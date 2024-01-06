@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Performance;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoFluid;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Strafe;
+import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
 import net.ccbluex.liquidbounce.injection.access.IWorld;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
@@ -372,7 +373,7 @@ public abstract class MixinEntity implements ICommandSender {
             return;
 
         final StrafeEvent strafeEvent = new StrafeEvent(strafe, forward, friction);
-        final Strafe strafeFix = FDPClient.moduleManager.getModule(Strafe.class);
+        final StrafeFix strafeFix = FDPClient.moduleManager.getModule(StrafeFix.class);
         //alert("Strafe: " + strafe + " Forward: " + forward + " Factor: " + friction + " DoFix: " + strafeFix.getDoFix());
         FDPClient.eventManager.callEvent(strafeEvent);
         if (strafeFix.getDoFix()) { //Run StrafeFix process on Post Strafe 2023/02/15
