@@ -29,7 +29,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import java.awt.Color
 @ModuleInfo(name = "BowModule", category = ModuleCategory.COMBAT)
-object BowModule : Module() {
+class BowModule : Module() {
 
     // AutoBow
     private val AutoBowValue = BoolValue("AutoBow", false)

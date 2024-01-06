@@ -30,7 +30,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
 @ModuleInfo("AutoBot", category = ModuleCategory.COMBAT)
-object AutoBot : Module() {
+class AutoBot : Module() {
 
     private val autoSoupValue = BoolValue("AutoSoup", true)
     private val autoPotValue = BoolValue("AutoPot", true)

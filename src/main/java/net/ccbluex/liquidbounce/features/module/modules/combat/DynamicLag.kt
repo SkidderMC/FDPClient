@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import kotlin.random.Random
 
 @ModuleInfo(name = "DynamicLag", category = ModuleCategory.COMBAT)
-object DynamicLag : Module() {       
+class DynamicLag : Module() {
 
     private val lagDelay = MSTimer()
     private val lagDuration = MSTimer()

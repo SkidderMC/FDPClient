@@ -21,7 +21,7 @@ import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import kotlin.random.Random
 
 @ModuleInfo(name = "Aimbot", category = ModuleCategory.COMBAT)
-object Aimbot : Module() {
+class Aimbot : Module() {
 
     private val rangeValue = FloatValue("Range", 4.4F, 1F, 8F)
     private val turnSpeedValue = FloatValue("TurnSpeed", 2F, 1F, 180F)

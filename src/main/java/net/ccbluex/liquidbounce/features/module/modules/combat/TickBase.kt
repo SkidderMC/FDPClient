@@ -14,13 +14,13 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.entity.EntityLivingBase
 
 @ModuleInfo(name = "TickBase", category = ModuleCategory.COMBAT)
-object TickBase : Module() {
+class TickBase : Module() {
 
     private var ticks = 0
 
-    val ticksAmount = IntegerValue("BoostTicks", 10, 3, 20)
-    val BoostAmount = FloatValue("BoostTimer", 10f, 1f, 50f)
-    val ChargeAmount = FloatValue("ChargeTimer", 0.11f, 0.05f, 1f)
+    private val ticksAmount = IntegerValue("BoostTicks", 10, 3, 20)
+    private val BoostAmount = FloatValue("BoostTimer", 10f, 1f, 50f)
+    private val ChargeAmount = FloatValue("ChargeTimer", 0.11f, 0.05f, 1f)
 
     @EventTarget
     fun onAttack(event: AttackEvent) {

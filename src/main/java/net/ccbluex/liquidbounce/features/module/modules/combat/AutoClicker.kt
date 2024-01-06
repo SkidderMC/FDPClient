@@ -22,7 +22,7 @@ import kotlin.random.Random
 import org.lwjgl.input.Mouse
 
 @ModuleInfo(name = "AutoClicker", category = ModuleCategory.COMBAT)
-object AutoClicker : Module() {
+class AutoClicker : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Normal", "Gaussian", "LegitJitter", "LegitButterfly"), "Normal")
     private val legitJitterValue = ListValue("LegitJitterMode", arrayOf("Jitter1", "Jitter2", "Jitter3", "SimpleJitter"), "Jitter1").displayable {modeValue.equals("LegitJitter")}

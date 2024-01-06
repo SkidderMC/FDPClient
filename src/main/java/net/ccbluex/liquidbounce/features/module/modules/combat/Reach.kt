@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import kotlin.math.max
 
 @ModuleInfo(name = "Reach", category = ModuleCategory.COMBAT)
-object Reach : Module() {
+class Reach : Module() {
 
     val combatReachValue = FloatValue("CombatReach", 3.5f, 3f, 7f)
     val buildReachValue = FloatValue("BuildReach", 5f, 4.5f, 7f)

@@ -23,7 +23,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 @ModuleInfo(name = "Velocity", category = ModuleCategory.COMBAT)
-object Velocity : Module() {
+class Velocity : Module() {
 
     private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.velocitys", VelocityMode::class.java)
         .map { it.newInstance() as VelocityMode }

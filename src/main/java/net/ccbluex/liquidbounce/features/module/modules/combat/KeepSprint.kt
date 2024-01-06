@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 
 @ModuleInfo(name = "KeepSprint", category = ModuleCategory.COMBAT)
-object KeepSprint : Module() {
+class KeepSprint : Module() {
 
     val s = FloatValue("Motion", 0.0F , 0.0F, 1.0F)
     val aws = BoolValue("AlwaysSprint", false)

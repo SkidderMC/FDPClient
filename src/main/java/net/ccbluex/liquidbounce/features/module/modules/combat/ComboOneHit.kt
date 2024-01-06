@@ -19,7 +19,7 @@ import net.minecraft.network.play.client.C0APacketAnimation
 
 @ModuleInfo(name = "ComboOneHit", category = ModuleCategory.COMBAT)
 @SuppressWarnings("ALL")
-object ComboOneHit : Module() {
+class ComboOneHit : Module() {
 
     private val amountValue = IntegerValue("Packets", 200, 0, 500)
     private val swingValue = ListValue("SwingMode", arrayOf("Normal","Packet"), "Normal")

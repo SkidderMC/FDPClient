@@ -47,9 +47,8 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
 import kotlin.math.*
-
 @ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_G)
-object KillAura : Module() {
+class KillAura : Module() {
     /**
      * OPTIONS
      */

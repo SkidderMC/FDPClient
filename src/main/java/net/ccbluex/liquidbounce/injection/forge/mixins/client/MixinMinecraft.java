@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
+import net.ccbluex.liquidbounce.features.module.modules.combat.NoClickDelay;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.injection.forge.mixins.accessors.MinecraftForgeClientAccessor;
@@ -248,7 +249,7 @@ public abstract class MixinMinecraft {
 
                     case MISS:
                     default:
-                        if (this.playerController.isNotCreative()) {
+                        if (this.playerController.isNotCreative() && !FDPClient.moduleManager.getModule(NoClickDelay.class).getState()) {
                             this.leftClickCounter = 10;
                         }
                 }

@@ -31,7 +31,7 @@ import java.util.List;
 
 public class MixedStyle extends Style {
 
-    private boolean mouseDown;
+    public boolean mouseDown;
     private boolean rightMouseDown;
 
     public static float drawSlider(final float value, final float min, final float max, final int x, final int y, final int width, final int mouseX, final int mouseY, final Color color) {

@@ -22,7 +22,7 @@ import net.minecraft.client.settings.GameSettings
 import net.minecraft.entity.player.EntityPlayer
 
 @ModuleInfo(name = "KeepRange", category = ModuleCategory.COMBAT)
-object KeepRange : Module() {
+class KeepRange : Module() {
 
     private val mode = ListValue("Mode", arrayOf("ReleaseKey", "CancelMove"), "ReleaseKey")
     private val minDistance = FloatValue("MinDistance", 2.3F, 0F, 4F)

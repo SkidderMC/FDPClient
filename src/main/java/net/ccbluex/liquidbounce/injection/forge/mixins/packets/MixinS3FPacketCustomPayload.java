@@ -1,4 +1,9 @@
-package net.ccbluex.liquidbounce.injection.forge.mixins.network;
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+package net.ccbluex.liquidbounce.injection.forge.mixins.packets;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.INetHandlerPlayClient;
@@ -9,6 +14,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+/**
+ * The type Mixin s 3 f packet custom payload.
+ */
 @Mixin(S3FPacketCustomPayload.class)
 public class MixinS3FPacketCustomPayload {
     @Shadow
