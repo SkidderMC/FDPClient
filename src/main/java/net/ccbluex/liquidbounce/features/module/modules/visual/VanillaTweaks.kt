@@ -45,20 +45,6 @@ class VanillaTweaks : Module() {
     val worldColorGValue = IntegerValue("WorldGreen", 255, 0, 255) { worldColorValue.get() }
     val worldColorBValue = IntegerValue("WorldBlue", 255, 0, 255) { worldColorValue.get() }
 
-    //HitColor
-    val hitColorValue = BoolValue("HitColor", false)
-    val hitColorRValue = IntegerValue("HitRed", 255, 0, 255) { hitColorValue.get() }
-    val hitColorGValue = IntegerValue("HitGreen", 255, 0, 255) { hitColorValue.get() }
-    val hitColorBValue = IntegerValue("HitBlue", 255, 0, 255) { hitColorValue.get() }
-    val hitColorAlphaValue = IntegerValue("HitAlpha", 255, 0, 255) { hitColorValue.get() }
-
-    //CustomFog
-    val customFog = BoolValue("CustomFog", false)
-    val customFogDistance = FloatValue("FogDistance", 0.10f, 0.001f, 2.0f).displayable  { customFog.get() }
-    private val customFogRValue = IntegerValue("FogRed", 255, 0, 255) { customFog.get() }
-    private val customFogGValue = IntegerValue("FogGreen", 255, 0, 255) { customFog.get() }
-    private val customFogBValue = IntegerValue("FogBlue", 255, 0, 255) { customFog.get() }
-
     private val motionBlur = BoolValue("MotionBlur", false)
     private val blurAmount = IntegerValue("BlurAmount", 0, 0, 10) { motionBlur.get() }
 
@@ -117,14 +103,6 @@ class VanillaTweaks : Module() {
         } catch (a: Exception) {
             a.printStackTrace()
         }
-    }
-
-
-    @EventTarget
-    fun onFogColor(event: FogColorEvent) {
-        event.setRed(customFogRValue.get())
-        event.setGreen(customFogGValue.get())
-        event.setBlue(customFogBValue.get())
     }
 
     override fun handleEvents() = true

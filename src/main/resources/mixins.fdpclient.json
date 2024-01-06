@@ -75,6 +75,9 @@
     "performance.MixinChunk",
     "performance.MixinWorld",
     "performance.MixinWorldManager",
+    "performance.MixinAnvilChunkLoader",
+    "performance.MixinGameRulesValue",
+    "performance.MixinMinecraftServer",
     "render.MixinEffectRenderer",
     "render.MixinEntityRenderer",
     "render.MixinFontRenderer",
@@ -86,6 +89,7 @@
     "render.MixinLayerWitherAura",
     "render.MixinModelBiped",
     "render.MixinModelPlayer",
+    "render.MixinModelPlayerFix",
     "render.MixinModelSkeleton",
     "render.MixinModelVillager",
     "render.MixinRender",
@@ -114,11 +118,10 @@
     "patcher.bugfixes.MixinServerAddress",
     "patcher.bugfixes.MixinServerList",
     "patcher.bugfixes.MixinSoundManager",
-    "patcher.performance.MixinAnvilChunkLoader",
     "patcher.performance.MixinBlockPos",
-    "patcher.performance.MixinGameRulesValue",
-    "patcher.performance.MixinMinecraftServer",
     "patcher.performance.MixinNodeProcessor",
+    "splash.MixinSplashProgress",
+    "splash.MixinSplashProgressRunnable",
     "accessors.MinecraftForgeClientAccessor"
   ]
 }

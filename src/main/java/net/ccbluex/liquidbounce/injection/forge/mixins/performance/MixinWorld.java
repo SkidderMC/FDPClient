@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.injection.forge.mixins.performance;
 
 import com.google.common.collect.ImmutableSetMultimap;
@@ -7,12 +12,14 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.profiler.Profiler;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.*;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.storage.WorldInfo;
 import net.minecraftforge.common.ForgeChunkManager;
+import net.minecraftforge.common.util.BlockSnapshot;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -20,6 +27,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -36,6 +44,10 @@ public abstract class MixinWorld implements IWorld {
     public boolean isRemote;
     @Shadow
     protected WorldInfo worldInfo;
+    @Shadow
+    public boolean captureBlockSnapshots;
+    @Shadow
+    public ArrayList<BlockSnapshot> capturedBlockSnapshots;
     @Shadow
     @Final
     public Profiler theProfiler;
@@ -384,6 +396,25 @@ public abstract class MixinWorld implements IWorld {
     }
 
     @Override
+    public boolean setBlockState(int n, int n2, int n3, IBlockState iBlockState, int n4) {
+        if (!this.isValid(n, n2, n3)) {
+            return false;
+        }
+        if (!this.isRemote && this.worldInfo.getTerrainType() == WorldType.DEBUG_WORLD) {
+            return false;
+        }
+        BlockSnapshot blockSnapshot = null;
+        if (this.captureBlockSnapshots && !this.isRemote) {
+            blockSnapshot = BlockSnapshot.getBlockSnapshot((World)(Object)this, new BlockPos(n, n2, n3), n4);
+            this.capturedBlockSnapshots.add(blockSnapshot);
+        }
+        if (blockSnapshot != null) {
+            this.capturedBlockSnapshots.remove(blockSnapshot);
+        } // TODO: here may be a problem
+        return false;
+    }
+
+    @Override
     public void markBlockForUpdate(int n, int n2, int n3) {
         for (IWorldAccess iWorldAccess : this.worldAccesses) {
             ((IMixinWorldAccess)iWorldAccess).markBlockForUpdate(n, n2, n3);
@@ -395,9 +426,9 @@ public abstract class MixinWorld implements IWorld {
         if (!((n4 & 2) == 0 || this.isRemote && (n4 & 4) != 0 || chunk != null && !chunk.isPopulated())) {
             this.markBlockForUpdate(n, n2, n3);
         }
-        if (!this.isRemote && (n4 & 1) != 0) {
-            iBlockState2.getBlock().hasComparatorInputOverride();
-        }// empty if block
+        if (this.isRemote || (n4 & 1) == 0 || iBlockState2.getBlock().hasComparatorInputOverride()) {
+            // empty if block
+        }
     }
 
     @Override

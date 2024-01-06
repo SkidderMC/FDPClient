@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import com.google.common.base.Predicates;
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.event.FogColorEvent;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.client.HurtCam;
@@ -17,17 +16,14 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.Reach;
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook;
 import net.ccbluex.liquidbounce.utils.Interpolator;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.EntityRenderer;
-import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityItemFrame;
@@ -39,8 +35,6 @@ import net.minecraftforge.client.ForgeHooksClient;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GLContext;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -50,7 +44,6 @@ import static org.objectweb.asm.Opcodes.GETFIELD;
 
 import java.awt.*;
 import java.io.IOException;
-import java.nio.FloatBuffer;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -98,20 +91,7 @@ public abstract class MixinEntityRenderer {
         this.thirdPersonDistance = thirdPersonDistance;
     }
 
-    @Shadow
-    private FloatBuffer fogColorBuffer = GLAllocation.createDirectFloatBuffer(16);
-
-    @Shadow
-    private float farPlaneDistance;
-
-    private float fogColorRed;
-    @Shadow
-    private float fogColorGreen;
-    @Shadow
-    private float fogColorBlue;
-
     float d3 = 0.0f;
-
 
     @Inject(method = "renderWorldPass", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/EntityRenderer;renderHand:Z", shift = At.Shift.BEFORE))
     private void renderWorldPass(int pass, float partialTicks, long finishTimeNano, CallbackInfo callbackInfo) {
@@ -463,97 +443,6 @@ public abstract class MixinEntityRenderer {
         }
     }
 
-    @Shadow
-    private FloatBuffer setFogColorBuffer(float p_setFogColorBuffer_1_, float p_setFogColorBuffer_2_, float p_setFogColorBuffer_3_, float p_setFogColorBuffer_4_) {
-        this.fogColorBuffer.clear();
-        this.fogColorBuffer.put(p_setFogColorBuffer_1_).put(p_setFogColorBuffer_2_).put(p_setFogColorBuffer_3_).put(p_setFogColorBuffer_4_);
-        this.fogColorBuffer.flip();
-        return this.fogColorBuffer;
-    }
-
-    @Overwrite
-    private void setupFog(int p_setupFog_1_, float p_setupFog_2_) {
-        Entity entity = this.mc.getRenderViewEntity();
-
-        GL11.glFog(2918, this.setFogColorBuffer(this.fogColorRed, this.fogColorGreen, this.fogColorBlue, 1.0F));
-        GL11.glNormal3f(0.0F, -1.0F, 0.0F);
-        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-        Block block = ActiveRenderInfo.getBlockAtEntityViewpoint(this.mc.theWorld, entity, p_setupFog_2_);
-        float hook = ForgeHooksClient.getFogDensity(this.mc.entityRenderer, entity, block, p_setupFog_2_, 0.1F);
-        if (hook >= 0.0F) {
-            GlStateManager.setFogDensity(hook);
-        } else {
-            float f;
-            if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPotionActive(Potion.blindness)) {
-                f = 5.0F;
-                int i = ((EntityLivingBase)entity).getActivePotionEffect(Potion.blindness).getDuration();
-                if (i < 20) {
-                    f = 5.0F + (this.farPlaneDistance - 5.0F) * (1.0F - (float)i / 20.0F);
-                }
-
-                GlStateManager.setFog(9729);
-                if (p_setupFog_1_ == -1) {
-                    GlStateManager.setFogStart(0.0F);
-                    GlStateManager.setFogEnd(f * 0.8F);
-                } else {
-                    GlStateManager.setFogStart(f * 0.25F);
-                    GlStateManager.setFogEnd(f);
-                }
-
-                if (GLContext.getCapabilities().GL_NV_fog_distance) {
-                    GL11.glFogi(34138, 34139);
-                }
-            } else if (this.cloudFog) {
-                GlStateManager.setFog(2048);
-                GlStateManager.setFogDensity(0.1F);
-            } else if (block.getMaterial() == Material.water) {
-                GlStateManager.setFog(2048);
-                if (entity instanceof EntityLivingBase && ((EntityLivingBase)entity).isPotionActive(Potion.waterBreathing)) {
-                    GlStateManager.setFogDensity(0.01F);
-                } else {
-                    GlStateManager.setFogDensity(0.1F - (float) EnchantmentHelper.getRespiration(entity) * 0.03F);
-                }
-            } else if (block.getMaterial() == Material.lava) {
-                GlStateManager.setFog(2048);
-                GlStateManager.setFogDensity(2.0F);
-            } else {
-                f = this.farPlaneDistance;
-                GlStateManager.setFog(9729);
-                if (p_setupFog_1_ == -1) {
-                    GlStateManager.setFogStart(0.0F);
-                    GlStateManager.setFogEnd(f);
-                } else {
-                    GlStateManager.setFogStart(f * (Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getCustomFog().get() ? -FDPClient.moduleManager.getModule(VanillaTweaks.class).getCustomFogDistance().get() : 0.75F));
-                    GlStateManager.setFogEnd(f);
-                }
-
-                if (GLContext.getCapabilities().GL_NV_fog_distance) {
-                    GL11.glFogi(34138, 34139);
-                }
-
-                if (this.mc.theWorld.provider.doesXZShowFog((int)entity.posX, (int)entity.posZ)) {
-                    GlStateManager.setFogStart(f * 0.05F);
-                    GlStateManager.setFogEnd(Math.min(f, 192.0F) * 0.5F);
-                }
-
-                ForgeHooksClient.onFogRender(this.mc.entityRenderer, entity, block, p_setupFog_2_, p_setupFog_1_, f);
-            }
-        }
-
-        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getCustomFog().get()) {
-            FogColorEvent event = new FogColorEvent(fogColorRed, fogColorGreen, fogColorBlue, 0);
-            FDPClient.eventManager.callEvent(event);
-
-            fogColorRed = event.getRed() / 255F;
-            fogColorGreen = event.getGreen() / 255F;
-            fogColorBlue = event.getBlue() / 255F;
-        }
-
-        GlStateManager.enableColorMaterial();
-        GlStateManager.enableFog();
-        GlStateManager.colorMaterial(1028, 4608);
-    }
-
     @Overwrite
     private void orientCamera(float partialTicks) {
         HUD hud = FDPClient.moduleManager.getModule(HUD.class);
@@ -604,7 +493,8 @@ public abstract class MixinEntityRenderer {
                 double d6 = (double) (-MathHelper.sin(f22 * ((float) Math.PI / 180))) * (double) this.d3;
                 for (int i = 0; i < 8; ++i) {
                     double d7;
-                    MovingObjectPosition movingobjectposition = this.mc.theWorld.rayTraceBlocks(new Vec3(d0 + (double) d4, d1 + (double) d5, d2 + (double) d6), new Vec3(d0 - d4 + (double) d4 + (double) d6, d1 - d6 + (double) d5, d2 - d5 + (double) d6));
+                    this.mc.theWorld.rayTraceBlocks(new Vec3(d0 + (double) d4, d1 + (double) d5, d2 + (double) d6), new Vec3(d0 - d4 + (double) d4 + (double) d6, d1 - d6 + (double) d5, d2 - d5 + (double) d6));
+                    MovingObjectPosition movingobjectposition;
                     float f3 = (i & 1) * 2 - 1;
                     float f4 = (i >> 1 & 1) * 2 - 1;
                     float f5 = (i >> 2 & 1) * 2 - 1;
@@ -642,12 +532,12 @@ public abstract class MixinEntityRenderer {
                 }
 
                 @Override
-                public IResource getResource(ResourceLocation resourceLocation) throws IOException {
+                public IResource getResource(ResourceLocation resourceLocation) {
                     return null;
                 }
 
                 @Override
-                public List<IResource> getAllResources(ResourceLocation resourceLocation) throws IOException {
+                public List<IResource> getAllResources(ResourceLocation resourceLocation) {
                     return null;
                 }
             }), entity, block, (double) partialTicks, yaw, pitch, f8);

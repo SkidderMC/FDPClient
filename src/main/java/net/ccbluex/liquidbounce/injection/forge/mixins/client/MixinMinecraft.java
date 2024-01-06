@@ -23,6 +23,7 @@ import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.render.ImageUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.block.material.Material;
+import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
@@ -98,6 +99,14 @@ public abstract class MixinMinecraft {
 
     @Shadow
     public abstract RenderManager getRenderManager();
+
+    @Inject(method = "toggleFullscreen", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setFullscreen(Z)V", remap = false))
+    private void resolveScreenState(CallbackInfo ci) {
+        if (!this.fullscreen && SystemUtils.IS_OS_WINDOWS) {
+            Display.setResizable(false);
+            Display.setResizable(true);
+        }
+    }
 
     @Inject(method = "run", at = @At("HEAD"))
     private void init(CallbackInfo callbackInfo) {
@@ -182,7 +191,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "runTick", at = @At("HEAD"))
     private void runTick(final CallbackInfo callbackInfo) {
-        StaticStorage.scaledResolution = new ScaledResolution((Minecraft) (Object) this);
+        StaticStorage.scaledResolution = new ScaledResolution((Minecraft)(Object) this);
     }
 
     @Inject(method = "runTick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;joinPlayerCounter:I", shift = At.Shift.BEFORE))
@@ -295,14 +304,6 @@ public abstract class MixinMinecraft {
         }
     }
 
-    @Inject(method = "toggleFullscreen", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setFullscreen(Z)V", remap = false))
-    private void resolveScreenState(CallbackInfo ci) {
-        if (!this.fullscreen && SystemUtils.IS_OS_WINDOWS) {
-            Display.setResizable(false);
-            Display.setResizable(true);
-        }
-    }
-
     @Redirect(method = "dispatchKeypresses", at = @At(value = "INVOKE", target = "Lorg/lwjgl/input/Keyboard;getEventCharacter()C", remap = false))
     private char resolveForeignKeyboards() {
         return (char) (Keyboard.getEventCharacter() + 256);
@@ -349,6 +350,26 @@ public abstract class MixinMinecraft {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    @Redirect(method="loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at=@At(value="INVOKE", target="Lnet/minecraft/client/LoadingScreenRenderer;resetProgressAndMessage(Ljava/lang/String;)V"))
+    public void loadWorld(LoadingScreenRenderer loadingScreenRenderer, String string) {
+    }
+
+    @Redirect(method="loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at=@At(value="INVOKE", target="Lnet/minecraft/client/LoadingScreenRenderer;displayLoadingString(Ljava/lang/String;)V"))
+    public void loadWorld1(LoadingScreenRenderer loadingScreenRenderer, String string) {
+    }
+
+    @Redirect(method="loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at=@At(value="INVOKE", target="Ljava/lang/System;gc()V", remap=false))
+    public void loadWorld2() {
+    }
+
+    @Inject(method="toggleFullscreen()V", at=@At(value="INVOKE", target="Lorg/lwjgl/opengl/Display;setFullscreen(Z)V", shift=At.Shift.AFTER, remap=false), require=1, allow=1)
+    private void toggleFullscreen(CallbackInfo callbackInfo) {
+        if (!this.fullscreen) {
+            Display.setResizable(false);
+            Display.setResizable(true);
         }
     }
 

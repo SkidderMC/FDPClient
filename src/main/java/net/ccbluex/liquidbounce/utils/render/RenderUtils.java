@@ -44,6 +44,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.List;
@@ -2799,6 +2800,29 @@ public final class RenderUtils extends MinecraftInstance {
         tessellator.draw();
         GlStateManager.enableTexture2D();
         GlStateManager.disableBlend();
+    }
+
+    /**
+     * Reads the image into a texture.
+     * @return texture id
+     * @author func16
+     */
+    public static int loadGlTexture(BufferedImage bufferedImage){
+        int textureId = GL11.glGenTextures();
+
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId);
+
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+
+        GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, bufferedImage.getWidth(), bufferedImage.getHeight(),
+                0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, ImageUtils.readImageToBuffer(bufferedImage));
+
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
+
+        return textureId;
     }
 
 }

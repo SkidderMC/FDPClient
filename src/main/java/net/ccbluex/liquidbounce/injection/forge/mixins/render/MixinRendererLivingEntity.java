@@ -1,29 +1,26 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
- */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
+
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
-import net.ccbluex.liquidbounce.features.module.modules.visual.Chams;
-import net.ccbluex.liquidbounce.features.module.modules.visual.NameTags;
-import net.ccbluex.liquidbounce.features.module.modules.visual.TrueSight;
+import net.ccbluex.liquidbounce.features.module.modules.visual.*;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
+import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
-import net.minecraft.client.renderer.GLAllocation;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RendererLivingEntity;
-import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EnumPlayerModelParts;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,31 +31,160 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.awt.*;
-import java.nio.FloatBuffer;
+import java.util.Objects;
 
+/**
+ * The type Mixin renderer living entity.
+ */
 @Mixin(RendererLivingEntity.class)
 public abstract class MixinRendererLivingEntity extends MixinRender {
-
+    @Final
+    @Shadow
+    private static final Logger logger = LogManager.getLogger();
+    /**
+     * The Main model.
+     */
     @Shadow
     protected ModelBase mainModel;
-
+    /**
+     * The Render outlines.
+     */
     @Shadow
-    protected FloatBuffer brightnessBuffer = GLAllocation.createDirectFloatBuffer(4);
+    protected boolean renderOutlines = false;
 
-    private static final DynamicTexture field_177096_e = new DynamicTexture(16, 16);
-
-    @Shadow
-    public abstract <T extends EntityLivingBase> int getColorMultiplier(T entitylivingbaseIn, float lightBrightness, float partialTickTime);
+    /**
+     * Gets death max rotation.
+     *
+     * @param <T>                      the type parameter
+     * @param p_getDeathMaxRotation_1_ the p get death max rotation 1
+     * @return the death max rotation
+     */
     @Shadow
     protected <T extends EntityLivingBase> float getDeathMaxRotation(T p_getDeathMaxRotation_1_) {
         return 90.0F;
     }
 
+    /**
+     * Interpolate rotation float.
+     *
+     * @param par1 the par 1
+     * @param par2 the par 2
+     * @param par3 the par 3
+     * @return the float
+     */
+    @Shadow
+    protected abstract float interpolateRotation(float par1, float par2, float par3);
+
+    /**
+     * Sets do render brightness.
+     *
+     * @param <T>                the type parameter
+     * @param entityLivingBaseIn the entity living base in
+     * @param partialTicks       the partial ticks
+     * @return the do render brightness
+     */
+    @Shadow
+    protected abstract <T extends EntityLivingBase> boolean setDoRenderBrightness(T entityLivingBaseIn, float partialTicks);
+
+    /**
+     * Sets score team color.
+     *
+     * @param <T>                the type parameter
+     * @param entityLivingBaseIn the entity living base in
+     * @return the score team color
+     */
+    @Shadow
+    protected abstract <T extends EntityLivingBase> boolean setScoreTeamColor(T entityLivingBaseIn);
+
+    /**
+     * Gets swing progress.
+     *
+     * @param <T>             the type parameter
+     * @param livingBase      the living base
+     * @param partialTickTime the partial tick time
+     * @return the swing progress
+     */
+    @Shadow
+    protected abstract <T extends EntityLivingBase> float getSwingProgress(T livingBase, float partialTickTime);
+
+    /**
+     * Unset score team color.
+     */
+    @Shadow
+    protected abstract void unsetScoreTeamColor();
+
+    /**
+     * Pre render callback.
+     *
+     * @param <T>                the type parameter
+     * @param entitylivingbaseIn the entitylivingbase in
+     * @param partialTickTime    the partial tick time
+     */
+    @Shadow
+    protected abstract <T extends EntityLivingBase> void preRenderCallback(T entitylivingbaseIn, float partialTickTime);
+
+    /**
+     * Unset brightness.
+     */
+    @Shadow
+    protected abstract void unsetBrightness();
+
+    /**
+     * Render living at.
+     *
+     * @param <T>                the type parameter
+     * @param entityLivingBaseIn the entity living base in
+     * @param x                  the x
+     * @param y                  the y
+     * @param z                  the z
+     */
+    @Shadow
+    protected abstract <T extends EntityLivingBase> void renderLivingAt(T entityLivingBaseIn, double x, double y, double z);
+
+    /**
+     * Handle rotation float float.
+     *
+     * @param <T>          the type parameter
+     * @param livingBase   the living base
+     * @param partialTicks the partial ticks
+     * @return the float
+     */
+    @Shadow
+    protected abstract <T extends EntityLivingBase> float handleRotationFloat(T livingBase, float partialTicks);
+
+    /**
+     * Render layers.
+     *
+     * @param <T>                the type parameter
+     * @param entitylivingbaseIn the entitylivingbase in
+     * @param p_177093_2_        the p 177093 2
+     * @param p_177093_3_        the p 177093 3
+     * @param partialTicks       the partial ticks
+     * @param p_177093_5_        the p 177093 5
+     * @param p_177093_6_        the p 177093 6
+     * @param p_177093_7_        the p 177093 7
+     * @param p_177093_8_        the p 177093 8
+     */
+    @Shadow
+    protected abstract <T extends EntityLivingBase> void renderLayers(T entitylivingbaseIn, float p_177093_2_, float p_177093_3_, float partialTicks, float p_177093_5_, float p_177093_6_, float p_177093_7_, float p_177093_8_);
+
+    /**
+     * Rotate corpse.
+     *
+     * @param <T>               the type parameter
+     * @param p_rotateCorpse_1_ the p rotate corpse 1
+     * @param p_rotateCorpse_2_ the p rotate corpse 2
+     * @param p_rotateCorpse_3_ the p rotate corpse 3
+     * @param p_rotateCorpse_4_ the p rotate corpse 4
+     * @author As_pw
+     * @reason RotateCorpse
+     */
     @Overwrite
     protected <T extends EntityLivingBase> void rotateCorpse(T p_rotateCorpse_1_, float p_rotateCorpse_2_, float p_rotateCorpse_3_, float p_rotateCorpse_4_) {
+        final PlayerEdit playerEdit = Objects.requireNonNull(FDPClient.moduleManager.getModule(PlayerEdit.class));
         GlStateManager.rotate(180.0F - p_rotateCorpse_3_, 0.0F, 1.0F, 0.0F);
         if (p_rotateCorpse_1_.deathTime > 0) {
-            float f = ((float)p_rotateCorpse_1_.deathTime + p_rotateCorpse_4_ - 1.0F) / 20.0F * 1.6F;
+            float f = ((float) p_rotateCorpse_1_.deathTime + p_rotateCorpse_4_ - 1.0F) / 20.0F * 1.6F;
             f = MathHelper.sqrt_float(f);
             if (f > 1.0F) {
                 f = 1.0F;
@@ -67,9 +193,12 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             GlStateManager.rotate(f * this.getDeathMaxRotation(p_rotateCorpse_1_), 0.0F, 0.0F, 1.0F);
         } else {
             String s = EnumChatFormatting.getTextWithoutFormattingCodes(p_rotateCorpse_1_.getName());
+            if (s != null && (PlayerEdit.rotatePlayer.get() && p_rotateCorpse_1_.equals(MinecraftInstance.mc.thePlayer) && playerEdit.getState()) && (!(p_rotateCorpse_1_ instanceof EntityPlayer) || ((EntityPlayer) p_rotateCorpse_1_).isWearing(EnumPlayerModelParts.CAPE))) {
+                GlStateManager.translate(0.0F, p_rotateCorpse_1_.height + PlayerEdit.yPos.get() - 1.8F, 0.0F);
+                GlStateManager.rotate(PlayerEdit.xRot.get(), 0.0F, 0.0F, 1.0F);
+            }
         }
     }
-
 
     @Inject(method = "doRender", at = @At("HEAD"))
     private <T extends EntityLivingBase> void injectChamsPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
@@ -100,103 +229,9 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     }
 
 
-    @Overwrite
-    protected <T extends EntityLivingBase> boolean setBrightness(T entitylivingbaseIn, float partialTicks, boolean combineTextures)
-    {
-        VanillaTweaks camera = FDPClient.moduleManager.getModule(VanillaTweaks.class);
-        float f = entitylivingbaseIn.getBrightness(partialTicks);
-        int i = this.getColorMultiplier(entitylivingbaseIn, f, partialTicks);
-        boolean flag = (i >> 24 & 255) > 0;
-        boolean flag1 = entitylivingbaseIn.hurtTime > 0 || entitylivingbaseIn.deathTime > 0;
-
-        if (!flag && !flag1)
-        {
-            return false;
-        }
-        else if (!flag && !combineTextures)
-        {
-            return false;
-        }
-        else
-        {
-            GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
-            GlStateManager.enableTexture2D();
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, OpenGlHelper.GL_COMBINE);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_COMBINE_RGB, GL11.GL_MODULATE);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_SOURCE0_RGB, OpenGlHelper.defaultTexUnit);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.GL_PRIMARY_COLOR);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_OPERAND0_RGB, GL11.GL_SRC_COLOR);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_OPERAND1_RGB, GL11.GL_SRC_COLOR);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_COMBINE_ALPHA, GL11.GL_REPLACE);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.defaultTexUnit);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA);
-            GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit);
-            GlStateManager.enableTexture2D();
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, OpenGlHelper.GL_COMBINE);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_COMBINE_RGB, OpenGlHelper.GL_INTERPOLATE);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_SOURCE0_RGB, OpenGlHelper.GL_CONSTANT);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.GL_PREVIOUS);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_SOURCE2_RGB, OpenGlHelper.GL_CONSTANT);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_OPERAND0_RGB, GL11.GL_SRC_COLOR);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_OPERAND1_RGB, GL11.GL_SRC_COLOR);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_OPERAND2_RGB, GL11.GL_SRC_ALPHA);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_COMBINE_ALPHA, GL11.GL_REPLACE);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.GL_PREVIOUS);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA);
-            this.brightnessBuffer.position(0);
-
-            if (flag1) {
-                assert camera != null;
-                if (camera.getState() && camera.getHitColorValue().get()) {
-                    int color = new Color(camera.getHitColorRValue().get(), camera.getHitColorGValue().get(), camera.getHitColorBValue().get(), camera.getHitColorAlphaValue().get()).getRGB();
-                    float red = (float) (color >> 16 & 0xFF) / 255.0f;
-                    float green = (float) (color >> 8 & 0xFF) / 255.0f;
-                    float blue = (float) (color & 0xFF) / 255.0f;
-                    float alpha = (float) (color >> 24 & 0xFF) / 255.0f;
-                    this.brightnessBuffer.put(red);
-                    this.brightnessBuffer.put(green);
-                    this.brightnessBuffer.put(blue);
-                    this.brightnessBuffer.put(alpha);
-                } else {
-                    this.brightnessBuffer.put(1.0F);
-                    this.brightnessBuffer.put(0.0F);
-                    this.brightnessBuffer.put(0.0F);
-                    this.brightnessBuffer.put(0.3F);
-                }
-            }
-            else
-            {
-                float f1 = (float)(i >> 24 & 255) / 255.0F;
-                float f2 = (float)(i >> 16 & 255) / 255.0F;
-                float f3 = (float)(i >> 8 & 255) / 255.0F;
-                float f4 = (float)(i & 255) / 255.0F;
-                this.brightnessBuffer.put(f2);
-                this.brightnessBuffer.put(f3);
-                this.brightnessBuffer.put(f4);
-                this.brightnessBuffer.put(1.0F - f1);
-            }
-
-            this.brightnessBuffer.flip();
-            GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR, this.brightnessBuffer);
-            GlStateManager.setActiveTexture(OpenGlHelper.GL_TEXTURE2);
-            GlStateManager.enableTexture2D();
-            GlStateManager.bindTexture(field_177096_e.getGlTextureId());
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_MODE, OpenGlHelper.GL_COMBINE);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_COMBINE_RGB, GL11.GL_MODULATE);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_SOURCE0_RGB, OpenGlHelper.GL_PREVIOUS);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_SOURCE1_RGB, OpenGlHelper.lightmapTexUnit);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_OPERAND0_RGB, GL11.GL_SRC_COLOR);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_OPERAND1_RGB, GL11.GL_SRC_COLOR);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_COMBINE_ALPHA, GL11.GL_REPLACE);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_SOURCE0_ALPHA, OpenGlHelper.GL_PREVIOUS);
-            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, OpenGlHelper.GL_OPERAND0_ALPHA, GL11.GL_SRC_ALPHA);
-            GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit);
-            return true;
-        }
-    }
-
     /**
-     * @author CCBlueX
+     * @author opZywl
+     * @reason Fix Renderer
      */
     @Inject(method = "renderModel", at = @At("HEAD"), cancellable = true)
     protected <T extends EntityLivingBase> void renderModel(T p_renderModel_1_, float p_renderModel_2_, float p_renderModel_3_, float p_renderModel_4_, float p_renderModel_5_, float p_renderModel_6_, float p_renderModel_7_, CallbackInfo ci) {

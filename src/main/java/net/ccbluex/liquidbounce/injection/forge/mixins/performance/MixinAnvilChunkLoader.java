@@ -1,7 +1,9 @@
 /*
- * ZAVZ Hacked Client
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.injection.forge.mixins.patcher.performance;
+package net.ccbluex.liquidbounce.injection.forge.mixins.performance;
 
 import net.minecraft.nbt.CompressedStreamTools;
 import net.minecraft.nbt.NBTTagCompound;
@@ -15,10 +17,9 @@ import java.io.IOException;
 
 @Mixin(AnvilChunkLoader.class)
 public class MixinAnvilChunkLoader {
-    // Local Capture misses this variable, so we have to resort to a Redirect.
     @Redirect(
-        method = "loadChunk__Async",
-        at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/CompressedStreamTools;read(Ljava/io/DataInputStream;)Lnet/minecraft/nbt/NBTTagCompound;")
+            method = "loadChunk__Async",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/CompressedStreamTools;read(Ljava/io/DataInputStream;)Lnet/minecraft/nbt/NBTTagCompound;")
     )
     private NBTTagCompound closeStream(DataInputStream stream) throws IOException {
         NBTTagCompound result = CompressedStreamTools.read(stream);

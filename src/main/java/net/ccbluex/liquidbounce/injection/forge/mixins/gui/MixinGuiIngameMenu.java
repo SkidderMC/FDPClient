@@ -23,7 +23,7 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))
     private void initGui(CallbackInfo callbackInfo) {
         if(!this.mc.isIntegratedServerRunning()) {
-            this.buttonList.add(new GuiButton(1337, this.width / 2 - 100, this.height / 4 + 128, "%ui.reconnect%"));
+            this.buttonList.add(new GuiButton(1337, this.width / 2 - 100, this.height / 4 + 128, "Reconnect"));
             this.buttonList.add(new GuiButton(1068,this.width / 2 - 100,this.height / 4 + 128 + 24,"Switcher"));
             this.buttonList.add(new GuiButton(1000, 4, height - 24, 68, 20, "Misc"));
         }
