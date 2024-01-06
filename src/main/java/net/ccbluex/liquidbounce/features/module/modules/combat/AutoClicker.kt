@@ -295,4 +295,12 @@ class AutoClicker : Module() {
         }
         return cDelay
     }
+
+    override val tag: String
+        get() = when (modeValue.get().lowercase()) {
+            "normal" -> normalMinCPSValue.get().toString() + " - " + normalMaxCPSValue.get().toString()
+            "legitjitter" -> legitJitterValue.get()
+            "legitbutterfly" -> legitbutterflyValue.get()
+            "gaussian" -> gaussianCpsValue.get()
+        }
 }
