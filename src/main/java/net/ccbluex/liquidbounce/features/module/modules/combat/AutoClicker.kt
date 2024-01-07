@@ -109,7 +109,7 @@ class AutoClicker : Module() {
             rightDelay = updateClicks().toLong() - 1L
         }
         
-        if (blockValue.get() && mc.thePlayer.heldItem?.item is ItemSword && mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() && blockOnClick.get() && Mouse.isButtonDown(1) && (!breakStopValue.get() || mc.playerController.curBlockDamageMP == 0F)) {
+        if (blockValue.get() && mc.thePlayer.heldItem?.item is ItemSword && leftValue.get() && (!breakStopValue.get() || mc.playerController.curBlockDamageMP == 0F)) {
             mc.gameSettings.keyBindUseItem.pressed = false
 
             doBlock = when(blockMode.get().lowercase()) {
