@@ -93,7 +93,6 @@ public abstract class FramebufferShader extends Shader {
      */
     public void drawFramebuffer(final Framebuffer framebuffer) {
         final ScaledResolution scaledResolution = StaticStorage.scaledResolution;
-        if (scaledResolution == null) return;
         glBindTexture(GL_TEXTURE_2D, framebuffer.framebufferTexture);
         glBegin(GL_QUADS);
         glTexCoord2d(0, 1);

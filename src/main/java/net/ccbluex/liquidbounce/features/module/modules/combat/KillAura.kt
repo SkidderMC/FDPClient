@@ -135,7 +135,6 @@ class KillAura : Module() {
     private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch").displayable { modeDisplay.get() }
     private val switchDelayValue = IntegerValue("SwitchDelay", 15, 1, 2000).displayable { targetModeValue.equals("Switch") && modeDisplay.get() }
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") && modeDisplay.get() }
-    private val movementFix = ListValue("MovementFix", arrayOf("Full", "Semi", "None"), "None").displayable { modeDisplay.get() && !rotationModeValue.get().equals("none", true) }
 
     private val raycastValue = BoolValue("RayCast", true).displayable { modeDisplay.get() }
     private val raycastTargetValue = BoolValue("RaycastOnlyTarget", false).displayable { raycastValue.get() && raycastValue.displayable }
@@ -993,14 +992,6 @@ class KillAura : Module() {
             rotation.toPlayer(mc.thePlayer)
         }
         return true
-    }
-
-    @EventTarget
-    fun onJump(event: JumpEventFix) {
-        if (movementFix.get() == "Full" && currentTarget != null) {
-            mc.thePlayer.isSprinting = false
-            event.yaw = RotationUtils.serverRotation?.yaw!!
-        }
     }
 
     /**

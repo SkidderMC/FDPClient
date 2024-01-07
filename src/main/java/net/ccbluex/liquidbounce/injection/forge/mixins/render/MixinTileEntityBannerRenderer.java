@@ -1,6 +1,12 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import com.google.common.collect.Lists;
+import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.LayeredColorMaskTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityBannerRenderer;
@@ -16,6 +22,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The type Mixin tile entity banner renderer.
+ */
 @Mixin(TileEntityBannerRenderer.class)
 public class MixinTileEntityBannerRenderer {
     @Shadow
@@ -27,8 +36,8 @@ public class MixinTileEntityBannerRenderer {
     private static ResourceLocation BANNERTEXTURES;
 
     /**
-     * @author asbyth
-     * @reason Resolve banners in chests not displaying once cache is full
+     * @author As_pw
+     * @reason Banner
      */
     @Overwrite
     private ResourceLocation func_178463_a(TileEntityBanner banner) {
@@ -53,7 +62,7 @@ public class MixinTileEntityBannerRenderer {
 
                 timedTexture = new TileEntityBannerRenderer.TimedBannerTexture();
                 timedTexture.bannerTexture = new ResourceLocation(texture);
-                Minecraft.getMinecraft().getTextureManager().loadTexture(timedTexture.bannerTexture, new LayeredColorMaskTexture(BANNERTEXTURES, patternPath, colorList));
+                MinecraftInstance.mc.getTextureManager().loadTexture(timedTexture.bannerTexture, new LayeredColorMaskTexture(BANNERTEXTURES, patternPath, colorList));
                 DESIGNS.put(texture, timedTexture);
             }
 
@@ -72,7 +81,7 @@ public class MixinTileEntityBannerRenderer {
             TileEntityBannerRenderer.TimedBannerTexture timedTexture = DESIGNS.get(next);
 
             if ((start - timedTexture.systemTime) > 5000L) {
-                Minecraft.getMinecraft().getTextureManager().deleteTexture(timedTexture.bannerTexture);
+                MinecraftInstance.mc.getTextureManager().deleteTexture(timedTexture.bannerTexture);
                 iterator.remove();
                 return true;
             }

@@ -25,6 +25,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 
+/**
+ * The type Mixin tile entity item stack renderer.
+ */
 @Mixin(TileEntityItemStackRenderer.class)
 public class MixinTileEntityItemStackRenderer {
 
@@ -41,33 +44,37 @@ public class MixinTileEntityItemStackRenderer {
     private TileEntityChest field_147717_b;
 
     /**
-     * @author CCBlueX
+     * Render by item.
+     *
+     * @param itemStackIn the item stack in
+     * @author opZywl
+     * @reason Render
      */
     @Overwrite
     public void renderByItem(ItemStack itemStackIn) {
-        if(itemStackIn.getItem() == Items.banner) {
+        if (itemStackIn.getItem() == Items.banner) {
             this.banner.setItemValues(itemStackIn);
-            TileEntityRendererDispatcher.instance.renderTileEntityAt(banner, 0, 0, 0, 0f);
-        }else if(itemStackIn.getItem() == Items.skull) {
+            TileEntityRendererDispatcher.instance.renderTileEntityAt(this.banner, 0.0D, 0.0D, 0.0D, 0.0F);
+        } else if (itemStackIn.getItem() == Items.skull) {
             GameProfile gameprofile = null;
 
-            if(itemStackIn.hasTagCompound()) {
+            if (itemStackIn.hasTagCompound()) {
                 NBTTagCompound nbttagcompound = itemStackIn.getTagCompound();
 
                 try {
-                    if(nbttagcompound.hasKey("SkullOwner", 10)) {
+                    if (nbttagcompound.hasKey("SkullOwner", 10)) {
                         gameprofile = NBTUtil.readGameProfileFromNBT(nbttagcompound.getCompoundTag("SkullOwner"));
-                    }else if(nbttagcompound.hasKey("SkullOwner", 8) && nbttagcompound.getString("SkullOwner").length() > 0) {
+                    } else if (nbttagcompound.hasKey("SkullOwner", 8) && nbttagcompound.getString("SkullOwner").length() > 0) {
                         GameProfile lvt_2_2_ = new GameProfile(null, nbttagcompound.getString("SkullOwner"));
                         gameprofile = TileEntitySkull.updateGameprofile(lvt_2_2_);
                         nbttagcompound.removeTag("SkullOwner");
                         nbttagcompound.setTag("SkullOwner", NBTUtil.writeGameProfile(new NBTTagCompound(), gameprofile));
                     }
-                }catch(Exception ignored) {
+                } catch (Exception ignored) {
                 }
             }
 
-            if(TileEntitySkullRenderer.instance != null) {
+            if (TileEntitySkullRenderer.instance != null) {
                 GlStateManager.pushMatrix();
                 GlStateManager.translate(-0.5F, 0.0F, -0.5F);
                 GlStateManager.scale(2.0F, 2.0F, 2.0F);
@@ -76,17 +83,17 @@ public class MixinTileEntityItemStackRenderer {
                 GlStateManager.enableCull();
                 GlStateManager.popMatrix();
             }
-        }else{
+        } else {
             Block block = Block.getBlockFromItem(itemStackIn.getItem());
 
-            if(block == Blocks.ender_chest) {
-                TileEntityRendererDispatcher.instance.renderTileEntityAt(enderChest, 0, 0, 0, 0f);
-            }else if(block == Blocks.trapped_chest) {
-                TileEntityRendererDispatcher.instance.renderTileEntityAt(field_147718_c, 0, 0, 0, 0f);
-            }else if(block != Blocks.chest)
+            if (block == Blocks.ender_chest) {
+                TileEntityRendererDispatcher.instance.renderTileEntityAt(this.enderChest, 0.0D, 0.0D, 0.0D, 0.0F);
+            } else if (block == Blocks.trapped_chest) {
+                TileEntityRendererDispatcher.instance.renderTileEntityAt(this.field_147718_c, 0.0D, 0.0D, 0.0D, 0.0F);
+            } else if (block != Blocks.chest)
                 net.minecraftforge.client.ForgeHooksClient.renderTileItem(itemStackIn.getItem(), itemStackIn.getMetadata());
-            else{
-                TileEntityRendererDispatcher.instance.renderTileEntityAt(field_147717_b, 0, 0, 0, 0f);
+            else {
+                TileEntityRendererDispatcher.instance.renderTileEntityAt(this.field_147717_b, 0.0D, 0.0D, 0.0D, 0.0F);
             }
         }
     }
