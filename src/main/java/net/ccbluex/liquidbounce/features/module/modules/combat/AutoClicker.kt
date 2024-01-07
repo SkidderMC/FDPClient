@@ -173,7 +173,7 @@ class AutoClicker : Module() {
                 cps = CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toInt()
             }
             
-            if (cps >= doubleClickCPSValue.get() && doubleClickChanceValue.get() > Random.nextFloat(0f, 1f)) {
+            if (cps >= doubleClickCPSValue.get() && doubleClickChanceValue.get() > Random.nextFloat()) {
                 wasDouble = true
                 return Random.nextInt(16, 25)
             }
