@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
+import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.MathUtils
 import net.minecraft.client.settings.KeyBinding
@@ -27,6 +28,9 @@ class AutoClicker : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Normal", "Gaussian", "LegitJitter", "LegitButterfly"), "Normal")
     private val legitJitterValue = ListValue("LegitJitterMode", arrayOf("Jitter1", "Jitter2", "Jitter3", "SimpleJitter"), "Jitter1").displayable {modeValue.equals("LegitJitter")}
     private val legitButterflyValue = ListValue("LegitButterflyMode", arrayOf("Butterfly1", "Butterfly2"), "Butterfly1").displayable {modeValue.equals("LegitButterfly")}
+    private val doubleClickValue = BoolValue("DoubleClick", true)
+    private val doubleClickCPSValue = IntegerValue("DCCPSActivation", 5, 0, 10).displayable { doubleClickValue.get() }
+    private val doubleClickChanceValue = FloatValue("DoubleClickChance", 0.8f, 0f, 1f).displayable { doubleClickValue.get() }
 
 
     // Normal
@@ -109,7 +113,7 @@ class AutoClicker : Module() {
             doBlock = when(blockMode.get().lowercase()) {
                 "percent" -> (System.currentTimeMillis() - leftLastSwing >= leftDelay * blockPercentStartValue.get().toDouble() && System.currentTimeMillis() - leftLastSwing <= leftDelay * blockPercentEndValue.get().toDouble()) 
                 "ticks" -> (blockTicks <= blockTicksValue.get())
-                "miliseconds" -> (System.currentTimeMillis() - leftLastSwing <= blockMsValue.get().toDouble())
+                "miliseconds" -> ((System.currentTimeMillis() - leftLastSwing) <= blockMsValue.get().toDouble())
                 else -> false
             }
 
@@ -159,6 +163,19 @@ class AutoClicker : Module() {
     }
     
     private fun updateClicks(): Int {
+        if (doubleClickValue.get()) {
+            var cps = 0
+            if (System.currentTimeMillis() - rightLastSwing < 2L) {
+                cps = CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toInt()
+            } else {
+                cps = CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toInt()
+            }
+            
+            if (cps >= doubleClickCPSValue.get()) {
+                return Random.nextInt(16, 25)
+            }
+        }
+        
         when (modeValue.get().lowercase()) {
             "normal" -> {
                 cDelay = TimeUtils.randomClickDelay(normalMinCPSValue.get(), normalMaxCPSValue.get()).toInt()
