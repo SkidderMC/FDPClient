@@ -84,6 +84,7 @@ class FireballFly : FlyMode("Fireball") {
     }
 
     override fun onDisable() {
+        FDPClient.moduleManager[Velocity::class.java]!!.state = veloStatus
         mc.timer.timerSpeed = 1f
         mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
         mc.gameSettings.keyBindBack.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindBack)
