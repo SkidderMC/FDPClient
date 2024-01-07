@@ -84,6 +84,8 @@ class AutoClicker : Module() {
     private var clickBlocked = false
     private var blockTicks = 0
 
+    private var wasDouble = false
+
 
 
     @EventTarget
@@ -95,15 +97,15 @@ class AutoClicker : Module() {
             blockTicks = 0
 
 
-           leftLastSwing = System.currentTimeMillis()
+           if (!wasDouble) leftLastSwing = System.currentTimeMillis()
            leftDelay = updateClicks().toLong()
         }
            
            
         if (mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem && rightValue.get() && System.currentTimeMillis() - rightLastSwing >= rightDelay && (!rightBlockOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemBlock) && rightValue.get()) {
             KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
-            
-            rightLastSwing = System.currentTimeMillis()
+
+            if (!wasDouble) rightLastSwing = System.currentTimeMillis()
             rightDelay = updateClicks().toLong() - 1L
         }
         
@@ -171,7 +173,8 @@ class AutoClicker : Module() {
                 cps = CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toInt()
             }
             
-            if (cps >= doubleClickCPSValue.get()) {
+            if (cps >= doubleClickCPSValue.get() && doubleClickChanceValue.get() > Random.nextFloat(0f, 1f)) {
+                wasDouble = true
                 return Random.nextInt(16, 25)
             }
         }
