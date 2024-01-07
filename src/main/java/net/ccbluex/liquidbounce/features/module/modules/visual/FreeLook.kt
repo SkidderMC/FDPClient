@@ -8,12 +8,13 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.EnumTriggerType
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.value.BoolValue
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
 
-@ModuleInfo(name = "FreeLook",  description = "", category = ModuleCategory.VISUAL, keyBind = Keyboard.KEY_F9)
+@ModuleInfo(name = "FreeLook",  description = "", category = ModuleCategory.VISUAL, keyBind = Keyboard.KEY_LSHIFT, triggerType = EnumTriggerType.PRESS)
 class FreeLook : Module() {
     private val thirdPerson = BoolValue("ThirdPerson", true)
     val reverse = BoolValue("Reverse", false)
