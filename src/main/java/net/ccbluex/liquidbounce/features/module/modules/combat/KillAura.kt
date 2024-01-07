@@ -111,7 +111,7 @@ class KillAura : Module() {
         }
     }
 
-    private val discoverRangeValue = FloatValue("Attack-Range", 6f, 0f, 8f).displayable { attackDisplay.get() }
+    private val discoverRangeValue = FloatValue("Attack-Range", 6f, 0f, 8f)
 
     private val rangeSprintReducementValue = FloatValue("RangeSprintReducement", 0f, 0f, 0.4f).displayable { rangeDisplay.get() }
 

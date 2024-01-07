@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
-
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.particle.EntityParticleEmitter;
@@ -70,5 +69,5 @@ public abstract class MixinEffectRenderer {
     private void removeBlockBreakingParticles_Forge(CallbackInfo ci) {
         if (Animations.getNoBlockParticles().get())
             ci.cancel();
-}
+    }
 }

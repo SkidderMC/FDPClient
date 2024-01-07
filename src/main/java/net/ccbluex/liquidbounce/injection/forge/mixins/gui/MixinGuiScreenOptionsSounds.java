@@ -1,6 +1,11 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.minecraft.client.Minecraft;
+import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.client.settings.GameSettings;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,6 +24,6 @@ public class MixinGuiScreenOptionsSounds {
 
     @Inject(method = "mouseReleased(II)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/audio/SoundHandler;playSound(Lnet/minecraft/client/audio/ISound;)V"))
     private void save(int mouseX, int mouseY, CallbackInfo ci) {
-        Minecraft.getMinecraft().gameSettings.saveOptions();
+        MinecraftInstance.mc.gameSettings.saveOptions();
     }
 }

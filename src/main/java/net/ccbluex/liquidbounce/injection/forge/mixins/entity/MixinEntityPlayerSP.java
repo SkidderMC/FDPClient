@@ -180,7 +180,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
      * Is current view entity boolean.
      *
      * @return the boolean
-     * @author As_pw
+     * @author opZywl
      * @reason Fix Video
      */
     @Overwrite

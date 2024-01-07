@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
@@ -11,6 +16,7 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.client.FMLClientHandler;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -24,32 +30,37 @@ import java.util.concurrent.ThreadPoolExecutor;
 
 @Mixin(ServerListEntryNormal.class)
 public abstract class MixinServerListEntryNormal {
+    @Final
     @Shadow
     private static final ThreadPoolExecutor field_148302_b = new ScheduledThreadPoolExecutor(5, (new ThreadFactoryBuilder()).setNameFormat("Server Pinger #%d").setDaemon(true).build());
 
+    @Final
     @Shadow
     private static ResourceLocation UNKNOWN_SERVER;
+    @Final
     @Shadow
     private static ResourceLocation SERVER_SELECTION_BUTTONS;
+    @Final
     @Shadow
     private GuiMultiplayer owner;
+    @Final
     @Shadow
     private Minecraft mc;
+    @Final
     @Shadow
     private ServerData server;
+    @Final
     @Shadow
     private ResourceLocation serverIcon;
     @Shadow
     private String field_148299_g;
     @Shadow
     private DynamicTexture field_148305_h;
-    @Shadow
-    private long field_148298_f;
 
     @Shadow
-    public abstract void prepareServerIcon();
+    protected abstract void prepareServerIcon();
     @Shadow
-    public abstract boolean func_178013_b();
+    protected abstract boolean func_178013_b();
 
     @Shadow
     protected abstract void drawTextureAt(int p_drawTextureAt_1_, int p_drawTextureAt_2_, ResourceLocation p_drawTextureAt_3_);
@@ -119,7 +130,7 @@ public abstract class MixinServerListEntryNormal {
             }
         } else {
             k = 1;
-            l = (int) (Minecraft.getSystemTime() / 100L + (long) (p_drawEntry_1_ * 2L) & 7L);
+            l = (int) (Minecraft.getSystemTime() / 100L + (p_drawEntry_1_ * 2L) & 7L);
             if (l > 4) {
                 l = 8 - l;
             }

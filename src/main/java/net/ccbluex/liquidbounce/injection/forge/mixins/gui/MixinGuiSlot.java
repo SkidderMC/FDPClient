@@ -1,5 +1,11 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
+import net.ccbluex.liquidbounce.injection.access.IMixinGuiSlot;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -12,10 +18,7 @@ import net.minecraft.util.MathHelper;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.lwjgl.opengl.GL11;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -24,80 +27,142 @@ import java.awt.*;
 
 @Mixin(GuiSlot.class)
 @SideOnly(Side.CLIENT)
-public abstract class MixinGuiSlot {
-
-    @Shadow
-    protected boolean field_178041_q;
-
-    @Shadow
-    protected int mouseX;
-
-    @Shadow
-    protected int slotHeight;
-
-    @Shadow
-    protected int headerPadding;
-
-    @Shadow
-    protected int mouseY;
-
-    @Shadow
-    protected abstract void drawBackground();
-
-    @Shadow
-    protected abstract void bindAmountScrolled();
-
-    @Shadow
-    public int left;
-
-    @Shadow
-    public int top;
-
-    @Shadow
-    public int width;
-
-    @Shadow
-    protected float amountScrolled;
-
-    @Shadow
-    protected boolean hasListHeader;
+public abstract class MixinGuiSlot implements IMixinGuiSlot {
 
     @Shadow
     protected boolean showSelectionBox;
 
     @Shadow
-    protected abstract void drawListHeader(int p_148129_1_, int p_148129_2_, Tessellator p_148129_3_);
-
-    @Shadow
-    protected abstract void drawSelectionBox(int p_148120_1_, int p_148120_2_, int mouseXIn, int mouseYIn);
-
-    @Shadow
     protected abstract int getSize();
 
+    @Final
+    @Shadow
+    public int slotHeight;
+
+    @Shadow
+    public int headerPadding;
+
+    /**
+     * The Left.
+     */
+    @Shadow
+    public int left;
+    /**
+     * The Top.
+     */
+    @Shadow
+    public int top;
+    /**
+     * The Width.
+     */
+    @Shadow
+    public int width;
+    /**
+     * The Right.
+     */
     @Shadow
     public int right;
-
+    /**
+     * The Bottom.
+     */
     @Shadow
     public int bottom;
-
+    /**
+     * The Height.
+     */
+    @Shadow
+    public int height;
+    /**
+     * The Field 178041 q.
+     */
+    @Shadow
+    protected boolean field_178041_q;
+    /**
+     * The Mouse x.
+     */
+    @Shadow
+    protected int mouseX;
+    /**
+     * The Mouse y.
+     */
+    @Shadow
+    protected int mouseY;
+    /**
+     * The Amount scrolled.
+     */
+    @Shadow
+    protected float amountScrolled;
+    /**
+     * The Has list header.
+     */
+    @Shadow
+    protected boolean hasListHeader;
+    /**
+     * The Mc.
+     */
     @Shadow
     @Final
     protected Minecraft mc;
+    @Unique
+    private int listWidth = 220;
 
+    /**
+     * Draw background.
+     */
     @Shadow
-    public int height;
+    protected abstract void drawBackground();
 
+    /**
+     * Bind amount scrolled.
+     */
+    @Shadow
+    protected abstract void bindAmountScrolled();
+
+    /**
+     * Draw list header.
+     *
+     * @param p_148129_1_ the p 148129 1
+     * @param p_148129_2_ the p 148129 2
+     * @param p_148129_3_ the p 148129 3
+     */
+    @Shadow
+    protected abstract void drawListHeader(int p_148129_1_, int p_148129_2_, Tessellator p_148129_3_);
+
+    /**
+     * Draw selection box.
+     *
+     * @param p_148120_1_ the p 148120 1
+     * @param p_148120_2_ the p 148120 2
+     * @param mouseXIn    the mouse x in
+     * @param mouseYIn    the mouse y in
+     */
+    @Shadow
+    protected abstract void drawSelectionBox(int p_148120_1_, int p_148120_2_, int mouseXIn, int mouseYIn);
+
+    /**
+     * Gets content height.
+     *
+     * @return the content height
+     */
     @Shadow
     protected abstract int getContentHeight();
 
+    /**
+     * Func 148135 f int.
+     *
+     * @return the int
+     */
     @Shadow
     public abstract int func_148135_f();
 
+    /**
+     * Func 148142 b.
+     *
+     * @param p_148142_1_ the p 148142 1
+     * @param p_148142_2_ the p 148142 2
+     */
     @Shadow
     protected abstract void func_148142_b(int p_148142_1_, int p_148142_2_);
-
-    @Shadow
-    public abstract int getListWidth();
 
     @Shadow
     protected abstract void func_178040_a(int p_178040_1_, int p_178040_2_, int p_178040_3_);
@@ -108,9 +173,8 @@ public abstract class MixinGuiSlot {
 
     @Shadow
     protected abstract boolean isSelected(int slotIndex);
-    /**
-     * @author XiGua
-     */
+
+
     @Inject(method = "drawSelectionBox", at = @At("HEAD"), cancellable = true)
     public void drawSelectionBoxs(int p_148120_1_, int p_148120_2_, int mouseXIn, int mouseYIn, CallbackInfo ci) {
         int i = this.getSize();
@@ -146,15 +210,18 @@ public abstract class MixinGuiSlot {
         }
         ci.cancel();
     }
-
-
-
     /**
-     * @author CCBlueX
+     * Draw screen.
+     *
+     * @param mouseXIn    the mouse x in
+     * @param mouseYIn    the mouse y in
+     * @param p_148128_3_ the p 148128 3
+     * @author opZywl
+     * @reason Draw
      */
     @Overwrite
     public void drawScreen(int mouseXIn, int mouseYIn, float p_148128_3_) {
-        if(this.field_178041_q) {
+        if (this.field_178041_q) {
             this.mouseX = mouseXIn;
             this.mouseY = mouseYIn;
             this.drawBackground();
@@ -241,10 +308,36 @@ public abstract class MixinGuiSlot {
     }
 
     /**
-     * @author CCBlueX
+     * Gets scroll bar x.
+     *
+     * @return the scroll bar x
+     * @author opZywl
+     * @reason ScrollBar
      */
     @Overwrite
     protected int getScrollBarX() {
         return this.width - 5;
     }
+
+    @Override
+    public void setEnableScissor(boolean enableScissor) {
+    }
+
+    /**
+     * Gets list width.
+     *
+     * @return the list width
+     * @author As_pw
+     * @reason Width
+     */
+    @Overwrite
+    public int getListWidth() {
+        return this.listWidth;
+    }
+
+    @Override
+    public void setListWidth(int listWidth) {
+        this.listWidth = listWidth;
+    }
+
 }

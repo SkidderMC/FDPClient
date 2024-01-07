@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.injection.forge.mixins.render;
+package net.ccbluex.liquidbounce.injection.forge.mixins.item;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
@@ -42,38 +42,100 @@ public abstract class MixinItemRenderer {
     @Final
     private Minecraft mc;
 
+    /**
+     * Rotate arround x and y.
+     *
+     * @param angle  the angle
+     * @param angleY the angle y
+     */
     @Shadow
     protected abstract void rotateArroundXAndY(float angle, float angleY);
 
+    /**
+     * Sets light map from player.
+     *
+     * @param clientPlayer the client player
+     */
     @Shadow
     protected abstract void setLightMapFromPlayer(AbstractClientPlayer clientPlayer);
 
+    /**
+     * Rotate with player rotations.
+     *
+     * @param entityPlayerSP the entityplayersp in
+     * @param partialTicks     the partial ticks
+     */
     @Shadow
     protected abstract void rotateWithPlayerRotations(EntityPlayerSP entityPlayerSP, float partialTicks);
 
     @Shadow
     private ItemStack itemToRender;
 
+    /**
+     * Render item map.
+     *
+     * @param clientPlayer      the client player
+     * @param pitch             the pitch
+     * @param equipmentProgress the equipment progress
+     * @param swingProgress     the swing progress
+     */
     @Shadow
     protected abstract void renderItemMap(AbstractClientPlayer clientPlayer, float pitch, float equipmentProgress, float swingProgress);
 
+    /**
+     * Perform drinking.
+     *
+     * @param clientPlayer the client player
+     * @param partialTicks the partial ticks
+     */
     @Shadow
     protected abstract void performDrinking(AbstractClientPlayer clientPlayer, float partialTicks);
 
+    /**
+     * Do block transformations.
+     */
     @Shadow
     protected abstract void doBlockTransformations();
 
+    /**
+     * Do bow transformations.
+     *
+     * @param partialTicks the partial ticks
+     * @param clientPlayer the client player
+     */
     @Shadow
     protected abstract void doBowTransformations(float partialTicks, AbstractClientPlayer clientPlayer);
 
+    /**
+     * Do item used transformations.
+     *
+     * @param swingProgress the swing progress
+     */
     @Shadow
     protected abstract void doItemUsedTransformations(float swingProgress);
 
+    /**
+     * Render item.
+     *
+     * @param entityIn  the entity in
+     * @param heldStack the held stack
+     * @param transform the transform
+     */
     @Shadow
     public abstract void renderItem(EntityLivingBase entityIn, ItemStack heldStack, ItemCameraTransforms.TransformType transform);
 
+    /**
+     * Render player arm.
+     *
+     * @param clientPlayer  the client player
+     * @param equipProgress the equip progress
+     * @param swingProgress the swing progress
+     */
     @Shadow
     protected abstract void renderPlayerArm(AbstractClientPlayer clientPlayer, float equipProgress, float swingProgress);
+
+    @Shadow
+    private int equippedItemSlot;
 
     private final Animations animations = Animations.INSTANCE;
 

@@ -1,4 +1,9 @@
-package net.ccbluex.liquidbounce.injection.forge.mixins.block;
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+package net.ccbluex.liquidbounce.injection.forge.mixins.item;
 
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
@@ -24,7 +29,10 @@ public class MixinItemBlock extends Item {
     @Final
     public Block block;
 
-
+    /**
+     * @author opZywl
+     * @reason Fix Block Sounds
+     */
     @Overwrite
     public boolean onItemUse(ItemStack stack, EntityPlayer playerIn, World worldIn, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ) {
         IBlockState iblockstate = worldIn.getBlockState(pos);
@@ -50,7 +58,7 @@ public class MixinItemBlock extends Item {
                     this.block.onBlockPlacedBy(worldIn, pos, iblockstate1, playerIn, stack);
                 }
 
-                if (ProtocolBase.getManager().getTargetVersion().getProtocol() != VersionEnum.r1_8.getProtocol() && !MinecraftInstance.mc.isIntegratedServerRunning()) {
+                if (ProtocolBase.getManager().getTargetVersion().isNewerThan(VersionEnum.r1_8) && !MinecraftInstance.mc.isIntegratedServerRunning()) {
                     MinecraftInstance.mc.theWorld.playSoundAtPos(pos.add(0.5, 0.5, 0.5), this.block.stepSound.getPlaceSound(), (this.block.stepSound.getVolume() + 1.0F) / 2.0F, this.block.stepSound.getFrequency() * 0.8F, false);
                 } else {
                     worldIn.playSoundEffect((float) pos.getX() + 0.5F, (float) pos.getY() + 0.5F, (float) pos.getZ() + 0.5F, this.block.stepSound.getPlaceSound(), (this.block.stepSound.getVolume() + 1.0F) / 2.0F, this.block.stepSound.getFrequency() * 0.8F);

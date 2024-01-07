@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.JumpEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
+import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.movement.*;
 import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
@@ -34,39 +35,182 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import java.util.Iterator;
+import java.util.Objects;
 
 @Mixin(EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends MixinEntity {
 
+    /**
+     * The Swing progress int.
+     */
+    @Shadow
+    public int swingProgressInt;
+    /**
+     * The Is swing in progress.
+     */
+    @Shadow
+    public boolean isSwingInProgress;
+    /**
+     * The Swing progress.
+     */
+    @Shadow
+    public float swingProgress;
+    /**
+     * The Is jumping.
+     */
     @Shadow
     protected boolean isJumping;
+    /**
+     * The Jump ticks.
+     */
     @Shadow
-    private int jumpTicks;
+    public int jumpTicks;
 
+    /**
+     * Gets jump upwards motion.
+     *
+     * @return the jump upwards motion
+     */
     @Shadow
     protected abstract float getJumpUpwardsMotion();
 
+    /**
+     * Gets active potion effect.
+     *
+     * @param potionIn the potion in
+     * @return the active potion effect
+     */
     @Shadow
     public abstract PotionEffect getActivePotionEffect(Potion potionIn);
 
+    /**
+     * Is potion active boolean.
+     *
+     * @param potionIn the potion in
+     * @return the boolean
+     */
     @Shadow
     public abstract boolean isPotionActive(Potion potionIn);
 
+    /**
+     * On living update.
+     */
     @Shadow
     public void onLivingUpdate() {
     }
 
+    /**
+     * Update fall state.
+     *
+     * @param y          the y
+     * @param onGroundIn the on ground in
+     * @param blockIn    the block in
+     * @param pos        the pos
+     */
     @Shadow
     protected abstract void updateFallState(double y, boolean onGroundIn, Block blockIn, BlockPos pos);
 
+    /**
+     * Gets health.
+     *
+     * @return the health
+     */
     @Shadow
     public abstract float getHealth();
 
+    /**
+     * Gets held item.
+     *
+     * @return the held item
+     */
     @Shadow
     public abstract ItemStack getHeldItem();
 
+    /**
+     * Update ai tick.
+     */
     @Shadow
     protected abstract void updateAITick();
+
+    /**
+     * The Render yaw offset.
+     */
+    @Shadow
+    public float renderYawOffset;
+
+    /**
+     * The Rotation yaw head.
+     */
+    @Shadow
+    public float rotationYawHead;
+
+    @Shadow
+    public float prevRotationYawHead;
+
+    @Shadow
+    public float prevRenderYawOffset;
+
+    @Inject(method = "updatePotionEffects", at = @At(value = "INVOKE", target = "Lnet/minecraft/potion/PotionEffect;onUpdate(Lnet/minecraft/entity/EntityLivingBase;)Z"),
+            locals = LocalCapture.CAPTURE_FAILSOFT, cancellable = true)
+    private void checkPotionEffect(CallbackInfo ci, Iterator<Integer> iterator, Integer integer, PotionEffect potioneffect) {
+        if (potioneffect == null)
+            ci.cancel();
+    }
+
+    /**
+     * Update distance float.
+     *
+     * @param p_1101461 the p 1101461
+     * @param p_1101462 the p 1101462
+     * @return the float
+     * @author opZywl
+     * @reason Rotation
+     */
+    @Overwrite
+    protected float updateDistance(float p_1101461, float p_1101462) {
+        float rotationYaw = this.rotationYaw;
+        final Rotations rotations = Objects.requireNonNull(FDPClient.moduleManager.getModule(Rotations.class));
+        if (rotations.getRotationMode().get().equals("Normal") && rotations.getState() && rotations.getPlayerYaw() != null && (EntityLivingBase) (Object) this instanceof EntityPlayerSP) {
+            if (this.swingProgress > 0F && !rotations.getBodyValue().get()) {
+                p_1101461 = rotations.getPlayerYaw();
+            }
+            rotationYaw = rotations.getPlayerYaw();
+            rotationYawHead = rotations.getPlayerYaw();
+        }
+        float f = MathHelper.wrapAngleTo180_float(p_1101461 - this.renderYawOffset);
+        if (rotations.getRotationMode().get().equals("Normal") && rotations.getBodyValue().get() && rotations.getState() && rotations.getPlayerYaw() != null && (EntityLivingBase) (Object) this instanceof EntityPlayerSP)
+            this.renderYawOffset += f;
+        else this.renderYawOffset += f * 0.3F;
+        float f1 = MathHelper.wrapAngleTo180_float(rotationYaw - this.renderYawOffset);
+        boolean flag = f1 < 90.0F || f1 >= 90.0F;
+
+        if (rotations.getRotationMode().get().equals("Normal") && rotations.getBodyValue().get() && rotations.getState() && rotations.getPlayerYaw() != null && (EntityLivingBase) (Object) this instanceof EntityPlayerSP) {
+            f1 = 0.0F;
+        }
+
+        if (f1 < -75.0F) {
+            f1 = -75.0F;
+        }
+
+        if (f1 >= 75.0F) {
+            f1 = 75.0F;
+        }
+
+        this.renderYawOffset = rotationYaw - f1;
+
+        if (f1 * f1 > 2500.0F) {
+            this.renderYawOffset += f1 * 0.2F;
+        }
+
+        if (flag) {
+            p_1101462 *= -1.0F;
+        }
+
+        return p_1101462;
+    }
 
     /**
      * @author CCBlueX
@@ -110,6 +254,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
         this.isAirBorne = true;
     }
+
 
     @Inject(method = "onLivingUpdate", at = @At("HEAD"))
     private void headLiving(CallbackInfo callbackInfo) {

@@ -6,18 +6,18 @@
 package net.ccbluex.liquidbounce.features.module.modules.world
 
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.player.InvManager
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.inventory.Slot
 import net.minecraft.item.Item
@@ -61,11 +61,14 @@ object Stealer : Module() {
     private val takeRandomizedValue = BoolValue("TakeRandomized", false)
     private val onlyItemsValue = BoolValue("OnlyItems", false)
     private val instantValue = BoolValue("Instant", false)
+    private val stopMotionValue = BoolValue("StopMotion", false)
     private val noDuplicateValue = BoolValue("NoDuplicateNonStackable", false)
     private val noCompassValue = BoolValue("NoCompass", false)
     private val autoCloseValue = BoolValue("AutoClose", true)
-    val silentValue = BoolValue("Silent", true)
-    val silentTitleValue = BoolValue("SilentTitle", true)
+    val silentTitleValue = BoolValue("SilentTitle", false)
+    val silenceValue = BoolValue("SilentMode", true)
+    val showStringValue = BoolValue("Silent-ShowString", true).displayable { silenceValue.get() }
+    val stillDisplayValue = BoolValue("Silent-StillDisplay", true).displayable { silenceValue.get() }
 
     private val autoCloseMaxDelayValue: IntegerValue = object : IntegerValue("AutoCloseMaxDelay", 0, 0, 400) {
         override fun onChanged(oldValue: Int, newValue: Int) {
@@ -83,8 +86,8 @@ object Stealer : Module() {
         }
     }.displayable { autoCloseValue.get() } as IntegerValue
 
-    private val closeOnFullValue = BoolValue("CloseOnFull", true).displayable { autoCloseValue.get() }
-    val chestTitleValue = BoolValue("ChestTitle", false)
+    private val closeOnFullValue = BoolValue("CloseOnFull", true)
+    private val chestTitleValue = BoolValue("ChestTitle", false)
 
     /**
      * VALUES
@@ -97,6 +100,19 @@ object Stealer : Module() {
     private var nextCloseDelay = TimeUtils.randomDelay(autoCloseMinDelayValue.get(), autoCloseMaxDelayValue.get())
 
     private var contentReceived = 0
+    var once = false
+
+    override fun onDisable() {
+        once = false
+    }
+
+    @EventTarget
+    fun onMove(event: MoveEvent) {
+        if (stopMotionValue.get() && mc.currentScreen is GuiChest) {
+            event.x = 0.0
+            event.z = 0.0
+        }
+    }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -179,22 +195,121 @@ object Stealer : Module() {
                     val slot = chest.inventorySlots.getSlot(i)
                     if (slot.hasStack) {
                         mc.thePlayer.sendQueue.addToSendQueue(
-                                C0EPacketClickWindow(
-                                        chest.inventorySlots.windowId,
-                                        i,
-                                        0,
-                                        1,
-                                        slot.stack,
-                                        1.toShort()
-                                )
+                            C0EPacketClickWindow(
+                                chest.inventorySlots.windowId,
+                                i,
+                                0,
+                                1,
+                                slot.stack,
+                                1.toShort()
+                            )
                         )
                     }
                 }
                 mc.thePlayer.closeScreen()
             }
         }
+        val screen = mc.currentScreen ?: return
+        performStealer(screen)
     }
 
+    private fun performStealer(screen: GuiScreen) {
+        if (once && screen !is GuiChest) {
+            // prevent a bug where the chest suddenly closed while not finishing stealing items inside, leaving cheststealer turned on alone.
+            state = false
+            return
+        }
+
+        if (screen !is GuiChest || !delayTimer.hasTimePassed(nextDelay)) {
+            autoCloseTimer.reset()
+            return
+        }
+
+        // No Compass
+        if (!once && noCompassValue.get() && mc.thePlayer.inventory.getCurrentItem()?.item?.unlocalizedName == "item.compass")
+            return
+
+        // Chest title
+        if (!once && chestTitleValue.get() && (screen.lowerChestInventory == null || !screen.lowerChestInventory.name.contains(
+                ItemStack(Item.itemRegistry.getObject(ResourceLocation("minecraft:chest"))).displayName
+            ))
+        )
+            return
+
+        // inventory cleaner
+        val inventoryCleaner = FDPClient.moduleManager[InvManager::class.java] as InvManager
+
+        // Is empty?
+        if (!isEmpty(screen) && !(closeOnFullValue.get() && fullInventory)) {
+            autoCloseTimer.reset()
+
+            // Randomized
+            if (takeRandomizedValue.get()) {
+                var noLoop = false
+                do {
+                    val items = mutableListOf<Slot>()
+
+                    for (slotIndex in 0 until screen.inventoryRows * 9) {
+                        val slot = screen.inventorySlots.inventorySlots[slotIndex]
+
+                        if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!noDuplicateValue.get() || slot.stack.maxStackSize > 1 || !mc.thePlayer.inventory.mainInventory.filter { it != null && it.item != null }
+                                .map { it.item!! }
+                                .contains(slot.stack.item)) && (!inventoryCleaner.state || inventoryCleaner.isUseful(
+                                slot.stack,
+                                -1
+                            ))
+                        )
+                            items.add(slot)
+                    }
+
+                    val randomSlot = Random.nextInt(items.size)
+                    val slot = items[randomSlot]
+
+                    move(screen, slot)
+                    if (nextDelay == 0L || delayTimer.hasTimePassed(nextDelay))
+                        noLoop = true
+                } while (delayTimer.hasTimePassed(nextDelay) && items.isNotEmpty() && !noLoop)
+                return
+            }
+
+            // Non randomized
+            for (slotIndex in 0 until screen.inventoryRows * 9) {
+                val slot = screen.inventorySlots.inventorySlots[slotIndex]
+
+                if (delayTimer.hasTimePassed(nextDelay) && slot.stack != null &&
+                    (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!noDuplicateValue.get() || slot.stack.maxStackSize > 1 || !mc.thePlayer.inventory.mainInventory.filter { it != null && it.item != null }
+                        .map { it.item!! }
+                        .contains(slot.stack.item)) && (!inventoryCleaner.state || inventoryCleaner.isUseful(
+                        slot.stack,
+                        -1
+                    ))
+                ) {
+                    move(screen, slot)
+                }
+            }
+        } else if (autoCloseValue.get() && screen.inventorySlots.windowId == contentReceived && autoCloseTimer.hasTimePassed(
+                nextCloseDelay
+            )
+        ) {
+            mc.thePlayer.closeScreen()
+
+            if (silenceValue.get() && !stillDisplayValue.get()) {
+                FDPClient.hud.addNotification(
+                    Notification(
+                        "Closed chest.","!!!",
+                        NotifyType.INFO
+                    )
+                )
+            }
+            nextCloseDelay = TimeUtils.randomDelay(autoCloseMinDelayValue.get(), autoCloseMaxDelayValue.get())
+
+            if (once) {
+                once = false
+                state = false
+                return
+            }
+        }
+    }
     @EventTarget
     private fun onPacket(event: PacketEvent) {
         val packet = event.packet
@@ -215,14 +330,19 @@ object Stealer : Module() {
     }
 
     private fun isEmpty(chest: GuiChest): Boolean {
-        val invManager = FDPClient.moduleManager[InvManager::class.java]!!
+        val inventoryCleaner = FDPClient.moduleManager[InvManager::class.java] as InvManager
 
         for (i in 0 until chest.inventoryRows * 9) {
             val slot = chest.inventorySlots.inventorySlots[i]
 
-            if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!invManager.state || invManager.isUseful(slot.stack, -1))) {
+            if (slot.stack != null && (!onlyItemsValue.get() || slot.stack.item !is ItemBlock) && (!noDuplicateValue.get() || slot.stack.maxStackSize > 1 || !mc.thePlayer.inventory.mainInventory.filter { it != null && it.item != null }
+                    .map { it.item!! }
+                    .contains(slot.stack.item)) && (!inventoryCleaner.state || inventoryCleaner.isUseful(
+                    slot.stack,
+                    -1
+                ))
+            )
                 return false
-            }
         }
 
         return true

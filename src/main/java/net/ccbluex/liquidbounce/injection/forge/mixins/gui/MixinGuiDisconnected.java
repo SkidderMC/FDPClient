@@ -53,7 +53,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
 
         final ServerData server=ServerUtils.serverData;
         infoStr="§fPlaying on: "+mc.session.getUsername()+" | "+server.serverIP;
-        buttonList.add(reconnectButton = new GuiButton(1, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 22, 98, 20, "%ui.reconnect%"));
+        buttonList.add(reconnectButton = new GuiButton(1, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 22, 98, 20, "Reconnect"));
 
         buttonList.add(autoReconnectDelaySlider =
                 new GuiSlider(2, this.width / 2 + 2, this.height / 2 + field_175353_i / 2
@@ -67,9 +67,9 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
                             this.updateSliderText();
                         }));
 
-        buttonList.add(new GuiButton(3, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 44, 98, 20, "%ui.disconnect.randomAlt%"));
-        buttonList.add(new GuiButton(4, this.width / 2 + 2, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 44, 98, 20, "%ui.disconnect.randomOffline%"));
-        buttonList.add(forgeBypassButton = new GuiButton(5, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 66, "%ui.antiForge%: "));
+        buttonList.add(new GuiButton(3, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 44, 98, 20, "RandomAlt"));
+        buttonList.add(new GuiButton(4, this.width / 2 + 2, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 44, 98, 20, "RandomOffline"));
+        buttonList.add(forgeBypassButton = new GuiButton(5, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 66, "AntiForge: "));
 
         updateSliderText();
     }
@@ -94,7 +94,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
                 break;
             case 5:
                 ClientFixes.INSTANCE.setEnabled(!ClientFixes.INSTANCE.getEnabled());
-                forgeBypassButton.displayString = "%ui.antiForge%: " + (ClientFixes.INSTANCE.getEnabled() ? "%ui.on%" : "%ui.off%");
+                forgeBypassButton.displayString = "AntiForge: " + (ClientFixes.INSTANCE.getEnabled() ? "ON" : "OFF");
                 FDPClient.fileManager.saveConfig(FDPClient.fileManager.getSpecialConfig());
                 break;
             case 998:
