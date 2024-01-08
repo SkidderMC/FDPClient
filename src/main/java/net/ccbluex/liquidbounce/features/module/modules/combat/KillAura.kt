@@ -76,25 +76,19 @@ class KillAura : Module() {
         }
     }.displayable {!simulateCooldown.get() && clickDisplay.get()} as IntegerValue
 
-    private val maxTurnSpeedValue: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 1f, 180f) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = minTurnSpeedValue.get()
-            if (v > newValue) set(v)
-        }
-    }.displayable { clickDisplay.get() && !rotationModeValue.equals("LockView")} as FloatValue
-
-    private val minTurnSpeedValue: FloatValue = object : FloatValue("MinTurnSpeed", 180f, 1f, 180f) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val v = maxTurnSpeedValue.get()
-            if (v < newValue) set(v)
-        }
-    }.displayable { clickDisplay.get() && !rotationModeValue.equals("LockView")} as FloatValue
-
     private val CpsReduceValue = BoolValue("CPSReduceVelocity", false).displayable { clickDisplay.get() }
 
     // Attack Setting
 
     private val attackDisplay = BoolValue("Attack Options:", true)
+
+    private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal").displayable { attackDisplay.get() }
+    
+    private val attackTimingValue = ListValue("AttackTiming", arrayOf("All", "Pre", "Post", "Both"), "All").displayable { attackDisplay.get() }
+    private val keepSprintValue = BoolValue("KeepSprint", true).displayable { attackDisplay.get() }
+
+    private val hitselectValue = BoolValue("hitSelect", false).displayable { attackDisplay.get() }
+    private val hitselectRangeValue = FloatValue("hitSelectRange", 3.0f, 2f, 4f).displayable { hitselectValue.get() && hitselectValue.displayable }
 
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10).displayable { attackDisplay.get() }
     private val clickOnly = BoolValue("ClickOnly", false).displayable { attackDisplay.get() }
@@ -136,44 +130,6 @@ class KillAura : Module() {
     private val switchDelayValue = IntegerValue("SwitchDelay", 15, 1, 2000).displayable { targetModeValue.equals("Switch") && modeDisplay.get() }
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") && modeDisplay.get() }
 
-    private val raycastValue = BoolValue("RayCast", true).displayable { modeDisplay.get() }
-    private val raycastTargetValue = BoolValue("RaycastOnlyTarget", false).displayable { raycastValue.get() && raycastValue.displayable }
-
-    // Bypass
-    private val bypassDisplay = BoolValue("Bypass Options:", true)
-
-    private val throughWallsValue = BoolValue("ThroughWalls", false).displayable { bypassDisplay.get() }
-    private val noWallsValue = BoolValue("No-Walls", false).displayable { throughWallsValue.get() || rotationModeValue.get().equals("none", true) }
-    private val fovValue = FloatValue("FOV", 180f, 0f, 180f).displayable { bypassDisplay.get() }
-
-    private val multiCombo = BoolValue("MultiCombo", false).displayable { bypassDisplay.get() }
-    private val amountValue = IntegerValue("Multi-Packet", 5, 0, 20, "x") { multiCombo.get() }
-
-    private val attackTimingValue = ListValue("AttackTiming", arrayOf("All", "Pre", "Post", "Both"), "All").displayable { bypassDisplay.get() }
-    private val keepSprintValue = BoolValue("KeepSprint", true).displayable { bypassDisplay.get() }
-
-    private val hitselectValue = BoolValue("hitSelect", false).displayable { bypassDisplay.get() }
-    private val hitselectRangeValue = FloatValue("hitSelectRange", 3.0f, 2f, 4f).displayable { hitselectValue.get() }
-
-    private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal").displayable { bypassDisplay.get() }
-
-    private val failRateValue = FloatValue("FailRate", 0f, 0f, 100f).displayable { bypassDisplay.get() }
-    private val fakeSwingValue = BoolValue("FakeSwing", true).displayable { failRateValue.get() != 0f && failRateValue.displayable }
-    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Silent").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") && bypassDisplay.get() }
-
-    // Tools
-    private val toolsDisplay = BoolValue("Tools Options:", true)
-
-    private val blinkCheck = BoolValue("BlinkCheck", false).displayable { toolsDisplay.get() }
-    private val noScaffValue = BoolValue("NoScaffold", false).displayable { toolsDisplay.get() }
-    private val noFlyValue = BoolValue("NoFly", false).displayable { toolsDisplay.get() }
-    private val noEat = BoolValue("NoEat", false).displayable { toolsDisplay.get() }
-    private val noBlocking = BoolValue("NoBlocking", false).displayable { toolsDisplay.get() }
-    private val noHitCheck = BoolValue("NoHitCheck", true).displayable { !toolsDisplay.get() }
-    private val noBadPacketsValue = BoolValue("NoBadPackets", false).displayable { toolsDisplay.get() }
-    private val noInventoryAttackValue = ListValue("NoInvAttack", arrayOf("Spoof", "CancelRun", "Off"), "Off").displayable { toolsDisplay.get() }
-    private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500).displayable { !noInventoryAttackValue.equals("Off") && noInventoryAttackValue.displayable }
-
     // AutoBlock
     private val autoblockDisplay = BoolValue("AutoBlock Settings:", true)
 
@@ -191,7 +147,7 @@ class KillAura : Module() {
     private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockPacketValue.displayable }
     private val legitBlockBlinkValue = BoolValue("Legit2Blink", true).displayable { autoBlockPacketValue.displayable && autoBlockPacketValue.equals("Legit2") }
     private val alwaysBlockDisplayValue = BoolValue("AlwaysRenderBlocking", true).displayable { autoBlockValue.displayable && autoBlockValue.equals("Range") }
-
+    
     // Rotations
     private val rotationDisplay = BoolValue("Rotation Options:", true)
 
@@ -207,6 +163,22 @@ class KillAura : Module() {
         "HalfUp") .displayable { rotationDisplay.get() && rotationModeValue.equals("SmoothCustom") }
 
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
+
+    private val noHitCheck = BoolValue("NoHitCheck", true).displayable { rotationDisplay.get() }
+
+    private val maxTurnSpeedValue: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 1f, 180f) {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val v = minTurnSpeedValue.get()
+            if (v > newValue) set(v)
+        }
+    }.displayable { rotationDisplay.get() && !rotationModeValue.equals("LockView")} as FloatValue
+
+    private val minTurnSpeedValue: FloatValue = object : FloatValue("MinTurnSpeed", 180f, 1f, 180f) {
+        override fun onChanged(oldValue: Float, newValue: Float) {
+            val v = maxTurnSpeedValue.get()
+            if (v < newValue) set(v)
+        }
+    }.displayable { rotationDisplay.get() && !rotationModeValue.equals("LockView")} as FloatValue
 
     private val rotationSmoothModeValue = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "Custom").displayable { rotationDisplay.get() && !rotationModeValue.equals("LiquidBounce") && !rotationModeValue.equals("ForceCenter") && !rotationModeValue.equals("LockView")}
     private val rotationSmoothValue = FloatValue("CustomSmooth", 2f, 1f, 10f).displayable { rotationSmoothModeValue.equals("Custom") && rotationSmoothModeValue.displayable }
@@ -256,10 +228,40 @@ class KillAura : Module() {
         }
     }.displayable { predictPlayerValue.displayable && predictPlayerValue.get() } as FloatValue
 
+    
+    
+    // Bypass
+    private val bypassDisplay = BoolValue("Bypass Options:", true)
+
+    private val raycastValue = BoolValue("RayCast", true).displayable { bypassDisplay.get() }
+    private val raycastTargetValue = BoolValue("RaycastOnlyTarget", false).displayable { raycastValue.get() && raycastValue.displayable }
+    
+    private val throughWallsValue = BoolValue("ThroughWalls", false).displayable { bypassDisplay.get() }
+    private val noWallsValue = BoolValue("No-Walls", false).displayable { throughWallsValue.get() || rotationModeValue.get().equals("none", true) }
+    private val fovValue = FloatValue("FOV", 180f, 0f, 180f).displayable { bypassDisplay.get() }
+
+    private val multiCombo = BoolValue("MultiCombo", false).displayable { bypassDisplay.get() }
+    private val amountValue = IntegerValue("Multi-Packet", 5, 0, 20, "x") { multiCombo.get() }
+
+    private val failRateValue = FloatValue("FailRate", 0f, 0f, 100f).displayable { bypassDisplay.get() }
+    private val fakeSwingValue = BoolValue("FakeSwing", true).displayable { failRateValue.get() != 0f && failRateValue.displayable }
+    private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Silent").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") && bypassDisplay.get() }
+
+    // Tools
+    private val toolsDisplay = BoolValue("Tools Options:", true)
+
+    private val blinkCheck = BoolValue("BlinkCheck", false).displayable { toolsDisplay.get() }
+    private val noScaffValue = BoolValue("NoScaffold", false).displayable { toolsDisplay.get() }
+    private val noFlyValue = BoolValue("NoFly", false).displayable { toolsDisplay.get() }
+    private val noEat = BoolValue("NoEat", false).displayable { toolsDisplay.get() }
+    private val noBlocking = BoolValue("NoBlocking", false).displayable { toolsDisplay.get() }
+    private val noBadPacketsValue = BoolValue("NoBadPackets", false).displayable { toolsDisplay.get() }
+    private val noInventoryAttackValue = ListValue("NoInvAttack", arrayOf("Spoof", "CancelRun", "Off"), "Off").displayable { toolsDisplay.get() }
+    private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500).displayable { !noInventoryAttackValue.equals("Off") && noInventoryAttackValue.displayable }
+    private val displayDebug = BoolValue("Debug", false).displayable { toolsDisplay.get() }
 
     private val displayMode = ListValue("DisplayMode", arrayOf("Simple", "LessSimple", "Complicated"), "Simple")
 
-    private val displayDebug = BoolValue("Debug", true)
 
     /**
      * MODULE
