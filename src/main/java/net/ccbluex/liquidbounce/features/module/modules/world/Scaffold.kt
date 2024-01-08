@@ -300,15 +300,14 @@ class Scaffold : Module() {
                 towerTick = 0
                 return
             }
-            MovementUtils.move(0.01f)
             if (towerTick > 0) {
                 ++towerTick
                 if (towerTick > 6) {
                     mc.thePlayer.motionX *= 0.99f
                     mc.thePlayer.motionZ *= 0.99f
                 }
-                if (towerTick > 16) {
-                    towerTick = 0
+                if (towerTick > 10) {
+                    towerTick = 1
                 }
             }
             if (towerStatus) {
