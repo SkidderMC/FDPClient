@@ -722,6 +722,12 @@ public class KillESP extends Module {
         final Tracers tracers = FDPClient.moduleManager.getModule(Tracers.class);
         if (tracers == null) return;
 
+        final EntityLivingBase target = aura.getCurrentTarget();
+
+        if (target == null) {
+            return;
+        }
+
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
         GL11.glEnable(GL11.GL_BLEND);
         GL11.glEnable(GL11.GL_LINE_SMOOTH);
