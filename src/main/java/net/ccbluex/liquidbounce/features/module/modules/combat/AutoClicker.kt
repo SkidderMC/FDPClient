@@ -14,9 +14,13 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.utils.CPSCounter
+import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.MathUtils
 import net.minecraft.client.settings.KeyBinding
+import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemSword
 import kotlin.random.Random
@@ -28,6 +32,7 @@ class AutoClicker : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Normal", "Gaussian", "LegitJitter", "LegitButterfly"), "Normal")
     private val legitJitterValue = ListValue("LegitJitterMode", arrayOf("Jitter1", "Jitter2", "Jitter3", "SimpleJitter"), "Jitter1").displayable {modeValue.equals("LegitJitter")}
     private val legitButterflyValue = ListValue("LegitButterflyMode", arrayOf("Butterfly1", "Butterfly2"), "Butterfly1").displayable {modeValue.equals("LegitButterfly")}
+    
     private val doubleClickValue = BoolValue("DoubleClick", true)
     private val doubleClickCPSValue = IntegerValue("DCCPSActivation", 5, 0, 10).displayable { doubleClickValue.get() }
     private val doubleClickChanceValue = FloatValue("DoubleClickChance", 0.8f, 0f, 1f).displayable { doubleClickValue.get() }
@@ -52,16 +57,27 @@ class AutoClicker : Module() {
     }
     private val rightValue = BoolValue("RightClick", true)
     private val rightBlockOnlyValue = BoolValue("RightBlockOnly", false).displayable { rightValue.get() }
+    
     private val leftValue = BoolValue("LeftClick", true)
+    
+    private val triggerBotValue = BoolValue("TiggerBot", false).displayable { leftValue.get() }
+    private val triggerBotRangeValue = FloatValue("TriggerBotRange", 4.5f, 0f, 6f).displayable { triggerBotValue.get() && triggerBotValue.displayable }
+    
     private val leftSwordOnlyValue = BoolValue("LeftSwordOnly", false).displayable { leftValue.get() }
+    
     private val breakStopValue = BoolValue("BreakingStop", true).displayable { leftValue.get() }
+    
     private val blockValue = BoolValue("AutoBlock", false). displayable { leftValue.get() }
     private val blockOnClick = BoolValue("AutoBlockOnRightClick", true). displayable { leftValue.get() && blockValue.get() }
+    
     private val blockMode = ListValue("AutoblockMode", arrayOf("Percent", "Click", "Ticks", "Miliseconds"), "Percent"). displayable { leftValue.get() && blockValue.get() }
+    
     private val blockPercentStartValue = FloatValue("PercentStart", 0.2f, 0.05f, 1f).displayable { blockMode.displayable && blockMode.equals("Percent") }
     private val blockPercentEndValue = FloatValue("PercentEnd", 0.8f, 0.05f, 1f).displayable { blockMode.displayable && blockMode.equals("Percent") }
     private val blockTicksValue = IntegerValue("BlockTicks", 2, 1, 10).displayable { blockMode.displayable && blockMode.equals("Ticks") }
     private val blockMsValue = IntegerValue("BlockMiliseconds", 80, 1, 1000).displayable { blockMode.displayable && blockMode.equals("Miliseconds") }
+
+    
     private val jitterValue = BoolValue("Jitter", false)
     
 
@@ -90,14 +106,16 @@ class AutoClicker : Module() {
 
     @EventTarget
     fun onRender(event: Render3DEvent) {
-        if (mc.gameSettings.keyBindAttack.isKeyDown && leftValue.get() &&
+        val leftAttack = mc.gameSettings.keyBindAttack.isKeyDown || (triggerBotValue.get() && isHovered())
+        if (leftAttack && leftValue.get() &&
             System.currentTimeMillis() - leftLastSwing >= leftDelay && (!leftSwordOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemSword) && (!breakStopValue.get() || mc.playerController.curBlockDamageMP == 0F)) {
             KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode) // Minecraft Click Handling
             clickBlocked = false
             blockTicks = 0
 
 
-           if (!wasDouble) leftLastSwing = System.currentTimeMillis()
+           if (!wasDouble) {leftLastSwing = System.currentTimeMillis()
+           wasDouble = false
            leftDelay = updateClicks().toLong()
         }
            
@@ -106,6 +124,7 @@ class AutoClicker : Module() {
             KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
 
             if (!wasDouble) rightLastSwing = System.currentTimeMillis()
+            wasDouble = false
             rightDelay = updateClicks().toLong() - 1L
         }
         
@@ -162,6 +181,15 @@ class AutoClicker : Module() {
         gaussianClickDelay = 1000F / (MathUtils.calculateGaussianDistribution(gaussianCpsValue.get().toFloat(), gaussianSigmaValue.get()).toFloat()
             .coerceAtLeast(1F)) // 1000ms = 1s
         return gaussianClickDelay
+    }
+
+    private fun isHovered(): Boolean {
+        for (entity in mc.theWorld.loadedEntityList) {
+            if (entity != null && entity != mc.thePlayer && EntityUtils.isSelected(entity, false)) {
+                if (RotationUtils.isFaced(entity, triggerBotRangeValue.get().toDouble())) return true
+            }
+        }
+        return false
     }
     
     private fun updateClicks(): Int {
