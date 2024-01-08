@@ -1,10 +1,10 @@
 package net.ccbluex.liquidbounce.utils.animations;
 
-import net.ccbluex.liquidbounce.utils.timer.TimerUtil;
+import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
 
 public abstract class Animation {
 
-    public TimerUtil timerUtil = new TimerUtil();
+    public TimerUtils timerUtils = new TimerUtils();
     protected int duration;
     protected double endPoint;
     protected Direction direction;
@@ -25,7 +25,7 @@ public abstract class Animation {
     }
 
     public double getLinearOutput() {
-        return 1 - ((timerUtil.getTime() / (double) duration) * endPoint);
+        return 1 - ((timerUtils.getTime() / (double) duration) * endPoint);
     }
 
     public double getEndPoint() {
@@ -37,11 +37,11 @@ public abstract class Animation {
     }
 
     public void reset() {
-        timerUtil.reset();
+        timerUtils.reset();
     }
 
     public boolean isDone() {
-        return timerUtil.hasTimeElapsed(duration);
+        return timerUtils.hasTimeElapsed(duration);
     }
 
     public void changeDirection() {
@@ -55,7 +55,7 @@ public abstract class Animation {
     public Animation setDirection(Direction direction) {
         if (this.direction != direction) {
             this.direction = direction;
-            timerUtil.setTime(System.currentTimeMillis() - (duration - Math.min(duration, timerUtil.getTime())));
+            timerUtils.setTime(System.currentTimeMillis() - (duration - Math.min(duration, timerUtils.getTime())));
         }
         return this;
     }
@@ -74,18 +74,18 @@ public abstract class Animation {
                 return endPoint;
             }
 
-            return getEquation(timerUtil.getTime() / (double) duration) * endPoint;
+            return getEquation(timerUtils.getTime() / (double) duration) * endPoint;
         } else {
             if (isDone()) {
                 return 0.0;
             }
 
             if (correctOutput()) {
-                double revTime = Math.min(duration, Math.max(0, duration - timerUtil.getTime()));
+                double revTime = Math.min(duration, Math.max(0, duration - timerUtils.getTime()));
                 return getEquation(revTime / (double) duration) * endPoint;
             }
 
-            return (1 - getEquation(timerUtil.getTime() / (double) duration)) * endPoint;
+            return (1 - getEquation(timerUtils.getTime() / (double) duration)) * endPoint;
         }
     }
 

@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.other.PlayerEdit;
+import net.ccbluex.liquidbounce.features.module.modules.visual.PlayerEdit;
 import net.ccbluex.liquidbounce.features.module.modules.visual.*;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;

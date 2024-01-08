@@ -122,7 +122,7 @@ public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
 
 
     /**
-     * @author As_pw
+     * @author opZywl
      * @reason Improves
      */
     @Inject(method = "dropItem", at = @At("HEAD"))

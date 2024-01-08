@@ -20,7 +20,7 @@ import net.minecraft.client.network.NetworkPlayerInfo;
 
 import java.util.Objects;
 
-@ModuleInfo(name = "NameProtect", category = ModuleCategory.CLIENT)
+@ModuleInfo(name = "NameProtect", category = ModuleCategory.OTHER)
 public class NameProtect extends Module {
     private final TextValue fakeNameValue = new TextValue("FakeName", "&cProtected User");
     private final TextValue allFakeNameValue = new TextValue("AllPlayersFakeName", "FDP");

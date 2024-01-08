@@ -18,7 +18,6 @@ public final class TimerUtils {
         this.previousTime = -1L;
     }
 
-
     public static long randomDelay(final int minDelay, final int maxDelay) {
         return RandomUtils.nextInt(minDelay, maxDelay);
     }
@@ -70,7 +69,9 @@ public final class TimerUtils {
         return System.nanoTime() / 1000000L - lastMS;
     }
 
-
+    public final long getElapsedTime() {
+        return this.getCurrentMS() - this.lastMS;
+    }
     public boolean delay(long nextDelay) {
         return System.currentTimeMillis() - lastMS >= nextDelay;
     }

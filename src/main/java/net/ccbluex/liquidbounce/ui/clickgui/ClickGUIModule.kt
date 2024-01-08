@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic.DropdownGUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.light.LightClickGUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.novoline.ClickyUI
-import net.ccbluex.liquidbounce.ui.clickgui.style.styles.onetap.OtcClickGUi
 import net.ccbluex.liquidbounce.ui.client.gui.options.modernuiLaunchOption
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -34,7 +33,6 @@ object ClickGUIModule : Module() {
         "Style",
         arrayOf(
             "Classic",
-            "OneTap",
             "Light",
             "Novoline",
             "LB+",
@@ -59,17 +57,14 @@ object ClickGUIModule : Module() {
     val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
     val fastRenderValue = BoolValue("FastRender", false)
     val getClosePrevious = BoolValue("ClosePrevious", false)
-    val disp = BoolValue("DisplayValue", true)
 
     private var lightClickGUI = LightClickGUI()
-    private var otcGui = OtcClickGUi()
     private var novoline = ClickyUI()
     private var dropdown = DropdownGUI()
 
     override fun onEnable() {
         when {
             styleValue.get().contains("Novoline") -> mc.displayGuiScreen(novoline)
-            styleValue.get().contains("OneTap") -> mc.displayGuiScreen(otcGui)
             styleValue.get().contains("Light") -> mc.displayGuiScreen(lightClickGUI)
             styleValue.get().equals("Classic", ignoreCase = true) -> mc.displayGuiScreen(dropdown)
             styleValue.get().equals("LB+", ignoreCase = true) -> mc.displayGuiScreen(NewUi.getInstance())

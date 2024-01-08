@@ -18,7 +18,6 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
-
 object ColorUtils {
 
     private val COLOR_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]")
@@ -234,29 +233,6 @@ object ColorUtils {
 
     }
 
-    @JvmStatic
-    fun astolfoRainbow2(counter: Int, alpha: Int): Int {
-        val width = 110
-        var rainbowState = Math.ceil((System.currentTimeMillis() - counter.toLong() * width).toDouble()) / 11
-        rainbowState %= 360.0
-        val hue =
-            if ((rainbowState / 360).toFloat() < 0.5) -(rainbowState / 360).toFloat() else (rainbowState / 360).toFloat()
-        val color = Color.getHSBColor(hue, 0.7f, 1f)
-        return Color(color.red, color.green, color.blue, alpha).rgb
-    }
-
-    @JvmStatic
-    fun astolfoRainbow2(offset: Int, distance: Float, speedl: Float): Color? {
-        val speed = (30 * 100).toFloat()
-        var hue = System.currentTimeMillis() % speed.toInt() + (distance - offset) * speedl
-        while (hue > speed) {
-            hue -= speed
-        }
-        hue /= speed
-        if (hue > 0.5) hue = 0.5f - (hue - 0.5f)
-        hue += 0.5f
-        return Color.getHSBColor(hue, 0.4f, 1f)
-    }
 
     @JvmStatic
     fun astolfoRainbow(delay: Int, offset: Int, index: Int): Color {
@@ -264,51 +240,6 @@ object ColorUtils {
         return Color.getHSBColor(if (((360.0.also { rainbowDelay %= it }) / 360.0).toFloat().toDouble() < 0.5) -((rainbowDelay / 360.0).toFloat()) else (rainbowDelay / 360.0).toFloat(), 0.5f, 1.0f)
     }
 
-    fun getFractionIndicies(fractions: FloatArray, progress: Float): IntArray {
-        var startPoint: Int
-        val range = IntArray(2)
-        startPoint = 0
-        while (startPoint < fractions.size && fractions[startPoint] <= progress) {
-            ++startPoint
-        }
-        if (startPoint >= fractions.size) {
-            startPoint = fractions.size - 1
-        }
-        range[0] = startPoint - 1
-        range[1] = startPoint
-        return range
-    }
-
-    @JvmStatic
-    fun astolfoRainbow(offset: Int): Color? {
-        val speed = (30 * 100).toFloat()
-        var hue = (System.currentTimeMillis() % speed.toInt() + offset).toFloat()
-        while (hue > speed) {
-            hue -= speed
-        }
-        hue /= speed
-        if (hue > 0.5) hue = 0.5f - (hue - 0.5f)
-        hue += 0.5f
-        return Color.getHSBColor(hue, 0.4f, 1f)
-    }
-
-    @JvmStatic
-    fun hsbTransition(from: Float, to: Float, angle: Int, s: Float = 1f, b: Float = 1f): Color {
-        return Color.getHSBColor(
-            if (angle < 180) from + (to - from) * (angle / 180f)
-            else from + (to - from) * (-(angle - 360) / 180f), s, b)
-    }
-
-    fun getAnalogousColor(color: Color): Array<Color?>? {
-        val colors = arrayOfNulls<Color>(2)
-        val hsb = Color.RGBtoHSB(color.red, color.green, color.blue, null)
-        val degree = 30 / 360f
-        val newHueAdded = hsb[0] + degree
-        colors[0] = Color(Color.HSBtoRGB(newHueAdded, hsb[1], hsb[2]))
-        val newHueSubtracted = hsb[0] - degree
-        colors[1] = Color(Color.HSBtoRGB(newHueSubtracted, hsb[1], hsb[2]))
-        return colors
-    }
 
     @JvmStatic
     fun interpolateInt(oldValue: Int, newValue: Int, interpolationValue: Double): Int {

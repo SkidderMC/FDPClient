@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.particles;
 
-import net.ccbluex.liquidbounce.utils.timer.ParticleTimer;
+import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockAir;
 import net.minecraft.block.BlockBush;
@@ -13,7 +13,7 @@ import net.minecraft.block.BlockLiquid;
 
 public class Particle {
 
-    private final ParticleTimer removeTimer = new ParticleTimer();
+    private final TimerUtils removeTimer = new TimerUtils();
 
     public final Vec3 position;
     private final Vec3 delta;

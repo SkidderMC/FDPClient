@@ -11,7 +11,6 @@ import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 import java.util.zip.ZipInputStream
 
-
 object FileUtils {
     fun readInputStream(inputStream: InputStream?): String? {
         val stringBuilder = StringBuilder()

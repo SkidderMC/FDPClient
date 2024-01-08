@@ -100,7 +100,7 @@ public abstract class MixinGuiConnecting extends GuiScreen {
     }
 
     /**
-     * @author As_pw
+     * @author CCBluex
      * @reason Logging in
      */
     @Overwrite

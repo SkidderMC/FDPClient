@@ -32,5 +32,15 @@ public final class Translate {
         return this.y;
     }
 
+    private boolean isInitialized;
+    private float currentX;
+    private float currentY;
+
+    public Translate(float initialY) {
+        this.currentX = 0; // Assuming that the initial X should be 0
+        this.currentY = initialY;
+    }
+
+
 }
 

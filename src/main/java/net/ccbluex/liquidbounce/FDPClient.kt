@@ -135,7 +135,6 @@ object FDPClient {
         eventManager.registerListener(InventoryUtils)
         eventManager.registerListener(BungeeCordSpoof())
         eventManager.registerListener(SessionUtils())
-        eventManager.registerListener(LocationCache())
         eventManager.registerListener(macroManager)
         eventManager.registerListener(combatManager)
         eventManager.registerListener(ClientSpoofHandler())

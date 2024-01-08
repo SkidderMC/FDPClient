@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemArmor
@@ -20,6 +21,7 @@ class Teams : Module() {
     private val colorValue = BoolValue("Color", true)
     private val gommeSWValue = BoolValue("GommeSW", false)
     private val armorValue = BoolValue("ArmorColor", false)
+    private val armorIndexValue = IntegerValue("ArmorIndex", 3, 0, 3, { armorValue.get() })
 
     /**
      * Check if [entity] is in your own team using scoreboard, name color or team prefix
@@ -42,14 +44,15 @@ class Teams : Module() {
         }
         if (armorValue.get()) {
             val entityPlayer = entity as EntityPlayer
-            if (mc.thePlayer.inventory.armorInventory[3] != null && entityPlayer.inventory.armorInventory[3] != null) {
-                val myHead = mc.thePlayer.inventory.armorInventory[3]
-                val myItemArmor = myHead.item as ItemArmor
+            if (mc.thePlayer.inventory.armorInventory[armorIndexValue.get()] != null && entityPlayer.inventory.armorInventory[armorIndexValue.get()] != null) {
+                val myHead = mc.thePlayer.inventory.armorInventory[armorIndexValue.get()]
+                val myItemArmor = myHead!!.item!! as ItemArmor
 
-                val entityHead = entityPlayer.inventory.armorInventory[3]
-                var entityItemArmor = myHead.item as ItemArmor
 
-                if (myItemArmor.getColor(myHead) == entityItemArmor.getColor(entityHead)) {
+                val entityHead = entityPlayer.inventory.armorInventory[armorIndexValue.get()]
+                var entityItemArmor = myHead.item!! as ItemArmor
+
+                if (myItemArmor.getColor(myHead) == entityItemArmor.getColor(entityHead!!)) {
                     return true
                 }
             }

@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.utils.particles.EvictingList;
 import net.ccbluex.liquidbounce.utils.particles.Particle;
 import net.ccbluex.liquidbounce.utils.particles.Vec3;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.utils.timer.ParticleTimer;
+import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.minecraft.entity.EntityLivingBase;
@@ -31,7 +31,7 @@ public final class Particles extends Module {
     private final BoolValue physics = new BoolValue("Physics", true);
 
     private final List<Particle> particles = new EvictingList<>(100);
-    private final ParticleTimer timer = new ParticleTimer();
+    private final TimerUtils timer = new TimerUtils();
     private EntityLivingBase target;
 
     @EventTarget

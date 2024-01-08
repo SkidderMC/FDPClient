@@ -415,19 +415,6 @@ object GLUtils {
         GlStateManager.color(red, green, blue, alpha)
     }
 
-    fun blur(radius: Int, f: () -> Unit) {
-        StencilUtils.initStencil(mc.framebuffer)
-        StencilUtils.writeToStencil()
-        f()
-        StencilUtils.readFromStencil()
-
-        glPushMatrix()
-        mc.entityRenderer.setupOverlayRendering()
-        BlurShader.blur(radius)
-        glPopMatrix()
-
-        StencilUtils.uninitStencil()
-    }
 
     fun drawPlatform(entity: Entity, color: Color) {
         val bb = entity.renderBoundingBox

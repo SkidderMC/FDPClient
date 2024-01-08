@@ -22,7 +22,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
-import net.ccbluex.liquidbounce.utils.render.ColorManager
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.boss.EntityWither
@@ -353,7 +353,7 @@ class FightBot : Module() {
             var last2: Vec3? =null
             for (vec in path) {
                 i += 100
-                RenderUtils.glColor(ColorManager.astolfoRainbow(50, 10-(i/2), i))
+                RenderUtils.glColor(ColorUtils.astolfoRainbow(50, 10-(i/2), i))
                 val x = vec.xCoord - renderPosX
                 val y = vec.yCoord - renderPosY
                 val z = vec.zCoord - renderPosZ
@@ -411,7 +411,7 @@ class FightBot : Module() {
                 - mc.renderManager.viewerPosZ)
         val pix2 = 3.1415926
         for (i in 0..20) {
-            RenderUtils.glColor(ColorManager.astolfoRainbow(5, 10, i))
+            RenderUtils.glColor(ColorUtils.astolfoRainbow(5, 10, i))
             GL11.glVertex3d(
                 x + rad * cos(i * pix2 / 9.0), y,
                 z + rad * sin(i * pix2 / 9.0)

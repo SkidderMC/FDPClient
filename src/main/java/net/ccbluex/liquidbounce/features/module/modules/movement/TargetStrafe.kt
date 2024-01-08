@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.render.ColorManager
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -103,7 +103,7 @@ object TargetStrafe : Module() {
                 val z = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
                 for (i in 0..10) {
                     counter[0] = counter[0] + 1
-                    val rainbow = Color(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
+                    val rainbow = Color(ColorUtils.otherAstolfo(counter[0] * 100, 5, 107))
                     //final Color rainbow = new Color(Color.HSBtoRGB((float) ((mc.thePlayer.ticksExisted / 70.0 + sin(i / 50.0 * 1.75)) % 1.0f), 0.7f, 1.0f));
                     GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
                     if (rad < 0.8 && rad > 0.0) GL11.glVertex3d(
@@ -113,7 +113,7 @@ object TargetStrafe : Module() {
                     )
                     if (rad < 1.5 && rad > 0.7) {
                         counter[0] = counter[0] + 1
-                        RenderUtils.glColor(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
+                        RenderUtils.glColor(ColorUtils.astolfoRainbow(counter[0] * 100, 5, 107))
                         GL11.glVertex3d(
                             x + rad * cos(i * 6.283185307179586 / 4.0),
                             y,
@@ -122,7 +122,7 @@ object TargetStrafe : Module() {
                     }
                     if (rad < 2.0 && rad > 1.4) {
                         counter[0] = counter[0] + 1
-                        RenderUtils.glColor(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
+                        RenderUtils.glColor(ColorUtils.astolfoRainbow(counter[0] * 100, 5, 107))
                         GL11.glVertex3d(
                             x + rad * cos(i * 6.283185307179586 / 5.0),
                             y,
@@ -131,7 +131,7 @@ object TargetStrafe : Module() {
                     }
                     if (rad < 2.4 && rad > 1.9) {
                         counter[0] = counter[0] + 1
-                        RenderUtils.glColor(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
+                        RenderUtils.glColor(ColorUtils.astolfoRainbow(counter[0] * 100, 5, 107))
                         GL11.glVertex3d(
                             x + rad * cos(i * 6.283185307179586 / 6.0),
                             y,
@@ -140,7 +140,7 @@ object TargetStrafe : Module() {
                     }
                     if (rad < 2.7 && rad > 2.3) {
                         counter[0] = counter[0] + 1
-                        RenderUtils.glColor(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
+                        RenderUtils.glColor(ColorUtils.astolfoRainbow(counter[0] * 100, 5, 107))
                         GL11.glVertex3d(
                             x + rad * cos(i * 6.283185307179586 / 7.0),
                             y,
@@ -149,7 +149,7 @@ object TargetStrafe : Module() {
                     }
                     if (rad < 6.0 && rad > 2.6) {
                         counter[0] = counter[0] + 1
-                        RenderUtils.glColor(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
+                        RenderUtils.glColor(ColorUtils.astolfoRainbow(counter[0] * 100, 5, 107))
                         GL11.glVertex3d(
                             x + rad * cos(i * 6.283185307179586 / 8.0),
                             y,
@@ -158,7 +158,7 @@ object TargetStrafe : Module() {
                     }
                     if (rad < 7.0 && rad > 5.9) {
                         counter[0] = counter[0] + 1
-                        RenderUtils.glColor(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
+                        RenderUtils.glColor(ColorUtils.astolfoRainbow(counter[0] * 100, 5, 107))
                         GL11.glVertex3d(
                             x + rad * cos(i * 6.283185307179586 / 9.0),
                             y,
@@ -167,7 +167,7 @@ object TargetStrafe : Module() {
                     }
                     if (rad < 11.0) if (rad > 6.9) {
                         counter[0] = counter[0] + 1
-                        RenderUtils.glColor(ColorManager.astolfoRainbow(counter[0] * 100, 5, 107))
+                        RenderUtils.glColor(ColorUtils.astolfoRainbow(counter[0] * 100, 5, 107))
                         GL11.glVertex3d(
                             x + rad * cos(i * 6.283185307179586 / 10.0),
                             y,

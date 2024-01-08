@@ -1,6 +1,5 @@
 package net.ccbluex.liquidbounce.utils.animations;
 
-
 import lombok.Getter;
 import net.ccbluex.liquidbounce.utils.animations.impl.SmoothStepAnimation;
 

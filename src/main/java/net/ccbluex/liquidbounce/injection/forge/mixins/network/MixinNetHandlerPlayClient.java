@@ -326,32 +326,13 @@ public abstract class MixinNetHandlerPlayClient implements INetHandlerPlayClient
     @Overwrite
     public void handlePlayerPosLook(S08PacketPlayerPosLook packetIn) {
         final NoRotateSet noRotateSet = FDPClient.moduleManager.getModule(NoRotateSet.class);
-        final TransferUtils transferUtils = TransferUtils.INSTANCE;
-        PacketThreadUtil.checkThreadAndEnqueue(packetIn, this, this.gameController);
-        final EntityPlayer entityplayer = this.gameController.thePlayer;
+        PacketThreadUtil.checkThreadAndEnqueue(packetIn, (NetHandlerPlayClient) (Object) this, this.gameController);
+        EntityPlayer entityplayer = this.gameController.thePlayer;
         double d0 = packetIn.getX();
         double d1 = packetIn.getY();
         double d2 = packetIn.getZ();
         float f = packetIn.getYaw();
         float f1 = packetIn.getPitch();
-
-        if (noRotateSet.getState()) {
-            f = entityplayer.rotationYaw;
-            f1 = entityplayer.rotationPitch;
-        }
-
-        TeleportEvent event = new TeleportEvent(new C03PacketPlayer.C06PacketPlayerPosLook(entityplayer.posX, entityplayer.posY, entityplayer.posZ, entityplayer.rotationYaw, entityplayer.rotationPitch, false), d0, d1, d2, f, f1);
-        FDPClient.eventManager.callEvent(event);
-
-        if (event.isCancelled()) {
-            return;
-        }
-
-        d0 = event.getPosX();
-        d1 = event.getPosY();
-        d2 = event.getPosZ();
-        f = event.getYaw();
-        f1 = event.getPitch();
 
         if (packetIn.func_179834_f().contains(S08PacketPlayerPosLook.EnumFlags.X)) {
             d0 += entityplayer.posX;
@@ -377,27 +358,44 @@ public abstract class MixinNetHandlerPlayClient implements INetHandlerPlayClient
             }
         }
 
-        entityplayer.setPositionAndRotation(d0, d1, d2, f, f1);
+        TransferUtils.INSTANCE.setNoMotionSet(false);
 
-        if (transferUtils.getSilentConfirm()) {
-            this.netManager.sendPacket(new C03PacketPlayer.C06PacketPlayerPosLook(
-                    d0,
-                    d1,
-                    d2,
-                    f % 360,
-                    f1,
-                    false
-            ));
-            transferUtils.setSilentConfirm(false);
+        if (packetIn.func_179834_f().contains(S08PacketPlayerPosLook.EnumFlags.X_ROT)) {
+            f1 += entityplayer.rotationPitch;
+        }
+
+        if (packetIn.func_179834_f().contains(S08PacketPlayerPosLook.EnumFlags.Y_ROT)) {
+            f += entityplayer.rotationYaw;
+        }
+
+        float overwriteYaw = f;
+        float overwritePitch = f1;
+
+        boolean flag = false;
+
+        if (TransferUtils.INSTANCE.getSilentConfirm()) {
+            this.netManager.sendPacket(new C03PacketPlayer.C06PacketPlayerPosLook(d0, d1, d2, f, f1, false));
+            TransferUtils.INSTANCE.setSilentConfirm(false);
         } else {
-            this.netManager.sendPacket(new C03PacketPlayer.C06PacketPlayerPosLook(
-                    d0,
-                    d1,
-                    d2,
-                    f % 360,
-                    f1,
-                    false
-            ));
+            if (noRotateSet.getState()) {
+                if (!noRotateSet.getNoLoadingValue().get() || this.doneLoadingTerrain) {
+                    flag = true;
+                    if (!noRotateSet.getOverwriteTeleportValue().get()) {
+                        overwriteYaw = entityplayer.rotationYaw;
+                        overwritePitch = entityplayer.rotationPitch;
+                    }
+                }
+            }
+            if (flag) {
+                if (noRotateSet.getRotateValue().get()) {
+                    entityplayer.setPositionAndRotation(d0, d1, d2, entityplayer.rotationYaw, entityplayer.rotationPitch);
+                } else {
+                    entityplayer.setPosition(d0, d1, d2);
+                }
+            } else {
+                entityplayer.setPositionAndRotation(d0, d1, d2, f, f1);
+            }
+            this.netManager.sendPacket(new C03PacketPlayer.C06PacketPlayerPosLook(entityplayer.posX, entityplayer.getEntityBoundingBox().minY, entityplayer.posZ, overwriteYaw, overwritePitch, false));
         }
 
         if (!this.doneLoadingTerrain) {

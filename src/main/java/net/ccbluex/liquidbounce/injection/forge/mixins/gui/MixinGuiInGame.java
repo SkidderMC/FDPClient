@@ -31,7 +31,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
 
-
 @Mixin(GuiIngame.class)
 public abstract class MixinGuiInGame extends MixinGui {
 

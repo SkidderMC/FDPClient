@@ -1,14 +1,13 @@
 package net.ccbluex.liquidbounce.ui.clickgui.style.styles.novoline;
 
-
 import com.google.common.collect.Lists;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
-import net.ccbluex.liquidbounce.utils.Translate;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
+import net.ccbluex.liquidbounce.utils.render.Translate;
 import net.minecraft.client.gui.Gui;
 import org.lwjgl.input.Mouse;
 
