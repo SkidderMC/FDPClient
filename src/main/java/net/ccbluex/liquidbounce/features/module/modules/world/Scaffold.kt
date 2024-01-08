@@ -1085,6 +1085,7 @@ class Scaffold : Module() {
             }
             
             "rise6" -> {
+                GlStateManager.pushMatrix()
                 val eeasing = EaseUtils.apply(EaseUtils.EnumEasingType.valueOf("BACK"), EaseUtils.EnumEasingOrder.valueOf("In"), progress.toDouble()).toFloat()
                 val info = "Amount " + blocksAmount.toString()
                 val height = event.scaledResolution.scaledHeight
@@ -1099,6 +1100,7 @@ class Scaffold : Module() {
                     Color(30, 30, 30, 120).rgb
                 )
                 mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 1f - eeasing * 0.2f, Color.WHITE.rgb, false)
+                GlStateManager.popMatrix()
             }
             
         
@@ -1284,7 +1286,11 @@ class Scaffold : Module() {
                     Rotation(caluyaw, placeRotation.rotation.pitch)
                 }
                 "static2" -> {
-                    Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 135), placeRotation.rotation.pitch)
+                    if ((MovementUtils.movingYaw / 45).roundToInt() % 2 == 1) {
+                        Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 180), placeRotation.rotation.pitch)
+                    } else {
+                        Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 135), placeRotation.rotation.pitch)
+                    }
                 }
                 "custom" -> {
                     Rotation(mc.thePlayer.rotationYaw + customYawValue.get(), customPitchValue.get().toFloat())
