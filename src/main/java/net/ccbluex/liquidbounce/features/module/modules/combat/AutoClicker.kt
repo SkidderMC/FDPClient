@@ -114,7 +114,7 @@ class AutoClicker : Module() {
             blockTicks = 0
 
 
-           if (!wasDouble) {leftLastSwing = System.currentTimeMillis()
+           if (!wasDouble) leftLastSwing = System.currentTimeMillis()
            wasDouble = false
            leftDelay = updateClicks().toLong()
         }
