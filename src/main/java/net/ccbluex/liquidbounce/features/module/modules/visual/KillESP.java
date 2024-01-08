@@ -528,7 +528,7 @@ public class KillESP extends Module {
 
     private void renderOtherBlockMode(Render3DEvent event) {
         for (Entity entity : mc.theWorld.loadedEntityList) {
-            if (!(entity instanceof EntityLivingBase)) {
+            if (!(entity instanceof EntityLivingBase) || entity == mc.thePlayer) {
                 continue;
             }
 
