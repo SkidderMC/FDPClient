@@ -56,6 +56,12 @@ public class Fonts {
     @FontDetails(fontName = "SFUI10", fontSize = 10)
     public static GameFontRenderer SFUI10;
 
+    @FontDetails(fontName = "SFUI Regular", fontSize = 35)
+    public static GameFontRenderer fontSFUI35;
+
+    @FontDetails(fontName = "SFUI Regular", fontSize = 40)
+    public static GameFontRenderer fontSFUI40;
+
     @FontDetails(fontName = "Tahoma", fontSize = 35)
     public static GameFontRenderer fontTahoma;
 
@@ -93,6 +99,8 @@ public class Fonts {
         SFUI40 = new GameFontRenderer(getFont("SF.ttf", 20));
         SFUI35 = new GameFontRenderer(getFont("SF.ttf", 18));
         SFUI10 = new GameFontRenderer(getFont("SF.ttf", 10));
+        fontSFUI35 = new GameFontRenderer(getFont("sfui.ttf", 35));
+        fontSFUI40 = new GameFontRenderer(getFont("sfui.ttf", 40));
         font35 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 35));
         font40 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 40));
         font72 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 72));

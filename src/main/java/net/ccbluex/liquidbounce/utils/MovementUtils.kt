@@ -343,4 +343,36 @@ object MovementUtils : MinecraftInstance() {
         }
         return false
     }
+
+    fun getRawDirectionRotation(yaw: Float, pStrafe: Float, pForward: Float): Float {
+        var rotationYaw = yaw
+        if (pForward < 0f) rotationYaw += 180f
+        var forward = 1f
+        if (pForward < 0f) forward = -0.5f else if (pForward > 0f) forward = 0.5f
+        if (pStrafe > 0f) rotationYaw -= 90f * forward
+        if (pStrafe < 0f) rotationYaw += 90f * forward
+        return rotationYaw
+    }
+
+    fun getMovementDirection(forward: Float, strafing: Float, yaw: Float): Float {
+        var yaw = yaw
+        if (forward == 0.0f && strafing == 0.0f) return yaw
+        val reversed = forward < 0.0f
+        val strafingYaw = 90.0f *
+                if (forward > 0.0f) 0.5f else if (reversed) -0.5f else 1.0f
+        if (reversed) yaw += 180.0f
+        if (strafing > 0.0f) yaw -= strafingYaw else if (strafing < 0.0f) yaw += strafingYaw
+        return yaw
+    }
+
+    fun setSpeed2(moveEvent: MoveEvent, speed: Double, forward: Float, strafing: Float, yaw: Float) {
+        var yaw = yaw
+        if (forward == 0.0f && strafing == 0.0f) return
+        yaw = getMovementDirection(forward, strafing, yaw)
+        val movementDirectionRads = Math.toRadians(yaw.toDouble())
+        val x = -Math.sin(movementDirectionRads) * speed
+        val z = Math.cos(movementDirectionRads) * speed
+        moveEvent.x = x
+        moveEvent.z = z
+    }
 }

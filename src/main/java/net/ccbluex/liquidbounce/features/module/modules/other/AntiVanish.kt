@@ -13,13 +13,16 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.server.S14PacketEntity
 import net.minecraft.network.play.server.S1DPacketEntityEffect
 
 @ModuleInfo(name = "AntiVanish", category = ModuleCategory.OTHER)
 object AntiVanish : Module() {
 
-    private var lastNotify = -1L
+    private var lastNotify=-1L
+
+    private val notifyLast = IntegerValue("Notification-Seconds", 2, 1, 30)
 
     @EventTarget
     fun onPacket(event: PacketEvent){
@@ -37,7 +40,7 @@ object AntiVanish : Module() {
 
     private fun vanish() {
         if((System.currentTimeMillis()-lastNotify)>5000){
-            FDPClient.hud.addNotification(Notification("Found a vanished entity!", "someone just vanished!", NotifyType.WARNING, 4000, 500))
+            FDPClient.hud.addNotification(Notification("Found a vanished entity!", "someone just vanished!", NotifyType.WARNING, notifyLast.get() * 1000))
 
         }
         lastNotify=System.currentTimeMillis()

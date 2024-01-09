@@ -96,4 +96,13 @@ object EntityUtils : MinecraftInstance() {
     fun isRendered(entityToCheck: Entity?): Boolean {
         return mc.theWorld != null && mc.theWorld.getLoadedEntityList().contains(entityToCheck)
     }
+
+    fun getPing(entityPlayer: EntityPlayer?): Int {
+        if (entityPlayer == null) return 0
+
+        val networkPlayerInfo = mc.netHandler.getPlayerInfo(entityPlayer.uniqueID)
+
+        return networkPlayerInfo?.responseTime ?: 0
+    }
+
 }

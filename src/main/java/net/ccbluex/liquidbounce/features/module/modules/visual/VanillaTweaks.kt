@@ -45,9 +45,6 @@ class VanillaTweaks : Module() {
     val worldColorGValue = IntegerValue("WorldGreen", 255, 0, 255) { worldColorValue.get() }
     val worldColorBValue = IntegerValue("WorldBlue", 255, 0, 255) { worldColorValue.get() }
 
-    private val motionBlur = BoolValue("MotionBlur", false)
-    private val blurAmount = IntegerValue("BlurAmount", 0, 0, 10) { motionBlur.get() }
-
     private var prevGamma = -1f
 
     override fun onEnable() {
@@ -78,31 +75,7 @@ class VanillaTweaks : Module() {
 
     @EventTarget
     fun onTick(event: TickEvent) {
-
         mc.guiAchievement.clearAchievements()
-        try {
-
-            if (mc.thePlayer != null) {
-                if (motionBlur.get()) {
-                    if (mc.entityRenderer.shaderGroup == null) mc.entityRenderer.loadShader(
-                        ResourceLocation(
-                            "minecraft",
-                            "shaders/post/motion_blur.json"
-                        )
-                    )
-                    val uniform = 1f - (blurAmount.get() / 10f).coerceAtMost(0.9f)
-                    if (mc.entityRenderer.shaderGroup != null) {
-                        mc.entityRenderer.shaderGroup.listShaders[0].shaderManager.getShaderUniform("Phosphor")
-                            .set(uniform, 0f, 0f)
-                    }
-                } else {
-                    if (mc.entityRenderer.isShaderActive) mc.entityRenderer.stopUseShader()
-                }
-            }
-
-        } catch (a: Exception) {
-            a.printStackTrace()
-        }
     }
 
     override fun handleEvents() = true

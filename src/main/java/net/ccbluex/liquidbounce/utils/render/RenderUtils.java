@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.particles.Vec3;
 import net.ccbluex.liquidbounce.utils.render.shader.Shader;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.*;
@@ -40,6 +41,7 @@ import net.minecraft.util.Timer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL14;
 import org.lwjgl.util.glu.GLU;
 
 import java.awt.*;
@@ -2786,6 +2788,35 @@ public final class RenderUtils extends MinecraftInstance {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, 0);
 
         return textureId;
+    }
+
+    public static boolean glEnableBlend() {
+        boolean wasEnabled = GL11.glIsEnabled((int)3042);
+        if (!wasEnabled) {
+            GL11.glEnable((int)3042);
+            GL14.glBlendFuncSeparate((int)770, (int)771, (int)1, (int)0);
+        }
+        return wasEnabled;
+    }
+
+    public static void glColour(int color) {
+        GL11.glColor4ub((byte)((byte)(color >> 16 & 0xFF)), (byte)((byte)(color >> 8 & 0xFF)), (byte)((byte)(color & 0xFF)), (byte)((byte)(color >> 24 & 0xFF)));
+    }
+
+    public static void glRestoreBlend(boolean wasEnabled) {
+        if (!wasEnabled) {
+            GL11.glDisable((int)3042);
+        }
+    }
+    public static boolean isBBInFrustum(AxisAlignedBB aabb) {
+        EntityPlayerSP player = RenderUtils.mc.thePlayer;
+        frustrum.setPosition(player.posX, player.posY, player.posZ);
+        return frustrum.isBoundingBoxInFrustum(aabb);
+    }
+
+    public static void setAlphaLimit(float limit) {
+        GlStateManager.enableAlpha();
+        GlStateManager.alphaFunc(GL_GREATER, (float) (limit * .01));
     }
 
 }

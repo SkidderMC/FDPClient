@@ -25,6 +25,7 @@ import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithServerSideRotation
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.BlinkUtils
+import net.ccbluex.liquidbounce.utils.extensions.eyes
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.minecraft.client.gui.ScaledResolution
@@ -49,7 +50,7 @@ import java.util.*
 import kotlin.math.*
 
 @ModuleInfo(name = "KillAura", category = ModuleCategory.COMBAT, keyBind = Keyboard.KEY_G)
-class KillAura : Module() {
+object KillAura : Module() {
     /**
      * OPTIONS
      */
@@ -137,6 +138,7 @@ class KillAura : Module() {
     private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch").displayable { modeDisplay.get() }
     private val switchDelayValue = IntegerValue("SwitchDelay", 15, 1, 2000).displayable { targetModeValue.equals("Switch") && modeDisplay.get() }
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") && modeDisplay.get() }
+    private val reachMode  = ListValue("CheckTargetDistance", arrayOf("Old", "New"), "New")
 
     // AutoBlock
     private val autoblockDisplay = BoolValue("AutoBlock Settings:", true)
@@ -592,8 +594,6 @@ class KillAura : Module() {
             blockingStatus = false
         }
     }
-
-
 
     private fun runAttackLoop() {
 

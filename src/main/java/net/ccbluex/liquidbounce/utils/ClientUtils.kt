@@ -39,10 +39,7 @@ ClientUtils : MinecraftInstance() {
     }
 
     fun setTitle() {
-        Display.setTitle("${FDPClient.CLIENT_NAME} ${FDPClient.CLIENT_VERSION} (${FDPClient.CLIENT_BRANCH}) | ${FDPClient.CLIENT_WEBSITE}")
-    }
-    fun setTitle(stats:String) {
-        Display.setTitle("${FDPClient.CLIENT_NAME} ${FDPClient.CLIENT_VERSION} (${FDPClient.CLIENT_BRANCH}) | ${FDPClient.CLIENT_WEBSITE} - " + stats)
+        Display.setTitle("${FDPClient.CLIENT_NAME} ${FDPClient.CLIENT_VERSION} | ${FDPClient.CLIENT_WEBSITE}")
     }
 
     fun displayAlert(message: String) {

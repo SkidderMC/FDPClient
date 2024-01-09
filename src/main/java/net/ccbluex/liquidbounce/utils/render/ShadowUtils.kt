@@ -60,6 +60,7 @@ object ShadowUtils : MinecraftInstance() {
         }
     }
 
+    @JvmStatic
     fun shadow(strength: Float, drawMethod: (() -> Unit), cutMethod: (() -> Unit)) {
         if (!OpenGlHelper.isFramebufferEnabled()) return
 
@@ -72,20 +73,20 @@ object ShadowUtils : MinecraftInstance() {
         resultBuffer ?: return
         frameBuffer ?: return
 
-        mc.getFramebuffer().unbindFramebuffer()
+        mc.framebuffer.unbindFramebuffer()
         initFramebuffer!!.framebufferClear()
         resultBuffer!!.framebufferClear()
         initFramebuffer!!.bindFramebuffer(true)
         drawMethod()
         frameBuffer!!.bindFramebuffer(true)
         shaderGroup!!.loadShaderGroup(mc.timer.renderPartialTicks)
-        mc.getFramebuffer().bindFramebuffer(true)
+        mc.framebuffer.bindFramebuffer(true)
 
         val fr_width = resultBuffer!!.framebufferWidth.toDouble() / resultBuffer!!.framebufferTextureWidth.toDouble()
         val fr_height = resultBuffer!!.framebufferHeight.toDouble() / resultBuffer!!.framebufferTextureHeight.toDouble()
 
         val tessellator = Tessellator.getInstance()
-        val worldrenderer = tessellator.getWorldRenderer()
+        val worldrenderer = tessellator.worldRenderer
 
         glPushMatrix()
         GlStateManager.disableLighting()
@@ -116,7 +117,7 @@ object ShadowUtils : MinecraftInstance() {
         tessellator.draw()
         resultBuffer!!.unbindFramebufferTexture()
 
-        GlStateManager.disableBlend() 
+        GlStateManager.disableBlend()
         GlStateManager.enableAlpha()
         GlStateManager.enableDepth()
         GlStateManager.depthMask(true)

@@ -104,8 +104,7 @@
     "render.MixinVisGraph",
     "resources.MixinDefaultResourcePack",
     "resources.MixinSkinManager",
-    "splash.MixinSplashProgress",
-    "splash.MixinSplashProgressRunnable"
+    "splash.MixinFMLClientHandler"
   ],
   "client": [
     "gui.MixinGui",

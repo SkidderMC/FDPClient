@@ -8,10 +8,8 @@ package net.ccbluex.liquidbounce.utils.misc
 
 import com.google.common.io.ByteStreams
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import java.io.DataOutputStream
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
+import org.apache.commons.io.FileUtils
+import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -67,12 +65,12 @@ object HttpUtils {
         return connection.inputStream.reader().readText()
     }
 
-    fun download(url: String, file: File) {
-        ClientUtils.logWarn("Downloading $url to ${file.absolutePath}")
-        FileOutputStream(file).use { ByteStreams.copy(make(url, "GET").inputStream, it) }
-    }
+    @Throws(IOException::class)
+    @JvmStatic
+    fun download(url: String, file: File) = FileUtils.copyInputStreamToFile(make(url, "GET").inputStream, file)
 
     fun get(url: String) = request(url, "GET")
 
     fun post(url: String, data: String) = request(url, "POST", data = data)
+
 }

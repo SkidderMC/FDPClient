@@ -107,6 +107,8 @@ dependencies {
 
     include("com.github.UnlegitMC:Astar3d:bec2291cf2") // pathfinding
 
+    include 'com.jhlabs:filters:2.0.235'
+
     include fileTree(include: ["*.jar"], dir: "libs")
 }
 

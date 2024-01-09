@@ -68,4 +68,23 @@ object PlayerUtils {
         return Integer.valueOf(-1)
     }
 
+    fun distance(
+        srcX: Double, srcY: Double, srcZ: Double,
+        dstX: Double, dstY: Double, dstZ: Double
+    ): Double {
+        val xDist = dstX - srcX
+        val yDist = dstY - srcY
+        val zDist = dstZ - srcZ
+        return Math.sqrt(xDist * xDist + yDist * yDist + zDist * zDist)
+    }
+
+    fun distance(
+        srcX: Double, srcZ: Double,
+        dstX: Double, dstZ: Double
+    ): Double {
+        val xDist = dstX - srcX
+        val zDist = dstZ - srcZ
+        return Math.sqrt(xDist * xDist + zDist * zDist)
+    }
+
 }

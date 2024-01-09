@@ -61,10 +61,6 @@ object FDPClient {
         }
     }
 
-    @JvmField
-    val CLIENT_BRANCH = (gitInfo["git.branch"] ?: "unknown").let {
-        if (it == "main") "Main" else it
-    }
 
     // Managers
     lateinit var moduleManager: ModuleManager

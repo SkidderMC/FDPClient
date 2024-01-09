@@ -349,13 +349,6 @@ object ColorUtils {
     }
 
     @JvmStatic
-    fun Astolfo(var2: Int, st: Float, bright: Float): Int {
-        var currentColor = Math.ceil((System.currentTimeMillis() + (var2 * 130).toLong()).toDouble()) / 6
-        return Color.getHSBColor(if ((360.0.also { currentColor %= it } / 360.0).toFloat()
-                .toDouble() < 0.5) -(currentColor / 360.0).toFloat() else (currentColor / 360.0).toFloat(), st, bright).rgb
-    }
-
-    @JvmStatic
     fun getFontColor(target: Any): Color {
         return Color(0xAEB5B9)
     }
@@ -376,6 +369,15 @@ object ColorUtils {
         brightness = 0.5f + 0.5f * brightness
         hsb[2] = brightness % 2.0f
         return Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]))
+    }
+
+    @JvmStatic
+    fun fade(speed: Int, index: Int, color: Color, alpha: Float): Color {
+        val hsb = Color.RGBtoHSB(color.red, color.green, color.blue, null)
+        var angle = ((System.currentTimeMillis() / speed + index) % 360L).toInt()
+        angle = (if (angle > 180) 360 - angle else angle) + 180
+        val colorHSB = Color(Color.HSBtoRGB(hsb[0], hsb[1], angle / 360.0f))
+        return Color(colorHSB.red, colorHSB.green, colorHSB.blue, (max(0.0, min(255.0, (alpha * 255.0f).toDouble()))).toInt())
     }
 
     fun reverseColor(color: Color) = Color(255 - color.red, 255 - color.green, 255 - color.blue, color.alpha)

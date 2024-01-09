@@ -575,6 +575,11 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         return new Rotation(yaw,pitch);
     }
 
+
+    public static float calculateYawFromSrcToDst(final float yaw, final double srcX, final double srcZ, final double dstX, final double dstZ) {final double xDist = dstX - srcX;final double zDist = dstZ - srcZ;final float var1 = (float) (StrictMath.atan2(zDist, xDist) * 180.0 / Math.PI) - 90.0F;return yaw + MathHelper.wrapAngleTo180_float(var1 - yaw);
+
+    }
+
     /**
      * @return YESSSS!!!
      */
