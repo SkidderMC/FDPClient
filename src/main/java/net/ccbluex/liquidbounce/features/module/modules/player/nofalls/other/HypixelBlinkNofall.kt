@@ -15,7 +15,7 @@ class HypixelBlinkNofall : NoFallMode("HypixelBlink") {
     }
     
     override fun onPacket(event: PacketEvent) {
-        if (mc.thePlayer.fallDistance > 1.5) {
+        if (mc.thePlayer.fallDistance > 0.0) {
             if (!enabled) {
                 BlinkUtils.setBlinkState(all = true)
                 enabled = true
