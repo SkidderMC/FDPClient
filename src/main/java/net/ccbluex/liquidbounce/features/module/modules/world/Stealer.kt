@@ -66,7 +66,7 @@ object Stealer : Module() {
     private val noCompassValue = BoolValue("NoCompass", false)
     private val autoCloseValue = BoolValue("AutoClose", true)
     val silentTitleValue = BoolValue("SilentTitle", false)
-    val silenceValue = BoolValue("SilentMode", true)
+    val silenceValue = BoolValue("SilentMode", false)
     val showStringValue = BoolValue("Silent-ShowString", true).displayable { silenceValue.get() }
     val stillDisplayValue = BoolValue("Silent-StillDisplay", true).displayable { silenceValue.get() }
 
