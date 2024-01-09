@@ -262,7 +262,6 @@ class Scaffold : Module() {
     private var offGroundTicks: Int = 0
 
     // WATCHDOG
-    private var wdTick = 0
     private var wdSpoof = false
     private var towerTick = 0 
     
@@ -275,7 +274,6 @@ class Scaffold : Module() {
         if (mc.thePlayer == null) return
         lastGroundY = mc.thePlayer.posY.toInt()
         lastPlace = 2
-        wdTick = 5
         clickDelay = TimeUtils.randomDelay(extraClickMinDelayValue.get(), extraClickMaxDelayValue.get())
         delayTimer.reset()
         zitterTimer.reset()
@@ -294,50 +292,6 @@ class Scaffold : Module() {
         // if(tolleyStayTick>100) tolleyStayTick=100
         if (towerStatus && towerModeValue.get().lowercase() != "aac3.3.9" && towerModeValue.get().lowercase() != "aac4.4constant" && towerModeValue.get().lowercase() != "aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
         if (!towerStatus) mc.timer.timerSpeed = timerValue.get()
-
-        if (towerModeValue.equals("WatchDog") && towerStatus) {
-            if (wdTick != 0) {
-                towerTick = 0
-                return
-            }
-            if (towerTick > 0) {
-                ++towerTick
-                if (towerTick > 6) {
-                    mc.thePlayer.motionX *= 0.99f
-                    mc.thePlayer.motionZ *= 0.99f
-                }
-                if (towerTick > 10) {
-                    towerTick = 1
-                }
-            }
-            if (towerStatus) {
-                if (mc.thePlayer.onGround) {
-                    if (towerTick == 0 || towerTick == 5) {
-                        mc.thePlayer.motionY = 0.42
-                        MovementUtils.move(0.1f)
-                        mc.thePlayer.motionX *= 1.1f
-                        mc.thePlayer.motionZ *= 1.1f
-                        towerTick = 1
-                    }
-                } else if (mc.thePlayer.motionY > -0.0784000015258789) {
-                    val n = Math.round(mc.thePlayer.posY % 1.0 * 100.0).toInt()
-                    when (n) {
-                        42 -> {
-                            mc.thePlayer.motionY = 0.33
-                        }
-        
-                        75 -> {
-                            mc.thePlayer.motionY = 1.0 - mc.thePlayer.posY % 1.0
-                            wdSpoof = true
-                        }
-        
-                        0 -> {
-                            mc.thePlayer.motionY = -0.0784000015258789
-                        }
-                    }
-                }
-            }
-        }
         
         if (towerStatus || mc.thePlayer.isCollidedHorizontally) {
             canSameY = false
@@ -553,12 +507,6 @@ class Scaffold : Module() {
     fun onMotion(event: MotionEvent) {
         val eventState = event.eventState
         towerStatus = false
-
-        if (towerModeValue.equals("Watchdog")) {
-            if (wdTick > 0) {
-                wdTick -- 
-            }
-        }
         
         // Tower
         if (motionSpeedEnabledValue.get()) MovementUtils.setMotion(motionSpeedValue.get().toDouble())
@@ -661,7 +609,7 @@ class Scaffold : Module() {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
                     mc.thePlayer.motionY = 0.41999998688698
-                } else if (mc.thePlayer.motionY < 0.1) {
+                } else if (mc.thePlayer.motionY == 0.0) {
                     mc.thePlayer.motionY = -0.08 * 0.98
                 }
             }
@@ -687,13 +635,15 @@ class Scaffold : Module() {
                     mc.thePlayer.motionY = 0.41999998688698
                 } else if (mc.thePlayer.motionY < 0.23) {
                     mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
+                    mc.thePlayer.onGround = true
+                    mc.thePlayer.motionY = 0.41999998688698
                 }
             }
             "motiontp2" -> {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
                     mc.thePlayer.motionY = 0.41999998688698
-                } else if (mc.thePlayer.motionY < 0.23) {
+                } else if (mc.thePlayer.motionY < 0.28) {
                     mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
                     mc.thePlayer.onGround = true
                     mc.thePlayer.motionY = 0.41999998688698
@@ -823,8 +773,28 @@ class Scaffold : Module() {
                 }
             }
             "watchdog" -> {
-                // hi
-                null
+                if (mc.thePlayer.onGround) {
+                    mc.thePlayer.motionY = 0.42
+                    MovementUtils.move(0.1f)
+                    mc.thePlayer.motionX *= 1.15f
+                    mc.thePlayer.motionZ *= 1.15f
+                } else if (mc.thePlayer.motionY > -0.0784000015258789) {
+                    val n = Math.round(mc.thePlayer.posY % 1.0 * 100.0).toInt()
+                    when (n) {
+                        42 -> {
+                            mc.thePlayer.motionY = 0.33
+                        }
+        
+                        75 -> {
+                            mc.thePlayer.motionY = 1.0 - mc.thePlayer.posY % 1.0
+                            wdSpoof = true
+                        }
+        
+                        0 -> {
+                            mc.thePlayer.motionY = -0.0784000015258789
+                        }
+                    }
+                }
             }
         }
     }
