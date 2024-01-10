@@ -643,7 +643,7 @@ class Scaffold : Module() {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
                     mc.thePlayer.motionY = 0.41999998688698
-                } else if (mc.thePlayer.motionY < 0.28) {
+                } else if (mc.thePlayer.motionY < 0.1) {
                     mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY), mc.thePlayer.posZ)
                     mc.thePlayer.onGround = true
                     mc.thePlayer.motionY = 0.41999998688698
@@ -773,7 +773,9 @@ class Scaffold : Module() {
                 }
             }
             "watchdog" -> {
-                if (mc.thePlayer.onGround) {
+                towerTick ++
+                if (mc.thePlayer.onGround && towerTick > 4) {
+                    towerTick = 0
                     mc.thePlayer.motionY = 0.42
                     MovementUtils.move(0.1f)
                     mc.thePlayer.motionX *= 1.15f
