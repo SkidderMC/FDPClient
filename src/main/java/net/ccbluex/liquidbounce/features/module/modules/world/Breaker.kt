@@ -112,8 +112,6 @@ object Breaker : Module() {
             } else {
                 pos = blockPos?: return
             }
-            currentPos = pos ?: return
-            rotations = RotationUtils.faceBlock(currentPos) ?: return
         }
 
         // Reset current breaking when there is no target block
