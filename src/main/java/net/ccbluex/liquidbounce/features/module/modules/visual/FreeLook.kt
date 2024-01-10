@@ -14,21 +14,17 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
 
-@ModuleInfo(name = "FreeLook",  description = "", category = ModuleCategory.VISUAL, keyBind = Keyboard.KEY_LSHIFT, triggerType = EnumTriggerType.PRESS)
+@ModuleInfo(name = "FreeLook",  description = "Freelook.", category = ModuleCategory.VISUAL, keyBind = Keyboard.KEY_LSHIFT, triggerType = EnumTriggerType.PRESS)
 class FreeLook : Module() {
     private val thirdPerson = BoolValue("ThirdPerson", true)
     val reverse = BoolValue("Reverse", false)
 
     override fun onEnable() {
-        perspectiveToggled = !perspectiveToggled
-        cameraYaw = mc.thePlayer.rotationYaw
-        cameraPitch = mc.thePlayer.rotationPitch
+        startPerspective()
         if (perspectiveToggled) {
             previousPerspective = mc.gameSettings.thirdPersonView
             if (thirdPerson.get())
                 mc.gameSettings.thirdPersonView = 1
-        } else {
-            mc.gameSettings.thirdPersonView = previousPerspective
         }
     }
 
@@ -66,6 +62,12 @@ class FreeLook : Module() {
                 if (cameraPitch < -90) cameraPitch = -90f
             }
             return false
+        }
+
+        fun startPerspective() {
+            perspectiveToggled = true
+            cameraYaw = mc.thePlayer.rotationYaw
+            cameraPitch = mc.thePlayer.rotationPitch
         }
 
         fun resetPerspective() {
