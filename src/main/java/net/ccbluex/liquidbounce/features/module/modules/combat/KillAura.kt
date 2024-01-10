@@ -155,7 +155,7 @@ object KillAura : Module() {
     
     private val legitBlockBlinkValue = BoolValue("Legit2Blink", true).displayable { autoBlockPacketValue.displayable && autoBlockPacketValue.equals("Legit2") }
     private val legitBlockTicksValue = IntegerValue("Legit2BlockTicks", 1, 1, 10).displayable { autoBlockPacketValue.displayable && autoBlockPacketValue.equals("Legit2") }
-    private val legitSwingTicksValue = IntegerValue("Legit2BlockTicks", 1, 1, 10).displayable { autoBlockPacketValue.displayable && autoBlockPacketValue.equals("Legit2") }
+    private val legitSwingTicksValue = IntegerValue("Legit2SwingTicks", 1, 1, 10).displayable { autoBlockPacketValue.displayable && autoBlockPacketValue.equals("Legit2") }
     
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", false).displayable { autoBlockPacketValue.displayable }
     private val smartAutoBlockValue = BoolValue("SmartAutoBlock", false).displayable { autoBlockPacketValue.displayable }
