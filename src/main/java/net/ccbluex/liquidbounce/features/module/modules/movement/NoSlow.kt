@@ -258,18 +258,21 @@ object NoSlow : Module() {
                     PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                 }
                 "hypixelnew" -> {
-                    if (getEmptySlot() != -1) {
+                    if (getEmptySlot() != -1 && event.eventState == EventState.PRE) {
                         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventoryContainer.getSlot(getEmptySlot()).stack, 0f, 0f, 0f))
                     }
                 }
                 "spamitemchange" -> {
-                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                    if (event.eventState == EventState.PRE) 
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                 }
                 "spamplace" -> {
-                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
+                    if (event.eventState == EventState.PRE) 
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
                 }
                 "spamemptyplace" -> {
-                    mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement())
+                    if (event.eventState == EventState.PRE) 
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement())
                 }
             }
         }
