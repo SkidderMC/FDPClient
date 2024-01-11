@@ -609,7 +609,7 @@ class Scaffold : Module() {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
                     mc.thePlayer.motionY = 0.41999998688698
-                } else if (mc.thePlayer.motionY == 0.0) {
+                } else if (Math.round(mc.thePlayer.posY % 1.0 * 100.0).toInt() == 0) {
                     mc.thePlayer.motionY = -0.08 * 0.98
                 }
             }
