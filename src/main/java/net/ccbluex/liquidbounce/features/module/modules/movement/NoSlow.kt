@@ -30,7 +30,7 @@ import kotlin.math.sqrt
 object NoSlow : Module() {
 
     //Basic settings
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDogBlink", "WatchDog", "WatchDog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "OldIntave", "GrimAC"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "WatchDog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "OldIntave", "GrimAC", "HypixelNew", "SpamItemChange", "SpamPlace", "SpamEmptyPlace"), "Vanilla")
     private val antiSwitchItem = BoolValue("AntiSwitchItem", false)
     private val onlyGround = BoolValue("OnlyGround", false)
     private val onlyMove = BoolValue("OnlyMove", false)
@@ -242,20 +242,37 @@ object NoSlow : Module() {
                         )
                     }
                 }
-                   "oldintave" -> {
-                if(mc.thePlayer.isUsingItem){
-                    if (event.eventState == EventState.PRE){
-                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
-                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
-                    }
-                    if(event.eventState == EventState.POST){
-                            mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(mc.thePlayer.inventory.currentItem + 36).stack))
+               "oldintave" -> {
+                    if(mc.thePlayer.isUsingItem){
+                        if (event.eventState == EventState.PRE){
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
+                            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                        }
+                        if(event.eventState == EventState.POST){
+                                mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventoryContainer.getSlot(mc.thePlayer.inventory.currentItem + 36).stack))
+                        }
                     }
                 }
-            }
                 "switchitem" -> {
                     PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem  % 8 + 1))
                     PacketUtils.sendPacketNoEvent(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                }
+                "hypixelnew" -> {
+                    if (getEmptySlot() != -1 && event.eventState == EventState.PRE) {
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventoryContainer.getSlot(getEmptySlot()).stack, 0f, 0f, 0f))
+                    }
+                }
+                "spamitemchange" -> {
+                    if (event.eventState == EventState.PRE) 
+                        mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+                }
+                "spamplace" -> {
+                    if (event.eventState == EventState.PRE) 
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
+                }
+                "spamemptyplace" -> {
+                    if (event.eventState == EventState.PRE) 
+                        mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement())
                 }
             }
         }
@@ -290,19 +307,7 @@ object NoSlow : Module() {
     fun onUpdate(event: UpdateEvent) {
         if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
             return
-        if (modeValue.equals("WatchDogBlink")) {
-            if(msTimer.hasTimePassed(230)) {
-                if(packetBuf.isNotEmpty()) {
-                    PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN))
-                    for(packet in packetBuf) {
-                        PacketUtils.sendPacketNoEvent(packet)
-                    }
-                    packetBuf.clear()
-                    PacketUtils.sendPacketNoEvent(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
-                }
-                msTimer.reset()
-            }
-        }
+
         if((modeValue.equals("Matrix") || modeValue.equals("Vulcan") || modeValue.equals("GrimAC")) && (lastBlockingStat || isBlocking)) {
             if(msTimer.hasTimePassed(230) && nextTemp) {
                 nextTemp = false
@@ -341,6 +346,13 @@ object NoSlow : Module() {
     private val isBlocking: Boolean
         get() = (mc.thePlayer.isUsingItem || FDPClient.moduleManager[KillAura::class.java]!!.blockingStatus) && mc.thePlayer.heldItem != null && mc.thePlayer.heldItem.item is ItemSword
 
+    private fun getEmptySlot(): Int {
+        for (i in 1..44) {
+            mc.thePlayer.inventoryContainer.getSlot(i).stack ?: return i
+        }
+        return -1
+    }
+    
     @EventTarget
     fun onPacket(event: PacketEvent) {
         if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
@@ -362,15 +374,7 @@ object NoSlow : Module() {
                 sendPacket = true
             }
         }
-        if(modeValue.equals("WatchDogBlink")) {
-            if (packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction || packet is C02PacketUseEntity) {
-                packetBuf.add(packet as Packet<INetHandlerPlayServer>)
-                event.cancelEvent()
-            }
-            if (packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) {
-                event.cancelEvent()
-            }
-        }
+
         if((modeValue.equals("Matrix") || modeValue.equals("Vulcan") || modeValue.equals("GrimAC")) && nextTemp) {
             if((packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) && isBlocking) {
                 event.cancelEvent()
