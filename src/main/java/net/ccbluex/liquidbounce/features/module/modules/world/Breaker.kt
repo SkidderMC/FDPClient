@@ -197,7 +197,7 @@ object Breaker : Module() {
 
                 if (currentDamage == 0F) {
                     mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.START_DESTROY_BLOCK,
-                            currentPos, EnumFacing.DOWN))
+                            currentPos, EnumFacing.UP))
 
                     if (mc.thePlayer.capabilities.isCreativeMode ||
                             block.getPlayerRelativeBlockHardness(mc.thePlayer, mc.theWorld, pos) >= 1.0F) {
@@ -222,10 +222,10 @@ object Breaker : Module() {
                 currentDamage += block.getPlayerRelativeBlockHardness(mc.thePlayer, mc.theWorld, currentPos)
                 mc.theWorld.sendBlockBreakProgress(mc.thePlayer.entityId, currentPos, (currentDamage * 10F).toInt() - 1)
 
-                if (currentDamage > 1F) {
+                if (currentDamage >= 1F) {
                     mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
                             currentPos, EnumFacing.DOWN))
-                    mc.playerController.onPlayerDestroyBlock(currentPos, EnumFacing.DOWN)
+                    mc.theWorld.setBlockState(currentPos, Blocks.air.defaultState, 11)
                     blockHitDelay = 4
                     currentDamage = 0F
                     pos = null
