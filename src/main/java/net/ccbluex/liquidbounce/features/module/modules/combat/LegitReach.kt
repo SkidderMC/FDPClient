@@ -44,20 +44,15 @@ class LegitReach : Module() {
 
     private var comboCounter = 0
     private var backtrack = false
+    private var wasBT = false
 
     override fun onEnable() {
         backtrack = false
-        if (mode.equals("IncomingBlink") && outgoingBlink.get()) {
-            BlinkUtils.setBlinkState(off = true, release = true)
-        }
     }
     
     override fun onDisable() {
         removeFakePlayer()
         clearPackets()
-        if (mode.equals("IncomingBlink") && outgoingBlink.get()) {
-            BlinkUtils.setBlinkState(off = true, release = true)
-        }
     }
 
     private fun removeFakePlayer() {
@@ -218,6 +213,13 @@ class LegitReach : Module() {
                 clearPackets()
                 backtrack = false
             }
+            if (!backtrack && wasBT) {
+                clearPackets()
+            }
+            if (backtrack && !wasBT) {
+                BlinkUtils.setBlinkState(all = true)
+            }
+            wasBT = backtrack
         }
     }
     
