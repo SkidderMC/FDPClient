@@ -649,6 +649,7 @@ object KillAura : Module() {
                     legit2Blink = true
                     legit2State = 1
                     legit2Swing = 0
+                    legit2Block = 0
                     stopBlocking()
                 } 
                 return
@@ -668,11 +669,12 @@ object KillAura : Module() {
         }
 
         if (autoBlockPacketValue.equals("Legit2") && autoBlockValue.equals("Range")) {
-            if (legit2Swing >= legitSwingTicksValue.get()) {
+            if (legit2Swing >= legitSwingTicksValue.get() && legitState == 1) {
                 BlinkUtils.setBlinkState(off = true, release = true)
                 legit2Blink = false
                 legit2State = 0
                 legit2Block = 0
+                legit2Swing = 0
                 val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
                 startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
             }
