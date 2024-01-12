@@ -34,25 +34,28 @@ import kotlin.math.sin
 object TargetStrafe : Module() {
 
     private val thirdPersonViewValue = BoolValue("ThirdPersonView", false)
-    private val renderModeValue = ListValue("RenderMode", arrayOf("Circle", "Polygon", "Zavz", "None"), "Zavz")
-    private val zavzRender = ListValue("Zavz-Render", arrayOf("Circle", "Points"), "Points")
 
-    private var redValue = IntegerValue("Zavz-Red", 0, 0, 255) { renderModeValue.get().equals("Zavz", true) }
-    private var greenValue = IntegerValue("Zavz-Green", 0, 0, 255) { renderModeValue.get().equals("Zavz", true) }
-    private var blueValue = IntegerValue("Zavz-Blue", 0, 0, 255) { renderModeValue.get().equals("Zavz", true) }
-    private var alphaValue = IntegerValue("Zavz-Alpha", 255, 0, 255) { renderModeValue.get().equals("Zavz", true) }
-    private var rainbowValue = BoolValue("Zavz-RainBow", false).displayable { renderModeValue.get().equals("Zavz", true) }
-
-    private val pointsProperty = IntegerValue("Points", 12, 1, 18)
-    private val adaptiveSpeedProperty = BoolValue("Adapt Speed", true)
-
-    private val lineWidthValue = FloatValue("LineWidth", 1f, 1f, 10f).displayable {!renderModeValue.equals("None")}
-    private val radiusModeValue = ListValue("RadiusMode", arrayOf("Normal", "Strict"/*, "Dynamic"*/), "Normal")
     private val radiusValue = FloatValue("Radius", 0.5f, 0.1f, 5.0f)
+    private val radiusModeValue = ListValue("RadiusMode", arrayOf("Normal", "Strict"/*, "Dynamic"*/), "Normal")
+
     private val ongroundValue = BoolValue("OnlyOnGround",false)
     private val holdSpaceValue = BoolValue("HoldSpace", false)
     private val onlySpeedValue = BoolValue("OnlySpeed", true)
-    private val trips = FloatValue("Radius", 2.0f, 0.1f, 4.0f)
+
+    private val pointsProperty = IntegerValue("Points", 12, 1, 18)
+    private val adaptiveSpeedProperty = BoolValue("Adapt Speed", true)
+    private val lineWidthValue = FloatValue("LineWidth", 1f, 1f, 10f).displayable {!renderModeValue.equals("None")}
+    private val trips = FloatValue("Trips", 2.0f, 0.1f, 4.0f)
+
+    private val renderModeValue = ListValue("RenderMode", arrayOf("Circle", "Polygon", "Zavz", "None"), "Zavz")
+    private val zavzRender = ListValue("Zavz-Render", arrayOf("Circle", "Points"), "Points").displayable { renderModeValue.equals("Zavz") }
+
+    private var redValue = IntegerValue("Zavz-Red", 0, 0, 255).displayable { renderModeValue.get().equals("Zavz", true) }
+    private var greenValue = IntegerValue("Zavz-Green", 0, 0, 255).displayable { renderModeValue.get().equals("Zavz", true) }
+    private var blueValue = IntegerValue("Zavz-Blue", 0, 0, 255).displayable { renderModeValue.get().equals("Zavz", true) }
+    private var alphaValue = IntegerValue("Zavz-Alpha", 255, 0, 255).displayable { renderModeValue.get().equals("Zavz", true) }
+    private var rainbowValue = BoolValue("Zavz-RainBow", false).displayable { renderModeValue.get().equals("Zavz", true) }
+
 
     private var direction = -1.0
     private var directionA = 1

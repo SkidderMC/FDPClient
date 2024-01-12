@@ -1761,7 +1761,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
                 }
                 // the part to blur for the epic glow
-                val font = Fonts.SFUI40
+                val font = Fonts.fontSFUI40
                 val name = "Name: ${entity.name}"
                 val info = "Distance: ${decimalFormat2.format(mc.thePlayer.getDistanceToEntityBox(entity))}"
                 val length = (font.getStringWidth(name).coerceAtLeast(font.getStringWidth(info)).toFloat() + 40F).coerceAtLeast(125F)
@@ -1775,7 +1775,7 @@ open class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side
                     GL11.glScalef(1F - calcScaleX, 1F - calcScaleY, 1F - calcScaleX)
                 }
                 // the part to cut
-                val font = Fonts.SFUI40
+                val font = Fonts.fontSFUI40
                 val name = "Name: ${entity.name}"
                 val info = "Distance: ${decimalFormat2.format(mc.thePlayer.getDistanceToEntityBox(entity))}"
                 val length = (font.getStringWidth(name).coerceAtLeast(font.getStringWidth(info)).toFloat() + 40F).coerceAtLeast(125F)

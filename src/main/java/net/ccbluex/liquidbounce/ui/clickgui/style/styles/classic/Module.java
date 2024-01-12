@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.FDPClient;
 
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
-import net.ccbluex.liquidbounce.ui.clickgui.fonts.impl.Fonts;
+import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
 import net.ccbluex.liquidbounce.value.TextValue;
@@ -97,7 +97,7 @@ public class Module {
         } else {
             RenderUtils.drawRect(tab.getPosX(), y, tab.getPosX() + 100, y + 14, interpolateColor(new Color(40, 40, 40, 255), colorHUD, MathHelper.clamp_float(fraction, 0, 1)));
         }
-        Fonts.SF.SF_18.SF_18.drawString(module.getName(), tab.getPosX() + 2, (float) (y + 4), 0xffffffff, true);
+        Fonts.fontSFUI35.drawString(module.getName(), tab.getPosX() + 2, (float) (y + 4), 0xffffffff, true);
 
         if (!settings.isEmpty()) {
             double val = debugFPS / 8.3;

@@ -102,8 +102,6 @@
     "render.MixinTileEntityRendererDispatcher",
     "render.MixinTileEntitySkullRenderer",
     "render.MixinVisGraph",
-    "resources.MixinDefaultResourcePack",
-    "resources.MixinSkinManager",
     "splash.MixinFMLClientHandler"
   ],
   "client": [

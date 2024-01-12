@@ -11,8 +11,6 @@ import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.FileUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.util.ResourceLocation;
-
 import java.awt.*;
 import java.io.*;
 import java.lang.reflect.Field;
@@ -21,17 +19,16 @@ import java.util.List;
 
 public class Fonts {
 
+
+    @FontDetails(fontName = "Medium", fontSize = 40, fileName = "regular.ttf")
+    public static GameFontRenderer font40;
+
+    @FontDetails(fontName = "Small", fontSize = 35, fileName = "regular.ttf")
+    public static GameFontRenderer font35;
     @FontDetails(fontName = "Light", fontSize = 32, fileName = "regular.ttf")
     public static GameFontRenderer font32;
     @FontDetails(fontName = "superLight", fontSize = 28, fileName = "regular.ttf")
     public static GameFontRenderer font28;
-
-    @FontDetails(fontName = "Roboto Medium", fontSize = 35)
-    public static GameFontRenderer font35;
-
-    @FontDetails(fontName = "Roboto Medium", fontSize = 40)
-    public static GameFontRenderer font40;
-
     @FontDetails(fontName = "Roboto Medium", fontSize = 72)
     public static GameFontRenderer font72;
 
@@ -44,49 +41,39 @@ public class Fonts {
     @FontDetails(fontName = "Roboto Medium", fontSize = 52)
     public static GameFontRenderer fontLarge;
 
-    @FontDetails(fontName = "SF", fontSize = 40)
-    public static GameFontRenderer SF;
-
-    @FontDetails(fontName = "SFUI40", fontSize = 20)
-    public static GameFontRenderer SFUI40;
-
-    @FontDetails(fontName = "SFUI35", fontSize = 18)
-    public static GameFontRenderer SFUI35;
-
-    @FontDetails(fontName = "SFUI10", fontSize = 10)
-    public static GameFontRenderer SFUI10;
-
+    @FontDetails(fontName = "SFUI Regular", fontSize = 32)
+    public static GameFontRenderer fontSFUI32;
     @FontDetails(fontName = "SFUI Regular", fontSize = 35)
     public static GameFontRenderer fontSFUI35;
 
     @FontDetails(fontName = "SFUI Regular", fontSize = 40)
     public static GameFontRenderer fontSFUI40;
 
-    @FontDetails(fontName = "Tahoma", fontSize = 35)
+    @FontDetails(fontName = "Tahoma Bold", fontSize = 35)
     public static GameFontRenderer fontTahoma;
 
-    @FontDetails(fontName = "Tahoma", fontSize = 30)
+    @FontDetails(fontName = "Tahoma Bold", fontSize = 30)
     public static GameFontRenderer fontTahoma30;
+    @FontDetails(fontName = "mainmenu", fontSize = 30)
+    public static GameFontRenderer fontMainMenu60;
 
+    @FontDetails(fontName = "Check", fontSize = 42)
+    public static GameFontRenderer fontCheck42;
     public static TTFFontRenderer fontTahomaSmall;
-
-    @FontDetails(fontName = "Bangers", fontSize = 45)
-    public static GameFontRenderer fontBangers;
-
-    @FontDetails(fontName = "ICONFONT_50", fontSize = 50)
+    @FontDetails(fontName = "ICONFONT", fontSize = 50)
     public static GameFontRenderer ICONFONT_50;
+
+    @FontDetails(fontName = "Tenacity", fontSize = 35)
+    public static GameFontRenderer fontTenacity35;
+
+    @FontDetails(fontName = "Tenacity", fontSize = 40)
+    public static GameFontRenderer fontTenacity40;
+
+    @FontDetails(fontName = "Tenacity Bold", fontSize = 35)
+    public static GameFontRenderer fontTenacityBold35;
 
     @FontDetails(fontName = "Minecraft Font")
     public static final FontRenderer minecraftFont = Minecraft.getMinecraft().fontRendererObj;
-
-    @FontDetails(fontName = "Tenacity35", fontSize = 35)
-    public static GameFontRenderer fontTenacity35;
-
-    @FontDetails(fontName = "TenacityBold35", fontSize = 35)
-    public static GameFontRenderer fontTenacityBold35;
-
-    @FontDetails(fontName = "tenacity40", fontSize = 40)
-    public static GameFontRenderer fontTenacity40;
 
     private static final List<GameFontRenderer> CUSTOM_FONT_RENDERERS = new ArrayList<>();
 
@@ -95,27 +82,26 @@ public class Fonts {
 
         ClientUtils.INSTANCE.logInfo("Loading Fonts.");
 
-        SF = new GameFontRenderer(getFont("SF.ttf", 20));
-        SFUI40 = new GameFontRenderer(getFont("SF.ttf", 20));
-        SFUI35 = new GameFontRenderer(getFont("SF.ttf", 18));
-        SFUI10 = new GameFontRenderer(getFont("SF.ttf", 10));
-        fontSFUI35 = new GameFontRenderer(getFont("sfui.ttf", 35));
-        fontSFUI40 = new GameFontRenderer(getFont("sfui.ttf", 40));
-        font35 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 35));
-        font40 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 40));
-        font72 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 72));
+        font40 = new GameFontRenderer(getFont("regular.ttf", 40));
+        font35 = new GameFontRenderer(getFont("regular.ttf", 35));
+        font32 = new GameFontRenderer(getFont("regular.ttf", 32));
+        font28 = new GameFontRenderer(getFont("regular.ttf", 28));
         fontSmall = new GameFontRenderer(getFont("Roboto-Medium.ttf", 30));
+        font72 = new GameFontRenderer(getFont("Roboto-Medium.ttf", 72));
         fontTiny = new GameFontRenderer(getFont("Roboto-Medium.ttf", 24));
         fontLarge = new GameFontRenderer(getFont("Roboto-Medium.ttf", 60));
-        ICONFONT_50 = new GameFontRenderer(getFont("stylesicons.ttf", 50));
+        fontSFUI32 = new GameFontRenderer(getFont("sfui.ttf", 32));
+        fontSFUI35 = new GameFontRenderer(getFont("sfui.ttf", 35));
+        fontSFUI40 = new GameFontRenderer(getFont("sfui.ttf", 40));
+        fontTahoma = new GameFontRenderer(getFont("TahomaBold.ttf", 35));
+        fontTahoma30 = new GameFontRenderer(getFont("TahomaBold.ttf", 30));
         fontTahomaSmall = new TTFFontRenderer(getFont("Tahoma.ttf", 11));
-        fontBangers = new GameFontRenderer(getFontcustom(45, "Bangers"));
-        fontTahoma = new GameFontRenderer(getFontcustom(35,"Tahoma"));
-        fontTahoma30 = new GameFontRenderer(getFontcustom(30,"Tahoma"));
-        fontTenacity35 = new GameFontRenderer(getFontcustom(35, "tenacity"));
-        fontTenacityBold35 = new GameFontRenderer(getFontcustom(35, "tenacity-bold"));
-        fontTenacity40 = new GameFontRenderer(getFontcustom(40,"tenacity"));
-
+        ICONFONT_50 = new GameFontRenderer(getFont("stylesicons.ttf", 50));
+        fontTenacityBold35 = new GameFontRenderer(getFont("tenacity-bold.ttf", 35));
+        fontTenacity35 = new GameFontRenderer(getFont("tenacity.ttf", 35));
+        fontTenacity40 = new GameFontRenderer(getFont("tenacity.ttf", 40));
+        fontMainMenu60 = new GameFontRenderer(getFont("mainmenu.ttf", 60));
+        fontCheck42 = new GameFontRenderer(getFont("check.ttf", 42));
         getCustomFonts();
 
         initFonts();
@@ -171,29 +157,14 @@ public class Fonts {
 
     private static void initFonts() {
         try {
-            initSingleFont("regular.ttf", "assets/minecraft/fdpclient/font/regular.ttf");
+            initSingleFont("assets/minecraft/fdpclient/font/regular.ttf");
         }catch(IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static Font getFontcustom(int size,String fontname) {
-        Font font;
-        try {
-            InputStream is = Minecraft.getMinecraft().getResourceManager()
-                    .getResource(new ResourceLocation("fdpclient/font/"+fontname+".ttf")).getInputStream();
-            font = Font.createFont(0, is);
-            font = font.deriveFont(Font.PLAIN, size);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.out.println("Error loading font");
-            font = new Font("default", Font.PLAIN, size);
-        }
-        return font;
-    }
-
-    private static void initSingleFont(String name, String resourcePath) throws IOException {
-        File file=new File(FDPClient.fileManager.getFontsDir(), name);
+    private static void initSingleFont(String resourcePath) throws IOException {
+        File file=new File(FDPClient.fileManager.getFontsDir(), "regular.ttf");
         if(!file.exists())
             FileUtils.INSTANCE.unpackFile(file, resourcePath);
     }

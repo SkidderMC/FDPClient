@@ -284,7 +284,7 @@ public class CFontRenderer extends CFont {
     /* JADX WARN: Type inference failed for: r0v55, types: [double] */
 
     public float drawString(String text, float x, float y, int color, boolean shadow) {
-        return drawString(text, (double) x, (double) y,color,shadow);
+        return drawString(text, x, (double) y,color,shadow);
     }
     public float drawString(String text, double x, double y, int color, boolean shadow) {
         GlStateManager.enableBlend();
@@ -380,7 +380,7 @@ public class CFontRenderer extends CFont {
                 i++;
             } else if (character < currentData.length) {
                 GL11.glBegin(4);
-                drawChar(currentData, character, (float) c, (float) y2);
+                drawChar(currentData, character, c, (float) y2);
                 GL11.glEnd();
                 if (strikethrough) {
                     drawLine(c, y2 + ((double) (currentData[character].height / 2)), (c + ((double) currentData[character].width)) - 8.0d, y2 + ((double) (currentData[character].height / 2)));
@@ -490,7 +490,7 @@ public class CFontRenderer extends CFont {
                 i++;
             } else if (character < currentData.length) {
                 GL11.glBegin(4);
-                drawChar(currentData, character, (float) c, (float) y2);
+                drawChar(currentData, character, c, (float) y2);
                 GL11.glEnd();
                 if (strikethrough) {
                     drawLine(c, y2 + ((double) (currentData[character].height / 2)), (c + ((double) currentData[character].width)) - 8.0d, y2 + ((double) (currentData[character].height / 2)));
@@ -498,7 +498,7 @@ public class CFontRenderer extends CFont {
                 if (underline) {
                     drawLine(c, (y2 + ((double) currentData[character].height)) - 2.0d, (c + ((double) currentData[character].width)) - 8.0d, (y2 + ((double) currentData[character].height)) - 2.0d);
                 }
-                c += (double) ((currentData[character].width - 8) + this.charOffset);
+                c += (char) ((currentData[character].width - 8) + this.charOffset);
             }
             i++;
         }
@@ -507,8 +507,8 @@ public class CFontRenderer extends CFont {
         return ((int) c) / 2;
     }
 
-    @Override // net.ccbluex.liquidbounce.CFont
-    public double getStringWidth(String text) {
+    @Override
+    public int getStringWidth(String text) {
         if (text == null) {
             return 0;
         }
@@ -533,7 +533,7 @@ public class CFontRenderer extends CFont {
         return width / 2;
     }
 
-    @Override // net.ccbluex.liquidbounce.CFont
+    @Override
     public void setFont(Font font) {
         setFont(font);
         setupBoldItalicIDs();

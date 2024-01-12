@@ -9,7 +9,7 @@ import lombok.Setter;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
-import net.ccbluex.liquidbounce.ui.clickgui.fonts.impl.Fonts;
+import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
@@ -62,7 +62,7 @@ public class Setting {
             percent = Math.max(0, Math.min(1, (float) (percent + (Math.max(0, Math.min(percentBar, 1)) - percent) * (0.2 / clamp))));
             RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 99, y + 14, new Color(0, 0, 0, 50).getRGB());
             RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 1 + 98 * percent, y + 14, ClickGUIModule.generateColor());
-            Fonts.SF.SF_18.SF_18.drawString(numberValue.getName() + " " + rounded, module.tab.getPosX() + 4, y + 5.5f, 0xffffffff, true);
+            Fonts.fontSFUI35.drawString(numberValue.getName() + " " + rounded, module.tab.getPosX() + 4, y + 5.5f, 0xffffffff, true);
 
             if (this.dragging) {
                 double difference = numberValue.getMaximum() - numberValue.getMinimum();
@@ -95,7 +95,7 @@ public class Setting {
             percent = Math.max(0, Math.min(1, (float) (percent + (Math.max(0, Math.min(percentBar, 1)) - percent) * (0.2 / clamp))));
             RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 99, y + 14, new Color(0, 0, 0, 50).getRGB());
             RenderUtils.drawRect(module.tab.getPosX() + 1, y + 3, module.tab.getPosX() + 1 + 98 * percent, y + 14, ClickGUIModule.generateColor());
-            Fonts.SF.SF_18.SF_18.drawString(integerValue.getName() + " " + rounded, module.tab.getPosX() + 4, y + 5.5f, 0xffffffff, true);
+            Fonts.fontSFUI35.drawString(integerValue.getName() + " " + rounded, module.tab.getPosX() + 4, y + 5.5f, 0xffffffff, true);
 
             if (this.dragging2) {
                 double difference = integerValue.getMaximum() - integerValue.getMinimum();
@@ -120,16 +120,16 @@ public class Setting {
                 RenderUtils.drawCheck(module.tab.getPosX() + 91, y + 8.5f, 2, ClickGUIModule.generateColor().brighter().getRGB());
             }
 
-            Fonts.SF.SF_18.SF_18.drawString(boolValue.getName(), module.tab.getPosX() + 4, y + 5.5f,
+            Fonts.fontSFUI35.drawString(boolValue.getName(), module.tab.getPosX() + 4, y + 5.5f,
                     new Color(227, 227, 227, 255).getRGB(), true);
 
         }
         if (setting instanceof ListValue) {
             final ListValue listValue = (ListValue) setting;
-            Fonts.SF.SF_17.SF_17.drawString(listValue.getName(), module.tab.getPosX() + 3, (float) (y + 6),
+            Fonts.fontSFUI35.drawString(listValue.getName(), module.tab.getPosX() + 3, (float) (y + 6),
                     0xffffffff, true);
-            Fonts.SF.SF_17.SF_17.drawString(listValue.get().toUpperCase(),
-                    module.tab.getPosX() + 97 - Fonts.SF.SF_17.SF_17.stringWidth(listValue.get().toUpperCase()), y + 7f,
+            Fonts.fontSFUI35.drawString(listValue.get().toUpperCase(),
+                    module.tab.getPosX() + 97 - Fonts.fontSFUI35.getStringWidth(listValue.get().toUpperCase()), y + 7f,
                     new Color(255, 255, 255, 255).getRGB(), true);
         }
 
@@ -143,12 +143,12 @@ public class Setting {
         }
 
         RenderUtils.drawRect(module.tab.getPosX() + 6, y + 16, module.tab.getPosX() + 84, y + 16.5, new Color(195, 195, 195, 220).getRGB());
-        Fonts.SF.SF_16.SF_16.drawString(textValue.getName(), module.tab.getPosX() + 5.5f, y + 1.5f, new Color(227, 227, 227, 255).getRGB());
+        Fonts.fontSFUI35.drawString(textValue.getName(), module.tab.getPosX() + 5.5f, y + 1.5f, new Color(227, 227, 227, 255).getRGB());
 
-        if (Fonts.SF.SF_16.SF_16.stringWidth(s) > 65) {
-            Fonts.SF.SF_16.SF_16.drawString(Fonts.SF.SF_16.SF_16.trimStringToWidth(s, 78, true), module.tab.getPosX() + 6, y + 10, 0xFFFFFFFF);
+        if (Fonts.fontSFUI35.getStringWidth(s) > 65) {
+            Fonts.fontSFUI35.drawString(Fonts.fontSFUI35.trimStringToWidth(s, 78, true), module.tab.getPosX() + 6, y + 10, 0xFFFFFFFF);
         } else {
-            Fonts.SF.SF_16.SF_16.drawString(s, module.tab.getPosX() + 6, y + 10, 0xFFFFFFFF);
+            Fonts.fontSFUI35.drawString(s, module.tab.getPosX() + 6, y + 10, 0xFFFFFFFF);
         }
 
        }

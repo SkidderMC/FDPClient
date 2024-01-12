@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.ui.clickgui.fonts.impl.Fonts;
+import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 
 import java.awt.*;
@@ -51,11 +51,11 @@ public class Tab {
             l = "E";
         }
         RenderUtils.drawRect(posX - 1, posY, posX + 101, posY + 15, new Color(29, 29, 29, 255).getRGB());
-        Fonts.ICONFONT.ICONFONT_24.ICONFONT_24.drawString(l, posX + 88, posY + 5, 0xffffffff);
+        Fonts.ICONFONT_50.drawString(l, posX + 88, posY + 5, 0xffffffff);
         if (enumModuleType.name().equalsIgnoreCase("World")){
-            Fonts.CheckFont.CheckFont_24.CheckFont_24.drawString("b",posX + 88, posY + 5, 0xffffffff);
+            Fonts.fontCheck42.drawString("b",posX + 88, posY + 5, 0xffffffff);
         }
-        Fonts.SF.SF_20.SF_20.drawString(enumModuleType.name().charAt(0) + enumModuleType.name().substring(1).toLowerCase(), posX + 4, posY + 4, 0xffffffff, true);
+        Fonts.fontSFUI35.drawString(enumModuleType.name().charAt(0) + enumModuleType.name().substring(1).toLowerCase(), posX + 4, posY + 4, 0xffffffff, true);
         if (opened) {
             RenderUtils.drawRect(posX - 1, posY + 15, posX + 101, posY + 15 + getTabHeight() + 1, new Color(29, 29, 29, 255).getRGB());
             modules.forEach(module -> module.drawScreen(mouseX, mouseY));
