@@ -669,7 +669,7 @@ object KillAura : Module() {
         }
 
         if (autoBlockPacketValue.equals("Legit2") && autoBlockValue.equals("Range")) {
-            if (legit2Swing >= legitSwingTicksValue.get() && legitState == 1) {
+            if (legit2Swing >= legitSwingTicksValue.get() && legit2State == 1) {
                 BlinkUtils.setBlinkState(off = true, release = true)
                 legit2Blink = false
                 legit2State = 0
