@@ -46,9 +46,6 @@ public class ColorManager extends Module {
     public static final FloatValue rainbowBrightnessValue = new FloatValue("RainbowBrightness", 1f, 0f, 1f);
     public static final IntegerValue rainbowSpeedValue = new IntegerValue("RainbowSpeed", 1500, 500, 7000);
 
-    private float tempY = 65.0f;
-    private float tempHeight = 65.0f;
-
     public static IntegerValue r = new IntegerValue("Red-1", 255, 0, 255);
     public static IntegerValue g = new IntegerValue("Green-1", 0, 0, 255);
     public static IntegerValue b = new IntegerValue("Blue-1", 84, 0, 255);
@@ -179,16 +176,16 @@ public class ColorManager extends Module {
     }
 
     public Color getColor1() {
-        final int red = this.red.get(),
-                green = this.green.get(),
-                blue = this.blue.get();
+        final int red = ColorManager.red.get(),
+                green = ColorManager.green.get(),
+                blue = ColorManager.blue.get();
         return new Color(red, green, blue);
     }
 
     public Color getColor2() {
-        final int red = this.red2.get(),
-                green = this.green2.get(),
-                blue = this.blue2.get();
+        final int red = red2.get(),
+                green = green2.get(),
+                blue = blue2.get();
         return new Color(red, green, blue);
     }
 

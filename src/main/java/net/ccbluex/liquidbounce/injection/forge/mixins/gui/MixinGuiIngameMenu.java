@@ -81,6 +81,6 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
         }
 
         if (button.id == 1000)
-            mc.displayGuiScreen(new GuiTeleportation((GuiScreen) (Object) this));
+            mc.displayGuiScreen(new GuiTeleportation());
     }
 }

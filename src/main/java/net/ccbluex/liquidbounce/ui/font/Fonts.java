@@ -14,6 +14,7 @@ import net.minecraft.client.gui.FontRenderer;
 import java.awt.*;
 import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,7 +103,6 @@ public class Fonts {
         fontTenacity40 = new GameFontRenderer(getFont("tenacity.ttf", 40));
         fontMainMenu60 = new GameFontRenderer(getFont("mainmenu.ttf", 60));
         fontCheck42 = new GameFontRenderer(getFont("check.ttf", 42));
-        getCustomFonts();
 
         initFonts();
 
@@ -243,29 +243,9 @@ public class Fonts {
         return fonts;
     }
 
-    public static List<GameFontRenderer> getCustomFonts() {
-        final List<GameFontRenderer> fonts = new ArrayList<>();
-
-        for(final Field fontField : Fonts.class.getDeclaredFields()) {
-            try {
-                fontField.setAccessible(true);
-
-                final Object fontObj = fontField.get(null);
-
-                if(fontObj instanceof GameFontRenderer) fonts.add((GameFontRenderer) fontObj);
-            }catch(final IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-
-        fonts.addAll(Fonts.CUSTOM_FONT_RENDERERS);
-
-        return fonts;
-    }
-
     private static Font getFont(final String fontName, final int size) {
         try {
-            final InputStream inputStream = new FileInputStream(new File(FDPClient.fileManager.getFontsDir(), fontName));
+            final InputStream inputStream = Files.newInputStream(new File(FDPClient.fileManager.getFontsDir(), fontName).toPath());
             Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
             awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size);
             inputStream.close();

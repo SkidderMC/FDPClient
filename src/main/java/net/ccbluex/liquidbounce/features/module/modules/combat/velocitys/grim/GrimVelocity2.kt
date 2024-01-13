@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.grim
 
 import net.ccbluex.liquidbounce.event.*
@@ -26,8 +31,8 @@ class GrimVelocity2 : VelocityMode("GrimC07") {
 
     private val flagPauseValue = IntegerValue("FlagPause-Time", 50, 0, 5000)
 
-    var gotVelo = false
-    var flagTimer = MSTimer()
+    private var gotVelo = false
+    private var flagTimer = MSTimer()
 
     override fun onEnable() {
         gotVelo = false
@@ -69,7 +74,7 @@ class GrimVelocity2 : VelocityMode("GrimC07") {
         }
     }
 
-    fun checkBlock(pos: BlockPos): Boolean {
+    private fun checkBlock(pos: BlockPos): Boolean {
         if (!onlyAirValue.get() || mc.theWorld.isAirBlock(pos)) {
             if (sendC03Value.get()) {
                 if (C06Value.get())

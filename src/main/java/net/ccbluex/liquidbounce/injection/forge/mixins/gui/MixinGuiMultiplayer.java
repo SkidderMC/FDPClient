@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolSelector;
 import net.ccbluex.liquidbounce.ui.altmanager.GuiAltManager;
-import net.ccbluex.liquidbounce.ui.client.GuiProxySelect;
 import net.ccbluex.liquidbounce.ui.elements.ToolDropdown;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -30,17 +29,10 @@ public abstract class MixinGuiMultiplayer extends MixinGuiScreen {
         buttonList.add(new GuiButton(1151, 4, height - 24, 68, 20, "Protocol"));
     }
 
-
     @Inject(method = "actionPerformed", at = @At("HEAD"))
     private void actionPerformed(GuiButton button, CallbackInfo callbackInfo) {
         if (button.id == 997)
             ToolDropdown.toggleState();
-
-        switch(button.id) {
-            case 999:
-                mc.displayGuiScreen(new GuiProxySelect((GuiScreen) (Object) this));
-                break;
-        }
         if (button.id == 998) {
             mc.displayGuiScreen(new GuiAltManager((GuiScreen) (Object) this));
         }

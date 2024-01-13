@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.BlockBBEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals;
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall;
 import net.ccbluex.liquidbounce.features.module.modules.visual.XRay;
-import net.ccbluex.liquidbounce.features.module.modules.world.NoSlowBreak;
+import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlowBreak;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockState;

@@ -31,7 +31,7 @@ object GuiCapeManager : GuiScreen() {
     private val capeList = mutableListOf<ICape>()
 
     init {
-        arrayOf("classic", "classic2", "aurora", "forest", "rose", "lavender", "ocean", "modern1", "modern2", "lava", "citrus", "fire", "nightlife", "abstract", "blur", "owner").forEach {
+        arrayOf("classic", "classic2", "aurora", "forest", "rose", "lavender", "ocean", "modern1", "modern2", "lava", "citrus", "fire", "owner").forEach {
             try {
                 embeddedCapes.add(loadCapeFromResource(it, "assets/minecraft/fdpclient/cape/$it.png"))
             } catch (e: Throwable) {
@@ -93,7 +93,14 @@ object GuiCapeManager : GuiScreen() {
         jsonFile.writeText(FileManager.PRETTY_GSON.toJson(json), Charsets.UTF_8)
     }
 
-    private fun loadCapeFromResource(name: String, loc: String) = SingleImageCape(name, ImageIO.read(GuiCapeManager::class.java.classLoader.getResourceAsStream(loc)))
+    private fun loadCapeFromResource(name: String, loc: String): ICape {
+        val resourceStream = GuiCapeManager::class.java.classLoader.getResourceAsStream(loc)
+        if (resourceStream != null) {
+            return SingleImageCape(name, ImageIO.read(resourceStream))
+        } else {
+            throw IllegalArgumentException("Resource not found: $loc")
+        }
+    }
 
     private fun loadCapeFromFile(name: String, file: File) = SingleImageCape(name, ImageIO.read(file))
 
@@ -110,7 +117,7 @@ object GuiCapeManager : GuiScreen() {
         this.buttonList.add(GuiButton(2, (width * 0.7).toInt(), (height * 0.5).toInt(), mc.fontRendererObj.getStringWidth("->") + 10, 20, "->"))
     }
 
-    override fun actionPerformed(p_actionPerformed_1_: GuiButton) {
+    override fun actionPerformed(pActionperformed1: GuiButton) {
         fun next(index: Int) {
             var chooseIndex = index
             if (chooseIndex >= capeList.size) {
@@ -128,14 +135,14 @@ object GuiCapeManager : GuiScreen() {
             }
         }
 
-        when (p_actionPerformed_1_.id) {
+        when (pActionperformed1.id) {
             0 -> mc.displayGuiScreen(null)
             1 -> next(capeList.indexOf(nowCape) - 1)
             2 -> next(capeList.indexOf(nowCape) + 1)
         }
     }
 
-    override fun drawScreen(p_drawScreen_1_: Int, p_drawScreen_2_: Int, p_drawScreen_3_: Float) {
+    override fun drawScreen(pDrawscreen1: Int, pDrawscreen2: Int, pDrawscreen3: Float) {
         // draw background
         this.drawDefaultBackground()
 
@@ -146,7 +153,7 @@ object GuiCapeManager : GuiScreen() {
         GL11.glPopMatrix()
 
         // draw buttons
-        super.drawScreen(p_drawScreen_1_, p_drawScreen_2_, p_drawScreen_3_)
+        super.drawScreen(pDrawscreen1, pDrawscreen2, pDrawscreen3)
 
         // draw entity
         mc.thePlayer ?: return

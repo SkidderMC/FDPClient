@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.world
+package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
@@ -20,9 +20,8 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S29PacketSoundEffect
 
-@ModuleInfo(name = "Fisher", category = ModuleCategory.WORLD)
+@ModuleInfo(name = "Fisher", category = ModuleCategory.PLAYER)
 object Fisher : Module() {
-
 
     private val detectionValue = ListValue("Detection", arrayOf("Motion", "Sound"), "Sound")
     private val recastValue = BoolValue("Recast", true)

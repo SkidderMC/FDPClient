@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.gui
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
+import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolSelector
 import net.ccbluex.liquidbounce.ui.client.GuiBackground
 import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
@@ -15,26 +16,25 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.fml.client.GuiModList
 
 import org.lwjgl.input.Keyboard
 
 class GuiInfo(private val prevGui: GuiScreen) : GuiScreen() {
 
-    private val BUTTON_VERSIONS = 2
-
     override fun initGui() {
-        buttonList.add(GuiButton(1, width / 2 - 100, height / 4 + 20 + 4, "Tools"))
-        buttonList.add(GuiButton(2, width / 2 - 100, height / 4 + 55 + 2, "Version"))
-        buttonList.add(GuiButton(3, width / 2 - 100, height / 4 + 90 - 2, "Website"))
-        buttonList.add(GuiButton(4, width / 2 - 100, height / 4 + 125 - 4, "Staff"))
-        buttonList.add(GuiButton(5, width / 2 - 100, height / 4 + 160 - 6, "Reload"))
+        buttonList.add(GuiButton(1, width / 2 - 100, height / 4 + 20 + 4, "Open Website"))
+        buttonList.add(GuiButton(2, width / 2 - 100, height / 4 + 55 + 2, "Join Discord"))
+        buttonList.add(GuiButton(3, width / 2 - 100, height / 4 + 90 - 2, "Gui Tools"))
+        buttonList.add(GuiButton(4, width / 2 - 100, height / 4 + 125 - 4, "Mod List"))
+        buttonList.add(GuiButton(5, width / 2 - 100, height / 4 + 160 - 6, "Version"))
         buttonList.add(GuiButton(6, width / 2 - 100, height / 4 + 195 - 8, "Done"))
         super.initGui()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
-        RenderUtils.drawImage(ResourceLocation("fdpclient/ui/mainmenu/portal.png"), 0, 0, width, height)
+        RenderUtils.drawImage(ResourceLocation("fdpclient/background.png"), 0, 0, width, height)
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
@@ -47,22 +47,12 @@ class GuiInfo(private val prevGui: GuiScreen) : GuiScreen() {
 
     override fun actionPerformed(button: GuiButton) {
         when (button.id) {
-            1 -> mc.displayGuiScreen(GuiBackground(this))
-            2 -> BUTTON_VERSIONS
-            3 -> MiscUtils.showURL(FDPClient.CLIENT_WEBSITE)
-            5 -> {
-                FDPClient.commandManager = CommandManager()
-                FDPClient.commandManager.registerCommands()
-                for (module in FDPClient.moduleManager.modules)
-                    FDPClient.moduleManager.generateCommand(module)
-                FDPClient.tipSoundManager = TipSoundManager()
-                FDPClient.combatManager = CombatManager()
-                FDPClient.fileManager.loadConfig(FDPClient.fileManager.hudConfig)
-                FDPClient.fileManager.loadConfig(FDPClient.fileManager.accountsConfig)
-                FDPClient.fileManager.loadConfig(FDPClient.fileManager.friendsConfig)
-            }
+            1 -> MiscUtils.showURL(FDPClient.CLIENT_WEBSITE)
+            2 -> MiscUtils.showURL(FDPClient.CLIENT_DISCORD)
+            3 ->  mc.displayGuiScreen(GuiBackground(this))
+            4 ->  mc.displayGuiScreen(GuiModList(this))
+            5 -> mc.displayGuiScreen(ProtocolSelector(this as GuiScreen))
             6 -> mc.displayGuiScreen(prevGui)
-        //   BUTTON_VERSIONS -> mc.displayGuiScreen(GuiProtocolSelector(this))
         }
     }
 }

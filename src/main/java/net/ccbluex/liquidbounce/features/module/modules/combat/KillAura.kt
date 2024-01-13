@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
 import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam
-import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold
+import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.value.*
@@ -25,7 +25,6 @@ import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithServerSideRotation
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.BlinkUtils
-import net.ccbluex.liquidbounce.utils.extensions.eyes
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.minecraft.client.gui.ScaledResolution
@@ -138,7 +137,6 @@ object KillAura : Module() {
     private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch").displayable { modeDisplay.get() }
     private val switchDelayValue = IntegerValue("SwitchDelay", 15, 1, 2000).displayable { targetModeValue.equals("Switch") && modeDisplay.get() }
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") && modeDisplay.get() }
-    private val reachMode  = ListValue("CheckTargetDistance", arrayOf("Old", "New"), "New")
 
     // AutoBlock
     private val autoblockDisplay = BoolValue("AutoBlock Settings:", true)

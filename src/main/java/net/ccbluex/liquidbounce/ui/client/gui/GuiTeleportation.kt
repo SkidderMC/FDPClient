@@ -20,7 +20,7 @@ import net.minecraft.client.gui.GuiTextField
 import net.minecraft.network.play.client.C03PacketPlayer
 import org.lwjgl.input.Keyboard
 
-class GuiTeleportation(private val prevGui: GuiScreen) : GuiScreen() {
+class GuiTeleportation : GuiScreen() {
     private lateinit var teleportXField: GuiTextField
     private lateinit var teleportYField: GuiTextField
     private lateinit var teleportZField: GuiTextField

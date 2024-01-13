@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.AntiDesync;
 import net.ccbluex.liquidbounce.features.module.modules.movement.*;
-import net.ccbluex.liquidbounce.features.module.modules.world.Scaffold;
+import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGui;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi;

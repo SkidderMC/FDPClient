@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.world
+package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.MotionEvent
@@ -18,7 +18,7 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-@ModuleInfo(name = "SpeedMine", category = ModuleCategory.WORLD)
+@ModuleInfo(name = "SpeedMine", category = ModuleCategory.MOVEMENT)
 object SpeedMine : Module() {
 
     private val speedValue = FloatValue("Speed", 1.5f, 1f, 3f)

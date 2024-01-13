@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.KeyEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.player.InvManager;
-import net.ccbluex.liquidbounce.features.module.modules.world.Stealer;
+import net.ccbluex.liquidbounce.features.module.modules.player.Stealer;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;

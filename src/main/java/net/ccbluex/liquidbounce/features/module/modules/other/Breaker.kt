@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.world
+package net.ccbluex.liquidbounce.features.module.modules.other
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
@@ -36,7 +36,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import java.awt.Color
 
-@ModuleInfo(name = "Breaker", category = ModuleCategory.WORLD)
+@ModuleInfo(name = "Breaker", category = ModuleCategory.OTHER)
 object Breaker : Module() {
 
     /**
@@ -108,7 +108,7 @@ object Breaker : Module() {
             pos = find(targetId)
 
             if (throughWallsValue.equals("Hypixel")) {
-                val blockPos = find(26)?: return
+                val blockPos = find(26) ?: return
                 if (!BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north()) ||
                 !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())) {
                     pos = blockPos.up()?: return
@@ -121,7 +121,7 @@ object Breaker : Module() {
         if (throughWallsValue.equals("Hypixel")) {
             if (pos != null) {
                 if (!BlockUtils.isFullBlock(pos)) {
-                    val blockPos = find(26)?: return
+                    val blockPos = find(26) ?: return
                     if (!BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north()) ||
                     !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())) {
                         pos = blockPos.up()?: return

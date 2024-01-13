@@ -60,22 +60,23 @@ public abstract class MixinGuiButton extends Gui {
    public String displayString;
 
    @Unique
-   protected final AbstractButtonRenderer buttonRenderer = Objects.requireNonNull(FDPClient.moduleManager.getModule(ClientSpoof.class)).getButtonRenderer((GuiButton)(Object)this);
+   protected final AbstractButtonRenderer fDPClient$buttonRenderer = Objects.requireNonNull(FDPClient.moduleManager.getModule(ClientSpoof.class)).getButtonRenderer((GuiButton)(Object)this);
 
    /**
     * @author liuli
     */
    @Inject(method = "drawButton", at = @At("HEAD"), cancellable = true)
    public void drawButton(Minecraft mc, int mouseX, int mouseY, CallbackInfo ci) {
-      if(this.buttonRenderer != null) {
+      if(this.fDPClient$buttonRenderer != null) {
          if(!visible) {
             return;
          }
          this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
          this.mouseDragged(mc, mouseX, mouseY);
-         buttonRenderer.render(mouseX, mouseY, mc);
-         buttonRenderer.drawButtonText(mc);
+         fDPClient$buttonRenderer.render(mouseX, mouseY, mc);
+         fDPClient$buttonRenderer.drawButtonText(mc);
          ci.cancel();
       }
    }
+
 }

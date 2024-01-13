@@ -258,8 +258,8 @@ public abstract class MixinMinecraft {
 
                     case MISS:
                     default:
-                        if (this.playerController.isNotCreative() && !FDPClient.moduleManager.getModule(NoClickDelay.class).getState()) {
-                            this.leftClickCounter = 10;
+                        if (this.playerController.isNotCreative() && !Objects.requireNonNull(FDPClient.moduleManager.getModule(NoClickDelay.class)).getState()) {
+                            this.leftClickCounter = 0;
                         }
                 }
             }
@@ -339,7 +339,7 @@ public abstract class MixinMinecraft {
     private void setWindowIcon(CallbackInfo callbackInfo) {
         try {
             if (Util.getOSType() != Util.EnumOS.OSX) {
-                BufferedImage image = ImageIO.read(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/icon.png"));
+                BufferedImage image = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/icon.png")));
                 ByteBuffer bytebuffer = ImageUtils.readImageToBuffer(ImageUtils.resizeImage(image, 16, 16));
                 if (bytebuffer == null) {
                     throw new Exception("Error when loading image.");

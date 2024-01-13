@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.font.cf;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.ResourceLocation;
+
 import java.awt.*;
 import java.io.InputStream;
 import java.util.ArrayList;

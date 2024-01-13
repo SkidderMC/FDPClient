@@ -3,14 +3,13 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.world
+package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.player.InvManager
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -29,7 +28,7 @@ import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.ResourceLocation
 import kotlin.random.Random
 
-@ModuleInfo(name = "Stealer", category = ModuleCategory.WORLD)
+@ModuleInfo(name = "Stealer", category = ModuleCategory.PLAYER)
 object Stealer : Module() {
     /**
      * OPTIONS
@@ -179,7 +178,9 @@ object Stealer : Module() {
                     move(screen, slot)
                 }
             }
-        } else if (autoCloseValue.get() && screen.inventorySlots.windowId == contentReceived && autoCloseTimer.hasTimePassed(nextCloseDelay)) {
+        } else if (autoCloseValue.get() && screen.inventorySlots.windowId == contentReceived && autoCloseTimer.hasTimePassed(
+                nextCloseDelay
+            )) {
             mc.thePlayer.closeScreen()
             nextCloseDelay = TimeUtils.randomDelay(autoCloseMinDelayValue.get(), autoCloseMaxDelayValue.get())
         }

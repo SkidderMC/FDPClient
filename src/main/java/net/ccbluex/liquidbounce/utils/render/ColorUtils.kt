@@ -204,13 +204,13 @@ object ColorUtils {
 
     @JvmStatic
     fun hslRainbow(
-            index: Int,
-            lowest: Float = ColorManager.rainbowStartValue.get(),
-            bigest: Float = ColorManager.rainbowStopValue.get(),
-            indexOffset: Int = 300,
-            timeSplit: Int = ColorManager.rainbowSpeedValue.get(),
-            saturation: Float = ColorManager.rainbowSaturationValue.get(),
-            brightness: Float = ColorManager.rainbowBrightnessValue.get()
+        index: Int,
+        lowest: Float = ColorManager.rainbowStartValue.get(),
+        bigest: Float = ColorManager.rainbowStopValue.get(),
+        indexOffset: Int = 300,
+        timeSplit: Int = ColorManager.rainbowSpeedValue.get(),
+        saturation: Float = ColorManager.rainbowSaturationValue.get(),
+        brightness: Float = ColorManager.rainbowBrightnessValue.get(),
     ): Color {
         return Color.getHSBColor((abs(((((System.currentTimeMillis() - startTime).toInt() + index * indexOffset) / timeSplit.toFloat()) % 2) - 1) * (bigest - lowest)) + lowest, saturation, brightness)
     }
@@ -439,6 +439,18 @@ object ColorUtils {
         val blue = color.blue / 255f
         val alpha = color.alpha / 255f
         GL11.glColor4f(red, green, blue, alpha)
+    }
+
+    fun applyOpacity(n: Int, f: Float): Int {
+        val color = Color(n)
+        return applyOpacity(color, f).getRGB()
+    }
+
+    @JvmStatic
+    fun applyOpacity(color: Color, f: Float): Color {
+        var f = f
+        f = min(1.0, max(0.0, f.toDouble())).toFloat()
+        return Color(color.red, color.green, color.blue, (color.alpha.toFloat() * f).toInt())
     }
 
 }

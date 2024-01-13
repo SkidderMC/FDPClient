@@ -463,18 +463,16 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             categoryYpos = 35;
         if (currentCategory == ModuleCategory.MOVEMENT)
             categoryYpos = 70;
-        if (currentCategory == ModuleCategory.WORLD)
-            categoryYpos = 105;
         if (currentCategory == ModuleCategory.PLAYER)
-            categoryYpos = 140;
+            categoryYpos = 105;
         if (currentCategory == ModuleCategory.EXPLOIT)
-            categoryYpos = 175;
+            categoryYpos = 140;
         if (currentCategory == ModuleCategory.OTHER)
-            categoryYpos = 210;
+            categoryYpos = 175;
         if (currentCategory == ModuleCategory.CLIENT)
-            categoryYpos = 245;
+            categoryYpos = 210;
         if (currentCategory == ModuleCategory.VISUAL)
-            categoryYpos = 280;
+            categoryYpos = 245;
 
         // detect mouse clicking on categories
         // and set animation if hovered over
@@ -500,21 +498,6 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
             if (Mouse.isButtonDown(0) && !categoryMouse) {
                 if (currentCategory != ModuleCategory.MOVEMENT) {
                     currentCategory = ModuleCategory.MOVEMENT;
-                    categoryMouse = true;
-                    if(searchBox.getText().isEmpty()) {
-                        moduleStart = 0;
-                        currentModule = FDPClient.moduleManager.getModuleInCategory(currentCategory).get(0);
-                        alphaAnim.resetAlpha();
-                        valueAnim.resetAlpha();
-                    }
-                }
-            }
-        }
-        if (isCategoryHovered(startX - 5, startY + 3 + 90, startX + 35 + categoryAnimation, startY + 13 + 115, mouseX, mouseY)) {
-            categoryYpos = 105;
-            if (Mouse.isButtonDown(0) && !categoryMouse) {
-                if (currentCategory != ModuleCategory.WORLD) {
-                    currentCategory = ModuleCategory.WORLD;
                     categoryMouse = true;
                     if(searchBox.getText().isEmpty()) {
                         moduleStart = 0;
@@ -627,12 +610,11 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
         if (categoryAnimation > 4) {
             Fonts.font40.drawString("Combat",   startX + 30 + Math.round(categoryAnimation / 5), startY + 35 + 6 - fontHeight,  new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
             Fonts.font40.drawString("Move",     startX + 30 + Math.round(categoryAnimation / 5), startY + 70 + 6 - fontHeight,  new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("World",    startX + 30 + Math.round(categoryAnimation / 5), startY + 105 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Player",   startX + 30 + Math.round(categoryAnimation / 5), startY + 140 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Exploit",  startX + 30 + Math.round(categoryAnimation / 5), startY + 175 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Misc",     startX + 30 + Math.round(categoryAnimation / 5), startY + 210 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Client",   startX + 30 + Math.round(categoryAnimation / 5), startY + 245 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
-            Fonts.font40.drawString("Render",   startX + 30 + Math.round(categoryAnimation / 5), startY + 280 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Player",    startX + 30 + Math.round(categoryAnimation / 5), startY + 105 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Exploit",   startX + 30 + Math.round(categoryAnimation / 5), startY + 140 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Misc",  startX + 30 + Math.round(categoryAnimation / 5), startY + 175 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Client",     startX + 30 + Math.round(categoryAnimation / 5), startY + 210 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
+            Fonts.font40.drawString("Render",   startX + 30 + Math.round(categoryAnimation / 5), startY + 245 + 6 - fontHeight, new Color(30, 30, 30, Math.round(categoryAnimation * 5)).getRGB());
         }
         searchBox.drawTextBox();
         // 判断category所处的位置是否被按下或者被略过

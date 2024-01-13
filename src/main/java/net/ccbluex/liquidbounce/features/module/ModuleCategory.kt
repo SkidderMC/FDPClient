@@ -11,7 +11,6 @@ enum class ModuleCategory(val displayName: String, val configName: String, val h
     MOVEMENT("%module.category.movement%", "Movement", "&#xe566;"),
     VISUAL("%module.category.visual%", "Visual", "&#xe417;"),
     CLIENT("%module.category.client%", "Client", "&#xe869;"),
-    WORLD("%module.category.world%", "World", "&#xe55b;"),
     OTHER("%module.category.other%", "Other", "&#xe5d3;"),
     EXPLOIT("%module.category.exploit%", "Exploit", "&#xe868;");
 }

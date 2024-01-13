@@ -103,6 +103,7 @@ class Text(
                 "speed" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
                 "bps" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
                 "health" -> return DECIMAL_FORMAT.format(mc.thePlayer.health)
+                "counter" -> return DECIMAL_FORMAT.format("" + mc.thePlayer.currentEquippedItem.stackSize)
                 "yaw" -> return DECIMAL_FORMAT.format(mc.thePlayer.rotationYaw)
                 "pitch" -> return DECIMAL_FORMAT.format(mc.thePlayer.rotationPitch)
                 "attackDist" -> return if (FDPClient.combatManager.target != null) mc.thePlayer.getDistanceToEntity(FDPClient.combatManager.target).toString() + " Blocks" else "Hasn't attacked"

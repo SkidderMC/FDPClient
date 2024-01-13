@@ -30,7 +30,7 @@ open class Module : MinecraftInstance(), Listenable {
     val animation: AnimationHelper
     var name: String
     private var suffix: String? = null
-    private val properties: List<Value<*>> = ArrayList<Value<*>>()
+    private val properties: List<Value<*>> = ArrayList()
     private var toggled = false
     var localizedName = ""
         get() = field.ifEmpty { name }

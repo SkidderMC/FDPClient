@@ -52,12 +52,9 @@ public class GuiMainMenu extends GuiScreen implements  GuiYesNoCallback {
             GlStateManager.translate(-this.currentX / 30.0F, -this.currentY / 15.0F, 0.0F);
             RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F) - 3f, (float) this.height / 2.0F - 100.0F - 3f, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F) + 3f, (float) this.height / 2.0F + 103.0F, 10, new Color(0, 0, 0, 80).getRGB());
             FontLoaders.F18.drawCenteredString("Made by SkidderMC with love.",(float)this.width / 2.0F,(float)this.height / 2.0F + 70.0F,new Color(255,255,255,255).getRGB());
-            //BlurUtils.INSTANCE.draw(0, 0, mc.displayWidth, mc.displayHeight, 30f);
             FontLoaders.F40.drawCenteredString("FDPCLIENT",(float)this.width / 2.0F,(float)this.height / 2.0F - 70.0F,new Color(255,255,255).getRGB());
-            //BlurUtils.INSTANCE.draw(0, 0, mc.displayWidth, mc.displayHeight, 10f);
             ParticleUtils.drawParticles(mouseX, mouseY);
             RenderUtils.drawRoundedCornerRect((float) this.width / 2.0F - 80.0F * ((float) this.butt.size() / 2.0F), (float) this.height / 2.0F - 100.0F, (float) this.width / 2.0F + 80.0F * ((float) this.butt.size() / 2.0F), (float) this.height / 2.0F + 100.0F, 10, new Color(0, 0, 0, 100).getRGB());
-            //RenderUtils.drawRect((float)this.width / 2.0F - 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 20.0F, (float)this.width / 2.0F + 50.0F * ((float)this.butt.size() / 2.0F), (float)this.height / 2.0F + 50.0F, 1040187392);
             float startX = (float) this.width / 2.0F - 64.5F * ((float) this.butt.size() / 2.0F);
 
             for (Iterator var9 = this.butt.iterator(); var9.hasNext(); startX += 75.0F) {
@@ -76,10 +73,9 @@ public class GuiMainMenu extends GuiScreen implements  GuiYesNoCallback {
     }
 
     protected void mouseClicked(int mouseX, int mouseY, int mouseButton) throws IOException {
-        Iterator var4 = this.butt.iterator();
 
-        while(var4.hasNext()) {
-            MainMenuButton button = (MainMenuButton)var4.next();
+        for (Object o : this.butt) {
+            MainMenuButton button = (MainMenuButton) o;
             button.mouseClick(mouseX, mouseY, mouseButton);
         }
 
