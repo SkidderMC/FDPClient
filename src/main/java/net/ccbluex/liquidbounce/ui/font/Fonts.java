@@ -55,7 +55,7 @@ public class Fonts {
 
     @FontDetails(fontName = "Tahoma Bold", fontSize = 30)
     public static GameFontRenderer fontTahoma30;
-    @FontDetails(fontName = "mainmenu", fontSize = 30)
+    @FontDetails(fontName = "mainmenu", fontSize = 60)
     public static GameFontRenderer fontMainMenu60;
 
     @FontDetails(fontName = "Check", fontSize = 42)
