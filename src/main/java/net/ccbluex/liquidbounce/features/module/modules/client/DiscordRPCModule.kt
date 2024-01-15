@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.handler.discord.DiscordRPC
+import net.ccbluex.liquidbounce.features.special.discord.DiscordRPC
 import net.ccbluex.liquidbounce.value.*
 
 @ModuleInfo(name = "DiscordRPC", category = ModuleCategory.CLIENT)

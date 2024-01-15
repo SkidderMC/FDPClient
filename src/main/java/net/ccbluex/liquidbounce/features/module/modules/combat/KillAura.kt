@@ -278,7 +278,6 @@ object KillAura : Module() {
 
     private val displayMode = ListValue("DisplayMode", arrayOf("Simple", "LessSimple", "Complicated"), "Simple")
 
-
     /**
      * MODULE
      */

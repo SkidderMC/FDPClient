@@ -14,10 +14,10 @@ import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.config.FileManager
 import net.ccbluex.liquidbounce.config.core.ConfigManager
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
-import net.ccbluex.liquidbounce.handler.discord.DiscordRPC
+import net.ccbluex.liquidbounce.features.special.discord.DiscordRPC
 import net.ccbluex.liquidbounce.handler.network.BungeeCordSpoof
 import net.ccbluex.liquidbounce.handler.network.ClientFixes
-import net.ccbluex.liquidbounce.handler.network.ClientSpoofHandler
+import net.ccbluex.liquidbounce.features.special.spoof.ClientSpoofHandler
 import net.ccbluex.liquidbounce.ui.client.gui.EnumLaunchFilter
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchFilterInfo
 import net.ccbluex.liquidbounce.ui.client.gui.LaunchOption

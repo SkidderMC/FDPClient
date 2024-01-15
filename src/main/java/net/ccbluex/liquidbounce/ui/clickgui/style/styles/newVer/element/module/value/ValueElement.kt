@@ -1,4 +1,4 @@
-package net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.value
+package net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.element.module.value
 
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.value.Value

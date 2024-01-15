@@ -13,7 +13,6 @@ import net.minecraft.util.EnumFacing
 
 class Grim117 : VelocityMode("Grim1.17") {
 
-    private var velocityInput = false
     override fun onPacket(event: PacketEvent) {
         mc.netHandler.addToSendQueue(
             C03PacketPlayer.C06PacketPlayerPosLook(
@@ -30,7 +29,6 @@ class Grim117 : VelocityMode("Grim1.17") {
                 C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,mc.thePlayer.position,
                 EnumFacing.DOWN)
         )
-        velocityInput = false
     }
 
 }

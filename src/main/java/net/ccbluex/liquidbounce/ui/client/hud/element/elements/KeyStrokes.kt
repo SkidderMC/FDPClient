@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import net.ccbluex.liquidbounce.utils.CPSCounter
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.*
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.util.ResourceLocation
 import net.minecraft.client.gui.FontRenderer
@@ -68,7 +69,7 @@ class KeyStrokes : Element(5.0, 25.0, 1.5F, Side.default()) {
 
         if(keyStyleValue.get().equals("Jello")) {
             for (keyStroke in keys) { keyStroke.renderJelloBlur(this.renderX.toFloat(), this.renderY.toFloat(), scale) }
-            RenderUtils.drawImage2(ResourceLocation("fdpclient/misc/keystrokes.png"), -3.5f, -3.5f, 54, 54)
+            drawImage2(ResourceLocation("fdpclient/misc/keystrokes.png"), -3.5f, -3.5f, 54, 54)
             for (keyStroke in keys) { keyStroke.renderJelloIndicator(animSpeedValue.get(), backGroundColor, textColor, highLightPercent.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale) }
         }
 
@@ -77,8 +78,8 @@ class KeyStrokes : Element(5.0, 25.0, 1.5F, Side.default()) {
                 keyStroke.renderJuul(animSpeedValue.get(), backGroundColor, textColor, highLightPercent.get(), outline.get(), outlineBoldValue.get(), fontValue.get(), blurValue.get(), this.renderX.toFloat(), this.renderY.toFloat(), scale)
             }
            val fontRenderer = fontValue.get()
-           RenderUtils.drawRoundedCornerRect(0f, 32f, 23f, 47f, 4f, if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(65, 65, 75, 255).rgb } else { Color(95, 95, 105, 255).rgb } )
-           RenderUtils.drawRoundedCornerRect(24f, 32f, 47f, 47f, 4f, if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(65, 65, 75, 255).rgb } else { Color(95, 95, 105, 255).rgb } )
+           drawRoundedCornerRect(0f, 32f, 23f, 47f, 4f, if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(65, 65, 75, 255).rgb } else { Color(95, 95, 105, 255).rgb } )
+           drawRoundedCornerRect(24f, 32f, 47f, 47f, 4f, if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(65, 65, 75, 255).rgb } else { Color(95, 95, 105, 255).rgb } )
             val juulLeft = if (CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toFloat() != 0f) { CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toString() + " cps" } else { "Left" }
            val juulRight = if (CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toFloat() != 0f) { CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toString() + "CPS" } else { "Right" }
            Fonts.font28.drawString(juulLeft, 15.5f - (fontRenderer.getStringWidth(juulLeft) / 2f) + 1f, 39.5f - (fontRenderer.FONT_HEIGHT / 2f) + 2f, textColor.rgb)
@@ -114,7 +115,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         val nowTime = System.currentTimeMillis()
 
         val rectColor = if (lastClick && animations.isEmpty()) { ColorUtils.reAlpha(highLightColor, clickAlpha.toInt()) } else { bgColor }
-        RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
+        drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
 
         val removeAble = ArrayList<Long>()
         for (time in animations) {
@@ -123,7 +124,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
                 removeAble.add(time)
                 continue
             }
-            RenderUtils.drawLimitedCircle(0F, 0F, width.toFloat(), height.toFloat(), centerX, centerY, (width * 0.7F) * pct, Color(255 - ((255 - highLightColor.red) * pct).toInt(), 255 - ((255 - highLightColor.green) * pct).toInt(), 255 - ((255 - highLightColor.blue) * pct).toInt(), 255 - ((255 - clickAlpha) * pct).toInt()))
+            drawLimitedCircle(0F, 0F, width.toFloat(), height.toFloat(), centerX, centerY, (width * 0.7F) * pct, Color(255 - ((255 - highLightColor.red) * pct).toInt(), 255 - ((255 - highLightColor.green) * pct).toInt(), 255 - ((255 - highLightColor.blue) * pct).toInt(), 255 - ((255 - clickAlpha) * pct).toInt()))
         }
         for (time in removeAble) {
             animations.remove(time)
@@ -134,16 +135,16 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         }
         
         if (key.isKeyDown && animations.isEmpty())
-            RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), ColorUtils.reAlpha(highLightColor, clickAlpha.toInt()))
+            drawRect(0F, 0F, width.toFloat(), height.toFloat(), ColorUtils.reAlpha(highLightColor, clickAlpha.toInt()))
         
         lastClick = key.isKeyDown
 
         font.drawString(keyName, centerX - (font.getStringWidth(keyName) / 2) + 1, centerY - (font.FONT_HEIGHT / 2) + 1, textColor.rgb)
         if (outline) {
-            RenderUtils.drawRect(0F, 0F, outlineBold.toFloat(), height.toFloat(), textColor.rgb)
-            RenderUtils.drawRect((width - outlineBold).toFloat(), 0F, width.toFloat(), height.toFloat(), textColor.rgb)
-            RenderUtils.drawRect((outlineBold).toFloat(), 0F, (width - outlineBold).toFloat(), outlineBold.toFloat(), textColor.rgb)
-            RenderUtils.drawRect((outlineBold).toFloat(), (height - outlineBold).toFloat(), (width - outlineBold).toFloat(), height.toFloat(), textColor.rgb)
+            drawRect(0F, 0F, outlineBold.toFloat(), height.toFloat(), textColor.rgb)
+            drawRect((width - outlineBold).toFloat(), 0F, width.toFloat(), height.toFloat(), textColor.rgb)
+            drawRect((outlineBold).toFloat(), 0F, (width - outlineBold).toFloat(), outlineBold.toFloat(), textColor.rgb)
+            drawRect((outlineBold).toFloat(), (height - outlineBold).toFloat(), (width - outlineBold).toFloat(), height.toFloat(), textColor.rgb)
         }
 
         GL11.glPopMatrix()
@@ -159,7 +160,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
             } else {
                 Color(95, 95, 95, 255)
             }
-            RenderUtils.drawRoundedCornerRect(0F, 0F, width.toFloat(), height.toFloat(), 3f, rectColor.rgb)
+            drawRoundedCornerRect(0F, 0F, width.toFloat(), height.toFloat(), 3f, rectColor.rgb)
             lastClick = key.isKeyDown
 
             Fonts.font28.drawString(keyName, width / 2 - (font.getStringWidth(keyName) / 2) + 1, height / 2 - (font.FONT_HEIGHT / 2) + 2, textColor.rgb)
@@ -183,7 +184,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
         val centerY = height / 2
         val nowTime = System.currentTimeMillis()
         val rectColor = if (lastClick && animations.isEmpty()) { ColorUtils.reAlpha(highLightColor, clickAlpha.toInt()) } else { Color(0f,0f,0f,0f) }
-        RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
+        drawRect(0F, 0F, width.toFloat(), height.toFloat(), rectColor)
 
         val removeAble = ArrayList<Long>()
         for (time in animations) {
@@ -192,7 +193,7 @@ class KeyStroke(val key: KeyBinding, val posX: Int, val posY: Int, val width: In
                 removeAble.add(time)
                 continue
             }
-            RenderUtils.drawLimitedCircle(0F, 0F, width.toFloat(), height.toFloat(), centerX, centerY, (width * 0.7F) * pct, Color(255 - ((255 - highLightColor.red) * pct).toInt(), 255 - ((255 - highLightColor.green) * pct).toInt(), 255 - ((255 - highLightColor.blue) * pct).toInt(), 255 - ((255 - clickAlpha) * pct).toInt()))
+            drawLimitedCircle(0F, 0F, width.toFloat(), height.toFloat(), centerX, centerY, (width * 0.7F) * pct, Color(255 - ((255 - highLightColor.red) * pct).toInt(), 255 - ((255 - highLightColor.green) * pct).toInt(), 255 - ((255 - highLightColor.blue) * pct).toInt(), 255 - ((255 - clickAlpha) * pct).toInt()))
         }
         for (time in removeAble) {
             animations.remove(time)

@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
 
-@ModuleInfo(name = "FreeLook",  description = "", category = ModuleCategory.VISUAL, keyBind = Keyboard.KEY_LSHIFT, triggerType = EnumTriggerType.PRESS)
+@ModuleInfo(name = "FreeLook",  description = "", category = ModuleCategory.VISUAL, keyBind = Keyboard.KEY_Z, triggerType = EnumTriggerType.PRESS)
 class FreeLook : Module() {
     private val thirdPerson = BoolValue("ThirdPerson", true)
     val reverse = BoolValue("Reverse", false)
