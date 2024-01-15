@@ -42,14 +42,14 @@ object ClickGUIModule : Module() {
             "Black",
             "White"
         ),
-        "Astolfo"
+        "Black"
     ) {
         override fun onChanged(oldValue: String, newValue: String) {
             updateStyle()
         }
     }
 
-    val scaleValue = FloatValue("Scale", 0.70f, 0.7f, 2f)
+    val scaleValue = FloatValue("Scale", 1f, 0.7f, 2f)
     val maxElementsValue = IntegerValue("MaxElements", 20, 1, 35)
     var colorRainbow = BoolValue("Rainbow", true)
     val colorRedValue = IntegerValue("R", 0, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
