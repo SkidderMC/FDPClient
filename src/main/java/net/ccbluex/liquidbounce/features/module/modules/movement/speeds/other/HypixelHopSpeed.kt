@@ -24,7 +24,8 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
     private val customSpeedBoost = FloatValue("${valuePrefix}SpeedPotJumpModifier", 0.1f, 0f, 0.4f)
     private val yMotion = FloatValue("${valuePrefix}JumpYMotion", 0.42f, 0.395f, 0.42f)
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", true)
-    private val sussyPacket = BoolValue("${valuePrefix}Rise6sussyPacket", true)
+    private val sussyPacket = BoolValue("${valuePrefix}Rise6sussyPacket", false)
+    private val fallingStrafe = BoolValue("${valuePrefix}FallingDamageStrafe", true)
 
 
     private var minSpeed = 0.0
@@ -44,7 +45,10 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
         } else {
             offGroundTicks += 1
         }
-        
+
+        if (fallingStrafe.get() && mc.thePlayer.motionY < 0.0 && mc.thePlayer.hurtTime > 0) {
+            MovementUtils.strafe()
+        }
 
         
         when (bypassMode.get().lowercase()) {
@@ -56,12 +60,13 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
                     
-                    val minSpeed = 0.405f + 0.04f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
+                    val minSpeed = 0.46f + 0.03f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
                     MovementUtils.strafe(MovementUtils.getSpeed() * (1.0 + 0.065 * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)).toFloat())
                     if (MovementUtils.getSpeed() < minSpeed) {
                         MovementUtils.strafe(minSpeed)
                     }
                     MovementUtils.strafe(MovementUtils.getSpeed() * 1.02f)
+                    MovementUtils.strafe()
                     
                     
                 } else {
