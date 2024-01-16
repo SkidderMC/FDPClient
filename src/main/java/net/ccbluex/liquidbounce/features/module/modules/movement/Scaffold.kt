@@ -1286,7 +1286,7 @@ class Scaffold : Module() {
                 "static2" -> {
                     if ((MovementUtils.movingYaw / 30).roundToInt() % 2 == 1) {
                         Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 180), placeRotation.rotation.pitch)
-                        if (static2BoostValue.get) {
+                        if (static2BoostValue.get()) {
                             mc.thePlayer.motionX *= 1.1
                             mc.thePlayer.motionZ *= 1.1
                         }
