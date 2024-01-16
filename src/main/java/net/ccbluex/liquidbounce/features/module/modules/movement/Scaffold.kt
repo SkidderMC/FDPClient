@@ -515,6 +515,30 @@ class Scaffold : Module() {
                 wdTick -- 
             }
         }
+        
+        // Tower
+        if (motionSpeedEnabledValue.get()) MovementUtils.setMotion(motionSpeedValue.get().toDouble())
+        towerStatus = (!stopWhenBlockAboveValue.get() || BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 2, mc.thePlayer.posZ)) is BlockAir)
+        if (towerStatus) {
+            // further checks
+            when (towerActiveValue.get().lowercase()) {
+                "off" -> towerStatus = false
+                "always" -> {
+                    towerStatus = (mc.gameSettings.keyBindLeft.isKeyDown ||
+                            mc.gameSettings.keyBindRight.isKeyDown || mc.gameSettings.keyBindForward.isKeyDown ||
+                            mc.gameSettings.keyBindBack.isKeyDown)
+                }
+                "pressspace" -> {
+                    towerStatus = mc.gameSettings.keyBindJump.isKeyDown
+                }
+                "nomove" -> {
+                    towerStatus = !(mc.gameSettings.keyBindLeft.isKeyDown ||
+                            mc.gameSettings.keyBindRight.isKeyDown || mc.gameSettings.keyBindForward.isKeyDown ||
+                            mc.gameSettings.keyBindBack.isKeyDown) && mc.gameSettings.keyBindJump.isKeyDown
+                }
+            }
+        }
+        if (towerStatus) move()
 
         if (towerModeValue.equals("WatchDog") && towerStatus && event.eventState == EventState.PRE) {
             if (wdTick != 0) {
@@ -558,30 +582,6 @@ class Scaffold : Module() {
                 }
             }
         }
-        
-        // Tower
-        if (motionSpeedEnabledValue.get()) MovementUtils.setMotion(motionSpeedValue.get().toDouble())
-        towerStatus = (!stopWhenBlockAboveValue.get() || BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 2, mc.thePlayer.posZ)) is BlockAir)
-        if (towerStatus) {
-            // further checks
-            when (towerActiveValue.get().lowercase()) {
-                "off" -> towerStatus = false
-                "always" -> {
-                    towerStatus = (mc.gameSettings.keyBindLeft.isKeyDown ||
-                            mc.gameSettings.keyBindRight.isKeyDown || mc.gameSettings.keyBindForward.isKeyDown ||
-                            mc.gameSettings.keyBindBack.isKeyDown)
-                }
-                "pressspace" -> {
-                    towerStatus = mc.gameSettings.keyBindJump.isKeyDown
-                }
-                "nomove" -> {
-                    towerStatus = !(mc.gameSettings.keyBindLeft.isKeyDown ||
-                            mc.gameSettings.keyBindRight.isKeyDown || mc.gameSettings.keyBindForward.isKeyDown ||
-                            mc.gameSettings.keyBindBack.isKeyDown) && mc.gameSettings.keyBindJump.isKeyDown
-                }
-            }
-        }
-        if (towerStatus) move()
 
         // Lock Rotation
         if (rotationsValue.get() != "None" && keepLengthValue.get()> 0 && lockRotation != null && silentRotationValue.get()) {
