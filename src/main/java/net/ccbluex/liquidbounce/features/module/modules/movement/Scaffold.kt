@@ -1285,14 +1285,14 @@ class Scaffold : Module() {
                     Rotation(caluyaw, placeRotation.rotation.pitch)
                 }
                 "static2" -> {
-                    if ((MovementUtils.movingYaw / 30).roundToInt() % 2 == 1) {
+                    if ((MovementUtils.movingYaw / 30).roundToInt() % 3 == 0) {
                         if (static2BoostValue.get()) {
                             mc.thePlayer.motionX *= 1.1
                             mc.thePlayer.motionZ *= 1.1
                         }
-                        Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 180), placeRotation.rotation.pitch)
-                    } else {
                         Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 135), placeRotation.rotation.pitch)
+                    } else {
+                        Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 180), placeRotation.rotation.pitch)
                     }
                 }
                 "custom" -> {
