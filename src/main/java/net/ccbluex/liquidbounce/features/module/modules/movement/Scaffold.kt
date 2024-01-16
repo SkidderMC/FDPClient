@@ -294,48 +294,6 @@ class Scaffold : Module() {
         if (towerStatus && towerModeValue.get().lowercase() != "aac3.3.9" && towerModeValue.get().lowercase() != "aac4.4constant" && towerModeValue.get().lowercase() != "aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
         if (!towerStatus) mc.timer.timerSpeed = timerValue.get()
 
-        if (towerModeValue.equals("WatchDog") && towerStatus) {
-            if (wdTick != 0) {
-                towerTick = 0
-                return
-            }
-            if (towerTick > 0) {
-                ++towerTick
-                if (towerTick > 6) {
-                    mc.thePlayer.motionX *= 0.99f
-                    mc.thePlayer.motionZ *= 0.99f
-                }
-                if (towerTick > 10) {
-                    towerTick = 1
-                }
-            }
-            if (towerStatus) {
-                if (mc.thePlayer.onGround) {
-                    if (towerTick == 0 || towerTick == 5 || towerTick > 7) {
-                        mc.thePlayer.motionY = 0.42
-                        mc.thePlayer.motionX *= 1.6f
-                        mc.thePlayer.motionZ *= 1.6f
-                        towerTick = 1
-                    }
-                } else if (mc.thePlayer.motionY > -0.0784000015258789) {
-                    val n = Math.round(mc.thePlayer.posY % 1.0 * 100.0).toInt()
-                    when (n) {
-                        42 -> {
-                            mc.thePlayer.motionY = 0.33
-                        }
-        
-                        75 -> {
-                            mc.thePlayer.motionY = 1.0 - mc.thePlayer.posY % 1.0
-                            wdSpoof = true
-                        }
-        
-                        0 -> {
-                            mc.thePlayer.motionY = -0.0784000015258789
-                        }
-                    }
-                }
-            }
-        }
         
         if (towerStatus || mc.thePlayer.isCollidedHorizontally) {
             canSameY = false
@@ -552,9 +510,52 @@ class Scaffold : Module() {
         val eventState = event.eventState
         towerStatus = false
 
-        if (towerModeValue.equals("Watchdog")) {
+        if (towerModeValue.equals("Watchdog" && event.eventState == EventState.PRE) {
             if (wdTick > 0) {
                 wdTick -- 
+            }
+        }
+
+        if (towerModeValue.equals("WatchDog") && towerStatus && event.eventState == EventState.PRE) {
+            if (wdTick != 0) {
+                towerTick = 0
+                return
+            }
+            if (towerTick > 0) {
+                ++towerTick
+                if (towerTick > 6) {
+                    mc.thePlayer.motionX *= 0.99f
+                    mc.thePlayer.motionZ *= 0.99f
+                }
+                if (towerTick > 16) {
+                    towerTick = 1
+                }
+            }
+            if (towerStatus) {
+                if (mc.thePlayer.onGround) {
+                    if (towerTick == 0 || towerTick == 5 ) {
+                        mc.thePlayer.motionY = 0.42
+                        mc.thePlayer.motionX *= 1.3f
+                        mc.thePlayer.motionZ *= 1.3f
+                        towerTick = 1
+                    }
+                } else if (mc.thePlayer.motionY > -0.0784000015258789) {
+                    val n = Math.round(mc.thePlayer.posY % 1.0 * 100.0).toInt()
+                    when (n) {
+                        42 -> {
+                            mc.thePlayer.motionY = 0.33
+                        }
+        
+                        75 -> {
+                            mc.thePlayer.motionY = 1.0 - mc.thePlayer.posY % 1.0
+                            wdSpoof = true
+                        }
+        
+                        0 -> {
+                            mc.thePlayer.motionY = -0.0784000015258789
+                        }
+                    }
+                }
             }
         }
         
