@@ -1318,8 +1318,6 @@ class Scaffold : Module() {
                     }
                 }
 
-                    
-                }
                 "advanced" -> {
                     var advancedYaw = 0f
                     var advancedPitch = 0f
