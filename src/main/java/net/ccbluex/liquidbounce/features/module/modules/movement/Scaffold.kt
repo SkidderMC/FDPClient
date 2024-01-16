@@ -510,7 +510,7 @@ class Scaffold : Module() {
         val eventState = event.eventState
         towerStatus = false
 
-        if (towerModeValue.equals("Watchdog" && event.eventState == EventState.PRE) {
+        if (towerModeValue.equals("Watchdog") && event.eventState == EventState.PRE) {
             if (wdTick > 0) {
                 wdTick -- 
             }
@@ -1312,7 +1312,7 @@ class Scaffold : Module() {
                     Rotation(calcyaw.toFloat(), calcpitch)
                 }
                 "derp" -> {
-                    if (isReplaceable(BlockPos(mc.thePlayer.posX + mc.thePlayer.motionX * 2.0, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ + mc.thePlayer.motionZ * 2.0))) {
+                    if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX + mc.thePlayer.motionX * 2.0, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ + mc.thePlayer.motionZ * 2.0)).block == Blocks.air) {
                         Rotation(mc.thePlayer.rotationYaw + 45f, placeRotation.rotation.pitch)
                     } else {
                         Rotation(placeRotation.rotation.yaw, placeRotation.rotation.pitch)
