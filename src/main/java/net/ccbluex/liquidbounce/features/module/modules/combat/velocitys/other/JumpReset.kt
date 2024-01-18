@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.other
 
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
+import net.minecraft.client.settings.GameSettings
 
 class JumpReset : VelocityMode("JumpReset") {
     private var start = 0
@@ -27,5 +28,8 @@ class JumpReset : VelocityMode("JumpReset") {
              start = 0
             }
         }
+    }
+    if (mc.thePlayer.hurtTime == 0) {
+        mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
     }
 }
