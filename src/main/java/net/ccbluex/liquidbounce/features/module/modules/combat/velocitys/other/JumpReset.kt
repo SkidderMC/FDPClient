@@ -28,8 +28,8 @@ class JumpReset : VelocityMode("JumpReset") {
              start = 0
             }
         }
-    }
     if (mc.thePlayer.hurtTime == 0) {
         mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
+    }
     }
 }
