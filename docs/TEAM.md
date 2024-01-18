@@ -21,15 +21,15 @@ OWNER | https://github.com/opZywl
 DEV | https://github.com/contionability
 
 ### gatodepan
-CONTRIBUTOR | https://github.com/gatooooooo
+DEV | https://github.com/gatooooooo
 
 ### DinoFeng
-CONTRIBUTOR | https://github.com/DinoFengz
+DEV | https://github.com/DinoFengz
 
 ### Dg636
-CONTRIBUTOR | https://github.com/C00LC0D35
+DEV | https://github.com/C00LC0D35
 
 ### XiGuaHanHan
-CONTRIBUTOR | https://github.com/Wlenk
+DEV | https://github.com/Wlenk
 
 (please do not ask us to be added here)
