@@ -251,7 +251,6 @@ object KillAura : Module() {
             if (i < newValue) set(i)
         }
     }.displayable { attackDisplay.get() && throughWallsValue.get() } as FloatValue
-    private val behindWallsValue = BoolValue("BehingWalls", false)
 
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f).displayable { bypassDisplay.get() }
     private val hitAbleValue = BoolValue("AlwaysHitAble", true).displayable { bypassDisplay.get() }
@@ -901,10 +900,6 @@ object KillAura : Module() {
                 }
             }
         }
-
-         if (behindWallsValue.get() && RaycastUtils.isRaycastEntityValid(entity, maxRange.toDouble())) {
-            stopBlocking()
-        }
     }
 
     private fun swingKeepSprint(entity: EntityLivingBase) {
@@ -926,12 +921,6 @@ object KillAura : Module() {
     private fun updateRotations(entity: Entity): Boolean {
         if (rotationModeValue.equals("None")) {
             return true
-        }
-
-        val isFacingThroughWalls = behindWallsValue.get() && !RaycastUtils.isRaycastEntityValid(entity, maxRange.toDouble())
-
-        if (isFacingThroughWalls) {
-            return false
         }
 
         // 视角差异
