@@ -19,8 +19,8 @@ class FreeLook : Module() {
     private val thirdPerson = BoolValue("ThirdPerson", true)
     val reverse = BoolValue("Reverse", false)
 
-    val isReverse = false
-    val isEnabled = false
+    var isReverse = false
+    var isEnabled = false
 
     override fun onEnable() {
         isEnabled = true
