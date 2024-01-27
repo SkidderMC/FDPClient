@@ -20,10 +20,11 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import kotlin.random.Random
 
 @ModuleInfo(name = "SilentHitbox", category = ModuleCategory.COMBAT)
-class AimAssist : Module() {
+class SilentHitbox : Module() {
 
     private val rangeValue = FloatValue("Range", 4.4F, 1F, 8F)
     private val fovValue = FloatValue("Expand", 10F, 1F, 50F)
@@ -59,8 +60,8 @@ class AimAssist : Module() {
             .minByOrNull { RotationUtils.getRotationDifference(it) } ?: resetCamera()
 
         targetRot = (RotationUtils.calculateCenter(
-            rotMode.get(),
             "LiquidBounce",
+            "Horizontal",
             0.1,
             entity.hitBox,
             false,
@@ -71,7 +72,7 @@ class AimAssist : Module() {
 
         val rotationCenter = RotationUtils.limitAngleChange(
             playerRot, targetRot,
-            3f + (Math.random() * 0.5f)
+            3f + (Math.random().toFloat() * 0.5f)
         )
 
         rotationCenter.toPlayer(mc.thePlayer)
