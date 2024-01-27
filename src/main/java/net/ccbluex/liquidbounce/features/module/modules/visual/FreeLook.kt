@@ -19,9 +19,6 @@ class FreeLook : Module() {
     private val thirdPerson = BoolValue("ThirdPerson", true)
     val reverse = BoolValue("Reverse", false)
 
-    var isReverse = false
-    var isEnabled = false
-
     override fun onEnable() {
         isEnabled = true
         isReverse = reverse.get()
@@ -48,6 +45,12 @@ class FreeLook : Module() {
 
     companion object {
         private val mc = MinecraftInstance.mc
+
+        @JvmField
+        var isReverse = false
+
+        @JvmField
+        var isEnabled = false
 
         @JvmField
         var perspectiveToggled = false
