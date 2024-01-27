@@ -37,9 +37,6 @@ class SilentHitbox : Module() {
     private var playerRot = Rotation(0f, 0f)
     private var targetRot = Rotation(0f, 0f)
 
-    val freeLook = FDPClient.moduleManager[FreeLook::class.java]!!
-                                            
-
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         if (mc.gameSettings.keyBindAttack.isKeyDown) {
@@ -48,18 +45,24 @@ class SilentHitbox : Module() {
 
         if (onClickValue.get() && clickTimer.hasTimePassed(onClickDurationValue.get().toLong())) {
             resetCamera()
+            return
         }
 
         val range = rangeValue.get()
-
-        if (RotationUtils.isFaced(entity, range.toDouble())) resetCamera()
-
         val entity = mc.theWorld.loadedEntityList
             .filter {
                 EntityUtils.isSelected(it, true) && mc.thePlayer.canEntityBeSeen(it) &&
                         mc.thePlayer.getDistanceToEntityBox(it) <= range && RotationUtils.getRotationDifference(it) <= fovValue.get()
             }
-            .minByOrNull { RotationUtils.getRotationDifference(it) } ?: resetCamera()
+            .minByOrNull { RotationUtils.getRotationDifference(it) } ?: {
+                resetCamera()
+                return
+            }
+
+        if (RotationUtils.isFaced(entity, range.toDouble())) {
+            resetCamera()
+            return
+        }
 
         targetRot = (RotationUtils.calculateCenter(
             "LiquidBounce",
@@ -81,15 +84,15 @@ class SilentHitbox : Module() {
     }
 
     private fun resetCamera() {
-        freeLook.isEnabled = false
-        mc.thePlayer.rotationYaw = freeLook.cameraYaw
-        mc.thePlayer.rotationPitch = freeLook.cameraPitch
-        freeLook.resetPerspective()
+        FDPClient.moduleManager[FreeLook::class.java]!!.isEnabled = false
+        mc.thePlayer.rotationYaw = FDPClient.moduleManager[FreeLook::class.java]!!.cameraYaw
+        mc.thePlayer.rotationPitch = FDPClient.moduleManager[FreeLook::class.java]!!.cameraPitch
+        FDPClient.moduleManager[FreeLook::class.java]!!.resetPerspective()
     }
 
     private fun startCamera () {
-        freeLook.isEnabled = true
-        freeLook.isReverse = false
-        freeLook.setRotations()
+        FDPClient.moduleManager[FreeLook::class.java]!!.isEnabled = true
+        FDPClient.moduleManager[FreeLook::class.java]!!.isReverse = false
+        FDPClient.moduleManager[FreeLook::class.java]!!.setRotations()
     }
 }
