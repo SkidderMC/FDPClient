@@ -19,10 +19,14 @@ class FreeLook : Module() {
     private val thirdPerson = BoolValue("ThirdPerson", true)
     val reverse = BoolValue("Reverse", false)
 
+    val isReverse = false
+    val isEnabled = false
+
     override fun onEnable() {
+        isEnabled = true
+        isReverse = reverse.get()
         perspectiveToggled = !perspectiveToggled
-        cameraYaw = mc.thePlayer.rotationYaw
-        cameraPitch = mc.thePlayer.rotationPitch
+        setRotations()
         if (perspectiveToggled) {
             previousPerspective = mc.gameSettings.thirdPersonView
             if (thirdPerson.get())
@@ -33,7 +37,13 @@ class FreeLook : Module() {
     }
 
     override fun onDisable() {
+        isEnabled = false
         resetPerspective()
+    }
+
+    fun setRotations() {
+        cameraYaw = mc.thePlayer.rotationYaw
+        cameraPitch = mc.thePlayer.rotationPitch
     }
 
     companion object {
