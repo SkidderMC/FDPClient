@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -36,7 +37,7 @@ class SilentHitbox : Module() {
     private var playerRot = Rotation(0f, 0f)
     private var targetRot = Rotation(0f, 0f)
 
-    val freeLook = FDPClient.moduleManager[FreeCam::class.java]!!
+    val freeLook = FDPClient.moduleManager[FreeLook::class.java]!!
                                             
 
     @EventTarget
@@ -49,9 +50,10 @@ class SilentHitbox : Module() {
             resetCamera()
         }
 
+        val range = rangeValue.get()
+
         if (RotationUtils.isFaced(entity, range.toDouble())) resetCamera()
 
-        val range = rangeValue.get()
         val entity = mc.theWorld.loadedEntityList
             .filter {
                 EntityUtils.isSelected(it, true) && mc.thePlayer.canEntityBeSeen(it) &&
