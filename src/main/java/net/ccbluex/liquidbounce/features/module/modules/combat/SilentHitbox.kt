@@ -38,6 +38,10 @@ class SilentHitbox : Module() {
     private var dontReset = false
     private var enabled = false
 
+    override fun onDisable() {
+        resetCamera()
+    }
+
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         if (mc.gameSettings.keyBindAttack.isKeyDown) {
@@ -63,6 +67,10 @@ class SilentHitbox : Module() {
             .minByOrNull { RotationUtils.getRotationDifference(it) } ?: return
 
         dontReset = true
+
+        if (!enabled) {
+            startCamera()
+        }
 
         if (RotationUtils.isFaced(entity, range.toDouble())) {
             resetCamera()
