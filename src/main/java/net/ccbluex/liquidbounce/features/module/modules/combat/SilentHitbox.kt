@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -34,6 +35,9 @@ class SilentHitbox : Module() {
     private var playerRot = Rotation(0f, 0f)
     private var targetRot = Rotation(0f, 0f)
 
+    private var dontReset = false
+    private var enabled = false
+
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         if (mc.gameSettings.keyBindAttack.isKeyDown) {
@@ -45,17 +49,20 @@ class SilentHitbox : Module() {
             return
         }
 
+        if (dontReset) dontReset = false
+        else if (enabled) {
+            resetCamera()
+        }
+
         val range = rangeValue.get()
         val entity = mc.theWorld.loadedEntityList
             .filter {
                 EntityUtils.isSelected(it, true) && mc.thePlayer.canEntityBeSeen(it) &&
                         mc.thePlayer.getDistanceToEntityBox(it) <= range && RotationUtils.getRotationDifference(it) <= fovValue.get()
             }
-            .minByOrNull { RotationUtils.getRotationDifference(it) } ?: {
-                resetCamera()
-            }
+            .minByOrNull { RotationUtils.getRotationDifference(it) } ?: return
 
-        if (entity == null) return
+        dontReset = true
 
         if (RotationUtils.isFaced(entity, range.toDouble())) {
             resetCamera()
@@ -66,7 +73,7 @@ class SilentHitbox : Module() {
             "LiquidBounce",
             "Horizontal",
             0.1,
-            entity.entityBoundingBox,
+            entity.hitBox,
             true,
             false)
                 ).rotation
@@ -82,15 +89,17 @@ class SilentHitbox : Module() {
     }
 
     private fun resetCamera() {
+        enabled = false
         FreeLook.isEnabled = false
         mc.thePlayer.rotationYaw = FreeLook.cameraYaw
         mc.thePlayer.rotationPitch = FreeLook.cameraPitch
         FreeLook.resetPerspective()
     }
 
-    private fun startCamera () {
+    private fun startCamera() {
+        enabled = true
         FreeLook.isEnabled = true
         FreeLook.isReverse = false
-        FreeLook.setRotations()
+        FDPClient.moduleManager[FreeLook::class.java]!!.setRotations()
     }
 }
