@@ -41,10 +41,14 @@ object Speed : Module() {
     private val noWater = BoolValue("NoWater", true)
     private val forceSprint = BoolValue("alwaysSprint", true)
 
+    private var lastTick = 0
+
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get())) return
         if (MovementUtils.isMoving() && forceSprint.get()) mc.thePlayer.isSprinting = true
+        if (lastTick == mc.thePlayer.ticksExisted) return
+        lastTick = mc.thePlayer.ticksExisted
         mode.onUpdate()
     }
 
