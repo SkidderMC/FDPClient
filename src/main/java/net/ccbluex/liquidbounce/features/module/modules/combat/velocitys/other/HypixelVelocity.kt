@@ -17,8 +17,6 @@ class HypixelVelocity : VelocityMode("Hypixel") {
         if(packet is S12PacketEntityVelocity) {
           event.cancelEvent()
           mc.thePlayer.motionY = packet.getMotionY().toDouble() / 8000.0
-          mc.thePlayer.motionX = 0.3 * packet.getMotionX().toDouble() / 8000.0
-          mc.thePlayer.motionZ = 0.3 * packet.getMotionY().toDouble() / 8000.0
         }
     }
 }

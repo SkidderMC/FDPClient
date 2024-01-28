@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.TickEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -41,7 +41,7 @@ class TickBase : Module() {
 
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onTick(event: TickEvent) {
         if (ticks == ticksAmount.get()) {
             mc.timer.timerSpeed = ChargeAmount.get()
             ticks --

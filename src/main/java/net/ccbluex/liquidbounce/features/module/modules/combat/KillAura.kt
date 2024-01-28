@@ -129,7 +129,6 @@ object KillAura : Module() {
             "Armor",
             "HurtResistance",
             "HurtTime",
-            "HealthAbsorption",
             "RegenAmplifier"
         ), "Health"
     ).displayable { modeDisplay.get() }
@@ -149,7 +148,7 @@ object KillAura : Module() {
             if (i < newValue) set(i)
         }
     }.displayable { !autoBlockValue.equals("Off") && autoBlockValue.displayable }
-    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterTick", "AfterAttack", "Vanilla", "Delayed", "Delayed2", "Legit", "OldIntave", "Test", "HoldKey", "KeyBlock", "Legit2", "Test2"), "Vanilla").displayable { autoBlockValue.equals("Range") && autoBlockValue.displayable }
+    private val autoBlockPacketValue = ListValue("AutoBlockPacket", arrayOf("AfterAttack", "Vanilla", "Delayed", "Legit", "Legit2", "OldIntave", "Test", "HoldKey", "KeyBlock", "Test2", "Blink"), "Vanilla").displayable { autoBlockValue.equals("Range") && autoBlockValue.displayable }
     private val interactAutoBlockValue = BoolValue("InteractAutoBlock", false).displayable { autoBlockPacketValue.displayable }
     private val smartAutoBlockValue = BoolValue("SmartAutoBlock", false).displayable { autoBlockPacketValue.displayable }
     private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockPacketValue.displayable }
@@ -171,8 +170,6 @@ object KillAura : Module() {
         "HalfUp") .displayable { rotationDisplay.get() && rotationModeValue.equals("SmoothCustom") }
 
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
-
-    private val noHitCheck = BoolValue("NoHitCheck", true).displayable { rotationDisplay.get() }
 
     private val maxTurnSpeedValue: FloatValue = object : FloatValue("MaxTurnSpeed", 180f, 1f, 180f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
@@ -202,6 +199,10 @@ object KillAura : Module() {
     private val keepDirectionTickValue = IntegerValue("KeepDirectionTick", 15, 1, 20).displayable { keepDirectionValue.get() && keepDirectionValue.displayable }
     private val rotationDelayValue = BoolValue("RotationDelay", false).displayable { !rotationModeValue.equals("None") && rotationDisplay.get() }
     private val rotationDelayMSValue = IntegerValue("RotationDelayMS", 300, 0, 1000).displayable { rotationDelayValue.get() && rotationDelayValue.displayable }
+
+    private val fovValue = FloatValue("FOV", 180f, 0f, 180f).displayable { rotationDisplay.get() }
+    private val hitAbleValue = BoolValue("AlwaysHitAble", true).displayable { rotationDisplay.get() }
+    private val noHitCheck = BoolValue("NoHitCheck", true).displayable { rotationDisplay.get() }
 
     // Predict
     private val predictValue = BoolValue("Predict", true).displayable { !rotationModeValue.equals("None") }
@@ -252,11 +253,8 @@ object KillAura : Module() {
         }
     }.displayable { attackDisplay.get() && throughWallsValue.get() } as FloatValue
 
-    private val fovValue = FloatValue("FOV", 180f, 0f, 180f).displayable { bypassDisplay.get() }
-    private val hitAbleValue = BoolValue("AlwaysHitAble", true).displayable { bypassDisplay.get() }
-
     private val multiCombo = BoolValue("MultiCombo", false).displayable { bypassDisplay.get() }
-    private val amountValue = IntegerValue("Multi-Packet", 5, 0, 20, "x") { multiCombo.get() }
+    private val amountValue = IntegerValue("Multi-Packet", 5, 0, 20, "x") { multiCombo.get() && bypassDisplay.get()}
 
     private val failRateValue = FloatValue("FailRate", 0f, 0f, 100f).displayable { bypassDisplay.get() }
     private val fakeSwingValue = BoolValue("FakeSwing", true).displayable { failRateValue.get() != 0f && failRateValue.displayable }
@@ -273,7 +271,7 @@ object KillAura : Module() {
     private val noBadPacketsValue = BoolValue("NoBadPackets", false).displayable { toolsDisplay.get() }
     private val noInventoryAttackValue = ListValue("NoInvAttack", arrayOf("Spoof", "CancelRun", "Off"), "Off").displayable { toolsDisplay.get() }
     private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500).displayable { !noInventoryAttackValue.equals("Off") && noInventoryAttackValue.displayable }
-    private val displayDebug = BoolValue("Debug", true)
+    private val displayDebug = BoolValue("Debug", false)
 
     private val displayMode = ListValue("DisplayMode", arrayOf("Simple", "LessSimple", "Complicated"), "Simple")
 
@@ -326,7 +324,7 @@ object KillAura : Module() {
     private var legitCancelAtk = false
 
     private var test2_block = false
-    private var legit2Blink = false
+    private var wasBlink = false
 
     private val getAABB: ((Entity) -> AxisAlignedBB) = {
         var aabb = it.hitBox
@@ -386,9 +384,9 @@ object KillAura : Module() {
             if (keepDirectionValue.get()) { keepDirectionTickValue.get() + 1 } else { 1 },
             if (rotationRevValue.get()) { rotationRevTickValue.get() + 1 } else { 0 }
         )
-        if (legit2Blink) {
+        if (wasBlink) {
             BlinkUtils.setBlinkState(off = true, release = true)
-            legit2Blink = false
+            wasBlink = false
         }
     }
 
@@ -484,9 +482,9 @@ object KillAura : Module() {
             stopBlocking()
             discoveredTargets.clear()
             inRangeDiscoveredTargets.clear()
-            if (legit2Blink) {
+            if (wasBlink) {
                 BlinkUtils.setBlinkState(off = true, release = true)
-                legit2Blink = false
+                wasBlink = false
             }
             return
         }
@@ -497,9 +495,9 @@ object KillAura : Module() {
             currentTarget = null
             hitable = false
             if (mc.currentScreen is GuiContainer) containerOpen = System.currentTimeMillis()
-            if (legit2Blink) {
+            if (wasBlink) {
                 BlinkUtils.setBlinkState(off = true, release = true)
-                legit2Blink = false
+                wasBlink = false
             }
             return
         }
@@ -508,9 +506,9 @@ object KillAura : Module() {
 
         if (discoveredTargets.isEmpty()) {
             stopBlocking()
-            if (legit2Blink) {
+            if (wasBlink) {
                 BlinkUtils.setBlinkState(off = true, release = true)
-                legit2Blink = false
+                wasBlink = false
             }
             return
         }
@@ -522,59 +520,72 @@ object KillAura : Module() {
 
         val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
 
-        if (autoBlockValue.equals("Range") && ( autoBlockPacketValue.equals("Delayed2") || autoBlockPacketValue.equals("Test"))) {
-            if (mc.thePlayer.swingProgressInt == 1) {
-                startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+        if (autoBlockValue.equals("Range")) {
+            if (autoBlockPacketValue.equals("Test")) {
+                if (mc.thePlayer.swingProgressInt == 1) {
+                    startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+                }
             }
-        }
 
-        if (autoBlockPacketValue.equals("Legit2") && autoBlockValue.equals("Range")) {
-            if (mc.thePlayer.ticksExisted % 4 == 1 && (!smartAutoBlockValue.get() || mc.thePlayer.hurtTime < 3)) {
-                if (legitBlockBlinkValue.get() || legit2Blink) {
-                    BlinkUtils.setBlinkState(off = true, release = true)
-                    legit2Blink = false
-                }
-                startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
-            } else if (mc.thePlayer.ticksExisted % 4 == 3 || (smartAutoBlockValue.get() && mc.thePlayer.hurtTime > 3)) {
-                if (legitBlockBlinkValue.get()) {
-                    BlinkUtils.setBlinkState(all = true)
-                    legit2Blink = true
-                }
-                stopBlocking()
-            }
-        }
-
-        legitCancelAtk = false
-        if (autoBlockPacketValue.equals("Legit") && autoBlockValue.equals("Range")) {
-            if (mc.thePlayer.hurtTime > 8) {
-                legitBlocking = 0
-                if (blockingStatus) {
-                    stopBlocking()
-                    blockingStatus = false
-                    legitCancelAtk = true
-                }
-            } else {
-                if (mc.thePlayer.hurtTime == 1) {
-                    legitBlocking = 3
-                } else if (legitBlocking > 0) {
-                    legitBlocking--
-                    // this code is correct u idiots
-                    if (discoveredTargets.isNotEmpty() && !blockingStatus) {
-                        val target = this.currentTarget ?: discoveredTargets.first()
-                        startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
-                        blockingStatus = true
+            if (autoBlockPacketValue.equals("Legit2")) {
+                if (mc.thePlayer.ticksExisted % 4 == 1 && (!smartAutoBlockValue.get() || mc.thePlayer.hurtTime < 3)) {
+                    if (legitBlockBlinkValue.get() || wasBlink) {
+                        BlinkUtils.setBlinkState(off = true, release = true)
+                        wasBlink = false
                     }
-                    if (clicks > 2)
-                        clicks = 2
-                    legitCancelAtk = true
-                } else {
-                    if (!canHitselect && hitselectValue.get()) {
-                        legitBlocking = 3
-                    } else {
-                        if (blockingStatus) stopBlocking()
+                    startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+                } else if (mc.thePlayer.ticksExisted % 4 == 3 || (smartAutoBlockValue.get() && mc.thePlayer.hurtTime > 3)) {
+                    if (legitBlockBlinkValue.get()) {
+                        BlinkUtils.setBlinkState(all = true)
+                        wasBlink = true
+                    }
+                    stopBlocking()
+                }
+            }
+
+            if (autoBlockPacketValue.equals("Blink")) {
+                if (mc.thePlayer.ticksExisted % 2 == 1) {
+                    if (blockingStatus) {
+                        BlinkUtils.setBlinkState(all = true)
+                        wasBlink = true
+                        stopBlocking()
+                    }
+                }
+            }
+
+
+            legitCancelAtk = false
+            if (autoBlockPacketValue.equals("Legit")) {
+                if (mc.thePlayer.hurtTime > 8) {
+                    legitBlocking = 0
+                    if (blockingStatus) {
+                        stopBlocking()
                         blockingStatus = false
                         legitCancelAtk = true
-                        // prevent hypixel flag
+                    }
+                } else {
+                    if (mc.thePlayer.hurtTime == 1) {
+                        legitBlocking = 3
+                    } else if (legitBlocking > 0) {
+                        legitBlocking--
+                        // this code is correct u idiots
+                        if (discoveredTargets.isNotEmpty() && !blockingStatus) {
+                            val target = this.currentTarget ?: discoveredTargets.first()
+                            startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+                            blockingStatus = true
+                        }
+                        if (clicks > 2)
+                            clicks = 2
+                        legitCancelAtk = true
+                    } else {
+                        if (!canHitselect && hitselectValue.get()) {
+                            legitBlocking = 3
+                        } else {
+                            if (blockingStatus) stopBlocking()
+                            blockingStatus = false
+                            legitCancelAtk = true
+                            // prevent hypixel flag
+                        }
                     }
                 }
             }
@@ -593,21 +604,9 @@ object KillAura : Module() {
 
     private fun runAttackLoop() {
 
-        if (autoBlockPacketValue.equals("Legit2") && autoBlockValue.equals("Range")) {
-            if (mc.thePlayer.ticksExisted % 4 > 0 && (!smartAutoBlockValue.get() || mc.thePlayer.hurtTime < 3)) {
-                return
-            }
-        }
-
         if (CpsReduceValue.get() && mc.thePlayer.hurtTime > 8){
             clicks += 4
         }
-
-        // legit auto block, block if about to get damage, else, don't block
-        if (autoBlockPacketValue.equals("Legit") && autoBlockValue.equals("Range")) {
-            if (legitCancelAtk) return
-        }
-
 
         // hit select (take damage to get yvelo to crit, for legit killaura)
         if (hitselectValue.get()) {
@@ -627,17 +626,20 @@ object KillAura : Module() {
             }
         }
 
-        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("Test") && blockingStatus) {
-            stopBlocking()
-            if (clicks > 0) {
-                clicks = 1
+        if (autoBlockValue.equals("Range")) {
+            when (autoBlockPacketValue.get().lowercase()) {
+                "legit" -> if (legitCancelAtk) return
+                "legit2" -> if (mc.thePlayer.ticksExisted % 4 > 0 && (!smartAutoBlockValue.get() || mc.thePlayer.hurtTime < 3)) return
+                "test", "test2" -> {
+                    if (blockingStatus) {
+                        stopBlocking()
+                        return
+                    }
+                }
+                "blink" -> if (mc.thePlayer.ticksExisted % 2 == 1) return
+                else -> null
             }
-            return
-        }
 
-        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("Test2") && blockingStatus && clicks > 0) {
-            stopBlocking()
-            return
         }
 
 
@@ -656,6 +658,13 @@ object KillAura : Module() {
             }
         } catch (e: java.lang.IllegalStateException) {
             return
+        }
+
+        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("Blink")) {
+            BlinkUtils.setBlinkState(off = true, release = true)
+            wasBlink = false
+            val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
+            startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
         }
 
         test2_block = true
@@ -758,7 +767,6 @@ object KillAura : Module() {
             "armor" -> discoveredTargets.sortBy { it.totalArmorValue } // Sort by armor
             "hurttime" -> discoveredTargets.sortBy { it.hurtTime } // Sort by hurt time
             "hurtresistance" -> discoveredTargets.sortBy { it.hurtResistantTime } // hurt resistant time
-            "healthabsorption" -> discoveredTargets.sortBy { it.health + it.absorptionAmount } // Sort by full health with absorption effect
             "regenamplifier" -> discoveredTargets.sortBy { if (it.isPotionActive(Potion.regeneration)) it.getActivePotionEffect(Potion.regeneration).amplifier else -1 }
         }
 
@@ -873,7 +881,7 @@ object KillAura : Module() {
         if (mc.thePlayer.isBlocking || blockingStatus) {
             when (autoBlockPacketValue.get().lowercase()) {
                 "vanilla" -> null
-                "aftertick", "afterattack", "delayed", "delayed2" -> stopBlocking()
+                "afterattack", "delayed" -> stopBlocking()
                 "oldintave" -> {
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem % 8 + 1))
                     mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
@@ -895,7 +903,7 @@ object KillAura : Module() {
                 when (autoBlockPacketValue.get().lowercase()) {
                     "vanilla", "afterattack", "oldintave" -> startBlocking(entity, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(entity) < maxRange))
                     "delayed", "keyblock" -> delayBlockTimer.reset()
-                    "aftertick", "legit", "delayed2", "test", "holdkey", "Legit2" -> null
+                    "legit", "test", "holdkey", "Legit2" -> null
                     else -> null
                 }
             }
