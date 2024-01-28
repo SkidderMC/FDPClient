@@ -61,12 +61,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                     mc.thePlayer.jump()
                     
                     val minSpeed = 0.46f + 0.03f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
-                    MovementUtils.strafe(MovementUtils.getSpeed() * (1.0 + 0.065 * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)).toFloat())
-                    if (MovementUtils.getSpeed() < minSpeed) {
-                        MovementUtils.strafe(minSpeed)
-                    }
-                    MovementUtils.strafe(MovementUtils.getSpeed() * 1.02f)
-                    MovementUtils.strafe()
+                    MovementUtils.strafe(minSpeed)
                     
                     
                 } else {
