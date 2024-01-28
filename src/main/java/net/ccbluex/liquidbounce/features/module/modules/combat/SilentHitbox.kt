@@ -101,11 +101,13 @@ class SilentHitbox : Module() {
         FreeLook.isEnabled = false
         mc.thePlayer.rotationYaw = FreeLook.cameraYaw
         mc.thePlayer.rotationPitch = FreeLook.cameraPitch
+        FreeLook.perspectiveToggled = false
         FreeLook.resetPerspective()
     }
 
     private fun startCamera() {
         enabled = true
+        FreeLook.perspectiveToggled = true
         FreeLook.isEnabled = true
         FreeLook.isReverse = false
         FDPClient.moduleManager[FreeLook::class.java]!!.setRotations()
