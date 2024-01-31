@@ -54,15 +54,18 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
         when (bypassMode.get().lowercase()) {
             
             "latest" -> {
-                if (sussyPacket.get()) 
+                if (sussyPacket.get()) {
                     PacketUtils.sendPacketNoEvent(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, BlockPos(-1,-1,-1), EnumFacing.UP))
-                    
+                    }
+
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
-                    
-                    val minSpeed = 0.46f + 0.03f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
-                    MovementUtils.strafe(minSpeed)
-                    
+
+                    if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
+                        MovementUtils.strafe(0.53f)
+                    } else {
+                        MovementUtils.strafe(0.46f)
+                    }
                     
                 } else {
                     

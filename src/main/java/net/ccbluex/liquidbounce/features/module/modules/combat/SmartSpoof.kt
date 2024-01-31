@@ -72,8 +72,8 @@ object SmartSpoof : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        targetDelay = (targetDelay.toDouble() * 0.9).toLong()
-        delay += ((targetDelay - delay).toDouble() * 0.22).toLong()
+        targetDelay = (targetDelay.toDouble() * 0.95).toLong()
+        delay += ((targetDelay - delay).toDouble() * 0.4).toLong()
         while (times.first() < System.currentTimeMillis() - delay) {
             PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
             times.remove(times.first())

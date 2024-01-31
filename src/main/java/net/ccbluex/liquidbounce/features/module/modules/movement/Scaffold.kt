@@ -263,8 +263,11 @@ class Scaffold : Module() {
     // WATCHDOG
     private var wdTick = 0
     private var wdSpoof = false
-    private var towerTick = 0 
-    
+    private var towerTick = 0
+
+    // update event fix
+    private var lastTick = 0
+
     /**
      * Enable module
      */
@@ -293,6 +296,9 @@ class Scaffold : Module() {
         // if(tolleyStayTick>100) tolleyStayTick=100
         if (towerStatus && towerModeValue.get().lowercase() != "aac3.3.9" && towerModeValue.get().lowercase() != "aac4.4constant" && towerModeValue.get().lowercase() != "aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
         if (!towerStatus) mc.timer.timerSpeed = timerValue.get()
+
+        if (lastTick == mc.thePlayer.ticksExisted) return
+        lastTick = mc.thePlayer.ticksExisted
 
         
         if (towerStatus || mc.thePlayer.isCollidedHorizontally) {
@@ -374,8 +380,8 @@ class Scaffold : Module() {
         mc.thePlayer.isSprinting = canSprint
         if (sprintValue.equals("Hypixel")) {
             if (mc.thePlayer.onGround) {
-                mc.thePlayer.motionX *= 0.75
-                mc.thePlayer.motionZ *= 0.75
+                mc.thePlayer.motionX *= 0.6
+                mc.thePlayer.motionZ *= 0.6
             } else {
                 mc.thePlayer.motionX *= 0.97
                 mc.thePlayer.motionZ *= 0.97
@@ -1390,7 +1396,7 @@ class Scaffold : Module() {
             "always", "dynamic" -> true
             "onground" -> mc.thePlayer.onGround
             "offground" -> !mc.thePlayer.onGround
-            "hypixel" -> mc.thePlayer.onGround
+            "hypixel" -> false
             "alternating" -> mc.thePlayer.ticksExisted % 2 == 0
             else -> false
         }
