@@ -18,7 +18,7 @@ class HealthRender(
     side: Side = Side(Side.Horizontal.MIDDLE, Side.Vertical.DOWN)
 ) : Element(x, y, scale, side) {
 
-    override fun drawElement(): Border {
+    override fun drawElement(partialTicks: Float): Border {
         val health = mc.thePlayer!!.health
         val maxhealth = mc.thePlayer!!.maxHealth
 
