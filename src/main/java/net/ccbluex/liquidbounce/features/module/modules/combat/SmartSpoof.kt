@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.server.S12PacketEntityVelocity
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayClient
 import java.util.concurrent.LinkedBlockingQueue
@@ -55,6 +56,14 @@ object SmartSpoof : Module() {
         if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true)) {
             if (mc.thePlayer.ticksExisted < 20) return
             if (packet is S12PacketEntityVelocity) targetDelay = velocityDelay.get().toLong()
+            if (packet is S08PacketPlayerPosLook) {
+                targetDelay = 0L
+                while (!packets.isEmpty()) {
+                    PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
+                }
+                times.clear()
+                return
+            }
             event.cancelEvent()
             times.add(System.currentTimeMillis())
             packets.add(packet as Packet<INetHandlerPlayClient>)

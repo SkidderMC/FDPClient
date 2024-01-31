@@ -72,10 +72,6 @@ class SilentHitbox : Module() {
             startCamera()
         }
 
-        if (RotationUtils.isFaced(entity, range.toDouble())) {
-            resetCamera()
-            return
-        }
 
         targetRot = (RotationUtils.calculateCenter(
             "LiquidBounce",
@@ -97,12 +93,14 @@ class SilentHitbox : Module() {
     }
 
     private fun resetCamera() {
-        enabled = false
-        FreeLook.isEnabled = false
-        mc.thePlayer.rotationYaw = FreeLook.cameraYaw
-        mc.thePlayer.rotationPitch = FreeLook.cameraPitch
-        FreeLook.perspectiveToggled = false
-        FreeLook.resetPerspective()
+        if (enabled) {
+            enabled = false
+            FreeLook.isEnabled = false
+            mc.thePlayer.rotationYaw = FreeLook.cameraYaw
+            mc.thePlayer.rotationPitch = FreeLook.cameraPitch
+            FreeLook.perspectiveToggled = false
+            FreeLook.resetPerspective()
+        }
     }
 
     private fun startCamera() {
