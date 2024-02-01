@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.movement.*;
 import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
+import net.ccbluex.liquidbounce.features.module.modules.player.DelayRemover;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
@@ -258,8 +259,8 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Inject(method = "onLivingUpdate", at = @At("HEAD"))
     private void headLiving(CallbackInfo callbackInfo) {
-        if (FDPClient.moduleManager.getModule(NoJumpDelay.class).getState())
-            jumpTicks = FDPClient.moduleManager.getModule(NoJumpDelay.class).getTicks().get();
+        if (FDPClient.moduleManager.getModule(DelayRemover.class).getState())
+            jumpTicks = FDPClient.moduleManager.getModule(DelayRemover.class).getJumpDelayTicks().get();
     }
 
     @Inject(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;isJumping:Z", ordinal = 1))

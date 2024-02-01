@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.BlockBBEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals;
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall;
 import net.ccbluex.liquidbounce.features.module.modules.visual.XRay;
-import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlowBreak;
+import net.ccbluex.liquidbounce.features.module.modules.player.DelayRemover;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockState;
@@ -81,14 +81,14 @@ public abstract class MixinBlock {
         float f = callbackInfo.getReturnValue();
 
         // NoSlowBreak
-        final NoSlowBreak noSlowBreak = FDPClient.moduleManager.getModule(NoSlowBreak.class);
-        if (noSlowBreak.getState()) {
-            if (noSlowBreak.getWaterValue().get() && playerIn.isInsideOfMaterial(Material.water) &&
+        final DelayRemover delayRemover = FDPClient.moduleManager.getModule(DelayRemover.class);
+        if (delayRemover.getState() && delayRemover.getNoSlowBreak().get()) {
+            if (delayRemover.getWaterValue().get() && playerIn.isInsideOfMaterial(Material.water) &&
                     !EnchantmentHelper.getAquaAffinityModifier(playerIn)) {
                 f *= 5.0F;
             }
 
-            if (noSlowBreak.getAirValue().get() && !playerIn.onGround) {
+            if (delayRemover.getAirValue().get() && !playerIn.onGround) {
                 f *= 5.0F;
             }
         } else if (playerIn.onGround) { // NoGround
