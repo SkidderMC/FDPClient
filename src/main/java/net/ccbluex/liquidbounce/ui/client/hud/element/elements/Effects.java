@@ -43,7 +43,7 @@ public class Effects extends Element {
     private final Map<Potion, PotionData> potionMap = new HashMap<>();
     
     protected Border draw() {
-        if (modeValue.get().equals("FDP") {
+        if (modeValue.get().equals("FDP")) {
         GlStateManager.pushMatrix();
         int y = 0;
         for (final PotionEffect potionEffect : mc.thePlayer.getActivePotionEffects()) {
@@ -104,7 +104,7 @@ public class Effects extends Element {
         GlStateManager.popMatrix();
         return new Border(0F, 0F, 120F, 30F);
     }
-        if (modeValue.get().equals("Default") {
+        if (modeValue.get().equals("Default")) {
             int xOffset = 21;
             int yOffset = 14;
 
