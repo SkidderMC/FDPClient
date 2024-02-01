@@ -33,11 +33,11 @@ import java.awt.*;
 @ModuleInfo(name = "BowJump", category = ModuleCategory.MOVEMENT)
 public class BowJump extends Module {
 
-    private final BoolValue hypixelBypassValue = new BoolValue("hypixelBypass", true);
+    private final BoolValue hypixelBypassValue = new BoolValue("hypixelBypass", false);
     private final ListValue modeValue = new ListValue("BoostMode", new String[] {"Strafe","SpeedInAir"}, "Strafe");
-    private final FloatValue speedInAirBoostValue = new FloatValue("SpeedInAir", 0.03F, 0.02F, 0.1F);
-    private final FloatValue boostValue = new FloatValue("Boost", 4.25F, 0F, 10F);
-    private final FloatValue heightValue = new FloatValue("Height", 0.42F, 0F, 10F);
+    private final FloatValue speedInAirBoostValue = new FloatValue("SpeedInAir", 0.021F, 0.02F, 0.03F);
+    private final FloatValue boostValue = new FloatValue("Boost", 1F, 0F, 10F);
+    private final FloatValue heightValue = new FloatValue("Height", 0.42F, 0F, 4F);
     private final FloatValue timerValue = new FloatValue("Timer", 1F, 0.1F, 10F);
     private final IntegerValue delayBeforeLaunch = new IntegerValue("DelayBeforeArrowLaunch", 1, 1, 20);
 
@@ -138,6 +138,7 @@ public class BowJump extends Module {
                 if (mc.thePlayer.onGround && mc.thePlayer.ticksExisted - lastPlayerTick >= 1)
                     bowState = 5;
             } else {
+                mc.thePlayer.jump();
                 switch (modeValue.get()) {
                     case "Strafe": {
                         MovementUtils.INSTANCE.strafe(boostValue.get());

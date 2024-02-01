@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
+import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.item.ItemFireball
@@ -30,6 +31,8 @@ class FireballFly : FlyMode("Fireball") {
     private var startingSlot = 0
     private var veloStatus = false
 
+    private var oldUpdateTick = 0
+
     override fun onEnable() {
         veloStatus = FDPClient.moduleManager[Velocity::class.java]!!.state
         FDPClient.moduleManager[Velocity::class.java]!!.state = false
@@ -41,31 +44,36 @@ class FireballFly : FlyMode("Fireball") {
             ClientUtils.displayChatMessage("§8[§c§lFireball-Flight§8] §aYou need a fireball to fly.")
             fly.state = false
         } else {
-            startingSlot = mc.thePlayer.inventory.currentItem 
+            startingSlot = mc.thePlayer.inventory.currentItem
             mc.thePlayer.inventory.currentItem = fbSlot
         }
     }
 
     override fun onUpdate(event: UpdateEvent) {
+        if (mc.thePlayer.ticksExisted == oldUpdateTick) return
+        oldUpdateTick = mc.thePlayer.ticksExisted
         mc.timer.timerSpeed = 1.0f
         if (beforeVelo) {
             if (mc.thePlayer.onGround) {
-                mc.thePlayer.jump()
-                MovementUtils.strafe(0.41f)
-            } else if (ticks == 1) {
-                mc.thePlayer.rotationYaw += 180f
-                mc.thePlayer.rotationPitch = 65f
-                mc.gameSettings.keyBindBack.pressed = true
                 mc.gameSettings.keyBindForward.pressed = true
+                mc.thePlayer.jump()
+                MovementUtils.strafe(0.46f)
+            } else if (ticks == 1) {
+                FDPClient.moduleManager[FreeLook::class.java]!!.enable()
+                mc.thePlayer.rotationYaw += 180f
+                mc.thePlayer.rotationPitch = 70f
+                mc.gameSettings.keyBindBack.pressed = true
+                mc.gameSettings.keyBindForward.pressed = false
                 KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
             } else if (ticks == 3) {
                 mc.thePlayer.rotationYaw += 180f
                 mc.thePlayer.rotationPitch = 30f
+                FDPClient.moduleManager[FreeLook::class.java]!!.disable()
                 mc.gameSettings.keyBindForward.pressed = true
                 mc.gameSettings.keyBindBack.pressed = false
             }
         } else {
-            if (ticks > 10) {
+            if (ticks > 6) {
                 mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
                 fly.state = false
             }

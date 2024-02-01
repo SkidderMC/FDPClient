@@ -43,6 +43,19 @@ class FreeLook : Module() {
         cameraPitch = mc.thePlayer.rotationPitch
     }
 
+    fun enable() {
+        isEnabled = true
+        isReverse = false
+        perspectiveToggled = true
+        setRotations()
+        previousPerspective = mc.gameSettings.thirdPersonView
+    }
+
+    fun disable() {
+        isEnabled = false
+        resetPerspective()
+    }
+
     companion object {
         private val mc = MinecraftInstance.mc
 
