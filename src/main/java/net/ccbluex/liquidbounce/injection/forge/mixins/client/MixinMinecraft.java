@@ -341,7 +341,7 @@ public abstract class MixinMinecraft {
         try {
             if (Util.getOSType() != Util.EnumOS.OSX) {
                 BufferedImage image = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/icon.png")));
-                ByteBuffer bytebuffer = ImageUtils.readImageToBuffer(ImageUtils.resizeImage(image, 16, 16));
+                ByteBuffer bytebuffer = ImageUtils.readImageToBuffer(image); // What the fuck? ImageUtils.resizeImage(image, 16, 16)
                 if (bytebuffer == null) {
                     throw new Exception("Error when loading image.");
                 } else {
