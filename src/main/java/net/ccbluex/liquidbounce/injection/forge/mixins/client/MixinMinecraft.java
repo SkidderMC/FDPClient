@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.handler.protocol.ProtocolMod;
 import net.ccbluex.liquidbounce.handler.protocol.api.AttackFixer;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
+import net.ccbluex.liquidbounce.utils.MacOS;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.render.ImageUtils;
@@ -347,7 +348,9 @@ public abstract class MixinMinecraft {
                     Display.setIcon(new ByteBuffer[]{bytebuffer, ImageUtils.readImageToBuffer(image)});
                     callbackInfo.cancel();
                 }
-            }
+            } else if(Util.getOSType() == Util.EnumOS.OSX) {
+                MacOS.icon();
+            }   
         } catch (Exception e) {
             e.printStackTrace();
         }
