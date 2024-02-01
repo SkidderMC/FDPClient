@@ -31,19 +31,19 @@ import java.util.*;
 @ElementInfo(name = "Effects")
 public class Effects extends Element {
 
-    private final BoolValue EffectFDP = new BoolValue("FDP Mode", true);
-    private final BoolValue EffectMinecraft = new BoolValue("Default Mode", true);
+    private final ListValue modeValue = new ListValue("Mode", new String[]{"FDP", "Default"}, "FDP");
+    public static FontValue font = new FontValue("Font", Fonts.minecraftFont);
+    public final BoolValue shadow = new BoolValue("Shadow", true);
     public final BoolValue iconValue = new BoolValue("Icon", true);
     public final BoolValue nameValue = new BoolValue("Name", true);
     public final BoolValue colorValue = new BoolValue("Color", false);
-    public static FontValue font = new FontValue("Font", Fonts.minecraftFont);
-    public final BoolValue shadow = new BoolValue("Shadow", true);
 
     private final float x = 10.0f;
     private final float y = 100.0f;
     private final Map<Potion, PotionData> potionMap = new HashMap<>();
+    
     protected Border draw() {
-        if (EffectFDP.get() ) {
+        if (modeValue.get().equals("FDP") {
         GlStateManager.pushMatrix();
         int y = 0;
         for (final PotionEffect potionEffect : mc.thePlayer.getActivePotionEffects()) {
@@ -104,7 +104,7 @@ public class Effects extends Element {
         GlStateManager.popMatrix();
         return new Border(0F, 0F, 120F, 30F);
     }
-        if (EffectMinecraft.get() ) {
+        if (modeValue.get().equals("Default") {
             int xOffset = 21;
             int yOffset = 14;
 

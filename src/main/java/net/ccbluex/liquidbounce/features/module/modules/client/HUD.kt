@@ -49,8 +49,8 @@ object HUD : Module() {
 
     // WaterMark
     private val waterMark = BoolValue("Watermark", true)
-    val modeValue = ListValue("Watermark-Mode", arrayOf("Classic", "FDP", "Blur", "Clean", "Zywl", "ZAVZ", "LiquidBounce"), "Zywl").displayable { waterMark.get() }
-    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Health", "Rainbow", "Slowly", "Fade", "Mixer"), "Custom").displayable { waterMark.get() }
+    val modeValue = ListValue("Watermark-Mode", arrayOf("Classic", "FDP", "Blur", "Clean", "Zywl", "ZAVZ", "LiquidBounce"), "LiquidBounce").displayable { waterMark.get() }
+    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Health", "Rainbow", "Slowly", "Fade", "Mixer"), "Health").displayable { waterMark.get() }
     val red = IntegerValue("Red", 0, 0, 255).displayable { waterMark.get() }
     val green = IntegerValue("Green", 0, 0, 255).displayable { waterMark.get() }
     val blue = IntegerValue("Blue", 255, 0, 255).displayable { waterMark.get() }
@@ -82,7 +82,7 @@ object HUD : Module() {
 
     // ArrayList
     private val arrayList = BoolValue("ArrayList", true)
-    val shadowValue = ListValue("TextShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Default").displayable { arrayList.get() }
+    val shadowValue = ListValue("TextShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Autumn").displayable { arrayList.get() }
     private val arrayListValue = BoolValue("ArrayListAnimation", true).displayable { arrayList.get() }
     val arraylistXAxisAnimSpeedValue = IntegerValue("ArraylistXAxisAnimSpeed", 10, 5, 20).displayable { arrayListValue.get() }
     val arraylistXAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistXAxisAnimType").displayable { arrayListValue.get() }

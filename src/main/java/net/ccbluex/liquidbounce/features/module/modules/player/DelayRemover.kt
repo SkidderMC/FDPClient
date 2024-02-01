@@ -14,10 +14,10 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 
-@ModuleInfo(name = "DelayRemover", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "DelayRemover", category = ModuleCategory.PLAYER, defaultOn = true)
 object DelayRemover : Module() {
 
-    val jumpDelay = BoolValue("NoJumpDelay", true)
+    val jumpDelay = BoolValue("NoJumpDelay", false)
     val jumpDelayTicks = IntegerValue("JumpDelayTicks", 0, 0, 4)
 
     val noClickDelay = BoolValue("NoClickDelay", true)

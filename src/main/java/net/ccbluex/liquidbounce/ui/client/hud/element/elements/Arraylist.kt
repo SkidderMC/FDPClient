@@ -42,7 +42,7 @@ class Arraylist(
 
     //Color settings
     private val colorDisplay = BoolValue("Color Options:", true)
-    private val colorModeValue = ListValue("Text-Color", arrayOf("Static", "Fade", "Random", "Rainbow", "Slowly", "SkyRainbow", "Static"), "Fade").displayable { colorDisplay.get() }
+    private val colorModeValue = ListValue("Text-Color", arrayOf("Static", "Fade", "Random", "Rainbow", "CRainbow", "SkyRainbow", "Slowly"), "Fade").displayable { colorDisplay.get() }
     val colorRedValue = IntegerValue("Text-R", 0, 0, 255).displayable { colorDisplay.get() }
     val colorGreenValue = IntegerValue("Text-G", 111, 0, 255).displayable { colorDisplay.get() }
     val colorBlueValue = IntegerValue("Text-B", 255, 0, 255).displayable { colorDisplay.get() }
@@ -53,14 +53,14 @@ class Arraylist(
     // Tag settings
     private val tagDisplay = BoolValue("Tag Options:", true)
     private val tagsValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", "Space", "None"), "Space").displayable { tagDisplay.get() }
-    private val tagColorModeValue = ListValue("Tag-Color", arrayOf("Static", "Random", "Rainbow", "Fade", "Slowly", "SkyRainbow", "Static"), "Static").displayable { tagDisplay.get() }
+    private val tagColorModeValue = ListValue("Tag-Color", arrayOf("Static", "Fade", "Random", "Rainbow", "CRainbow", "SkyRainbow", "Slowly"), "Static").displayable { tagDisplay.get() }
     private val tagColorRedValue = IntegerValue("Tag-R", 195, 0, 255).displayable { tagDisplay.get() }
     private val tagColorGreenValue = IntegerValue("Tag-G", 195, 0, 255).displayable { tagDisplay.get() }
     private val tagColorBlueValue = IntegerValue("Tag-B", 195, 0, 255).displayable { tagDisplay.get() }
 
     // Options Text
     private val textDisplay = BoolValue("Text Options:", true)
-    private val fontValue = FontValue("Font", Fonts.minecraftFont).displayable { textDisplay.get() }
+    private val fontValue = FontValue("Font", Fonts.font35).displayable { textDisplay.get() }
     private val fontAlphaValue = IntegerValue("TextAlpha", 255, 0, 255).displayable { textDisplay.get() }
     private val saturationValue = FloatValue("Saturation", 0.9f, 0f, 1f).displayable { textDisplay.get() }
     private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f).displayable { textDisplay.get() }
@@ -76,7 +76,7 @@ class Arraylist(
     // Rectangle color settings
     private val rectDisplay = BoolValue("Rect Options:", true)
     private val rectValue = ListValue("Rect", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "None").displayable { rectDisplay.get() }
-    private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Static", "Random", "Rainbow", "Fade", "Slowly", "SkyRainbow", "Static"), "Fade").displayable { rectDisplay.get() }
+    private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Static", "Fade", "Random", "Rainbow", "CRainbow", "SkyRainbow", "Slowly"), "Fade").displayable { rectDisplay.get() }
     private val rectColorRedValue = IntegerValue("Rect-R", 255, 0, 255).displayable { rectDisplay.get() }
     private val rectColorGreenValue = IntegerValue("Rect-G", 255, 0, 255).displayable { rectDisplay.get() }
     private val rectColorBlueValue = IntegerValue("Rect-B", 255, 0, 255).displayable { rectDisplay.get() }
@@ -84,7 +84,7 @@ class Arraylist(
 
     // Background color settings
     private val backgroundDisplay = BoolValue("BackGround Options:", true)
-    private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Static", "Random", "Rainbow", "Fade", "Slowly", "SkyRainbow", "Static"), "Static").displayable { backgroundDisplay.get() }
+    private val backgroundColorModeValue = ListValue("Background-Color", arrayOf("Static", "Fade", "Random", "Rainbow", "CRainbow", "SkyRainbow", "Slowly"), "Static").displayable { backgroundDisplay.get() }
     private val backgroundColorRedValue = IntegerValue("Background-R", 0, 0, 255).displayable { backgroundDisplay.get() }
     private val backgroundColorGreenValue = IntegerValue("Background-G", 0, 0, 255).displayable { backgroundDisplay.get() }
     private val backgroundColorBlueValue = IntegerValue("Background-B", 0, 0, 255).displayable { backgroundDisplay.get() }

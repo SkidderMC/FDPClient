@@ -91,12 +91,12 @@ public class Armor extends Element {
 
             GlStateManager.pushMatrix();
             if (showAttributes.get().equals("Value")) {
-                // Exibe o valor numérico
+                    // Display the number Value
                 float percentageXOffset = (float) percentageX.get();
                 float percentageYOffset = (float) percentageY.get();
                 Fonts.fontSFUI32.drawString(String.valueOf(stack.getMaxDamage() - stack.getItemDamage()), x + percentageXOffset, y + 15.0f + Fonts.fontSFUI32.getHeight() + percentageYOffset, color);
             } else if (showAttributes.get().equals("Percentage")) {
-                // Exibe a porcentagem
+                    // Display percentage
                 float percentageXOffset = (float) percentageX.get();
                 float percentageYOffset = (float) percentageY.get();
                 float percentage = (float) (stack.getMaxDamage() - stack.getItemDamage()) / (float) stack.getMaxDamage() * 100.0f;
@@ -156,12 +156,12 @@ public class Armor extends Element {
 
             GlStateManager.pushMatrix();
             if (showAttributes.get().equals("Value")) {
-                // Exibe o valor numérico
+                    // Display Number Value
                 float percentageXOffset = (float) percentageX.get();
                 float percentageYOffset = (float) percentageY.get();
                 Fonts.fontSFUI32.drawString(String.valueOf(stack.getMaxDamage() - stack.getItemDamage()), x + percentageXOffset, y + 15.0f + Fonts.fontSFUI32.getHeight() + percentageYOffset, color);
             } else if (showAttributes.get().equals("Percentage")) {
-                // Exibe a porcentagem
+                    // Display percentage
                 float percentageXOffset = (float) percentageX.get();
                 float percentageYOffset = (float) percentageY.get();
                 float percentage = (float) (stack.getMaxDamage() - stack.getItemDamage()) / (float) stack.getMaxDamage() * 100.0f;
