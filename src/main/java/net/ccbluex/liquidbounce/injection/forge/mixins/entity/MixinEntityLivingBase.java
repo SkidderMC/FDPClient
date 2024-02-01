@@ -259,7 +259,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Inject(method = "onLivingUpdate", at = @At("HEAD"))
     private void headLiving(CallbackInfo callbackInfo) {
-        if (FDPClient.moduleManager.getModule(DelayRemover.class).getState())
+        if (FDPClient.moduleManager.getModule(DelayRemover.class).getState() && FDPClient.moduleManager.getModule(DelayRemover.class).getJumpDelay().get())
             jumpTicks = FDPClient.moduleManager.getModule(DelayRemover.class).getJumpDelayTicks().get();
     }
 
