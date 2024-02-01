@@ -31,12 +31,11 @@ class NCPLatestSpeed : SpeedMode("NCPLatest") {
             if (mc.thePlayer.onGround) {
                 wasSlow = false
                 mc.thePlayer.jump()
-                MovementUtils.strafe(0.48f)
+                MovementUtils.strafe(0.47f)
                 if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
                     MovementUtils.strafe(0.48f * (1.0f + 0.13f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)))
                 }
             }
-            MovementUtils.strafe(MovementUtils.getSpeed() * 1.007f)
             if (MovementUtils.getSpeed() < 0.277)
                 wasSlow = true
             if (wasSlow) 
