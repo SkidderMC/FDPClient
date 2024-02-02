@@ -17,7 +17,10 @@ import org.json.JSONObject
 import java.time.OffsetDateTime
 import kotlin.concurrent.thread
 
-object DiscordRPC {                   
+object DiscordRPC {
+
+    var showRichPresenceValue = true
+
     private val ipcClient = IPCClient(1183085624195022942)
     private val timestamp = OffsetDateTime.now()
     private var running = false

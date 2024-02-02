@@ -216,6 +216,16 @@ object FDPClient {
         isLoadingConfig = false
 
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION started!")
+
+        if (DiscordRPC.showRichPresenceValue) {
+            thread {
+                try {
+                    DiscordRPC.run()
+                } catch (throwable: Throwable) {
+                    ClientUtils.logError("", throwable)
+                }
+            }
+        }
     }
 
     /**
