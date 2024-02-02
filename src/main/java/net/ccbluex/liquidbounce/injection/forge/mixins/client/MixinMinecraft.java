@@ -340,7 +340,7 @@ public abstract class MixinMinecraft {
     private void setWindowIcon(CallbackInfo callbackInfo) {
         try {
             if (Util.getOSType() != Util.EnumOS.OSX) {
-                BufferedImage image = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/icon.png")));
+                BufferedImage image = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/32.png"))); // need to impliment 16x and 64x
                 ByteBuffer bytebuffer = ImageUtils.readImageToBuffer(image); // What the fuck? ImageUtils.resizeImage(image, 16, 16)
                 if (bytebuffer == null) {
                     throw new Exception("Error when loading image.");
