@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.minecraft.client.settings.GameSettings
 
 class LegitSpeed : SpeedMode("Legit") {
     
@@ -17,7 +18,6 @@ class LegitSpeed : SpeedMode("Legit") {
     
     override fun onUpdate() {
         if (cpuSPEED.get()) mc.timer.timerSpeed = 1.004f
-        if (mc.thePlayer.isInWater) return
         if (MovementUtils.isMoving()) {
             if (mc.thePlayer.onGround) {
                 mc.gameSettings.keyBindJump.pressed = true
@@ -31,5 +31,10 @@ class LegitSpeed : SpeedMode("Legit") {
                 }
             }
         }
+    }
+
+    override fun onDisable() {
+        mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+        if (cpuSPEED.get()) mc.timer.timerSpeed = 1f
     }
 }

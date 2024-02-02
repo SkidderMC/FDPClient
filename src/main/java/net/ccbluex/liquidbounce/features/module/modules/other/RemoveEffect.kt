@@ -32,10 +32,10 @@ object RemoveEffect : Module() {
         if (mc.thePlayer != null) {
 
             val effectIdsToRemove = mutableListOf<Int>()
-            if (shouldRemoveSlowness.get()) effectIdsToRemove.add(Potion.moveSlowdown.id)
-            if (shouldRemoveMiningFatigue.get()) effectIdsToRemove.add(Potion.digSlowdown.id)
-            if (shouldRemoveBlindness.get()) effectIdsToRemove.add(Potion.blindness.id)
-            if (shouldRemoveWeakness.get()) effectIdsToRemove.add(Potion.weakness.id)
+            if (shouldRemoveSlowness.get()) mc.thePlayer.removePotionEffectClient(Potion.moveSlowdown.id)
+            if (shouldRemoveMiningFatigue.get()) mc.thePlayer.removePotionEffectClient(Potion.digSlowdown.id)
+            if (shouldRemoveBlindness.get()) mc.thePlayer.removePotionEffectClient(Potion.blindness.id)
+            if (shouldRemoveWeakness.get()) mc.thePlayer.removePotionEffectClient(Potion.weakness.id)
             if (shouldRemoveWither.get()) effectIdsToRemove.add(Potion.wither.id)
             if (shouldRemovePoison.get()) effectIdsToRemove.add(Potion.poison.id)
             if (shouldRemoveWaterBreathing.get()) effectIdsToRemove.add(Potion.waterBreathing.id)

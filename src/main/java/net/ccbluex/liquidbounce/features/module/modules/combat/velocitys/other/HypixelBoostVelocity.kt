@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 class HypixelBoostVelocity : VelocityMode("HypixelBoost") {
 
     override fun onUpdate(event: UpdateEvent) {
-        if (mc.thePlayer.hurtTime == 9) {
+        if (mc.thePlayer.hurtTime == 8) {
             MovementUtils.strafe(MovementUtils.getSpeed() * 0.7f)
         }
     }

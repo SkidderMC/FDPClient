@@ -107,28 +107,15 @@ object Breaker : Module() {
             BlockUtils.getCenterDistance(pos!!) > rangeValue.get()) {
             pos = find(targetId)
 
-            if (throughWallsValue.equals("Hypixel")) {
-                val blockPos = find(26) ?: return
-                if (!BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north()) ||
-                !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())) {
-                    pos = blockPos.up()?: return
-                } else {
-                    pos = blockPos?: return
-                }
-            }
         }
 
         if (throughWallsValue.equals("Hypixel")) {
-            if (pos != null) {
-                if (!BlockUtils.isFullBlock(pos)) {
-                    val blockPos = find(26) ?: return
-                    if (!BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north()) ||
-                    !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())) {
-                        pos = blockPos.up()?: return
-                    } else {
-                        pos = blockPos?: return
-                    }
-                }
+            val blockPos = find(26) ?: return
+            if (!BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north()) ||
+                !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())) {
+                pos = blockPos.up()?: return
+            } else {
+                pos = blockPos?: return
             }
         }
 

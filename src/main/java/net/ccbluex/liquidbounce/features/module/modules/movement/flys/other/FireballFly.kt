@@ -58,8 +58,8 @@ class FireballFly : FlyMode("Fireball") {
                 mc.gameSettings.keyBindForward.pressed = true
                 mc.thePlayer.jump()
                 MovementUtils.strafe(0.46f)
-            } else if (ticks == 1) {
                 FDPClient.moduleManager[FreeLook::class.java]!!.enable()
+            } else if (ticks == 1) {
                 mc.thePlayer.rotationYaw += 180f
                 mc.thePlayer.rotationPitch = 70f
                 mc.gameSettings.keyBindBack.pressed = true
