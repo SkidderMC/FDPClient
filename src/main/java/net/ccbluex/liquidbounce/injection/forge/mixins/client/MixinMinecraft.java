@@ -339,7 +339,9 @@ public abstract class MixinMinecraft {
     @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
     private void setWindowIcon(CallbackInfo callbackInfo) {
         try {
-            if (Util.getOSType() != Util.EnumOS.OSX) {
+            if (Util.getOSType() == Util.EnumOS.OSX) {
+                MacOS.icon();
+            } else {
                 BufferedImage image = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/32.png"))); // need to impliment 16x and 64x
                 ByteBuffer bytebuffer = ImageUtils.readImageToBuffer(image); // What the fuck? ImageUtils.resizeImage(image, 16, 16)
                 if (bytebuffer == null) {
@@ -348,9 +350,7 @@ public abstract class MixinMinecraft {
                     Display.setIcon(new ByteBuffer[]{bytebuffer, ImageUtils.readImageToBuffer(image)});
                     callbackInfo.cancel();
                 }
-            } else if(Util.getOSType() == Util.EnumOS.OSX) {
-                MacOS.icon();
-            }   
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
