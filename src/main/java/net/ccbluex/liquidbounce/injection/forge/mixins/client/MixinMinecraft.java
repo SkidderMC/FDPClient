@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.handler.protocol.ProtocolMod;
 import net.ccbluex.liquidbounce.handler.protocol.api.AttackFixer;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
+import net.ccbluex.liquidbounce.utils.MacOS;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.render.ImageUtils;
@@ -339,15 +340,17 @@ public abstract class MixinMinecraft {
     private void setWindowIcon(CallbackInfo callbackInfo) {
         try {
             if (Util.getOSType() != Util.EnumOS.OSX) {
-                BufferedImage image = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/icon.png")));
-                ByteBuffer bytebuffer = ImageUtils.readImageToBuffer(ImageUtils.resizeImage(image, 16, 16));
+                BufferedImage image = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/32.png"))); // need to impliment 16x and 64x
+                ByteBuffer bytebuffer = ImageUtils.readImageToBuffer(image); // What the fuck? ImageUtils.resizeImage(image, 16, 16)
                 if (bytebuffer == null) {
                     throw new Exception("Error when loading image.");
                 } else {
                     Display.setIcon(new ByteBuffer[]{bytebuffer, ImageUtils.readImageToBuffer(image)});
                     callbackInfo.cancel();
                 }
-            }
+            } else if(Util.getOSType() == Util.EnumOS.OSX) {
+                MacOS.icon();
+            }   
         } catch (Exception e) {
             e.printStackTrace();
         }
