@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayClient
 import java.util.concurrent.LinkedBlockingQueue
