@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.grim
 
-import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C07PacketPlayerDigging
@@ -13,7 +13,7 @@ import net.minecraft.util.EnumFacing
 
 class Grim117 : VelocityMode("Grim1.17") {
 
-    override fun onPacket(event: PacketEvent) {
+    override fun onUpdate(event: UpdateEvent) {
         mc.netHandler.addToSendQueue(
             C03PacketPlayer.C06PacketPlayerPosLook(
                 mc.thePlayer.posX,
