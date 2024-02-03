@@ -322,16 +322,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
      */
     @Overwrite
     public void onLivingUpdate() {
-        FDPClient.eventManager.callEvent(new UpdateEvent());
-        if (mc.currentScreen instanceof NewUi || mc.currentScreen instanceof ClickGui || mc.currentScreen instanceof GuiTeleportation) {
-            mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward);
-            mc.gameSettings.keyBindBack.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindBack);
-            mc.gameSettings.keyBindRight.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindRight);
-            mc.gameSettings.keyBindLeft.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindLeft);
-            mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump);
-            mc.gameSettings.keyBindSprint.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSprint);
-        }
-        
         /**
          * Update Sprint State - Pre
          * - Run Sprint update before UpdateEvent

@@ -31,8 +31,6 @@ class FireballFly : FlyMode("Fireball") {
     private var startingSlot = 0
     private var veloStatus = false
 
-    private var oldUpdateTick = 0
-
     override fun onEnable() {
         veloStatus = FDPClient.moduleManager[Velocity::class.java]!!.state
         FDPClient.moduleManager[Velocity::class.java]!!.state = false
@@ -50,8 +48,6 @@ class FireballFly : FlyMode("Fireball") {
     }
 
     override fun onUpdate(event: UpdateEvent) {
-        if (mc.thePlayer.ticksExisted == oldUpdateTick) return
-        oldUpdateTick = mc.thePlayer.ticksExisted
         mc.timer.timerSpeed = 1.0f
         if (beforeVelo) {
             if (mc.thePlayer.onGround) {

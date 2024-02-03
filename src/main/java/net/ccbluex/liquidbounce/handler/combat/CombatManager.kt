@@ -39,7 +39,7 @@ class CombatManager : Listenable, MinecraftInstance() {
 
         inCombat = false
 
-        if (!lastAttackTimer.hasTimePassed(250)) {
+        if (!lastAttackTimer.hasTimePassed(500)) {
             inCombat = true
             return
         }

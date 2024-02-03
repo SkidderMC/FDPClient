@@ -46,17 +46,18 @@ object SmartSpoof : Module() {
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
-        targetDelay = btDelay.get().toLong()
+        if (mc.thePlayer.getDistanceToEntityBox(event.targetEntity) > 2.6f) {
+            targetDelay = btDelay.get().toLong()
+        }
     }
 
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true)) {
-            if (mc.thePlayer.ticksExisted < 20) return
+        if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true) && delay > 5) {
             if (packet is S12PacketEntityVelocity) targetDelay = velocityDelay.get().toLong()
-            if (packet is S08PacketPlayerPosLook) {
+            if (packet is S08PacketPlayerPosLook || mc.thePlayer.ticksExisted < 20) {
                 targetDelay = 0L
                 while (!packets.isEmpty()) {
                     PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)

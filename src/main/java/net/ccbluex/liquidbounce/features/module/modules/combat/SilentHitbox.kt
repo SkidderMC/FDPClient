@@ -86,7 +86,7 @@ class SilentHitbox : Module() {
 
         val rotationCenter = RotationUtils.limitAngleChange(
             playerRot, targetRot,
-            3f + (Math.random().toFloat() * 0.5f)
+            10f + (Math.random().toFloat() * 0.5f)
         )
 
         rotationCenter.toPlayer(mc.thePlayer)
