@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayClient
@@ -33,13 +34,16 @@ object Blink : Module() {
     private val outgoingValue = BoolValue("OutGoing", true)
     private val inboundValue = BoolValue("Inbound", false)
     private val pulseValue = BoolValue("Pulse", false)
-    private val pulseDelayValue = IntegerValue("PulseDelay", 1000, 100, 5000).displayable { pulseValue.get() }
+    private val minPulseDelayValue = IntegerValue("MinPulseDelay", 1000, 100, 5000).displayable { pulseValue.get() }
+    private val maxPulseDelayValue = IntegerValue("MaxPulseDelay", 1500, 100, 5000)
 
     private val pulseTimer = MSTimer()
+    private var pulseDelay = 0
     private var fakePlayer: EntityOtherPlayerMP? = null
     private val positions = LinkedList<DoubleArray>()
     
     private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayClient>>()
+
 
     override fun onEnable() {
         if (mc.thePlayer == null) return
@@ -51,6 +55,8 @@ object Blink : Module() {
                 fakePlayer!!.copyLocationAndAnglesFrom(mc.thePlayer)
                 fakePlayer!!.rotationYawHead = mc.thePlayer.rotationYawHead
                 mc.theWorld.addEntityToWorld(-1337, fakePlayer)
+            } else {
+                pulseDelay = RandomUtils.nextInt(minPulseDelayValue.get(), maxPulseDelayValue.get())
             }
         }
         packets.clear()
@@ -86,11 +92,12 @@ object Blink : Module() {
                 )
             )
         }
-        if (pulseValue.get() && pulseTimer.hasTimePassed(pulseDelayValue.get().toLong())) {
+        if (pulseValue.get() && pulseTimer.hasTimePassed(pulseDelay.toLong())) {
             synchronized(positions) { positions.clear() }
             BlinkUtils.releasePacket()
             clearPackets()
             pulseTimer.reset()
+            pulseDelay = RandomUtils.nextInt(minPulseDelayValue.get(), maxPulseDelayValue.get())
         }
     }
     

@@ -93,6 +93,7 @@ class FireballFly : FlyMode("Fireball") {
         mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
         mc.gameSettings.keyBindBack.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindBack)
         mc.thePlayer.inventory.currentItem = startingSlot
+        FDPClient.moduleManager[FreeLook::class.java]!!.disable()
     }
 
     override fun onPacket(event: PacketEvent) {

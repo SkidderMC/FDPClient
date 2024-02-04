@@ -100,8 +100,6 @@ class AutoClicker : Module() {
     private var clickBlocked = false
     private var blockTicks = 0
 
-    private var wasDouble = false
-
 
 
     @EventTarget
@@ -113,22 +111,23 @@ class AutoClicker : Module() {
             clickBlocked = false
             blockTicks = 0
 
+            if (doubleClickValue.get()) {
+                var cps = CPSCounter.getCPS(CPSCounter.MouseButton.LEFT)
+                if (cps >= doubleClickCPSValue.get() && doubleClickChanceValue.get() > Random.nextFloat()) {
+                    KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode)
+                }
+            }
 
-           if (!wasDouble) leftLastSwing = System.currentTimeMillis()
-           wasDouble = false
            leftDelay = updateClicks().toLong()
         }
            
            
         if (mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem && rightValue.get() && System.currentTimeMillis() - rightLastSwing >= rightDelay && (!rightBlockOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemBlock) && rightValue.get()) {
             KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
-
-            if (!wasDouble) rightLastSwing = System.currentTimeMillis()
-            wasDouble = false
-            rightDelay = updateClicks().toLong() - 1L
+            rightDelay = updateClicks().toLong()
         }
         
-        if (blockValue.get() && mc.thePlayer.heldItem?.item is ItemSword && leftValue.get() && (!breakStopValue.get() || mc.playerController.curBlockDamageMP == 0F)) {
+        if (blockValue.get() && mc.thePlayer.heldItem?.item is ItemSword && leftValue.get() &&  mc.gameSettings.keyBindAttack.isKeyDown && (!breakStopValue.get() || mc.playerController.curBlockDamageMP == 0F)) {
             mc.gameSettings.keyBindUseItem.pressed = false
 
             doBlock = when(blockMode.get().lowercase()) {
@@ -193,19 +192,6 @@ class AutoClicker : Module() {
     }
     
     private fun updateClicks(): Int {
-        if (doubleClickValue.get()) {
-            var cps = 0
-            if (System.currentTimeMillis() - rightLastSwing < 2L) {
-                cps = CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toInt()
-            } else {
-                cps = CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toInt()
-            }
-            
-            if (cps >= doubleClickCPSValue.get() && doubleClickChanceValue.get() > Random.nextFloat()) {
-                wasDouble = true
-                return Random.nextInt(16, 25)
-            }
-        }
         
         when (modeValue.get().lowercase()) {
             "normal" -> {

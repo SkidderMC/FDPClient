@@ -297,7 +297,7 @@ object Stealer : Module() {
             if (silenceValue.get() && !stillDisplayValue.get()) {
                 FDPClient.hud.addNotification(
                     Notification(
-                        "Closed chest.","!!!",
+                        "Stealer","Closed chest.",
                         NotifyType.INFO
                     )
                 )

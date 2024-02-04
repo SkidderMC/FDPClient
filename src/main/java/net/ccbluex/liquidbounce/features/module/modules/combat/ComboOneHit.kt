@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C0APacketAnimation
 
@@ -22,7 +21,6 @@ import net.minecraft.network.play.client.C0APacketAnimation
 class ComboOneHit : Module() {
 
     private val amountValue = IntegerValue("Packets", 200, 0, 500)
-    private val swingValue = ListValue("SwingMode", arrayOf("Normal","Packet"), "Normal")
     private val onlyAuraValue = BoolValue("OnlyAura", false)
     private val gameBreaking = BoolValue("GameBreaking", false)
 
@@ -32,11 +30,7 @@ class ComboOneHit : Module() {
             mc.netHandler.addToSendQueue(C02PacketUseEntity(event.targetEntity, C02PacketUseEntity.Action.ATTACK))
         }
         fun swingPacket() {
-            when(swingValue.get().lowercase()) {
-                "normal" -> mc.thePlayer.swingItem()
-
-                "packet" -> mc.netHandler.addToSendQueue(C0APacketAnimation())
-            }
+            mc.netHandler.addToSendQueue(C0APacketAnimation())
         }
         if (onlyAuraValue.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state && !FDPClient.moduleManager[InfiniteAura::class.java]!!.state) return
 
