@@ -32,16 +32,16 @@ class FireballFly : FlyMode("Fireball") {
     private var veloStatus = false
 
     override fun onEnable() {
-        veloStatus = FDPClient.moduleManager[Velocity::class.java]!!.state
-        FDPClient.moduleManager[Velocity::class.java]!!.state = false
-        velocitypacket = false
-        beforeVelo = true
-        ticks = 0
         var fbSlot = getFBSlot()
         if (fbSlot == -1) {
             ClientUtils.displayChatMessage("§8[§c§lFireball-Flight§8] §aYou need a fireball to fly.")
             fly.state = false
         } else {
+            veloStatus = FDPClient.moduleManager[Velocity::class.java]!!.state
+            FDPClient.moduleManager[Velocity::class.java]!!.state = false
+            velocitypacket = false
+            beforeVelo = true
+            ticks = 0
             startingSlot = mc.thePlayer.inventory.currentItem
             mc.thePlayer.inventory.currentItem = fbSlot
         }
@@ -55,6 +55,7 @@ class FireballFly : FlyMode("Fireball") {
                 mc.thePlayer.jump()
                 MovementUtils.strafe(0.46f)
                 FDPClient.moduleManager[FreeLook::class.java]!!.enable()
+                ticks = 0
             } else if (ticks == 1) {
                 mc.thePlayer.rotationYaw += 180f
                 mc.thePlayer.rotationPitch = 70f
