@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.utils;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.FileResourcePack;
 import net.minecraft.client.resources.FolderResourcePack;
 import net.minecraft.client.resources.IResourcePack;
@@ -28,6 +29,7 @@ import org.lwjgl.util.glu.GLU;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -38,22 +40,31 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static org.lwjgl.opengl.GL11.glLoadIdentity;
-
 public class CustomSplashProgress {
     private static Drawable d;
     private static volatile boolean pause = false;
     private static volatile boolean done = false;
     private static Thread thread;
     private static volatile Throwable threadError;
+    private static final int angle = 0;
     private static final Lock lock = new ReentrantLock(true);
+    private static CustomSplashProgress.SplashFontRenderer fontRenderer;
     private static final IResourcePack mcPack;
     private static final IResourcePack fmlPack;
     private static IResourcePack miscPack;
+    //private static SplashProgress.Texture logoTexture;
     private static CustomSplashProgress.Texture fontTexture;
     private static CustomSplashProgress.Texture backgroundTexture;
+    //private static SplashProgress.Texture forgeTexture;
     private static Properties config;
     private static boolean enabled;
+    private static boolean rotate;
+    //private static int logoOffset;
+    //private static int backgroundColor;
+    private static int fontColor;
+    private static int barBorderColor;
+    private static int barColor;
+    private static int barBackgroundColor;
     public static final Semaphore mutex;
     private static int max_texture_size;
     private static final IntBuffer buf;
@@ -64,8 +75,16 @@ public class CustomSplashProgress {
         return value;
     }
 
-    private static boolean getBool(boolean def) {
-        return Boolean.parseBoolean(getString("enabled", Boolean.toString(def)));
+    private static boolean getBool(String name, boolean def) {
+        return Boolean.parseBoolean(getString(name, Boolean.toString(def)));
+    }
+
+    private static int getInt(String name, int def) {
+        return Integer.decode(getString(name, Integer.toString(def)));
+    }
+
+    private static int getHex(String name, int def) {
+        return Integer.decode(getString(name, "0x" + Integer.toString(def, 16).toUpperCase()));
     }
 
     public static void start() {
@@ -82,13 +101,23 @@ public class CustomSplashProgress {
             r = new FileReader(configFile);
             config.load(r);
         } catch (IOException var24) {
-            FMLLog.info("Could not load splash.properties, will create a default one");
+            FMLLog.info("Could not load splash.properties, will create a default one", new Object[0]);
         } finally {
             IOUtils.closeQuietly(r);
         }
 
         boolean defaultEnabled = !System.getProperty("os.name").toLowerCase().contains("mac");
-        enabled = getBool(defaultEnabled) && (!FMLClientHandler.instance().hasOptifine() || Launch.blackboard.containsKey("optifine.ForgeSplashCompatible"));
+        enabled = getBool("enabled", defaultEnabled) && (!FMLClientHandler.instance().hasOptifine() || Launch.blackboard.containsKey("optifine.ForgeSplashCompatible"));
+        rotate = getBool("rotate", false);
+        //logoOffset = getInt("logoOffset", 0);
+        //backgroundColor = getHex("background", 16777215);
+        //fontColor = getHex("font", 0);
+        fontColor = Color.WHITE.getRGB();
+        barBorderColor = getHex("barBorder", 12632256);
+        //barColor = getHex("bar", 13319477);
+        barColor = new Color(218, 215, 222, 180).getRGB();
+        //barBackgroundColor = getHex("barBackground", 16777215);
+        barBackgroundColor = new Color(200, 200, 255).getRGB();
         final ResourceLocation fontLoc = new ResourceLocation(getString("fontTexture", "minecraft:textures/font/ascii.png"));
         final ResourceLocation backgroundLoc = new ResourceLocation(getString("backgroundTexture", "fdpclient/misc/splash.png"));
         File miscPackFile = new File(Minecraft.getMinecraft().mcDataDir, getString("resourcePackPath", "resources"));
@@ -98,7 +127,7 @@ public class CustomSplashProgress {
             w = new FileWriter(configFile);
             config.store(w, "Splash screen properties");
         } catch (IOException var22) {
-            FMLLog.log(Level.ERROR, var22, "Could not save the splash.properties file");
+            FMLLog.log(Level.ERROR, var22, "Could not save the splash.properties file", new Object[0]);
         } finally {
             IOUtils.closeQuietly(w);
         }
@@ -106,7 +135,7 @@ public class CustomSplashProgress {
         miscPack = createResourcePack(miscPackFile);
         if (enabled) {
             FMLCommonHandler.instance().registerCrashCallable(new ICrashCallable() {
-                public String call() {
+                public String call() throws Exception {
                     return "' Vendor: '" + GL11.glGetString(7936) + "' Version: '" + GL11.glGetString(7938) + "' Renderer: '" + GL11.glGetString(7937) + "'";
                 }
 
@@ -140,12 +169,19 @@ public class CustomSplashProgress {
 
             getMaxTextureSize();
             thread = new Thread(new Runnable() {
+                private final int barWidth = 400;
+                private final int barHeight = 20;
+                private final int textHeight2 = 20;
+                private final int barOffset = 55;
+
                 public void run() {
                     this.setGL();
                     CustomSplashProgress.fontTexture = new CustomSplashProgress.Texture(fontLoc);
+                    //SplashProgress.logoTexture = new SplashProgress.Texture(logoLoc);
                     CustomSplashProgress.backgroundTexture = new CustomSplashProgress.Texture(backgroundLoc);
+                    //SplashProgress.forgeTexture = new SplashProgress.Texture(forgeLoc);
                     GL11.glEnable(3553);
-                    new SplashFontRenderer();
+                    CustomSplashProgress.fontRenderer = new CustomSplashProgress.SplashFontRenderer();
                     GL11.glDisable(3553);
 
                     for(; !CustomSplashProgress.done; Display.sync(100)) {
@@ -168,10 +204,26 @@ public class CustomSplashProgress {
                         int h = Display.getHeight();
                         GL11.glViewport(0, 0, w, h);
                         GL11.glMatrixMode(5889);
-                        glLoadIdentity();
+                        GL11.glLoadIdentity();
                         GL11.glOrtho(320 - w / 2, 320 + w / 2, 240 + h / 2, 240 - h / 2, -1.0, 1.0);
                         GL11.glMatrixMode(5888);
-                        glLoadIdentity();
+                        GL11.glLoadIdentity();
+
+                        /*this.setColor(SplashProgress.backgroundColor);
+                        GL11.glEnable(3553);
+                        SplashProgress.logoTexture.bind();
+                        GL11.glBegin(7);
+                        SplashProgress.logoTexture.texCoord(0, 0.0F, 0.0F);
+                        GL11.glVertex2f(64.0F, -16.0F);
+                        SplashProgress.logoTexture.texCoord(0, 0.0F, 1.0F);
+                        GL11.glVertex2f(64.0F, 496.0F);
+                        SplashProgress.logoTexture.texCoord(0, 1.0F, 1.0F);
+                        GL11.glVertex2f(576.0F, 496.0F);
+                        SplashProgress.logoTexture.texCoord(0, 1.0F, 0.0F);
+                        GL11.glVertex2f(576.0F, -16.0F);
+                        GL11.glEnd();
+                        GL11.glDisable(3553);*/
+
 
                         int w2 = Display.getWidth();
                         int h2 = Display.getHeight();
@@ -205,6 +257,35 @@ public class CustomSplashProgress {
 
                             GL11.glPopMatrix();
                         }
+                        //this.setColor(SplashProgress.backgroundColor);
+
+                        /*SplashProgress.angle = SplashProgress.angle + 1;
+                        this.setColor(SplashProgress.backgroundColor);
+                        float fw = (float) SplashProgress.forgeTexture.getWidth() / 2.0F / 2.0F;
+                        float fh = (float) SplashProgress.forgeTexture.getHeight() / 2.0F / 2.0F;
+                        if (SplashProgress.rotate) {
+                            float sh = Math.max(fw, fh);
+                            GL11.glTranslatef((float)(320 + w / 2) - sh - (float) SplashProgress.logoOffset, (float)(240 + h / 2) - sh - (float) SplashProgress.logoOffset, 0.0F);
+                            GL11.glRotatef((float) SplashProgress.angle, 0.0F, 0.0F, 1.0F);
+                        } else {
+                            GL11.glTranslatef((float)(320 + w / 2) - fw - (float) SplashProgress.logoOffset, (float)(240 + h / 2) - fh - (float) SplashProgress.logoOffset, 0.0F);
+                        }
+
+                        int f = SplashProgress.angle / 10 % SplashProgress.forgeTexture.getFrames();
+                        GL11.glEnable(3553);
+                        SplashProgress.forgeTexture.bind();
+                        GL11.glBegin(7);
+                        SplashProgress.forgeTexture.texCoord(f, 0.0F, 0.0F);
+                        GL11.glVertex2f(-fw, -fh);
+                        SplashProgress.forgeTexture.texCoord(f, 0.0F, 1.0F);
+                        GL11.glVertex2f(-fw, fh);
+                        SplashProgress.forgeTexture.texCoord(f, 1.0F, 1.0F);
+                        GL11.glVertex2f(fw, fh);
+                        SplashProgress.forgeTexture.texCoord(f, 1.0F, 0.0F);
+                        GL11.glVertex2f(fw, -fh);
+                        GL11.glEnd();
+                        GL11.glDisable(3553);*/
+
 
                         CustomSplashProgress.mutex.acquireUninterruptibly();
                         Display.update();
@@ -218,6 +299,36 @@ public class CustomSplashProgress {
                     this.clearGL();
                 }
 
+                private void setColor(int color) {
+                    GL11.glColor3ub((byte)(color >> 16 & 255), (byte)(color >> 8 & 255), (byte)(color & 255));
+                }
+
+                private void drawBox(int w, int h) {
+                    double paramXStart = 0;
+                    double paramYStart = 0;
+                    double paramXEnd = w;
+                    double paramYEnd = h;
+                    double radius = (double) h / 2;
+
+                    double x1 = paramXStart + radius;
+                    double y1 = paramYStart + radius;
+                    double x2 = paramXEnd - radius;
+                    double y2 = paramYEnd - radius;
+
+                    GL11.glBegin(GL11.GL_POLYGON);
+
+                    double degree = Math.PI / 180;
+                    for (double i = 0; i <= 90; i += 1)
+                        GL11.glVertex2d(x2 + Math.sin(i * degree) * radius, y2 + Math.cos(i * degree) * radius);
+                    for (double i = 90; i <= 180; i += 1)
+                        GL11.glVertex2d(x2 + Math.sin(i * degree) * radius, y1 + Math.cos(i * degree) * radius);
+                    for (double i = 180; i <= 270; i += 1)
+                        GL11.glVertex2d(x1 + Math.sin(i * degree) * radius, y1 + Math.cos(i * degree) * radius);
+                    for (double i = 270; i <= 360; i += 1)
+                        GL11.glVertex2d(x1 + Math.sin(i * degree) * radius, y2 + Math.cos(i * degree) * radius);
+                    GL11.glEnd();
+                }
+
                 private void setGL() {
                     CustomSplashProgress.lock.lock();
 
@@ -228,6 +339,7 @@ public class CustomSplashProgress {
                         throw new RuntimeException(var2);
                     }
 
+                    //GL11.glClearColor((float)(SplashProgress.backgroundColor >> 16 & 255) / 255.0F, (float)(SplashProgress.backgroundColor >> 8 & 255) / 255.0F, (float)(SplashProgress.backgroundColor & 255) / 255.0F, 1.0F);
                     GL11.glDisable(2896);
                     GL11.glDisable(2929);
                     GL11.glEnable(3042);
@@ -257,7 +369,7 @@ public class CustomSplashProgress {
                 }
             });
             thread.setUncaughtExceptionHandler((t, e) -> {
-                FMLLog.log(Level.ERROR, e, "Splash thread Exception");
+                FMLLog.log(Level.ERROR, e, "Splash thread Exception", new Object[0]);
                 CustomSplashProgress.threadError = e;
             });
             thread.start();
@@ -265,17 +377,19 @@ public class CustomSplashProgress {
         }
     }
 
-    public static void getMaxTextureSize() {
+    public static int getMaxTextureSize() {
         if (max_texture_size != -1) {
+            return max_texture_size;
         } else {
             for(int i = 16384; i > 0; i >>= 1) {
                 GL11.glTexImage2D(32868, 0, 6408, i, i, 0, 6408, 5121, (ByteBuffer)null);
                 if (GL11.glGetTexLevelParameteri(32868, 0, 4096) != 0) {
                     max_texture_size = i;
-                    return;
+                    return i;
                 }
             }
 
+            return -1;
         }
     }
 
@@ -331,6 +445,8 @@ public class CustomSplashProgress {
                 d.releaseContext();
                 Display.getDrawable().makeCurrent();
                 fontTexture.delete();
+                //logoTexture.delete();
+                //forgeTexture.delete();
             } catch (Exception e) {
                 e.printStackTrace();
                 disableSplash(e);
@@ -339,11 +455,11 @@ public class CustomSplashProgress {
         }
     }
 
-    private static void disableSplash(Exception e) {
+    private static boolean disableSplash(Exception e) {
         if (disableSplash()) {
             throw new EnhancedRuntimeException(e) {
                 protected void printStackTrace(EnhancedRuntimeException.WrappedPrintStream stream) {
-                    stream.println("CustomSplashProgress has detected a error loading Minecraft.");
+                    stream.println("SplashProgress has detected a error loading Minecraft.");
                     stream.println("This can sometimes be caused by bad video drivers.");
                     stream.println("We have automatically disabeled the new Splash Screen in config/splash.properties.");
                     stream.println("Try reloading minecraft before reporting any errors.");
@@ -352,7 +468,7 @@ public class CustomSplashProgress {
         } else {
             throw new EnhancedRuntimeException(e) {
                 protected void printStackTrace(EnhancedRuntimeException.WrappedPrintStream stream) {
-                    stream.println("CustomSplashProgress has detected a error loading Minecraft.");
+                    stream.println("SplashProgress has detected a error loading Minecraft.");
                     stream.println("This can sometimes be caused by bad video drivers.");
                     stream.println("Please try disabeling the new Splash Screen in config/splash.properties.");
                     stream.println("After doing so, try reloading minecraft before reporting any errors.");
@@ -372,22 +488,37 @@ public class CustomSplashProgress {
         config.setProperty("enabled", "false");
         FileWriter w = null;
 
+        boolean var4;
         try {
             w = new FileWriter(configFile);
             config.store(w, "Splash screen properties");
             return true;
         } catch (IOException var8) {
-            FMLLog.log(Level.ERROR, var8, "Could not save the splash.properties file");
-
+            FMLLog.log(Level.ERROR, var8, "Could not save the splash.properties file", new Object[0]);
+            var4 = false;
         } finally {
             IOUtils.closeQuietly(w);
         }
 
-        return false;
+        return var4;
     }
 
     private static IResourcePack createResourcePack(File file) {
-        return file.isDirectory() ? new FolderResourcePack(file) : new FileResourcePack(file);
+        return (IResourcePack)(file.isDirectory() ? new FolderResourcePack(file) : new FileResourcePack(file));
+    }
+
+    public static void drawVanillaScreen(TextureManager renderEngine) throws LWJGLException {
+        if (!enabled) {
+            Minecraft.getMinecraft().drawSplashScreen(renderEngine);
+        }
+
+    }
+
+    public static void clearVanillaResources(TextureManager renderEngine, ResourceLocation mojangLogo) {
+        if (!enabled) {
+            renderEngine.deleteTexture(mojangLogo);
+        }
+
     }
 
     public static void checkGLError(String where) {
@@ -415,7 +546,7 @@ public class CustomSplashProgress {
 
     private static class SplashFontRenderer extends FontRenderer {
         public SplashFontRenderer() {
-            super(Minecraft.getMinecraft().gameSettings, CustomSplashProgress.fontTexture.location, null, false);
+            super(Minecraft.getMinecraft().gameSettings, CustomSplashProgress.fontTexture.getLocation(), null, false);
             super.onResourceManagerReload(null);
         }
 
@@ -433,11 +564,11 @@ public class CustomSplashProgress {
     }
 
     private static class Texture {
-
         private final ResourceLocation location;
         private final int name;
         private final int width;
         private final int height;
+        private final int frames;
         private final int size;
 
         public Texture(ResourceLocation location) {
@@ -453,11 +584,11 @@ public class CustomSplashProgress {
                 } else {
                     ImageReader reader = readers.next();
                     reader.setInput(stream);
-                    int frames = reader.getNumImages(true);
-                    BufferedImage[] images = new BufferedImage[frames];
+                    this.frames = reader.getNumImages(true);
+                    BufferedImage[] images = new BufferedImage[this.frames];
 
                     int size;
-                    for(size = 0; size < frames; ++size) {
+                    for(size = 0; size < this.frames; ++size) {
                         images[size] = reader.read(size);
                     }
 
@@ -465,11 +596,12 @@ public class CustomSplashProgress {
                     size = 1;
                     this.width = images[0].getWidth();
 
-                    for(this.height = images[0].getHeight(); size / this.width * (size / this.height) < frames; size *= 2) {
+                    for(this.height = images[0].getHeight(); size / this.width * (size / this.height) < this.frames; size *= 2) {
                     }
 
                     this.size = size;
                     GL11.glEnable(3553);
+                    Class var8 = CustomSplashProgress.class;
                     synchronized(CustomSplashProgress.class) {
                         this.name = GL11.glGenTextures();
                         GL11.glBindTexture(3553, this.name);
@@ -480,8 +612,8 @@ public class CustomSplashProgress {
                     GL11.glTexImage2D(3553, 0, 6408, size, size, 0, 32993, 33639, (IntBuffer)null);
                     CustomSplashProgress.checkGLError("Texture creation");
 
-                    for(int i = 0; i * (size / this.width) < frames; ++i) {
-                        for(int j = 0; i * (size / this.width) + j < frames && j < size / this.width; ++j) {
+                    for(int i = 0; i * (size / this.width) < this.frames; ++i) {
+                        for(int j = 0; i * (size / this.width) + j < this.frames && j < size / this.width; ++j) {
                             CustomSplashProgress.buf.clear();
                             BufferedImage image = images[i * (size / this.width) + j];
 
@@ -506,6 +638,30 @@ public class CustomSplashProgress {
             } finally {
                 IOUtils.closeQuietly(s);
             }
+        }
+
+        public ResourceLocation getLocation() {
+            return this.location;
+        }
+
+        public int getName() {
+            return this.name;
+        }
+
+        public int getWidth() {
+            return this.width;
+        }
+
+        public int getHeight() {
+            return this.height;
+        }
+
+        public int getFrames() {
+            return this.frames;
+        }
+
+        public int getSize() {
+            return this.size;
         }
 
         public void bind() {

@@ -24,9 +24,7 @@ import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.ccbluex.liquidbounce.value.*;
-import net.minecraft.client.Minecraft;
 import net.minecraft.util.Vec3;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;

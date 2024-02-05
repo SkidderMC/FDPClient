@@ -39,7 +39,7 @@ import kotlin.math.max
 @ModuleInfo(name = "Hotbar", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HotbarSettings : Module() {
 
-    val hotbarValue = ListValue("HotbarMode", arrayOf("Minecraft", "Rounded", "Full", "LB", "Rise", "Gradient", "Overflow", "Glow", "Glowing", "Dock", "Exhi", "BlueIce", "Win11", "Bread"), "Minecraft")
+    val hotbarValue = ListValue("HotbarMode", arrayOf("Minecraft", "Rounded", "Full", "LB", "Rise", "Gradient", "Overflow", "Glow", "Glowing", "Dock", "Exhi", "BlueIce", "Bread"), "Minecraft")
     private val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255)
     private val hotbarEaseValue = BoolValue("HotbarEase", false)
     private val BlurValue = BoolValue("Blur", false)
@@ -59,49 +59,6 @@ object HotbarSettings : Module() {
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         when {
-            hotbarValue.get() == "Win11" -> {
-                if(BlurValue.get()) { BlurUtils.draw(0F, (sr.scaledHeight - 24).toFloat(), sr.scaledWidth.toFloat(), 24F, 100F) }
-                // render the hotbar bg and items
-                RenderUtils.drawRect(0f, (sr.scaledHeight - 24).toFloat(), sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color(0, 0, 0, 160))
-                RenderHelper.enableGUIStandardItemLighting(); for (item in 0..8) { HotbarItems(item, sr.scaledWidth / 2 - 90 + item * 20 + 13, sr.scaledHeight - 20); HotbarTextOverlay(sr.scaledWidth / 2 - 90 + item * 20 + 13, sr.scaledHeight - 20, null as String?, item) }; RenderHelper.disableStandardItemLighting()
-                RenderHelper.disableStandardItemLighting()
-                // render windows logo and item pos indicator
-                RenderUtils.originalRoundedRect(itemX + 19F, sr.scaledHeight - 3F, itemX + 25F,sr.scaledHeight - 1F, 1F,  Color(68, 129, 230).rgb)
-                RenderUtils.drawImage( ResourceLocation("fdpclient/ui/hotbar/win11.png"), sr.scaledWidth / 2 - 95, sr.scaledHeight - 19, 14, 14)
-                // date and time
-                val dateFormat = SimpleDateFormat("dd/MM/yy")
-                val date = dateFormat.format(System.currentTimeMillis())
-                FontLoaders.F14.drawString(date,
-                    (sr.scaledWidth - FontLoaders.F14.getStringWidth(date) - 4F).toFloat(),sr.scaledHeight - 9F,  Color(255, 255, 255).rgb)
-                val hourFormat = SimpleDateFormat("HH:mm")
-                val time = hourFormat.format(System.currentTimeMillis())
-                FontLoaders.F14.drawString(time,
-                    (sr.scaledWidth - FontLoaders.F14.getStringWidth(time) - 4F).toFloat(),sr.scaledHeight - 18F,  Color(255, 255, 255).rgb)
-                // get distance date takes up
-                val padding = max(FontLoaders.F14.getStringWidth(time), FontLoaders.F14.getStringWidth(date)) + 10
-                // fake icons
-                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/hotbar/1.png"),
-                    ((sr.scaledWidth - padding) - 10).toInt(), sr.scaledHeight - 17, 10, 10)
-                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/hotbar/2.png"),
-                    ((sr.scaledWidth - padding) - 28).toInt(), sr.scaledHeight - 17, 10, 10)
-                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/hotbar/3.png"),
-                    ((sr.scaledWidth - padding) - 46).toInt(), sr.scaledHeight - 17, 10, 10)
-                // lang idicator
-                val loccode = mc.gameSettings.language.uppercase()
-                val lang = loccode.substringBefore("_", "null")
-                val region = loccode.substringAfter("_", "null")
-                FontLoaders.F14.drawString(lang,
-                    ((sr.scaledWidth - padding) - 62F).toFloat(),sr.scaledHeight - 17F,  Color(255, 255, 255).rgb)
-                FontLoaders.F14.drawString(region,
-                    ((sr.scaledWidth - padding) - 62F).toFloat(),sr.scaledHeight - 10F,  Color(255, 255, 255).rgb)
-                // fake expand tray icon
-                val paddingAfter = (max(
-                    FontLoaders.F14.getStringWidth(time),
-                    FontLoaders.F14.getStringWidth(date)
-                ) + 10) + (max(FontLoaders.F14.getStringWidth(lang), FontLoaders.F14.getStringWidth(region)) + 2)
-                RenderUtils.drawImage(ResourceLocation("fdpclient/ui/hotbar/up.png"),
-                    ((sr.scaledWidth - paddingAfter) - 68).toInt(), sr.scaledHeight - 17, 10, 10)
-            }
             hotbarValue.get() ==  "Rise" -> {
                 if(BlurValue.get() && BlurAmount.get() > 1F ) {
                     BlurUtils.draw((i - 91).toFloat(), (sr.scaledHeight - 22).toFloat(), 182F, 22F, BlurAmount.get())

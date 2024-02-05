@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client;
 
-import net.ccbluex.liquidbounce.features.module.modules.client.ColorManager;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 
 public class ColorElement extends IntegerValue {

@@ -11,8 +11,8 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.utils.Colors
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.OutlineShader
@@ -32,15 +32,18 @@ import kotlin.math.roundToInt
 object ItemESP : Module() {
 
     private val entityConvertedPointsMap: MutableMap<EntityItem, DoubleArray> = HashMap()
+    private val nameTags = BoolValue("NameTag", false)
+    private val itemCount = BoolValue("ItemCount", false).displayable { nameTags.get() }
+    private val scaleValue = FloatValue("Scale", 1F, 1F, 4F).displayable { itemCount.get() }
     private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "Exhibition", "LightBox", "ShaderOutline", "ShaderGlow"), "Exhibition")
     private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
-    private val colorRedValue = IntegerValue("R", 0, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorBlueValue = IntegerValue("B", 0, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorRainbowValue = BoolValue("Rainbow", true)
+    private val colorRedValue = IntegerValue("R", 0, 0, 255)
+    private val colorGreenValue = IntegerValue("G", 255, 0, 255)
+    private val colorBlueValue = IntegerValue("B", 0, 0, 255)
+    private val colorThemeClient = BoolValue("ClientTheme", true)
 
     private fun getColor(): Color {
-        return if (colorRainbowValue.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
+        return if (colorThemeClient.get()) ClientTheme.getColor(1) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
     }
 
     @EventTarget
@@ -58,9 +61,10 @@ object ItemESP : Module() {
         if (modeValue.get().equals("LightBox", ignoreCase = true)) {
             for (o in mc.theWorld.loadedEntityList) {
                 if (o !is EntityItem) continue
-                val x = o.posX - mc.renderManager.renderPosX
-                val y = o.posY + 0.5 - mc.renderManager.renderPosY
-                val z = o.posZ - mc.renderManager.renderPosZ
+                val item = o
+                val x = item.posX - mc.renderManager.renderPosX
+                val y = item.posY + 0.5 - mc.renderManager.renderPosY
+                val z = item.posZ - mc.renderManager.renderPosZ
                 GL11.glEnable(3042)
                 GL11.glLineWidth(2.0f)
                 GL11.glColor4f(1f, 1f, 1f, .75f)
@@ -76,6 +80,7 @@ object ItemESP : Module() {
                 GL11.glDisable(3042)
             }
         }
+
         if (modeValue.get().equals("Exhibition", ignoreCase = true)) {
             entityConvertedPointsMap.clear()
             val pTicks = mc.timer.renderPartialTicks
@@ -316,13 +321,6 @@ object ItemESP : Module() {
             } catch (ex: Exception) {
                 alert("An error occurred while rendering all item entities for shader esp")
             }
-            OutlineShader.OUTLINE_SHADER.stopDraw(
-                    if (colorRainbowValue.get()) rainbow() else Color(
-                            colorRedValue.get(),
-                            colorGreenValue.get(),
-                            colorBlueValue.get()
-                    ), 1f, 1f
-            )
         }
 
         @EventTarget
@@ -339,6 +337,35 @@ object ItemESP : Module() {
             }
 
             shader.stopDraw(getColor(), outlineWidth.get(), 1f)
+        }
+
+        if (nameTags.get()) {
+            for (item in mc.theWorld.getLoadedEntityList()) {
+                if (item is EntityItem) {
+                    val string = (item.entityItem.displayName + if (itemCount.get() && item.entityItem.stackSize > 1) " x${item.entityItem.stackSize}" else "")
+                    GL11.glPushMatrix()
+                    GL11.glTranslated(
+                        item.lastTickPosX + (item.posX - item.lastTickPosX) * mc.timer.renderPartialTicks - mc.renderManager.renderPosX,
+                        item.lastTickPosY + (item.posY - item.lastTickPosY) * mc.timer.renderPartialTicks - mc.renderManager.renderPosY - 0.2,
+                        item.lastTickPosZ + (item.posZ - item.lastTickPosZ) * mc.timer.renderPartialTicks - mc.renderManager.renderPosZ
+                    )
+                    GL11.glRotated((-mc.renderManager.playerViewY).toDouble(), 0.0, 1.0, 0.0)
+                    RenderUtils.disableGlCap(GL11.GL_LIGHTING, GL11.GL_DEPTH_TEST)
+                    GL11.glScalef(-scaleValue.get(), -scaleValue.get(), -scaleValue.get())
+                    mc.fontRendererObj.drawString(string, -6F, -30F,
+                        Color(255,255,255).rgb,true)
+                    RenderUtils.enableGlCap(GL11.GL_BLEND)
+                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+                    RenderUtils.resetCaps()
+
+                    // Reset color
+                    GlStateManager.resetColor()
+                    GL11.glColor4f(1F, 1F, 1F, 1F)
+
+                    // Pop
+                    GL11.glPopMatrix()
+                }
+            }
         }
     }
 

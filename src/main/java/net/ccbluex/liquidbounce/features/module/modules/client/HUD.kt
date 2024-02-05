@@ -170,7 +170,7 @@ object HUD : Module() {
                     Fonts.fontTenacityBold40.drawString(name[l].toString(), 5F + Fonts.fontTenacityBold40.getStringWidth(width).toFloat(), 5.5F, ClientTheme.getColor(l * -135).rgb, true)
                     width += name[l].toString()
                 }
-                Fonts.fontTenacityBold35.drawString(other, Fonts.fontTenacityBold40.getStringWidth("FDPCLIENT").toFloat() + 5F, 6.5F, Color(255,255,255).rgb)
+                Fonts.fontTenacityBold35.drawString(other, Fonts.fontTenacityBold40.getStringWidth("FDP").toFloat() + 5F, 6.5F, Color(255,255,255).rgb)
                 GlStateManager.resetColor()
             }
 

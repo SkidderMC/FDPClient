@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.ColorManager
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.utils.MathUtils.toRadians
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.Render
@@ -35,16 +36,12 @@ object JumpCircle : Module() {
     //NewCircle
     val disappearTime = IntegerValue("Time", 1000, 1000,3000)
     val radius = FloatValue("Radius", 2f, 1f,5f)
-    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "Sky", "LiquidSlowly", "Fade", "Mixer"), "Custom")
-    private val saturationValue = FloatValue("Saturation", 1f, 0f, 1f)
-    private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f)
-    private val mixerSecondsValue = IntegerValue("Seconds", 2, 1, 10)
-    //
+    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Theme", "Fade"), "Theme")
+
     private val colorRedValue: IntegerValue = IntegerValue("Red", 255, 0, 255)
     private val colorGreenValue = IntegerValue("Green", 255, 0, 255)
     private val colorBlueValue = IntegerValue("Blue", 255, 0, 255)
-    private val astolfoRainbowOffset = IntegerValue("AstolfoOffset", 5, 1, 20)
-    private val astolfoRainbowIndex = IntegerValue("AstolfoIndex", 109, 1, 300)
+
 
     private val points = mutableMapOf<Int, MutableList<Render>>()
     var jump=false
@@ -113,7 +110,7 @@ object JumpCircle : Module() {
                 (points[entity.entityId] ?: mutableListOf<Render>().also { points[entity.entityId] = it }).add(
                         Render(
                                 entity.posX, entity.entityBoundingBox.minY, entity.posZ, System.currentTimeMillis(),
-                                ColorUtils.astolfoRainbow(counter[0] * 100, astolfoRainbowOffset.get(), astolfoRainbowIndex.get())
+                            ClientTheme.getColor(1)
                         )
                 )
                 counter[0] = counter[0] + 1
@@ -140,10 +137,6 @@ object JumpCircle : Module() {
         var colorRedValue = jumpModule.colorRedValue.get()
         var colorGreenValue = jumpModule.colorGreenValue.get()
         var colorBlueValue = jumpModule.colorBlueValue.get()
-        private var mixerSecondsValue = jumpModule.mixerSecondsValue.get()
-        private var saturationValue = jumpModule.saturationValue.get()
-        private var brightnessValue = jumpModule.brightnessValue.get()
-
         fun draw() {
 
             val dif = (System.currentTimeMillis() - time)
@@ -177,17 +170,7 @@ object JumpCircle : Module() {
         fun getColor(index: Int): Color {
             return when (colorModeValue) {
                 "Custom" -> Color(colorRedValue, colorGreenValue, colorBlueValue)
-                "Rainbow" -> Color(
-                        RenderUtils.getRainbowOpaque(
-                                mixerSecondsValue,
-                                saturationValue,
-                                brightnessValue,
-                                index
-                        )
-                )
-
-                "Slowly" -> ColorUtils.slowlyRainbow(System.nanoTime(), index, saturationValue, brightnessValue)
-                "Mixer" -> ColorManager.getMixedColor(index, mixerSecondsValue)
+                "Theme" -> ClientTheme.getColor(1)
                 else -> ColorUtils.fade(Color(colorRedValue, colorGreenValue, colorBlueValue), index, 100)
             }
         }
