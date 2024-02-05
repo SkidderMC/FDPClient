@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.CPSCounter
+import net.ccbluex.liquidbounce.utils.CPSCounterUtils
 import net.ccbluex.liquidbounce.utils.render.GlowUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import java.awt.Color
@@ -31,7 +31,15 @@ class CPSCounter : Element() {
     private val glowRadius = FloatValue("Glow Radius", 5F, 1F, 8F)
     override fun drawElement(partialTicks: Float): Border {
         val font = fontValue.get()
-        val string: String = if (backGround.get()) "CPS : ${CPSCounter.getCPS(CPSCounter.MouseButton.LEFT)}" + if (rightValue.get()) " | ${CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT)}" else "" else "[CPS : ${CPSCounter.getCPS(CPSCounter.MouseButton.LEFT)}" + if (rightValue.get()) " | ${CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT)}]" else "]"
+        val string: String = if (backGround.get()) "CPS : ${
+            CPSCounterUtils.getCPS(
+                CPSCounterUtils.MouseButton.LEFT)}" + if (rightValue.get()) " | ${
+            CPSCounterUtils.getCPS(
+                CPSCounterUtils.MouseButton.RIGHT)}" else "" else "[CPS : ${
+            CPSCounterUtils.getCPS(
+                CPSCounterUtils.MouseButton.LEFT)}" + if (rightValue.get()) " | ${
+            CPSCounterUtils.getCPS(
+                CPSCounterUtils.MouseButton.RIGHT)}]" else "]"
         if (!backGround.get()) {
         } else {
             RenderUtils.drawRoundedRect(0F, 0F, 10F + font.getStringWidth(string), 10F + font.FONT_HEIGHT, backRounded.get(), Color(0,0,0,backAlpha.get()).rgb)

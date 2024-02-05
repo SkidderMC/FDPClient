@@ -13,14 +13,12 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
-import net.ccbluex.liquidbounce.utils.CPSCounter
+import net.ccbluex.liquidbounce.utils.CPSCounterUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.MathUtils
 import net.minecraft.client.settings.KeyBinding
-import net.minecraft.entity.Entity
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemSword
 import kotlin.random.Random
@@ -112,7 +110,7 @@ class AutoClicker : Module() {
             blockTicks = 0
 
             if (doubleClickValue.get()) {
-                var cps = CPSCounter.getCPS(CPSCounter.MouseButton.LEFT)
+                var cps = CPSCounterUtils.getCPS(CPSCounterUtils.MouseButton.LEFT)
                 if (cps >= doubleClickCPSValue.get() && doubleClickChanceValue.get() > Random.nextFloat()) {
                     KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode)
                 }

@@ -16,11 +16,8 @@ import net.ccbluex.liquidbounce.injection.forge.mixins.accessors.MinecraftForgeC
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolMod;
 import net.ccbluex.liquidbounce.handler.protocol.api.AttackFixer;
-import net.ccbluex.liquidbounce.utils.CPSCounter;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
-import net.ccbluex.liquidbounce.utils.MacOS;
-import net.ccbluex.liquidbounce.utils.MinecraftInstance;
-import net.ccbluex.liquidbounce.utils.RotationUtils;
+import net.ccbluex.liquidbounce.utils.*;
+import net.ccbluex.liquidbounce.utils.CPSCounterUtils;
 import net.ccbluex.liquidbounce.utils.render.ImageUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.block.material.Material;
@@ -237,7 +234,7 @@ public abstract class MixinMinecraft {
      */
     @Overwrite
     public void clickMouse() {
-        CPSCounter.registerClick(CPSCounter.MouseButton.LEFT);
+        CPSCounterUtils.registerClick(CPSCounterUtils.MouseButton.LEFT);
         if (this.leftClickCounter <= 0) {
             if (this.objectMouseOver != null && Objects.requireNonNull(this.objectMouseOver.typeOfHit) != MovingObjectPosition.MovingObjectType.ENTITY) {
                 this.thePlayer.swingItem();
@@ -277,12 +274,12 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "middleClickMouse", at = @At("HEAD"))
     private void middleClickMouse(CallbackInfo ci) {
-        CPSCounter.registerClick(CPSCounter.MouseButton.MIDDLE);
+        CPSCounterUtils.registerClick(CPSCounterUtils.MouseButton.MIDDLE);
     }
 
     @Inject(method = "rightClickMouse", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;rightClickDelayTimer:I", shift = At.Shift.AFTER))
     private void rightClickMouse(final CallbackInfo callbackInfo) {
-        CPSCounter.registerClick(CPSCounter.MouseButton.RIGHT);
+        CPSCounterUtils.registerClick(CPSCounterUtils.MouseButton.RIGHT);
 
     }
 

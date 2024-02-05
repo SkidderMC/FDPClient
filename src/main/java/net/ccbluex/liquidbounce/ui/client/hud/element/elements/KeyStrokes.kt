@@ -12,9 +12,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
-import net.ccbluex.liquidbounce.utils.CPSCounter
+import net.ccbluex.liquidbounce.utils.CPSCounterUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.*
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.util.ResourceLocation
@@ -80,8 +79,12 @@ class KeyStrokes : Element(5.0, 25.0, 1.5F, Side.default()) {
            val fontRenderer = fontValue.get()
            drawRoundedCornerRect(0f, 32f, 23f, 47f, 4f, if (mc.gameSettings.keyBindAttack.isKeyDown) { Color(65, 65, 75, 255).rgb } else { Color(95, 95, 105, 255).rgb } )
            drawRoundedCornerRect(24f, 32f, 47f, 47f, 4f, if (mc.gameSettings.keyBindUseItem.isKeyDown) { Color(65, 65, 75, 255).rgb } else { Color(95, 95, 105, 255).rgb } )
-            val juulLeft = if (CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toFloat() != 0f) { CPSCounter.getCPS(CPSCounter.MouseButton.LEFT).toString() + " cps" } else { "Left" }
-           val juulRight = if (CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toFloat() != 0f) { CPSCounter.getCPS(CPSCounter.MouseButton.RIGHT).toString() + "CPS" } else { "Right" }
+            val juulLeft = if (CPSCounterUtils.getCPS(
+                    CPSCounterUtils.MouseButton.LEFT).toFloat() != 0f) { CPSCounterUtils.getCPS(
+                CPSCounterUtils.MouseButton.LEFT).toString() + " cps" } else { "Left" }
+           val juulRight = if (CPSCounterUtils.getCPS(
+                   CPSCounterUtils.MouseButton.RIGHT).toFloat() != 0f) { CPSCounterUtils.getCPS(
+               CPSCounterUtils.MouseButton.RIGHT).toString() + "CPS" } else { "Right" }
            Fonts.font28.drawString(juulLeft, 15.5f - (fontRenderer.getStringWidth(juulLeft) / 2f) + 1f, 39.5f - (fontRenderer.FONT_HEIGHT / 2f) + 2f, textColor.rgb)
            Fonts.font28.drawString(juulRight, 39.5f - (fontRenderer.getStringWidth(juulRight).toFloat() / 2f) + 1f, 39.5f - (fontRenderer.FONT_HEIGHT.toFloat() / 2f) + 2f, textColor.rgb)
         }
