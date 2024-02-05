@@ -23,7 +23,9 @@ public abstract class FontLoaders {
     public static final CFontRenderer C12 = new CFontRenderer(getComfortaa(12), true, true);
     public static final CFontRenderer C16 = new CFontRenderer(getComfortaa(16), true, true);
     public static final CFontRenderer C18 = new CFontRenderer(getComfortaa(18), true, true);
-    public static final CFontRenderer M16 = new CFontRenderer(getMojangles(16), true, true);
+    public static CFontRenderer SF20 = new CFontRenderer(getSF(20), true, true);
+    public static CFontRenderer SF30 = new CFontRenderer(getSF(30), true, true);
+    public static CFontRenderer SF40 = new CFontRenderer(getSF(40), true, true);
     public static final ArrayList<CFontRenderer> fonts = new ArrayList<>();
 
     public static Font getFont(int size) {
@@ -53,13 +55,11 @@ public abstract class FontLoaders {
         return font;
     }
 
-    private static Font getMojangles(int size) {
+    public static Font getSF(int size) {
         Font font;
         try {
-            InputStream is = MinecraftInstance.mc.getResourceManager()
-                    .getResource(new ResourceLocation("fdpclient/font/mojangles.ttf")).getInputStream();
-            font = Font.createFont(0, is);
-            font = font.deriveFont(Font.PLAIN, size);
+            font = Font.createFont(0, Minecraft.getMinecraft().getResourceManager()
+                    .getResource(new ResourceLocation("fdpclient/font/sfui.ttf")).getInputStream()).deriveFont(Font.PLAIN, (float) size);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Error loading font");
@@ -67,5 +67,6 @@ public abstract class FontLoaders {
         }
         return font;
     }
+
 
 }

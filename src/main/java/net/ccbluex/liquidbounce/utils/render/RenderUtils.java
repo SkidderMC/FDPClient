@@ -2834,4 +2834,269 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.alphaFunc(GL_GREATER, (float) (limit * .01));
     }
 
+    /** rounded rect outline
+     * @author Shoroa
+     * @param x : X pos
+     * @param y : Y pos
+     * @param x1 : X2 pos
+     * @param y1 : Y2 pos
+     * @param radius : round of edges;
+     * @param lineWidth : width of outline line;
+     * @param colour : color;
+     */
+    public static void drawRoundedOutline(float x, float y, float x1, float y1, float radius,float lineWidth, int colour) {
+        glPushAttrib(0);
+        glScaled(0.5D, 0.5D, 0.5D);
+        x *= 2.0D;
+        y *= 2.0D;
+        x1 *= 2.0D;
+        y1 *= 2.0D;
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        ColorUtils.setColour(colour);
+        glEnable(GL_LINE_SMOOTH);
+        glLineWidth(lineWidth);
+        glBegin(GL_LINE_LOOP);
+        int i;
+        for (i = 0; i <= 90; i += 3)
+            glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y + radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        for (i = 90; i <= 180; i += 3)
+            glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        for (i = 0; i <= 90; i += 3)
+            glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        for (i = 90; i <= 180; i += 3)
+            glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y + radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        glEnd();
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_BLEND);
+        glEnable(GL_TEXTURE_2D);
+        glScaled(2.0D, 2.0D, 2.0D);
+        glPopAttrib();
+        glLineWidth(1);
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    /**
+     * @author Shoroa
+     * @param x : X pos
+     * @param y : Y pos
+     * @param x1 : X2 pos
+     * @param y1 : Y2 pos
+     * @param radius : round of edges;
+     * @param color : color;
+     * @param color2 : color2;
+     * @param color3 : color3;
+     * @param color4 : color4;
+     */
+    public static void drawRoundedGradientRectCorner(float x, float y, float x1, float y1, float radius, int color, int color2, int color3, int color4) {
+        ColorUtils.setColour(-1);
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+
+        glPushAttrib(0);
+        glScaled(0.5D, 0.5D, 0.5D);
+        x *= 2.0D;
+        y *= 2.0D;
+        x1 *= 2.0D;
+        y1 *= 2.0D;
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        ColorUtils.setColour(color);
+        glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+        glBegin(6);
+        int i;
+        for (i = 0; i <= 90; i += 3)
+            glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y + radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        ColorUtils.setColour(color2);
+        for (i = 90; i <= 180; i += 3)
+            glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        ColorUtils.setColour(color3);
+        for (i = 0; i <= 90; i += 3)
+            glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        ColorUtils.setColour(color4);
+        for (i = 90; i <= 180; i += 3)
+            glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y + radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        glEnd();
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_BLEND);
+        glEnable(GL_TEXTURE_2D);
+        glScaled(2.0D, 2.0D, 2.0D);
+        glPopAttrib();
+
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glShadeModel(GL_FLAT);
+        ColorUtils.setColour(-1);
+    }
+    public static void drawRoundedGradientRectCorner(float x, float y, float x1, float y1, float radius, int color, int color2) {
+        ColorUtils.setColour(-1);
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+
+        glPushAttrib(0);
+        glScaled(0.5D, 0.5D, 0.5D);
+        x *= 2.0D;
+        y *= 2.0D;
+        x1 *= 2.0D;
+        y1 *= 2.0D;
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        ColorUtils.setColour(color);
+        glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+        glBegin(6);
+        int i;
+        for (i = 0; i <= 90; i += 3)
+            glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y + radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        ColorUtils.setColour(color);
+        for (i = 90; i <= 180; i += 3)
+            glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        ColorUtils.setColour(color2);
+        for (i = 0; i <= 90; i += 3)
+            glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        ColorUtils.setColour(color2);
+        for (i = 90; i <= 180; i += 3)
+            glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y + radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        glEnd();
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_BLEND);
+        glEnable(GL_TEXTURE_2D);
+        glScaled(2.0D, 2.0D, 2.0D);
+        glPopAttrib();
+
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glShadeModel(GL_FLAT);
+        ColorUtils.setColour(-1);
+    }
+    /**
+     * @param x : X pos
+     * @param y : Y pos
+     * @param x1 : X2 pos
+     * @param y1 : Y2 pos
+     * @param width : width of line;
+     * @param radius : round of edges;
+     * @param color : color;
+     * @param color2 : color2;
+     * @param color3 : color3;
+     * @param color4 : color4;
+     */
+    public static void drawRoundedGradientOutlineCorner(float x, float y, float x1, float y1, float width, float radius, int color, int color2, int color3, int color4) {
+        ColorUtils.setColour(-1);
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+
+        glPushAttrib(0);
+        glScaled(0.5D, 0.5D, 0.5D);
+        x *= 2.0D;
+        y *= 2.0D;
+        x1 *= 2.0D;
+        y1 *= 2.0D;
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        ColorUtils.setColour(color);
+        glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+        glLineWidth(width);
+        glBegin(GL_LINE_LOOP);
+        int i;
+        for (i = 0; i <= 90; i += 3)
+            glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y + radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        ColorUtils.setColour(color2);
+        for (i = 90; i <= 180; i += 3)
+            glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        ColorUtils.setColour(color3);
+        for (i = 0; i <= 90; i += 3)
+            glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        ColorUtils.setColour(color4);
+        for (i = 90; i <= 180; i += 3)
+            glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y + radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        glEnd();
+        glLineWidth(1);
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_BLEND);
+        glEnable(GL_TEXTURE_2D);
+        glScaled(2.0D, 2.0D, 2.0D);
+        glPopAttrib();
+
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glShadeModel(GL_FLAT);
+        ColorUtils.setColour(-1);
+    }
+    public static void drawRoundedGradientOutlineCorner(float x, float y, float x1, float y1, float width, float radius, int color, int color2) {
+        ColorUtils.setColour(-1);
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+
+        glPushAttrib(0);
+        glScaled(0.5D, 0.5D, 0.5D);
+        x *= 2.0F;
+        y *= 2.0F;
+        x1 *= 2.0F;
+        y1 *= 2.0F;
+        glEnable(GL_BLEND);
+        glDisable(GL_TEXTURE_2D);
+        ColorUtils.setColour(color);
+        glEnable(GL_LINE_SMOOTH);
+        glShadeModel(GL_SMOOTH);
+        glLineWidth(width);
+        glBegin(GL_LINE_LOOP);
+        int i;
+        for (i = 0; i <= 90; i += 3)
+            glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y + radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        ColorUtils.setColour(color);
+        for (i = 90; i <= 180; i += 3)
+            glVertex2d(x + radius + Math.sin(i * Math.PI / 180.0D) * radius * -1.0D, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius * -1.0D);
+        ColorUtils.setColour(color2);
+        for (i = 0; i <= 90; i += 3)
+            glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y1 - radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        ColorUtils.setColour(color2);
+        for (i = 90; i <= 180; i += 3)
+            glVertex2d(x1 - radius + Math.sin(i * Math.PI / 180.0D) * radius, y + radius + Math.cos(i * Math.PI / 180.0D) * radius);
+        glEnd();
+        glLineWidth(1);
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glDisable(GL_BLEND);
+        glEnable(GL_TEXTURE_2D);
+        glScaled(2.0D, 2.0D, 2.0D);
+        glPopAttrib();
+
+
+        glEnable(GL_TEXTURE_2D);
+        glDisable(GL_BLEND);
+        glDisable(GL_LINE_SMOOTH);
+        glShadeModel(GL_FLAT);
+        ColorUtils.setColour(-1);
+    }
+
 }

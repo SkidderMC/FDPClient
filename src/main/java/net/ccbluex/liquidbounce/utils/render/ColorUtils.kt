@@ -13,20 +13,13 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.*
 import java.util.regex.Pattern
-import kotlin.math.abs
-import kotlin.math.ceil
-import kotlin.math.max
-import kotlin.math.min
+import kotlin.math.*
 
 object ColorUtils {
 
     private val COLOR_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]")
     private val startTime = System.currentTimeMillis()
 
-    @JvmStatic
-    fun getBackgroundBrighterColor(): Color {
-        return Color(185, 185, 185, 80)
-    }
     @JvmField
     val hexColors = IntArray(16)
 
@@ -166,21 +159,6 @@ object ColorUtils {
         return color3
     }
 
-    fun blendColors(fractions: FloatArray?, colors: Array<Color>?, progress: Float): Color? {
-        requireNotNull(fractions) { "Fractions can't be null" }
-        requireNotNull(colors) { "Colours can't be null" }
-        if (fractions.size == colors.size) {
-            val getFractionBlack = getFraction(fractions, progress)
-            val range = floatArrayOf(fractions[getFractionBlack[0]], fractions[getFractionBlack[1]])
-            val colorRange = arrayOf(colors[getFractionBlack[0]], colors[getFractionBlack[1]])
-            val max = range[1] - range[0]
-            val value = progress - range[0]
-            val weight = value / max
-            return blend(colorRange[0], colorRange[1], (1.0f - weight).toDouble())
-        }
-        throw IllegalArgumentException("Fractions and colours must have equal number of elements")
-    }
-
     private fun getFraction(fractions: FloatArray, progress: Float): IntArray {
         var startPoint: Int
         val range = IntArray(2)
@@ -215,6 +193,11 @@ object ColorUtils {
         return Color.getHSBColor((abs(((((System.currentTimeMillis() - startTime).toInt() + index * indexOffset) / timeSplit.toFloat()) % 2) - 1) * (bigest - lowest)) + lowest, saturation, brightness)
     }
 
+    @JvmStatic
+    fun hslRainbow(index: Int, speed: Float): Color {
+        return Color.getHSBColor((abs(((((System.currentTimeMillis() - startTime).toInt() - index * 200) / speed) % 2) - 1) * (0.3F)) + 0.55F, 0.8F, 1F)
+    }
+
     fun interpolate(oldValue: Double, newValue: Double, interpolationValue: Double): Double {
         return oldValue + (newValue - oldValue) * interpolationValue
     }
@@ -231,6 +214,11 @@ object ColorUtils {
 
         return Color(resultColor.red, resultColor.green, resultColor.blue, interpolateInt(color1.alpha, color2.alpha, amount.toDouble()))
 
+    }
+
+    @JvmStatic
+    fun astolfo(index: Int, speed: Float): Color {
+        return Color.getHSBColor((abs(((((System.currentTimeMillis() - startTime).toInt() - index * 200) / speed) % 2) - 1) * (0.3F)) + 0.55F, 0.55F, 1F)
     }
 
     @JvmStatic
@@ -389,6 +377,16 @@ object ColorUtils {
         return Color(color1.red + ((color2.red - color1.red) * percent).toInt(), color1.green + ((color2.green - color1.green) * percent).toInt(), color1.blue + ((color2.blue - color1.blue) * percent).toInt(), color1.alpha + ((color2.alpha - color1.alpha) * percent).toInt())
     }
 
+    fun mixColors(color1: Color, color2: Color, ms: Double, offset: Int): Color {
+        val timer = (System.currentTimeMillis() / 1E+8 * ms) * 4E+5
+        val percent =  (sin(timer + offset * 0.55f) + 1) * 0.5f
+        val inverse_percent = 1.0 - percent
+        val redPart = (color1.red * percent + color2.red * inverse_percent).toInt()
+        val greenPart = (color1.green * percent + color2.green * inverse_percent).toInt()
+        val bluePart = (color1.blue * percent + color2.blue * inverse_percent).toInt()
+        return Color(redPart, greenPart, bluePart)
+    }
+
     private fun toRGB(n: Int, n2: Int, n3: Int, n4: Int): Int {
         return (n4 and 0xFF shl 24) or (n3 and 0xFF shl 16) or (n2 and 0xFF shl 8) or (n and 0xFF)
     }
@@ -400,6 +398,15 @@ object ColorUtils {
     @JvmStatic
     fun setColor(color: Int) {
         setColorAlpha(color)
+    }
+
+    @JvmStatic
+    fun setColour(colour: Int) {
+        val a = (colour shr 24 and 0xFF) / 255.0f
+        val r = (colour shr 16 and 0xFF) / 255.0f
+        val g = (colour shr 8 and 0xFF) / 255.0f
+        val b = (colour and 0xFF) / 255.0f
+        GL11.glColor4f(r, g, b, a)
     }
 
     private fun setColorAlpha(color: Int) {
