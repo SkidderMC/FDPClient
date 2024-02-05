@@ -115,13 +115,14 @@ class AutoClicker : Module() {
                     KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode)
                 }
             }
-
-           leftDelay = updateClicks().toLong()
+            leftLastSwing = System.currentTimeMillis()
+            leftDelay = updateClicks().toLong()
         }
            
            
         if (mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem && rightValue.get() && System.currentTimeMillis() - rightLastSwing >= rightDelay && (!rightBlockOnlyValue.get() || mc.thePlayer.heldItem?.item is ItemBlock) && rightValue.get()) {
             KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
+            rightLastSwing = System.currentTimeMillis()
             rightDelay = updateClicks().toLong()
         }
         
