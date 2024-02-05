@@ -76,6 +76,17 @@ public class Fonts {
     @FontDetails(fontName = "Tenacity Bold", fontSize = 40)
     public static GameFontRenderer fontTenacityBold40;
 
+    @FontDetails(fontName = "SFApple24", fontSize = 24)
+    public static GameFontRenderer SFApple24;
+    @FontDetails(fontName = "SFApple30", fontSize = 30)
+    public static GameFontRenderer SFApple30;
+    @FontDetails(fontName = "SFApple35", fontSize = 35)
+    public static GameFontRenderer SFApple35;
+    @FontDetails(fontName = "SFApple40", fontSize = 40)
+    public static GameFontRenderer SFApple40;
+    @FontDetails(fontName = "SFApple50", fontSize = 50)
+    public static GameFontRenderer SFApple50;
+
 
     @FontDetails(fontName = "Minecraft Font")
     public static final FontRenderer minecraftFont = Minecraft.getMinecraft().fontRendererObj;
@@ -108,6 +119,11 @@ public class Fonts {
         fontTenacity40 = new GameFontRenderer(getFont("tenacity.ttf", 40));
         fontMainMenu60 = new GameFontRenderer(getFont("mainmenu.ttf", 60));
         fontCheck42 = new GameFontRenderer(getFont("check.ttf", 42));
+        SFApple40 = new GameFontRenderer(getFont("SFApple", 40));
+        SFApple30 = new GameFontRenderer(getFont("SFApple", 30));
+        SFApple35 = new GameFontRenderer(getFont("SFApple", 35));
+        SFApple50 = new GameFontRenderer(getFont("SFApple", 50));
+        SFApple24 = new GameFontRenderer(getFont("SFApple", 24));
 
         initFonts();
 

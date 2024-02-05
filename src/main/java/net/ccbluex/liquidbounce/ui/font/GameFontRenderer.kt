@@ -52,6 +52,12 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
 
     fun drawString(s: String, x: Float, y: Float, color: Int) = drawString(s, x, y, color, false)
 
+
+    fun drawStringFade(s: String, x: Float, y: Float, color: Color) {
+        drawString(s, x+0.7F, y+0.7F, Color(0,0,0,color.alpha).rgb, false)
+        drawString(s, x, y, color.rgb, false)
+    }
+
     override fun drawStringWithShadow(text: String, x: Float, y: Float, color: Int) = drawString(text, x, y, color, true)
 
     fun drawCenteredString(s: String, x: Float, y: Float, color: Int, shadow: Boolean) = drawString(s, x - getStringWidth(s) / 2F, y, color, shadow)

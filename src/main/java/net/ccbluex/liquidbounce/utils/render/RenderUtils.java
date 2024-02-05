@@ -2666,8 +2666,12 @@ public final class RenderUtils extends MinecraftInstance {
         tessellator.draw();
     }
 
-    public static void drawHead(ResourceLocation skin, int x, int y, int width, int height) {
-        GL11.glColor4f(1F, 1F, 1F, 1F);
+    public static void drawHead(ResourceLocation skin, int x, int y, int width, int height, int color) {
+        float f3 = (float) (color >> 24 & 255) / 255.0F;
+        float f = (float) (color >> 16 & 255) / 255.0F;
+        float f1 = (float) (color >> 8 & 255) / 255.0F;
+        float f2 = (float) (color & 255) / 255.0F;
+        GlStateManager.color(f, f1, f2, f3);
         mc.getTextureManager().bindTexture(skin);
         RenderUtils.drawScaledCustomSizeModalRect(x, y, 8F, 8F, 8, 8, width, height,
                 64F, 64F);

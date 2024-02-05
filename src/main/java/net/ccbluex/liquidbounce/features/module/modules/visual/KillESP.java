@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.features.module.modules.client.ColorManager;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
+import net.ccbluex.liquidbounce.handler.combat.CombatManager;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.AnimationUtils;
 import net.ccbluex.liquidbounce.utils.render.BlendUtils;
@@ -92,6 +93,7 @@ public class KillESP extends Module {
     private double start;
     private float al = 0;
     private AxisAlignedBB bb;
+    private CombatManager combat;
     private KillAura aura;
     private long lastMS = System.currentTimeMillis();
     private long lastDeltaMS = 0L;
@@ -103,13 +105,13 @@ public class KillESP extends Module {
 
     @Override
     public void onInitialize() {
-        aura = FDPClient.moduleManager.getModule(KillAura.class);
+        combat = FDPClient.combatManager;
     }
 
     @EventTarget
     public void onTick(TickEvent event) {
         if (JelloMode.get())
-            al = AnimationUtils.changer(al, (aura.getCurrentTarget() != null ? jelloFadeSpeedValue.get() : -jelloFadeSpeedValue.get()), 0F, colorAlphaValue.get() / 255.0F);
+            al = AnimationUtils.changer(al, (combat.getTarget() != null ? jelloFadeSpeedValue.get() : -jelloFadeSpeedValue.get()), 0F, colorAlphaValue.get() / 255.0F);
     }
 
     @EventTarget
@@ -351,8 +353,8 @@ public class KillESP extends Module {
             lastMS = System.currentTimeMillis() - lastDeltaMS;
         }
 
-        if (aura.getCurrentTarget() != null) {
-            entity = aura.getCurrentTarget();
+        if (combat.getTarget() != null) {
+            entity = combat.getTarget();
             bb = entity.getEntityBoundingBox();
         }
 
@@ -403,7 +405,7 @@ public class KillESP extends Module {
         post3D();
     }
     private void renderDefaultMode(Render3DEvent event) {
-        EntityLivingBase target = aura.getCurrentTarget();
+        EntityLivingBase target = combat.getTarget();
         if (target != null) {
             Color color = (target.hurtTime > 0) ? ColorUtils.reAlpha(getColor(target), colorAlphaValue.get()) : new Color(235, 40, 40, colorAlphaValue.get());
             RenderUtils.drawPlatforms(target, color);
@@ -411,7 +413,7 @@ public class KillESP extends Module {
     }
 
     private void renderSimsMode(Render3DEvent event) {
-        EntityLivingBase target = aura.getCurrentTarget();
+        EntityLivingBase target = combat.getTarget();
         if (target != null) {
             renderESP();
             int colorRGB = (target.hurtTime <= 0) ? new Color(80, 255, 80, 200).getRGB() : new Color(255, 0, 0, 200).getRGB();
@@ -420,7 +422,7 @@ public class KillESP extends Module {
     }
 
     private void renderLiesMode(Render3DEvent event) {
-        final EntityLivingBase target = aura.getCurrentTarget();
+        final EntityLivingBase target = combat.getTarget();
 
         if (target == null) {
             return;
@@ -510,7 +512,7 @@ public class KillESP extends Module {
 
                 Color boxColor;
                 if (livingEntity.hurtTime <= 0) {
-                    if (livingEntity == aura.getCurrentTarget()) {
+                    if (livingEntity == combat.getTarget()) {
                         boxColor = new Color(25, 230, 0, 170);
                     } else {
                         boxColor = new Color(10, 250, 10, 170);
@@ -541,7 +543,7 @@ public class KillESP extends Module {
 
                 Color boxColor;
                 if (livingEntity.hurtTime <= 0) {
-                    if (livingEntity == aura.getCurrentTarget()) {
+                    if (livingEntity == combat.getTarget()) {
                         boxColor = new Color(25, 230, 0, 170);
                     } else {
                         boxColor = new Color(10, 250, 10, 170);
@@ -558,7 +560,7 @@ public class KillESP extends Module {
     }
 
     private void renderZavzMode(Render3DEvent event) {
-        final EntityLivingBase target = aura.getCurrentTarget();
+        final EntityLivingBase target = combat.getTarget();
 
         if (target == null) {
             return;
@@ -651,7 +653,7 @@ public class KillESP extends Module {
     }
 
     private void renderZavz2Mode(Render3DEvent event) {
-        final EntityLivingBase target = aura.getCurrentTarget();
+        final EntityLivingBase target = combat.getTarget();
 
         if (target == null) {
             return;
@@ -722,7 +724,7 @@ public class KillESP extends Module {
         final Tracers tracers = FDPClient.moduleManager.getModule(Tracers.class);
         if (tracers == null) return;
 
-        final EntityLivingBase target = aura.getCurrentTarget();
+        final EntityLivingBase target = combat.getTarget();
 
         if (target == null) {
             return;
@@ -738,11 +740,11 @@ public class KillESP extends Module {
 
         GL11.glBegin(GL11.GL_LINES);
 
-        int dist = (int)(Objects.requireNonNull(aura.getCurrentTarget()).getDistanceToEntity(mc.thePlayer) * 2);
+        int dist = (int)(Objects.requireNonNull(combat.getTarget()).getDistanceToEntity(mc.thePlayer) * 2);
 
         if (dist > 255) dist = 255;
 
-        tracers.drawTraces(aura.getCurrentTarget(), getColor(aura.getCurrentTarget()), false);
+        tracers.drawTraces(combat.getTarget(), getColor(combat.getTarget()), false);
 
         GL11.glEnd();
 
