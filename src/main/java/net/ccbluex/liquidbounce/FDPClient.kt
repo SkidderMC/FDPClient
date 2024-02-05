@@ -170,6 +170,7 @@ object FDPClient {
             fileManager.accountsConfig,
             fileManager.friendsConfig,
             fileManager.specialConfig,
+            fileManager.themeConfig,
             fileManager.hudConfig,
             fileManager.xrayConfig
         )

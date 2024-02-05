@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 import com.google.common.collect.Iterables
 import com.google.common.collect.Lists
 import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
@@ -54,13 +55,14 @@ class ScoreboardElement(
     private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 0, 0, 255)
 
     private val rectValue = BoolValue("Rect", false)
-    private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Rainbow"), "Custom")
+    private val rectColorModeValue = ListValue("Rect-Color", arrayOf("Custom", "Theme"), "Custom")
     private val rectColorRedValue = IntegerValue("Rect-R", 0, 0, 255)
     private val rectColorGreenValue = IntegerValue("Rect-G", 111, 0, 255)
     private val rectColorBlueValue = IntegerValue("Rect-B", 255, 0, 255)
     private val rectColorBlueAlpha = IntegerValue("Rect-Alpha", 255, 0, 255)
 
-    private val rainbowBarValue = BoolValue("RainbowBar", false)
+    private val themeBarValue = BoolValue("Theme Bar", false)
+    private val borderAlphaValue = IntegerValue("Border Alpha", 10, 0, 255)
     private val shadowValue = BoolValue("ShadowText", false)
     private val serverValue = ListValue("ServerIp", arrayOf("None", "ClientName", "Website"), "ClientName")
     private val noPointValue = BoolValue("NoPoints", true)
@@ -125,14 +127,14 @@ class ScoreboardElement(
         val maxHeight = scoreCollection.size * fontRenderer.FONT_HEIGHT
         val l1 = -maxWidth - 3 - if (rectValue.get()) 3 else 0
 
-        if(rainbowBarValue.get()) {
-            Gui.drawRect(l1 - 7, -6, 9, - 5, ColorUtils.rainbow().rgb)
+        if(themeBarValue.get()) {
+            Gui.drawRect(l1 - 7, -6, 9, - 5, ClientTheme.getColorWithAlpha(1, borderAlphaValue.get()).rgb)
         }
         // draw main rect?
                 Gui.drawRect(l1 - 7, -5, 9, maxHeight + fontRenderer.FONT_HEIGHT + 5, backColor)
-    
 
-        
+
+
         shadowRenderUtils.drawShadowWithCustomAlpha(l1 - 7f, -5f, -l1+16f, maxHeight + fontRenderer.FONT_HEIGHT + 10f, 255f)
         scoreCollection.forEachIndexed { index, score ->
             val team = scoreboard.getPlayersTeam(score.playerName)
@@ -191,9 +193,9 @@ class ScoreboardElement(
                     GL11.glScalef(scale, scale, scale)
                         RenderUtils.newDrawRect(
                             l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F,  -2F,
-                            if (side.horizontal == Side.Horizontal.LEFT) -5F else 5F, 
+                            if (side.horizontal == Side.Horizontal.LEFT) -5F else 5F,
                             (maxHeight + fontRenderer.FONT_HEIGHT).toFloat(),
-                            if (shadowColorMode.get().equals("background", true)) 
+                            if (shadowColorMode.get().equals("background", true))
                                 Color(backgroundColorRedValue.get(), backgroundColorGreenValue.get(), backgroundColorBlueValue.get()).rgb
                             else
                                 Color(shadowColorRedValue.get(), shadowColorGreenValue.get(), shadowColorBlueValue.get()).rgb)
@@ -207,7 +209,7 @@ class ScoreboardElement(
                     GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
                         RenderUtils.quickDrawRect(
                             l1.toFloat() + if (side.horizontal == Side.Horizontal.LEFT) 2F else -2F, 2f,
-                            if (side.horizontal == Side.Horizontal.LEFT) -5F else 5F, 
+                            if (side.horizontal == Side.Horizontal.LEFT) -5F else 5F,
                             (maxHeight + fontRenderer.FONT_HEIGHT).toFloat())
                     GlStateManager.enableTexture2D()
                     GlStateManager.disableBlend()

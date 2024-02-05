@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.client.gui.GuiTeleportation;
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme;
 import net.ccbluex.liquidbounce.ui.client.gui.colortheme.GuiTheme;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.ServerUtils;
@@ -46,38 +46,38 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
     @Inject(method = "drawScreen", at = @At("RETURN"))
     private void drawScreen(CallbackInfo callbackInfo) {
         Fonts.minecraftFont.drawStringWithShadow(
-                "§" + HUD.INSTANCE.getColorGuiInGameValue().getValue() + "Username : §a" + mc.getSession().getUsername(),
+                "§" + ClientTheme.INSTANCE.getColor(90).getRGB() + "Username : §a" + mc.getSession().getUsername(),
                 6f,
                 6f,
                 0xffffff);
         if (!mc.isIntegratedServerRunning()) {
             Fonts.minecraftFont.drawStringWithShadow(
-                    "§" + HUD.INSTANCE.getColorGuiInGameValue().getValue() + "Server : §a" + mc.getCurrentServerData().serverIP,
+                    "§" + ClientTheme.INSTANCE.getColor(90).getRGB() + "Server : §a" + mc.getCurrentServerData().serverIP,
                     6f,
                     16f,
                     0xffffff);
             Fonts.minecraftFont.drawStringWithShadow(
-                    "§" + HUD.INSTANCE.getColorGuiInGameValue().getValue() + "Brand : §a" + mc.getCurrentServerData().gameVersion,
+                    "§" + ClientTheme.INSTANCE.getColor(90).getRGB() + "Brand : §a" + mc.getCurrentServerData().gameVersion,
                     6f,
                     26f,
                     0xffffff);
             Fonts.minecraftFont.drawStringWithShadow(
-                    "§" + HUD.INSTANCE.getColorGuiInGameValue().getValue() + "Protocol : §a" + mc.getCurrentServerData().version,
+                    "§" + ClientTheme.INSTANCE.getColor(90).getRGB() + "Protocol : §a" + mc.getCurrentServerData().version,
                     6f,
                     36f,
                     0xffffff);
             Fonts.minecraftFont.drawStringWithShadow(
-                    "§" + HUD.INSTANCE.getColorGuiInGameValue().getValue() + "Ping : §a" + mc.getCurrentServerData().pingToServer,
+                    "§" + ClientTheme.INSTANCE.getColor(90).getRGB() + "Ping : §a" + mc.getCurrentServerData().pingToServer,
                     6f,
                     46f,
                     0xffffff);
             Fonts.minecraftFont.drawStringWithShadow(
-                    "§" + HUD.INSTANCE.getColorGuiInGameValue().getValue() +"Players : §a" + mc.getCurrentServerData().populationInfo,
+                    "§" + ClientTheme.INSTANCE.getColor(90).getRGB() +"Players : §a" + mc.getCurrentServerData().populationInfo,
                     6f,
                     56f,
                     0xffffff);
             Fonts.minecraftFont.drawStringWithShadow(
-                    "§" + HUD.INSTANCE.getColorGuiInGameValue().getValue() + "Health : §a" + mc.thePlayer.getHealth(),
+                    "§" + ClientTheme.INSTANCE.getColor(90).getRGB() + "Health : §a" + mc.thePlayer.getHealth(),
                     6f,
                     66f,
                     0xffffff);

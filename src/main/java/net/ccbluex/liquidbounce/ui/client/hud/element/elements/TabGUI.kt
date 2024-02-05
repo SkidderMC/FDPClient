@@ -8,12 +8,12 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -32,7 +32,7 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
     private val greenValue = IntegerValue("Rectangle Green", 111, 0, 255)
     private val blueValue = IntegerValue("Rectangle Blue", 255, 0, 255)
     private val alphaValue = IntegerValue("Rectangle Alpha", 255, 0, 255)
-    private val rectangleRainbow = BoolValue("Rectangle Rainbow", false)
+    private val rectangleTheme = BoolValue("Rectangle Theme", false)
     private val backgroundRedValue = IntegerValue("Background Red", 0, 0, 255)
     private val backgroundGreenValue = IntegerValue("Background Green", 0, 0, 255)
     private val backgroundBlueValue = IntegerValue("Background Blue", 0, 0, 255)
@@ -43,7 +43,7 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
     private val borderGreenValue = IntegerValue("Border Green", 0, 0, 255)
     private val borderBlueValue = IntegerValue("Border Blue", 0, 0, 255)
     private val borderAlphaValue = IntegerValue("Border Alpha", 10, 0, 255)
-    private val borderRainbow = BoolValue("Border Rainbow", false)
+    private val borderTheme = BoolValue("Border Theme", false)
     private val arrowsValue = BoolValue("Arrows", false)
     private val fontValue = FontValue("Font", Fonts.font35)
     private val textShadow = BoolValue("TextShadow", true)
@@ -79,19 +79,19 @@ class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
         val fontRenderer = fontValue.get()
 
         // Color
-        val color = if (!rectangleRainbow.get()) {
+        val color = if (!rectangleTheme.get()) {
             Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get())
         } else {
-            ColorUtils.rainbowWithAlpha(alphaValue.get())
+            ClientTheme.getColorWithAlpha(1, alphaValue.get())
         }
 
         val backgroundColor = Color(backgroundRedValue.get(), backgroundGreenValue.get(), backgroundBlueValue.get(),
             backgroundAlphaValue.get())
 
-        val borderColor = if (!borderRainbow.get()) {
+        val borderColor = if (!borderTheme.get()) {
             Color(borderRedValue.get(), borderGreenValue.get(), borderBlueValue.get(), borderAlphaValue.get())
         } else {
-            ColorUtils.rainbowWithAlpha(borderAlphaValue.get())
+            ClientTheme.getColorWithAlpha(1, borderAlphaValue.get())
         }
 
         // Draw

@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -48,33 +49,23 @@ class Text(
         val DECIMAL_FORMAT = DecimalFormat("#.##")
         val NO_DECIMAL_FORMAT = DecimalFormat("#")
     }
-
     val displayString = TextValue("DisplayText", "")
     private val shadowValue = BoolValue("Shadow", false)
     private val shadowStrength = FloatValue("Shadow-Strength", 1F, 0.01F, 8F).displayable { shadowValue.get() }
-    private val redValue = IntegerValue("Red", 255, 0, 255)
-    private val greenValue = IntegerValue("Green", 255, 0, 255)
-    private val blueValue = IntegerValue("Blue", 255, 0, 255)
-    private val alphaValue = IntegerValue("Alpha", 255, 0, 255)
-    val colorModeValue = ListValue("Color", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
-    private val shadow = BoolValue("Shadow", false)
+    private val shadow = BoolValue("TextShadow", false)
+    private val fontValue = FontValue("Font", Fonts.font40)
     val rectValue = ListValue("Rect", arrayOf("Normal", "RNormal", "OneTap", "Skeet", "Rounded", "None"), "None")
-    val rectColorModeValue = ListValue("RectColor", arrayOf("Custom", "Rainbow", "AnotherRainbow", "SkyRainbow"), "Custom")
-    private val rectRedValue = IntegerValue("RectRed", 0, 0, 255)
-    private val rectGreenValue = IntegerValue("RectGreen", 0, 0, 255)
-    private val rectBlueValue = IntegerValue("RectBlue", 0, 0, 255)
-    private val rectAlphaValue = IntegerValue("RectAlpha", 255, 0, 255)
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
     private val rectRoundValue = FloatValue("RectRoundingMultiplier", 1.5F, 0.1F, 4F)
-    private val rainbowSpeed = IntegerValue("RainbowSpeed", 10, 1, 10)
-    private val rainbowIndex = IntegerValue("RainbowIndex", 1, 1, 20)
-    private val fontValue = FontValue("Font", Fonts.font40)
 
     private var editMode = false
     private var editTicks = 0
     private var prevClick = 0L
 
+    private var suggestion = mutableListOf<String>()
+    private var autoComplete = ""
     private var displayText = display
+    private var pointer = 0
 
     private val display: String
         get() {
@@ -101,10 +92,10 @@ class Text(
                 "zdp" -> return mc.thePlayer.posZ.toString()
                 "velocity" -> return DECIMAL_FORMAT.format(sqrt(mc.thePlayer.motionX * mc.thePlayer.motionX + mc.thePlayer.motionZ * mc.thePlayer.motionZ))
                 "ping" -> return "${mc.thePlayer.ping}"
-                "speed" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
+                "speed" -> return DECIMAL_FORMAT.format(MovementUtils.getSpeed())
                 "bps" -> return DECIMAL_FORMAT.format(MovementUtils.bps)
-                "health" -> return DECIMAL_FORMAT.format(mc.thePlayer.health)
                 "counter" -> return DECIMAL_FORMAT.format("" + mc.thePlayer.currentEquippedItem.stackSize)
+                "health" -> return DECIMAL_FORMAT.format(mc.thePlayer.health)
                 "yaw" -> return DECIMAL_FORMAT.format(mc.thePlayer.rotationYaw)
                 "pitch" -> return DECIMAL_FORMAT.format(mc.thePlayer.rotationPitch)
                 "attackDist" -> return if (FDPClient.combatManager.target != null) mc.thePlayer.getDistanceToEntity(FDPClient.combatManager.target).toString() + " Blocks" else "Hasn't attacked"
@@ -124,6 +115,7 @@ class Text(
                 CPSCounterUtils.MouseButton.LEFT).toString()
             "mcps" -> return CPSCounterUtils.getCPS(CPSCounterUtils.MouseButton.MIDDLE).toString()
             "rcps" -> return CPSCounterUtils.getCPS(CPSCounterUtils.MouseButton.RIGHT).toString()
+            "currentconfig" -> FDPClient.configManager.nowConfig
             else -> null // Null = don't replace
         }
     }
@@ -157,40 +149,30 @@ class Text(
 
         return result.toString()
     }
-
     /**
      * Draw element
      */
     override fun drawElement(partialTicks: Float): Border {
-        val color = Color(redValue.get(), greenValue.get(), blueValue.get(), alphaValue.get())
-        val colorNoAlpha = Color(redValue.get(), greenValue.get(), blueValue.get())
+
 
         val fontRenderer = fontValue.get()
-
-
-        val rectColor = when (rectColorModeValue.get().lowercase()) {
-            "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
-            "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
-            "anotherrainbow" -> ColorUtils.fade(Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()), 100, rainbowIndex.get()).rgb
-            else -> Color(rectRedValue.get(), rectGreenValue.get(), rectBlueValue.get(), rectAlphaValue.get()).rgb
-        }
         val expand = fontRenderer.FONT_HEIGHT * rectExpandValue.get()
         when (rectValue.get().lowercase()) {
             "normal" -> {
-                RenderUtils.drawRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, rectColor)
+                RenderUtils.drawRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, ClientTheme.getColor(1))
             }
 
             "rounded" -> {
-                RenderUtils.drawRoundedCornerRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, 2 + (expand / 4) * rectRoundValue.get(), rectColor)
+                RenderUtils.drawRoundedCornerRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, 2 + (expand / 4) * rectRoundValue.get(), ClientTheme.getColor(1).rgb)
             }
 
             "rnormal" -> {
                 RenderUtils.drawRect(-expand, -expand - 1, fontRenderer.getStringWidth(displayText) + expand, -expand, ColorUtils.rainbow())
-                RenderUtils.drawRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, rectColor)
+                RenderUtils.drawRect(-expand, -expand, fontRenderer.getStringWidth(displayText) + expand, fontRenderer.FONT_HEIGHT + expand, ClientTheme.getColor(1))
             }
             "onetap" -> {
                 RenderUtils.drawRect(-4.0f, -8.0f, (fontRenderer.getStringWidth(displayText) + 3).toFloat(), fontRenderer.FONT_HEIGHT.toFloat(), Color(43, 43, 43).rgb)
-                RenderUtils.drawGradientSidewaysH(-3.0, -7.0, fontRenderer.getStringWidth(displayText) + 2.0, -3.0, Color(rectColor).darker().rgb, rectColor)
+                RenderUtils.drawGradientSidewaysH(-3.0, -7.0, fontRenderer.getStringWidth(displayText) + 2.0, -3.0, Color(ClientTheme.getColor(1).rgb).darker().rgb, ClientTheme.getColor(1).rgb)
             }
             "skeet" -> {
                 RenderUtils.drawRect(-11.0, -11.0, (fontRenderer.getStringWidth(displayText) + 10).toDouble(), fontRenderer.FONT_HEIGHT.toDouble() + 8.0, Color(0, 0, 0).rgb)
@@ -199,31 +181,21 @@ class Text(
                 RenderUtils.drawOutLineRect(-4.0, -4.0, (fontRenderer.getStringWidth(displayText) + 3).toDouble(), fontRenderer.FONT_HEIGHT.toDouble() + 1.0, 1.0, Color(18, 18, 18).rgb, Color(0, 0, 0).rgb)
             }
         }
+
         if (shadowValue.get()) {
             GL11.glTranslated(-renderX, -renderY, 0.0)
             GL11.glPushMatrix()
             ShadowUtils.shadow(shadowStrength.get(), {
                 GL11.glPushMatrix()
                 GL11.glTranslated(renderX, renderY, 0.0)
-                fontRenderer.drawString(
-                    displayText, 0F*scale, 0F*scale, when (colorModeValue.get().lowercase()) {
-                        "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
-                        "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
-                        "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
-                        else -> colorNoAlpha.rgb
-                    }, false)
+                fontRenderer.drawString(displayText, 0F*scale, 0F*scale, if (ClientTheme.textValue.get()) Color.WHITE.rgb else getColor(1).rgb, false)
                 GL11.glPopMatrix()
             }, {})
             GL11.glPopMatrix()
             GL11.glTranslated(renderX, renderY, 0.0)
         }
-            fontRenderer.drawString(
-                displayText, 0F, 0F, when (colorModeValue.get().lowercase()) {
-                    "rainbow" -> ColorUtils.hslRainbow(rainbowIndex.get(), indexOffset = 100 * rainbowSpeed.get()).rgb
-                    "skyrainbow" -> ColorUtils.skyRainbow(rainbowIndex.get(), 1F, 1F, rainbowSpeed.get().toDouble()).rgb
-                    "anotherrainbow" -> ColorUtils.fade(color, 100, rainbowIndex.get()).rgb
-                    else -> color.rgb
-                }, shadow.get())
+
+        fontRenderer.drawString(displayText, 0F, 0F, if (ClientTheme.textValue.get()) Color.WHITE.rgb else getColor(1).rgb, shadow.get())
 
 
         if (editMode && mc.currentScreen is GuiHudDesigner && editTicks <= 40) {
@@ -249,6 +221,97 @@ class Text(
         if (editTicks > 80) editTicks = 0
 
         displayText = if (editMode) displayString.get() else display
+
+
+        var suggestStr = ""
+        var foundPlaceHolder = false
+        for (i in displayText.length - 1 downTo 0 step 1) {
+            if (displayText[i].toString() == "%") {
+                var placeHolderCounter = 1
+                var z = i
+
+                for (j in z downTo 0 step 1) {
+                    if (displayText[j].toString() == "%") placeHolderCounter++
+                }
+
+                if (placeHolderCounter % 2 == 0) {
+                    try {
+                        suggestStr = displayText.substring(i, displayText.length).replace("%", "")
+                        foundPlaceHolder = true
+                    } catch (e: Exception) {
+                        e.printStackTrace() // and then ignore
+                    }
+                }
+
+                break
+            }
+        }
+        autoComplete = ""
+
+        if (!foundPlaceHolder)
+            suggestion.clear()
+        else suggestion = listOf(
+            "x",
+            "y",
+            "z",
+            "xInt",
+            "yInt",
+            "zInt",
+            "xdp",
+            "ydp",
+            "zdp",
+            "velocity",
+            "ping",
+            "health",
+            "maxHealth",
+            "healthInt",
+            "maxHealthInt",
+            "yaw",
+            "pitch",
+            "yawInt",
+            "pitchInt",
+            "bps",
+            "inBound",
+            "outBound",
+            "hurtTime",
+            "onGround",
+            "userName",
+            "clientName",
+            "clientVersion",
+            "clientCreator",
+            "fps",
+            "date",
+            "time",
+            "serverIp",
+            "cps", "lcps",
+            "mcps",
+            "rcps",
+            "portalVersion",
+            "watchdogLastMin",
+            "staffLastMin",
+            "wdStatus",
+            "sessionTime",
+            "worldTime"
+        ).filter { it.startsWith(suggestStr, true) && it.length > suggestStr.length }.sortedBy { it.length }.reversed()
+            .toMutableList()
+
+        pointer = pointer.coerceIn(0, (suggestion.size - 1).coerceAtLeast(0))
+
+        // may require sth
+        if (suggestion.size > 0) {
+            autoComplete = suggestion[pointer].substring(
+                (suggestStr.length).coerceIn(0, suggestion[pointer].length),
+                suggestion[pointer].length
+            )
+            suggestion.replaceAll { s ->
+                "§7$suggestStr§r${
+                    s.substring(
+                        (suggestStr.length).coerceIn(0, s.length),
+                        s.length
+                    )
+                }"
+            }
+        }
     }
 
     override fun handleMouseClick(x: Double, y: Double, mouseButton: Int) {
@@ -262,7 +325,6 @@ class Text(
             editMode = false
         }
     }
-
     override fun handleKey(c: Char, keyCode: Int) {
         if (editMode && mc.currentScreen is GuiHudDesigner) {
             if (keyCode == Keyboard.KEY_BACK) {
@@ -281,11 +343,7 @@ class Text(
             updateElement()
         }
     }
-
-    fun setColor(c: Color): Text {
-        redValue.set(c.red)
-        greenValue.set(c.green)
-        blueValue.set(c.blue)
-        return this
+    fun getColor(index : Int) : Color {
+        return  ClientTheme.getColor(index)
     }
 }

@@ -1,12 +1,17 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -37,13 +42,13 @@ class Inventory : Element(300.0, 50.0, 1F, Side(Side.Horizontal.RIGHT, Side.Vert
     private val fontGreenValue = IntegerValue("FontGreen", 255, 0, 255)
     private val fontBlueValue = IntegerValue("FontBlue", 255, 0, 255)
     private val titleValue = ListValue("Title", arrayOf("Center", "Left", "Right", "None"), "Left")
-    private val bdRainbow = BoolValue("BDRainbow", false)
-    private val fontRainbow = BoolValue("FontRainbow", false)
+    private val bdColorTheme = BoolValue("BDColorTheme", false)
+    private val fontColorTheme = BoolValue("FontColorTheme", false)
     private val fontValue = FontValue("Font", Fonts.font35)
 
     override fun drawElement(partialTicks: Float): Border {
-        val borderColor = if (bdRainbow.get()) { ColorUtils.rainbow() } else { Color(bdRedValue.get(), bdGreenValue.get(), bdBlueValue.get()) }
-        val fontColor = if (fontRainbow.get()) { ColorUtils.rainbow() } else { Color(fontRedValue.get(), fontGreenValue.get(), fontBlueValue.get()) }
+        val borderColor = if (bdColorTheme.get()) { ClientTheme.getColor(1) } else { Color(bdRedValue.get(), bdGreenValue.get(), bdBlueValue.get()) }
+        val fontColor = if (fontColorTheme.get()) { ClientTheme.getColor(1) } else { Color(fontRedValue.get(), fontGreenValue.get(), fontBlueValue.get()) }
         val backgroundColor = Color(bgRedValue.get(), bgGreenValue.get(), bgBlueValue.get(), bgAlphaValue.get())
         val font = fontValue.get()
         val startY = if (!titleValue.equals("None")) { -(6 + font.FONT_HEIGHT) } else { 0 }.toFloat()

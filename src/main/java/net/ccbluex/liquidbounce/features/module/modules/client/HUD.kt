@@ -72,7 +72,6 @@ object HUD : Module() {
     private val uiEffectValue = BoolValue("UIEffect", true)
     val buttonShadowValue = BoolValue("ShadowButton", true).displayable  { uiEffectValue.get() }
     val UiShadowValue = ListValue("UIEffectMode", arrayOf("Shadow", "Glow", "None"), "Shadow").displayable  { uiEffectValue.get() }
-    val ColorGuiInGameValue = IntegerValue("ColorGuiInGame", 0, 0, 9)
     val inventoryParticle = BoolValue("InventoryParticle", false).displayable  { uiEffectValue.get() }
 
     // CAMERA
@@ -85,7 +84,7 @@ object HUD : Module() {
 
     // ArrayList
     private val arrayList = BoolValue("ArrayList", true)
-    val shadowValue = ListValue("TextShadowMode", arrayOf("LiquidBounce", "Outline", "Default", "Autumn"), "Autumn").displayable { arrayList.get() }
+    val shadowValue = ListValue("TextShadowMode", arrayOf("Normal", "LiquidBounce", "Outline", "Default", "Autumn"), "Normal").displayable { arrayList.get() }
     private val arrayListValue = BoolValue("ArrayListAnimation", true).displayable { arrayList.get() }
     val arraylistXAxisAnimSpeedValue = IntegerValue("ArraylistXAxisAnimSpeed", 10, 5, 20).displayable { arrayListValue.get() }
     val arraylistXAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistXAxisAnimType").displayable { arrayListValue.get() }

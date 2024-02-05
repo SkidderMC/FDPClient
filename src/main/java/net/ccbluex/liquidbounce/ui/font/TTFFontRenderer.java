@@ -3,16 +3,16 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
+
 package net.ccbluex.liquidbounce.ui.font;
 
+import net.ccbluex.liquidbounce.ui.font.smoth.FontRenderer;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.MathHelper;
-import org.jetbrains.annotations.NotNull;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Vector2f;
-
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -134,9 +134,23 @@ public class TTFFontRenderer {
             BufferedImage characterImage = new BufferedImage(MathHelper.ceiling_double_int(width), MathHelper.ceiling_double_int(height), BufferedImage.TYPE_INT_ARGB);
 
             // The graphics of the character image.
-            Graphics2D graphics = getGraphics2D(characterImage, font);
+            Graphics2D graphics = (Graphics2D) characterImage.getGraphics();
+
+            // Sets the font to the input font/
+            graphics.setFont(font);
+
+            // Sets the color to white with no alpha.
+            graphics.setColor(new Color(255, 255, 255, 0));
+
+            // Fills the entire image with the color above, makes it transparent.
+            graphics.fillRect(0, 0, characterImage.getWidth(), characterImage.getHeight());
+
+            // Sets the color to white to draw the character.
+            graphics.setColor(Color.WHITE);
 
             // Enables anti-aliasing so the font doesn't have aliasing.
+            //graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            //graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             graphics.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             graphics.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, this.fractionalMetrics ? RenderingHints.VALUE_FRACTIONALMETRICS_ON : RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
 
@@ -155,24 +169,6 @@ public class TTFFontRenderer {
 
         // Returns the filled character data array.
         return characterData;
-    }
-
-    @NotNull
-    private static Graphics2D getGraphics2D(BufferedImage characterImage, Font font) {
-        Graphics2D graphics = (Graphics2D) characterImage.getGraphics();
-
-        // Sets the font to the input font/
-        graphics.setFont(font);
-
-        // Sets the color to white with no alpha.
-        graphics.setColor(new Color(255, 255, 255, 0));
-
-        // Fills the entire image with the color above, makes it transparent.
-        graphics.fillRect(0, 0, characterImage.getWidth(), characterImage.getHeight());
-
-        // Sets the color to white to draw the character.
-        graphics.setColor(Color.WHITE);
-        return graphics;
     }
 
     /**
@@ -223,6 +219,15 @@ public class TTFFontRenderer {
         GlStateManager.bindTexture(0);
     }
 
+
+    public void drawOutlineStringWithoutGL(String s, float x , float y, int color, FontRenderer fontRenderer) {
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2 - 1), (int) (y * 2), Color.BLACK.getRGB());
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2 + 1), (int) (y * 2), Color.BLACK.getRGB());
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2), (int) (y * 2 - 1), Color.BLACK.getRGB());
+        fontRenderer.drawString(ColorUtils.stripColor(s), (int) (x * 2), (int) (y * 2 + 1), Color.BLACK.getRGB());
+        fontRenderer.drawString(s, (int) (x * 2), (int) (y * 2), color);
+    }
+
     /**
      * Renders the given string.
      *
@@ -250,8 +255,6 @@ public class TTFFontRenderer {
         renderString(text, x, y, color, false);
     }
 
-
-
     /**
      * Renders the given string.
      *
@@ -263,7 +266,7 @@ public class TTFFontRenderer {
      */
     private void renderString(String text, float x, float y, int color, boolean shadow) {
         // Returns if the text is empty.
-        if (text.isEmpty()) return;
+        if (text.length() == 0) return;
 
         // Pushes the matrix to store gl values.
         GL11.glPushMatrix();
@@ -272,8 +275,8 @@ public class TTFFontRenderer {
         GlStateManager.scale(0.5, 0.5, 1);
 
         // Removes half the margin to render in the right spot.
-        x -= (float) MARGIN / 2;
-        y -= (float) MARGIN / 2;
+        x -= MARGIN / 2;
+        y -= MARGIN / 2;
 
         // Adds 0.5 to x and y.
         x += 0.5F;
@@ -316,7 +319,7 @@ public class TTFFontRenderer {
             if (previous == COLOR_INVOKER) continue;
 
             // Sets the color if the character is the color invoker and the character index is less than the length.
-            if (character == COLOR_INVOKER) {
+            if (character == COLOR_INVOKER && i < length) {
 
                 // The color index of the character after the current character.
                 int index = "0123456789abcdefklmnor".indexOf(text.toLowerCase(Locale.ENGLISH).charAt(i + 1));
@@ -332,7 +335,7 @@ public class TTFFontRenderer {
                     characterData = regularData;
 
                     // Clamps the index just to be safe in case an odd character somehow gets in here.
-                    if (index < 0) index = 15;
+                    if (index < 0 || index > 15) index = 15;
 
                     // Adds 16 to the color index to get the darker shadow color.
                     if (shadow) index += 16;
@@ -354,7 +357,7 @@ public class TTFFontRenderer {
                 else if (index == 20)
                     // Sets the character data to the italics type.
                     characterData = italicsData;
-                else {
+                else if (index == 21) {
                     // Resets the style.
                     obfuscated = false;
                     strikethrough = false;
@@ -431,7 +434,7 @@ public class TTFFontRenderer {
             if (previous == COLOR_INVOKER) continue;
 
             // Sets the color if the character is the color invoker and the character index is less than the length.
-            if (character == COLOR_INVOKER) {
+            if (character == COLOR_INVOKER && i < length) {
 
                 // The color index of the character after the current character.
                 int index = "0123456789abcdefklmnor".indexOf(text.toLowerCase(Locale.ENGLISH).charAt(i + 1));
@@ -458,7 +461,7 @@ public class TTFFontRenderer {
         }
 
         // Returns the width.
-        return width + (float) MARGIN / 2;
+        return width + MARGIN / 2;
     }
 
     /**
@@ -490,7 +493,7 @@ public class TTFFontRenderer {
             if (previous == COLOR_INVOKER) continue;
 
             // Sets the color if the character is the color invoker and the character index is less than the length.
-            if (character == COLOR_INVOKER) {
+            if (character == COLOR_INVOKER && i < length) {
 
                 // The color index of the character after the current character.
                 int index = "0123456789abcdefklmnor".indexOf(text.toLowerCase(Locale.ENGLISH).charAt(i + 1));
@@ -517,7 +520,7 @@ public class TTFFontRenderer {
         }
 
         // Returns the height.
-        return height / 2 - (float) MARGIN / 2;
+        return height / 2 - MARGIN / 2;
     }
 
     /**
@@ -604,7 +607,7 @@ public class TTFFontRenderer {
             int green = (i >> 1 & 1) * 170 + thingy;
 
             // The blue value of the color.
-            int blue = (i & 1) * 170 + thingy;
+            int blue = (i >> 0 & 1) * 170 + thingy;
 
             // Increments the red by 85, not sure why does this in minecraft's font renderer.
             if (i == 6) red += 85;
@@ -628,7 +631,7 @@ public class TTFFontRenderer {
     /**
      * Class that holds the data for each character.
      */
-    static class CharacterData {
+    class CharacterData {
 
         /**
          * The character the data belongs to.

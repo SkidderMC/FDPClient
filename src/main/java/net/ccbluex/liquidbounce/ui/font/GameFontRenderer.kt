@@ -40,7 +40,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
         FONT_HEIGHT = height
     }
 
-    private fun getColorIndex2(type: Char): Int {
+    fun getColorIndex2(type: Char): Int {
         return when (type) {
             in '0'..'9' -> type - '0'
             in 'a'..'f' -> type - 'a' + 10
@@ -52,11 +52,12 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
 
     fun drawString(s: String, x: Float, y: Float, color: Int) = drawString(s, x, y, color, false)
 
-
     fun drawStringFade(s: String, x: Float, y: Float, color: Color) {
         drawString(s, x+0.7F, y+0.7F, Color(0,0,0,color.alpha).rgb, false)
         drawString(s, x, y, color.rgb, false)
     }
+
+    fun stringWidth(text: CharSequence?) {}
 
     override fun drawStringWithShadow(text: String, x: Float, y: Float, color: Int) = drawString(text, x, y, color, true)
 
@@ -78,14 +79,15 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
 
         if (shadow) {
             when {
-                HUD.shadowValue.get().equals("LiquidBounce", ignoreCase = true) -> drawText(currentText, x + 1f, currY + 1f, Color(0, 0, 0, 150).rgb, true)
-                HUD.shadowValue.get().equals("Default", ignoreCase = true) -> drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
-                HUD.shadowValue.get().equals("Autumn", ignoreCase = true) -> drawText(currentText, x + 1f, currY + 1f, Color(20, 20, 20, 200).rgb, true)
-                HUD.shadowValue.get().equals("Outline", ignoreCase = true) -> {
-                    drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
-                    drawText(currentText, x - 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
-                    drawText(currentText, x + 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
-                    drawText(currentText, x - 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
+                HUD.shadowValue.get().equals("Normal", ignoreCase = true) ->    drawText(currentText, x + 1f, currY + 1f, Color(20, 20, 20, 200).rgb, true)
+            HUD.shadowValue.get().equals("LiquidBounce", ignoreCase = true) -> drawText(currentText, x + 1f, currY + 1f, Color(0, 0, 0, 150).rgb, true)
+            HUD.shadowValue.get().equals("Default", ignoreCase = true) -> drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
+            HUD.shadowValue.get().equals("Autumn", ignoreCase = true) -> drawText(currentText, x + 1f, currY + 1f, Color(20, 20, 20, 200).rgb, true)
+            HUD.shadowValue.get().equals("Outline", ignoreCase = true) -> {
+                drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
+                drawText(currentText, x - 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
+                drawText(currentText, x + 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
+                drawText(currentText, x - 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
                 }
             }
         }
@@ -96,7 +98,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
     private fun drawText(text: String?, x: Float, y: Float, color: Int, ignoreColor: Boolean, rainbow: Boolean = false): Int {
         if (text == null)
             return 0
-        if (text.isEmpty())
+        if (text.isNullOrEmpty())
             return x.toInt()
 
         GlStateManager.translate(x - 1.5, y + 0.5, 0.0)
@@ -214,7 +216,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
     private fun drawText(text: String?, x: Float, y: Float, colorHex: Int, ignoreColor: Boolean): Int {
         if (text == null)
             return 0
-        if (text.isEmpty())
+        if (text.isNullOrEmpty())
             return x.toInt()
 
         GlStateManager.translate(x - 1.5, y + 0.5, 0.0)
@@ -394,6 +396,16 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
     override fun onResourceManagerReload(resourceManager: IResourceManager) {}
 
     override fun bindTexture(location: ResourceLocation?) {}
+
+
+    fun drawOutlineStringWithoutGL(s: String, x: Float, y: Float, color: Int,font: FontRenderer) {
+
+        font.drawString(ColorUtils.stripColor(s), (x * 2 - 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
+        font.drawString(ColorUtils.stripColor(s), (x * 2 + 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
+        font.drawString(ColorUtils.stripColor(s), (x * 2).toInt(), (y * 2 - 1).toInt(), Color.BLACK.rgb)
+        font.drawString(ColorUtils.stripColor(s), (x * 2).toInt(), (y * 2 + 1).toInt(), Color.BLACK.rgb)
+        font.drawString(s, (x * 2).toInt(), (y * 2).toInt(), color)
+    }
 
 
     companion object {

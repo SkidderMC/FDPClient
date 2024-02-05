@@ -26,12 +26,12 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 
 @ElementInfo(name = "TargetHUD")
-open class TargetHUD : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)){
-    val styleList = mutableListOf<TargetStyle>()
+class TargetHUD : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)){
+    private val styleList = mutableListOf<TargetStyle>()
 
     val styleValue: ListValue
     val onlyPlayer = BoolValue("Only player", false)
-    val showinchat = BoolValue("Show When Chat", false)
+    val showinchat = BoolValue("Show When Chat", true)
     val fadeValue = BoolValue("Fade", false)
     val animationValue = BoolValue("Animation", false)
     val animationSpeed = FloatValue("Animation Speed", 1F, 0.1F, 2F).displayable { fadeValue.get() || animationValue.get() }
@@ -116,5 +116,4 @@ open class TargetHUD : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Si
     }
 
     private fun getCurrentStyle(styleName: String): TargetStyle? = styleList.find { it.name.equals(styleName, true) }
-
 }

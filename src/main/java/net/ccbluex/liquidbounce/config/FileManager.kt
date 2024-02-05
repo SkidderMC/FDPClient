@@ -32,6 +32,7 @@ class FileManager : MinecraftInstance() {
     val xrayConfig = XRayConfig(File(dir, "xray-blocks.json"))
     val hudConfig = HudConfig(File(dir, "hud.json"))
     val specialConfig = SpecialConfig(File(dir, "special.json"))
+    val themeConfig = ThemeConfig(File(dir, "themeColor.json"))
     val backgroundFile = File(dir, "background.png")
 
     /**

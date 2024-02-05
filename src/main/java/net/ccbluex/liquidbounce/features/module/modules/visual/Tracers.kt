@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -28,13 +29,18 @@ import java.util.*
 @ModuleInfo(name = "Tracers", category = ModuleCategory.VISUAL)
 object Tracers : Module() {
 
-    private val colorMode = ListValue("Color", arrayOf("Custom", "DistanceColor", "Rainbow"), "Custom")
+    private val colorMode = ListValue("Color", arrayOf("Custom", "Theme", "DistanceColor"), "Theme")
+
+    private val playerHeightValue = BoolValue("PlayerHeight", true)
+    private val entityHeightValue = BoolValue("EntityHeight", true)
 
     private val thicknessValue = FloatValue("Thickness", 2F, 1F, 5F)
+    private val colorAlphaValue = IntegerValue("Alpha", 150, 0, 255)
 
     private val colorRedValue = IntegerValue("R", 0, 0, 255)
     private val colorGreenValue = IntegerValue("G", 160, 0, 255)
     private val colorBlueValue = IntegerValue("B", 255, 0, 255)
+
 
     private val directLineValue = BoolValue("Directline", false)
     private val fovModeValue = ListValue("FOV-Mode", arrayOf("All", "Back", "Front"), "All")
@@ -63,7 +69,7 @@ object Tracers : Module() {
                     EntityUtils.isFriend(entity) -> Color(0, 255, 0, 200)
                     colorMode == "custom" -> Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 150)
                     colorMode == "distancecolor" -> Color(255 - dist, dist, 0, 150)
-                    colorMode == "rainbow" -> ColorUtils.rainbow()
+                    colorMode == "Theme" ->  ClientTheme.getColorWithAlpha(1, colorAlphaValue.get())
                     else -> Color(255, 255, 255, 150)
                 }
 
@@ -81,6 +87,29 @@ object Tracers : Module() {
         GlStateManager.resetColor()
     }
 
+    private fun drawTraces(entity: Entity, color: Color) {
+        val x = (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks -
+                mc.renderManager.renderPosX)
+        val y = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.timer.renderPartialTicks -
+                mc.renderManager.renderPosY)
+        val z = (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks -
+                mc.renderManager.renderPosZ)
+        val eyeVector = Vec3(0.0, 0.0, 1.0)
+            .rotatePitch((-Math.toRadians(mc.thePlayer.rotationPitch.toDouble())).toFloat())
+            .rotateYaw((-Math.toRadians(mc.thePlayer.rotationYaw.toDouble())).toFloat())
+
+        RenderUtils.glColor(color, colorAlphaValue.get())
+
+        GL11.glBegin(GL11.GL_LINE_STRIP)
+        GL11.glVertex3d(eyeVector.xCoord,
+            if(playerHeightValue.get()) { mc.thePlayer.getEyeHeight().toDouble() } else { 0.0 } + eyeVector.yCoord,
+            eyeVector.zCoord)
+        GL11.glVertex3d(x, y, z)
+        if(entityHeightValue.get()) {
+            GL11.glVertex3d(x, y + entity.height, z)
+        }
+        GL11.glEnd()
+    }
     fun drawTraces(entity: Entity, color: Color, drawHeight: Boolean) {
         val x = (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks
                 - mc.renderManager.renderPosX)
@@ -93,16 +122,16 @@ object Tracers : Module() {
             .rotatePitch((-Math.toRadians(mc.thePlayer.rotationPitch.toDouble())).toFloat())
             .rotateYaw((-Math.toRadians(mc.thePlayer.rotationYaw.toDouble())).toFloat())
 
-        RenderUtils.glColor(color)
+        RenderUtils.glColor(color, colorAlphaValue.get())
 
-        GL11.glVertex3d(eyeVector.xCoord, mc.thePlayer.getEyeHeight().toDouble() + eyeVector.yCoord, eyeVector.zCoord)
-        if (drawHeight) {
-            GL11.glVertex3d(x, y, z)
-            GL11.glVertex3d(x, y, z)
+        GL11.glBegin(GL11.GL_LINE_STRIP)
+        GL11.glVertex3d(eyeVector.xCoord,
+            if(playerHeightValue.get()) { mc.thePlayer.getEyeHeight().toDouble() } else { 0.0 } + eyeVector.yCoord,
+            eyeVector.zCoord)
+        GL11.glVertex3d(x, y, z)
+        if(entityHeightValue.get()) {
             GL11.glVertex3d(x, y + entity.height, z)
-        } else {
-            GL11.glVertex3d(x, y + entity.height / 2.0, z)
         }
-
+        GL11.glEnd()
     }
 }
