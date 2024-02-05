@@ -23,6 +23,8 @@ import net.raphimc.vialoader.util.VersionEnum;
 import java.util.Objects;
 
 public class ClientSpoofHandler extends MinecraftInstance implements Listenable {
+
+    public static final boolean enabled = true;
     @EventTarget
     public void onPacket(PacketEvent event) {
         final Packet<?> packet = event.getPacket();
