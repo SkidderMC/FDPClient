@@ -202,7 +202,6 @@ object KillAura : Module() {
 
     private val fovValue = FloatValue("FOV", 180f, 0f, 180f).displayable { rotationDisplay.get() }
     private val hitAbleValue = BoolValue("AlwaysHitAble", true).displayable { rotationDisplay.get() }
-    private val noHitCheck = BoolValue("NoHitCheck", true).displayable { rotationDisplay.get() }
 
     // Predict
     private val predictValue = BoolValue("Predict", true).displayable { !rotationModeValue.equals("None") }
@@ -245,13 +244,7 @@ object KillAura : Module() {
     private val raycastValue = BoolValue("RayCast", true).displayable { bypassDisplay.get() }
     private val raycastTargetValue = BoolValue("RaycastOnlyTarget", false).displayable { raycastValue.get() && raycastValue.displayable }
 
-    private val throughWallsValue = BoolValue("AimThroughWalls", false)
-    private val throughWallsRangeValue = object : FloatValue("ThroughWallsRange", 1.5f, 0f, 8f) {
-        override fun onChanged(oldValue: Float, newValue: Float) {
-            val i = rangeValue.get()
-            if (i < newValue) set(i)
-        }
-    }.displayable { attackDisplay.get() && throughWallsValue.get() } as FloatValue
+    private val throughWallsValue = BoolValue("ThroughWalls", false)
 
     private val multiCombo = BoolValue("MultiCombo", false).displayable { bypassDisplay.get() }
     private val amountValue = IntegerValue("Multi-Packet", 5, 0, 20, "x") { multiCombo.get() && bypassDisplay.get()}
@@ -1036,7 +1029,10 @@ object KillAura : Module() {
             return
         }
         val wallTrace = mc.thePlayer.rayTraceWithServerSideRotation(entityDist)
-        hitable = RotationUtils.isFaced(currentTarget, maxRange.toDouble()) && (entityDist < throughWallsRangeValue.get() || wallTrace?.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
+        hitable = RotationUtils.isFaced(
+            currentTarget,
+            maxRange.toDouble()
+        ) && (entityDist < discoverRangeValue.get() || wallTrace?.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
     }
 
     /**
@@ -1183,10 +1179,7 @@ object KillAura : Module() {
      * Range
      */
     private val maxRange: Float
-        get() = if (!noHitCheck.get()) max(
-            rangeValue.get(),
-            if (!throughWallsValue.get()) rangeValue.get() else 0.0f
-        ) else max(rangeValue.get(), if (!throughWallsValue.get()) rangeValue.get() else 0.0f)
+        get() = max(rangeValue.get(), if (!throughWallsValue.get()) rangeValue.get() else 0.0f)
 
     /**
      * HUD Tag

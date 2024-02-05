@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi
 import net.ccbluex.liquidbounce.ui.client.gui.GuiTeleportation
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils.getPing
@@ -49,7 +50,7 @@ object HUD : Module() {
 
     // WaterMark
     private val waterMark = BoolValue("Watermark", true)
-    val modeValue = ListValue("Watermark-Mode", arrayOf("Classic", "FDP", "Blur", "Clean", "Zywl", "ZAVZ", "LiquidBounce"), "LiquidBounce").displayable { waterMark.get() }
+    val modeValue = ListValue("Watermark-Mode", arrayOf("FDPCLIENT", "Classic", "FDP", "Blur", "Clean", "Zywl", "ZAVZ", "Slide"), "FDPCLIENT").displayable { waterMark.get() }
     private val colorModeValue = ListValue("Color", arrayOf("Custom", "Health", "Rainbow", "Slowly", "Fade", "Mixer"), "Health").displayable { waterMark.get() }
     val red = IntegerValue("Red", 0, 0, 255).displayable { waterMark.get() }
     val green = IntegerValue("Green", 0, 0, 255).displayable { waterMark.get() }
@@ -62,10 +63,16 @@ object HUD : Module() {
     val crossHairValue = BoolValue("CrossHair", false)
     val nof5crossHair = BoolValue("NoF5-CrossHair", true)
 
+    // MISC
+    private val noInvClose = BoolValue("NoInvClose", false)
+    private val noTitle = BoolValue("NoTitle", false)
+    private val antiTabComplete = BoolValue("AntiTabComplete", false)
+
     // UI EFFECT
     private val uiEffectValue = BoolValue("UIEffect", true)
     val buttonShadowValue = BoolValue("ShadowButton", true).displayable  { uiEffectValue.get() }
     val UiShadowValue = ListValue("UIEffectMode", arrayOf("Shadow", "Glow", "None"), "Shadow").displayable  { uiEffectValue.get() }
+    val ColorGuiInGameValue = IntegerValue("ColorGuiInGame", 0, 0, 9)
     val inventoryParticle = BoolValue("InventoryParticle", false).displayable  { uiEffectValue.get() }
 
     // CAMERA
@@ -75,10 +82,6 @@ object HUD : Module() {
     val cameraPositionYawValue = FloatValue("Yaw", 10F, -50F, 50F).displayable  { cameraPositionValue.get() }
     val cameraPositionPitchValue = FloatValue("Pitch", 10F, -50F, 50F).displayable  { cameraPositionValue.get() }
     val cameraPositionFovValue = FloatValue("DistanceFov", 4F, 1F, 50F).displayable  { cameraPositionValue.get() }
-
-    private val noInvClose = BoolValue("NoInvClose", false)
-    private val noTitle = BoolValue("NoTitle", false)
-    private val antiTabComplete = BoolValue("AntiTabComplete", false)
 
     // ArrayList
     private val arrayList = BoolValue("ArrayList", true)
@@ -91,7 +94,7 @@ object HUD : Module() {
     val arraylistYAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistYAxisAnimType")
     val arraylistYAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistYAxisHotbarAnimOrder").displayable { !arraylistYAxisAnimTypeValue.equals("NONE") }
 
-    val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 1.5f)
+    private val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 1.5f)
 
     private var lastFontEpsilon = 0f
 
@@ -157,9 +160,24 @@ object HUD : Module() {
 
         val name = FDPClient.CLIENT_NAME
         when (modeValue.get()) {
+            "FDPCLIENT" -> {
+                var width = ""
+                val other = ""
+                val leagth = Fonts.fontTenacityBold40.getStringWidth(name) + Fonts.fontTenacityBold35.getStringWidth(other)
+                RenderUtils.customRounded(2F, 3.5F, leagth + 6F, Fonts.fontTenacityBold40.FONT_HEIGHT + 5F, 0F, 0F, 5F, 5F, Color(0,0,0,180).rgb)
+                RenderUtils.drawAnimatedGradient(2.0, 3.0, leagth + 6.0, 4.0, ClientTheme.getColor(0).rgb, ClientTheme.getColor(90).rgb)
+                GlowUtils.drawGlow(3.79F, 6.07F, 3.83F + Fonts.fontTenacityBold40.getStringWidth(name).toFloat(), 7.21F, 9, ClientTheme.getColor(1))
+                for (l in name.indices) {
+                    Fonts.fontTenacityBold40.drawString(name[l].toString(), 5F + Fonts.fontTenacityBold40.getStringWidth(width).toFloat(), 5.5F, ClientTheme.getColor(l * -135).rgb, true)
+                    width += name[l].toString()
+                }
+                Fonts.fontTenacityBold35.drawString(other, Fonts.fontTenacityBold40.getStringWidth("FDPCLIENT").toFloat() + 5F, 6.5F, Color(255,255,255).rgb)
+                GlStateManager.resetColor()
+            }
+
             "Classic" -> {
                 val str =
-                    EnumChatFormatting.DARK_GRAY.toString() + " | " + EnumChatFormatting.WHITE + mc.session.username + EnumChatFormatting.DARK_GRAY + " | " + EnumChatFormatting.WHITE + Minecraft.getDebugFPS() + "fps" + EnumChatFormatting.DARK_GRAY + " | " + EnumChatFormatting.WHITE + (if (mc.isSingleplayer()) "SinglePlayer" else mc.getCurrentServerData().serverIP)
+                    EnumChatFormatting.DARK_GRAY.toString() + " | " + EnumChatFormatting.WHITE + mc.session.username + EnumChatFormatting.DARK_GRAY + " | " + EnumChatFormatting.WHITE + Minecraft.getDebugFPS() + "fps" + EnumChatFormatting.DARK_GRAY + " | " + EnumChatFormatting.WHITE + (if (mc.isSingleplayer) "SinglePlayer" else mc.currentServerData.serverIP)
                 RoundedUtil.drawRound(
                     6.0f,
                     6.0f,
@@ -235,7 +253,6 @@ object HUD : Module() {
                     )
                     GlStateManager.enableTexture2D()
                     GlStateManager.disableBlend()
-                    null
                 }, {
                     GlStateManager.enableBlend()
                     GlStateManager.disableTexture2D()
@@ -250,7 +267,6 @@ object HUD : Module() {
                     )
                     GlStateManager.enableTexture2D()
                     GlStateManager.disableBlend()
-                    null
                 })
                 blurAreaRounded(
                     6f,
@@ -294,7 +310,6 @@ object HUD : Module() {
                     )
                     GlStateManager.enableTexture2D()
                     GlStateManager.disableBlend()
-                    null
                 }, {
                     GlStateManager.enableBlend()
                     GlStateManager.disableTexture2D()
@@ -309,7 +324,6 @@ object HUD : Module() {
                     )
                     GlStateManager.enableTexture2D()
                     GlStateManager.disableBlend()
-                    null
                 })
                 blurAreaRounded(
                     6f,
@@ -384,7 +398,7 @@ object HUD : Module() {
                 )
             }
 
-            "LiquidBounce" -> {
+            "Slide" -> {
                 drawNewRect(
                     5.0,
                     6.0,
@@ -560,7 +574,7 @@ object HUD : Module() {
         }
     }
 
-    fun drawNewRect(left: Double, top: Double, right: Double, bottom: Double, color: Int) {
+    private fun drawNewRect(left: Double, top: Double, right: Double, bottom: Double, color: Int) {
         var left = left
         var top = top
         var right = right
@@ -580,7 +594,7 @@ object HUD : Module() {
         val f1 = (color shr 8 and 0xFF).toFloat() / 255.0f
         val f2 = (color and 0xFF).toFloat() / 255.0f
         val tessellator: Tessellator = Tessellator.getInstance()
-        val vertexbuffer: WorldRenderer = tessellator.getWorldRenderer()
+        val vertexbuffer: WorldRenderer = tessellator.worldRenderer
         GlStateManager.enableBlend()
         GlStateManager.disableTexture2D()
         GlStateManager.tryBlendFuncSeparate(770, 771, 0, 1)

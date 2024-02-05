@@ -73,6 +73,10 @@ public class Fonts {
     @FontDetails(fontName = "Tenacity Bold", fontSize = 35)
     public static GameFontRenderer fontTenacityBold35;
 
+    @FontDetails(fontName = "Tenacity Bold", fontSize = 40)
+    public static GameFontRenderer fontTenacityBold40;
+
+
     @FontDetails(fontName = "Minecraft Font")
     public static final FontRenderer minecraftFont = Minecraft.getMinecraft().fontRendererObj;
 
@@ -99,6 +103,7 @@ public class Fonts {
         fontTahomaSmall = new TTFFontRenderer(getFont("Tahoma.ttf", 11));
         ICONFONT_50 = new GameFontRenderer(getFont("stylesicons.ttf", 50));
         fontTenacityBold35 = new GameFontRenderer(getFont("tenacity-bold.ttf", 35));
+        fontTenacityBold40 = new GameFontRenderer(getFont("tenacity-bold.ttf", 40));
         fontTenacity35 = new GameFontRenderer(getFont("tenacity.ttf", 35));
         fontTenacity40 = new GameFontRenderer(getFont("tenacity.ttf", 40));
         fontMainMenu60 = new GameFontRenderer(getFont("mainmenu.ttf", 60));
@@ -157,16 +162,16 @@ public class Fonts {
 
     private static void initFonts() {
         try {
-            initSingleFont("assets/minecraft/fdpclient/font/regular.ttf");
+            initSingleFont();
         }catch(IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void initSingleFont(String resourcePath) throws IOException {
+    private static void initSingleFont() throws IOException {
         File file=new File(FDPClient.fileManager.getFontsDir(), "regular.ttf");
         if(!file.exists())
-            FileUtils.INSTANCE.unpackFile(file, resourcePath);
+            FileUtils.INSTANCE.unpackFile(file, "assets/minecraft/fdpclient/font/regular.ttf");
     }
 
     public static FontRenderer getFontRenderer(final String name, final int size) {

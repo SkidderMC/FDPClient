@@ -45,7 +45,7 @@ object FDPClient {
     const val CLIENT_CREATOR = "CCBlueX, Zywl & SkidderMC TEAM"
     const val CLIENT_WEBSITE = "https://fdpinfo.github.io"
     const val CLIENT_DISCORD = "https://discord.gg/3XRFGeqEYD"
-    const val CLIENT_VERSION = "v5.5.0"
+    const val CLIENT_VERSION = "v5.6.0 (IN DEV)"
 
     // Flags
     var isStarting = true
@@ -78,6 +78,9 @@ object FDPClient {
     lateinit var hud: HUD
     lateinit var mainMenu: GuiScreen
     lateinit var keyBindManager: KeyBindManager
+
+    // Discord RPC
+    lateinit var clientRichPresence: DiscordRPC
 
     // Menu Background
     var background: ResourceLocation? = ResourceLocation("fdpclient/background.png")
@@ -135,6 +138,10 @@ object FDPClient {
         eventManager.registerListener(macroManager)
         eventManager.registerListener(combatManager)
         eventManager.registerListener(ClientSpoofHandler())
+
+
+        // Init Discord RPC
+        clientRichPresence = DiscordRPC
 
         // Load client fonts
         Fonts.loadFonts()
@@ -217,10 +224,10 @@ object FDPClient {
 
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION started!")
 
-        if (DiscordRPC.showRichPresenceValue) {
+        if (clientRichPresence.showRichPresenceValue) {
             thread {
                 try {
-                    DiscordRPC.run()
+                    clientRichPresence.run()
                 } catch (throwable: Throwable) {
                     ClientUtils.logError("", throwable)
                 }
@@ -249,11 +256,7 @@ object FDPClient {
                 it.stop()
             }
         }
-        // Stop Discord RPC
-        try {
-            DiscordRPC.stop()
-        } catch (e: Throwable) {
-            ClientUtils.logError("Failed to shutdown DiscordRPC.", e)
-        }
+            // Stop Discord RPC
+            clientRichPresence.stop()
     }
 }

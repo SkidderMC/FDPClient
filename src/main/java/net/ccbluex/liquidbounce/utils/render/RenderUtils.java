@@ -59,6 +59,9 @@ import static org.lwjgl.opengl.GL11.*;
 public final class RenderUtils extends MinecraftInstance {
     private static final Map<String, Map<Integer, Boolean>> glCapMap = new HashMap<>();
 
+    private static final int[] DISPLAY_LISTS_2D = new int[4];
+    private static long startTime;
+    private static int animationDuration = 500;
     public static int deltaTime;
 
     public static int width() {
@@ -68,8 +71,6 @@ public final class RenderUtils extends MinecraftInstance {
     public static int height() {
         return new ScaledResolution(Minecraft.getMinecraft()).getScaledHeight();
     }
-
-    private static final int[] DISPLAY_LISTS_2D = new int[4];
 
     static {
         for (int i = 0; i < DISPLAY_LISTS_2D.length; i++) {
@@ -600,7 +601,7 @@ public final class RenderUtils extends MinecraftInstance {
         float green = (color >> 8 & 0xFF) / 255.0F;
         float blue = (color & 0xFF) / 255.0F;
 
-        float z = 0;
+        float z;
         if (paramXStart > paramXEnd) {
             z = paramXStart;
             paramXStart = paramXEnd;
@@ -636,24 +637,13 @@ public final class RenderUtils extends MinecraftInstance {
         glBegin(GL_POLYGON);
 
         double degree = Math.PI / 180;
-        if (rBR <= 0)
-            glVertex2d(xBR, yBR);
-        else for (double i = 0; i <= 90; i += 1)
+        for (double i = 0; i <= 90; i += 0.25)
             glVertex2d(xBR + Math.sin(i * degree) * rBR, yBR + Math.cos(i * degree) * rBR);
-
-        if (rTR <= 0)
-            glVertex2d(xTR, yTR);
-        else for (double i = 90; i <= 180; i += 1)
+        for (double i = 90; i <= 180; i += 0.25)
             glVertex2d(xTR + Math.sin(i * degree) * rTR, yTR + Math.cos(i * degree) * rTR);
-
-        if (rTL <= 0)
-            glVertex2d(xTL, yTL);
-        else for (double i = 180; i <= 270; i += 1)
+        for (double i = 180; i <= 270; i += 0.25)
             glVertex2d(xTL + Math.sin(i * degree) * rTL, yTL + Math.cos(i * degree) * rTL);
-
-        if (rBL <= 0)
-            glVertex2d(xBL, yBL);
-        else for (double i = 270; i <= 360; i += 1)
+        for (double i = 270; i <= 360; i += 0.25)
             glVertex2d(xBL + Math.sin(i * degree) * rBL, yBL + Math.cos(i * degree) * rBL);
         glEnd();
 
@@ -661,6 +651,44 @@ public final class RenderUtils extends MinecraftInstance {
         glDisable(GL_BLEND);
         glDisable(GL_LINE_SMOOTH);
         glPopMatrix();
+    }
+
+    public static void drawAnimatedGradient(double left, double top, double right, double bottom, int col1, int col2) {
+        long currentTime = System.currentTimeMillis();
+        if (startTime == 0) {
+            startTime = currentTime;
+        }
+
+        long elapsedTime = currentTime - startTime;
+        float progress = (float) (elapsedTime % animationDuration) / animationDuration;
+
+        int color1, color2;
+
+        if (elapsedTime / animationDuration % 2 == 0) {
+            // Custom Color 1 to Custom Color 2
+            color1 = interpolateColors(col1, col2, progress);
+            color2 = interpolateColors(col2, col1, progress);
+        } else {
+            // Custom Color 2 to Custom Color 1
+            color1 = interpolateColors(col2, col1, progress);
+            color2 = interpolateColors(col1, col2, progress);
+        }
+
+        drawGradientSideways(left, top, right, bottom, color1, color2);
+
+        if (elapsedTime >= 2 * animationDuration) {
+            // Reset the start time to continue the loop
+            startTime = currentTime;
+        }
+    }
+
+    public static int interpolateColors(int color1, int color2, float progress) {
+        int alpha = (int) ((1.0 - progress) * (color1 >>> 24) + progress * (color2 >>> 24));
+        int red = (int) ((1.0 - progress) * ((color1 >> 16) & 0xFF) + progress * ((color2 >> 16) & 0xFF));
+        int green = (int) ((1.0 - progress) * ((color1 >> 8) & 0xFF) + progress * ((color2 >> 8) & 0xFF));
+        int blue = (int) ((1.0 - progress) * (color1 & 0xFF) + progress * (color2 & 0xFF));
+
+        return (alpha << 24) | (red << 16) | (green << 8) | blue;
     }
     public static void drawGradientSideways(double left, double top, double right, double bottom, int col1, int col2) {
         float f = (float) (col1 >> 24 & 255) / 255.0f;

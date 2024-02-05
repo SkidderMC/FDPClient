@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.event.StrafeEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Performance;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoFluid;
-import net.ccbluex.liquidbounce.features.module.modules.movement.Strafe;
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
 import net.ccbluex.liquidbounce.injection.access.IWorld;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;

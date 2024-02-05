@@ -50,8 +50,8 @@ class Text(
     }
 
     val displayString = TextValue("DisplayText", "")
-    val shadowValue = BoolValue("Shadow", false)
-    val shadowStrength = FloatValue("Shadow-Strength", 1F, 0.01F, 8F).displayable { shadowValue.get() }
+    private val shadowValue = BoolValue("Shadow", false)
+    private val shadowStrength = FloatValue("Shadow-Strength", 1F, 0.01F, 8F).displayable { shadowValue.get() }
     private val redValue = IntegerValue("Red", 255, 0, 255)
     private val greenValue = IntegerValue("Green", 255, 0, 255)
     private val blueValue = IntegerValue("Blue", 255, 0, 255)
@@ -112,13 +112,6 @@ class Text(
         }
 
         return when (str) {
-            "playtime" -> {
-                if (mc.isSingleplayer) {
-                    "Singleplayer"
-                } else {
-                    SessionUtils.getFormatSessionTime()
-                }
-            }
             "username" -> mc.getSession().username
             "clientName" -> FDPClient.CLIENT_NAME
             "clientVersion" -> FDPClient.CLIENT_VERSION
@@ -164,9 +157,7 @@ class Text(
 
         return result.toString()
     }
-    fun getClientName(i: Int,i2: Int): String{
-        return "FDPClient".substring(i,i2);
-    }
+
     /**
      * Draw element
      */
