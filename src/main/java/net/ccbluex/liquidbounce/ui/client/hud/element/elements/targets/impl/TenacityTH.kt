@@ -6,12 +6,16 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl
 
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
+import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.TargetHUD
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.*
+import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
+import org.lwjgl.opengl.GL11
 import net.minecraft.entity.EntityLivingBase
 import java.awt.Color
+import kotlin.math.roundToInt
 
 class TenacityTH(inst: TargetHUD) : TargetStyle("Tenacity5", inst, true) {
     override fun drawTarget(target: EntityLivingBase) {

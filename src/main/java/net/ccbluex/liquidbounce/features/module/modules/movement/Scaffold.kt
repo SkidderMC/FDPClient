@@ -379,11 +379,11 @@ class Scaffold : Module() {
         mc.thePlayer.isSprinting = canSprint
         if (sprintValue.equals("Hypixel")) {
             if (mc.thePlayer.onGround) {
-                mc.thePlayer.motionX *= 0.6
-                mc.thePlayer.motionZ *= 0.6
+                mc.thePlayer.motionX *= 0.9
+                mc.thePlayer.motionZ *= 0.9
             } else {
-                mc.thePlayer.motionX *= 0.97
-                mc.thePlayer.motionZ *= 0.97
+                mc.thePlayer.motionX *= 0.99
+                mc.thePlayer.motionZ *= 0.99
             }
         }
 

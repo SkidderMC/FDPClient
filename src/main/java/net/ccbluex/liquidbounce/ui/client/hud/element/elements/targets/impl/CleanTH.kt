@@ -11,11 +11,13 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.TargetHUD
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders
+import net.ccbluex.liquidbounce.utils.PlayerUtils
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import org.lwjgl.opengl.GL11
 import net.minecraft.entity.EntityLivingBase
 import java.awt.Color
+import java.text.DecimalFormat
 
 class CleanTH(inst: TargetHUD) : TargetStyle("Normal", inst, true) {
     override fun drawTarget(target: EntityLivingBase) {
