@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.entity.EntityLivingBase
 import java.awt.Color
 
-class LiquidTH(inst: TargetHUD) : TargetStyle("Bar", inst, true) {
+class LiquidTH(inst: TargetHUD) : TargetStyle("LiquidBounce", inst, true) {
     
     override fun drawTarget(target: EntityLivingBase) {
         val width = (38 + target.name.let(Fonts.font40::getStringWidth))

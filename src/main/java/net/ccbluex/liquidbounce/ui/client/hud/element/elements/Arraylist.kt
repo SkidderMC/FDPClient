@@ -51,8 +51,8 @@ class Arraylist(
     // Options Text
     private val textDisplay = BoolValue("Text Options:", true)
     private val orderValue = ListValue("Order", arrayOf("ABC", "Distance"), "Distance").displayable { textDisplay.get() }
-    private val shadowValue = BoolValue("ShadowText", false).displayable { textDisplay.get() }
-    private val split = BoolValue("SplitName", false).displayable { textDisplay.get() }
+    private val shadowValue = BoolValue("ShadowText", true).displayable { textDisplay.get() }
+    private val split = BoolValue("SplitName", true).displayable { textDisplay.get() }
     private val noRenderModules = BoolValue("NoRenderModules", false).displayable { textDisplay.get() }
     private val caseValue = ListValue("Case", arrayOf("Upper", "Normal", "Lower"), "Normal").displayable { textDisplay.get() }
     private val spaceValue = FloatValue("Space", 0F, 0F, 5F).displayable { textDisplay.get() }
@@ -64,13 +64,13 @@ class Arraylist(
 
     // React settings
     private val rectDisplay = BoolValue("Rect Options:", true)
-    private val rectRightValue = ListValue("Rect-Right", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "Outline").displayable { rectDisplay.get() }
+    private val rectRightValue = ListValue("Rect-Right", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "Right").displayable { rectDisplay.get() }
     private val rectLeftValue = ListValue("Rect-Left", arrayOf("None", "Left", "Right"), "None").displayable { rectDisplay.get() }
     private val roundStrength = FloatValue("Rounded-Strength", 0F, 0F, 2F).displayable { rectDisplay.get() }
 
     // Shadow Options
-    private val shadowShaderValue = BoolValue("Shadow", false)
-    private val shadowNoCutValue = BoolValue("Shadow-NoCut", false).displayable { shadowShaderValue.get() }
+    private val shadowShaderValue = BoolValue("Shadow", true)
+    private val shadowNoCutValue = BoolValue("Shadow-NoCut", true).displayable { shadowShaderValue.get() }
     private val shadowStrength = IntegerValue("Shadow-Strength", 1, 1, 30).displayable { shadowShaderValue.get() }
     private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Text", "Custom"), "Background").displayable { shadowShaderValue.get() }
     private val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255).displayable{ shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) }
