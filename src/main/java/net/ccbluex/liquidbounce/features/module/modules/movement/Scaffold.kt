@@ -1080,20 +1080,22 @@ class Scaffold : Module() {
             
             "rise6" -> {
                 GlStateManager.pushMatrix()
-                val eeasing = EaseUtils.apply(EaseUtils.EnumEasingType.valueOf("BACK"), EaseUtils.EnumEasingOrder.valueOf("In"), progress.toDouble()).toFloat()
+                val eeasing = progress * progress
+
                 val info = "Amount " + blocksAmount.toString()
                 val height = event.scaledResolution.scaledHeight
                 val width = event.scaledResolution.scaledWidth
                 val w2=(mc.fontRendererObj.getStringWidth(info))
+
                 RenderUtils.drawRoundedCornerRect(
                     (width - w2 - 20) / 2f,
                     height * 0.8f - 8f,
                     (width + w2 + 18) / 2f,
-                    height * 0.8f + 12f,
+                    height * (1f - eeasing * 0.2f) + 12f,
                     4f,
                     Color(30, 30, 30, 120).rgb
                 )
-                mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 1f - eeasing * 0.2f, Color.WHITE.rgb, false)
+                mc.fontRendererObj.drawCenteredString(info, width / 2f, height * (1f - eeasing * 0.2f), Color.WHITE.rgb, false)
                 GlStateManager.popMatrix()
             }
             

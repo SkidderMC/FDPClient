@@ -26,7 +26,9 @@ class TenacityTH(inst: TargetHUD) : TargetStyle("Tenacity5", inst, true) {
         val c2 = ColorUtils.interpolateColorsBackAndForth(17, 90, Color(230, 140, 255, 205), Color(101, 208, 252, 205), true);
         val c3 = ColorUtils.interpolateColorsBackAndForth(17, 270, Color(230, 140, 255, 205), Color(101, 208, 252, 205), true);
         val c4 = ColorUtils.interpolateColorsBackAndForth(17, 180, Color(230, 140, 255, 205), Color(101, 208, 252, 205), true);
-
+        val renderX = Element.renderX
+        val renderY = Element.renderY
+        val scale = Element.scale
         // glow
         GL11.glTranslated(-renderX * scale, -renderY * scale, 0.0)
         GL11.glPushMatrix()

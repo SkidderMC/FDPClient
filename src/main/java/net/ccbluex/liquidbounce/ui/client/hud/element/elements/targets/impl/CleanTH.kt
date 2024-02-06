@@ -62,7 +62,7 @@ class CleanTH(inst: TargetHUD) : TargetStyle("Normal", inst, true) {
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
         // 受伤的红色效果
-        GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
+        GL11.glColor4f(1f, 1f - hurtPercent, 1f - hurtPercent, 1f)
         // 绘制头部图片
         GL11.glColor4f(1f, 1f, 1f, 1f)
         mc.textureManager.bindTexture(target.skin)
