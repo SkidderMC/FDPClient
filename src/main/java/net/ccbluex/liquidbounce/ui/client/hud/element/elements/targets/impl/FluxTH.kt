@@ -43,7 +43,7 @@ class FluxTH(inst: TargetHUD) : TargetStyle("Flux", inst, true) {
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {
-        return Border(3F,22F, 115F + Fonts.SFApple40.getStringWidth(entity!!.name), 42F)
+        return Border(0F,0F, (38F + Fonts.SFApple40.getStringWidth(entity!!.name)).coerceAtLeast(70F), 34F)
     }
     
 }
