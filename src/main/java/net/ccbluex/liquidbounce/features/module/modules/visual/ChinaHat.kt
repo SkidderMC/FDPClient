@@ -33,11 +33,12 @@ object ChinaHat : Module() {
     private val drawThePlayerValue = BoolValue("DrawThePlayer", true)
     private val onlyThirdPersonValue = BoolValue("OnlyThirdPerson", true).displayable { drawThePlayerValue.get() }
     private val drawTargetsValue = BoolValue("DrawTargets", true)
-    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorAlphaValue = IntegerValue("Alpha", 200, 0, 255)
-    private val colorRainbowValue = BoolValue("Rainbow", false)
+    private val colorDisplay = BoolValue("Color", true)
+    private val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { colorDisplay.get() }
+    private val colorGreenValue = IntegerValue("Green", 179, 0, 255).displayable { colorDisplay.get() }
+    private val colorBlueValue = IntegerValue("Blue", 72, 0, 255).displayable { colorDisplay.get() }
+    private val colorAlphaValue = IntegerValue("Alpha", 255, 0, 255).displayable { colorDisplay.get() }
+    private val colorThemeClient = BoolValue("Client Color", true).displayable { colorDisplay.get() }
 
     @EventTarget
     fun onRender3d(event: Render3DEvent) {
@@ -61,7 +62,7 @@ object ChinaHat : Module() {
         GL11.glDisable(GL11.GL_DEPTH_TEST)
         GL11.glDepthMask(false)
         GL11.glDisable(GL11.GL_CULL_FACE)
-        if(!colorRainbowValue.get()) {
+        if(!colorThemeClient.get()) {
             GL11.glColor4f(colorRedValue.get() / 255f, colorGreenValue.get() / 255f, colorBlueValue.get() / 255f, colorAlphaValue.get() / 255f)
         }
         GL11.glTranslated(entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks - mc.renderManager.renderPosX,
@@ -73,7 +74,7 @@ object ChinaHat : Module() {
         GL11.glVertex3d(0.0, heightValue.get().toDouble(), 0.0)
         val radius = radiusValue.get().toDouble()
         for(i in 0..360 step 5) {
-            if(colorRainbowValue.get()) {
+            if(colorThemeClient.get()) {
                 RenderUtils.glColor(Color.getHSBColor(if (i <180) { ColorManager.rainbowStartValue.get() + (ColorManager.rainbowStopValue.get() - ColorManager.rainbowStartValue.get()) * (i / 180f) } else { ColorManager.rainbowStartValue.get() + (ColorManager.rainbowStopValue.get() - ColorManager.rainbowStartValue.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f), colorAlphaValue.get() / 255f)
             }
             GL11.glVertex3d(cos(i.toDouble() * Math.PI / 180.0) * radius, 0.0, sin(i.toDouble() * Math.PI / 180.0) * radius)

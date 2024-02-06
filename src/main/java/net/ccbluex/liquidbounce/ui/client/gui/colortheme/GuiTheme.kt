@@ -59,8 +59,8 @@ class GuiTheme : GuiScreen() {
         /**
          * Line 1
          */
-        //Cherry
-        if (ClientTheme.ClientColorMode.equals("Cherry"))
+        //Zywl
+        if (ClientTheme.ClientColorMode.equals("Zywl"))
             RenderUtils.drawRoundedOutline(
                 22F,
                 68F + scroll,
@@ -76,19 +76,19 @@ class GuiTheme : GuiScreen() {
             124.5F,
             140F + scroll,
             20F,
-            ClientTheme.getColorFromName("Cherry", 0).rgb,
-            ClientTheme.getColorFromName("Cherry", 90).rgb,
-            ClientTheme.getColorFromName("Cherry", 180).rgb,
-            ClientTheme.getColorFromName("Cherry", 270).rgb
+            ClientTheme.getColorFromName("Zywl", 0).rgb,
+            ClientTheme.getColorFromName("Zywl", 90).rgb,
+            ClientTheme.getColorFromName("Zywl", 180).rgb,
+            ClientTheme.getColorFromName("Zywl", 270).rgb
         )
         FontLoaders.SF20.drawStringWithShadow(
-            "Cherry",
+            "Zywl",
             58.0,
             145.0 + scroll,
-            ClientTheme.getColorFromName("Cherry", 1).rgb
+            ClientTheme.getColorFromName("Zywl", 1).rgb
         )
-        //Water
-        if (ClientTheme.ClientColorMode.equals("Water"))
+        //FDP
+        if (ClientTheme.ClientColorMode.equals("FDP"))
             RenderUtils.drawRoundedOutline(
                 147F,
                 68F + scroll,
@@ -104,16 +104,16 @@ class GuiTheme : GuiScreen() {
             249.5F,
             140F + scroll,
             20F,
-            ClientTheme.getColorFromName("Water", 0).rgb,
-            ClientTheme.getColorFromName("Water", 90).rgb,
-            ClientTheme.getColorFromName("Water", 180).rgb,
-            ClientTheme.getColorFromName("Water", 270).rgb
+            ClientTheme.getColorFromName("FDP", 0).rgb,
+            ClientTheme.getColorFromName("FDP", 90).rgb,
+            ClientTheme.getColorFromName("FDP", 180).rgb,
+            ClientTheme.getColorFromName("FDP", 270).rgb
         )
         FontLoaders.SF20.drawStringWithShadow(
-            "Water",
+            "FDP",
             184.0,
             145.0 + scroll,
-            ClientTheme.getColorFromName("Water", 1).rgb
+            ClientTheme.getColorFromName("FDP", 1).rgb
         )
         //Magic
         if (ClientTheme.ClientColorMode.equals("Magic"))
@@ -632,11 +632,11 @@ class GuiTheme : GuiScreen() {
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (mouseWithinBounds(mouseX, mouseY, 25F, 70F + scroll, 122F, 140F + scroll)) {
-            ClientTheme.ClientColorMode.set("Cherry")
+            ClientTheme.ClientColorMode.set("Zywl")
         }
 
         if (mouseWithinBounds(mouseX, mouseY, 150F, 70F + scroll, 247F, 140F + scroll)) {
-            ClientTheme.ClientColorMode.set("Water")
+            ClientTheme.ClientColorMode.set("FDP")
         }
 
         if (mouseWithinBounds(mouseX, mouseY, 275F, 70F + scroll, 372F, 140F + scroll)) {
@@ -692,21 +692,22 @@ class GuiTheme : GuiScreen() {
         }
 
         //Line 4
-
-        if (mouseWithinBounds(mouseX, mouseY, 25F, 355F + scroll, 122F, 425F + scroll)) {
-            ClientTheme.ClientColorMode.set("Pumpkin")
-        }
-        if (mouseWithinBounds(mouseX, mouseY, 150F, 355F + scroll, 247F, 425F + scroll)) {
-            ClientTheme.ClientColorMode.set("Polarized")
-        }
-        if (mouseWithinBounds(mouseX, mouseY, 275F, 355F + scroll, 372F, 425F + scroll)) {
-            ClientTheme.ClientColorMode.set("Sundae")
-        }
-        if (mouseWithinBounds(mouseX, mouseY, 400F, 355F + scroll, 497F, 425F + scroll)) {
-            ClientTheme.ClientColorMode.set("Terminal")
-        }
-        if (mouseWithinBounds(mouseX, mouseY, 525F, 355F + scroll, 622F, 425F + scroll)) {
-            ClientTheme.ClientColorMode.set("Coral")
+        if (scroll < -75F) {
+            if (mouseWithinBounds(mouseX, mouseY, 25F, 355F + scroll, 122F, 425F + scroll)) {
+                ClientTheme.ClientColorMode.set("Pumpkin")
+            }
+            if (mouseWithinBounds(mouseX, mouseY, 150F, 355F + scroll, 247F, 425F + scroll)) {
+                ClientTheme.ClientColorMode.set("Polarized")
+            }
+            if (mouseWithinBounds(mouseX, mouseY, 275F, 355F + scroll, 372F, 425F + scroll)) {
+                ClientTheme.ClientColorMode.set("Sundae")
+            }
+            if (mouseWithinBounds(mouseX, mouseY, 400F, 355F + scroll, 497F, 425F + scroll)) {
+                ClientTheme.ClientColorMode.set("Terminal")
+            }
+            if (mouseWithinBounds(mouseX, mouseY, 525F, 355F + scroll, 622F, 425F + scroll)) {
+                ClientTheme.ClientColorMode.set("Coral")
+            }
         }
 
         if (mouseWithinBounds(mouseX, mouseY, 25F, 350.0f, 40F, 365.0f)) {

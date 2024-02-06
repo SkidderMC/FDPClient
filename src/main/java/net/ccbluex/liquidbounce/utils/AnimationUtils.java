@@ -62,6 +62,19 @@ public final class AnimationUtils {
         return current;
     }
 
+    public static float animated(float target, float current, double speed) {
+        boolean larger = target > current;
+        if (speed < 0.0F) {
+            speed = 0.0F;
+        } else if (speed > 1.0F) {
+            speed = 1.0F;
+        }
+        float dif = Math.max(target, current) - Math.min(target, current);
+        float factor = (float) (dif * speed);
+        current = larger ? current + factor : current - factor;
+        return current;
+    }
+
     public static float lstransition(float now, float desired, double speed) {
         final double dif = Math.abs(desired - now);
         float a = (float) Math.abs((desired - (desired - (Math.abs(desired - now)))) / (100 - (speed * 10)));

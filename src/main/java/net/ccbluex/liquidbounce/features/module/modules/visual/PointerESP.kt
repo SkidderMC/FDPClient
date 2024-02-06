@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -30,16 +31,21 @@ object PointerESP : Module() {
     private val dimensionValue = ListValue("Dimension", arrayOf("2d", "3d"), "2d")
     private val modeValue = ListValue("Mode", arrayOf("Solid", "Line", "LoopLine"), "Solid")
     private val lineWidthValue = FloatValue("LineWidth", 4f, 1f, 10f).displayable { modeValue.get().contains("Line") }
-    private val redValue = IntegerValue("Red", 255, 0, 255).displayable { !rainbowValue.get() }
-    private val greenValue = IntegerValue("Green", 255, 0, 255).displayable { !rainbowValue.get() }
-    private val blueValue = IntegerValue("Blue", 255, 0, 255).displayable { !rainbowValue.get() }
-    private val rainbowValue = BoolValue("Rainbow", false)
+
+    private val colorDisplay = BoolValue("Color", true)
+
+    private val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { colorDisplay.get() }
+    private val colorGreenValue = IntegerValue("Green", 179, 0, 255).displayable { colorDisplay.get() }
+    private val colorBlueValue = IntegerValue("Blue", 72, 0, 255).displayable { colorDisplay.get() }
+
+    private val colorThemeClient = BoolValue("Client Color", true).displayable { colorDisplay.get() }
+
     private val damageColorValue = BoolValue("DamageColor", true)
     private val smoothDamageColorValue = BoolValue("SmoothDamageColor", false)
-    private val dmgRedValue = IntegerValue("DamageRed", 255, 0, 255).displayable { !dmgRainbowValue.get() && damageColorValue.get() }
-    private val dmgGreenValue = IntegerValue("DamageGreen", 0, 0, 255).displayable { !dmgRainbowValue.get() && damageColorValue.get() }
-    private val dmgBlueValue = IntegerValue("DamageBlue", 0, 0, 255).displayable { !dmgRainbowValue.get() && damageColorValue.get() }
-    private val dmgRainbowValue = BoolValue("DamageRainbow", false).displayable { damageColorValue.get() }
+    private val dmgRedValue = IntegerValue("DamageRed", 255, 0, 255).displayable { !colorThemeClient.get() && damageColorValue.get() }
+    private val dmgGreenValue = IntegerValue("DamageGreen", 0, 0, 255).displayable { !colorThemeClient.get() && damageColorValue.get() }
+    private val dmgBlueValue = IntegerValue("DamageBlue", 0, 0, 255).displayable { !colorThemeClient.get() && damageColorValue.get() }
+
     private val alphaValue : IntegerValue = object : IntegerValue("Alpha", 255, 0, 255) {
         override fun onChanged(oldValue: Int, newValue: Int) {
             if (distanceAlphaValue.get() && newValue < distanceValue.get()) {
@@ -94,9 +100,9 @@ object PointerESP : Module() {
         val size = sizeValue.get()
         val playerPosX = mc.thePlayer.posX + (mc.thePlayer.posX - mc.thePlayer.lastTickPosX) * mc.timer.renderPartialTicks
         val playerPosZ = mc.thePlayer.posZ + (mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ) * mc.timer.renderPartialTicks
-        val color = if(rainbowValue.get()) { ColorUtils.rainbow() } else { Color(redValue.get(), greenValue.get(), blueValue.get()) }
+        val color = if(colorThemeClient.get()) { ClientTheme.getColor(1) } else { Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()) }
         val damageColor = if(damageColorValue.get()) {
-            if(dmgRainbowValue.get()) { ColorUtils.reverseColor(ColorUtils.rainbow()) } else { Color(dmgRedValue.get(), dmgGreenValue.get(), dmgBlueValue.get()) }
+            if(colorThemeClient.get()) { ClientTheme.getColor(1) } else { Color(dmgRedValue.get(), dmgGreenValue.get(), dmgBlueValue.get()) }
         } else {
             color
         }

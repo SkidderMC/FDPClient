@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.features.module
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
@@ -16,9 +15,7 @@ import net.ccbluex.liquidbounce.utils.AnimationHelper
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.render.Animation
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
-import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.Translate
 import net.ccbluex.liquidbounce.value.Value
 import org.lwjgl.input.Keyboard
@@ -57,6 +54,8 @@ open class Module : MinecraftInstance(), Listenable {
     var triggerType: EnumTriggerType
     val moduleCommand: Boolean
     val moduleInfo = javaClass.getAnnotation(ModuleInfo::class.java)!!
+
+    var slideStep = 0F
     var splicedName = ""
         get() {
             if (field.isEmpty()) {
@@ -131,53 +130,8 @@ open class Module : MinecraftInstance(), Listenable {
         }
 
     // HUD
-    val hue = Math.random().toFloat()
-    private var slideAnimation: Animation? = null
     var slide = 0f
-        get() {
-            if (slideAnimation != null) {
-                field = slideAnimation!!.value.toFloat()
-                if (slideAnimation!!.state == Animation.EnumAnimationState.STOPPED) {
-                    slideAnimation = null
-                }
-            }
-            return field
-        }
-        set(value) {
-            if (slideAnimation == null || (slideAnimation != null && slideAnimation!!.to != value.toDouble())) {
-                slideAnimation = Animation(
-                    EaseUtils.EnumEasingType.valueOf(HUD.arraylistXAxisAnimTypeValue.get()),
-                    EaseUtils.EnumEasingOrder.valueOf(HUD.arraylistXAxisAnimOrderValue.get()),
-                    field.toDouble(),
-                    value.toDouble(),
-                    HUD.arraylistXAxisAnimSpeedValue.get() * 30L
-                ).start()
-            }
-            field = value
-        }
-    var yPosAnimation: Animation? = null
-    open var yPos = 0f
-        get() {
-            if (yPosAnimation != null) {
-                field = yPosAnimation!!.value.toFloat()
-                if (yPosAnimation!!.state == Animation.EnumAnimationState.STOPPED) {
-                    yPosAnimation = null
-                }
-            }
-            return field
-        }
-        set(value) {
-            if (yPosAnimation == null || (yPosAnimation != null && yPosAnimation!!.to != value.toDouble())) {
-                yPosAnimation = Animation(
-                    EaseUtils.EnumEasingType.valueOf(HUD.arraylistYAxisAnimTypeValue.get()),
-                    EaseUtils.EnumEasingOrder.valueOf(HUD.arraylistYAxisAnimOrderValue.get()),
-                    field.toDouble(),
-                    value.toDouble(),
-                    HUD.arraylistYAxisAnimSpeedValue.get() * 30L
-                ).start()
-            }
-            field = value
-        }
+    var yPos = 0f
 
     // Tag
     open val tag: String?

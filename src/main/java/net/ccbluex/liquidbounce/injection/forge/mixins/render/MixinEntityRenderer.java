@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.client.HurtCam;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;
+import net.ccbluex.liquidbounce.features.module.modules.visual.Ambience;
 import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Reach;
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook;
@@ -43,7 +44,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import static org.objectweb.asm.Opcodes.GETFIELD;
 
 import java.awt.*;
-import java.io.IOException;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -341,7 +341,7 @@ public abstract class MixinEntityRenderer {
      */
     @Overwrite
     private void updateLightmap(float f2) {
-        VanillaTweaks camera = FDPClient.moduleManager.getModule(VanillaTweaks.class);
+        Ambience ambience = FDPClient.moduleManager.getModule(Ambience.class);
         if (this.lightmapUpdateNeeded) {
             this.mc.mcProfiler.startSection("lightTex");
             World world = this.mc.theWorld;
@@ -433,8 +433,8 @@ public abstract class MixinEntityRenderer {
                     int n2 = (int) (f13 * 255.0f);
                     int n3 = (int) (f14 * 255.0f);
                     int n4 = (int) (f15 * 255.0f);
-                    assert camera != null;
-                    this.lightmapColors[i2] = camera.getState() && camera.getWorldColorValue().get() ? new Color(camera.getWorldColorRValue().get(), camera.getWorldColorGValue().get(), camera.getWorldColorBValue().get()).getRGB() : 0xFF000000 | n2 << 16 | n3 << 8 | n4;
+                    assert ambience != null;
+                    this.lightmapColors[i2] = ambience.getState() && ambience.getWorldColorValue().get() ? new Color(ambience.getWorldColorRValue().get(), ambience.getWorldColorGValue().get(), ambience.getWorldColorBValue().get()).getRGB() : 0xFF000000 | n2 << 16 | n3 << 8 | n4;
                 }
                 this.lightmapTexture.updateDynamicTexture();
                 this.lightmapUpdateNeeded = false;

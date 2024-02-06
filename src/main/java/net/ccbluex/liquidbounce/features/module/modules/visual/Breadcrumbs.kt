@@ -12,8 +12,8 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -29,11 +29,13 @@ import java.awt.Color
 object Breadcrumbs : Module() {
 
     private val typeValue = ListValue("Type", arrayOf("Line", "Rect", "Sphere", "Rise"), "Line")
-    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorGreenValue = IntegerValue("G", 255, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorAlphaValue = IntegerValue("Alpha", 255, 0, 255)
-    private val colorRainbowValue = BoolValue("Rainbow", false)
+    private val colorDisplay = BoolValue("Color", true)
+    private val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { colorDisplay.get() }
+    private val colorGreenValue = IntegerValue("Green", 179, 0, 255).displayable { colorDisplay.get() }
+    private val colorBlueValue = IntegerValue("Blue", 72, 0, 255).displayable { colorDisplay.get() }
+    private val colorAlphaValue = IntegerValue("Alpha", 255, 0, 255).displayable { colorDisplay.get() }
+    private val colorThemeClient = BoolValue("Client Color", true).displayable { colorDisplay.get() }
+
     private val fadeValue = BoolValue("Fade", true)
     private val drawThePlayerValue = BoolValue("DrawThePlayer", true)
     private val drawTargetsValue = BoolValue("DrawTargets", true)
@@ -46,7 +48,7 @@ object Breadcrumbs : Module() {
     private val points = mutableMapOf<Int, MutableList<BreadcrumbPoint>>()
 
     val color: Color
-        get() = if (colorRainbowValue.get()) rainbow() else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
+        get() = if (colorThemeClient.get()) ClientTheme.getColor(1) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
 
     private val sphereList = GL11.glGenLists(1)
 

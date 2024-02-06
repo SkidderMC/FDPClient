@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.utils.render;
 
-import net.ccbluex.liquidbounce.ui.client.gui.AnimationUtil;
 import net.ccbluex.liquidbounce.utils.AnimationUtils;
+
 public final class Translate {
     private float x;
     private float y;
@@ -19,8 +19,8 @@ public final class Translate {
 
     public void interpolate(float targetX, float targetY, double smoothing) {
         if(first) {
-            this.x = AnimationUtil.animate(targetX, this.x, smoothing);
-            this.y = AnimationUtil.animate(targetY, this.y, smoothing);
+            this.x = AnimationUtils.animated(targetX, this.x, smoothing);
+            this.y = AnimationUtils.animated(targetY, this.y, smoothing);
         } else {
             this.x = targetX;
             this.y = targetY;

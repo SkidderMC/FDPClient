@@ -12,8 +12,8 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.renderer.GlStateManager
@@ -29,7 +29,7 @@ object DamageParticle : Module() {
 
     private val aliveTicksValue = IntegerValue("AliveTicks", 20, 10, 50)
     private val sizeValue = IntegerValue("Size", 3, 1, 7)
-    private val colourValue = ListValue("ColourType", arrayOf("Damage", "Custom", "Rainbow"), "Custom")
+    private val colourValue = ListValue("ColourType", arrayOf("Damage", "Custom", "Client"), "Client")
     private val colorRedValue = IntegerValue("Red", 68, 0, 255).displayable { colourValue.get() == "Custom" }
     private val colorGreenValue = IntegerValue("Green", 117, 0, 255).displayable { colourValue.get() == "Custom" }
     private val colorBlueValue = IntegerValue("Blue", 255, 0, 255).displayable { colourValue.get() == "Custom" }
@@ -47,7 +47,7 @@ object DamageParticle : Module() {
                     healthData[entity.entityId] = entity.health
                     if(lastHealth == entity.health) continue
                     val colourPrefix = if (colourValue.get() == "Damage") (if(lastHealth>entity.health){"§c"}else{"§a"}) else ""
-                    val prefix = if (colourValue.get() != "Rainbow") (if(lastHealth>entity.health){"❤"}else{"❤"}) else (if(lastHealth>entity.health){"-"}else{"+"})
+                    val prefix = if (colourValue.get() != "Client") (if(lastHealth>entity.health){"❤"}else{"❤"}) else (if(lastHealth>entity.health){"-"}else{"+"})
                     particles.add(SingleParticle(colourPrefix + prefix + BigDecimal(abs(lastHealth - entity.health).toDouble()).setScale(1, BigDecimal.ROUND_HALF_UP).toDouble()
                         ,entity.posX - 0.5 + Random(System.currentTimeMillis()).nextInt(5).toDouble() * 0.1
                         ,entity.entityBoundingBox.minY + (entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2.0
@@ -104,7 +104,7 @@ object DamageParticle : Module() {
                         }
                     }
                 }
-                mc.fontRendererObj.drawString(particle.str, (-(mc.fontRendererObj.getStringWidth(particle.str) / 2)).toFloat(), (-(mc.fontRendererObj.FONT_HEIGHT - 1)).toFloat(), (if (colourValue.get() == "Rainbow") ColorUtils.rainbowWithAlpha(colorAlphaValue.get()) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())).rgb, false)
+                mc.fontRendererObj.drawString(particle.str, (-(mc.fontRendererObj.getStringWidth(particle.str) / 2)).toFloat(), (-(mc.fontRendererObj.FONT_HEIGHT - 1)).toFloat(), (if (colourValue.get() == "Client") ClientTheme.getColor(1) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())).rgb, false)
                 GL11.glColor4f(187.0f, 255.0f, 255.0f, 1.0f)
                 GL11.glDepthMask(true)
                 GlStateManager.doPolygonOffset(1.0f, 1500000.0f)

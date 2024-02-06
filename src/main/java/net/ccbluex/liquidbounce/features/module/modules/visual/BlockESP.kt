@@ -12,10 +12,10 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -32,14 +32,20 @@ object BlockESP : Module() {
     private val outlineWidthValue = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
     private val blockValue = BlockValue("Block", 168)
     private val radiusValue = IntegerValue("Radius", 40, 5, 120)
-    private val colorRedValue = IntegerValue("R", 255, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorGreenValue = IntegerValue("G", 179, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorBlueValue = IntegerValue("B", 72, 0, 255).displayable { !colorRainbowValue.get() }
-    private val colorRainbowValue = BoolValue("Rainbow", false)
+
+    private val colorDisplay = BoolValue("Color", true)
+
+    private val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { colorDisplay.get() }
+    private val colorGreenValue = IntegerValue("Green", 179, 0, 255).displayable { colorDisplay.get() }
+    private val colorBlueValue = IntegerValue("Blue", 72, 0, 255).displayable { colorDisplay.get() }
+
+    private val colorThemeClient = BoolValue("Client Color", true).displayable { colorDisplay.get() }
+
     private val searchTimer = MSTimer()
     private val posList: MutableList<BlockPos> = ArrayList()
     private var color = Color.CYAN
     private var thread: Thread? = null
+
     private val waterMode = ListValue("WaterMode", arrayOf("Box", "2D"), "Box")
     private val waterRadiusValue = IntegerValue("WaterRadius", 40, 5, 120)
     private val waterLimitValue = IntegerValue("WaterLimit", 128, 0, 1024)
@@ -69,7 +75,7 @@ object BlockESP : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
-        color = if (colorRainbowValue.get()) rainbow() else Color(
+        color = if (colorThemeClient.get()) ClientTheme.getColor(1) else Color(
             colorRedValue.get(),
             colorGreenValue.get(),
             colorBlueValue.get()

@@ -12,11 +12,9 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
-import net.minecraft.util.ResourceLocation
 @ModuleInfo(name = "VanillaTweaks", description = "Vanilla Utilities.", category = ModuleCategory.VISUAL)
 class VanillaTweaks : Module() {
 
@@ -39,11 +37,6 @@ class VanillaTweaks : Module() {
     private val noFov = BoolValue("NoFOV", false)
     val fovValue = FloatValue("FOV", 1.2F, 0.8F, 1.5F).displayable  { noFov.get() }
 
-    //WorldColor
-    val worldColorValue = BoolValue("WorldColor", false)
-    val worldColorRValue = IntegerValue("WorldRed", 255, 0, 255) { worldColorValue.get() }
-    val worldColorGValue = IntegerValue("WorldGreen", 255, 0, 255) { worldColorValue.get() }
-    val worldColorBValue = IntegerValue("WorldBlue", 255, 0, 255) { worldColorValue.get() }
 
     private var prevGamma = -1f
 

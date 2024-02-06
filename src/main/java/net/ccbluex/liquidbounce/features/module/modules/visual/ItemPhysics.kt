@@ -14,6 +14,6 @@ import net.ccbluex.liquidbounce.value.FloatValue
 object ItemPhysics : Module() {
 
     val itemWeight = FloatValue("Weight", 0.5F, 0F, 1F)
-    override val tag: String?
+    override val tag: String
         get() = "${itemWeight.get()}"
 }

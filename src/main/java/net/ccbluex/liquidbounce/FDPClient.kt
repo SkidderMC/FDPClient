@@ -46,6 +46,7 @@ object FDPClient {
     const val CLIENT_WEBSITE = "https://fdpinfo.github.io"
     const val CLIENT_DISCORD = "https://discord.gg/3XRFGeqEYD"
     const val CLIENT_VERSION = "v5.6.0 (IN DEV)"
+    var USER_NAME = ""
 
     // Flags
     var isStarting = true

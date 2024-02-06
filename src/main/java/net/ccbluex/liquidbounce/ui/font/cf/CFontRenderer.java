@@ -16,7 +16,6 @@ import org.spongepowered.asm.lib.Opcodes;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -566,7 +565,7 @@ public class CFontRenderer extends CFont {
         GL11.glEnable(3553);
     }
 
-    public List<String> wrapWords(String text, double width) {
+    public java.util.List<String> wrapWords(String text, double width) {
         ArrayList<String> finalWords = new ArrayList<>();
         if (((double) getStringWidth(text)) > width) {
             String[] words = text.split(" ");
@@ -598,7 +597,7 @@ public class CFontRenderer extends CFont {
         return finalWords;
     }
 
-    public List<String> formatString(String string, double width) {
+    public java.util.List<String> formatString(String string, double width) {
         ArrayList<String> finalWords = new ArrayList<>();
         String currentWord = "";
         int lastColorCode = 65535;

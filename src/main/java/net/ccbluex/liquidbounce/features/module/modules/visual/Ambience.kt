@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
@@ -20,11 +21,18 @@ import net.minecraft.network.play.server.S2BPacketChangeGameState
 @ModuleInfo(name = "Ambience", category = ModuleCategory.VISUAL)
 object Ambience : Module() {
 
-    private val timeModeValue = ListValue("TimeMode", arrayOf("None", "Normal", "Custom"), "Normal")
-    private val weatherModeValue = ListValue("WeatherMode", arrayOf("None", "Sun", "Rain", "Thunder"), "None")
-    private val customWorldTimeValue = IntegerValue("CustomTime", 1, 0, 24).displayable { timeModeValue.equals("Custom") }
+    private val timeModeValue = ListValue("TimeMode", arrayOf("None", "Normal", "Custom"), "Custom")
+
+    private val customWorldTimeValue = IntegerValue("CustomTime", 19, 0, 24).displayable { timeModeValue.equals("Custom") }
     private val changeWorldTimeSpeedValue = IntegerValue("ChangeWorldTimeSpeed", 150, 10, 500).displayable { timeModeValue.equals("Normal") }
+
+    private val weatherModeValue = ListValue("WeatherMode", arrayOf("None", "Sun", "Rain", "Thunder"), "None")
     private val weatherStrengthValue = FloatValue("WeatherStrength", 1f, 0f, 1f).displayable { !weatherModeValue.equals("None") }
+
+    val worldColorValue = BoolValue("WorldColor", false)
+    val worldColorRValue = IntegerValue("WorldRed", 255, 0, 255) { worldColorValue.get() }
+    val worldColorGValue = IntegerValue("WorldGreen", 255, 0, 255) { worldColorValue.get() }
+    val worldColorBValue = IntegerValue("WorldBlue", 255, 0, 255) { worldColorValue.get() }
 
     var i = 0L
 

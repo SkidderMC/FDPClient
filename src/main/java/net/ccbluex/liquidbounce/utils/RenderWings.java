@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.utils;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.Wings;
-import net.ccbluex.liquidbounce.utils.render.ColorUtils;
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.ModelBase;
@@ -56,7 +56,7 @@ public class RenderWings extends ModelBase {
         if (mc.thePlayer.isSneaking()) {
             GL11.glTranslated( 0.0, 0.125 / scale, 0.0);
         }
-        if(Wings.getColourType().get().equals("Chroma")){ RenderUtils.glColor(ColorUtils.rainbow(), 255F);} else if(Wings.getColourType().get().equals("Custom")){RenderUtils.glColor(new Color(Wings.getCR().get(), Wings.getCG().get(), Wings.getCB().get()), 255F);} else { GL11.glColor3f(1,1,1);}
+        if(Wings.getColourType().get().equals("Theme")){ ClientTheme.INSTANCE.getColor(1);} else if(Wings.getColourType().get().equals("Custom")){RenderUtils.glColor(new Color(Wings.getCR().get(), Wings.getCG().get(), Wings.getCB().get()), 255F);} else { GL11.glColor3f(1,1,1);}
         this.mc.getTextureManager().bindTexture(this.location);
 
         for (int j = 0; j < 2; ++j) {

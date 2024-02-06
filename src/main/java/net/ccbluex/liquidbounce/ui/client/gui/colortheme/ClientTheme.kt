@@ -16,11 +16,11 @@ import java.awt.Color
 object ClientTheme {
     val ClientColorMode = ListValue(
         "ColorMode",
-        arrayOf("Cherry", "Water", "Magic", "DarkNight", "Sun", "Tree", "Flower", "Loyoi", "Soniga", "May", "Mint", "Cero", "Azure", "Rainbow", "Astolfo", "Pumpkin", "Polarized", "Sundae", "Terminal", "Coral"),
-        "Water"
+        arrayOf("Zywl", "FDP", "Magic", "DarkNight", "Sun", "Tree", "Flower", "Loyoi", "Soniga", "May", "Mint", "Cero", "Azure", "Rainbow", "Astolfo", "Pumpkin", "Polarized", "Sundae", "Terminal", "Coral"),
+        "FDP"
     ).displayable { false }
     val textValue = BoolValue("TextStaticColor", false).displayable { false }
-    val fadespeed = IntegerValue("Fade-speed", 1, 1, 10).displayable { false }
+    val fadespeed = IntegerValue("Fade-speed", 2, 1, 10).displayable { false }
     val updown = BoolValue(
         "Fade-Type",
         false
@@ -29,13 +29,13 @@ object ClientTheme {
         if (CustomClientColor.state) return CustomClientColor.getColor(alpha)
         when (ClientColorMode.get().lowercase()) {
 
-            "cherry" -> if (type == "START") {
+            "zywl" -> if (type == "START") {
                 return Color(215, 171, 168, alpha)
             } else if (type == "END") {
                 return Color(206, 58, 98, alpha)
             }
 
-            "water" -> if (type == "START") {
+            "fdp" -> if (type == "START") {
                 return Color(108, 170, 207, alpha)
             } else if (type == "END") {
                 return Color(35, 69, 148, alpha)
@@ -157,14 +157,14 @@ object ClientTheme {
     fun getColor(index: Int): Color {
         if (CustomClientColor.state) return CustomClientColor.getColor()
         when (ClientColorMode.get().lowercase()) {
-            "cherry" -> return ColorUtils.mixColors(
+            "zywl" -> return ColorUtils.mixColors(
                 Color(206, 58, 98),
                 Color(215, 171, 168),
                 fadespeed.get() / 5.0 * if (updown.get()) 1 else -1,
                 index
             )
 
-            "water" -> return ColorUtils.mixColors(
+            "fdp" -> return ColorUtils.mixColors(
                 Color(35, 69, 148),
                 Color(108, 170, 207),
                 fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,
@@ -281,14 +281,14 @@ object ClientTheme {
     fun getColorFromName(name: String,index: Int): Color {
         if (CustomClientColor.state) return CustomClientColor.getColor()
         when (name.lowercase()) {
-            "cherry" -> return ColorUtils.mixColors(
+            "zywl" -> return ColorUtils.mixColors(
                 Color(206, 58, 98),
                 Color(215, 171, 168),
                 fadespeed.get() / 5.0 * if (updown.get()) 1 else -1,
                 index
             )
 
-            "water" -> return ColorUtils.mixColors(
+            "fdp" -> return ColorUtils.mixColors(
                 Color(35, 69, 148),
                 Color(108, 170, 207),
                 fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,
@@ -404,14 +404,14 @@ object ClientTheme {
     fun getColorWithAlpha(index: Int, alpha: Int): Color {
         if (CustomClientColor.state) return CustomClientColor.getColor(alpha)
         when (ClientColorMode.get().lowercase()) {
-            "cherry" -> return ColorUtils.mixColors(
+            "zywl" -> return ColorUtils.mixColors(
                 Color(206, 58, 98),
                 Color(215, 171, 168),
                 fadespeed.get() / 5.0 * if (updown.get()) 1 else -1,
                 index
             ).setAlpha(alpha)
 
-            "water" -> return ColorUtils.mixColors(
+            "fdp" -> return ColorUtils.mixColors(
                 Color(35, 69, 148),
                 Color(108, 170, 207),
                 fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,

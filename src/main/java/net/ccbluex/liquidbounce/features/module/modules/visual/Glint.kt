@@ -17,14 +17,14 @@ import java.awt.Color
 @ModuleInfo(name = "Glint", category = ModuleCategory.VISUAL)
 object Glint : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Theme", "AnotherRainbow", "Custom"), "Custom")
+    private val modeValue = ListValue("Mode", arrayOf("Client", "AnotherRainbow", "Custom"), "Custom")
     private val redValue = IntegerValue("Red", 255, 0, 255).displayable { modeValue.equals("Custom") }
     private val greenValue = IntegerValue("Green", 0, 0, 255).displayable { modeValue.equals("Custom") }
     private val blueValue = IntegerValue("Blue", 0, 0, 255).displayable { modeValue.equals("Custom") }
 
     fun getColor(): Color {
         return when (modeValue.get().lowercase()) {
-            "theme" -> ClientTheme.getColor(1)
+            "client" -> ClientTheme.getColor(1)
             "anotherrainbow" -> ColorUtils.skyRainbow(10, 0.9F, 1F, 1.0)
             else -> Color(redValue.get(), greenValue.get(), blueValue.get())
         }

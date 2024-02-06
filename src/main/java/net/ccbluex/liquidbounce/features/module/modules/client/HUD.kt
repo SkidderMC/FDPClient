@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.visual.CustomClientColor
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi
 import net.ccbluex.liquidbounce.ui.client.gui.GuiTeleportation
@@ -41,6 +42,8 @@ import net.minecraft.network.play.server.S45PacketTitle
 import net.minecraft.util.EnumChatFormatting
 import java.awt.Color
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import kotlin.math.max
 import kotlin.math.min
@@ -51,13 +54,7 @@ object HUD : Module() {
     // WaterMark
     private val waterMark = BoolValue("Watermark", true)
     val modeValue = ListValue("Watermark-Mode", arrayOf("FDPCLIENT", "Classic", "FDP", "Blur", "Clean", "Zywl", "ZAVZ", "Slide"), "FDPCLIENT").displayable { waterMark.get() }
-    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Health", "Rainbow", "Slowly", "Fade", "Mixer"), "Health").displayable { waterMark.get() }
-    val red = IntegerValue("Red", 0, 0, 255).displayable { waterMark.get() }
-    val green = IntegerValue("Green", 0, 0, 255).displayable { waterMark.get() }
-    val blue = IntegerValue("Blue", 255, 0, 255).displayable { waterMark.get() }
-    private val saturationValue = FloatValue("Saturation", 1f, 0f, 1f).displayable { waterMark.get() }
-    private val brightnessValue = FloatValue("Brightness", 1f, 0f, 1f).displayable { waterMark.get() }
-    private val mixerSecondsValue = IntegerValue("Seconds", 2, 1, 10).displayable { waterMark.get() }
+    private val colorModeValue = ListValue("Color", arrayOf("Custom", "Health", "Theme"), "Health").displayable { waterMark.get() }
 
     // CrossHair
     val crossHairValue = BoolValue("CrossHair", false)
@@ -82,21 +79,11 @@ object HUD : Module() {
     val cameraPositionPitchValue = FloatValue("Pitch", 10F, -50F, 50F).displayable  { cameraPositionValue.get() }
     val cameraPositionFovValue = FloatValue("DistanceFov", 4F, 1F, 50F).displayable  { cameraPositionValue.get() }
 
-    // ArrayList
-    private val arrayList = BoolValue("ArrayList", true)
-    val shadowValue = ListValue("TextShadowMode", arrayOf("Normal", "LiquidBounce", "Outline", "Default", "Autumn"), "Normal").displayable { arrayList.get() }
-    private val arrayListValue = BoolValue("ArrayListAnimation", true).displayable { arrayList.get() }
-    val arraylistXAxisAnimSpeedValue = IntegerValue("ArraylistXAxisAnimSpeed", 10, 5, 20).displayable { arrayListValue.get() }
-    val arraylistXAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistXAxisAnimType").displayable { arrayListValue.get() }
-    val arraylistXAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistXAxisHotbarAnimOrder").displayable { !arraylistXAxisAnimTypeValue.equals("NONE") }
-    val arraylistYAxisAnimSpeedValue = IntegerValue("ArraylistYAxisAnimSpeed", 10, 5, 20).displayable { arrayListValue.get() }
-    val arraylistYAxisAnimTypeValue = EaseUtils.getEnumEasingList("ArraylistYAxisAnimType")
-    val arraylistYAxisAnimOrderValue = EaseUtils.getEnumEasingOrderList("ArraylistYAxisHotbarAnimOrder").displayable { !arraylistYAxisAnimTypeValue.equals("NONE") }
-
+    // Fonts
+    val shadowValue = ListValue("TextShadowMode", arrayOf("Normal", "LiquidBounce", "Outline", "Default", "Autumn"), "Normal")
     private val fontEpsilonValue = FloatValue("FontVectorEpsilon", 0.5f, 0f, 1.5f)
 
     private var lastFontEpsilon = 0f
-
     /**
      * Renders the HUD.
      */
@@ -175,42 +162,19 @@ object HUD : Module() {
             }
 
             "Classic" -> {
-                val str =
-                    EnumChatFormatting.DARK_GRAY.toString() + " | " + EnumChatFormatting.WHITE + mc.session.username + EnumChatFormatting.DARK_GRAY + " | " + EnumChatFormatting.WHITE + Minecraft.getDebugFPS() + "fps" + EnumChatFormatting.DARK_GRAY + " | " + EnumChatFormatting.WHITE + (if (mc.isSingleplayer) "SinglePlayer" else mc.currentServerData.serverIP)
-                RoundedUtil.drawRound(
-                    6.0f,
-                    6.0f,
-                    (Fonts.font35.getStringWidth(str) + 8 + Fonts.font40.getStringWidth(name.uppercase(Locale.getDefault()))).toFloat(),
-                    15.0f,
-                    0.0f,
-                    Color(19, 19, 19, 230)
-                )
-                RoundedUtil.drawRound(
-                    6.0f,
-                    6.0f,
-                    (Fonts.font35.getStringWidth(str) + 8 + Fonts.font40.getStringWidth(name.uppercase(Locale.getDefault()))).toFloat(),
-                    1.0f,
-                    1.0f,
-                    color(8)
-                )
-                Fonts.font35.drawString(
-                    str,
-                    (11 + Fonts.font40.getStringWidth(name.uppercase(Locale.getDefault()))).toFloat(),
-                    11.5f,
-                    Color.WHITE.rgb
-                )
-                Fonts.font40.drawString(
-                    EnumChatFormatting.BOLD.toString() + name.uppercase(Locale.getDefault()),
-                    9.5f,
-                    11.5f,
-                    color(8).rgb
-                )
-                Fonts.font40.drawString(
-                    EnumChatFormatting.BOLD.toString() + name.uppercase(Locale.getDefault()),
-                    10.0f,
-                    12f,
-                    Color.WHITE.rgb
-                )
+                var width = ""
+                val name = "FDP"
+                val other = " | ${FDPClient.USER_NAME} | ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("hh:mm a"))}"
+                val leagth = Fonts.fontTenacityBold40.getStringWidth(name) + Fonts.fontTenacityBold35.getStringWidth(other)
+                RenderUtils.customRounded(2F, 3.5F, leagth + 6F, Fonts.fontTenacityBold40.FONT_HEIGHT + 5F, 0F, 0F, 5F, 5F, Color(0,0,0,180).rgb)
+                RenderUtils.drawAnimatedGradient(2.0, 3.0, leagth + 6.0, 4.0, ClientTheme.getColor(0).rgb, ClientTheme.getColor(90).rgb)
+                GlowUtils.drawGlow(3.79F, 6.07F, 3.83F + Fonts.fontTenacityBold40.getStringWidth(name).toFloat(), 7.21F, 9, ClientTheme.getColor(1))
+                for (l in name.indices) {
+                    Fonts.fontTenacityBold40.drawString(name[l].toString(), 5F + Fonts.fontTenacityBold40.getStringWidth(width).toFloat(), 5.5F, ClientTheme.getColor(l * -135).rgb, true)
+                    width += name[l].toString()
+                }
+                Fonts.fontTenacityBold35.drawString(other, Fonts.fontTenacityBold40.getStringWidth("FDP").toFloat() + 5F, 6.5F, Color(255,255,255).rgb)
+                GlStateManager.resetColor()
             }
 
             "Zywl" -> {
@@ -551,24 +515,8 @@ object HUD : Module() {
 
     fun getColor(): Color {
         return when (colorModeValue.get()) {
-            "Custom" -> Color(red.get(), green.get(), blue.get())
-            "Rainbow" -> Color(
-                RenderUtils.getRainbowOpaque(
-                        mixerSecondsValue.get(),
-                        saturationValue.get(),
-                    brightnessValue.get(),
-                    0
-                )
-            )
-
-            "Slowly" -> ColorUtils.slowlyRainbow(
-                System.nanoTime(),
-                0,
-                saturationValue.get(),
-                brightnessValue.get()
-            )
-
-            "Fade" -> ColorUtils.fade(Color(red.get(), green.get(), blue.get()), 0, 100)
+            "Custom" -> CustomClientColor.getColor()
+            "Rainbow" -> ClientTheme.getColor(1)
             else -> Color.white
         }
     }
