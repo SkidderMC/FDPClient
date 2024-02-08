@@ -904,7 +904,7 @@ object KillAura : Module() {
     }
 
     private fun swingKeepSprint(entity: EntityLivingBase) {
-        if (keepSprintValue.get() && (!CpsReduceValue.get() || mc.thePlayer.hurtTime > 6)) {
+        if (keepSprintValue.get() && (!CpsReduceValue.get() || mc.thePlayer.hurtTime < 7)) {
             // Enchant Effect
             if (EnchantmentHelper.getModifierForCreature(mc.thePlayer.heldItem, entity.creatureAttribute) > 0F) {
                 mc.thePlayer.onEnchantmentCritical(entity)
