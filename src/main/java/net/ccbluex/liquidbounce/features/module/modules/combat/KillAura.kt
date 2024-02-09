@@ -37,6 +37,7 @@ import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemBucketMilk
 import net.minecraft.item.ItemFood
+import net.minecraft.item.ItemPotion
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.*
 import net.minecraft.potion.Potion
@@ -1159,7 +1160,7 @@ object KillAura : Module() {
                 || FDPClient.moduleManager[FreeCam::class.java]!!.state
                 || (noScaffValue.get() && FDPClient.moduleManager[Scaffold::class.java]!!.state)
                 || (noFlyValue.get() && FDPClient.moduleManager[Flight::class.java]!!.state)
-                || (noEat.get() && mc.thePlayer.isUsingItem && (mc.thePlayer.heldItem?.item is ItemFood || mc.thePlayer.heldItem?.item is ItemBucketMilk))
+                || (noEat.get() && mc.thePlayer.isUsingItem && (mc.thePlayer.heldItem?.item is ItemFood || mc.thePlayer.heldItem?.item is ItemBucketMilk || mc.thePlayer.isUsingItem && (mc.thePlayer.heldItem?.item is ItemPotion)))
                 || (noBlocking.get() && mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item is ItemBlock)
                 || (noInventoryAttackValue.equals("CancelRun") && (mc.currentScreen is GuiContainer || System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get()))
 
