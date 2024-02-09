@@ -2464,6 +2464,19 @@ public final class RenderUtils extends MinecraftInstance {
         ColorUtils.clearColor();
     }
 
+    public static void rectangleBorderedx(double x, double y, double x1, double y1, double width, int internalColor, int borderColor) {
+        RenderUtils.rectangle(x + width, y + width, x1 - width, y1 - width, internalColor);
+        GlStateManager.color( 1.0f,  1.0f, 1.0f, 1.0f);
+        RenderUtils.rectangle(x + width, y, x1 - width, y + width, borderColor);
+        GlStateManager.color(1.0f, 1.0f,  1.0f,  1.0f);
+        RenderUtils.rectangle(x, y, x + width, y1, borderColor);
+        GlStateManager.color( 1.0f,  1.0f,  1.0f,  1.0f);
+        RenderUtils.rectangle(x1 - width, y, x1, y1, borderColor);
+        GlStateManager.color( 1.0f,  1.0f,  1.0f, 1.0f);
+        RenderUtils.rectangle(x + width, y1 - width, x1 - width, y1, borderColor);
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+
     public static void originalRoundedRect(float paramXStart, float paramYStart, float paramXEnd, float paramYEnd, float radius, int color) {
         float alpha = (color >> 24 & 0xFF) / 255.0F;
         float red = (color >> 16 & 0xFF) / 255.0F;

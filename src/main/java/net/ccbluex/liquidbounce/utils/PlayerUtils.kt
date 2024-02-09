@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.utils.MinecraftInstance.mc
@@ -23,7 +28,7 @@ object PlayerUtils {
         return stringBuilder.toString()
     }
     fun getAr(player : EntityLivingBase):Double{
-        var arPercentage: Double = (player!!.totalArmorValue / player!!.maxHealth).toDouble()
+        var arPercentage: Double = (player.totalArmorValue / player.maxHealth).toDouble()
         arPercentage = MathHelper.clamp_double(arPercentage, 0.0, 1.0)
         return 100 * arPercentage
     }
@@ -55,6 +60,11 @@ object PlayerUtils {
             off += 2
         }
         return false
+    }
+
+    fun getIncremental(`val`: Double, inc: Double): Double {
+        val one = 1.0 / inc
+        return Math.round(`val` * one) / one
     }
 
     fun findSlimeBlock(): Int? {

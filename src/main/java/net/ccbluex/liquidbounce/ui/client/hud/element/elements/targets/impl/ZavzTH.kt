@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl
 
 import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.TargetHUD
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
@@ -19,7 +19,7 @@ import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class ZavzTH(inst: TargetHUD) : TargetStyle("Zavz", inst, true) {
+class ZavzTH(inst: Targets) : TargetStyle("Zavz", inst, true) {
     override fun drawTarget(entity: EntityLivingBase) {
         val fonts = Fonts.SFApple40
         val leagth = if (fonts.getStringWidth(entity.name) < fonts.getStringWidth("HurtTime : ${entity.hurtTime}")) fonts.getStringWidth("HurtTime : ${entity.hurtTime}") else fonts.getStringWidth(entity.name)

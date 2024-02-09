@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl
 import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.TargetHUD
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.skin
@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import java.awt.Color
 
-class NormalTH(inst: TargetHUD) : TargetStyle("Normal", inst, true) {
+class NormalTH(inst: Targets) : TargetStyle("Normal", inst, true) {
     val numberValue = BoolValue("Show Number", false).displayable { targetInstance.styleValue.equals("Normal") }
     val percentValue = BoolValue("Percent", false).displayable { targetInstance.styleValue.equals("Normal") && numberValue.get() }
     override fun drawTarget(entity: EntityLivingBase) {

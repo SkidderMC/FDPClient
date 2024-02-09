@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl
 
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.TargetHUD
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.entity.EntityLivingBase
 import java.awt.Color
 
-class LiquidTH(inst: TargetHUD) : TargetStyle("LiquidBounce", inst, true) {
+class LiquidTH(inst: Targets) : TargetStyle("LiquidBounce", inst, true) {
     
     override fun drawTarget(target: EntityLivingBase) {
         val width = (38 + target.name.let(Fonts.font40::getStringWidth))

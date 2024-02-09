@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl
 import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.TargetHUD
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.BlendUtils
@@ -18,7 +18,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import java.awt.Color
 
-class RavenB4TH(inst: TargetHUD) : TargetStyle("RavenB4", inst, true) {
+class RavenB4TH(inst: Targets) : TargetStyle("RavenB4", inst, true) {
     private val rm = BoolValue("Modern", true).displayable { targetInstance.styleValue.get().equals("ravenb4", true) }
     override fun drawTarget(entity: EntityLivingBase) {
         if (!rm.get()) {

@@ -37,7 +37,7 @@ open class HUD : MinecraftInstance() {
                 .addElement(ScoreboardElement())
                 .addElement(Armor())
                 .addElement(Notifications())
-                .addElement(TargetHUD())
+                .addElement(Targets())
         }
     }
 

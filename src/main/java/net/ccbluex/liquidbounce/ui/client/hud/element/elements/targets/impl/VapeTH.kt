@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl
 
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.TargetHUD
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.render.RoundedUtil
 import net.minecraft.entity.EntityLivingBase
 import java.awt.Color
 
-class VapeTH(inst: TargetHUD) : TargetStyle("Vape", inst, true) {
+class VapeTH(inst: Targets) : TargetStyle("Vape", inst, true) {
     
     override fun drawTarget(target: EntityLivingBase) {
         RenderUtils.drawEntityOnScreen(16, 55, 25, target)

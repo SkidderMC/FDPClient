@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets
 
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.TargetHUD
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.value.*
@@ -18,7 +18,7 @@ import java.text.DecimalFormatSymbols
 import java.util.Locale
 import kotlin.math.pow
 
-abstract class TargetStyle(val name: String, val targetInstance: TargetHUD, val shaderSupport: Boolean): MinecraftInstance() {
+abstract class TargetStyle(val name: String, val targetInstance: Targets, val shaderSupport: Boolean): MinecraftInstance() {
 
     var easingHealth = 0F
 

@@ -232,8 +232,6 @@ class LegitReach : Module() {
 
         if (packet is S12PacketEntityVelocity && velocityValue.get()) {
             comboCounter = 0
-            event.cancelEvent()
-            packets.add(packet as Packet<INetHandlerPlayClient>)
             clearPackets()
         }
         

@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl
 
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.TargetHUD
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.skin
@@ -17,7 +17,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import java.awt.Color
 
-class SimpleTH(inst: TargetHUD) : TargetStyle("Simple", inst, true) {
+class SimpleTH(inst: Targets) : TargetStyle("Simple", inst, true) {
     override fun drawTarget(entity: EntityLivingBase) {
         val fonts = Fonts.minecraftFont
         val leagth = fonts.getStringWidth(entity.name)

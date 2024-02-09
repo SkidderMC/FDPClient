@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl
 
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.TargetHUD
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.roundToInt
 
-class FDPTH(inst: TargetHUD) : TargetStyle("FDP", inst, true) {
+class FDPTH(inst: Targets) : TargetStyle("FDP", inst, true) {
 
     private val fontValue = FontValue("Font", Fonts.font40).displayable { targetInstance.styleValue.equals("FDP") }
 
