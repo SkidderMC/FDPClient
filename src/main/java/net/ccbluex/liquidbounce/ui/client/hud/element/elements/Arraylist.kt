@@ -39,25 +39,21 @@ class Arraylist(
     side: Side = Side(Horizontal.RIGHT, Vertical.UP)
 ) : Element(x, y, scale, side) {
 
-    private val colorDisplay = BoolValue("Color Options:", true)
-    val colorRedValue = IntegerValue("Text-R", 0, 0, 255).displayable { colorDisplay.get() }
-    val colorGreenValue = IntegerValue("Text-G", 111, 0, 255).displayable { colorDisplay.get() }
-    val colorBlueValue = IntegerValue("Text-B", 255, 0, 255).displayable { colorDisplay.get() }
+
+    private val shadowValue = BoolValue("ShadowText", true)
+    private val orderValue = ListValue("Order", arrayOf("ABC", "Distance"), "Distance")
+    private val caseValue = ListValue("Case", arrayOf("Upper", "Normal", "Lower"), "Normal")
+    private val spaceValue = FloatValue("Space", 0F, 0F, 5F)
+
+    private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
+    private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
+
+    private val split = BoolValue("SplitName", true)
+    private val noRenderModule = BoolValue("NoRenderModule", false)
 
     // Tag settings
-    private val tagValue = BoolValue("Tags", false)
-    private val tagsStyleValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", "->", "Space", "None"), "Space").displayable { tagValue.get() }
-
-    // Options Text
-    private val textDisplay = BoolValue("Text Options:", true)
-    private val orderValue = ListValue("Order", arrayOf("ABC", "Distance"), "Distance").displayable { textDisplay.get() }
-    private val shadowValue = BoolValue("ShadowText", true).displayable { textDisplay.get() }
-    private val split = BoolValue("SplitName", true).displayable { textDisplay.get() }
-    private val noRenderModules = BoolValue("NoRenderModules", false).displayable { textDisplay.get() }
-    private val caseValue = ListValue("Case", arrayOf("Upper", "Normal", "Lower"), "Normal").displayable { textDisplay.get() }
-    private val spaceValue = FloatValue("Space", 0F, 0F, 5F).displayable { textDisplay.get() }
-    private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F).displayable { textDisplay.get() }
-    private val textYValue = FloatValue("TextY", 1F, 0F, 20F).displayable { textDisplay.get() }
+    private val tagValue = BoolValue("Tags", true)
+    private val tagsStyleValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", "->", "Space", "None"), "|").displayable { tagValue.get() }
 
     // Background color settings
     private val backgroundValue = IntegerValue("Background", 155, 0, 255)
@@ -72,14 +68,23 @@ class Arraylist(
     private val shadowShaderValue = BoolValue("Shadow", true)
     private val shadowNoCutValue = BoolValue("Shadow-NoCut", true).displayable { shadowShaderValue.get() }
     private val shadowStrength = IntegerValue("Shadow-Strength", 1, 1, 30).displayable { shadowShaderValue.get() }
-    private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Text", "Custom"), "Background").displayable { shadowShaderValue.get() }
+    private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Text", "Custom"), "Text").displayable { shadowShaderValue.get() }
     private val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255).displayable{ shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) }
     private val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255).displayable{ shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) }
     private val shadowColorBlueValue = IntegerValue("Shadow-Blue", 255, 0, 255).displayable{ shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) }
 
+    // Color
+    private val colorDisplay = BoolValue("Color Options:", true)
+    val colorRedValue = IntegerValue("Text-R", 0, 0, 255).displayable { colorDisplay.get() }
+    val colorGreenValue = IntegerValue("Text-G", 111, 0, 255).displayable { colorDisplay.get() }
+    val colorBlueValue = IntegerValue("Text-B", 255, 0, 255).displayable { colorDisplay.get() }
+
+    // Animation
     private val horizontalAnimation = ListValue("Horizontal-Animation", arrayOf("Default", "None", "Slide", "Fast"), "None")
     private val verticalAnimation = ListValue("Vertical-Animation", arrayOf("None", "Delta", "Slide", "Low", "Fast"), "None")
     private val animationSpeed = FloatValue("Animation-Speed", 0.25F, 0.01F, 1F)
+
+    // Font
     companion object {
         val fontValue = FontValue("Font", Fonts.fontTenacity40)
     }
@@ -92,20 +97,16 @@ class Arraylist(
     val delay = intArrayOf(0)
 
     private fun shouldExpect(module: Module): Boolean {
-        return noRenderModules.get() && module.category == ModuleCategory.VISUAL
-    }
-
-    private fun changeCase(inStr: String): String {
-        val str = LanguageManager.replace(inStr)
-        return when (caseValue.get().lowercase()) {
-            "upper" -> str.uppercase()
-            "lower" -> str.lowercase()
-            else -> str
-        }
+        return noRenderModule.get() && module.category == ModuleCategory.VISUAL
     }
 
     private fun getModuleName(module: Module): String {
         val displayName : String = (if (split.get()) { module.splicedName } else module.localizedName) + getModTag(module)
+
+        when (caseValue.get().lowercase()) {
+            "lower" -> displayName = displayName.lowercase()
+            "upper" -> displayName = displayName.uppercase()
+        }
 
         return displayName
     }
@@ -131,7 +132,7 @@ class Arraylist(
             if (module.array && !shouldExpect(module) && (module.state || module.slide != 0F)) {
                 val displayString = getModuleName(module)
 
-                val width = fontRenderer.getStringWidth(changeCase(displayString))
+                val width = fontRenderer.getStringWidth(displayString)
 
                 when (horizontalAnimation.get()) {
                     "Fast" -> {
