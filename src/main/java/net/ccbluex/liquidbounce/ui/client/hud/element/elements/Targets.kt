@@ -25,7 +25,7 @@ import net.minecraft.entity.player.EntityPlayer
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-@ElementInfo(name = "TargetHUD")
+@ElementInfo(name = "Targets")
 class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)){
     private val styleList = mutableListOf<TargetStyle>()
 
