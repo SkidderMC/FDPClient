@@ -26,6 +26,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", true)
     private val sussyPacket = BoolValue("${valuePrefix}Rise6sussyPacket", false)
     private val fallingStrafe = BoolValue("${valuePrefix}FallingDamageStrafe", true)
+    private val fastFall = BoolValue("${valuePrefix}FastFall", true)
 
 
     private var minSpeed = 0.0
@@ -50,6 +51,17 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
             MovementUtils.strafe()
         }
 
+        if (fastFall.get()) {
+            mc.thePlayer.motionY = when (offGroundTicks) {
+                5 -> -0.0263837384
+                6 -> -0.19025606858
+                7 -> -0.26485095
+                8 -> -0.3379539399
+                9 -> -0.3997423801
+                else -> mc.thePlayer.motionY
+            }
+        }
+
         
         when (bypassMode.get().lowercase()) {
             
@@ -72,10 +84,8 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
                         mc.thePlayer.motionX *= (1.0002 + 0.0008 * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
                         mc.thePlayer.motionZ *= (1.0002 + 0.0008 * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1))
+                        mc.thePlayer.speedInAir = 0.02f + 0.0003f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
                     }
-                    
-                    mc.thePlayer.speedInAir = 0.02f + 0.0003f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1).toFloat()
-                    
                 }
             }
             
