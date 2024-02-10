@@ -562,12 +562,9 @@ class Scaffold : Module() {
             }
             if (towerStatus) {
                 if (mc.thePlayer.onGround) {
-                    if (towerTick == 0 || towerTick == 5 ) {
-                        mc.thePlayer.motionY = 0.42
-                        mc.thePlayer.motionX *= 1.3f
-                        mc.thePlayer.motionZ *= 1.3f
-                        towerTick = 1
-                    }
+                    mc.thePlayer.motionY = 0.42
+                    mc.thePlayer.motionX *= 1.3f
+                    mc.thePlayer.motionZ *= 1.3f
                 } else if (mc.thePlayer.motionY > -0.0784000015258789) {
                     val n = Math.round(mc.thePlayer.posY % 1.0 * 100.0).toInt()
                     when (n) {
@@ -576,13 +573,10 @@ class Scaffold : Module() {
                         }
         
                         75 -> {
-                            mc.thePlayer.motionY = 1.0 - mc.thePlayer.posY % 1.0
+                            mc.thePlayer.motionY = 0.25
                             wdSpoof = true
                         }
-        
-                        0 -> {
-                            mc.thePlayer.motionY = -0.0784000015258789
-                        }
+    
                     }
                 }
             }
