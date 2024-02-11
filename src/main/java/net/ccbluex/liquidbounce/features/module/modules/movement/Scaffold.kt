@@ -515,11 +515,6 @@ class Scaffold : Module() {
         val eventState = event.eventState
         towerStatus = false
 
-        if (towerModeValue.equals("Watchdog") && event.eventState == EventState.PRE) {
-            if (wdTick > 0) {
-                wdTick -- 
-            }
-        }
         
         // Tower
         if (motionSpeedEnabledValue.get()) MovementUtils.setMotion(motionSpeedValue.get().toDouble())
@@ -546,10 +541,6 @@ class Scaffold : Module() {
         if (towerStatus) move()
 
         if (towerModeValue.equals("WatchDog") && towerStatus && event.eventState == EventState.PRE) {
-            if (wdTick != 0) {
-                towerTick = 0
-                return
-            }
             if (towerTick > 0) {
                 ++towerTick
                 if (towerTick > 6) {
