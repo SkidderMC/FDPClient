@@ -104,16 +104,16 @@ object Scaffold2 : Module() {
                     if (safewalkValue.equals("None")) {
                         rpitch = 76.3f
                     } else {
-                        rpitch = 78.7f
+                        rpitch = 78.1f
                     }
                 }
 
                 // Applying rotations
                 if (derpValue.get()) {
                     if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).block == Blocks.air) {
-                        playerRot = Rotation(camYaw + 45, rpitch)
-                    } else {
                         playerRot = Rotation(camYaw + 180f, rpitch)
+                    } else {
+                        playerRot = Rotation(camYaw + 45, rpitch)
                     }
 
                     lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 180f)
@@ -126,9 +126,9 @@ object Scaffold2 : Module() {
                 // Controls correction
                 if (derpValue.get()) {
                     if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).block == Blocks.air) {
-                        correctControls(2)
-                    } else {
                         correctControls(1)
+                    } else {
+                        correctControls(2)
                     }
                 } else {
                     correctControls(1)
