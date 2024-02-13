@@ -54,6 +54,8 @@ class FreeLook : Module() {
     fun disable() {
         isEnabled = false
         resetPerspective()
+        mc.thePlayer.rotationYaw = cameraYaw
+        mc.thePlayer.rotationPitch = cameraPitch
     }
 
     companion object {

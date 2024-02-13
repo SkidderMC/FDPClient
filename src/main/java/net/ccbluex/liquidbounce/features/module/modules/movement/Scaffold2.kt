@@ -32,7 +32,7 @@ object Scaffold2 : Module() {
     val modeValue = ListValue("Mode", arrayOf("Simple"), "Simple")
 
     val safewalkValue = ListValue("SafewalkType", arrayOf("Sneak", "Safewalk", "None"), "Safewalk").displayable { modeValue.equals("Simple") }
-
+    val derpValue = BoolValue("SimpleDerpBridge", false).displayable { modeValue.equals("Simple") }
 
 
     private var playerRot = Rotation(0f, 0f)
@@ -43,6 +43,11 @@ object Scaffold2 : Module() {
 
     private var prevSlot = 0
 
+    private var fw = false
+    private var bw = false
+    private var left = false
+    private var right = false
+
     override fun onEnable() {
         FDPClient.moduleManager[FreeLook::class.java]!!.enable()
         prevSlot = mc.thePlayer.inventory.currentItem
@@ -51,6 +56,9 @@ object Scaffold2 : Module() {
     override fun onDisable() {
         FDPClient.moduleManager[FreeLook::class.java]!!.disable()
         mc.thePlayer.inventory.currentItem = prevSlot
+
+        correctControls(0)
+        mc.gameSettings.keyBindUseItem.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindUseItem)
     }
 
 
@@ -87,20 +95,44 @@ object Scaffold2 : Module() {
                 // Rotation stuff
                 var rpitch = 0f
                 if (((camYaw / 45).roundToInt()) % 2 == 0) {
-                    rpitch = 82f
+                    if (safewalkValue.equals("None")) {
+                        rpitch = 79f
+                    } else {
+                        rpitch = 83.2f
+                    }
                 } else {
-                    rpitch = 78f
+                    if (safewalkValue.equals("None")) {
+                        rpitch = 76.3f
+                    } else {
+                        rpitch = 78.7f
+                    }
                 }
-                playerRot = Rotation(camYaw + 180f, rpitch)
-                lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 50f)
+
+                // Applying rotations
+                if (derpValue.get()) {
+                    if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).block == Blocks.air) {
+                        playerRot = Rotation(camYaw + 45, rpitch)
+                    } else {
+                        playerRot = Rotation(camYaw + 180f, rpitch)
+                    }
+
+                    lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 180f)
+                } else {
+                    playerRot = Rotation(camYaw + 180f, rpitch)
+                    lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 50f)
+                }
 
 
                 // Controls correction
-
-                mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindBack)
-                mc.gameSettings.keyBindBack.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
-                mc.gameSettings.keyBindRight.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindLeft)
-                mc.gameSettings.keyBindLeft.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindRight)
+                if (derpValue.get()) {
+                    if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).block == Blocks.air) {
+                        correctControls(2)
+                    } else {
+                        correctControls(1)
+                    }
+                } else {
+                    correctControls(1)
+                }
 
                 // eagle
                 if (safewalkValue.equals("Sneak")) {
@@ -112,5 +144,30 @@ object Scaffold2 : Module() {
         lockRotation.toPlayer(mc.thePlayer)
     }
 
-
+    private fun correctControls(type: Int) {
+        fw =  GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
+        bw = GameSettings.isKeyDown(mc.gameSettings.keyBindBack)
+        right = GameSettings.isKeyDown(mc.gameSettings.keyBindRight)
+        left = GameSettings.isKeyDown(mc.gameSettings.keyBindLeft)
+        when (type) {
+           0 -> {
+               mc.gameSettings.keyBindForward.pressed = fw
+               mc.gameSettings.keyBindBack.pressed = bw
+               mc.gameSettings.keyBindRight.pressed = right
+               mc.gameSettings.keyBindLeft.pressed = left
+           }
+           1 -> {
+               mc.gameSettings.keyBindForward.pressed = bw
+               mc.gameSettings.keyBindBack.pressed = fw
+               mc.gameSettings.keyBindRight.pressed = left
+               mc.gameSettings.keyBindLeft.pressed = right
+           }
+           2 -> {
+               mc.gameSettings.keyBindForward.pressed = fw || right
+               mc.gameSettings.keyBindBack.pressed = left || bw
+               mc.gameSettings.keyBindRight.pressed = right || bw
+               mc.gameSettings.keyBindLeft.pressed = fw || left
+           }
+        }
+    }
 }
