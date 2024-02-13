@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.client.settings.GameSettings
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
 import net.ccbluex.liquidbounce.utils.InventoryUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.minecraft.init.Blocks
@@ -29,7 +30,7 @@ import kotlin.math.roundToInt
 
 @ModuleInfo(name = "Scaffold2",  category = ModuleCategory.MOVEMENT)
 object Scaffold2 : Module() {
-    val modeValue = ListValue("Mode", arrayOf("Simple"), "Simple")
+    val modeValue = ListValue("Mode", arrayOf("Simple", "Breezily"), "Simple")
 
     val safewalkValue = ListValue("SafewalkType", arrayOf("Sneak", "Safewalk", "None"), "Safewalk").displayable { modeValue.equals("Simple") }
     val derpValue = BoolValue("SimpleDerpBridge", false).displayable { modeValue.equals("Simple") }
@@ -47,6 +48,8 @@ object Scaffold2 : Module() {
     private var bw = false
     private var left = false
     private var right = false
+
+    private var breezily = false
 
     override fun onEnable() {
         FDPClient.moduleManager[FreeLook::class.java]!!.enable()
@@ -90,6 +93,29 @@ object Scaffold2 : Module() {
         oldPlayerRot = Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
 
         when (modeValue.get().lowercase()) {
+            "breezily" -> {
+                var rpitch = 0f
+                camYaw = MovementUtils.movingYaw
+                if (((camYaw / 45).roundToInt()) % 2 == 0) {
+                    rpitch = 79.6f
+                } else {
+                    rpitch = 76.3f
+                }
+
+                playerRot = Rotation(camYaw + 180f, rpitch)
+                lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 60f)
+
+                correctControls(1)
+                mc.gameSettings.keyBindRight.pressed = false
+                mc.gameSettings.keyBindLeft.pressed = false
+
+                if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).block == Blocks.air) {
+                    breezily = !breezily
+                    mc.gameSettings.keyBindRight.pressed = breezily
+                    mc.gameSettings.keyBindLeft.pressed = !breezily
+                    // zig zag jitter
+                }
+            }
             "simple" -> {
 
                 // Rotation stuff
@@ -113,13 +139,17 @@ object Scaffold2 : Module() {
                     if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).block == Blocks.air) {
                         playerRot = Rotation(camYaw + 180f, rpitch)
                     } else {
-                        playerRot = Rotation(camYaw + 45, rpitch)
+                        if (mc.thePlayer.onGround && mc.gameSettings.keyBindJump.pressed) {
+                            playerRot = Rotation(camYaw + 31, rpitch) // jump correction
+                        } else {
+                            playerRot = Rotation(camYaw + 45, rpitch) // normal derp
+                        }
                     }
 
                     lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 180f)
                 } else {
                     playerRot = Rotation(camYaw + 180f, rpitch)
-                    lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 50f)
+                    lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 60f)
                 }
 
 
@@ -136,7 +166,7 @@ object Scaffold2 : Module() {
 
                 // eagle
                 if (safewalkValue.equals("Sneak")) {
-                    mc.gameSettings.keyBindSneak.pressed = (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) || mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).block == Blocks.air)
+                    mc.gameSettings.keyBindSneak.pressed = (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) || mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX - mc.thePlayer.motionX.toDouble() * 0.5, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ - mc.thePlayer.motionZ.toDouble() * 0.5)).block == Blocks.air)
                 }
             }
         }
