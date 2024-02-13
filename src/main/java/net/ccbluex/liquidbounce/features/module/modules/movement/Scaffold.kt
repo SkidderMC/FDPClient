@@ -541,16 +541,6 @@ class Scaffold : Module() {
         if (towerStatus) move()
 
         if (towerModeValue.equals("WatchDog") && towerStatus && event.eventState == EventState.PRE) {
-            if (towerTick > 0) {
-                ++towerTick
-                if (towerTick > 6) {
-                    mc.thePlayer.motionX *= 0.99f
-                    mc.thePlayer.motionZ *= 0.99f
-                }
-                if (towerTick > 16) {
-                    towerTick = 1
-                }
-            }
             if (towerStatus) {
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.motionY = 0.42
