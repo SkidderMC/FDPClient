@@ -12,7 +12,6 @@ package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -55,16 +54,6 @@ object Scaffold2 : Module() {
     }
 
 
-    // universal, block selection
-    @EventTarget
-    fun onMotion(e: MotionEvent) {
-        val blockSlot = InventoryUtils.findAutoBlockBlock()
-        if (blockSlot != -1) {
-            mc.thePlayer.inventory.currentItem = blockSlot
-            mc.rightClickDelayTimer = 1
-            mc.gameSettings.keyBindUseItem.pressed = true
-        }
-    }
 
     // safewalk events
     @EventTarget
@@ -78,6 +67,15 @@ object Scaffold2 : Module() {
 
     @EventTarget
     fun onUpdate(e: UpdateEvent) {
+
+        val blockSlot = InventoryUtils.findAutoBlockBlock()
+        if (blockSlot != -1) {
+            mc.thePlayer.inventory.currentItem = blockSlot - 36
+            mc.rightClickDelayTimer = 1
+            mc.gameSettings.keyBindUseItem.pressed = true
+        }
+
+
         camYaw = FreeLook.cameraYaw
         camPitch = FreeLook.cameraPitch
 
@@ -93,7 +91,7 @@ object Scaffold2 : Module() {
                 } else {
                     rpitch = 78f
                 }
-                playerRot = Rotation(camYaw, rpitch)
+                playerRot = Rotation(camYaw + 180f, rpitch)
                 lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 50f)
 
 
