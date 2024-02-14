@@ -5,10 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -56,7 +53,7 @@ object SmartSpoof : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true) && delay > 5) {
+        if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true)) {
             if (packet is S12PacketEntityVelocity) targetDelay = velocityDelay.get().toLong()
             if (packet is S08PacketPlayerPosLook || mc.thePlayer.ticksExisted < 20) {
                 targetDelay = 0L
@@ -73,12 +70,19 @@ object SmartSpoof : Module() {
     }
 
     @EventTarget
+    fun onWorld(event: WorldEvent) {
+        times.clear()
+        packets.clear()
+    }
+
+    @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        targetDelay = (targetDelay.toDouble() * 0.95).toLong()
-        delay += ((targetDelay - delay).toDouble() * 0.4).toLong()
-        while (times.first() < System.currentTimeMillis() - delay) {
-            PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
-            times.remove(times.first())
+        delay = targetDelay
+        if (!packets.isEmpty()) {
+            while (times.first() < System.currentTimeMillis() - delay) {
+                PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
+                times.remove(times.first())
+            }
         }
     }
 }

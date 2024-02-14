@@ -74,7 +74,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                     mc.thePlayer.jump()
 
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        MovementUtils.strafe(0.53f)
+                        MovementUtils.strafe(0.535f)
                     } else {
                         MovementUtils.strafe(0.46f)
                     }
