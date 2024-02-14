@@ -557,6 +557,7 @@ class Scaffold : Module() {
                             mc.thePlayer.motionY = 0.25
                             wdSpoof = true
                         }
+                        0 -> mc.thePlayer.motionY = -0.0784000015258789
     
                     }
                 }

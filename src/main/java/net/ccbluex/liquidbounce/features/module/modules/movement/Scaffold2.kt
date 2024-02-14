@@ -96,7 +96,6 @@ object Scaffold2 : Module() {
         when (modeValue.get().lowercase()) {
             "breezily" -> {
                 var rpitch = 0f
-                camYaw = MovementUtils.movingYaw
                 if (((camYaw / 45).roundToInt()) % 2 == 0) {
                     rpitch = 79.6f
                 } else {
@@ -167,7 +166,7 @@ object Scaffold2 : Module() {
 
                 // eagle
                 if (safewalkValue.equals("Sneak")) {
-                    mc.gameSettings.keyBindSneak.pressed = (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) || mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX - mc.thePlayer.motionX.toDouble() * 0.5, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ - mc.thePlayer.motionZ.toDouble() * 0.5)).block == Blocks.air)
+                    mc.gameSettings.keyBindSneak.pressed = (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) || mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).block == Blocks.air)
                 }
             }
         }
