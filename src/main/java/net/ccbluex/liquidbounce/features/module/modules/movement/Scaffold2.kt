@@ -62,6 +62,7 @@ object Scaffold2 : Module() {
 
         correctControls(0)
         mc.gameSettings.keyBindUseItem.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindUseItem)
+        mc.gameSettings.keyBindSneak.pressed = (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak))
     }
 
 
@@ -149,7 +150,7 @@ object Scaffold2 : Module() {
                     lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 180f)
                 } else {
                     playerRot = Rotation(camYaw + 180f, rpitch)
-                    lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 60f)
+                    lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 90f)
                 }
 
 
