@@ -43,7 +43,7 @@ import net.minecraft.network.play.client.*
 import net.minecraft.potion.Potion
 import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
-import net.raphimc.vialoader.util.VersionEnum
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
@@ -850,7 +850,7 @@ object KillAura : Module() {
         if (multiCombo.get()) {
             event.targetEntity
             repeat(amountValue.get()) {
-                if (ProtocolBase.getManager().targetVersion.isNewerThan(VersionEnum.r1_8))
+                if (ProtocolBase.getManager().targetVersion.isNewerThan(ProtocolVersion.r1_8))
                     mc.netHandler.addToSendQueue(
                         C02PacketUseEntity(
                             event.targetEntity,
@@ -860,7 +860,7 @@ object KillAura : Module() {
 
                 mc.netHandler.addToSendQueue(C0APacketAnimation())
 
-                if (!ProtocolBase.getManager().targetVersion.isNewerThan(VersionEnum.r1_8))
+                if (!ProtocolBase.getManager().targetVersion.isNewerThan(ProtocolVersion.r1_8))
                     mc.netHandler.addToSendQueue(
                         C02PacketUseEntity(
                             event.targetEntity,
