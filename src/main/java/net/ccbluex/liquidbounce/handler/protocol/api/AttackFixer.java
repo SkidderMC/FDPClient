@@ -1,12 +1,11 @@
 package net.ccbluex.liquidbounce.handler.protocol.api;
 
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.MovingObjectPosition;
-import net.raphimc.vialoader.util.VersionEnum;
-
 public class AttackFixer {
     private static final Minecraft mc = Minecraft.getMinecraft();
 
@@ -17,7 +16,7 @@ public class AttackFixer {
     }
 
     public static void sendFixedAttack(final EntityPlayer entityIn, final Entity target) {
-        if (ProtocolBase.getManager().getTargetVersion().isNewerThan(VersionEnum.r1_8)) {
+        if (ProtocolBase.getManager().getTargetVersion().newerThan(ProtocolVersion.v1_8)) {
             mc.playerController.attackEntity(entityIn, target);
             mc.thePlayer.swingItem();
         } else {

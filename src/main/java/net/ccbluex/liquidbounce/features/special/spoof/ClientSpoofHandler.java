@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.special.spoof;
 
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.Listenable;
@@ -18,7 +19,6 @@ import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
 import net.minecraft.network.play.client.C17PacketCustomPayload;
-import net.raphimc.vialoader.util.VersionEnum;
 
 import java.util.Objects;
 
@@ -30,7 +30,7 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
         final Packet<?> packet = event.getPacket();
         final ClientSpoof clientSpoof = FDPClient.moduleManager.getModule(ClientSpoof.class);
 
-        if (ProtocolBase.getManager().getTargetVersion().isNewerThan(VersionEnum.r1_9_3tor1_9_4)) {
+        if (ProtocolBase.getManager().getTargetVersion().newerThan(ProtocolVersion.v1_10) && packet instanceof C08PacketPlayerBlockPlacement) {
             if (packet instanceof C08PacketPlayerBlockPlacement) {
                 ((C08PacketPlayerBlockPlacement) packet).facingX = 0.5F;
                 ((C08PacketPlayerBlockPlacement) packet).facingY = 0.5F;

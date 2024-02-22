@@ -5,10 +5,10 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import net.ccbluex.liquidbounce.handler.protocol.api.ExtendedServerData;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.nbt.NBTTagCompound;
-import net.raphimc.vialoader.util.VersionEnum;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 public class MixinServerData implements ExtendedServerData {
 
     @Unique
-    private VersionEnum viaForge$version;
+    private ProtocolVersion viaForge$version;
 
     @Inject(method = "getNBTCompound", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/NBTTagCompound;setString(Ljava/lang/String;Ljava/lang/String;)V", ordinal = 0), locals = LocalCapture.CAPTURE_FAILHARD)
     public void saveVersion(CallbackInfoReturnable<NBTTagCompound> cir, NBTTagCompound nbttagcompound) {
@@ -33,7 +33,7 @@ public class MixinServerData implements ExtendedServerData {
     @Inject(method = "getServerDataFromNBTCompound", at = @At(value = "TAIL"))
     private static void getVersion(NBTTagCompound nbtCompound, CallbackInfoReturnable<ServerData> cir) {
         if (nbtCompound.hasKey("viaForge$version")) {
-            ((ExtendedServerData) cir.getReturnValue()).viaForge$setVersion(VersionEnum.fromProtocolId(nbtCompound.getInteger("viaForge$version")));
+            ((ExtendedServerData) cir.getReturnValue()).viaForge$setVersion(ProtocolVersion.getProtocol(nbtCompound.getInteger("viaForge$version")));
         }
     }
 
@@ -45,12 +45,12 @@ public class MixinServerData implements ExtendedServerData {
     }
 
     @Override
-    public VersionEnum viaForge$getVersion() {
+    public ProtocolVersion viaForge$getVersion() {
         return viaForge$version;
     }
 
     @Override
-    public void viaForge$setVersion(VersionEnum version) {
+    public void viaForge$setVersion(ProtocolVersion version) {
         viaForge$version = version;
     }
 

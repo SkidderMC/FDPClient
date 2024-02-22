@@ -850,7 +850,7 @@ object KillAura : Module() {
         if (multiCombo.get()) {
             event.targetEntity
             repeat(amountValue.get()) {
-                if (ProtocolBase.getManager().targetVersion.isNewerThan(ProtocolVersion.r1_8))
+                if (ProtocolBase.getManager().targetVersion.newerThan(ProtocolVersion.v1_8))
                     mc.netHandler.addToSendQueue(
                         C02PacketUseEntity(
                             event.targetEntity,
@@ -860,7 +860,7 @@ object KillAura : Module() {
 
                 mc.netHandler.addToSendQueue(C0APacketAnimation())
 
-                if (!ProtocolBase.getManager().targetVersion.isNewerThan(ProtocolVersion.r1_8))
+                if (!ProtocolBase.getManager().targetVersion.newerThan(ProtocolVersion.v1_8))
                     mc.netHandler.addToSendQueue(
                         C02PacketUseEntity(
                             event.targetEntity,
