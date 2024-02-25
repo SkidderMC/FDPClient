@@ -36,6 +36,7 @@ import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.stream.IStream;
+import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
@@ -53,6 +54,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.nio.ByteBuffer;
 import java.util.Objects;
@@ -165,6 +167,16 @@ public abstract class MixinMinecraft {
         // No-op
     }
 
+    @Inject(method = "displayCrashReport", at = @At(value = "INVOKE", target = "Lnet/minecraft/crash/CrashReport;getFile()Ljava/io/File;"))
+    public void displayCrashReport(CrashReport crashReportIn, CallbackInfo ci) {
+        String message = crashReportIn.getCauseStackTraceOrString();
+        JOptionPane.showMessageDialog(null, "Game crashed!\n" +
+                        "Please create a issue: \n" + GitUtils.gitInfo.get("git.remote.origin.url").toString().split("\\.git")[0] + "/issues/new\n" +
+                        "Please make a screenshot of this screen and send it to developers\n"
+                        + message,
+                "oops, game crashed!", JOptionPane.ERROR_MESSAGE);
+    }
+
     @Inject(method = "displayGuiScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", shift = At.Shift.AFTER))
     private void displayGuiScreen(CallbackInfo callbackInfo) {
         if (currentScreen instanceof net.minecraft.client.gui.GuiMainMenu || (currentScreen != null && currentScreen.getClass().getSimpleName().equals("ModGuiMainMenu"))) {
@@ -263,15 +275,6 @@ public abstract class MixinMinecraft {
             }
         }
     }
-
-    @Redirect(
-            method = "clickMouse",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EntityLivingBase;swingItem()V")
-    )
-    private void fixAttackOrder_VanillaSwing() {
-        AttackFixer.sendConditionalSwing(this.objectMouseOver);
-    }
-
     @Inject(method = "middleClickMouse", at = @At("HEAD"))
     private void middleClickMouse(CallbackInfo ci) {
         CPSCounterUtils.registerClick(CPSCounterUtils.MouseButton.MIDDLE);

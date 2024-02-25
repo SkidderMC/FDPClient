@@ -6,24 +6,24 @@
 package net.ccbluex.liquidbounce
 
 import com.google.gson.JsonParser
+import net.ccbluex.liquidbounce.config.FileManager
+import net.ccbluex.liquidbounce.config.core.ConfigManager
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
-import net.ccbluex.liquidbounce.handler.macro.MacroManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
-import net.ccbluex.liquidbounce.config.FileManager
-import net.ccbluex.liquidbounce.config.core.ConfigManager
-import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.features.special.discord.DiscordRPC
+import net.ccbluex.liquidbounce.features.special.spoof.ClientSpoofHandler
+import net.ccbluex.liquidbounce.handler.combat.CombatManager
+import net.ccbluex.liquidbounce.handler.macro.MacroManager
 import net.ccbluex.liquidbounce.handler.network.BungeeCordSpoof
 import net.ccbluex.liquidbounce.handler.network.ClientFixes
-import net.ccbluex.liquidbounce.features.special.spoof.ClientSpoofHandler
-import net.ccbluex.liquidbounce.ui.client.gui.EnumLaunchFilter
-import net.ccbluex.liquidbounce.ui.client.gui.LaunchFilterInfo
-import net.ccbluex.liquidbounce.ui.client.gui.LaunchOption
-import net.ccbluex.liquidbounce.ui.client.gui.GuiLaunchOptionSelectMenu
 import net.ccbluex.liquidbounce.handler.script.ScriptManager
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
+import net.ccbluex.liquidbounce.ui.client.gui.EnumLaunchFilter
+import net.ccbluex.liquidbounce.ui.client.gui.GuiLaunchOptionSelectMenu
+import net.ccbluex.liquidbounce.ui.client.gui.LaunchFilterInfo
+import net.ccbluex.liquidbounce.ui.client.gui.LaunchOption
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -41,11 +41,13 @@ object FDPClient {
 
     // Client information
     const val CLIENT_NAME = "FDPClient"
+    val CLIENT_LOGO  = ResourceLocation("fdpclient/misc/logo.png")
     const val COLORED_NAME = "§7[§b§lFDPClient§7] "
     const val CLIENT_CREATOR = "CCBlueX, Zywl & SkidderMC TEAM"
     const val CLIENT_WEBSITE = "https://fdpinfo.github.io"
     const val CLIENT_DISCORD = "https://discord.gg/3XRFGeqEYD"
     const val CLIENT_VERSION = "v5.6.0 (IN DEV)"
+
     var USER_NAME = ""
 
     // Flags

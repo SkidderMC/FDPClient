@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.config.FileConfig
 import net.ccbluex.liquidbounce.config.FileManager
 import net.ccbluex.liquidbounce.handler.network.AutoReconnect
 import net.ccbluex.liquidbounce.handler.network.ClientFixes
-import net.ccbluex.liquidbounce.ui.client.GuiBackground
 import net.ccbluex.liquidbounce.ui.altmanager.GuiAltManager
 import java.io.File
 class SpecialConfig(file: File) : FileConfig(file) {
@@ -27,8 +26,6 @@ class SpecialConfig(file: File) : FileConfig(file) {
         ClientFixes.blockFML = true
         ClientFixes.blockProxyPacket = true
         ClientFixes.blockPayloadPackets = true
-        GuiBackground.enabled = true
-        GuiBackground.particles = false
         GuiAltManager.randomAltField.text = "F%nD%nP%n_%s%s%s"
         useGlyphFontRenderer = true
 
@@ -70,16 +67,6 @@ class SpecialConfig(file: File) : FileConfig(file) {
             ClientFixes.clientBrand = jsonValue.get("ClientBrand").asString
             }
         }
-        if (json.has("background")) {
-            val jsonValue = json.getAsJsonObject("background")
-
-            if (jsonValue.has("enable")) {
-                GuiBackground.enabled = jsonValue.get("enable").asBoolean
-            }
-            if (jsonValue.has("particles")) {
-                GuiBackground.particles = jsonValue.get("particles").asBoolean
-            }
-        }
     }
 
     override fun saveConfig(): String {
@@ -97,11 +84,6 @@ class SpecialConfig(file: File) : FileConfig(file) {
         antiForgeJson.addProperty("block-proxy", ClientFixes.blockProxyPacket)
         antiForgeJson.addProperty("block-payload", ClientFixes.blockPayloadPackets)
         json.add("anti-forge", antiForgeJson)
-
-        val backgroundJson = JsonObject()
-        backgroundJson.addProperty("enable", GuiBackground.enabled)
-        backgroundJson.addProperty("particles", GuiBackground.particles)
-        json.add("background", backgroundJson)
 
         return FileManager.PRETTY_GSON.toJson(json)
     }

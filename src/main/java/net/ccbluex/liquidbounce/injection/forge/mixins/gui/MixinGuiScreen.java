@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders;
-import net.ccbluex.liquidbounce.ui.client.GuiBackground;
 import net.ccbluex.liquidbounce.utils.particles.ParticleUtils;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.BackgroundShader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.*;
@@ -23,6 +23,7 @@ import net.minecraft.event.ClickEvent;
 import net.minecraft.event.HoverEvent;
 import net.minecraft.util.ChatStyle;
 import net.minecraft.util.IChatComponent;
+import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
@@ -133,40 +134,12 @@ public abstract class MixinGuiScreen {
         GlStateManager.disableLighting();
         GlStateManager.disableFog();
 
-        if(GuiBackground.Companion.getEnabled()) {
-            if (FDPClient.INSTANCE.getBackground() == null) {
-                BackgroundShader.BACKGROUND_SHADER.startShader();
+        RenderUtils.drawImage(
+                new ResourceLocation("fdpclient/background.png"), 0, 0,
+                width, height
+        );
 
-                final Tessellator instance = Tessellator.getInstance();
-                final WorldRenderer worldRenderer = instance.getWorldRenderer();
-                worldRenderer.begin(7, DefaultVertexFormats.POSITION);
-                worldRenderer.pos(0, height, 0.0D).endVertex();
-                worldRenderer.pos(width, height, 0.0D).endVertex();
-                worldRenderer.pos(width, 0, 0.0D).endVertex();
-                worldRenderer.pos(0, 0, 0.0D).endVertex();
-                instance.draw();
-
-                BackgroundShader.BACKGROUND_SHADER.stopShader();
-            }else{
-                final ScaledResolution scaledResolution = new ScaledResolution(mc);
-                final int width = scaledResolution.getScaledWidth();
-                final int height = scaledResolution.getScaledHeight();
-
-                mc.getTextureManager().bindTexture(FDPClient.INSTANCE.getBackground());
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                Gui.drawScaledCustomSizeModalRect(0, 0, 0.0F, 0.0F, width, height, width, height, width, height);
-            }
-
-            if (GuiBackground.Companion.getParticles())
-                net.ccbluex.liquidbounce.utils.render.ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
-            callbackInfo.cancel();
-        }
-    }
-
-    @Inject(method = "drawBackground", at = @At("RETURN"))
-    private void drawParticles(final CallbackInfo callbackInfo) {
-        if(GuiBackground.Companion.getParticles())
-            ParticleUtils.drawParticles(Mouse.getX() * width / mc.displayWidth, height - Mouse.getY() * height / mc.displayHeight - 1);
+        callbackInfo.cancel();
     }
 
     @Inject(method = "handleComponentHover", at = @At("HEAD"))

@@ -17,7 +17,6 @@ public abstract class FontLoaders {
 
     public static final CFontRenderer F14 = new CFontRenderer(getFont(14), true, true);
     public static final CFontRenderer F18 = new CFontRenderer(getFont(18), true, true);
-    public static final CFontRenderer F20 = new CFontRenderer(getFont(20), true, true);
     public static final CFontRenderer F30 = new CFontRenderer(getFont(30), true, true);
     public static final CFontRenderer F40 = new CFontRenderer(getFont(40), true, true);
     public static final CFontRenderer C12 = new CFontRenderer(getComfortaa(12), true, true);
@@ -26,6 +25,9 @@ public abstract class FontLoaders {
     public static CFontRenderer SF20 = new CFontRenderer(getSF(20), true, true);
     public static CFontRenderer SF30 = new CFontRenderer(getSF(30), true, true);
     public static CFontRenderer SF40 = new CFontRenderer(getSF(40), true, true);
+    public static final CFontRenderer Raleway = new CFontRenderer(getRaleway(15), true, true);
+    public static final CFontRenderer Roboto = new CFontRenderer(getRoboto(12), true, true);
+
     public static final ArrayList<CFontRenderer> fonts = new ArrayList<>();
 
     public static Font getFont(int size) {
@@ -54,6 +56,52 @@ public abstract class FontLoaders {
         }
         return font;
     }
+
+    private static Font getRoboto(int size) {
+        Font font;
+        try {
+            InputStream is = MinecraftInstance.mc.getResourceManager()
+                    .getResource(new ResourceLocation("fdpclient/font/roboto-regular.ttf")).getInputStream();
+            font = Font.createFont(0, is);
+            font = font.deriveFont(Font.PLAIN, size);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("Error loading font");
+            font = new Font("default", Font.PLAIN, size);
+        }
+        return font;
+    }
+
+    private static Font getRobotoBlack(int size) {
+        Font font;
+        try {
+            InputStream is = MinecraftInstance.mc.getResourceManager()
+                    .getResource(new ResourceLocation("fdpclient/font/roboto-black.ttf")).getInputStream();
+            font = Font.createFont(0, is);
+            font = font.deriveFont(Font.PLAIN, size);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("Error loading font");
+            font = new Font("default", Font.PLAIN, size);
+        }
+        return font;
+    }
+
+    private static Font getRaleway(int size) {
+        Font font;
+        try {
+            InputStream is = MinecraftInstance.mc.getResourceManager()
+                    .getResource(new ResourceLocation("fdpclient/font/raleway-extrabold.ttf")).getInputStream();
+            font = Font.createFont(0, is);
+            font = font.deriveFont(Font.PLAIN, size);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            System.out.println("Error loading font");
+            font = new Font("default", Font.PLAIN, size);
+        }
+        return font;
+    }
+
 
     public static Font getSF(int size) {
         Font font;

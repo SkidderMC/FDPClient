@@ -17,9 +17,19 @@ object MathUtils {
 
     const val DEGREES_TO_RADIANS = 0.017453292519943295
 
-    const val RADIANS_TO_DEGREES = 57.29577951308232
-    fun radians(degrees: Double): Double {
-        return degrees * Math.PI / 180
+    private val b = DoubleArray(360)
+
+    fun getAngle(paramInt: Int): Double {
+        var paramInt = paramInt
+        paramInt %= 360
+        return b.get(paramInt)
+    }
+
+    fun getRightAngle(paramInt: Int): Double {
+        var paramInt = paramInt
+        paramInt += 90
+        paramInt %= 360
+        return b.get(paramInt)
     }
 
     fun getDistance(x1: Double, y1: Double, x2: Double, y2: Double): Double {

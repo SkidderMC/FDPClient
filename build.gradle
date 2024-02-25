@@ -1,11 +1,11 @@
 plugins {
     id 'java'
     id 'idea'
-    id 'org.jetbrains.kotlin.jvm'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
     id 'com.github.johnrengelman.shadow' version '6.1.0'
+    id 'com.gorylenko.gradle-git-properties' version '2.4.1'
     id 'net.minecraftforge.gradle.forge'
     id 'org.spongepowered.mixin'
-    id 'com.gorylenko.gradle-git-properties' version '2.4.1'
 }
 
 repositories {
@@ -37,7 +37,7 @@ minecraft {
     runDir = 'run'
     mappings = 'stable_22'
     makeObfSourceJar = false
-    clientJvmArgs += ["-Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.TransformerLoader", "-Xmx1024m", "-Xms1024m", "-Ddev-mode"]
+    clientJvmArgs += ["-Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.TransformerLoader", "-Xmx2048m -Xms2048m", "-Ddev-mode"]
 }
 
 configurations {
@@ -63,6 +63,7 @@ def viaLibs = [
 dependencies {
     // Implementation dependencies
     implementation 'org.projectlombok:lombok:1.18.30'
+    implementation group: 'org.slick2d', name: 'slick2d-core', version: '1.0.2'
     include("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         transitive = false
         exclude group: 'com.google.guava', module: 'guava'
@@ -89,7 +90,7 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
 
     // Other dependencies
-    include "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    include 'org.jetbrains.kotlin:kotlin-stdlib:1.9.0'
     include("me.friwi:jcefmaven:$jcef_version") {
         exclude module: 'commons-compress'
         exclude module: 'jogl-all'

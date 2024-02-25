@@ -59,6 +59,14 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
 
     fun stringWidth(text: CharSequence?) {}
 
+    fun drawCenteredTextScaled(text: String?, givenX: Int, givenY: Int, color: Int, givenScale: Double) {
+        GL11.glPushMatrix()
+        GL11.glTranslated(givenX.toDouble(), givenY.toDouble(), 0.0)
+        GL11.glScaled(givenScale, givenScale, givenScale)
+        this.drawCenteredString(text!!, 0.0f, 0.0f, color)
+        GL11.glPopMatrix()
+    }
+
     override fun drawStringWithShadow(text: String, x: Float, y: Float, color: Int) = drawString(text, x, y, color, true)
 
     fun drawCenteredString(s: String, x: Float, y: Float, color: Int, shadow: Boolean) = drawString(s, x - getStringWidth(s) / 2F, y, color, shadow)

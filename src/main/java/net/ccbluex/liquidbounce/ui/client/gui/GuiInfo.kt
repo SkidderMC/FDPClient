@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolSelector
-import net.ccbluex.liquidbounce.ui.client.GuiBackground
 import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -49,7 +48,7 @@ class GuiInfo(private val prevGui: GuiScreen) : GuiScreen() {
         when (button.id) {
             1 -> MiscUtils.showURL(FDPClient.CLIENT_WEBSITE)
             2 -> MiscUtils.showURL(FDPClient.CLIENT_DISCORD)
-            3 ->  mc.displayGuiScreen(GuiBackground(this))
+            3 -> mc.displayGuiScreen(prevGui)
             4 ->  mc.displayGuiScreen(GuiModList(this))
             5 -> mc.displayGuiScreen(ProtocolSelector(this as GuiScreen))
             6 -> mc.displayGuiScreen(prevGui)

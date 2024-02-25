@@ -24,7 +24,6 @@ public class CFontRenderer extends CFont {
     protected final CFont.CharData[] italicChars = new CFont.CharData[256];
     protected final CFont.CharData[] boldItalicChars = new CFont.CharData[256];
     private final int[] colorCode = new int[32];
-    private final String colorcodeIdentifiers = "0123456789abcdefklmnor";
     protected DynamicTexture texBold;
     protected DynamicTexture texItalic;
     protected DynamicTexture texItalicBold;
@@ -43,6 +42,14 @@ public class CFontRenderer extends CFont {
         GlStateManager.color(1.0f, 1.0f, 1.0f);
         RenderUtils.glColor(color);
         return drawString(text, x, (double) y, color, false);
+    }
+
+    public void drawCenteredTextScaled(final String text, final int givenX, final int givenY, final int color, final double givenScale) {
+        GL11.glPushMatrix();
+        GL11.glTranslated(givenX, givenY, 0.0);
+        GL11.glScaled(givenScale, givenScale, givenScale);
+        this.drawCenteredString(text, 0.0f, 0.0f, color);
+        GL11.glPopMatrix();
     }
 
     public float drawCenteredString(String text, double x, double y, int color) {
