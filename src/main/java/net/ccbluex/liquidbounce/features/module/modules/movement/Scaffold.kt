@@ -544,8 +544,7 @@ class Scaffold : Module() {
             if (towerStatus) {
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.motionY = 0.42
-                    mc.thePlayer.motionX *= 1.3f
-                    mc.thePlayer.motionZ *= 1.3f
+                    MovementUtils.strafe(0.4f)
                 } else if (mc.thePlayer.motionY > -0.0784000015258789) {
                     val n = Math.round(mc.thePlayer.posY % 1.0 * 100.0).toInt()
                     when (n) {
