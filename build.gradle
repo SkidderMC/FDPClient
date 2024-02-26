@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'idea'
-    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.22'
     id 'com.github.johnrengelman.shadow' version '6.1.0'
     id 'com.gorylenko.gradle-git-properties' version '2.4.1'
     id 'net.minecraftforge.gradle.forge'
