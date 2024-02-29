@@ -95,9 +95,9 @@ class SilentHitbox : Module() {
     private fun resetCamera() {
         if (enabled) {
             enabled = false
-            FreeLook.isEnabled = false
             mc.thePlayer.rotationYaw = FreeLook.cameraYaw
             mc.thePlayer.rotationPitch = FreeLook.cameraPitch
+            FreeLook.isEnabled = false
             FreeLook.perspectiveToggled = false
             FreeLook.resetPerspective()
         }

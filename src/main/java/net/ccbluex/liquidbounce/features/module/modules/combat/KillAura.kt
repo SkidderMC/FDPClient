@@ -104,9 +104,9 @@ object KillAura : Module() {
             val i = discoverRangeValue.get()
             if (i < newValue) set(i)
         }
-    }
+    }.displayable { rangeDisplay.get() } as FloatValue
 
-    private val discoverRangeValue = FloatValue("Attack-Range", 6f, 0f, 8f)
+    private val discoverRangeValue = FloatValue("Discover-Range", 6f, 0f, 8f).displayable { rangeDisplay.get() }
 
     private val rangeSprintReducementValue = FloatValue("RangeSprintReducement", 0f, 0f, 0.4f).displayable { rangeDisplay.get() }
 
@@ -205,7 +205,7 @@ object KillAura : Module() {
     private val hitAbleValue = BoolValue("AlwaysHitAble", true).displayable { rotationDisplay.get() }
 
     // Predict
-    private val predictValue = BoolValue("Predict", true).displayable { !rotationModeValue.equals("None") }
+    private val predictValue = BoolValue("Predict", true).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
 
     private val maxPredictSizeValue: FloatValue = object : FloatValue("MaxPredictSize", 1f, -2f, 5f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
@@ -765,7 +765,7 @@ object KillAura : Module() {
         }
 
         inRangeDiscoveredTargets.clear()
-        inRangeDiscoveredTargets.addAll(discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it) < (rangeValue.get() - if (mc.thePlayer.isSprinting) rangeSprintReducementValue.get() else 0F) })
+        inRangeDiscoveredTargets.addAll(discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it) < (swingRangeValue.get() - if (mc.thePlayer.isSprinting) rangeSprintReducementValue.get() else 0F) })
 
         // Cleanup last targets when no targets found and try again
         if (inRangeDiscoveredTargets.isEmpty() && prevTargetEntities.isNotEmpty()) {
@@ -823,6 +823,8 @@ object KillAura : Module() {
      */
     private fun attackEntity(entity: EntityLivingBase) {
         if (packetSent && noBadPacketsValue.get()) return
+        if (mc.thePlayer.getDistanceToEntityBox(entity) > rangeValue.get())
+            return
 
         // Call attack event
         val event = AttackEvent(entity)

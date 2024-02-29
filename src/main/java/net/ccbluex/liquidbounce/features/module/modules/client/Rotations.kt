@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
-import net.ccbluex.liquidbounce.features.module.modules.other.Breaker
+import net.ccbluex.liquidbounce.features.module.modules.player.Breaker
 import net.ccbluex.liquidbounce.features.module.modules.player.ChestAura
 import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold
 import net.ccbluex.liquidbounce.utils.RotationUtils

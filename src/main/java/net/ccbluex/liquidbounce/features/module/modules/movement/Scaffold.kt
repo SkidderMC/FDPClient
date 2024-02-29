@@ -558,8 +558,7 @@ class Scaffold : Module() {
                         }
                         0 -> {
                             mc.thePlayer.motionY = 0.42
-                            mc.thePlayer.motionX *= 1.3f
-                            mc.thePlayer.motionZ *= 1.3f
+                            MovementUtils.strafe(0.4f)
                         }
     
                     }
