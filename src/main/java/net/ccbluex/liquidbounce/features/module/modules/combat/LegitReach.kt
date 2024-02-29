@@ -45,8 +45,11 @@ class LegitReach : Module() {
     private var comboCounter = 0
     private var backtrack = false
 
+    private var releasing = false
+
     override fun onEnable() {
         backtrack = false
+        releasing = false
         if (mode.equals("IncomingBlink") && outgoingBlink.get()) {
             BlinkUtils.setBlinkState(off = true, release = true)
         }
@@ -68,9 +71,16 @@ class LegitReach : Module() {
     }
     
     private fun clearPackets() {
+        releasing = true
         while (!packets.isEmpty()) {
-            PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
+            val packet = packets.take()
+            val packetEvent = PacketEvent(packet, PacketEvent.Type.RECEIVE)
+            FDPClient.eventManager.callEvent(packetEvent)
+            if (!packetEvent.isCancelled) {
+                PacketUtils.handlePacket(packet as Packet<INetHandlerPlayClient?>)
+            }
         }
+        releasing = false
         if (outgoingBlink.get())  {
             BlinkUtils.releasePacket()
             if (!backtrack) BlinkUtils.setBlinkState(off = true, release = true)
@@ -223,6 +233,7 @@ class LegitReach : Module() {
     
     @EventTarget
     fun onPacket(event: PacketEvent) {
+        if (releasing) return
         val packet = event.packet
         if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state || !backtrack) {
             clearPackets()
