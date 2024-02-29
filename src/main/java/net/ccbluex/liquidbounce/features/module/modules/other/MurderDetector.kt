@@ -19,7 +19,7 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.item.Item
 import java.awt.Color
 
-@ModuleInfo(name = "MurderDetector", category = ModuleCategory.OTHER)
+@ModuleInfo(name = "MurdererDetector", category = ModuleCategory.OTHER)
 object MurderDetector : Module() {
 
     private val showText = BoolValue("ShowText", true)
@@ -92,11 +92,11 @@ object MurderDetector : Module() {
                 ) {
                     if (murder1 == null) {
                         if (chatValue.get())
-                            chat("§e" + player.name + "§r is Murder!")
+                            chat("§e" + player.name + "§r is Murderer!")
                         if (notifyValue.get())
                             FDPClient.hud.addNotification(
                                 Notification(
-                                    player.name + " is Murder!","ALERT!",
+                                    player.name + " is Murderer!","ALERT!",
                                     NotifyType.INFO,
                                     6000
                                 )
@@ -106,7 +106,7 @@ object MurderDetector : Module() {
                     }
                     if (murder2 == null && player != murder1) {
                         if (chatValue.get())
-                            chat("§e" + player.name + "§r is Murder!")
+                            chat("§e" + player.name + "§r is Murderer!")
                         if (notifyValue.get())
                             FDPClient.hud.addNotification(
                                 Notification(
@@ -127,15 +127,15 @@ object MurderDetector : Module() {
         val sc = ScaledResolution(mc)
         if (showText.get()) {
             Fonts.minecraftFont.drawString(
-                if (murder1 != null) "Murder1: §e" + murder1?.name else "Murder1: §cNone",
-                sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth(if (murder1 != null) "Murder1: §e" + murder1?.name else "Murder1: §cNone") / 2F,
+                if (murder1 != null) "Murderer1: §e" + murder1?.name else "Murderer1: §cNone",
+                sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth(if (murder1 != null) "Murderer1: §e" + murder1?.name else "Murderer1: §cNone") / 2F,
                 66.5F,
                 Color(255, 255, 255).rgb,
                 true
             )
             Fonts.minecraftFont.drawString(
-                if (murder2 != null) "Murder2: §e" + murder2?.name else "Murder2: §cNone",
-                sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth(if (murder2 != null) "Murder2: §e" + murder2?.name else "Murder2: §cNone") / 2F,
+                if (murder2 != null) "Murderer2: §e" + murder2?.name else "Murderer2: §cNone",
+                sc.scaledWidth / 2F - Fonts.minecraftFont.getStringWidth(if (murder2 != null) "Murderer2: §e" + murder2?.name else "Murderer2: §cNone") / 2F,
                 77.5F,
                 Color(255, 255, 255).rgb,
                 true

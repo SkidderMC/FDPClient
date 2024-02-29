@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.other
+package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.features.module.modules.player.AutoTool
 import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
@@ -44,7 +43,7 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-@ModuleInfo(name = "Breaker", category = ModuleCategory.OTHER)
+@ModuleInfo(name = "Breaker", category = ModuleCategory.PLAYER)
 object Breaker : Module() {
 
     /**
@@ -183,8 +182,7 @@ object Breaker : Module() {
 
         if (throughWallsValue.equals("Hypixel")) {
             val blockPos = find(26) ?: return
-            if (!BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north()) ||
-                !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())) {
+            if (!BlockUtils.isFullBlock(blockPos.up()) && pos != null) {
                 pos = blockPos.up()?: return
             } else {
                 pos = blockPos?: return
@@ -304,6 +302,7 @@ object Breaker : Module() {
                     mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
                             currentPos, EnumFacing.DOWN))
                     mc.playerController.onPlayerDestroyBlock(currentPos, EnumFacing.DOWN)
+                    mc.theWorld.setBlockState(currentPos, Blocks.air.defaultState, 11)
                     blockHitDelay = 4
                     currentDamage = 0F
                     pos = null
