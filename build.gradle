@@ -176,6 +176,7 @@ reobf {
 }
 
 tasks.reobfJar.dependsOn(shadowJar)
+jar.finalizedBy('reobfShadowJar')
 
 configurations {
     compileClasspath {
