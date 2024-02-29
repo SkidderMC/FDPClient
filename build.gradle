@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'idea'
-    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
+    id 'org.jetbrains.kotlin.jvm'
     id 'com.github.johnrengelman.shadow' version '6.1.0'
     id 'com.gorylenko.gradle-git-properties' version '2.4.1'
     id 'net.minecraftforge.gradle.forge'
@@ -63,7 +63,6 @@ def viaLibs = [
 dependencies {
     // Implementation dependencies
     implementation 'org.projectlombok:lombok:1.18.30'
-    implementation group: 'org.slick2d', name: 'slick2d-core', version: '1.0.2'
     include("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         transitive = false
         exclude group: 'com.google.guava', module: 'guava'
@@ -90,7 +89,7 @@ dependencies {
     annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
 
     // Other dependencies
-    include 'org.jetbrains.kotlin:kotlin-stdlib:1.9.0'
+    include "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     include("me.friwi:jcefmaven:$jcef_version") {
         exclude module: 'commons-compress'
         exclude module: 'jogl-all'
