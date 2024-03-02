@@ -19,10 +19,6 @@ public class ClientSpoof extends Module {
     public final ListValue modeValue = new ListValue("Payloads", new String[]{"Vanilla", "Fabric", "Lunar", "LabyMod", "Custom", "CheatBreaker", "PvPLounge"}, "Lunar");
     public final TextValue CustomClient = new TextValue("CustomClientSpoof", "CustomClient");
     public final ListValue buttonValue = new ListValue("Button", new String[]{"Better", "RGBRounded", "Wolfram", "Rounded", "Hyperium", "RGB", "Badlion", "PVP", "Flat", "FLine", "Rise", "Vanilla"}, "FLine");
-    @Override
-    public String getTag() {
-        return modeValue.get();
-    }
     public AbstractButtonRenderer getButtonRenderer(GuiButton button) {
         String lowerCaseButtonValue = buttonValue.get().toLowerCase();
         switch (lowerCaseButtonValue) {
@@ -49,5 +45,9 @@ public class ClientSpoof extends Module {
             default:
                 return null; // vanilla or unknown
         }
+    }
+    @Override
+    public String getTag() {
+        return modeValue.get();
     }
 }

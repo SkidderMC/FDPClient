@@ -40,7 +40,6 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
 
     val colorModeValue = ListValue("Color", arrayOf("Health", "Client"), "Client")
 
-    val shadowValue = BoolValue("Shadow", false)
     val bgRedValue = IntegerValue("Background-Red", 0, 0, 255)
     val bgGreenValue = IntegerValue("Background-Green", 0, 0, 255)
     val bgBlueValue = IntegerValue("Background-Blue", 0, 0, 255)

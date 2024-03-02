@@ -3,55 +3,51 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.visual;
+package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.features.module.EnumTriggerType;
-import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.features.module.ModuleInfo;
-import net.ccbluex.liquidbounce.value.BoolValue;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraftforge.fml.common.gameevent.TickEvent;
-import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import org.lwjgl.input.Keyboard;
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.Render2DEvent
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.KeyValue
+import org.lwjgl.input.Keyboard
 
-@ModuleInfo(name = "Zoom", category = ModuleCategory.VISUAL, keyBind = Keyboard.KEY_C, triggerType = EnumTriggerType.PRESS)
-public class Zoom extends Module {
-    private final BoolValue slowerSens = new BoolValue("Slower sensitivity", true);
-    private final BoolValue smoothCam = new BoolValue("Smooth camera", true);
+@ModuleInfo(name = "Zoom", category = ModuleCategory.VISUAL)
+class Zoom : Module() {
+    private val slowSen = BoolValue("Slow Sensitivity", false)
+    private val smoothSpeed = FloatValue("Smooth Speed", 0.1F, 0.1F, 5F)
+    private val keyValue = KeyValue("KeyBind : ", Keyboard.KEY_C)
+    private var oldFov = 0F
+    override fun onEnable() {
+        oldFov = mc.gameSettings.fovSetting
+    }
 
-    private boolean active;
-    private float oldFov;
-    private float oldSens;
+    override fun onDisable() {
+        mc.gameSettings.fovSetting = oldFov
+    }
 
-    @SubscribeEvent
-    public void onTick(TickEvent.PlayerTickEvent e) {
-        if (this.getState()) {
-            if (mc.thePlayer != null) {
-                    if (!active) {
-                        oldSens = mc.gameSettings.mouseSensitivity;
-                        oldFov = mc.gameSettings.fovSetting;
-                        active = true;
-
-                        if (slowerSens.get()) {
-                            mc.gameSettings.mouseSensitivity /= 4F;
-                        }
-
-                        if (smoothCam.get()) {
-                            KeyBinding.setKeyBindState(mc.gameSettings.keyBindSmoothCamera.getKeyCode(), true);
-                        }
-
-                        mc.gameSettings.fovSetting = 25;
-                    }
-                } else {
-                    if (active) {
-                        active = false;
-
-                        KeyBinding.setKeyBindState(mc.gameSettings.keyBindSmoothCamera.getKeyCode(), false);
-                        mc.gameSettings.mouseSensitivity = oldSens;
-                        mc.gameSettings.fovSetting = oldFov;
-                    }
-                }
-            }
+    @EventTarget
+    fun onRender2D(event: Render2DEvent) {
+        mc.gameSettings.smoothCamera = (Keyboard.isKeyDown(keyValue.get()) && slowSen.get())
+        if (mc.gameSettings.fovSetting <= 25F) {
+            mc.gameSettings.fovSetting = 25F
         }
+        if (mc.gameSettings.fovSetting >= oldFov) {
+            mc.gameSettings.fovSetting = oldFov
+        }
+        if (Keyboard.isKeyDown(keyValue.get()) && mc.gameSettings.fovSetting > oldFov) {
+            mc.gameSettings.fovSetting = oldFov
+        }
+        if (Keyboard.isKeyDown(keyValue.get()) && mc.gameSettings.fovSetting == 25F) return
+        var zoom = 0F
+        zoom += (0.0075F * smoothSpeed.get() * RenderUtils.deltaTime * if (Keyboard.isKeyDown(keyValue.get())) 1F else -1F)
+        zoom.coerceIn(0F, 1F)
+        if (Keyboard.isKeyDown(keyValue.get()) || mc.gameSettings.fovSetting != oldFov) {
+            mc.gameSettings.fovSetting -= ((oldFov - 25) * zoom)
+        }
+    }
 }

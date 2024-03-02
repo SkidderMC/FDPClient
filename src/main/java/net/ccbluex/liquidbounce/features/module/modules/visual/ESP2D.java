@@ -5,22 +5,13 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual;
 
-import java.awt.Color;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector4d;
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.event.*;
+import net.ccbluex.liquidbounce.event.EventTarget;
+import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
-import net.ccbluex.liquidbounce.value.*;
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
@@ -28,6 +19,10 @@ import net.ccbluex.liquidbounce.utils.item.ItemUtils;
 import net.ccbluex.liquidbounce.utils.render.BlendUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
+import net.ccbluex.liquidbounce.value.BoolValue;
+import net.ccbluex.liquidbounce.value.FloatValue;
+import net.ccbluex.liquidbounce.value.IntegerValue;
+import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.ScaledResolution;
@@ -47,6 +42,17 @@ import net.minecraft.util.MathHelper;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.glu.GLU;
+
+import javax.vecmath.Vector3d;
+import javax.vecmath.Vector4d;
+import java.awt.*;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 @ModuleInfo(name = "ESP2D", category = ModuleCategory.VISUAL)
 public final class ESP2D extends Module {
@@ -71,13 +77,10 @@ public final class ESP2D extends Module {
     public final BoolValue clearNameValue = new BoolValue("Use-Clear-Name", false);
     public final BoolValue localPlayer = new BoolValue("Local-Player", true);
     public final BoolValue droppedItems = new BoolValue("Dropped-Items", false);
-    private final ListValue colorModeValue = new ListValue("Color", new String[] {"Custom", "Slowly", "AnotherRainbow"}, "Custom");
+    private final ListValue colorModeValue = new ListValue("Color", new String[] {"Custom", "Client", "AnotherRainbow"}, "Custom");
     private final IntegerValue colorRedValue = new IntegerValue("Red", 255, 0, 255);
     private final IntegerValue colorGreenValue = new IntegerValue("Green", 255, 0, 255);
     private final IntegerValue colorBlueValue = new IntegerValue("Blue", 255, 0, 255);
-    private final FloatValue saturationValue = new FloatValue("Saturation", 1F, 0F, 1F);
-    private final FloatValue brightnessValue = new FloatValue("Brightness", 1F, 0F, 1F);
-    private final IntegerValue mixerSecondsValue = new IntegerValue("Seconds", 2, 1, 10);
     private final FloatValue fontScaleValue = new FloatValue("Font-Scale", 0.5F, 0F, 1F);
     private final BoolValue colorTeam = new BoolValue("Team", false);
     public static List collectedEntities = new ArrayList();
@@ -131,10 +134,8 @@ public final class ESP2D extends Module {
         switch (colorModeValue.get()) {
             case "Custom":
                 return new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
-            case "Rainbow":
-                return new Color(RenderUtils.getRainbowOpaque(mixerSecondsValue.get(), saturationValue.get(), brightnessValue.get(), 0));
-            case "Slowly":
-                return ColorUtils.slowlyRainbow(System.nanoTime(), 0, saturationValue.get(), brightnessValue.get());
+            case "Client":
+                return ClientTheme.INSTANCE.getColor(1);
             default:
                 return ColorUtils.fade(new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get()), 0, 100);
         }

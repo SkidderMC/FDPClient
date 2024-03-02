@@ -5,28 +5,31 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
+import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
 import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam
-import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithServerSideRotation
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.inventory.GuiInventory
@@ -34,16 +37,11 @@ import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityArmorStand
-import net.minecraft.item.ItemBlock
-import net.minecraft.item.ItemBucketMilk
-import net.minecraft.item.ItemFood
-import net.minecraft.item.ItemPotion
-import net.minecraft.item.ItemSword
+import net.minecraft.item.*
 import net.minecraft.network.play.client.*
 import net.minecraft.potion.Potion
 import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
@@ -194,6 +192,7 @@ object KillAura : Module() {
     private val randomCenRangeValue = FloatValue("RandomRange", 0.0f, 0.0f, 1.2f).displayable { !randomCenterModeValue.equals("Off") && rotationDisplay.get()}
 
     // Keep Rotate
+    private val gcdValue = BoolValue("GDC", false).displayable { !rotationModeValue.equals("None") }
     private val rotationRevValue = BoolValue("RotationReverse", false).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
     private val rotationRevTickValue = IntegerValue("RotationReverseTick", 5, 1, 20).displayable {  rotationRevValue.get() && rotationRevValue.displayable }
     private val keepDirectionValue = BoolValue("KeepDirection", true).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
@@ -265,6 +264,7 @@ object KillAura : Module() {
     private val noBadPacketsValue = BoolValue("NoBadPackets", false).displayable { toolsDisplay.get() }
     private val noInventoryAttackValue = ListValue("NoInvAttack", arrayOf("Spoof", "CancelRun", "Off"), "Off").displayable { toolsDisplay.get() }
     private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500).displayable { !noInventoryAttackValue.equals("Off") && noInventoryAttackValue.displayable }
+    private val onSwording = BoolValue("OnSword", true)
     private val displayDebug = BoolValue("Debug", false)
 
     private val displayMode = ListValue("DisplayMode", arrayOf("Simple", "LessSimple", "Complicated"), "Simple")
@@ -388,7 +388,8 @@ object KillAura : Module() {
      * Render event
      */
     @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+    fun onRender2D(
+        event: Render2DEvent) {
         if (displayDebug.get()) {
             val sr = ScaledResolution(mc)
             val blockingStatus = mc.thePlayer.isBlocking
@@ -1002,11 +1003,19 @@ object KillAura : Module() {
         if (silentRotationValue.get()) {
             RotationUtils.setTargetRotationReverse(
                 rotation,
-                if (keepDirectionValue.get()) { keepDirectionTickValue.get() } else { 1 },
-                if (rotationRevValue.get()) { rotationRevTickValue.get() } else { 0 }
+                if (keepDirectionValue.get()) {
+                    keepDirectionTickValue.get()
+                } else {
+                    1
+                },
+                if (rotationRevValue.get()) {
+                    rotationRevTickValue.get()
+                } else {
+                    0
+                }
             )
         } else {
-            rotation.toPlayer(mc.thePlayer)
+            rotation.toPlayer(mc.thePlayer, gcdValue.get())
         }
         return true
     }
@@ -1165,6 +1174,7 @@ object KillAura : Module() {
                 || (noEat.get() && mc.thePlayer.isUsingItem && (mc.thePlayer.heldItem?.item is ItemFood || mc.thePlayer.heldItem?.item is ItemBucketMilk || mc.thePlayer.isUsingItem && (mc.thePlayer.heldItem?.item is ItemPotion)))
                 || (noBlocking.get() && mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item is ItemBlock)
                 || (noInventoryAttackValue.equals("CancelRun") && (mc.currentScreen is GuiContainer || System.currentTimeMillis() - containerOpen < noInventoryDelayValue.get()))
+                || (onSwording.get() && mc.thePlayer.heldItem?.item !is ItemSword)
 
 
     /**
@@ -1187,8 +1197,6 @@ object KillAura : Module() {
     /**
      * HUD Tag
      */
-
-
     override val tag: String
         get() = when (displayMode.get().lowercase()) {
             "simple" -> targetModeValue.get() + ""

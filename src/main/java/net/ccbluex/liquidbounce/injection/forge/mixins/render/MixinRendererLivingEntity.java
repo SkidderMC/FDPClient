@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.visual.PlayerEdit;
 import net.ccbluex.liquidbounce.features.module.modules.visual.*;
+import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
@@ -275,8 +276,8 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                 case "Custom":
                     chamsColor = new Color(chams.getRedValue().get(), chams.getGreenValue().get(), chams.getBlueValue().get());
                     break;
-                case "Slowly":
-                    chamsColor = ColorUtils.slowlyRainbow(System.nanoTime(), 0, chams.getSaturationValue().get(), chams.getBrightnessValue().get());
+                case "Client":
+                    chamsColor = ClientTheme.INSTANCE.getColor(1);
                     break;
                 case "Fade":
                     chamsColor = ColorUtils.fade(new Color(chams.getRedValue().get(), chams.getGreenValue().get(), chams.getBlueValue().get(), chams.getAlphaValue().get()), 0, 100);

@@ -16,6 +16,7 @@ object CustomClientColor : Module() {
     private val redValue = IntegerValue("Red", 255,0,255)
     private val greenValue = IntegerValue("Green", 255,0,255)
     private val blueValue = IntegerValue("Blue", 255,0,255)
+
     fun getColor() : Color {
         return Color(redValue.get(), greenValue.get(), blueValue.get())
     }

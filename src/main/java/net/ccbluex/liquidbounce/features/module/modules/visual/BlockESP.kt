@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -13,17 +12,18 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
-import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
 import net.minecraft.block.BlockLiquid
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import java.awt.Color
+import java.util.*
 
 @ModuleInfo(name = "BlockESP", category = ModuleCategory.VISUAL)
 object BlockESP : Module() {
@@ -119,7 +119,7 @@ object BlockESP : Module() {
                             val yPos = thePlayer.posY.toInt() + y
                             val zPos = thePlayer.posZ.toInt() + z
                             val blockPos = BlockPos(xPos, yPos, zPos)
-                            val block = BlockUtils.getBlock(blockPos)
+                            val block = getBlock(blockPos)
                             if (block == Blocks.water && (mc.theWorld?.getBlockState(blockPos)?.getValue(BlockLiquid.LEVEL) ?: 1) == 0 && blockList.size < waterLimitValue.get()) blockList.add(blockPos)
                         }
                     }
@@ -145,7 +145,7 @@ object BlockESP : Module() {
                             val yPos = thePlayer.posY.toInt() + y
                             val zPos = thePlayer.posZ.toInt() + z
                             val blockPos = BlockPos(xPos, yPos, zPos)
-                            val block = BlockUtils.getBlock(blockPos)
+                            val block = getBlock(blockPos)
                             if (block == Blocks.lava && (mc.theWorld?.getBlockState(blockPos)?.getValue(BlockLiquid.LEVEL) ?: 1) == 0 && blockList.size < lavaLimitValue.get()) blockList.add(blockPos)
                         }
                     }
@@ -185,7 +185,7 @@ object BlockESP : Module() {
             if (waterEnable) synchronized(waterPosList) {
                 for (blockPos in waterPosList) {
                     val color = if (waterRainbow.get()) ColorUtils.rainbow() else Color(waterRedValue.get(), waterGreenValue.get(), waterBlueValue.get())
-                    when (waterMode.get().toLowerCase()) {
+                    when (waterMode.get().lowercase(Locale.getDefault())) {
                         "box" -> RenderUtils.drawBlockBox(blockPos, color, true)
                         "2d" -> RenderUtils.draw2D(blockPos, color.rgb, Color.BLACK.rgb)
                     }
@@ -195,7 +195,7 @@ object BlockESP : Module() {
             if (lavaEnable) synchronized(lavaPosList) {
                 for (blockPos in lavaPosList) {
                     val color = if (lavaRainbow.get()) ColorUtils.rainbow() else Color(lavaRedValue.get(), lavaGreenValue.get(), lavaBlueValue.get())
-                    when (lavaMode.get().toLowerCase()) {
+                    when (lavaMode.get().lowercase(Locale.getDefault())) {
                         "box" -> RenderUtils.drawBlockBox(blockPos, color, true)
                         "2d" -> RenderUtils.draw2D(blockPos, color.rgb, Color.BLACK.rgb)
                     }

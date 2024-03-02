@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import io.netty.buffer.Unpooled;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.Packet;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -49,10 +50,12 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
                         mc.getNetHandler().addToSendQueue(new C17PacketCustomPayload("labymod3:main", this.getInfo()));
                         mc.getNetHandler().addToSendQueue(new C17PacketCustomPayload("LMC", this.getInfo()));
                     }
-                    if (Objects.requireNonNull(clientSpoof).modeValue.get().equals("Custom")) {
+                    if (enabled && !Minecraft.getMinecraft().isIntegratedServerRunning() && clientSpoof.modeValue.get().equals("Custom")) {
                         try {
-                            final C17PacketCustomPayload customPayload = (C17PacketCustomPayload) packet;
-                            customPayload.data = new PacketBuffer(Unpooled.buffer()).writeString(clientSpoof.CustomClient.get());
+                            if (packet instanceof C17PacketCustomPayload) {
+                                final C17PacketCustomPayload customPayload = (C17PacketCustomPayload) packet;
+                                customPayload.data = (new PacketBuffer(Unpooled.buffer()).writeString(clientSpoof.CustomClient.get()));
+                            }
                         } catch (final Exception e) {
                             e.printStackTrace();
                         }
