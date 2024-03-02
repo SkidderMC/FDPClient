@@ -125,7 +125,8 @@ class LegitReach : Module() {
                 shown = true
             } else {
                 if (event.targetEntity == fakePlayer) {
-                    event.targetEntity = fakePlayer as EntityOtherPlayerMP
+                    attackEntity(currentTarget ?: return)
+                    event.cancelEvent()
                 } else {
                     fakePlayer = null
                     currentTarget = event.targetEntity as EntityLivingBase?
