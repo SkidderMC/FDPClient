@@ -31,6 +31,7 @@ class Grim117 : VelocityMode("Grim1.17") {
                 C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,mc.thePlayer.position,
                 EnumFacing.DOWN)
         )
+        event.cancelEvent()
     }
 
 }
