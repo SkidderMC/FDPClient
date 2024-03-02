@@ -98,7 +98,7 @@ public class GuiMainMenu extends GuiScreen implements  GuiYesNoCallback {
             mc.displayGuiScreen(new GuiModList(mc.currentScreen));
         }
         if (this.btnCommitInfo.hoverFade > 0) {
-        //    mc.displayGuiScreen(new GuiCommitInfo());
+            mc.displayGuiScreen(new GuiCommitInfo());
         }
 
         if (this.btnCosmetics.hoverFade > 0) {

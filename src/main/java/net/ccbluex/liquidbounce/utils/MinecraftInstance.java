@@ -10,5 +10,4 @@ import net.minecraft.client.gui.FontRenderer;
 
 public class MinecraftInstance {
     public static final Minecraft mc = Minecraft.getMinecraft();
-    public static FontRenderer fontRenderer;
 }
