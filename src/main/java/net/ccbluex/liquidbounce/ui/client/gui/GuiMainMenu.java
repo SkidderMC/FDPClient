@@ -56,8 +56,8 @@ public class GuiMainMenu extends GuiScreen implements  GuiYesNoCallback {
         this.logo = new ResourceLocation("fdpclient/misc/logo.png");
 
         this.btnSinglePlayer = new GuiButton("S I N G L E P L A Y E R", this.width / 2 - 66, this.height / 2);
-        this.btnMultiplayer = new GuiButton("M U L T I P L A Y E R", this.width / 2 - 66, this.height / 2 + 15);
-        this.btnCommitInfo = new GuiButton("G I T C O M M I T", this.width / 2 - 66, this.height / 2 + 32);
+        this.btnMultiplayer = new GuiButton("M U L T I P L A Y E R", this.width / 2 - 66, this.height / 2 + 16);
+        this.btnCommitInfo = new GuiButton("G I T C O M M I T", this.width / 2 - 66, this.height / 2 + 36);
 
         int yPos = this.height - 20;
 
@@ -126,8 +126,8 @@ public class GuiMainMenu extends GuiScreen implements  GuiYesNoCallback {
         GlStateManager.color(1.0F, 1.0F, 1.0F);
         mc.getTextureManager().bindTexture(logo);
         Gui.drawModalRectWithCustomSizedTexture(this.width / 2 - 25, this.height / 2 - 68, 0, 0, 49, 49, 49, 49);
-        FontLoaders.Raleway.drawCenteredString("by SkiderMC with love ", (float) this.width / 2 - 0.25F, this.height / 2 - 18, new Color(30, 30, 30, 70).getRGB());
-        FontLoaders.Raleway.drawCenteredString("by SkiderMC with love ", (float) this.width / 2, (float) this.height / 2 - 19, -1);
+        FontLoaders.Raleway.drawCenteredString("by SkidderMC with love ", (float) this.width / 2 - 0.25F, this.height / 2 - 18, new Color(30, 30, 30, 70).getRGB());
+        FontLoaders.Raleway.drawCenteredString("by SkidderMC with love ", (float) this.width / 2, (float) this.height / 2 - 19, -1);
         this.btnSinglePlayer.drawButton(mouseX, mouseY);
         this.btnMultiplayer.drawButton(mouseX, mouseY);
         this.btnCommitInfo.drawButton(mouseX, mouseY);

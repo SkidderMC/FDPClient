@@ -182,7 +182,7 @@ object Breaker : Module() {
 
         if (throughWallsValue.equals("Hypixel")) {
             val blockPos = find(26) ?: return
-            if (!BlockUtils.isFullBlock(blockPos.up()) && pos != null) {
+            if (BlockUtils.isFullBlock(blockPos.up())) {
                 pos = blockPos.up()?: return
             } else {
                 pos = blockPos?: return

@@ -77,7 +77,7 @@ class LegitReach : Module() {
             val packetEvent = PacketEvent(packet, PacketEvent.Type.RECEIVE)
             FDPClient.eventManager.callEvent(packetEvent)
             if (!packetEvent.isCancelled) {
-                PacketUtils.handlePacket(packet as Packet<INetHandlerPlayClient?>)
+                PacketUtils.handlePacket(packetEvent.packet as Packet<INetHandlerPlayClient?>)
             }
         }
         releasing = false
@@ -125,8 +125,7 @@ class LegitReach : Module() {
                 shown = true
             } else {
                 if (event.targetEntity == fakePlayer) {
-                    attackEntity(currentTarget ?: return)
-                    event.cancelEvent()
+                    event.targetEntity = fakePlayer as EntityOtherPlayerMP
                 } else {
                     fakePlayer = null
                     currentTarget = event.targetEntity as EntityLivingBase?

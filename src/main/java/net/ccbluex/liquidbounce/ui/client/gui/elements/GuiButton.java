@@ -25,7 +25,7 @@ public class GuiButton {
         this.y = y;
 
         this.width = 132;
-        this.height = 11;
+        this.height = 12;
     }
 
     public void drawButton(int mouseX, int mouseY) {
@@ -42,8 +42,8 @@ public class GuiButton {
 
         RenderUtils.drawRoundOutline(this.x, this.y, this.x + this.width, this.y + this.height, 2, 3, new Color(255, 255, 255, 30).getRGB());
 
-        FontLoaders.Roboto.drawCenteredString(this.text, this.x + (float) this.width / 2 + 0.5F, this.y + (float) (this.height - 4) / 2 + 0.5F, new Color(30, 30, 30, 50).getRGB());
-        FontLoaders.Roboto.drawCenteredString(this.text, this.x + (float) this.width / 2, this.y + (float) (this.height - 4) / 2, new Color(190, 195, 189).getRGB());
+        FontLoaders.Roboto.drawCenteredString(this.text, this.x + (float) this.width / 2 + 0.5F, this.y + (float) (this.height - 4) / 2 + 1.5F, new Color(30, 30, 30, 50).getRGB());
+        FontLoaders.Roboto.drawCenteredString(this.text, this.x + (float) this.width / 2, this.y + (float) (this.height - 4) / 2 + 1F, new Color(190, 195, 189).getRGB());
     }
 
 }
