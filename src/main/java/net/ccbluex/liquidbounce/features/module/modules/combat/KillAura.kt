@@ -192,7 +192,6 @@ object KillAura : Module() {
     private val randomCenRangeValue = FloatValue("RandomRange", 0.0f, 0.0f, 1.2f).displayable { !randomCenterModeValue.equals("Off") && rotationDisplay.get()}
 
     // Keep Rotate
-    private val gcdValue = BoolValue("GDC", false).displayable { !rotationModeValue.equals("None") }
     private val rotationRevValue = BoolValue("RotationReverse", false).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
     private val rotationRevTickValue = IntegerValue("RotationReverseTick", 5, 1, 20).displayable {  rotationRevValue.get() && rotationRevValue.displayable }
     private val keepDirectionValue = BoolValue("KeepDirection", true).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
@@ -1015,7 +1014,7 @@ object KillAura : Module() {
                 }
             )
         } else {
-            rotation.toPlayer(mc.thePlayer, gcdValue.get())
+            rotation.toPlayer(mc.thePlayer)
         }
         return true
     }

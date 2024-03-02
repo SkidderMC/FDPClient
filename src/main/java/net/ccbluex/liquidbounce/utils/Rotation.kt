@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.event.StrafeEvent
+import net.ccbluex.liquidbounce.features.module.modules.client.Rotations
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.MathHelper
@@ -19,13 +20,12 @@ data class Rotation(var yaw: Float, var pitch: Float) {
     /**
      * Set rotations to [player]
      */
-    fun toPlayer(player: EntityPlayer, fixSen: Boolean) {
-        if ((yaw.isNaN() || pitch.isNaN()))
+    fun toPlayer(player: EntityPlayer) {
+        if ((yaw.isNaN() || pitch.isNaN()) && Rotations.nanValue.get()) {
             return
-
-        if (fixSen){
-            fixedSensitivity(MinecraftInstance.mc.gameSettings.mouseSensitivity)
         }
+
+        fixedSensitivity(MinecraftInstance.mc.gameSettings.mouseSensitivity)
 
         player.rotationYaw = yaw
         player.rotationPitch = pitch
