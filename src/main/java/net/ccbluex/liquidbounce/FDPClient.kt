@@ -30,6 +30,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
 import net.ccbluex.liquidbounce.utils.*
+import net.ccbluex.liquidbounce.utils.MinecraftInstance.mc
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
@@ -43,7 +44,7 @@ object FDPClient {
     const val CLIENT_NAME = "FDPClient"
     val CLIENT_LOGO  = ResourceLocation("fdpclient/misc/logo.png")
     const val COLORED_NAME = "§7[§b§lFDPClient§7] "
-    const val CLIENT_CREATOR = "CCBlueX, Zywl & SkidderMC TEAM"
+    const val CLIENT_DEV = "Zywl, 1zuna, Yuugiri, Dg636, gatodepan, DinoFeng, Co`Dynamic. by (SkidderMC & CCBlueX - TEAM)"
     const val CLIENT_WEBSITE = "https://fdpinfo.github.io"
     const val CLIENT_DISCORD = "https://discord.gg/3XRFGeqEYD"
     const val CLIENT_VERSION = "v5.6.0 (IN DEV)"
@@ -113,6 +114,8 @@ object FDPClient {
      * Execute if client will be started
      */
     fun initClient() {
+        mc.fontRendererObj.also { mc.fontRendererObj = it }
+        SplashProgress.setProgress(1, "Initializing Minecraft")
         ClientUtils.logInfo("Loading $CLIENT_NAME $CLIENT_VERSION")
         ClientUtils.logInfo("Initializing...")
         val startTime = System.currentTimeMillis()
@@ -227,6 +230,8 @@ object FDPClient {
         isLoadingConfig = false
 
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION started!")
+        mc.fontRendererObj.also { mc.fontRendererObj = it }
+        SplashProgress.setProgress(4, "Initializing " + CLIENT_NAME)
 
         if (clientRichPresence.showRichPresenceValue) {
             thread {

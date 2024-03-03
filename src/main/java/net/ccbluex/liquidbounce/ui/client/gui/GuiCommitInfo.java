@@ -47,7 +47,7 @@ public class GuiCommitInfo extends GuiScreen {
         this.drawString(Fonts.minecraftFont, "CommitMessage: " + commitMessage, 70, 30 + Fonts.minecraftFont.FONT_HEIGHT * 4 + 5, new Color(255, 255, 255).getRGB());
         this.drawString(Fonts.minecraftFont, "Branch: " + branch, 70, 30 + Fonts.minecraftFont.FONT_HEIGHT * 5 + 5, new Color(255, 255, 255).getRGB());
         this.drawString(Fonts.minecraftFont, "Remote origin: " + repo, 70, 30 + Fonts.minecraftFont.FONT_HEIGHT * 6 + 5, new Color(255, 255, 255).getRGB());
-        this.drawString(Fonts.minecraftFont, "Developers: " + String.join(" ", FDPClient.CLIENT_CREATOR), 70, 30 + Fonts.minecraftFont.FONT_HEIGHT * 7 + 5, new Color(255, 255, 255).getRGB());
+        this.drawString(Fonts.minecraftFont, "Developers: " + String.join(" ", FDPClient.CLIENT_DEV), 70, 30 + Fonts.minecraftFont.FONT_HEIGHT * 7 + 5, new Color(255, 255, 255).getRGB());
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 

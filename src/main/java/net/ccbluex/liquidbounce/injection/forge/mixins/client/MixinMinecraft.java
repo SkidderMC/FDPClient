@@ -122,6 +122,16 @@ public abstract class MixinMinecraft {
         FDPClient.INSTANCE.initClient();
     }
 
+    @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 1, shift = At.Shift.AFTER))
+    public void step1(CallbackInfo ci) {
+        SplashProgress.INSTANCE.setProgress(2, "textures");
+    }
+
+    @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
+    public void step2(CallbackInfo ci) {
+        SplashProgress.INSTANCE.setProgress(3, "Gui");
+    }
+
     @Inject(method = "<init>", at = @At("RETURN"))
     public void startVia(GameConfiguration p_i45547_1_, CallbackInfo ci) {
         ProtocolBase.init(ProtocolMod.PLATFORM);

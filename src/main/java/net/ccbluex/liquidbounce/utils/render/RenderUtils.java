@@ -2983,6 +2983,15 @@ public final class RenderUtils extends MinecraftInstance {
         return textureId;
     }
 
+    public static int loadGlTexture(ResourceLocation resource) {
+        try {
+            BufferedImage bufferedImage = ImageIO.read(FileUtils.getFile(resource.getResourcePath()));
+            return loadGlTexture(bufferedImage);
+        } catch (Throwable e) {
+            return 0;
+        }
+    }
+
     public static int loadOGlTexture(ResourceLocation resource) {
         try {
             BufferedImage bufferedImage = ImageIO.read(FileUtils.getFile(resource.getResourcePath()));
@@ -3383,5 +3392,4 @@ public final class RenderUtils extends MinecraftInstance {
         GlStateManager.enableBlend();
         GlStateManager.popMatrix();
     }
-
 }

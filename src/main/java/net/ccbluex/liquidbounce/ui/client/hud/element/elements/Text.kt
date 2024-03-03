@@ -106,7 +106,7 @@ class Text(
             "username" -> mc.getSession().username
             "clientName" -> FDPClient.CLIENT_NAME
             "clientVersion" -> FDPClient.CLIENT_VERSION
-            "clientCreator" -> FDPClient.CLIENT_CREATOR
+            "clientCreator" -> FDPClient.CLIENT_DEV
             "fps" -> Minecraft.getDebugFPS().toString()
             "date" -> DATE_FORMAT.format(System.currentTimeMillis())
             "time" -> HOUR_FORMAT.format(System.currentTimeMillis())

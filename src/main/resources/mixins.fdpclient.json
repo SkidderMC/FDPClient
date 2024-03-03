@@ -101,7 +101,8 @@
     "render.MixinTileEntityMobSpawnerRenderer",
     "render.MixinTileEntityRendererDispatcher",
     "render.MixinTileEntitySkullRenderer",
-    "render.MixinVisGraph"
+    "render.MixinVisGraph",
+    "splash.MixinSplashProgressRunnable"
   ],
   "client": [
     "gui.MixinGui",
