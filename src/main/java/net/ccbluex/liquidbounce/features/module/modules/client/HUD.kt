@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.ui.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi
 import net.ccbluex.liquidbounce.ui.gui.menu.GuiTeleportation
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
-import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils.getPing
 import net.ccbluex.liquidbounce.utils.MathUtils

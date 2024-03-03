@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.config.impl
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.config.FileConfig
-import net.ccbluex.liquidbounce.ui.client.hud.Config
+import net.ccbluex.liquidbounce.ui.hud.Config
 import java.io.File
 
 class HudConfig(file: File) : FileConfig(file) {

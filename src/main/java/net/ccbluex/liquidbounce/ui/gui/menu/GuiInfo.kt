@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.ui.gui.menu
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolSelector
 import net.ccbluex.liquidbounce.ui.gui.colortheme.GuiTheme
-import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.GuiButton

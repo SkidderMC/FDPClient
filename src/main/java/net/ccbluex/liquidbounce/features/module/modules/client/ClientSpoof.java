@@ -18,7 +18,7 @@ public class ClientSpoof extends Module {
 
     public final ListValue modeValue = new ListValue("Payloads", new String[]{"Vanilla", "Fabric", "Lunar", "LabyMod", "Custom", "CheatBreaker", "PvPLounge"}, "Lunar");
     public final TextValue CustomClient = new TextValue("CustomClientSpoof", "CustomClient");
-    public final ListValue buttonValue = new ListValue("Button", new String[]{"Better", "RGBRounded", "Wolfram", "Rounded", "Hyperium", "RGB", "Badlion", "PVP", "Flat", "FLine", "Rise", "Vanilla"}, "FLine");
+    public final ListValue buttonValue = new ListValue("Button", new String[]{"Better", "RGBRounded", "Wolfram", "Rounded", "Hyperium", "RGB", "Badlion", "PVP", "Flat", "FLine", "Rise", "Vanilla"}, "PVP");
     public AbstractButtonRenderer getButtonRenderer(GuiButton button) {
         String lowerCaseButtonValue = buttonValue.get().toLowerCase();
         switch (lowerCaseButtonValue) {

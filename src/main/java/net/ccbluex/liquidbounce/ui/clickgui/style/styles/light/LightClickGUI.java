@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.light.LightSettings.InputBox;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.light.ModuleSettings.Settings;
-import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
+import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.AnimationHelper;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;

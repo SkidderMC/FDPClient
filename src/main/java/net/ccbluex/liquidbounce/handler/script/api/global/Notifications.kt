@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.handler.script.api.global
 
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.ui.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.hud.element.elements.NotifyType
 
 object Notifications {
 

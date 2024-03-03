@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic;
 
 import lombok.Getter;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
+import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;

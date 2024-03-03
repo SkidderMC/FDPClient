@@ -24,7 +24,7 @@ import net.ccbluex.liquidbounce.ui.gui.EnumLaunchFilter
 import net.ccbluex.liquidbounce.ui.gui.GuiLaunchOptionSelectMenu
 import net.ccbluex.liquidbounce.ui.gui.LaunchFilterInfo
 import net.ccbluex.liquidbounce.ui.gui.LaunchOption
-import net.ccbluex.liquidbounce.ui.client.hud.HUD
+import net.ccbluex.liquidbounce.ui.hud.HUD
 import net.ccbluex.liquidbounce.ui.gui.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
