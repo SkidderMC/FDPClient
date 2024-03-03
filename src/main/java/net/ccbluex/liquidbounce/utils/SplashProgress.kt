@@ -6,11 +6,11 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.texture.SimpleTexture
 import net.minecraft.client.shader.Framebuffer
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
@@ -49,22 +49,18 @@ object SplashProgress {
     }
 
     fun drawSplash() {
-        val scaledResolution = ScaledResolution(MinecraftInstance.mc)
+        val mc = MinecraftInstance.mc ?: return
+        val textureManager = mc.textureManager ?: return
+
+        val scaledResolution = ScaledResolution(mc)
         val scaleFactor = scaledResolution.scaleFactor
-        val framebuffer =
-            Framebuffer(scaledResolution.scaledWidth * scaleFactor, scaledResolution.scaledHeight * scaleFactor, true)
+
+        val framebuffer = Framebuffer(scaledResolution.scaledWidth * scaleFactor, scaledResolution.scaledHeight * scaleFactor, true)
         framebuffer.bindFramebuffer(false)
 
         GlStateManager.matrixMode(GL11.GL_PROJECTION)
         GlStateManager.loadIdentity()
-        GlStateManager.ortho(
-            0.0,
-            scaledResolution.scaledWidth.toDouble(),
-            scaledResolution.scaledHeight.toDouble(),
-            0.0,
-            1000.0,
-            3000.0
-        )
+        GlStateManager.ortho(0.0, scaledResolution.scaledWidth.toDouble(), scaledResolution.scaledHeight.toDouble(), 0.0, 1000.0, 3000.0)
         GlStateManager.matrixMode(GL11.GL_MODELVIEW)
         GlStateManager.loadIdentity()
         GlStateManager.translate(0.0f, 0.0f, -2000.0f)
@@ -77,7 +73,12 @@ object SplashProgress {
             splash = ResourceLocation("fdpclient/misc/splash.png")
         }
 
-        GL11.glBindTexture(GL11.GL_TEXTURE_2D, RenderUtils.loadGlTexture(splash))
+        if (!textureManager.loadTexture(splash, SimpleTexture(splash))) {
+
+            return
+        }
+
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureManager.getTexture(splash).glTextureId)
 
         GlStateManager.resetColor()
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
@@ -96,16 +97,14 @@ object SplashProgress {
         )
         drawProgress()
         framebuffer.unbindFramebuffer()
-        framebuffer.framebufferRender(
-            scaledResolution.scaledWidth * scaleFactor,
-            scaledResolution.scaledHeight * scaleFactor
-        )
+        framebuffer.framebufferRender(scaledResolution.scaledWidth * scaleFactor, scaledResolution.scaledHeight * scaleFactor)
 
         GlStateManager.enableAlpha()
         GlStateManager.alphaFunc(516, 0.1f)
 
-        MinecraftInstance.mc.updateDisplay()
+        mc.updateDisplay()
     }
+
 
     private fun drawProgress() {
         if (MinecraftInstance.mc.gameSettings == null || MinecraftInstance.mc.textureManager == null) {
@@ -143,7 +142,6 @@ object SplashProgress {
             (scaledResolution.scaledWidth - 25).toFloat(),
             Color(254, 228, 1).rgb
         )
-
         GlStateManager.resetColor()
 
         Gui.drawRect(

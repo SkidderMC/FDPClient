@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.gui;
 
 import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager;
 import net.ccbluex.liquidbounce.ui.client.gui.elements.*;
 import net.ccbluex.liquidbounce.ui.client.gui.elements.GuiButton;
 import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders;
@@ -39,6 +40,10 @@ public class GuiMainMenu extends GuiScreen implements  GuiYesNoCallback {
     private GuiButton btnDiscord;
     private QuitButton btnQuit;
 
+    private static int panoramaTimer;
+    private ImageButton btnAddAccount;
+    GuiCapeManager guiCapeManager = GuiCapeManager.INSTANCE;
+
     private static final ResourceLocation[] titlePanoramaPaths = new ResourceLocation[]{
             new ResourceLocation("fdpclient/panorama/panorama_0.png"),
             new ResourceLocation("fdpclient/panorama/panorama_1.png"),
@@ -47,9 +52,6 @@ public class GuiMainMenu extends GuiScreen implements  GuiYesNoCallback {
             new ResourceLocation("fdpclient/panorama/panorama_4.png"),
             new ResourceLocation("fdpclient/panorama/panorama_5.png")
     };
-
-    private static int panoramaTimer;
-    private ImageButton btnAddAccount;
 
     @Override
     public void initGui() {
@@ -102,7 +104,7 @@ public class GuiMainMenu extends GuiScreen implements  GuiYesNoCallback {
         }
 
         if (this.btnCosmetics.hoverFade > 0) {
-        // in progres..
+            mc.displayGuiScreen(guiCapeManager);
         }
         if (this.btnAddAccount.hoverFade > 0) {
             mc.displayGuiScreen(new GuiAltManager(this));

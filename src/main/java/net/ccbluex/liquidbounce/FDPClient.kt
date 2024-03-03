@@ -231,7 +231,7 @@ object FDPClient {
 
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION started!")
         mc.fontRendererObj.also { mc.fontRendererObj = it }
-        SplashProgress.setProgress(4, "Initializing " + CLIENT_NAME)
+        SplashProgress.setProgress(4, "Initializing $CLIENT_NAME")
 
         if (clientRichPresence.showRichPresenceValue) {
             thread {

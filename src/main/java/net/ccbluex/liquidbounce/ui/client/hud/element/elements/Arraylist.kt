@@ -46,18 +46,17 @@ class Arraylist(
 
     // Tag settings
     private val tagValue = BoolValue("Tags", true)
-    private val tagsStyleValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", "->", "Space", "None"), "Space").displayable { tagValue.get() }
+    private val tagsStyleValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", "->", "Space"), "Space").displayable { tagValue.get() }
 
     // Options Text
-    private val textDisplay = BoolValue("Text Options:", true)
-    private val orderValue = ListValue("Order", arrayOf("ABC", "Distance"), "Distance").displayable { textDisplay.get() }
-    private val shadowValue = BoolValue("ShadowText", true).displayable { textDisplay.get() }
-    private val split = BoolValue("SplitName", true).displayable { textDisplay.get() }
-    private val noRenderModules = BoolValue("NoRenderModules", false).displayable { textDisplay.get() }
-    private val caseValue = ListValue("Case", arrayOf("Upper", "Normal", "Lower"), "Normal").displayable { textDisplay.get() }
-    private val spaceValue = FloatValue("Space", 0F, 0F, 5F).displayable { textDisplay.get() }
-    private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F).displayable { textDisplay.get() }
-    private val textYValue = FloatValue("TextY", 1F, 0F, 20F).displayable { textDisplay.get() }
+    private val orderValue = ListValue("Order", arrayOf("ABC", "Distance"), "Distance")
+    private val shadowValue = BoolValue("ShadowText", true)
+    private val split = BoolValue("SplitName", true)
+    private val noRenderModules = BoolValue("NoRenderModules", false)
+    private val caseValue = ListValue("Case", arrayOf("Upper", "Normal", "Lower"), "Normal")
+    private val spaceValue = FloatValue("Space", 0F, 0F, 5F)
+    private val textHeightValue = FloatValue("TextHeight", 11F, 1F, 20F)
+    private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
 
     // Background color settings
     private val backgroundValue = IntegerValue("Background", 155, 0, 255)
@@ -90,22 +89,13 @@ class Arraylist(
     private var sortedModules = emptyList<Module>()
 
     val delay = intArrayOf(0)
-
-    private fun shouldExpect(module: Module): Boolean {
-        return noRenderModules.get() && module.category == ModuleCategory.VISUAL
-    }
-
-    private fun changeCase(inStr: String): String {
-        val str = LanguageManager.replace(inStr)
-        return when (caseValue.get().lowercase()) {
-            "upper" -> str.uppercase()
-            "lower" -> str.lowercase()
-            else -> str
-        }
-    }
-
     private fun getModuleName(module: Module): String {
-        val displayName : String = (if (split.get()) { module.splicedName } else module.localizedName) + getModTag(module)
+        var displayName : String = (if (split.get()) { module.splicedName } else module.localizedName) + getModTag(module)
+
+        when (caseValue.get().lowercase()) {
+            "lower" -> displayName = displayName.lowercase()
+            "upper" -> displayName = displayName.uppercase()
+        }
 
         return displayName
     }
@@ -131,7 +121,7 @@ class Arraylist(
             if (module.array && !shouldExpect(module) && (module.state || module.slide != 0F)) {
                 val displayString = getModuleName(module)
 
-                val width = fontRenderer.getStringWidth(changeCase(displayString))
+                val width = fontRenderer.getStringWidth(displayString)
 
                 when (horizontalAnimation.get()) {
                     "Fast" -> {
@@ -437,7 +427,6 @@ class Arraylist(
     }
 
     override fun updateElement() {
-
         modules = if (orderValue.equals("ABC")) FDPClient.moduleManager.modules
             .filter {
                 it.array && !shouldExpect(it) && (if (horizontalAnimation.get()
@@ -480,6 +469,10 @@ class Arraylist(
                 tagsStyleValue.get()[1].toString()
             }
         return returnTag
+    }
+
+    private fun shouldExpect(module: Module): Boolean {
+        return noRenderModules.get() && module.category == ModuleCategory.VISUAL
     }
 
     fun getColor(index : Int) : Color {
