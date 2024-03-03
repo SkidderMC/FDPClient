@@ -379,8 +379,8 @@ class Scaffold : Module() {
         mc.thePlayer.isSprinting = canSprint
         if (sprintValue.equals("Hypixel")) {
             if (mc.thePlayer.onGround) {
-                mc.thePlayer.motionX *= 0.9
-                mc.thePlayer.motionZ *= 0.9
+                mc.thePlayer.motionX *= 0.94
+                mc.thePlayer.motionZ *= 0.94
             } else {
                 mc.thePlayer.motionX *= 0.99
                 mc.thePlayer.motionZ *= 0.99
@@ -1261,9 +1261,9 @@ class Scaffold : Module() {
                 }
                 "static2" -> {
                     if ((MovementUtils.movingYaw / 30).roundToInt() % 3 == 0) {
-                        if (static2BoostValue.get()) {
-                            mc.thePlayer.motionX *= 1.1
-                            mc.thePlayer.motionZ *= 1.1
+                        if (static2BoostValue.get() && mc.thePlayer.onGround) {
+                            mc.thePlayer.motionX *= 1.07
+                            mc.thePlayer.motionZ *= 1.07
                         }
                         Rotation(((MovementUtils.direction * 180f / Math.PI).toFloat() + 135), placeRotation.rotation.pitch)
                     } else {

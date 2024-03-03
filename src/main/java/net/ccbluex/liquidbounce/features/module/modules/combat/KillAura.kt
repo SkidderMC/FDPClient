@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
 import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold
+import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold2
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
 import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
@@ -1169,7 +1170,7 @@ object KillAura : Module() {
         get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer)
                 || (blinkCheck.get() && FDPClient.moduleManager[Blink::class.java]!!.state)
                 || FDPClient.moduleManager[FreeCam::class.java]!!.state
-                || (noScaffValue.get() && FDPClient.moduleManager[Scaffold::class.java]!!.state)
+                || (noScaffValue.get() && (FDPClient.moduleManager[Scaffold::class.java]!!.state || FDPClient.moduleManager[Scaffold2::class.java]!!.state))
                 || (noFlyValue.get() && FDPClient.moduleManager[Flight::class.java]!!.state)
                 || (noEat.get() && mc.thePlayer.isUsingItem && (mc.thePlayer.heldItem?.item is ItemFood || mc.thePlayer.heldItem?.item is ItemBucketMilk || mc.thePlayer.isUsingItem && (mc.thePlayer.heldItem?.item is ItemPotion)))
                 || (noBlocking.get() && mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item is ItemBlock)
