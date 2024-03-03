@@ -279,7 +279,6 @@ object ClientTheme {
         return Color(-1)
     }
     fun getColorFromName(name: String,index: Int): Color {
-        if (CustomClientColor.state) return CustomClientColor.getColor()
         when (name.lowercase()) {
             "zywl" -> return ColorUtils.mixColors(
                 Color(206, 58, 98),

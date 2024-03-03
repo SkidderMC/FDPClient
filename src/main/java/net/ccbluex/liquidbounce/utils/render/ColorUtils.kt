@@ -133,21 +133,9 @@ object ColorUtils {
         var red = rgb1[0] * r + rgb2[0] * ir
         var green = rgb1[1] * r + rgb2[1] * ir
         var blue = rgb1[2] * r + rgb2[2] * ir
-        if (red < 0.0f) {
-            red = 0.0f
-        } else if (red > 255.0f) {
-            red = 255.0f
-        }
-        if (green < 0.0f) {
-            green = 0.0f
-        } else if (green > 255.0f) {
-            green = 255.0f
-        }
-        if (blue < 0.0f) {
-            blue = 0.0f
-        } else if (blue > 255.0f) {
-            blue = 255.0f
-        }
+        red.coerceIn(0f, 255f)
+        green.coerceIn(0f, 255f)
+        blue.coerceIn(0f, 255f)
         var color3: Color? = null
         try {
             color3 = Color(red, green, blue)
