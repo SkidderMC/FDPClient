@@ -23,7 +23,7 @@ object ToolDropdown {
     private var dropState = false
 
 
-    private val expandIcon = ResourceLocation("fdpclient/misc/expand.png")
+    private val expandIcon = ResourceLocation("fdpclient/gui/design/expand.png")
 
     @JvmStatic
     fun handleDraw(button: GuiButton) {

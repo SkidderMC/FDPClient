@@ -54,7 +54,7 @@ object Insult : Module() {
         try {
             // check file exists
             if (!insultFile.exists()) {
-                FileUtils.unpackFile(insultFile, "assets/minecraft/fdpclient/misc/insult.json")
+                FileUtils.unpackFile(insultFile, "assets/minecraft/fdpclient/insult.json")
             }
             // read it
             val json = JsonParser().parse(insultFile.readText(Charsets.UTF_8))

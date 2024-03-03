@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.handler.protocol.ProtocolMod;
 import net.ccbluex.liquidbounce.handler.protocol.api.AttackFixer;
 import net.ccbluex.liquidbounce.utils.*;
 import net.ccbluex.liquidbounce.utils.CPSCounterUtils;
+import net.ccbluex.liquidbounce.utils.render.IconUtils;
 import net.ccbluex.liquidbounce.utils.render.ImageUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.block.material.Material;
@@ -348,10 +349,13 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
     private void setWindowIcon(CallbackInfo callbackInfo) {
-        try {
+      //  try {
             if (Util.getOSType() == Util.EnumOS.OSX) {
                 MacOS.icon();
-            } else {
+                Display.setIcon(IconUtils.fav());
+            }
+    /*
+             else {
                 BufferedImage image = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/32.png"))); // need to impliment 16x and 64x
                 ByteBuffer bytebuffer = ImageUtils.readImageToBuffer(image); // What the fuck? ImageUtils.resizeImage(image, 16, 16)
                 if (bytebuffer == null) {
@@ -364,6 +368,8 @@ public abstract class MixinMinecraft {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+     */
     }
 
     @Redirect(method="loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at=@At(value="INVOKE", target="Lnet/minecraft/client/LoadingScreenRenderer;resetProgressAndMessage(Ljava/lang/String;)V"))

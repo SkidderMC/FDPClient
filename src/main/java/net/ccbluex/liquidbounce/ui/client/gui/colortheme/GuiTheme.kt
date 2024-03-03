@@ -42,8 +42,8 @@ class GuiTheme : GuiScreen() {
         }
         text = textValue.get()
         RenderUtils.drawRoundedRect(10F, 10F, 628F, 428F, 5F, Color(0, 0, 0, 150).rgb, 3F, ClientTheme.getColor(1).rgb)
-        RenderUtils.drawImage(ResourceLocation("fdpclient/misc/arrowup.png"), 160, 381, 25, 25)
-        RenderUtils.drawImage(ResourceLocation("fdpclient/misc/arrowdown.png"), 160, 410, 25, 25)
+        RenderUtils.drawImage(ResourceLocation("fdpclient/gui/design/arrowup.png"), 160, 381, 25, 25)
+        RenderUtils.drawImage(ResourceLocation("fdpclient/gui/design/arrowdown.png"), 160, 410, 25, 25)
         FontLoaders.SF40.drawStringWithShadow("ClientTheme", 20.0, 25.0, ClientTheme.getColor(1).rgb)
         RenderUtils.drawRect(10F, 65F, 638F, 66F, ClientTheme.getColor(1).rgb)
         RenderUtils.drawRect(10F, 345.0f, 638F, 346.0f, ClientTheme.getColor(1).rgb)

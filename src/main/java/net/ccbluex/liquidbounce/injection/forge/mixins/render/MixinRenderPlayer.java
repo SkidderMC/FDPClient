@@ -24,9 +24,9 @@ import java.util.Objects;
 
 @Mixin(RenderPlayer.class)
 public abstract class MixinRenderPlayer {
-    private final ResourceLocation rabbit = new ResourceLocation("fdpclient/models/rabbit.png");
-    private final ResourceLocation freddy = new ResourceLocation("fdpclient/models/freddy.png");
-    private final ResourceLocation amogus = new ResourceLocation("fdpclient/models/amogus.png");
+    private final ResourceLocation rabbit = new ResourceLocation("fdpclient/cosmetic/rabbit.png");
+    private final ResourceLocation freddy = new ResourceLocation("fdpclient/cosmetic/models/freddy.png");
+    private final ResourceLocation amogus = new ResourceLocation("fdpclient/cosmetic/amogus.png");
     /**
      * Render living at.
      *

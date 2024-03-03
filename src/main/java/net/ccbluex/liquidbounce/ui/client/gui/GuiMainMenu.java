@@ -45,17 +45,17 @@ public class GuiMainMenu extends GuiScreen implements  GuiYesNoCallback {
     GuiCapeManager guiCapeManager = GuiCapeManager.INSTANCE;
 
     private static final ResourceLocation[] titlePanoramaPaths = new ResourceLocation[]{
-            new ResourceLocation("fdpclient/panorama/panorama_0.png"),
-            new ResourceLocation("fdpclient/panorama/panorama_1.png"),
-            new ResourceLocation("fdpclient/panorama/panorama_2.png"),
-            new ResourceLocation("fdpclient/panorama/panorama_3.png"),
-            new ResourceLocation("fdpclient/panorama/panorama_4.png"),
-            new ResourceLocation("fdpclient/panorama/panorama_5.png")
+            new ResourceLocation("fdpclient/gui/panorama/panorama_0.png"),
+            new ResourceLocation("fdpclient/gui/panorama/panorama_1.png"),
+            new ResourceLocation("fdpclient/gui/panorama/panorama_2.png"),
+            new ResourceLocation("fdpclient/gui/panorama/panorama_3.png"),
+            new ResourceLocation("fdpclient/gui/panorama/panorama_4.png"),
+            new ResourceLocation("fdpclient/gui/panorama/panorama_5.png")
     };
 
     @Override
     public void initGui() {
-        this.logo = new ResourceLocation("fdpclient/misc/logo.png");
+        this.logo = new ResourceLocation("fdpclient/gui/design/logo.png");
 
         this.btnSinglePlayer = new GuiButton("S I N G L E P L A Y E R", this.width / 2 - 66, this.height / 2);
         this.btnMultiplayer = new GuiButton("M U L T I P L A Y E R", this.width / 2 - 66, this.height / 2 + 16);
@@ -63,15 +63,15 @@ public class GuiMainMenu extends GuiScreen implements  GuiYesNoCallback {
 
         int yPos = this.height - 20;
 
-        this.btnClientOptions = new ImageButton("SETTINGS", FDPClient.INSTANCE.getCLIENT_LOGO(), this.width / 2 - 30, yPos);
-        this.btnCosmetics = new ImageButton("COSMETICS", new ResourceLocation("fdpclient/gui/cosmetics.png"), this.width / 2 - 15, yPos);
-        this.btnMinecraftOptions = new ImageButton("MINECRAFT SETTINGS", new ResourceLocation("fdpclient/gui/cog.png"), this.width / 2, yPos);
-        this.btnLanguage = new ImageButton("LANGUAGE", new ResourceLocation("fdpclient/gui/globe.png"), this.width / 2 + 15, yPos);
-        this.btnForgeModList = new ImageButton("FORGE MODS", new ResourceLocation("fdpclient/gui/forge.png"), this.width / 2 + 30, yPos);
+        this.btnClientOptions = new ImageButton("SETTINGS", new ResourceLocation("fdpclient/gui/design/logo.png"), this.width / 2 - 30, yPos);
+        this.btnCosmetics = new ImageButton("COSMETICS", new ResourceLocation("fdpclient/gui/icons/cosmetics.png"), this.width / 2 - 15, yPos);
+        this.btnMinecraftOptions = new ImageButton("MINECRAFT SETTINGS", new ResourceLocation("fdpclient/gui/icons/cog.png"), this.width / 2, yPos);
+        this.btnLanguage = new ImageButton("LANGUAGE", new ResourceLocation("fdpclient/gui/icons/globe.png"), this.width / 2 + 15, yPos);
+        this.btnForgeModList = new ImageButton("FORGE MODS", new ResourceLocation("fdpclient/gui/icons/forge.png"), this.width / 2 + 30, yPos);
 
-        this.btnAddAccount = new ImageButton("LOGIN", new ResourceLocation("fdpclient/gui/add-account.png"), 10, 10);
-        this.btnDiscord = new ImageButton("DISCORD", new ResourceLocation("fdpclient/gui/discord.png"), 20, 5);
-        this.btnWebsite = new ImageButton("WEBSITE", new ResourceLocation("fdpclient/gui/lighting.png"), 25, 5);
+        this.btnAddAccount = new ImageButton("LOGIN", new ResourceLocation("fdpclient/gui/icons/add-account.png"), 10, 10);
+        this.btnDiscord = new ImageButton("DISCORD", new ResourceLocation("fdpclient/gui/icons/discord.png"), 20, 5);
+        this.btnWebsite = new ImageButton("WEBSITE", new ResourceLocation("fdpclient/gui/icons/lighting.png"), 25, 5);
 
         this.btnQuit = new QuitButton(this.width - 17, 7);
     }

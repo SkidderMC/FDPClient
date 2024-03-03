@@ -4,8 +4,6 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils
-
-import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
@@ -15,21 +13,22 @@ import net.minecraft.client.shader.Framebuffer
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import net.minecraft.client.renderer.GlStateManager.resetColor
+import net.minecraft.client.renderer.GlStateManager.disableLighting
+import net.minecraft.client.renderer.GlStateManager.disableFog
+import net.minecraft.client.renderer.GlStateManager.disableDepth
+import net.minecraft.client.renderer.GlStateManager.enableTexture2D
 
 object SplashProgress {
     private const val MAX = 4
 
-    var width: Int = 0
-
-    var height: Int = 0
-    private var progress = 0
-    private var currentText = ""
+    var progress = 0
+    var currentText = ""
     private var splash: ResourceLocation? = null
-
     private var renderProgress = 0
 
     fun update() {
-        if (Minecraft.getMinecraft() == null || MinecraftInstance.mc.languageManager == null) {
+        if (Minecraft.getMinecraft().languageManager == null) {
             return
         }
 
@@ -49,8 +48,8 @@ object SplashProgress {
     }
 
     fun drawSplash() {
-        val mc = MinecraftInstance.mc ?: return
-        val textureManager = mc.textureManager ?: return
+        val mc = Minecraft.getMinecraft()
+        val textureManager = mc.textureManager
 
         val scaledResolution = ScaledResolution(mc)
         val scaleFactor = scaledResolution.scaleFactor
@@ -64,23 +63,22 @@ object SplashProgress {
         GlStateManager.matrixMode(GL11.GL_MODELVIEW)
         GlStateManager.loadIdentity()
         GlStateManager.translate(0.0f, 0.0f, -2000.0f)
-        GlStateManager.disableLighting()
-        GlStateManager.disableFog()
-        GlStateManager.disableDepth()
-        GlStateManager.enableTexture2D()
+        disableLighting()
+        disableFog()
+        disableDepth()
+        enableTexture2D()
 
         if (splash == null) {
-            splash = ResourceLocation("fdpclient/misc/splash.png")
+            splash = ResourceLocation("fdpclient/gui/design/splash.png")
         }
 
         if (!textureManager.loadTexture(splash, SimpleTexture(splash))) {
-
             return
         }
 
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureManager.getTexture(splash).glTextureId)
 
-        GlStateManager.resetColor()
+        resetColor()
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
 
         Gui.drawScaledCustomSizeModalRect(
@@ -105,13 +103,13 @@ object SplashProgress {
         mc.updateDisplay()
     }
 
-
     private fun drawProgress() {
-        if (MinecraftInstance.mc.gameSettings == null || MinecraftInstance.mc.textureManager == null) {
+        val mc = Minecraft.getMinecraft()
+        if (mc.gameSettings == null || mc.textureManager == null) {
             return
         }
 
-        val scaledResolution = ScaledResolution(MinecraftInstance.mc)
+        val scaledResolution = ScaledResolution(mc)
 
         val nProgress = progress.toDouble()
         val calculation = (nProgress / MAX) * scaledResolution.scaledWidth
@@ -126,23 +124,22 @@ object SplashProgress {
             Color(0, 0, 0, 50).rgb
         )
 
-        GlStateManager.resetColor()
+        resetColor()
 
-        FontLoaders.Roboto.drawString(
+        mc.fontRendererObj.drawString(
             currentText,
-            20f,
-            (scaledResolution.scaledHeight - 20).toFloat(),
+            20,
+            scaledResolution.scaledHeight - 20,
             Color(255, 255, 255).rgb
         )
 
-        val indexText = progress.toString() + "/" + MAX
-        FontLoaders.Roboto.drawString(
+        val indexText = "$progress/$MAX"
+        mc.fontRendererObj.drawString(
             indexText,
-            (scaledResolution.scaledWidth - 20 - FontLoaders.Roboto.getStringWidth(indexText)).toFloat(),
-            (scaledResolution.scaledWidth - 25).toFloat(),
+            (scaledResolution.scaledWidth - 20 - mc.fontRendererObj.getStringWidth(indexText)),
+            (scaledResolution.scaledHeight - 25),
             Color(254, 228, 1).rgb
         )
-        GlStateManager.resetColor()
 
         Gui.drawRect(
             0,

@@ -2,10 +2,9 @@ package net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer;
 
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
-import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.IconManager;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.element.CategoryElement;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.element.SearchElement;
-import net.ccbluex.liquidbounce.ui.client.gui.newVer.element.module.ModuleElement;
+import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.element.module.ModuleElement;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MouseUtils;
 import net.ccbluex.liquidbounce.utils.AnimationUtils;

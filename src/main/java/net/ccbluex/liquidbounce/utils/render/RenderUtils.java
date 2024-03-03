@@ -865,7 +865,7 @@ public final class RenderUtils extends MinecraftInstance {
         final boolean disableAlpha = !glIsEnabled(GL_ALPHA_TEST);
         if (!enableBlend) glEnable(GL_BLEND);
         if (!disableAlpha) glDisable(GL_ALPHA_TEST);
-        mc.getTextureManager().bindTexture(new ResourceLocation("fdpclient/ui/shadow/" + image + ".png"));
+        mc.getTextureManager().bindTexture(new ResourceLocation("fdpclient/shader/shadow/" + image + ".png"));
         GlStateManager.color(1F, 1F, 1F, 1F);
         RenderUtils.drawModalRectWithCustomSizedTexture(x, y, 0, 0, width, height, width, height);
         if (!enableBlend) glDisable(GL_BLEND);

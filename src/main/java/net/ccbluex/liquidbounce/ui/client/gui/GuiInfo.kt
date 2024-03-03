@@ -35,7 +35,7 @@ class GuiInfo(private val prevGui: GuiScreen) : GuiScreen() {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
-        RenderUtils.drawImage(ResourceLocation("fdpclient/background.png"), 0, 0, width, height)
+        RenderUtils.drawImage(ResourceLocation("fdpclient/gui/design/background.png"), 0, 0, width, height)
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 

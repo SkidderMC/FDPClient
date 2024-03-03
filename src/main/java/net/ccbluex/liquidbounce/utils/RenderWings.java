@@ -27,7 +27,7 @@ public class RenderWings extends ModelBase {
     String WingMode = Wings.getWingStyle().get();
 
     public RenderWings() {
-        if(WingMode.equals("Dragon")) { this.location = new ResourceLocation("fdpclient/wings/DragonWings.png"); } else if(WingMode.equals("Simple")) { this.location = new ResourceLocation("fdpclient/wings/NeonWings.png"); }
+        if(WingMode.equals("Dragon")) { this.location = new ResourceLocation("fdpclient/cosmetic/wings/DragonWings.png"); } else if(WingMode.equals("Simple")) { this.location = new ResourceLocation("fdpclient/cosmetic/wings/NeonWings.png"); }
         this.playerUsesFullHeight = true;
         this.setTextureOffset("wing.bone", 0, 0);
         this.setTextureOffset("wing.skin", -10, 8);

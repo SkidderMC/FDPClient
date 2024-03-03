@@ -135,7 +135,7 @@ public abstract class MixinGuiScreen {
         GlStateManager.disableFog();
 
         RenderUtils.drawImage(
-                new ResourceLocation("fdpclient/background.png"), 0, 0,
+                new ResourceLocation("fdpclient/gui/design/background.png"), 0, 0,
                 width, height
         );
 

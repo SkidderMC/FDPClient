@@ -67,7 +67,7 @@ object shadowRenderUtils {
         if (!enableBlend) glEnable(GL_BLEND)
         if (!disableAlpha) glDisable(GL_ALPHA_TEST)
         GlStateManager.color(1f, 1f, 1f, alpha)
-        Minecraft.getMinecraft().textureManager.bindTexture(ResourceLocation("fdpclient/ui/shadow/$image.png"))
+        Minecraft.getMinecraft().textureManager.bindTexture(ResourceLocation("fdpclient/shader/shadow/$image.png"))
         drawModalRectWithCustomSizedTexture(
             x,
             y,
@@ -90,7 +90,7 @@ object shadowRenderUtils {
         val disableAlpha = !glIsEnabled(GL_ALPHA_TEST)
         if (!enableBlend) glEnable(GL_BLEND)
         if (!disableAlpha) glDisable(GL_ALPHA_TEST)
-        Minecraft.getMinecraft().textureManager.bindTexture(ResourceLocation("fdpclient/ui/shadow/$image.png"))
+        Minecraft.getMinecraft().textureManager.bindTexture(ResourceLocation("fdpclient/shader/shadow/$image.png"))
         GlStateManager.color(1f, 1f, 1f, 1f)
         drawModalRectWithCustomSizedTexture(
             x,

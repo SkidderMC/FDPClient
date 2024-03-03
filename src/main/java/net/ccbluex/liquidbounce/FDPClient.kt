@@ -42,7 +42,6 @@ object FDPClient {
 
     // Client information
     const val CLIENT_NAME = "FDPClient"
-    val CLIENT_LOGO  = ResourceLocation("fdpclient/misc/logo.png")
     const val COLORED_NAME = "§7[§b§lFDPClient§7] "
     const val CLIENT_DEV = "Zywl, 1zuna, Yuugiri, Dg636, gatodepan, DinoFeng, Co`Dynamic. by (SkidderMC & CCBlueX - TEAM)"
     const val CLIENT_WEBSITE = "https://fdpinfo.github.io"
@@ -87,7 +86,7 @@ object FDPClient {
     lateinit var clientRichPresence: DiscordRPC
 
     // Menu Background
-    var background: ResourceLocation? = ResourceLocation("fdpclient/background.png")
+    var background: ResourceLocation? = ResourceLocation("fdpclient/gui/design/background.png")
 
     val launchFilters = mutableListOf<EnumLaunchFilter>()
     private val dynamicLaunchOptions: Array<LaunchOption>

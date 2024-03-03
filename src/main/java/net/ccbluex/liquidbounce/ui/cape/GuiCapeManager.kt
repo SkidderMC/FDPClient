@@ -33,7 +33,7 @@ object GuiCapeManager : GuiScreen() {
     init {
         arrayOf("classic", "classic2", "aurora", "forest", "rose", "lavender", "ocean", "modern1", "modern2", "lava", "citrus", "fire", "owner").forEach {
             try {
-                embeddedCapes.add(loadCapeFromResource(it, "assets/minecraft/fdpclient/cape/$it.png"))
+                embeddedCapes.add(loadCapeFromResource(it, "assets/minecraft/fdpclient/cosmetic/cape/$it.png"))
             } catch (e: Throwable) {
                 System.err.println("Failed to load cape '$it'")
                 e.printStackTrace()
