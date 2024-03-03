@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.clickgui.elements;
 
-import net.ccbluex.liquidbounce.ui.client.gui.options.modernuiLaunchOption;
+import net.ccbluex.liquidbounce.ui.gui.options.modernuiLaunchOption;
 
 public class ButtonElement extends Element {
 

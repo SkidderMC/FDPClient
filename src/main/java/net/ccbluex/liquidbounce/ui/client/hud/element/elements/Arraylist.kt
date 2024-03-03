@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
@@ -19,7 +19,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Horizontal
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Vertical
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.AnimationUtils
 import net.ccbluex.liquidbounce.utils.render.*
 import net.minecraft.client.renderer.GlStateManager

@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.visual.PlayerEdit;
 import net.ccbluex.liquidbounce.features.module.modules.visual.*;
-import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme;
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;

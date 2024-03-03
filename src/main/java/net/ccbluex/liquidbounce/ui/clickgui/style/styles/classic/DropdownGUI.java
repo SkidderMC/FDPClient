@@ -26,7 +26,7 @@ public class DropdownGUI extends GuiScreen {
     private final List<Tab> tabs = new CopyOnWriteArrayList<>();
     private int dragX;
     private int dragY;
-    private final ResourceLocation hudIcon = new ResourceLocation("fdpclient/ui/clickgui/hud.png");
+    private final ResourceLocation hudIcon = new ResourceLocation("fdpclient/gui/design/hud.png");
 
     @Override
     public void initGui() {

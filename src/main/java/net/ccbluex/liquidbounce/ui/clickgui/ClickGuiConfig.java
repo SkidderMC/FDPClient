@@ -8,7 +8,7 @@ import net.ccbluex.liquidbounce.config.FileConfig;
 import net.ccbluex.liquidbounce.config.FileManager;
 import net.ccbluex.liquidbounce.ui.clickgui.elements.Element;
 import net.ccbluex.liquidbounce.ui.clickgui.elements.ModuleElement;
-import net.ccbluex.liquidbounce.ui.client.gui.options.modernuiLaunchOption;
+import net.ccbluex.liquidbounce.ui.gui.options.modernuiLaunchOption;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 
 import java.io.File;

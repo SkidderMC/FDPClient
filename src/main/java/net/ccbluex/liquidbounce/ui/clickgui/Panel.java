@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.ui.clickgui;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.ui.clickgui.elements.Element;
-import net.ccbluex.liquidbounce.ui.client.gui.options.modernuiLaunchOption;
+import net.ccbluex.liquidbounce.ui.gui.options.modernuiLaunchOption;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.util.ResourceLocation;

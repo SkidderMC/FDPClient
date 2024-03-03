@@ -114,7 +114,7 @@ public class LightClickGUI extends GuiScreen implements GuiYesNoCallback {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         // yes hud designer here
-        RenderUtils.drawImage(new ResourceLocation( "fdpclient/ui/clickgui/hud.png"), 9, height - 41, 32, 32);
+        RenderUtils.drawImage(new ResourceLocation( "fdpclient/gui/design/hud.png"), 9, height - 41, 32, 32);
 
         // set up bool animations?
         if(!firstSetAnimation) {

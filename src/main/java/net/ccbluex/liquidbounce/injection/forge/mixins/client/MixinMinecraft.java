@@ -11,15 +11,14 @@ import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.player.DelayRemover;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
+import net.ccbluex.liquidbounce.handler.protocol.api.AttackFixer;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.injection.forge.mixins.accessors.MinecraftForgeClientAccessor;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolMod;
-import net.ccbluex.liquidbounce.handler.protocol.api.AttackFixer;
 import net.ccbluex.liquidbounce.utils.*;
 import net.ccbluex.liquidbounce.utils.CPSCounterUtils;
 import net.ccbluex.liquidbounce.utils.render.IconUtils;
-import net.ccbluex.liquidbounce.utils.render.ImageUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.LoadingScreenRenderer;
@@ -54,10 +53,7 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import java.awt.image.BufferedImage;
-import java.nio.ByteBuffer;
 import java.util.Objects;
 
 @Mixin(Minecraft.class)

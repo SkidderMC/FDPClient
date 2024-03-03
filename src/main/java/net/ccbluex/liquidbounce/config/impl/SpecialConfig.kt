@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.config.FileConfig
 import net.ccbluex.liquidbounce.config.FileManager
 import net.ccbluex.liquidbounce.handler.network.AutoReconnect
 import net.ccbluex.liquidbounce.handler.network.ClientFixes
-import net.ccbluex.liquidbounce.ui.altmanager.GuiAltManager
+import net.ccbluex.liquidbounce.ui.gui.altmanager.GuiAltManager
 import java.io.File
 class SpecialConfig(file: File) : FileConfig(file) {
     private var useGlyphFontRenderer = true

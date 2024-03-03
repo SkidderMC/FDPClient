@@ -1,6 +1,11 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.handler.protocol.api;
 
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
+import net.raphimc.vialoader.util.VersionEnum;
 
 public interface VFNetworkManager {
 
@@ -9,13 +14,13 @@ public interface VFNetworkManager {
     /**
      * @return the target version of the connection
      */
-    ProtocolVersion viaForge$getTrackedVersion();
+    VersionEnum viaForge$getTrackedVersion();
 
     /**
      * Sets the target version of the connection.
      *
      * @param version the target version
      */
-    void viaForge$setTrackedVersion(final ProtocolVersion version);
+    void viaForge$setTrackedVersion(final VersionEnum version);
 
 }

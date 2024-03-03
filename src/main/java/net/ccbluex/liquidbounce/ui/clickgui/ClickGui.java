@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.ui.clickgui.elements.Element;
 import net.ccbluex.liquidbounce.ui.clickgui.elements.ModuleElement;
 import net.ccbluex.liquidbounce.ui.clickgui.style.Style;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.BlackStyle;
-import net.ccbluex.liquidbounce.ui.client.gui.options.modernuiLaunchOption;
+import net.ccbluex.liquidbounce.ui.gui.options.modernuiLaunchOption;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.renderer.GlStateManager;

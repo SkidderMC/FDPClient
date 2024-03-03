@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic.DropdownGUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.light.LightClickGUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.novoline.ClickyUI
-import net.ccbluex.liquidbounce.ui.client.gui.options.modernuiLaunchOption
+import net.ccbluex.liquidbounce.ui.gui.options.modernuiLaunchOption
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue

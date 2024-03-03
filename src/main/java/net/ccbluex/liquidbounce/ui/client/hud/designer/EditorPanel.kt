@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
-import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.minecraft.client.gui.Gui
 import net.minecraft.util.MathHelper
 import org.lwjgl.input.Mouse

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
-import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo

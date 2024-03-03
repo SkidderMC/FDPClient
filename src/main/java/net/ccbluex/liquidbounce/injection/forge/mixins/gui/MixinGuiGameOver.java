@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.ui.client.gui.GuiMainMenu;
+import net.ccbluex.liquidbounce.ui.gui.menu.GuiMainMenu;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiGameOver;
 import net.minecraft.client.gui.GuiYesNo;

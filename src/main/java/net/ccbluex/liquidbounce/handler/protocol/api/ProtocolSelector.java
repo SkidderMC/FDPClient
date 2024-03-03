@@ -1,12 +1,17 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.handler.protocol.api;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSlot;
+import net.raphimc.vialoader.util.VersionEnum;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
@@ -74,12 +79,12 @@ public class ProtocolSelector extends GuiScreen {
 
         @Override
         protected int getSize() {
-            return ProtocolVersion.getProtocols().size();
+            return VersionEnum.SORTED_VERSIONS.size();
         }
 
         @Override
         protected void elementClicked(int index, boolean b, int i1, int i2) {
-            finishedCallback.finished(ProtocolVersion.getProtocol(index), parent);
+            finishedCallback.finished(VersionEnum.SORTED_VERSIONS.get(index), parent);
         }
 
         @Override
@@ -94,8 +99,8 @@ public class ProtocolSelector extends GuiScreen {
 
         @Override
         protected void drawSlot(int index, int x, int y, int slotHeight, int mouseX, int mouseY) {
-            final ProtocolVersion targetVersion = ProtocolBase.getManager().getTargetVersion();
-            final ProtocolVersion version = ProtocolVersion.getProtocol(index);
+            final VersionEnum targetVersion = ProtocolBase.getManager().getTargetVersion();
+            final VersionEnum version = VersionEnum.SORTED_VERSIONS.get(index);
 
             String color;
             if (targetVersion == version) {
@@ -110,7 +115,7 @@ public class ProtocolSelector extends GuiScreen {
 
     public interface FinishedCallback {
 
-        void finished(final ProtocolVersion version, final GuiScreen parent);
+        void finished(final VersionEnum version, final GuiScreen parent);
 
     }
 

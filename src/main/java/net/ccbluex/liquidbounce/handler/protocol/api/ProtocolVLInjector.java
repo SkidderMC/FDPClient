@@ -1,21 +1,23 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.handler.protocol.api;
 
-
 import net.raphimc.vialoader.impl.viaversion.VLInjector;
+import net.raphimc.vialoader.netty.VLLegacyPipeline;
 
 public class ProtocolVLInjector extends VLInjector {
 
+    @Override
     public String getDecoderName() {
-        return "via-decoder";
+        return VLLegacyPipeline.VIA_DECODER_NAME;
     }
 
     @Override
-    public boolean lateProtocolVersionSetting() {
-        return super.lateProtocolVersionSetting();
-    }
-
     public String getEncoderName() {
-        return "via-encoder";
+        return VLLegacyPipeline.VIA_ENCODER_NAME;
     }
 
 }

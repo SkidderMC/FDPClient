@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.ui.font.Fonts

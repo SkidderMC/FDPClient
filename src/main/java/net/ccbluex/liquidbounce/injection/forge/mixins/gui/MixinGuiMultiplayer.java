@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolSelector;
-import net.ccbluex.liquidbounce.ui.altmanager.GuiAltManager;
+import net.ccbluex.liquidbounce.ui.gui.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.ui.elements.ToolDropdown;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;

@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.ui.clickgui.elements;
 
 import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.ui.client.gui.options.modernuiLaunchOption;
+import net.ccbluex.liquidbounce.ui.gui.options.modernuiLaunchOption;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;

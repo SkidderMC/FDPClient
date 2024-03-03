@@ -11,8 +11,7 @@ import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue

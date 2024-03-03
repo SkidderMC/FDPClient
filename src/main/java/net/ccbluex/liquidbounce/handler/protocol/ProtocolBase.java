@@ -1,7 +1,11 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.handler.protocol;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import com.viaversion.viaversion.connection.UserConnectionImpl;
 import com.viaversion.viaversion.protocol.ProtocolPipelineImpl;
 import io.netty.channel.Channel;
@@ -11,10 +15,11 @@ import net.ccbluex.liquidbounce.handler.protocol.api.*;
 import net.raphimc.vialoader.ViaLoader;
 import net.raphimc.vialoader.impl.platform.*;
 import net.raphimc.vialoader.netty.CompressionReorderEvent;
+import net.raphimc.vialoader.util.VersionEnum;
 
 public class ProtocolBase {
 
-    private ProtocolVersion targetVersion = ProtocolVersion.v1_8;
+    private VersionEnum targetVersion = VersionEnum.r1_8;
     public static final AttributeKey<UserConnection> LOCAL_VIA_USER = AttributeKey.valueOf("local_via_user");
     public static final AttributeKey<VFNetworkManager> VF_NETWORK_MANAGER = AttributeKey.valueOf("encryption_setup");
     private final VFPlatform platform;
@@ -29,8 +34,8 @@ public class ProtocolBase {
             return;
         }
 
-        final ProtocolVersion version = ProtocolVersion.getProtocol(platform.getGameVersion());
-        if (version == ProtocolVersion.unknown) {
+        final VersionEnum version = VersionEnum.fromProtocolId(platform.getGameVersion());
+        if (version == VersionEnum.UNKNOWN) {
             throw new IllegalArgumentException("Unknown Version " + platform.getGameVersion());
         }
 
@@ -51,15 +56,15 @@ public class ProtocolBase {
         }
     }
 
-    public ProtocolVersion getTargetVersion() {
+    public VersionEnum getTargetVersion() {
         return targetVersion;
     }
 
-    public void setTargetVersionSilent(final ProtocolVersion targetVersion) {
+    public void setTargetVersionSilent(final VersionEnum targetVersion) {
         this.targetVersion = targetVersion;
     }
 
-    public void setTargetVersion(final ProtocolVersion targetVersion) {
+    public void setTargetVersion(final VersionEnum targetVersion) {
         this.targetVersion = targetVersion;
     }
 

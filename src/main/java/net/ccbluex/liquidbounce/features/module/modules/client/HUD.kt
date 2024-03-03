@@ -13,8 +13,8 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.visual.CustomClientColor
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi
-import net.ccbluex.liquidbounce.ui.client.gui.GuiTeleportation
-import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
+import net.ccbluex.liquidbounce.ui.gui.menu.GuiTeleportation
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils.getPing
@@ -25,7 +25,6 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.width
 import net.ccbluex.liquidbounce.utils.render.ShadowUtils.shadow
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui

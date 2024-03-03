@@ -6,9 +6,8 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.ui.client.gui.GuiTeleportation;
-import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme;
-import net.ccbluex.liquidbounce.ui.client.gui.colortheme.GuiTheme;
+import net.ccbluex.liquidbounce.ui.gui.menu.GuiTeleportation;
+import net.ccbluex.liquidbounce.ui.gui.colortheme.GuiTheme;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.ServerUtils;
 import net.minecraft.client.gui.GuiButton;

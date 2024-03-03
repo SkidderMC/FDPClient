@@ -14,9 +14,6 @@ import net.ccbluex.liquidbounce.features.module.modules.exploit.AntiDesync;
 import net.ccbluex.liquidbounce.features.module.modules.movement.*;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
-import net.ccbluex.liquidbounce.ui.clickgui.ClickGui;
-import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi;
-import net.ccbluex.liquidbounce.ui.client.gui.GuiTeleportation;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
@@ -29,7 +26,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.network.NetHandlerPlayClient;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
@@ -40,6 +36,7 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
+import net.raphimc.vialoader.util.VersionEnum;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -193,7 +190,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     @Redirect(method = "onUpdateWalkingPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/NetHandlerPlayClient;addToSendQueue(Lnet/minecraft/network/Packet;)V", ordinal = 7))
     public void emulateIdlePacket(NetHandlerPlayClient instance, Packet p_addToSendQueue_1_) {
-        if (ProtocolBase.getManager().getTargetVersion().newerThan(ProtocolVersion.v1_8) && !MinecraftInstance.mc.isIntegratedServerRunning()) {
+        if (ProtocolBase.getManager().getTargetVersion().isNewerThan(VersionEnum.r1_8) && !MinecraftInstance.mc.isIntegratedServerRunning()) {
             if (this.viaForge$prevOnGround == this.onGround) {
                 return;
             }

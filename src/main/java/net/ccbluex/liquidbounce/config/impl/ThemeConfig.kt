@@ -9,7 +9,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.config.FileConfig
 import net.ccbluex.liquidbounce.config.FileManager
-import net.ccbluex.liquidbounce.ui.client.gui.colortheme.ClientTheme
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import java.io.File
 
 class ThemeConfig(file: File) : FileConfig(file) {
