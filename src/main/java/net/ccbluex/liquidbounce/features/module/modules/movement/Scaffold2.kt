@@ -180,13 +180,13 @@ object Scaffold2 : Module() {
 
                 if (rpitch == 78.7) {
                     playerRot = Rotation(camYaw - 135, rpitch.toFloat())
+                    correctControls(3)
                 } else {
                     playerRot = Rotation(camYaw - 180, rpitch.toFloat())
+                    correctControls(1)
                 }
 
                 lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 90f)
-
-                correctControls(3)
 
                 mc.gameSettings.keyBindSneak.pressed = (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) || mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).block == Blocks.air)
             }
