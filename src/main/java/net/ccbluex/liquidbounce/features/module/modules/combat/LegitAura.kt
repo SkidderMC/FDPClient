@@ -81,8 +81,7 @@ object LegitAura : Module() {
     private val blockMarkExpandValue = FloatValue("BlockExpand", 0f, 0.5f, 1f).displayable { markValue.equals("Block") || markValue.equals("OtherBlock") }
 
 
-    private var currentTarget: EntityLivingBase = mc.thePlayer
-    private var entity: EntityLivingBase = mc.thePlayer
+    private var currentTarget: EntityLivingBase? = null
 
 
     private var advancedAimPointX = 0f
@@ -133,9 +132,8 @@ object LegitAura : Module() {
             }
         }
 
-        currentTarget = discoveredTargets.getOrNull(0)!! ?: return
-
-        val entity = currentTarget!!
+        val entity = currentTarget?: inRangeDiscoveredTargets.getOrNull(0)?: return as EntityLivingBase
+        currentTarget = entity as EntityLivingBase?
 
         if (rotationMode.equals("Advanced")) {
             entity.hitBox.offset((entity.posX - entity.lastTickPosX) * 1.4f,
@@ -157,11 +155,11 @@ object LegitAura : Module() {
 
 
         // ka rot
-        killauraRotations(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch))
+        killauraRotations(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), entity)
 
     }
 
-    private fun killauraRotations(playerRot: Rotation) {
+    private fun killauraRotations(playerRot: Rotation, entity: EntityLivingBase) {
         playerRotation = Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
 
         when (rotationMode.get().lowercase()) {
