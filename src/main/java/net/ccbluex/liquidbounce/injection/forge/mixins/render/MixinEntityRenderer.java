@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.client.HurtCam;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;
+import net.ccbluex.liquidbounce.features.module.modules.combat.LegitAura;
 import net.ccbluex.liquidbounce.features.module.modules.visual.Ambience;
 import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Reach;
@@ -192,8 +193,10 @@ public abstract class MixinEntityRenderer {
             this.mc.pointedEntity = null;
 
             final Reach reach = Objects.requireNonNull(FDPClient.moduleManager.getModule(Reach.class));
+            final LegitAura legitAura = Objects.requireNonNull(FDPClient.moduleManager.getModule(LegitAura.class));
 
-            double d0 = reach.getState() ? reach.getMaxRange() : this.mc.playerController.getBlockReachDistance();
+            double d0 = reach.getState() ? reach.getMaxRange() : legitAura.getState() ? legitAura.getHitRange().get().doubleValue() : mc.playerController.getBlockReachDistance();
+
             this.mc.objectMouseOver = entity.rayTrace(d0, partialTicks);
             double d1 = d0;
             Vec3 vec3 = entity.getPositionEyes(partialTicks);
