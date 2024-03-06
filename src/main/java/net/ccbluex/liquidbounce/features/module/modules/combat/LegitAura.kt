@@ -105,7 +105,7 @@ object LegitAura : Module() {
 
     private val discoveredTargets = mutableListOf<EntityLivingBase>()
     private val inRangeDiscoveredTargets = mutableListOf<EntityLivingBase>()
-
+    private val autoblockRangeTargets = mutableListOf<EntityLivingBase>()
 
     // clicker
     private var leftDelay = 50L
@@ -116,7 +116,7 @@ object LegitAura : Module() {
     }
 
     val displayBlocking: Boolean
-        get() = !autoblockMode.equals("None") && discoveredTargets.isNotEmpty() && mc.thePlayer.getDistanceToEntityBox(currentTarget) <= autoblockRange.get()
+        get() = !autoblockMode.equals("None") && autoblockRangeTargets.isNotEmpty()
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -278,23 +278,23 @@ object LegitAura : Module() {
         // autoblock
         when (autoblockMode.get().lowercase()) {
             "always" -> {
-                if (swingDiff >= leftDelay * 0.1 && swingDiff <= leftDelay * 0.7 ) {
+                if (swingDiff >= leftDelay * 0.1 && swingDiff <= leftDelay * 0.7) {
                     mc.gameSettings.keyBindUseItem.pressed = true
                 }
             }
+
             "smart" -> {
                 if (swingDiff >= leftDelay * 0.1 && swingDiff <= leftDelay * 0.6 && mc.thePlayer.hurtTime <= 3) {
                     mc.gameSettings.keyBindUseItem.pressed = true
                 }
             }
+
             "spam", "blink" -> {
                 mc.gameSettings.keyBindUseItem.pressed = mc.thePlayer.ticksExisted % 2 == 0
             }
+
             else -> null
         }
-
-
-
 
         discoveredTargets.forEach {
             when (markValue.get().lowercase()) {
@@ -450,6 +450,9 @@ object LegitAura : Module() {
 
         inRangeDiscoveredTargets.clear()
         inRangeDiscoveredTargets.addAll(discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it) < swingRange.get()})
+
+        autoblockRangeTargets.clear()
+        autoblockRangeTargets.addAll(discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it) < autoblockRange.get()})
     }
 }
     
