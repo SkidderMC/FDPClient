@@ -26,7 +26,7 @@ jobs:
         run: |
           cd build/libs
           export JAR=$(find . -regex '.*FDPClient-[0-9|.]*\.jar')
-          export C_VERSION=$(echo $JAR | sed -r 's/.*\/FDPClient-([a-zA-Z][0-9]+)\.jar/\1/')
+          export C_VERSION=$(echo $JAR | sed -r 's/\.\/FDPClient-([0-9|.]+)\.jar/\1/')
           export MINECRAFT_VERSION='1.8.9'
           echo Client Version: $C_VERSION, Minecraft: $MINECRAFT_VERSION
           zip -r fdpclient.zip $JAR
