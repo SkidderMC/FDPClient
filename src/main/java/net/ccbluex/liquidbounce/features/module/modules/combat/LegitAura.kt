@@ -11,9 +11,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.event.StrafeEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.Rotation
@@ -129,11 +127,8 @@ object LegitAura : Module() {
 
         updateTarget()
         if (discoveredTargets.isEmpty()) {
-            if (FreeLook.isEnabled) {
-                mc.thePlayer.rotationYaw = FreeLook.cameraYaw
-                mc.thePlayer.rotationPitch = FreeLook.cameraPitch
-                FDPClient.moduleManager[FreeLook::class.java]!!.disable()
-            }
+            mc.thePlayer.rotationYaw = FreeLook.cameraYaw
+            mc.thePlayer.rotationPitch = FreeLook.cameraPitch
             currentTarget = null
             return
         } else {
@@ -172,16 +167,6 @@ object LegitAura : Module() {
         // ka rot
         killauraRotations(entity)
 
-    }
-
-    @EventTarget
-    fun onStrafe(event: StrafeEvent) {
-        // strafe fix
-        if (!FreeLook.isEnabled) return
-        RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw + (mc.thePlayer.rotationYaw - FreeLook.cameraYaw), mc.thePlayer.rotationPitch))
-        FDPClient.moduleManager[StrafeFix::class.java]!!.runStrafeFixLoop(true, event)
-        event.cancelEvent()
-        RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch))
     }
 
     private fun killauraRotations(entity: EntityLivingBase) {
@@ -231,18 +216,18 @@ object LegitAura : Module() {
 
                 aimRotation = RotationUtils.calculateCenter("CenterLine", "Horizontal", 0.05, entity.hitBox, true, true).rotation
                 rotationDistance = RotationUtils.getRotationDifference(playerRotation,  aimRotation).toFloat()
-                rotationLimit = (rotationLimit + applySmoothing(rotationDistance.toDouble(), "quad").toFloat()) / 3.2f
+                rotationLimit = (rotationLimit + applySmoothing(rotationDistance.toDouble()/1.5, "quad").toFloat()) / 3.2f
 
                 advancedAimVelo += rotationLimit + RandomUtils.nextFloat(-3f, 2f)
-                advancedAimVelo *= 0.65f
+                advancedAimVelo *= 0.6f
 
                 aimRotation = RotationUtils.calculateCenter("HeadRange", "Horizontal", 0.05, entity.hitBox, false, true).rotation
-                targetRotation = RotationUtils.limitAngleChange(playerRotation, aimRotation, advancedAimVelo * 0.6f )
+                targetRotation = RotationUtils.limitAngleChange(playerRotation, aimRotation, advancedAimVelo * 0.3f )
                 aimRotation = RotationUtils.calculateCenter("CenterDot", "Horizontal", 0.05, entity.hitBox, false, true).rotation
                 targetRotation = RotationUtils.limitAngleChange(targetRotation, aimRotation, advancedAimVelo * 0.6f )
 
                 if (RotationUtils.getRotationDifference(advancedAimSlowRot,  targetRotation).toFloat() > 85f) {
-                    advancedAimVelo *= 0.2f
+                    advancedAimVelo *= 0.3f
                     advancedAimSlowRot = targetRotation
                 }
             }
