@@ -264,6 +264,26 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
                 yMin = 0.10D; yMax = 0.90D;
                 zMin = 0.45D; zMax = 0.55D; zDist = 0.0125D;
                 break;
+            case "CenterLarge":
+                xMin = 0.30D; xMax = 0.70D; xDist = 0.1D;
+                yMin = 0.20D; yMax = 0.80D; yDist = 0.1D;
+                zMin = 0.30D; zMax = 0.705D; zDist = 0.1D;
+                break;
+            case "CenterDot":
+                xMin = 0.48D; xMax = 0.52D; xDist = 0.005D;
+                yMin = 0.58D; yMax = 0.62D; yDist = 0.005D;
+                zMin = 0.48D; zMax = 0.52D; zDist = 0.005D;
+                break;
+            case "MidRange":
+                xMin = 0.20D; xMax = 0.80D; xDist = 0.1D;
+                yMin = 0.40D; yMax = 0.60D; yDist = 0.0125D;
+                zMin = 0.20D; zMax = 0.80D; zDist = 0.1D;
+                break;
+            case "HeadRange":
+                xMin = 0.20D; xMax = 0.80D; xDist = 0.1D;
+                yMin = 0.55D; yMax = 0.80D; yDist = 0.0125D;
+                zMin = 0.20D; zMax = 0.80D; zDist = 0.1D;
+                break;
         }
 
         for(double xSearch = xMin; xSearch < xMax; xSearch += xDist) {

@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.Rotation
@@ -113,6 +114,7 @@ object LegitAura : Module() {
 
     override fun onDisable() {
         FDPClient.moduleManager[FreeLook::class.java]!!.disable()
+        autoblockRangeTargets.clear()
     }
 
     val displayBlocking: Boolean
@@ -126,6 +128,8 @@ object LegitAura : Module() {
             mc.thePlayer.rotationYaw = FreeLook.cameraYaw
             mc.thePlayer.rotationPitch = FreeLook.cameraPitch
             FDPClient.moduleManager[FreeLook::class.java]!!.disable()
+            currentTarget = null
+            return
         } else {
             if (!FreeLook.isEnabled) {
                 FDPClient.moduleManager[FreeLook::class.java]!!.enable()
@@ -157,6 +161,10 @@ object LegitAura : Module() {
         // ka rot
         killauraRotations(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), entity)
 
+        // strafe fix
+        RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw + (mc.thePlayer.rotationYaw - FreeLook.cameraYaw), mc.thePlayer.rotationPitch))
+        FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(true, true)
+        RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch))
     }
 
     private fun killauraRotations(playerRot: Rotation, entity: EntityLivingBase) {
@@ -244,6 +252,7 @@ object LegitAura : Module() {
         } else if (mc.thePlayer.rotationPitch < -90) {
             mc.thePlayer.rotationPitch = -90F
         }
+
     }
 
     private fun applySmoothing(diffAngle: Double, mode: String): Double {
@@ -263,39 +272,6 @@ object LegitAura : Module() {
 
     @EventTarget
     fun on3DRender(event: Render3DEvent) {
-        val swingDiff = System.currentTimeMillis() - leftLastSwing
-
-        if (inRangeDiscoveredTargets.isEmpty()) return
-        // clicker
-        if (swingDiff >= leftDelay && mc.playerController.curBlockDamageMP == 0F) {
-            KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode)
-            leftLastSwing = System.currentTimeMillis()
-            leftDelay = TimeUtils.randomClickDelay(minCpsValue.get(), maxCpsValue.get()).toLong()
-        }
-
-        mc.gameSettings.keyBindUseItem.pressed = false
-
-        // autoblock
-        when (autoblockMode.get().lowercase()) {
-            "always" -> {
-                if (swingDiff >= leftDelay * 0.1 && swingDiff <= leftDelay * 0.7) {
-                    mc.gameSettings.keyBindUseItem.pressed = true
-                }
-            }
-
-            "smart" -> {
-                if (swingDiff >= leftDelay * 0.1 && swingDiff <= leftDelay * 0.6 && mc.thePlayer.hurtTime <= 3) {
-                    mc.gameSettings.keyBindUseItem.pressed = true
-                }
-            }
-
-            "spam", "blink" -> {
-                mc.gameSettings.keyBindUseItem.pressed = mc.thePlayer.ticksExisted % 2 == 0
-            }
-
-            else -> null
-        }
-
         discoveredTargets.forEach {
             when (markValue.get().lowercase()) {
                 "liquid" -> {
@@ -414,6 +390,41 @@ object LegitAura : Module() {
                 }
             }
         }
+
+        val swingDiff = System.currentTimeMillis() - leftLastSwing
+
+        if (inRangeDiscoveredTargets.isEmpty()) return
+        // clicker
+        if (swingDiff >= leftDelay && mc.playerController.curBlockDamageMP == 0F) {
+            KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode)
+            leftLastSwing = System.currentTimeMillis()
+            leftDelay = TimeUtils.randomClickDelay(minCpsValue.get(), maxCpsValue.get()).toLong()
+        }
+
+        mc.gameSettings.keyBindUseItem.pressed = false
+
+        if (autoblockRangeTargets.isEmpty()) return
+        // autoblock
+        when (autoblockMode.get().lowercase()) {
+            "always" -> {
+                if (swingDiff >= leftDelay * 0.1 && swingDiff <= leftDelay * 0.7) {
+                    mc.gameSettings.keyBindUseItem.pressed = true
+                }
+            }
+
+            "smart" -> {
+                if (swingDiff >= leftDelay * 0.1 && swingDiff <= leftDelay * 0.6 && mc.thePlayer.hurtTime <= 3) {
+                    mc.gameSettings.keyBindUseItem.pressed = true
+                }
+            }
+
+            "spam", "blink" -> {
+                mc.gameSettings.keyBindUseItem.pressed = mc.thePlayer.ticksExisted % 2 == 0
+            }
+
+            else -> null
+        }
+
     }
 
 
