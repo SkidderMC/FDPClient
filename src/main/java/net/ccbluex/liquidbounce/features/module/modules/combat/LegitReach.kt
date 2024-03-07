@@ -73,12 +73,7 @@ class LegitReach : Module() {
     private fun clearPackets() {
         releasing = true
         while (!packets.isEmpty()) {
-            val packet = packets.take()
-            val packetEvent = PacketEvent(packet, PacketEvent.Type.RECEIVE)
-            FDPClient.eventManager.callEvent(packetEvent)
-            if (!packetEvent.isCancelled) {
-                PacketUtils.handlePacket(packetEvent.packet as Packet<INetHandlerPlayClient?>)
-            }
+            PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
         }
         releasing = false
         if (outgoingBlink.get())  {

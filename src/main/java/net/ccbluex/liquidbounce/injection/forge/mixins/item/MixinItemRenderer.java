@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.item;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
+import net.ccbluex.liquidbounce.features.module.modules.combat.LegitAura;
 import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.minecraft.client.Minecraft;
@@ -172,7 +173,7 @@ public abstract class MixinItemRenderer {
         GlStateManager.pushMatrix();
 
         if (this.itemToRender != null) {
-            final boolean displayBlocking = FDPClient.moduleManager.getModule(KillAura.class).getDisplayBlocking();
+            final boolean displayBlocking = FDPClient.moduleManager.getModule(KillAura.class).getDisplayBlocking() || FDPClient.moduleManager.getModule(LegitAura.class).getDisplayBlocking();
 
             if (this.itemToRender.getItem() instanceof ItemMap) {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
