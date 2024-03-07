@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.StrafeEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
@@ -24,6 +25,7 @@ import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
@@ -115,6 +117,8 @@ object LegitAura : Module() {
     override fun onDisable() {
         FDPClient.moduleManager[FreeLook::class.java]!!.disable()
         autoblockRangeTargets.clear()
+        mc.gameSettings.keyBindUseItem.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindUseItem)
+        currentTarget = null
     }
 
     val displayBlocking: Boolean
@@ -125,18 +129,25 @@ object LegitAura : Module() {
 
         updateTarget()
         if (discoveredTargets.isEmpty()) {
-            mc.thePlayer.rotationYaw = FreeLook.cameraYaw
-            mc.thePlayer.rotationPitch = FreeLook.cameraPitch
-            FDPClient.moduleManager[FreeLook::class.java]!!.disable()
+            if (FreeLook.isEnabled) {
+                mc.thePlayer.rotationYaw = FreeLook.cameraYaw
+                mc.thePlayer.rotationPitch = FreeLook.cameraPitch
+                FDPClient.moduleManager[FreeLook::class.java]!!.disable()
+            }
             currentTarget = null
             return
         } else {
             if (!FreeLook.isEnabled) {
                 FDPClient.moduleManager[FreeLook::class.java]!!.enable()
             }
+            if (inRangeDiscoveredTargets.isNotEmpty()) {
+                if (!inRangeDiscoveredTargets.contains(currentTarget)) {
+                    currentTarget = inRangeDiscoveredTargets.first()
+                }
+            }
         }
 
-        val entity = currentTarget?: inRangeDiscoveredTargets.getOrNull(0)?: return as EntityLivingBase
+        val entity = currentTarget?: inRangeDiscoveredTargets.getOrNull(0)?: return
         currentTarget = entity as EntityLivingBase?
 
         if (rotationMode.equals("Advanced")) {
@@ -159,15 +170,21 @@ object LegitAura : Module() {
 
 
         // ka rot
-        killauraRotations(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), entity)
+        killauraRotations(entity)
 
+    }
+
+    @EventTarget
+    fun onStrafe(event: StrafeEvent) {
         // strafe fix
+        if (!FreeLook.isEnabled) return
         RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw + (mc.thePlayer.rotationYaw - FreeLook.cameraYaw), mc.thePlayer.rotationPitch))
-        FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(true, true)
+        FDPClient.moduleManager[StrafeFix::class.java]!!.runStrafeFixLoop(true, event)
+        event.cancelEvent()
         RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch))
     }
 
-    private fun killauraRotations(playerRot: Rotation, entity: EntityLivingBase) {
+    private fun killauraRotations(entity: EntityLivingBase) {
         playerRotation = Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
 
         when (rotationMode.get().lowercase()) {
@@ -401,7 +418,7 @@ object LegitAura : Module() {
             leftDelay = TimeUtils.randomClickDelay(minCpsValue.get(), maxCpsValue.get()).toLong()
         }
 
-        mc.gameSettings.keyBindUseItem.pressed = false
+        mc.gameSettings.keyBindUseItem.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindUseItem)
 
         if (autoblockRangeTargets.isEmpty()) return
         // autoblock
