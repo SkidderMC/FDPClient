@@ -12,8 +12,8 @@ import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
+import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
@@ -24,27 +24,34 @@ import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.Cylinder
 import java.awt.Color
 import kotlin.math.*
+import kotlin.random.Random
 
 @ModuleInfo(name = "LegitAura", category = ModuleCategory.COMBAT)
 object LegitAura : Module() {
+
+    private val cpsMode = ListValue("CPSMode", arrayOf("Normal", "Jitter", "Butterfly"), "Normal")
+    private val legitJitterValue = ListValue("LegitJitterMode", arrayOf("Jitter1", "Jitter2", "Jitter3", "SimpleJitter"), "Jitter1").displayable { cpsMode.equals("Jitter")}
+    private val legitButterflyValue = ListValue("LegitButterflyMode", arrayOf("Butterfly1", "Butterfly2"), "Butterfly1").displayable {  cpsMode.equals("Butterfly")}
+
     private val minCpsValue: IntegerValue = object : IntegerValue("MinCPS", 10, 1, 20){
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = maxCpsValue.get()
             if (i < newValue) set(i)
         }
-    }
+    }.displayable { cpsMode.equals("Normal") } as IntegerValue
     private val maxCpsValue: IntegerValue = object : IntegerValue("MaxCPS", 12, 1, 20){
         override fun onChanged(oldValue: Int, newValue: Int) {
             val i = minCpsValue.get()
             if (i > newValue) set(i)
         }
-    }
+    }.displayable { cpsMode.equals("Normal") } as IntegerValue
 
     val hitRange: FloatValue = object : FloatValue("AttackRange", 3.05f, 2f, 6f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
@@ -111,10 +118,14 @@ object LegitAura : Module() {
     // clicker
     private var leftDelay = 50L
     private var leftLastSwing = 0L
+    private var cDelay = 0
+    private var delayNum = 0
 
     override fun onDisable() {
         FDPClient.moduleManager[FreeLook::class.java]!!.disable()
         autoblockRangeTargets.clear()
+        mc.gameSettings.keyBindUseItem.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindUseItem)
+        currentTarget = null
     }
 
     val displayBlocking: Boolean
@@ -127,16 +138,28 @@ object LegitAura : Module() {
         if (discoveredTargets.isEmpty()) {
             mc.thePlayer.rotationYaw = FreeLook.cameraYaw
             mc.thePlayer.rotationPitch = FreeLook.cameraPitch
-            FDPClient.moduleManager[FreeLook::class.java]!!.disable()
             currentTarget = null
+            mc.gameSettings.keyBindUseItem.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindUseItem)
+            BlinkUtils.setBlinkState(off = true, release = true)
             return
         } else {
             if (!FreeLook.isEnabled) {
                 FDPClient.moduleManager[FreeLook::class.java]!!.enable()
             }
+            if (inRangeDiscoveredTargets.isNotEmpty()) {
+                if (!inRangeDiscoveredTargets.contains(currentTarget)) {
+                    currentTarget = inRangeDiscoveredTargets.first()
+                }
+            }
         }
 
-        val entity = currentTarget?: inRangeDiscoveredTargets.getOrNull(0)?: return as EntityLivingBase
+        if (mc.thePlayer.ticksExisted % 2 == 0 && autoblockMode.equals("Blink") && autoblockRangeTargets.isNotEmpty()) {
+            BlinkUtils.setBlinkState(all = true)
+        } else if (autoblockMode.equals("Blink") && autoblockRangeTargets.isEmpty()) {
+            BlinkUtils.setBlinkState(off = true, release = true)
+        }
+
+        val entity = currentTarget?: inRangeDiscoveredTargets.getOrNull(0)?: return
         currentTarget = entity as EntityLivingBase?
 
         if (rotationMode.equals("Advanced")) {
@@ -159,15 +182,17 @@ object LegitAura : Module() {
 
 
         // ka rot
-        killauraRotations(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), entity)
+        killauraRotations(entity)
 
-        // strafe fix
-        RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw + (mc.thePlayer.rotationYaw - FreeLook.cameraYaw), mc.thePlayer.rotationPitch))
-        FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(true, true)
-        RotationUtils.setTargetRotation(Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch))
+        // blink ab pt2
+        if (mc.thePlayer.ticksExisted % 2 == 0 && autoblockMode.equals("Blink") && autoblockRangeTargets.isNotEmpty()) {
+            BlinkUtils.releasePacket()
+        }
+
+
     }
 
-    private fun killauraRotations(playerRot: Rotation, entity: EntityLivingBase) {
+    private fun killauraRotations(entity: EntityLivingBase) {
         playerRotation = Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
 
         when (rotationMode.get().lowercase()) {
@@ -210,22 +235,22 @@ object LegitAura : Module() {
 
                 aimRotation = RotationUtils.calculateCenter("LiquidBounce", "Horizontal", 0.05, entity.hitBox, false, true).rotation
                 rotationDistance = RotationUtils.getRotationDifference(playerRotation,  aimRotation).toFloat()
-                rotationLimit = applySmoothing(rotationDistance.toDouble(), "line").toFloat()
+                rotationLimit = applySmoothing(rotationDistance.toDouble(), "line").toFloat() /1.5f
 
                 aimRotation = RotationUtils.calculateCenter("CenterLine", "Horizontal", 0.05, entity.hitBox, true, true).rotation
                 rotationDistance = RotationUtils.getRotationDifference(playerRotation,  aimRotation).toFloat()
-                rotationLimit = (rotationLimit + applySmoothing(rotationDistance.toDouble(), "quad").toFloat()) / 3.2f
+                rotationLimit = (rotationLimit + applySmoothing(rotationDistance.toDouble()/1.5, "quad").toFloat()) / 2f
 
                 advancedAimVelo += rotationLimit + RandomUtils.nextFloat(-3f, 2f)
-                advancedAimVelo *= 0.65f
+                advancedAimVelo *= 0.7f
 
                 aimRotation = RotationUtils.calculateCenter("HeadRange", "Horizontal", 0.05, entity.hitBox, false, true).rotation
-                targetRotation = RotationUtils.limitAngleChange(playerRotation, aimRotation, advancedAimVelo * 0.6f )
+                targetRotation = RotationUtils.limitAngleChange(playerRotation, aimRotation, advancedAimVelo * 0.5f )
                 aimRotation = RotationUtils.calculateCenter("CenterDot", "Horizontal", 0.05, entity.hitBox, false, true).rotation
-                targetRotation = RotationUtils.limitAngleChange(targetRotation, aimRotation, advancedAimVelo * 0.6f )
+                targetRotation = RotationUtils.limitAngleChange(targetRotation, aimRotation, advancedAimVelo * 0.3f )
 
-                if (RotationUtils.getRotationDifference(advancedAimSlowRot,  targetRotation).toFloat() > 85f) {
-                    advancedAimVelo *= 0.2f
+                if (RotationUtils.getRotationDifference(advancedAimSlowRot,  targetRotation).toFloat() > 125f) {
+                    advancedAimVelo *= 0.7f
                     advancedAimSlowRot = targetRotation
                 }
             }
@@ -398,10 +423,10 @@ object LegitAura : Module() {
         if (swingDiff >= leftDelay && mc.playerController.curBlockDamageMP == 0F) {
             KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode)
             leftLastSwing = System.currentTimeMillis()
-            leftDelay = TimeUtils.randomClickDelay(minCpsValue.get(), maxCpsValue.get()).toLong()
+            leftDelay = updateClicks().toLong()
         }
 
-        mc.gameSettings.keyBindUseItem.pressed = false
+        mc.gameSettings.keyBindUseItem.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindUseItem)
 
         if (autoblockRangeTargets.isEmpty()) return
         // autoblock
@@ -464,6 +489,140 @@ object LegitAura : Module() {
 
         autoblockRangeTargets.clear()
         autoblockRangeTargets.addAll(discoveredTargets.filter { mc.thePlayer.getDistanceToEntityBox(it) < autoblockRange.get()})
+    }
+
+    private fun updateClicks(): Int {
+
+        when (cpsMode.get().lowercase()) {
+            "normal" -> {
+                cDelay = TimeUtils.randomClickDelay(minCpsValue.get(), maxCpsValue.get()).toInt()
+            }
+
+            "jitter" -> {
+                when (legitJitterValue.get().lowercase()) {
+                    "jitter1" -> {
+                        if (1 == Random.nextInt(1, 5))
+                            delayNum = 0
+
+                        if (delayNum == 0) {
+                            if (Random.nextInt(1, 3) == 1) {
+                                cDelay = Random.nextInt(98, 110)
+                            } else if (Random.nextInt(1, 2) == 1) {
+                                cDelay = Random.nextInt(125, 138)
+                            } else {
+                                cDelay = Random.nextInt(148, 153)
+                            }
+
+                            delayNum = 1
+                        } else {
+                            if (Random.nextInt(1, 4) !== 1) {
+                                if (Random.nextBoolean()) {
+                                    cDelay = Random.nextInt(65, 69)
+                                } else {
+                                    if (Random.nextInt(1, 5) == 1) {
+                                        cDelay = Random.nextInt(81, 87)
+                                    } else {
+                                        cDelay = Random.nextInt(97, 101)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    "jitter2" -> {
+                        if (Random.nextInt(1, 14) <= 3) {
+                            if (Random.nextInt(1, 3) == 1) {
+                                cDelay = Random.nextInt(98, 102)
+                            } else {
+                                cDelay = Random.nextInt(114, 117)
+                            }
+                        } else {
+                            if (Random.nextInt(1, 4) == 1) {
+                                cDelay = Random.nextInt(64, 69)
+                            } else {
+                                cDelay = Random.nextInt(83, 85)
+                            }
+
+                        }
+                    }
+
+                    "jitter3" -> {
+                        if (Random.nextInt(1, 5) == 1 && delayNum == 0) {
+                            delayNum = 1
+                            if (Random.nextInt(1, 4) == 1) {
+                                cDelay = Random.nextInt(114, 118)
+                            } else {
+                                cDelay = Random.nextInt(98, 104)
+                            }
+                        } else {
+                            if (delayNum == 1) {
+                                delayNum = 0
+                                cDelay = Random.nextInt(65, 70)
+                            } else {
+                                cDelay = Random.nextInt(84, 88)
+                            }
+                        }
+                    }
+
+                    "simplejitter" -> {
+                        if (Random.nextInt(1, 5) == 1) {
+                            if (Random.nextBoolean()) {
+                                cDelay = Random.nextInt(105, 110)
+                            } else {
+                                cDelay = Random.nextInt(120, 128)
+                            }
+                        } else {
+                            if (Random.nextInt(1, 3) == 1) {
+                                cDelay = Random.nextInt(76, 79)
+                            } else {
+                                if (Random.nextInt(1, 3) == 1) {
+                                    cDelay = 78
+                                } else {
+                                    cDelay = 77
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            "butterfly" -> {
+                when (legitButterflyValue.get().lowercase()) {
+                    "butterfly1" -> {
+                        if (Random.nextInt(1, 7) == 1) {
+                            cDelay = Random.nextInt(80, 104)
+                        } else {
+                            if (Random.nextInt(1, 7) <= 2) {
+                                cDelay = 117
+                            } else {
+                                cDelay = Random.nextInt(114, 119)
+                            }
+                        }
+                    }
+
+                    "butterfly2" -> {
+                        if (Random.nextInt(1, 10) == 1) {
+                            cDelay = Random.nextInt(225, 250)
+                        } else {
+                            if (Random.nextInt(1, 6) == 1) {
+                                cDelay = Random.nextInt(89, 94)
+                            } else if (Random.nextInt(1, 3) == 1) {
+                                cDelay = Random.nextInt(95, 103)
+                            } else if (Random.nextInt(1, 3) == 1) {
+                                cDelay = Random.nextInt(115, 123)
+                            } else {
+                                if (Random.nextBoolean()) {
+                                    cDelay = Random.nextInt(131, 136)
+                                } else {
+                                    cDelay = Random.nextInt(165, 174)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return cDelay
     }
 }
     
