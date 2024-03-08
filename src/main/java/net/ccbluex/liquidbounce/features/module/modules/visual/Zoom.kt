@@ -33,14 +33,15 @@ class Zoom : Module() {
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
         mc.gameSettings.smoothCamera = (Keyboard.isKeyDown(keyValue.get()) && slowSen.get())
-        if (mc.gameSettings.fovSetting <= 25F) {
-            mc.gameSettings.fovSetting = 25F
-        }
+
         if (mc.gameSettings.fovSetting >= oldFov) {
             mc.gameSettings.fovSetting = oldFov
         }
         if (Keyboard.isKeyDown(keyValue.get()) && mc.gameSettings.fovSetting > oldFov) {
             mc.gameSettings.fovSetting = oldFov
+        }
+        if (mc.gameSettings.fovSetting <= 25F) {
+            mc.gameSettings.fovSetting = 25F
         }
         if (Keyboard.isKeyDown(keyValue.get()) && mc.gameSettings.fovSetting == 25F) return
         var zoom = 0F
@@ -49,5 +50,9 @@ class Zoom : Module() {
         if (Keyboard.isKeyDown(keyValue.get()) || mc.gameSettings.fovSetting != oldFov) {
             mc.gameSettings.fovSetting -= ((oldFov - 25) * zoom)
         }
+        if (mc.gameSettings.fovSetting <= 25F) {
+            mc.gameSettings.fovSetting = 25F
+        }
+
     }
 }

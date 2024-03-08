@@ -8,9 +8,11 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
+import net.ccbluex.liquidbounce.features.module.modules.player.Eagle
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.potion.Potion
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.server.S12PacketEntityVelocity
@@ -25,8 +27,9 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
     private val yMotion = FloatValue("${valuePrefix}JumpYMotion", 0.42f, 0.395f, 0.42f)
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", true)
     private val sussyPacket = BoolValue("${valuePrefix}Rise6sussyPacket", false)
-    private val fallingStrafe = BoolValue("${valuePrefix}FallingDamageStrafe", true)
-    private val fastFall = BoolValue("${valuePrefix}FastFall", true)
+    private val fallingStrafe = BoolValue("${valuePrefix}FallingDamageStrafe", false)
+    private val fastFall = BoolValue("${valuePrefix}FastFall", false)
+    private val sneakStrafe = BoolValue("${valuePrefix}SneakStrafe", true)
 
 
     private var minSpeed = 0.0
@@ -61,6 +64,23 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                 else -> mc.thePlayer.motionY
             }
         }
+
+        if (damageBoost.get()) {
+            if (mc.thePlayer.hurtTime == 9) {
+                MovementUtils.strafe(MovementUtils.getSpeed() * 0.7f)
+            }
+        }
+
+        if (sneakStrafe.get()) {
+            if (offGroundTicks > 0 && offGroundTicks < 5) {
+                MovementUtils.strafe()
+                mc.gameSettings.keyBindSneak.pressed = true
+            } else {
+                mc.gameSettings.keyBindSneak.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
+            }
+        }
+
+
 
         
         when (bypassMode.get().lowercase()) {
@@ -118,8 +138,8 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
             
             if (packet.motionY / 8000.0 > 0.1) {
                 if (damageBoost.get()) {
-                    mc.thePlayer.motionX *= 1.05
-                    mc.thePlayer.motionZ *= 1.05
+                    mc.thePlayer.motionX *= 1.07
+                    mc.thePlayer.motionZ *= 1.07
                 }
             }
         }

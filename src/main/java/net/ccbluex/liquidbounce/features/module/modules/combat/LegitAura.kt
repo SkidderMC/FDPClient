@@ -140,7 +140,7 @@ object LegitAura : Module() {
             mc.thePlayer.rotationPitch = FreeLook.cameraPitch
             currentTarget = null
             mc.gameSettings.keyBindUseItem.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindUseItem)
-            BlinkUtils.setBlinkState(off = true)
+            BlinkUtils.setBlinkState(off = true, release = true)
             return
         } else {
             if (!FreeLook.isEnabled) {
@@ -153,7 +153,11 @@ object LegitAura : Module() {
             }
         }
 
-        BlinkUtils.setBlinkState(all = true)
+        if (mc.thePlayer.ticksExisted % 2 == 0 && autoblockMode.equals("Blink") && autoblockRangeTargets.isNotEmpty()) {
+            BlinkUtils.setBlinkState(all = true)
+        } else if (autoblockMode.equals("Blink") && autoblockRangeTargets.isEmpty()) {
+            BlinkUtils.setBlinkState(off = true, release = true)
+        }
 
         val entity = currentTarget?: inRangeDiscoveredTargets.getOrNull(0)?: return
         currentTarget = entity as EntityLivingBase?
@@ -181,7 +185,7 @@ object LegitAura : Module() {
         killauraRotations(entity)
 
         // blink ab pt2
-        if (mc.thePlayer.ticksExisted % 2 == 0) {
+        if (mc.thePlayer.ticksExisted % 2 == 0 && autoblockMode.equals("Blink") && autoblockRangeTargets.isNotEmpty()) {
             BlinkUtils.releasePacket()
         }
 
@@ -235,18 +239,18 @@ object LegitAura : Module() {
 
                 aimRotation = RotationUtils.calculateCenter("CenterLine", "Horizontal", 0.05, entity.hitBox, true, true).rotation
                 rotationDistance = RotationUtils.getRotationDifference(playerRotation,  aimRotation).toFloat()
-                rotationLimit = (rotationLimit + applySmoothing(rotationDistance.toDouble()/1.5, "quad").toFloat()) / 3.2f
+                rotationLimit = (rotationLimit + applySmoothing(rotationDistance.toDouble()/1.5, "quad").toFloat()) / 2f
 
                 advancedAimVelo += rotationLimit + RandomUtils.nextFloat(-3f, 2f)
-                advancedAimVelo *= 0.6f
+                advancedAimVelo *= 0.7f
 
                 aimRotation = RotationUtils.calculateCenter("HeadRange", "Horizontal", 0.05, entity.hitBox, false, true).rotation
-                targetRotation = RotationUtils.limitAngleChange(playerRotation, aimRotation, advancedAimVelo * 0.3f )
+                targetRotation = RotationUtils.limitAngleChange(playerRotation, aimRotation, advancedAimVelo * 0.5f )
                 aimRotation = RotationUtils.calculateCenter("CenterDot", "Horizontal", 0.05, entity.hitBox, false, true).rotation
-                targetRotation = RotationUtils.limitAngleChange(targetRotation, aimRotation, advancedAimVelo * 0.6f )
+                targetRotation = RotationUtils.limitAngleChange(targetRotation, aimRotation, advancedAimVelo * 0.3f )
 
-                if (RotationUtils.getRotationDifference(advancedAimSlowRot,  targetRotation).toFloat() > 85f) {
-                    advancedAimVelo *= 0.3f
+                if (RotationUtils.getRotationDifference(advancedAimSlowRot,  targetRotation).toFloat() > 125f) {
+                    advancedAimVelo *= 0.7f
                     advancedAimSlowRot = targetRotation
                 }
             }
