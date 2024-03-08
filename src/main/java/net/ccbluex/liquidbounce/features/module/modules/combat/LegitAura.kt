@@ -235,7 +235,7 @@ object LegitAura : Module() {
 
                 aimRotation = RotationUtils.calculateCenter("LiquidBounce", "Horizontal", 0.05, entity.hitBox, false, true).rotation
                 rotationDistance = RotationUtils.getRotationDifference(playerRotation,  aimRotation).toFloat()
-                rotationLimit = applySmoothing(rotationDistance.toDouble(), "line").toFloat()
+                rotationLimit = applySmoothing(rotationDistance.toDouble(), "line").toFloat() /1.5f
 
                 aimRotation = RotationUtils.calculateCenter("CenterLine", "Horizontal", 0.05, entity.hitBox, true, true).rotation
                 rotationDistance = RotationUtils.getRotationDifference(playerRotation,  aimRotation).toFloat()
