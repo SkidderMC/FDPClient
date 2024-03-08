@@ -161,13 +161,13 @@ object KillAura : Module() {
 
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "OldMatrix", "Test", "SmoothCustom"),
+        arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "Optimal", "Test", "SmoothCustom"),
         "LiquidBounce"
     ).displayable { rotationDisplay.get()}
 
     private val customRotationValue = ListValue(
         "CustomRotationMode",
-        arrayOf ("LiquidBounce", "Full", "HalfUp", "HalfDown", "CenterSimple", "CenterLine"),
+        arrayOf ("LiquidBounce", "Full", "HalfUp", "HalfDown", "CenterSimple", "CenterLine", "CenterLarge", "CenterDot", "MidRange", "HeadRange", "Optimal"),
         "HalfUp") .displayable { rotationDisplay.get() && rotationModeValue.equals("SmoothCustom") }
 
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
@@ -950,8 +950,9 @@ object KillAura : Module() {
 
         val rModes = when (rotationModeValue.get()) {
             "LiquidBounce", "SmoothLiquid" -> "LiquidBounce"
-            "ForceCenter", "SmoothCenter", "OldMatrix" -> "CenterLine"
+            "ForceCenter", "SmoothCenter" -> "CenterLine"
             "LockView" -> "CenterSimple"
+            "Optimal" -> "Optimal"
             "SmoothCustom" -> customRotationValue.get()
             else -> "LiquidBounce"
         }
@@ -966,7 +967,6 @@ object KillAura : Module() {
                 throughWallsValue.get()
             ) ?: return false
 
-        if (rotationModeValue.get() == "OldMatrix") directRotation.pitch = 89.9f
 
         var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
         if (diffAngle < 0) diffAngle = -diffAngle
@@ -993,7 +993,7 @@ object KillAura : Module() {
                 directRotation,
                 (180.0).toFloat()
             )
-            "SmoothCenter", "SmoothLiquid", "SmoothCustom", "OldMatrix" -> RotationUtils.limitAngleChange(
+            "SmoothCenter", "SmoothLiquid", "SmoothCustom", "Optimal" -> RotationUtils.limitAngleChange(
                 RotationUtils.serverRotation,
                 directRotation,
                 (calculateSpeed).toFloat()

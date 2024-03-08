@@ -284,6 +284,8 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
                 yMin = 0.55D; yMax = 0.80D; yDist = 0.0125D;
                 zMin = 0.20D; zMax = 0.80D; zDist = 0.1D;
                 break;
+            case "Optimal":
+                break;
         }
 
         for(double xSearch = xMin; xSearch < xMax; xSearch += xDist) {
@@ -302,6 +304,12 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
                     }
                 }
             }
+        }
+
+        if (calMode == "Optimal") {
+            final Vec3 vec3 = new Vec3(Math.max(bb.minX, Math.min(mc.thePlayer.posX, bb.maxX)), Math.max(bb.minY, Math.min(mc.thePlayer.posY, bb.maxY)), Math.max(bb.minZ, Math.min(mc.thePlayer.posZ, bb.maxZ)));
+            final Rotation rotation = toRotation(vec3, predict);
+            vecRotation = new VecRotation(vec3, rotation);
         }
         
         if(vecRotation == null || randMode.equals("Off"))
