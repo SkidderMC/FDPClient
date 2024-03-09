@@ -27,7 +27,7 @@ object LongJump : Module() {
     private val mode: LongJumpMode
         get() = modes.find { modeValue.equals(it.modeName) } ?: throw NullPointerException() // this should not happen
 
-    private val modeValue: ListValue = object : ListValue("Mode", modes.map { it.modeName }.toTypedArray(), "NCP") {
+    private val modeValue: ListValue = object : ListValue("Mode", modes.map { it.modeName }.toTypedArray(), "Boost") {
         override fun onChange(oldValue: String, newValue: String) {
             if (state) onDisable()
         }
