@@ -139,7 +139,8 @@ class Scaffold : Module() {
     private val rotOptions = BoolValue("Rotation Options: ", true)
 
     // Rotations
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom", "Advanced", "Backwards", "Snap", "BackSnap", "Derp"), "Backwards").displayable { rotOptions.get() }
+    private val testRotationsValue = BoolValue("TestRotations", false).displayable { rotOptions.get() }
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom", "Advanced", "Backwards", "Snap", "BackSnap", "Derp"), "AAC").displayable { rotOptions.get() }
     private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom", "Advacned"), "AAC").displayable { rotOptions.get() }
     
     private val advancedYawModeValue = ListValue("AdvancedYawRotations", arrayOf("Offset", "Static", "RoundStatic", "Vanilla", "Round", "MoveDirection", "OffsetMove", "RoundMoveDir"), "MoveDirection").displayable { (rotationsValue.equals("Advanced") || towerrotationsValue.equals("Advanced")) && rotationsValue.displayable}
@@ -543,6 +544,7 @@ class Scaffold : Module() {
         if (towerModeValue.equals("WatchDog") && towerStatus && event.eventState == EventState.PRE) {
             if (towerStatus) {
                 if (mc.thePlayer.onGround) {
+                    wdTick = 0
                     mc.thePlayer.motionY = 0.42
                     MovementUtils.strafe(0.4f)
                 } else if (mc.thePlayer.motionY > -0.0784000015258789) {
@@ -557,12 +559,17 @@ class Scaffold : Module() {
                             wdSpoof = true
                         }
                         0 -> {
-                            mc.thePlayer.motionY = 0.42
-                            MovementUtils.strafe(0.4f)
+                            wdTick = 1
                         }
     
                     }
                 }
+                if (wdTick == 1) {
+                    wdSpoof = true
+                    mc.thePlayer.motionY = 0.5
+                }
+            } else {
+                wdTick = 0
             }
         }
 
@@ -1169,7 +1176,7 @@ class Scaffold : Module() {
                             continue
                         }
                         if (placeRotation == null || RotationUtils.getRotationDifference(rotation) < RotationUtils.getRotationDifference(
-                                placeRotation.rotation
+                                if (testRotationsValue.get()) { Rotation(MovementUtils.movingYaw - 180f, 80f) } else { placeRotation.rotation }
                             )
                         ) placeRotation = PlaceRotation(PlaceInfo(neighbor, side.opposite, hitVec), rotation)
                         zSearch += 0.1
@@ -1288,9 +1295,9 @@ class Scaffold : Module() {
                 }
                 "derp" -> {
                     if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX + mc.thePlayer.motionX * 2.0, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ + mc.thePlayer.motionZ * 2.0)).block == Blocks.air) {
-                        Rotation(mc.thePlayer.rotationYaw + 45f, placeRotation.rotation.pitch)
-                    } else {
                         Rotation(placeRotation.rotation.yaw, placeRotation.rotation.pitch)
+                    } else {
+                        Rotation(mc.thePlayer.rotationYaw + 45f, placeRotation.rotation.pitch)
                     }
                 }
 
@@ -1304,7 +1311,7 @@ class Scaffold : Module() {
                         "round" -> ((placeRotation.rotation.yaw / advancedYawRoundValue.get()).roundToInt() * advancedYawRoundValue.get()).toFloat()
                         "roundstatic" -> (((mc.thePlayer.rotationYaw + advancedYawStaticValue.get()) / advancedYawRoundValue.get()).roundToInt() * advancedYawRoundValue.get()).toFloat()
                         "movedirection" -> MovementUtils.movingYaw - 180
-                        "roundmovedir" -> (((MovementUtils.movingYaw - 180) / advancedYawRoundValue.get()).roundToInt() * advancedYawRoundValue.get()).toFloat()
+                        "roundmovedir" -> (((placeRotation.rotation.yaw - (MovementUtils.movingYaw - 180)) / advancedYawRoundValue.get()).roundToInt() * advancedYawRoundValue.get()).toFloat() + (MovementUtils.movingYaw - 180f)
                         "offsetmove" -> MovementUtils.movingYaw - 180 + advancedYawMoveOffsetValue.get()
                         else -> placeRotation.rotation.yaw
                     }

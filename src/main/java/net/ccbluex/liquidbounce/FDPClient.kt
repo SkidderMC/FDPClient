@@ -115,11 +115,13 @@ object FDPClient {
     fun initClient() {
         mc.fontRendererObj.also { mc.fontRendererObj = it }
         SplashProgress.setProgress(1, "Initializing Minecraft")
+        SplashProgress.setSecondary("-")
         ClientUtils.logInfo("Loading $CLIENT_NAME $CLIENT_VERSION")
         ClientUtils.logInfo("Initializing...")
         val startTime = System.currentTimeMillis()
 
         // Initialize managers
+        SplashProgress.setSecondary("Initializing Managers")
         fileManager = FileManager()
         configManager = ConfigManager()
         eventManager = EventManager()
@@ -132,9 +134,11 @@ object FDPClient {
         tipSoundManager = TipSoundManager()
 
         // Load language
+        SplashProgress.setSecondary("Initializing Language")
         LanguageManager.switchLanguage(Minecraft.getMinecraft().gameSettings.language)
 
         // Register listeners
+        SplashProgress.setSecondary("Initializing Listeners")
         eventManager.registerListener(RotationUtils())
         eventManager.registerListener(ClientFixes)
         eventManager.registerListener(InventoryUtils)
@@ -151,9 +155,13 @@ object FDPClient {
         // Load client fonts
         Fonts.loadFonts()
 
+        SplashProgress.setProgress(4, "Initializing $CLIENT_NAME")
+
         // Setup modules
+        SplashProgress.setSecondary("Initializing Modules")
         moduleManager.registerModules()
 
+        SplashProgress.setSecondary("Initializing Scripts")
         // Load and enable scripts
         try {
             scriptManager.loadScripts()
@@ -163,14 +171,17 @@ object FDPClient {
         }
 
         // Register commands
+        SplashProgress.setSecondary("Initializing Commands")
         commandManager.registerCommands()
 
         // Load GUI
+        SplashProgress.setSecondary("Initializing GUI")
         GuiCapeManager.load()
         mainMenu = GuiLaunchOptionSelectMenu()
         hud = HUD.createDefault()
 
         // Load configs
+        SplashProgress.setSecondary("Initializing Configs")
         fileManager.loadConfigs(
             fileManager.accountsConfig,
             fileManager.friendsConfig,
@@ -190,6 +201,7 @@ object FDPClient {
 
         // Log success
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis() - startTime)}ms!")
+        SplashProgress.setSecondary("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis() - startTime)}ms!")
     }
 
     private fun checkUpdate() {

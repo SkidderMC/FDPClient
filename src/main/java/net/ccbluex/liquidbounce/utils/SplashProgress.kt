@@ -24,6 +24,7 @@ object SplashProgress {
 
     var progress = 0
     var currentText = ""
+    var secondaryText = ""
     private var splash: ResourceLocation? = null
     private var renderProgress = 0
 
@@ -38,6 +39,12 @@ object SplashProgress {
     fun setProgress(giveProgress: Int, giveText: String) {
         progress = giveProgress
         currentText = giveText
+        secondaryText = ""
+        update()
+    }
+
+    fun setSecondary(giveText: String) {
+        secondaryText = giveText
         update()
     }
 
@@ -129,6 +136,13 @@ object SplashProgress {
         mc.fontRendererObj.drawString(
             currentText,
             20,
+            scaledResolution.scaledHeight - 40,
+            Color(255, 255, 255).rgb
+        )
+
+        mc.fontRendererObj.drawString(
+            secondaryText,
+            20,
             scaledResolution.scaledHeight - 20,
             Color(255, 255, 255).rgb
         )
@@ -137,7 +151,7 @@ object SplashProgress {
         mc.fontRendererObj.drawString(
             indexText,
             (scaledResolution.scaledWidth - 20 - mc.fontRendererObj.getStringWidth(indexText)),
-            (scaledResolution.scaledHeight - 25),
+            (scaledResolution.scaledHeight - 20),
             Color(254, 228, 1).rgb
         )
 

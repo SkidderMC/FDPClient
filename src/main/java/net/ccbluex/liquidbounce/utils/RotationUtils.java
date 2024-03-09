@@ -307,7 +307,7 @@ public final class RotationUtils extends MinecraftInstance implements Listenable
         }
 
         if (calMode == "Optimal") {
-            final Vec3 vec3 = new Vec3(Math.max(bb.minX, Math.min(mc.thePlayer.posX, bb.maxX)), Math.max(bb.minY, Math.min(mc.thePlayer.posY, bb.maxY)), Math.max(bb.minZ, Math.min(mc.thePlayer.posZ, bb.maxZ)));
+            final Vec3 vec3 = new Vec3(Math.max(bb.minX, Math.min(mc.thePlayer.posX, bb.maxX)), Math.max(bb.minY, Math.min(mc.thePlayer.posY + mc.thePlayer.getEyeHeight(), bb.maxY)), Math.max(bb.minZ, Math.min(mc.thePlayer.posZ, bb.maxZ)));
             final Rotation rotation = toRotation(vec3, predict);
             vecRotation = new VecRotation(vec3, rotation);
         }
