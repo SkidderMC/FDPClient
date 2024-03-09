@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.player.DelayRemover;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
-import net.ccbluex.liquidbounce.handler.protocol.api.AttackFixer;
+import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixes;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.injection.forge.mixins.accessors.MinecraftForgeClientAccessor;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
@@ -262,7 +262,7 @@ public abstract class MixinMinecraft {
             if (this.objectMouseOver != null) {
                 switch (this.objectMouseOver.typeOfHit) {
                     case ENTITY:
-                        AttackFixer.sendFixedAttack(this.thePlayer, this.objectMouseOver.entityHit);
+                        ProtocolFixes.sendFixedAttack(this.thePlayer, this.objectMouseOver.entityHit);
                         break;
 
                     case BLOCK:

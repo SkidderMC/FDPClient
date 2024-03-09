@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack
-import net.ccbluex.liquidbounce.utils.RotationUtils.getVectorForRotation
-import net.ccbluex.liquidbounce.utils.RotationUtils.serverRotation
+import net.ccbluex.liquidbounce.utils.RotationUtils.Companion.getVectorForRotation
+import net.ccbluex.liquidbounce.utils.RotationUtils.Companion.serverRotation
 import net.ccbluex.liquidbounce.utils.extensions.eyes
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.minecraft.entity.Entity
@@ -19,8 +19,8 @@ object RaycastUtils : MinecraftInstance() {
     @JvmOverloads
     fun raycastEntity(
         range: Double,
-        yaw: Float = serverRotation.yaw,
-        pitch: Float = serverRotation.pitch,
+        yaw: Float = serverRotation!!.yaw,
+        pitch: Float = serverRotation!!.pitch,
         entityFilter: (Entity) -> Boolean
     ): Entity? {
         val renderViewEntity = mc.renderViewEntity

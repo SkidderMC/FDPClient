@@ -28,7 +28,6 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.CapabilityDispatcher;
-import net.raphimc.vialoader.util.VersionEnum;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -403,12 +402,12 @@ public abstract class MixinEntity implements ICommandSender {
         final HitBox hitBoxes = Objects.requireNonNull(FDPClient.moduleManager.getModule(HitBox.class));
 
         if (hitBoxes.getState() && EntityUtils.INSTANCE.isSelected(((Entity) ((Object) this)), true)) {
-            if (ProtocolBase.getManager().getTargetVersion().isNewerThan(VersionEnum.r1_8) && !MinecraftInstance.mc.isIntegratedServerRunning()) {
+            if (ProtocolBase.getManager().getTargetVersion().newerThan(ProtocolVersion.v1_8) && !MinecraftInstance.mc.isIntegratedServerRunning()) {
                 callbackInfoReturnable.setReturnValue(hitBoxes.getSizeValue().get());
             } else {
                 callbackInfoReturnable.setReturnValue(0.1F + hitBoxes.getSizeValue().get());
             }
-        } else if (ProtocolBase.getManager().getTargetVersion().isNewerThan(VersionEnum.r1_8) && !MinecraftInstance.mc.isIntegratedServerRunning()) {
+        } else if (ProtocolBase.getManager().getTargetVersion().newerThan(ProtocolVersion.v1_8) && !MinecraftInstance.mc.isIntegratedServerRunning()) {
             callbackInfoReturnable.setReturnValue(0.0F);
         }
     }

@@ -29,11 +29,9 @@ import net.minecraft.network.play.client.C03PacketPlayer
 object Rotations : Module() {
     val headValue = BoolValue("Head", false)
     val bodyValue = BoolValue("Body", false)
-    val fixedValue = ListValue("SensitivityFixed", arrayOf("None", "Old", "New"), "New")
     val rotationMode = ListValue("Mode", arrayOf("Normal", "Silent"), "Normal")
     val rotatingCheckValue = BoolValue("RotatingCheck", false)
     val nanValue = BoolValue("NaNCheck", true)
-    val fakeValue = BoolValue("Ghost", true)
     var R = FloatValue("R", 255f, 0f, 255f)
     var G = FloatValue("G", 255f, 0f, 255f)
     var B = FloatValue("B", 255f, 0f, 255f)
@@ -55,7 +53,7 @@ object Rotations : Module() {
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         if (RotationUtils.serverRotation != null && headValue.get())
-            mc.thePlayer.rotationYawHead = RotationUtils.serverRotation.yaw
+            mc.thePlayer.rotationYawHead = RotationUtils.serverRotation!!.yaw
     }
 
     @EventTarget
@@ -78,7 +76,7 @@ object Rotations : Module() {
     @EventTarget
     fun onMotion(event: MotionEvent) {
         prevHeadPitch = headPitch
-        headPitch = RotationUtils.serverRotation.pitch
+        headPitch = RotationUtils.serverRotation!!.pitch
         val thePlayer = mc.thePlayer
 
         if (thePlayer == null) {
@@ -86,10 +84,10 @@ object Rotations : Module() {
             return
         }
 
-        playerYaw = RotationUtils.serverRotation.yaw
+        playerYaw = RotationUtils.serverRotation!!.yaw
 
         if (headValue.get())
-            thePlayer.rotationYawHead = RotationUtils.serverRotation.yaw
+            thePlayer.rotationYawHead = RotationUtils.serverRotation!!.yaw
     }
 
     private fun getState(module: Class<out Module>) = FDPClient.moduleManager[module]!!.state

@@ -67,13 +67,13 @@ class Aimbot : Module() {
         val rotation = RotationUtils.limitAngleChange(
             Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch),
             (RotationUtils.calculateCenter(
-                        rotMode.get(),
-                        "Horizontal",
-                        0.1,
-                        entity.hitBox,
-                        false,
-                        true)
-            ).rotation,
+                rotMode.get(),
+                "Horizontal",
+                0.1,
+                entity.hitBox,
+                false,
+                true)
+                    )!!.rotation,
             (calcBaseSpeed * calcPrecent).toFloat()
         )
 

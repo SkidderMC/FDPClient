@@ -44,7 +44,7 @@ data class Rotation(var yaw: Float, var pitch: Float) {
         val rotation = RotationUtils.serverRotation
 
         // fix yaw
-        var deltaYaw = yaw - rotation.yaw
+        var deltaYaw = yaw - rotation!!.yaw
         deltaYaw -= deltaYaw % gcd
         yaw = rotation.yaw + deltaYaw
 

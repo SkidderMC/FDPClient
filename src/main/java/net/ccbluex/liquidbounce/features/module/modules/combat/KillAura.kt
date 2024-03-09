@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
 import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold
-import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold2
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
 import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
@@ -43,7 +42,6 @@ import net.minecraft.network.play.client.*
 import net.minecraft.potion.Potion
 import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
-import net.raphimc.vialoader.util.VersionEnum
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
@@ -161,13 +159,13 @@ object KillAura : Module() {
 
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "Optimal", "Test", "SmoothCustom"),
+        arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "OldMatrix", "Test", "SmoothCustom"),
         "LiquidBounce"
     ).displayable { rotationDisplay.get()}
 
     private val customRotationValue = ListValue(
         "CustomRotationMode",
-        arrayOf ("LiquidBounce", "Full", "HalfUp", "HalfDown", "CenterSimple", "CenterLine", "CenterLarge", "CenterDot", "MidRange", "HeadRange", "Optimal"),
+        arrayOf ("LiquidBounce", "Full", "HalfUp", "HalfDown", "CenterSimple", "CenterLine"),
         "HalfUp") .displayable { rotationDisplay.get() && rotationModeValue.equals("SmoothCustom") }
 
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
@@ -374,11 +372,13 @@ object KillAura : Module() {
             mc.gameSettings.keyBindUseItem.pressed = false
         }
 
-        RotationUtils.setTargetRotationReverse(
-            RotationUtils.serverRotation,
-            if (keepDirectionValue.get()) { keepDirectionTickValue.get() + 1 } else { 1 },
-            if (rotationRevValue.get()) { rotationRevTickValue.get() + 1 } else { 0 }
-        )
+        RotationUtils.serverRotation?.let {
+            RotationUtils.setTargetRotationReverse(
+                it,
+                if (keepDirectionValue.get()) { keepDirectionTickValue.get() + 1 } else { 1 },
+                if (rotationRevValue.get()) { rotationRevTickValue.get() + 1 } else { 0 }
+            )
+        }
         if (wasBlink) {
             BlinkUtils.setBlinkState(off = true, release = true)
             wasBlink = false
@@ -854,7 +854,7 @@ object KillAura : Module() {
         if (multiCombo.get()) {
             event.targetEntity
             repeat(amountValue.get()) {
-                if (ProtocolBase.getManager().targetVersion.isNewerThan(VersionEnum.r1_8))
+                if (ProtocolBase.getManager().targetVersion.newerThan(ProtocolVersion.v1_8))
                     mc.netHandler.addToSendQueue(
                         C02PacketUseEntity(
                             event.targetEntity,
@@ -864,7 +864,7 @@ object KillAura : Module() {
 
                 mc.netHandler.addToSendQueue(C0APacketAnimation())
 
-                if (!ProtocolBase.getManager().targetVersion.isNewerThan(VersionEnum.r1_8))
+                if (!ProtocolBase.getManager().targetVersion.newerThan(ProtocolVersion.v1_8))
                     mc.netHandler.addToSendQueue(
                         C02PacketUseEntity(
                             event.targetEntity,
@@ -950,9 +950,8 @@ object KillAura : Module() {
 
         val rModes = when (rotationModeValue.get()) {
             "LiquidBounce", "SmoothLiquid" -> "LiquidBounce"
-            "ForceCenter", "SmoothCenter" -> "CenterLine"
+            "ForceCenter", "SmoothCenter", "OldMatrix" -> "CenterLine"
             "LockView" -> "CenterSimple"
-            "Optimal" -> "Optimal"
             "SmoothCustom" -> customRotationValue.get()
             else -> "LiquidBounce"
         }
@@ -967,8 +966,9 @@ object KillAura : Module() {
                 throughWallsValue.get()
             ) ?: return false
 
+        if (rotationModeValue.get() == "OldMatrix") directRotation.pitch = 89.9f
 
-        var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation, directRotation)
+        var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation!!, directRotation)
         if (diffAngle < 0) diffAngle = -diffAngle
         if (diffAngle > 180.0) diffAngle = 180.0
 
@@ -985,16 +985,16 @@ object KillAura : Module() {
 
         val rotation = when (rotationModeValue.get()) {
             "LiquidBounce", "ForceCenter" -> RotationUtils.limitAngleChange(
-                RotationUtils.serverRotation, directRotation,
+                RotationUtils.serverRotation!!, directRotation,
                 (Math.random() * (maxTurnSpeedValue.get() - minTurnSpeedValue.get()) + minTurnSpeedValue.get()).toFloat()
             )
             "LockView" -> RotationUtils.limitAngleChange(
-                RotationUtils.serverRotation,
+                RotationUtils.serverRotation!!,
                 directRotation,
                 (180.0).toFloat()
             )
-            "SmoothCenter", "SmoothLiquid", "SmoothCustom", "Optimal" -> RotationUtils.limitAngleChange(
-                RotationUtils.serverRotation,
+            "SmoothCenter", "SmoothLiquid", "SmoothCustom", "OldMatrix" -> RotationUtils.limitAngleChange(
+                RotationUtils.serverRotation!!,
                 directRotation,
                 (calculateSpeed).toFloat()
             )
@@ -1043,7 +1043,7 @@ object KillAura : Module() {
         }
         val wallTrace = mc.thePlayer.rayTraceWithServerSideRotation(entityDist)
         hitable = RotationUtils.isFaced(
-            currentTarget,
+            currentTarget!!,
             maxRange.toDouble()
         ) && (entityDist < discoverRangeValue.get() || wallTrace?.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK) && (currentTarget as EntityLivingBase).hurtTime <= hurtTimeValue.get()
     }
@@ -1170,7 +1170,7 @@ object KillAura : Module() {
         get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer)
                 || (blinkCheck.get() && FDPClient.moduleManager[Blink::class.java]!!.state)
                 || FDPClient.moduleManager[FreeCam::class.java]!!.state
-                || (noScaffValue.get() && (FDPClient.moduleManager[Scaffold::class.java]!!.state || FDPClient.moduleManager[Scaffold2::class.java]!!.state))
+                || (noScaffValue.get() && FDPClient.moduleManager[Scaffold::class.java]!!.state)
                 || (noFlyValue.get() && FDPClient.moduleManager[Flight::class.java]!!.state)
                 || (noEat.get() && mc.thePlayer.isUsingItem && (mc.thePlayer.heldItem?.item is ItemFood || mc.thePlayer.heldItem?.item is ItemBucketMilk || mc.thePlayer.isUsingItem && (mc.thePlayer.heldItem?.item is ItemPotion)))
                 || (noBlocking.get() && mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item is ItemBlock)

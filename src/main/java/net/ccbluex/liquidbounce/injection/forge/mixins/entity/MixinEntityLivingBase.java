@@ -45,21 +45,6 @@ import java.util.Objects;
 public abstract class MixinEntityLivingBase extends MixinEntity {
 
     /**
-     * The Swing progress int.
-     */
-    @Shadow
-    public int swingProgressInt;
-    /**
-     * The Is swing in progress.
-     */
-    @Shadow
-    public boolean isSwingInProgress;
-    /**
-     * The Swing progress.
-     */
-    @Shadow
-    public float swingProgress;
-    /**
      * The Is jumping.
      */
     @Shadow
@@ -69,6 +54,12 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
      */
     @Shadow
     public int jumpTicks;
+
+    @Shadow
+    public float moveStrafing;
+
+    @Shadow
+    public float moveForward;
 
     /**
      * Gets jump upwards motion.
@@ -136,126 +127,38 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     @Shadow
     protected abstract void updateAITick();
 
-    /**
-     * The Render yaw offset.
-     */
     @Shadow
-    public float renderYawOffset;
-
-    /**
-     * The Rotation yaw head.
-     */
-    @Shadow
-    public float rotationYawHead;
-
-    @Shadow
-    public float prevRotationYawHead;
-
-    @Shadow
-    public float prevRenderYawOffset;
-
-    @Inject(method = "updatePotionEffects", at = @At(value = "INVOKE", target = "Lnet/minecraft/potion/PotionEffect;onUpdate(Lnet/minecraft/entity/EntityLivingBase;)Z"),
-            locals = LocalCapture.CAPTURE_FAILSOFT, cancellable = true)
-    private void checkPotionEffect(CallbackInfo ci, Iterator<Integer> iterator, Integer integer, PotionEffect potioneffect) {
-        if (potioneffect == null)
-            ci.cancel();
+    protected void updateEntityActionState() {
     }
 
     /**
      * Update distance float.
      *
-     * @param p_1101461 the p 1101461
-     * @param p_1101462 the p 1101462
      * @return the float
      * @author opZywl
      * @reason Rotation
      */
     @Overwrite
-    protected float updateDistance(float p_1101461, float p_1101462) {
-        float rotationYaw = this.rotationYaw;
-        final Rotations rotations = Objects.requireNonNull(FDPClient.moduleManager.getModule(Rotations.class));
-        if (rotations.getRotationMode().get().equals("Normal") && rotations.getState() && rotations.getPlayerYaw() != null && (EntityLivingBase) (Object) this instanceof EntityPlayerSP) {
-            if (this.swingProgress > 0F && !rotations.getBodyValue().get()) {
-                p_1101461 = rotations.getPlayerYaw();
-            }
-            rotationYaw = rotations.getPlayerYaw();
-            rotationYawHead = rotations.getPlayerYaw();
-        }
-        float f = MathHelper.wrapAngleTo180_float(p_1101461 - this.renderYawOffset);
-        if (rotations.getRotationMode().get().equals("Normal") && rotations.getBodyValue().get() && rotations.getState() && rotations.getPlayerYaw() != null && (EntityLivingBase) (Object) this instanceof EntityPlayerSP)
-            this.renderYawOffset += f;
-        else this.renderYawOffset += f * 0.3F;
-        float f1 = MathHelper.wrapAngleTo180_float(rotationYaw - this.renderYawOffset);
-        boolean flag = f1 < 90.0F || f1 >= 90.0F;
-
-        if (rotations.getRotationMode().get().equals("Normal") && rotations.getBodyValue().get() && rotations.getState() && rotations.getPlayerYaw() != null && (EntityLivingBase) (Object) this instanceof EntityPlayerSP) {
-            f1 = 0.0F;
-        }
-
-        if (f1 < -75.0F) {
-            f1 = -75.0F;
-        }
-
-        if (f1 >= 75.0F) {
-            f1 = 75.0F;
-        }
-
-        this.renderYawOffset = rotationYaw - f1;
-
-        if (f1 * f1 > 2500.0F) {
-            this.renderYawOffset += f1 * 0.2F;
-        }
-
-        if (flag) {
-            p_1101462 *= -1.0F;
-        }
-
-        return p_1101462;
-    }
-
-    /**
-     * @author CCBlueX
-     * @author CoDynamic
-     * Modified by Co Dynamic
-     * Date: 2023/02/15
-     */
-    @Overwrite
     protected void jump() {
-        if (!this.equals(Minecraft.getMinecraft().thePlayer)) {
-            return;
-        }
-        
-        /**
-         * Jump Process Fix
-         * use updateFixState to reset Jump Fix state
-         * @param fixedYaw  The yaw player should have (NOT RotationYaw)
-         * @param strafeFix StrafeFix Module
-         */
-
-        final JumpEvent jumpEvent = new JumpEvent(MovementUtils.INSTANCE.getJumpMotion());
+        final JumpEvent jumpEvent = new JumpEvent(this.getJumpUpwardsMotion(), this.rotationYaw);
         FDPClient.eventManager.callEvent(jumpEvent);
         if (jumpEvent.isCancelled())
             return;
 
         this.motionY = jumpEvent.getMotion();
-        final Sprint sprint = FDPClient.moduleManager.getModule(Sprint.class);
-        final StrafeFix strafeFix = FDPClient.moduleManager.getModule(StrafeFix.class);
+
+        if (this.isPotionActive(Potion.jump))
+            this.motionY += (float) (this.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F;
 
         if (this.isSprinting()) {
-            float fixedYaw = this.rotationYaw;
-            if(RotationUtils.targetRotation != null && strafeFix.getDoFix()) {
-                fixedYaw = RotationUtils.targetRotation.getYaw();
-            }
-            if(sprint.getState() && sprint.getJumpDirectionsValue().get()) {
-                fixedYaw += MovementUtils.INSTANCE.getMovingYaw() - this.rotationYaw;
-            }
-            this.motionX -= MathHelper.sin(fixedYaw / 180F * 3.1415927F) * 0.2F;
-            this.motionZ += MathHelper.cos(fixedYaw / 180F * 3.1415927F) * 0.2F;
+            float f = jumpEvent.getYaw() * 0.017453292F;
+
+            this.motionX -= (MathHelper.sin(f) * 0.2F);
+            this.motionZ += (MathHelper.cos(f) * 0.2F);
         }
 
         this.isAirBorne = true;
     }
-
 
     @Inject(method = "onLivingUpdate", at = @At("HEAD"))
     private void headLiving(CallbackInfo callbackInfo) {
@@ -273,13 +176,6 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
         }
     }
 
-    @ModifyConstant(method = "onLivingUpdate", constant = @Constant(doubleValue = 0.005D))
-    private double ViaVersion_MovementThreshold(double constant) {
-        if (ProtocolBase.getManager().getTargetVersion().getVersion() != ProtocolVersion.v1_8.getVersion() && !MinecraftInstance.mc.isIntegratedServerRunning())
-            return 0.003D;
-        return 0.005D;
-    }
-
     @Inject(method = "getLook", at = @At("HEAD"), cancellable = true)
     private void getLook(CallbackInfoReturnable<Vec3> callbackInfoReturnable) {
         if (((EntityLivingBase) (Object) this) instanceof EntityPlayerSP)
@@ -292,6 +188,13 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
         if ((p_isPotionActive_1_ == Potion.confusion || p_isPotionActive_1_ == Potion.blindness) && camera.getState() && camera.getConfusionEffectValue().get())
             callbackInfoReturnable.setReturnValue(false);
+    }
+
+    @ModifyConstant(method = "onLivingUpdate", constant = @Constant(doubleValue = 0.005D))
+    private double ViaVersion_MovementThreshold(double constant) {
+        if (ProtocolBase.getManager().getTargetVersion().newerThan(ProtocolVersion.v1_8) && !MinecraftInstance.mc.isIntegratedServerRunning())
+            return 0.003D;
+        return 0.005D;
     }
 
     /**

@@ -113,7 +113,7 @@ class AimAssist : Module() {
 
         //edge rotation
         if (!onTarget) {
-            targetRot = RotationUtils.searchCenter(entity.entityBoundingBox, false, false, true, false).rotation
+            targetRot = RotationUtils.searchCenter(entity.entityBoundingBox, false, false, true, false)!!.rotation
             rotDiff = RotationUtils.getRotationDifference(playerRot,  targetRot).toFloat()
 
             val rotationEdge = RotationUtils.limitAngleChange(

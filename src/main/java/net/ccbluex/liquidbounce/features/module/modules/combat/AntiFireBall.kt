@@ -21,7 +21,6 @@ import net.minecraft.entity.projectile.EntityFireball
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C0APacketAnimation
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion
-import net.raphimc.vialoader.util.VersionEnum
 import java.util.*
 
 @ModuleInfo(name = "AntiFireBall", description = "", category = ModuleCategory.COMBAT)
@@ -60,7 +59,7 @@ class AntiFireBall : Module() {
                     )
                 }
 
-                if (ProtocolBase.getManager().targetVersion.isNewerThan(VersionEnum.r1_8))
+                if (ProtocolBase.getManager().targetVersion.newerThan(ProtocolVersion.v1_8))
                     mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
 
                 when (swingValue.get().lowercase(Locale.getDefault())) {
@@ -68,7 +67,7 @@ class AntiFireBall : Module() {
                     "packet" -> mc.netHandler.addToSendQueue(C0APacketAnimation())
                 }
 
-                if (!ProtocolBase.getManager().targetVersion.isNewerThan(VersionEnum.r1_8))
+                if (!ProtocolBase.getManager().targetVersion.newerThan(ProtocolVersion.v1_8))
                     mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
 
                 timer.reset()

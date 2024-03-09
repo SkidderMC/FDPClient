@@ -36,7 +36,6 @@ import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.*;
-import net.raphimc.vialoader.util.VersionEnum;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -118,8 +117,14 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     private float lastReportedYaw;
     @Shadow
     private float lastReportedPitch;
-    @Unique
-    private boolean lastOnGround;
+    @Shadow
+    public float renderArmYaw;
+    @Shadow
+    public float renderArmPitch;
+    @Shadow
+    public float prevRenderArmYaw;
+    @Shadow
+    public float prevRenderArmPitch;
 
     /**
      * Play sound.
@@ -186,11 +191,10 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
         return (mc.getRenderViewEntity() != null && mc.getRenderViewEntity().equals(this)) || (FDPClient.moduleManager != null && flight.getState());
     }
-    private boolean debug_AttemptSprint = false;
 
     @Redirect(method = "onUpdateWalkingPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/NetHandlerPlayClient;addToSendQueue(Lnet/minecraft/network/Packet;)V", ordinal = 7))
     public void emulateIdlePacket(NetHandlerPlayClient instance, Packet p_addToSendQueue_1_) {
-        if (ProtocolBase.getManager().getTargetVersion().isNewerThan(VersionEnum.r1_8) && !MinecraftInstance.mc.isIntegratedServerRunning()) {
+        if (ProtocolBase.getManager().getTargetVersion().newerThan(ProtocolVersion.v1_8) && !MinecraftInstance.mc.isIntegratedServerRunning()) {
             if (this.viaForge$prevOnGround == this.onGround) {
                 return;
             }
@@ -201,6 +205,25 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Inject(method = "onUpdateWalkingPlayer", at = @At("RETURN"))
     public void saveGroundState(CallbackInfo ci) {
         this.viaForge$prevOnGround = this.onGround;
+    }
+
+    /**
+     * @author As_pw
+     * @reason Fix Arm
+     */
+    @Overwrite
+    public void updateEntityActionState() {
+        super.updateEntityActionState();
+
+        if (this.isCurrentViewEntity()) {
+            this.moveStrafing = this.movementInput.moveStrafe;
+            this.moveForward = this.movementInput.moveForward;
+            this.isJumping = this.movementInput.jump;
+            this.prevRenderArmYaw = this.renderArmYaw;
+            this.prevRenderArmPitch = this.renderArmPitch;
+            this.renderArmPitch = (float) ((double) this.renderArmPitch + (double) (this.rotationPitch - this.renderArmPitch) * 0.5D);
+            this.renderArmYaw = (float) ((double) this.renderArmYaw + (double) (this.rotationYaw - this.renderArmYaw) * 0.5D);
+        }
     }
 
     /**
@@ -486,7 +509,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             this.setSprinting(scaffold.getCanSprint());
         }
 
-        debug_AttemptSprint = this.isSprinting();
+        boolean debug_AttemptSprint = this.isSprinting();
         
         attemptToggle = false;
 

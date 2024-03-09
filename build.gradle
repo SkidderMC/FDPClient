@@ -17,9 +17,9 @@ repositories {
     maven { url = 'https://repo.viaversion.com/' }
 }
 
-version = '5.4.0'
-group = 'org.unlegitmc.fdp'
-archivesBaseName = 'FDPClient'
+version = project.mod_version
+group = project.maven_group
+archivesBaseName = project.archives_base_name
 
 sourceCompatibility = targetCompatibility = '1.8'
 
@@ -56,7 +56,6 @@ def viaLibs = [
         "com.viaversion:viabackwards:${project.viabackwards_version}",
         "com.viaversion:viarewind-universal:${project.viarewind_version}",
         "net.raphimc:ViaLoader:${project.vialoader_version}",
-        "net.raphimc:ViaAprilFools:${project.viaaprilfools_version}",
         "org.yaml:snakeyaml:${project.snake_yml_version}",
         "org.slf4j:slf4j-api:${project.slf4j_version}"
 ]
@@ -75,10 +74,6 @@ dependencies {
 
     viaLibs.each { via ->
         include(via)
-    }
-
-    include ("net.raphimc:ViaLegacy:${project.vialegacy_version}") {
-        exclude group: "com.google.code.gson", module: "gson"
     }
 
     include('com.github.half-cambodian-hacker-man:Koffee:d8cee73') {

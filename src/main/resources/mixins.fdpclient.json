@@ -107,6 +107,7 @@
   "client": [
     "gui.MixinGui",
     "gui.MixinGuiKeyBindingList",
+    "gui.MixinGuiOverlayDebug",
     "gui.MixinGuiPlayerTabOverlay",
     "gui.MixinGuiSlot",
     "performance.MixinEntityFX",

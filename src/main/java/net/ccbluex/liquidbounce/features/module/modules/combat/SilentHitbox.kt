@@ -80,7 +80,7 @@ class SilentHitbox : Module() {
             entity.hitBox,
             true,
             false)
-                ).rotation
+                )!!.rotation
 
         playerRot = Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
 

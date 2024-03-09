@@ -60,7 +60,7 @@ fun Entity.rayTraceWithCustomRotation(blockReachDistance: Double, rotation: Rota
 }
 
 fun Entity.rayTraceWithServerSideRotation(blockReachDistance: Double): MovingObjectPosition? {
-    return this.rayTraceWithCustomRotation(blockReachDistance, RotationUtils.serverRotation)
+    return RotationUtils.serverRotation?.let { this.rayTraceWithCustomRotation(blockReachDistance, it) }
 }
 
 fun EntityPlayer.getEyeVec3(): Vec3 {

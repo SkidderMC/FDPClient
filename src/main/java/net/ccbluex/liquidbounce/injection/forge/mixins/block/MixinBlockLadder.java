@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 public abstract class MixinBlockLadder extends MixinBlock {
     @ModifyConstant(method = "setBlockBoundsBasedOnState", constant = @Constant(floatValue = 0.125F))
     private float ViaVersion_LadderBB(float constant) {
-        if (ProtocolBase.getManager().getTargetVersion().getVersion() != ProtocolVersion.v1_8.getVersion() && !MinecraftInstance.mc.isIntegratedServerRunning())
+        if (ProtocolBase.getManager().getTargetVersion().newerThan(ProtocolVersion.v1_8) && !MinecraftInstance.mc.isIntegratedServerRunning())
             return 0.1875F;
         return 0.125F;
     }

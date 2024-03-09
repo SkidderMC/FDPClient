@@ -84,13 +84,13 @@ object Projectiles : Module() {
 
         // Yaw and pitch of player
         val yaw = if (RotationUtils.targetRotation != null) {
-            RotationUtils.targetRotation.yaw
+            RotationUtils.targetRotation!!.yaw
         } else {
             mc.thePlayer.rotationYaw
         }
 
         val pitch = if (RotationUtils.targetRotation != null) {
-            RotationUtils.targetRotation.pitch
+            RotationUtils.targetRotation!!.pitch
         } else {
             mc.thePlayer.rotationPitch
         }

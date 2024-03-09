@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import net.ccbluex.liquidbounce.FDPClient;
@@ -15,10 +16,7 @@ import net.ccbluex.liquidbounce.handler.protocol.api.VFNetworkManager;
 import net.ccbluex.liquidbounce.utils.BlinkUtils;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.minecraft.network.*;
-import net.minecraft.util.CryptManager;
 import net.minecraft.util.LazyLoadBase;
-import net.raphimc.vialoader.netty.VLLegacyPipeline;
-import net.raphimc.vialoader.util.VersionEnum;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -41,28 +39,15 @@ public class MixinNetworkManager implements VFNetworkManager {
 
     @Shadow
     private Channel channel;
-
     @Shadow
     private INetHandler packetListener;
 
     @Unique
-    private Cipher viaForge$decryptionCipher;
-
-    @Unique
-    private VersionEnum viaForge$targetVersion;
+    private ProtocolVersion viaForge$targetVersion;
 
     @Inject(method = "func_181124_a", at = @At(value = "INVOKE", target = "Lio/netty/bootstrap/Bootstrap;group(Lio/netty/channel/EventLoopGroup;)Lio/netty/bootstrap/AbstractBootstrap;"), locals = LocalCapture.CAPTURE_FAILHARD, remap = false)
     private static void trackSelfTarget(InetAddress address, int serverPort, boolean useNativeTransport, CallbackInfoReturnable<NetworkManager> cir, NetworkManager networkmanager, Class oclass, LazyLoadBase lazyloadbase) {
         ((VFNetworkManager) networkmanager).viaForge$setTrackedVersion(ProtocolBase.getManager().getTargetVersion());
-    }
-
-    @Inject(method = "enableEncryption", at = @At("HEAD"), cancellable = true)
-    private void storeEncryptionCiphers(SecretKey key, CallbackInfo ci) {
-        if (ProtocolBase.getManager().getTargetVersion().isOlderThanOrEqualTo(VersionEnum.r1_6_4)) {
-            ci.cancel();
-            this.viaForge$decryptionCipher = CryptManager.createNetCipherInstance(2, key);
-            this.channel.pipeline().addBefore(VLLegacyPipeline.VIALEGACY_PRE_NETTY_LENGTH_REMOVER_NAME, "encrypt", new NettyEncryptingEncoder(CryptManager.createNetCipherInstance(1, key)));
-        }
     }
 
     @Inject(method = "setCompressionTreshold", at = @At("RETURN"))
@@ -71,17 +56,12 @@ public class MixinNetworkManager implements VFNetworkManager {
     }
 
     @Override
-    public void viaForge$setupPreNettyDecryption() {
-        this.channel.pipeline().addBefore(VLLegacyPipeline.VIALEGACY_PRE_NETTY_LENGTH_REMOVER_NAME, "decrypt", new NettyEncryptingDecoder(this.viaForge$decryptionCipher));
-    }
-
-    @Override
-    public VersionEnum viaForge$getTrackedVersion() {
+    public ProtocolVersion viaForge$getTrackedVersion() {
         return viaForge$targetVersion;
     }
 
     @Override
-    public void viaForge$setTrackedVersion(VersionEnum version) {
+    public void viaForge$setTrackedVersion(ProtocolVersion version) {
         viaForge$targetVersion = version;
     }
 
