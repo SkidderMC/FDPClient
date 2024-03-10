@@ -549,7 +549,7 @@ class RotationUtils : MinecraftInstance(), Listenable {
 
             if (calMode === "Optimal") {
                 val vec3 = Vec3(
-                    max(bb.minX, min(mc.thePlayer.posX, bb.maxX)), max(bb.minY, min(mc.thePlayer.posY, bb.maxY)), max(
+                    max(bb.minX, min(mc.thePlayer.posX, bb.maxX)), max(bb.minY, min(mc.thePlayer.posY + mc.thePlayer.getEyeHeight(), bb.maxY)), max(
                         bb.minZ, min(
                             mc.thePlayer.posZ, bb.maxZ
                         )

@@ -159,13 +159,13 @@ object KillAura : Module() {
 
     private val rotationModeValue = ListValue(
         "RotationMode",
-        arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "OldMatrix", "Test", "SmoothCustom"),
+        arrayOf("None", "LiquidBounce", "ForceCenter", "SmoothCenter", "SmoothLiquid", "LockView", "Optimal", "Test", "SmoothCustom"),
         "LiquidBounce"
     ).displayable { rotationDisplay.get()}
 
     private val customRotationValue = ListValue(
         "CustomRotationMode",
-        arrayOf ("LiquidBounce", "Full", "HalfUp", "HalfDown", "CenterSimple", "CenterLine"),
+        arrayOf ("LiquidBounce", "Full", "HalfUp", "HalfDown", "CenterSimple", "CenterLine", "CenterLarge", "CenterDot", "MidRange", "HeadRange", "Optimal"),
         "HalfUp") .displayable { rotationDisplay.get() && rotationModeValue.equals("SmoothCustom") }
 
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationModeValue.equals("None") && rotationDisplay.get()}
@@ -837,9 +837,12 @@ object KillAura : Module() {
         preAttack()
 
         // Attack target
+        if (ProtocolBase.getManager().targetVersion.newerThan(ProtocolVersion.v1_8))
+            mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
         runSwing()
         packetSent = true
-        mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
+        if (!ProtocolBase.getManager().targetVersion.newerThan(ProtocolVersion.v1_8))
+            mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
 
 
         swingKeepSprint(entity)
@@ -950,7 +953,8 @@ object KillAura : Module() {
 
         val rModes = when (rotationModeValue.get()) {
             "LiquidBounce", "SmoothLiquid" -> "LiquidBounce"
-            "ForceCenter", "SmoothCenter", "OldMatrix" -> "CenterLine"
+            "ForceCenter", "SmoothCenter" -> "CenterLine"
+            "Optimal" -> "Optimal"
             "LockView" -> "CenterSimple"
             "SmoothCustom" -> customRotationValue.get()
             else -> "LiquidBounce"
@@ -966,7 +970,6 @@ object KillAura : Module() {
                 throughWallsValue.get()
             ) ?: return false
 
-        if (rotationModeValue.get() == "OldMatrix") directRotation.pitch = 89.9f
 
         var diffAngle = RotationUtils.getRotationDifference(RotationUtils.serverRotation!!, directRotation)
         if (diffAngle < 0) diffAngle = -diffAngle
@@ -984,7 +987,7 @@ object KillAura : Module() {
         if (!lastCanBeSeen && rotationDelayValue.get() && !rotationTimer.hasTimePassed(rotationDelayMSValue.get().toLong())) return true
 
         val rotation = when (rotationModeValue.get()) {
-            "LiquidBounce", "ForceCenter" -> RotationUtils.limitAngleChange(
+            "LiquidBounce", "ForceCenter", "Optimal" -> RotationUtils.limitAngleChange(
                 RotationUtils.serverRotation!!, directRotation,
                 (Math.random() * (maxTurnSpeedValue.get() - minTurnSpeedValue.get()) + minTurnSpeedValue.get()).toFloat()
             )
@@ -993,7 +996,7 @@ object KillAura : Module() {
                 directRotation,
                 (180.0).toFloat()
             )
-            "SmoothCenter", "SmoothLiquid", "SmoothCustom", "OldMatrix" -> RotationUtils.limitAngleChange(
+            "SmoothCenter", "SmoothLiquid", "SmoothCustom" -> RotationUtils.limitAngleChange(
                 RotationUtils.serverRotation!!,
                 directRotation,
                 (calculateSpeed).toFloat()

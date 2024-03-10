@@ -114,13 +114,13 @@ object FDPClient {
      */
     fun initClient() {
         mc.fontRendererObj.also { mc.fontRendererObj = it }
-        SplashProgress.setProgress(1, "Initializing Minecraft")
+        SplashProgress.setProgress(2, "Initializing Minecraft")
         ClientUtils.logInfo("Loading $CLIENT_NAME $CLIENT_VERSION")
         ClientUtils.logInfo("Initializing...")
         val startTime = System.currentTimeMillis()
 
         // Initialize managers
-        SplashProgress.setProgress(4, "Initializing $CLIENT_NAME")
+        SplashProgress.setProgress(2, "Initializing $CLIENT_NAME")
         SplashProgress.setSecondary("Initializing Managers")
         fileManager = FileManager()
         configManager = ConfigManager()

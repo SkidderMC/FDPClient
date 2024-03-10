@@ -23,7 +23,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 @ModuleInfo(name = "FastUse", category = ModuleCategory.PLAYER)
 object FastUse : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("NCP", "NCP2", "Instant", "Timer", "CustomDelay", "DelayedInstant", "MinemoraTest", "AAC", "NewAAC","Medusa","Matrix","Fast", "Grim"), "DelayedInstant")
+    private val modeValue = ListValue("Mode", arrayOf("NCP", "NCP2", "Instant", "Timer", "CustomDelay", "DelayedInstant", "MinemoraTest", "AAC", "NewAAC","Medusa","Matrix","Fast", "Grim", "Test"), "DelayedInstant")
     private val timerValue = FloatValue("Timer", 1.22F, 0.1F, 2.0F).displayable { modeValue.equals("Timer") }
     private val durationValue = IntegerValue("InstantDelay", 14, 0, 35).displayable { modeValue.equals("DelayedInstant") }
     private val delayValue = IntegerValue("CustomDelay", 0, 0, 300).displayable { modeValue.equals("CustomDelay") }
@@ -84,6 +84,11 @@ object FastUse : Module() {
 
         if (usingItem is ItemFood || usingItem is ItemBucketMilk || usingItem is ItemPotion) {
             when (modeValue.get().lowercase()) {
+                "test" -> {
+                    if (mc.thePlayer.itemInUseDuration > 10) {
+                        stopUsing()
+                    }
+                }
                 "matrix" -> {
                     mc.timer.timerSpeed = 0.5f
                     usedTimer = true

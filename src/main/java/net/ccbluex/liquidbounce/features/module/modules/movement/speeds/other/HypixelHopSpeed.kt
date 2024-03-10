@@ -23,13 +23,12 @@ import net.minecraft.util.EnumFacing
 class HypixelHopSpeed : SpeedMode("HypixelHop") {
 
     private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("Latest", "Legit", "GroundStrafe"), "Latest")
-    private val customSpeedBoost = FloatValue("${valuePrefix}SpeedPotJumpModifier", 0.1f, 0f, 0.4f)
-    private val yMotion = FloatValue("${valuePrefix}JumpYMotion", 0.42f, 0.395f, 0.42f)
     private val damageBoost = BoolValue("${valuePrefix}DamageBoost", true)
     private val sussyPacket = BoolValue("${valuePrefix}Rise6sussyPacket", false)
     private val fallingStrafe = BoolValue("${valuePrefix}FallingDamageStrafe", false)
     private val fastFall = BoolValue("${valuePrefix}FastFall", false)
     private val sneakStrafe = BoolValue("${valuePrefix}SneakStrafe", true)
+    private val glide = BoolValue("${valuePrefix}Glide", true)
 
 
     private var minSpeed = 0.0
@@ -72,11 +71,17 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
         }
 
         if (sneakStrafe.get()) {
-            if (offGroundTicks > 0 && offGroundTicks < 5) {
+            mc.gameSettings.keyBindSneak.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
+            if (!mc.thePlayer.onGround && offGroundTicks < 5) {
                 MovementUtils.strafe()
                 mc.gameSettings.keyBindSneak.pressed = true
-            } else {
-                mc.gameSettings.keyBindSneak.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
+            }
+        }
+
+        if (glide.get()) {
+            if (offGroundTicks > 10 && offGroundTicks < 15) {
+                mc.thePlayer.motionY = 0.0
+                MovementUtils.strafe()
             }
         }
 
