@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.ui.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.SplashProgress
 import net.minecraft.client.Minecraft
 import org.lwjgl.input.Keyboard
 
@@ -38,9 +39,15 @@ class ModuleManager : Listenable {
         ClassUtils.resolvePackage("${this.javaClass.`package`.name}.modules", Module::class.java)
             .forEach(this::registerModule)
 
-        modules.forEach { it.onInitialize() }
+        modules.forEach {
+            it.onInitialize()
+            SplashProgress.setSecondary("Initializing Module " + it.name)
+        }
 
-            modules.forEach { it.onLoad() }
+        modules.forEach {
+            it.onLoad()
+            SplashProgress.setSecondary("Loading Module " + it.name)
+        }
 
         FDPClient.eventManager.registerListener(AutoDisable)
 

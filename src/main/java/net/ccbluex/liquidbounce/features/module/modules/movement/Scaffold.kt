@@ -1175,10 +1175,7 @@ class Scaffold : Module() {
                             zSearch += 0.1
                             continue
                         }
-                        if (placeRotation == null || RotationUtils.getRotationDifference(rotation) < RotationUtils.getRotationDifference(
-                                if (testRotationsValue.get()) { Rotation(MovementUtils.movingYaw - 180f, 80f) } else { placeRotation.rotation }
-                            )
-                        ) placeRotation = PlaceRotation(PlaceInfo(neighbor, side.opposite, hitVec), rotation)
+                        if (placeRotation == null || RotationUtils.getRotationDifference(rotation) < RotationUtils.getRotationDifference(placeRotation.rotation)) placeRotation = PlaceRotation(PlaceInfo(neighbor, side.opposite, hitVec), rotation)
                         zSearch += 0.1
                     }
                     ySearch += 0.1

@@ -136,7 +136,7 @@ object SplashProgress {
         mc.fontRendererObj.drawString(
             currentText,
             20,
-            scaledResolution.scaledHeight - 40,
+            scaledResolution.scaledHeight - if (secondaryText == "") {20} else {38},
             Color(255, 255, 255).rgb
         )
 
@@ -144,7 +144,7 @@ object SplashProgress {
             secondaryText,
             20,
             scaledResolution.scaledHeight - 20,
-            Color(255, 255, 255).rgb
+            Color(200, 200, 200).rgb
         )
 
         val indexText = "$progress/$MAX"
