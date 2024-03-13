@@ -71,7 +71,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
         }
 
         if (sneakStrafe.get()) {
-            mc.gameSettings.keyBindSneak.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
+            mc.gameSettings.keyBindSneak.pressed = false
             if (!mc.thePlayer.onGround && offGroundTicks < 5) {
                 MovementUtils.strafe()
                 mc.gameSettings.keyBindSneak.pressed = true
@@ -99,9 +99,9 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
                     mc.thePlayer.jump()
 
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                        MovementUtils.strafe(0.535f)
+                        MovementUtils.strafe(0.51f)
                     } else {
-                        MovementUtils.strafe(0.46f)
+                        MovementUtils.strafe(0.45f)
                     }
                     
                 } else {
