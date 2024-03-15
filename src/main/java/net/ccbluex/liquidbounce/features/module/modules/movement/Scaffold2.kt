@@ -54,7 +54,8 @@ object Scaffold2 : Module() {
 
     private val currentBlock: BlockPos?
         get() {
-            val blockPos = mc.objectMouseOver?.blockPos ?: return null
+            val entity = mc.getRenderViewEntity()
+            val blockPos = entity.rayTrace(2.0, mc.timer.renderPartialTicks)?.blockPos?: return null
 
             if (BlockUtils.canBeClicked(blockPos) && mc.theWorld.worldBorder.contains(blockPos)) {
                 return blockPos
@@ -203,12 +204,7 @@ object Scaffold2 : Module() {
                 mc.gameSettings.keyBindSneak.pressed = (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) || mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).block == Blocks.air)
             }
             "jitterbridge" -> {
-                var rpitch = 0f
-                if (((camYaw / 45).roundToInt()) % 2 == 0) {
-                    rpitch = 77.4f
-                } else  {
-                    rpitch = 77.1f
-                }
+                var rpitch = getPitchRot()
 
                 playerRot = Rotation(camYaw + 180, rpitch)
                 lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 80f)
