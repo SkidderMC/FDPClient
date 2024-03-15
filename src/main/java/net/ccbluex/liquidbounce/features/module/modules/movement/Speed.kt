@@ -39,6 +39,7 @@ object Speed : Module() {
     }
 
     private val noWater = BoolValue("NoWater", true)
+    private val noSneak = BoolValue("NoSneak", true)
     private val forceSprint = BoolValue("alwaysSprint", true)
 
     @EventTarget
@@ -76,7 +77,7 @@ object Speed : Module() {
 
     @EventTarget
     fun onTick(event: TickEvent) {
-        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get())) {
+        if ((mc.thePlayer.isSneaking && noSneak.get()) || (mc.thePlayer.isInWater && noWater.get())) {
             return
         }
 
