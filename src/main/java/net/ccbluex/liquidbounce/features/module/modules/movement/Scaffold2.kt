@@ -138,13 +138,13 @@ object Scaffold2 : Module() {
                     if (safewalkValue.equals("None")) {
                         rpitch = 79f
                     } else {
-                        rpitch = 83.2f
+                        getPitchRot()
                     }
                 } else {
                     if (safewalkValue.equals("None")) {
                         rpitch = 76.3f
                     } else {
-                        rpitch = 78.1f
+                        getPitchRot()
                     }
                 }
 
@@ -269,12 +269,13 @@ object Scaffold2 : Module() {
         var rpitch = 90f
         Rotation(mc.thePlayer.rotationYaw, rpitch).toPlayer(mc.thePlayer)
         while (currentBlock == null && rpitch > 0f) {
-            rpitch -= 0.1f
+            rpitch -= 0.03f
             Rotation(mc.thePlayer.rotationYaw, rpitch).toPlayer(mc.thePlayer)
         }
         if (currentBlock == null) {
             return 80f
         }
+
         return rpitch
     }
 }
