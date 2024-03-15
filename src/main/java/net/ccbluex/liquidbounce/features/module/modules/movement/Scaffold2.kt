@@ -23,6 +23,7 @@ import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.ccbluex.liquidbounce.value.*
@@ -50,6 +51,17 @@ object Scaffold2 : Module() {
     private var right = false
 
     private var breezily = false
+
+    private val currentBlock: BlockPos?
+        get() {
+            val blockPos = mc.objectMouseOver?.blockPos ?: return null
+
+            if (BlockUtils.canBeClicked(blockPos) && mc.theWorld.worldBorder.contains(blockPos)) {
+                return blockPos
+            }
+
+            return null
+        }
 
     override fun onEnable() {
         FDPClient.moduleManager[FreeLook::class.java]!!.enable()
@@ -206,20 +218,15 @@ object Scaffold2 : Module() {
                 mc.gameSettings.keyBindJump.pressed = true
             }
             "tellybridge" -> {
-                var rpitch = 0f
-                if (((camYaw / 45).roundToInt()) % 2 == 0) {
-                    rpitch = 75.1f
-                } else  {
-                    rpitch = 75.5f
-                }
 
                 if (mc.thePlayer.onGround) {
-                    playerRot = Rotation(camYaw, rpitch)
+                    playerRot = Rotation(camYaw, 80f)
                     correctControls(0)
                 } else {
-                    playerRot = Rotation(camYaw + 180, rpitch)
+                    playerRot = Rotation(camYaw + 180, getPitchRot())
                     correctControls(1)
                 }
+
                 lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 180f)
 
                 mc.gameSettings.keyBindJump.pressed = true
@@ -260,5 +267,18 @@ object Scaffold2 : Module() {
                mc.gameSettings.keyBindLeft.pressed = right || bw
            }
         }
+    }
+
+    private fun getPitchRot(): Float {
+        var rpitch = 90f
+        Rotation(mc.thePlayer.rotationYaw, rpitch).toPlayer(mc.thePlayer)
+        while (currentBlock == null && rpitch > 0f) {
+            rpitch -= 0.1f
+            Rotation(mc.thePlayer.rotationYaw, rpitch).toPlayer(mc.thePlayer)
+        }
+        if (currentBlock == null) {
+            return 80f
+        }
+        return rpitch
     }
 }
