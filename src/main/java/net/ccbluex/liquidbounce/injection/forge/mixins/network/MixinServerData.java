@@ -33,13 +33,7 @@ public class MixinServerData implements ExtendedServerData {
     @Inject(method = "getServerDataFromNBTCompound", at = @At(value = "TAIL"))
     private static void getVersion(NBTTagCompound nbtCompound, CallbackInfoReturnable<ServerData> cir) {
         if (nbtCompound.hasKey("viaForge$version")) {
-            ProtocolVersion version;
-            if (nbtCompound.getInteger("viaForge$version") != 0) {
-                version = ProtocolVersion.getProtocol(nbtCompound.getInteger("viaForge$version"));
-            } else {
-                version = ProtocolVersion.getClosest(nbtCompound.getString("viaForge$version"));
-            }
-            ((ExtendedServerData) cir.getReturnValue()).viaForge$setVersion(version);
+            ((ExtendedServerData) cir.getReturnValue()).viaForge$setVersion(ProtocolVersion.getClosest(nbtCompound.getString("viaForge$version")));
         }
     }
 

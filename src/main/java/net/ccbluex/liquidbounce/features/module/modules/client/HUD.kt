@@ -64,6 +64,7 @@ object HUD : Module() {
     private val noInvClose = BoolValue("NoInvClose", false)
     private val noTitle = BoolValue("NoTitle", false)
     private val antiTabComplete = BoolValue("AntiTabComplete", false)
+    val noAchievement = BoolValue("No-Achievements", true)
 
     // UI EFFECT
     private val uiEffectValue = BoolValue("UIEffect", true)

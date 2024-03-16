@@ -18,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(targets = "net.minecraft.network.NetworkManager$5")
-public class MixinNetworkManager_5 {
+public class MixinNetworkManager$5 {
 
     @Final
     @Mutable

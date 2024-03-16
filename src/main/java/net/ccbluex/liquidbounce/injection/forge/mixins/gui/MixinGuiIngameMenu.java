@@ -5,7 +5,9 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.ui.gui.menu.GuiTeleportation;
 import net.ccbluex.liquidbounce.ui.gui.colortheme.GuiTheme;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
@@ -44,6 +46,7 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
 
     @Inject(method = "drawScreen", at = @At("RETURN"))
     private void drawScreen(CallbackInfo callbackInfo) {
+        final ProtocolVersion version = ProtocolBase.getManager().getTargetVersion();
         Fonts.minecraftFont.drawStringWithShadow(
                 "§7Username : §a" + mc.getSession().getUsername(),
                 6f,
@@ -61,7 +64,7 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
                     26f,
                     0xffffff);
             Fonts.minecraftFont.drawStringWithShadow(
-                    "§7Protocol : §a" + mc.getCurrentServerData().version,
+                    "§7Protocol : §a" + version.getName(),
                     6f,
                     36f,
                     0xffffff);

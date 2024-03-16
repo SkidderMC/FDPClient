@@ -152,7 +152,7 @@ class ScoreboardElement(
                 for (domain in allowedDomains) {
                     if (name.contains(domain, true)) {
                         name = when (serverValue.get().lowercase()) {
-                            "clientname" -> FDPClient.COLORED_NAME
+                            "clientname" -> FDPClient.CLIENT_CHAT
                             "website" -> FDPClient.CLIENT_WEBSITE
                             else -> "null"
                         }

@@ -189,12 +189,6 @@ public abstract class MixinNetHandlerPlayClient implements INetHandlerPlayClient
         callbackInfo.cancel();
     }
 
-    @Inject(method = "handleCloseWindow", at = @At("HEAD"), cancellable = true)
-    private void handleCloseWindow(final S2EPacketCloseWindow packetIn, final CallbackInfo callbackInfo) {
-        if (this.gameController.currentScreen instanceof GuiChat || this.gameController.currentScreen instanceof NewUi || this.gameController.currentScreen instanceof ClickGui || this.gameController.currentScreen instanceof GuiTeleportation)
-            callbackInfo.cancel();
-    }
-
     @Inject(method = "handleJoinGame", at = @At("HEAD"), cancellable = true)
     private void handleJoinGameWithAntiForge(S01PacketJoinGame packetIn, final CallbackInfo callbackInfo) {
         if (MinecraftInstance.mc.isIntegratedServerRunning())

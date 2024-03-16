@@ -5,11 +5,14 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import me.liuli.elixir.account.MinecraftAccount;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.handler.network.ClientFixes;
 import net.ccbluex.liquidbounce.handler.network.AutoReconnect;
+import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolSelector;
+import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.gui.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.utils.ServerUtils;
 import net.ccbluex.liquidbounce.utils.SessionUtils;
@@ -117,10 +120,12 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
 
     @Inject(method = "drawScreen", at = @At("RETURN"))
     private void drawScreen(CallbackInfo callbackInfo) {
+        final ProtocolVersion version = ProtocolBase.getManager().getTargetVersion();
         RendererExtensionKt.drawCenteredString(mc.fontRendererObj, infoStr, this.width / 2F, this.height / 2F + field_175353_i / 2F + this.fontRendererObj.FONT_HEIGHT + 100, 0,false);
         if (AutoReconnect.INSTANCE.isEnabled()) {
             this.updateReconnectButton();
         }
+        Fonts.minecraftFont.drawStringWithShadow("§7Protocol: §b" + version.getName(), 6f, 16f, 0xffffff);
     }
 
     private void updateSliderText() {

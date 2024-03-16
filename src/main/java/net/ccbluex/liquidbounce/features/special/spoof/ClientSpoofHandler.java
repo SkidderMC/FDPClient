@@ -52,7 +52,7 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
                 }
             } else {
                 if (Objects.requireNonNull(FDPClient.moduleManager.getModule(HUD.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(HUD.class)).getTpDebugValue().get())
-                    ClientUtils.INSTANCE.displayChatMessage(FDPClient.COLORED_NAME + "tp");
+                    ClientUtils.INSTANCE.displayChatMessage(FDPClient.CLIENT_CHAT + "tp");
                 flagTicks = 1;
                 flagged = false;
             }

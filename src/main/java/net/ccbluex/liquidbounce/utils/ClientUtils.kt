@@ -43,7 +43,7 @@ ClientUtils : MinecraftInstance() {
     }
 
     fun displayAlert(message: String) {
-        displayChatMessage(FDPClient.COLORED_NAME + message)
+        displayChatMessage(FDPClient.CLIENT_CHAT + message)
     }
 
     fun displayChatMessage(message: String) {

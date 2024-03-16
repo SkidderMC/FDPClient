@@ -224,7 +224,7 @@ class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameS
     private fun drawText(text: String?, x: Float, y: Float, colorHex: Int, ignoreColor: Boolean): Int {
         if (text == null)
             return 0
-        if (text.isNullOrEmpty())
+        if (text.isEmpty())
             return x.toInt()
 
         GlStateManager.translate(x - 1.5, y + 0.5, 0.0)

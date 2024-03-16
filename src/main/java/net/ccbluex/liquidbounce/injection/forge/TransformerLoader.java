@@ -16,7 +16,6 @@ import org.spongepowered.asm.mixin.Mixins;
 
 import java.util.Map;
 
-@IFMLLoadingPlugin.MCVersion("1.8.9")
 public class TransformerLoader implements IFMLLoadingPlugin {
 
     public TransformerLoader() {

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import com.viaversion.viaversion.api.protocol.version.ProtocolVersion
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -20,7 +21,6 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.projectile.EntityFireball
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C0APacketAnimation
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion
 import java.util.*
 
 @ModuleInfo(name = "AntiFireBall", description = "", category = ModuleCategory.COMBAT)

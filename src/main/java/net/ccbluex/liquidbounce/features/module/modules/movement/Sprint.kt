@@ -27,7 +27,6 @@ object Sprint : Module() {
     val hungryValue = BoolValue("Hungry", true)
     val sneakValue = BoolValue("Sneak", false)
     val collideValue = BoolValue("Collide", false)
-    val jumpDirectionsValue = BoolValue("JumpDirections", false)
     val allDirectionsValue = BoolValue("AllDirections", false)
     val allDirectionsBypassValue = ListValue("AllDirectionsBypass", arrayOf("Rotate", "RotateSpoof", "Toggle", "Spoof", "SpamSprint", "NoStopSprint", "Minemora", "LimitSpeed", "None"), "None").displayable { allDirectionsValue.get() }
     private val allDirectionsLimitSpeedGround = BoolValue("AllDirectionsLimitSpeedOnlyGround", true)

@@ -8,10 +8,7 @@ package net.ccbluex.liquidbounce.utils
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.util.*
-import kotlin.math.PI
-import kotlin.math.exp
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 
 object MathUtils {
 
@@ -123,6 +120,7 @@ object MathUtils {
         return outPoints.toTypedArray()
     }
 
+    @JvmStatic
     fun round(value: Double, inc: Double): Double {
         return if (inc == 0.0) value else if (inc == 1.0) Math.round(value).toDouble() else {
             val halfOfInc = inc / 2.0
@@ -138,6 +136,7 @@ object MathUtils {
         return Math.sqrt(sigma.toDouble()) * random.nextGaussian() + x
     }
 
+    @JvmStatic
     fun roundToHalf(d: Double): Double {
         return Math.round(d * 2.0) / 2.0
     }
@@ -173,5 +172,21 @@ object MathUtils {
         bd = bd.setScale(places, RoundingMode.HALF_UP)
         return bd.toDouble()
     }
+
+    @JvmStatic
+    fun roundX(value: Double, inc: Double): Double {
+        if (inc == 0.0) return value
+        else if (inc == 1.0) return Math.round(value).toDouble()
+        else {
+            val halfOfInc = inc / 2.0
+            val floored = floor(value / inc) * inc
+
+            return if (value >= floored + halfOfInc) BigDecimal(ceil(value / inc) * inc)
+                .toDouble()
+            else BigDecimal(floored)
+                .toDouble()
+        }
+    }
+
 
 }

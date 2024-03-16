@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.handler.protocol;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
@@ -20,11 +25,9 @@ public class ProtocolBase {
     private ProtocolVersion targetVersion = ProtocolVersion.v1_8;
     public static final AttributeKey<UserConnection> LOCAL_VIA_USER = AttributeKey.valueOf("local_via_user");
     public static final AttributeKey<VFNetworkManager> VF_NETWORK_MANAGER = AttributeKey.valueOf("encryption_setup");
-    private final VFPlatform platform;
     private static ProtocolBase manager;
 
-    public ProtocolBase(VFPlatform platform) {
-        this.platform = platform;
+    public ProtocolBase() {
     }
 
     public static void init(final VFPlatform platform) {
@@ -39,7 +42,7 @@ public class ProtocolBase {
         if (version == ProtocolVersion.unknown)
             throw new IllegalArgumentException("Unknown Version " + platform.getGameVersion());
 
-        manager = new ProtocolBase(platform);
+        manager = new ProtocolBase();
 
         ViaLoader.init(new ViaVersionPlatformImpl(null), new ProtocolVLLoader(platform), new ProtocolVLInjector(), null, ViaBackwardsPlatformImpl::new, ViaRewindPlatformImpl::new, null, null);
 
@@ -72,10 +75,6 @@ public class ProtocolBase {
 
     public void reorderCompression(final Channel channel) {
         channel.pipeline().fireUserEventTriggered(CompressionReorderEvent.INSTANCE);
-    }
-
-    public VFPlatform getPlatform() {
-        return platform;
     }
 
     public static ProtocolBase getManager() {

@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.client.HotbarSettings;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
+import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
@@ -84,7 +85,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             overlayPlayerList.renderPlayerlist(sr.getScaledWidth(), mc.theWorld.getScoreboard(), mc.theWorld.getScoreboard().getObjectiveInDisplaySlot(0));
         }
 
-        if(Minecraft.getMinecraft().getRenderViewEntity() instanceof EntityPlayer) {
+        if(MinecraftInstance.mc.getRenderViewEntity() instanceof EntityPlayer) {
             String hotbarType = HotbarSettings.getHotbarValue().get();
             Minecraft mc = Minecraft.getMinecraft();
             GlStateManager.resetColor();

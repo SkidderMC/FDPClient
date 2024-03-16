@@ -6,6 +6,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "accessors.MinecraftForgeClientAccessor",
+    "client.MixinAnvilChunkLoader",
     "block.MixinBlock",
     "block.MixinBlockAnvil",
     "block.MixinBlockLadder",
@@ -14,7 +15,6 @@
     "block.MixinBlockRedstoneTorch",
     "block.MixinBlockSoulSand",
     "block.MixinWorld",
-    "client.MixinEnumFacing",
     "client.MixinGameSettings",
     "client.MixinLanguageManager",
     "client.MixinMinecraft",
@@ -61,10 +61,9 @@
     "network.MixinGuiConnecting_1",
     "network.MixinNetHandlerPlayClient",
     "network.MixinNetworkManager",
-    "network.MixinNetworkManager_5",
+    "network.MixinNetworkManager$5",
     "network.MixinNetworkPlayerInfo",
     "network.MixinServerData",
-    "network.MixinServerPinger",
     "packets.MixinC00Handshake",
     "packets.MixinC17PacketCustomPayload",
     "packets.MixinEntityPackets",
@@ -105,6 +104,7 @@
     "splash.MixinSplashProgressRunnable"
   ],
   "client": [
+    "client.MixinRegionRenderCache",
     "gui.MixinGui",
     "gui.MixinGuiKeyBindingList",
     "gui.MixinGuiOverlayDebug",
