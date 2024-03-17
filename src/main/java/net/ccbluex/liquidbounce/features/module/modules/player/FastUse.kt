@@ -85,7 +85,7 @@ object FastUse : Module() {
         if (usingItem is ItemFood || usingItem is ItemBucketMilk || usingItem is ItemPotion) {
             when (modeValue.get().lowercase()) {
                 "test" -> {
-                    if (mc.thePlayer.itemInUseDuration > 10) {
+                    if (mc.thePlayer.itemInUseDuration > 28) {
                         stopUsing()
                     }
                 }

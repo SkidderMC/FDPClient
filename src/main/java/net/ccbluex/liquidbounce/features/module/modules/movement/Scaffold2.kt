@@ -55,7 +55,7 @@ object Scaffold2 : Module() {
     private val currentBlock: BlockPos?
         get() {
             val entity = mc.getRenderViewEntity()
-            val blockPos = entity.rayTrace(2.0, mc.timer.renderPartialTicks)?.blockPos?: return null
+            val blockPos = entity.rayTrace(4.0, mc.timer.renderPartialTicks)?.blockPos?: return null
 
             if (BlockUtils.canBeClicked(blockPos) && mc.theWorld.worldBorder.contains(blockPos)) {
                 return blockPos
@@ -134,6 +134,7 @@ object Scaffold2 : Module() {
 
                 // Rotation stuff
                 var rpitch = 0f
+                Rotation(camYaw + 180, 0f).toPlayer(mc.thePlayer)
                 if (((camYaw / 45).roundToInt()) % 2 == 0) {
                     if (safewalkValue.equals("None")) {
                         rpitch = 79f
@@ -204,6 +205,7 @@ object Scaffold2 : Module() {
                 mc.gameSettings.keyBindSneak.pressed = (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) || mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).block == Blocks.air)
             }
             "jitterbridge" -> {
+                Rotation(camYaw + 180, 0f).toPlayer(mc.thePlayer)
                 var rpitch = getPitchRot()
 
                 playerRot = Rotation(camYaw + 180, rpitch)
@@ -219,6 +221,7 @@ object Scaffold2 : Module() {
                     playerRot = Rotation(camYaw, 80f)
                     correctControls(0)
                 } else {
+                    Rotation(camYaw + 180, 0f).toPlayer(mc.thePlayer)
                     playerRot = Rotation(camYaw + 180, getPitchRot())
                     correctControls(1)
                 }

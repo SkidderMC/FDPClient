@@ -20,7 +20,6 @@ import net.ccbluex.liquidbounce.utils.block.PlaceInfo.Companion.get
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithServerSideRotation
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.timer.TickTimer
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
@@ -77,12 +76,13 @@ class Scaffold : Module() {
     private val sameYValue = ListValue("SameY", arrayOf("Simple", "AutoJump", "WhenSpeed", "JumpUpY", "MotionY", "OFF"), "WhenSpeed").displayable { placeOptions.get() }
     private val hitableCheckValue = ListValue("HitableCheck", arrayOf("Simple", "Strict", "OFF"), "Simple").displayable { placeOptions.get() }
     private val expandLengthValue = IntegerValue("ExpandLength", 1, 1, 6).displayable { placeOptions.get() }
+    private val noExpandOnTowerValue = BoolValue("NoExpandOnTower", false).displayable { placeOptions.get() && expandLengthValue.get() > 1}
    
     
     // Movement
     private val moveOptions = BoolValue("Movement Options: ", true)
     
-    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "Alternating", "Hypixel", "OFF"), "Always").displayable { moveOptions.get() }
+    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "Alternating", "Hypixel", "Vulcan", "OFF"), "Always").displayable { moveOptions.get() }
     
     private val safeWalkValue = ListValue("SafeWalk", arrayOf("Ground", "Air", "OFF"), "Ground").displayable { moveOptions.get() }
     private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "Off"), "Off").displayable { moveOptions.get() }
@@ -299,6 +299,11 @@ class Scaffold : Module() {
 
         if (lastTick == mc.thePlayer.ticksExisted) return
         lastTick = mc.thePlayer.ticksExisted
+
+        if (sprintValue.equals("Vulcan")) {
+            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
+            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
+        }
 
         
         if (towerStatus || mc.thePlayer.isCollidedHorizontally) {
@@ -805,6 +810,19 @@ class Scaffold : Module() {
                 // hi
                 null
             }
+            "vulcan" -> {
+                if (mc.thePlayer.onGround) {
+                    fakeJump()
+                    jumpGround = mc.thePlayer.posY
+                    mc.thePlayer.motionY = 0.42
+                }
+                if (mc.thePlayer.posY > jumpGround + 0.75 && MovementUtils.isMoving()) {
+                    fakeJump()
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
+                    mc.thePlayer.motionY = 0.36
+                    jumpGround = mc.thePlayer.posY
+                }
+            }
         }
     }
 
@@ -814,7 +832,7 @@ class Scaffold : Module() {
             return
         }
 
-        findBlock(expandLengthValue.get()> 1)
+        findBlock(expandLengthValue.get()> 1 && (!noExpandOnTowerValue.get() || !towerStatus))
     }
 
     /**
@@ -1366,7 +1384,7 @@ class Scaffold : Module() {
 
     val canSprint: Boolean
         get() = MovementUtils.isMoving() && when (sprintValue.get().lowercase()) {
-            "always", "dynamic" -> true
+            "always", "dynamic", "vulcan" -> true
             "onground" -> mc.thePlayer.onGround
             "offground" -> !mc.thePlayer.onGround
             "hypixel" -> false

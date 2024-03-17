@@ -44,7 +44,7 @@ object Speed : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get())) return
+        if ((mc.thePlayer.isSneaking && noSneak.get()) || (mc.thePlayer.isInWater && noWater.get())) return
         if (MovementUtils.isMoving() && forceSprint.get()) mc.thePlayer.isSprinting = true
         mode.onUpdate()
     }
@@ -58,7 +58,7 @@ object Speed : Module() {
 
         mode.onMotion(event)
 
-        if (mc.thePlayer.isSneaking || event.eventState !== EventState.PRE || (mc.thePlayer.isInWater && noWater.get())) {
+        if ((mc.thePlayer.isSneaking && noSneak.get()) || event.eventState !== EventState.PRE || (mc.thePlayer.isInWater && noWater.get())) {
             return
         }
 
@@ -67,7 +67,7 @@ object Speed : Module() {
 
     @EventTarget
     fun onMove(event: MoveEvent) {
-        if (mc.thePlayer.isSneaking || (mc.thePlayer.isInWater && noWater.get())) {
+        if ((mc.thePlayer.isSneaking && noSneak.get()) || (mc.thePlayer.isInWater && noWater.get())) {
             return
         }
 
