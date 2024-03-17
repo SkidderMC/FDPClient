@@ -107,6 +107,7 @@ class Scaffold : Module() {
             "Matrix6.9.2",
             "Verus",
             "NCP",
+            "Vulcan",
             "WatchDog"
         ), "MotionTP2"
     ).displayable { moveOptions.get() }
@@ -816,7 +817,7 @@ class Scaffold : Module() {
                     jumpGround = mc.thePlayer.posY
                     mc.thePlayer.motionY = 0.42
                 }
-                if (mc.thePlayer.posY > jumpGround + 0.75 && MovementUtils.isMoving()) {
+                if (mc.thePlayer.posY > jumpGround + 0.65 && MovementUtils.isMoving()) {
                     fakeJump()
                     mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
                     mc.thePlayer.motionY = 0.36
