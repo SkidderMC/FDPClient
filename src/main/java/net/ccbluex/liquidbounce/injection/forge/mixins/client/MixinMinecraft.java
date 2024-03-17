@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.player.DelayRemover;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
+import net.ccbluex.liquidbounce.features.special.spoof.ClientSpoofHandler;
 import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixes;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.injection.forge.mixins.accessors.MinecraftForgeClientAccessor;
@@ -54,6 +55,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import javax.swing.*;
+import java.util.List;
 import java.util.Objects;
 
 @Mixin(Minecraft.class)
@@ -366,6 +368,11 @@ public abstract class MixinMinecraft {
         }
 
      */
+    }
+
+    @Inject(method = "getVersion", at = @At("HEAD"))
+    private void getVersion(CallbackInfoReturnable<List<String>> cir) {
+        ClientSpoofHandler.handleLaunchedVersion();
     }
 
     @Redirect(method="loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V", at=@At(value="INVOKE", target="Lnet/minecraft/client/LoadingScreenRenderer;resetProgressAndMessage(Ljava/lang/String;)V"))

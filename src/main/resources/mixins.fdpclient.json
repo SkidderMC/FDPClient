@@ -6,7 +6,6 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "accessors.MinecraftForgeClientAccessor",
-    "client.MixinAnvilChunkLoader",
     "block.MixinBlock",
     "block.MixinBlockAnvil",
     "block.MixinBlockLadder",
@@ -15,6 +14,7 @@
     "block.MixinBlockRedstoneTorch",
     "block.MixinBlockSoulSand",
     "block.MixinWorld",
+    "client.MixinAnvilChunkLoader",
     "client.MixinGameSettings",
     "client.MixinLanguageManager",
     "client.MixinMinecraft",

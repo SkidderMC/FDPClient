@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.client.button.*
+import net.ccbluex.liquidbounce.features.special.spoof.ClientSpoofHandler
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.value.ListValue
@@ -29,8 +30,9 @@ class ClientSpoof : Module() {
     /**
      * The Mode value.
      */
-    val modeValue = ListValue(
-        "Mode", arrayOf(
+    val modeValue = object : ListValue(
+        "Mode",
+        arrayOf(
             "Vanilla",
             "OptiFine",
             "Fabric",
@@ -41,8 +43,15 @@ class ClientSpoof : Module() {
             "Geyser",
             "Log4j",
             "Custom"
-        ), "Vanilla"
-    )
+        ),
+        "Vanilla"
+    ) {
+        override fun onPostChange(oldValue: String?, newValue: String?) {
+            if (oldValue != newValue) {
+                ClientSpoofHandler.checkIconAndTitle()
+            }
+        }
+    }
 
     private val customValue = TextValue("Custom-Brand", "WTF").displayable { modeValue.get().equals("custom", true) }
 
@@ -139,7 +148,7 @@ class ClientSpoof : Module() {
                         "Lunar" -> PacketUtils.sendPacketNoEvent(
                             C17PacketCustomPayload(
                                 "MC|Brand",
-                                PacketBuffer(Unpooled.buffer()).writeString("lunarclient:v2.12.3-2351")
+                                PacketBuffer(Unpooled.buffer()).writeString("lunarclient:v2.14.5-2411")
                             )
                         )
 
@@ -202,4 +211,15 @@ class ClientSpoof : Module() {
                         "}"
             )
     }
+
+    @Override
+    override fun onEnable() {
+        ClientSpoofHandler.checkIconAndTitle()
+    }
+
+    @Override
+    override fun onDisable() {
+        ClientSpoofHandler.checkIconAndTitle()
+    }
+
 }

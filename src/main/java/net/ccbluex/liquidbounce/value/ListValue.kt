@@ -56,4 +56,6 @@ open class ListValue(name: String, val values: Array<String>, value: String) : V
     override fun fromJson(element: JsonElement) {
         if (element.isJsonPrimitive) changeValue(element.asString)
     }
+
+    open fun onPostChange(oldValue: String?, newValue: String?) {}
 }
