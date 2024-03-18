@@ -12,11 +12,15 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlockIntersects
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.block.Block
 import net.minecraft.block.BlockAir
+import net.minecraft.block.BlockLadder
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.BlockPos
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
@@ -25,7 +29,8 @@ import kotlin.math.sin
 object Spider : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Collide", "Motion", "AAC3.3.12", "AAC4", "Checker", "Vulcan"), "Collide")
-    private val motionValue = FloatValue("Motion", 0.42F, 0.1F, 1F)
+    private val motionValue = FloatValue("Motion", 0.42F, 0.1F, 1F).displayable { modeValue.equals("Motion") }
+    private val avoidLadderValue = BoolValue("AvoidLadder", false)
 
     private var groundHeight = 0.0
     private var glitch = false
@@ -44,6 +49,9 @@ object Spider : Module() {
                 return
             }
         }
+
+        val block = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ))
+        if (block is BlockLadder && avoidLadderValue.get()) return
 
         if(modeValue.get() == "AAC4" && (mc.thePlayer.motionY < 0.0 || mc.thePlayer.onGround)) {
             glitch = true

@@ -565,14 +565,10 @@ class Scaffold : Module() {
                             wdSpoof = true
                         }
                         0 -> {
-                            wdTick = 1
+                            mc.thePlayer.motionY = 0.0
                         }
     
                     }
-                }
-                if (wdTick == 1) {
-                    wdSpoof = true
-                    mc.thePlayer.motionY = 0.5
                 }
             } else {
                 wdTick = 0

@@ -53,9 +53,9 @@ object SmartSpoof : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true)) {
+        if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true) && mc.thePlayer.ticksExisted > 20) {
             if (packet is S12PacketEntityVelocity) targetDelay = velocityDelay.get().toLong()
-            if (packet is S08PacketPlayerPosLook || mc.thePlayer.ticksExisted < 20) {
+            if (packet is S08PacketPlayerPosLook) {
                 targetDelay = 0L
                 while (!packets.isEmpty()) {
                     PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
@@ -77,6 +77,10 @@ object SmartSpoof : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if (mc.thePlayer.ticksExisted < 20) {
+            times.clear()
+            packets.clear()
+        }
         delay = targetDelay
         if (!packets.isEmpty()) {
             while (times.first() < System.currentTimeMillis() - delay) {

@@ -55,11 +55,8 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
 
         if (fastFall.get()) {
             mc.thePlayer.motionY = when (offGroundTicks) {
-                5 -> -0.0263837384
-                6 -> -0.19025606858
-                7 -> -0.26485095
-                8 -> -0.3379539399
-                9 -> -0.3997423801
+                4 -> mc.thePlayer.motionY - 0.03
+                6 -> mc.thePlayer.motionY - 0.084
                 else -> mc.thePlayer.motionY
             }
         }
@@ -81,6 +78,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
         if (glide.get()) {
             if (offGroundTicks > 10 && offGroundTicks < 15) {
                 mc.thePlayer.motionY = 0.0
+                mc.thePlayer.onGround = true
                 MovementUtils.strafe()
             }
         }

@@ -128,6 +128,11 @@ object LegitAura : Module() {
         currentTarget = null
     }
 
+    override fun onEnable() {
+        currentTarget = null
+        FDPClient.moduleManager[FreeLook::class.java]!!.enable()
+    }
+
     val displayBlocking: Boolean
         get() = !autoblockMode.equals("None") && autoblockRangeTargets.isNotEmpty()
 

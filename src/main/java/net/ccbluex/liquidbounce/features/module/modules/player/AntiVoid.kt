@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold
+import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
@@ -28,7 +29,7 @@ import net.minecraft.util.BlockPos
 @ModuleInfo(name = "AntiVoid", category = ModuleCategory.PLAYER)
 object AntiVoid : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Blink", "TPBack", "MotionFlag", "PacketFlag", "GroundSpoof", "OldHypixel", "Jartex", "OldCubecraft", "Packet", "Vulcan"), "Blink")
+    private val modeValue = ListValue("Mode", arrayOf("Blink", "TPBack", "MotionFlag", "PacketFlag", "GroundSpoof", "OldHypixel", "Jartex", "OldCubecraft", "Packet", "Vulcan", "Universal"), "Universal")
     private val maxFallDistValue = FloatValue("MaxFallDistance", 10F, 5F, 20F)
     private val resetMotionValue = BoolValue("ResetMotion", false).displayable { modeValue.equals("Blink") }
     private val startFallDistValue = FloatValue("BlinkStartFallDistance", 2F, 0F, 5F).displayable { modeValue.equals("Blink") }
@@ -43,6 +44,9 @@ object AntiVoid : Module() {
     private var canSpoof = false
     private var tried = false
     private var flagged = false
+
+    private var enabled = false
+    private var wasOnGround = false
 
     private var posX = 0.0
     private var posY = 0.0
@@ -64,6 +68,7 @@ object AntiVoid : Module() {
         }
         tried = false
         flagged = false
+        enabled = false
     }
 
     @EventTarget
@@ -78,9 +83,31 @@ object AntiVoid : Module() {
         if (mc.thePlayer.onGround) {
             tried = false
             flagged = false
+            wasOnGround = true
         }
 
         when (modeValue.get().lowercase()) {
+            "universal" -> {
+                if (!mc.thePlayer.onGround && wasOnGround) {
+                    if (mc.thePlayer.motionY < 0.0 && checkVoid()) {
+                        enabled = true
+                        BlinkUtils.setBlinkState(all = true)
+                        posX = mc.thePlayer.posX
+                        posY = mc.thePlayer.posY
+                        posZ = mc.thePlayer.posZ
+                        flagged = false
+                    }
+                } else if (mc.thePlayer.onGround && enabled) {
+                    BlinkUtils.setBlinkState(off = true, release = true)
+                    enabled = false
+                    flagged = false
+                } else if (!mc.thePlayer.onGround && enabled) {
+                    if (mc.thePlayer.fallDistance > maxFallDistValue.get() && !flagged) {
+                        mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(posX, posY + 1, posZ, false))
+                        flagged = true
+                    }
+                }
+            }
             "groundspoof" -> {
                 if (!voidOnlyValue.get() || checkVoid()) {
                     canSpoof = mc.thePlayer.fallDistance > maxFallDistValue.get()
@@ -241,6 +268,10 @@ object AntiVoid : Module() {
                 }
             }
         }
+
+        if (!mc.thePlayer.onGround) {
+            wasOnGround = false
+        }
     }
 
     private fun checkVoid(): Boolean {
@@ -252,6 +283,13 @@ object AntiVoid : Module() {
         val packet = event.packet
 
         when (modeValue.get().lowercase()) {
+            "universal" -> {
+                if (enabled && flagged && packet is S08PacketPlayerPosLook) {
+                    enabled = false
+                    BlinkUtils.setBlinkState(off = true, release = true)
+                    mc.thePlayer.setPosition(posX, posY, posZ)
+                }
+            }
             "blink" -> {
                 if (blink && (packet is C03PacketPlayer)) {
                     packetCache.add(packet)
