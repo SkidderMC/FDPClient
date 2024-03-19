@@ -34,7 +34,7 @@ import kotlin.math.roundToInt
 @ModuleInfo(name = "NameTags", category = ModuleCategory.VISUAL)
 object NameTags : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "Liquid", "Jello"), "Liquid")
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "Liquid", "Jello", "Modern"), "Liquid")
     private val healthValue = BoolValue("Health", true).displayable { modeValue.equals("Liquid") }
     private val pingValue = BoolValue("Ping", true).displayable { modeValue.equals("Liquid") }
     private val healthBarValue = BoolValue("Bar", true).displayable { modeValue.equals("Liquid") }

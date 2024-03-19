@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold
 import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -71,6 +72,12 @@ object AntiVoid : Module() {
         enabled = false
     }
 
+    override fun onDisable() {
+        if (enabled) {
+            BlinkUtils.setBlinkState(off = true, release = true)
+        }
+    }
+
     @EventTarget
     fun onWorld(event: WorldEvent) {
         if(lastRecY == 0.0) {
@@ -103,7 +110,7 @@ object AntiVoid : Module() {
                     flagged = false
                 } else if (!mc.thePlayer.onGround && enabled) {
                     if (mc.thePlayer.fallDistance > maxFallDistValue.get() && !flagged) {
-                        mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(posX, posY + 1, posZ, false))
+                        PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(posX, posY + 1, posZ, false))
                         flagged = true
                     }
                 }
