@@ -42,6 +42,7 @@ import java.awt.Color
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
+import net.minecraft.item.*
 
 @ModuleInfo(name = "Breaker", category = ModuleCategory.PLAYER)
 object Breaker : Module() {
@@ -52,9 +53,10 @@ object Breaker : Module() {
     private val blockValue = BlockValue("Block", 26)
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val ignoreFirstBlockValue = BoolValue("IgnoreFirstDetection", false)
-    private val onClickMouse = BoolValue("onClick", false)
+    private val onClickMouse = BoolValue("OnClick", false)
     private val noHitValue = BoolValue("NoHit", false)
-    private val noMoveValue = BoolValue("noMove", false)
+    private val noMoveValue = BoolValue("NoMove", false)
+    private val noEatValue = BoolValue("NoEat", true)
     private val throughWallsValue = ListValue("ThroughWalls", arrayOf("None", "Raycast", "Around", "Hypixel"), "None")
     private val actionValue = ListValue("Action", arrayOf("Destroy", "Use"), "Destroy")
     private val rangeValue = FloatValue("Range", 5F, 1F, 7F)
@@ -155,6 +157,12 @@ object Breaker : Module() {
             val killAura = FDPClient.moduleManager[KillAura::class.java]!!
 
             if (killAura.state && killAura.currentTarget != null) {
+                return
+            }
+        }
+
+        if (noEatValue.get()) {
+            if (mc.thePlayer.isUsingItem && (mc.thePlayer.heldItem?.item is ItemFood || mc.thePlayer.heldItem?.item is ItemBucketMilk || mc.thePlayer.heldItem?.item is ItemPotion)) {
                 return
             }
         }
