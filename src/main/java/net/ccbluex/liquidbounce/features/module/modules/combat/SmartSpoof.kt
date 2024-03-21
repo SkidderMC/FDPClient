@@ -1,8 +1,3 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
- */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.event.*
@@ -30,6 +25,8 @@ object SmartSpoof : Module() {
     private var delay = 0L
     private var targetDelay = 0L
 
+    private var releasing = false
+
     override fun onEnable() {
         packets.clear()
         times.clear()
@@ -53,13 +50,10 @@ object SmartSpoof : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true) && mc.thePlayer.ticksExisted > 20) {
+        if (releasing) return 
+        if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true) && mc.thePlayer.ticksExisted > 20 && targetDelay > 0) {
             if (packet is S12PacketEntityVelocity) targetDelay = velocityDelay.get().toLong()
             if (packet is S08PacketPlayerPosLook) {
-                if (mc.thePlayer.ticksExisted < 20) {
-                    times.clear()
-                    packets.clear()
-                }
                 targetDelay = 0L
                 while (!packets.isEmpty()) {
                     PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
@@ -84,14 +78,15 @@ object SmartSpoof : Module() {
         if (mc.thePlayer.ticksExisted < 20) {
             times.clear()
             packets.clear()
-            return 
         }
         delay = targetDelay
         if (!packets.isEmpty()) {
+            releasing = true
             while (times.first() < System.currentTimeMillis() - delay) {
                 PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
                 times.remove(times.first())
             }
+            releasing = false
         }
     }
 }
