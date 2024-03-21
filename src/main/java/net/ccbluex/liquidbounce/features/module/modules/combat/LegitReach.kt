@@ -228,25 +228,24 @@ class LegitReach : Module() {
     
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        if (releasing) return
         val packet = event.packet
         if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state || !backtrack) {
             clearPackets()
             backtrack = false
             return
         }
-
-        if (packet is S12PacketEntityVelocity && velocityValue.get()) {
-            comboCounter = 0
-            event.cancelEvent()
-            packets.add(packet as Packet<INetHandlerPlayClient>)
-            clearPackets()
-        }
         
         if (mode.equals("IncomingBlink") && backtrack) {
             if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true)) {
                 if (mc.thePlayer.ticksExisted < 20) return
                 if (incomingBlink.get()) {
+                    if (packet is S12PacketEntityVelocity && velocityValue.get()) {
+                        comboCounter = 0
+                        event.cancelEvent()
+                        packets.add(packet as Packet<INetHandlerPlayClient>)
+                        clearPackets()
+                        return 
+                    }
                     event.cancelEvent()
                     packets.add(packet as Packet<INetHandlerPlayClient>)
                 }
