@@ -56,6 +56,10 @@ object SmartSpoof : Module() {
         if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true) && mc.thePlayer.ticksExisted > 20) {
             if (packet is S12PacketEntityVelocity) targetDelay = velocityDelay.get().toLong()
             if (packet is S08PacketPlayerPosLook) {
+                if (mc.thePlayer.ticksExisted < 20) {
+                    times.clear()
+                    packets.clear()
+                }
                 targetDelay = 0L
                 while (!packets.isEmpty()) {
                     PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
@@ -80,6 +84,7 @@ object SmartSpoof : Module() {
         if (mc.thePlayer.ticksExisted < 20) {
             times.clear()
             packets.clear()
+            return 
         }
         delay = targetDelay
         if (!packets.isEmpty()) {
