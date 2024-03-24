@@ -1349,7 +1349,7 @@ class Scaffold : Module() {
                         "offset" -> placeRotation.rotation.pitch + advancedPitchOffsetValue.get().toFloat()
                         "static" -> advancedPitchStaticValue.get().toFloat()
                         "vanilla" -> placeRotation.rotation.pitch
-                        "backwards" -> if (((MovementUtils.movingYaw - 180) / 45).roundToInt() * 45 % 90 == 0) { 82f } else { calcpitch = 78f}
+                        "backwards" -> if (((MovementUtils.movingYaw - 180) / 45).roundToInt() * 45 % 90 == 0) { 82f } else { 78f}
                         else -> placeRotation.rotation.pitch
                     }
                     Rotation(advancedYaw, advancedPitch)
