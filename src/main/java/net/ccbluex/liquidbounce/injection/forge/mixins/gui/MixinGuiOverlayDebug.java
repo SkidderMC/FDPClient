@@ -63,7 +63,7 @@ public abstract class MixinGuiOverlayDebug {
                 case EAST:
                     s = "Towards positive X";
             }
-            list.add("Minecraft 1.8.9 (" + ClientBrandRetriever.getClientModName() + ")");
+            list.add("Minecraft 1.8.9 (1.8.9/" + ClientBrandRetriever.getClientModName() + ")");
             list.add(MinecraftInstance.mc.debug);
             list.add(MinecraftInstance.mc.renderGlobal.getDebugInfoRenders());
             list.add(MinecraftInstance.mc.renderGlobal.getDebugInfoEntities());
@@ -98,62 +98,9 @@ public abstract class MixinGuiOverlayDebug {
                 list.add(String.format("Looking at: %d %d %d", new Object[]{Integer.valueOf(blockpos1.getX()), Integer.valueOf(blockpos1.getY()), Integer.valueOf(blockpos1.getZ())}));
             }
 
-        }
-        Entity entity = MinecraftInstance.mc.getRenderViewEntity();
-        EnumFacing enumfacing = entity.getHorizontalFacing();
-        String s = "Invalid";
-
-        switch (enumfacing) {
-            case NORTH:
-                s = "Towards negative Z";
-                break;
-            case SOUTH:
-                s = "Towards positive Z";
-                break;
-            case WEST:
-                s = "Towards negative X";
-                break;
-            case EAST:
-                s = "Towards positive X";
+            cir.setReturnValue(list);
         }
 
-        List<String> list = Lists.newArrayList();
-        list.add("Minecraft 1.8.9 (" + ClientBrandRetriever.getClientModName() + ")");
-        list.add(MinecraftInstance.mc.debug);
-        list.add(MinecraftInstance.mc.renderGlobal.getDebugInfoRenders());
-        list.add(MinecraftInstance.mc.renderGlobal.getDebugInfoEntities());
-        list.add("P: " + MinecraftInstance.mc.effectRenderer.getStatistics() + ". T: " + MinecraftInstance.mc.theWorld.getDebugLoadedEntities());
-        list.add(MinecraftInstance.mc.theWorld.getProviderName());
-        list.add("");
-        list.add(String.format("XYZ: %.3f / %.5f / %.3f", MinecraftInstance.mc.getRenderViewEntity().posX, Double.valueOf(MinecraftInstance.mc.getRenderViewEntity().getEntityBoundingBox().minY), Double.valueOf(MinecraftInstance.mc.getRenderViewEntity().posZ)));
-        list.add(String.format("Block: %d %d %d", blockpos.getX(), blockpos.getY(), blockpos.getZ()));
-        list.add(String.format("Chunk: %d %d %d in %d %d %d", blockpos.getX() & 15, blockpos.getY() & 15, Integer.valueOf(blockpos.getZ() & 15), Integer.valueOf(blockpos.getX() >> 4), Integer.valueOf(blockpos.getY() >> 4), Integer.valueOf(blockpos.getZ() >> 4)));
-        list.add(String.format("Facing: %s (%s) (%.1f / %.1f)", enumfacing, s, MathHelper.wrapAngleTo180_float(entity.rotationYaw), Float.valueOf(MathHelper.wrapAngleTo180_float(entity.rotationPitch))));
-
-        if (MinecraftInstance.mc.theWorld != null && MinecraftInstance.mc.theWorld.isBlockLoaded(blockpos)) {
-            Chunk chunk = MinecraftInstance.mc.theWorld.getChunkFromBlockCoords(blockpos);
-            list.add("Biome: " + chunk.getBiome(blockpos, MinecraftInstance.mc.theWorld.getWorldChunkManager()).biomeName);
-            list.add("Light: " + chunk.getLightSubtracted(blockpos, 0) + " (" + chunk.getLightFor(EnumSkyBlock.SKY, blockpos) + " sky, " + chunk.getLightFor(EnumSkyBlock.BLOCK, blockpos) + " block)");
-            DifficultyInstance difficultyinstance = MinecraftInstance.mc.theWorld.getDifficultyForLocation(blockpos);
-
-            if (MinecraftInstance.mc.isIntegratedServerRunning() && MinecraftInstance.mc.getIntegratedServer() != null) {
-                EntityPlayerMP entityplayermp = MinecraftInstance.mc.getIntegratedServer().getConfigurationManager().getPlayerByUUID(MinecraftInstance.mc.thePlayer.getUniqueID());
-
-            }
-
-            list.add(String.format("Local Difficulty: %.2f (Day %d)", new Object[]{Float.valueOf(difficultyinstance.getAdditionalDifficulty()), Long.valueOf(MinecraftInstance.mc.theWorld.getWorldTime() / 24000L)}));
-        }
-
-        if (MinecraftInstance.mc.entityRenderer != null && MinecraftInstance.mc.entityRenderer.isShaderActive()) {
-            list.add("Shader: " + MinecraftInstance.mc.entityRenderer.getShaderGroup().getShaderGroupName());
-        }
-
-        if (MinecraftInstance.mc.objectMouseOver != null && MinecraftInstance.mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && MinecraftInstance.mc.objectMouseOver.getBlockPos() != null) {
-            BlockPos blockpos1 = MinecraftInstance.mc.objectMouseOver.getBlockPos();
-            list.add(String.format("Looking at: %d %d %d", new Object[]{Integer.valueOf(blockpos1.getX()), Integer.valueOf(blockpos1.getY()), Integer.valueOf(blockpos1.getZ())}));
-        }
-
-        cir.setReturnValue(list);
     }
 
     @ModifyVariable(method = "getDebugInfoRight", at = @At(value = "STORE"), ordinal = 0)
@@ -182,7 +129,6 @@ public abstract class MixinGuiOverlayDebug {
         }
         return originalList;
     }
-
 
     @Inject(method = "getDebugInfoRight", at = @At("RETURN"), cancellable = true)
     private void modifyDebugInfoRight(CallbackInfoReturnable<List<String>> ci) {

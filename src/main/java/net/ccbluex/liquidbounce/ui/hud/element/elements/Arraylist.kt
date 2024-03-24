@@ -79,7 +79,7 @@ class Arraylist(
     private val verticalAnimation = ListValue("Vertical-Animation", arrayOf("None", "Delta", "Slide", "Low", "Fast"), "None")
     private val animationSpeed = FloatValue("Animation-Speed", 0.25F, 0.01F, 1F)
     companion object {
-        val fontValue = FontValue("Font", Fonts.fontTenacity40)
+        val fontValue = FontValue("Font", Fonts.fontSFUI37)
     }
     private var x2 = 0
     private var y2 = 0F

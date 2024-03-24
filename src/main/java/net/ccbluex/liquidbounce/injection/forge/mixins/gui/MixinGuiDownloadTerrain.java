@@ -22,7 +22,7 @@ public abstract class MixinGuiDownloadTerrain extends MixinGuiScreen {
     }
 
     @Override
-    protected void injectedActionPerformed(GuiButton button) {
+    protected void fDPClient$injectedActionPerformed(GuiButton button) {
         if (button.id == 0) {
             boolean flag = this.mc.isIntegratedServerRunning();
             boolean flag1 = this.mc.isConnectedToRealms();

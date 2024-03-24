@@ -64,8 +64,8 @@ public class MixedStyle extends Style {
         }
         GlStateManager.resetColor();
 
-        float textWidth = Fonts.fontTenacityBold35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
-        Fonts.fontTenacityBold35.drawString(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7 - 3, Color.WHITE.getRGB());
+        float textWidth = Fonts.fontBold35.getStringWidth("§f" + StringUtils.stripControlCodes(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%",""))));
+        Fonts.fontBold35.drawString(LanguageManager.INSTANCE.get(panel.getName().replaceAll("%","")), (int) (panel.getX() - (textWidth - 100.0F) / 2F), panel.getY() + 7 - 3, Color.WHITE.getRGB());
     }
 
     @Override
@@ -97,8 +97,8 @@ public class MixedStyle extends Style {
         }
         GlStateManager.resetColor();
 
-        float modtextWidth = Fonts.fontTenacity35.getStringWidth(moduleElement.getDisplayName().replaceAll("%",""));
-        Fonts.fontTenacity35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() - ((modtextWidth - 100.0F) / 2F), moduleElement.getY() + 5, Color.WHITE.getRGB());
+        float modtextWidth = Fonts.font35.getStringWidth(moduleElement.getDisplayName().replaceAll("%",""));
+        Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() - ((modtextWidth - 100.0F) / 2F), moduleElement.getY() + 5, Color.WHITE.getRGB());
 
         // Draw settings
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();

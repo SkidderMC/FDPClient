@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.font.cf;
 
+import lombok.Getter;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import org.lwjgl.opengl.GL11;
 
@@ -14,6 +15,7 @@ import java.awt.image.BufferedImage;
 
 public class CFont {
     protected CharData[] charData = new CharData[256];
+    @Getter
     protected Font font;
     protected boolean antiAlias;
     protected boolean fractionalMetrics;
@@ -146,10 +148,6 @@ public class CFont {
             this.fractionalMetrics = fractionalMetrics;
             this.tex = this.setupTexture(this.font, this.antiAlias, fractionalMetrics, this.charData);
         }
-    }
-
-    public Font getFont() {
-        return this.font;
     }
 
     public void setFont(final Font font) {

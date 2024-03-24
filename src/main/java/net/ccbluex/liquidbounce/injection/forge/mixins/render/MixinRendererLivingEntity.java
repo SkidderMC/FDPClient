@@ -23,10 +23,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EnumPlayerModelParts;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.MathHelper;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.opengl.GL11;
-import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -44,19 +41,12 @@ import java.util.Objects;
  */
 @Mixin(RendererLivingEntity.class)
 public abstract class MixinRendererLivingEntity extends MixinRender {
-    @Final
-    @Shadow
-    private static final Logger logger = LogManager.getLogger();
+
     /**
      * The Main model.
      */
     @Shadow
-    protected ModelBase mainModel;
-    /**
-     * The Render outlines.
-     */
-    @Shadow
-    protected boolean renderOutlines = false;
+    public ModelBase mainModel;
 
     /**
      * Gets death max rotation.
@@ -71,110 +61,6 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     }
 
     /**
-     * Interpolate rotation float.
-     *
-     * @param par1 the par 1
-     * @param par2 the par 2
-     * @param par3 the par 3
-     * @return the float
-     */
-    @Shadow
-    protected abstract float interpolateRotation(float par1, float par2, float par3);
-
-    /**
-     * Sets do render brightness.
-     *
-     * @param <T>                the type parameter
-     * @param entityLivingBaseIn the entity living base in
-     * @param partialTicks       the partial ticks
-     * @return the do render brightness
-     */
-    @Shadow
-    protected abstract <T extends EntityLivingBase> boolean setDoRenderBrightness(T entityLivingBaseIn, float partialTicks);
-
-    /**
-     * Sets score team color.
-     *
-     * @param <T>                the type parameter
-     * @param entityLivingBaseIn the entity living base in
-     * @return the score team color
-     */
-    @Shadow
-    protected abstract <T extends EntityLivingBase> boolean setScoreTeamColor(T entityLivingBaseIn);
-
-    /**
-     * Gets swing progress.
-     *
-     * @param <T>             the type parameter
-     * @param livingBase      the living base
-     * @param partialTickTime the partial tick time
-     * @return the swing progress
-     */
-    @Shadow
-    protected abstract <T extends EntityLivingBase> float getSwingProgress(T livingBase, float partialTickTime);
-
-    /**
-     * Unset score team color.
-     */
-    @Shadow
-    protected abstract void unsetScoreTeamColor();
-
-    /**
-     * Pre render callback.
-     *
-     * @param <T>                the type parameter
-     * @param entitylivingbaseIn the entitylivingbase in
-     * @param partialTickTime    the partial tick time
-     */
-    @Shadow
-    protected abstract <T extends EntityLivingBase> void preRenderCallback(T entitylivingbaseIn, float partialTickTime);
-
-    /**
-     * Unset brightness.
-     */
-    @Shadow
-    protected abstract void unsetBrightness();
-
-    /**
-     * Render living at.
-     *
-     * @param <T>                the type parameter
-     * @param entityLivingBaseIn the entity living base in
-     * @param x                  the x
-     * @param y                  the y
-     * @param z                  the z
-     */
-    @Shadow
-    protected abstract <T extends EntityLivingBase> void renderLivingAt(T entityLivingBaseIn, double x, double y, double z);
-
-    /**
-     * Handle rotation float float.
-     *
-     * @param <T>          the type parameter
-     * @param livingBase   the living base
-     * @param partialTicks the partial ticks
-     * @return the float
-     */
-    @Shadow
-    protected abstract <T extends EntityLivingBase> float handleRotationFloat(T livingBase, float partialTicks);
-
-    /**
-     * Render layers.
-     *
-     * @param <T>                the type parameter
-     * @param entitylivingbaseIn the entitylivingbase in
-     * @param p_177093_2_        the p 177093 2
-     * @param p_177093_3_        the p 177093 3
-     * @param partialTicks       the partial ticks
-     * @param p_177093_5_        the p 177093 5
-     * @param p_177093_6_        the p 177093 6
-     * @param p_177093_7_        the p 177093 7
-     * @param p_177093_8_        the p 177093 8
-     */
-    @Shadow
-    protected abstract <T extends EntityLivingBase> void renderLayers(T entitylivingbaseIn, float p_177093_2_, float p_177093_3_, float partialTicks, float p_177093_5_, float p_177093_6_, float p_177093_7_, float p_177093_8_);
-
-    /**
      * Rotate corpse.
      *
      * @param <T>               the type parameter
@@ -182,7 +68,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
      * @param p_rotateCorpse_2_ the p rotate corpse 2
      * @param p_rotateCorpse_3_ the p rotate corpse 3
      * @param p_rotateCorpse_4_ the p rotate corpse 4
-     * @author As_pw
+     * @author CCBluex
      * @reason RotateCorpse
      */
     @Overwrite
@@ -206,31 +92,31 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         }
     }
 
-    @Inject(method = "doRender", at = @At("HEAD"))
+    @Inject(method = "doRender*", at = @At("HEAD"))
     private <T extends EntityLivingBase> void injectChamsPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
         final Chams chams = FDPClient.moduleManager.getModule(Chams.class);
 
-        if (chams.getState() && chams.getTargetsValue().get() && chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entity == Minecraft.getMinecraft().thePlayer) || EntityUtils.INSTANCE.isSelected(entity, false))) {
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(Chams.class)).getState() && Objects.requireNonNull(chams).getTargetsValue().get() && chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entity == Minecraft.getMinecraft().thePlayer) || EntityUtils.INSTANCE.isSelected(entity, false))) {
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
             GL11.glPolygonOffset(1.0F, -1000000F);
         }
     }
 
-    @Inject(method = "doRender", at = @At("RETURN"))
+    @Inject(method = "doRender*", at = @At("RETURN"))
     private <T extends EntityLivingBase> void injectChamsPost(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
         final Chams chams = FDPClient.moduleManager.getModule(Chams.class);
 
-        if (chams.getState() && chams.getTargetsValue().get() && chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entity == Minecraft.getMinecraft().thePlayer) || EntityUtils.INSTANCE.isSelected(entity, false))
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(Chams.class)).getState() && Objects.requireNonNull(chams).getTargetsValue().get() && chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && entity == Minecraft.getMinecraft().thePlayer) || EntityUtils.INSTANCE.isSelected(entity, false))
         ) {
             GL11.glPolygonOffset(1.0F, 1000000F);
             GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL);
         }
     }
 
-    @Inject(method = "canRenderName", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "canRenderName*", at = @At("HEAD"), cancellable = true)
     private <T extends EntityLivingBase> void canRenderName(T entity, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
 
-        if ((FDPClient.moduleManager.getModule(NameTags.class).getState() && EntityUtils.INSTANCE.isSelected(entity, false)))
+        if ((Objects.requireNonNull(FDPClient.moduleManager.getModule(NameTags.class)).getState() && EntityUtils.INSTANCE.isSelected(entity, false)))
             callbackInfoReturnable.setReturnValue(false);
     }
 
@@ -244,8 +130,8 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         boolean visible = !p_renderModel_1_.isInvisible();
         final Chams chams = FDPClient.moduleManager.getModule(Chams.class);
         final TrueSight trueSight = FDPClient.moduleManager.getModule(TrueSight.class);
-        boolean chamsFlag = (chams.getState() && chams.getTargetsValue().get() && !chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && p_renderModel_1_ == Minecraft.getMinecraft().thePlayer) || EntityUtils.INSTANCE.isSelected(p_renderModel_1_, false)));
-        boolean semiVisible = !visible && (!p_renderModel_1_.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer) || (trueSight.getState() && trueSight.getEntitiesValue().get()));
+        boolean chamsFlag = (Objects.requireNonNull(FDPClient.moduleManager.getModule(Chams.class)).getState() && Objects.requireNonNull(chams).getTargetsValue().get() && !chams.getLegacyMode().get() && ((chams.getLocalPlayerValue().get() && p_renderModel_1_ == Minecraft.getMinecraft().thePlayer) || EntityUtils.INSTANCE.isSelected(p_renderModel_1_, false)));
+        boolean semiVisible = !visible && (!p_renderModel_1_.isInvisibleToPlayer(Minecraft.getMinecraft().thePlayer) || (Objects.requireNonNull(FDPClient.moduleManager.getModule(TrueSight.class)).getState() && Objects.requireNonNull(trueSight).getEntitiesValue().get()));
 
         if(visible || semiVisible) {
             if(!this.bindEntityTexture(p_renderModel_1_))
@@ -268,23 +154,23 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             final int texture2D = 3553;
             final int lighting = 2896;
 
-            boolean textured = chams.getTexturedValue().get();
+            boolean textured = Objects.requireNonNull(FDPClient.moduleManager.getModule(Chams.class)).getTexturedValue().get();
 
             Color chamsColor = new Color(0x00000000);
 
-            switch (chams.getColorModeValue().get()) {
+            switch (Objects.requireNonNull(FDPClient.moduleManager.getModule(Chams.class)).getColorModeValue().get()) {
                 case "Custom":
-                    chamsColor = new Color(chams.getRedValue().get(), chams.getGreenValue().get(), chams.getBlueValue().get());
+                    chamsColor = new Color(Objects.requireNonNull(chams).getRedValue().get(), chams.getGreenValue().get(), chams.getBlueValue().get());
                     break;
                 case "Client":
                     chamsColor = ClientTheme.INSTANCE.getColor(1);
                     break;
                 case "Fade":
-                    chamsColor = ColorUtils.fade(new Color(chams.getRedValue().get(), chams.getGreenValue().get(), chams.getBlueValue().get(), chams.getAlphaValue().get()), 0, 100);
+                    chamsColor = ColorUtils.fade(new Color(Objects.requireNonNull(chams).getRedValue().get(), chams.getGreenValue().get(), chams.getBlueValue().get(), chams.getAlphaValue().get()), 0, 100);
                     break;
             }
 
-            chamsColor = ColorUtils.reAlpha(chamsColor, chams.getAlphaValue().get());
+            chamsColor = ColorUtils.reAlpha(chamsColor, Objects.requireNonNull(chams).getAlphaValue().get());
 
             if (chamsFlag) {
                 Color chamsColor2 = new Color(0x00000000);

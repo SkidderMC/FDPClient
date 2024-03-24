@@ -41,6 +41,8 @@ class ClientSpoof : Module() {
             "CheatBreaker",
             "PvPLounge",
             "Geyser",
+            "MineBuilders",
+            "Feather",
             "Log4j",
             "Custom"
         ),
@@ -149,6 +151,20 @@ class ClientSpoof : Module() {
                             C17PacketCustomPayload(
                                 "MC|Brand",
                                 PacketBuffer(Unpooled.buffer()).writeString("lunarclient:v2.14.5-2411")
+                            )
+                        )
+
+                        "MineBuilders" -> PacketUtils.sendPacketNoEvent(
+                            C17PacketCustomPayload(
+                                "MC|Brand",
+                                PacketBuffer(Unpooled.buffer()).writeString("minebuilders8")
+                            )
+                        )
+
+                        "Feather" -> PacketUtils.sendPacketNoEvent(
+                            C17PacketCustomPayload(
+                                "MC|Brand",
+                                PacketBuffer(Unpooled.buffer()).writeString("Feather Forge")
                             )
                         )
 

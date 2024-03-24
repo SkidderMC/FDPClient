@@ -11,25 +11,17 @@ import net.minecraft.util.ResourceLocation;
 
 import java.awt.*;
 import java.io.InputStream;
-import java.util.ArrayList;
 
 public abstract class FontLoaders {
 
-    public static final CFontRenderer F14 = new CFontRenderer(getFont(14), true, true);
-    public static final CFontRenderer F18 = new CFontRenderer(getFont(18), true, true);
-    public static final CFontRenderer F30 = new CFontRenderer(getFont(30), true, true);
-    public static final CFontRenderer F40 = new CFontRenderer(getFont(40), true, true);
-    public static final CFontRenderer C12 = new CFontRenderer(getComfortaa(12), true, true);
-    public static final CFontRenderer C16 = new CFontRenderer(getComfortaa(16), true, true);
-    public static final CFontRenderer C18 = new CFontRenderer(getComfortaa(18), true, true);
-    public static CFontRenderer SF20 = new CFontRenderer(getSF(20), true, true);
-    public static CFontRenderer SF30 = new CFontRenderer(getSF(30), true, true);
-    public static CFontRenderer SF40 = new CFontRenderer(getSF(40), true, true);
-    public static final CFontRenderer Raleway = new CFontRenderer(getRaleway(15), true, true);
-    public static final CFontRenderer Roboto = new CFontRenderer(getRoboto(12), true, true);
-
-    public static final ArrayList<CFontRenderer> fonts = new ArrayList<>();
-
+    public static final CFontRenderer F18 = new CFontRenderer(FontLoaders.getFont(18), true, true);
+    public static final CFontRenderer F30 = new CFontRenderer(FontLoaders.getFont(30), true, true);
+    public static final CFontRenderer F40 = new CFontRenderer(FontLoaders.getFont(40), true, true);
+    public static final CFontRenderer C12 = new CFontRenderer(FontLoaders.getComfortaa(12), true, true);
+    public static final CFontRenderer C16 = new CFontRenderer(FontLoaders.getComfortaa(16), true, true);
+    public static final CFontRenderer C18 = new CFontRenderer(FontLoaders.getComfortaa(18), true, true);
+    public static final CFontRenderer R12 = new CFontRenderer(FontLoaders.getRoboto(), true, true);
+    public static final CFontRenderer R15 = new CFontRenderer(FontLoaders.getRoboto(), true, true);
     public static Font getFont(int size) {
         Font font;
         try {
@@ -57,64 +49,19 @@ public abstract class FontLoaders {
         return font;
     }
 
-    private static Font getRoboto(int size) {
+    private static Font getRoboto() {
         Font font;
         try {
             InputStream is = MinecraftInstance.mc.getResourceManager()
                     .getResource(new ResourceLocation("fdpclient/font/roboto-regular.ttf")).getInputStream();
             font = Font.createFont(0, is);
-            font = font.deriveFont(Font.PLAIN, size);
+            font = font.deriveFont(Font.PLAIN, 12);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Error loading font");
-            font = new Font("default", Font.PLAIN, size);
+            font = new Font("default", Font.PLAIN, 12);
         }
         return font;
     }
-
-    private static Font getRobotoBlack(int size) {
-        Font font;
-        try {
-            InputStream is = MinecraftInstance.mc.getResourceManager()
-                    .getResource(new ResourceLocation("fdpclient/font/roboto-black.ttf")).getInputStream();
-            font = Font.createFont(0, is);
-            font = font.deriveFont(Font.PLAIN, size);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.out.println("Error loading font");
-            font = new Font("default", Font.PLAIN, size);
-        }
-        return font;
-    }
-
-    private static Font getRaleway(int size) {
-        Font font;
-        try {
-            InputStream is = MinecraftInstance.mc.getResourceManager()
-                    .getResource(new ResourceLocation("fdpclient/font/raleway-extrabold.ttf")).getInputStream();
-            font = Font.createFont(0, is);
-            font = font.deriveFont(Font.PLAIN, size);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.out.println("Error loading font");
-            font = new Font("default", Font.PLAIN, size);
-        }
-        return font;
-    }
-
-
-    public static Font getSF(int size) {
-        Font font;
-        try {
-            font = Font.createFont(0, Minecraft.getMinecraft().getResourceManager()
-                    .getResource(new ResourceLocation("fdpclient/font/sfui.ttf")).getInputStream()).deriveFont(Font.PLAIN, (float) size);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            System.out.println("Error loading font");
-            font = new Font("default", Font.PLAIN, size);
-        }
-        return font;
-    }
-
 
 }

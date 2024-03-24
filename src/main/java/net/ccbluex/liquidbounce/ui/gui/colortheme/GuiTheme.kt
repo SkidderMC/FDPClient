@@ -44,7 +44,7 @@ class GuiTheme : GuiScreen() {
         RenderUtils.drawRoundedRect(10F, 10F, 628F, 428F, 5F, Color(0, 0, 0, 150).rgb, 3F, ClientTheme.getColor(1).rgb)
         RenderUtils.drawImage(ResourceLocation("fdpclient/gui/design/arrowup.png"), 160, 381, 25, 25)
         RenderUtils.drawImage(ResourceLocation("fdpclient/gui/design/arrowdown.png"), 160, 410, 25, 25)
-        FontLoaders.SF40.drawStringWithShadow("ClientTheme", 20.0, 25.0, ClientTheme.getColor(1).rgb)
+        FontLoaders.F40.drawStringWithShadow("ClientTheme", 20.0, 25.0, ClientTheme.getColor(1).rgb)
         RenderUtils.drawRect(10F, 65F, 638F, 66F, ClientTheme.getColor(1).rgb)
         RenderUtils.drawRect(10F, 345.0f, 638F, 346.0f, ClientTheme.getColor(1).rgb)
         GL11.glPushMatrix()
@@ -81,7 +81,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Zywl", 180).rgb,
             ClientTheme.getColorFromName("Zywl", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "Zywl",
             58.0,
             145.0 + scroll,
@@ -109,7 +109,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("FDP", 180).rgb,
             ClientTheme.getColorFromName("FDP", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "FDP",
             184.0,
             145.0 + scroll,
@@ -137,7 +137,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Magic", 180).rgb,
             ClientTheme.getColorFromName("Magic", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "Magic",
             310.0,
             145.0 + scroll,
@@ -165,7 +165,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("DarkNight", 180).rgb,
             ClientTheme.getColorFromName("DarkNight", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "DarkNight",
             427.0,
             145.0 + scroll,
@@ -193,7 +193,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Sun", 180).rgb,
             ClientTheme.getColorFromName("Sun", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow("Sun", 565.0, 145.0 + scroll, ClientTheme.getColorFromName("Sun", 1).rgb)
+        FontLoaders.F18.drawStringWithShadow("Sun", 565.0, 145.0 + scroll, ClientTheme.getColorFromName("Sun", 1).rgb)
 
         /**
          * Line 2
@@ -221,7 +221,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Tree", 180).rgb,
             ClientTheme.getColorFromName("Tree", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow("Tree", 60.0, 240.0 + scroll, ClientTheme.getColorFromName("Tree", 1).rgb)
+        FontLoaders.F18.drawStringWithShadow("Tree", 60.0, 240.0 + scroll, ClientTheme.getColorFromName("Tree", 1).rgb)
         //Flower
         if (ClientTheme.ClientColorMode.equals("Flower"))
             RenderUtils.drawRoundedOutline(
@@ -244,7 +244,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Flower", 180).rgb,
             ClientTheme.getColorFromName("Flower", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "Flower",
             184.0,
             240.0 + scroll,
@@ -272,7 +272,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Loyoi", 180).rgb,
             ClientTheme.getColorFromName("Loyoi", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "Loyoi",
             310.0,
             240.0 + scroll,
@@ -300,7 +300,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Cero", 180).rgb,
             ClientTheme.getColorFromName("Cero", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "Cero",
             434.0,
             240.0 + scroll,
@@ -328,7 +328,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Soniga", 180).rgb,
             ClientTheme.getColorFromName("Soniga", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "Soniga",
             560.0,
             240.0 + scroll,
@@ -360,7 +360,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("May", 180).rgb,
             ClientTheme.getColorFromName("May", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow("May", 60.0, 335.0 + scroll, ClientTheme.getColorFromName("May", 1).rgb)
+        FontLoaders.F18.drawStringWithShadow("May", 60.0, 335.0 + scroll, ClientTheme.getColorFromName("May", 1).rgb)
         //Flower
         if (ClientTheme.ClientColorMode.equals("Mint"))
             RenderUtils.drawRoundedOutline(
@@ -383,7 +383,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Mint", 180).rgb,
             ClientTheme.getColorFromName("Mint", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "Mint",
             187.0,
             335.0 + scroll,
@@ -411,7 +411,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Azure", 180).rgb,
             ClientTheme.getColorFromName("Azure", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "Azure",
             310.0,
             335.0 + scroll,
@@ -439,7 +439,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Rainbow", 180).rgb,
             ClientTheme.getColorFromName("Rainbow", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "Rainbow",
             428.0,
             335.0 + scroll,
@@ -466,7 +466,8 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Astolfo", 180).rgb,
             ClientTheme.getColorFromName("Astolfo", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18
+            .drawStringWithShadow(
             "Astolfo",
             560.0,
             335.0 + scroll,
@@ -498,7 +499,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Pumpkin", 180).rgb,
             ClientTheme.getColorFromName("Pumpkin", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "Pumpkin",
             53.0,
             430.0 + scroll,
@@ -526,7 +527,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Polarized", 180).rgb,
             ClientTheme.getColorFromName("Polarized", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "Polarized",
             180.0,
             430.0 + scroll,
@@ -554,7 +555,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Sundae", 180).rgb,
             ClientTheme.getColorFromName("Sundae", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "Sundae",
             305.0,
             430.0 + scroll,
@@ -582,7 +583,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Terminal", 180).rgb,
             ClientTheme.getColorFromName("Terminal", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "Terminal",
             428.0,
             430.0 + scroll,
@@ -609,7 +610,7 @@ class GuiTheme : GuiScreen() {
             ClientTheme.getColorFromName("Coral", 180).rgb,
             ClientTheme.getColorFromName("Coral", 270).rgb
         )
-        FontLoaders.SF20.drawStringWithShadow(
+        FontLoaders.F18.drawStringWithShadow(
             "Coral",
             563.0,
             430.0 + scroll,
@@ -624,9 +625,9 @@ class GuiTheme : GuiScreen() {
         textsmooth = textsmooth.animLinear((if (text) 0.2F else -0.2F) * RenderUtils.deltaTime * 0.045F, 0F, 1F)
         RenderUtils.drawRoundedRect(25F, 350.0f, 40F, 365.0f, 5F, textColor)
         RenderUtils.drawRoundedOutline(25F, 350.0f, 40F, 365.0f, 7F, 1F, Color.WHITE.rgb)
-        FontLoaders.SF30.drawStringWithShadow("Text White Color", 43.0, 351.5, Color(255, 255, 255).rgb)
-        FontLoaders.SF30.drawStringWithShadow("Fade Side : " + updown.get(), 25.0, 376.5, Color(255, 255, 255).rgb)
-        FontLoaders.SF30.drawStringWithShadow("FadeSpeed : " + fadespeed.get(), 25.0, 401.5, Color(255, 255, 255).rgb)
+        FontLoaders.F30.drawStringWithShadow("Text White Color", 43.0, 351.5, Color(255, 255, 255).rgb)
+        FontLoaders.F30.drawStringWithShadow("Fade Side : " + updown.get(), 25.0, 376.5, Color(255, 255, 255).rgb)
+        FontLoaders.F30.drawStringWithShadow("FadeSpeed : " + fadespeed.get(), 25.0, 401.5, Color(255, 255, 255).rgb)
         GlStateManager.resetColor()
     }
 

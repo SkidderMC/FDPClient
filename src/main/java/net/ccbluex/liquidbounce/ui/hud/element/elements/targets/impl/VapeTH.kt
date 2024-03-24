@@ -20,7 +20,7 @@ class VapeTH(inst: Targets) : TargetStyle("Vape", inst, true) {
     override fun drawTarget(target: EntityLivingBase) {
         RenderUtils.drawEntityOnScreen(16, 55, 25, target)
 
-        Fonts.fontTenacityBold35.drawString(target.name, 36.5f, 12.6f / 2f - Fonts.fontTenacityBold35.height / 2f, -1)
+        Fonts.fontBold35.drawString(target.name, 36.5f, 12.6f / 2f - Fonts.fontBold35.height / 2f, -1)
 
         val targetHealth = target.health
         val targetMaxHealth = target.maxHealth
@@ -42,9 +42,9 @@ class VapeTH(inst: Targets) : TargetStyle("Vape", inst, true) {
         }
 
         val hp = (targetHealth + targetAbsorptionAmount).toString() + "  HP"
-        Fonts.fontTenacityBold35.drawString(hp,
-            105f - Fonts.fontTenacityBold35.getStringWidth(hp),
-            (12.6f - Fonts.fontTenacityBold35.height) / 2f,
+        Fonts.fontBold35.drawString(hp,
+            105f - Fonts.fontBold35.getStringWidth(hp),
+            (12.6f - Fonts.fontBold35.height) / 2f,
             -1)
     }
 

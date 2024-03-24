@@ -69,7 +69,6 @@ object HUD : Module() {
     private val uiEffectValue = BoolValue("UIEffect", true)
     val buttonShadowValue = BoolValue("ShadowButton", true).displayable  { uiEffectValue.get() }
     val UiShadowValue = ListValue("UIEffectMode", arrayOf("Shadow", "Glow", "None"), "Shadow").displayable  { uiEffectValue.get() }
-    val inventoryParticle = BoolValue("InventoryParticle", false).displayable  { uiEffectValue.get() }
 
     // CAMERA
     private val viewValue = BoolValue("BetterView", true)
@@ -149,15 +148,15 @@ object HUD : Module() {
             "FDPCLIENT" -> {
                 var width = ""
                 val other = ""
-                val leagth = Fonts.fontTenacityBold40.getStringWidth(name) + Fonts.fontTenacityBold35.getStringWidth(other)
-                RenderUtils.customRounded(2F, 3.5F, leagth + 6F, Fonts.fontTenacityBold40.FONT_HEIGHT + 5F, 0F, 0F, 5F, 5F, Color(0,0,0,180).rgb)
+                val leagth = Fonts.fontBold40.getStringWidth(name) + Fonts.fontBold35.getStringWidth(other)
+                RenderUtils.customRounded(2F, 3.5F, leagth + 6F, Fonts.fontBold40.FONT_HEIGHT + 5F, 0F, 0F, 5F, 5F, Color(0,0,0,180).rgb)
                 RenderUtils.drawAnimatedGradient(2.0, 3.0, leagth + 6.0, 4.0, ClientTheme.getColor(0).rgb, ClientTheme.getColor(90).rgb)
-                GlowUtils.drawGlow(3.79F, 6.07F, 3.83F + Fonts.fontTenacityBold40.getStringWidth(name).toFloat(), 7.21F, 9, ClientTheme.getColor(1))
+                GlowUtils.drawGlow(3.79F, 6.07F, 3.83F + Fonts.fontBold40.getStringWidth(name).toFloat(), 7.21F, 9, ClientTheme.getColor(1))
                 for (l in name.indices) {
-                    Fonts.fontTenacityBold40.drawString(name[l].toString(), 5F + Fonts.fontTenacityBold40.getStringWidth(width).toFloat(), 5.5F, ClientTheme.getColor(l * -135).rgb, true)
+                    Fonts.fontBold40.drawString(name[l].toString(), 5F + Fonts.fontBold40.getStringWidth(width).toFloat(), 5.5F, ClientTheme.getColor(l * -135).rgb, true)
                     width += name[l].toString()
                 }
-                Fonts.fontTenacityBold35.drawString(other, Fonts.fontTenacityBold40.getStringWidth("FDP").toFloat() + 5F, 6.5F, Color(255,255,255).rgb)
+                Fonts.fontBold35.drawString(other, Fonts.fontBold40.getStringWidth("FDP").toFloat() + 5F, 6.5F, Color(255,255,255).rgb)
                 GlStateManager.resetColor()
             }
 
@@ -165,15 +164,15 @@ object HUD : Module() {
                 var width = ""
                 val name = "FDP"
                 val other = " | ${FDPClient.USER_NAME} | ${LocalDateTime.now().format(DateTimeFormatter.ofPattern("hh:mm a"))}"
-                val leagth = Fonts.fontTenacityBold40.getStringWidth(name) + Fonts.fontTenacityBold35.getStringWidth(other)
-                RenderUtils.customRounded(2F, 3.5F, leagth + 6F, Fonts.fontTenacityBold40.FONT_HEIGHT + 5F, 0F, 0F, 5F, 5F, Color(0,0,0,180).rgb)
+                val leagth = Fonts.fontBold40.getStringWidth(name) + Fonts.fontBold35.getStringWidth(other)
+                RenderUtils.customRounded(2F, 3.5F, leagth + 6F, Fonts.fontBold40.FONT_HEIGHT + 5F, 0F, 0F, 5F, 5F, Color(0,0,0,180).rgb)
                 RenderUtils.drawAnimatedGradient(2.0, 3.0, leagth + 6.0, 4.0, ClientTheme.getColor(0).rgb, ClientTheme.getColor(90).rgb)
-                GlowUtils.drawGlow(3.79F, 6.07F, 3.83F + Fonts.fontTenacityBold40.getStringWidth(name).toFloat(), 7.21F, 9, ClientTheme.getColor(1))
+                GlowUtils.drawGlow(3.79F, 6.07F, 3.83F + Fonts.fontBold40.getStringWidth(name).toFloat(), 7.21F, 9, ClientTheme.getColor(1))
                 for (l in name.indices) {
-                    Fonts.fontTenacityBold40.drawString(name[l].toString(), 5F + Fonts.fontTenacityBold40.getStringWidth(width).toFloat(), 5.5F, ClientTheme.getColor(l * -135).rgb, true)
+                    Fonts.fontBold40.drawString(name[l].toString(), 5F + Fonts.fontBold40.getStringWidth(width).toFloat(), 5.5F, ClientTheme.getColor(l * -135).rgb, true)
                     width += name[l].toString()
                 }
-                Fonts.fontTenacityBold35.drawString(other, Fonts.fontTenacityBold40.getStringWidth("FDP").toFloat() + 5F, 6.5F, Color(255,255,255).rgb)
+                Fonts.fontBold35.drawString(other, Fonts.fontBold40.getStringWidth("FDP").toFloat() + 5F, 6.5F, Color(255,255,255).rgb)
                 GlStateManager.resetColor()
             }
 

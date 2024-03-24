@@ -92,7 +92,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     }
 
     @Override
-    protected void injectedActionPerformed(GuiButton button) {
+    protected void fDPClient$injectedActionPerformed(GuiButton button) {
         final KillAura killAura = Objects.requireNonNull(FDPClient.moduleManager.getModule(KillAura.class));
         final InvManager invManager = Objects.requireNonNull(FDPClient.moduleManager.getModule(InvManager.class));
         final Stealer stealer = Objects.requireNonNull(FDPClient.moduleManager.getModule(Stealer.class));

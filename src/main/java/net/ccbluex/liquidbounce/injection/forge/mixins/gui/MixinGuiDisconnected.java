@@ -109,15 +109,6 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
         }
     }
 
-    @Override
-    public void updateScreen() {
-        if (AutoReconnect.INSTANCE.isEnabled()) {
-            reconnectTimer++;
-            if (reconnectTimer > AutoReconnect.INSTANCE.getDelay() / 50)
-                ServerUtils.connectToLastServer();
-        }
-    }
-
     @Inject(method = "drawScreen", at = @At("RETURN"))
     private void drawScreen(CallbackInfo callbackInfo) {
         final ProtocolVersion version = ProtocolBase.getManager().getTargetVersion();

@@ -42,8 +42,8 @@ public class GuiButton {
 
         RenderUtils.drawRoundOutline(this.x, this.y, this.x + this.width, this.y + this.height, 2, 3, new Color(255, 255, 255, 30).getRGB());
 
-        FontLoaders.Roboto.drawCenteredString(this.text, this.x + (float) this.width / 2 + 0.5F, this.y + (float) (this.height - 4) / 2 + 1.5F, new Color(30, 30, 30, 50).getRGB());
-        FontLoaders.Roboto.drawCenteredString(this.text, this.x + (float) this.width / 2, this.y + (float) (this.height - 4) / 2 + 1F, new Color(190, 195, 189).getRGB());
+        FontLoaders.R12.drawCenteredString(this.text, this.x + (float) this.width / 2 + 0.5F, this.y + (float) (this.height - 4) / 2 + 1.5F, new Color(30, 30, 30, 50).getRGB());
+        FontLoaders.R12.drawCenteredString(this.text, this.x + (float) this.width / 2, this.y + (float) (this.height - 4) / 2 + 1F, new Color(190, 195, 189).getRGB());
     }
 
 }

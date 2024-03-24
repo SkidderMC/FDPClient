@@ -51,7 +51,6 @@
     "gui.MixinGuiScreenResourcePacks",
     "gui.MixinGuiSpectator",
     "gui.MixinGuiTextField",
-    "gui.MixinServerListEntryNormal",
     "gui.MixinServerSelectionList",
     "item.MixinItemBlock",
     "item.MixinItemRenderer",
