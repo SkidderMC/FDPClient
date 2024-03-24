@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.other.AntiBot
 import net.ccbluex.liquidbounce.features.module.modules.other.Teams
 import net.ccbluex.liquidbounce.features.module.modules.player.HackerDetector
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.extensions.ping
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -33,7 +34,7 @@ import kotlin.math.roundToInt
 @ModuleInfo(name = "NameTags", category = ModuleCategory.VISUAL)
 object NameTags : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("Simple", "Liquid", "Jello"), "Liquid")
+    private val modeValue = ListValue("Mode", arrayOf("Simple", "Liquid", "Jello", "Modern"), "Liquid")
     private val healthValue = BoolValue("Health", true).displayable { modeValue.equals("Liquid") }
     private val pingValue = BoolValue("Ping", true).displayable { modeValue.equals("Liquid") }
     private val healthBarValue = BoolValue("Bar", true).displayable { modeValue.equals("Liquid") }
@@ -312,6 +313,20 @@ object NameTags : Module() {
                 fontRenderer.drawString(tag, -width, -fontRenderer.FONT_HEIGHT * 2 - 4, Color.WHITE.rgb)
                 glScalef(0.5F, 0.5F, 0.5F)
                 fontRenderer.drawString("Health: " + entity.health.toInt(), -width * 2, -fontRenderer.FONT_HEIGHT * 2, Color.WHITE.rgb)
+            }
+
+            "modern" -> {
+                // colors
+                val width = fontRenderer.getStringWidth(tag) / 2
+
+                // render bg
+                glScalef(-scale * 2, -scale * 2, scale * 2)
+                drawRoundedCornerRect(-width - 4F, -fontRenderer.FONT_HEIGHT * 3F, width + 4F, -3F, 3f, Color(60, 60, 60, 110).rgb)
+
+                // string
+                fontRenderer.drawString(tag, -width, -fontRenderer.FONT_HEIGHT * 2 - 4, ClientTheme.getColor(1).rgb)
+                glScalef(0.5F, 0.5F, 0.5F)
+                fontRenderer.drawString("" + entity.health.toInt(), -2, -fontRenderer.FONT_HEIGHT * 2, ClientTheme.getColor(1).rgb)
             }
         }
         // Reset caps

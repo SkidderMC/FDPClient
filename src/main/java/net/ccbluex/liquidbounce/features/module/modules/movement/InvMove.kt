@@ -29,7 +29,7 @@ import org.lwjgl.input.Keyboard
 object InvMove : Module() {
 
     private val noDetectableValue = BoolValue("NoDetectable", false)
-    private val bypassValue = ListValue("Bypass", arrayOf("NoOpenPacket", "Blink", "PacketInv", "None"), "None")
+    private val bypassValue = ListValue("Bypass", arrayOf("NoOpenPacket", "Blink", "PacketInv", "Pulse", "None"), "None")
     private val rotateValue = BoolValue("Rotate", false)
     private val noMoveClicksValue = BoolValue("NoMoveClicks", false)
     val noSprintValue = ListValue("NoSprint", arrayOf("Real", "PacketSpoof", "None"), "None")
@@ -163,6 +163,25 @@ object InvMove : Module() {
                         }
                         blinkPacketList.clear()
                     }
+                }
+            }
+            "pulse" -> {
+                if (packet is C16PacketClientStatus && packet.status == C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT) {
+                    event.cancelEvent()
+                    packetListYes.clear()
+                }
+                if (packet is C0EPacketClickWindow) {
+                    packetListYes.add(packet)
+                    event.cancelEvent()
+                }
+                if (packet is C0DPacketCloseWindow) {
+                    event.cancelEvent()
+                    PacketUtils.sendPacketNoEvent(C16PacketClientStatus(C16PacketClientStatus.EnumState.OPEN_INVENTORY_ACHIEVEMENT))
+                    packetListYes.forEach {
+                        PacketUtils.sendPacketNoEvent(it)
+                    }
+                    packetListYes.clear()
+                    PacketUtils.sendPacketNoEvent(C0DPacketCloseWindow(mc.thePlayer.inventoryContainer.windowId))
                 }
             }
         }

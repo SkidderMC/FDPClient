@@ -128,6 +128,11 @@ object LegitAura : Module() {
         currentTarget = null
     }
 
+    override fun onEnable() {
+        currentTarget = null
+        FDPClient.moduleManager[FreeLook::class.java]!!.enable()
+    }
+
     val displayBlocking: Boolean
         get() = !autoblockMode.equals("None") && autoblockRangeTargets.isNotEmpty()
 
@@ -239,7 +244,7 @@ object LegitAura : Module() {
 
                 aimRotation = RotationUtils.calculateCenter("CenterLine", "Horizontal", 0.05, entity.hitBox, true, true)!!.rotation
                 rotationDistance = RotationUtils.getRotationDifference(playerRotation,  aimRotation).toFloat()
-                rotationLimit = (rotationLimit + applySmoothing(rotationDistance.toDouble()/1.5, "quad").toFloat()) / 2f
+                rotationLimit = (rotationLimit + applySmoothing(rotationDistance.toDouble()/1.5, "quad").toFloat())
 
                 advancedAimVelo += rotationLimit + RandomUtils.nextFloat(-3f, 2f)
                 advancedAimVelo *= 0.7f

@@ -6,11 +6,13 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import com.viaversion.viaversion.api.protocol.version.ProtocolVersion
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
@@ -21,6 +23,8 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.projectile.EntityFireball
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C0APacketAnimation
+import net.ccbluex.liquidbounce.features.module.modules.visual.Tracers
+import java.awt.Color
 import java.util.*
 
 @ModuleInfo(name = "AntiFireBall", description = "", category = ModuleCategory.COMBAT)
@@ -47,7 +51,10 @@ class AntiFireBall : Module() {
     @EventTarget
     private fun onUpdate(event: UpdateEvent) {
         for (entity in mc.theWorld.loadedEntityList) {
-            if (entity is EntityFireball && mc.thePlayer.getDistanceToEntity(entity) < 5.5 && timer.hasTimePassed(300)) {
+            if (entity is EntityFireball && mc.thePlayer.getDistanceToEntity(entity) < 15) {
+                FDPClient.moduleManager[Tracers::class.java]!!.drawTraces(entity, Color.white, true)
+            }
+            if (entity is EntityFireball && mc.thePlayer.getDistanceToEntity(entity) < 3 && timer.hasTimePassed(300)) {
                 if (rotationValue.get()) {
                     RotationUtils.setTargetRotation(
                             RotationUtils.limitAngleChange(

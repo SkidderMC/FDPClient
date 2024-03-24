@@ -139,13 +139,13 @@ object Scaffold2 : Module() {
                     if (safewalkValue.equals("None")) {
                         rpitch = 79f
                     } else {
-                        getPitchRot()
+                        rpitch = getPitchRot()
                     }
                 } else {
                     if (safewalkValue.equals("None")) {
                         rpitch = 76.3f
                     } else {
-                        getPitchRot()
+                        rpitch = getPitchRot()
                     }
                 }
 
@@ -222,7 +222,8 @@ object Scaffold2 : Module() {
                     correctControls(0)
                 } else {
                     Rotation(camYaw + 180, 0f).toPlayer(mc.thePlayer)
-                    playerRot = Rotation(camYaw + 180, getPitchRot())
+                    var rpitch = getPitchRot()
+                    playerRot = Rotation(camYaw + 180, rpitch)
                     correctControls(1)
                 }
 

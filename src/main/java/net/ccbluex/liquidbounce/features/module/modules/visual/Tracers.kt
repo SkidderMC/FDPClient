@@ -127,9 +127,10 @@ object Tracers : Module() {
         GL11.glVertex3d(eyeVector.xCoord,
             if(playerHeightValue.get()) { mc.thePlayer.getEyeHeight().toDouble() } else { 0.0 } + eyeVector.yCoord,
             eyeVector.zCoord)
-        GL11.glVertex3d(x, y, z)
-        if(entityHeightValue.get()) {
+        if(drawHeight) {
             GL11.glVertex3d(x, y + entity.height, z)
+        } else {
+            GL11.glVertex3d(x, y, z)
         }
         GL11.glEnd()
     }
