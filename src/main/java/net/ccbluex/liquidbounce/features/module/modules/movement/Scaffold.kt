@@ -70,10 +70,11 @@ class Scaffold : Module() {
     
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal").displayable { placeOptions.get() }
     private val searchValue = BoolValue("Search", true).displayable { placeOptions.get() }
+    private val searchDistanceValue = IntegerValue("SearchDistance", 1, 1, 5).displayable { placeOptions.get() && searchValue.get() }
     private val downValue = BoolValue("Down", false).displayable { placeOptions.get() }
     private val placeModeValue = ListValue("PlaceTiming", arrayOf("All", "Pre", "Post"), "All").displayable { placeOptions.get() }
     
-    private val sameYValue = ListValue("SameY", arrayOf("Simple", "AutoJump", "WhenSpeed", "JumpUpY", "MotionY", "OFF"), "WhenSpeed").displayable { placeOptions.get() }
+    private val sameYValue = ListValue("SameY", arrayOf("Simple", "AutoJump", "WhenSpeed", "JumpUpY", "MotionY", "Hypixel", "OFF"), "WhenSpeed").displayable { placeOptions.get() }
     private val hitableCheckValue = ListValue("HitableCheck", arrayOf("Simple", "Strict", "OFF"), "Simple").displayable { placeOptions.get() }
     private val expandLengthValue = IntegerValue("ExpandLength", 1, 1, 6).displayable { placeOptions.get() }
     private val noExpandOnTowerValue = BoolValue("NoExpandOnTower", false).displayable { placeOptions.get() && expandLengthValue.get() > 1}
@@ -82,7 +83,7 @@ class Scaffold : Module() {
     // Movement
     private val moveOptions = BoolValue("Movement Options: ", true)
     
-    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "Alternating", "Hypixel", "Vulcan", "OFF"), "Always").displayable { moveOptions.get() }
+    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "Alternating", "Hypixel", "HypixelFast", "Vulcan", "OFF"), "Always").displayable { moveOptions.get() }
     
     private val safeWalkValue = ListValue("SafeWalk", arrayOf("Ground", "Air", "OFF"), "Ground").displayable { moveOptions.get() }
     private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "Off"), "Off").displayable { moveOptions.get() }
@@ -141,11 +142,11 @@ class Scaffold : Module() {
 
     // Rotations
     private val testRotationsValue = BoolValue("TestRotations", false).displayable { rotOptions.get() }
-    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom", "Advanced", "Backwards", "Snap", "BackSnap", "Derp"), "AAC").displayable { rotOptions.get() }
+    private val rotationsValue = ListValue("Rotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom", "Advanced", "Backwards", "Snap", "BackSnap"), "AAC").displayable { rotOptions.get() }
     private val towerrotationsValue = ListValue("TowerRotations", arrayOf("None", "Better", "Vanilla", "AAC", "Static1", "Static2", "Custom", "Advacned"), "AAC").displayable { rotOptions.get() }
     
     private val advancedYawModeValue = ListValue("AdvancedYawRotations", arrayOf("Offset", "Static", "RoundStatic", "Vanilla", "Round", "MoveDirection", "OffsetMove", "RoundMoveDir"), "MoveDirection").displayable { (rotationsValue.equals("Advanced") || towerrotationsValue.equals("Advanced")) && rotationsValue.displayable}
-    private val advancedPitchModeValue = ListValue("AdvancedPitchRotations", arrayOf("Offset", "Static", "Vanilla"), "Static").displayable { advancedYawModeValue.displayable && rotationsValue.displayable }
+    private val advancedPitchModeValue = ListValue("AdvancedPitchRotations", arrayOf("Offset", "Static", "Vanilla", "Backwards"), "Static").displayable { advancedYawModeValue.displayable && rotationsValue.displayable }
     private val advancedYawOffsetValue = IntegerValue("AdvancedOffsetYaw", -15, -180, 180).displayable { advancedYawModeValue.displayable && advancedYawModeValue.equals("Offset") && rotationsValue.displayable }
     private val advancedYawMoveOffsetValue = IntegerValue("AdvancedMoveOffsetYaw", -15, -180, 180).displayable { advancedYawModeValue.displayable && advancedYawModeValue.equals("Offset") && rotationsValue.displayable }
     private val advancedYawStaticValue = IntegerValue("AdvancedStaticYaw", 145, -180, 180).displayable { advancedYawModeValue.displayable && (advancedYawModeValue.equals("Static") || advancedYawModeValue.equals("RoundStatic")) && rotationsValue.displayable }
@@ -298,6 +299,8 @@ class Scaffold : Module() {
         if (towerStatus && towerModeValue.get().lowercase() != "aac3.3.9" && towerModeValue.get().lowercase() != "aac4.4constant" && towerModeValue.get().lowercase() != "aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
         if (!towerStatus) mc.timer.timerSpeed = timerValue.get()
 
+        FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(!rotationsValue.equals("None"), moveFixValue.get())
+
         if (lastTick == mc.thePlayer.ticksExisted) return
         lastTick = mc.thePlayer.ticksExisted
 
@@ -333,6 +336,9 @@ class Scaffold : Module() {
                 }
                 "whenspeed" -> {
                     canSameY = FDPClient.moduleManager[Speed::class.java]!!.state
+                }
+                "hypixel" -> {
+                    canSameY = mc.thePlayer.ticksExisted % 11 == 0
                 }
                 else -> {
                     canSameY = false
@@ -391,6 +397,12 @@ class Scaffold : Module() {
             } else {
                 mc.thePlayer.motionX *= 0.99
                 mc.thePlayer.motionZ *= 0.99
+            }
+        }
+        if (sprintValue.equals("HypixelFast")) {
+            if (mc.thePlayer.onGround) {
+                mc.thePlayer.motionX *= 0.92
+                mc.thePlayer.motionZ *= 0.92
             }
         }
 
@@ -461,8 +473,6 @@ class Scaffold : Module() {
                         mc.gameSettings.keyBindSneak.pressed = shouldEagle
                     }
                     placedBlocksWithoutEagle = 0
-                } else {
-                    placedBlocksWithoutEagle++
                 }
             }
             // Zitter
@@ -488,6 +498,15 @@ class Scaffold : Module() {
                 if (wdSpoof) {
                     packet.onGround = true
                     wdSpoof = false
+                }
+            }
+        }
+
+        if (sprintValue.equals("HypixelFast")) {
+            if (packet is C03PacketPlayer) {
+                if (mc.thePlayer.onGround && mc.thePlayer.ticksExisted % 2 == 0) {
+                    packet.onGround = false
+                    packet.y += 0.035
                 }
             }
         }
@@ -603,8 +622,6 @@ class Scaffold : Module() {
                 delayTimer.reset()
             }
         }
-        
-        FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(!rotationsValue.equals("None"), moveFixValue.get())
     }
 
     private fun fakeJump() {
@@ -858,10 +875,12 @@ class Scaffold : Module() {
                 }
             }
         } else if (searchValue.get()) {
-            for (x in -1..1) {
-                for (z in -1..1) {
-                    if (search(blockPosition.add(x, 0, z), !shouldGoDown)) {
-                        return
+            for (dist in 1..searchDistanceValue.get()) {
+                for (x in -dist..dist) {
+                    for (z in -dist..dist) {
+                        if (search(blockPosition.add(x, 0, z), !shouldGoDown)) {
+                            return
+                        }
                     }
                 }
             }
@@ -918,6 +937,7 @@ class Scaffold : Module() {
             mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
         }
         if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, itemStack, targetPlace!!.blockPos, targetPlace!!.enumFacing, targetPlace!!.vec3)) {
+            placedBlocksWithoutEagle++
             // delayTimer.reset()
             delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
             if (mc.thePlayer.onGround) {
@@ -1149,6 +1169,11 @@ class Scaffold : Module() {
             mc.thePlayer.posZ
         )
         var placeRotation: PlaceRotation? = null
+        if (testRotationsValue.get()) {
+            RotationUtils.setTargetRotationReverse(
+                Rotation(MovementUtils.movingYaw - 180, 81f),1,0
+            )
+        }
         for (side in StaticStorage.facings()) {
             val neighbor = blockPosition.offset(side)
             if (!BlockUtils.canBeClicked(neighbor)) continue
@@ -1305,13 +1330,6 @@ class Scaffold : Module() {
                     }
                     Rotation(calcyaw.toFloat(), calcpitch)
                 }
-                "derp" -> {
-                    if (mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX + mc.thePlayer.motionX * 2.0, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ + mc.thePlayer.motionZ * 2.0)).block == Blocks.air) {
-                        Rotation(placeRotation.rotation.yaw, placeRotation.rotation.pitch)
-                    } else {
-                        Rotation(mc.thePlayer.rotationYaw + 45f, placeRotation.rotation.pitch)
-                    }
-                }
 
                 "advanced" -> {
                     var advancedYaw = 0f
@@ -1331,6 +1349,7 @@ class Scaffold : Module() {
                         "offset" -> placeRotation.rotation.pitch + advancedPitchOffsetValue.get().toFloat()
                         "static" -> advancedPitchStaticValue.get().toFloat()
                         "vanilla" -> placeRotation.rotation.pitch
+                        "backwards" -> if (((MovementUtils.movingYaw - 180) / 45).roundToInt() * 45 % 90 == 0) { 82f } else { calcpitch = 78f}
                         else -> placeRotation.rotation.pitch
                     }
                     Rotation(advancedYaw, advancedPitch)
