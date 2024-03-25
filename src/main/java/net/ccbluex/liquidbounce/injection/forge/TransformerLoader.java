@@ -18,9 +18,12 @@ import java.util.Map;
 
 public class TransformerLoader implements IFMLLoadingPlugin {
 
+    /**
+     * Return a list of classes that implements the IClassTransformer interface
+     */
     public TransformerLoader() {
         MixinBootstrap.init();
-        Mixins.addConfiguration("fdpclient.forge.mixins.json");
+        Mixins.addConfiguration("mixins.fdpclient.json");
         MixinEnvironment.getDefaultEnvironment().setSide(MixinEnvironment.Side.CLIENT);
     }
 
