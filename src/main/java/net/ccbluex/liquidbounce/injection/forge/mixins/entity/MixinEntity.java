@@ -12,12 +12,11 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Performance;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoFluid;
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
-import net.ccbluex.liquidbounce.injection.access.IWorld;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
+import net.ccbluex.liquidbounce.injection.access.IWorld;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.crash.CrashReportCategory;
@@ -27,9 +26,9 @@ import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.common.capabilities.CapabilityDispatcher;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -161,16 +160,6 @@ public abstract class MixinEntity implements ICommandSender {
     @Shadow
     public float width;
     /**
-     * The Prev rotation pitch.
-     */
-    @Shadow
-    public float prevRotationPitch;
-    /**
-     * The Prev rotation yaw.
-     */
-    @Shadow
-    public float prevRotationYaw;
-    /**
      * The Rand.
      */
     @Shadow
@@ -184,14 +173,6 @@ public abstract class MixinEntity implements ICommandSender {
     private int nextStepDistance;
     @Shadow
     private int fire;
-    @Shadow(remap = false)
-    private CapabilityDispatcher capabilities;
-
-    /**
-     * Is sprinting boolean.
-     *
-     * @return the boolean
-     */
     @Shadow
     public abstract void setSprinting(boolean sprinting);
 
@@ -222,17 +203,6 @@ public abstract class MixinEntity implements ICommandSender {
      */
     @Shadow
     public abstract float getDistanceToEntity(Entity entityIn);
-
-    /**
-     * Move entity.
-     *
-     * @param x the x
-     * @param y the y
-     * @param z the z
-     */
-    @Shadow
-    public void moveEntity(double x, double y, double z) {
-    }
 
     /**
      * Is in water boolean.
@@ -312,22 +282,13 @@ public abstract class MixinEntity implements ICommandSender {
 
     @Shadow
     public abstract boolean equals(Object p_equals_1_);
-
-    /**
-     * Is inside of material boolean.
-     *
-     * @param materialIn the material in
-     * @return the boolean
-     */
-    @Shadow
-    public abstract boolean isInsideOfMaterial(Material materialIn);
-
     /**
      * Gets next step distance.
      *
      * @return the next step distance
      */
-    public int getNextStepDistance() {
+    @Unique
+    public int fDPClient$getNextStepDistance() {
         return nextStepDistance;
     }
 
@@ -336,7 +297,8 @@ public abstract class MixinEntity implements ICommandSender {
      *
      * @param nextStepDistance the next step distance
      */
-    public void setNextStepDistance(int nextStepDistance) {
+    @Unique
+    public void fDPClient$setNextStepDistance(int nextStepDistance) {
         this.nextStepDistance = nextStepDistance;
     }
 
@@ -345,7 +307,8 @@ public abstract class MixinEntity implements ICommandSender {
      *
      * @return the fire
      */
-    public int getFire() {
+    @Unique
+    public int fDPClient$getFire() {
         return fire;
     }
 
@@ -359,12 +322,6 @@ public abstract class MixinEntity implements ICommandSender {
 
     @Shadow
     public abstract float getEyeHeight();
-
-    @Shadow
-    public abstract Vec3 getLook(float p_getLook_1_);
-
-    @Shadow
-    protected abstract boolean getFlag(int p_getFlag_1_);
 
     @Inject(method = "moveFlying", at = @At("HEAD"), cancellable = true)
     private void handleRotations(float strafe, float forward, float friction, final CallbackInfo callbackInfo) {

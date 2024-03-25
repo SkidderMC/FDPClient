@@ -7,18 +7,17 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.*;
-import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
-import net.ccbluex.liquidbounce.features.module.modules.player.DelayRemover;
+import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
+import net.ccbluex.liquidbounce.features.module.modules.player.DelayRemover;
 import net.ccbluex.liquidbounce.features.special.spoof.ClientSpoofHandler;
+import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
+import net.ccbluex.liquidbounce.handler.protocol.ProtocolMod;
 import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixes;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.injection.forge.mixins.accessors.MinecraftForgeClientAccessor;
-import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
-import net.ccbluex.liquidbounce.handler.protocol.ProtocolMod;
 import net.ccbluex.liquidbounce.utils.*;
-import net.ccbluex.liquidbounce.utils.CPSCounterUtils;
 import net.ccbluex.liquidbounce.utils.render.IconUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.block.material.Material;
@@ -34,7 +33,6 @@ import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.renderer.EntityRenderer;
 import net.minecraft.client.renderer.entity.RenderManager;
-import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.stream.IStream;
 import net.minecraft.crash.CrashReport;
@@ -50,6 +48,7 @@ import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -82,19 +81,13 @@ public abstract class MixinMinecraft {
     @Shadow
     public int displayHeight;
     @Shadow
-    public int rightClickDelayTimer;
-    @Shadow
     public GameSettings gameSettings;
-    @Shadow
-    private Entity renderViewEntity;
     @Shadow
     private boolean fullscreen;
     @Shadow
     public int leftClickCounter;
-    private long lastFrame = Minecraft.getSystemTime();
-
-    @Shadow
-    public abstract IResourceManager getResourceManager();
+    @Unique
+    private long fDPClient$lastFrame = Minecraft.getSystemTime();
 
     @Shadow
     public abstract RenderManager getRenderManager();
@@ -148,7 +141,6 @@ public abstract class MixinMinecraft {
         }
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     @Inject(
             method = "loadWorld(Lnet/minecraft/client/multiplayer/WorldClient;Ljava/lang/String;)V",
             at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;theWorld:Lnet/minecraft/client/multiplayer/WorldClient;", opcode = Opcodes.PUTFIELD, shift = At.Shift.AFTER)
@@ -202,8 +194,8 @@ public abstract class MixinMinecraft {
     @Inject(method = "runGameLoop", at = @At("HEAD"))
     private void runGameLoop(final CallbackInfo callbackInfo) {
         final long currentTime = Minecraft.getSystemTime();
-        final int deltaTime = (int) (currentTime - lastFrame);
-        lastFrame = currentTime;
+        final int deltaTime = (int) (currentTime - fDPClient$lastFrame);
+        fDPClient$lastFrame = currentTime;
 
         RenderUtils.deltaTime = deltaTime;
     }
@@ -221,19 +213,21 @@ public abstract class MixinMinecraft {
     @Inject(method = "dispatchKeypresses", at = @At(value = "HEAD"))
     private void onKey(CallbackInfo callbackInfo) {
         try {
-            if (shouldDispatchEvent()) {
-                FDPClient.eventManager.callEvent(new KeyEvent(getEventKeyOrCharacter()));
+            if (fDPClient$shouldDispatchEvent()) {
+                FDPClient.eventManager.callEvent(new KeyEvent(fDPClient$getEventKeyOrCharacter()));
             }
         } catch (Exception e) {
             //e.printStackTrace();
         }
     }
 
-    private boolean shouldDispatchEvent() {
+    @Unique
+    private boolean fDPClient$shouldDispatchEvent() {
         return Keyboard.getEventKeyState() && (currentScreen == null || (SoundModule.INSTANCE.getToggleIgnoreScreenValue().get() && this.currentScreen instanceof GuiContainer));
     }
 
-    private int getEventKeyOrCharacter() {
+    @Unique
+    private int fDPClient$getEventKeyOrCharacter() {
         return Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() : Keyboard.getEventKey();
     }
 
@@ -277,13 +271,14 @@ public abstract class MixinMinecraft {
 
                     case MISS:
                     default:
-                        if (this.playerController.isNotCreative() && !Objects.requireNonNull(FDPClient.moduleManager.getModule(DelayRemover.class)).getState() && FDPClient.moduleManager.getModule(DelayRemover.class).getNoClickDelay().get()) {
+                        if (this.playerController.isNotCreative() && !Objects.requireNonNull(FDPClient.moduleManager.getModule(DelayRemover.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(DelayRemover.class)).getNoClickDelay().get()) {
                             this.leftClickCounter = 0;
                         }
                 }
             }
         }
     }
+
     @Inject(method = "middleClickMouse", at = @At("HEAD"))
     private void middleClickMouse(CallbackInfo ci) {
         CPSCounterUtils.registerClick(CPSCounterUtils.MouseButton.MIDDLE);
@@ -345,13 +340,13 @@ public abstract class MixinMinecraft {
         }
     }
 
-    @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "setWindowIcon", at = @At("HEAD"))
     private void setWindowIcon(CallbackInfo callbackInfo) {
-      //  try {
-            if (Util.getOSType() == Util.EnumOS.OSX) {
-                MacOS.icon();
-                Display.setIcon(IconUtils.fav());
-            }
+        //  try {
+        if (Util.getOSType() == Util.EnumOS.OSX) {
+            MacOS.icon();
+            Display.setIcon(IconUtils.fav());
+        }
     /*
              else {
                 BufferedImage image = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/32.png"))); // need to impliment 16x and 64x

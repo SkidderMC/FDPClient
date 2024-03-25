@@ -12,11 +12,10 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.AntiDesync;
 import net.ccbluex.liquidbounce.features.module.modules.movement.*;
-import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
-import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
+import net.ccbluex.liquidbounce.utils.RotationUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
@@ -828,8 +827,8 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 distanceWalkedModified = (float) (distanceWalkedModified + MathHelper.sqrt_double(d12 * d12 + d14 * d14) * 0.6);
                 distanceWalkedOnStepModified = (float) (distanceWalkedOnStepModified + MathHelper.sqrt_double(d12 * d12 + d13 * d13 + d14 * d14) * 0.6);
 
-                if (distanceWalkedOnStepModified > (float) getNextStepDistance() && block1.getMaterial() != Material.air) {
-                    setNextStepDistance((int) distanceWalkedOnStepModified + 1);
+                if (distanceWalkedOnStepModified > (float) fDPClient$getNextStepDistance() && block1.getMaterial() != Material.air) {
+                    fDPClient$setNextStepDistance((int) distanceWalkedOnStepModified + 1);
 
                     if (isInWater()) {
                         float f = MathHelper.sqrt_double(motionX * motionX * 0.20000000298023224 + motionY * motionY + motionZ * motionZ * 0.20000000298023224) * 0.35F;
@@ -860,17 +859,17 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 dealFireDamage(1);
 
                 if (!flag2) {
-                    setFire(getFire() + 1);
+                    setFire(fDPClient$getFire() + 1);
 
-                    if (getFire() == 0) {
+                    if (fDPClient$getFire() == 0) {
                         setFire(8);
                     }
                 }
-            } else if (getFire() <= 0) {
+            } else if (fDPClient$getFire() <= 0) {
                 setFire(-fireResistance);
             }
 
-            if (flag2 && getFire() > 0) {
+            if (flag2 && fDPClient$getFire() > 0) {
                 playSound("random.fizz", 0.7F, 1.6F + (rand.nextFloat() - rand.nextFloat()) * 0.4F);
                 setFire(-fireResistance);
             }

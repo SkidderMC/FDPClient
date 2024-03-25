@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.injection.transformers;
 
 import net.ccbluex.liquidbounce.features.special.spoof.ClientSpoofHandler;
-import net.ccbluex.liquidbounce.handler.script.remapper.injection.utils.ClassUtils;
 import net.ccbluex.liquidbounce.handler.script.remapper.injection.utils.NodeUtils;
+import net.ccbluex.liquidbounce.utils.ClassUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.tree.*;
@@ -18,10 +18,6 @@ import static org.objectweb.asm.Opcodes.*;
  * Transform bytecode of classes
  */
 public class ForgeNetworkTransformer implements IClassTransformer {
-
-    public static boolean returnMethod() {
-        return ClientSpoofHandler.enabled && !Minecraft.getMinecraft().isIntegratedServerRunning();
-    }
 
     /**
      * Transform a class
@@ -80,5 +76,9 @@ public class ForgeNetworkTransformer implements IClassTransformer {
         }
 
         return basicClass;
+    }
+
+    public static boolean returnMethod() {
+        return ClientSpoofHandler.enabled && !Minecraft.getMinecraft().isIntegratedServerRunning();
     }
 }

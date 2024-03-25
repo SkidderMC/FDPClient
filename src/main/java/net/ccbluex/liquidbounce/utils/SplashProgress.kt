@@ -4,6 +4,7 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils
+
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution

@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.handler.spoof;
 
-
 import net.ccbluex.liquidbounce.features.special.spoof.ClientSpoofHandler;
 
 public class ClientBrandRetriever {

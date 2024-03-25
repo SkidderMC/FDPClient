@@ -17,7 +17,7 @@ import java.awt.*;
 import java.io.IOException;
 
 public class GuiCommitInfo extends GuiScreen {
-    public static final ResourceLocation gitImage = new ResourceLocation("fdpclient/gui/git.png");
+    public static final ResourceLocation gitImage = new ResourceLocation("fdpclient/gui/icons/git.png");
 
     /**
      * Adds the buttons (and other controls) to the screen in question. Called when the GUI is displayed and when the

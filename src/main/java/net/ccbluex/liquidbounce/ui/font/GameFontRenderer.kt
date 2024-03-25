@@ -9,6 +9,8 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.TextEvent
 import net.ccbluex.liquidbounce.features.module.modules.client.HUD
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
+import net.ccbluex.liquidbounce.utils.ClassUtils
+import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
@@ -22,8 +24,12 @@ import org.lwjgl.opengl.GL20
 import java.awt.Color
 import java.awt.Font
 
-class GameFontRenderer(font: Font) : FontRenderer(Minecraft.getMinecraft().gameSettings,
-    ResourceLocation("textures/font/ascii.png"), Minecraft.getMinecraft().textureManager, false) {
+class GameFontRenderer(font: Font) : FontRenderer(
+    MinecraftInstance.mc.gameSettings,
+    ResourceLocation("textures/font/ascii.png"),
+    if (ClassUtils.hasForge()) null else MinecraftInstance.mc.textureManager,
+    false
+) {
 
     var defaultFont = AWTFontRenderer(font)
     private var boldFont = AWTFontRenderer(font.deriveFont(Font.BOLD))

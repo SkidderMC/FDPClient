@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
 import io.netty.channel.Channel;
-
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.handler.protocol.api.VFNetworkManager;
 import net.minecraft.network.NetworkManager;

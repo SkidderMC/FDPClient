@@ -13,14 +13,15 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Objects;
+
 @Mixin(BlockSoulSand.class)
 public class MixinBlockSoulSand {
 
     @Inject(method = "onEntityCollidedWithBlock", at = @At("HEAD"), cancellable = true)
     private void onEntityCollidedWithBlock(CallbackInfo callbackInfo) {
-        final NoSlow noSlow = FDPClient.moduleManager.getModule(NoSlow.class);
 
-        if(noSlow.getState() && noSlow.getSoulSandValue().get()) {
+        if(Objects.requireNonNull(FDPClient.moduleManager.getModule(NoSlow.class)).getState() && Objects.requireNonNull(Objects.requireNonNull(FDPClient.moduleManager.getModule(NoSlow.class)).getSoulSandValue().get())) {
             callbackInfo.cancel();
         }
     }

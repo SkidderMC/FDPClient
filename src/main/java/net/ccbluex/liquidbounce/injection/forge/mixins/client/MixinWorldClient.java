@@ -12,12 +12,13 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
+import java.util.Objects;
+
 @Mixin(WorldClient.class)
 public class MixinWorldClient {
 
     @ModifyVariable(method = "doVoidFogParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/block/Block;randomDisplayTick(Lnet/minecraft/world/World;Lnet/minecraft/util/BlockPos;Lnet/minecraft/block/state/IBlockState;Ljava/util/Random;)V", shift = At.Shift.AFTER), ordinal = 0)
     private boolean handleBarriers(final boolean flag) {
-        final TrueSight trueSight = FDPClient.moduleManager.getModule(TrueSight.class);
-        return flag || trueSight.getState() && trueSight.getBarriersValue().get();
+        return flag || Objects.requireNonNull(FDPClient.moduleManager.getModule(TrueSight.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(TrueSight.class)).getBarriersValue().get();
     }
 }

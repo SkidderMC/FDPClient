@@ -19,6 +19,10 @@ import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(BlockLilyPad.class)
 public abstract class MixinBlockLilyPad extends BlockBush {
+    /**
+     * @author Zywl
+     * @reason Get Collision Bounding Box
+     */
     @Overwrite
     public AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state) {
         if (ProtocolBase.getManager().getTargetVersion().newerThan(ProtocolVersion.v1_8) && !MinecraftInstance.mc.isIntegratedServerRunning())

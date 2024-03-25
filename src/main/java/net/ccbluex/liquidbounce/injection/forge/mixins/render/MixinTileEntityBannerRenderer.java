@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import com.google.common.collect.Lists;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.LayeredColorMaskTexture;
 import net.minecraft.client.renderer.tileentity.TileEntityBannerRenderer;
 import net.minecraft.item.EnumDyeColor;

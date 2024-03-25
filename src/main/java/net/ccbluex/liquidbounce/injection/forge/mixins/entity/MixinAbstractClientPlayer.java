@@ -17,6 +17,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Objects;
+
 @Mixin(AbstractClientPlayer.class)
 public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
 
@@ -32,10 +34,9 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
 
     @Inject(method = "getFovModifier", at = @At("HEAD"), cancellable = true)
     private void getFovModifier(CallbackInfoReturnable<Float> callbackInfoReturnable) {
-        final VanillaTweaks vanillaTweaks = FDPClient.moduleManager.getModule(VanillaTweaks.class);
 
-        if(vanillaTweaks.getState()) {
-            float newFOV = vanillaTweaks.getFovValue().get();
+        if(Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getState()) {
+            float newFOV = Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getFovValue().get();
 
             if(!this.isUsingItem()) {
                 callbackInfoReturnable.setReturnValue(newFOV);

@@ -12,10 +12,10 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.features.module.modules.client.HurtCam;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;
 import net.ccbluex.liquidbounce.features.module.modules.combat.LegitAura;
-import net.ccbluex.liquidbounce.features.module.modules.visual.Ambience;
-import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Reach;
+import net.ccbluex.liquidbounce.features.module.modules.visual.Ambience;
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook;
+import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.utils.Interpolator;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
@@ -40,15 +40,16 @@ import org.lwjgl.opengl.Display;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import static org.objectweb.asm.Opcodes.GETFIELD;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import static org.objectweb.asm.Opcodes.GETFIELD;
 
 @Mixin(EntityRenderer.class)
 public abstract class MixinEntityRenderer {

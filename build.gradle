@@ -67,46 +67,49 @@ def viaLibs = [
 
 dependencies {
     // Implementation dependencies
-    implementation 'org.projectlombok:lombok:1.18.30'
-    include("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+    implementation 'org.projectlombok:lombok:1.18.32'
+    implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
+
+    include("org.spongepowered:mixin:${project.mixin_version}") {
         transitive = false
-        exclude group: 'com.google.guava', module: 'guava'
-        exclude group: 'commons-io', module: 'commons-io'
-        exclude group: 'com.google.code.gson', module: 'gson'
-        exclude group: 'org.slf4j', module: 'slf4j-api'
-        exclude group: 'org.apache.logging.log4j', module: 'log4j-core'
+        exclude module: "guava"
+        exclude module: "commons-io"
+        exclude module: "gson"
+        exclude module: "launchwrapper"
+        exclude module: "log4j-core"
+        exclude module: "slf4j-api"
     }
 
     viaLibs.each { via ->
         include(via)
     }
 
-    include('com.github.half-cambodian-hacker-man:Koffee:d8cee73') {
-        exclude module: 'asm-commons'
-        exclude module: 'asm-tree'
-        exclude module: 'asm'
-    }
+    annotationProcessor("org.spongepowered:mixin:${project.mixin_version}")
 
-    annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
-
-    // Other dependencies
     include "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+
     include("me.friwi:jcefmaven:$jcef_version") {
         exclude module: 'commons-compress'
         exclude module: 'jogl-all'
         exclude module: 'gluegen-rt'
     }
-    include("com.jagrosh:DiscordIPC:0.4")
-    include("com.github.SkidderMC:elixir-2:1.2.4") {
-        exclude module: 'kotlin-stdlib'
-        exclude module: 'authlib'
+
+    include("com.jagrosh:DiscordIPC:0.4") {
+        exclude module: "log4j"
     }
+
+    include("com.github.CCBlueX:Elixir:1.2.6") {
+        exclude module: "kotlin-stdlib"
+        exclude module: "authlib"
+    }
+
     include("com.github.zh79325:open-gif:1.0.4") {
         exclude module: 'slf4j-api'
         exclude module: 'logback-core'
         exclude module: 'logback-classic'
         exclude module: 'junit'
     }
+
     include("com.github.UnlegitMC:Astar3d:bec2291cf2") // pathfinding
     include 'com.jhlabs:filters:2.0.235-1'
     include fileTree(dir: "libs", include: ["*.jar"])
@@ -137,7 +140,7 @@ processResources {
     rename '(.+_at.cfg)', 'META-INF/\$1'
 }
 
-task moveResources {
+tasks.register('moveResources') {
     doLast {
         ant.move file: "${buildDir}/resources/main", todir: "${buildDir}/classes/java"
     }

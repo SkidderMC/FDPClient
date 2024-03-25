@@ -2,10 +2,6 @@
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
- *
- * This util sets a mac os dock icon
- * please include this header with all copies of this class
- * https://github.com/GlassMods/MinecraftSnippets/tree/main/MacOS-Dock-Icon-Java8
  */
 package net.ccbluex.liquidbounce.utils.render;
 
