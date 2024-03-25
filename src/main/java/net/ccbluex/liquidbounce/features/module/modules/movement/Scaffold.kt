@@ -299,7 +299,7 @@ class Scaffold : Module() {
         if (towerStatus && towerModeValue.get().lowercase() != "aac3.3.9" && towerModeValue.get().lowercase() != "aac4.4constant" && towerModeValue.get().lowercase() != "aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
         if (!towerStatus) mc.timer.timerSpeed = timerValue.get()
 
-        FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(!rotationsValue.equals("None"), moveFixValue.get())
+        
 
         if (lastTick == mc.thePlayer.ticksExisted) return
         lastTick = mc.thePlayer.ticksExisted
@@ -338,7 +338,7 @@ class Scaffold : Module() {
                     canSameY = FDPClient.moduleManager[Speed::class.java]!!.state
                 }
                 "hypixel" -> {
-                    canSameY = mc.thePlayer.ticksExisted % 11 == 0
+                    canSameY = mc.thePlayer.ticksExisted % 11 > 3
                 }
                 else -> {
                     canSameY = false
@@ -486,6 +486,8 @@ class Scaffold : Module() {
         }
         
         if (placeModeValue.equals("All")) place()
+
+        FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(true, moveFixValue.get())
     }
 
     @EventTarget
@@ -1400,7 +1402,7 @@ class Scaffold : Module() {
 
     val canSprint: Boolean
         get() = MovementUtils.isMoving() && when (sprintValue.get().lowercase()) {
-            "always", "dynamic", "vulcan" -> true
+            "always", "dynamic", "vulcan", "hypixelfast" -> true
             "onground" -> mc.thePlayer.onGround
             "offground" -> !mc.thePlayer.onGround
             "hypixel" -> false
