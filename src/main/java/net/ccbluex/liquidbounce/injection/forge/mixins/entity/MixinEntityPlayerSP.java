@@ -576,7 +576,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         }
     }
 
-    @Override
     public void moveEntity(double x, double y, double z) {
         MoveEvent moveEvent = new MoveEvent(x, y, z);
         FDPClient.eventManager.callEvent(moveEvent);
