@@ -32,6 +32,7 @@ class FireballFly : FlyMode("Fireball") {
 
     private var startingSlot = 0
     private var veloStatus = false
+    private var start = false
 
     override fun onEnable() {
         var fbSlot = getFBSlot()
@@ -43,16 +44,17 @@ class FireballFly : FlyMode("Fireball") {
             FDPClient.moduleManager[Velocity::class.java]!!.state = false
             velocitypacket = false
             beforeVelo = true
-            ticks = 0
+            ticks = 50
             startingSlot = mc.thePlayer.inventory.currentItem
             mc.thePlayer.inventory.currentItem = fbSlot
+            start = false
         }
     }
 
     override fun onUpdate(event: UpdateEvent) {
         mc.timer.timerSpeed = 1.0f
         if (beforeVelo) {
-            if (mc.thePlayer.onGround) {
+            if (mc.thePlayer.onGround && !start) {
                 mc.gameSettings.keyBindForward.pressed = true
                 if (jumpValue.get()) {
                     mc.thePlayer.jump()
@@ -60,6 +62,7 @@ class FireballFly : FlyMode("Fireball") {
                 }
                 FDPClient.moduleManager[FreeLook::class.java]!!.enable()
                 ticks = 0
+                start = true
             } else if (ticks == 1) {
                 mc.thePlayer.rotationYaw += 180f
                 mc.thePlayer.rotationPitch = 80f

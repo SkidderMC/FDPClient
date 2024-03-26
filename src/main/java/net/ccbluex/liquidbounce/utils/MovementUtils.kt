@@ -174,7 +174,7 @@ object MovementUtils : MinecraftInstance() {
 
     val jumpMotion: Double
         get() {
-            var mot = 0.42
+            var mot = 0.41999998688698
             if (mc.thePlayer.isPotionActive(Potion.jump)) {
                 mot += (mc.thePlayer.getActivePotionEffect(Potion.jump).amplifier + 1) * 0.1
             }

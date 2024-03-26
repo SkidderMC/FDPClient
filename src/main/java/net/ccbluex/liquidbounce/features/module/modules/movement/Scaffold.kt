@@ -321,6 +321,7 @@ class Scaffold : Module() {
                 "telly", "tellyup" -> {
                     canSameY = sameYValue.equals("Telly")
                     if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
+                        mc.thePlayer.isSprinting = true
                         mc.thePlayer.jump()
                     }
                 }
@@ -494,14 +495,6 @@ class Scaffold : Module() {
         if (placeModeValue.equals("All")) place()
 
         FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(true, moveFixValue.get())
-    }
-
-    @EventTarget
-    fun onStrafe(event: StrafeEvent) {
-        if (moveFixValue.get()) {
-            FDPClient.moduleManager[StrafeFix::class.java]!!.runStrafeFixLoop(true, event)
-            event.cancelEvent()
-        }
     }
 
     @EventTarget
