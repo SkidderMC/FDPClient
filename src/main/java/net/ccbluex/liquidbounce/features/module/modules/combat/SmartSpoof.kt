@@ -4,6 +4,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.play.server.S12PacketEntityVelocity
@@ -79,6 +80,7 @@ object SmartSpoof : Module() {
             times.clear()
             packets.clear()
         }
+        ClientUtils.displayChatMessage(delay.toString() + ' ' + times.size.toString())
         delay = targetDelay
         if (!packets.isEmpty()) {
             releasing = true

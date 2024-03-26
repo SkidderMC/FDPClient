@@ -247,7 +247,7 @@ object LegitAura : Module() {
                 rotationLimit = (rotationLimit + applySmoothing(rotationDistance.toDouble()/1.5, "quad").toFloat())
 
                 advancedAimVelo += rotationLimit + RandomUtils.nextFloat(-3f, 2f)
-                advancedAimVelo *= 0.7f
+                advancedAimVelo *= 0.3f
 
                 aimRotation = RotationUtils.calculateCenter("HeadRange", "Horizontal", 0.05, entity.hitBox, false, true)!!.rotation
                 targetRotation = RotationUtils.limitAngleChange(playerRotation, aimRotation, advancedAimVelo * 0.5f )

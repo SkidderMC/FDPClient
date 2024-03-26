@@ -45,7 +45,7 @@ class VulcanHighFly : FlyMode("VulcanHigh") {
             mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 3.00133597911214, mc.thePlayer.posZ)
         }
 
-        if (sent && mc.thePlayer.hurtTime == 10) {
+        if (sent && mc.thePlayer.hurtTime == 9) {
             mc.thePlayer.posY += height.get()
         }
     }

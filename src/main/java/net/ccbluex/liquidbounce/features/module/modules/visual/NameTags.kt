@@ -321,7 +321,7 @@ object NameTags : Module() {
 
                 // render bg
                 glScalef(-scale * 2, -scale * 2, scale * 2)
-                drawRoundedCornerRect(-width - 4F, -fontRenderer.FONT_HEIGHT * 3F, width + 4F, -3F, 3f, Color(60, 60, 60, 110).rgb)
+                drawRoundedCornerRect(-width - 4F, -fontRenderer.FONT_HEIGHT * 3F, width + 4F, -3F, 3f, Color(60, 60, 60, 160).rgb)
 
                 // string
                 fontRenderer.drawString(tag, -width, -fontRenderer.FONT_HEIGHT * 2 - 4, ClientTheme.getColor(1).rgb)

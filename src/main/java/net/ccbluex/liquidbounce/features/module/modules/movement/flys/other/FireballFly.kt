@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.item.ItemFireball
@@ -23,6 +24,7 @@ class FireballFly : FlyMode("Fireball") {
 
 
     private val boostValue = FloatValue("${valuePrefix}BoostAmount", 1.2f, 1f, 2f)
+    private val jumpValue = BoolValue("${valuePrefix}Jump", true)
 
     private var velocitypacket = false
     private var ticks = 0
@@ -52,13 +54,15 @@ class FireballFly : FlyMode("Fireball") {
         if (beforeVelo) {
             if (mc.thePlayer.onGround) {
                 mc.gameSettings.keyBindForward.pressed = true
-                mc.thePlayer.jump()
-                MovementUtils.strafe(0.46f)
+                if (jumpValue.get()) {
+                    mc.thePlayer.jump()
+                    MovementUtils.strafe(0.46f)
+                }
                 FDPClient.moduleManager[FreeLook::class.java]!!.enable()
                 ticks = 0
             } else if (ticks == 1) {
                 mc.thePlayer.rotationYaw += 180f
-                mc.thePlayer.rotationPitch = 70f
+                mc.thePlayer.rotationPitch = 80f
                 mc.gameSettings.keyBindBack.pressed = true
                 mc.gameSettings.keyBindForward.pressed = false
                 KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)

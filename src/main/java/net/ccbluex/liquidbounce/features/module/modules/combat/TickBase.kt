@@ -53,6 +53,4 @@ class TickBase : Module() {
             ticks --
         }
     }
-
-
 }

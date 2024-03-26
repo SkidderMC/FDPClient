@@ -261,10 +261,11 @@ object KillAura : Module() {
     private val noEat = BoolValue("NoEat", false).displayable { toolsDisplay.get() }
     private val noBlocking = BoolValue("NoBlocking", false).displayable { toolsDisplay.get() }
     private val noBadPacketsValue = BoolValue("NoBadPackets", false).displayable { toolsDisplay.get() }
+    private val jumpFixValue = BoolValue("JumpFix", false).displayable { toolsDisplay.get() }
     private val noInventoryAttackValue = ListValue("NoInvAttack", arrayOf("Spoof", "CancelRun", "Off"), "Off").displayable { toolsDisplay.get() }
     private val noInventoryDelayValue = IntegerValue("NoInvDelay", 200, 0, 500).displayable { !noInventoryAttackValue.equals("Off") && noInventoryAttackValue.displayable }
-    private val onSwording = BoolValue("OnSword", true)
-    private val displayDebug = BoolValue("Debug", false)
+    private val onSwording = BoolValue("OnSword", false).displayable { toolsDisplay.get() }
+    private val displayDebug = BoolValue("Debug", false).displayable { toolsDisplay.get() }
 
     private val displayMode = ListValue("DisplayMode", arrayOf("Simple", "LessSimple", "Complicated"), "Simple")
 
@@ -444,25 +445,6 @@ object KillAura : Module() {
 
         runAttackLoop()
 
-        if (packetSent && noBadPacketsValue.get()) {
-            return
-        }
-        return
-        // AutoBlock
-        if (autoBlockValue.equals("Range") && discoveredTargets.isNotEmpty() && (!autoBlockPacketValue.equals("AfterAttack")
-                    || discoveredTargets.any { mc.thePlayer.getDistanceToEntityBox(it) > maxRange }) && canBlock
-        ) {
-            if (mc.thePlayer.getDistanceToEntityBox(target) <= autoBlockRangeValue.get()) {
-                startBlocking(
-                    target,
-                    interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange)
-                )
-            } else {
-                if (!mc.thePlayer.isBlocking) {
-                    stopBlocking()
-                }
-            }
-        }
     }
 
     /**
@@ -1156,6 +1138,14 @@ object KillAura : Module() {
                     test2_block = false
                 }
             }
+        }
+    }
+
+    @EventTarget
+    fun onJump(event: JumpEvent) {
+        if (jumpFixValue.get()) {
+            event.cancelEvent()
+            mc.thePlayer.motionY = MovementUtils.jumpMotion
         }
     }
 

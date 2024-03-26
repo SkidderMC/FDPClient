@@ -172,11 +172,11 @@ object MovementUtils : MinecraftInstance() {
             return Math.toRadians(rotationYaw.toDouble())
         }
 
-    val jumpMotion: Float
+    val jumpMotion: Double
         get() {
-            var mot = 0.42f
+            var mot = 0.42
             if (mc.thePlayer.isPotionActive(Potion.jump)) {
-                mot += (mc.thePlayer.getActivePotionEffect(Potion.jump).amplifier + 1).toFloat() * 0.1f
+                mot += (mc.thePlayer.getActivePotionEffect(Potion.jump).amplifier + 1) * 0.1
             }
             return mot
         }

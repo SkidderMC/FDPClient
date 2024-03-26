@@ -74,7 +74,7 @@ class Scaffold : Module() {
     private val downValue = BoolValue("Down", false).displayable { placeOptions.get() }
     private val placeModeValue = ListValue("PlaceTiming", arrayOf("All", "Pre", "Post"), "All").displayable { placeOptions.get() }
     
-    private val sameYValue = ListValue("SameY", arrayOf("Simple", "AutoJump", "WhenSpeed", "JumpUpY", "MotionY", "Hypixel", "OFF"), "WhenSpeed").displayable { placeOptions.get() }
+    private val sameYValue = ListValue("SameY", arrayOf("Simple", "AutoJump", "WhenSpeed", "JumpUpY", "MotionY", "Hypixel", "Telly", "TellyUp", "OFF"), "WhenSpeed").displayable { placeOptions.get() }
     private val hitableCheckValue = ListValue("HitableCheck", arrayOf("Simple", "Strict", "OFF"), "Simple").displayable { placeOptions.get() }
     private val expandLengthValue = IntegerValue("ExpandLength", 1, 1, 6).displayable { placeOptions.get() }
     private val noExpandOnTowerValue = BoolValue("NoExpandOnTower", false).displayable { placeOptions.get() && expandLengthValue.get() > 1}
@@ -83,7 +83,7 @@ class Scaffold : Module() {
     // Movement
     private val moveOptions = BoolValue("Movement Options: ", true)
     
-    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "Alternating", "Hypixel", "HypixelFast", "Vulcan", "OFF"), "Always").displayable { moveOptions.get() }
+    private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "Alternating", "Hypixel", "HypixelSkywars", "HypixelFast", "Vulcan", "OFF"), "Always").displayable { moveOptions.get() }
     
     private val safeWalkValue = ListValue("SafeWalk", arrayOf("Ground", "Air", "OFF"), "Ground").displayable { moveOptions.get() }
     private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "Off"), "Off").displayable { moveOptions.get() }
@@ -99,7 +99,7 @@ class Scaffold : Module() {
     // Tower
     private val towerModeValue = ListValue(
         "TowerMode", arrayOf(
-            "Jump",
+            "Legit", "Jump",
             "Motion", "Motion2", "Motion3",
             "ConstantMotion", "PlusMotion", "StableMotion",
             "MotionTP", "MotionTP2",
@@ -318,6 +318,12 @@ class Scaffold : Module() {
                 "simple" -> {
                     canSameY = true
                 }
+                "telly", "tellyup" -> {
+                    canSameY = sameYValue.equals("Telly")
+                    if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
+                        mc.thePlayer.jump()
+                    }
+                }
                 "autojump" -> {
                     canSameY = true
                     if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
@@ -491,6 +497,14 @@ class Scaffold : Module() {
     }
 
     @EventTarget
+    fun onStrafe(event: StrafeEvent) {
+        if (moveFixValue.get()) {
+            FDPClient.moduleManager[StrafeFix::class.java]!!.runStrafeFixLoop(true, event)
+            event.cancelEvent()
+        }
+    }
+
+    @EventTarget
     fun onPacket(event: PacketEvent) {
         if (mc.thePlayer == null) return
         val packet = event.packet
@@ -528,7 +542,9 @@ class Scaffold : Module() {
             } else {
                 slot = packet.slotId
             }
-        } else if (packet is C08PacketPlayerBlockPlacement) {
+        }
+
+        if (packet is C08PacketPlayerBlockPlacement) {
             // c08 item override to solve issues in scaffold and some other modules, maybe bypass some anticheat in future
             packet.stack = mc.thePlayer.inventory.mainInventory[slot]
             // illegal facing checks
@@ -546,6 +562,8 @@ class Scaffold : Module() {
         
         // Tower
         if (motionSpeedEnabledValue.get()) MovementUtils.setMotion(motionSpeedValue.get().toDouble())
+        if (sprintValue.equals("HypixelSkywars")) MovementUtils.strafe(0.1434f)
+
         towerStatus = (!stopWhenBlockAboveValue.get() || BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 2, mc.thePlayer.posZ)) is BlockAir)
         if (towerStatus) {
             // further checks
@@ -573,7 +591,8 @@ class Scaffold : Module() {
                 if (mc.thePlayer.onGround) {
                     wdTick = 0
                     mc.thePlayer.motionY = 0.42
-                    MovementUtils.strafe(0.4f)
+                    mc.thePlayer.motionZ *= 1.05
+                    mc.thePlayer.motionX *= 1.05
                 } else if (mc.thePlayer.motionY > -0.0784000015258789) {
                     val n = Math.round(mc.thePlayer.posY % 1.0 * 100.0).toInt()
                     when (n) {
@@ -586,7 +605,7 @@ class Scaffold : Module() {
                             wdSpoof = true
                         }
                         0 -> {
-                            mc.thePlayer.motionY = 0.0
+                            mc.thePlayer.motionY = 0.42
                         }
     
                     }
@@ -606,6 +625,37 @@ class Scaffold : Module() {
                 RotationUtils.setTargetRotation(limitedRotation, keepLengthValue.get())
             }
         }
+
+
+
+        if (moveFixValue.get()) {
+            val movefixYaw = when (rotationsValue.get().lowercase()) {
+                "aac" -> mc.thePlayer.rotationYaw + (if (mc.thePlayer.movementInput.moveForward < 0) 0 else 180) + aacYawValue.get()
+                "custom", "better" -> mc.thePlayer.rotationYaw + customYawValue.get()
+                "static2" -> {
+                    if ((MovementUtils.movingYaw / 30).roundToInt() % 3 == 0) {
+                        (MovementUtils.direction * 180f / Math.PI).toFloat() + 135
+                    } else {
+                        (MovementUtils.direction * 180f / Math.PI).toFloat() + 180
+                    }
+                }
+                "advanced" -> {
+                    when (advancedYawModeValue.get().lowercase()) {
+                        "static" -> mc.thePlayer.rotationYaw + advancedYawStaticValue.get()
+                        "movedirection" -> MovementUtils.movingYaw - 180
+                        "offsetmove" -> MovementUtils.movingYaw - 180 + advancedYawMoveOffsetValue.get()
+                        else -> RotationUtils.serverRotation!!.yaw
+                    }
+                }
+                else -> RotationUtils.serverRotation!!.yaw
+            }
+            RotationUtils.setTargetRotation(Rotation(movefixYaw, RotationUtils.serverRotation!!.pitch), 1)
+        }
+
+        if ((sameYValue.equals("Telly") || sameYValue.equals("TellyUp")) && mc.thePlayer.onGround) {
+            RotationUtils.setTargetRotation(Rotation(MovementUtils.movingYaw, RotationUtils.serverRotation!!.pitch))
+        }
+
         
 
         // Update and search for new block
@@ -638,10 +688,10 @@ class Scaffold : Module() {
     private fun move() {
         towerTimer.update()
         when (towerModeValue.get().lowercase()) {
-            "none" -> {
+            "none", "legit" -> {
                 if (mc.thePlayer.onGround) {
                     fakeJump()
-                    mc.thePlayer.motionY = 0.42
+                    mc.thePlayer.motionY = MovementUtils.jumpMotion
                 }
             }
             "jump" -> {
@@ -834,7 +884,7 @@ class Scaffold : Module() {
                 }
                 if (mc.thePlayer.posY > jumpGround + 0.65 && MovementUtils.isMoving()) {
                     fakeJump()
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY) + 1.0, mc.thePlayer.posZ)
                     mc.thePlayer.motionY = 0.36
                     jumpGround = mc.thePlayer.posY
                 }
@@ -1172,8 +1222,8 @@ class Scaffold : Module() {
         )
         var placeRotation: PlaceRotation? = null
         if (testRotationsValue.get()) {
-            RotationUtils.setTargetRotationReverse(
-                Rotation(MovementUtils.movingYaw - 180, 81f),1,0
+            RotationUtils.setTargetRotation(
+                Rotation(MovementUtils.movingYaw - 180, 81f),1
             )
         }
         for (side in StaticStorage.facings()) {
@@ -1371,6 +1421,10 @@ class Scaffold : Module() {
                 mc.thePlayer.rotationPitch = lockRotation!!.pitch
             }
         }
+
+        if ((sameYValue.equals("Telly") || sameYValue.equals("TellyUp")) && mc.thePlayer.onGround) {
+            RotationUtils.setTargetRotation(Rotation(MovementUtils.movingYaw, RotationUtils.serverRotation!!.pitch))
+        }
         targetPlace = placeRotation.placeInfo
         return true
     }
@@ -1402,7 +1456,7 @@ class Scaffold : Module() {
 
     val canSprint: Boolean
         get() = MovementUtils.isMoving() && when (sprintValue.get().lowercase()) {
-            "always", "dynamic", "vulcan", "hypixelfast" -> true
+            "always", "dynamic", "vulcan", "hypixelfast", "hypixelskywars" -> true
             "onground" -> mc.thePlayer.onGround
             "offground" -> !mc.thePlayer.onGround
             "hypixel" -> false
