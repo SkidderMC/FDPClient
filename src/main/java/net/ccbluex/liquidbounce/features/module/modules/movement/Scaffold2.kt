@@ -31,7 +31,7 @@ import kotlin.math.roundToInt
 
 @ModuleInfo(name = "Scaffold2",  category = ModuleCategory.MOVEMENT)
 object Scaffold2 : Module() {
-    val modeValue = ListValue("Mode", arrayOf("Simple", "SpeedBridge", "Breezily", "JitterBridge", "TellyBridge"), "Simple")
+    val modeValue = ListValue("Mode", arrayOf("Simple", "SpeedBridge", "Breezily", "JitterBridge", "TellyBridge","GodBridge"), "Simple")
 
     val safewalkValue = ListValue("SafewalkType", arrayOf("Sneak", "Safewalk", "None"), "Safewalk").displayable { modeValue.equals("Simple") }
     val derpValue = BoolValue("SimpleDerpBridge", false).displayable { modeValue.equals("Simple") }
@@ -139,13 +139,13 @@ object Scaffold2 : Module() {
                     if (safewalkValue.equals("None")) {
                         rpitch = 79f
                     } else {
-                        rpitch = getPitchRot()
+                        rpitch = 83.2f
                     }
                 } else {
                     if (safewalkValue.equals("None")) {
                         rpitch = 76.3f
                     } else {
-                        rpitch = getPitchRot()
+                        rpitch = 78.1f
                     }
                 }
 
@@ -204,9 +204,32 @@ object Scaffold2 : Module() {
 
                 mc.gameSettings.keyBindSneak.pressed = (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) || mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)).block == Blocks.air)
             }
+
+            "godbridge" -> {
+                var rpitch = 0.0
+                if (((camYaw / 45).roundToInt()) % 2 == 0) {
+                    rpitch = 75.0
+                } else  {
+                    rpitch = 75.6
+                }
+
+                if (rpitch == 75.0) {
+                    playerRot = Rotation(camYaw - 135, rpitch.toFloat())
+                    correctControls(3)
+                } else {
+                    playerRot = Rotation(camYaw - 180, rpitch.toFloat())
+                    correctControls(1)
+                }
+
+                lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 80f)
+            }
             "jitterbridge" -> {
-                Rotation(camYaw + 180, 0f).toPlayer(mc.thePlayer)
-                var rpitch = getPitchRot()
+                var rpitch = 0f
+                if (((camYaw / 45).roundToInt()) % 2 == 0) {
+                    rpitch = 77.4f
+                } else  {
+                    rpitch = 77.1f
+                }
 
                 playerRot = Rotation(camYaw + 180, rpitch)
                 lockRotation = RotationUtils.limitAngleChange(oldPlayerRot, playerRot, 80f)
@@ -217,12 +240,18 @@ object Scaffold2 : Module() {
             }
             "tellybridge" -> {
 
+                var rpitch = 0f
+                if (((camYaw / 45).roundToInt()) % 2 == 0) {
+                    rpitch = 75.1f
+                } else  {
+                    rpitch = 75.5f
+                }
+
                 if (mc.thePlayer.onGround) {
                     playerRot = Rotation(camYaw, 80f)
                     correctControls(0)
                 } else {
                     Rotation(camYaw + 180, 0f).toPlayer(mc.thePlayer)
-                    var rpitch = getPitchRot()
                     playerRot = Rotation(camYaw + 180, rpitch)
                     correctControls(1)
                 }

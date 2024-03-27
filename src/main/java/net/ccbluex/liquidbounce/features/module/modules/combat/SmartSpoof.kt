@@ -81,7 +81,8 @@ object SmartSpoof : Module() {
             packets.clear()
         }
         ClientUtils.displayChatMessage(delay.toString() + ' ' + times.size.toString())
-        delay = targetDelay
+        delay += ((targetDelay - delay) / 3).toLong()
+        targetDelay = (targetDelay * 0.93).toLong()
         if (!packets.isEmpty()) {
             releasing = true
             while (times.first() < System.currentTimeMillis() - delay) {

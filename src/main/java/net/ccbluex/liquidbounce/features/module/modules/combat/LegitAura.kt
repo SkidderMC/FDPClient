@@ -85,6 +85,8 @@ object LegitAura : Module() {
     private val playerPredictValue = FloatValue("PlayerPredictAmount", 1.2f, -2f, 3f)
     private val opPredictValue = FloatValue("TargetPredictAmount", 1.5f, -2f, 3f)
 
+    private val movementFixValue = BoolValue("MovementFix", true)
+
     private val markValue = ListValue("Mark", arrayOf("Liquid", "Block", "OtherBlock", "Rise", "Eternal"), "OtherBlock")
     private val blockMarkExpandValue = FloatValue("BlockExpand", 0f, 0.5f, 1f).displayable { markValue.equals("Block") || markValue.equals("OtherBlock") }
 
@@ -194,7 +196,15 @@ object LegitAura : Module() {
             BlinkUtils.releasePacket()
         }
 
-
+        if (movementFixValue.get()) {
+            var yawDiff = ((FreeLook.cameraYaw - mc.thePlayer.rotationYaw)/45).roundToInt()
+            if (yawDiff > 4) yawDiff -= 8
+            if (yawDiff < -4) yawDiff += 8
+            mc.gameSettings.keyBindForward.pressed = abs(yawDiff) <= 1
+            mc.gameSettings.keyBindBack.pressed = abs(yawDiff) >= 3
+            mc.gameSettings.keyBindRight.pressed = yawDiff in 1..3
+            mc.gameSettings.keyBindLeft.pressed = yawDiff in -3..-1
+        }
     }
 
     private fun killauraRotations(entity: EntityLivingBase) {
