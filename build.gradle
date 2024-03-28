@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 plugins {
     id 'java'
     id 'idea'
@@ -59,8 +64,6 @@ def viaLibs = [
 dependencies {
     include 'org.projectlombok:lombok:1.18.32'
     annotationProcessor 'org.projectlombok:lombok:1.18.32'
-
-    implementation group: 'com.google.guava', name: 'guava', version: '33.1.5-jre'
 
     include("org.spongepowered:mixin:${project.mixin_version}") {
         transitive = false
