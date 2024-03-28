@@ -51,7 +51,6 @@ object SmartSpoof : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (releasing) return 
         if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true) && mc.thePlayer.ticksExisted > 20 && targetDelay > 0) {
             if (packet is S12PacketEntityVelocity) targetDelay = velocityDelay.get().toLong()
             if (packet is S08PacketPlayerPosLook) {
@@ -84,12 +83,10 @@ object SmartSpoof : Module() {
         delay += ((targetDelay - delay) / 3).toLong()
         targetDelay = (targetDelay * 0.93).toLong()
         if (!packets.isEmpty()) {
-            releasing = true
             while (times.first() < System.currentTimeMillis() - delay) {
                 PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
                 times.remove(times.first())
             }
-            releasing = false
         }
     }
 }
