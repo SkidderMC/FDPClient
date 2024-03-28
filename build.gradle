@@ -1,8 +1,3 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
- */
 plugins {
     id 'java'
     id 'idea'
@@ -11,6 +6,7 @@ plugins {
     id 'com.gorylenko.gradle-git-properties' version '2.4.1'
     id 'net.minecraftforge.gradle.forge'
     id 'org.spongepowered.mixin'
+    id 'maven-publish'
 }
 
 repositories {
@@ -26,11 +22,8 @@ version = project.mod_version
 group = project.maven_group
 archivesBaseName = project.archives_base_name
 
-sourceCompatibility = targetCompatibility = '1.8'
-
-compileJava {
-    options.encoding = 'UTF-8'
-}
+sourceCompatibility = targetCompatibility = 1.8
+compileJava.options.encoding = "UTF-8"
 
 compileKotlin {
     kotlinOptions {
@@ -60,15 +53,14 @@ def viaLibs = [
         "com.viaversion:viaversion:${project.viaversion_version}",
         "com.viaversion:viabackwards:${project.viabackwards_version}",
         "com.viaversion:viarewind-universal:${project.viarewind_version}",
-        "net.raphimc:ViaLoader:${project.vialoader_version}",
-        "org.yaml:snakeyaml:${project.snake_yml_version}",
-        "org.slf4j:slf4j-api:${project.slf4j_version}"
+        "net.raphimc:ViaLoader:${project.vialoader_version}"
 ]
 
 dependencies {
-    // Implementation dependencies
-    implementation 'org.projectlombok:lombok:1.18.32'
-    implementation group: 'com.google.guava', name: 'guava', version: '33.1.0-jre'
+    include 'org.projectlombok:lombok:1.18.32'
+    annotationProcessor 'org.projectlombok:lombok:1.18.32'
+
+    implementation group: 'com.google.guava', name: 'guava', version: '33.1.5-jre'
 
     include("org.spongepowered:mixin:${project.mixin_version}") {
         transitive = false
@@ -77,7 +69,6 @@ dependencies {
         exclude module: "gson"
         exclude module: "launchwrapper"
         exclude module: "log4j-core"
-        exclude module: "slf4j-api"
     }
 
     viaLibs.each { via ->
@@ -94,7 +85,7 @@ dependencies {
         exclude module: 'gluegen-rt'
     }
 
-    include("com.jagrosh:DiscordIPC:0.4") {
+    include('com.jagrosh:DiscordIPC:0.4') {
         exclude module: "log4j"
     }
 
@@ -142,7 +133,7 @@ processResources {
 
 tasks.register('moveResources') {
     doLast {
-        ant.move file: "${buildDir}/resources/main", todir: "${buildDir}/classes/java"
+        "${buildDir}/classes/java"
     }
 }
 
@@ -178,7 +169,7 @@ reobf {
     }
 }
 
-tasks.reobfJar.dependsOn(shadowJar)
+jar.dependsOn("shadowJar")
 
 configurations {
     compileClasspath {
@@ -188,3 +179,18 @@ configurations {
         attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
     }
 }
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = group
+            artifactId = archivesBaseName
+            version = version
+
+            from components.java
+        }
+    }
+}
+
+tasks.reobfShadowJar.mustRunAfter shadowJar
+tasks.reobfJar.dependsOn(shadowJar)

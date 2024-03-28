@@ -70,7 +70,6 @@ public class Fonts {
     @FontDetails(fontName = "ICONFONT", fontSize = 50)
     public static GameFontRenderer ICONFONT_50;
 
-
     // SFAPPLE
     @FontDetails(fontName = "SFApple", fontSize = 40)
     public static GameFontRenderer SFApple40;
@@ -79,39 +78,39 @@ public class Fonts {
 
     public static void loadFonts() {
         // ROBOTO
-        font28 = new GameFontRenderer(getRobotoMedium("regular.ttf", 28));
-        font32 = new GameFontRenderer(getRobotoMedium("regular.ttf", 32));
-        font35 = new GameFontRenderer(getRobotoMedium("regular.ttf", 35));
-        font40 = new GameFontRenderer(getRobotoMedium("regular.ttf", 40));
-        font72 = new GameFontRenderer(getRobotoMedium("regular.ttf", 72));
+        font28 = new GameFontRenderer(getRobotoMedium(28));
+        font32 = new GameFontRenderer(getRobotoMedium(32));
+        font35 = new GameFontRenderer(getRobotoMedium(35));
+        font40 = new GameFontRenderer(getRobotoMedium(40));
+        font72 = new GameFontRenderer(getRobotoMedium(72));
 
-        fontSmall = new GameFontRenderer(getRobotoMedium("regular.ttf", 30));
-        fontTiny = new GameFontRenderer(getRobotoMedium("regular.ttf", 24));
-        fontLarge = new GameFontRenderer(getRobotoMedium("regular.ttf", 60));
+        fontSmall = new GameFontRenderer(getRobotoMedium(30));
+        fontTiny = new GameFontRenderer(getRobotoMedium(24));
+        fontLarge = new GameFontRenderer(getRobotoMedium(60));
 
         // ROBOTO BOLD
-        fontBold32 = new GameFontRenderer(getRobotoBold("Roboto-Bold.ttf", 32));
-        fontBold35 = new GameFontRenderer(getRobotoBold("Roboto-Bold.ttf", 35));
-        fontBold40 = new GameFontRenderer(getRobotoBold("Roboto-Bold.ttf", 40));
+        fontBold32 = new GameFontRenderer(getRobotoBold(32));
+        fontBold35 = new GameFontRenderer(getRobotoBold(35));
+        fontBold40 = new GameFontRenderer(getRobotoBold(40));
 
         // SFUI
-        fontSFUI32 = new GameFontRenderer(getSFUI("sfui.ttf", 32));
-        fontSFUI35 = new GameFontRenderer(getSFUI("sfui.ttf", 35));
-        fontSFUI37 = new GameFontRenderer(getSFUI("sfui.ttf", 37));
-        fontSFUI40 = new GameFontRenderer(getSFUI("sfui.ttf", 40));
+        fontSFUI32 = new GameFontRenderer(getSFUI(32));
+        fontSFUI35 = new GameFontRenderer(getSFUI(35));
+        fontSFUI37 = new GameFontRenderer(getSFUI(37));
+        fontSFUI40 = new GameFontRenderer(getSFUI(40));
 
         // TAHOMA
-        fontTahoma = new GameFontRenderer(getTahomaBold("TahomaBold.ttf", 35));
-        fontTahoma30 = new GameFontRenderer(getTahomaBold("TahomaBold.ttf", 30));
-        fontTahomaSmall = new TTFFontRenderer(getTahoma("Tahoma.ttf", 11));
+        fontTahoma = new GameFontRenderer(getTahomaBold(35));
+        fontTahoma30 = new GameFontRenderer(getTahomaBold(30));
+        fontTahomaSmall = new TTFFontRenderer(getTahoma(11));
 
         // ICONS
-        ICONFONT_50 = new GameFontRenderer(getIcons("stylesicons.ttf", 50));
-        fontCheck42 = new GameFontRenderer(getCheck("check.ttf", 42));
+        ICONFONT_50 = new GameFontRenderer(getIcons(50));
+        fontCheck42 = new GameFontRenderer(getCheck(42));
 
         // SFAPPLE
-        SFApple40 = new GameFontRenderer(getSFApple("SFApple", 40));
-        SFApple50 = new GameFontRenderer(getSFApple("SFApple", 50));
+        SFApple40 = new GameFontRenderer(getSFApple(40));
+        SFApple50 = new GameFontRenderer(getSFApple(50));
 
         ClientUtils.getLogger().info("Loaded Fonts");
     }
@@ -190,12 +189,12 @@ public class Fonts {
         return fonts;
     }
 
-    private static Font getSFUI(final String fontName, final int size) {
+    private static Font getSFUI(final int size) {
         try {
             InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/sfui.ttf");
 
             if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + fontName);
+                throw new FileNotFoundException("Font file not found: " + "sfui.ttf");
             }
 
             Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
@@ -208,12 +207,12 @@ public class Fonts {
         }
     }
 
-    private static Font getRobotoMedium(final String fontName, final int size) {
+    private static Font getRobotoMedium(final int size) {
         try {
             InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/regular.ttf");
 
             if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + fontName);
+                throw new FileNotFoundException("Font file not found: " + "regular.ttf");
             }
 
             Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
@@ -226,12 +225,12 @@ public class Fonts {
         }
     }
 
-    private static Font getSFApple(final String fontName, final int size) {
+    private static Font getSFApple(final int size) {
         try {
             InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/SFApple.ttf");
 
             if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + fontName);
+                throw new FileNotFoundException("Font file not found: " + "SFApple");
             }
 
             Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
@@ -244,12 +243,12 @@ public class Fonts {
         }
     }
 
-    private static Font getRobotoBold(final String fontName, final int size) {
+    private static Font getRobotoBold(final int size) {
         try {
             InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/Roboto-Bold.ttf");
 
             if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + fontName);
+                throw new FileNotFoundException("Font file not found: " + "Roboto-Bold.ttf");
             }
 
             Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
@@ -262,12 +261,12 @@ public class Fonts {
         }
     }
 
-    private static Font getTahomaBold(final String fontName, final int size) {
+    private static Font getTahomaBold(final int size) {
         try {
             InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/TahomaBold.ttf");
 
             if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + fontName);
+                throw new FileNotFoundException("Font file not found: " + "TahomaBold.ttf");
             }
 
             Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
@@ -280,12 +279,12 @@ public class Fonts {
         }
     }
 
-    private static Font getTahoma(final String fontName, final int size) {
+    private static Font getTahoma(final int size) {
         try {
             InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/Tahoma.ttf");
 
             if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + fontName);
+                throw new FileNotFoundException("Font file not found: " + "Tahoma.ttf");
             }
 
             Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
@@ -299,12 +298,12 @@ public class Fonts {
     }
 
 
-    private static Font getIcons(final String fontName, final int size) {
+    private static Font getIcons(final int size) {
         try {
             InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/stylesicons.ttf");
 
             if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + fontName);
+                throw new FileNotFoundException("Font file not found: " + "stylesicons.ttf");
             }
 
             Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
@@ -317,12 +316,12 @@ public class Fonts {
         }
     }
 
-    private static Font getCheck(final String fontName, final int size) {
+    private static Font getCheck(final int size) {
         try {
             InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/check.ttf");
 
             if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + fontName);
+                throw new FileNotFoundException("Font file not found: " + "check.ttf");
             }
 
             Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);

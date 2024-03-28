@@ -20,6 +20,7 @@
     "client.MixinMinecraft",
     "client.MixinResourcePackRepository",
     "client.MixinWorldClient",
+    "client.MixinEnumFacing",
     "entity.MixinAbstractClientPlayer",
     "entity.MixinEntity",
     "entity.MixinEntityLivingBase",
