@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
+import net.ccbluex.liquidbounce.features.module.modules.client.ClientSpoof
 import net.ccbluex.liquidbounce.features.special.discord.DiscordRPC
 import net.ccbluex.liquidbounce.features.special.spoof.ClientSpoofHandler
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
@@ -36,6 +37,7 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
 import java.util.*
+import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 
 object FDPClient {
@@ -83,7 +85,7 @@ object FDPClient {
     lateinit var keyBindManager: KeyBindManager
 
     // Discord RPC
-    lateinit var clientRichPresence: DiscordRPC
+    lateinit var discordRPC: DiscordRPC
 
     // Menu Background
     var background: ResourceLocation? = ResourceLocation("fdpclient/gui/design/background.png")
@@ -148,12 +150,18 @@ object FDPClient {
         eventManager.registerListener(combatManager)
         eventManager.registerListener(ClientSpoofHandler())
 
-
         // Init Discord RPC
-        clientRichPresence = DiscordRPC
+        discordRPC = DiscordRPC
 
         // Load client fonts
         Fonts.loadFonts()
+
+        // Setup default states on first launch
+        if (!fileManager.loadLegacy()) {
+            ClientUtils.logInfo("Setting up default modules...")
+            moduleManager.getModule(ClientSpoof::class.java)?.state = true
+            moduleManager.getModule(net.ccbluex.liquidbounce.features.module.modules.client.DiscordRPCModule::class.java)?.state = true
+        }
 
         // Setup modules
         SplashProgress.setSecondary("Initializing Modules")
@@ -188,7 +196,7 @@ object FDPClient {
             fileManager.hudConfig,
             fileManager.xrayConfig
         )
-        
+
         // Run update checker
         if (CLIENT_VERSION != "unknown") {
             thread(block = this::checkUpdate)
@@ -242,15 +250,6 @@ object FDPClient {
         mc.fontRendererObj.also { mc.fontRendererObj = it }
         SplashProgress.setProgress(4, "Initializing $CLIENT_NAME")
 
-        if (clientRichPresence.showRichPresenceValue) {
-            thread {
-                try {
-                    clientRichPresence.run()
-                } catch (throwable: Throwable) {
-                    ClientUtils.logError("", throwable)
-                }
-            }
-        }
     }
 
     /**
@@ -273,8 +272,9 @@ object FDPClient {
             dynamicLaunchOptions.forEach {
                 it.stop()
             }
-        }
+
             // Stop Discord RPC
-            clientRichPresence.stop()
+            DiscordRPC.stop()
+        }
     }
 }

@@ -342,7 +342,7 @@ public abstract class MixinEntity implements ICommandSender {
 
     @Inject(method = "isInWater", at = @At("HEAD"), cancellable = true)
     private void isInWater(final CallbackInfoReturnable<Boolean> cir) {
-        if (NoFluid.INSTANCE.getState() && NoFluid.INSTANCE.getWaterValue().get()) {
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(NoFluid.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(NoFluid.class)).getWaterValue().get()) {
             cir.setReturnValue(false);
         }
     }
