@@ -18,8 +18,8 @@ import net.minecraft.entity.EntityLivingBase
 import java.awt.Color
 
 class NormalTH(inst: Targets) : TargetStyle("Normal", inst, true) {
-    val numberValue = BoolValue("Show Number", false).displayable { targetInstance.styleValue.equals("Normal") }
-    val percentValue = BoolValue("Percent", false).displayable { targetInstance.styleValue.equals("Normal") && numberValue.get() }
+    private val numberValue = BoolValue("Show Number", false).displayable { targetInstance.styleValue.equals("Normal") }
+    private val percentValue = BoolValue("Percent", false).displayable { targetInstance.styleValue.equals("Normal") && numberValue.get() }
     override fun drawTarget(entity: EntityLivingBase) {
         val fonts = Fonts.fontBold40
         val leaght = fonts.getStringWidth(entity.name)
@@ -42,6 +42,7 @@ class NormalTH(inst: Targets) : TargetStyle("Normal", inst, true) {
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {
-        return Border(0F, 0F, 42F + Fonts.fontBold40.getStringWidth(entity!!.name), 23F)
+        val entityNameWidth = if (entity != null) Fonts.fontBold40.getStringWidth(entity.name) else 0
+        return Border(0F, 0F, 42F + entityNameWidth, 23F)
     }
 }

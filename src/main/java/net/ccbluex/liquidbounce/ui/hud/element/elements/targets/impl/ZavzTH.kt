@@ -49,6 +49,7 @@ class ZavzTH(inst: Targets) : TargetStyle("Zavz", inst, true) {
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {
-        return Border(0F,0F, 70F + Fonts.SFApple40.getStringWidth(entity!!.name), 42F)
+        val entityNameWidth = if (entity != null) Fonts.SFApple40.getStringWidth(entity.name) else 0
+        return Border(0F, 0F, 70F + entityNameWidth, 42F)
     }
 }

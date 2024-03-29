@@ -113,7 +113,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             mainTarget = null
 
         val returnBorder = mainStyle.getBorder(mainTarget) ?: return null
-        val scaleX = animProgress * (4F / ((returnBorder.x2 - returnBorder.x) / 2F))
+        animProgress * (4F / ((returnBorder.x2 - returnBorder.x) / 2F))
         val scaleY = animProgress * (4F / ((returnBorder.y2 - returnBorder.y) / 2F))
         val tranY = (returnBorder.y2 - returnBorder.y) / 2F * scaleY
         if (mainTarget == null) {

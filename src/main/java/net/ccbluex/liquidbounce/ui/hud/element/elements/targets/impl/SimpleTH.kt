@@ -32,6 +32,7 @@ class SimpleTH(inst: Targets) : TargetStyle("Simple", inst, true) {
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {
-        return Border(0F,0F, 40F + Fonts.minecraftFont.getStringWidth(entity!!.name), 24F)
+        val entityNameWidth = if (entity != null) Fonts.minecraftFont.getStringWidth(entity.name) else 0
+        return Border(0F, 0F, 40F + entityNameWidth, 24F)
     }
 }

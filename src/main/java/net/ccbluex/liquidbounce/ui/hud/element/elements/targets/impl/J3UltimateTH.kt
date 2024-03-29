@@ -27,8 +27,13 @@ class J3UltimateTH(inst: Targets) : TargetStyle("J3Ultimate", inst, true) {
     }
     override fun getBorder(entity: EntityLivingBase?): Border {
         entity ?: return Border(0F, 0F, 90F, 36F)
-        val tWidth = (45F + Fonts.font40.getStringWidth(entity.name).coerceAtLeast(Fonts.font72.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(90F)
-        return Border(0F, 0F, tWidth, 36F)
+
+        val nameWidth = Fonts.minecraftFont.getStringWidth("[" + entity.name + "]")
+        val healthWidth = Fonts.minecraftFont.getStringWidth("" + entity.health.toInt() + " §4❤" + EnumChatFormatting.RESET + '/' + entity.maxHealth.toInt() + " §4❤")
+
+        val maxWidth = (36F + nameWidth).coerceAtLeast(38F + healthWidth).coerceAtLeast(90F)
+
+        return Border(0F, 0F, maxWidth, 36F)
     }
 
 }

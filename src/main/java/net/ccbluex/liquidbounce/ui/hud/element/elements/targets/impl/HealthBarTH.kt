@@ -15,31 +15,36 @@ import java.awt.Color
 
 class HealthBarTH(inst: Targets) : TargetStyle("Bar", inst, true) {
 
-    override fun drawTarget(target: EntityLivingBase) {
+    override fun drawTarget(entity: EntityLivingBase) {
         Health = easingHP
 
-        val width = (38 + Fonts.font40.getStringWidth(target.name))
+        val width = (38 + Fonts.font40.getStringWidth(entity.name))
             .coerceAtLeast(119)
             .toFloat()
 
         RenderUtils.drawBorderedRect(3F, 37F, 115F, 42F, 4.2F, Color(16, 16, 16, 255).rgb, Color(10, 10, 10, 100).rgb)
         RenderUtils.drawBorderedRect(3F, 37F, 115F, 42F, 1.2F, Color(255, 255, 255, 180).rgb, Color(255, 180, 255, 0).rgb)
-        if (Health > getHealth(target))
-            RenderUtils.drawRect(3F, 37F, (Health / target.maxHealth) * width - 4F,
+        if (Health > getHealth(entity))
+            RenderUtils.drawRect(3F, 37F, (Health / entity.maxHealth) * width - 4F,
                 42F, Color(250, 0, 0, 120).rgb)
 
-        RenderUtils.drawRect(3.2F, 37F, (getHealth(target) / target.maxHealth) * width - 4F,
+        RenderUtils.drawRect(3.2F, 37F, (getHealth(entity) / entity.maxHealth) * width - 4F,
             42F, Color(220, 0, 0, 220).rgb)
-        if (Health < target.health)
-            RenderUtils.drawRect((Health / target.maxHealth) * width, 37F,
-                (getHealth(target) / target.maxHealth) * width, 42F, Color(44, 201, 144).rgb)
+        if (Health < entity.health)
+            RenderUtils.drawRect((Health / entity.maxHealth) * width, 37F,
+                (getHealth(entity) / entity.maxHealth) * width, 42F, Color(44, 201, 144).rgb)
         RenderUtils.drawBorderedRect(3F, 37F, 115F, 42F, 1.2F, Color(255, 255, 255, 180).rgb, Color(255, 180, 255, 0).rgb)
 
-        mc.fontRendererObj.drawStringWithShadow(target.name.toString(), 36F, 22F, 0xFFFFFF)
+        mc.fontRendererObj.drawStringWithShadow(entity.name.toString(), 36F, 22F, 0xFFFFFF)
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {
-        return Border(3F,22F, 115F + Fonts.SFApple40.getStringWidth(entity!!.name), 42F)
+        entity ?: return Border(3F, 22F, 115F, 42F)
+
+        val nameWidth = mc.fontRendererObj.getStringWidth(entity.name.toString())
+        val maxWidth = (115F + nameWidth).coerceAtLeast(38F + Fonts.font40.getStringWidth(entity.name))
+
+        return Border(3F, 22F, maxWidth, 42F)
     }
 
 }

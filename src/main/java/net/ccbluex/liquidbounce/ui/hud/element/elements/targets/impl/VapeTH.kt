@@ -17,14 +17,14 @@ import java.awt.Color
 
 class VapeTH(inst: Targets) : TargetStyle("Vape", inst, true) {
     
-    override fun drawTarget(target: EntityLivingBase) {
-        RenderUtils.drawEntityOnScreen(16, 55, 25, target)
+    override fun drawTarget(entity: EntityLivingBase) {
+        RenderUtils.drawEntityOnScreen(16, 55, 25, entity)
 
-        Fonts.fontBold35.drawString(target.name, 36.5f, 12.6f / 2f - Fonts.fontBold35.height / 2f, -1)
+        Fonts.fontBold35.drawString(entity.name, 36.5f, 12.6f / 2f - Fonts.fontBold35.height / 2f, -1)
 
-        val targetHealth = target.health
-        val targetMaxHealth = target.maxHealth
-        val targetAbsorptionAmount = target.absorptionAmount
+        val targetHealth = entity.health
+        val targetMaxHealth = entity.maxHealth
+        val targetAbsorptionAmount = entity.absorptionAmount
         val targetHealthDWithAbs = targetHealth / (targetMaxHealth + targetAbsorptionAmount).coerceAtLeast(1.0f)
         val targetHealthD = targetHealth / targetMaxHealth.coerceAtLeast(1.0f)
         val color: Color = ColorUtils.interpolateColorC(Color.RED, Color(5, 134, 105), targetHealthD)
@@ -49,7 +49,8 @@ class VapeTH(inst: Targets) : TargetStyle("Vape", inst, true) {
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {
-        return Border(0F,0F, 110F + Fonts.SFApple40.getStringWidth(entity!!.name), 40F)
+        val entityNameWidth = if (entity != null) Fonts.fontBold35.getStringWidth(entity.name) else 0
+        return Border(0F, 0F, 110F + entityNameWidth, 40F)
     }
     
 }

@@ -79,23 +79,23 @@ class RemixTH(inst: Targets) : TargetStyle("Remix", inst, true) {
                 (1F - targetInstance.getFadeProgress()).toInt()
             )
 
-            val responseTime = mc.netHandler.getPlayerInfo(entity.uniqueID).responseTime.toInt()
+            val responseTime = mc.netHandler.getPlayerInfo(entity.uniqueID).responseTime
             val stringTime = "${responseTime.coerceAtLeast(0)}ms"
 
-            var j = 0
+            val j: Int
 
-            if (responseTime < 0)
-                j = 5
+            j = if (responseTime < 0)
+                5
             else if (responseTime < 150)
-                j = 0
+                0
             else if (responseTime < 300)
-                j = 1
+                1
             else if (responseTime < 600)
-                j = 2
+                2
             else if (responseTime < 1000)
-                j = 3
+                3
             else
-                j = 4
+                4
 
             mc.textureManager.bindTexture(Gui.icons)
             RenderUtils.drawTexturedModalRect(132, 18, 0, 176 + j * 8, 10, 8, 100.0F)
@@ -136,7 +136,17 @@ class RemixTH(inst: Targets) : TargetStyle("Remix", inst, true) {
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {
-        return Border(0F, 0F, 146F, 49F)
+        entity ?: return Border(0F, 0F, 146F, 49F)
+
+        val font = Fonts.minecraftFont
+        val nameWidth = font.getStringWidth(entity.name)
+        val armorBarWidth = 141.5F
+        val armorItemWidth = 80F
+        val totalWidth = 146F
+
+        val maxWidth = totalWidth.coerceAtLeast(nameWidth.coerceAtLeast(armorBarWidth.coerceAtLeast(armorItemWidth).toInt()).toFloat())
+
+        return Border(0F, 0F, maxWidth, 49F)
     }
 
 }

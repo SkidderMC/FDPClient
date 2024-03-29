@@ -54,6 +54,6 @@ class SimplicityTH(inst: Targets) : TargetStyle("Simplicity", inst, true) {
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {
-        return Border(37F, 0F, 119F, 20F)
+        return Border(37F, 0F, 118F, 20F)
     }
 }

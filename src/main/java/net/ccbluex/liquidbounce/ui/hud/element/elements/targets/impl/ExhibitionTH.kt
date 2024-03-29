@@ -73,7 +73,7 @@ class ExhibitionTH(inst: Targets) : TargetStyle("Exhibition", inst, true) {
         val renderItem = mc.renderItem
 
         var x = 45
-        var y = 28
+        val y = 28
 
         for (index in 3 downTo 0) {
             val stack = entity.inventory[index] ?: continue

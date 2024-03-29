@@ -22,16 +22,16 @@ class FDPTH(inst: Targets) : TargetStyle("FDP", inst, true) {
 
     private val fontValue = FontValue("Font", Fonts.font40).displayable { targetInstance.styleValue.equals("FDP") }
 
-    override fun drawTarget(target: EntityLivingBase) {
+    override fun drawTarget(entity: EntityLivingBase) {
         val font = fontValue.get()
-        val addedLen = (60 + font.getStringWidth(target.name) * 1.60f).toFloat()
+        val addedLen = (60 + font.getStringWidth(entity.name) * 1.60f)
 
         RenderUtils.drawRect(0f, 0f, addedLen, 47f, Color(0, 0, 0, 120).rgb)
-        RenderUtils.drawRoundedCornerRect(0f, 0f, (easingHP / target.maxHealth) * addedLen, 47f, 3f, Color(0, 0, 0, 90).rgb)
+        RenderUtils.drawRoundedCornerRect(0f, 0f, (easingHP / entity.maxHealth) * addedLen, 47f, 3f, Color(0, 0, 0, 90).rgb)
 
         RenderUtils.drawShadow(0f, 0f, addedLen, 47f)
 
-        val hurtPercent = target.hurtPercent
+        val hurtPercent = entity.hurtPercent
         val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
             1 - (0.1f * hurtPercent * 2)
         } else {
@@ -44,17 +44,23 @@ class FDPTH(inst: Targets) : TargetStyle("FDP", inst, true) {
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        RenderUtils.quickDrawHead(target.skin, 0, 0, size, size)
+        RenderUtils.quickDrawHead(entity.skin, 0, 0, size, size)
         GL11.glPopMatrix()
 
         GL11.glPushMatrix()
         GL11.glScalef(1.5f, 1.5f, 1.5f)
-        font.drawString(target.name, 39, 8, Color.WHITE.rgb)
+        font.drawString(entity.name, 39, 8, Color.WHITE.rgb)
         GL11.glPopMatrix()
-        font.drawString("Health ${getHealth(target).roundToInt()}", 56, 12 + (font.FONT_HEIGHT * 1.5).toInt(), Color.WHITE.rgb)
+        font.drawString("Health ${getHealth(entity).roundToInt()}", 56, 12 + (font.FONT_HEIGHT * 1.5).toInt(), Color.WHITE.rgb)
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {
-        return Border(0F,0F, 150F + Fonts.SFApple40.getStringWidth(entity!!.name), 47F)
+        entity ?: return Border(0F, 0F, 150F, 47F)
+
+        val font = fontValue.get()
+        val nameWidth = font.getStringWidth(entity.name)
+        val addedLen = (60 + nameWidth * 1.60f)
+
+        return Border(0F, 0F, addedLen, 47F)
     }
 }

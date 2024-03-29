@@ -27,6 +27,9 @@ version = project.mod_version
 group = project.maven_group
 archivesBaseName = project.archives_base_name
 
+println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
+println("Give us stars -> https://github.com/SkidderMC/FDPClient")
+
 sourceCompatibility = targetCompatibility = 1.8
 compileJava.options.encoding = "UTF-8"
 
@@ -89,6 +92,7 @@ dependencies {
     }
 
     include('com.jagrosh:DiscordIPC:0.4') {
+        exclude module: "gson"
         exclude module: "log4j"
     }
 

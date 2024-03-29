@@ -117,6 +117,14 @@ class RavenB4TH(inst: Targets) : TargetStyle("RavenB4", inst, true) {
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {
-        return Border(0F, 0F, if (rm.get())40F + mc.fontRendererObj.getStringWidth(entity!!.displayName.formattedText) else 60F + mc.fontRendererObj.getStringWidth(entity!!.displayName.formattedText), if (rm.get()) 35F else 28F)
+        entity ?: return Border(0F, 0F, 60F, 28F)
+
+        val font = mc.fontRendererObj
+        val displayNameWidth = font.getStringWidth(entity.displayName.formattedText)
+        val healthBarWidth = if (rm.get()) 40F else 60F
+        val healthBarHeight = if (rm.get()) 35F else 28F
+
+        return Border(0F, 0F, healthBarWidth + displayNameWidth, healthBarHeight)
     }
+
 }

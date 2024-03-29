@@ -21,9 +21,9 @@ import org.lwjgl.opengl.GL11
 
 class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
 
-    val chillFontSpeed =
+    private val chillFontSpeed =
         FloatValue("Chill-FontSpeed", 0.5F, 0.01F, 1F).displayable { targetInstance.styleValue.equals("Chill") }
-    val chillRoundValue =
+    private val chillRoundValue =
         BoolValue("Chill-RoundedBar", true).displayable { targetInstance.styleValue.equals("Chill") }
 
     private val numberRenderer = CharRenderer(false)
