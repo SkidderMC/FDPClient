@@ -84,7 +84,7 @@ object GuiCapeManager : GuiScreen() {
                 }
             }
         } catch (e: Exception) {
-            System.err.println("Failed to load cape '$it'")
+            System.err.println("Failed to load cape")
             e.printStackTrace()
             nowCape = embeddedCapes.random()
         }
