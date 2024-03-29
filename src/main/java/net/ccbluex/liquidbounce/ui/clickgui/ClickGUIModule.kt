@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.*
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic.DropdownGUI
-import net.ccbluex.liquidbounce.ui.clickgui.style.styles.light.LightClickGUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.novoline.ClickyUI
 import net.ccbluex.liquidbounce.ui.gui.options.modernuiLaunchOption
@@ -58,14 +57,12 @@ object ClickGUIModule : Module() {
     val fastRenderValue = BoolValue("FastRender", false)
     val getClosePrevious = BoolValue("ClosePrevious", false)
 
-    private var lightClickGUI = LightClickGUI()
     private var novoline = ClickyUI()
     private var dropdown = DropdownGUI()
 
     override fun onEnable() {
         when {
             styleValue.get().contains("Novoline") -> mc.displayGuiScreen(novoline)
-            styleValue.get().contains("Light") -> mc.displayGuiScreen(lightClickGUI)
             styleValue.get().equals("Classic", ignoreCase = true) -> mc.displayGuiScreen(dropdown)
             styleValue.get().equals("LB+", ignoreCase = true) -> mc.displayGuiScreen(NewUi.getInstance())
             else -> {
