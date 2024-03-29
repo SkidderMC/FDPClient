@@ -6,8 +6,6 @@
 package net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic;
 
 import lombok.Setter;
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MathUtils;
@@ -35,13 +33,9 @@ public class Setting {
         this.setting = setting;
         this.module = module;
     }
-    public void setPercent(float value) {
-        this.percent = value;
-    }
 
     public void drawScreen(int mouseX, int mouseY) {
         int y = getY();
-        HUD hud = FDPClient.moduleManager.getModule(HUD.class);
         ScaledResolution scaledResolution = new ScaledResolution(Minecraft.getMinecraft());
         boolean scissor = scaledResolution.getScaleFactor() != 1;
         double clamp = MathHelper.clamp_double((double) Minecraft.getDebugFPS() / 30, 1, 9999);

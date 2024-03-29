@@ -74,15 +74,22 @@ object GuiCapeManager : GuiScreen() {
             return
         }
 
-        val json = JsonParser().parse(jsonFile.reader(Charsets.UTF_8)).asJsonObject
-
-        if (json.has("name")) {
-            val name = json.get("name").asString
-            if (!name.equals("NONE")) {
-                val result = capeList.find { it.name == name } ?: embeddedCapes.random()
-                nowCape = result
+        try {
+            val json = JsonParser().parse(jsonFile.reader(Charsets.UTF_8)).asJsonObject
+            if (json.has("name")) {
+                val name = json.get("name").asString
+                if (!name.equals("NONE")) {
+                    val result = capeList.find { it.name == name } ?: embeddedCapes.random()
+                    nowCape = result
+                }
             }
+        } catch (e: Exception) {
+            System.err.println("Failed to load cape")
+            e.printStackTrace()
+            nowCape = embeddedCapes.random()
         }
+
+
     }
 
     fun save() {
