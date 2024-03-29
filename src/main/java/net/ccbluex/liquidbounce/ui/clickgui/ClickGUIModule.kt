@@ -32,7 +32,6 @@ object ClickGUIModule : Module() {
         "Style",
         arrayOf(
             "Classic",
-            "Light",
             "Novoline",
             "LB+",
             "Astolfo",
@@ -50,7 +49,7 @@ object ClickGUIModule : Module() {
 
     val scaleValue = FloatValue("Scale", 1f, 0.7f, 2f)
     val maxElementsValue = IntegerValue("MaxElements", 20, 1, 35)
-    var colorRainbow = BoolValue("Rainbow", true)
+    var colorRainbow = BoolValue("Rainbow", false)
     val colorRedValue = IntegerValue("R", 0, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
     val colorGreenValue = IntegerValue("G", 160, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
     val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorRainbow.get() } as IntegerValue

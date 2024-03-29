@@ -30,7 +30,10 @@ import kotlin.concurrent.schedule
 @ModuleInfo(name = "AutoPlay", category = ModuleCategory.OTHER)
 object AutoPlay : Module() {
 
-    private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex", "Pika", "Hydracraft", "HyCraft", "MineFC/HeroMC_Bedwars", "Supercraft"), "BlocksMC")
+    private val modeValue = ListValue("Server", arrayOf("RedeSky", "BlocksMC", "Minemora", "Hypixel", "Jartex", "Pika", "Hydracraft", "HyCraft", "MineFC/HeroMC_Bedwars", "Supercraft", "Universocraft", "Librecraft"), "BlocksMC")
+
+
+    private val unimode = ListValue("Universocraft-Mode", arrayOf("SkyWars", "Bedwars", "Eggwars", "HungerGames"), "SkyWars").displayable { modeValue.equals("Universocraft") }
 
     private val bwModeValue = ListValue("Mode", arrayOf("SOLO", "4v4v4v4"), "4v4v4v4").displayable { modeValue.equals("MineFC/HeroMC_Bedwars") }
     private val autoStartValue = BoolValue("AutoStartAtLobby", true).displayable { modeValue.equals("MineFC/HeroMC_Bedwars") }
@@ -122,6 +125,7 @@ object AutoPlay : Module() {
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/sw leave")
                             mc.thePlayer.sendChatMessage("/sw randomjoin solo")
+                            correctjoin()
                         }
                     }
                     if (text.contains("El juego ya fue iniciado.", true)) {
@@ -136,6 +140,36 @@ object AutoPlay : Module() {
                     if (text.contains("Has click en alguna de las siguientes opciones", true)) {
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/join")
+                            correctjoin()
+                        }
+                    }
+                }
+                "universocraft" -> {
+                    if (text.contains("Jugar de nuevo", true)) {
+                        queueAutoPlay {
+                            when (unimode.get()) {
+                                "SW-TSW" -> {
+                                    mc.thePlayer.sendChatMessage("/skywars random")
+                                }
+                                "Bedwars" -> {
+                                    mc.thePlayer.sendChatMessage("/bedwars random")
+                                }
+                                "Eggwars" -> {
+                                    mc.thePlayer.sendChatMessage("/eggwars random")
+                                }
+                                "Hungergames" -> {
+                                    mc.thePlayer.sendChatMessage("/playagain")
+                                }
+                            }
+                            correctjoin()
+                        }
+                    }
+                }
+                "librecraft" -> {
+                    if (text.contains("¡Partida finalizada!", true)) {
+                        queueAutoPlay {
+                            mc.thePlayer.sendChatMessage("/saliryentrar")
+                            correctjoin()
                         }
                     }
                 }
@@ -143,6 +177,7 @@ object AutoPlay : Module() {
                     if (text.contains("Has ganado ¿Qué quieres hacer?", true)) {
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/playagain")
+                            correctjoin()
                         }
                     }
                 }
@@ -152,6 +187,7 @@ object AutoPlay : Module() {
                         if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.contains("play")) {
                             queueAutoPlay {
                                 mc.thePlayer.sendChatMessage(clickEvent.value)
+                                correctjoin()
                             }
                         }
                     }
@@ -159,7 +195,6 @@ object AutoPlay : Module() {
                 "blocksmc" -> {
                     if (clickState == 1 && text.contains("Only VIP players can join full servers!", true)) {
                         FDPClient.hud.addNotification(Notification(this.name, "Join failed! trying again...", NotifyType.WARNING, 3000))
-                        // connect failed so try to join again
                         Timer().schedule(1500L) {
                             mc.netHandler.addToSendQueue(C09PacketHeldItemChange(7))
                             repeat(2) {
@@ -254,6 +289,10 @@ object AutoPlay : Module() {
             }
             FDPClient.hud.addNotification(Notification(this.name, "Sending you to next game in ${delayValue.get()}s...", NotifyType.INFO, delayValue.get() * 1000))
         }
+    }
+
+    fun correctjoin() {
+        FDPClient.hud.addNotification(Notification("AutoPlay", "You joined in the new game", NotifyType.SUCCESS, 1000, 500))
     }
 
     @EventTarget
