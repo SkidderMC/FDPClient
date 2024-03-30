@@ -210,6 +210,7 @@ object AutoPlay : Module() {
                             if(clickEvent != null && clickEvent.action == ClickEvent.Action.RUN_COMMAND && clickEvent.value.startsWith("/")) {
                                 queueAutoPlay {
                                     mc.thePlayer.sendChatMessage(clickEvent.value)
+                                    correctjoin()
                                 }
                             }
                         }
@@ -229,6 +230,7 @@ object AutoPlay : Module() {
                     if (text.contains(mc.getSession().username + " has been") || text.contains(mc.getSession().username + " died.")) {
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/skywars-normal-solo")
+                            correctjoin()
                         }
                     }
                 }
@@ -260,6 +262,7 @@ object AutoPlay : Module() {
                         
                         queueAutoPlay {
                             mc.thePlayer.sendChatMessage("/bw join ${bwModeValue.get()}")
+                            correctjoin()
                         }
                         waitForLobby = false
                     }

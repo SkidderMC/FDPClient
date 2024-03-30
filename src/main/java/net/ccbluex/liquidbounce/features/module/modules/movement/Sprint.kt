@@ -22,16 +22,16 @@ import net.minecraft.network.play.client.C0BPacketEntityAction
 @ModuleInfo(name = "Sprint", category = ModuleCategory.MOVEMENT, defaultOn = true)
 object Sprint : Module() {
 
-    val useItemValue = BoolValue("UseItem", true)
+    val useItemValue = BoolValue("UseItem", false)
     val useItemSwordValue = BoolValue("UseItemOnlySword", false).displayable{ useItemValue.get() }
-    val hungryValue = BoolValue("Hungry", true)
+    val hungryValue = BoolValue("Hungry", false)
     val sneakValue = BoolValue("Sneak", false)
     val collideValue = BoolValue("Collide", false)
     val allDirectionsValue = BoolValue("AllDirections", false)
     val allDirectionsBypassValue = ListValue("AllDirectionsBypass", arrayOf("Rotate", "RotateSpoof", "Toggle", "Spoof", "SpamSprint", "NoStopSprint", "Minemora", "LimitSpeed", "None"), "None").displayable { allDirectionsValue.get() }
     private val allDirectionsLimitSpeedGround = BoolValue("AllDirectionsLimitSpeedOnlyGround", true)
     private val allDirectionsLimitSpeedValue = FloatValue("AllDirectionsLimitSpeed", 0.7f, 0.5f, 1f).displayable { allDirectionsBypassValue.displayable && allDirectionsBypassValue.equals("LimitSpeed") }
-    private val noPacketValue = BoolValue("NoPackets", true)
+    private val noPacketValue = BoolValue("NoPackets", false)
     var switchStat = false
     var forceSprint = false
     
