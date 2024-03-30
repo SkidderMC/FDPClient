@@ -70,7 +70,7 @@ public class ModuleRect extends Component {
 
         DrRenderUtils.drawRect2(x, y, width, height, DrRenderUtils.applyOpacity(clickModColor, (float) animation.getOutput()).getRGB());
 
-        Fonts.fontSFUI32.drawString(module.getName(), x + 5, y + Fonts.fontSFUI32.getMiddleOfBox(height), textColor.getRGB());
+        Fonts.fontSFUI35.drawString(module.getName(), x + 5, y + Fonts.fontSFUI32.getMiddleOfBox(height), textColor.getRGB());
 
         if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && module.getKeyBind() != 0) {
             String keyName = Keyboard.getKeyName(module.getKeyBind());
