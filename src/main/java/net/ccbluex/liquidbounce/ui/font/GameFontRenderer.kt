@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.resources.IResourceManager
@@ -63,7 +62,17 @@ class GameFontRenderer(font: Font) : FontRenderer(
         drawString(s, x, y, color.rgb, false)
     }
 
+    fun trimStringToWidth(text: CharSequence?, width: Int): String {
+        return trimStringToWidth(text.toString(), width, false)
+    }
+
     fun stringWidth(text: CharSequence?) {}
+
+    fun stringWidthINT(text: CharSequence?): Int {
+        // Implemente a lógica para calcular a largura do texto aqui
+        // Por exemplo, você pode usar a lógica similar ao método getStringWidth
+        return if (text.isNullOrEmpty()) 0 else getStringWidth(text.toString())
+    }
 
     fun drawCenteredTextScaled(text: String?, givenX: Int, givenY: Int, color: Int, givenScale: Double) {
         GL11.glPushMatrix()
@@ -73,6 +82,9 @@ class GameFontRenderer(font: Font) : FontRenderer(
         GL11.glPopMatrix()
     }
 
+    fun getMiddleOfBox(boxHeight: Float): Float {
+        return boxHeight / 2f - height / 2f
+    }
     override fun drawStringWithShadow(text: String, x: Float, y: Float, color: Int) = drawString(text, x, y, color, true)
 
     fun drawCenteredString(s: String, x: Float, y: Float, color: Int, shadow: Boolean) = drawString(s, x - getStringWidth(s) / 2F, y, color, shadow)

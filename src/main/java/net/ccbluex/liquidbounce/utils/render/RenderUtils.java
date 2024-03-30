@@ -2007,7 +2007,6 @@ public final class RenderUtils extends MinecraftInstance {
         glDisable(GL_BLEND);
         glEnable(GL_DEPTH_TEST);
     }
-
     public static void drawImage(String image, int x, int y, int width, int height) {
         drawImage(new ResourceLocation(image), x, y, width, height);
     }

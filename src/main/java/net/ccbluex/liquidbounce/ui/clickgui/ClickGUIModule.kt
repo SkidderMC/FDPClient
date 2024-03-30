@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.*
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic.DropdownGUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi
+import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.FDPDropdownClickGUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.novoline.ClickyUI
 import net.ccbluex.liquidbounce.ui.gui.options.modernuiLaunchOption
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
@@ -32,6 +33,7 @@ object ClickGUIModule : Module() {
         "Style",
         arrayOf(
             "Classic",
+            "Dropdrown",
             "Novoline",
             "LB+",
             "Astolfo",
@@ -49,20 +51,27 @@ object ClickGUIModule : Module() {
 
     val scaleValue = FloatValue("Scale", 1f, 0.7f, 2f)
     val maxElementsValue = IntegerValue("MaxElements", 20, 1, 35)
-    var colorRainbow = BoolValue("Rainbow", false)
+    var colorRainbow = BoolValue("Rainbow", true)
     val colorRedValue = IntegerValue("R", 0, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
     val colorGreenValue = IntegerValue("G", 160, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
     val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
     val fastRenderValue = BoolValue("FastRender", false)
     val getClosePrevious = BoolValue("ClosePrevious", false)
 
+    val backback = BoolValue("Background Accent", true)
+    val scrollMode = ListValue("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")
+    val colormode = ListValue("Setting Accent", arrayOf("White", "Color"), "Color")
+    val clickHeight = IntegerValue("Tab Height", 250, 100, 500)
+
     private var novoline = ClickyUI()
     private var dropdown = DropdownGUI()
+    private var dropdownClickGUIFDP = FDPDropdownClickGUI()
 
     override fun onEnable() {
         when {
             styleValue.get().contains("Novoline") -> mc.displayGuiScreen(novoline)
             styleValue.get().equals("Classic", ignoreCase = true) -> mc.displayGuiScreen(dropdown)
+            styleValue.get().equals("Dropdrown", ignoreCase = true) -> mc.displayGuiScreen(dropdownClickGUIFDP)
             styleValue.get().equals("LB+", ignoreCase = true) -> mc.displayGuiScreen(NewUi.getInstance())
             else -> {
                 updateStyle()

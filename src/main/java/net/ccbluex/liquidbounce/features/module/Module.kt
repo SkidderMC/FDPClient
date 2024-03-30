@@ -28,6 +28,7 @@ open class Module : MinecraftInstance(), Listenable {
     var name: String
     private var suffix: String? = null
     private val properties: List<Value<*>> = ArrayList()
+    var expanded: Boolean = false
     private var toggled = false
     var localizedName = ""
         get() = field.ifEmpty { name }

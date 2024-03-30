@@ -20,6 +20,7 @@ public class CFont {
     protected boolean antiAlias;
     protected boolean fractionalMetrics;
     protected int fontHeight = -1;
+
     protected int charOffset = 0;
     protected DynamicTexture tex;
 

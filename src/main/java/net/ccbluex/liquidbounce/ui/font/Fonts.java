@@ -40,6 +40,8 @@ public class Fonts {
     public static GameFontRenderer fontLarge;
 
     // BOLD
+    @FontDetails(fontName = "Roboto Bold", fontSize = 26)
+    public static GameFontRenderer fontBold26;
     @FontDetails(fontName = "Roboto Bold", fontSize = 32)
     public static GameFontRenderer fontBold32;
     @FontDetails(fontName = "Roboto Bold", fontSize = 35)
@@ -47,7 +49,19 @@ public class Fonts {
     @FontDetails(fontName = "Roboto Bold", fontSize = 40)
     public static GameFontRenderer fontBold40;
 
+    // SFUI BOLD
+    @FontDetails(fontName = "SFUI Bold", fontSize = 16)
+    public static GameFontRenderer fontSFUIBOLD16;
+    @FontDetails(fontName = "SFUI Bold", fontSize = 18)
+    public static GameFontRenderer fontSFUIBOLD18;
+    @FontDetails(fontName = "SFUI Bold", fontSize = 26)
+    public static GameFontRenderer fontSFUIBOLD26;
+
     // SFUI
+    @FontDetails(fontName = "SFUI Regular", fontSize = 16)
+    public static GameFontRenderer fontSFUI16;
+    @FontDetails(fontName = "SFUI Regular", fontSize = 18)
+    public static GameFontRenderer fontSFUI18;
     @FontDetails(fontName = "SFUI Regular", fontSize = 32)
     public static GameFontRenderer fontSFUI32;
     @FontDetails(fontName = "SFUI Regular", fontSize = 35)
@@ -89,11 +103,19 @@ public class Fonts {
         fontLarge = new GameFontRenderer(getRobotoMedium(60));
 
         // ROBOTO BOLD
+        fontBold26 = new GameFontRenderer(getRobotoBold(32));
         fontBold32 = new GameFontRenderer(getRobotoBold(32));
         fontBold35 = new GameFontRenderer(getRobotoBold(35));
         fontBold40 = new GameFontRenderer(getRobotoBold(40));
 
         // SFUI
+        fontSFUIBOLD16 = new GameFontRenderer(getSFUIBOLD(16));
+        fontSFUIBOLD18 = new GameFontRenderer(getSFUIBOLD(18));
+        fontSFUIBOLD26 = new GameFontRenderer(getSFUIBOLD(26));
+
+        // SFUI
+        fontSFUI16 = new GameFontRenderer(getSFUI(16));
+        fontSFUI18 = new GameFontRenderer(getSFUI(18));
         fontSFUI32 = new GameFontRenderer(getSFUI(32));
         fontSFUI35 = new GameFontRenderer(getSFUI(35));
         fontSFUI37 = new GameFontRenderer(getSFUI(37));
@@ -187,6 +209,24 @@ public class Fonts {
         fonts.addAll(CUSTOM_FONT_RENDERERS);
 
         return fonts;
+    }
+
+    private static Font getSFUIBOLD(final int size) {
+        try {
+            InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/sfuibold.ttf");
+
+            if (inputStream == null) {
+                throw new FileNotFoundException("Font file not found: " + "sfuibold.ttf");
+            }
+
+            Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
+            awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size);
+            inputStream.close();
+            return awtClientFont;
+        } catch (final Exception e) {
+            e.printStackTrace();
+            return new Font("sfuibold", Font.PLAIN, size);
+        }
     }
 
     private static Font getSFUI(final int size) {

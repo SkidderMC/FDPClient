@@ -19,7 +19,7 @@ public class RoundedUtil {
     public static final ShaderUtil roundedShader = new ShaderUtil("roundedRect");
     private static final ShaderUtil roundedGradientShader = new ShaderUtil("roundedRectGradient");
 
-    private static ShaderUtil gradientMaskShader = new ShaderUtil("shaders/gradientMask.frag");
+    private static final ShaderUtil gradientMaskShader = new ShaderUtil("shaders/gradientMask.frag");
 
 
     public static void drawRound(float x, float y, float width, float height, float radius, Color color) {
@@ -67,10 +67,6 @@ public class RoundedUtil {
                 (Minecraft.getMinecraft().displayHeight - (height * sr.getScaleFactor())) - (y * sr.getScaleFactor()));
         roundedTexturedShader.setUniformf("rectSize", width * sr.getScaleFactor(), height * sr.getScaleFactor());
         roundedTexturedShader.setUniformf("radius", radius * sr.getScaleFactor());
-    }
-
-    public static void drawGradientHorizontal(float x, float y, float width, float height, float radius, Color left, Color right) {
-        drawGradientRound(x, y, width, height, radius, left, left, right, right);
     }
 
     public static void applyGradientHorizontal(float x, float y, float width, float height, float alpha, Color left, Color right, Runnable content) {

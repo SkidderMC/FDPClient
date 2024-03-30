@@ -136,6 +136,7 @@ object MathUtils {
         return Math.sqrt(sigma.toDouble()) * random.nextGaussian() + x
     }
 
+
     @JvmStatic
     fun roundToHalf(d: Double): Double {
         return Math.round(d * 2.0) / 2.0

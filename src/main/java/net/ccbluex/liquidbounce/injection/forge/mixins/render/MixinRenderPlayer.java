@@ -15,6 +15,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -24,9 +25,12 @@ import java.util.Objects;
 
 @Mixin(RenderPlayer.class)
 public abstract class MixinRenderPlayer {
-    private final ResourceLocation rabbit = new ResourceLocation("fdpclient/cosmetic/rabbit.png");
-    private final ResourceLocation freddy = new ResourceLocation("fdpclient/cosmetic/models/freddy.png");
-    private final ResourceLocation amogus = new ResourceLocation("fdpclient/cosmetic/amogus.png");
+    @Unique
+    private final ResourceLocation fDPClient$rabbit = new ResourceLocation("fdpclient/cosmetic/skins/rabbit.png");
+    @Unique
+    private final ResourceLocation fDPClient$freddy = new ResourceLocation("fdpclient/cosmetic/skins/freddy.png");
+    @Unique
+    private final ResourceLocation fDPClient$amogus = new ResourceLocation("fdpclient/cosmetic/skins/amogus.png");
     /**
      * Render living at.
      *
@@ -36,7 +40,7 @@ public abstract class MixinRenderPlayer {
      * @param z                  the z
      * @param callbackInfo       the callback info
      */
-    @Inject(method = "renderLivingAt", at = @At("HEAD"))
+    @Inject(method = "renderLivingAt*", at = @At("HEAD"))
     protected void renderLivingAt(AbstractClientPlayer entityLivingBaseIn, double x, double y, double z, CallbackInfo callbackInfo) {
         final PlayerEdit playerEdit = Objects.requireNonNull(FDPClient.moduleManager.getModule(PlayerEdit.class));
 
@@ -50,19 +54,17 @@ public abstract class MixinRenderPlayer {
      * @param entity the entity
      * @param ci     the ci
      */
-    @Inject(method = {"getEntityTexture"}, at = {@At("HEAD")}, cancellable = true)
+    @Inject(method = {"getEntityTexture*"}, at = {@At("HEAD")}, cancellable = true)
     public void getEntityTexture(AbstractClientPlayer entity, CallbackInfoReturnable<ResourceLocation> ci) {
-        final CustomModel customModel = Objects.requireNonNull(FDPClient.moduleManager.getModule(CustomModel.class));
-
-        if ((CustomModel.onlyMe.get() && entity == Minecraft.getMinecraft().thePlayer || CustomModel.onlyOther.get() && entity != Minecraft.getMinecraft().thePlayer) && FDPClient.moduleManager.getModule(CustomModel.class).getState()) {
+        if ((CustomModel.onlyMe.get() && entity == Minecraft.getMinecraft().thePlayer || CustomModel.onlyOther.get() && entity != Minecraft.getMinecraft().thePlayer) && Objects.requireNonNull(FDPClient.moduleManager.getModule(CustomModel.class)).getState()) {
             if (CustomModel.mode.get().contains("Rabbit")) {
-                ci.setReturnValue(rabbit);
+                ci.setReturnValue(fDPClient$rabbit);
             }
             if (CustomModel.mode.get().contains("Freddy")) {
-                ci.setReturnValue(freddy);
+                ci.setReturnValue(fDPClient$freddy);
             }
             if (CustomModel.mode.get().contains("Amogus")) {
-                ci.setReturnValue(amogus);
+                ci.setReturnValue(fDPClient$amogus);
             }
         }
     }

@@ -29,11 +29,11 @@ public class ClickGuiConfig extends FileConfig {
         final JsonObject jsonObject = (JsonObject) jsonElement;
 
         for (final Panel panel : modernuiLaunchOption.clickGui.panels) {
-            if (!jsonObject.has(panel.getCategory().getConfigName()))
+            if (!jsonObject.has(panel.getCategory().configName))
                 continue;
 
             try {
-                final JsonObject panelObject = jsonObject.getAsJsonObject(panel.getCategory().getConfigName());
+                final JsonObject panelObject = jsonObject.getAsJsonObject(panel.getCategory().configName);
 
                 panel.setOpen(panelObject.get("open").getAsBoolean());
                 panel.setVisible(panelObject.get("visible").getAsBoolean());
@@ -54,11 +54,11 @@ public class ClickGuiConfig extends FileConfig {
 
                         moduleElement.setShowSettings(elementObject.get("Settings").getAsBoolean());
                     } catch (final Exception e) {
-                        ClientUtils.INSTANCE.logError("Error while loading clickgui module element with the name '" + moduleElement.getModule().getName() + "' (Panel Name: " + panel.getCategory().getConfigName() + ").", e);
+                        ClientUtils.INSTANCE.logError("Error while loading clickgui module element with the name '" + moduleElement.getModule().getName() + "' (Panel Name: " + panel.getCategory().configName + ").", e);
                     }
                 }
             } catch (final Exception e) {
-                ClientUtils.INSTANCE.logError("Error while loading clickgui panel with the name '" + panel.getCategory().getConfigName() + "'.", e);
+                ClientUtils.INSTANCE.logError("Error while loading clickgui panel with the name '" + panel.getCategory().configName + "'.", e);
             }
         }
     }
@@ -88,7 +88,7 @@ public class ClickGuiConfig extends FileConfig {
                 panelObject.add(moduleElement.getModule().getName(), elementObject);
             }
 
-            jsonObject.add(panel.getCategory().getConfigName(), panelObject);
+            jsonObject.add(panel.getCategory().configName, panelObject);
         }
 
         return FileManager.Companion.getPRETTY_GSON().toJson(jsonObject);
