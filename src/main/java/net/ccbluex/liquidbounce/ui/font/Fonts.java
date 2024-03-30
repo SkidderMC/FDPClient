@@ -103,7 +103,7 @@ public class Fonts {
         fontLarge = new GameFontRenderer(getRobotoMedium(60));
 
         // ROBOTO BOLD
-        fontBold26 = new GameFontRenderer(getRobotoBold(32));
+        fontBold26 = new GameFontRenderer(getRobotoBold(26));
         fontBold32 = new GameFontRenderer(getRobotoBold(32));
         fontBold35 = new GameFontRenderer(getRobotoBold(35));
         fontBold40 = new GameFontRenderer(getRobotoBold(40));

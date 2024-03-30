@@ -37,7 +37,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
 import java.util.*
-import java.util.concurrent.Executors
 import kotlin.concurrent.thread
 
 object FDPClient {

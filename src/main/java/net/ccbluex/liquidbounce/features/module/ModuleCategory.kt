@@ -3,61 +3,43 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module;
+package net.ccbluex.liquidbounce.features.module
 
-import lombok.Getter;
-import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.normal.Main;
-import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.objects.Drag;
-import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.render.Scroll;
+import lombok.Getter
+import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.normal.Main
+import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.objects.Drag
+import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.render.Scroll
+enum class ModuleCategory(val displayName: String, val configName: String, val htmlIcon: String,  posX: Int, posY: Int, clicked: Boolean, showMods: Boolean) {
+    COMBAT("%module.category.combat%", "Combat", "&#xe000;", 15, 15, false, true),
+    PLAYER("%module.category.player%", "Player", "&#xe7fd;", 15, 180, false, true),
+    MOVEMENT("%module.category.movement%", "Movement", "&#xe566;", 330, 15, false, true),
+    VISUAL("%module.category.visual%", "Visual", "&#xe417;", 225, 15, false, true),
+    CLIENT("%module.category.client%", "Client", "&#xe869;", 15, 330, false, true),
+    OTHER("%module.category.other%", "Other", "&#xe5d3;", 15, 330, false, true),
+    EXPLOIT("%module.category.exploit%", "Exploit", "&#xe868;", 120, 180, false, true);
 
-public enum ModuleCategory {
-
-    COMBAT("%module.category.combat%", "a", "Combat", 15, 15, false, true),
-    PLAYER("%module.category.player%", "d", "Player", 15, 180, false, true),
-    MOVEMENT("%module.category.movement%", "b", "Movement", 330, 15, false, true),
-    VISUAL("%module.category.visual%", "c", "Visual", 225, 15, false, true),
-    CLIENT("%module.category.client%", "e", "Client", 120, 15, false, true),
-    OTHER("%module.category.other%", "g", "Other", 15, 330, false, true),
-    EXPLOIT("%module.category.exploit%", "f", "Exploit", 120, 180, false, true);
-
-    public final String namee;
-    public final String icon;
-    public final String displayName;
-    public final String configName;
-    public boolean expanded;
-
-    public int posXs;
-    public int posYs;
-    public boolean clickeds;
-    public boolean showModsV;
+    private var expanded: Boolean
+    private var posXs: Int
+    private var posYs: Int
+    private var clickeds: Boolean
+    private var showModsV: Boolean
 
     @Getter
-    private final Scroll scroll = new Scroll();
+     val scroll = Scroll()
 
     @Getter
-    private final Drag drag;
-    public int posY = 20;
+    val drag: Drag
+    var posY: Int = 20
 
-    ModuleCategory(String a1, String a, String config, int posX, int posY, boolean clicked, boolean showMods) {
-        namee = a1;
-        icon = a;
-        displayName = a1;
-        posX = 40 + (Main.categoryCount * 120);
-        configName = config;
-        drag = new Drag(posX, posY);
-        expanded = true;
-        posXs = posX;
-        posYs = posY;
-        clickeds = clicked;
-        showModsV = showMods;
-        Main.categoryCount++;
-    }
-
-    public String getDisplayName() {
-        return displayName;
-    }
-
-    public String getIcon() {
-        return icon;
+    init {
+        var posX = posX
+        posX = 40 + (Main.categoryCount * 120)
+        drag = Drag(posX.toFloat(), posY.toFloat())
+        expanded = true
+        posXs = posX
+        posYs = posY
+        clickeds = clicked
+        showModsV = showMods
+        Main.categoryCount++
     }
 }
