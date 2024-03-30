@@ -128,6 +128,12 @@ object LegitAura : Module() {
         autoblockRangeTargets.clear()
         mc.gameSettings.keyBindUseItem.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindUseItem)
         currentTarget = null
+
+        // AutoDisable MoveFix
+        mc.gameSettings.keyBindForward.pressed = false
+        mc.gameSettings.keyBindBack.pressed = false
+        mc.gameSettings.keyBindRight.pressed = false
+        mc.gameSettings.keyBindLeft.pressed = false
     }
 
     override fun onEnable() {
