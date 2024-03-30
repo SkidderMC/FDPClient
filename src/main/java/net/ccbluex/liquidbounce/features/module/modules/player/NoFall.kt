@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.block.BlockLiquid
 import net.minecraft.util.AxisAlignedBB
 
-@ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER, autoDisable = EnumAutoDisableType.FLAG)
+@ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER)
 object NoFall : Module() {
 
     private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.nofalls", NoFallMode::class.java)

@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 
-class NCPDamageLongjump : LongJumpMode("NCPDamage") {
+class OldNCPDamageLongjump : LongJumpMode("OldNCPDamage") {
     private val modeValue = ListValue("${valuePrefix}Mode", arrayOf("Normal", "OldHypixel"), "Normal")
     private val hypBoostValue = FloatValue("${valuePrefix}BoostSpeed", 1.2f, 1f, 2f).displayable { modeValue.equals("OldHypixel") }
     private val ncpBoostValue = FloatValue("${valuePrefix}Boost", 4.25f, 1f, 10f).displayable { modeValue.equals("Normal") }
