@@ -72,7 +72,7 @@ class RiseTH(inst: Targets) : TargetStyle("Rise", inst, true) {
         RenderUtils.drawRoundedCornerRect(52f, 36f, 48f + (healthBarWidth * (easingHealth / entity.maxHealth)) , 39f, 2f, Color(0, 0, 0, 30).rgb)
         GL11.glPushMatrix()
         GL11.glScalef(1.15f, 1.15f, 1.15f)
-        font.drawString(getHealth(entity).roundToInt().toString(), ((38 + additionalWidth - font.getStringWidth((getHealth(entity) * 1.15).roundToInt().toString())) / 1.15).roundToInt()   , 31 - (font.FONT_HEIGHT/2), Color(115, 208, 255, 255).rgb)
+        font.drawString(getHealth(entity).roundToInt().toString(), ((38 + additionalWidth - font.getStringWidth((getHealth(entity) * 1.15).roundToInt().toString())) / 1.15).roundToInt()   , 29 - (font.FONT_HEIGHT/2),  ClientTheme.getColorWithAlpha(0, fadeAlpha(255)).rgb)
         GL11.glPopMatrix()
     }
 
