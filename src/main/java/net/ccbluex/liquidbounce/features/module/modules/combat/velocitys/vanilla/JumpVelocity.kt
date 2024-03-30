@@ -27,7 +27,7 @@ class JumpVelocity : VelocityMode("Jump") {
     private var skipVeloc = false
     
     override fun onVelocity(event: UpdateEvent) {
-        if ((failJump || mc.thePlayer.hurtTime > 6) && mc.thePlayer.onGround) {
+        if ((failJump || mc.thePlayer.hurtTime > 7) && mc.thePlayer.onGround) {
             if (failJump) {
                 failJump = false
             }

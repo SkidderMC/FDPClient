@@ -1144,8 +1144,7 @@ object KillAura : Module() {
     @EventTarget
     fun onJump(event: JumpEvent) {
         if (jumpFixValue.get()) {
-            event.cancelEvent()
-            mc.thePlayer.motionY = MovementUtils.jumpMotion
+            mc.thePlayer.isSprinting = false
         }
     }
 

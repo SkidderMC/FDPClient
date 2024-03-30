@@ -70,6 +70,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             SlowlyTH(this),
             J3UltimateTH(this),
             SimplicityTH(this),
+            RiseTH(this),
         ).toTypedArray(), "Normal")
     }
     var mainTarget: EntityLivingBase? = null

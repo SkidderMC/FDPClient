@@ -877,7 +877,7 @@ class Scaffold : Module() {
                 }
                 if (mc.thePlayer.posY > jumpGround + 0.65 && MovementUtils.isMoving()) {
                     fakeJump()
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, truncate(mc.thePlayer.posY) + 1.0, mc.thePlayer.posZ)
+                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
                     mc.thePlayer.motionY = 0.36
                     jumpGround = mc.thePlayer.posY
                 }

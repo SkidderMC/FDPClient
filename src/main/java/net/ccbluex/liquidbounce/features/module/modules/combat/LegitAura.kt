@@ -203,13 +203,39 @@ object LegitAura : Module() {
         }
 
         if (movementFixValue.get()) {
-            var yawDiff = ((FreeLook.cameraYaw - mc.thePlayer.rotationYaw)/45).roundToInt()
-            if (yawDiff > 4) yawDiff -= 8
-            if (yawDiff < -4) yawDiff += 8
-            mc.gameSettings.keyBindForward.pressed = abs(yawDiff) <= 1
-            mc.gameSettings.keyBindBack.pressed = abs(yawDiff) >= 3
-            mc.gameSettings.keyBindRight.pressed = yawDiff in 1..3
-            mc.gameSettings.keyBindLeft.pressed = yawDiff in -3..-1
+            if (GameSettings.isKeyDown(mc.gameSettings.keyBindRight) || GameSettings.isKeyDown(mc.gameSettings.keyBindLeft)
+                || GameSettings.isKeyDown(mc.gameSettings.keyBindForward) || GameSettings.isKeyDown(mc.gameSettings.keyBindBack)) {
+
+                var movingYaw = FreeLook.cameraYaw
+                var forward = 1.0
+                if (GameSettings.isKeyDown(mc.gameSettings.keyBindBack)) {
+                    forward = -0.5
+                }
+                if (GameSettings.isKeyDown(mc.gameSettings.keyBindForward)) {
+                    forward = 0.5
+                }
+                if (GameSettings.isKeyDown(mc.gameSettings.keyBindForward) && GameSettings.isKeyDown(mc.gameSettings.keyBindBack)) {
+                    forward = 0.0
+                }
+                if (forward < 0) {
+                    movingYaw += 180
+                }
+                if (GameSettings.isKeyDown(mc.gameSettings.keyBindRight)) {
+                    movingYaw += 90 * forward.toFloat()
+                }
+                if (GameSettings.isKeyDown(mc.gameSettings.keyBindLeft)) {
+                    movingYaw -= 90 * forward.toFloat()
+                }
+
+
+                var yawDiff = ((movingYaw - mc.thePlayer.rotationYaw) / 45).roundToInt()
+                if (yawDiff > 4) yawDiff -= 8
+                if (yawDiff < -4) yawDiff += 8
+                mc.gameSettings.keyBindForward.pressed = abs(yawDiff) <= 1
+                mc.gameSettings.keyBindBack.pressed = abs(yawDiff) >= 3
+                mc.gameSettings.keyBindRight.pressed = yawDiff in 1..3
+                mc.gameSettings.keyBindLeft.pressed = yawDiff in -3..-1
+            }
         }
     }
 
