@@ -20,7 +20,7 @@ import net.minecraft.network.play.client.C0BPacketEntityAction
 object Sneak : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Vanilla2", "Packet", "NCP"), "Vanilla")
-    private val onlySneakValue = BoolValue("OnlySneak", false)
+    private val onlySneakValue = BoolValue("OnlySneak", false).displayable { !modeValue.equals("Vanilla") }
 
     override fun onEnable() {
         if (modeValue.equals("Packet")) {

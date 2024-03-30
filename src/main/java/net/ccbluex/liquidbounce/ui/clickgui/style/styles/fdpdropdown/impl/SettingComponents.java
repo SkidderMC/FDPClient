@@ -154,18 +154,18 @@ public class SettingComponents extends Component {
                 FloatValue numberSetting = (FloatValue) setting;
 
                 String value = Float.toString((float) MathUtils.round(numberSetting.getValue(), 0.01));
-                float regularFontWidth = (float) Fonts.fontSFUI18.stringWidthINT(numberSetting.getName() + ": ");
-                float valueFontWidth = (float) Fonts.fontSFUI18.stringWidthINT(value);
+                float regularFontWidth = (float) Fonts.fontSFUI32.stringWidthINT(numberSetting.getName() + ": ");
+                float valueFontWidth = (float) Fonts.fontSFUI32.stringWidthINT(value);
 
                 float titleX = x + width / 2f - (regularFontWidth + valueFontWidth) / 2f;
-                float titleY = settingY + Fonts.fontSFUI18.getMiddleOfBox(rectHeight) -
-                        Fonts.fontSFUI18.getMiddleOfBox(rectHeight) / 2f + 1;
+                float titleY = settingY + Fonts.fontSFUI32.getMiddleOfBox(rectHeight) -
+                        Fonts.fontSFUI32.getMiddleOfBox(rectHeight) / 2f + 1;
                 GlStateManager.color(1, 1, 1, 1);
 
-                Fonts.fontSFUI18.drawString(numberSetting.getName() + ": ", titleX, titleY, textColor.getRGB());
+                Fonts.fontSFUI32.drawString(numberSetting.getName() + ": ", titleX, titleY, textColor.getRGB());
                 GlStateManager.color(1, 1, 1, 1);
 
-                Fonts.fontSFUIBOLD18.drawString(value, titleX + regularFontWidth, titleY, textColor.getRGB());
+                Fonts.fontSFUI32.drawString(value, titleX + regularFontWidth, titleY, textColor.getRGB());
 
                 Animation hoverAnimation = sliderfloatAnimMap.get(numberSetting)[0];
                 Animation selectAnimtion = sliderfloatAnimMap.get(numberSetting)[1];
@@ -213,18 +213,18 @@ public class SettingComponents extends Component {
                 IntegerValue numberSetting = (IntegerValue) setting;
 
                 String value = Float.toString((float) MathUtils.roundX(numberSetting.getValue(), 1));
-                float regularFontWidth = (float) Fonts.fontSFUI18.stringWidthINT(numberSetting.getName() + ": ");
-                float valueFontWidth = (float) Fonts.fontSFUI18.stringWidthINT(value);
+                float regularFontWidth = (float) Fonts.fontSFUI32.stringWidthINT(numberSetting.getName() + ": ");
+                float valueFontWidth = (float) Fonts.fontSFUI32.stringWidthINT(value);
 
                 float titleX = x + width / 2f - (regularFontWidth + valueFontWidth) / 2f;
-                float titleY = settingY + Fonts.fontSFUI18.getMiddleOfBox(rectHeight) -
-                        Fonts.fontSFUI18.getMiddleOfBox(rectHeight) / 2f + 1;
+                float titleY = settingY + Fonts.fontSFUI32.getMiddleOfBox(rectHeight) -
+                        Fonts.fontSFUI32.getMiddleOfBox(rectHeight) / 2f + 1;
                 GlStateManager.color(1, 1, 1, 1);
 
-                Fonts.fontSFUI18.drawString(numberSetting.getName() + ": ", titleX, titleY, textColor.getRGB());
+                Fonts.fontSFUI32.drawString(numberSetting.getName() + ": ", titleX, titleY, textColor.getRGB());
                 GlStateManager.color(1, 1, 1, 1);
 
-                Fonts.fontSFUIBOLD18.drawString(value, titleX + regularFontWidth, titleY, textColor.getRGB());
+                Fonts.fontSFUI32.drawString(value, titleX + regularFontWidth, titleY, textColor.getRGB());
 
                 Animation hoverAnimation = sliderintAnimMap.get(numberSetting)[0];
                 Animation selectAnimtion = sliderintAnimMap.get(numberSetting)[1];
@@ -274,18 +274,18 @@ public class SettingComponents extends Component {
                 NumberValue numberSetting = (NumberValue) setting;
 
                 String value = Float.toString((float) MathUtils.round(numberSetting.getValue(), numberSetting.getInc()));
-                  float regularFontWidth = (float) Fonts.fontSFUI18.stringWidthINT(numberSetting.getName() + ": ");
-                  float valueFontWidth = (float) Fonts.fontSFUIBOLD18.stringWidthINT(value);
+                  float regularFontWidth = (float) Fonts.fontSFUI32.stringWidthINT(numberSetting.getName() + ": ");
+                  float valueFontWidth = (float) Fonts.fontSFUI32.stringWidthINT(value);
 
                 float titleX = x + width / 2f - (regularFontWidth + valueFontWidth) / 2f;
-                float titleY = settingY + Fonts.fontSFUI18.getMiddleOfBox(rectHeight) -
-                        Fonts.fontSFUI18.getMiddleOfBox(rectHeight) / 2f + 1;
+                float titleY = settingY + Fonts.fontSFUI32.getMiddleOfBox(rectHeight) -
+                        Fonts.fontSFUI32.getMiddleOfBox(rectHeight) / 2f + 1;
                 GlStateManager.color(1, 1, 1, 1);
 
-                Fonts.fontSFUI18.drawString(numberSetting.getName() + ": ", titleX, titleY, textColor.getRGB());
+                Fonts.fontSFUI32.drawString(numberSetting.getName() + ": ", titleX, titleY, textColor.getRGB());
                 GlStateManager.color(1, 1, 1, 1);
 
-                Fonts.fontSFUIBOLD18.drawString(value, titleX + regularFontWidth, titleY, textColor.getRGB());
+                Fonts.fontSFUI32.drawString(value, titleX + regularFontWidth, titleY, textColor.getRGB());
 
                 Animation hoverAnimation = sliderAnimMap.get(numberSetting)[0];
                 Animation selectAnimtion = sliderAnimMap.get(numberSetting)[1];
@@ -341,13 +341,13 @@ public class SettingComponents extends Component {
                 OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
                 GlStateManager.enableBlend();
 
-                Fonts.fontSFUI18.drawString(booleanSetting.getName(), (int) MathUtils.roundToHalf(x + 4), settingY +
+                Fonts.fontSFUI32.drawString(booleanSetting.getName(), (int) MathUtils.roundToHalf(x + 4), settingY +
                         5, textColor.getRGB());
 
                 float switchWidth = 16;
 
-                boolean hoveringSwitch = isClickable(settingY + Fonts.fontSFUI18.getMiddleOfBox(rectHeight) - 1) &&
-                        DrRenderUtils.isHovering(x + width - (switchWidth + 6), settingY + Fonts.fontSFUI18.getMiddleOfBox(rectHeight) - 1,
+                boolean hoveringSwitch = isClickable(settingY + Fonts.fontSFUI32.getMiddleOfBox(rectHeight) - 1) &&
+                        DrRenderUtils.isHovering(x + width - (switchWidth + 6), settingY + Fonts.fontSFUI32.getMiddleOfBox(rectHeight) - 1,
                                 switchWidth, 8, mouseX, mouseY);
 
                 hoverAnimation.setDirection(hoveringSwitch ? Direction.FORWARDS : Direction.BACKWARDS);
@@ -359,16 +359,16 @@ public class SettingComponents extends Component {
                 toggleAnimation.setDirection(booleanSetting.get() ? Direction.FORWARDS : Direction.BACKWARDS);
                 DrRenderUtils.resetColor();
                 Color accentCircle = accent ? DrRenderUtils.applyOpacity(accentedColor, .8f) : DrRenderUtils.darker(textColor, .8f);
-                RoundedUtil.drawRound(x + width - (switchWidth + 5.5f), settingY + Fonts.fontSFUI18.getMiddleOfBox(rectHeight) + 2, switchWidth, 4.5f,
+                RoundedUtil.drawRound(x + width - (switchWidth + 5.5f), settingY + Fonts.fontSFUI32.getMiddleOfBox(rectHeight) + 2, switchWidth, 4.5f,
                         2, DrRenderUtils.interpolateColorC(DrRenderUtils.applyOpacity(darkRectHover, .5f), accentCircle, (float) toggleAnimation.getOutput()));
 
                 DrRenderUtils.fakeCircleGlow((float) ((x + width - (switchWidth + 3)) + ((switchWidth - 5) * toggleAnimation.getOutput())),
-                        settingY + Fonts.fontSFUI18.getMiddleOfBox(rectHeight) + 4, 6, Color.BLACK, .3f);
+                        settingY + Fonts.fontSFUI32.getMiddleOfBox(rectHeight) + 4, 6, Color.BLACK, .3f);
 
                 DrRenderUtils.resetColor();
 
                 RoundedUtil.drawRound((float) (x + width - (switchWidth + 6) + ((switchWidth - 5) * toggleAnimation.getOutput())),
-                        settingY + Fonts.fontSFUI18.getMiddleOfBox(rectHeight) + 1, 6.5f,
+                        settingY + Fonts.fontSFUI32.getMiddleOfBox(rectHeight) + 1, 6.5f,
                         6.5f, 3, textColor);
 
 
@@ -425,7 +425,7 @@ public class SettingComponents extends Component {
                     if (openAnimation.isDone() && openAnimation.getDirection().equals(Direction.FORWARDS) || !openAnimation.isDone()) {
                         //      RoundedUtil.drawRound(x + 5 + ((width - 10) / 2f - selectRectWidth / 2f), settingY + rectHeight + 10.5f,
                         //    Math.max(2, selectRectWidth), 1.5f, .5f, accent ? accentedColor2 : textColor);
-                        Fonts.fontSFUI18.drawString(mode, x + 13, modeY,DrRenderUtils.applyOpacity(textColor, (float) openAnimation.getOutput()).getRGB());
+                        Fonts.fontSFUI32.drawString(mode, x + 13, modeY,DrRenderUtils.applyOpacity(textColor, (float) openAnimation.getOutput()).getRGB());
                     }
                     //   Fonts.SF.SF_18.SF_18.drawString(mode, x + 13, modeY,DrRenderUtils.applyOpacity(textColor, (float) openAnimation.getOutput()).getRGB());
                     modeCount++;
@@ -454,12 +454,12 @@ public class SettingComponents extends Component {
 
                 //Mode的名字
                 // SF14
-                Fonts.fontSFUI18.drawString(modeSetting.getName(), x + 13, settingY + 9, textColor.getRGB());
+                Fonts.fontSFUI32.drawString(modeSetting.getName(), x + 13, settingY + 9, textColor.getRGB());
 
                 DrRenderUtils.resetColor();
                 //当先选择的mode
                 //SF BOLD 18
-                Fonts.fontSFUI18.drawString(modeSetting.get(), x + 13, (float) (settingY + 17.5), textColor.getRGB());
+                Fonts.fontSFUI32.drawString(modeSetting.get(), x + 13, (float) (settingY + 17.5), textColor.getRGB());
 
                 DrRenderUtils.resetColor();
                 DrRenderUtils.drawClickGuiArrow(x + width - 15, settingY + 17, 5, openAnimation, textColor.getRGB());
@@ -474,7 +474,7 @@ public class SettingComponents extends Component {
                 Fonts.fontSFUI16.drawString(stringSetting.getName(), x + 5, settingY + 2, textColor.getRGB());
 
                 PasswordField stringSettingField = new PasswordField("Type Here...", 0,
-                        (int) (x + 5), (int) (settingY + 15), (int) (width - 10), 10, Fonts.fontSFUI18);
+                        (int) (x + 5), (int) (settingY + 15), (int) (width - 10), 10, Fonts.fontSFUI32);
 
                 stringSettingField.setText(stringSetting.get());
                 stringSettingField.setFocused(selectedStringSetting == stringSetting);

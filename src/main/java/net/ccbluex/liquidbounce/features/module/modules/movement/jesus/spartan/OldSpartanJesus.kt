@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.minecraft.block.BlockLiquid
 import net.minecraft.util.BlockPos
 
-class SpartanJesus : JesusMode("Spartan") {
+class OldSpartanJesus : JesusMode("OldSpartan") {
     override fun onJesus(event: UpdateEvent, blockPos: BlockPos) {
         if (mc.thePlayer.isInWater) {
             if (mc.thePlayer.isCollidedHorizontally) {

@@ -13,7 +13,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 
-class MatrixBoostFly : FlyMode("MatrixBoost") {
+class OldMatrixBoostFly : FlyMode("OldMatrixBoost") {
     private val bypassMode = ListValue("${valuePrefix}BypassMode", arrayOf("New", "Stable", "Test", "Custom"), "New")
     private val speed = FloatValue("${valuePrefix}Speed", 2.0f, 1.0f, 3.0f)
     private val customYMotion = FloatValue("${valuePrefix}CustomJumpMotion", 0.6f, 0.2f, 5f).displayable { bypassMode.equals("Custom") }

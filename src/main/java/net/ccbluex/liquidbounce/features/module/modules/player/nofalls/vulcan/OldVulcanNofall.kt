@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.network.play.client.C03PacketPlayer
 
-class VulcanNofall : NoFallMode("Vulcan") {
+class OldVulcanNofall : NoFallMode("OldVulcan") {
     private var vulCanNoFall = false
     private var vulCantNoFall = false
     private var nextSpoof = false
