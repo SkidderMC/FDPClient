@@ -131,7 +131,7 @@ object TargetStrafe : Module() {
                 for (i in 0..10) {
                     counter[0] = counter[0] + 1
                     val rainbow = Color(ColorUtils.otherAstolfo(counter[0] * 100, 5, 107))
-                    //final Color rainbow = new Color(Color.HSBtoRGB((float) ((mc.thePlayer.ticksExisted / 70.0 + sin(i / 50.0 * 1.75)) % 1.0f), 0.7f, 1.0f));
+
                     GL11.glColor3f(rainbow.red / 255.0f, rainbow.green / 255.0f, rainbow.blue / 255.0f)
                     if (rad < 0.8 && rad > 0.0) GL11.glVertex3d(
                         x + rad * cos(i * 6.283185307179586 / 3.0),

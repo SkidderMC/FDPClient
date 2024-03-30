@@ -20,7 +20,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.client.settings.GameSettings
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
 import net.ccbluex.liquidbounce.utils.InventoryUtils
-import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
@@ -29,8 +28,8 @@ import net.minecraft.util.BlockPos
 import net.ccbluex.liquidbounce.value.*
 import kotlin.math.roundToInt
 
-@ModuleInfo(name = "Scaffold2",  category = ModuleCategory.MOVEMENT)
-object Scaffold2 : Module() {
+@ModuleInfo(name = "LegitScaffold",  category = ModuleCategory.MOVEMENT)
+object LegitScaffold : Module() {
     val modeValue = ListValue("Mode", arrayOf("Simple", "SpeedBridge", "Breezily", "JitterBridge", "TellyBridge","GodBridge"), "Simple")
 
     val safewalkValue = ListValue("SafewalkType", arrayOf("Sneak", "Safewalk", "None"), "Safewalk").displayable { modeValue.equals("Simple") }

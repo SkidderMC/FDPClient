@@ -30,7 +30,7 @@ import kotlin.math.sqrt
 object NoSlow : Module() {
 
     //Basic settings
-    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "WatchDog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Vulcan", "Medusa", "OldIntave", "GrimAC", "HypixelNew", "SpamItemChange", "SpamPlace", "SpamEmptyPlace"), "Vanilla")
+    private val modeValue = ListValue("PacketMode", arrayOf("Vanilla", "LiquidBounce", "Custom", "WatchDog", "WatchDog2", "NCP", "AAC", "AAC4", "AAC5","SwitchItem", "Matrix", "Medusa", "OldIntave", "GrimAC", "HypixelNew", "SpamItemChange", "SpamPlace", "SpamEmptyPlace"), "Vanilla")
     private val antiSwitchItem = BoolValue("AntiSwitchItem", false)
     private val onlyGround = BoolValue("OnlyGround", false)
     private val onlyMove = BoolValue("OnlyMove", false)
@@ -304,7 +304,7 @@ object NoSlow : Module() {
         if(mc.thePlayer == null || mc.theWorld == null || (onlyGround.get() && !mc.thePlayer.onGround))
             return
 
-        if((modeValue.equals("Matrix") || modeValue.equals("Vulcan") || modeValue.equals("GrimAC")) && (lastBlockingStat || isBlocking)) {
+        if((modeValue.equals("Matrix")  || modeValue.equals("GrimAC")) && (lastBlockingStat || isBlocking)) {
             if(msTimer.hasTimePassed(230) && nextTemp) {
                 nextTemp = false
                 if(modeValue.equals("GrimAC")) {
@@ -333,7 +333,7 @@ object NoSlow : Module() {
                 }
                 PacketUtils.sendPacketNoEvent(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, mc.thePlayer.inventory.getCurrentItem(), 0f, 0f, 0f))
                 nextTemp = true
-                waitC03 = modeValue.equals("Vulcan")
+                waitC03 = false
                 msTimer.reset()
             }
         }
@@ -371,14 +371,10 @@ object NoSlow : Module() {
             }
         }
 
-        if((modeValue.equals("Matrix") || modeValue.equals("Vulcan") || modeValue.equals("GrimAC")) && nextTemp) {
+        if((modeValue.equals("Matrix")  || modeValue.equals("GrimAC")) && nextTemp) {
             if((packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) && isBlocking) {
                 event.cancelEvent()
             }else if (packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction || packet is C02PacketUseEntity || packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) {
-                if (modeValue.equals("Vulcan") && waitC03 && packet is C03PacketPlayer) {
-                    waitC03 = false
-                    return
-                }
                 packetBuf.add(packet as Packet<INetHandlerPlayServer>)
                 event.cancelEvent()
             }
