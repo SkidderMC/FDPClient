@@ -40,15 +40,15 @@ public abstract class MixinChunk implements IChunk {
     public abstract void generateSkylightMap();
 
     @Override
-    public int getLightFor(EnumSkyBlock enumSkyBlock, int n, int n2, int n3) {
+    public int fDPClient$getLightFor(EnumSkyBlock enumSkyBlock, int n, int n2, int n3) {
         int n4 = n & 0xF;
         int n5 = n3 & 0xF;
         ExtendedBlockStorage extendedBlockStorage = this.storageArrays[n2 >> 4];
-        return extendedBlockStorage == null ? (this.canSeeSky(n, n2, n3) ? enumSkyBlock.defaultLightValue : 0) : (enumSkyBlock == EnumSkyBlock.SKY ? (this.worldObj.provider.getHasNoSky() ? 0 : extendedBlockStorage.getExtSkylightValue(n4, n2 & 0xF, n5)) : (enumSkyBlock == EnumSkyBlock.BLOCK ? extendedBlockStorage.getExtBlocklightValue(n4, n2 & 0xF, n5) : enumSkyBlock.defaultLightValue));
+        return extendedBlockStorage == null ? (this.fDPClient$canSeeSky(n, n2, n3) ? enumSkyBlock.defaultLightValue : 0) : (enumSkyBlock == EnumSkyBlock.SKY ? (this.worldObj.provider.getHasNoSky() ? 0 : extendedBlockStorage.getExtSkylightValue(n4, n2 & 0xF, n5)) : (enumSkyBlock == EnumSkyBlock.BLOCK ? extendedBlockStorage.getExtBlocklightValue(n4, n2 & 0xF, n5) : enumSkyBlock.defaultLightValue));
     }
 
     @Override
-    public int getLightSubtracted(int n, int n2, int n3, int n4) {
+    public int fDPClient$getLightSubtracted(int n, int n2, int n3, int n4) {
         int n5 = n & 0xF;
         int n6 = n3 & 0xF;
         ExtendedBlockStorage extendedBlockStorage = this.storageArrays[n2 >> 4];
@@ -64,14 +64,14 @@ public abstract class MixinChunk implements IChunk {
     }
 
     @Override
-    public boolean canSeeSky(int n, int n2, int n3) {
+    public boolean fDPClient$canSeeSky(int n, int n2, int n3) {
         int n4 = n3 & 0xF;
         int n5 = n & 0xF;
         return n2 >= this.heightMap[n4 << 4 | n5];
     }
 
     @Override
-    public void setLightFor(EnumSkyBlock enumSkyBlock, int n, int n2, int n3, int n4) {
+    public void fDPClient$setLightFor(EnumSkyBlock enumSkyBlock, int n, int n2, int n3, int n4) {
         int n5 = n & 0xF;
         int n6 = n3 & 0xF;
         ExtendedBlockStorage extendedBlockStorage = this.storageArrays[n2 >> 4];
@@ -92,7 +92,7 @@ public abstract class MixinChunk implements IChunk {
     }
 
     @Override
-    public IBlockState getBlockState(int n, int n2, int n3) {
+    public IBlockState fDPClient$getBlockState(int n, int n2, int n3) {
         if (this.worldObj.getWorldType() == WorldType.DEBUG_WORLD) {
             IBlockState iBlockState = null;
             if (n2 == 60) {

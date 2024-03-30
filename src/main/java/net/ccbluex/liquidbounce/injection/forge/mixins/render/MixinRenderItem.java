@@ -14,6 +14,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+import java.util.Objects;
+
 @Mixin(RenderItem.class)
 public abstract class MixinRenderItem {
 
@@ -22,8 +24,7 @@ public abstract class MixinRenderItem {
 
     @Redirect(method = "renderEffect", at = @At(value="INVOKE", target="Lnet/minecraft/client/renderer/entity/RenderItem;renderModel(Lnet/minecraft/client/resources/model/IBakedModel;I)V"))
     private void renderModel(RenderItem renderItem, IBakedModel model, int color) {
-        Glint glint = FDPClient.moduleManager.getModule(Glint.class);
-        this.renderModel(model, glint.getState() ? glint.getColor().getRGB() : -8372020);
+        this.renderModel(model, Objects.requireNonNull(FDPClient.moduleManager.getModule(Glint.class)).getState() ? Objects.requireNonNull(FDPClient.moduleManager.getModule(Glint.class)).getColor().getRGB() : -8372020);
     }
 }
 

@@ -31,6 +31,8 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+import java.util.Objects;
+
 @Mixin(ItemRenderer.class)
 public abstract class MixinItemRenderer {
     @Shadow
@@ -135,17 +137,15 @@ public abstract class MixinItemRenderer {
     @Shadow
     protected abstract void renderPlayerArm(AbstractClientPlayer clientPlayer, float equipProgress, float swingProgress);
 
-    @Shadow
-    private int equippedItemSlot;
-
-    private final Animations animations = Animations.INSTANCE;
+    private final Animations fDPClient$animations = Animations.INSTANCE;
 
     /**
      * @author Liuli
+     * @reason Transform First Person Item
      */
     @Overwrite
     private void transformFirstPersonItem(float equipProgress, float swingProgress) {
-        doItemRenderGLTranslate();
+        fDPClient$doItemRenderGLTranslate();
         GlStateManager.translate(0.0F, equipProgress * -0.6F, 0.0F);
         GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
         float f = MathHelper.sin(swingProgress * swingProgress * 3.1415927F);
@@ -153,32 +153,33 @@ public abstract class MixinItemRenderer {
         GlStateManager.rotate(f * -20.0F, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(f1 * -20.0F, 0.0F, 0.0F, 1.0F);
         GlStateManager.rotate(f1 * -80.0F, 1.0F, 0.0F, 0.0F);
-        doItemRenderGLScale();
+        fDPClient$doItemRenderGLScale();
     }
 
     /**
      * @author Liuli
+     * @reason Render Item In First Person
      */
     @Overwrite
     public void renderItemInFirstPerson(float partialTicks) {
         float f = 1.0F - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
-        AbstractClientPlayer abstractclientplayer = mc.thePlayer;
+        EntityPlayerSP abstractclientplayer = mc.thePlayer;
         float f1 = abstractclientplayer.getSwingProgress(partialTicks);
         float f2 = abstractclientplayer.prevRotationPitch + (abstractclientplayer.rotationPitch - abstractclientplayer.prevRotationPitch) * partialTicks;
         float f3 = abstractclientplayer.prevRotationYaw + (abstractclientplayer.rotationYaw - abstractclientplayer.prevRotationYaw) * partialTicks;
         this.rotateArroundXAndY(f2, f3);
         this.setLightMapFromPlayer(abstractclientplayer);
-        this.rotateWithPlayerRotations((EntityPlayerSP) abstractclientplayer, partialTicks);
+        this.rotateWithPlayerRotations(abstractclientplayer, partialTicks);
         GlStateManager.enableRescaleNormal();
         GlStateManager.pushMatrix();
 
         if (this.itemToRender != null) {
-            final boolean displayBlocking = FDPClient.moduleManager.getModule(KillAura.class).getDisplayBlocking() || FDPClient.moduleManager.getModule(LegitAura.class).getDisplayBlocking();
+            final boolean displayBlocking = Objects.requireNonNull(FDPClient.moduleManager.getModule(KillAura.class)).getDisplayBlocking() || Objects.requireNonNull(FDPClient.moduleManager.getModule(LegitAura.class)).getDisplayBlocking();
 
             if (this.itemToRender.getItem() instanceof ItemMap) {
                 this.renderItemMap(abstractclientplayer, f2, f, f1);
-            } else if ((abstractclientplayer.isUsingItem() || (mc.gameSettings.keyBindUseItem.isKeyDown() && animations.getAnythingBlockValue().get())) || ((itemToRender.getItem() instanceof ItemSword || animations.getAnythingBlockValue().get()) && displayBlocking)) {
-                switch((displayBlocking || animations.getAnythingBlockValue().get()) ? EnumAction.BLOCK : this.itemToRender.getItemUseAction()) {
+            } else if ((abstractclientplayer.isUsingItem() || (mc.gameSettings.keyBindUseItem.isKeyDown() && fDPClient$animations.getAnythingBlockValue().get())) || ((itemToRender.getItem() instanceof ItemSword || fDPClient$animations.getAnythingBlockValue().get()) && displayBlocking)) {
+                switch((displayBlocking || fDPClient$animations.getAnythingBlockValue().get()) ? EnumAction.BLOCK : this.itemToRender.getItemUseAction()) {
                     case NONE:
                         this.transformFirstPersonItem(f, 0.0F);
                         break;
@@ -188,11 +189,11 @@ public abstract class MixinItemRenderer {
                         this.transformFirstPersonItem(f, f1);
                         break;
                     case BLOCK:
-                        GL11.glTranslated(animations.getTranslateXValue().get(), animations.getTranslateYValue().get(), animations.getTranslateZValue().get());
-                        GlStateManager.rotate(animations.getRotateXValue().get(), 1.0F, 0.0F, 0.0F);
-                        GlStateManager.rotate(animations.getRotateYValue().get(), 0.0F, 1.0F, 0.0F);
-                        GlStateManager.rotate(animations.getRotateZValue().get(), 0.0F, 0.0F, 1.0F);
-                        switch (animations.getBlockingModeValue().get()) {
+                        GL11.glTranslated(fDPClient$animations.getTranslateXValue().get(), fDPClient$animations.getTranslateYValue().get(), fDPClient$animations.getTranslateZValue().get());
+                        GlStateManager.rotate(fDPClient$animations.getRotateXValue().get(), 1.0F, 0.0F, 0.0F);
+                        GlStateManager.rotate(fDPClient$animations.getRotateYValue().get(), 0.0F, 1.0F, 0.0F);
+                        GlStateManager.rotate(fDPClient$animations.getRotateZValue().get(), 0.0F, 0.0F, 1.0F);
+                        switch (fDPClient$animations.getBlockingModeValue().get()) {
                             case "1.7": {
                                 transformFirstPersonItem(f, f1);
                                 doBlockTransformations();
@@ -204,12 +205,12 @@ public abstract class MixinItemRenderer {
                                 break;
                             }
                             case "Avatar": {
-                                avatar(f1);
+                                fDPClient$avatar(f1);
                                 doBlockTransformations();
                                 break;
                             }
                             case "ETB": {
-                                etb(f, f1);
+                                fDPClient$etb(f, f1);
                                 doBlockTransformations();
                                 break;
                             }
@@ -223,7 +224,7 @@ public abstract class MixinItemRenderer {
                                 break;
                             }
                             case "Push": {
-                                push(f1);
+                                fDPClient$push(f1);
                                 doBlockTransformations();
                                 break;
                             }
@@ -234,24 +235,24 @@ public abstract class MixinItemRenderer {
                                 break;
                             }
                             case "Shield": {
-                                jello(f1);
+                                fDPClient$jello(f1);
                                 doBlockTransformations();
                                 break;
                             }
                             case "SigmaNew": {
-                                doItemRenderGLTranslate();
+                                fDPClient$doItemRenderGLTranslate();
                                 GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
                                 float var11 = MathHelper.sin(f1 * f1 * 3.1415927F);
                                 float var12 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
                                 GlStateManager.rotate(var12 * -5.0F, 1.0F, 0.0F, 0.0F);
                                 GlStateManager.rotate(var12 * 0.0F, 0.0F, 0.0F, 1.0F);
                                 GlStateManager.rotate(var12 * 25.0F, 0.0F, 1.0F, 0.0F);
-                                doItemRenderGLScale();
+                                fDPClient$doItemRenderGLScale();
                                 doBlockTransformations();
                                 break;
                             }
                             case "SigmaOld": {
-                                sigmaOld(f);
+                                fDPClient$sigmaOld(f);
                                 float var15 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
                                 GlStateManager.rotate(-var15 * 55.0F / 2.0F, -8.0F, -0.0F, 9.0F);
                                 GlStateManager.rotate(-var15 * 45.0F, 1.0F, var15 / 2.0F, -0.0F);
@@ -262,7 +263,7 @@ public abstract class MixinItemRenderer {
                                 break;
                             }
                             case "Slide": {
-                                slide(f1);
+                                fDPClient$slide(f1);
                                 doBlockTransformations();
                                 break;
                             }
@@ -279,7 +280,7 @@ public abstract class MixinItemRenderer {
                                 break;
                             }
                             case "VisionFX": {
-                                continuity(f1);
+                                fDPClient$continuity(f1);
                                 doBlockTransformations();
                                 break;
                             }
@@ -317,7 +318,7 @@ public abstract class MixinItemRenderer {
                                 break;
                             }
                             case "Rotate":{
-                                rotateSword(f1);
+                                fDPClient$rotateSword(f1);
                                 break;
                             }
                             case "Liquid": {
@@ -327,15 +328,15 @@ public abstract class MixinItemRenderer {
                                 break;
                             }
                             case "Fall": {
-                                doItemRenderGLTranslate();
+                                fDPClient$doItemRenderGLTranslate();
                                 GlStateManager.translate(0.0F, f * -0.6F, 0.0F);
                                 GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-                                doItemRenderGLScale();
+                                fDPClient$doItemRenderGLScale();
                                 doBlockTransformations();
                                 break;
                             }
                             case "Yeet": {
-                                doItemRenderGLTranslate();
+                                fDPClient$doItemRenderGLTranslate();
                                 GlStateManager.translate(0.0F, f * -0.6F, 0.0F);
                                 GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
                                 float var11 = MathHelper.sin(f1 * f1 * 3.1415927F);
@@ -343,12 +344,12 @@ public abstract class MixinItemRenderer {
                                 GlStateManager.rotate(var11 * 0.0F, 0.0F, 1.0F, 0.0F);
                                 GlStateManager.rotate(var12 * 0.0F, 0.0F, 0.0F, 1.0F);
                                 GlStateManager.rotate(var12 * -40.0F + 10F, 1.0F, 0.0F, 0.0F);
-                                doItemRenderGLScale();
+                                fDPClient$doItemRenderGLScale();
                                 doBlockTransformations();
                                 break;
                             }
                             case "Yeet2": {
-                                doItemRenderGLTranslate();
+                                fDPClient$doItemRenderGLTranslate();
                                 GlStateManager.translate(0.0F, f * -0.8F, 0.0F);
                                 GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
                                 float var11 = MathHelper.sin(f1 * f1 * 3.1415927F);
@@ -356,7 +357,7 @@ public abstract class MixinItemRenderer {
                                 GlStateManager.rotate(var11 * 0.0F, 0.0F, 1.0F, 0.0F);
                                 GlStateManager.rotate(var12 * 0.0F, 0.0F, 0.0F, 1.0F);
                                 GlStateManager.rotate(var12 * -20.0F - 9.5F, 1.0F, 0.0F, 0.0F);
-                                doItemRenderGLScale();
+                                fDPClient$doItemRenderGLScale();
                                 doBlockTransformations();
                                 break;
                             }
@@ -372,7 +373,7 @@ public abstract class MixinItemRenderer {
                                 GlStateManager.rotate(60.0F, 0.0F, 1.0F, 0.0F);
                                 break;
                             }
-                             
+
                         }
                         break;
                     case BOW:
@@ -380,7 +381,7 @@ public abstract class MixinItemRenderer {
                         this.doBowTransformations(partialTicks, abstractclientplayer);
                 }
             }else{
-                if (!animations.getSwingAnimValue().get())
+                if (!fDPClient$animations.getSwingAnimValue().get())
                     this.doItemUsedTransformations(f1);
                 this.transformFirstPersonItem(f, f1);
             }
@@ -395,27 +396,27 @@ public abstract class MixinItemRenderer {
         RenderHelper.disableStandardItemLighting();
     }
 
-    private void doItemRenderGLTranslate(){
-        GlStateManager.translate(animations.getItemPosXValue().get(), animations.getItemPosYValue().get(), animations.getItemPosZValue().get());
+    private void fDPClient$doItemRenderGLTranslate(){
+        GlStateManager.translate(fDPClient$animations.getItemPosXValue().get(), fDPClient$animations.getItemPosYValue().get(), fDPClient$animations.getItemPosZValue().get());
     }
 
-    private void doItemRenderGLScale(){
-        GlStateManager.scale(animations.getItemScaleValue().get(), animations.getItemScaleValue().get(), animations.getItemScaleValue().get());
+    private void fDPClient$doItemRenderGLScale(){
+        GlStateManager.scale(fDPClient$animations.getItemScaleValue().get(), fDPClient$animations.getItemScaleValue().get(), fDPClient$animations.getItemScaleValue().get());
     }
 
-    private void sigmaOld(float f) {
-        doItemRenderGLTranslate();
+    private void fDPClient$sigmaOld(float f) {
+        fDPClient$doItemRenderGLTranslate();
         GlStateManager.translate(0.0F, f * -0.6F, 0.0F);
         GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(0F, 0.0F, 1.0F, 0.2F);
         GlStateManager.rotate(0F, 0.2F, 0.1F, 1.0F);
         GlStateManager.rotate(0F, 1.3F, 0.1F, 0.2F);
-        doItemRenderGLScale();
+        fDPClient$doItemRenderGLScale();
     }
 
     //methods in LiquidBounce b73 Animation-No-Cross
-    private void avatar(float swingProgress) {
-        doItemRenderGLTranslate();
+    private void fDPClient$avatar(float swingProgress) {
+        fDPClient$doItemRenderGLTranslate();
         GlStateManager.translate(0.0F, 0.0F, 0.0F);
         GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
         float f = MathHelper.sin(swingProgress * swingProgress * 3.1415927F);
@@ -423,11 +424,11 @@ public abstract class MixinItemRenderer {
         GlStateManager.rotate(f * -20.0F, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(f2 * -20.0F, 0.0F, 0.0F, 1.0F);
         GlStateManager.rotate(f2 * -40.0F, 1.0F, 0.0F, 0.0F);
-        doItemRenderGLScale();
+        fDPClient$doItemRenderGLScale();
     }
 
-    private void slide(float var9) {
-        doItemRenderGLTranslate();
+    private void fDPClient$slide(float var9) {
+        fDPClient$doItemRenderGLTranslate();
         GlStateManager.translate(0.0F, 0.0F, 0.0F);
         GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
         float var11 = MathHelper.sin(var9 * var9 * 3.1415927F);
@@ -435,17 +436,17 @@ public abstract class MixinItemRenderer {
         GlStateManager.rotate(var11 * 0.0F, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(var12 * 0.0F, 0.0F, 0.0F, 1.0F);
         GlStateManager.rotate(var12 * -40.0F, 1.0F, 0.0F, 0.0F);
-        doItemRenderGLScale();
+        fDPClient$doItemRenderGLScale();
     }
 
-    private void rotateSword(float f1){
-        genCustom();
+    private void fDPClient$rotateSword(float f1){
+        fDPClient$genCustom();
         doBlockTransformations();
         GlStateManager.translate(-0.5F, 0.2F, 0.0F);
         GlStateManager.rotate(MathHelper.sqrt_float(f1) * 10.0F * 40.0F, 1.0F, -0.0F, 2.0F);
     }
 
-    private void genCustom() {
+    private void fDPClient$genCustom() {
         GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
         GlStateManager.translate(0.0F, (float) 0.0 * -0.6F, 0.0F);
         GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
@@ -458,19 +459,19 @@ public abstract class MixinItemRenderer {
     }
 
 
-    private void jello(float var12) {
-        doItemRenderGLTranslate();
+    private void fDPClient$jello(float var12) {
+        fDPClient$doItemRenderGLTranslate();
         GlStateManager.rotate(48.57F, 0.0F, 0.24F, 0.14F);
         float var13 = MathHelper.sin(var12 * var12 * 3.1415927F);
         float var14 = MathHelper.sin(MathHelper.sqrt_float(var12) * 3.1415927F);
         GlStateManager.rotate(var13 * -35.0F, 0.0F, 0.0F, 0.0F);
         GlStateManager.rotate(var14 * 0.0F, 0.0F, 0.0F, 0.0F);
         GlStateManager.rotate(var14 * 20.0F, 1.0F, 1.0F, 1.0F);
-        doItemRenderGLScale();
+        fDPClient$doItemRenderGLScale();
     }
 
-    private void continuity(float var10) {
-        doItemRenderGLTranslate();
+    private void fDPClient$continuity(float var10) {
+        fDPClient$doItemRenderGLTranslate();
         GlStateManager.translate(0.0F, 0.0F, 0.0F);
         GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
         float var12 = -MathHelper.sin(var10 * var10 * 3.1415927F);
@@ -479,20 +480,11 @@ public abstract class MixinItemRenderer {
         GlStateManager.rotate(var12 * var14 * 30.0F, 0.0F, 1.0F, 0.0F);
         GlStateManager.rotate(var13 * 0.0F, 0.0F, 0.0F, 1.0F);
         GlStateManager.rotate(var13 * 20.0F, 1.0F, 0.0F, 0.0F);
-        doItemRenderGLScale();
+        fDPClient$doItemRenderGLScale();
     }
 
-    public void sigmaNew(float var22, float var23) {
-        doItemRenderGLTranslate();
-        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-        float var24 = MathHelper.sin(var23 * MathHelper.sqrt_float(var22) * 3.1415927F);
-        float var25 = MathHelper.abs(MathHelper.sqrt_double(var22) * 3.1415927F);
-        GlStateManager.rotate(var24 * 20.0F * var25, 0.0F, 1.0F, 1.0F);
-        doItemRenderGLScale();
-    }
-
-    private void etb(float equipProgress, float swingProgress) {
-        doItemRenderGLTranslate();
+    private void fDPClient$etb(float equipProgress, float swingProgress) {
+        fDPClient$doItemRenderGLTranslate();
         GlStateManager.translate(0.0F, equipProgress * -0.6F, 0.0F);
         GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
         float var3 = MathHelper.sin(swingProgress * swingProgress * 3.1415927F);
@@ -500,11 +492,11 @@ public abstract class MixinItemRenderer {
         GlStateManager.rotate(var3 * -34.0F, 0.0F, 1.0F, 0.2F);
         GlStateManager.rotate(var4 * -20.7F, 0.2F, 0.1F, 1.0F);
         GlStateManager.rotate(var4 * -68.6F, 1.3F, 0.1F, 0.2F);
-        doItemRenderGLScale();
+        fDPClient$doItemRenderGLScale();
     }
 
-    private void push(float idc) {
-        doItemRenderGLTranslate();
+    private void fDPClient$push(float idc) {
+        fDPClient$doItemRenderGLTranslate();
         GlStateManager.translate(0.0F, (float) 0.1 * -0.6F, 0.0F);
         GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
         float var3 = MathHelper.sin(idc * idc * 3.1415927F);
@@ -512,7 +504,7 @@ public abstract class MixinItemRenderer {
         GlStateManager.rotate(var3 * -10.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.rotate(var4 * -10.0F, 1.0F, 1.0F, 1.0F);
         GlStateManager.rotate(var4 * -10.0F, 1.0F, 1.0F, 1.0F);
-        doItemRenderGLScale();
+        fDPClient$doItemRenderGLScale();
     }
 
     /**
@@ -520,9 +512,8 @@ public abstract class MixinItemRenderer {
      */
     @Redirect(method="renderFireInFirstPerson", at=@At(value="INVOKE", target="Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V"))
     private void renderFireInFirstPerson(float p_color_0_, float p_color_1_, float p_color_2_, float p_color_3_) {
-        final VanillaTweaks camera = FDPClient.moduleManager.getModule(VanillaTweaks.class);
-        if(p_color_3_ != 1F && camera.getState()){
-            GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, camera.getFireEffectValue().get());
+        if(p_color_3_ != 1F && Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getState()){
+            GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getFireEffectValue().get());
         }else{
             GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, p_color_3_);
         }

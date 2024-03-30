@@ -27,6 +27,7 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 public class NullStyle extends Style {
@@ -36,7 +37,8 @@ public class NullStyle extends Style {
 
     @Override
     public void drawPanel(int mouseX, int mouseY, Panel panel) {
-        RenderUtils.drawGradientSidewaysH((float) panel.getX() - 3, (float) panel.getY(), (float) panel.getX() + panel.getWidth() + 3, (float) panel.getY() + 19, ClickGUIModule.INSTANCE.generateColor().getRGB(), ColorUtils.INSTANCE.reAlpha(ClickGUIModule.INSTANCE.generateColor(),50).getRGB());
+        int index = 0;
+        RenderUtils.drawGradientSidewaysH((float) panel.getX() - 3, (float) panel.getY(), (float) panel.getX() + panel.getWidth() + 3, (float) panel.getY() + 19, ClickGUIModule.generateColor(index).getRGB(), ColorUtils.reAlpha(ClickGUIModule.generateColor(index),50).getRGB());
         if(panel.getFade() > 0)
             RenderUtils.drawBorderedRect((float) panel.getX(), (float) panel.getY() + 19, (float) panel.getX() + panel.getWidth(), panel.getY() + 19 + panel.getFade(), 1, Integer.MIN_VALUE, Integer.MIN_VALUE);
         GlStateManager.resetColor();
@@ -48,7 +50,8 @@ public class NullStyle extends Style {
     public void drawDescription(int mouseX, int mouseY, String text) {
         int textWidth = Fonts.minecraftFont.getStringWidth(LanguageManager.INSTANCE.get(text.replaceAll("%","")));
 
-        RenderUtils.drawRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.minecraftFont.FONT_HEIGHT + 3, ClickGUIModule.INSTANCE.generateColor().getRGB());
+        int index = 0;
+        RenderUtils.drawRect(mouseX + 9, mouseY, mouseX + textWidth + 14, mouseY + Fonts.minecraftFont.FONT_HEIGHT + 3, ClickGUIModule.generateColor(index).getRGB());
         GlStateManager.resetColor();
         Fonts.minecraftFont.drawString(LanguageManager.INSTANCE.get(text.replaceAll("%","")), mouseX + 12, mouseY + (Fonts.minecraftFont.FONT_HEIGHT / 2), Integer.MAX_VALUE);
     }
@@ -61,9 +64,10 @@ public class NullStyle extends Style {
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
-        final int guiColor = ClickGUIModule.INSTANCE.generateColor().getRGB();
+        int index = 0;
+        final int guiColor = ClickGUIModule.generateColor(index).getRGB();
         GlStateManager.resetColor();
-        Fonts.minecraftFont.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), (int) (moduleElement.getX()+3), moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
+        Fonts.minecraftFont.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX()+3, moduleElement.getY() + 7, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
 
         final List<Value<?>> moduleValues = moduleElement.getModule().getValues();
 
@@ -280,7 +284,7 @@ public class NullStyle extends Style {
 
     private BigDecimal round(final float f) {
         BigDecimal bd = new BigDecimal(Float.toString(f));
-        bd = bd.setScale(2, 4);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
         return bd;
     }
 }

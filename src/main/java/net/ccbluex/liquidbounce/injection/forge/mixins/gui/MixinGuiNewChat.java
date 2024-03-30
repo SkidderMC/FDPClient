@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import com.mojang.realmsclient.gui.ChatFormatting;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.ChatControl;
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.ui.font.cf.CFontRenderer;
 import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders;
@@ -35,8 +34,8 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.awt.*;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 @Mixin(GuiNewChat.class)
 public abstract class MixinGuiNewChat {
@@ -70,53 +69,48 @@ public abstract class MixinGuiNewChat {
     @Shadow
     public abstract void printChatMessageWithOptionalDeletion(IChatComponent chatComponent, int chatLineId);
 
-    private String lastMessage;
-    private int sameMessageAmount;
-    private int line;
-
-    private final HUD hud = FDPClient.moduleManager.getModule(HUD.class);
-
-    private final ChatControl chatEnhance = FDPClient.moduleManager.getModule(ChatControl.class);
-
+    private String fDPClient$lastMessage;
+    private int fDPClient$sameMessageAmount;
+    private int fDPClient$line;
     /**
      * @author Liuli
      * @reason ChatCombine
      */
     @Overwrite
     public void printChatMessage(IChatComponent chatComponent) {
-        if(!chatEnhance.getState() || !chatEnhance.getChatCombineValue().get()) {
+        if(!Objects.requireNonNull(FDPClient.moduleManager.getModule(ChatControl.class)).getState() || !Objects.requireNonNull(FDPClient.moduleManager.getModule(ChatControl.class)).getChatCombineValue().get()) {
             printChatMessageWithOptionalDeletion(chatComponent, 0);
-        } else if(chatEnhance.getChatCombineValue().get()) {
+        } else if(Objects.requireNonNull(FDPClient.moduleManager.getModule(ChatControl.class)).getChatCombineValue().get()) {
 
-            String text = fixString(chatComponent.getFormattedText());
+            String text = fDPClient$fixString(chatComponent.getFormattedText());
 
-            if (text.equals(this.lastMessage)) {
-                (Minecraft.getMinecraft()).ingameGUI.getChatGUI().deleteChatLine(this.line);
-                this.sameMessageAmount++;
-                chatComponent.appendText(ChatFormatting.WHITE + " [" + "x" + this.sameMessageAmount + "]");
+            if (text.equals(this.fDPClient$lastMessage)) {
+                (Minecraft.getMinecraft()).ingameGUI.getChatGUI().deleteChatLine(this.fDPClient$line);
+                this.fDPClient$sameMessageAmount++;
+                chatComponent.appendText(ChatFormatting.WHITE + " [" + "x" + this.fDPClient$sameMessageAmount + "]");
             } else {
-                this.sameMessageAmount = 1;
+                this.fDPClient$sameMessageAmount = 1;
             }
 
-            this.lastMessage = text;
-            this.line++;
-            if (this.line > 256)
-                this.line = 0;
+            this.fDPClient$lastMessage = text;
+            this.fDPClient$line++;
+            if (this.fDPClient$line > 256)
+                this.fDPClient$line = 0;
 
-            printChatMessageWithOptionalDeletion(chatComponent, this.line);
+            printChatMessageWithOptionalDeletion(chatComponent, this.fDPClient$line);
         }
     }
 
     @ModifyConstant(method = "setChatLine", constant = @Constant(intValue = 100))
     private int fixMsgLimit(int constant) {
-        if(chatEnhance.getState() && chatEnhance.getChatClearValue().get()) {
+        if(Objects.requireNonNull(FDPClient.moduleManager.getModule(ChatControl.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(ChatControl.class)).getChatClearValue().get()) {
             return 114514;
         } else {
             return 100;
         }
     }
 
-    private String fixString(String str){
+    private String fDPClient$fixString(String str){
         str=str.replaceAll("\uF8FF","");//remove air chars
 
         StringBuilder sb=new StringBuilder();
@@ -138,7 +132,7 @@ public abstract class MixinGuiNewChat {
      */
     @Overwrite
     public void drawChat(int updateCounter) {
-        boolean canFont = chatEnhance.getState() && chatEnhance.getFontChatValue().get();
+        boolean canFont = Objects.requireNonNull(FDPClient.moduleManager.getModule(ChatControl.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(ChatControl.class)).getFontChatValue().get();
 
         if (this.mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {
             
@@ -188,7 +182,7 @@ public abstract class MixinGuiNewChat {
                                 int i2 = 0;
                                 int j2 = -i1 * 9;
 
-                                if(chatEnhance.getChatAnimValue().get()&&!flag) {
+                                if(Objects.requireNonNull(FDPClient.moduleManager.getModule(ChatControl.class)).getChatAnimValue().get()&&!flag) {
                                     if (j1 <= 20) {
                                         GL11.glTranslatef((float) (-(l + 4) * EaseUtils.INSTANCE.easeInQuart(1 - ((j1+mc.timer.renderPartialTicks) / 20.0))), 0F, 0F);
                                     }
@@ -197,7 +191,7 @@ public abstract class MixinGuiNewChat {
                                     }
                                 }
 
-                                if(chatEnhance.getChatRectValue().get()) {
+                                if(Objects.requireNonNull(FDPClient.moduleManager.getModule(ChatControl.class)).getChatRectValue().get()) {
                                     RenderUtils.drawRect(i2 - 2, j2 - 9, i2 + l + 4, j2, l1 / 2 << 24);
                                     if (j2 - 9 < minH) {
                                         minH = j2 - 9;
@@ -207,7 +201,7 @@ public abstract class MixinGuiNewChat {
                                     }
                                 }
                                 GlStateManager.enableBlend();
-                                if(chatEnhance.getChatRectValue().get()) {
+                                if(Objects.requireNonNull(FDPClient.moduleManager.getModule(ChatControl.class)).getChatRectValue().get()) {
                                     if (canFont)
                                         CFontRenderer.DisplayFont(chatline.getChatComponent().getFormattedText(), (float) i2, (float) (j2 - 8), new Color(255, 255, 255).getRGB(), FontLoaders.C16);
                                     else {
@@ -229,7 +223,7 @@ public abstract class MixinGuiNewChat {
                     }
                 }
                 
-                if (chatEnhance.getBetterChatRectValue().get()) {
+                if (Objects.requireNonNull(FDPClient.moduleManager.getModule(ChatControl.class)).getBetterChatRectValue().get()) {
                     if (minH < 900) {
                         RenderUtils.drawShadow(-2f, minH, MathHelper.ceiling_float_int((float)this.getChatWidth() / f1) + 4, maxH - minH);
                     }
@@ -257,7 +251,7 @@ public abstract class MixinGuiNewChat {
 
     @Inject(method = "getChatComponent", at = @At("HEAD"), cancellable = true)
     private void getChatComponent(int p_getChatComponent_1_, int p_getChatComponent_2_, final CallbackInfoReturnable<IChatComponent> callbackInfo) {
-        if(chatEnhance.getState() && chatEnhance.getFontChatValue().get()) {
+        if(Objects.requireNonNull(FDPClient.moduleManager.getModule(ChatControl.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(ChatControl.class)).getFontChatValue().get()) {
             if(!this.getChatOpen()) {
                 callbackInfo.setReturnValue(null);
             }else{
@@ -270,17 +264,15 @@ public abstract class MixinGuiNewChat {
                 if(lvt_6_1_ >= 0 && lvt_7_1_ >= 0) {
                     int lvt_8_1_ = Math.min(this.getLineCount(), this.drawnChatLines.size());
                     if(lvt_6_1_ <= MathHelper.floor_float((float) this.getChatWidth() / this.getChatScale()) && lvt_7_1_ < FontLoaders.C16.getHeight() * lvt_8_1_ + lvt_8_1_) {
-                        int lvt_9_1_ = (int) (lvt_7_1_ / FontLoaders.C16.getHeight() + this.scrollPos);
+                        int lvt_9_1_ = lvt_7_1_ / FontLoaders.C16.getHeight() + this.scrollPos;
                         if(lvt_9_1_ >= 0 && lvt_9_1_ < this.drawnChatLines.size()) {
                             ChatLine lvt_10_1_ = this.drawnChatLines.get(lvt_9_1_);
                             int lvt_11_1_ = 0;
-                            Iterator lvt_12_1_ = lvt_10_1_.getChatComponent().iterator();
 
-                            while(lvt_12_1_.hasNext()) {
-                                IChatComponent lvt_13_1_ = (IChatComponent) lvt_12_1_.next();
-                                if(lvt_13_1_ instanceof ChatComponentText) {
+                            for (IChatComponent lvt_13_1_ : lvt_10_1_.getChatComponent()) {
+                                if (lvt_13_1_ instanceof ChatComponentText) {
                                     lvt_11_1_ += FontLoaders.C16.getStringWidth(GuiUtilRenderComponents.func_178909_a(((ChatComponentText) lvt_13_1_).getChatComponentText_TextValue(), false));
-                                    if(lvt_11_1_ > lvt_6_1_) {
+                                    if (lvt_11_1_ > lvt_6_1_) {
                                         callbackInfo.setReturnValue(lvt_13_1_);
                                         return;
                                     }

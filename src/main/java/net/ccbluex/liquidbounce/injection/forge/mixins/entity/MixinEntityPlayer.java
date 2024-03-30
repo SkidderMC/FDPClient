@@ -28,6 +28,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Objects;
+
 /**
  * The type Mixin entity player.
  */
@@ -105,25 +107,14 @@ public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
     public abstract boolean isUsingItem();
 
     /**
-     * Is player sleeping boolean.
-     *
-     * @return the boolean
-     */
-    @Shadow
-    public abstract boolean isPlayerSleeping();
-
-    @Shadow(remap = false)
-    public abstract float getDefaultEyeHeight();
-
-    /**
      * The Inventory.
      */
     @Shadow
     public InventoryPlayer inventory;
-    private ItemStack cooldownStack;
-    private int cooldownStackSlot;
-    private final ItemStack[] mainInventory = new ItemStack[36];
-    private final ItemStack[] armorInventory = new ItemStack[4];
+    private ItemStack fDPClient$cooldownStack;
+    private int fDPClient$cooldownStackSlot;
+    private final ItemStack[] fDPClient$mainInventory = new ItemStack[36];
+    private final ItemStack[] fDPClient$armorInventory = new ItemStack[4];
 
 
     /**
@@ -132,19 +123,19 @@ public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
      */
     @Inject(method = "dropItem", at = @At("HEAD"))
     private void dropItem(ItemStack p_dropItem_1_, boolean p_dropItem_2_, boolean p_dropItem_3_, CallbackInfoReturnable<EntityItem> cir) {
-        for (int i = 0; i < this.mainInventory.length; ++i) {
+        for (int i = 0; i < this.fDPClient$mainInventory.length; ++i) {
             if (!MinecraftInstance.mc.isIntegratedServerRunning() && ProtocolBase.getManager().getTargetVersion().newerThanOrEqualTo(ProtocolVersion.v1_16))
                 PacketUtils.sendPacketNoEvent(new C0APacketAnimation());
-            if (this.mainInventory[i] != null) {
-                this.mainInventory[i] = null;
+            if (this.fDPClient$mainInventory[i] != null) {
+                this.fDPClient$mainInventory[i] = null;
             }
         }
 
-        for (int j = 0; j < this.armorInventory.length; ++j) {
+        for (int j = 0; j < this.fDPClient$armorInventory.length; ++j) {
             if (!MinecraftInstance.mc.isIntegratedServerRunning() && ProtocolBase.getManager().getTargetVersion().newerThanOrEqualTo(ProtocolVersion.v1_16))
                 PacketUtils.sendPacketNoEvent(new C0APacketAnimation());
-            if (this.armorInventory[j] != null) {
-                this.armorInventory[j] = null;
+            if (this.fDPClient$armorInventory[j] != null) {
+                this.fDPClient$armorInventory[j] = null;
             }
         }
     }
@@ -154,18 +145,18 @@ public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
             CooldownHelper.INSTANCE.incrementLastAttackedTicks();
             CooldownHelper.INSTANCE.updateGenericAttackSpeed(getHeldItem());
 
-            if (cooldownStackSlot != inventory.currentItem || !ItemStack.areItemStacksEqual(cooldownStack, getHeldItem())) {
+            if (fDPClient$cooldownStackSlot != inventory.currentItem || !ItemStack.areItemStacksEqual(fDPClient$cooldownStack, getHeldItem())) {
                 CooldownHelper.INSTANCE.resetLastAttackedTicks();
             }
 
-            cooldownStack = getHeldItem();
-            cooldownStackSlot = inventory.currentItem;
+            fDPClient$cooldownStack = getHeldItem();
+            fDPClient$cooldownStackSlot = inventory.currentItem;
         }
     }
     @Inject(method = "attackTargetEntityWithCurrentItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;setSprinting(Z)V", shift = At.Shift.AFTER))
     public void onAttackTargetEntityWithCurrentItem(CallbackInfo callbackInfo) {
         final KeepSprint ks = FDPClient.moduleManager.getModule(KeepSprint.class);
-            if (ks.getState()) {
+            if (Objects.requireNonNull(ks).getState()) {
                 final float s = 0.6f + 0.4f * ks.getS().getValue();
                 this.motionX = this.motionX / 0.6 * s;
                 this.motionZ = this.motionZ / 0.6 * s;

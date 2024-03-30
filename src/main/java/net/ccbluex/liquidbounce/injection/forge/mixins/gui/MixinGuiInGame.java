@@ -30,6 +30,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Objects;
+
 import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
 
 @Mixin(GuiIngame.class)
@@ -62,17 +64,16 @@ public abstract class MixinGuiInGame extends MixinGui {
 
     @Inject(method = "renderScoreboard", at = @At("HEAD"), cancellable = true)
     private void renderScoreboard(CallbackInfo callbackInfo) {
-        if (FDPClient.moduleManager.getModule(HUD.class).getState())
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(HUD.class)).getState())
             callbackInfo.cancel();
     }
 
     /**
      * @author liulihaocai
+     * @reason Render Tool Tip
      */
     @Overwrite
     protected void renderTooltip(ScaledResolution sr, float partialTicks) {
-        final HUD hud = FDPClient.moduleManager.getModule(HUD.class);
-        final HotbarSettings HotbarSettings = FDPClient.moduleManager.getModule(HotbarSettings.class);
         final EntityPlayer entityplayer = (EntityPlayer) mc.getRenderViewEntity();
 
         float tabHope = mc.gameSettings.keyBindPlayerList.isKeyDown() ? 1f : 0f;
@@ -86,7 +87,7 @@ public abstract class MixinGuiInGame extends MixinGui {
         }
 
         if(MinecraftInstance.mc.getRenderViewEntity() instanceof EntityPlayer) {
-            String hotbarType = HotbarSettings.getHotbarValue().get();
+            String hotbarType = Objects.requireNonNull(Objects.requireNonNull(FDPClient.moduleManager.getModule(HotbarSettings.class)).getHotbarValue().get());
             Minecraft mc = Minecraft.getMinecraft();
             GlStateManager.resetColor();
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
@@ -98,8 +99,8 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.enableBlend();
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             if (hotbarType.equals("Minecraft")) {
-                this.drawTexturedModalRect( sr.getScaledWidth() / 2 - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
-                this.drawTexturedModalRect(((sr.getScaledWidth() / 2) - 91 + net.ccbluex.liquidbounce.features.module.modules.client.HotbarSettings.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20)) - 1, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
+                this.drawTexturedModalRect( (float) sr.getScaledWidth() / 2 - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
+                this.drawTexturedModalRect((((float) sr.getScaledWidth() / 2) - 91 + net.ccbluex.liquidbounce.features.module.modules.client.HotbarSettings.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20)) - 1, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
             }
             this.zLevel = f;
             RenderHelper.enableGUIStandardItemLighting();
@@ -117,25 +118,22 @@ public abstract class MixinGuiInGame extends MixinGui {
 
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
     private void renderPumpkinOverlay(final CallbackInfo callbackInfo) {
-        final VanillaTweaks camera = FDPClient.moduleManager.getModule(VanillaTweaks.class);
 
-        if(camera.getState() && camera.getPumpkinEffectValue().get())
+        if(Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getPumpkinEffectValue().get())
             callbackInfo.cancel();
     }
 
     @Inject(method = "renderBossHealth", at = @At("HEAD"), cancellable = true)
     private void renderBossHealth(CallbackInfo callbackInfo) {
-        final VanillaTweaks camera = FDPClient.moduleManager.getModule(VanillaTweaks.class);
-        if (camera.getState() && camera.getBossHealthValue().get())
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getBossHealthValue().get())
             callbackInfo.cancel();
     }
 
     @Inject(method = "showCrosshair", at = @At("HEAD"), cancellable = true)
     private void injectCrosshair(CallbackInfoReturnable<Boolean> cir) {
-        if (FDPClient.moduleManager.getModule(HUD.class).getState()) {
-            final HUD hud = FDPClient.moduleManager.getModule(HUD.class);
-            if (hud.getCrossHairValue().get()
-                || mc.gameSettings.thirdPersonView != 0 && hud.getNof5crossHair().get())
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(HUD.class)).getState()) {
+            if (Objects.requireNonNull(FDPClient.moduleManager.getModule(HUD.class)).getCrossHairValue().get()
+                || mc.gameSettings.thirdPersonView != 0 && Objects.requireNonNull(FDPClient.moduleManager.getModule(HUD.class)).getNof5crossHair().get())
                 cir.setReturnValue(false);
         }
     }

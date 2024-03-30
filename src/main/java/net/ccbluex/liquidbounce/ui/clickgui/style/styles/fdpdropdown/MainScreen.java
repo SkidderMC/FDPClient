@@ -75,7 +75,7 @@ public class MainScreen implements Screen {
         float x = category.getDrag().getX(), y = category.getDrag().getY();
         DrRenderUtils.drawRect2(x, y, rectWidth, categoryRectHeight, categoryRectColor);
         DrRenderUtils.setAlphaLimit(0);
-        Fonts.fontSFUIBOLD26.drawString(category.name(), x + 5, y + Fonts.fontSFUIBOLD26.getMiddleOfBox(categoryRectHeight), textColor);
+        Fonts.font32.drawString(category.name(), x + 5, y + Fonts.font32.getMiddleOfBox(categoryRectHeight), textColor);
 
        // String icon = category.icon;
         String l = "";

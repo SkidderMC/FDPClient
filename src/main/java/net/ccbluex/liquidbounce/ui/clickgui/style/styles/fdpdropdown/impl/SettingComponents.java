@@ -136,7 +136,8 @@ public class SettingComponents extends Component {
         Color[] colors;
         boolean accent = ClickGUIModule.INSTANCE.getColormode().get().equalsIgnoreCase("Color");
 
-        Color color2 = new Color(ClickGUIModule.generateColor().getRGB());
+        int index = 0;
+        Color color2 = new Color(ClickGUIModule.generateColor(index).getRGB());
         colors = new Color[]{color2, color2};
 
         Color accentedColor = DrRenderUtils.applyOpacity(colors[0], alphaAnimation / 255f);

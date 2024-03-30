@@ -14,26 +14,25 @@ import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.Stencil
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.roundToInt
 
 class RiseTH(inst: Targets) : TargetStyle("Rise", inst, true) {
-    override fun drawTarget(target: EntityLivingBase) {
+    override fun drawTarget(entity: EntityLivingBase) {
 
         val font = Fonts.font35
 
-        updateAnim(target.health)
+        updateAnim(entity.health)
 
-        val additionalWidth = ((font.getStringWidth(target.name) * 1.1).toInt().coerceAtLeast(70) + font.getStringWidth("Name: ") * 1.1 + 7.0).roundToInt()
+        val additionalWidth = ((font.getStringWidth(entity.name) * 1.1).toInt().coerceAtLeast(70) + font.getStringWidth("Name: ") * 1.1 + 7.0).roundToInt()
         val healthBarWidth = additionalWidth - (font.getStringWidth("20") * 1.15).roundToInt() - 16
         RenderUtils.drawRoundedCornerRect(0f, 0f, 50f + additionalWidth, 50f, 7f, Color(0, 0, 0, 130).rgb)
         //RenderUtils.drawShadow(2f, 2f, 48f + additionalWidth, 48f)
 
         // circle player avatar
-        val hurtPercent = target.hurtPercent
+        val hurtPercent = entity.hurtPercent
         val scale = if (hurtPercent == 0f) { 1f } else if (hurtPercent < 0.5f) {
             1 - (0.2f * hurtPercent * 2)
         } else {
@@ -44,12 +43,9 @@ class RiseTH(inst: Targets) : TargetStyle("Rise", inst, true) {
         //draw head
         GL11.glPushMatrix()
         GL11.glTranslatef(7f, 7f, 0f)
-        // 受伤的缩放效果
         GL11.glScalef(scale, scale, scale)
         GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        // 受伤的红色效果
         GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
-        // 绘制头部图片
         Stencil.write(false)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
         GL11.glEnable(GL11.GL_BLEND)
@@ -58,29 +54,35 @@ class RiseTH(inst: Targets) : TargetStyle("Rise", inst, true) {
         GL11.glDisable(GL11.GL_BLEND)
         GL11.glEnable(GL11.GL_TEXTURE_2D)
         Stencil.erase(true)
-        RenderUtils.drawHead(target.skin, 4, 4, 30, 30, 1) //playerInfo.locationSkin
+        RenderUtils.drawHead(entity.skin, 4, 4, 30, 30, 1) //playerInfo.locationSkin
         Stencil.dispose()
         GL11.glPopMatrix()
 
         // draw name
         GL11.glPushMatrix()
         GL11.glScalef(1.1f, 1.1f, 1.1f)
-        font.drawString("Name: ${target.name}", 45, 14, ClientTheme.getColorWithAlpha(0, fadeAlpha(255)).rgb)
+        font.drawString("Name: ${entity.name}", 45, 14, ClientTheme.getColorWithAlpha(0, fadeAlpha(255)).rgb)
         font.drawString("Name:", 45, 14, Color.WHITE.rgb)
         GL11.glPopMatrix()
 
         // draw health
         RenderUtils.drawRoundedCornerRect(50f, 31f, 50f + healthBarWidth , 39f, 3f, Color(20, 20, 20, 255).rgb)
-        RenderUtils.drawRoundedCornerRect(50f, 31f, 50f + (healthBarWidth * (easingHealth / target.maxHealth)) , 39f, 4f, ClientTheme.getColorWithAlpha(0, fadeAlpha(255)).rgb)
-        RenderUtils.drawRoundedCornerRect(52f, 31f, 48f + (healthBarWidth * (easingHealth / target.maxHealth)) , 34f, 2f, Color(255, 255, 255, 30).rgb)
-        RenderUtils.drawRoundedCornerRect(52f, 36f, 48f + (healthBarWidth * (easingHealth / target.maxHealth)) , 39f, 2f, Color(0, 0, 0, 30).rgb)
+        RenderUtils.drawRoundedCornerRect(50f, 31f, 50f + (healthBarWidth * (easingHealth / entity.maxHealth)) , 39f, 4f, ClientTheme.getColorWithAlpha(0, fadeAlpha(255)).rgb)
+        RenderUtils.drawRoundedCornerRect(52f, 31f, 48f + (healthBarWidth * (easingHealth / entity.maxHealth)) , 34f, 2f, Color(255, 255, 255, 30).rgb)
+        RenderUtils.drawRoundedCornerRect(52f, 36f, 48f + (healthBarWidth * (easingHealth / entity.maxHealth)) , 39f, 2f, Color(0, 0, 0, 30).rgb)
         GL11.glPushMatrix()
         GL11.glScalef(1.15f, 1.15f, 1.15f)
-        font.drawString(getHealth(target).roundToInt().toString(), ((38 + additionalWidth.toInt() - font.getStringWidth((getHealth(target) * 1.15).roundToInt().toString()).toInt()) / 1.15).roundToInt()   , 31 - (font.FONT_HEIGHT/2).toInt(), Color(115, 208, 255, 255).rgb)
+        font.drawString(getHealth(entity).roundToInt().toString(), ((38 + additionalWidth - font.getStringWidth((getHealth(entity) * 1.15).roundToInt().toString())) / 1.15).roundToInt()   , 31 - (font.FONT_HEIGHT/2), Color(115, 208, 255, 255).rgb)
         GL11.glPopMatrix()
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {
-        return Border(0F, 0F, 150F, 50F)
+        entity ?: return Border(0F, 0F, 50F, 50F)
+
+        val font = Fonts.font35
+
+        val additionalWidth = ((font.getStringWidth(entity.name) * 1.1).toInt().coerceAtLeast(70) + font.getStringWidth("Name: ") * 1.1 + 7.0).roundToInt()
+
+        return Border(0F, 0F, 50F + additionalWidth, 50F)
     }
 }

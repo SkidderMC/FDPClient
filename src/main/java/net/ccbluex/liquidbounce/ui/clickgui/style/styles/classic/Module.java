@@ -84,7 +84,8 @@ public class Module {
         }
 
         HUD hud = FDPClient.moduleManager.getModule(HUD.class);
-        Color colorHUD = ClickGUIModule.INSTANCE.generateColor();
+        int index = 0;
+        Color colorHUD = ClickGUIModule.generateColor(index);
         Color white = new Color(0xFFFFFF);
 
         if (colorHUD.getRed() > 220 && colorHUD.getBlue() > 220 && colorHUD.getGreen() > 220) {
@@ -216,7 +217,5 @@ public class Module {
         if (opened)
             return mouseX >= tab.getPosX() && mouseY >= y && mouseX <= tab.getPosX() + 101 && mouseY <= y + 14;
         return mouseX >= tab.getPosX() && mouseY >= y && mouseX <= tab.getPosX() + 101 && mouseY <= y + yPerModule;
-    }
-    private void update() {
     }
 }

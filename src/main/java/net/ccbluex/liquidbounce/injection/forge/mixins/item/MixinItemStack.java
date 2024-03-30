@@ -21,18 +21,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(ItemStack.class)
 public class MixinItemStack implements IItemStack {
     @Unique
-    private long itemDelay;
+    private long fDPClient$itemDelay;
     @Unique
-    private String cachedDisplayName;
+    private String fDPClient$cachedDisplayName;
 
     @Inject(method = "<init>(Lnet/minecraft/item/Item;IILnet/minecraft/nbt/NBTTagCompound;)V", at = @At("RETURN"))
     private void init(final CallbackInfo callbackInfo) {
-        this.itemDelay = System.currentTimeMillis();
+        this.fDPClient$itemDelay = System.currentTimeMillis();
     }
 
     @Override
     public long getItemDelay() {
-        return itemDelay;
+        return fDPClient$itemDelay;
     }
 
     @Redirect(
@@ -45,18 +45,18 @@ public class MixinItemStack implements IItemStack {
 
     @Inject(method = "getDisplayName", at = @At("HEAD"), cancellable = true)
     private void returnCachedDisplayName(CallbackInfoReturnable<String> cir) {
-        if (cachedDisplayName != null) {
-            cir.setReturnValue(cachedDisplayName);
+        if (fDPClient$cachedDisplayName != null) {
+            cir.setReturnValue(fDPClient$cachedDisplayName);
         }
     }
 
     @Inject(method = "getDisplayName", at = @At("RETURN"))
     private void cacheDisplayName(CallbackInfoReturnable<String> cir) {
-        cachedDisplayName = cir.getReturnValue();
+        fDPClient$cachedDisplayName = cir.getReturnValue();
     }
 
     @Inject(method = "setStackDisplayName", at = @At("HEAD"))
     private void resetCachedDisplayName(String displayName, CallbackInfoReturnable<ItemStack> cir) {
-        cachedDisplayName = null;
+        fDPClient$cachedDisplayName = null;
     }
 }

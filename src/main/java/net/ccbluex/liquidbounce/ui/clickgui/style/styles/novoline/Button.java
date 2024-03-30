@@ -79,11 +79,11 @@ public class Button {
         RenderUtils.drawRect(x - 5, y - 5 - 1, x + 85 + parent.allX, y + font.FONT_HEIGHT + 3 + 1,
                 hudcolorwithalpha());//Button Font List
         rticks++;
-
-        Color Ranbow = ClickGUIModule.INSTANCE.getColorRainbow().get() ? new Color(Color.HSBtoRGB(
+        int index = 0;
+        Color Ranbow = ClickGUIModule.INSTANCE.getClientColor().get() ? new Color(Color.HSBtoRGB(
                 (float) ((double) Minecraft.getMinecraft().thePlayer.ticksExisted / 50.0 + Math.sin((double) 0 / 50.0 * 1.6))
                         % 1.0f,
-                0.5f, 1.0f)) : ClickGUIModule.INSTANCE.generateColor();
+                0.5f, 1.0f)) : ClickGUIModule.generateColor(index);
         ValueButton.valuebackcolor = Ranbow.getRGB();
         if (!expand && size >= 1) {
             Fonts.font35.drawString("+", x + 75 + parent.allX, y - 1, -1);

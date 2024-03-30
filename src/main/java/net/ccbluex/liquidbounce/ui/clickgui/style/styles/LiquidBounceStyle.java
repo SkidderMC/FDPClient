@@ -64,7 +64,8 @@ public class LiquidBounceStyle extends Style {
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
-        int guiColor = ClickGUIModule.INSTANCE.generateColor().getRGB();
+        int index = 0;
+        int guiColor = ClickGUIModule.generateColor(index).getRGB();
         GlStateManager.resetColor();
         Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), (int) (moduleElement.getX() - (Fonts.font35.getStringWidth(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%",""))) - 100.0f) / 2.0f), moduleElement.getY() + 6, moduleElement.getModule().getState() ? guiColor : Integer.MAX_VALUE);
 

@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic.DropdownGUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.FDPDropdownClickGUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.novoline.ClickyUI
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.gui.options.modernuiLaunchOption
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -51,10 +52,10 @@ object ClickGUIModule : Module() {
 
     val scaleValue = FloatValue("Scale", 1f, 0.7f, 2f)
     val maxElementsValue = IntegerValue("MaxElements", 20, 1, 35)
-    var colorRainbow = BoolValue("Rainbow", true)
-    val colorRedValue = IntegerValue("R", 0, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
-    val colorGreenValue = IntegerValue("G", 160, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
-    val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !colorRainbow.get() } as IntegerValue
+    var clientColor = BoolValue("Client Color", true)
+    val colorRedValue = IntegerValue("R", 0, 0, 255).displayable { !clientColor.get() } as IntegerValue
+    val colorGreenValue = IntegerValue("G", 160, 0, 255).displayable { !clientColor.get() } as IntegerValue
+    val colorBlueValue = IntegerValue("B", 255, 0, 255).displayable { !clientColor.get() } as IntegerValue
     val fastRenderValue = BoolValue("FastRender", false)
     val getClosePrevious = BoolValue("ClosePrevious", false)
 
@@ -90,9 +91,9 @@ object ClickGUIModule : Module() {
     }
 
     @JvmStatic
-    fun generateColor(): Color {
-        return if (colorRainbow.get()) {
-            rainbow()
+    fun generateColor(index : Int) : Color {
+        return if (clientColor.get()) {
+            ClientTheme.getColor(index)
         } else {
             Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
         }

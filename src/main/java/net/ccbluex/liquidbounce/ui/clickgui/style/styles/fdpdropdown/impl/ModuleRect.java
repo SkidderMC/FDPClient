@@ -56,7 +56,8 @@ public class ModuleRect extends Component {
     public void drawScreen(int mouseX, int mouseY) {
         Color rectColor = new Color(43, 45, 50, alphaAnimation);
         Color textColor = new Color(255, 255, 255, alphaAnimation);
-        Color debcolor = new Color(ClickGUIModule.generateColor().getRGB());
+        int index = 0;
+        Color debcolor = new Color(ClickGUIModule.generateColor(index).getRGB());
 
         Color clickModColor = DrRenderUtils.applyOpacity(debcolor, alphaAnimation / 255f);
 

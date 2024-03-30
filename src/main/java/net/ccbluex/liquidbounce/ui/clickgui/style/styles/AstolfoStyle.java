@@ -28,6 +28,7 @@ import org.lwjgl.input.Mouse;
 
 import java.awt.*;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @SideOnly(Side.CLIENT)
@@ -55,7 +56,8 @@ public class AstolfoStyle extends Style {
         if (categoryName.equals("other")) {
             return new Color(244, 157, 19, 175);
         }
-        return ClickGUIModule.INSTANCE.generateColor();
+        int index = 0;
+        return ClickGUIModule.generateColor(index);
     }
 
     @Override
@@ -82,9 +84,10 @@ public class AstolfoStyle extends Style {
 
     @Override
     public void drawButtonElement(int mouseX, int mouseY, ButtonElement buttonElement) {
+        int index = 0;
         Gui.drawRect(buttonElement.getX() - 1, buttonElement.getY() + 1, buttonElement.getX() + buttonElement.getWidth() + 1,
                 buttonElement.getY() + buttonElement.getHeight() + 2, hoverColor(buttonElement.getColor() != Integer.MAX_VALUE
-                        ? ClickGUIModule.INSTANCE.generateColor() : new Color(26, 26, 26), buttonElement.hoverTime).getRGB());
+                        ? ClickGUIModule.generateColor(index) : new Color(26, 26, 26), buttonElement.hoverTime).getRGB());
 
         GlStateManager.resetColor();
         Fonts.font35.drawString(LanguageManager.INSTANCE.get(buttonElement.getDisplayName().replaceAll("%","")), buttonElement.getX() + 3,
@@ -93,13 +96,14 @@ public class AstolfoStyle extends Style {
 
     @Override
     public void drawModuleElement(int mouseX, int mouseY, ModuleElement moduleElement) {
+        int index = 0;
         Gui.drawRect(moduleElement.getX() + 1, moduleElement.getY() + 1, moduleElement.getX() + moduleElement.getWidth() - 1,
                 moduleElement.getY() + moduleElement.getHeight() + 2, hoverColor(new Color(26, 26, 26), moduleElement.hoverTime).getRGB());
         Gui.drawRect(moduleElement.getX() + 1, moduleElement.getY() + 1, moduleElement.getX()
                 + moduleElement.getWidth() - 1, moduleElement.getY() + moduleElement.getHeight() + 2, hoverColor(
                 new Color(getCategoryColor(moduleElement.getModule().getCategory().name()).getRed(), getCategoryColor(moduleElement.getModule().getCategory().name()).getGreen(), getCategoryColor(moduleElement.getModule().getCategory().name()).getBlue(), moduleElement.slowlyFade), moduleElement.hoverTime).getRGB());
 
-        final int guiColor = ClickGUIModule.INSTANCE.generateColor().getRGB();
+        final int guiColor = ClickGUIModule.generateColor(index).getRGB();
 
         GlStateManager.resetColor();
         Fonts.font35.drawString(LanguageManager.INSTANCE.get(moduleElement.getDisplayName().replaceAll("%","")), moduleElement.getX() + 3,
@@ -343,7 +347,7 @@ public class AstolfoStyle extends Style {
 
     private BigDecimal round(final float f) {
         BigDecimal bd = new BigDecimal(Float.toString(f));
-        bd = bd.setScale(2, 4);
+        bd = bd.setScale(2, RoundingMode.HALF_UP);
         return bd;
     }
 

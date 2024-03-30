@@ -138,7 +138,8 @@ public class SideGui extends GuiPanel {
             hoverAnimation.setDirection(hovered ? Direction.FORWARDS : Direction.BACKWARDS);
             enableAnimation.setDirection(currentCategory.equals(category) ? Direction.FORWARDS : Direction.BACKWARDS);
 
-            Color color22 = new Color(ClickGUIModule.generateColor().getRGB());
+            int index = 0;
+            Color color22 = new Color(ClickGUIModule.generateColor(index).getRGB());
             Color categoryColor = new Color(45, 45, 45, alpha);
             Color hoverColor = DrRenderUtils.interpolateColorC(categoryColor, DrRenderUtils.brighter(categoryColor, .8f), (float) hoverAnimation.getOutput());
             Color finalColor = DrRenderUtils.interpolateColorC(hoverColor, DrRenderUtils.applyOpacity(color22, alpha / 255f), (float) enableAnimation.getOutput());
@@ -167,9 +168,10 @@ public class SideGui extends GuiPanel {
         DrRenderUtils.drawGradientRect2(x + 20, y + 51, rectWidth - 40, 8, new Color(0, 0, 0, (int) (60 * (alpha / 255f))).getRGB(), new Color(0, 0, 0, 0).getRGB());
 
         DrRenderUtils.setAlphaLimit(0);
+        int index = 0;
         DrRenderUtils.drawGradientRectSideways2(sr.getScaledWidth() - 40, 0, 40, sr.getScaledHeight(),
-                DrRenderUtils.applyOpacity(ClickGUIModule.generateColor().getRGB(), 0),
-                DrRenderUtils.applyOpacity(ClickGUIModule.generateColor().getRGB(), (float) (.4 * moveOverGradientAnimation.getOutput())));
+                DrRenderUtils.applyOpacity(ClickGUIModule.generateColor(index).getRGB(), 0),
+                DrRenderUtils.applyOpacity(ClickGUIModule.generateColor(index).getRGB(), (float) (.4 * moveOverGradientAnimation.getOutput())));
 
         DrRenderUtils.setAlphaLimit(1);
     }

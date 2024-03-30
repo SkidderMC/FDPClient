@@ -74,7 +74,8 @@ public class NewUi extends GuiScreen {
 
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         // will draw reduced ver once it gets under 1140x780.
-        drawFullSized(mouseX, mouseY, partialTicks, ClickGUIModule.INSTANCE.generateColor());
+        int index = 0;
+        drawFullSized(mouseX, mouseY, partialTicks, ClickGUIModule.generateColor(index));
     }
 
     private void drawFullSized(int mouseX, int mouseY, float partialTicks, Color accentColor) {

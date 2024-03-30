@@ -27,7 +27,6 @@ public class TransformerLoader implements IFMLLoadingPlugin {
     /**
      * Return a list of classes that implements the IClassTransformer interface
      *
-     * @return a list of classes that implements the IClassTransformer interface
      */
     @Override
     public String[] getASMTransformerClass() {
@@ -68,7 +67,6 @@ public class TransformerLoader implements IFMLLoadingPlugin {
      * "coremodList" : the list of coremods
      * "coremodLocation" : the file this coremod loaded from,
      *
-     * @param data
      */
     @Override
     public void injectData(Map<String, Object> data) {

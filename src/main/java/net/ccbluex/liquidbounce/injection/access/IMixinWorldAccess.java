@@ -9,5 +9,5 @@ public interface IMixinWorldAccess {
 
     void markBlockForUpdate(int var1, int var2, int var3);
 
-    void notifyLightSet(int var1, int var2, int var3);
+    void fDPClient$notifyLightSet(int var1, int var2, int var3);
 }

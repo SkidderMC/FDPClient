@@ -5,19 +5,23 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.ui.gui.menu.GuiMainMenu;
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiGameOver;
-import net.minecraft.client.gui.GuiYesNo;
-import net.minecraft.client.gui.GuiYesNoCallback;
+import net.minecraft.client.gui.*;
 import net.minecraft.client.resources.I18n;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GuiGameOver.class)
 public abstract class MixinGuiGameOver extends MixinGuiScreen implements GuiYesNoCallback {
+    @Shadow
+    public int enableButtonsTimer;
+    @Inject(method = "initGui", at = @At("HEAD"))
+    private void allowClickable(CallbackInfo ci) {
+        this.enableButtonsTimer = 0;
+    }
+
     @Inject(method = "actionPerformed", at = @At("HEAD"))
     public void actionPerformed(GuiButton button, CallbackInfo callbackInfo) {
         switch (button.id) {

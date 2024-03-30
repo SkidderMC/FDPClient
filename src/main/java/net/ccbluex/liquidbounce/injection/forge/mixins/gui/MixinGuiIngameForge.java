@@ -24,11 +24,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class MixinGuiIngameForge extends MixinGuiInGame {
 
     /**
-     * The X scale.
-     */
-    public float xScale = 0F;
-
-    /**
      * Pre boolean.
      *
      * @param type the type
