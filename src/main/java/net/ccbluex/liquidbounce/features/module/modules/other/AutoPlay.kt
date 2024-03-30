@@ -148,7 +148,7 @@ object AutoPlay : Module() {
                     if (text.contains("Jugar de nuevo", true)) {
                         queueAutoPlay {
                             when (unimode.get()) {
-                                "SW-TSW" -> {
+                                "SkyWars" -> {
                                     mc.thePlayer.sendChatMessage("/skywars random")
                                 }
                                 "Bedwars" -> {
