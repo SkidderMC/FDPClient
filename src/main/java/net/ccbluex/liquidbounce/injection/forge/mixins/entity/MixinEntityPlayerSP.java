@@ -433,11 +433,11 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         this.movementInput.updatePlayerMoveState();
 
         movingStat = Math.abs(this.movementInput.moveForward) > 0.05f || Math.abs(this.movementInput.moveStrafe) > 0.05f;
-        runStrictStrafe = Objects.requireNonNull(FDPClient.moduleManager.getModule(StrafeFix.class)).getDoFix() && !Objects.requireNonNull(FDPClient.moduleManager.getModule(StrafeFix.class)).getSilentFix();
+        runStrictStrafe = Objects.requireNonNull(strafeFix).getDoFix() && !Objects.requireNonNull(strafeFix).getSilentFix();
         noStrafe = RotationUtils.targetRotation == null || !Objects.requireNonNull(FDPClient.moduleManager.getModule(StrafeFix.class)).getDoFix();
         
-        isCurrentUsingItem = getHeldItem() != null && (this.isUsingItem() || (getHeldItem().getItem() instanceof ItemSword && Objects.requireNonNull(FDPClient.moduleManager.getModule(KillAura.class)).getBlockingStatus())) && this.isRiding();
-        isCurrentUsingSword = getHeldItem() != null && getHeldItem().getItem() instanceof ItemSword && ((Objects.requireNonNull(FDPClient.moduleManager.getModule(KillAura.class))).getBlockingStatus() || this.isUsingItem());
+        isCurrentUsingItem = getHeldItem() != null && (this.isUsingItem() || (getHeldItem().getItem() instanceof ItemSword && Objects.requireNonNull(killAura).getBlockingStatus())) && this.isRiding();
+        isCurrentUsingSword = getHeldItem() != null && getHeldItem().getItem() instanceof ItemSword && ((Objects.requireNonNull(killAura)).getBlockingStatus() || this.isUsingItem());
 
         if (isCurrentUsingItem) {
             final SlowDownEvent slowDownEvent = new SlowDownEvent(0.2F, 0.2F);
