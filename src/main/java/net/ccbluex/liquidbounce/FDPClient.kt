@@ -47,11 +47,13 @@ object FDPClient {
     const val CLIENT_DEV = "Zywl, 1zuna, Yuugiri, Dg636, gatodepan, DinoFeng, Co`Dynamic. by (SkidderMC & CCBlueX - TEAM)"
     const val CLIENT_WEBSITE = "https://fdpinfo.github.io"
     const val CLIENT_DISCORD = "https://discord.gg/3XRFGeqEYD"
-    const val CLIENT_VERSION = "v5.6.0 (IN DEV)"
+    const val CLIENT_VERSION = "v5.6.0"
+    const val CLIENT_HUDMSG = ""
 
     var USER_NAME = ""
 
     // Flags
+    var isInDev = true
     var isStarting = true
     var isLoadingConfig = true
     private var latest = ""
@@ -85,6 +87,7 @@ object FDPClient {
 
     // Discord RPC
     lateinit var discordRPC: DiscordRPC
+
 
     // Menu Background
     var background: ResourceLocation? = ResourceLocation("fdpclient/gui/design/background.png")

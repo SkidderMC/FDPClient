@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client.button
 
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
@@ -125,7 +125,7 @@ class BetterButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
                 )
             }
             GL11.glPopMatrix()
-            if (HUD.buttonShadowValue.equals(true)) shadowRenderUtils.drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f)
+            if (HUDModule.buttonShadowValue.equals(true)) shadowRenderUtils.drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f)
         }
     }
 }

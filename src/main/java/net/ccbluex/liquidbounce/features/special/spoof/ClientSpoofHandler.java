@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.Listenable;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.ClientSpoof;
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
@@ -62,7 +62,7 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
                     RotationUtils.Companion.reset();
                 }
             } else {
-                if (Objects.requireNonNull(FDPClient.moduleManager.getModule(HUD.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(HUD.class)).getTpDebugValue().get())
+                if (Objects.requireNonNull(FDPClient.moduleManager.getModule(HUDModule.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(HUDModule.class)).getTpDebugValue().get())
                     ClientUtils.INSTANCE.displayChatMessage(FDPClient.CLIENT_CHAT + "tp");
                 flagTicks = 1;
                 flagged = false;

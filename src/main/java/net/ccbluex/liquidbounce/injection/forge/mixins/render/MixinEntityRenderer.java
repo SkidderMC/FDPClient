@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 import com.google.common.base.Predicates;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.HurtCam;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;
 import net.ccbluex.liquidbounce.features.module.modules.combat.LegitAura;
@@ -454,7 +454,7 @@ public abstract class MixinEntityRenderer {
      */
     @Overwrite
     private void orientCamera(float partialTicks) {
-        HUD hud = FDPClient.moduleManager.getModule(HUD.class);
+        HUDModule hud = FDPClient.moduleManager.getModule(HUDModule.class);
         Entity entity = this.mc.getRenderViewEntity();
         float f = entity.getEyeHeight();
         double d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) partialTicks;

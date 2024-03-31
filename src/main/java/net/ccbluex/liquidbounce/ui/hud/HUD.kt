@@ -5,7 +5,11 @@
  */
 package net.ccbluex.liquidbounce.ui.hud
 
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_VERSION
+import net.ccbluex.liquidbounce.FDPClient.isInDev
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.hud.element.Element
 import net.ccbluex.liquidbounce.ui.hud.element.elements.*
@@ -31,11 +35,40 @@ open class HUD : MinecraftInstance() {
          * Create default HUD
          */
         fun createDefault(): HUD {
+            val text1 = Text(x = 7.63, y = 5.42)
+            text1.displayString.set("$CLIENT_NAME")
+            text1.shadow.set(true)
+            text1.getColor(1)
+            text1.rectValue.set("None")
+            text1.fontValue.set(Fonts.minecraftFont)
+            text1.scale = 1.55F
+
+            val text2 = Text(x = 88.44, y = 16.24)
+            text2.displayString.set("$CLIENT_VERSION")
+            text2.shadow.set(true)
+            text2.getColor(1)
+            text2.rectValue.set("None")
+            text2.fontValue.set(Fonts.font32)
+            text2.scale = 0.95F
+
+            val text3 = Text(x = 12.11, y = 26.79)
+            if (isInDev) {
+                text3.displayString.set("Development Build")
+            } else {
+                text3.displayString.set("by Zywl, Dg636 and vPrah")
+            }
+            text3.shadow.set(true)
+            text3.getColor(1)
+            text3.rectValue.set("None")
+            text3.fontValue.set(Fonts.minecraftFont)
+            text3.scale = 0.90F
 
             return HUD()
+                .addElement(text1)
+                .addElement(text2)
+                .addElement(text3)
                 .addElement(Arraylist())
                 .addElement(ScoreboardElement())
-                .addElement(Armor())
                 .addElement(Notifications())
                 .addElement(Targets())
         }

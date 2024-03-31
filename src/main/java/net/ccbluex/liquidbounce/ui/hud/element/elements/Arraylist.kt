@@ -32,20 +32,20 @@ import java.awt.Color
  */
 @ElementInfo(name = "Arraylist", single = true, blur = true)
 class Arraylist(
-    x: Double = -0.0,
-    y: Double = 0.0,
+    x: Double = 5.0,
+    y: Double = 3.0,
     scale: Float = 1F,
     side: Side = Side(Horizontal.RIGHT, Vertical.UP)
 ) : Element(x, y, scale, side) {
 
     private val colorDisplay = BoolValue("Color Options:", true)
     val colorRedValue = IntegerValue("Text-R", 0, 0, 255).displayable { colorDisplay.get() }
-    val colorGreenValue = IntegerValue("Text-G", 111, 0, 255).displayable { colorDisplay.get() }
-    val colorBlueValue = IntegerValue("Text-B", 255, 0, 255).displayable { colorDisplay.get() }
+    val colorGreenValue = IntegerValue("Text-G", 0, 0, 255).displayable { colorDisplay.get() }
+    val colorBlueValue = IntegerValue("Text-B", 0, 0, 255).displayable { colorDisplay.get() }
 
     // Tag settings
     private val tagValue = BoolValue("Tags", true)
-    private val tagsStyleValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", "->", "Space"), "Space").displayable { tagValue.get() }
+    private val tagsStyleValue = ListValue("TagsStyle", arrayOf("-", "|", "()", "[]", "<>", "->", "Space"), "[]").displayable { tagValue.get() }
 
     // Options Text
     private val orderValue = ListValue("Order", arrayOf("ABC", "Distance"), "Distance")
@@ -58,18 +58,18 @@ class Arraylist(
     private val textYValue = FloatValue("TextY", 1F, 0F, 20F)
 
     // Background color settings
-    private val backgroundValue = IntegerValue("Background", 155, 0, 255)
+    private val backgroundValue = IntegerValue("Background", 104, 0, 255)
 
     // React settings
     private val rectDisplay = BoolValue("Rect Options:", true)
-    private val rectRightValue = ListValue("Rect-Right", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "Right").displayable { rectDisplay.get() }
+    private val rectRightValue = ListValue("Rect-Right", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "None").displayable { rectDisplay.get() }
     private val rectLeftValue = ListValue("Rect-Left", arrayOf("None", "Left", "Right"), "None").displayable { rectDisplay.get() }
-    private val roundStrength = FloatValue("Rounded-Strength", 0F, 0F, 2F).displayable { rectDisplay.get() }
+    private val roundStrength = FloatValue("Rounded-Strength", 0.57F, 0F, 2F).displayable { rectDisplay.get() }
 
     // Shadow Options
     private val shadowShaderValue = BoolValue("Shadow", true)
-    private val shadowNoCutValue = BoolValue("Shadow-NoCut", true).displayable { shadowShaderValue.get() }
-    private val shadowStrength = IntegerValue("Shadow-Strength", 1, 1, 30).displayable { shadowShaderValue.get() }
+    private val shadowNoCutValue = BoolValue("Shadow-NoCut", false).displayable { shadowShaderValue.get() }
+    private val shadowStrength = IntegerValue("Shadow-Strength", 30, 1, 40).displayable { shadowShaderValue.get() }
     private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Text", "Custom"), "Text").displayable { shadowShaderValue.get() }
     private val shadowColorRedValue = IntegerValue("Shadow-Red", 0, 0, 255).displayable{ shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) }
     private val shadowColorGreenValue = IntegerValue("Shadow-Green", 111, 0, 255).displayable{ shadowShaderValue.get() && shadowColorMode.get().equals("custom", true) }
@@ -79,7 +79,7 @@ class Arraylist(
     private val verticalAnimation = ListValue("Vertical-Animation", arrayOf("None", "Delta", "Slide", "Low", "Fast"), "None")
     private val animationSpeed = FloatValue("Animation-Speed", 0.25F, 0.01F, 1F)
     companion object {
-        val fontValue = FontValue("Font", Fonts.fontSFUI37)
+        val fontValue = FontValue("Font", Fonts.minecraftFont)
     }
     private var x2 = 0
     private var y2 = 0F

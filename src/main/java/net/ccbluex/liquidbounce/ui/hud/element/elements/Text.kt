@@ -52,8 +52,8 @@ class Text(
     val displayString = TextValue("DisplayText", "")
     private val shadowValue = BoolValue("Shadow", false)
     private val shadowStrength = FloatValue("Shadow-Strength", 1F, 0.01F, 8F).displayable { shadowValue.get() }
-    private val shadow = BoolValue("TextShadow", false)
-    private val fontValue = FontValue("Font", Fonts.font40)
+    val shadow = BoolValue("TextShadow", false)
+    val fontValue = FontValue("Font", Fonts.font40)
     val rectValue = ListValue("Rect", arrayOf("Normal", "RNormal", "OneTap", "Skeet", "Rounded", "None"), "None")
     private val rectExpandValue = FloatValue("RectExpand", 0.3F, 0F, 1F)
     private val rectRoundValue = FloatValue("RectRoundingMultiplier", 1.5F, 0.1F, 4F)

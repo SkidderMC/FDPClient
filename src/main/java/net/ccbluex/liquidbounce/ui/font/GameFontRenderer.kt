@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.ui.font
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.TextEvent
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
@@ -91,11 +91,11 @@ class GameFontRenderer(font: Font) : FontRenderer(
 
         if (shadow) {
             when {
-                HUD.shadowValue.get().equals("Normal", ignoreCase = true) ->    drawText(currentText, x + 1f, currY + 1f, Color(20, 20, 20, 200).rgb, true)
-                HUD.shadowValue.get().equals("LiquidBounce", ignoreCase = true) -> drawText(currentText, x + 1f, currY + 1f, Color(0, 0, 0, 150).rgb, true)
-                HUD.shadowValue.get().equals("Default", ignoreCase = true) -> drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
-                HUD.shadowValue.get().equals("Autumn", ignoreCase = true) -> drawText(currentText, x + 1f, currY + 1f, Color(20, 20, 20, 200).rgb, true)
-                HUD.shadowValue.get().equals("Outline", ignoreCase = true) -> {
+                HUDModule.shadowValue.get().equals("Normal", ignoreCase = true) ->    drawText(currentText, x + 1f, currY + 1f, Color(20, 20, 20, 200).rgb, true)
+                HUDModule.shadowValue.get().equals("LiquidBounce", ignoreCase = true) -> drawText(currentText, x + 1f, currY + 1f, Color(0, 0, 0, 150).rgb, true)
+                HUDModule.shadowValue.get().equals("Default", ignoreCase = true) -> drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
+                HUDModule.shadowValue.get().equals("Autumn", ignoreCase = true) -> drawText(currentText, x + 1f, currY + 1f, Color(20, 20, 20, 200).rgb, true)
+                HUDModule.shadowValue.get().equals("Outline", ignoreCase = true) -> {
                     drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
                     drawText(currentText, x - 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
                     drawText(currentText, x + 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)

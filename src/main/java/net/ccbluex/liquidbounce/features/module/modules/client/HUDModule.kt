@@ -48,10 +48,10 @@ import kotlin.math.max
 import kotlin.math.min
 
 @ModuleInfo(name = "HUD", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
-object HUD : Module() {
+object HUDModule : Module() {
 
     // WaterMark
-    private val waterMark = BoolValue("Watermark", true)
+    private val waterMark = BoolValue("Watermark", false)
     val modeValue = ListValue("Watermark-Mode", arrayOf("FDPCLIENT", "Classic", "FDP", "Blur", "Clean", "Zywl", "ZAVZ", "Slide"), "FDPCLIENT").displayable { waterMark.get() }
     private val colorModeValue = ListValue("Color", arrayOf("Custom", "Health", "Theme"), "Health").displayable { waterMark.get() }
 

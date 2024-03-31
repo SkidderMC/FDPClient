@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic;
 import lombok.Getter;
 import net.ccbluex.liquidbounce.FDPClient;
 
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -83,7 +83,7 @@ public class Module {
             }
         }
 
-        HUD hud = FDPClient.moduleManager.getModule(HUD.class);
+        HUDModule hud = FDPClient.moduleManager.getModule(HUDModule.class);
         int index = 0;
         Color colorHUD = ClickGUIModule.generateColor(index);
         Color white = new Color(0xFFFFFF);

@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
-import net.ccbluex.liquidbounce.features.module.modules.client.HUD;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.HotbarSettings;
 import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
@@ -64,7 +64,7 @@ public abstract class MixinGuiInGame extends MixinGui {
 
     @Inject(method = "renderScoreboard", at = @At("HEAD"), cancellable = true)
     private void renderScoreboard(CallbackInfo callbackInfo) {
-        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(HUD.class)).getState())
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(HUDModule.class)).getState())
             callbackInfo.cancel();
     }
 
@@ -131,9 +131,9 @@ public abstract class MixinGuiInGame extends MixinGui {
 
     @Inject(method = "showCrosshair", at = @At("HEAD"), cancellable = true)
     private void injectCrosshair(CallbackInfoReturnable<Boolean> cir) {
-        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(HUD.class)).getState()) {
-            if (Objects.requireNonNull(FDPClient.moduleManager.getModule(HUD.class)).getCrossHairValue().get()
-                || mc.gameSettings.thirdPersonView != 0 && Objects.requireNonNull(FDPClient.moduleManager.getModule(HUD.class)).getNof5crossHair().get())
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(HUDModule.class)).getState()) {
+            if (Objects.requireNonNull(FDPClient.moduleManager.getModule(HUDModule.class)).getCrossHairValue().get()
+                || mc.gameSettings.thirdPersonView != 0 && Objects.requireNonNull(FDPClient.moduleManager.getModule(HUDModule.class)).getNof5crossHair().get())
                 cir.setReturnValue(false);
         }
     }
