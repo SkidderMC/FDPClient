@@ -145,7 +145,6 @@ public class SettingComponents extends Component {
 
         double count = 0;
 
-        //
         for (Value setting : module.getValues()) {
             if (!setting.getDisplayable())
                 continue;
@@ -382,7 +381,7 @@ public class SettingComponents extends Component {
                 boolean hoveringModeSettingRect = isClickable(settingY + 5) &&
                         DrRenderUtils.isHovering(x + 5, settingY + 5, width - 10, rectHeight + 7, mouseX, mouseY);
 
-                if (type == GuiEvents.CLICK && hoveringModeSettingRect && button == 1) {
+                if (type == GuiEvents.CLICK && hoveringModeSettingRect && (button == 1 || button == 0)) {
                     modeSettingClick.put(modeSetting, !modeSettingClick.get(modeSetting));
                 }
 
@@ -404,7 +403,6 @@ public class SettingComponents extends Component {
                     float modeY = (float) (settingY + rectHeight + 11 + ((8 + (modeCount * rectHeight)) * openAnimation.getOutput()));
                     DrRenderUtils.resetColor();
 
-                    //指针所指的String
                     boolean hoveringMode = isClickable(modeY - 5) && openAnimation.getDirection().equals(Direction.FORWARDS) &&
                             DrRenderUtils.isHovering(x + 5, modeY - 5, width - 10, rectHeight, mouseX, mouseY);
                     Animation modeHoverAnimation = modesHoverAnimation.get(modeSetting).get(mode);
@@ -424,11 +422,8 @@ public class SettingComponents extends Component {
                         modeSetting.set(mode);
                     }
                     if (openAnimation.isDone() && openAnimation.getDirection().equals(Direction.FORWARDS) || !openAnimation.isDone()) {
-                        //      RoundedUtil.drawRound(x + 5 + ((width - 10) / 2f - selectRectWidth / 2f), settingY + rectHeight + 10.5f,
-                        //    Math.max(2, selectRectWidth), 1.5f, .5f, accent ? accentedColor2 : textColor);
                         Fonts.fontSFUI32.drawString(mode, x + 13, modeY,DrRenderUtils.applyOpacity(textColor, (float) openAnimation.getOutput()).getRGB());
                     }
-                    //   Fonts.SF.SF_18.SF_18.drawString(mode, x + 13, modeY,DrRenderUtils.applyOpacity(textColor, (float) openAnimation.getOutput()).getRGB());
                     modeCount++;
                 }
                 if (!openAnimation.isDone() && type == GuiEvents.DRAW) {
@@ -446,19 +441,17 @@ public class SettingComponents extends Component {
 
 
                 float selectRectWidth = (float) ((width - 10) * openAnimation.getOutput());
-                // DrRenderUtils.renderRoundedRect(x + 5, settingY + rectHeight + 7, width - 10, 2, .5f, disabledTextColor.getRGB());
                 if (openAnimation.isDone() && openAnimation.getDirection().equals(Direction.FORWARDS) || !openAnimation.isDone()) {
                     RoundedUtil.drawRound(x + 5 + ((width - 10) / 2f - selectRectWidth / 2f), settingY + rectHeight + 10.5f,
                             Math.max(2, selectRectWidth), 1.5f, .5f, accent ? accentedColor2 : textColor);
-                    //   Fonts.SF.SF_18.SF_18.drawString(mode, x + 13, modeY,DrRenderUtils.applyOpacity(textColor, (float) openAnimation.getOutput()).getRGB());
                 }
 
-                //Mode的名字
+
                 // SF14
                 Fonts.fontSFUI32.drawString(modeSetting.getName(), x + 13, settingY + 9, textColor.getRGB());
 
                 DrRenderUtils.resetColor();
-                //当先选择的mode
+
                 //SF BOLD 18
                 Fonts.fontSFUI32.drawString(modeSetting.get(), x + 13, (float) (settingY + 17.5), textColor.getRGB());
 
@@ -535,7 +528,6 @@ public class SettingComponents extends Component {
             count++;
         }
         settingSize = count;
-        // settingSize = count;
     }
 
 

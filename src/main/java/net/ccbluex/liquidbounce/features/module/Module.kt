@@ -50,6 +50,7 @@ open class Module : MinecraftInstance(), Listenable {
                 FDPClient.configManager.smartSave()
             }
         }
+
     val canEnable: Boolean
     var autoDisable: EnumAutoDisableType
     var triggerType: EnumTriggerType

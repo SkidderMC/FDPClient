@@ -20,6 +20,9 @@ class MSTimer {
         return System.currentTimeMillis() - time
     }
 
+    fun zero() {
+        time = -1L
+    }
     fun reset() {
         time = System.currentTimeMillis()
     }

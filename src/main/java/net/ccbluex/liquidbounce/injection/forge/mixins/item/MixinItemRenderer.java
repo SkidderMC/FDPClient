@@ -189,10 +189,10 @@ public abstract class MixinItemRenderer {
                         this.transformFirstPersonItem(f, f1);
                         break;
                     case BLOCK:
-                        GL11.glTranslated(fDPClient$animations.getTranslateXValue().get(), fDPClient$animations.getTranslateYValue().get(), fDPClient$animations.getTranslateZValue().get());
                         GlStateManager.rotate(fDPClient$animations.getRotateXValue().get(), 1.0F, 0.0F, 0.0F);
                         GlStateManager.rotate(fDPClient$animations.getRotateYValue().get(), 0.0F, 1.0F, 0.0F);
                         GlStateManager.rotate(fDPClient$animations.getRotateZValue().get(), 0.0F, 0.0F, 1.0F);
+                        GL11.glTranslated(fDPClient$animations.getTranslateXValue().get(), fDPClient$animations.getTranslateYValue().get(), fDPClient$animations.getTranslateZValue().get());
                         switch (fDPClient$animations.getBlockingModeValue().get()) {
                             case "1.7": {
                                 transformFirstPersonItem(f, f1);

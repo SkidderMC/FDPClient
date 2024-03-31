@@ -213,10 +213,10 @@ object LegitScaffold : Module() {
                 }
 
                 if (rpitch == 75.0) {
-                    playerRot = Rotation(camYaw - 135, rpitch.toFloat())
+                    playerRot = Rotation(((camYaw / 45).roundToInt() * 45f) - 135, rpitch.toFloat())
                     correctControls(3)
                 } else {
-                    playerRot = Rotation(camYaw - 180, rpitch.toFloat())
+                    playerRot = Rotation(((camYaw / 45).roundToInt() * 45f) - 180, rpitch.toFloat())
                     correctControls(1)
                 }
 
