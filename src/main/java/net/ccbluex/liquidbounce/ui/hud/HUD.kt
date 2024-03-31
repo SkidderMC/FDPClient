@@ -52,11 +52,7 @@ open class HUD : MinecraftInstance() {
             text2.scale = 0.95F
 
             val text3 = Text(x = 12.11, y = 26.79)
-            if (isInDev) {
-                text3.displayString.set("Development Build")
-            } else {
-                text3.displayString.set("by Zywl, Dg636 and vPrah")
-            }
+            if (isInDev) { text3.displayString.set("Development Build") } else { text3.displayString.set("by Zywl, Dg636 and vPrah") }
             text3.shadow.set(true)
             text3.getColor(1)
             text3.rectValue.set("None")
