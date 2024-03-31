@@ -10,6 +10,7 @@ import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.config.FileConfig
 import net.ccbluex.liquidbounce.config.FileManager
+import net.ccbluex.liquidbounce.features.module.modules.client.IRCModule
 import net.ccbluex.liquidbounce.handler.network.AutoReconnect
 import net.ccbluex.liquidbounce.handler.network.ClientFixes
 import net.ccbluex.liquidbounce.ui.gui.altmanager.GuiAltManager
@@ -45,6 +46,23 @@ class SpecialConfig(file: File) : FileConfig(file) {
             FDPClient.USER_NAME = json.get("client-user").asString
         }
 
+        // IRC
+
+        if (json.has("irc")) {
+            val ircJson = json.getAsJsonObject("irc")
+
+            ircJson.has("API-Key")
+        }
+
+        if (json.has("liquidchat")) {
+            val liquidChatJson = json.getAsJsonObject("liquidchat")
+
+            if (liquidChatJson.has("token")) {
+                IRCModule.jwtToken
+                (liquidChatJson.get("token").asString)
+            }
+        }
+
         if (json.has("anti-forge")) {
             val jsonValue = json.getAsJsonObject("anti-forge")
 
@@ -77,6 +95,10 @@ class SpecialConfig(file: File) : FileConfig(file) {
         json.addProperty("alt-field", GuiAltManager.randomAltField.text)
         json.addProperty("client-user", FDPClient.USER_NAME)
         json.addProperty("use-glyph-fontrenderer", useGlyphFontRenderer)
+
+        val liquidChatObject = JsonObject()
+        liquidChatObject.addProperty("token", IRCModule.jwtToken)
+        json.add("liquidchat", liquidChatObject)
 
         val antiForgeJson = JsonObject()
         antiForgeJson.addProperty("enable", ClientFixes.enabled)

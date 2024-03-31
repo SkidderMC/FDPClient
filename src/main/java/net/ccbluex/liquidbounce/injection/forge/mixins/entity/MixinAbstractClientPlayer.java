@@ -27,7 +27,6 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
         if(!getUniqueID().equals(Minecraft.getMinecraft().thePlayer.getUniqueID()))
             return;
 
-
         if(GuiCapeManager.INSTANCE.getNowCape()!=null)
             callbackInfoReturnable.setReturnValue(GuiCapeManager.INSTANCE.getNowCape().getCape());
     }
