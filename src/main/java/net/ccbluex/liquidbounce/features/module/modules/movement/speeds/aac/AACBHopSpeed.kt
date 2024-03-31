@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.aac
 
+import net.ccbluex.liquidbounce.event.EventState
+import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.ListValue
@@ -14,13 +16,17 @@ import kotlin.math.sin
 
 class AACBHopSpeed : SpeedMode("AACBHop") {
     
-    private val bypassMode = ListValue("BhopMode", arrayOf("AAC", "AAC2", "AAC4", "AAC6", "AAC7", "LowHop2", "LowHop3"), "AAC")
+    private val bypassMode = ListValue("BhopMode", arrayOf("AAC", "AAC3.5.0", "AAC2", "AAC4", "AAC6", "AAC7", "LowHop2", "LowHop3"), "AAC")
                                                            
     private var legitHop = true
     private var waitForGround = false
                                                            
     override fun onEnable() {
         legitHop = true
+        if (bypassMode.equals("AAC3.5.0") && mc.thePlayer.onGround) {
+            mc.thePlayer.motionZ = 0.0
+            mc.thePlayer.motionX = mc.thePlayer.motionZ
+        }
     }
     
     override fun onPreMotion() {
@@ -177,8 +183,30 @@ class AACBHopSpeed : SpeedMode("AACBHop") {
         }
     }
 
+    override fun onMotion(event: MotionEvent) {
+        when (bypassMode.get()) {
+            "AAC3.5.0" -> {
+                if (event.eventState === EventState.POST && MovementUtils.isMoving() && !mc.thePlayer.isInWater && !mc.thePlayer.isInLava) {
+                    mc.thePlayer.jumpMovementFactor += 0.00208f
+                    if (mc.thePlayer.fallDistance <= 1f) {
+                        if (mc.thePlayer.onGround) {
+                            mc.thePlayer.jump()
+                            mc.thePlayer.motionX *= 1.0118
+                            mc.thePlayer.motionZ *= 1.0118
+                        } else {
+                            mc.thePlayer.motionY -= 0.0147
+                            mc.thePlayer.motionX *= 1.00138
+                            mc.thePlayer.motionZ *= 1.00138
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     override fun onDisable() {
         mc.timer.timerSpeed = 1f
         mc.thePlayer.speedInAir = 0.02f
+        mc.thePlayer.jumpMovementFactor = 0.02f
     }
 }
