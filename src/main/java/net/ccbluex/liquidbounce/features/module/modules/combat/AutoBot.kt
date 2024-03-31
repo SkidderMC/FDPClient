@@ -21,7 +21,6 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.inventory.GuiInventory
-import net.minecraft.entity.projectile.EntityFireball
 import net.minecraft.init.Items
 import net.minecraft.item.ItemPotion
 import net.minecraft.network.play.client.*

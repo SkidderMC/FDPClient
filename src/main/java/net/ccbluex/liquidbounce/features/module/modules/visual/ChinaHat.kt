@@ -10,16 +10,14 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.client.ColorManager
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
-import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -75,7 +73,7 @@ object ChinaHat : Module() {
         val radius = radiusValue.get().toDouble()
         for(i in 0..360 step 5) {
             if(colorThemeClient.get()) {
-                RenderUtils.glColor(Color.getHSBColor(if (i <180) { ColorManager.rainbowStartValue.get() + (ColorManager.rainbowStopValue.get() - ColorManager.rainbowStartValue.get()) * (i / 180f) } else { ColorManager.rainbowStartValue.get() + (ColorManager.rainbowStopValue.get() - ColorManager.rainbowStartValue.get()) * (-(i-360) / 180f) }, 0.7f, 1.0f), colorAlphaValue.get() / 255f)
+                ClientTheme.getColor(1)
             }
             GL11.glVertex3d(cos(i.toDouble() * Math.PI / 180.0) * radius, 0.0, sin(i.toDouble() * Math.PI / 180.0) * radius)
         }

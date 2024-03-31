@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
-import net.ccbluex.liquidbounce.features.module.modules.client.ColorManager;
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.animations.Animation;
 import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation;
@@ -149,7 +149,7 @@ public class GlowESP extends Module {
 
 
     public void setupGlowUniforms(float dir1, float dir2) {
-        Color color = getColor();
+        Color color = getColor(1);
         glowShader.setUniformi("texture", 0);
         if (seperate.get()) {
             glowShader.setUniformi("textureToCheck", 16);
@@ -172,7 +172,7 @@ public class GlowESP extends Module {
 
 
     public void setupOutlineUniforms(float dir1, float dir2) {
-        Color color = getColor();
+        Color color = getColor(1);
         outlineShader.setUniformi("texture", 0);
         outlineShader.setUniformf("radius", radius.get() / 1.5f);
         outlineShader.setUniformf("texelSize", 1.0f / mc.displayWidth, 1.0f / mc.displayHeight);
@@ -188,14 +188,9 @@ public class GlowESP extends Module {
         });
     }
 
-    private Color getColor() {
-        final ColorManager colorManager = FDPClient.moduleManager.getModule(ColorManager.class);
-        Color[] colors = colorManager.getClientColors();
-        if (colorManager.movingcolors.get()) {
-            return colors[0];
-        } else {
-            return ColorUtils.interpolateColorsBackAndForth(15, 0, colors[0], colors[1], colorManager.hueInterpolation.get());
-        }
+    private Color getColor(int index) {
+        final Color clientTheme = ClientTheme.getColor(1);
+        return clientTheme;
     }
 
     public void collectEntities() {

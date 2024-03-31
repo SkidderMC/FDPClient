@@ -17,7 +17,6 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.FDPDropdown
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.novoline.ClickyUI
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.gui.options.modernuiLaunchOption
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -43,7 +42,7 @@ object ClickGUIModule : Module() {
             "Black",
             "White"
         ),
-        "Classic"
+        "Dropdrown"
     ) {
         override fun onChanged(oldValue: String, newValue: String) {
             updateStyle()

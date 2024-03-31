@@ -107,6 +107,7 @@
     "gui.MixinGuiOverlayDebug",
     "gui.MixinGuiPlayerTabOverlay",
     "gui.MixinGuiSlot",
+    "gui.MixinGuiTextField",
     "performance.MixinEntityFX",
     "performance.MixinRenderGlobal",
     "render.MixinLayerArmorBase",

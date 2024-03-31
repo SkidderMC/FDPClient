@@ -37,22 +37,28 @@ public abstract class MixinWorld implements IWorld {
     @Shadow
     @Final
     public WorldProvider provider;
+
     @Shadow
     private int skylightSubtracted;
+
     @Shadow
     @Final
     public boolean isRemote;
+
     @Shadow
     protected WorldInfo worldInfo;
-    @Shadow
-    public boolean captureBlockSnapshots;
-    @Shadow
-    public ArrayList<BlockSnapshot> capturedBlockSnapshots;
+
+    public boolean fDPClient$captureBlockSnapshots;
+
+    public ArrayList<BlockSnapshot> fDPClient$capturedBlockSnapshots;
+
     @Shadow
     @Final
     public Profiler theProfiler;
+
     @Shadow
     protected List<IWorldAccess> worldAccesses;
+
     @Shadow
     int[] lightUpdateBlockList;
 
@@ -64,7 +70,6 @@ public abstract class MixinWorld implements IWorld {
 
     @Shadow
     protected abstract boolean isAreaLoaded(int var1, int var2, int var3, int var4, int var5, int var6, boolean var7);
-
     @Shadow
     protected Set<ChunkCoordIntPair> activeChunkSet;
     @Shadow
@@ -75,8 +80,8 @@ public abstract class MixinWorld implements IWorld {
     @Shadow
     @Final
     public Random rand;
-    @Shadow
-    public abstract ImmutableSetMultimap<ChunkCoordIntPair, ForgeChunkManager.Ticket> getPersistentChunks();
+
+    public abstract ImmutableSetMultimap<ChunkCoordIntPair, ForgeChunkManager.Ticket> fDPClient$getPersistentChunks();
     @Shadow
     protected abstract int getRenderDistanceChunks();
 
@@ -89,7 +94,7 @@ public abstract class MixinWorld implements IWorld {
             callbackInfo.cancel();
             this.activeChunkSet.clear();
             this.theProfiler.startSection("buildList");
-            this.activeChunkSet.addAll(this.getPersistentChunks().keySet());
+            this.activeChunkSet.addAll(this.fDPClient$getPersistentChunks().keySet());
             for (EntityPlayer entityPlayer : this.playerEntities) {
                 n3 = MathHelper.floor_double(entityPlayer.posX / 16.0);
                 n2 = MathHelper.floor_double(entityPlayer.posZ / 16.0);
@@ -333,7 +338,7 @@ public abstract class MixinWorld implements IWorld {
                 n7 = this.fDPClient$getLightFor(enumSkyBlock, n11, n10, n9);
                 if (n7 != n8) continue;
                 this.fDPClient$setLightFor(enumSkyBlock, n11, n10, n9, 0);
-                if (n8 <= 0 || MathHelper.abs_int(n11 - n) + MathHelper.abs_int(n10 - n2) + MathHelper.abs_int(n9 - n3) >= 17) continue;
+                if (n8 == 0 || MathHelper.abs_int(n11 - n) + MathHelper.abs_int(n10 - n2) + MathHelper.abs_int(n9 - n3) >= 17) continue;
                 for (EnumFacing enumFacing : StaticStorage.facings()) {
                     int n17 = n11 + enumFacing.getFrontOffsetX();
                     int n18 = n10 + enumFacing.getFrontOffsetY();
@@ -404,12 +409,12 @@ public abstract class MixinWorld implements IWorld {
             return false;
         }
         BlockSnapshot blockSnapshot = null;
-        if (this.captureBlockSnapshots && !this.isRemote) {
+        if (this.fDPClient$captureBlockSnapshots && !this.isRemote) {
             blockSnapshot = BlockSnapshot.getBlockSnapshot((World)(Object)this, new BlockPos(n, n2, n3), n4);
-            this.capturedBlockSnapshots.add(blockSnapshot);
+            this.fDPClient$capturedBlockSnapshots.add(blockSnapshot);
         }
         if (blockSnapshot != null) {
-            this.capturedBlockSnapshots.remove(blockSnapshot);
+            this.fDPClient$capturedBlockSnapshots.remove(blockSnapshot);
         } // TODO: here may be a problem
         return false;
     }

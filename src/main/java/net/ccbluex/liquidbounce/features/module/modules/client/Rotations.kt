@@ -37,7 +37,7 @@ object Rotations : Module() {
     var B = FloatValue("B", 255f, 0f, 255f)
     var Alpha = FloatValue("Alpha", 100f, 0f, 255f)
 
-    var playerYaw: Float? = null
+    private var playerYaw: Float? = null
 
     @JvmStatic
     var prevHeadPitch = 0f

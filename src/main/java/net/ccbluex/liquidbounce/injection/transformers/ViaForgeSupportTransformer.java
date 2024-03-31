@@ -13,9 +13,6 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.TypeInsnNode;
 
 public class ViaForgeSupportTransformer implements IClassTransformer {
-
-    private byte[] target = null;
-
     @Override
     public byte[] transform(String name, String transformedName, byte[] basicClass) {
         if(name.equals("net.ccbluex.liquidbounce.injection.forge.mixins.network.MixinNetworkManager")) {

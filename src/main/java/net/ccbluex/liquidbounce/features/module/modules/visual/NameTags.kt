@@ -63,8 +63,22 @@ object NameTags : Module() {
 
     private var targetTicks = 0
     private var entityKeep = "yes zywl"
+    var renderNameTags = true
 
     private val inventoryBackground = ResourceLocation("textures/gui/container/inventory.png")
+
+    fun shouldCancelNameTag(entity: EntityLivingBase): Boolean {
+        val nametagsModule = FDPClient.moduleManager.getModule(NameTags::class.java)
+
+        if (nametagsModule != null && nametagsModule.state) {
+
+            nametagsModule.renderNameTags
+            return true
+        }
+
+        return false
+    }
+
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -79,32 +93,25 @@ object NameTags : Module() {
 
     private fun getPlayerName(entity: EntityLivingBase): String {
         val name = entity.displayName.formattedText
-        var pre = ""
-        val teams = FDPClient.moduleManager[Teams::class.java]!!
-        if (FDPClient.fileManager.friendsConfig.isFriend(entity.name)) {
-            pre = "$pre§b[Friend] "
+        val isBot = AntiBot.isBot(entity)
+        val isInTeam = FDPClient.moduleManager[Teams::class.java]!!.isInYourTeam(entity)
+        val isFriend = FDPClient.fileManager.friendsConfig.isFriend(entity.name)
+
+        val prefix = when {
+            isFriend -> "§b[Friend] "
+            isInTeam -> "§a[TEAM] "
+            isBot -> "§e[BOT] "
+            else -> "§c"
         }
-        if (teams.isInYourTeam(entity)) {
-            pre = "$pre§a[TEAM] "
-        }
-        if (AntiBot.isBot(entity)) {
-            pre = "$pre§e[BOT] "
-        }
-        if (!AntiBot.isBot(entity) && !teams.isInYourTeam(entity)) {
-            pre = if (FDPClient.fileManager.friendsConfig.isFriend(entity.name)) {
-                "§b[Friend] §c"
-            } else {
-                "§c"
-            }
-        }
-        return name + pre
+
+        return "$prefix$name"
     }
 
     private fun renderNameTag(entity: EntityLivingBase, tag: String) {
-        if (onlyTarget.get() && entity != FDPClient.combatManager.target && entity.getName() != entityKeep) {
+        if (onlyTarget.get() && entity != FDPClient.combatManager.target && entity.name != entityKeep) {
             return
         } else if (onlyTarget.get() && entity == FDPClient.combatManager.target) {
-            entityKeep = entity.getName()
+            entityKeep = entity.name
             targetTicks++
             if (targetTicks >= 5) {
                 targetTicks = 4
@@ -160,6 +167,7 @@ object NameTags : Module() {
         // Draw nametag
         when (modeValue.get().lowercase()) {
             "simple" -> {
+                val playerName = getPlayerName(entity)
                 val healthPercent = (entity.health / entity.maxHealth).coerceAtMost(1F)
                 val width = fontRenderer.getStringWidth(tag).coerceAtLeast(30) / 2
                 val maxWidth = width * 2 + 12F
@@ -203,7 +211,7 @@ object NameTags : Module() {
 
                 if (healthBarValue.get()) {
                     quickDrawRect(-width - 2F, fontRenderer.FONT_HEIGHT + 3F, -width - 2F + dist, fontRenderer.FONT_HEIGHT + 4F, Color(10, 155, 10).rgb)
-                    quickDrawRect(-width - 2F, fontRenderer.FONT_HEIGHT + 3F, -width - 2F + (dist * (entity.health.toFloat() / entity.maxHealth.toFloat()).coerceIn(0F, 1F)), fontRenderer.FONT_HEIGHT + 4F, Color(10, 255, 10).rgb)
+                    quickDrawRect(-width - 2F, fontRenderer.FONT_HEIGHT + 3F, -width - 2F + (dist * (entity.health / entity.maxHealth).coerceIn(0F, 1F)), fontRenderer.FONT_HEIGHT + 4F, Color(10, 255, 10).rgb)
                 }
 
                 glEnable(GL_TEXTURE_2D)
@@ -213,8 +221,8 @@ object NameTags : Module() {
 
                 var foundPotion = false
                 if (potionValue.get() && entity is EntityPlayer) {
-                    val potions = (entity.getActivePotionEffects() as Collection<PotionEffect>).map { Potion.potionTypes[it.getPotionID()] }.filter { it.hasStatusIcon() }
-                    if (!potions.isEmpty()) {
+                    val potions = (entity.getActivePotionEffects() as Collection<PotionEffect>).map { Potion.potionTypes[it.potionID] }.filter { it.hasStatusIcon() }
+                    if (potions.isNotEmpty()) {
                         foundPotion = true
 
                         color(1.0F, 1.0F, 1.0F, 1.0F)
@@ -223,16 +231,13 @@ object NameTags : Module() {
 
                         val minX = (potions.size * -20) / 2
 
-                        var index = 0
-
                         glPushMatrix()
                         enableRescaleNormal()
-                        for (potion in potions) {
+                        for ((index, potion) in potions.withIndex()) {
                             color(1.0F, 1.0F, 1.0F, 1.0F)
-                            mc.getTextureManager().bindTexture(inventoryBackground)
-                            val i1 = potion.getStatusIconIndex()
+                            mc.textureManager.bindTexture(inventoryBackground)
+                            val i1 = potion.statusIconIndex
                             drawTexturedModalRect(minX + index * 20, -22, 0 + i1 % 8 * 18, 198 + i1 / 8 * 18, 18, 18, 0F)
-                            index++
                         }
                         disableRescaleNormal()
                         glPopMatrix()
@@ -287,6 +292,7 @@ object NameTags : Module() {
 
             "jello" -> {
                 // colors
+                val playerName = getPlayerName(entity)
                 var hpBarColor = Color(255, 255, 255, jelloAlphaValue.get())
                 val name = entity.displayName.unformattedText
                 if (jelloColorValue.get() && name.startsWith("§")) {
@@ -317,6 +323,7 @@ object NameTags : Module() {
 
             "modern" -> {
                 // colors
+                val playerName = getPlayerName(entity)
                 val width = fontRenderer.getStringWidth(tag) / 2
 
                 // render bg

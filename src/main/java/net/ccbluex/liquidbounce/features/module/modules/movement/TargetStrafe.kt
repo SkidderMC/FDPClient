@@ -48,13 +48,13 @@ object TargetStrafe : Module() {
     private val trips = FloatValue("Trips", 2.0f, 0.1f, 4.0f)
 
     private val renderModeValue = ListValue("RenderMode", arrayOf("Circle", "Polygon", "Zavz", "None"), "Zavz")
-    private val zavzRender = ListValue("Zavz-Render", arrayOf("Circle", "Points"), "Points").displayable { renderModeValue.equals("Zavz") }
+    private val zavzRender = ListValue("Mark", arrayOf("Circle", "Points"), "Points").displayable { renderModeValue.equals("Zavz") }
 
-    private var redValue = IntegerValue("Zavz-Red", 0, 0, 255).displayable { renderModeValue.get().equals("Zavz", true) }
-    private var greenValue = IntegerValue("Zavz-Green", 0, 0, 255).displayable { renderModeValue.get().equals("Zavz", true) }
-    private var blueValue = IntegerValue("Zavz-Blue", 0, 0, 255).displayable { renderModeValue.get().equals("Zavz", true) }
-    private var alphaValue = IntegerValue("Zavz-Alpha", 255, 0, 255).displayable { renderModeValue.get().equals("Zavz", true) }
-    private var rainbowValue = BoolValue("Zavz-RainBow", false).displayable { renderModeValue.get().equals("Zavz", true) }
+    private var redValue = IntegerValue("Red", 0, 0, 255).displayable { renderModeValue.get().equals("Zavz", true) }
+    private var greenValue = IntegerValue("Green", 0, 0, 255).displayable { renderModeValue.get().equals("Zavz", true) }
+    private var blueValue = IntegerValue("Blue", 0, 0, 255).displayable { renderModeValue.get().equals("Zavz", true) }
+    private var alphaValue = IntegerValue("Alpha", 255, 0, 255).displayable { renderModeValue.get().equals("Zavz", true) }
+    private var rainbowValue = BoolValue("RainBow", false).displayable { renderModeValue.get().equals("Zavz", true) }
 
 
     private var direction = -1.0

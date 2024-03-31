@@ -420,5 +420,13 @@ class GameFontRenderer(font: Font) : FontRenderer(
                 else -> -1
             }
         }
+
+        fun drawOutlineStringWithoutGL(s: String, x: Float, y: Float, color: Int,fontRenderer: FontRenderer) {
+            fontRenderer.drawString(ColorUtils.stripColor(s), (x * 2 - 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
+            fontRenderer.drawString(ColorUtils.stripColor(s), (x * 2 + 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
+            fontRenderer.drawString(ColorUtils.stripColor(s), (x * 2).toInt(), (y * 2 - 1).toInt(), Color.BLACK.rgb)
+            fontRenderer.drawString(ColorUtils.stripColor(s), (x * 2).toInt(), (y * 2 + 1).toInt(), Color.BLACK.rgb)
+            fontRenderer.drawString(s, (x * 2).toInt(), (y * 2).toInt(), color)
+        }
     }
 }

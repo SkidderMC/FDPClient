@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.utils.render
 
 import net.ccbluex.liquidbounce.utils.ClientUtils.mc
 import net.ccbluex.liquidbounce.utils.extensions.renderBoundingBox
-import net.ccbluex.liquidbounce.utils.render.shader.shaders.BlurShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.CircleShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RoundRectShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.SRoundRectShader
@@ -443,6 +442,36 @@ object GLUtils {
         glEnable(GL_DEPTH_TEST)
         glDepthMask(true)
     }
+
+    fun setGLCap(cap: Int, flag: Boolean) {
+        glCapMap[cap] = glGetBoolean(cap)
+        if (flag) {
+            glEnable(cap)
+        } else {
+            glDisable(cap)
+        }
+    }
+
+    fun revertGLCap(cap: Int) {
+        val origCap: Any? = glCapMap.get(cap)
+        if (origCap != null) {
+            if (origCap as Boolean) {
+                glEnable(cap)
+            } else {
+                glDisable(cap)
+            }
+        }
+    }
+    fun revertAllCaps() {
+        val localIterator: Iterator<*> = glCapMap.keys.iterator()
+        while (localIterator.hasNext()) {
+            val cap = localIterator.next() as Int
+            revertGLCap(cap)
+        }
+    }
+
+    private val glCapMap: HashMap<Any?, Any?> = HashMap()
+
 
     @JvmStatic
     fun stopScale() {

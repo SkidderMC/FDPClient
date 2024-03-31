@@ -13,10 +13,10 @@ import net.ccbluex.liquidbounce.event.TickEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
-import net.ccbluex.liquidbounce.features.module.modules.client.ColorManager;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.handler.combat.CombatManager;
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme;
 import net.ccbluex.liquidbounce.utils.AnimationUtils;
 import net.ccbluex.liquidbounce.utils.render.BlendUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
@@ -467,8 +467,8 @@ public class KillESP extends Module {
         for (int i = 5; i <= 360; i += 5) {
             Color color = Color.getHSBColor(
                     (i < 180)
-                            ? ColorManager.rainbowStartValue.get() + (ColorManager.rainbowStopValue.get() - ColorManager.rainbowStartValue.get()) * (i / 180f)
-                            : ColorManager.rainbowStartValue.get() + (ColorManager.rainbowStopValue.get() - ColorManager.rainbowStartValue.get()) * (-(i - 360) / 180f),
+                            ? ClientTheme.INSTANCE.getRainbowStartValue().get() + (ClientTheme.INSTANCE.getRainbowStopValue().get() - ClientTheme.INSTANCE.getRainbowStartValue().get()) * (i / 180f)
+                            : ClientTheme.INSTANCE.getRainbowStartValue().get() + (ClientTheme.INSTANCE.getRainbowStopValue().get() - ClientTheme.INSTANCE.getRainbowStartValue().get()) * (-(i - 360) / 180f),
                     0.7f,
                     1.0f
             );
@@ -593,7 +593,7 @@ public class KillESP extends Module {
             final double posX = x + radius * Math.cos(startPos + i * DOUBLE_PI / (precision / 2.0d)),
                     posZ = z + radius * Math.sin(startPos + i * DOUBLE_PI / (precision / 2.0d));
 
-            RenderUtils.glColor(Objects.requireNonNull(ColorUtils.getGradientOffset(FDPClient.moduleManager.get(ColorManager.class).getColor1(), FDPClient.moduleManager.get(ColorManager.class).getColor2(), Math.abs(System.currentTimeMillis() / 10L) / 100.0 + y)));
+            RenderUtils.glColor(Objects.requireNonNull(ClientTheme.getColor(1)));
 
             GL11.glVertex3d(posX, y, posZ);
 
@@ -632,7 +632,7 @@ public class KillESP extends Module {
                 final double posX = x + radius * Math.cos(-(startPos2 + i * DOUBLE_PI / (precision / 2.0d))),
                         posZ = z + (radius * Math.sin(-(startPos2 + i * DOUBLE_PI / (precision / 2.0d))));
 
-                RenderUtils.glColor(Objects.requireNonNull(ColorUtils.getGradientOffset(Objects.requireNonNull(Objects.requireNonNull(FDPClient.moduleManager.get(ColorManager.class))).getColor1(), FDPClient.moduleManager.get(ColorManager.class).getColor2(), Math.abs(System.currentTimeMillis() / 10L) / 100.0 + y)));
+                RenderUtils.glColor(ClientTheme.getColor(1));
 
                 GL11.glVertex3d(posX, y, posZ);
 
@@ -699,8 +699,8 @@ public class KillESP extends Module {
             final double offset = Math.abs(System.currentTimeMillis() / 10L) / 100.0 + y;
             final int alpha = dualRing ? 0 : 170;
             final Color color = ColorUtils.getGradientOffset(
-                    Objects.requireNonNull(FDPClient.moduleManager.get(ColorManager.class)).getColor1(),
-                    Objects.requireNonNull(FDPClient.moduleManager.get(ColorManager.class)).getColor2(),
+                    ClientTheme.getColor(1),
+                    ClientTheme.getColor(2),
                     offset
             );
 

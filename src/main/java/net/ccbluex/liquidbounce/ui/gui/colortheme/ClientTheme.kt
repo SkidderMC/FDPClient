@@ -6,11 +6,12 @@
 package net.ccbluex.liquidbounce.ui.gui.colortheme
 
 import net.ccbluex.liquidbounce.features.module.modules.visual.CustomClientColor
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.utils.extensions.setAlpha
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import java.awt.Color
 
 object ClientTheme {
@@ -25,6 +26,13 @@ object ClientTheme {
         "Fade-Type",
         false
     ).displayable { false }
+
+    val rainbowStartValue = FloatValue("RainbowStart", 0.41f, 0f, 1f)
+    val rainbowStopValue = FloatValue("RainbowStop", 0.58f, 0f, 1f)
+
+    val rainbowSaturationValue = FloatValue("RainbowSaturation", 0.7f, 0f, 1f)
+    val rainbowBrightnessValue = FloatValue("RainbowBrightness", 1f, 0f, 1f)
+    val rainbowSpeedValue = IntegerValue("RainbowSpeed", 1500, 500, 7000)
     fun setColor(type: String, alpha: Int): Color {
         if (CustomClientColor.state) return CustomClientColor.getColor(alpha)
         when (ClientColorMode.get().lowercase()) {
@@ -154,6 +162,8 @@ object ClientTheme {
         }
         return Color(-1).rgb
     }
+
+    @JvmStatic
     fun getColor(index: Int): Color {
         if (CustomClientColor.state) return CustomClientColor.getColor()
         when (ClientColorMode.get().lowercase()) {

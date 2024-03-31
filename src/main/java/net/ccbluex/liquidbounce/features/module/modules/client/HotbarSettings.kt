@@ -295,8 +295,11 @@ object HotbarSettings : Module() {
             field = value
         }
     fun getHotbarEasePos(x: Int): Int {
-        if (!hotbarEaseValue.get()) return x
-        easingValue = x
-        return easingValue
+        return if (hotbarEaseValue.get()) easingValue else x
+    }
+
+    @Override
+    override fun onDisable() {
+        hotbarValue.equals("Minecraft")
     }
 }

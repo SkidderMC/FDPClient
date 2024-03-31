@@ -4,7 +4,6 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.access;
-
 public interface IMixinWorldAccess {
 
     void markBlockForUpdate(int var1, int var2, int var3);
