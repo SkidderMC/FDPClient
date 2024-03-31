@@ -13,10 +13,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
-import net.ccbluex.liquidbounce.utils.BlinkUtils
-import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.Rotation
-import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
@@ -130,10 +127,7 @@ object LegitAura : Module() {
         currentTarget = null
 
         // AutoDisable MoveFix
-        mc.gameSettings.keyBindForward.pressed = false
-        mc.gameSettings.keyBindBack.pressed = false
-        mc.gameSettings.keyBindRight.pressed = false
-        mc.gameSettings.keyBindLeft.pressed = false
+        MovementUtils.updateControls()
     }
 
     override fun onEnable() {

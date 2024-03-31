@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
+import net.ccbluex.liquidbounce.features.module.modules.movement.Freeze
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.server.S27PacketExplosion
@@ -25,6 +26,8 @@ class FireballFly : FlyMode("Fireball") {
 
     private val boostValue = FloatValue("${valuePrefix}BoostAmount", 1.2f, 1f, 2f)
     private val jumpValue = BoolValue("${valuePrefix}Jump", true)
+    private val jumpFreeze = BoolValue("${valuePrefix}Freeze", false).displayable { jumpValue.get() }
+    private val hypixelValue = BoolValue("${valuePrefix}HypixelBypass", false)
 
     private var velocitypacket = false
     private var ticks = 0
@@ -75,10 +78,19 @@ class FireballFly : FlyMode("Fireball") {
                 FDPClient.moduleManager[FreeLook::class.java]!!.disable()
                 mc.gameSettings.keyBindForward.pressed = true
                 mc.gameSettings.keyBindBack.pressed = false
+                if (jumpValue.get() && jumpFreeze.get()) {
+                    FDPClient.moduleManager[Freeze::class.java]!!.state = true
+                }
             }
         } else {
             if (ticks > 6) {
                 mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
+                if (!hypixelValue.get()) fly.state = false
+            }
+            if (ticks < 25 && hypixelValue.get()) {
+                // raven b4 thanks
+                mc.thePlayer.motionY = 0.7
+            } else if (hypixelValue.get() && ticks > 24) {
                 fly.state = false
             }
         }
@@ -92,6 +104,9 @@ class FireballFly : FlyMode("Fireball") {
             beforeVelo = false
             ticks = 0
             FDPClient.moduleManager[Velocity::class.java]!!.state = veloStatus
+            if (jumpValue.get() && jumpFreeze.get()) {
+                FDPClient.moduleManager[Freeze::class.java]!!.state = false
+            }
         }
     }
 

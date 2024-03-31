@@ -1144,7 +1144,9 @@ object KillAura : Module() {
     @EventTarget
     fun onJump(event: JumpEvent) {
         if (jumpFixValue.get()) {
-            mc.thePlayer.isSprinting = false
+            if (discoveredTargets.isNotEmpty()) {
+                mc.thePlayer.isSprinting = false
+            }
         }
     }
 

@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.minecraft.client.Minecraft
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.potion.Potion
@@ -374,5 +375,14 @@ object MovementUtils : MinecraftInstance() {
         val z = Math.cos(movementDirectionRads) * speed
         moveEvent.x = x
         moveEvent.z = z
+    }
+
+    fun updateControls() {
+        mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
+        mc.gameSettings.keyBindBack.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindBack)
+        mc.gameSettings.keyBindRight.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindRight)
+        mc.gameSettings.keyBindLeft.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindLeft)
+        mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+        mc.gameSettings.keyBindSprint.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSprint)
     }
 }

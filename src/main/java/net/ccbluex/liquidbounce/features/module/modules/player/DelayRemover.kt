@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.utils.MovementUtils
 
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -18,7 +19,7 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 object DelayRemover : Module() {
 
     val jumpDelay = BoolValue("NoJumpDelay", false)
-    val jumpDelayTicks = IntegerValue("JumpDelayTicks", 0, 0, 4)
+    val jumpDelayTicks = IntegerValue("JumpDelayTicks", 0, 0, 4).displayable { jumpDelay.get() }
 
     val noClickDelay = BoolValue("NoClickDelay", true)
 
@@ -28,6 +29,10 @@ object DelayRemover : Module() {
     val airValue = BoolValue("Air", true).displayable { noSlowBreak.get() }
     val waterValue = BoolValue("Water", false).displayable { noSlowBreak.get() }
 
+    val exitGuiValue = BoolValue("NoExitGuiDelay", true)
+
+    private var prevGui = false
+
     @EventTarget
     fun onMotion(event: MotionEvent) {
         if (mc.thePlayer != null && mc.theWorld != null && noClickDelay.get()) {
@@ -36,6 +41,13 @@ object DelayRemover : Module() {
 
         if (blockBreakDelay.get()) {
             mc.playerController.blockHitDelay = 0
+        }
+
+        if (mc.currentScreen == null) {
+            if (prevGui) MovementUtils.updateControls()
+            prevGui = false
+        } else {
+            prevGui = true
         }
     }
 
