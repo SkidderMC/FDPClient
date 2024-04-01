@@ -18,8 +18,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 @ModuleInfo(name = "NoWeb", category = ModuleCategory.MOVEMENT)
 object NoWeb : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("None", "FastFall", "OldAAC", "LAAC", "Rewinside", "Horizon", "Spartan", "AAC4", "AAC5", "Matrix", "Test", "Intave14"), "None")
-    private val horizonSpeed = FloatValue("HorizonSpeed", 0.1F, 0.01F, 0.8F)
+    private val modeValue = ListValue("Mode", arrayOf("None", "FastFall", "OldAAC", "LAAC", "Rewinside", "Spartan", "AAC4", "AAC5", "Matrix", "Intave14"), "None")
 
     private var usedTimer = false
 
@@ -70,11 +69,6 @@ object NoWeb : Module() {
                     mc.timer.timerSpeed = 1.35F
                 }
             }
-            "horizon" -> {
-                if (mc.thePlayer.onGround) {
-                    MovementUtils.strafe(horizonSpeed.get())
-                }
-            }
             "spartan" -> {
                 MovementUtils.strafe(0.27F)
                 mc.timer.timerSpeed = 3.7F
@@ -104,17 +98,6 @@ object NoWeb : Module() {
 
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
-                }
-            }
-            "test" -> {
-                if (mc.thePlayer.ticksExisted % 7 == 0) {
-                    mc.thePlayer.jumpMovementFactor = 0.42f
-                }
-                if (mc.thePlayer.ticksExisted % 7 == 1) {
-                    mc.thePlayer.jumpMovementFactor = 0.33f
-                }
-                if (mc.thePlayer.ticksExisted % 7 == 2) {
-                    mc.thePlayer.jumpMovementFactor = 0.08f
                 }
             }
             "intave14" -> {
