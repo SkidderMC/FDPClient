@@ -97,8 +97,7 @@
     "render.MixinTileEntityMobSpawnerRenderer",
     "render.MixinTileEntityRendererDispatcher",
     "render.MixinTileEntitySkullRenderer",
-    "render.MixinVisGraph",
-    "splash.MixinSplashProgressRunnable"
+    "render.MixinVisGraph"
   ],
   "client": [
     "client.MixinRegionRenderCache",
