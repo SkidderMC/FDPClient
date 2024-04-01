@@ -52,7 +52,7 @@ object FDPClient {
     var USER_NAME = ""
 
     // Flags
-    var isInDev = true
+    var isInDev = false
     var isStarting = true
     var isLoadingConfig = true
     private var latest = ""
