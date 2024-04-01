@@ -68,7 +68,7 @@ object Tracers : Module() {
                     EntityUtils.isFriend(entity) -> Color(0, 255, 0, 200)
                     colorMode == "custom" -> Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 150)
                     colorMode == "distancecolor" -> Color(255 - dist, dist, 0, 150)
-                    colorMode == "Theme" ->  ClientTheme.getColorWithAlpha(1, colorAlphaValue.get())
+                    colorMode == "theme" ->  ClientTheme.getColorWithAlpha(1, colorAlphaValue.get())
                     else -> Color(255, 255, 255, 150)
                 }
 

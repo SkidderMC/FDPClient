@@ -18,11 +18,11 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
 
-@ModuleInfo(name = "VanillaTweaks", description = "Vanilla Utilities.", category = ModuleCategory.VISUAL)
+@ModuleInfo(name = "VanillaTweaks", description = "Vanilla Utilities.", category = ModuleCategory.VISUAL, defaultOn = true)
 class VanillaTweaks : Module() {
 
     // NoAchievements
-    val noAchievements = BoolValue("NoAchievements", false)
+    val noAchievements = BoolValue("NoAchievements", true)
 
     // CameraClip
     val cameraClipValue = BoolValue("CameraClip", false)
@@ -37,7 +37,7 @@ class VanillaTweaks : Module() {
     val bossHealthValue = BoolValue("Boss-Health", true).displayable { antiBlindValue.get() }
 
     //NoFOV
-    private val noFov = BoolValue("NoFOV", false)
+    val noFov = BoolValue("NoFOV", false)
     val fovValue = FloatValue("FOV", 1.2F, 0.8F, 1.5F).displayable  { noFov.get() }
 
 
