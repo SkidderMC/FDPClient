@@ -35,7 +35,7 @@ object ItemESP : Module() {
     private val nameTags = BoolValue("NameTag", false)
     private val itemCount = BoolValue("ItemCount", false).displayable { nameTags.get() }
     private val scaleValue = FloatValue("Scale", 1F, 1F, 4F).displayable { itemCount.get() }
-    private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "Exhibition", "LightBox", "ShaderOutline", "ShaderGlow"), "Exhibition")
+    private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "LightBox", "ShaderGlow"), "Outline")
     private val outlineWidth = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
     private val colorRedValue = IntegerValue("R", 0, 0, 255)
     private val colorGreenValue = IntegerValue("G", 255, 0, 255)
@@ -78,80 +78,6 @@ object ItemESP : Module() {
                 GL11.glEnable(2929)
                 GL11.glDepthMask(true)
                 GL11.glDisable(3042)
-            }
-        }
-
-        if (modeValue.get().equals("Exhibition", ignoreCase = true)) {
-            entityConvertedPointsMap.clear()
-            val pTicks = mc.timer.renderPartialTicks
-            for (e2 in mc.theWorld.getLoadedEntityList()) {
-                if (e2 is EntityItem) {
-                    var x = e2.lastTickPosX + (e2.posX - e2.lastTickPosX) * pTicks
-                    -mc.renderManager.viewerPosX + 0.36
-                    var y = (e2.lastTickPosY + (e2.posY - e2.lastTickPosY) * pTicks
-                            - mc.renderManager.viewerPosY)
-                    var z = e2.lastTickPosZ + (e2.posZ - e2.lastTickPosZ) * pTicks
-                    -mc.renderManager.viewerPosZ + 0.36
-                    val topY: Double
-                    y += (e2.height + 0.15).also { topY = it }
-                    val convertedPoints = RenderUtils.convertTo2D(x, y, z)
-                    val convertedPoints2 = RenderUtils.convertTo2D(x - 0.36, y, z - 0.36)
-                    val xd = 0.0
-                    assert(convertedPoints2 != null)
-                    if (convertedPoints2!![2] < 0.0 || convertedPoints2[2] >= 1.0) continue
-                    x = (e2.lastTickPosX + (e2.posX - e2.lastTickPosX) * pTicks - mc.renderManager.viewerPosX
-                            - 0.36)
-                    z = (e2.lastTickPosZ + (e2.posZ - e2.lastTickPosZ) * pTicks - mc.renderManager.viewerPosZ
-                            - 0.36)
-                    val convertedPointsBottom = RenderUtils.convertTo2D(x, y, z)
-                    y = (e2.lastTickPosY + (e2.posY - e2.lastTickPosY) * pTicks - mc.renderManager.viewerPosY
-                            - 0.05)
-                    val convertedPointsx = RenderUtils.convertTo2D(x, y, z)
-                    x = (e2.lastTickPosX + (e2.posX - e2.lastTickPosX) * pTicks - mc.renderManager.viewerPosX
-                            - 0.36)
-                    z = (e2.lastTickPosZ + (e2.posZ - e2.lastTickPosZ) * pTicks - mc.renderManager.viewerPosZ
-                            + 0.36)
-                    val convertedPointsTop1 = RenderUtils.convertTo2D(x, topY, z)
-                    val convertedPointsx2 = RenderUtils.convertTo2D(x, y, z)
-                    x = (e2.lastTickPosX + (e2.posX - e2.lastTickPosX) * pTicks - mc.renderManager.viewerPosX
-                            + 0.36)
-                    z = (e2.lastTickPosZ + (e2.posZ - e2.lastTickPosZ) * pTicks - mc.renderManager.viewerPosZ
-                            + 0.36)
-                    val convertedPointsz = RenderUtils.convertTo2D(x, y, z)
-                    x = (e2.lastTickPosX + (e2.posX - e2.lastTickPosX) * pTicks - mc.renderManager.viewerPosX
-                            + 0.36)
-                    z = (e2.lastTickPosZ + (e2.posZ - e2.lastTickPosZ) * pTicks - mc.renderManager.viewerPosZ
-                            - 0.36)
-                    val convertedPointsTop2 = RenderUtils.convertTo2D(x, topY, z)
-                    val convertedPointsz2 = RenderUtils.convertTo2D(x, y, z)
-                    assert(convertedPoints != null)
-                    assert(convertedPointsx != null)
-                    assert(convertedPointsTop1 != null)
-                    assert(convertedPointsTop2 != null)
-                    assert(convertedPointsz2 != null)
-                    assert(convertedPointsz != null)
-                    assert(convertedPointsx2 != null)
-                    assert(convertedPointsBottom != null)
-                    entityConvertedPointsMap[e2] = doubleArrayOf(
-                            convertedPoints!![0],
-                            convertedPoints[1], xd,
-                            convertedPoints[2],
-                            convertedPointsBottom!![0],
-                            convertedPointsBottom[1],
-                            convertedPointsBottom[2],
-                            convertedPointsx!![0],
-                            convertedPointsx[1],
-                            convertedPointsx[2],
-                            convertedPointsx2!![0],
-                            convertedPointsx2[1],
-                            convertedPointsx2[2],
-                            convertedPointsz!![0],
-                            convertedPointsz[1],
-                            convertedPointsz[2], convertedPointsz2!![0], convertedPointsz2[1], convertedPointsz2[2],
-                            convertedPointsTop1!![0], convertedPointsTop1[1], convertedPointsTop1[2],
-                            convertedPointsTop2!![0], convertedPointsTop2[1], convertedPointsTop2[2]
-                    )
-                }
             }
         }
     }
@@ -310,17 +236,6 @@ object ItemESP : Module() {
             GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
             GlStateManager.popMatrix()
             RenderUtils.rectangle(0.0, 0.0, 0.0, 0.0, -1)
-        }
-        if (modeValue.get().equals("ShaderOutline", ignoreCase = true)) {
-            OutlineShader.OUTLINE_SHADER.startDraw(event.partialTicks)
-            try {
-                for (entity in mc.theWorld.loadedEntityList) {
-                    if (!(entity is EntityItem || entity is EntityArrow)) continue
-                    mc.renderManager.renderEntityStatic(entity, event.partialTicks, true)
-                }
-            } catch (ex: Exception) {
-                alert("An error occurred while rendering all item entities for shader esp")
-            }
         }
 
         @EventTarget

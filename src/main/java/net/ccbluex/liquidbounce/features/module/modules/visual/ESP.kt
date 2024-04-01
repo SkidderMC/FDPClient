@@ -39,10 +39,10 @@ import java.text.DecimalFormat
 object ESP : Module() {
     val modeValue = ListValue(
         "Mode",
-        arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "CSGO", "CSGO-Old", "Outline", "ShaderOutline", "ShaderGlow", "Jello"),
-        "CSGO"
+        arrayOf("Box", "OtherBox", "2D", "Real2D", "CSGO", "CSGO-Old", "Outline", "ShaderOutline", "ShaderGlow", "Jello"),
+        "Outline"
     )
-    private val outlineWidthValue = FloatValue("Outline-Width", 3f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
+    private val outlineWidthValue = FloatValue("Outline-Width", 1.36f, 0.5f, 5f).displayable { modeValue.equals("Outline") }
     private val shaderOutlineRadiusValue = FloatValue("ShaderOutline-Radius", 1.35f, 1f, 2f).displayable { modeValue.equals("ShaderOutline") }
     private val shaderGlowRadiusValue = FloatValue("ShaderGlow-Radius", 2.3f, 2f, 3f).displayable { modeValue.equals("ShaderGlow") }
     private val csgoDirectLineValue = BoolValue("CSGO-DirectLine", false).displayable { modeValue.equals("CSGO") }
