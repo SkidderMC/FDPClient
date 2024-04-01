@@ -31,12 +31,12 @@ object ChinaHat : Module() {
     private val drawThePlayerValue = BoolValue("DrawThePlayer", true)
     private val onlyThirdPersonValue = BoolValue("OnlyThirdPerson", true).displayable { drawThePlayerValue.get() }
     private val drawTargetsValue = BoolValue("DrawTargets", true)
-    private val colorDisplay = BoolValue("Color", true)
-    private val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { colorDisplay.get() }
-    private val colorGreenValue = IntegerValue("Green", 179, 0, 255).displayable { colorDisplay.get() }
-    private val colorBlueValue = IntegerValue("Blue", 72, 0, 255).displayable { colorDisplay.get() }
-    private val colorAlphaValue = IntegerValue("Alpha", 255, 0, 255).displayable { colorDisplay.get() }
-    private val colorThemeClient = BoolValue("Client Color", true).displayable { colorDisplay.get() }
+    private val colorDisplay = BoolValue("Color", false)
+    private val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { colorDisplay.get() && !colorThemeClient.get() }
+    private val colorGreenValue = IntegerValue("Green", 179, 0, 255).displayable { colorDisplay.get() && !colorThemeClient.get() }
+    private val colorBlueValue = IntegerValue("Blue", 72, 0, 255).displayable { colorDisplay.get() && !colorThemeClient.get() }
+    private val colorAlphaValue = IntegerValue("Alpha", 255, 0, 255).displayable { colorDisplay.get() && !colorThemeClient.get() }
+    private val colorThemeClient = BoolValue("Client Color", true)
 
     @EventTarget
     fun onRender3d(event: Render3DEvent) {
@@ -73,7 +73,7 @@ object ChinaHat : Module() {
         val radius = radiusValue.get().toDouble()
         for(i in 0..360 step 5) {
             if(colorThemeClient.get()) {
-                ClientTheme.getColor(1)
+                ClientTheme.getColorWithAlpha(1, colorAlphaValue.get())
             }
             GL11.glVertex3d(cos(i.toDouble() * Math.PI / 180.0) * radius, 0.0, sin(i.toDouble() * Math.PI / 180.0) * radius)
         }
