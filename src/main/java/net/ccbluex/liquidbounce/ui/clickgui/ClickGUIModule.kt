@@ -40,7 +40,6 @@ object ClickGUIModule : Module() {
             "Mixed",
             "Null",
             "Black",
-            "White"
         ),
         "Dropdrown"
     ) {
@@ -83,7 +82,7 @@ object ClickGUIModule : Module() {
     private fun updateStyle() {
         when (styleValue.get().lowercase(Locale.getDefault())) {
             "null" -> modernuiLaunchOption.clickGui.style = NullStyle()
-            "black", "white" -> modernuiLaunchOption.clickGui.style = if (styleValue.get() == "White") WhiteStyle() else BlackStyle()
+            "black" -> modernuiLaunchOption.clickGui.style = BlackStyle()
             "mixed" -> modernuiLaunchOption.clickGui.style = MixedStyle()
             "astolfo" -> modernuiLaunchOption.clickGui.style = AstolfoStyle()
         }
