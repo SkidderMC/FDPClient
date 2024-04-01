@@ -48,10 +48,9 @@ class KeyBindManager : GuiScreen() {
 
         GL11.glPushMatrix()
 
-//        GL11.glPushMatrix()
         GL11.glScalef(2f, 2f, 2f)
         FontLoaders.C18.DisplayFonts("%ui.keybind.title%", width * 0.21f * 0.5f, height * 0.2f * 0.5f, Color.WHITE.rgb, FontLoaders.C18)
-//        GL11.glPopMatrix()
+
         GL11.glScalef(0.5f, 0.5f, 0.5f)
 
         GL11.glTranslatef(width * 0.2f, (height * 0.2f + FontLoaders.C18.height * 2.3f), 0F)

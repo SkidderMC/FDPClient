@@ -31,12 +31,6 @@ class Tenacity5TH(inst: Targets) : TargetStyle("Tenacity5", inst, true) {
         val c3 = ColorUtils.interpolateColorsBackAndForth(17, 270, Color(230, 140, 255, 205), Color(101, 208, 252, 205), true);
         val c4 = ColorUtils.interpolateColorsBackAndForth(17, 180, Color(230, 140, 255, 205), Color(101, 208, 252, 205), true);
 
-//        // glow
-//        GL11.glTranslated(-renderX * scale, -renderY * scale, 0.0)
-//        GL11.glPushMatrix()
-//        ShadowUtils.shadow(8F, { GL11.glPushMatrix(); GL11.glTranslated(renderX * scale, renderY * scale, 0.0); RoundedUtil.drawGradientRound(0f * scale, 5f * scale, 59f + additionalWidth.toFloat() * scale, 45f * scale, 6F, c1, c2, c3, c4); GL11.glPopMatrix(); }, {})
-//        GL11.glPopMatrix()
-//        GL11.glTranslated(renderX * scale, renderY * scale, 0.0)
 
         // background
         RoundedUtil.drawGradientRound(0f, 5f, 59f + additionalWidth.toFloat(), 45f, 6F, c1, c2, c3, c4);

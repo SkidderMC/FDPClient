@@ -293,22 +293,6 @@ class Notification(
             return false
         }
 
-//        // lbtl means liquidbounce text length
-//        if(style.equals("LiquidBounce")) {
-//            RenderUtils.drawRect(-1F, 0F, lbtl + 9F, -20F, Color(0, 0, 0, alpha))
-//            FontLoaders.C12.DisplayFont2(FontLoaders.C12, title + ": " + content, -4F, 3F, textColor, titleShadow)
-//            RenderUtils.drawRect(-1F + max(lbtl + 5F - (lbtl+ 5F) * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), 0F, 4F + max(lbtl + 5F - (lbtl+ 5F) * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), -20F, Color(0, 0, 0, alpha))
-//            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-//        }
-
-
-        /*  
-        if(style.equals("Simple")) {
-            RenderUtils.customRoundedinf(-x + 8F + lbtl, -y, -x - 2F, -18F - y, 0F, 3F, 3F, 0F, Color(0,0,0, alpha).rgb)
-            RenderUtils.customRoundedinf(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, type.renderColor)
-            Fonts.font40.drawString("$title: $content", -x + 3, -13F - y, -1)
-            }  */
-
         if(style.equals("Classic")) {
             if (blurRadius != 0f)
                 BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, classicHeight * scale, blurRadius) 
@@ -333,16 +317,6 @@ enum class NotifyType(var renderColor: Color) {
     WARNING(Color(0xF5FD00)),
     INFO(Color(0x6490A7));
 }
-    //classic
-   // SUCCESS(Color((0x60E092)),
-   // ERROR(Color(0xFF2F2F)),
-   // WARNING(Color(0xF5FD00)),
-   // INFO(Color( 0x6490A7)));
-   //modern (shitty)
-   //    SUCCESS(Color(0x36D399)),
-   // ERROR(Color(0xF87272)),
-   // WARNING(Color(0xFBBD23)),
-   // INFO(Color(0xF2F2F2));
 
 
 enum class FadeState { IN, STAY, OUT, END }

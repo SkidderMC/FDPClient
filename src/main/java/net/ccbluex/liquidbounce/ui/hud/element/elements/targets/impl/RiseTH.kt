@@ -54,7 +54,7 @@ class RiseTH(inst: Targets) : TargetStyle("Rise", inst, true) {
         GL11.glDisable(GL11.GL_BLEND)
         GL11.glEnable(GL11.GL_TEXTURE_2D)
         Stencil.erase(true)
-        RenderUtils.drawHead(entity.skin, 4, 4, 30, 30, 1) //playerInfo.locationSkin
+        RenderUtils.drawHead(entity.skin, 4, 4, 30, 30, 1)
         Stencil.dispose()
         GL11.glPopMatrix()
 
