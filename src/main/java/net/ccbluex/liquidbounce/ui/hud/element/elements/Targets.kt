@@ -72,7 +72,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             J3UltimateTH(this),
             SimplicityTH(this),
             RiseTH(this),
-        ).toTypedArray(), "Normal")
+        ).toTypedArray(), "Rise")
     }
     var mainTarget: EntityLivingBase? = null
     var animProgress = 0F

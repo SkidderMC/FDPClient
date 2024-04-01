@@ -34,7 +34,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
     private val whiteText = BoolValue("WhiteTextColor", true)
     private val modeColored = BoolValue("CustomModeColored", true)
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "FDP", "Modern", "Skid"), "Modern")
+        val styleValue = ListValue("Mode", arrayOf("Classic", "FDP", "Modern", "LiquidBounce"), "FDP")
     }
 
     /**
@@ -46,7 +46,6 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
      * Draw element
      */
     override fun drawElement(partialTicks: Float): Border? {
-        // bypass java.util.ConcurrentModificationException
         FDPClient.hud.notifications.map { it }.forEachIndexed { index, notify ->
             GL11.glPushMatrix()
 
@@ -294,13 +293,13 @@ class Notification(
             return false
         }
 
-        // lbtl means liquidbounce text length
-        /* if(style.equals("LiquidBounce")) {
-            RenderUtils.drawRect(-1F, 0F, lbtl + 9F, -20F, Color(0, 0, 0, alpha))
-            FontLoaders.C12.DisplayFont2(FontLoaders.C12, title + ": " + content, -4F, 3F, textColor, titleShadow)
-            RenderUtils.drawRect(-1F + max(lbtl + 5F - (lbtl+ 5F) * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), 0F, 4F + max(lbtl + 5F - (lbtl+ 5F) * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), -20F, Color(0, 0, 0, alpha))
-            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-        } yo so dg, WTF */
+//        // lbtl means liquidbounce text length
+//        if(style.equals("LiquidBounce")) {
+//            RenderUtils.drawRect(-1F, 0F, lbtl + 9F, -20F, Color(0, 0, 0, alpha))
+//            FontLoaders.C12.DisplayFont2(FontLoaders.C12, title + ": " + content, -4F, 3F, textColor, titleShadow)
+//            RenderUtils.drawRect(-1F + max(lbtl + 5F - (lbtl+ 5F) * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), 0F, 4F + max(lbtl + 5F - (lbtl+ 5F) * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), -20F, Color(0, 0, 0, alpha))
+//            GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
+//        }
 
 
         /*  
@@ -309,20 +308,6 @@ class Notification(
             RenderUtils.customRoundedinf(-x - 2F, -y, -x - 5F, -18F - y, 3F, 0F, 0F, 3F, type.renderColor)
             Fonts.font40.drawString("$title: $content", -x + 3, -13F - y, -1)
             }  */
-
-        if(style.equals("Skid")){
-
-            val colors=Color(type.renderColor.red,type.renderColor.green,type.renderColor.blue,alpha/3)
-            shadowRenderUtils.drawShadowWithCustomAlpha(2f, 0F, width.toFloat() + 5f, 27f - 5f, 250f) // oops
-            RenderUtils.drawRect(2.0, 0.0, 4.0, 27f - 5.0, colors.rgb)
-            RenderUtils.drawRect(3F, 0F, width.toFloat() + 5f, 27f - 5f, Color(0,0,0,150))
-            RenderUtils.drawGradientSidewaysH(3.0, 0.0, 20.0, 27f - 5.0, colors.rgb, Color(0,0,0,0).rgb)
-            RenderUtils.drawRect(2f, 27f-6f, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time))+5f, 0F), 27f - 5f ,Color(52, 97, 237).rgb)
-
-            FontLoaders.C12.DisplayFont2(FontLoaders.C12,title, 4F, 3F, textColor,titleShadow)
-            font.DisplayFont2(font,content, 4F, 10F, textColor,contentShadow)
-            return false
-            }
 
         if(style.equals("Classic")) {
             if (blurRadius != 0f)
