@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.*
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic.DropdownGUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.FDPDropdownClickGUI
-import net.ccbluex.liquidbounce.ui.clickgui.style.styles.novoline.ClickyUI
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.gui.options.modernuiLaunchOption
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -34,7 +33,6 @@ object ClickGUIModule : Module() {
         arrayOf(
             "Classic",
             "Dropdrown",
-            "Novoline",
             "LB+",
             "Astolfo",
             "Mixed",
@@ -62,13 +60,11 @@ object ClickGUIModule : Module() {
     val colormode = ListValue("Setting Accent", arrayOf("White", "Color"), "Color")
     val clickHeight = IntegerValue("Tab Height", 250, 100, 500)
 
-    private var novoline = ClickyUI()
     private var dropdown = DropdownGUI()
     private var dropdownClickGUIFDP = FDPDropdownClickGUI()
 
     override fun onEnable() {
         when {
-            styleValue.get().contains("Novoline") -> mc.displayGuiScreen(novoline)
             styleValue.get().equals("Classic", ignoreCase = true) -> mc.displayGuiScreen(dropdown)
             styleValue.get().equals("Dropdrown", ignoreCase = true) -> mc.displayGuiScreen(dropdownClickGUIFDP)
             styleValue.get().equals("LB+", ignoreCase = true) -> mc.displayGuiScreen(NewUi.getInstance())
