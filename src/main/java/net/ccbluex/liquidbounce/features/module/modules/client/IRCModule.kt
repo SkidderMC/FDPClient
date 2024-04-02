@@ -104,7 +104,7 @@ object IRCModule : Module() {
                         "NotPermitted" -> "You are missing the required permissions!"
                         "NotBanned" -> "You are not banned!"
                         "Banned" -> "You are banned!"
-                        "RateLimited" -> "You have been rate limited. Please try again later."
+                        "RateLimited" -> "Please do not spam."
                         "PrivateMessageNotAccepted" -> "Private message not accepted!"
                         "EmptyMessage" -> "You are trying to send an empty message!"
                         "MessageTooLong" -> "Message is too long!"
