@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.entity.EntityLivingBase
@@ -24,10 +25,19 @@ class TickBase : Module() {
     private val BoostAmount = FloatValue("BoostTimer", 10f, 1f, 50f)
     private val ChargeAmount = FloatValue("ChargeTimer", 0.11f, 0.05f, 1f)
 
+    private val test = BoolValue("Test", false)
+
+    private var prev_fps = 0
+
     @EventTarget
     fun onAttack(event: AttackEvent) {
         if (event.targetEntity is EntityLivingBase && ticks == 0) {
             ticks = ticksAmount.get()
+            if (test.get()) {
+                ticks = 2
+                prev_fps = mc.gameSettings.limitFramerate
+                mc.gameSettings.limitFramerate = 2
+            }
         }
     }
 
@@ -42,6 +52,13 @@ class TickBase : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if (test.get()) {
+            ticks --
+            if (ticks == 1) {
+                mc.gameSettings.limitFramerate = prev_fps
+            }
+            return
+        }
         if (ticks == ticksAmount.get()) {
             mc.timer.timerSpeed = ChargeAmount.get()
             ticks --
