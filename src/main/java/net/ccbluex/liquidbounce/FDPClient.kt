@@ -47,12 +47,12 @@ object FDPClient {
     const val CLIENT_DEV = "Zywl, 1zuna, Yuugiri, Dg636, vPrah, gatodepan, DinoFeng, Co`Dynamic. by (SkidderMC & CCBlueX - TEAM)"
     const val CLIENT_WEBSITE = "https://fdpinfo.github.io"
     const val CLIENT_DISCORD = "https://discord.gg/3XRFGeqEYD"
-    const val CLIENT_VERSION = "v5.6.0"
+    const val CLIENT_VERSION = "v5.6.1"
 
     var USER_NAME = ""
 
     // Flags
-    var isInDev = false
+    var isInDev = true
     var isStarting = true
     var isLoadingConfig = true
     private var latest = ""
