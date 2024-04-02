@@ -12,6 +12,6 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(value=WorldManager.class)
 public abstract class MixinWorldManager implements IMixinWorldAccess {
     @Override
-    public void fDPClient$notifyLightSet(int n, int n2, int n3) {
+    public void notifyLightSet(int n, int n2, int n3) {
     }
 }

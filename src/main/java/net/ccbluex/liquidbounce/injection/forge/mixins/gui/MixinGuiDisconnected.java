@@ -43,38 +43,38 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
     private int field_175353_i;
 
     @Shadow @Final private GuiScreen parentScreen;
-    private GuiButton fDPClient$reconnectButton;
-    private GuiSlider fDPClient$autoReconnectDelaySlider;
-    private GuiButton fDPClient$forgeBypassButton;
-    private int fDPClient$reconnectTimer;
-    private String fDPClient$infoStr = "null";
+    private GuiButton reconnectButton;
+    private GuiSlider autoReconnectDelaySlider;
+    private GuiButton forgeBypassButton;
+    private int reconnectTimer;
+    private String infoStr = "null";
 
     @Inject(method = "initGui", at = @At("RETURN"))
     private void initGui(CallbackInfo callbackInfo) {
-        fDPClient$reconnectTimer = 0;
+        reconnectTimer = 0;
         SessionUtils.handleConnection();
 
         final ServerData server=ServerUtils.serverData;
-        fDPClient$infoStr ="§fPlaying on: "+mc.session.getUsername()+" | "+server.serverIP;
-        buttonList.add(fDPClient$reconnectButton = new GuiButton(1, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 22, 98, 20, "Reconnect"));
+        infoStr="§fPlaying on: "+mc.session.getUsername()+" | "+server.serverIP;
+        buttonList.add(reconnectButton = new GuiButton(1, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 22, 98, 20, "Reconnect"));
 
-        buttonList.add(fDPClient$autoReconnectDelaySlider =
+        buttonList.add(autoReconnectDelaySlider =
                 new GuiSlider(2, this.width / 2 + 2, this.height / 2 + field_175353_i / 2
                         + this.fontRendererObj.FONT_HEIGHT + 22, 98, 20, "AutoReconnect: ",
                         "ms", AutoReconnect.MIN, AutoReconnect.MAX, AutoReconnect.INSTANCE.getDelay(), false, true,
                         guiSlider -> {
                             AutoReconnect.INSTANCE.setDelay(guiSlider.getValueInt());
 
-                            this.fDPClient$reconnectTimer = 0;
-                            this.fDPClient$updateReconnectButton();
-                            this.fDPClient$updateSliderText();
+                            this.reconnectTimer = 0;
+                            this.updateReconnectButton();
+                            this.updateSliderText();
                         }));
 
         buttonList.add(new GuiButton(3, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 44, 98, 20, "RandomAlt"));
         buttonList.add(new GuiButton(4, this.width / 2 + 2, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 44, 98, 20, "RandomOffline"));
-        buttonList.add(fDPClient$forgeBypassButton = new GuiButton(5, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 66, "AntiForge: "));
+        buttonList.add(forgeBypassButton = new GuiButton(5, this.width / 2 - 100, this.height / 2 + field_175353_i / 2 + this.fontRendererObj.FONT_HEIGHT + 66, "AntiForge: "));
 
-        fDPClient$updateSliderText();
+        updateSliderText();
     }
 
     @Inject(method = "actionPerformed", at = @At("HEAD"))
@@ -97,7 +97,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
                 break;
             case 5:
                 ClientFixes.INSTANCE.setEnabled(!ClientFixes.INSTANCE.getEnabled());
-                fDPClient$forgeBypassButton.displayString = "AntiForge: " + (ClientFixes.INSTANCE.getEnabled() ? "ON" : "OFF");
+                forgeBypassButton.displayString = "AntiForge: " + (ClientFixes.INSTANCE.getEnabled() ? "ON" : "OFF");
                 FDPClient.fileManager.saveConfig(FDPClient.fileManager.getSpecialConfig());
                 break;
             case 998:
@@ -112,27 +112,27 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
     @Inject(method = "drawScreen", at = @At("RETURN"))
     private void drawScreen(CallbackInfo callbackInfo) {
         final ProtocolVersion version = ProtocolBase.getManager().getTargetVersion();
-        RendererExtensionKt.drawCenteredString(mc.fontRendererObj, fDPClient$infoStr, this.width / 2F, this.height / 2F + field_175353_i / 2F + this.fontRendererObj.FONT_HEIGHT + 100, 0,false);
+        RendererExtensionKt.drawCenteredString(mc.fontRendererObj, infoStr, this.width / 2F, this.height / 2F + field_175353_i / 2F + this.fontRendererObj.FONT_HEIGHT + 100, 0,false);
         if (AutoReconnect.INSTANCE.isEnabled()) {
-            this.fDPClient$updateReconnectButton();
+            this.updateReconnectButton();
         }
         Fonts.minecraftFont.drawStringWithShadow("§7Protocol: §b" + version.getName(), 6f, 16f, 0xffffff);
     }
 
-    private void fDPClient$updateSliderText() {
-        if (this.fDPClient$autoReconnectDelaySlider == null)
+    private void updateSliderText() {
+        if (this.autoReconnectDelaySlider == null)
             return;
 
         if (!AutoReconnect.INSTANCE.isEnabled()) {
-            this.fDPClient$autoReconnectDelaySlider.displayString = "AutoReconnect: Off";
+            this.autoReconnectDelaySlider.displayString = "AutoReconnect: Off";
         } else {
-            this.fDPClient$autoReconnectDelaySlider.displayString = "AutoReconnect: " + DECIMAL_FORMAT.format(AutoReconnect.INSTANCE.getDelay() / 1000.0) + "s";
+            this.autoReconnectDelaySlider.displayString = "AutoReconnect: " + DECIMAL_FORMAT.format(AutoReconnect.INSTANCE.getDelay() / 1000.0) + "s";
         }
     }
 
-    private void fDPClient$updateReconnectButton() {
-        if (fDPClient$reconnectButton != null)
-            fDPClient$reconnectButton.displayString = "Reconnect" + (AutoReconnect.INSTANCE.isEnabled() ? " (" + (AutoReconnect.INSTANCE.getDelay() / 1000 - fDPClient$reconnectTimer / 20) + ")" : "");
+    private void updateReconnectButton() {
+        if (reconnectButton != null)
+            reconnectButton.displayString = "Reconnect" + (AutoReconnect.INSTANCE.isEnabled() ? " (" + (AutoReconnect.INSTANCE.getDelay() / 1000 - reconnectTimer / 20) + ")" : "");
     }
 
     @Inject(method = "keyTyped", at = @At("HEAD"))

@@ -7,10 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiDownloadTerrain;
-import net.minecraft.client.gui.GuiMainMenu;
-import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.realms.RealmsBridge;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -33,16 +30,7 @@ public abstract class MixinGuiDownloadTerrain extends MixinGuiScreen {
 
             this.mc.theWorld.sendQuittingDisconnectingPacket();
             this.mc.loadWorld(null);
-
-            if (flag) {
-                this.mc.displayGuiScreen(new GuiMainMenu());
-            } else if (flag1) {
-                RealmsBridge realmsbridge = new RealmsBridge();
-                realmsbridge.switchToRealms(new GuiMainMenu());
-            } else {
-                this.mc.displayGuiScreen(new GuiMultiplayer(new GuiMainMenu()));
-            }
         }
-
     }
+
 }

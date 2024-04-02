@@ -21,16 +21,16 @@ public abstract class MixinBlock implements IBlock {
     public abstract int getLightOpacity();
 
     @Override
-    public int fDPClient$getLightValue(IBlockAccess iBlockAccess, int n, int n2, int n3) {
-        Block block = ((IWorld) iBlockAccess).fDPClient$getBlockState(n, n2, n3).getBlock();
+    public int getLightValue(IBlockAccess iBlockAccess, int n, int n2, int n3) {
+        Block block = ((IWorld) iBlockAccess).getBlockState(n, n2, n3).getBlock();
         if (!this.equals(block)) {
-            return ((IBlock) block).fDPClient$getLightValue(iBlockAccess, n, n2, n3);
+            return ((IBlock) block).getLightValue(iBlockAccess, n, n2, n3);
         }
         return this.getLightValue();
     }
 
     @Override
-    public int fDPClient$getLightOpacity(IBlockAccess iBlockAccess, int n, int n2, int n3) {
+    public int getLightOpacity(IBlockAccess iBlockAccess, int n, int n2, int n3) {
         return this.getLightOpacity();
     }
 }

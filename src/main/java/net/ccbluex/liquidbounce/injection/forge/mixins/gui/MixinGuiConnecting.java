@@ -55,7 +55,6 @@ public abstract class MixinGuiConnecting extends GuiScreen {
 
     /**
      * @reason Fix Connect
-     * @author opZywl
      */
     @Overwrite
     private void connect(final String ip, final int port) {
@@ -106,7 +105,7 @@ public abstract class MixinGuiConnecting extends GuiScreen {
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         this.drawDefaultBackground();
 
-        RenderUtils.drawLoadingCircle((float) this.width / 2, (float) this.height / 4 + 70);
+        RenderUtils.drawLoadingCircle(this.width / 2, this.height / 4 + 70);
 
         String ip = "Unknown";
 
@@ -114,8 +113,8 @@ public abstract class MixinGuiConnecting extends GuiScreen {
         if (serverData != null)
             ip = serverData.serverIP;
 
-        RendererExtensionKt.drawCenteredString(fontRendererObj, "Logging in to", (float) this.width / 2, (float) this.height / 4 + 102, 16777215);
-        RendererExtensionKt.drawCenteredString(fontRendererObj, "§7" + ip, (float) this.width / 2, (float) this.height / 4 + 120, 0x5281FB, true);
+        RendererExtensionKt.drawCenteredString(fontRendererObj, "Logging in to", this.width / 2, this.height / 4 + 102, 16777215);
+        RendererExtensionKt.drawCenteredString(fontRendererObj, "§7" + ip, this.width / 2, this.height / 4 + 120, 0x5281FB, true);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

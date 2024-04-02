@@ -25,7 +25,6 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 @Mixin(GuiChat.class)
 public abstract class MixinGuiChat extends MixinGuiScreen {
@@ -47,10 +46,10 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
 
     @Shadow private String historyBuffer;
 
-    private float fDPClient$yPosOfInputField;
-    private float fDPClient$fade = 0;
+    private float yPosOfInputField;
+    private float fade = 0;
 
-    private final ChatControl fDPClient$chatEnhance = FDPClient.moduleManager.getModule(ChatControl.class);
+    private final ChatControl chatEnhance = FDPClient.moduleManager.getModule(ChatControl.class);
 
     /**
      * @author Liuli
@@ -64,23 +63,23 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
         if (i != this.sentHistoryCursor) {
             if (i == j) {
                 this.sentHistoryCursor = j;
-                fDPClient$setText(this.historyBuffer);
+                setText(this.historyBuffer);
             } else {
                 if (this.sentHistoryCursor == j) {
                     this.historyBuffer = this.inputField.getText();
                 }
 
-                fDPClient$setText(this.mc.ingameGUI.getChatGUI().getSentMessages().get(i));
+                setText(this.mc.ingameGUI.getChatGUI().getSentMessages().get(i));
                 this.sentHistoryCursor = i;
             }
         }
     }
 
-    private void fDPClient$setText(String text){
+    private void setText(String text){
         if(text.startsWith(String.valueOf(FDPClient.commandManager.getPrefix()))) {
             this.inputField.setMaxStringLength(114514);
         } else {
-            if(Objects.requireNonNull(fDPClient$chatEnhance).getState() && fDPClient$chatEnhance.getChatLimitValue().get()) {
+            if(chatEnhance.getState() && chatEnhance.getChatLimitValue().get()) {
                 this.inputField.setMaxStringLength(114514);
             } else {
                 this.inputField.setMaxStringLength(100);
@@ -92,7 +91,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))
     private void init(CallbackInfo callbackInfo) {
         inputField.yPosition = height - 5;
-        fDPClient$yPosOfInputField = inputField.yPosition;
+        yPosOfInputField = inputField.yPosition;
     }
 
     /**
@@ -113,7 +112,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
                 FDPClient.commandManager.autoComplete(text);
             }
         } else {
-            if(Objects.requireNonNull(fDPClient$chatEnhance).getState() && fDPClient$chatEnhance.getChatLimitValue().get()) {
+            if(chatEnhance.getState() && chatEnhance.getChatLimitValue().get()) {
                 this.inputField.setMaxStringLength(114514);
             } else {
                 this.inputField.setMaxStringLength(100);
@@ -127,7 +126,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     @Inject(method = "setText", at = @At("HEAD"), cancellable = true)
     private void setText(String newChatText, boolean shouldOverwrite, CallbackInfo callbackInfo) {
         if(shouldOverwrite&&newChatText.startsWith(String.valueOf(FDPClient.commandManager.getPrefix()))){
-            fDPClient$setText(FDPClient.commandManager.getPrefix()+"say "+newChatText);
+            setText(FDPClient.commandManager.getPrefix()+"say "+newChatText);
             callbackInfo.cancel();
         }
     }
@@ -136,13 +135,13 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
     private void updateScreen(CallbackInfo callbackInfo) {
         final int delta = RenderUtils.deltaTime;
 
-        if (fDPClient$fade < 14) fDPClient$fade += 0.4F * delta;
-        if (fDPClient$fade > 14) fDPClient$fade = 14;
+        if (fade < 14) fade += 0.4F * delta;
+        if (fade > 14) fade = 14;
 
-        if (fDPClient$yPosOfInputField > height - 12) fDPClient$yPosOfInputField -= 0.4F * delta;
-        if (fDPClient$yPosOfInputField < height - 12) fDPClient$yPosOfInputField = height - 12;
+        if (yPosOfInputField > height - 12) yPosOfInputField -= 0.4F * delta;
+        if (yPosOfInputField < height - 12) yPosOfInputField = height - 12;
 
-        inputField.yPosition = (int) fDPClient$yPosOfInputField - 1;
+        inputField.yPosition = (int) yPosOfInputField - 1;
     }
 
     @Inject(method = "autocompletePlayerNames", at = @At("HEAD"))
@@ -172,15 +171,20 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
             callbackInfo.cancel();
         }
     }
-    
+
+    private void onAutocompleteResponse(String[] autoCompleteResponse, CallbackInfo callbackInfo) {
+        if (FDPClient.commandManager.getLatestAutoComplete().length != 0) callbackInfo.cancel();
+    }
+    public void draw(){
+    }
     /**
      * @author CCBlueX
      */
     @Inject(method = "drawScreen", at = @At("HEAD"), cancellable = true)
     public void drawScreen(int mouseX, int mouseY, float partialTicks,CallbackInfo ci) {
         //RenderUtils.drawRect(10,10,20,20,new Color(255,255,255,255).getRGB());
-        RenderUtils.drawRoundedCornerRect(1, this.height - (int) fDPClient$fade - 2, this.width - 4, this.height - 1 , 2f, new Color(255,255,255,50).getRGB());
-        RenderUtils.drawRoundedCornerRect(2, this.height - (int) fDPClient$fade - 1, this.width - 3, this.height - 2 ,3f, new Color(0,0,0,200).getRGB());
+        RenderUtils.drawRoundedCornerRect(1, this.height - (int) fade - 2, this.width - 4, this.height - 1 , 2f, new Color(255,255,255,50).getRGB());
+        RenderUtils.drawRoundedCornerRect(2, this.height - (int) fade - 1, this.width - 3, this.height - 2 ,3f, new Color(0,0,0,200).getRGB());
 
         this.inputField.drawTextBox();
 

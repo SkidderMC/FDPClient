@@ -14,23 +14,12 @@ import org.spongepowered.asm.mixin.Overwrite;
 @Mixin(GuiKeyBindingList.class)
 public abstract class MixinGuiKeyBindingList extends GuiSlot {
 
-    /**
-     * Instantiates a new Mixin gui key binding list.
-     *
-     * @param mcIn         the mc in
-     * @param width        the width
-     * @param height       the height
-     * @param topIn        the top in
-     * @param bottomIn     the bottom in
-     * @param slotHeightIn the slot height in
-     */
     public MixinGuiKeyBindingList(Minecraft mcIn, int width, int height, int topIn, int bottomIn, int slotHeightIn) {
         super(mcIn, width, height, topIn, bottomIn, slotHeightIn);
     }
 
     /**
      * @author CCBlueX
-     * @reason Get Scroll Bar
      */
     @Overwrite
     protected int getScrollBarX() {

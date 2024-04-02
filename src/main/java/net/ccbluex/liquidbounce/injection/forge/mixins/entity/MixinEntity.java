@@ -267,7 +267,7 @@ public abstract class MixinEntity implements ICommandSender {
      * @return the vector for rotation
      */
     @Shadow
-    public abstract Vec3 getVectorForRotation(float pitch, float yaw);
+    protected abstract Vec3 getVectorForRotation(float pitch, float yaw);
 
     /**
      * Gets unique id.
@@ -374,7 +374,7 @@ public abstract class MixinEntity implements ICommandSender {
         if (Performance.fastEntityLightningValue.get()) {
             int n, n2, n3 = MathHelper.floor_double(this.posX);
             IWorld world = (IWorld)this.worldObj;
-            callbackInfoReturnable.setReturnValue(world.fDPClient$isBlockLoaded(n3, n2 = MathHelper.floor_double(this.posY + (double)this.getEyeHeight()), n = MathHelper.floor_double(this.posZ)) ? world.fDPClient$getCombinedLight(n3, n2, n, 0) : 0);
+            callbackInfoReturnable.setReturnValue(world.isBlockLoaded(n3, n2 = MathHelper.floor_double(this.posY + (double)this.getEyeHeight()), n = MathHelper.floor_double(this.posZ)) ? world.getCombinedLight(n3, n2, n, 0) : 0);
         }
     }
 
@@ -383,7 +383,7 @@ public abstract class MixinEntity implements ICommandSender {
         if (Performance.fastEntityLightningValue.get()) {
             int n, n2, n3 = MathHelper.floor_double(this.posX);
             IWorld world = (IWorld)this.worldObj;
-            callbackInfoReturnable.setReturnValue(world.fDPClient$isBlockLoaded(n3, n2 = MathHelper.floor_double(this.posY + (double) this.getEyeHeight()), n = MathHelper.floor_double(this.posZ)) ? world.fDPClient$getLightBrightness(n3, n2, n) : 0.0f);
+            callbackInfoReturnable.setReturnValue(world.isBlockLoaded(n3, n2 = MathHelper.floor_double(this.posY + (double) this.getEyeHeight()), n = MathHelper.floor_double(this.posZ)) ? world.getLightBrightness(n3, n2, n) : 0.0f);
         }
     }
 }

@@ -137,6 +137,3 @@ fun World.getEntitiesInRadius(entity: Entity, radius: Double = 16.0): List<Entit
     }
     return entities
 }
-
-val Entity.rotation: Rotation
-    get() = Rotation(rotationYaw, rotationPitch)

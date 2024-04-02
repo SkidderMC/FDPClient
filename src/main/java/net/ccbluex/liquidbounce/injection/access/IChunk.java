@@ -9,14 +9,14 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.world.EnumSkyBlock;
 
 public interface IChunk {
-    int fDPClient$getLightFor(EnumSkyBlock var1, int var2, int var3, int var4);
+    int getLightFor(EnumSkyBlock var1, int var2, int var3, int var4);
 
-    int fDPClient$getLightSubtracted(int var1, int var2, int var3, int var4);
+    int getLightSubtracted(int var1, int var2, int var3, int var4);
 
-    boolean fDPClient$canSeeSky(int var1, int var2, int var3);
+    boolean canSeeSky(int var1, int var2, int var3);
 
-    void fDPClient$setLightFor(EnumSkyBlock var1, int var2, int var3, int var4, int var5);
+    void setLightFor(EnumSkyBlock var1, int var2, int var3, int var4, int var5);
 
-    IBlockState fDPClient$getBlockState(int var1, int var2, int var3);
+    IBlockState getBlockState(int var1, int var2, int var3);
 }
 

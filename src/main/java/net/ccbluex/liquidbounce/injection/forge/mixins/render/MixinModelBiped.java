@@ -42,6 +42,56 @@ public abstract class MixinModelBiped {
     @Shadow
     public ModelRenderer bipedHead;
 
+    /**
+     * Sets rotation angles.
+     *
+     * @param p_setRotationAngles_1_ the p set rotation angles 1
+     * @param p_setRotationAngles_2_ the p set rotation angles 2
+     * @param p_setRotationAngles_3_ the p set rotation angles 3
+     * @param p_setRotationAngles_4_ the p set rotation angles 4
+     * @param p_setRotationAngles_5_ the p set rotation angles 5
+     * @param p_setRotationAngles_6_ the p set rotation angles 6
+     * @param p_setRotationAngles_7_ the p set rotation angles 7
+     */
+    @Shadow
+    public abstract void setRotationAngles(float p_setRotationAngles_1_, float p_setRotationAngles_2_, float p_setRotationAngles_3_, float p_setRotationAngles_4_, float p_setRotationAngles_5_, float p_setRotationAngles_6_, Entity p_setRotationAngles_7_);
+
+    /**
+     * The Biped body.
+     */
+    @Shadow
+    public ModelRenderer bipedBody;
+
+    /**
+     * The Biped headwear.
+     */
+    @Shadow
+    public ModelRenderer bipedHeadwear;
+
+    /**
+     * The Biped left arm.
+     */
+    @Shadow
+    public ModelRenderer bipedLeftArm;
+
+    /**
+     * The Biped right leg.
+     */
+    @Shadow
+    public ModelRenderer bipedRightLeg;
+
+    /**
+     * The Biped left leg.
+     */
+    @Shadow
+    public ModelRenderer bipedLeftLeg;
+
+    /**
+     * The Held item left.
+     */
+    @Shadow
+    public int heldItemLeft;
+
     @Inject(method = "setRotationAngles", at = @At(value = "FIELD", target = "Lnet/minecraft/client/model/ModelBiped;swingProgress:F"))
     private void revertSwordAnimation(float p_setRotationAngles1, float p_setRotationAngles2, float p_setRotationAngles3, float p_setRotationAngles4, float p_setRotationAngles5, float p_setRotationAngles6, Entity p_setRotationAngles7, CallbackInfo callbackInfo) {
         final Rotations rotations = Objects.requireNonNull(FDPClient.moduleManager.getModule(Rotations.class));

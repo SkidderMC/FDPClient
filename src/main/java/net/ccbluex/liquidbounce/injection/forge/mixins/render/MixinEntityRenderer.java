@@ -93,7 +93,7 @@ public abstract class MixinEntityRenderer {
         this.thirdPersonDistance = thirdPersonDistance;
     }
 
-    float fDPClient$d3 = 0.0f;
+    float d3 = 0.0f;
 
     @Inject(method = "renderWorldPass", at = @At(value = "FIELD", target = "Lnet/minecraft/client/renderer/EntityRenderer;renderHand:Z", shift = At.Shift.BEFORE))
     private void renderWorldPass(int pass, float partialTicks, long finishTimeNano, CallbackInfo callbackInfo) {
@@ -107,7 +107,7 @@ public abstract class MixinEntityRenderer {
         }
     }
 
-    private float fDPClient$getNightVisionBrightness(EntityLivingBase p_getNightVisionBrightness_1_, float p_getNightVisionBrightness_2_) {
+    private float getNightVisionBrightness(EntityLivingBase p_getNightVisionBrightness_1_, float p_getNightVisionBrightness_2_) {
         int i = p_getNightVisionBrightness_1_.getActivePotionEffect(Potion.nightVision).getDuration();
         return i > 200 ? 1.0F : 0.7F + MathHelper.sin(((float) i - p_getNightVisionBrightness_2_) * 3.1415927F * 0.2F) * 0.3F;
     }
@@ -290,8 +290,7 @@ public abstract class MixinEntityRenderer {
      */
     @Redirect(method = "updateCameraAndRender", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;inGameHasFocus:Z", opcode = GETFIELD))
     public boolean updateCameraAndRender(Minecraft minecraft) {
-        Objects.requireNonNull(FDPClient.moduleManager.getModule(FreeLook.class));
-        if (FreeLook.isEnabled && !FreeLook.isReverse) {
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(FreeLook.class)).isEnabled && !Objects.requireNonNull(FDPClient.moduleManager.getModule(FreeLook.class)).isReverse) {
             return FreeLook.overrideMouse();
         } else return mc.inGameHasFocus && Display.isActive();
     }
@@ -341,8 +340,8 @@ public abstract class MixinEntityRenderer {
     }
 
     /**
-     * @author opZywl
-     * @reason Update Light Map
+     * @author
+     * @reason
      */
     @Overwrite
     private void updateLightmap(float f2) {
@@ -383,7 +382,7 @@ public abstract class MixinEntityRenderer {
                         f15 = 0.25f + f12 * 0.75f;
                     }
                     if (this.mc.thePlayer.isPotionActive(Potion.nightVision)) {
-                        f6 = this.fDPClient$getNightVisionBrightness(this.mc.thePlayer, f2);
+                        f6 = this.getNightVisionBrightness(this.mc.thePlayer, f2);
                         f5 = 1.0f / f13;
                         if (f5 > 1.0f / f14) {
                             f5 = 1.0f / f14;
@@ -448,10 +447,6 @@ public abstract class MixinEntityRenderer {
         }
     }
 
-    /**
-     * @author opZywl
-     * @reason Orient Camera
-     */
     @Overwrite
     private void orientCamera(float partialTicks) {
         HUDModule hud = FDPClient.moduleManager.getModule(HUDModule.class);
@@ -474,16 +469,16 @@ public abstract class MixinEntityRenderer {
             assert hud != null;
             float f2;
             if (hud.getSmoothCamera().get() && hud.getState()) {
-                f2 = this.fDPClient$d3 = hud.getState() && hud.getCameraPositionValue().get() ? (float) Interpolator.LINEAR.interpolate(this.fDPClient$d3, (double) hud.getCameraPositionFovValue().get(), 5.0 / (double) Minecraft.getDebugFPS()) : (float) Interpolator.LINEAR.interpolate(this.fDPClient$d3, 4.0, 5.0 / (double) Minecraft.getDebugFPS());
+                f2 = this.d3 = hud.getState() && hud.getCameraPositionValue().get() ? (float) Interpolator.LINEAR.interpolate((double) this.d3, (double) hud.getCameraPositionFovValue().get(), 5.0 / (double) Minecraft.getDebugFPS()) : (float) Interpolator.LINEAR.interpolate((double) this.d3, 4.0, 5.0 / (double) Minecraft.getDebugFPS());
             }else{
-                f2 = this.fDPClient$d3 = hud.getState() && hud.getCameraPositionValue().get() ? hud.getCameraPositionFovValue().get(): (float) 4.0;
+                f2 = this.d3 = hud.getState() && hud.getCameraPositionValue().get() ? hud.getCameraPositionFovValue().get(): (float) 4.0;
             }
-            if (Double.isNaN(this.fDPClient$d3)) {
-                this.fDPClient$d3 = 0.01f;
+            if (Double.isNaN(this.d3)) {
+                this.d3 = 0.01f;
             }
-            this.fDPClient$d3 = MathHelper.clamp_float(this.fDPClient$d3, 0.01F, (float) (hud.getState() && hud.getCameraPositionValue().get() ? (double) hud.getCameraPositionFovValue().get() : 4.0));
+            this.d3 = (float) MathHelper.clamp_float((float) this.d3, 0.01F, (float) (hud.getState() && hud.getCameraPositionValue().get() ? (double) hud.getCameraPositionFovValue().get() : 4.0));
             if (this.mc.gameSettings.debugCamEnable) {
-                GlStateManager.translate(0.0f, 0.0f, -this.fDPClient$d3);
+                GlStateManager.translate(0.0f, 0.0f, -this.d3);
             } else {
                 float f22;
                 float f1;
@@ -497,32 +492,32 @@ public abstract class MixinEntityRenderer {
                 if (this.mc.gameSettings.thirdPersonView == 2) {
                     f22 += 180.0f;
                 }
-                double d4 = (double) (-MathHelper.sin(f1 * ((float) Math.PI / 180)) * MathHelper.cos(f22 * ((float) Math.PI / 180))) * (double) this.fDPClient$d3;
-                double d5 = (double) (MathHelper.cos(f1 * ((float) Math.PI / 180)) * MathHelper.cos(f22 * ((float) Math.PI / 180))) * (double) this.fDPClient$d3;
-                double d6 = (double) (-MathHelper.sin(f22 * ((float) Math.PI / 180))) * (double) this.fDPClient$d3;
+                double d4 = (double) (-MathHelper.sin(f1 * ((float) Math.PI / 180)) * MathHelper.cos(f22 * ((float) Math.PI / 180))) * (double) this.d3;
+                double d5 = (double) (MathHelper.cos(f1 * ((float) Math.PI / 180)) * MathHelper.cos(f22 * ((float) Math.PI / 180))) * (double) this.d3;
+                double d6 = (double) (-MathHelper.sin(f22 * ((float) Math.PI / 180))) * (double) this.d3;
                 for (int i = 0; i < 8; ++i) {
                     double d7;
-                    this.mc.theWorld.rayTraceBlocks(new Vec3(d0 + d4, d1 + d5, d2 + d6), new Vec3(d0 - d4 + d4 + d6, d1 - d6 + d5, d2 - d5 + d6));
+                    this.mc.theWorld.rayTraceBlocks(new Vec3(d0 + (double) d4, d1 + (double) d5, d2 + (double) d6), new Vec3(d0 - d4 + (double) d4 + (double) d6, d1 - d6 + (double) d5, d2 - d5 + (double) d6));
                     MovingObjectPosition movingobjectposition;
                     float f3 = (i & 1) * 2 - 1;
                     float f4 = (i >> 1 & 1) * 2 - 1;
                     float f5 = (i >> 2 & 1) * 2 - 1;
-                    if (hud.getState() || (movingobjectposition = this.mc.theWorld.rayTraceBlocks(new Vec3(d0 + (double) (f3 *= 0.1f), d1 + (double) (f4 *= 0.1f), d2 + (double) (f5 *= 0.1f)), new Vec3(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5))) == null || !((d7 = movingobjectposition.hitVec.distanceTo(new Vec3(d0, d1, d2))) < (double) this.fDPClient$d3))
+                    if (hud.getState() || (movingobjectposition = this.mc.theWorld.rayTraceBlocks(new Vec3(d0 + (double) (f3 *= 0.1f), d1 + (double) (f4 *= 0.1f), d2 + (double) (f5 *= 0.1f)), new Vec3(d0 - d4 + (double) f3 + (double) f5, d1 - d6 + (double) f4, d2 - d5 + (double) f5))) == null || !((d7 = movingobjectposition.hitVec.distanceTo(new Vec3(d0, d1, d2))) < (double) this.d3))
                         continue;
-                    this.fDPClient$d3 = (float) d7;
+                    this.d3 = (float) d7;
                 }
                 if (this.mc.gameSettings.thirdPersonView == 2) {
                     GlStateManager.rotate(180.0f, 0.0f, 1.0f, 0.0f);
                 }
                 GlStateManager.rotate(entity.rotationPitch - f22, 1.0f, 0.0f, 0.0f);
                 GlStateManager.rotate(entity.rotationYaw - f1, 0.0f, 1.0f, 0.0f);
-                GlStateManager.translate(0.0f, 0.0f, -this.fDPClient$d3);
+                GlStateManager.translate(0.0f, 0.0f, -this.d3);
                 GlStateManager.rotate(f1 - entity.rotationYaw, 0.0f, 1.0f, 0.0f);
                 GlStateManager.rotate(f22 - entity.rotationPitch, 1.0f, 0.0f, 0.0f);
             }
         } else {
             GlStateManager.translate(0.0f, 0.0f, 0.05f);
-            this.fDPClient$d3 = 0.01f;
+            this.d3 = 0.01f;
         }
         if (!this.mc.gameSettings.debugCamEnable) {
             float yaw = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0F;
@@ -549,11 +544,19 @@ public abstract class MixinEntityRenderer {
                 public List<IResource> getAllResources(ResourceLocation resourceLocation) {
                     return null;
                 }
-            }), entity, block, partialTicks, yaw, pitch, f8);
+            }), entity, block, (double) partialTicks, yaw, pitch, f8);
             MinecraftForge.EVENT_BUS.post(event);
             GlStateManager.rotate(event.roll, 0.0F, 0.0F, 1.0F);
             GlStateManager.rotate(event.pitch, 1.0F, 0.0F, 0.0F);
             GlStateManager.rotate(event.yaw, 0.0F, 1.0F, 0.0F);
+        } else if (!this.mc.gameSettings.debugCamEnable) {
+            GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partialTicks, 1.0f, 0.0f, 0.0f);
+            if (entity instanceof EntityAnimal) {
+                EntityAnimal entityanimal = (EntityAnimal) entity;
+                GlStateManager.rotate(entityanimal.prevRotationYawHead + (entityanimal.rotationYawHead - entityanimal.prevRotationYawHead) * partialTicks + 180.0f, 0.0f, 1.0f, 0.0f);
+            } else {
+                GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partialTicks + 180.0f, 0.0f, 1.0f, 0.0f);
+            }
         }
         GlStateManager.translate(0.0f, -f, 0.0f);
         d0 = entity.prevPosX + (entity.posX - entity.prevPosX) * (double) partialTicks;

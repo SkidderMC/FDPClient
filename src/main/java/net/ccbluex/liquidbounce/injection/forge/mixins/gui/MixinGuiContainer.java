@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import lombok.Setter;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.KeyEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
@@ -58,11 +57,12 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
     private int dragSplittingButton;
     @Shadow
     private int dragSplittingRemnant;
-    @Setter
-    private GuiButton fDPClient$stealButton, fDPClient$chestStealerButton, fDPClient$invManagerButton, fDPClient$killAuraButton;
-    private float fDPClient$progress = 0F;
-    private long fDPClient$lastMS = 0L;
-    private boolean fDPClient$translated = false;
+    private GuiButton stealButton, chestStealerButton, invManagerButton, killAuraButton;
+    private float progress = 0F;
+    private long lastMS = 0L;
+
+    private long guiOpenTime = -1;
+    private boolean translated = false;
     /**
      * Check hotbar keys boolean.
      *
@@ -82,13 +82,13 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
         GuiScreen guiScreen = MinecraftInstance.mc.currentScreen;
 
         if (guiScreen instanceof GuiChest) {
-            buttonList.add(fDPClient$killAuraButton = new GuiButton(1024576, 5, 5, 150, 20, "Disable KillAura"));
-            buttonList.add(fDPClient$chestStealerButton = new GuiButton(727, 5, 27, 150, 20, "Disable Stealer"));
-            buttonList.add(fDPClient$invManagerButton = new GuiButton(321123, 5, 49, 150, 20, "Disable Manager"));
+            buttonList.add(killAuraButton = new GuiButton(1024576, 5, 5, 150, 20, "Disable KillAura"));
+            buttonList.add(chestStealerButton = new GuiButton(727, 5, 27, 150, 20, "Disable Stealer"));
+            buttonList.add(invManagerButton = new GuiButton(321123, 5, 49, 150, 20, "Disable Manager"));
         }
 
-        fDPClient$lastMS = System.currentTimeMillis();
-        fDPClient$progress = 0F;
+        lastMS = System.currentTimeMillis();
+        progress = 0F;
     }
 
     @Override
@@ -111,8 +111,8 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
         InvManager invManager = Objects.requireNonNull(FDPClient.moduleManager.getModule(InvManager.class));
         final Minecraft mc = MinecraftInstance.mc;
 
-        if (fDPClient$progress >= 1F) fDPClient$progress = 1F;
-        else fDPClient$progress = (float) (System.currentTimeMillis() - fDPClient$lastMS) / (float) 200;
+        if (progress >= 1F) progress = 1F;
+        else progress = (float) (System.currentTimeMillis() - lastMS) / (float) 200;
 
         if ((!(mc.currentScreen instanceof GuiChest)
                 || !stealer.getState()
@@ -123,12 +123,12 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
         try {
             GuiScreen guiScreen = mc.currentScreen;
 
-            if (fDPClient$stealButton != null) fDPClient$stealButton.enabled = !stealer.getState();
-            if (fDPClient$killAuraButton != null)
-                fDPClient$killAuraButton.enabled = killAura.getState();
-            if (fDPClient$chestStealerButton != null) fDPClient$chestStealerButton.enabled = stealer.getState();
-            if (fDPClient$invManagerButton != null)
-                fDPClient$invManagerButton.enabled = invManager.getState();
+            if (stealButton != null) stealButton.enabled = !stealer.getState();
+            if (killAuraButton != null)
+                killAuraButton.enabled = killAura.getState();
+            if (chestStealerButton != null) chestStealerButton.enabled = stealer.getState();
+            if (invManagerButton != null)
+                invManagerButton.enabled = invManager.getState();
 
             if (stealer.getState() && stealer.getSilenceValue().get() && guiScreen instanceof GuiChest) {
                 mc.setIngameFocus();
@@ -168,8 +168,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
             mc.currentScreen.drawWorldBackground(0);
 
             final Animations animations = Animations.INSTANCE;
-            long fDPClient$guiOpenTime = -1;
-            double pct = Math.max(animations.getInvTimeValue().get() - (System.currentTimeMillis() - fDPClient$guiOpenTime), 0) / ((double) animations.getInvTimeValue().get());
+            double pct = Math.max(animations.getInvTimeValue().get() - (System.currentTimeMillis() - guiOpenTime), 0) / ((double) animations.getInvTimeValue().get());
             if (pct != 0) {
                 GL11.glPushMatrix();
 
@@ -191,7 +190,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
                     }
                 }
 
-                fDPClient$translated = true;
+                translated = true;
                 GL11.glPopMatrix(); // Make sure to pop the matrix to avoid affecting other render calls
             }
         }
@@ -205,16 +204,16 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
      */
     @Inject(method = "drawScreen", at = @At("RETURN"))
     public void drawScreenReturn(CallbackInfo callbackInfo) {
-        if (fDPClient$translated) {
+        if (translated) {
             GL11.glPopMatrix();
-            fDPClient$translated = false;
+            translated = false;
         }
         final Animations animMod = Objects.requireNonNull(FDPClient.moduleManager.getModule(Animations.class));
         Stealer stealer = Objects.requireNonNull(FDPClient.moduleManager.getModule(Stealer.class));
         final Minecraft mc = MinecraftInstance.mc;
         boolean checkFullSilence = stealer.getState() && stealer.getSilenceValue().get() && !stealer.getStillDisplayValue().get();
 
-        if (animMod.getState() && !(mc.currentScreen instanceof GuiChest && checkFullSilence))
+        if (animMod != null && animMod.getState() && !(mc.currentScreen instanceof GuiChest && checkFullSilence))
             GL11.glPopMatrix();
     }
 
@@ -241,12 +240,12 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
 
     @Inject(method = "keyTyped", at = @At("HEAD"))
     private void keyTyped(char typedChar, int keyCode, CallbackInfo ci) {
+        Stealer stealer = FDPClient.moduleManager.getModule(Stealer.class);
         try {
-            if (Objects.requireNonNull(FDPClient.moduleManager.getModule(Stealer.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(Stealer.class)).getSilentTitleValue().get() && mc.currentScreen instanceof GuiChest)
+            if (stealer.getState() && stealer.getSilentTitleValue().get() && mc.currentScreen instanceof GuiChest)
                 FDPClient.eventManager.callEvent(new KeyEvent(keyCode == 0 ? typedChar + 256 : keyCode));
-        } catch (Exception ignored){
+        }catch (Exception e){
 
         }
     }
-
 }

@@ -104,7 +104,7 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
     @Final
     protected Minecraft mc;
     @Unique
-    private int fDPClient$listWidth = 220;
+    private int listWidth = 220;
 
     /**
      * Draw background.
@@ -319,6 +319,10 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
         return this.width - 5;
     }
 
+    @Override
+    public void setEnableScissor(boolean enableScissor) {
+    }
+
     /**
      * Gets list width.
      *
@@ -328,12 +332,12 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
      */
     @Overwrite
     public int getListWidth() {
-        return this.fDPClient$listWidth;
+        return this.listWidth;
     }
 
     @Override
-    public void fDPClient$setListWidth(int listWidth) {
-        this.fDPClient$listWidth = listWidth;
+    public void setListWidth(int listWidth) {
+        this.listWidth = listWidth;
     }
 
 }

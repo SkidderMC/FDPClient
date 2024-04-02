@@ -47,7 +47,7 @@ public class MixinTileEntityBannerRenderer {
         } else {
             TileEntityBannerRenderer.TimedBannerTexture timedTexture = DESIGNS.get(texture);
             if (timedTexture == null) {
-                if (DESIGNS.size() >= 256 && !this.fDPClient$freeCacheSlot()) {
+                if (DESIGNS.size() >= 256 && !this.freeCacheSlot()) {
                     return BANNERTEXTURES;
                 }
 
@@ -71,7 +71,7 @@ public class MixinTileEntityBannerRenderer {
     }
 
     @Unique
-    private boolean fDPClient$freeCacheSlot() {
+    private boolean freeCacheSlot() {
         long start = System.currentTimeMillis();
         Iterator<String> iterator = DESIGNS.keySet().iterator();
 

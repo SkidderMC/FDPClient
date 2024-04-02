@@ -17,7 +17,7 @@ public abstract class MixinRenderGlobal implements IMixinWorldAccess {
     protected abstract void markBlocksForUpdate(int var1, int var2, int var3, int var4, int var5, int var6);
 
     @Override
-    public void fDPClient$notifyLightSet(int n, int n2, int n3) {
+    public void notifyLightSet(int n, int n2, int n3) {
         this.markBlocksForUpdate(n - 1, n2 - 1, n3 - 1, n + 1, n2 + 1, n3 + 1);
     }
 }

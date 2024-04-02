@@ -21,10 +21,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(GuiMultiplayer.class)
 public abstract class MixinGuiMultiplayer extends MixinGuiScreen {
 
-    private GuiButton fDPClient$toolButton;
+    private GuiButton toolButton;
     @Inject(method = "initGui", at = @At("RETURN"))
     private void initGui(CallbackInfo callbackInfo) {
-        buttonList.add(fDPClient$toolButton = new GuiButton(997, 5, 8, 138, 20, "Tools"));
+        buttonList.add(toolButton = new GuiButton(997, 5, 8, 138, 20, "Tools"));
         buttonList.add(new GuiButton(998, width - 94, 5, 88, 20, "Alt Manager"));
         buttonList.add(new GuiButton(1151, 4, height - 24, 68, 20, "Protocol"));
     }
@@ -43,13 +43,13 @@ public abstract class MixinGuiMultiplayer extends MixinGuiScreen {
 
     @Inject(method = "drawScreen", at = @At("TAIL"))
     private void injectToolDraw(int mouseX, int mouseY, float partialTicks, CallbackInfo callbackInfo) {
-        ToolDropdown.handleDraw(fDPClient$toolButton);
+        ToolDropdown.handleDraw(toolButton);
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void injectToolClick(int mouseX, int mouseY, int mouseButton, CallbackInfo callbackInfo) {
         if (mouseButton == 0)
-            if (ToolDropdown.handleClick(mouseX, mouseY, fDPClient$toolButton))
+            if (ToolDropdown.handleClick(mouseX, mouseY, toolButton))
                 callbackInfo.cancel();
     }
 

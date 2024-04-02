@@ -39,6 +39,9 @@ public class MixinNetworkManager implements VFNetworkManager {
 
     @Shadow
     private Channel channel;
+    @Shadow
+    private INetHandler packetListener;
+
     @Unique
     private ProtocolVersion viaForge$targetVersion;
 
@@ -76,7 +79,7 @@ public class MixinNetworkManager implements VFNetworkManager {
      * @author opZywl
      * @reason Packet Tracking
      */
-    @Inject(method = "channelRead0*", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "channelRead0", at = @At("HEAD"), cancellable = true)
     private void read(ChannelHandlerContext context, Packet<?> packet, CallbackInfo callback) {
         if(PacketUtils.INSTANCE.getPacketType(packet) != PacketUtils.PacketType.SERVERSIDE)
             return;
