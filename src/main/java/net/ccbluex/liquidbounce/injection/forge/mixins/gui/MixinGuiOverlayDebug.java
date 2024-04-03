@@ -69,10 +69,10 @@ public abstract class MixinGuiOverlayDebug {
             list.add("P: " + MinecraftInstance.mc.effectRenderer.getStatistics() + ". T: " + MinecraftInstance.mc.theWorld.getDebugLoadedEntities());
             list.add(MinecraftInstance.mc.theWorld.getProviderName());
             list.add("");
-            list.add(String.format("XYZ: %.3f / %.5f / %.3f", MinecraftInstance.mc.getRenderViewEntity().posX, Double.valueOf(MinecraftInstance.mc.getRenderViewEntity().getEntityBoundingBox().minY), Double.valueOf(MinecraftInstance.mc.getRenderViewEntity().posZ)));
+            list.add(String.format("XYZ: %.3f / %.5f / %.3f", MinecraftInstance.mc.getRenderViewEntity().posX, MinecraftInstance.mc.getRenderViewEntity().getEntityBoundingBox().minY, MinecraftInstance.mc.getRenderViewEntity().posZ));
             list.add(String.format("Block: %d %d %d", blockpos.getX(), blockpos.getY(), blockpos.getZ()));
-            list.add(String.format("Chunk: %d %d %d in %d %d %d", blockpos.getX() & 15, blockpos.getY() & 15, Integer.valueOf(blockpos.getZ() & 15), Integer.valueOf(blockpos.getX() >> 4), Integer.valueOf(blockpos.getY() >> 4), Integer.valueOf(blockpos.getZ() >> 4)));
-            list.add(String.format("Facing: %s (%s) (%.1f / %.1f)", enumfacing, s, MathHelper.wrapAngleTo180_float(entity.rotationYaw), Float.valueOf(MathHelper.wrapAngleTo180_float(entity.rotationPitch))));
+            list.add(String.format("Chunk: %d %d %d in %d %d %d", blockpos.getX() & 15, blockpos.getY() & 15, blockpos.getZ() & 15, blockpos.getX() >> 4, blockpos.getY() >> 4, blockpos.getZ() >> 4));
+            list.add(String.format("Facing: %s (%s) (%.1f / %.1f)", enumfacing, s, MathHelper.wrapAngleTo180_float(entity.rotationYaw), MathHelper.wrapAngleTo180_float(entity.rotationPitch)));
 
             if (MinecraftInstance.mc.theWorld != null && MinecraftInstance.mc.theWorld.isBlockLoaded(blockpos)) {
                 Chunk chunk = MinecraftInstance.mc.theWorld.getChunkFromBlockCoords(blockpos);
@@ -85,7 +85,7 @@ public abstract class MixinGuiOverlayDebug {
 
                 }
 
-                list.add(String.format("Local Difficulty: %.2f (Day %d)", new Object[]{Float.valueOf(difficultyinstance.getAdditionalDifficulty()), Long.valueOf(MinecraftInstance.mc.theWorld.getWorldTime() / 24000L)}));
+                list.add(String.format("Local Difficulty: %.2f (Day %d)", difficultyinstance.getAdditionalDifficulty(), MinecraftInstance.mc.theWorld.getWorldTime() / 24000L));
             }
 
             if (MinecraftInstance.mc.entityRenderer != null && MinecraftInstance.mc.entityRenderer.isShaderActive()) {
@@ -94,7 +94,7 @@ public abstract class MixinGuiOverlayDebug {
 
             if (MinecraftInstance.mc.objectMouseOver != null && MinecraftInstance.mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && MinecraftInstance.mc.objectMouseOver.getBlockPos() != null) {
                 BlockPos blockpos1 = MinecraftInstance.mc.objectMouseOver.getBlockPos();
-                list.add(String.format("Looking at: %d %d %d", new Object[]{Integer.valueOf(blockpos1.getX()), Integer.valueOf(blockpos1.getY()), Integer.valueOf(blockpos1.getZ())}));
+                list.add(String.format("Looking at: %d %d %d", blockpos1.getX(), blockpos1.getY(), blockpos1.getZ()));
             }
 
             cir.setReturnValue(list);

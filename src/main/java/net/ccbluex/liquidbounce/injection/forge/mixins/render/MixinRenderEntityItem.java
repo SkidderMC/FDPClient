@@ -26,6 +26,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.Objects;
+
 @Mixin(RenderEntityItem.class)
 public abstract class MixinRenderEntityItem extends Render<EntityItem> {
     protected MixinRenderEntityItem(final RenderManager p_i46179_1_) {
@@ -36,26 +38,28 @@ public abstract class MixinRenderEntityItem extends Render<EntityItem> {
     protected abstract int func_177078_a(final ItemStack p0);
 
 
-    @Inject(method = "doRender", at = @At("HEAD"))
+    @Inject(method = "doRender*", at = @At("HEAD"))
     private void injectChamsPre(CallbackInfo callbackInfo) {
-        final Chams chams = FDPClient.moduleManager.getModule(Chams.class);
 
-        if (chams.getState() && chams.getItemsValue().get()) {
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(Chams.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(Chams.class)).getItemsValue().get()) {
             GL11.glEnable(GL11.GL_POLYGON_OFFSET_FILL);
             GL11.glPolygonOffset(1.0F, -1000000F);
         }
     }
 
-    @Inject(method = "doRender", at = @At("RETURN"))
+    @Inject(method = "doRender*", at = @At("RETURN"))
     private void injectChamsPost(CallbackInfo callbackInfo) {
-        final Chams chams = FDPClient.moduleManager.getModule(Chams.class);
 
-        if (chams.getState() && chams.getItemsValue().get()) {
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(Chams.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(Chams.class)).getItemsValue().get()) {
             GL11.glPolygonOffset(1.0F, 1000000F);
             GL11.glDisable(GL11.GL_POLYGON_OFFSET_FILL);
         }
     }
 
+    /**
+     * @author opZywl
+     * @reason Item Physic
+     */
     @Overwrite
     private int func_177077_a(EntityItem itemIn, double p_177077_2_, double p_177077_4_, double p_177077_6_, float p_177077_8_, IBakedModel p_177077_9_)
     {
@@ -71,7 +75,6 @@ public abstract class MixinRenderEntityItem extends Render<EntityItem> {
         {
             boolean flag = p_177077_9_.isGui3d();
             int i = this.func_177078_a(itemstack);
-            float f = 0.25F;
             float f1 = MathHelper.sin(((float)itemIn.getAge() + p_177077_8_) / 10.0F + itemIn.hoverStart) * 0.1F + 0.1F;
             if (itemPhysics.getState()) {
                 f1 = 0.0f;

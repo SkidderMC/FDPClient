@@ -15,13 +15,13 @@ public interface IMixinGuiSlot {
      *
      * @param listWidth the list width
      */
-    void setListWidth(int listWidth);
+    void fDPClient$setListWidth(int listWidth);
 
     /**
      * Sets enable scissor.
      *
      * @param b the b
      */
-    void setEnableScissor(boolean b);
+    void fDPClient$setEnableScissor(boolean b);
 
 }

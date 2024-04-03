@@ -31,8 +31,4 @@ public abstract class MixinRender {
     private void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
         FDPClient.eventManager.callEvent(new RenderEntityEvent(entity, x, y, z, entityYaw, partialTicks));
     }
-
-    public void doRenders(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
-        FDPClient.eventManager.callEvent(new RenderEntityEvent(entity, x, y, z, entityYaw, partialTicks));
-    }
 }

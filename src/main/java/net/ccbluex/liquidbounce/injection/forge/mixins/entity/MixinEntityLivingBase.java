@@ -34,6 +34,8 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.Objects;
+
 @Mixin(EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends MixinEntity {
 
@@ -127,7 +129,6 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     /**
      * Update distance float.
      *
-     * @return the float
      * @author opZywl
      * @reason Rotation
      */
@@ -155,15 +156,15 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Inject(method = "onLivingUpdate", at = @At("HEAD"))
     private void headLiving(CallbackInfo callbackInfo) {
-        if (FDPClient.moduleManager.getModule(DelayRemover.class).getState() && FDPClient.moduleManager.getModule(DelayRemover.class).getJumpDelay().get())
-            jumpTicks = FDPClient.moduleManager.getModule(DelayRemover.class).getJumpDelayTicks().get();
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(DelayRemover.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(DelayRemover.class)).getJumpDelay().get())
+            jumpTicks = Objects.requireNonNull(FDPClient.moduleManager.getModule(DelayRemover.class)).getJumpDelayTicks().get();
     }
 
     @Inject(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;isJumping:Z", ordinal = 1))
     private void onJumpSection(CallbackInfo callbackInfo) {
         final Jesus jesus = FDPClient.moduleManager.getModule(Jesus.class);
 
-        if (jesus.getState() && !isJumping && !isSneaking() && isInWater() &&
+        if (Objects.requireNonNull(jesus).getState() && !isJumping && !isSneaking() && isInWater() &&
                 jesus.getModeValue().equals("Legit")) {
             this.updateAITick();
         }
@@ -179,7 +180,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     private void isPotionActive(Potion p_isPotionActive_1_, final CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
         final VanillaTweaks camera = FDPClient.moduleManager.getModule(VanillaTweaks.class);
 
-        if ((p_isPotionActive_1_ == Potion.confusion || p_isPotionActive_1_ == Potion.blindness) && camera.getState() && camera.getConfusionEffectValue().get())
+        if ((p_isPotionActive_1_ == Potion.confusion || p_isPotionActive_1_ == Potion.blindness) && Objects.requireNonNull(camera).getState() && camera.getConfusionEffectValue().get())
             callbackInfoReturnable.setReturnValue(false);
     }
 
@@ -192,6 +193,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     /**
      * @author Liuli
+     * @reason Get Arm Swing Animation End
      */
     @Overwrite
     private int getArmSwingAnimationEnd() {

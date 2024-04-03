@@ -112,41 +112,41 @@ public abstract class MixinWorld implements IWorld {
                 n3 = MathHelper.floor_double(entityPlayer.posX) + this.rand.nextInt(11) - 5;
                 n2 = MathHelper.floor_double(entityPlayer.posY) + this.rand.nextInt(11) - 5;
                 n = MathHelper.floor_double(entityPlayer.posZ) + this.rand.nextInt(11) - 5;
-                this.checkLight(n3, n2, n);
+                this.fDPClient$checkLight(n3, n2, n);
             }
             this.theProfiler.endSection();
         }
     }
 
     @Override
-    public boolean isAreaLoaded(int n, int n2, int n3, int n4, boolean bl) {
+    public boolean fDPClient$isAreaLoaded(int n, int n2, int n3, int n4, boolean bl) {
         return this.isAreaLoaded(n - n4, n2 - n4, n3 - n4, n + n4, n2 + n4, n3 + n4, bl);
     }
 
     @Override
-    public boolean isBlockLoaded(int n, int n2, int n3) {
-        return this.isBlockLoaded(n, n2, n3, true);
+    public boolean fDPClient$isBlockLoaded(int n, int n2, int n3) {
+        return this.fDPClient$isBlockLoaded(n, n2, n3, true);
     }
 
     @Override
-    public boolean isBlockLoaded(int n, int n2, int n3, boolean bl) {
-        return this.isValid(n, n2, n3) && this.isChunkLoaded(n >> 4, n3 >> 4, bl);
+    public boolean fDPClient$isBlockLoaded(int n, int n2, int n3, boolean bl) {
+        return this.fDPClient$isValid(n, n2, n3) && this.isChunkLoaded(n >> 4, n3 >> 4, bl);
     }
 
     @Override
-    public boolean isValid(int n, int n2, int n3) {
+    public boolean fDPClient$isValid(int n, int n2, int n3) {
         return n >= -30000000 && n3 >= -30000000 && n < 30000000 && n3 < 30000000 && n2 >= 0 && n2 < 256;
     }
 
     @Override
-    public boolean canSeeSky(int n, int n2, int n3) {
-        return ((IChunk)this.getChunkFromBlockCoords(n, n2, n3)).canSeeSky(n, n2, n3);
+    public boolean fDPClient$canSeeSky(int n, int n2, int n3) {
+        return ((IChunk)this.fDPClient$getChunkFromBlockCoords(n, n2, n3)).fDPClient$canSeeSky(n, n2, n3);
     }
 
     @Override
-    public int getCombinedLight(int n, int n2, int n3, int n4) {
-        int n5 = this.getLightFromNeighborsFor(EnumSkyBlock.SKY, n, n2, n3);
-        int n6 = this.getLightFromNeighborsFor(EnumSkyBlock.BLOCK, n, n2, n3);
+    public int fDPClient$getCombinedLight(int n, int n2, int n3, int n4) {
+        int n5 = this.fDPClient$getLightFromNeighborsFor(EnumSkyBlock.SKY, n, n2, n3);
+        int n6 = this.fDPClient$getLightFromNeighborsFor(EnumSkyBlock.BLOCK, n, n2, n3);
         if (n6 < n4) {
             n6 = n4;
         }
@@ -154,14 +154,14 @@ public abstract class MixinWorld implements IWorld {
     }
 
     @Override
-    public int getRawLight(int n, int n2, int n3, EnumSkyBlock enumSkyBlock) {
-        if (enumSkyBlock == EnumSkyBlock.SKY && this.canSeeSky(n, n2, n3)) {
+    public int fDPClient$getRawLight(int n, int n2, int n3, EnumSkyBlock enumSkyBlock) {
+        if (enumSkyBlock == EnumSkyBlock.SKY && this.fDPClient$canSeeSky(n, n2, n3)) {
             return 15;
         }
-        IBlock IBlock2 = (IBlock)this.getBlockState(n, n2, n3).getBlock();
-        int n4 = IBlock2.getLightValue((World)(Object)this, n, n2, n3);
+        IBlock IBlock2 = (IBlock)this.fDPClient$getBlockState(n, n2, n3).getBlock();
+        int n4 = IBlock2.fDPClient$getLightValue((World)(Object)this, n, n2, n3);
         int n5 = enumSkyBlock == EnumSkyBlock.SKY ? 0 : n4;
-        int n6 = IBlock2.getLightOpacity((World)(Object)this, n, n2, n3);
+        int n6 = IBlock2.fDPClient$getLightOpacity((World)(Object)this, n, n2, n3);
         if (n6 >= 15 && n4 > 0) {
             n6 = 1;
         }
@@ -175,7 +175,7 @@ public abstract class MixinWorld implements IWorld {
             return n5;
         }
         for (EnumFacing enumFacing : StaticStorage.facings()) {
-            int n7 = this.getLightFor(enumSkyBlock, n + enumFacing.getFrontOffsetX(), n2 + enumFacing.getFrontOffsetY(), n3 + enumFacing.getFrontOffsetZ()) - n6;
+            int n7 = this.fDPClient$getLightFor(enumSkyBlock, n + enumFacing.getFrontOffsetX(), n2 + enumFacing.getFrontOffsetY(), n3 + enumFacing.getFrontOffsetZ()) - n6;
             if (n7 > n5) {
                 n5 = n7;
             }
@@ -186,19 +186,19 @@ public abstract class MixinWorld implements IWorld {
     }
 
     @Override
-    public float getLightBrightness(int n, int n2, int n3) {
-        return this.provider.getLightBrightnessTable()[this.getLightFromNeighbors(n, n2, n3)];
+    public float fDPClient$getLightBrightness(int n, int n2, int n3) {
+        return this.provider.getLightBrightnessTable()[this.fDPClient$getLightFromNeighbors(n, n2, n3)];
     }
 
     @Override
-    public int getLight(int n, int n2, int n3, boolean bl) {
+    public int fDPClient$getLight(int n, int n2, int n3, boolean bl) {
         if (n >= -30000000 && n3 >= -30000000 && n < 30000000 && n3 < 30000000) {
-            if (bl && this.getBlockState(n, n2, n3).getBlock().getUseNeighborBrightness()) {
-                int n4 = this.getLight(n, n2 + 1, n3, false);
-                int n5 = this.getLight(n + 1, n2, n3, false);
-                int n6 = this.getLight(n - 1, n2, n3, false);
-                int n7 = this.getLight(n, n2, n3 + 1, false);
-                int n8 = this.getLight(n, n2, n3 - 1, false);
+            if (bl && this.fDPClient$getBlockState(n, n2, n3).getBlock().getUseNeighborBrightness()) {
+                int n4 = this.fDPClient$getLight(n, n2 + 1, n3, false);
+                int n5 = this.fDPClient$getLight(n + 1, n2, n3, false);
+                int n6 = this.fDPClient$getLight(n - 1, n2, n3, false);
+                int n7 = this.fDPClient$getLight(n, n2, n3 + 1, false);
+                int n8 = this.fDPClient$getLight(n, n2, n3 - 1, false);
                 if (n5 > n4) {
                     n4 = n5;
                 }
@@ -219,52 +219,52 @@ public abstract class MixinWorld implements IWorld {
             if (n2 >= 256) {
                 n2 = 255;
             }
-            IChunk IChunk2 = (IChunk)this.getChunkFromBlockCoords(n, n2, n3);
-            return IChunk2.getLightSubtracted(n, n2, n3, this.skylightSubtracted);
+            IChunk IChunk2 = (IChunk)this.fDPClient$getChunkFromBlockCoords(n, n2, n3);
+            return IChunk2.fDPClient$getLightSubtracted(n, n2, n3, this.skylightSubtracted);
         }
         return 15;
     }
 
     @Override
-    public int getLightFor(EnumSkyBlock enumSkyBlock, int n, int n2, int n3) {
+    public int fDPClient$getLightFor(EnumSkyBlock enumSkyBlock, int n, int n2, int n3) {
         if (n2 < 0) {
             n2 = 0;
         }
-        if (!this.isValid(n, n2, n3)) {
+        if (!this.fDPClient$isValid(n, n2, n3)) {
             return enumSkyBlock.defaultLightValue;
         }
-        if (!this.isBlockLoaded(n, n2, n3)) {
+        if (!this.fDPClient$isBlockLoaded(n, n2, n3)) {
             return enumSkyBlock.defaultLightValue;
         }
-        IChunk IChunk2 = (IChunk)this.getChunkFromBlockCoords(n, n2, n3);
-        return IChunk2.getLightFor(enumSkyBlock, n, n2, n3);
+        IChunk IChunk2 = (IChunk)this.fDPClient$getChunkFromBlockCoords(n, n2, n3);
+        return IChunk2.fDPClient$getLightFor(enumSkyBlock, n, n2, n3);
     }
 
     @Override
-    public int getLightFromNeighbors(int n, int n2, int n3) {
-        return this.getLight(n, n2, n3, true);
+    public int fDPClient$getLightFromNeighbors(int n, int n2, int n3) {
+        return this.fDPClient$getLight(n, n2, n3, true);
     }
 
     @Override
-    public int getLightFromNeighborsFor(EnumSkyBlock enumSkyBlock, int n, int n2, int n3) {
+    public int fDPClient$getLightFromNeighborsFor(EnumSkyBlock enumSkyBlock, int n, int n2, int n3) {
         if (this.provider.getHasNoSky() && enumSkyBlock == EnumSkyBlock.SKY) {
             return 0;
         }
         if (n2 < 0) {
             n2 = 0;
         }
-        if (!this.isValid(n, n2, n3)) {
+        if (!this.fDPClient$isValid(n, n2, n3)) {
             return enumSkyBlock.defaultLightValue;
         }
-        if (!this.isBlockLoaded(n, n2, n3)) {
+        if (!this.fDPClient$isBlockLoaded(n, n2, n3)) {
             return enumSkyBlock.defaultLightValue;
         }
-        if (this.getBlockState(n, n2, n3).getBlock().getUseNeighborBrightness()) {
-            int n4 = this.getLightFor(enumSkyBlock, n, n2 + 1, n3);
-            int n5 = this.getLightFor(enumSkyBlock, n + 1, n2, n3);
-            int n6 = this.getLightFor(enumSkyBlock, n - 1, n2, n3);
-            int n7 = this.getLightFor(enumSkyBlock, n, n2, n3 + 1);
-            int n8 = this.getLightFor(enumSkyBlock, n, n2, n3 - 1);
+        if (this.fDPClient$getBlockState(n, n2, n3).getBlock().getUseNeighborBrightness()) {
+            int n4 = this.fDPClient$getLightFor(enumSkyBlock, n, n2 + 1, n3);
+            int n5 = this.fDPClient$getLightFor(enumSkyBlock, n + 1, n2, n3);
+            int n6 = this.fDPClient$getLightFor(enumSkyBlock, n - 1, n2, n3);
+            int n7 = this.fDPClient$getLightFor(enumSkyBlock, n, n2, n3 + 1);
+            int n8 = this.fDPClient$getLightFor(enumSkyBlock, n, n2, n3 - 1);
             if (n5 > n4) {
                 n4 = n5;
             }
@@ -279,30 +279,30 @@ public abstract class MixinWorld implements IWorld {
             }
             return n4;
         }
-        IChunk IChunk2 = (IChunk)this.getChunkFromBlockCoords(n, n2, n3);
-        return IChunk2.getLightFor(enumSkyBlock, n, n2, n3);
+        IChunk IChunk2 = (IChunk)this.fDPClient$getChunkFromBlockCoords(n, n2, n3);
+        return IChunk2.fDPClient$getLightFor(enumSkyBlock, n, n2, n3);
     }
 
     @Override
-    public void setLightFor(EnumSkyBlock enumSkyBlock, int n, int n2, int n3, int n4) {
-        if (this.isValid(n, n2, n3) && this.isBlockLoaded(n, n2, n3)) {
-            IChunk IChunk2 = (IChunk)this.getChunkFromBlockCoords(n, n2, n3);
-            IChunk2.setLightFor(enumSkyBlock, n, n2, n3, n4);
-            this.notifyLightSet(n, n2, n3);
+    public void fDPClient$setLightFor(EnumSkyBlock enumSkyBlock, int n, int n2, int n3, int n4) {
+        if (this.fDPClient$isValid(n, n2, n3) && this.fDPClient$isBlockLoaded(n, n2, n3)) {
+            IChunk IChunk2 = (IChunk)this.fDPClient$getChunkFromBlockCoords(n, n2, n3);
+            IChunk2.fDPClient$setLightFor(enumSkyBlock, n, n2, n3, n4);
+            this.fDPClient$notifyLightSet(n, n2, n3);
         }
     }
 
     @Override
-    public boolean checkLight(int n, int n2, int n3) {
+    public boolean fDPClient$checkLight(int n, int n2, int n3) {
         boolean bl = false;
         if (!this.provider.getHasNoSky()) {
-            bl = this.checkLightFor(EnumSkyBlock.SKY, n, n2, n3);
+            bl = this.fDPClient$checkLightFor(EnumSkyBlock.SKY, n, n2, n3);
         }
-        return bl | this.checkLightFor(EnumSkyBlock.BLOCK, n, n2, n3);
+        return bl | this.fDPClient$checkLightFor(EnumSkyBlock.BLOCK, n, n2, n3);
     }
 
     @Override
-    public boolean checkLightFor(EnumSkyBlock enumSkyBlock, int n, int n2, int n3) {
+    public boolean fDPClient$checkLightFor(EnumSkyBlock enumSkyBlock, int n, int n2, int n3) {
         int n4;
         int n5;
         int n6;
@@ -312,14 +312,14 @@ public abstract class MixinWorld implements IWorld {
         int n10;
         int n11;
         int n12;
-        if (!this.isAreaLoaded(n, n2, n3, 17, false)) {
+        if (!this.fDPClient$isAreaLoaded(n, n2, n3, 17, false)) {
             return false;
         }
         int n13 = 0;
         int n14 = 0;
         this.theProfiler.startSection("getBrightness");
-        int n15 = this.getLightFor(enumSkyBlock, n, n2, n3);
-        int n16 = this.getRawLight(n, n2, n3, enumSkyBlock);
+        int n15 = this.fDPClient$getLightFor(enumSkyBlock, n, n2, n3);
+        int n16 = this.fDPClient$getRawLight(n, n2, n3, enumSkyBlock);
         if (n16 > n15) {
             this.lightUpdateBlockList[n14++] = 133152;
         } else if (n16 < n15) {
@@ -330,16 +330,16 @@ public abstract class MixinWorld implements IWorld {
                 n10 = (n12 >> 6 & 0x3F) - 32 + n2;
                 n9 = (n12 >> 12 & 0x3F) - 32 + n3;
                 n8 = n12 >> 18 & 0xF;
-                n7 = this.getLightFor(enumSkyBlock, n11, n10, n9);
+                n7 = this.fDPClient$getLightFor(enumSkyBlock, n11, n10, n9);
                 if (n7 != n8) continue;
-                this.setLightFor(enumSkyBlock, n11, n10, n9, 0);
+                this.fDPClient$setLightFor(enumSkyBlock, n11, n10, n9, 0);
                 if (n8 <= 0 || MathHelper.abs_int(n11 - n) + MathHelper.abs_int(n10 - n2) + MathHelper.abs_int(n9 - n3) >= 17) continue;
                 for (EnumFacing enumFacing : StaticStorage.facings()) {
                     int n17 = n11 + enumFacing.getFrontOffsetX();
                     int n18 = n10 + enumFacing.getFrontOffsetY();
                     int n19 = n9 + enumFacing.getFrontOffsetZ();
-                    int n20 = Math.max(1, this.getBlockState(n17, n18, n19).getBlock().getLightOpacity());
-                    n7 = this.getLightFor(enumSkyBlock, n17, n18, n19);
+                    int n20 = Math.max(1, this.fDPClient$getBlockState(n17, n18, n19).getBlock().getLightOpacity());
+                    n7 = this.fDPClient$getLightFor(enumSkyBlock, n17, n18, n19);
                     if (n7 != n8 - n20 || n14 >= this.lightUpdateBlockList.length) continue;
                     this.lightUpdateBlockList[n14++] = n17 - n + 32 | n18 - n2 + 32 << 6 | n19 - n3 + 32 << 12 | n8 - n20 << 18;
                 }
@@ -354,32 +354,32 @@ public abstract class MixinWorld implements IWorld {
             n11 = (n12 & 0x3F) - 32 + n;
             n10 = (n12 >> 6 & 0x3F) - 32 + n2;
             n9 = (n12 >> 12 & 0x3F) - 32 + n3;
-            n8 = this.getLightFor(enumSkyBlock, n11, n10, n9);
-            n7 = this.getRawLight(n11, n10, n9, enumSkyBlock);
+            n8 = this.fDPClient$getLightFor(enumSkyBlock, n11, n10, n9);
+            n7 = this.fDPClient$getRawLight(n11, n10, n9, enumSkyBlock);
             if (n7 == n8) continue;
-            this.setLightFor(enumSkyBlock, n11, n10, n9, n7);
+            this.fDPClient$setLightFor(enumSkyBlock, n11, n10, n9, n7);
             if (n7 <= n8) continue;
             n6 = Math.abs(n11 - n);
             n5 = Math.abs(n10 - n2);
             n4 = Math.abs(n9 - n3);
             boolean bl2 = bl = n14 < this.lightUpdateBlockList.length - 6;
             if (n6 + n5 + n4 >= 17 || !bl) continue;
-            if (this.getLightFor(enumSkyBlock, n11 - 1, n10, n9) < n7) {
+            if (this.fDPClient$getLightFor(enumSkyBlock, n11 - 1, n10, n9) < n7) {
                 this.lightUpdateBlockList[n14++] = n11 - 1 - n + 32 + (n10 - n2 + 32 << 6) + (n9 - n3 + 32 << 12);
             }
-            if (this.getLightFor(enumSkyBlock, n11 + 1, n10, n9) < n7) {
+            if (this.fDPClient$getLightFor(enumSkyBlock, n11 + 1, n10, n9) < n7) {
                 this.lightUpdateBlockList[n14++] = n11 + 1 - n + 32 + (n10 - n2 + 32 << 6) + (n9 - n3 + 32 << 12);
             }
-            if (this.getLightFor(enumSkyBlock, n11, n10 - 1, n9) < n7) {
+            if (this.fDPClient$getLightFor(enumSkyBlock, n11, n10 - 1, n9) < n7) {
                 this.lightUpdateBlockList[n14++] = n11 - n + 32 + (n10 - 1 - n2 + 32 << 6) + (n9 - n3 + 32 << 12);
             }
-            if (this.getLightFor(enumSkyBlock, n11, n10 + 1, n9) < n7) {
+            if (this.fDPClient$getLightFor(enumSkyBlock, n11, n10 + 1, n9) < n7) {
                 this.lightUpdateBlockList[n14++] = n11 - n + 32 + (n10 + 1 - n2 + 32 << 6) + (n9 - n3 + 32 << 12);
             }
-            if (this.getLightFor(enumSkyBlock, n11, n10, n9 - 1) < n7) {
+            if (this.fDPClient$getLightFor(enumSkyBlock, n11, n10, n9 - 1) < n7) {
                 this.lightUpdateBlockList[n14++] = n11 - n + 32 + (n10 - n2 + 32 << 6) + (n9 - 1 - n3 + 32 << 12);
             }
-            if (this.getLightFor(enumSkyBlock, n11, n10, n9 + 1) >= n7) continue;
+            if (this.fDPClient$getLightFor(enumSkyBlock, n11, n10, n9 + 1) >= n7) continue;
             this.lightUpdateBlockList[n14++] = n11 - n + 32 + (n10 - n2 + 32 << 6) + (n9 + 1 - n3 + 32 << 12);
         }
         this.theProfiler.endSection();
@@ -387,17 +387,17 @@ public abstract class MixinWorld implements IWorld {
     }
 
     @Override
-    public IBlockState getBlockState(int n, int n2, int n3) {
-        if (!this.isValid(n, n2, n3)) {
+    public IBlockState fDPClient$getBlockState(int n, int n2, int n3) {
+        if (!this.fDPClient$isValid(n, n2, n3)) {
             return Blocks.air.getDefaultState();
         }
-        IChunk IChunk2 = (IChunk)this.getChunkFromBlockCoords(n, n2, n3);
-        return IChunk2.getBlockState(n, n2, n3);
+        IChunk IChunk2 = (IChunk)this.fDPClient$getChunkFromBlockCoords(n, n2, n3);
+        return IChunk2.fDPClient$getBlockState(n, n2, n3);
     }
 
     @Override
-    public boolean setBlockState(int n, int n2, int n3, IBlockState iBlockState, int n4) {
-        if (!this.isValid(n, n2, n3)) {
+    public boolean fDPClient$setBlockState(int n, int n2, int n3, IBlockState iBlockState, int n4) {
+        if (!this.fDPClient$isValid(n, n2, n3)) {
             return false;
         }
         if (!this.isRemote && this.worldInfo.getTerrainType() == WorldType.DEBUG_WORLD) {
@@ -415,16 +415,16 @@ public abstract class MixinWorld implements IWorld {
     }
 
     @Override
-    public void markBlockForUpdate(int n, int n2, int n3) {
+    public void fDPClient$markBlockForUpdate(int n, int n2, int n3) {
         for (IWorldAccess iWorldAccess : this.worldAccesses) {
             ((IMixinWorldAccess)iWorldAccess).markBlockForUpdate(n, n2, n3);
         }
     }
 
     @Override
-    public void markAndNotifyBlock(int n, int n2, int n3, Chunk chunk, IBlockState iBlockState, IBlockState iBlockState2, int n4) {
+    public void fDPClient$markAndNotifyBlock(int n, int n2, int n3, Chunk chunk, IBlockState iBlockState, IBlockState iBlockState2, int n4) {
         if (!((n4 & 2) == 0 || this.isRemote && (n4 & 4) != 0 || chunk != null && !chunk.isPopulated())) {
-            this.markBlockForUpdate(n, n2, n3);
+            this.fDPClient$markBlockForUpdate(n, n2, n3);
         }
         if (this.isRemote || (n4 & 1) == 0 || iBlockState2.getBlock().hasComparatorInputOverride()) {
             // empty if block
@@ -432,14 +432,14 @@ public abstract class MixinWorld implements IWorld {
     }
 
     @Override
-    public void notifyLightSet(int n, int n2, int n3) {
+    public void fDPClient$notifyLightSet(int n, int n2, int n3) {
         for (IWorldAccess iWorldAccess : this.worldAccesses) {
-            ((IMixinWorldAccess)iWorldAccess).notifyLightSet(n, n2, n3);
+            ((IMixinWorldAccess)iWorldAccess).fDPClient$notifyLightSet(n, n2, n3);
         }
     }
 
     @Override
-    public Chunk getChunkFromBlockCoords(int n, int n2, int n3) {
+    public Chunk fDPClient$getChunkFromBlockCoords(int n, int n2, int n3) {
         return this.getChunkFromChunkCoords(n >> 4, n3 >> 4);
     }
 }
