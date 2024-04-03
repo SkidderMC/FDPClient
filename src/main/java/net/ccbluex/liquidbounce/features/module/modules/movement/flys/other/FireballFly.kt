@@ -117,6 +117,7 @@ class FireballFly : FlyMode("Fireball") {
         mc.gameSettings.keyBindBack.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindBack)
         mc.thePlayer.inventory.currentItem = startingSlot
         FDPClient.moduleManager[FreeLook::class.java]!!.disable()
+        FDPClient.moduleManager[Freeze::class.java]!!.state = false
     }
 
     override fun onPacket(event: PacketEvent) {
@@ -124,6 +125,7 @@ class FireballFly : FlyMode("Fireball") {
 
         if (packet is S27PacketExplosion ) {
             velocitypacket = true
+            FDPClient.moduleManager[Freeze::class.java]!!.state = false
         }
     }
 

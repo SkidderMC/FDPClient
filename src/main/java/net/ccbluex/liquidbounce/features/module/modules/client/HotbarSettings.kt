@@ -35,7 +35,7 @@ import java.awt.Color
 @ModuleInfo(name = "Hotbar", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HotbarSettings : Module() {
 
-    val hotbarValue = ListValue("HotbarMode", arrayOf("Minecraft", "Rounded", "Full", "LB", "Rise", "Gradient", "Overflow", "Glow", "Glowing", "Dock", "Exhi", "BlueIce", "Bread"), "Minecraft")
+    val hotbarValue = ListValue("HotbarMode", arrayOf("Minecraft", "Rounded", "Rounded2", "Full", "LB", "Rise", "Gradient", "Overflow", "Glow", "Glowing", "Dock", "Exhi", "BlueIce", "Bread"), "Minecraft")
     private val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255)
     private val hotbarEaseValue = BoolValue("HotbarEase", false)
     private val BlurValue = BoolValue("Blur", false)
@@ -132,6 +132,13 @@ object HotbarSettings : Module() {
             hotbarValue.get() == "Rounded" -> {
                 RenderUtils.originalRoundedRect((i - 91).toFloat(), (sr.scaledHeight - 2).toFloat(), (i + 91).toFloat(), (sr.scaledHeight - 22).toFloat(), 3f, Int.MIN_VALUE)
                 RenderUtils.originalRoundedRect(i - 91 + posInv, (sr.scaledHeight - 2).toFloat(), i - 91 + posInv + 22, (sr.scaledHeight - 22).toFloat(), 3f, Int.MAX_VALUE)
+                RenderHelper.enableGUIStandardItemLighting()
+                for (j in 0..8) { HotbarItems(j, sr.scaledWidth / 2 - 90 + j * 20 + 2, sr.scaledHeight - 20); HotbarTextOverlay(sr.scaledWidth / 2 - 90 + j * 20 + 2, sr.scaledHeight - 20, null as String?, j) }
+                RenderHelper.disableStandardItemLighting()
+            }
+            hotbarValue.get() == "Rounded2" -> {
+                RenderUtils.originalRoundedRect((i - 91).toFloat(), (sr.scaledHeight - 2).toFloat(), (i + 91).toFloat(), (sr.scaledHeight - 22).toFloat(), 3f, Int.MIN_VALUE)
+                RenderUtils.originalRoundedRect(i - 91 + posInv, (sr.scaledHeight - 2).toFloat(), i - 91 + posInv + 22, (sr.scaledHeight - 22).toFloat(), 3f, Int.MIN_VALUE)
                 RenderHelper.enableGUIStandardItemLighting()
                 for (j in 0..8) { HotbarItems(j, sr.scaledWidth / 2 - 90 + j * 20 + 2, sr.scaledHeight - 20); HotbarTextOverlay(sr.scaledWidth / 2 - 90 + j * 20 + 2, sr.scaledHeight - 20, null as String?, j) }
                 RenderHelper.disableStandardItemLighting()
@@ -295,7 +302,9 @@ object HotbarSettings : Module() {
             field = value
         }
     fun getHotbarEasePos(x: Int): Int {
-        return if (hotbarEaseValue.get()) easingValue else x
+        if (!hotbarEaseValue.get()) return x
+        easingValue = x
+        return easingValue
     }
 
     @Override

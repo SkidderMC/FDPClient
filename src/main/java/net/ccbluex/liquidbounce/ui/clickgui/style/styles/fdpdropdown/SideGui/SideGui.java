@@ -24,7 +24,7 @@ public class SideGui extends GuiPanel {
 
   //  private final ConfigPanel configPanel = new ConfigPanel();
   //  private final ScriptPanel scriptPanel = new ScriptPanel();
-    private final String[] categories = {"Scripts", "Configs"};
+    private final String[] categories = {"Scripts", "Configs", "Design"};
     public boolean focused;
     public Animation clickAnimation;
     private Animation hoverAnimation;

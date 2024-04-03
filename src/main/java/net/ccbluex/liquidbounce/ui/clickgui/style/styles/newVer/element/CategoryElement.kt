@@ -10,6 +10,8 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MouseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import com.mojang.realmsclient.gui.ChatFormatting
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
+import net.minecraft.util.StringUtils
 import org.lwjgl.opengl.GL11
 
 import java.awt.Color
@@ -46,8 +48,9 @@ class CategoryElement(val category: ModuleCategory): MinecraftInstance() {
         if (lastHeight >= 10F) lastHeight -= 10F
         handleScrolling(wheel, height)
         drawScroll(x, y + 50F, width, height)
-        Fonts.fontLarge.drawString("${ChatFormatting.GRAY}Modules > ${ChatFormatting.RESET}$name", x + 10F, y + 10F, -1)
-        Fonts.fontSmall.drawString("$name", x - 190F, y - 12F, -1)
+        Fonts.fontLarge.drawString("${ChatFormatting.GRAY}Modules > ${ChatFormatting.RESET}${
+            StringUtils.stripControlCodes(LanguageManager.get(name.replace('%',' ')))}", x + 10F, y + 10F, -1)
+        Fonts.fontSmall.drawString(StringUtils.stripControlCodes(LanguageManager.get(name.replace('%',' '))), x - 190F, y - 12F, -1)
         if (mouseY < y + 50F || mouseY >= y + height)
             mouseY = -1
         RenderUtils.makeScissorBox(x, y + 50F, x + width, y + height)

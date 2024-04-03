@@ -52,8 +52,9 @@ class TickBase : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        if (ticks < 0) ticks = 0
         if (test.get()) {
-            ticks --
+            if (ticks > 0) ticks --
             if (ticks == 1) {
                 mc.gameSettings.limitFramerate = prev_fps
             }
