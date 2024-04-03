@@ -119,6 +119,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
             }
             "groundstrafe" -> {
                 if (mc.thePlayer.onGround) {
+                    MovementUtils.strafe(MovementUtils.getSpeed())
                     mc.thePlayer.jump()
                     MovementUtils.strafe(MovementUtils.getSpeed())
                 }
