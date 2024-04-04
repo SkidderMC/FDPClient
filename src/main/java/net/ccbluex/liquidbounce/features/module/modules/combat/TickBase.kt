@@ -34,7 +34,7 @@ class TickBase : Module() {
         if (event.targetEntity is EntityLivingBase && ticks == 0) {
             ticks = ticksAmount.get()
             if (test.get()) {
-                ticks = 2
+                ticks = 3
                 prev_fps = mc.gameSettings.limitFramerate
                 mc.gameSettings.limitFramerate = 2
             }
