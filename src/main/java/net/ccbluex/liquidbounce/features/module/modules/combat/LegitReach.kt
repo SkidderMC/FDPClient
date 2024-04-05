@@ -134,7 +134,7 @@ class LegitReach : Module() {
                 currentTarget = event.targetEntity as EntityLivingBase?
             }
             currentTarget?.let {
-                if (mc.thePlayer.getDistanceToEntityBox(it) > 2f) {
+                if (mc.thePlayer.getDistanceToEntityBox(it) > 2.6f) {
                     if (comboCounter >= 2) {
                         if (outgoingBlink.get()) BlinkUtils.setBlinkState(all = true)
                         backtrack = true
