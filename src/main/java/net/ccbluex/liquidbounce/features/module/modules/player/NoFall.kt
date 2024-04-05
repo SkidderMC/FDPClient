@@ -132,6 +132,11 @@ object NoFall : Module() {
         mode.onStep(event)
     }
 
+    @EventTarget
+    fun onRender2D(event: Render2DEvent) {
+        mode.onRender2D(event)
+    }
+
     override val tag: String
         get() = modeValue.get()
         

@@ -646,7 +646,7 @@ class VulcanFlys : FlyMode("Vulcan") {
         }
     }
 
-    override fun onBB(event: BlockBBEvent) {
+    override fun onBlockBB(event: BlockBBEvent) {
         if (!flys.equals("GhostNew"))
         if (!mc.gameSettings.keyBindJump.isKeyDown && mc.gameSettings.keyBindSneak.isKeyDown) return
         if (!event.block.material.blocksMovement() && event.block.material != Material.carpet && event.block.material != Material.vine && event.block.material != Material.snow && event.block !is BlockLadder) {

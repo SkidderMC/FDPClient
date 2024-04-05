@@ -27,4 +27,5 @@ abstract class NoFallMode(val modeName: String) : MinecraftInstance() {
     open fun onBlockBB(event: BlockBBEvent) {}
     open fun onJump(event: JumpEvent) {}
     open fun onStep(event: StepEvent) {}
+    open fun onRender2D(event: Render2DEvent) {}
 }
