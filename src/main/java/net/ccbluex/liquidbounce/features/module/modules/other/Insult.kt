@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.utils.FileUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.TextValue
 import net.minecraft.entity.player.EntityPlayer
 import java.io.File
 
@@ -29,9 +30,12 @@ object Insult : Module() {
         "Mode", arrayOf(
             "Clear",
             "WithWords",
-            "RawWords"
-        ), "RawWords"
+            "RawWords",
+            "Message"
+        ), "Message"
     )
+
+    private val messageValue = TextValue("Message", "FDP client > %name%").displayable {modeValue.equals("Message")}
     private val waterMarkValue = BoolValue("WaterMark", true)
 
     private val insultFile = File(FDPClient.fileManager.dir, "insult.json")
@@ -94,6 +98,9 @@ object Insult : Module() {
             }
             "rawwords" -> {
                 sendInsultWords(getRandomOne(), target.name)
+            }
+            "message" -> {
+                sendInsultWords(messageValue.get(), target.name)
             }
         }
     }
