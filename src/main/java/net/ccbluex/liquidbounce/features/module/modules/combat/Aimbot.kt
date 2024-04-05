@@ -35,11 +35,15 @@ class Aimbot : Module() {
     private val onClickDurationValue = IntegerValue("OnClickDuration", 500, 100, 1000).displayable { onClickValue.get() }
     private val jitterValue = BoolValue("Jitter", false)
     private val randomJitterValue = FloatValue("JitterRandomRate", 1.0F, 0F, 5.0F).displayable { jitterValue.get() }
+    private val breakStopValue = BoolValue("NoBreak", true)
 
     private val clickTimer = MSTimer()
 
     @EventTarget
     fun onStrafe(event: StrafeEvent) {
+        if (breakStopValue.get() && mc.playerController.curBlockDamageMP == 0F) {
+            return
+        }
         if (mc.gameSettings.keyBindAttack.isKeyDown) {
             clickTimer.reset()
         }
