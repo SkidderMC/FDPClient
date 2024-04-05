@@ -39,23 +39,33 @@ class SilentHitbox : Module() {
     private var enabled = false
 
     override fun onDisable() {
-        resetCamera()
+        enabled = false
+        FDPClient.moduleManager[FreeLook::class.java]!!.disable()
+    }
+
+    override fun onEnable() {
+        enabled = false
+        FDPClient.moduleManager[FreeLook::class.java]!!.enable()
     }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
+        if (!enabled) {
+            mc.thePlayer.rotationYaw = FreeLook.cameraYaw
+            mc.thePlayer.rotationPitch = FreeLook.cameraPitch
+        }
         if (mc.gameSettings.keyBindAttack.isKeyDown) {
             clickTimer.reset()
         }
 
         if (onClickValue.get() && clickTimer.hasTimePassed(onClickDurationValue.get().toLong())) {
-            resetCamera()
+            enabled = false
             return
         }
 
         if (dontReset) dontReset = false
         else if (enabled) {
-            resetCamera()
+            enabled = false
         }
 
         val range = rangeValue.get()
@@ -69,7 +79,7 @@ class SilentHitbox : Module() {
         dontReset = true
 
         if (!enabled) {
-            startCamera()
+            enabled = true
         }
 
 
@@ -86,28 +96,10 @@ class SilentHitbox : Module() {
 
         val rotationCenter = RotationUtils.limitAngleChange(
             playerRot, targetRot,
-            10f + (Math.random().toFloat() * 0.5f)
+            15f + (Math.random().toFloat() * 0.5f)
         )
 
         rotationCenter.toPlayer(mc.thePlayer)
     }
 
-    private fun resetCamera() {
-        if (enabled) {
-            enabled = false
-            mc.thePlayer.rotationYaw = FreeLook.cameraYaw
-            mc.thePlayer.rotationPitch = FreeLook.cameraPitch
-            FreeLook.isEnabled = false
-            FreeLook.perspectiveToggled = false
-            FreeLook.resetPerspective()
-        }
-    }
-
-    private fun startCamera() {
-        enabled = true
-        FreeLook.perspectiveToggled = true
-        FreeLook.isEnabled = true
-        FreeLook.isReverse = false
-        FDPClient.moduleManager[FreeLook::class.java]!!.setRotations()
-    }
 }
