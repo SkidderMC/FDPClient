@@ -52,7 +52,7 @@ object AntiStaff : Module() {
     private var hycraftStaff : String = "Alexander245 arqui Blandih Chony_15 jac0mc Ragen06 TheBryaan TMT_131 Yapecito MartynaGamer830 archeriam"
     private var librecraftStaff : String = "Kudos  H0DKIER  Iker_XD9  acreate  iJeanSC  acreate  Janet  Rosse_RM  aldoum23neko_  DERGO  MJKINGPAND"
     private var universocraftStaff : String = "0edx_ 0_Lily 1Kao denila  fxrchus  haaaaaaaaaaax_ iBlackSoulz iMxon_ JuliCarles kvvwro Tauchet wSilv6r _JuPo_"
-    private var minelatinoStaff : String = "zycragames _Dryout BunnyTruckSo amaelarco Norstonta Unexpected 1x12"
+    private var minelatinoStaff : String = "zycragames _Dryout BunnyTruckSo amaelarco Norstonta Unexpected 1x12 Frachiza"
     
     
     private var detected = false
