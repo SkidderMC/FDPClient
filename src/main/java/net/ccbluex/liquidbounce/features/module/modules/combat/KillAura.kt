@@ -152,6 +152,7 @@ object KillAura : Module() {
     private val smartAutoBlockValue = BoolValue("SmartAutoBlock", false).displayable { autoBlockPacketValue.displayable }
     private val blockRateValue = IntegerValue("BlockRate", 100, 1, 100).displayable { autoBlockPacketValue.displayable }
     private val legitBlockBlinkValue = BoolValue("Legit2Blink", true).displayable { autoBlockPacketValue.displayable && autoBlockPacketValue.equals("Legit2") }
+    private val blinkBlockMode = ListValue("BlinkBlockType", arrayOf("Blatant", "Legit3tick", "Legit4tick", "Legit5tick", "Dynamic"), "Legit3tick").displayable { autoBlockPacketValue.displayable && autoBlockPacketValue.equals("Blink") }
     private val alwaysBlockDisplayValue = BoolValue("AlwaysRenderBlocking", true).displayable { autoBlockValue.displayable && autoBlockValue.equals("Range") }
 
     // Rotations
@@ -522,7 +523,7 @@ object KillAura : Module() {
             }
 
             if (autoBlockPacketValue.equals("Blink")) {
-                if (mc.thePlayer.ticksExisted % 2 == 1) {
+                if (mc.thePlayer.ticksExisted % 2 == 1 && blinkBlockMode.equals("Blatant")) {
                     if (blockingStatus) {
                         BlinkUtils.setBlinkState(all = true)
                         wasBlink = true
@@ -614,7 +615,60 @@ object KillAura : Module() {
                         return
                     }
                 }
-                "blink" -> if (mc.thePlayer.ticksExisted % 2 == 1) return
+                "blink" -> {
+                    when(blinkBlockMode.get().lowercase()) {
+                        "blatant" -> if (mc.thePlayer.ticksExisted % 2 == 1) return
+                        "legit3tick", "legit4tick", "legit5tick" -> {
+                            val blockTicks = when (blinkBlockMode.get().lowercase()) {
+                                "legit3tick" -> 3
+                                "legit4tick" -> 4
+                                "legit5tick" -> 5
+                                else -> 3
+                            }
+                            when (mc.thePlayer.ticksExisted % blockTicks) {
+                                0 -> {
+                                    if (blockingStatus) {
+                                        BlinkUtils.setBlinkState(all = true)
+                                        wasBlink = true
+                                        stopBlocking()
+                                    }
+                                    return
+                                }
+                                blockTicks - 1 -> {
+                                    blinkBlock()
+                                    return
+                                }
+                                else -> null
+                            }
+                        }
+                        "dynamic" -> {
+                            if (mc.thePlayer.hurtTime < 4) {
+                                when (mc.thePlayer.ticksExisted % 3) {
+                                    0 -> {
+                                        if (blockingStatus) {
+                                            BlinkUtils.setBlinkState(all = true)
+                                            wasBlink = true
+                                            stopBlocking()
+                                        }
+                                        return
+                                    }
+                                    2 -> {
+                                        blinkBlock()
+                                        return
+                                    }
+                                    else -> null
+                                }
+                            } else {
+                                if (blockingStatus || wasBlink) {
+                                    if (blockingStatus) stopBlocking()
+                                    BlinkUtils.setBlinkState(off = true, release = true)
+                                    wasBlink = false
+                                    return
+                                }
+                            }
+                        }
+                    }
+                }
                 else -> null
             }
 
@@ -638,11 +692,8 @@ object KillAura : Module() {
             return
         }
 
-        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("Blink")) {
-            BlinkUtils.setBlinkState(off = true, release = true)
-            wasBlink = false
-            val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
-            startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
+        if (autoBlockValue.equals("Range") && autoBlockPacketValue.equals("Blink") && blinkBlockMode.equals("Blatant")) {
+            blinkBlock()
         }
 
         test2_block = true
@@ -1097,6 +1148,13 @@ object KillAura : Module() {
             blockingStatus = false
             packetSent = true
         }
+    }
+
+    private fun blinkBlock() {
+        BlinkUtils.setBlinkState(off = true, release = true)
+        wasBlink = false
+        val target = this.currentTarget ?: discoveredTargets.getOrNull(0) ?: return
+        startBlocking(target, interactAutoBlockValue.get() && (mc.thePlayer.getDistanceToEntityBox(target) < maxRange))
     }
 
     /**
