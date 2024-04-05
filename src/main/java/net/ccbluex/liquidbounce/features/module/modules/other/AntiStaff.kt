@@ -33,6 +33,7 @@ object AntiStaff : Module() {
     private val hycraftValue = BoolValue("Hycraft", true)
     private val librecraftValue = BoolValue("Librecraft", false)
     private val universocraftValue = BoolValue("Universocraft", true)
+    private val minelatinoValue = BoolValue("Minelatino", true)
     private val customValue = BoolValue("Custom", false)
     
     private val notifyValue = BoolValue("Notification",true)
@@ -51,6 +52,7 @@ object AntiStaff : Module() {
     private var hycraftStaff : String = "Alexander245 arqui Blandih Chony_15 jac0mc Ragen06 TheBryaan TMT_131 Yapecito MartynaGamer830 archeriam"
     private var librecraftStaff : String = "Kudos  H0DKIER  Iker_XD9  acreate  iJeanSC  acreate  Janet  Rosse_RM  aldoum23neko_  DERGO  MJKINGPAND"
     private var universocraftStaff : String = "0edx_ 0_Lily 1Kao denila  fxrchus  haaaaaaaaaaax_ iBlackSoulz iMxon_ JuliCarles kvvwro Tauchet wSilv6r _JuPo_"
+    private var minelatinoStaff : String = "zycragames _Dryout BunnyTruckSo amaelarco Norstonta Unexpected 1x12 Frachiza"
     
     
     private var detected = false
@@ -67,6 +69,7 @@ object AntiStaff : Module() {
         if (hycraftValue.get()) staffs = staffs + " " + hycraftStaff
         if (librecraftValue.get()) staffs = staffs + " " + librecraftStaff
         if (universocraftValue.get()) staffs = staffs + " " + universocraftStaff
+        if (minelatinoValue.get()) staffs = staffs + " " + minelatinoStaff
         if (customValue.get()) {
         
             try {

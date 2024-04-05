@@ -18,7 +18,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 @ModuleInfo(name = "NoWeb", category = ModuleCategory.MOVEMENT)
 object NoWeb : Module() {
 
-    private val modeValue = ListValue("Mode", arrayOf("None", "FastFall", "OldAAC", "LAAC", "Rewinside", "Spartan", "AAC4", "AAC5", "Matrix", "Intave14"), "None")
+    private val modeValue = ListValue("Mode", arrayOf("None", "FastFall", "OldAAC", "LAAC", "Rewinside", "Spartan", "AAC4", "AAC5", "Matrix", "Intave14", "Verus"), "None")
 
     private var usedTimer = false
 
@@ -113,6 +113,18 @@ object NoWeb : Module() {
 
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
+                }
+            }
+            "verus" -> {
+                MovementUtils.strafe(1.00f)
+                if (!mc.gameSettings.keyBindJump.isKeyDown && !mc.gameSettings.keyBindSneak.isKeyDown) {
+                    mc.thePlayer.motionY = 0.00
+                }
+                if (mc.gameSettings.keyBindJump.isKeyDown) {
+                    mc.thePlayer.motionY = 4.42
+                }
+                if (mc.gameSettings.keyBindSneak.isKeyDown) {
+                    mc.thePlayer.motionY = -4.42
                 }
             }
         }
