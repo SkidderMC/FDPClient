@@ -33,7 +33,7 @@ object ClickGUIModule : Module() {
         arrayOf(
             "Classic",
             "Dropdrown",
-            "LB+",
+//            "LB+",
             "Astolfo",
             "Mixed",
             "Null",
@@ -67,7 +67,7 @@ object ClickGUIModule : Module() {
         when {
             styleValue.get().equals("Classic", ignoreCase = true) -> mc.displayGuiScreen(dropdown)
             styleValue.get().equals("Dropdrown", ignoreCase = true) -> mc.displayGuiScreen(dropdownClickGUIFDP)
-            styleValue.get().equals("LB+", ignoreCase = true) -> mc.displayGuiScreen(NewUi.getInstance())
+//            styleValue.get().equals("LB+", ignoreCase = true) -> mc.displayGuiScreen(NewUi.getInstance())
             else -> {
                 updateStyle()
                 mc.displayGuiScreen(modernuiLaunchOption.clickGui)
