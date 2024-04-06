@@ -13,19 +13,31 @@ package net.ccbluex.liquidbounce.features.module.modules.movement
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.MoveEvent
+import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.client.settings.GameSettings
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
+import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.InventoryUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
+import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import net.ccbluex.liquidbounce.value.*
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.item.Item
+import net.minecraft.item.ItemBlock
+import net.minecraft.item.ItemStack
+import java.awt.Color
 import kotlin.math.roundToInt
 
 @ModuleInfo(name = "LegitScaffold",  category = ModuleCategory.MOVEMENT)
@@ -34,6 +46,11 @@ object LegitScaffold : Module() {
 
     val safewalkValue = ListValue("SafewalkType", arrayOf("Sneak", "Safewalk", "None"), "Safewalk").displayable { modeValue.equals("Simple") }
     val derpValue = BoolValue("SimpleDerpBridge", false).displayable { modeValue.equals("Simple") }
+
+    // Visuals
+    private val counter = BoolValue("Counter", true)
+    private val counterDisplayValue = ListValue("Counter-Mode", arrayOf("FDP", "Rise", "Simple"), "FDP").displayable { counter.get() }
+    private val barrier = ItemStack(Item.getItemById(166), 0, 0)
 
 
     private var playerRot = Rotation(0f, 0f)
@@ -264,6 +281,106 @@ object LegitScaffold : Module() {
         lockRotation.toPlayer(mc.thePlayer)
     }
 
+    @EventTarget
+    fun onRender2D(event: Render2DEvent) {
+        val scaledResolution = ScaledResolution(mc)
+        if (counter.get()) {
+            when (counterDisplayValue.get().lowercase()) {
+                "fdp" -> {
+                    GlStateManager.pushMatrix()
+                    val info = LanguageManager.getAndFormat("ui.scaffold.blocks", blocksAmount)
+                    val slot = InventoryUtils.findAutoBlockBlock()
+                    val height = event.scaledResolution.scaledHeight
+                    val width = event.scaledResolution.scaledWidth
+                    val w2 = (mc.fontRendererObj.getStringWidth(info))
+                    RenderUtils.drawRoundedCornerRect(
+                        (width - w2 - 20) / 2f,
+                        height * 0.8f - 24f,
+                        (width + w2 + 18) / 2f,
+                        height * 0.8f + 12f,
+                        3f,
+                        Color(43, 45, 48).rgb
+                    )
+                    mc.fontRendererObj.drawCenteredString(
+                        "▼",
+                        width / 2.0f + 2f,
+                        height * 0.8f + 8f,
+                        Color(43, 45, 48).rgb
+                    )
+                    var stack = barrier
+                    if (slot != -1) {
+                        if (mc.thePlayer.inventory.getCurrentItem() != null) {
+                            val handItem = mc.thePlayer.inventory.getCurrentItem().item
+                            if (handItem is ItemBlock && InventoryUtils.canPlaceBlock(handItem.block)) {
+                                stack = mc.thePlayer.inventory.getCurrentItem()
+                            }
+                        }
+                        if (stack == barrier) {
+                            stack = mc.thePlayer.inventory.getStackInSlot(InventoryUtils.findAutoBlockBlock() - 36)
+                            if (stack == null) {
+                                stack = barrier
+                            }
+                        }
+                    }
+
+                    RenderHelper.enableGUIStandardItemLighting()
+                    mc.renderItem.renderItemIntoGUI(stack, width / 2 - 9, (height * 0.8 - 20).toInt())
+                    RenderHelper.disableStandardItemLighting()
+                    mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
+                    GlStateManager.popMatrix()
+                }
+
+                "rise" -> {
+                    GlStateManager.pushMatrix()
+                    val info = blocksAmount.toString()
+                    val slot = InventoryUtils.findAutoBlockBlock()
+                    val height = event.scaledResolution.scaledHeight
+                    val width = event.scaledResolution.scaledWidth
+                    val w2 = (mc.fontRendererObj.getStringWidth(info))
+                    RenderUtils.drawRoundedCornerRect(
+                        (width - w2 - 20) / 2f,
+                        height * 0.8f - 24f,
+                        (width + w2 + 18) / 2f,
+                        height * 0.8f + 12f,
+                        5f,
+                        Color(20, 20, 20, 100).rgb
+                    )
+                    var stack = barrier
+                    if (slot != -1) {
+                        if (mc.thePlayer.inventory.getCurrentItem() != null) {
+                            val handItem = mc.thePlayer.inventory.getCurrentItem().item
+                            if (handItem is ItemBlock && InventoryUtils.canPlaceBlock(handItem.block)) {
+                                stack = mc.thePlayer.inventory.getCurrentItem()
+                            }
+                        }
+                        if (stack == barrier) {
+                            stack = mc.thePlayer.inventory.getStackInSlot(InventoryUtils.findAutoBlockBlock() - 36)
+                            if (stack == null) {
+                                stack = barrier
+                            }
+                        }
+                    }
+
+                    RenderHelper.enableGUIStandardItemLighting()
+                    mc.renderItem.renderItemIntoGUI(stack, width / 2 - 9, (height * 0.8 - 20).toInt())
+                    RenderHelper.disableStandardItemLighting()
+                    mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
+                    GlStateManager.popMatrix()
+                }
+
+                "simple" -> {
+                    Fonts.minecraftFont.drawString(
+                        blocksAmount.toString() + " Blocks",
+                        scaledResolution.scaledWidth / 1.95f,
+                        (scaledResolution.scaledHeight / 2 + 20).toFloat(),
+                        -1,
+                        true
+                    )
+                }
+            }
+        }
+    }
+
     private fun correctControls(type: Int) {
         fw =  GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
         bw = GameSettings.isKeyDown(mc.gameSettings.keyBindBack)
@@ -310,4 +427,16 @@ object LegitScaffold : Module() {
 
         return rpitch
     }
+
+    private val blocksAmount: Int
+        get() {
+            var amount = 0
+            for (i in 36..44) {
+                val itemStack = mc.thePlayer.inventoryContainer.getSlot(i).stack
+                if (itemStack != null && itemStack.item is ItemBlock && InventoryUtils.canPlaceBlock((itemStack.item as ItemBlock).block)) {
+                    amount += itemStack.stackSize
+                }
+            }
+            return amount
+        }
 }
