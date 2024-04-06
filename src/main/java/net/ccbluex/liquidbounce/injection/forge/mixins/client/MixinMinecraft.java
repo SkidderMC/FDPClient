@@ -228,7 +228,7 @@ public abstract class MixinMinecraft {
 
     @Unique
     private int fDPClient$getEventKeyOrCharacter() {
-        return Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() : Keyboard.getEventKey();
+        return Keyboard.getEventKey();
     }
 
     @Inject(method = "sendClickBlockToController", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/MovingObjectPosition;getBlockPos()Lnet/minecraft/util/BlockPos;"))
