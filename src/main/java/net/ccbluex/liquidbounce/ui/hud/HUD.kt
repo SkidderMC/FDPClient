@@ -35,34 +35,34 @@ open class HUD : MinecraftInstance() {
          * Create default HUD
          */
         fun createDefault(): HUD {
-            val text1 = Text(x = 7.63, y = 5.42)
-            text1.displayString.set("$CLIENT_NAME")
-            text1.shadow.set(true)
-            text1.getColor(1)
-            text1.rectValue.set("None")
-            text1.fontValue.set(Fonts.minecraftFont)
-            text1.scale = 1.55F
+            val ClientName = Text(x = 7.63, y = 5.42)
+            ClientName.displayString.set("%clientName%")
+            ClientName.shadow.set(true)
+            ClientName.getColor(1)
+            ClientName.rectValue.set("None")
+            ClientName.fontValue.set(Fonts.minecraftFont)
+            ClientName.scale = 1.55F
 
-            val text2 = Text(x = 88.44, y = 16.24)
-            text2.displayString.set("$CLIENT_VERSION")
-            text2.shadow.set(true)
-            text2.getColor(1)
-            text2.rectValue.set("None")
-            text2.fontValue.set(Fonts.font32)
-            text2.scale = 0.95F
+            val Clientversion = Text(x = 88.44, y = 16.24)
+            Clientversion.displayString.set("%clientVersion%")
+            Clientversion.shadow.set(true)
+            Clientversion.getColor(1)
+            Clientversion.rectValue.set("None")
+            Clientversion.fontValue.set(Fonts.font32)
+            Clientversion.scale = 0.95F
 
-            val text3 = Text(x = 12.11, y = 26.79)
-            if (isInDev) { text3.displayString.set("Development Build") } else { text3.displayString.set("by Zywl, Dg636 and vPrah") }
-            text3.shadow.set(true)
-            text3.getColor(1)
-            text3.rectValue.set("None")
-            text3.fontValue.set(Fonts.minecraftFont)
-            text3.scale = 0.90F
+            val Clientcredits = Text(x = 12.11, y = 26.79)
+            if (isInDev) { Clientcredits.displayString.set("Development Build") } else { Clientcredits.displayString.set("by SkidderMC Org") }
+            Clientcredits.shadow.set(true)
+            Clientcredits.getColor(1)
+            Clientcredits.rectValue.set("None")
+            Clientcredits.fontValue.set(Fonts.minecraftFont)
+            Clientcredits.scale = 0.90F
 
             return HUD()
-                .addElement(text1)
-                .addElement(text2)
-                .addElement(text3)
+                .addElement(ClientName)
+                .addElement(Clientversion)
+                .addElement(Clientcredits)
                 .addElement(Arraylist())
                 .addElement(ScoreboardElement())
                 .addElement(Notifications())
