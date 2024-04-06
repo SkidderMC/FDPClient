@@ -1066,6 +1066,7 @@ class Scaffold : Module() {
         
         val scaledResolution = ScaledResolution(mc)
         val info = blocksAmount.toString() + " Blocks"
+        if (renderOptions.get()) {
         when (counterDisplayValue.get().lowercase()) {
             "fdp" -> {
                 GlStateManager.pushMatrix()
@@ -1152,6 +1153,7 @@ class Scaffold : Module() {
                 )
             }
         }
+            }
     }
 
     /**
@@ -1161,7 +1163,7 @@ class Scaffold : Module() {
      */
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        if (!markValue.get()) return
+        if (!markValue.get() && !renderOptions.get()) return
         for (i in 0 until (expandLengthValue.get() + 1)) {
             val blockPos = BlockPos(
                 mc.thePlayer.posX + if (mc.thePlayer.horizontalFacing == EnumFacing.WEST) -i else if (mc.thePlayer.horizontalFacing == EnumFacing.EAST) i else 0,
