@@ -49,6 +49,7 @@ class HypixelBlinkNofall : NoFallMode("HypixelBlink") {
     }
 
     override fun onRender2D(event: Render2DEvent) {
+        if (!enabled) return
         val scaledResolution = ScaledResolution(mc)
         Fonts.minecraftFont.drawString(
             "Blinking " + BlinkUtils.bufferSize().toString(),
