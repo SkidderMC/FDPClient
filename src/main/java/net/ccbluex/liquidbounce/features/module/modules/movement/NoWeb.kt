@@ -22,6 +22,11 @@ object NoWeb : Module() {
 
     private var usedTimer = false
 
+    /**
+     * Verus NoWeb
+     * Code by bipasisnotavailable
+     */
+
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (usedTimer) {
