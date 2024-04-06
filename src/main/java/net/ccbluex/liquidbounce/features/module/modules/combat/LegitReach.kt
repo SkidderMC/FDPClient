@@ -229,7 +229,7 @@ class LegitReach : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state || !backtrack) {
+        if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state && !FDPClient.moduleManager[LegitAura::class.java]!!.state || !backtrack) {
             clearPackets()
             backtrack = false
             return
