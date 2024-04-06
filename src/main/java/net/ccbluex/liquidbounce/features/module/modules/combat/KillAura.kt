@@ -55,7 +55,7 @@ object KillAura : Module() {
 
     // CPS
 
-    private val clickDisplay = BoolValue("Click Options:", true)
+    private val clickDisplay = BoolValue("Click-Options", true)
 
     private val maxCpsValue: IntegerValue = object : IntegerValue("MaxCPS", 12, 1, 20) {
         override fun onChanged(oldValue: Int, newValue: Int) {
@@ -79,7 +79,7 @@ object KillAura : Module() {
 
     // Attack Setting
 
-    private val attackDisplay = BoolValue("Attack Options:", true)
+    private val attackDisplay = BoolValue("Attack-Options", true)
 
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal").displayable { attackDisplay.get() }
 
@@ -95,7 +95,7 @@ object KillAura : Module() {
     private val cooldownNoDupAtk = BoolValue("NoDuplicateAttack", false).displayable { simulateCooldown.get() && attackDisplay.get() }
 
     // Range
-    private val rangeDisplay = BoolValue("Range Options:", true)
+    private val rangeDisplay = BoolValue("Range-Options", true)
 
     val rangeValue: FloatValue = object : FloatValue("Target-Range", 3.0f, 0f, 8f) {
         override fun onChanged(oldValue: Float, newValue: Float) {
@@ -117,7 +117,7 @@ object KillAura : Module() {
     }.displayable { rangeDisplay.get() } as FloatValue
 
     // Modes
-    private val modeDisplay = BoolValue("Mode Options:", true)
+    private val modeDisplay = BoolValue("Mode-Options", true)
 
     private val priorityValue = ListValue(
         "Priority", arrayOf(
@@ -137,7 +137,7 @@ object KillAura : Module() {
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") && modeDisplay.get() }
 
     // AutoBlock
-    private val autoblockDisplay = BoolValue("AutoBlock Settings:", true)
+    private val autoblockDisplay = BoolValue("AutoBlock-Settings", true)
 
     private val autoBlockValue = ListValue("AutoBlock", arrayOf("Range", "Fake", "Off"), "Range").displayable { autoblockDisplay.get() }
 
@@ -239,7 +239,7 @@ object KillAura : Module() {
 
 
     // Bypass
-    private val bypassDisplay = BoolValue("Bypass Options:", true)
+    private val bypassDisplay = BoolValue("Bypass-Options", true)
 
     private val raycastValue = BoolValue("RayCast", true).displayable { bypassDisplay.get() }
     private val raycastTargetValue = BoolValue("RaycastOnlyTarget", false).displayable { raycastValue.get() && raycastValue.displayable }
@@ -254,7 +254,7 @@ object KillAura : Module() {
     private val rotationStrafeValue = ListValue("Strafe", arrayOf("Off", "Strict", "Silent"), "Silent").displayable { silentRotationValue.get() && !rotationModeValue.equals("None") && bypassDisplay.get() }
 
     // Tools
-    private val toolsDisplay = BoolValue("Tools Options:", true)
+    private val toolsDisplay = BoolValue("Tools-Options", true)
 
     private val blinkCheck = BoolValue("BlinkCheck", false).displayable { toolsDisplay.get() }
     private val noScaffValue = BoolValue("NoScaffold", false).displayable { toolsDisplay.get() }
