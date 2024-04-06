@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.vulcan
 
 import net.ccbluex.liquidbounce.event.*
@@ -26,6 +31,12 @@ import kotlin.math.sqrt
 import net.minecraft.block.material.Material
 
 class VulcanFlys : FlyMode("Vulcan") {
+
+    /**
+     * The fly called GhostNew is imported from LiquidBounce Legacy
+     * Credits to EclipseDev for this
+     */
+
 
     private var flys = ListValue("Vulcan-Mode", arrayOf("High", "Clip", "Damage", "Fast", "Ghost", "GhostNew"), "GhostNew")
 
@@ -83,9 +94,9 @@ class VulcanFlys : FlyMode("Vulcan") {
 
         when (flys.get()) {
             "GhostNew" -> {
-                ClientUtils.displayChatMessage("Ensure that you sneak on landing.")
-                ClientUtils.displayChatMessage("After landing, go backward (Air) and go forward to landing location, then sneak again.")
-                ClientUtils.displayChatMessage("And then you can turn off fly.")
+                ClientUtils.displayChatMessage("§8[§c§lVulcanFly§8] §fEnsure that you sneak on landing.")
+                ClientUtils.displayChatMessage("§8[§c§lVulcanFly§8] §fAfter landing, go backward (Air) and go forward to landing location, then sneak again.")
+                ClientUtils.displayChatMessage("§8[§c§lVulcanFly§8] §fAnd then you can turn off fly.")
             }
             "Clip" -> {
                 if(mc.thePlayer.onGround && vulcanclipcanClipValue.get()) {

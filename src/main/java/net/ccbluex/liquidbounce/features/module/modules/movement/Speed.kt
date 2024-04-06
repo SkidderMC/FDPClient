@@ -40,7 +40,7 @@ object Speed : Module() {
 
     private val noWater = BoolValue("NoWater", true)
     private val noSneak = BoolValue("NoSneak", true)
-    private val forceSprint = BoolValue("alwaysSprint", true)
+    private val forceSprint = BoolValue("AlwaysSprint", true)
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
