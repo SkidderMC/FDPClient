@@ -205,7 +205,7 @@ class Scaffold : Module() {
     // Visuals
     private val renderOptions = BoolValue("Render Options:", true)
     
-    private val counterDisplayValue = ListValue("Counter", arrayOf("FDP", "Rise", "Rise6", "Simple"), "FDP").displayable { renderOptions.get() }
+    private val counterDisplayValue = ListValue("Counter", arrayOf("FDP", "Rise", "Simple"), "FDP").displayable { renderOptions.get() }
     private val markValue = BoolValue("Mark", false).displayable { renderOptions.get() }
     private val markRedValue = IntegerValue("MarkColorRed", 68, 0, 255).displayable { markValue.get() && markValue.displayable }
     private val markGreenValue = IntegerValue("MarkColorGreen", 117, 0, 255).displayable { markValue.get() && markValue.displayable }
@@ -1142,29 +1142,6 @@ class Scaffold : Module() {
                 mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
                 GlStateManager.popMatrix()
             }
-            
-            "rise6" -> {
-                GlStateManager.pushMatrix()
-                val eeasing = progress * progress
-
-                val info = "Amount " + blocksAmount.toString()
-                val height = event.scaledResolution.scaledHeight
-                val width = event.scaledResolution.scaledWidth
-                val w2=(mc.fontRendererObj.getStringWidth(info))
-
-                RenderUtils.drawRoundedCornerRect(
-                    (width - w2 - 20) / 2f,
-                    height * 0.8f - 8f,
-                    (width + w2 + 18) / 2f,
-                    height * (1f - eeasing * 0.2f) + 12f,
-                    4f,
-                    Color(30, 30, 30, 120).rgb
-                )
-                mc.fontRendererObj.drawCenteredString(info, width / 2f, height * (1f - eeasing * 0.2f), Color.WHITE.rgb, false)
-                GlStateManager.popMatrix()
-            }
-            
-        
             "simple" -> {
                 Fonts.minecraftFont.drawString(
                     blocksAmount.toString() + " Blocks",
