@@ -18,7 +18,7 @@ import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixes;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.injection.forge.mixins.accessors.MinecraftForgeClientAccessor;
 import net.ccbluex.liquidbounce.utils.*;
-import net.ccbluex.liquidbounce.utils.render.IconUtils;
+import net.ccbluex.liquidbounce.utils.IconUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.LoadingScreenRenderer;
@@ -340,29 +340,12 @@ public abstract class MixinMinecraft {
         }
     }
 
-    @Inject(method = "setWindowIcon", at = @At("HEAD"))
-    private void setWindowIcon(CallbackInfo callbackInfo) {
-        //  try {
-        if (Util.getOSType() == Util.EnumOS.OSX) {
-            MacOS.icon();
-            Display.setIcon(IconUtils.fav());
-        }
-    /*
-             else {
-                BufferedImage image = ImageIO.read(Objects.requireNonNull(this.getClass().getResourceAsStream("/assets/minecraft/fdpclient/misc/32.png"))); // need to impliment 16x and 64x
-                ByteBuffer bytebuffer = ImageUtils.readImageToBuffer(image); // What the fuck? ImageUtils.resizeImage(image, 16, 16)
-                if (bytebuffer == null) {
-                    throw new Exception("Error when loading image.");
-                } else {
-                    Display.setIcon(new ByteBuffer[]{bytebuffer, ImageUtils.readImageToBuffer(image)});
-                    callbackInfo.cancel();
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-     */
+    @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
+    private void setGameIcon(CallbackInfo c) {
+        IconUtils iu = new IconUtils();
+        iu.setIcon();
+        c.cancel();
     }
 
     @Inject(method = "getVersion", at = @At("HEAD"))
