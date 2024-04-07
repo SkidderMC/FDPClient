@@ -8,6 +8,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMod
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.ccbluex.liquidbounce.utils.BlinkUtils
+import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.client.gui.ScaledResolution
 
@@ -27,7 +28,7 @@ class HypixelBlinkNofall : NoFallMode("HypixelBlink") {
             wasOnGround = true
         } else if (wasOnGround) {
             wasOnGround = false
-            if (mc.thePlayer.motionY < 0) {
+            if (mc.thePlayer.motionY < 0 && (FallingPlayer(mc.thePlayer).findCollision(60) != null)) {
                 enabled = true
                 BlinkUtils.setBlinkState(all = true)
             }
@@ -47,8 +48,8 @@ class HypixelBlinkNofall : NoFallMode("HypixelBlink") {
         }
     }
 
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+    override fun onRender2D(event: Render2DEvent) {
+        if (!enabled) return
         val scaledResolution = ScaledResolution(mc)
         Fonts.minecraftFont.drawString(
             "Blinking " + BlinkUtils.bufferSize().toString(),

@@ -1,9 +1,11 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.vulcan
 
-import net.ccbluex.liquidbounce.event.EventState
-import net.ccbluex.liquidbounce.event.MotionEvent
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
@@ -14,20 +16,29 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.block.BlockLadder
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
+import net.minecraft.block.material.Material
 
 class VulcanFlys : FlyMode("Vulcan") {
 
-    private var flys = ListValue("Vulcan-Mode", arrayOf("High", "Clip", "Damage", "Fast", "Ghost"), "High")
+    /**
+     * The fly called GhostNew is imported from LiquidBounce Legacy
+     * Credits to EclipseDev for this
+     */
+
+
+    private var flys = ListValue("Vulcan-Mode", arrayOf("High", "Clip", "Damage", "Fast", "Ghost", "GhostNew"), "GhostNew")
 
     private val vulcanhighheight = IntegerValue("VulcanHigh-ClipHeight", 10, 50, 100).displayable { flys.equals("High") }
     private val vulcanclipcanClipValue = BoolValue("VulcanClip-CanClip", true).displayable { flys.equals("Clip") }
@@ -82,6 +93,11 @@ class VulcanFlys : FlyMode("Vulcan") {
 
 
         when (flys.get()) {
+            "GhostNew" -> {
+                ClientUtils.displayChatMessage("§8[§c§lVulcanFly§8] §fEnsure that you sneak on landing.")
+                ClientUtils.displayChatMessage("§8[§c§lVulcanFly§8] §fAfter landing, go backward (Air) and go forward to landing location, then sneak again.")
+                ClientUtils.displayChatMessage("§8[§c§lVulcanFly§8] §fAnd then you can turn off fly.")
+            }
             "Clip" -> {
                 if(mc.thePlayer.onGround && vulcanclipcanClipValue.get()) {
                     clip(0f, -0.1f)
@@ -641,9 +657,33 @@ class VulcanFlys : FlyMode("Vulcan") {
         }
     }
 
+    override fun onBlockBB(event: BlockBBEvent) {
+        if (!flys.equals("GhostNew"))
+        if (!mc.gameSettings.keyBindJump.isKeyDown && mc.gameSettings.keyBindSneak.isKeyDown) return
+        if (!event.block.material.blocksMovement() && event.block.material != Material.carpet && event.block.material != Material.vine && event.block.material != Material.snow && event.block !is BlockLadder) {
+            event.boundingBox = AxisAlignedBB(
+                -2.0,
+                -1.0,
+                -2.0,
+                2.0,
+                1.0,
+                2.0
+            ).offset(
+                event.x.toDouble(),
+                event.y.toDouble(),
+                event.z.toDouble()
+            )
+        }
+    }
+
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
         when (flys.get()) {
+            "GhostNew" -> {
+                if (packet is S08PacketPlayerPosLook) {
+                    event.cancelEvent()
+                }
+            }
             "Clip" -> {
                 if(packet is S08PacketPlayerPosLook && waitFlag) {
                     waitFlag = false

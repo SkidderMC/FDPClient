@@ -359,6 +359,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         this.movementInput.updatePlayerMoveState();
 
         final Sprint sprint = FDPClient.moduleManager.getModule(Sprint.class);
+        final LegitScaffold legitscaffold = FDPClient.moduleManager.getModule(LegitScaffold.class);
         final NoSlow noSlow = FDPClient.moduleManager.getModule(NoSlow.class);
         final KillAura killAura = FDPClient.moduleManager.getModule(KillAura.class);
         final InvMove inventoryMove = FDPClient.moduleManager.getModule(InvMove.class);
@@ -502,7 +503,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             this.setSprinting(false);
         }
 
-        //Overwrite: Scaffold
+        //Overwrite: Scaffold && LegitScaffold
 
         if (scaffold.getState()) {
             this.setSprinting(scaffold.getCanSprint());

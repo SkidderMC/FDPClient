@@ -51,7 +51,7 @@ import kotlin.math.*
 class Scaffold : Module() {
     
     // Block place
-    private val placeOptions = BoolValue("Placement Options: ", true)
+    private val placeOptions = BoolValue("Placement-Options", true)
     
     private val placeableDelayValue = ListValue("PlaceableDelay", arrayOf("Normal", "Smart", "OFF"), "Normal").displayable { placeOptions.get() }
     private val placeDelayTower = BoolValue("PlaceableDelayWhenTowering", true).displayable { placeOptions.get() }
@@ -81,7 +81,7 @@ class Scaffold : Module() {
    
     
     // Movement
-    private val moveOptions = BoolValue("Movement Options: ", true)
+    private val moveOptions = BoolValue("Movement-Options ", true)
     
     private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "Alternating", "Hypixel", "HypixelSkywars", "HypixelFast", "Vulcan", "OFF"), "Always").displayable { moveOptions.get() }
     
@@ -138,7 +138,7 @@ class Scaffold : Module() {
     private val teleportNoMotionValue = BoolValue("TowerTeleportNoMotion", false).displayable { towerModeValue.equals("Teleport") && towerModeValue.displayable }
     
    
-    private val rotOptions = BoolValue("Rotation Options: ", true)
+    private val rotOptions = BoolValue("Rotation-Options ", true)
 
     // Rotations
     private val testRotationsValue = BoolValue("TestRotations", false).displayable { rotOptions.get() }
@@ -159,8 +159,6 @@ class Scaffold : Module() {
     private val customPitchValue = FloatValue("CustomPitch", 82.4f, -90f, 90f).displayable { rotationsValue.equals("Custom") && rotationsValue.displayable }
     private val customtowerYawValue = IntegerValue("CustomTowerYaw", -145, -180, 180).displayable { towerrotationsValue.equals("Custom") || towerrotationsValue.equals("Better") && towerrotationsValue.displayable }
     private val customtowerPitchValue = FloatValue("CustomTowerPitch", 79f, -90f, 90f).displayable { towerrotationsValue.equals("Custom") && towerrotationsValue.displayable }
-    // private val tolleyBridgeValue = IntegerValue("TolleyBridgeTick", 0, 0, 10)
-    // private val tolleyYawValue = IntegerValue("TolleyYaw", 0, 0, 90)
     private val static2BoostValue = BoolValue("Static2StrafeBoost", true).displayable { rotationsValue.equals("Static2") && rotationsValue.displayable }
     private val silentRotationValue = BoolValue("SilentRotation", true).displayable { !rotationsValue.equals("None") && rotationsValue.displayable }
     private val minRotationSpeedValue: IntegerValue = object : IntegerValue("MinRotationSpeed", 80, 0, 180) {
@@ -177,7 +175,7 @@ class Scaffold : Module() {
     }.displayable { !rotationsValue.equals("None") && rotationsValue.displayable } as IntegerValue
     private val keepLengthValue = IntegerValue("KeepRotationTick", 1, 0, 20).displayable { !rotationsValue.equals("None") && rotationsValue.displayable }
 
-    private val bypassOptions = BoolValue("Bypass Options: ", true)
+    private val bypassOptions = BoolValue("Bypass-Options ", true)
     
     private val autoBlockValue = ListValue("AutoBlock", arrayOf("Spoof", "LiteSpoof", "Switch", "OFF"), "Spoof").displayable { bypassOptions.get() }
     
@@ -203,9 +201,9 @@ class Scaffold : Module() {
 
     
     // Visuals
-    private val renderOptions = BoolValue("Render Options:", true)
+    private val renderOptions = BoolValue("Render-Options", true)
     
-    private val counterDisplayValue = ListValue("Counter", arrayOf("FDP", "Rise", "Rise6", "Simple"), "FDP").displayable { renderOptions.get() }
+    private val counterDisplayValue = ListValue("Counter", arrayOf("FDP", "Rise", "Simple"), "FDP").displayable { renderOptions.get() }
     private val markValue = BoolValue("Mark", false).displayable { renderOptions.get() }
     private val markRedValue = IntegerValue("MarkColorRed", 68, 0, 255).displayable { markValue.get() && markValue.displayable }
     private val markGreenValue = IntegerValue("MarkColorGreen", 117, 0, 255).displayable { markValue.get() && markValue.displayable }
@@ -1066,6 +1064,7 @@ class Scaffold : Module() {
         
         val scaledResolution = ScaledResolution(mc)
         val info = blocksAmount.toString() + " Blocks"
+        if (renderOptions.get()) {
         when (counterDisplayValue.get().lowercase()) {
             "fdp" -> {
                 GlStateManager.pushMatrix()
@@ -1142,29 +1141,6 @@ class Scaffold : Module() {
                 mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
                 GlStateManager.popMatrix()
             }
-            
-            "rise6" -> {
-                GlStateManager.pushMatrix()
-                val eeasing = progress * progress
-
-                val info = "Amount " + blocksAmount.toString()
-                val height = event.scaledResolution.scaledHeight
-                val width = event.scaledResolution.scaledWidth
-                val w2=(mc.fontRendererObj.getStringWidth(info))
-
-                RenderUtils.drawRoundedCornerRect(
-                    (width - w2 - 20) / 2f,
-                    height * 0.8f - 8f,
-                    (width + w2 + 18) / 2f,
-                    height * (1f - eeasing * 0.2f) + 12f,
-                    4f,
-                    Color(30, 30, 30, 120).rgb
-                )
-                mc.fontRendererObj.drawCenteredString(info, width / 2f, height * (1f - eeasing * 0.2f), Color.WHITE.rgb, false)
-                GlStateManager.popMatrix()
-            }
-            
-        
             "simple" -> {
                 Fonts.minecraftFont.drawString(
                     blocksAmount.toString() + " Blocks",
@@ -1175,6 +1151,7 @@ class Scaffold : Module() {
                 )
             }
         }
+            }
     }
 
     /**
@@ -1184,7 +1161,7 @@ class Scaffold : Module() {
      */
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        if (!markValue.get()) return
+        if (!markValue.get() && !renderOptions.get()) return
         for (i in 0 until (expandLengthValue.get() + 1)) {
             val blockPos = BlockPos(
                 mc.thePlayer.posX + if (mc.thePlayer.horizontalFacing == EnumFacing.WEST) -i else if (mc.thePlayer.horizontalFacing == EnumFacing.EAST) i else 0,

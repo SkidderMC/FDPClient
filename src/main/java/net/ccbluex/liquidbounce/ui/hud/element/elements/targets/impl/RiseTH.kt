@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.Stencil
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -41,6 +42,7 @@ class RiseTH(inst: Targets) : TargetStyle("Rise", inst, true) {
         val size = 45
 
         //draw head
+        GlStateManager.enableBlend()
         GL11.glPushMatrix()
         GL11.glTranslatef(7f, 7f, 0f)
         GL11.glScalef(scale, scale, scale)
@@ -57,6 +59,7 @@ class RiseTH(inst: Targets) : TargetStyle("Rise", inst, true) {
         RenderUtils.drawHead(entity.skin, 4, 4, 30, 30, 1)
         Stencil.dispose()
         GL11.glPopMatrix()
+        GlStateManager.disableBlend()
 
         // draw name
         GL11.glPushMatrix()

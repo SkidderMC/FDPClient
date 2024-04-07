@@ -134,7 +134,7 @@ class LegitReach : Module() {
                 currentTarget = event.targetEntity as EntityLivingBase?
             }
             currentTarget?.let {
-                if (mc.thePlayer.getDistanceToEntityBox(it) > 2f) {
+                if (mc.thePlayer.getDistanceToEntityBox(it) > 2.6f) {
                     if (comboCounter >= 2) {
                         if (outgoingBlink.get()) BlinkUtils.setBlinkState(all = true)
                         backtrack = true
@@ -229,7 +229,7 @@ class LegitReach : Module() {
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state || !backtrack) {
+        if (aura.get() && !FDPClient.moduleManager[KillAura::class.java]!!.state && !FDPClient.moduleManager[LegitAura::class.java]!!.state || !backtrack) {
             clearPackets()
             backtrack = false
             return
