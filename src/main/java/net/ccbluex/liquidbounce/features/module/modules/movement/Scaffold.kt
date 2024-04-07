@@ -86,9 +86,10 @@ class Scaffold : Module() {
     private val sprintValue = ListValue("Sprint", arrayOf("Always", "Dynamic", "OnGround", "OffGround", "Alternating", "Hypixel", "HypixelSkywars", "HypixelFast", "Vulcan", "OFF"), "Always").displayable { moveOptions.get() }
     
     private val safeWalkValue = ListValue("SafeWalk", arrayOf("Ground", "Air", "OFF"), "Ground").displayable { moveOptions.get() }
-    private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "Off"), "Off").displayable { moveOptions.get() }
-    private val blocksToEagleValue = IntegerValue("BlocksToEagle", 0, 0, 10).displayable { !eagleValue.equals("Off") && eagleValue.displayable }
-    private val edgeDistanceValue = FloatValue("EagleEdgeDistance", 0f, 0f, 0.5f).displayable { !eagleValue.equals("Off") && eagleValue.displayable }
+    private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "Legit", "Off"), "Off").displayable { moveOptions.get() }
+    private val eaglelegitvalue = IntegerValue("LegitEagle-Ticks", 30, 0, 1000).displayable { eagleValue.equals("Legit") }
+    private val blocksToEagleValue = IntegerValue("BlocksToEagle", 0, 0, 10).displayable { !eagleValue.equals("Off") && !eagleValue.equals("Legit") && eagleValue.displayable  }
+    private val edgeDistanceValue = FloatValue("EagleEdgeDistance", 0f, 0f, 0.5f).displayable { !eagleValue.equals("Off") && !eagleValue.equals("Legit") && eagleValue.displayable }
 
     private val timerValue = FloatValue("Timer", 1f, 0.1f, 5f).displayable { moveOptions.get() }
     private val motionSpeedEnabledValue = BoolValue("MotionSpeedSet", false).displayable { moveOptions.get() }
@@ -297,7 +298,13 @@ class Scaffold : Module() {
         if (towerStatus && towerModeValue.get().lowercase() != "aac3.3.9" && towerModeValue.get().lowercase() != "aac4.4constant" && towerModeValue.get().lowercase() != "aac4jump") mc.timer.timerSpeed = towerTimerValue.get()
         if (!towerStatus) mc.timer.timerSpeed = timerValue.get()
 
-        
+
+        if (eagleValue.equals("Legit") && mc.thePlayer.ticksExisted % eaglelegitvalue.get() == 0) {
+            mc.gameSettings.keyBindSneak.pressed = true
+        } else {
+            mc.gameSettings.keyBindSneak.pressed = false
+        }
+
 
         if (lastTick == mc.thePlayer.ticksExisted) return
         lastTick = mc.thePlayer.ticksExisted
@@ -436,7 +443,7 @@ class Scaffold : Module() {
             }
 
             // Eagle
-            if (!eagleValue.get().equals("Off", true) && !shouldGoDown) {
+            if (!eagleValue.get().equals("Off", true) && !eagleValue.get().equals("Legit", true) && !shouldGoDown) {
                 var dif = 0.5
                 val blockPos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)
                 if (edgeDistanceValue.get() > 0) {
