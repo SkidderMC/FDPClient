@@ -20,9 +20,11 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.client.settings.GameSettings
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
+import net.ccbluex.liquidbounce.features.module.modules.visual.XRay
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.InventoryUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
@@ -46,6 +48,9 @@ object LegitScaffold : Module() {
 
     val safewalkValue = ListValue("SafewalkType", arrayOf("Sneak", "Safewalk", "None"), "Safewalk").displayable { modeValue.equals("Simple") }
     val derpValue = BoolValue("SimpleDerpBridge", false).displayable { modeValue.equals("Simple") }
+
+    // Stop sprint with Speed Potion
+    val nosprintwithpot = BoolValue("NoSprintWithSpeedPotion", false)
 
     // Visuals
     private val counter = BoolValue("Counter", true)
@@ -81,11 +86,19 @@ object LegitScaffold : Module() {
         }
 
     override fun onEnable() {
+        if (nosprintwithpot.get() && FDPClient.moduleManager[Sprint::class.java]!!.state) {
+            FDPClient.moduleManager[Sprint::class.java]!!.state = false
+        }
+
         FDPClient.moduleManager[FreeLook::class.java]!!.enable()
         prevSlot = mc.thePlayer.inventory.currentItem
     }
 
     override fun onDisable() {
+        if (nosprintwithpot.get()) {
+            FDPClient.moduleManager[Sprint::class.java]!!.state = true
+        }
+
         FDPClient.moduleManager[FreeLook::class.java]!!.disable()
         mc.thePlayer.inventory.currentItem = prevSlot
 
