@@ -234,6 +234,7 @@ class Scaffold : Module() {
     private var zitterDirection = false
 
     // Delay
+    var placing = false
     private val delayTimer = MSTimer()
     private val zitterTimer = MSTimer()
     private val clickTimer = MSTimer()
@@ -299,11 +300,6 @@ class Scaffold : Module() {
         if (!towerStatus) mc.timer.timerSpeed = timerValue.get()
 
 
-        if (eagleValue.equals("Legit") && mc.thePlayer.ticksExisted % eaglelegitvalue.get() == 0) {
-            mc.gameSettings.keyBindSneak.pressed = true
-        } else {
-            mc.gameSettings.keyBindSneak.pressed = false
-        }
 
 
         if (lastTick == mc.thePlayer.ticksExisted) return
@@ -500,6 +496,13 @@ class Scaffold : Module() {
         if (placeModeValue.equals("All")) place()
 
         FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(true, moveFixValue.get())
+
+        if (eagleValue.equals("Legit") && placing && mc.thePlayer.ticksExisted % eaglelegitvalue.get() == 0) {
+            mc.gameSettings.keyBindSneak.pressed = true
+        } else {
+            mc.gameSettings.keyBindSneak.pressed = false
+        }
+
     }
 
     @EventTarget
@@ -952,6 +955,8 @@ class Scaffold : Module() {
         if (!delayTimer.hasTimePassed(delay) || !towerStatus && canSameY && lastGroundY - 1 != targetPlace!!.vec3.yCoord.toInt()) {
             return
         }
+
+        placing = true
 
         if (!rotationsValue.equals("None")) {
             val rayTraceInfo = mc.thePlayer.rayTraceWithServerSideRotation(5.0)
