@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
-import net.ccbluex.liquidbounce.utils.render.IconUtils;
+import net.ccbluex.liquidbounce.utils.IconUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
-import static net.ccbluex.liquidbounce.utils.render.IconUtils.readImageToBuffer;
 
 public class ClientSpoofHandler extends MinecraftInstance implements Listenable {
 
@@ -93,7 +92,9 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
         }
     }
 
+    // zywl... w h y -bread
     public static void checkIconAndTitle() {
+        IconUtils iu = new IconUtils();
         Util.EnumOS util$enumos = Util.getOSType();
         final ClientSpoof clientSpoof = FDPClient.moduleManager.getModule(ClientSpoof.class);
         final boolean enabled = clientSpoof != null && clientSpoof.getState();
@@ -107,19 +108,20 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
                 Display.setTitle("Lunar Client 1.8.9 (" + LUNAR_DISPLAY_NAME.replace("lunarclient:", "") + ")");
             } else {
                 if (util$enumos != Util.EnumOS.OSX) {
-                    Display.setIcon(IconUtils.fav());
+                    iu.setIcon();
                 }
                 Display.setTitle(FDPClient.CLIENT_NAME + " " + FDPClient.CLIENT_VERSION);
             }
         } else {
             if (util$enumos != Util.EnumOS.OSX) {
-                Display.setIcon(IconUtils.fav());
+                iu.setIcon();
             }
             Display.setTitle(FDPClient.CLIENT_NAME + " " + FDPClient.CLIENT_VERSION);
         }
     }
 
     private static void setVanillaIcon() {
+        IconUtils iu = new IconUtils();
         InputStream inputstream = null;
         InputStream inputstream1 = null;
 
@@ -128,7 +130,7 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
             inputstream1 = mc.mcDefaultResourcePack.getInputStreamAssets(new ResourceLocation("icons/icon_32x32.png"));
 
             if (inputstream != null && inputstream1 != null) {
-                Display.setIcon(new ByteBuffer[]{readImageToBuffer(inputstream), readImageToBuffer(inputstream1)});
+                Display.setIcon(new ByteBuffer[]{iu.readImageToBuffer(inputstream), iu.readImageToBuffer(inputstream1)});
             }
         } catch (IOException ioexception) {
             ClientUtils.getLogger().error("Couldn\'t set icon", ioexception);
