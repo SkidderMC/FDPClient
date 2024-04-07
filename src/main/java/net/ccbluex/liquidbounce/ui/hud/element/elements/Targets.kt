@@ -60,7 +60,6 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             SimpleTH(this),
             ZavzTH(this),
             FDPTH(this),
-            HealthBarTH(this),
             VapeTH(this),
             FluxTH(this),
             LiquidTH(this),
