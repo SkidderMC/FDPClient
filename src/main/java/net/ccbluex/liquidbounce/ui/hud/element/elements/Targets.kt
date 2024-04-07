@@ -66,6 +66,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             AstolfoTH(this),
             ExhibitionTH(this),
             ChillTH(this),
+            J3UltimateTH(this),
             RemixTH(this),
             SlowlyTH(this),
             SimplicityTH(this),
