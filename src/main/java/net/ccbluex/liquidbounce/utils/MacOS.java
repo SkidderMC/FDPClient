@@ -20,7 +20,7 @@ import java.lang.reflect.InvocationTargetException;
 public class MacOS {
     public static void icon(){
         if(Util.getOSType() != Util.EnumOS.OSX) { return; }
-        InputStream iconStream = MacOS.class.getResourceAsStream("/assets/minecraft/fdpclient/256.png");
+        InputStream iconStream = MacOS.class.getResourceAsStream("/assets/minecraft/fdpclient/mac.png");
         if (iconStream != null) {
             try {
                 BufferedImage icon = ImageIO.read(iconStream);
