@@ -59,7 +59,7 @@ public class IconUtils {
     }
 
     // this code is aids because its skidded directly from Minecraft.class
-    private ByteBuffer readImageToBuffer(InputStream imageStream) throws IOException {
+    public ByteBuffer readImageToBuffer(InputStream imageStream) throws IOException {
         BufferedImage bufferedimage = ImageIO.read(imageStream);
         int[] aint = bufferedimage.getRGB(0, 0, bufferedimage.getWidth(), bufferedimage.getHeight(), null, 0, bufferedimage.getWidth());
         ByteBuffer bytebuffer = ByteBuffer.allocate(4 * aint.length);

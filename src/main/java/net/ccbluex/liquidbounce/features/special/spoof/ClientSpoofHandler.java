@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
-import net.ccbluex.liquidbounce.utils.render.IconUtils;
+import net.ccbluex.liquidbounce.utils.IconUtils;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement;
@@ -31,7 +31,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
-import static net.ccbluex.liquidbounce.utils.render.IconUtils.readImageToBuffer;
+import static net.ccbluex.liquidbounce.utils.IconUtils.readImageToBuffer;
 
 public class ClientSpoofHandler extends MinecraftInstance implements Listenable {
 
@@ -93,7 +93,9 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
         }
     }
 
+    // zywl... w h y -bread
     public static void checkIconAndTitle() {
+        IconUtils iu = new IconUtils();
         Util.EnumOS util$enumos = Util.getOSType();
         final ClientSpoof clientSpoof = FDPClient.moduleManager.getModule(ClientSpoof.class);
         final boolean enabled = clientSpoof != null && clientSpoof.getState();
@@ -107,13 +109,13 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
                 Display.setTitle("Lunar Client 1.8.9 (" + LUNAR_DISPLAY_NAME.replace("lunarclient:", "") + ")");
             } else {
                 if (util$enumos != Util.EnumOS.OSX) {
-                    Display.setIcon(IconUtils.fav());
+                    iu.setIcon();
                 }
                 Display.setTitle(FDPClient.CLIENT_NAME + " " + FDPClient.CLIENT_VERSION);
             }
         } else {
             if (util$enumos != Util.EnumOS.OSX) {
-                Display.setIcon(IconUtils.fav());
+                iu.setIcon();
             }
             Display.setTitle(FDPClient.CLIENT_NAME + " " + FDPClient.CLIENT_VERSION);
         }
