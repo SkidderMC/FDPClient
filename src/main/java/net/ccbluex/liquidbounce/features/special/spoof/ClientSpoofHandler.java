@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
-import static net.ccbluex.liquidbounce.utils.IconUtils.readImageToBuffer;
 
 public class ClientSpoofHandler extends MinecraftInstance implements Listenable {
 
@@ -122,6 +121,7 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
     }
 
     private static void setVanillaIcon() {
+        IconUtils iu = new IconUtils();
         InputStream inputstream = null;
         InputStream inputstream1 = null;
 
@@ -130,7 +130,7 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
             inputstream1 = mc.mcDefaultResourcePack.getInputStreamAssets(new ResourceLocation("icons/icon_32x32.png"));
 
             if (inputstream != null && inputstream1 != null) {
-                Display.setIcon(new ByteBuffer[]{readImageToBuffer(inputstream), readImageToBuffer(inputstream1)});
+                Display.setIcon(new ByteBuffer[]{iu.readImageToBuffer(inputstream), iu.readImageToBuffer(inputstream1)});
             }
         } catch (IOException ioexception) {
             ClientUtils.getLogger().error("Couldn\'t set icon", ioexception);
