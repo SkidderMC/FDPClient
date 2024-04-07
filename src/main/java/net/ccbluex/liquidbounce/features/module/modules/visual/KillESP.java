@@ -20,7 +20,6 @@ import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme;
 import net.ccbluex.liquidbounce.utils.AnimationUtils;
 import net.ccbluex.liquidbounce.utils.render.BlendUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
-import net.ccbluex.liquidbounce.utils.render.EaseUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.ccbluex.liquidbounce.value.BoolValue;
@@ -226,7 +225,6 @@ public class KillESP extends Module {
             drawPercent -= 1;
         }
 
-        drawPercent = EaseUtils.easeInOutQuad(drawPercent);
         mc.entityRenderer.disableLightmap();
         GL11.glPushMatrix();
         GL11.glDisable(GL11.GL_TEXTURE_2D);
@@ -248,7 +246,7 @@ public class KillESP extends Module {
         double z = markEntity.lastTickPosZ + (markEntity.posZ - markEntity.lastTickPosZ) * event.getPartialTicks() - mc.getRenderManager().viewerPosZ;
 
         mc.entityRenderer.disableLightmap();
-        GL11.glLineWidth((float) (radius * 8f));
+        GL11.glLineWidth((radius * 8f));
         GL11.glBegin(GL11.GL_LINE_STRIP);
         for (int i = 0; i < 360; i += 10) {
             float hue = i < 180 ? RAINBOW_START_VALUE + (RAINBOW_STOP_VALUE - RAINBOW_START_VALUE) * i / 180f : RAINBOW_START_VALUE + (RAINBOW_STOP_VALUE - RAINBOW_START_VALUE) * (-(i - 360)) / 180f;
