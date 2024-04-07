@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawHead
 import net.ccbluex.liquidbounce.utils.render.Stencil
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
@@ -21,9 +22,12 @@ import java.awt.Color
 import kotlin.math.roundToInt
 
 class RiseTH(inst: Targets) : TargetStyle("Rise", inst, true) {
+
     override fun drawTarget(entity: EntityLivingBase) {
 
         val font = Fonts.font35
+
+
 
         updateAnim(entity.health)
 
@@ -39,27 +43,27 @@ class RiseTH(inst: Targets) : TargetStyle("Rise", inst, true) {
         } else {
             0.8f + (0.2f * (hurtPercent - 0.5f) * 2)
         }
-        val size = 45
+        val size = 35
 
         //draw head
-        GlStateManager.enableBlend()
         GL11.glPushMatrix()
-        GL11.glTranslatef(7f, 7f, 0f)
-        GL11.glScalef(scale, scale, scale)
-        GL11.glTranslatef(((size * 0.5f * (1 - scale)) / scale), ((size * 0.5f * (1 - scale)) / scale), 0f)
-        GL11.glColor4f(1f, 1 - hurtPercent, 1 - hurtPercent, 1f)
+        GL11.glTranslatef(9f, 10f, 0f)
+        GL11.glColor4f(1f, 1 - entity.hurtPercent, 1 - entity.hurtPercent, 1f)
         Stencil.write(false)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
         GL11.glEnable(GL11.GL_BLEND)
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        RenderUtils.fastRoundedRect(4F, 4F, 34F, 34F, 8F)
+        RenderUtils.fastRoundedRect(-2F, -3F, 33F, 33F, 8F)
         GL11.glDisable(GL11.GL_BLEND)
         GL11.glEnable(GL11.GL_TEXTURE_2D)
         Stencil.erase(true)
-        RenderUtils.drawHead(entity.skin, 4, 4, 30, 30, 1)
+        drawHead(entity.skin, -2, -3, 35, 35, Color(255,255,255,fadeAlpha(255)).rgb)
         Stencil.dispose()
         GL11.glPopMatrix()
+        GlStateManager.disableAlpha()
         GlStateManager.disableBlend()
+        GlStateManager.resetColor()
+
 
         // draw name
         GL11.glPushMatrix()
