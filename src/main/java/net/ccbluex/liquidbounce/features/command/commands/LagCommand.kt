@@ -15,8 +15,9 @@ class LagCommand : Command("lag", emptyArray()) {
     override fun execute(args: Array<String>) {
         if (args.size > 1) {
             var f = 1
+            var time = 0L
             try {
-                var time = args[1].toLong()
+                time = args[1].toLong()
             } catch (e: NumberFormatException) {
                 chatSyntaxError()
                 return
