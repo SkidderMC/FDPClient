@@ -39,6 +39,7 @@ import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
+import net.minecraft.potion.Potion
 import java.awt.Color
 import kotlin.math.roundToInt
 
@@ -49,8 +50,8 @@ object LegitScaffold : Module() {
     val safewalkValue = ListValue("SafewalkType", arrayOf("Sneak", "Safewalk", "None"), "Safewalk").displayable { modeValue.equals("Simple") }
     val derpValue = BoolValue("SimpleDerpBridge", false).displayable { modeValue.equals("Simple") }
 
-    // Stop sprint with Speed Potion
-    val nosprintwithpot = BoolValue("NoSprintWithSpeedPotion", false)
+    // Sprint
+    val sprintValue = ListValue("Sprint-Mode", arrayOf("Always", "NoSpeedPot", "OFF"), "Always")
 
     // Visuals
     private val counter = BoolValue("Counter", true)
@@ -86,18 +87,12 @@ object LegitScaffold : Module() {
         }
 
     override fun onEnable() {
-        if (nosprintwithpot.get() && FDPClient.moduleManager[Sprint::class.java]!!.state) {
-            FDPClient.moduleManager[Sprint::class.java]!!.state = false
-        }
 
         FDPClient.moduleManager[FreeLook::class.java]!!.enable()
         prevSlot = mc.thePlayer.inventory.currentItem
     }
 
     override fun onDisable() {
-        if (nosprintwithpot.get()) {
-            FDPClient.moduleManager[Sprint::class.java]!!.state = true
-        }
 
         FDPClient.moduleManager[FreeLook::class.java]!!.disable()
         mc.thePlayer.inventory.currentItem = prevSlot
@@ -426,6 +421,13 @@ object LegitScaffold : Module() {
            }
         }
     }
+
+    val canSprint: Boolean
+        get() = MovementUtils.isMoving() && when (sprintValue.get().lowercase()) {
+            "always" -> true
+            "nospeedpot" -> !mc.thePlayer.isPotionActive(Potion.moveSpeed)
+            else -> false
+        }
 
     private fun getPitchRot(): Float {
         var rpitch = 90f

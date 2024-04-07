@@ -509,6 +509,10 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             this.setSprinting(scaffold.getCanSprint());
         }
 
+        if (legitscaffold.getState()) {
+            this.setSprinting(legitscaffold.getCanSprint());
+        }
+
         boolean debug_AttemptSprint = this.isSprinting();
 
         attemptToggle = false;
