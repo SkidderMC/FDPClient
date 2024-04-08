@@ -110,13 +110,21 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
                 if (util$enumos != Util.EnumOS.OSX) {
                     iu.setIcon();
                 }
-                Display.setTitle(FDPClient.CLIENT_NAME + " " + FDPClient.CLIENT_VERSION);
+                if (FDPClient.INSTANCE.isInDev()) {
+                    Display.setTitle(FDPClient.CLIENT_NAME + " " + FDPClient.CLIENT_VERSION +  " " + "|" + " " + "Development Build");
+                } else {
+                    Display.setTitle(FDPClient.CLIENT_NAME + " " + FDPClient.CLIENT_VERSION);
+                }
             }
         } else {
             if (util$enumos != Util.EnumOS.OSX) {
                 iu.setIcon();
             }
-            Display.setTitle(FDPClient.CLIENT_NAME + " " + FDPClient.CLIENT_VERSION);
+            if (FDPClient.INSTANCE.isInDev()) {
+                Display.setTitle(FDPClient.CLIENT_NAME + " " + FDPClient.CLIENT_VERSION +  " " + "|" + " " + "Development Build");
+            } else {
+                Display.setTitle(FDPClient.CLIENT_NAME + " " + FDPClient.CLIENT_VERSION);
+            }
         }
     }
 
