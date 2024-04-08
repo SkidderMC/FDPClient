@@ -407,7 +407,7 @@ object KillAura : Module() {
             val rangeString = "Range: $maxRange"
             val reachString = "Reach: $formattedReach"
 
-            val status = "Blocking: ${if (blockingStatus) "Yes" else "No"}, $clicks, $reachString, $rangeString"
+            val status = "Blocking: ${if (blockingStatus) "Yes" else "No"}, CPS: $clicks, $reachString, $rangeString"
             Fonts.minecraftFont.drawStringWithShadow(
                 status,
                 sr.scaledWidth / 2f - Fonts.minecraftFont.getStringWidth(status) / 2f,

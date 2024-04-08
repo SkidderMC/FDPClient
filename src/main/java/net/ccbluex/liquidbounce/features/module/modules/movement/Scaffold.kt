@@ -88,6 +88,7 @@ class Scaffold : Module() {
     private val safeWalkValue = ListValue("SafeWalk", arrayOf("Ground", "Air", "OFF"), "Ground").displayable { moveOptions.get() }
     private val eagleValue = ListValue("Eagle", arrayOf("Silent", "Normal", "Legit", "Off"), "Off").displayable { moveOptions.get() }
     private val eaglelegitvalue = IntegerValue("LegitEagle-Ticks", 30, 0, 1000).displayable { eagleValue.equals("Legit") }
+    private val eaglelegitpacketvalue = BoolValue("LegitEagle-Silent", false).displayable { eagleValue.equals("Legit") }
     private val blocksToEagleValue = IntegerValue("BlocksToEagle", 0, 0, 10).displayable { !eagleValue.equals("Off") && !eagleValue.equals("Legit") && eagleValue.displayable  }
     private val edgeDistanceValue = FloatValue("EagleEdgeDistance", 0f, 0f, 0.5f).displayable { !eagleValue.equals("Off") && !eagleValue.equals("Legit") && eagleValue.displayable }
 
@@ -498,10 +499,24 @@ class Scaffold : Module() {
         FDPClient.moduleManager[StrafeFix::class.java]!!.applyForceStrafe(true, moveFixValue.get())
 
         if (eagleValue.equals("Legit") && placing && mc.thePlayer.ticksExisted % eaglelegitvalue.get() == 0) {
-            mc.gameSettings.keyBindSneak.pressed = true
+            if (eaglelegitpacketvalue.get()) {
+                mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SNEAKING))
+            } else {
+                mc.gameSettings.keyBindSneak.pressed = true
+            }
         } else {
-            mc.gameSettings.keyBindSneak.pressed = false
+            if (eaglelegitpacketvalue.get()) {
+                mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING))
+            } else {
+                mc.gameSettings.keyBindSneak.pressed = false
+            }
         }
+
+//        if (eagleValue.equals("Legit") && eaglelegitpacketvalue.get() && placing && mc.thePlayer.ticksExisted % eaglelegitvalue.get() == 0) {
+//            C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SNEAKING)
+//        } else {
+//            C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING)
+//        }
 
     }
 
@@ -544,6 +559,7 @@ class Scaffold : Module() {
                 slot = packet.slotId
             }
         }
+
 
         if (packet is C08PacketPlayerBlockPlacement) {
             // c08 item override to solve issues in scaffold and some other modules, maybe bypass some anticheat in future
