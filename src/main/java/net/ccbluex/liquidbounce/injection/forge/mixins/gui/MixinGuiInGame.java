@@ -119,13 +119,13 @@ public abstract class MixinGuiInGame extends MixinGui {
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
     private void renderPumpkinOverlay(final CallbackInfo callbackInfo) {
 
-        if(Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getPumpkinEffectValue().get())
+        if(Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getAntiBlindValue().get() && Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getPumpkinEffectValue().get())
             callbackInfo.cancel();
     }
 
     @Inject(method = "renderBossHealth", at = @At("HEAD"), cancellable = true)
     private void renderBossHealth(CallbackInfo callbackInfo) {
-        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getBossHealthValue().get())
+        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getAntiBlindValue().get() && Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getBossHealthValue().get())
             callbackInfo.cancel();
     }
 

@@ -25,16 +25,16 @@ class VanillaTweaks : Module() {
     val noAchievements = BoolValue("NoAchievements", true)
 
     // CameraClip
-    val cameraClipValue = BoolValue("CameraClip", false)
+    val cameraClipValue = BoolValue("CameraClip", true)
 
     //AntiBlind
-    private val antiBlindValue = BoolValue("AntiBlind", false)
+    val antiBlindValue = BoolValue("AntiBlind", false)
     val confusionEffectValue = BoolValue("Confusion", false).displayable { antiBlindValue.get() }
     val pumpkinEffectValue = BoolValue("Pumpkin", true).displayable { antiBlindValue.get() }
     val fireEffectValue = FloatValue("FireAlpha", 0.3f, 0f, 1f).displayable { antiBlindValue.get() }
     private val fullBrightValue = BoolValue("FullBright", true).displayable { antiBlindValue.get() }
     private val fullBrightModeValue = ListValue("FullBrightMode", arrayOf("None", "Gamma", "NightVision"), "Gamma").displayable { fullBrightValue.get() }
-    val bossHealthValue = BoolValue("Boss-Health", true).displayable { antiBlindValue.get() }
+    val bossHealthValue = BoolValue("Boss-Health", false).displayable { antiBlindValue.get() }
 
     //NoFOV
     val noFov = BoolValue("NoFOV", false)
@@ -57,7 +57,7 @@ class VanillaTweaks : Module() {
     @EventTarget(ignoreCondition = true)
     fun onUpdate(event: UpdateEvent) {
         if (state || FDPClient.moduleManager[XRay::class.java]!!.state) {
-            if(fullBrightValue.get()) {
+            if(fullBrightValue.get() && antiBlindValue.get()) {
                 when (fullBrightModeValue.get().lowercase()) {
                     "gamma" -> if (mc.gameSettings.gammaSetting <= 100f) mc.gameSettings.gammaSetting++
                     "nightvision" -> mc.thePlayer.addPotionEffect(PotionEffect(Potion.nightVision.id, 1337, 1))

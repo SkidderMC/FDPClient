@@ -22,8 +22,8 @@ import java.util.Objects;
 
 @ModuleInfo(name = "NameProtect", category = ModuleCategory.OTHER)
 public class NameProtect extends Module {
-    private final TextValue fakeNameValue = new TextValue("FakeName", "&cProtected User");
-    private final TextValue allFakeNameValue = new TextValue("AllPlayersFakeName", "FDP");
+    private final TextValue fakeNameValue = new TextValue("FakeName", "&bFDP User");
+    private final TextValue allFakeNameValue = new TextValue("AllPlayersFakeName", "Protected Name");
     public final BoolValue selfValue = new BoolValue("Yourself", true);
     public final BoolValue tagValue = new BoolValue("Tag", false);
     public final BoolValue allPlayersValue = new BoolValue("AllPlayers", false);

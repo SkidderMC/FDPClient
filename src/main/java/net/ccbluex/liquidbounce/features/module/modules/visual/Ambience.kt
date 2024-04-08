@@ -23,7 +23,7 @@ object Ambience : Module() {
 
     private val timeModeValue = ListValue("TimeMode", arrayOf("None", "Normal", "Custom"), "Custom")
 
-    private val customWorldTimeValue = IntegerValue("CustomTime", 19, 0, 24).displayable { timeModeValue.equals("Custom") }
+    private val customWorldTimeValue = IntegerValue("CustomTime", 6, 0, 24).displayable { timeModeValue.equals("Custom") }
     private val changeWorldTimeSpeedValue = IntegerValue("ChangeWorldTimeSpeed", 150, 10, 500).displayable { timeModeValue.equals("Normal") }
 
     private val weatherModeValue = ListValue("WeatherMode", arrayOf("None", "Sun", "Rain", "Thunder"), "None")
