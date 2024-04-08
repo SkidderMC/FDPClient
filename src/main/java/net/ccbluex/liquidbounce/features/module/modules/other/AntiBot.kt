@@ -43,6 +43,7 @@ object AntiBot : Module() {
     private val validNameValue = BoolValue("ValidName", true)
     private val hiddenNameValue = BoolValue("HiddenName", false)
     private val armorValue = BoolValue("Armor", false)
+    private val invalidUUID = BoolValue("InvalidUUID", true) // Imported from LiquidBounce Legacy (Credits to EclipseDev)
     private val pingValue = BoolValue("Ping", false)
     private val needHitValue = BoolValue("NeedHit", false)
     private val noClipValue = BoolValue("NoClip", false)
@@ -170,6 +171,10 @@ object AntiBot : Module() {
                 entity.inventory.armorInventory[2] == null && entity.inventory.armorInventory[3] == null) {
                 return true
             }
+        }
+
+        if (invalidUUID.get() && mc.netHandler.getPlayerInfo(entity.uniqueID) == null) {
+            return true
         }
 
         if (pingValue.get()) {
