@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.combat.LegitAura;
 import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
+import net.ccbluex.liquidbounce.utils.SpoofItemUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -29,7 +30,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Objects;
 
@@ -73,7 +76,8 @@ public abstract class MixinItemRenderer {
 
     @Shadow
     private ItemStack itemToRender;
-
+    @Shadow
+    private int equippedItemSlot = -1;
     /**
      * Render item map.
      *
@@ -138,7 +142,34 @@ public abstract class MixinItemRenderer {
     protected abstract void renderPlayerArm(AbstractClientPlayer clientPlayer, float equipProgress, float swingProgress);
 
     private final Animations fDPClient$animations = Animations.INSTANCE;
+    @Inject(method = "updateEquippedItem", at = @At("HEAD"), cancellable = true)
+    public void updateEquippedItemHead(CallbackInfo i) {
+        this.prevEquippedProgress = this.equippedProgress;
+        ItemStack itemstack = SpoofItemUtils.INSTANCE.getStack();
+        boolean flag = false;
+        if (this.itemToRender != null && itemstack != null) {
+            if (!this.itemToRender.getIsItemStackEqual(itemstack)) {
+                if (!this.itemToRender.getItem().shouldCauseReequipAnimation(this.itemToRender, itemstack, this.equippedItemSlot != SpoofItemUtils.INSTANCE.getSlot())) {
+                    this.itemToRender = itemstack;
+                    this.equippedItemSlot = SpoofItemUtils.INSTANCE.getSlot();
+                    return;
+                }
 
+                flag = true;
+            }
+        } else flag = this.itemToRender != null || itemstack != null;
+
+        float f = 0.4F;
+        float f1 = flag ? 0.0F : 1.0F;
+        float f2 = MathHelper.clamp_float(f1 - this.equippedProgress, -f, f);
+        this.equippedProgress += f2;
+        if (this.equippedProgress < 0.1F) {
+            this.itemToRender = itemstack;
+            this.equippedItemSlot = SpoofItemUtils.INSTANCE.getSlot();
+        }
+        //Fix Optifine Crash
+        i.cancel();
+    }
     /**
      * @author Liuli
      * @reason Transform First Person Item
