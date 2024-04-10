@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.ui.gui.colortheme
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme.fadespeed
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme.textValue
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme.updown
-import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.extensions.animLinear
+import net.ccbluex.liquidbounce.ui.clickgui.style.styles.animLinear
 import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders
 import net.ccbluex.liquidbounce.utils.MouseUtils.mouseWithinBounds
 import net.ccbluex.liquidbounce.utils.render.BlendUtils

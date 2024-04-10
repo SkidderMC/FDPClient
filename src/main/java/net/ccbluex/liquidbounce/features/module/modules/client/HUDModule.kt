@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.visual.CustomClientColor
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGui
-import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi
 import net.ccbluex.liquidbounce.ui.gui.menu.GuiTeleportation
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner
@@ -132,7 +131,7 @@ object HUDModule : Module() {
         }
 
         if (mc.theWorld == null || mc.thePlayer == null) return
-        if (noInvClose.get() && event.packet is S2EPacketCloseWindow && (mc.currentScreen is GuiInventory || mc.currentScreen is NewUi || mc.currentScreen is ClickGui || mc.currentScreen is GuiChat || mc.currentScreen is GuiTeleportation)) {
+        if (noInvClose.get() && event.packet is S2EPacketCloseWindow && (mc.currentScreen is GuiInventory || mc.currentScreen is ClickGui || mc.currentScreen is GuiChat || mc.currentScreen is GuiTeleportation)) {
             event.cancelEvent()
         }
     }
