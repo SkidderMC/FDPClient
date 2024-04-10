@@ -54,6 +54,7 @@ object Breaker : Module() {
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val ignoreFirstBlockValue = BoolValue("IgnoreFirstDetection", false)
     private val onClickMouse = BoolValue("OnClick", false)
+    private val tools = BoolValue("Tool", false)
     private val noHitValue = BoolValue("NoHit", false)
     private val noMoveValue = BoolValue("NoMove", false)
     private val noEatValue = BoolValue("NoEat", true)
@@ -255,10 +256,8 @@ object Breaker : Module() {
             actionValue.equals("destroy") || surroundings || !isRealBlock -> {
                 
                 // Auto Tool
-                val autoTool = FDPClient.moduleManager[AutoTool::class.java]!!
-                if (autoTool.state) {
-                    autoTool.switchSlot(currentPos)
-                }
+                if (tools.get())
+                    switchSlot(currentPos)
 
                 // Break block
                 if (instantValue.get()) {
@@ -505,6 +504,27 @@ object Breaker : Module() {
             "around" -> !BlockUtils.isFullBlock(blockPos.down()) || !BlockUtils.isFullBlock(blockPos.up()) || !BlockUtils.isFullBlock(blockPos.north()) ||
                     !BlockUtils.isFullBlock(blockPos.east()) || !BlockUtils.isFullBlock(blockPos.south()) || !BlockUtils.isFullBlock(blockPos.west())
             else -> true
+        }
+    }
+
+    fun switchSlot(blockPos: BlockPos) {
+        var bestSpeed = 1F
+        var bestSlot = -1
+
+        val block = mc.theWorld.getBlockState(blockPos).block
+
+        for (i in 0..8) {
+            val item = mc.thePlayer.inventory.getStackInSlot(i) ?: continue
+            val speed = item.getStrVsBlock(block)
+
+            if (speed > bestSpeed) {
+                bestSpeed = speed
+                bestSlot = i
+            }
+        }
+
+        if (bestSlot != -1) {
+            mc.thePlayer.inventory.currentItem = bestSlot
         }
     }
 
