@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.FastBreak
-import net.ccbluex.liquidbounce.features.module.modules.player.AutoTool
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
@@ -29,6 +28,7 @@ import net.minecraft.block.BlockLiquid
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.C07PacketPlayerDigging
+import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
@@ -42,6 +42,7 @@ class Nuker : Module() {
     private val throughWallsValue = BoolValue("ThroughWalls", false)
     private val priorityValue = ListValue("Priority", arrayOf("Distance", "Hardness"), "Distance")
     private val rotationsValue = BoolValue("Rotations", true)
+    private val tools = BoolValue("Tool", false)
     private val layerValue = BoolValue("Layer", false)
     private val hitDelayValue = IntegerValue("HitDelay", 4, 0, 20)
     private val nukeValue = IntegerValue("Nuke", 1, 1, 20)
@@ -131,9 +132,8 @@ class Nuker : Module() {
                 attackedBlocks.add(blockPos)
 
                 // Call auto tool
-                val autoTool = FDPClient.moduleManager.getModule(AutoTool::class.java) as AutoTool
-                if (autoTool.state)
-                    autoTool.switchSlot(blockPos)
+                if (tools.get())
+                    switchSlot(blockPos)
 
                 // Start block breaking
                 if (currentDamage == 0F) {
@@ -230,5 +230,25 @@ class Nuker : Module() {
 
     companion object {
         var currentDamage = 0F
+    }
+    fun switchSlot(blockPos: BlockPos) {
+        var bestSpeed = 1F
+        var bestSlot = -1
+
+        val block = mc.theWorld.getBlockState(blockPos).block
+
+        for (i in 0..8) {
+            val item = mc.thePlayer.inventory.getStackInSlot(i) ?: continue
+            val speed = item.getStrVsBlock(block)
+
+            if (speed > bestSpeed) {
+                bestSpeed = speed
+                bestSlot = i
+            }
+        }
+
+        if (bestSlot != -1) {
+            mc.thePlayer.inventory.currentItem = bestSlot
+        }
     }
 }
