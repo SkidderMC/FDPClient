@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.*
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic.DropdownGUI
-import net.ccbluex.liquidbounce.ui.clickgui.style.styles.newVer.NewUi
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.FDPDropdownClickGUI
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.gui.options.modernuiLaunchOption
