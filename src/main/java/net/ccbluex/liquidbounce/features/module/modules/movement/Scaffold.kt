@@ -228,9 +228,6 @@ class Scaffold : Module() {
     // Rotation lock
     private var lockRotation: Rotation? = null
 
-    // Auto block slot
-    private var slot = 0
-
     // Zitter Smooth
     private var zitterDirection = false
 
@@ -266,16 +263,18 @@ class Scaffold : Module() {
     // WATCHDOG
     private var wdTick = 0
     private var wdSpoof = false
-    private var towerTick = 0
 
     // update event fix
     private var lastTick = 0
+
+    //prevItem
+    private var prevItem = 0
 
     /**
      * Enable module
      */
     override fun onEnable() {
-        slot = mc.thePlayer.inventory.currentItem
+        prevItem = mc.thePlayer.inventory.currentItem
         doSpoof = false
         if (mc.thePlayer == null) return
         lastGroundY = mc.thePlayer.posY.toInt()
@@ -369,7 +368,7 @@ class Scaffold : Module() {
                 mc.netHandler.addToSendQueue(c08)
             }
             when (extraClickValue.get().lowercase()) {
-                "emptyc08" -> sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getStackInSlot(slot)))
+                "emptyc08" -> sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
                 "afterplace" -> {
                     if (afterPlaceC08 != null) {
                         if (mc.thePlayer.getDistanceSqToCenter(lastPlaceBlock) <10) {
@@ -387,9 +386,9 @@ class Scaffold : Module() {
                         val directionVec = rayTraceInfo.sideHit.directionVec
                         val targetPos = rayTraceInfo.blockPos.add(directionVec.x, directionVec.y, directionVec.z)
                         if (mc.thePlayer.entityBoundingBox.intersectsWith(Blocks.stone.getSelectedBoundingBox(mc.theWorld, targetPos))) {
-                            sendPacket(C08PacketPlayerBlockPlacement(blockPos, rayTraceInfo.sideHit.index, mc.thePlayer.inventory.getStackInSlot(slot), (hitVec.xCoord - blockPos.x.toDouble()).toFloat(), (hitVec.yCoord - blockPos.y.toDouble()).toFloat(), (hitVec.zCoord - blockPos.z.toDouble()).toFloat()))
+                            sendPacket(C08PacketPlayerBlockPlacement(blockPos, rayTraceInfo.sideHit.index, mc.thePlayer.inventory.getCurrentItem(), (hitVec.xCoord - blockPos.x.toDouble()).toFloat(), (hitVec.yCoord - blockPos.y.toDouble()).toFloat(), (hitVec.zCoord - blockPos.z.toDouble()).toFloat()))
                         } else {
-                            sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getStackInSlot(slot)))
+                            sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
                         }
                     }
                 }
@@ -551,19 +550,10 @@ class Scaffold : Module() {
             }
         }
 
-        // AutoBlock
-        if (packet is C09PacketHeldItemChange) {
-            if(packet.slotId == slot) {
-                event.cancelEvent()
-            } else {
-                slot = packet.slotId
-            }
-        }
-
 
         if (packet is C08PacketPlayerBlockPlacement) {
             // c08 item override to solve issues in scaffold and some other modules, maybe bypass some anticheat in future
-            packet.stack = mc.thePlayer.inventory.mainInventory[slot]
+            packet.stack = mc.thePlayer.inventory.getCurrentItem()
             // illegal facing checks
             packet.facingX = packet.facingX.coerceIn(-1.0000F, 1.0000F)
             packet.facingY = packet.facingY.coerceIn(-1.0000F, 1.0000F)
@@ -998,10 +988,10 @@ class Scaffold : Module() {
             blockSlot = InventoryUtils.findAutoBlockBlock()
             if (blockSlot == -1) return
             if (autoBlockValue.equals("LiteSpoof") || autoBlockValue.equals("Spoof")) {
-                mc.netHandler.addToSendQueue(C09PacketHeldItemChange(blockSlot - 36))
-            } else {
-                mc.thePlayer.inventory.currentItem = blockSlot - 36
+                SpoofItemUtils.startSpoof(prevItem)
             }
+            mc.thePlayer.inventory.currentItem = blockSlot - 36
+
             itemStack = mc.thePlayer.inventoryContainer.getSlot(blockSlot).stack
         }
         if (isDynamicSprint) {
@@ -1038,7 +1028,7 @@ class Scaffold : Module() {
         }
 
         if (autoBlockValue.equals("LiteSpoof") && blockSlot >= 0) {
-            mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+            SpoofItemUtils.stopSpoof()
         }
 
         // Reset
@@ -1062,7 +1052,7 @@ class Scaffold : Module() {
         shouldGoDown = false
         val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation!!, Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)!!, 58f)
         RotationUtils.setTargetRotation(limitedRotation, 2)
-        if (slot != mc.thePlayer.inventory.currentItem) mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
+        SpoofItemUtils.stopSpoof()
     }
 
     /**
