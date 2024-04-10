@@ -24,6 +24,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.client.LoadingScreenRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.gui.inventory.GuiContainer;
@@ -64,6 +65,8 @@ public abstract class MixinMinecraft {
     public GuiScreen currentScreen;
     @Shadow
     public boolean skipRenderWorld;
+    @Shadow
+    public GuiIngame ingameGUI;
     @Shadow
     public MovingObjectPosition objectMouseOver;
     @Shadow
@@ -150,6 +153,23 @@ public abstract class MixinMinecraft {
         MinecraftForgeClient.getRenderPass(); // Ensure class is loaded, strange accessor issue
         MinecraftForgeClientAccessor.getRegionCache().invalidateAll();
         MinecraftForgeClientAccessor.getRegionCache().cleanUp();
+    }
+    @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/settings/KeyBinding;isPressed()Z", ordinal = 0))
+    private void changeItem(CallbackInfo info) {
+
+        for(int k = 0; k < 9; ++k) {
+            if (this.gameSettings.keyBindsHotbar[k].isPressed()) {
+                if (this.thePlayer.isSpectator()) {
+                    this.ingameGUI.getSpectatorGui().func_175260_a(k);
+                } else {
+                    if(SpoofItemUtils.INSTANCE.getSpoofing()) {
+                        SpoofItemUtils.INSTANCE.setSlot(k);
+                    } else {
+                        this.thePlayer.inventory.currentItem = k;
+                    }
+                }
+            }
+        }
     }
 
     @Redirect(

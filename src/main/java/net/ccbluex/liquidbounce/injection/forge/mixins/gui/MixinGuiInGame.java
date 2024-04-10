@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HotbarSettings;
 import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
+import net.ccbluex.liquidbounce.utils.SpoofItemUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
@@ -89,6 +90,7 @@ public abstract class MixinGuiInGame extends MixinGui {
         if(MinecraftInstance.mc.getRenderViewEntity() instanceof EntityPlayer) {
             String hotbarType = Objects.requireNonNull(Objects.requireNonNull(FDPClient.moduleManager.getModule(HotbarSettings.class)).getHotbarValue().get());
             Minecraft mc = Minecraft.getMinecraft();
+            boolean spoofing = SpoofItemUtils.INSTANCE.getSpoofing();
             GlStateManager.resetColor();
             GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             mc.getTextureManager().bindTexture(widgetsTexPath);
@@ -100,7 +102,7 @@ public abstract class MixinGuiInGame extends MixinGui {
             GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
             if (hotbarType.equals("Minecraft")) {
                 this.drawTexturedModalRect( (float) sr.getScaledWidth() / 2 - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
-                this.drawTexturedModalRect((((float) sr.getScaledWidth() / 2) - 91 + net.ccbluex.liquidbounce.features.module.modules.client.HotbarSettings.INSTANCE.getHotbarEasePos(entityplayer.inventory.currentItem * 20)) - 1, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
+                this.drawTexturedModalRect((((float) sr.getScaledWidth() / 2) - 91 + net.ccbluex.liquidbounce.features.module.modules.client.HotbarSettings.INSTANCE.getHotbarEasePos((HotbarSettings.INSTANCE.getSpoofHotbar().get() && spoofing ? entityplayer.inventory.currentItem : spoofing ? SpoofItemUtils.INSTANCE.getSlot() : entityplayer.inventory.currentItem) * 20)) - 1, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
             }
             this.zLevel = f;
             RenderHelper.enableGUIStandardItemLighting();

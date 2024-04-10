@@ -58,7 +58,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             Tenacity5TH(this),
             NormalTH(this),
             SimpleTH(this),
-            ZavzTH(this),
+            CrossSineTH(this),
             FDPTH(this),
             VapeTH(this),
             FluxTH(this),

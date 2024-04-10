@@ -38,6 +38,7 @@ object HotbarSettings : Module() {
     val hotbarValue = ListValue("HotbarMode", arrayOf("Minecraft", "Rounded", "Rounded2", "Full", "LB", "Rise", "Gradient", "Overflow", "Glow", "Glowing", "Dock", "Exhi", "BlueIce", "Bread"), "Minecraft")
     private val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255)
     private val hotbarEaseValue = BoolValue("HotbarEase", false)
+    val spoofHotbar = BoolValue("ItemSpoof-Hotbar", false)
     private val BlurValue = BoolValue("Blur", false)
     private val BlurAmount = FloatValue("BlurAmount", 10F, 1F, 100F).displayable { BlurValue.get() }
     private val ItemCountValue = BoolValue("ItemColorCount", false)
