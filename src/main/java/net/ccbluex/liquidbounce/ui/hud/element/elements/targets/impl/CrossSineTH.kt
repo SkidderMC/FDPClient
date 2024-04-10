@@ -19,7 +19,7 @@ import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-class ZavzTH(inst: Targets) : TargetStyle("Zavz", inst, true) {
+class CrossSineTH(inst: Targets) : TargetStyle("CrossSine", inst, true) {
     override fun drawTarget(entity: EntityLivingBase) {
         val fonts = Fonts.SFApple40
         val leagth = if (fonts.getStringWidth(entity.name) < fonts.getStringWidth("HurtTime : ${entity.hurtTime}")) fonts.getStringWidth("HurtTime : ${entity.hurtTime}") else fonts.getStringWidth(entity.name)
