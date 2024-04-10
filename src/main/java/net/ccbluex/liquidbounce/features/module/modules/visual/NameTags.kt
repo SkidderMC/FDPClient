@@ -333,7 +333,7 @@ object NameTags : Module() {
                 // string
                 fontRenderer.drawString(tag, -width, -fontRenderer.FONT_HEIGHT * 2 - 4, ClientTheme.getColor(1).rgb)
                 glScalef(0.5F, 0.5F, 0.5F)
-                fontRenderer.drawString("" + entity.health.toInt(), -2, -fontRenderer.FONT_HEIGHT * 2, ClientTheme.getColor(1).rgb)
+                fontRenderer.drawString("" + entity.health.toInt(), -5, -fontRenderer.FONT_HEIGHT * 2, ClientTheme.getColor(1).rgb)
             }
         }
         // Reset caps
