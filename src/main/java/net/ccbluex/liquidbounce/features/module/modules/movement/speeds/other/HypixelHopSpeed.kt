@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
-import net.ccbluex.liquidbounce.features.module.modules.player.Eagle
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
@@ -95,11 +95,18 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
 
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
+                    MovementUtils.strafe()
 
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
                         MovementUtils.strafe(0.51f)
                     } else {
-                        MovementUtils.strafe(0.465f)
+                        if (MovementUtils.getSpeed() < 0.46f)
+                            MovementUtils.strafe(0.465f)
+                    }
+
+                    if (mc.thePlayer.isBlocking || FDPClient.moduleManager[KillAura::class.java]!!.blockingStatus) {
+                        mc.thePlayer.motionX *= 0.5
+                        mc.thePlayer.motionZ *= 0.5
                     }
                     
                 } else {
@@ -128,7 +135,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
     }
                     
    
-    
+
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
