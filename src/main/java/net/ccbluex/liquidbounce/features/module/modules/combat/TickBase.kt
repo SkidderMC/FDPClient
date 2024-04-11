@@ -36,7 +36,7 @@ class TickBase : Module() {
             if (test.get()) {
                 ticks = 3
                 prev_fps = mc.gameSettings.limitFramerate
-                mc.gameSettings.limitFramerate = 2
+                mc.gameSettings.limitFramerate = 4
             }
         }
     }

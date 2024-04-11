@@ -347,7 +347,7 @@ class Scaffold : Module() {
                     canSameY = FDPClient.moduleManager[Speed::class.java]!!.state
                 }
                 "hypixel" -> {
-                    canSameY = mc.thePlayer.ticksExisted % 11 > 3
+                    canSameY = mc.thePlayer.ticksExisted % 11 > 4
                 }
                 else -> {
                     canSameY = false
@@ -579,7 +579,7 @@ class Scaffold : Module() {
         
         // Tower
         if (motionSpeedEnabledValue.get()) MovementUtils.setMotion(motionSpeedValue.get().toDouble())
-        if (sprintValue.equals("HypixelSkywars")) MovementUtils.strafe(0.1434f)
+        if (sprintValue.equals("HypixelSkywars")) MovementUtils.strafe(0.13f)
 
         towerStatus = (!stopWhenBlockAboveValue.get() || BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 2, mc.thePlayer.posZ)) is BlockAir)
         if (towerStatus) {
@@ -623,6 +623,7 @@ class Scaffold : Module() {
                         }
                         0 -> {
                             mc.thePlayer.motionY = 0.42
+                            wdSpoof = true
                         }
     
                     }
