@@ -14,7 +14,10 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.server.S12PacketEntityVelocity
+import net.minecraft.util.Timer
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -24,7 +27,7 @@ class OldMatrixDamageFly : FlyMode("OldMatrixDamage") {
 
     private val mode = ListValue("${valuePrefix}Mode", arrayOf("Stable","Test","Custom"), "Stable")
     private val warn = BoolValue("${valuePrefix}DamageWarn",true)
-    private val timer = FloatValue("${valuePrefix}Timer", 1.0f, 0f, 2f).displayable { mode.equals("Custom") }
+    private val timerspeed = FloatValue("${valuePrefix}Timer", 1.0f, 0f, 2f).displayable { mode.equals("Custom") }
     private val speedBoost = FloatValue("${valuePrefix}Custom-BoostSpeed", 0.5f, 0f, 3f).displayable { mode.equals("Custom") }
     private val boostTicks = IntegerValue("${valuePrefix}Custom-BoostTicks", 27,10,40).displayable { mode.equals("Custom") }
     private val randomize = BoolValue("${valuePrefix}Custom-Randomize", true).displayable { mode.equals("Custom") }
@@ -37,6 +40,12 @@ class OldMatrixDamageFly : FlyMode("OldMatrixDamage") {
     private var tick = 0
     private var randomNum = 0.2
 
+    // Optimize code
+    val player: EntityPlayerSP
+        get() = mc.thePlayer
+    val timer: Timer
+        get() = mc.timer
+
     override fun onEnable() {
         if (warn.get())
             ClientUtils.displayChatMessage("§8[§c§lMatrix-Dmg-Flight§8] §aGetting damage from other entities (players, arrows, snowballs, eggs...) is required to bypass.")
@@ -47,9 +56,9 @@ class OldMatrixDamageFly : FlyMode("OldMatrixDamage") {
 
     private fun resetmotion() {
         if(motionreduceonend.get()) {
-            mc.thePlayer.motionX = mc.thePlayer.motionX / 10
-            mc.thePlayer.motionY = mc.thePlayer.motionY / 10
-            mc.thePlayer.motionZ = mc.thePlayer.motionZ / 10
+            player.motionX = player.motionX / 10
+            player.motionY = player.motionY / 10
+            player.motionZ = player.motionZ / 10
         }
     }
 
@@ -58,17 +67,17 @@ class OldMatrixDamageFly : FlyMode("OldMatrixDamage") {
             fly.needReset = false
         }
         if(velocitypacket) {
-            val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
+            val yaw = Math.toRadians(player.rotationYaw.toDouble())
             when(mode.get().lowercase()) {
                 "stable" -> {
-                    mc.timer.timerSpeed = 1.0F
-                    mc.thePlayer.motionX += (-sin(yaw) * 0.416)
-                    mc.thePlayer.motionZ += (cos(yaw) * 0.416)
-                    mc.thePlayer.motionY = packetymotion
+                    timer.timerSpeed = 1.0F
+                    player.motionX += (-sin(yaw) * 0.416)
+                    player.motionZ += (cos(yaw) * 0.416)
+                    player.motionY = packetymotion
 
                     if(tick++ >=27) {
                         resetmotion()
-                        mc.timer.timerSpeed = 1.0f
+                        timer.timerSpeed = 1.0f
                         velocitypacket = false
                         packetymotion = 0.0
                         tick = 0
@@ -76,18 +85,18 @@ class OldMatrixDamageFly : FlyMode("OldMatrixDamage") {
                 }
                 "test"-> {
                     if (tick++ >= 4) {
-                        mc.timer.timerSpeed = 1.1F
-                        mc.thePlayer.motionX += (-sin(yaw) * 0.420)
-                        mc.thePlayer.motionZ += (cos(yaw) * 0.420)
+                        timer.timerSpeed = 1.1F
+                        player.motionX += (-sin(yaw) * 0.420)
+                        player.motionZ += (cos(yaw) * 0.420)
                     } else {
-                        mc.timer.timerSpeed = 0.9F
-                        mc.thePlayer.motionX += (-sin(yaw) * 0.330)
-                        mc.thePlayer.motionZ += (cos(yaw) * 0.330)
+                        timer.timerSpeed = 0.9F
+                        player.motionX += (-sin(yaw) * 0.330)
+                        player.motionZ += (cos(yaw) * 0.330)
                     }
-                    mc.thePlayer.motionY = packetymotion
+                    player.motionY = packetymotion
                     if (tick++ >= 27) {
                         resetmotion()
-                        mc.timer.timerSpeed = 1.0f
+                        timer.timerSpeed = 1.0f
                         velocitypacket = false
                         packetymotion = 0.0
                         tick = 0
@@ -97,13 +106,13 @@ class OldMatrixDamageFly : FlyMode("OldMatrixDamage") {
                     if(customstrafe.get())
                         MovementUtils.strafe()
                     randomNum = if (randomize.get()) Math.random() * randomAmount.get() * 0.01 else 0.0
-                    mc.timer.timerSpeed = timer.get()
-                    mc.thePlayer.motionX += (-sin(yaw) * (0.3 + (speedBoost.get().toDouble() / 10 ) + randomNum))
-                    mc.thePlayer.motionZ += (cos(yaw) * (0.3 + (speedBoost.get().toDouble() / 10 ) + randomNum))
-                    mc.thePlayer.motionY = packetymotion
+                    timer.timerSpeed = timerspeed.get()
+                    player.motionX += (-sin(yaw) * (0.3 + (speedBoost.get().toDouble() / 10 ) + randomNum))
+                    player.motionZ += (cos(yaw) * (0.3 + (speedBoost.get().toDouble() / 10 ) + randomNum))
+                    player.motionY = packetymotion
                     if(tick++ >=boostTicks.get()) {
                         resetmotion()
-                        mc.timer.timerSpeed = 1.0f
+                        timer.timerSpeed = 1.0f
                         velocitypacket = false
                         packetymotion = 0.0
                         tick = 0
@@ -115,7 +124,7 @@ class OldMatrixDamageFly : FlyMode("OldMatrixDamage") {
     }
 
     override fun onDisable() {
-        mc.timer.timerSpeed = 1f
+        timer.timerSpeed = 1f
         resetmotion()
     }
 
@@ -123,7 +132,7 @@ class OldMatrixDamageFly : FlyMode("OldMatrixDamage") {
         val packet = event.packet
 
         if (packet is S12PacketEntityVelocity) {
-            if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) return
+            if (player == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != player) return
             if(packet.motionY / 8000.0 > 0.2) {
                 velocitypacket = true
                 packetymotion = packet.motionY / 8000.0

@@ -29,6 +29,8 @@ import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
 import net.minecraft.block.material.Material
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.util.Timer
 
 class VulcanFlys : FlyMode("Vulcan") {
 
@@ -88,6 +90,14 @@ class VulcanFlys : FlyMode("Vulcan") {
     private var groundY = 0.0
     private var groundZ = 0.0
 
+    // Optimize code
+    val player: EntityPlayerSP
+        get() = mc.thePlayer
+    val timer: Timer
+        get() = mc.timer
+    val settings: GameSettings
+        get() = mc.gameSettings
+
     override fun onEnable() {
         sent = false
 
@@ -99,12 +109,12 @@ class VulcanFlys : FlyMode("Vulcan") {
                 ClientUtils.displayChatMessage("§8[§c§lVulcanFly§8] §fAnd then you can turn off fly.")
             }
             "Clip" -> {
-                if(mc.thePlayer.onGround && vulcanclipcanClipValue.get()) {
+                if(player.onGround && vulcanclipcanClipValue.get()) {
                     clip(0f, -0.1f)
                     waitFlag = true
                     canGlide = false
                     ticks = 0
-                    mc.timer.timerSpeed = 0.1f
+                    timer.timerSpeed = 0.1f
                 } else {
                     waitFlag = false
                     canGlide = true
@@ -116,129 +126,129 @@ class VulcanFlys : FlyMode("Vulcan") {
                 isStarted = false
                 isDamaged = false
                 dmgJumpCount = 0
-                mc.timer.timerSpeed = 1.0f
+                timer.timerSpeed = 1.0f
                 if (bypassMode.equals("InstantDamage")) {
                     dmgJumpCount = 11451
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY,
+                            player.posZ,
                             true
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY - 0.0784,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY - 0.0784,
+                            player.posZ,
                             false
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY,
+                            player.posZ,
                             true
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 0.41999998688697815,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 0.41999998688697815,
+                            player.posZ,
                             false
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 0.7531999805212,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 0.7531999805212,
+                            player.posZ,
                             false
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 1.0,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 1.0,
+                            player.posZ,
                             true
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 1.4199999868869781,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 1.4199999868869781,
+                            player.posZ,
                             false
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 1.7531999805212,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 1.7531999805212,
+                            player.posZ,
                             false
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 2.0,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 2.0,
+                            player.posZ,
                             true
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 2.419999986886978,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 2.419999986886978,
+                            player.posZ,
                             false
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 2.7531999805212,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 2.7531999805212,
+                            player.posZ,
                             false
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 3.00133597911214,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 3.00133597911214,
+                            player.posZ,
                             false
                         )
                     )
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 3.00133597911214, mc.thePlayer.posZ)
+                    player.setPosition(player.posX, player.posY + 3.00133597911214, player.posZ)
                     waitFlag = true
                 } else if (bypassMode.equals("Flag")) {
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY,
+                            player.posZ,
                             true
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY - 2,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY - 2,
+                            player.posZ,
                             true
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY,
+                            player.posZ,
                             true
                         )
                     )
@@ -252,7 +262,7 @@ class VulcanFlys : FlyMode("Vulcan") {
                 if(verticalValue.get()) {
                     ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Flight§8] §cVertical Flying sometimes flag!")
                 }
-                if(mc.thePlayer.posY % 1 != 0.0) {
+                if(player.posY % 1 != 0.0) {
                     fly.state = false
                     ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Flight§8] §cPlease stand on a solid block to fly!")
                     isSuccess = true
@@ -262,15 +272,15 @@ class VulcanFlys : FlyMode("Vulcan") {
                 isSuccess = false
                 ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Flight§8] §aPlease press Sneak before you land on ground!")
                 ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Flight§8] §7Tips: DO NOT Use killaura when you're flying!")
-                startX = mc.thePlayer.posX
-                startY = mc.thePlayer.posY
-                startZ = mc.thePlayer.posZ
+                startX = player.posX
+                startY = player.posY
+                startZ = player.posZ
             }
             "Ghost" -> {
                 ticks = 0
                 modifyTicks = 0
                 flags = 0
-                mc.thePlayer.setPosition(mc.thePlayer.posX, (mc.thePlayer.posY * 2).roundToInt().toDouble() / 2, mc.thePlayer.posZ)
+                player.setPosition(player.posX, (player.posY * 2).roundToInt().toDouble() / 2, player.posZ)
                 stage = FlyStage.WAITING
                 ClientUtils.displayChatMessage("§8[§c§lVulcan-Ghost-Flight§8] §aPlease press Sneak before you land on ground!")
                 ClientUtils.displayChatMessage("§8[§c§lVulcan-Ghost-Flight§8] §aYou can go Up/Down by pressing Jump/Sneak")
@@ -279,11 +289,11 @@ class VulcanFlys : FlyMode("Vulcan") {
     }
 
     override fun onDisable() {
-        mc.timer.timerSpeed = 1.0f
+        timer.timerSpeed = 1.0f
 
         if (flys.equals("Fast")) {
             if (!isSuccess) {
-                mc.thePlayer.setPosition(startX, startY, startZ)
+                player.setPosition(startX, startY, startZ)
                 ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Flight§8] §cFly attempt Failed...")
                 ClientUtils.displayChatMessage("§8[§c§lVulcan-Fast-Flight§8] §cIf it keeps happen, Don't use it again in CURRENT gameplay")
             }
@@ -310,22 +320,22 @@ class VulcanFlys : FlyMode("Vulcan") {
                         waitFlag = false
                         mc.netHandler.addToSendQueue(
                             C03PacketPlayer.C04PacketPlayerPosition(
-                                mc.thePlayer.posX,
-                                mc.thePlayer.posY,
-                                mc.thePlayer.posZ,
+                                player.posX,
+                                player.posY,
+                                player.posZ,
                                 true
                             )
                         )
                         dmgJumpCount = 999
                     }
                 }
-                mc.thePlayer.jumpMovementFactor = 0.00f
+                player.jumpMovementFactor = 0.00f
                 if (!isStarted && !waitFlag) {
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY - 0.0784,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY - 0.0784,
+                            player.posZ,
                             false
                         )
                     )
@@ -334,12 +344,12 @@ class VulcanFlys : FlyMode("Vulcan") {
                 if (isStarted) {
                     when (flyMode.get().lowercase()) {
                         "cancelmove" -> {
-                            mc.timer.timerSpeed = 1.0f
+                            timer.timerSpeed = 1.0f
                             MovementUtils.resetMotion(false)
-                            if (!mc.gameSettings.keyBindSneak.isKeyDown) {
+                            if (!settings.keyBindSneak.isKeyDown) {
                                 MovementUtils.resetMotion(true)
-                                if (mc.gameSettings.keyBindJump.isKeyDown) {
-                                    mc.thePlayer.motionY = flyVSpeedValue.get().toDouble()
+                                if (settings.keyBindJump.isKeyDown) {
+                                    player.motionY = flyVSpeedValue.get().toDouble()
                                 }
                             }
 
@@ -347,7 +357,7 @@ class VulcanFlys : FlyMode("Vulcan") {
                         }
                         "timer" -> {
                             flyTicks++
-                            mc.timer.timerSpeed = flyTimerValue.get()
+                            timer.timerSpeed = flyTimerValue.get()
                             MovementUtils.resetMotion(true)
                             if (flyTicks > 4) {
                                 MovementUtils.strafe(flyDistanceValue.get() - 0.005f)
@@ -357,15 +367,15 @@ class VulcanFlys : FlyMode("Vulcan") {
                         }
                         "clip" -> {
                             MovementUtils.resetMotion(true)
-                            if (mc.thePlayer.ticksExisted % 10 == 0) {
+                            if (player.ticksExisted % 10 == 0) {
                                 flyTicks++
-                                val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
-                                mc.thePlayer.setPosition(mc.thePlayer.posX + (-sin(yaw) * flyDistanceValue.get()), mc.thePlayer.posY + 0.42, mc.thePlayer.posZ + (cos(yaw) * flyDistanceValue.get()))
+                                val yaw = Math.toRadians(player.rotationYaw.toDouble())
+                                player.setPosition(player.posX + (-sin(yaw) * flyDistanceValue.get()), player.posY + 0.42, player.posZ + (cos(yaw) * flyDistanceValue.get()))
                                 PacketUtils.sendPacketNoEvent(
                                     C03PacketPlayer.C04PacketPlayerPosition(
-                                        mc.thePlayer.posX,
-                                        mc.thePlayer.posY,
-                                        mc.thePlayer.posZ,
+                                        player.posX,
+                                        player.posY,
+                                        player.posZ,
                                         false
                                     )
                                 )
@@ -384,30 +394,30 @@ class VulcanFlys : FlyMode("Vulcan") {
                         MovementUtils.strafe(speedValue.get())
                         doCancel = true
 
-                        if(mc.gameSettings.keyBindSneak.pressed) {
+                        if(settings.keyBindSneak.pressed) {
                             MovementUtils.strafe(0.45f)
                             if(verticalValue.get()) {
-                                mc.thePlayer.motionY = 0.0 - speedValue.get().toDouble()
+                                player.motionY = 0.0 - speedValue.get().toDouble()
                             }
                         }
                         if(verticalValue.get()) {
-                            if(mc.gameSettings.keyBindJump.pressed) {
-                                mc.thePlayer.motionY = speedValue.get().toDouble()
-                            } else if(!mc.gameSettings.keyBindSneak.pressed) {
-                                mc.thePlayer.motionY = 0.0
+                            if(settings.keyBindJump.pressed) {
+                                player.motionY = speedValue.get().toDouble()
+                            } else if(!settings.keyBindSneak.pressed) {
+                                player.motionY = 0.0
                             }
                         }
-                        if(mc.gameSettings.keyBindSneak.pressed && mc.thePlayer.ticksExisted % 2 == 1) {
-                            val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
-                            val underBlock2 = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, fixedY - 1, mc.thePlayer.posZ)) ?: return
+                        if(settings.keyBindSneak.pressed && player.ticksExisted % 2 == 1) {
+                            val fixedY = player.posY - (player.posY % 1)
+                            val underBlock2 = BlockUtils.getBlock(BlockPos(player.posX, fixedY - 1, player.posZ)) ?: return
                             if(underBlock2.isFullBlock) {
                                 stage = FlyStage.WAIT_APPLY
                                 MovementUtils.resetMotion(true)
-                                mc.thePlayer.jumpMovementFactor = 0.00f
+                                player.jumpMovementFactor = 0.00f
                                 doCancel = false
-                                mc.thePlayer.onGround = false
-                                var fixedX = mc.thePlayer.posX - (mc.thePlayer.posX % 1)
-                                var fixedZ = mc.thePlayer.posZ - (mc.thePlayer.posZ % 1)
+                                player.onGround = false
+                                var fixedX = player.posX - (player.posX % 1)
+                                var fixedZ = player.posZ - (player.posZ % 1)
                                 if(fixedX>0) {
                                     fixedX += 0.5
                                 }else{
@@ -418,8 +428,8 @@ class VulcanFlys : FlyMode("Vulcan") {
                                 }else{
                                     fixedZ -= 0.5
                                 }
-                                mc.thePlayer.setPosition(fixedX, fixedY, fixedZ)
-                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY , mc.thePlayer.posZ, true))
+                                player.setPosition(fixedX, fixedY, fixedZ)
+                                mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(player.posX, fixedY , player.posZ, true))
                                 doCancel = true
                                 ClientUtils.displayChatMessage("§8[§c§lVulcan-Flight§8] §aWaiting for landing...")
                             } else {
@@ -433,14 +443,14 @@ class VulcanFlys : FlyMode("Vulcan") {
                         if(vticks == 60) {
                             ClientUtils.displayChatMessage("§8[§c§lVulcan-Flight§8] §cSeems took a long time! Please turn off the Flight manually")
                         }
-                        mc.timer.timerSpeed = 1f
+                        timer.timerSpeed = 1f
                         MovementUtils.resetMotion(true)
-                        mc.thePlayer.jumpMovementFactor = 0.00f
-                        val fixedY = mc.thePlayer.posY - (mc.thePlayer.posY % 1)
-                        if(mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -10.0, 0.0)).isEmpty() && mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -12.0, 0.0)).isEmpty()) {
-                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY - 10, mc.thePlayer.posZ, true))
+                        player.jumpMovementFactor = 0.00f
+                        val fixedY = player.posY - (player.posY % 1)
+                        if(mc.theWorld.getCollisionBoxes(player.entityBoundingBox.offset(0.0, -10.0, 0.0)).isEmpty() && mc.theWorld.getCollisionBoxes(player.entityBoundingBox.offset(0.0, -12.0, 0.0)).isEmpty()) {
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(player.posX, fixedY - 10, player.posZ, true))
                         }else {
-                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, fixedY - 1024, mc.thePlayer.posZ, true))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(player.posX, fixedY - 1024, player.posZ, true))
                         }
                         doCancel = true
                     }
@@ -449,68 +459,68 @@ class VulcanFlys : FlyMode("Vulcan") {
             "Ghost" -> {
                 ticks++
                 modifyTicks++
-                mc.gameSettings.keyBindJump.pressed = false
-                mc.gameSettings.keyBindSneak.pressed = false
+                settings.keyBindJump.pressed = false
+                settings.keyBindSneak.pressed = false
                 when(stage) {
                     FlyStage.FLYING, FlyStage.WAITING -> {
                         if(stage == FlyStage.FLYING) {
-                            mc.timer.timerSpeed = timerValue.get()
+                            timer.timerSpeed = timerValue.get()
                         }else{
-                            mc.timer.timerSpeed = 1.0f
+                            timer.timerSpeed = 1.0f
                         }
-                        if(ticks == 2 && GameSettings.isKeyDown(mc.gameSettings.keyBindJump) && modifyTicks>=6 && mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, 0.5, 0.0)).isEmpty()) {
-                            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY+0.5, mc.thePlayer.posZ)
+                        if(ticks == 2 && GameSettings.isKeyDown(settings.keyBindJump) && modifyTicks>=6 && mc.theWorld.getCollisionBoxes(player.entityBoundingBox.offset(0.0, 0.5, 0.0)).isEmpty()) {
+                            player.setPosition(player.posX, player.posY+0.5, player.posZ)
                             modifyTicks = 0
                         }
-                        if(!MovementUtils.isMoving() && ticks == 1 && (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) || GameSettings.isKeyDown(mc.gameSettings.keyBindJump)) && modifyTicks>=5) {
-                            val playerYaw = mc.thePlayer.rotationYaw * Math.PI / 180
-                            mc.thePlayer.setPosition(mc.thePlayer.posX + 0.05 * -sin(playerYaw)
-                                , mc.thePlayer.posY
-                                , mc.thePlayer.posZ + 0.05 * cos(playerYaw)
+                        if(!MovementUtils.isMoving() && ticks == 1 && (GameSettings.isKeyDown(settings.keyBindSneak) || GameSettings.isKeyDown(settings.keyBindJump)) && modifyTicks>=5) {
+                            val playerYaw = player.rotationYaw * Math.PI / 180
+                            player.setPosition(player.posX + 0.05 * -sin(playerYaw)
+                                , player.posY
+                                , player.posZ + 0.05 * cos(playerYaw)
                             )
                         }
-                        if(ticks == 2 && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && modifyTicks>=6 && mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -0.5, 0.0)).isEmpty()) {
-                            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY-0.5, mc.thePlayer.posZ)
+                        if(ticks == 2 && GameSettings.isKeyDown(settings.keyBindSneak) && modifyTicks>=6 && mc.theWorld.getCollisionBoxes(player.entityBoundingBox.offset(0.0, -0.5, 0.0)).isEmpty()) {
+                            player.setPosition(player.posX, player.posY-0.5, player.posZ)
                             modifyTicks = 0
-                        }else if(ticks == 2 && GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) && mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(0.0, -0.5, 0.0))
+                        }else if(ticks == 2 && GameSettings.isKeyDown(settings.keyBindSneak) && mc.theWorld.getCollisionBoxes(player.entityBoundingBox.offset(0.0, -0.5, 0.0))
                                 .isNotEmpty()) {
-                            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX+0.05,mc.thePlayer.posY,mc.thePlayer.posZ,true))
-                            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,true))
-                            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY+0.42,mc.thePlayer.posZ,true))
-                            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY+0.7532,mc.thePlayer.posZ,true))
-                            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY+1.0,mc.thePlayer.posZ,true))
-                            mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY+1.0, mc.thePlayer.posZ)
+                            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(player.posX+0.05,player.posY,player.posZ,true))
+                            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(player.posX,player.posY,player.posZ,true))
+                            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(player.posX,player.posY+0.42,player.posZ,true))
+                            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(player.posX,player.posY+0.7532,player.posZ,true))
+                            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(player.posX,player.posY+1.0,player.posZ,true))
+                            player.setPosition(player.posX, player.posY+1.0, player.posZ)
                             stage = FlyStage.WAIT_APPLY
                             modifyTicks = 0
-                            groundY = mc.thePlayer.posY - 1.0
-                            groundX = mc.thePlayer.posX
-                            groundZ = mc.thePlayer.posZ
+                            groundY = player.posY - 1.0
+                            groundX = player.posX
+                            groundZ = player.posZ
                             ClientUtils.displayChatMessage("§8[§c§lVulcan-Ghost-Flight§8] §aWaiting to land...")
                         }
-                        mc.thePlayer.onGround = true
-                        mc.thePlayer.motionY = 0.0
+                        player.onGround = true
+                        player.motionY = 0.0
                     }
                     FlyStage.WAIT_APPLY -> {
-                        mc.timer.timerSpeed = 1.0f
+                        timer.timerSpeed = 1.0f
                         MovementUtils.resetMotion(true)
-                        mc.thePlayer.jumpMovementFactor = 0.0f
+                        player.jumpMovementFactor = 0.0f
                         if (modifyTicks >= 10) {
-                            val playerYaw = mc.thePlayer.rotationYaw * Math.PI / 180
+                            val playerYaw = player.rotationYaw * Math.PI / 180
                             if (modifyTicks % 2 != 0) {
-                                mc.thePlayer.setPosition(mc.thePlayer.posX + 0.1 * -sin(playerYaw)
-                                    , mc.thePlayer.posY
-                                    , mc.thePlayer.posZ + 0.1 * cos(playerYaw)
+                                player.setPosition(player.posX + 0.1 * -sin(playerYaw)
+                                    , player.posY
+                                    , player.posZ + 0.1 * cos(playerYaw)
                                 )
                             }else{
-                                mc.thePlayer.setPosition(mc.thePlayer.posX - 0.1 * -sin(playerYaw)
-                                    , mc.thePlayer.posY
-                                    , mc.thePlayer.posZ - 0.1 * cos(playerYaw)
+                                player.setPosition(player.posX - 0.1 * -sin(playerYaw)
+                                    , player.posY
+                                    , player.posZ - 0.1 * cos(playerYaw)
                                 )
                                 if (modifyTicks >= 16 && ticks == 2) {
                                     modifyTicks = 16
-                                    mc.thePlayer.setPosition(mc.thePlayer.posX
-                                        , mc.thePlayer.posY + 0.5
-                                        , mc.thePlayer.posZ)
+                                    player.setPosition(player.posX
+                                        , player.posY + 0.5
+                                        , player.posZ)
                                 }
                             }
                         }
@@ -523,132 +533,132 @@ class VulcanFlys : FlyMode("Vulcan") {
     override fun onMotion(event: MotionEvent) {
         when (flys.get()) {
             "High" -> {
-                if (event.eventState == EventState.PRE && !mc.thePlayer.onGround) {
-                    mc.timer.timerSpeed = 1f
-                    mc.thePlayer.motionY = -if(ticks % 2 == 0) {
+                if (event.eventState == EventState.PRE && !player.onGround) {
+                    timer.timerSpeed = 1f
+                    player.motionY = -if(ticks % 2 == 0) {
                         0.16
                     } else {
                         0.10
                     }
                     if(ticks == 0) {
-                        mc.thePlayer.motionY = -0.07
+                        player.motionY = -0.07
                     }
                     ticks++
-                } else if (mc.thePlayer.onGround && !sent) {
+                } else if (player.onGround && !sent) {
                     sent = true
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY,
+                            player.posZ,
                             true
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY - 0.0784,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY - 0.0784,
+                            player.posZ,
                             false
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY,
+                            player.posZ,
                             true
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 0.41999998688697815,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 0.41999998688697815,
+                            player.posZ,
                             false
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 0.7531999805212,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 0.7531999805212,
+                            player.posZ,
                             false
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 1.0,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 1.0,
+                            player.posZ,
                             true
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 1.4199999868869781,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 1.4199999868869781,
+                            player.posZ,
                             false
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 1.7531999805212,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 1.7531999805212,
+                            player.posZ,
                             false
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 2.0,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 2.0,
+                            player.posZ,
                             true
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 2.419999986886978,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 2.419999986886978,
+                            player.posZ,
                             false
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 2.7531999805212,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 2.7531999805212,
+                            player.posZ,
                             false
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 3.00133597911214,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 3.00133597911214,
+                            player.posZ,
                             false
                         )
                     )
-                    mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 3.00133597911214, mc.thePlayer.posZ)
+                    player.setPosition(player.posX, player.posY + 3.00133597911214, player.posZ)
                 }
 
-                if (sent && mc.thePlayer.hurtTime == 9) {
-                    mc.thePlayer.posY += vulcanhighheight.get()
+                if (sent && player.hurtTime == 9) {
+                    player.posY += vulcanhighheight.get()
                 }
             }
             "Clip" -> {
                 if (event.eventState == EventState.PRE && canGlide) {
-                    mc.timer.timerSpeed = 1f
-                    mc.thePlayer.motionY = -if(ticks % 2 == 0) {
+                    timer.timerSpeed = 1f
+                    player.motionY = -if(ticks % 2 == 0) {
                         0.17
                     } else {
                         0.10
                     }
                     if(ticks == 0) {
-                        mc.thePlayer.motionY = -0.07
+                        player.motionY = -0.07
                     }
                     ticks++
                 }
@@ -659,7 +669,7 @@ class VulcanFlys : FlyMode("Vulcan") {
 
     override fun onBlockBB(event: BlockBBEvent) {
         if (!flys.equals("GhostNew"))
-        if (!mc.gameSettings.keyBindJump.isKeyDown && mc.gameSettings.keyBindSneak.isKeyDown) return
+        if (!settings.keyBindJump.isKeyDown && settings.keyBindSneak.isKeyDown) return
         if (!event.block.material.blocksMovement() && event.block.material != Material.carpet && event.block.material != Material.vine && event.block.material != Material.snow && event.block !is BlockLadder) {
             event.boundingBox = AxisAlignedBB(
                 -2.0,
@@ -687,19 +697,19 @@ class VulcanFlys : FlyMode("Vulcan") {
             "Clip" -> {
                 if(packet is S08PacketPlayerPosLook && waitFlag) {
                     waitFlag = false
-                    mc.thePlayer.setPosition(packet.x, packet.y, packet.z)
+                    player.setPosition(packet.x, packet.y, packet.z)
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C06PacketPlayerPosLook(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY,
-                            mc.thePlayer.posZ,
-                            mc.thePlayer.rotationYaw,
-                            mc.thePlayer.rotationPitch,
+                            player.posX,
+                            player.posY,
+                            player.posZ,
+                            player.rotationYaw,
+                            player.rotationPitch,
                             false
                         )
                     )
                     event.cancelEvent()
-                    mc.thePlayer.jump()
+                    player.jump()
                     clip(0.127318f, 0f)
                     clip(3.425559f, 3.7f)
                     clip(3.14285f, 3.54f)
@@ -763,7 +773,7 @@ class VulcanFlys : FlyMode("Vulcan") {
                             false
                         )
                     )
-                    mc.timer.timerSpeed = 1.0f
+                    timer.timerSpeed = 1.0f
                     flyTicks = 0
 
                 } else if (packet is S08PacketPlayerPosLook && flyMode.equals("cancelmove")) {
@@ -805,9 +815,9 @@ class VulcanFlys : FlyMode("Vulcan") {
                     }
                     is S08PacketPlayerPosLook -> {
                         if (stage == FlyStage.WAIT_APPLY) {
-                            if(sqrt((packet.x-mc.thePlayer.posX)*(packet.x-mc.thePlayer.posX)
-                                        +(packet.y-mc.thePlayer.posY)*(packet.y-mc.thePlayer.posY)
-                                        +(packet.z-mc.thePlayer.posZ)*(packet.z-mc.thePlayer.posZ)) < 1.4) {
+                            if(sqrt((packet.x-player.posX)*(packet.x-player.posX)
+                                        +(packet.y-player.posY)*(packet.y-player.posY)
+                                        +(packet.z-player.posZ)*(packet.z-player.posZ)) < 1.4) {
                                 isSuccess = true
                                 fly.state = false
                                 return
@@ -857,25 +867,25 @@ class VulcanFlys : FlyMode("Vulcan") {
 
 
     private fun clip(dist: Float, y: Float) {
-        val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
+        val yaw = Math.toRadians(player.rotationYaw.toDouble())
         val x = -sin(yaw) * dist
         val z = cos(yaw) * dist
-        mc.thePlayer.setPosition(mc.thePlayer.posX + x, mc.thePlayer.posY + y, mc.thePlayer.posZ + z)
+        player.setPosition(player.posX + x, player.posY + y, player.posZ + z)
         mc.netHandler.addToSendQueue(
             C03PacketPlayer.C04PacketPlayerPosition(
-                mc.thePlayer.posX,
-                mc.thePlayer.posY,
-                mc.thePlayer.posZ,
+                player.posX,
+                player.posY,
+                player.posZ,
                 false
             )
         )
     }
 
-    fun runSelfDamageCore(): Boolean {
-        mc.timer.timerSpeed = 1.0f
+    private fun runSelfDamageCore(): Boolean {
+        timer.timerSpeed = 1.0f
         if (bypassMode.equals("Damage") || bypassMode.equals("Flag")) {
             if (!bypassMode.equals("Flag")) {
-                if (mc.thePlayer.hurtTime > 0 || isDamaged) {
+                if (player.hurtTime > 0 || isDamaged) {
                     isDamaged = true
                     dmgJumpCount = 999
                     return false
@@ -891,14 +901,14 @@ class VulcanFlys : FlyMode("Vulcan") {
             dmgJumpCount = 999
             return false
         }
-        mc.thePlayer.jumpMovementFactor = 0.00f
-        if (mc.thePlayer.onGround) {
+        player.jumpMovementFactor = 0.00f
+        if (player.onGround) {
             if (dmgJumpCount >= 4) {
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.posY,
-                        mc.thePlayer.posZ,
+                        player.posX,
+                        player.posY,
+                        player.posZ,
                         true
                     )
                 )
@@ -908,7 +918,7 @@ class VulcanFlys : FlyMode("Vulcan") {
             }
             dmgJumpCount++
             MovementUtils.resetMotion(true)
-            mc.thePlayer.jump()
+            player.jump()
         }
         MovementUtils.resetMotion(false)
         return true

@@ -10,7 +10,10 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.timer.TickTimer
 import net.ccbluex.liquidbounce.value.*
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.util.Timer
 
 class SpartanFlys : FlyMode("Spartan") {
 
@@ -22,6 +25,11 @@ class SpartanFlys : FlyMode("Spartan") {
     // Variables
     private val timer = TickTimer()
 
+    // Optimize code
+    val player: EntityPlayerSP
+        get() = mc.thePlayer
+
+
     override fun onEnable() {
         sendLegacy()
 
@@ -29,33 +37,33 @@ class SpartanFlys : FlyMode("Spartan") {
             repeat(65) {
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.posY + 0.049,
-                        mc.thePlayer.posZ,
+                        player.posX,
+                        player.posY + 0.049,
+                        player.posZ,
                         false
                     )
                 )
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.posY,
-                        mc.thePlayer.posZ,
+                        player.posX,
+                        player.posY,
+                        player.posZ,
                         false
                     )
                 )
             }
             mc.netHandler.addToSendQueue(
                 C03PacketPlayer.C04PacketPlayerPosition(
-                    mc.thePlayer.posX,
-                    mc.thePlayer.posY + 0.1,
-                    mc.thePlayer.posZ,
+                    player.posX,
+                    player.posY + 0.1,
+                    player.posZ,
                     true
                 )
             )
 
-            mc.thePlayer.motionX *= 0.1
-            mc.thePlayer.motionZ *= 0.1
-            mc.thePlayer.swingItem()
+            player.motionX *= 0.1
+            player.motionZ *= 0.1
+            player.swingItem()
         }
     }
 
@@ -63,22 +71,22 @@ class SpartanFlys : FlyMode("Spartan") {
         when (flys.get()) {
             "Normal" -> {
                 fly.antiDesync = true
-                mc.thePlayer.motionY = 0.0
+                player.motionY = 0.0
                 timer.update()
                 if (timer.hasTimePassed(12)) {
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY + 8,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY + 8,
+                            player.posZ,
                             true
                         )
                     )
                     mc.netHandler.addToSendQueue(
                         C03PacketPlayer.C04PacketPlayerPosition(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY - 8,
-                            mc.thePlayer.posZ,
+                            player.posX,
+                            player.posY - 8,
+                            player.posZ,
                             true
                         )
                     )
@@ -89,18 +97,18 @@ class SpartanFlys : FlyMode("Spartan") {
                 fly.antiDesync = true
                 MovementUtils.strafe(0.264f)
 
-                if (mc.thePlayer.ticksExisted % 8 == 0) {
-                    mc.thePlayer.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 10, mc.thePlayer.posZ, true))
+                if (player.ticksExisted % 8 == 0) {
+                    player.sendQueue.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(player.posX, player.posY + 10, player.posZ, true))
                 }
             }
             "Fast" -> {
                 fly.antiDesync = true
                 MovementUtils.resetMotion(true)
                 if (mc.gameSettings.keyBindJump.isKeyDown) {
-                    mc.thePlayer.motionY += speedValue.get() * 0.5
+                    player.motionY += speedValue.get() * 0.5
                 }
                 if (mc.gameSettings.keyBindSneak.isKeyDown) {
-                    mc.thePlayer.motionY -= speedValue.get() * 0.5
+                    player.motionY -= speedValue.get() * 0.5
                 }
 
                 MovementUtils.strafe(speedValue.get())

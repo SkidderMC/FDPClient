@@ -38,7 +38,7 @@ class FireballFly : FlyMode("Fireball") {
     private var start = false
 
     override fun onEnable() {
-        var fbSlot = getFBSlot()
+        val fbSlot = getFBSlot()
         if (fbSlot == -1) {
             ClientUtils.displayChatMessage("§8[§c§lFireball-Flight§8] §aYou need a fireball to fly.")
             fly.state = false
@@ -131,8 +131,8 @@ class FireballFly : FlyMode("Fireball") {
 
     private fun getFBSlot(): Int {
         for(i in 36..45) {
-            var stack = mc.thePlayer.inventoryContainer.getSlot(i).getStack()
-            if (stack != null && stack.getItem() is ItemFireball) {
+            val stack = mc.thePlayer.inventoryContainer.getSlot(i).stack
+            if (stack != null && stack.item is ItemFireball) {
                 return i - 36
             }
         }

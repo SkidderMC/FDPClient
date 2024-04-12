@@ -9,7 +9,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
 
 class FunCraftFly : FlyMode("FunCraft") {
-    private val timescale = FloatValue("${valuePrefix}Timer", 1f, 0.1f, 10f)
+    private val timescale = FloatValue("${valuePrefix}-Timer", 1f, 0.1f, 10f)
     private val timer = TickTimer()
 
     override fun onUpdate(event: UpdateEvent) {

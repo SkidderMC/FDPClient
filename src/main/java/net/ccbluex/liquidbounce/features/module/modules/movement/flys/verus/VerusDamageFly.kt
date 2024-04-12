@@ -12,11 +12,14 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C0BPacketEntityAction
+import net.minecraft.util.Timer
 import kotlin.math.floor
 
 class VerusDamageFly : FlyMode("VerusDamage") {
@@ -27,6 +30,13 @@ class VerusDamageFly : FlyMode("VerusDamage") {
     private var ticks = 0
     private var ticks2 = 0
 
+    // Optimize code
+    val player: EntityPlayerSP
+        get() = mc.thePlayer
+    val timer: Timer
+        get() = mc.timer
+
+
     override fun onEnable() {
         ticks = 0
         ticks2 = 1
@@ -36,7 +46,7 @@ class VerusDamageFly : FlyMode("VerusDamage") {
         when (boostModeValue.get()) {
             "Boost1" -> {
                 val speed = speedValue.get()
-                val pos = mc.thePlayer.position.add(0.0, -1.5, 0.0)
+                val pos = player.position.add(0.0, -1.5, 0.0)
                 PacketUtils.sendPacketNoEvent(
                     C08PacketPlayerBlockPlacement(pos, 1,
                         ItemStack(Blocks.stone.getItem(mc.theWorld, pos)), 0.0F, 0.5F + Math.random().toFloat() * 0.44.toFloat(), 0.0F)
@@ -44,11 +54,11 @@ class VerusDamageFly : FlyMode("VerusDamage") {
                 if (ticks < 3)
                     event.cancelEvent()
                 if(ticks > 4)
-                    mc.thePlayer.motionY = 0.0684
+                    player.motionY = 0.0684
                 if(ticks <= 25) {
-                    mc.timer.timerSpeed = 0.8f
-                    mc.thePlayer.motionX = 0.0
-                    mc.thePlayer.motionZ = 0.0
+                    timer.timerSpeed = 0.8f
+                    player.motionX = 0.0
+                    player.motionZ = 0.0
                     MovementUtils.strafe(speed)
                 }else {
                     MovementUtils.strafe(0.29F)
@@ -60,30 +70,30 @@ class VerusDamageFly : FlyMode("VerusDamage") {
                     event.cancelEvent()
                 }
                 if(ticks == 3) {
-                    val pos = mc.thePlayer.position.add(0.0, -1.5, 0.0)
+                    val pos = player.position.add(0.0, -1.5, 0.0)
                     PacketUtils.sendPacketNoEvent(
                         C08PacketPlayerBlockPlacement(pos, 1,
                             ItemStack(Blocks.stone.getItem(mc.theWorld, pos)), 0.0F, 0.5F + Math.random().toFloat() * 0.44.toFloat(), 0.0F)
                     )
-                    val x = mc.thePlayer.posX
-                    val y = mc.thePlayer.posY
-                    val z = mc.thePlayer.posZ
-                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(x, y+3+Math.random()*0.07, z, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, false))
-                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(x, y, z, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, false))
-                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(x, y, z, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch, true))
-                    mc.timer.timerSpeed = 0.25f
+                    val x = player.posX
+                    val y = player.posY
+                    val z = player.posZ
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(x, y+3+Math.random()*0.07, z, player.rotationYaw, player.rotationPitch, false))
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(x, y, z, player.rotationYaw, player.rotationPitch, false))
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(x, y, z, player.rotationYaw, player.rotationPitch, true))
+                    timer.timerSpeed = 0.25f
                 }
-                if(mc.thePlayer.hurtTime > 2) {
-                    mc.thePlayer.motionY += 0.4f
-                    event.y = mc.thePlayer.motionY
-                    mc.timer.timerSpeed = 1.0f
+                if(player.hurtTime > 2) {
+                    player.motionY += 0.4f
+                    event.y = player.motionY
+                    timer.timerSpeed = 1.0f
                     MovementUtils.strafe(speedValue.get())
                 }
-                if(mc.thePlayer.hurtTime == 3) mc.thePlayer.motionY = 0.42
+                if(player.hurtTime == 3) player.motionY = 0.42
 
-                if(mc.thePlayer.hurtTime == 0) {
+                if(player.hurtTime == 0) {
                     MovementUtils.strafe(0.36F)
-                    if(mc.thePlayer.fallDistance > 0) mc.thePlayer.motionY = 0.0
+                    if(player.fallDistance > 0) player.motionY = 0.0
                 }
             }
         }
@@ -92,59 +102,59 @@ class VerusDamageFly : FlyMode("VerusDamage") {
     override fun onUpdate(event: UpdateEvent) {
         if(boostModeValue.get() === "Boost3") {
             if (ticks2 == 1) {
-                mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
+                mc.netHandler.addToSendQueue(C0BPacketEntityAction(player, C0BPacketEntityAction.Action.START_SPRINTING))
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.posY,
-                        mc.thePlayer.posZ,
+                        player.posX,
+                        player.posY,
+                        player.posZ,
                         true
                     )
                 )
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.posY + 3.42,
-                        mc.thePlayer.posZ,
+                        player.posX,
+                        player.posY + 3.42,
+                        player.posZ,
                         false
                     )
                 )
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.posY,
-                        mc.thePlayer.posZ,
+                        player.posX,
+                        player.posY,
+                        player.posZ,
                         false
                     )
                 )
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.posY,
-                        mc.thePlayer.posZ,
+                        player.posX,
+                        player.posY,
+                        player.posZ,
                         true
                     )
                 )
-                mc.timer.timerSpeed = 0.15f
-                mc.thePlayer.jump()
-                mc.thePlayer.onGround = true
+                timer.timerSpeed = 0.15f
+                player.jump()
+                player.onGround = true
             } else if (ticks2 == 2) {
-                mc.timer.timerSpeed = 1f
+                timer.timerSpeed = 1f
             }
 
-            if (mc.thePlayer.onGround) {
-                mc.thePlayer.jump()
+            if (player.onGround) {
+                player.jump()
             }
 
-            if (mc.thePlayer.fallDistance > 1) {
-                mc.thePlayer.motionY = -((mc.thePlayer.posY) - floor(mc.thePlayer.posY))
+            if (player.fallDistance > 1) {
+                player.motionY = -((player.posY) - floor(player.posY))
             }
 
-            if (mc.thePlayer.motionY == 0.0) {
-                mc.thePlayer.jump()
+            if (player.motionY == 0.0) {
+                player.jump()
 
-                mc.thePlayer.onGround = true
-                mc.thePlayer.fallDistance = 0f
+                player.onGround = true
+                player.fallDistance = 0f
             }
 
             if (ticks2 < 25) {
@@ -182,13 +192,13 @@ class VerusDamageFly : FlyMode("VerusDamage") {
                     return
                 ticks++
                 if(ticks == 3) {
-                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY+3.25,mc.thePlayer.posZ,false))
-                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX,mc.thePlayer.posY,mc.thePlayer.posZ,false))
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(player.posX,player.posY+3.25,player.posZ,false))
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C04PacketPlayerPosition(player.posX,player.posY,player.posZ,false))
                     PacketUtils.sendPacketNoEvent(C03PacketPlayer(true))
-                    mc.timer.timerSpeed = 0.4f
-                    mc.thePlayer.jump()
+                    timer.timerSpeed = 0.4f
+                    player.jump()
                 }else {
-                    if(ticks == 4) mc.thePlayer.motionY += 0.3
+                    if(ticks == 4) player.motionY += 0.3
                 }
             }
 
