@@ -9,8 +9,10 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.*
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.server.S12PacketEntityVelocity
+import net.minecraft.util.Timer
 import kotlin.math.sqrt
 
 class MatrixSpeeds : SpeedMode("Matrix") {
@@ -29,52 +31,60 @@ class MatrixSpeeds : SpeedMode("Matrix") {
     private var noVelocityY = 0
     private var wasTimer = false
 
+    // Optimize code
+    val player: EntityPlayerSP
+        get() = mc.thePlayer
+    val timer: Timer
+        get() = mc.timer
+    val settings: GameSettings
+        get() = mc.gameSettings
+
 
     override fun onEnable() {
-        mc.timer.timerSpeed = 1f
+        timer.timerSpeed = 1f
     }
 
     override fun onUpdate() {
         when (speeds.get()) {
             "MatrixHop2" -> {
-                mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+                settings.keyBindJump.pressed = GameSettings.isKeyDown(settings.keyBindJump)
                 if (MovementUtils.isMoving()) {
-                    if (mc.thePlayer.onGround) {
-                        mc.gameSettings.keyBindJump.pressed = false
-                        mc.timer.timerSpeed = 1.0f
+                    if (player.onGround) {
+                        settings.keyBindJump.pressed = false
+                        timer.timerSpeed = 1.0f
                         if (groundStrafe.get()) MovementUtils.strafe()
-                        mc.thePlayer.jump()
+                        player.jump()
                     }
 
-                    if (mc.thePlayer.motionY > 0.003) {
-                        mc.thePlayer.motionX *= 1.0012
-                        mc.thePlayer.motionZ *= 1.0012
-                        mc.timer.timerSpeed = 1.05f
+                    if (player.motionY > 0.003) {
+                        player.motionX *= 1.0012
+                        player.motionZ *= 1.0012
+                        timer.timerSpeed = 1.05f
                     }
                 }
             }
             "Matrix6.6.1" -> {
                 if (usePreMotion.get()) return
-                mc.thePlayer.jumpMovementFactor = 0.0266f
-                if (!mc.thePlayer.onGround) {
-                    mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+                player.jumpMovementFactor = 0.0266f
+                if (!player.onGround) {
+                    settings.keyBindJump.pressed = GameSettings.isKeyDown(settings.keyBindJump)
                     if (MovementUtils.getSpeed() < 0.217) {
                         MovementUtils.strafe(0.217f)
-                        mc.thePlayer.jumpMovementFactor = 0.0269f
+                        player.jumpMovementFactor = 0.0269f
                     }
                 }
-                if (mc.thePlayer.motionY < 0) {
+                if (player.motionY < 0) {
                     timer(1.09f)
-                    if (mc.thePlayer.fallDistance > 1.4)
+                    if (player.fallDistance > 1.4)
                         timer(1.0f)
                 } else {
                     timer(0.95f)
                 }
-                if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
-                    mc.gameSettings.keyBindJump.pressed = false
+                if (player.onGround && MovementUtils.isMoving()) {
+                    settings.keyBindJump.pressed = false
                     timer(1.03f)
-                    mc.thePlayer.jump()
-                    if (mc.thePlayer.movementInput.moveStrafe <= 0.01 && mc.thePlayer.movementInput.moveStrafe >= -0.01) {
+                    player.jump()
+                    if (player.movementInput.moveStrafe <= 0.01 && player.movementInput.moveStrafe >= -0.01) {
                         MovementUtils.strafe((MovementUtils.getSpeed() * 1.0071).toFloat())
                     }
                 } else if (!MovementUtils.isMoving()) {
@@ -86,16 +96,16 @@ class MatrixSpeeds : SpeedMode("Matrix") {
             "Matrix6.9.2" -> {
                 if (wasTimer) {
                     wasTimer = false
-                    mc.timer.timerSpeed = 1.0f
+                    timer.timerSpeed = 1.0f
                 }
-                mc.thePlayer.motionY -= 0.00348
-                mc.thePlayer.jumpMovementFactor = 0.026f
-                mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
-                if (MovementUtils.isMoving() && mc.thePlayer.onGround) {
-                    mc.gameSettings.keyBindJump.pressed = false
-                    mc.timer.timerSpeed = 1.35f
+                player.motionY -= 0.00348
+                player.jumpMovementFactor = 0.026f
+                settings.keyBindJump.pressed = GameSettings.isKeyDown(settings.keyBindJump)
+                if (MovementUtils.isMoving() && player.onGround) {
+                    settings.keyBindJump.pressed = false
+                    timer.timerSpeed = 1.35f
                     wasTimer = true
-                    mc.thePlayer.jump()
+                    player.jump()
                     MovementUtils.strafe()
                 }else if (MovementUtils.getSpeed() < 0.215) {
                     MovementUtils.strafe(0.215f)
@@ -108,26 +118,26 @@ class MatrixSpeeds : SpeedMode("Matrix") {
         when (speeds.get()) {
             "Matrix6.6.1" -> {
                 if (!usePreMotion.get()) return
-                mc.thePlayer.jumpMovementFactor = 0.0266f
-                if (!mc.thePlayer.onGround) {
-                    mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+                player.jumpMovementFactor = 0.0266f
+                if (!player.onGround) {
+                    settings.keyBindJump.pressed = GameSettings.isKeyDown(settings.keyBindJump)
                     if (MovementUtils.getSpeed() < 0.217) {
                         MovementUtils.strafe(0.217f)
-                        mc.thePlayer.jumpMovementFactor = 0.0269f
+                        player.jumpMovementFactor = 0.0269f
                     }
                 }
-                if (mc.thePlayer.motionY < 0) {
+                if (player.motionY < 0) {
                     timer(1.09f)
-                    if (mc.thePlayer.fallDistance > 1.4)
+                    if (player.fallDistance > 1.4)
                         timer(1.0f)
                 } else {
                     timer(0.95f)
                 }
-                if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
-                    mc.gameSettings.keyBindJump.pressed = false
+                if (player.onGround && MovementUtils.isMoving()) {
+                    settings.keyBindJump.pressed = false
                     timer(1.03f)
-                    mc.thePlayer.jump()
-                    if (mc.thePlayer.movementInput.moveStrafe <= 0.01 && mc.thePlayer.movementInput.moveStrafe >= -0.01) {
+                    player.jump()
+                    if (player.movementInput.moveStrafe <= 0.01 && player.movementInput.moveStrafe >= -0.01) {
                         MovementUtils.strafe((MovementUtils.getSpeed() * 1.0071).toFloat())
                     }
                 } else if (!MovementUtils.isMoving()) {
@@ -146,7 +156,7 @@ class MatrixSpeeds : SpeedMode("Matrix") {
         when (speeds.get()) {
             "Matrix6.6.1" -> {
                 if (packet is S12PacketEntityVelocity && veloBoostValue.get()) {
-                    if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
+                    if (player == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != player) {
                         return
                     }
                     event.cancelEvent()
@@ -155,7 +165,7 @@ class MatrixSpeeds : SpeedMode("Matrix") {
                     recZ = packet.motionZ / 8000.0
                     if (sqrt(recX * recX + recZ * recZ) > MovementUtils.getSpeed()) {
                         MovementUtils.strafe(sqrt(recX * recX + recZ * recZ).toFloat())
-                        mc.thePlayer.motionY = packet.motionY / 8000.0
+                        player.motionY = packet.motionY / 8000.0
                     }
 
                     MovementUtils.strafe((MovementUtils.getSpeed() * 1.1).toFloat())
@@ -163,7 +173,7 @@ class MatrixSpeeds : SpeedMode("Matrix") {
             }
             "Matrix 6.7.0" -> {
                 if (packet is S12PacketEntityVelocity) {
-                    if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
+                    if (player == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != player) {
                         return
                     }
                     noVelocityY = 10
@@ -175,18 +185,18 @@ class MatrixSpeeds : SpeedMode("Matrix") {
     override fun onDisable() {
         when (speeds.get()) {
             "Matrix6.6.1" -> {
-                mc.timer.timerSpeed = 1f
+                timer.timerSpeed = 1f
             }
             "Matrix6.9.2" -> {
                 wasTimer = false
-                mc.timer.timerSpeed = 1.0f
+                timer.timerSpeed = 1.0f
             }
         }
     }
 
     private fun timer(value: Float) {
         if(timerBoostValue.get()) {
-            mc.timer.timerSpeed = value
+            timer.timerSpeed = value
         }
     }
 

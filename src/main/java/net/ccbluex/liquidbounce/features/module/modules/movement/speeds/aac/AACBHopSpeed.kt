@@ -10,7 +10,10 @@ import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.util.MathHelper
+import net.minecraft.util.Timer
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -20,165 +23,171 @@ class AACBHopSpeed : SpeedMode("AACBHop") {
                                                            
     private var legitHop = true
     private var waitForGround = false
+
+    // Optimize code
+    val player: EntityPlayerSP
+        get() = mc.thePlayer
+    val timer: Timer
+        get() = mc.timer
                                                            
     override fun onEnable() {
         legitHop = true
-        if (bypassMode.equals("AAC3.5.0") && mc.thePlayer.onGround) {
-            mc.thePlayer.motionZ = 0.0
-            mc.thePlayer.motionX = mc.thePlayer.motionZ
+        if (bypassMode.equals("AAC3.5.0") && player.onGround) {
+            player.motionZ = 0.0
+            player.motionX = player.motionZ
         }
     }
     
     override fun onPreMotion() {
-        if (mc.thePlayer.isInWater) return
+        if (player.isInWater) return
         when (bypassMode.get().lowercase()) {
             "aac" -> {
 
                 if (MovementUtils.isMoving()) {
-                    mc.timer.timerSpeed = 1.08f
-                    if (mc.thePlayer.onGround) {
-                        mc.thePlayer.motionY = 0.399
-                        val f = mc.thePlayer.rotationYaw * 0.017453292f
-                        mc.thePlayer.motionX -= (MathHelper.sin(f) * 0.2f).toDouble()
-                        mc.thePlayer.motionZ += (MathHelper.cos(f) * 0.2f).toDouble()
-                        mc.timer.timerSpeed = 2f
+                    timer.timerSpeed = 1.08f
+                    if (player.onGround) {
+                        player.motionY = 0.399
+                        val f = player.rotationYaw * 0.017453292f
+                        player.motionX -= (MathHelper.sin(f) * 0.2f).toDouble()
+                        player.motionZ += (MathHelper.cos(f) * 0.2f).toDouble()
+                        timer.timerSpeed = 2f
                     } else {
-                        mc.thePlayer.motionY *= 0.97
-                        mc.thePlayer.motionX *= 1.008
-                        mc.thePlayer.motionZ *= 1.008
+                        player.motionY *= 0.97
+                        player.motionX *= 1.008
+                        player.motionZ *= 1.008
                     }
                 } else {
-                    mc.thePlayer.motionX = 0.0
-                    mc.thePlayer.motionZ = 0.0
-                    mc.timer.timerSpeed = 1f
+                    player.motionX = 0.0
+                    player.motionZ = 0.0
+                    timer.timerSpeed = 1f
                 }
             }
             "aac2" -> {
 
                 if (MovementUtils.isMoving()) {
-                    if (mc.thePlayer.onGround) {
-                        mc.thePlayer.jump()
-                        mc.thePlayer.motionX *= 1.02
-                        mc.thePlayer.motionZ *= 1.02
-                    } else if (mc.thePlayer.motionY > -0.2) {
-                        mc.thePlayer.jumpMovementFactor = 0.08f
-                        mc.thePlayer.motionY += 0.01431
-                        mc.thePlayer.jumpMovementFactor = 0.07f
+                    if (player.onGround) {
+                        player.jump()
+                        player.motionX *= 1.02
+                        player.motionZ *= 1.02
+                    } else if (player.motionY > -0.2) {
+                        player.jumpMovementFactor = 0.08f
+                        player.motionY += 0.01431
+                        player.jumpMovementFactor = 0.07f
                     }
                 } else {
-                    mc.thePlayer.motionX = 0.0
-                    mc.thePlayer.motionZ = 0.0
+                    player.motionX = 0.0
+                    player.motionZ = 0.0
                 }
             }
             "aac4" -> {
                 if (MovementUtils.isMoving()) {
                     if (legitHop) {
-                        if (mc.thePlayer.onGround) {
-                            mc.thePlayer.jump()
-                            mc.thePlayer.onGround = false
+                        if (player.onGround) {
+                            player.jump()
+                            player.onGround = false
                             legitHop = false
                         }
                         return
                     }
-                    if (mc.thePlayer.onGround) {
-                        mc.thePlayer.onGround = false
+                    if (player.onGround) {
+                        player.onGround = false
                         MovementUtils.strafe(0.375f)
-                        mc.thePlayer.jump()
-                        mc.thePlayer.motionY = 0.41
-                    } else mc.thePlayer.speedInAir = 0.0211f
+                        player.jump()
+                        player.motionY = 0.41
+                    } else player.speedInAir = 0.0211f
                 } else {
-                    mc.thePlayer.motionX = 0.0
-                    mc.thePlayer.motionZ = 0.0
+                    player.motionX = 0.0
+                    player.motionZ = 0.0
                     legitHop = true
                 }
             }
             "aac6" -> {
-                mc.timer.timerSpeed = 1f
+                timer.timerSpeed = 1f
 
                 if (MovementUtils.isMoving()) {
-                    if (mc.thePlayer.onGround) {
+                    if (player.onGround) {
                         if (legitHop) {
-                            mc.thePlayer.motionY = 0.4
+                            player.motionY = 0.4
                             MovementUtils.strafe(0.15f)
-                            mc.thePlayer.onGround = false
+                            player.onGround = false
                             legitHop = false
                             return
                         }
-                        mc.thePlayer.motionY = 0.41
+                        player.motionY = 0.41
                         MovementUtils.strafe(0.47458485f)
                     }
 
-                    if (mc.thePlayer.motionY < 0 && mc.thePlayer.motionY > -0.2) mc.timer.timerSpeed =
-                        (1.2 + mc.thePlayer.motionY).toFloat()
+                    if (player.motionY < 0 && player.motionY > -0.2) timer.timerSpeed =
+                        (1.2 + player.motionY).toFloat()
 
-                    mc.thePlayer.speedInAir = 0.022151f
+                    player.speedInAir = 0.022151f
                 } else {
                     legitHop = true
-                    mc.thePlayer.motionX = 0.0
-                    mc.thePlayer.motionZ = 0.0
+                    player.motionX = 0.0
+                    player.motionZ = 0.0
                 }
             }
             "aac7" -> {
-                if (mc.thePlayer.onGround) {
-                    mc.thePlayer.jump()
-                    mc.thePlayer.motionY = 0.405
-                    mc.thePlayer.motionX *= 1.004
-                    mc.thePlayer.motionZ *= 1.004
+                if (player.onGround) {
+                    player.jump()
+                    player.motionY = 0.405
+                    player.motionX *= 1.004
+                    player.motionZ *= 1.004
                     return
                 }
 
                 val speed = MovementUtils.getSpeed() * 1.0072
-                val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
-                mc.thePlayer.motionX = -sin(yaw) * speed
-                mc.thePlayer.motionZ = cos(yaw) * speed
+                val yaw = Math.toRadians(player.rotationYaw.toDouble())
+                player.motionX = -sin(yaw) * speed
+                player.motionZ = cos(yaw) * speed
             }
             "lowhop2" -> {
-                mc.timer.timerSpeed = 1f
+                timer.timerSpeed = 1f
 
                 if (MovementUtils.isMoving()) {
-                    mc.timer.timerSpeed = 1.09f
-                    if (mc.thePlayer.onGround) {
+                    timer.timerSpeed = 1.09f
+                    if (player.onGround) {
                         if (legitHop) {
-                            mc.thePlayer.jump()
+                            player.jump()
                             legitHop = false
                             return
                         }
-                        mc.thePlayer.motionY = 0.343
+                        player.motionY = 0.343
                         MovementUtils.strafe(0.534f)
                     }
                 } else {
                     legitHop = true
-                    mc.thePlayer.motionX = 0.0
-                    mc.thePlayer.motionZ = 0.0
+                    player.motionX = 0.0
+                    player.motionZ = 0.0
                 }
             }
             "lowhop3" -> {
                 if (MovementUtils.isMoving()) {
-                    if (mc.thePlayer.hurtTime <= 0) {
-                        if (mc.thePlayer.onGround) {
+                    if (player.hurtTime <= 0) {
+                        if (player.onGround) {
                             waitForGround = false
                             if (!legitHop) legitHop = true
-                            mc.thePlayer.jump()
-                            mc.thePlayer.motionY = 0.41
+                            player.jump()
+                            player.motionY = 0.41
                         } else {
                             if (waitForGround) return
-                            if (mc.thePlayer.isCollidedHorizontally) return
+                            if (player.isCollidedHorizontally) return
                             legitHop = false
-                            mc.thePlayer.motionY -= 0.0149
+                            player.motionY -= 0.0149
                         }
-                        if (!mc.thePlayer.isCollidedHorizontally) MovementUtils.forward(if (legitHop) 0.0016 else 0.001799)
+                        if (!player.isCollidedHorizontally) MovementUtils.forward(if (legitHop) 0.0016 else 0.001799)
                     } else {
                         legitHop = true
                         waitForGround = true
                     }
                 } else {
-                    mc.thePlayer.motionZ = 0.0
-                    mc.thePlayer.motionX = 0.0
+                    player.motionZ = 0.0
+                    player.motionX = 0.0
                 }
 
                 val speed = MovementUtils.getSpeed().toDouble()
-                mc.thePlayer.motionX = -(sin(MovementUtils.direction) * speed)
-                mc.thePlayer.motionZ = cos(MovementUtils.direction) * speed
+                player.motionX = -(sin(MovementUtils.direction) * speed)
+                player.motionZ = cos(MovementUtils.direction) * speed
             }
         }
     }
@@ -186,17 +195,17 @@ class AACBHopSpeed : SpeedMode("AACBHop") {
     override fun onMotion(event: MotionEvent) {
         when (bypassMode.get()) {
             "AAC3.5.0" -> {
-                if (event.eventState === EventState.POST && MovementUtils.isMoving() && !mc.thePlayer.isInWater && !mc.thePlayer.isInLava) {
-                    mc.thePlayer.jumpMovementFactor += 0.00208f
-                    if (mc.thePlayer.fallDistance <= 1f) {
-                        if (mc.thePlayer.onGround) {
-                            mc.thePlayer.jump()
-                            mc.thePlayer.motionX *= 1.0118
-                            mc.thePlayer.motionZ *= 1.0118
+                if (event.eventState === EventState.POST && MovementUtils.isMoving() && !player.isInWater && !player.isInLava) {
+                    player.jumpMovementFactor += 0.00208f
+                    if (player.fallDistance <= 1f) {
+                        if (player.onGround) {
+                            player.jump()
+                            player.motionX *= 1.0118
+                            player.motionZ *= 1.0118
                         } else {
-                            mc.thePlayer.motionY -= 0.0147
-                            mc.thePlayer.motionX *= 1.00138
-                            mc.thePlayer.motionZ *= 1.00138
+                            player.motionY -= 0.0147
+                            player.motionX *= 1.00138
+                            player.motionZ *= 1.00138
                         }
                     }
                 }
@@ -205,8 +214,8 @@ class AACBHopSpeed : SpeedMode("AACBHop") {
     }
 
     override fun onDisable() {
-        mc.timer.timerSpeed = 1f
-        mc.thePlayer.speedInAir = 0.02f
-        mc.thePlayer.jumpMovementFactor = 0.02f
+        timer.timerSpeed = 1f
+        player.speedInAir = 0.02f
+        player.jumpMovementFactor = 0.02f
     }
 }

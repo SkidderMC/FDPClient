@@ -10,23 +10,28 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.value.*
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.network.play.client.C03PacketPlayer
 
 class VerusSpeeds : SpeedMode("Verus") {
     private val modeValue = ListValue("Verus-Mode", arrayOf("Hop", "Float", "Ground", "YPort", "YPort2"), "Hop")
 
-    private val YPortspeedValue = FloatValue("YPort-Speed", 0.61f, 0.1f, 1f).displayable { modeValue.equals("YPort") }
-    private val YPort2speedValue = FloatValue("YPort2-Speed", 0.61f, 0.1f, 1f).displayable { modeValue.equals("YPort2") }
+    private val yPortspeedValue = FloatValue("YPort-Speed", 0.61f, 0.1f, 1f).displayable { modeValue.equals("YPort") }
+    private val yPort2speedValue = FloatValue("YPort2-Speed", 0.61f, 0.1f, 1f).displayable { modeValue.equals("YPort2") }
 
 
     // Variables
     private var firstHop = false
     private var ticks = 0
-    private var Bypass = false
-    private var IsinAir = false
+    private var bypass = false
+    private var isinAir = false
+
+    // Optimize code
+    val player: EntityPlayerSP
+        get() = mc.thePlayer
 
     override fun onEnable() {
-        Bypass = false
+        bypass = false
     }
 
     override fun onUpdate() {
@@ -34,8 +39,8 @@ class VerusSpeeds : SpeedMode("Verus") {
             "Hop" -> {
                 if (isMoving()) {
                     mc.gameSettings.keyBindJump.pressed = false
-                    if (mc.thePlayer.onGround) {
-                        mc.thePlayer.jump()
+                    if (player.onGround) {
+                        player.jump()
                         MovementUtils.strafe(0.48f)
 
                     }
@@ -43,7 +48,7 @@ class VerusSpeeds : SpeedMode("Verus") {
                 }
             }
             "YPort2" -> {
-                mc.thePlayer.motionY = -0.0784000015258789
+                player.motionY = -0.0784000015258789
             }
         }
     }
@@ -51,17 +56,17 @@ class VerusSpeeds : SpeedMode("Verus") {
     override fun onPreMotion() {
         when (modeValue.get()) {
             "Ground" -> {
-                if (mc.thePlayer.onGround)
+                if (player.onGround)
                     if (modeValue.equals("Ground")) {
-                        if (mc.thePlayer.ticksExisted % 12 == 0) {
+                        if (player.ticksExisted % 12 == 0) {
                             firstHop = false
                             MovementUtils.strafe(0.69f)
-                            mc.thePlayer.jump()
-                            mc.thePlayer.motionY = 0.0
+                            player.jump()
+                            player.motionY = 0.0
                             MovementUtils.strafe(0.69f)
-                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.42, mc.thePlayer.posZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(player.posX, player.posY + 0.42, player.posZ, false))
                             MovementUtils.strafe(0.41f)
-                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, false))
+                            mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(player.posX, player.posY, player.posZ, false))
                         } else if (!firstHop) {
                             MovementUtils.strafe(1.01f)
                         }
@@ -70,20 +75,20 @@ class VerusSpeeds : SpeedMode("Verus") {
             "Float" -> {
                 ticks++
                 if (!mc.gameSettings.keyBindJump.isKeyDown) {
-                    if (mc.thePlayer.onGround) {
+                    if (player.onGround) {
                         ticks = 0
                         MovementUtils.strafe(0.44f)
-                        mc.thePlayer.motionY = 0.42
+                        player.motionY = 0.42
                         mc.timer.timerSpeed = 2.1f
-                        IsinAir = true
-                    } else if (IsinAir) {
+                        isinAir = true
+                    } else if (isinAir) {
                         if (ticks >= 10) {
-                            Bypass = true
+                            bypass = true
                             MovementUtils.strafe(0.2865f)
-                            IsinAir = false
+                            isinAir = false
                         }
 
-                        if (Bypass) {
+                        if (bypass) {
                             if (ticks <= 1) {
                                 MovementUtils.strafe(0.45f)
                             }
@@ -93,10 +98,10 @@ class VerusSpeeds : SpeedMode("Verus") {
                             }
                         }
 
-                        mc.thePlayer.motionY = 0.0
+                        player.motionY = 0.0
                         mc.timer.timerSpeed = 0.9f
 
-                        mc.thePlayer.onGround = true
+                        player.onGround = true
                     }
                 }
             }
@@ -108,10 +113,10 @@ class VerusSpeeds : SpeedMode("Verus") {
             "YPort" -> {
                 if (isMoving()) {
                     mc.gameSettings.keyBindJump.pressed = false
-                    if (mc.thePlayer.onGround) {
-                        mc.thePlayer.jump()
-                        mc.thePlayer.motionY = 0.0
-                        MovementUtils.strafe(YPortspeedValue.get())
+                    if (player.onGround) {
+                        player.jump()
+                        player.motionY = 0.0
+                        MovementUtils.strafe(yPortspeedValue.get())
                         event.y = 0.41999998688698
                     } else {
                         MovementUtils.strafe()
@@ -121,8 +126,8 @@ class VerusSpeeds : SpeedMode("Verus") {
            "YPort2" -> {
                if (isMoving()) {
                    mc.gameSettings.keyBindJump.pressed = false
-                   if (mc.thePlayer.onGround) {
-                       MovementUtils.strafe(YPort2speedValue.get())
+                   if (player.onGround) {
+                       MovementUtils.strafe(yPort2speedValue.get())
                        event.y = 0.41999998688698
                    } else {
                        MovementUtils.strafe()

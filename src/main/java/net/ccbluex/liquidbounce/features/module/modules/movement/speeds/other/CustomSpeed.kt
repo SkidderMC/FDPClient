@@ -37,8 +37,8 @@ class CustomSpeed : SpeedMode("Custom") {
     private val resetXZValue = BoolValue("CustomResetXZ", false)
     private val resetYValue = BoolValue("CustomResetY", false)
     private val doJump = BoolValue("CustomDoJump",true)
-    private val GroundSpaceKeyPressed = BoolValue("CustomPressSpaceKeyOnGround", true)
-    private val AirSpaceKepPressed = BoolValue("CustomPressSpaceKeyInAir", false)
+    private val groundSpaceKeyPressed = BoolValue("CustomPressSpaceKeyOnGround", true)
+    private val airSpaceKepPressed = BoolValue("CustomPressSpaceKeyInAir", false)
     private val usePreMotion = BoolValue("CustomUsePreMotion", true)
 
     
@@ -54,7 +54,7 @@ class CustomSpeed : SpeedMode("Custom") {
             when {
                 mc.thePlayer.onGround -> {
                     if (groundTick >= groundStay.get()) {
-                        if (GroundSpaceKeyPressed.get()) {
+                        if (groundSpaceKeyPressed.get()) {
                             mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
                         }
                         mc.timer.timerSpeed = jumpTimerValue.get()
@@ -85,7 +85,7 @@ class CustomSpeed : SpeedMode("Custom") {
                 
                 else -> {
                     groundTick = 0
-                    if (AirSpaceKepPressed.get()) {
+                    if (airSpaceKepPressed.get()) {
                         mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
                     }
                     if (doMinimumSpeedValue.get() && MovementUtils.getSpeed() < minimumSpeedValue.get()) {
@@ -157,7 +157,7 @@ class CustomSpeed : SpeedMode("Custom") {
             when {
                 mc.thePlayer.onGround -> {
                     if (groundTick >= groundStay.get()) {
-                        if (GroundSpaceKeyPressed.get()) {
+                        if (groundSpaceKeyPressed.get()) {
                             mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
                         }
                         mc.timer.timerSpeed = jumpTimerValue.get()
@@ -188,7 +188,7 @@ class CustomSpeed : SpeedMode("Custom") {
                 
                 else -> {
                     groundTick = 0
-                    if (AirSpaceKepPressed.get()) {
+                    if (airSpaceKepPressed.get()) {
                         mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
                     }
                     if (doMinimumSpeedValue.get() && MovementUtils.getSpeed() < minimumSpeedValue.get()) {
