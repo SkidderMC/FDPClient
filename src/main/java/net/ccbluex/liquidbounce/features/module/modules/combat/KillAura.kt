@@ -1200,7 +1200,7 @@ object KillAura : Module() {
     fun onJump(event: JumpEvent) {
         if (jumpFixValue.get()) {
             if (discoveredTargets.isNotEmpty()) {
-                mc.thePlayer.isSprinting = false
+                event.yaw = RotationUtils.serverRotation!!.yaw
             }
         }
     }
