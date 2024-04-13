@@ -454,6 +454,8 @@ class VulcanFlys : FlyMode("Vulcan") {
                         }
                         doCancel = true
                     }
+
+                    else -> {}
                 }
             }
             "Ghost" -> {

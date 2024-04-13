@@ -6,12 +6,10 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import com.mojang.authlib.GameProfile;
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KeepSprint;
-import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
+import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixer;
 import net.ccbluex.liquidbounce.utils.CooldownHelper;
-import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.PacketUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.item.EntityItem;
@@ -124,7 +122,7 @@ public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
     @Inject(method = "dropItem", at = @At("HEAD"))
     private void dropItem(ItemStack p_dropItem_1_, boolean p_dropItem_2_, boolean p_dropItem_3_, CallbackInfoReturnable<EntityItem> cir) {
         for (int i = 0; i < this.fDPClient$mainInventory.length; ++i) {
-            if (!MinecraftInstance.mc.isIntegratedServerRunning() && ProtocolBase.getManager().getTargetVersion().newerThanOrEqualTo(ProtocolVersion.v1_16))
+            if (ProtocolFixer.newerThanOrEqualsTo1_16())
                 PacketUtils.sendPacketNoEvent(new C0APacketAnimation());
             if (this.fDPClient$mainInventory[i] != null) {
                 this.fDPClient$mainInventory[i] = null;
@@ -132,7 +130,7 @@ public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
         }
 
         for (int j = 0; j < this.fDPClient$armorInventory.length; ++j) {
-            if (!MinecraftInstance.mc.isIntegratedServerRunning() && ProtocolBase.getManager().getTargetVersion().newerThanOrEqualTo(ProtocolVersion.v1_16))
+            if (ProtocolFixer.newerThanOrEqualsTo1_16())
                 PacketUtils.sendPacketNoEvent(new C0APacketAnimation());
             if (this.fDPClient$armorInventory[j] != null) {
                 this.fDPClient$armorInventory[j] = null;

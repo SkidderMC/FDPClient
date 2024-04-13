@@ -14,7 +14,6 @@
     "block.MixinBlockRedstoneTorch",
     "block.MixinBlockSoulSand",
     "block.MixinWorld",
-    "client.MixinAnvilChunkLoader",
     "client.MixinEnumFacing",
     "client.MixinGameSettings",
     "client.MixinLanguageManager",
@@ -91,6 +90,9 @@
     "render.MixinRendererLivingEntity",
     "render.MixinRenderItem",
     "render.MixinRenderPlayer",
+    "render.MixinLayerArmorBase",
+    "render.MixinRender",
+    "render.MixinRenderManager",
     "render.MixinTileEntityBannerRenderer",
     "render.MixinTileEntityChestRenderer",
     "render.MixinTileEntityItemStackRenderer",
@@ -108,8 +110,6 @@
     "gui.MixinGuiSlot",
     "gui.MixinGuiTextField",
     "performance.MixinEntityFX",
-    "performance.MixinRenderGlobal",
-    "render.MixinLayerArmorBase",
-    "render.MixinRender"
+    "performance.MixinRenderGlobal"
   ]
 }

@@ -65,16 +65,10 @@ class AntiFireBall : Module() {
                     )
                 }
 
-                if (ProtocolBase.getManager().targetVersion.newerThan(ProtocolVersion.v1_8))
-                    mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
-
                 when (swingValue.get().lowercase(Locale.getDefault())) {
                     "normal" -> mc.thePlayer.swingItem()
                     "packet" -> mc.netHandler.addToSendQueue(C0APacketAnimation())
                 }
-
-                if (!ProtocolBase.getManager().targetVersion.newerThan(ProtocolVersion.v1_8))
-                    mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
 
                 timer.reset()
                 break

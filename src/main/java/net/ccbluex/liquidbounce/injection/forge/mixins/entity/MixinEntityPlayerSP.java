@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.AntiDesync;
 import net.ccbluex.liquidbounce.features.module.modules.movement.*;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
+import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixer;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
@@ -192,8 +193,8 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     }
 
     @Redirect(method = "onUpdateWalkingPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/NetHandlerPlayClient;addToSendQueue(Lnet/minecraft/network/Packet;)V", ordinal = 7))
-    public void emulateIdlePacket(NetHandlerPlayClient instance, Packet p_addToSendQueue_1_) {
-        if (ProtocolBase.getManager().getTargetVersion().newerThan(ProtocolVersion.v1_8) && !MinecraftInstance.mc.isIntegratedServerRunning()) {
+    public void emulateIdlePacket(final NetHandlerPlayClient instance, final Packet<?> p_addToSendQueue_1_) {
+        if (ProtocolFixer.newerThan1_8()) {
             if (this.viaForge$prevOnGround == this.onGround) {
                 return;
             }

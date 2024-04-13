@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
@@ -14,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.*
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam
-import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase
+import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixer
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
@@ -867,11 +866,11 @@ object KillAura : Module() {
         preAttack()
 
         // Attack target
-        if (ProtocolBase.getManager().targetVersion.newerThan(ProtocolVersion.v1_8))
+        if (ProtocolFixer.newerThan1_8())
             mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
         runSwing()
         packetSent = true
-        if (!ProtocolBase.getManager().targetVersion.newerThan(ProtocolVersion.v1_8))
+        if (!ProtocolFixer.newerThan1_8())
             mc.netHandler.addToSendQueue(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
 
 
@@ -885,9 +884,9 @@ object KillAura : Module() {
     @EventTarget
     fun onAttack(event: AttackEvent) {
         if (multiCombo.get()) {
-            event.targetEntity
+            event.targetEntity ?: return
             repeat(amountValue.get()) {
-                if (ProtocolBase.getManager().targetVersion.newerThan(ProtocolVersion.v1_8))
+                if (ProtocolFixer.newerThan1_8())
                     mc.netHandler.addToSendQueue(
                         C02PacketUseEntity(
                             event.targetEntity,
@@ -897,7 +896,7 @@ object KillAura : Module() {
 
                 mc.netHandler.addToSendQueue(C0APacketAnimation())
 
-                if (!ProtocolBase.getManager().targetVersion.newerThan(ProtocolVersion.v1_8))
+                if (!ProtocolFixer.newerThan1_8())
                     mc.netHandler.addToSendQueue(
                         C02PacketUseEntity(
                             event.targetEntity,

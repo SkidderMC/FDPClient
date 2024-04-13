@@ -26,6 +26,7 @@ public abstract class Animation {
         this.direction = Direction.FORWARDS;
     }
 
+
     public Animation(int ms, double endPoint, Direction direction) {
         this.duration = ms; //Time in milliseconds of how long you want the animation to take.
         this.endPoint = endPoint; //The desired distance for the animated object to go.
@@ -35,6 +36,11 @@ public abstract class Animation {
     public boolean finished(Direction direction) {
         return isDone() && this.direction.equals(direction);
     }
+
+    public double getLinearOutput() {
+        return 1 - ((timerUtil.getTime() / (double) duration) * endPoint);
+    }
+
     public void reset() {
         timerUtil.reset();
     }
@@ -42,6 +48,11 @@ public abstract class Animation {
     public boolean isDone() {
         return timerUtil.hasTimeElapsed(duration);
     }
+
+    public void changeDirection() {
+        setDirection(direction.opposite());
+    }
+
     public void setDirection(Direction direction) {
         if (this.direction != direction) {
             this.direction = direction;
@@ -66,6 +77,7 @@ public abstract class Animation {
             } else return (1 - getEquation(timerUtil.getTime())) * endPoint;
         }
     }
+
     protected abstract double getEquation(double x);
 
 }

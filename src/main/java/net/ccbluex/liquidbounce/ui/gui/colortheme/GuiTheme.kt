@@ -711,6 +711,18 @@ class GuiTheme : GuiScreen() {
             }
         }
 
+        if (scroll < -115f) {
+            if (mouseWithinBounds(mouseX, mouseY, 25F, 450F + this.scroll, 122F, 520F + this.scroll)) {
+                ClientTheme.ClientColorMode.set("Fire")
+            }
+            if (mouseWithinBounds(mouseX, mouseY, 150F, 450F + this.scroll, 247F, 520F + this.scroll)) {
+                ClientTheme.ClientColorMode.set("Aqua")
+            }
+            if (mouseWithinBounds(mouseX, mouseY, 275F, 450F + this.scroll, 372F, 520F + this.scroll)) {
+                ClientTheme.ClientColorMode.set("Peony")
+            }
+        }
+
         if (mouseWithinBounds(mouseX, mouseY, 25F, 350.0f, 40F, 365.0f)) {
             textValue.set(!textValue.get())
         }

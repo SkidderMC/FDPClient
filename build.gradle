@@ -57,13 +57,6 @@ configurations {
     runtimeOnly.canBeResolved = true
 }
 
-def viaLibs = [
-        "com.viaversion:viaversion:${project.viaversion_version}",
-        "com.viaversion:viabackwards:${project.viabackwards_version}",
-        "com.viaversion:viarewind-universal:${project.viarewind_version}",
-        "net.raphimc:ViaLoader:${project.vialoader_version}"
-]
-
 dependencies {
 
     include 'org.projectlombok:lombok:1.18.32'
@@ -76,11 +69,22 @@ dependencies {
         exclude module: "gson"
         exclude module: "launchwrapper"
         exclude module: "log4j-core"
+        exclude module: "slf4j-api"
     }
 
-    for (final def via in viaLibs) {
-        include(via)
+    include "com.viaversion:viaversion:${project.viaversion_version}"
+    include "com.viaversion:viabackwards:${project.viabackwards_version}"
+    include "com.viaversion:viarewind-universal:${project.viarewind_version}"
+    include ("net.raphimc:ViaLegacy:${project.vialegacy_version}") {
+        exclude group: "com.google.code.gson", module: "gson"
     }
+    include "net.raphimc:ViaAprilFools:${project.viaaprilfools_version}"
+    include "net.raphimc:ViaLoader:${project.vialoader_version}"
+
+    include "org.slf4j:slf4j-api:${project.slf4j_version}"
+    include "org.yaml:snakeyaml:${project.snake_yml_version}"
+
+    include "com.squareup.okhttp3:okhttp:${project.okhttp_version}"
 
     annotationProcessor("org.spongepowered:mixin:${project.mixin_version}")
 

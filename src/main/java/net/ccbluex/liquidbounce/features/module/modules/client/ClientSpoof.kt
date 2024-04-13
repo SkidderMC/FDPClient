@@ -61,16 +61,20 @@ class ClientSpoof : Module() {
         "Button",
         arrayOf(
             "Better",
-            "RGBRounded",
-            "Wolfram",
+            "Dark",
+            "Light",
             "Rounded",
-            "Hyperium",
             "RGB",
-            "Badlion",
-            "PVP",
+            "RGBRounded",
             "Flat",
             "FLine",
+            "Melon",
+            "LiquidBounce",
+            "Wolfram",
             "Rise",
+            "Hyperium",
+            "Badlion",
+            "PVP",
             "Vanilla"
         ),
         "PVP"
@@ -89,6 +93,10 @@ class ClientSpoof : Module() {
             "rgbrounded" -> RGBRoundedButtonRenderer(button!!)
             "wolfram" -> WolframButtonRenderer(button!!)
             "pvp" -> PvPClientButtonRenderer(button!!)
+            "liquidbounce" -> LiquidButtonRenderer(button!!)
+            "light" -> LunarButtonRenderer(button!!)
+            "melon" -> MelonButtonRenderer(button!!)
+            "dark" -> BlackoutButtonRenderer(button!!)
             else -> null // vanilla or unknown
         }
     }

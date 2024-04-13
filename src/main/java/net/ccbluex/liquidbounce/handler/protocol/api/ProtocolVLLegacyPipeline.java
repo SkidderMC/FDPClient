@@ -6,20 +6,13 @@
 package net.ccbluex.liquidbounce.handler.protocol.api;
 
 import com.viaversion.viaversion.api.connection.UserConnection;
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-import io.netty.channel.ChannelHandlerContext;
 import net.raphimc.vialoader.netty.VLLegacyPipeline;
+import net.raphimc.vialoader.util.VersionEnum;
 
 public class ProtocolVLLegacyPipeline extends VLLegacyPipeline {
 
-    public ProtocolVLLegacyPipeline(UserConnection user, ProtocolVersion version) {
+    public ProtocolVLLegacyPipeline(UserConnection user, VersionEnum version) {
         super(user, version);
-    }
-
-    @Override
-    public void handlerAdded(ChannelHandlerContext ctx) {
-        ctx.pipeline().addBefore(this.packetDecoderName(), VIA_DECODER_NAME, this.createViaDecoder());
-        ctx.pipeline().addBefore(this.packetEncoderName(), VIA_ENCODER_NAME, this.createViaEncoder());
     }
 
     @Override

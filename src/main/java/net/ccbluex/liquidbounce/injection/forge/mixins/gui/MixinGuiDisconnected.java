@@ -23,6 +23,7 @@ import net.minecraft.client.gui.GuiDisconnected;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.multiplayer.ServerData;
 import net.minecraftforge.fml.client.config.GuiSlider;
+import net.raphimc.vialoader.util.VersionEnum;
 import org.lwjgl.input.Keyboard;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -111,7 +112,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
 
     @Inject(method = "drawScreen", at = @At("RETURN"))
     private void drawScreen(CallbackInfo callbackInfo) {
-        final ProtocolVersion version = ProtocolBase.getManager().getTargetVersion();
+        final VersionEnum version = ProtocolBase.getManager().getTargetVersion();
         RendererExtensionKt.drawCenteredString(mc.fontRendererObj, fDPClient$infoStr, this.width / 2F, this.height / 2F + field_175353_i / 2F + this.fontRendererObj.FONT_HEIGHT + 100, 0,false);
         if (AutoReconnect.INSTANCE.isEnabled()) {
             this.fDPClient$updateReconnectButton();

@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.DelayRemover;
 import net.ccbluex.liquidbounce.features.special.spoof.ClientSpoofHandler;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolMod;
-import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixes;
+import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixer;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
 import net.ccbluex.liquidbounce.injection.forge.mixins.accessors.MinecraftForgeClientAccessor;
 import net.ccbluex.liquidbounce.utils.*;
@@ -278,7 +278,7 @@ public abstract class MixinMinecraft {
             if (this.objectMouseOver != null) {
                 switch (this.objectMouseOver.typeOfHit) {
                     case ENTITY:
-                        ProtocolFixes.sendFixedAttack(this.thePlayer, this.objectMouseOver.entityHit);
+                        ProtocolFixer.sendFixedAttack(this.thePlayer, this.objectMouseOver.entityHit);
                         break;
 
                     case BLOCK:
