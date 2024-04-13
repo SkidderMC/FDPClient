@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.anima
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.normal.Main;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils;
 
-import net.ccbluex.liquidbounce.ui.font.Fonts;
+import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
@@ -66,16 +66,15 @@ public class ModuleRect extends Component {
         boolean hoveringModule = DrRenderUtils.isHovering(x, y, width, height, mouseX, mouseY);
         hoverAnimation.setDirection(hoveringModule ? Direction.FORWARDS : Direction.BACKWARDS);
 
-        // Normal Grey rect
         DrRenderUtils.drawRect2(x, y, width, height, DrRenderUtils.interpolateColor(rectColor.getRGB(), DrRenderUtils.brighter(rectColor, .8f).getRGB(), (float) hoverAnimation.getOutput()));
 
         DrRenderUtils.drawRect2(x, y, width, height, DrRenderUtils.applyOpacity(clickModColor, (float) animation.getOutput()).getRGB());
 
-        Fonts.fontSFUI35.drawString(module.getName(), x + 5, y + Fonts.fontSFUI32.getMiddleOfBox(height), textColor.getRGB());
+        Fonts.SF.SF_20.SF_20.drawString(module.getName(), x + 5, y + Fonts.SF.SF_20.SF_20.getMiddleOfBox(height), textColor.getRGB());
 
         if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && module.getKeyBind() != 0) {
             String keyName = Keyboard.getKeyName(module.getKeyBind());
-         Fonts.fontSFUI32.drawString(keyName, x + width - Fonts.fontSFUI32.stringWidthINT(keyName) - 5, y + Fonts.fontSFUI32.getMiddleOfBox(height), textColor.getRGB());
+            Fonts.SF.SF_20.SF_20.drawString(keyName, x + width - Fonts.SF.SF_20.SF_20.stringWidth(keyName) - 5, y + Fonts.SF.SF_20.SF_20.getMiddleOfBox(height), textColor.getRGB());
         } else {
             float arrowSize = 6;
             arrowAnimation.setDirection(module.getExpanded() ? Direction.FORWARDS : Direction.BACKWARDS);
@@ -127,7 +126,6 @@ public class ModuleRect extends Component {
 
 
     }
-
 
     public void mouseClicked(int mouseX, int mouseY, int button) {
         boolean hoveringModule = isClickable(y, panelLimitY) && DrRenderUtils.isHovering(x, y, width, height, mouseX, mouseY);

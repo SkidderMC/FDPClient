@@ -13,8 +13,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.IResource;
 import net.minecraft.client.resources.IResourceManager;
 import net.minecraft.util.ResourceLocation;
-
-
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,13 +20,11 @@ import java.util.EnumMap;
 
 public final class SimpleFontManager implements FontManager {
 
-	//region instantiating
 	private SimpleFontManager() {}
 
 	public static FontManager create() {
 		return new SimpleFontManager();
 	}
-	//endregion
 
 	private static final String FONT_DIRECTORY = "fdpclient/font/";
 	private final FontRegistry fonts = new FontRegistry();
@@ -82,6 +78,5 @@ public final class SimpleFontManager implements FontManager {
 
 			return font;
 		}
-		//endregion
 	}
 }

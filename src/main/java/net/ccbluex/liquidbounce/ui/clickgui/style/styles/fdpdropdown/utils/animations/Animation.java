@@ -12,7 +12,10 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.norma
 public abstract class Animation {
 
     public TimerUtil timerUtil = new TimerUtil();
+    @Setter
     protected int duration;
+    @Getter
+    @Setter
     protected double endPoint;
     protected Direction direction;
 
@@ -35,14 +38,6 @@ public abstract class Animation {
 
     public double getLinearOutput() {
         return 1 - ((timerUtil.getTime() / (double) duration) * endPoint);
-    }
-
-    public double getEndPoint() {
-        return endPoint;
-    }
-
-    public void setEndPoint(double endPoint) {
-        this.endPoint = endPoint;
     }
 
     public void reset() {
@@ -68,10 +63,6 @@ public abstract class Animation {
         }
     }
 
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
     protected boolean correctOutput() {
         return false;
     }
@@ -90,9 +81,5 @@ public abstract class Animation {
         }
     }
 
-
-    //This is where the animation equation should go, for example, a logistic function. Output should range from 0 - 1.
-    //This will take the timer's time as an input, x.
     protected abstract double getEquation(double x);
-
 }

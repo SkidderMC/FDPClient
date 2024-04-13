@@ -104,8 +104,6 @@ public class MainScreen implements Screen {
                     y + Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.getMiddleOfBox(categoryRectHeight), textColor);
         }
 
-        //     ClickGuiMod clickGUIMod = (ClickGuiMod) Tenacity.INSTANCE.getModuleCollection().get(ClickGuiMod.class);
-
         if (ClickGUIModule.INSTANCE.getScrollMode().get().equals("Value")) {
             Main.allowedClickGuiHeight =  ClickGUIModule.INSTANCE.getClickHeight().get().floatValue();
         } else {
@@ -142,7 +140,6 @@ public class MainScreen implements Screen {
             moduleRect.width = rectWidth;
             moduleRect.drawScreen(mouseX, mouseY);
 
-            // count ups by one but then accounts for setting animation opening
             count += 1 + (moduleRect.getSettingSize());
         }
 

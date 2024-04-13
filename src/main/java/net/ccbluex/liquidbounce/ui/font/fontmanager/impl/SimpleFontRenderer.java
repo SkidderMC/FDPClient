@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.font.fontmanager.impl;
 
+import lombok.Getter;
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -28,6 +29,7 @@ public final class SimpleFontRenderer implements FontRenderer {
     private static final float IMG_SIZE = 512;
     private static final float CHAR_OFFSET = 0f;
 
+    @Getter
     private final CharData[] charData = new CharData[CHARS];
     private final CharData[] boldChars = new CharData[CHARS];
     private final CharData[] italicChars = new CharData[CHARS];
@@ -372,11 +374,7 @@ public final class SimpleFontRenderer implements FontRenderer {
 
     @Override
     public float charWidth(char s){
-        return (charData[s].width - 8) / 2;
-    }
-
-    public CharData[] getCharData() {
-        return charData;
+        return (float) (charData[s].width - 8) / 2;
     }
 
     //region shit

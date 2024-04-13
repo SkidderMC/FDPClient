@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.ui.font.fontmanager.impl;
 
-
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontFamily;
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer;
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontType;

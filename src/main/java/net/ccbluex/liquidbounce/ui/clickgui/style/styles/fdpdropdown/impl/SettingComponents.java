@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.impl;
 
-import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.animations.Animation;
@@ -17,7 +16,6 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.objec
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.render.GuiEvents;
 import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
-import net.ccbluex.liquidbounce.ui.hud.HUD;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.render.RoundedUtil;
 import net.ccbluex.liquidbounce.value.*;
@@ -117,7 +115,6 @@ public class SettingComponents extends Component {
         }
 
          */
-
 
         if (selectedField != null) {
             if (keyCode == 1) {
