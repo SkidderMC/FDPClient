@@ -12,12 +12,8 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.norma
 public abstract class Animation {
 
     public TimerUtil timerUtil = new TimerUtil();
-    @Setter
     protected int duration;
-    @Setter
-    @Getter
     protected double endPoint;
-    @Getter
     protected Direction direction;
 
     public Animation(int ms, double endPoint) {
@@ -41,6 +37,14 @@ public abstract class Animation {
         return 1 - ((timerUtil.getTime() / (double) duration) * endPoint);
     }
 
+    public double getEndPoint() {
+        return endPoint;
+    }
+
+    public void setEndPoint(double endPoint) {
+        this.endPoint = endPoint;
+    }
+
     public void reset() {
         timerUtil.reset();
     }
@@ -53,11 +57,19 @@ public abstract class Animation {
         setDirection(direction.opposite());
     }
 
+    public Direction getDirection() {
+        return direction;
+    }
+
     public void setDirection(Direction direction) {
         if (this.direction != direction) {
             this.direction = direction;
             timerUtil.setTime(System.currentTimeMillis() - (duration - Math.min(duration, timerUtil.getTime())));
         }
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
     }
 
     protected boolean correctOutput() {
@@ -78,6 +90,9 @@ public abstract class Animation {
         }
     }
 
+
+    //This is where the animation equation should go, for example, a logistic function. Output should range from 0 - 1.
+    //This will take the timer's time as an input, x.
     protected abstract double getEquation(double x);
 
 }

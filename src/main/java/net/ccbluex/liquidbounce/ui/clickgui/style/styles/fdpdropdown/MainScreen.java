@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.norma
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.normal.Screen;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.render.StencilUtil;
-import net.ccbluex.liquidbounce.ui.font.Fonts;
+import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.minecraft.client.gui.ScaledResolution;
 import java.awt.*;
@@ -64,6 +64,7 @@ public class MainScreen implements Screen {
             moduleRects.forEach(moduleRect -> moduleRect.keyTyped(typedChar, keyCode));
         }
     }
+
     @Override
     public void drawScreen(int mouseX, int mouseY) {
         float animClamp = (float) Math.max(0, Math.min(255, 255 * animation.getOutput()));
@@ -75,9 +76,8 @@ public class MainScreen implements Screen {
         float x = category.getDrag().getX(), y = category.getDrag().getY();
         DrRenderUtils.drawRect2(x, y, rectWidth, categoryRectHeight, categoryRectColor);
         DrRenderUtils.setAlphaLimit(0);
-        Fonts.font32.drawString(category.name(), x + 5, y + Fonts.font32.getMiddleOfBox(categoryRectHeight), textColor);
+        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(category.name(), x + 5, y + Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.getMiddleOfBox(categoryRectHeight), textColor);
 
-       // String icon = category.icon;
         String l = "";
         if (category.name().equalsIgnoreCase("Combat")) {
             l = "D";
@@ -93,15 +93,18 @@ public class MainScreen implements Screen {
             l = "F";
         }
 
+
         DrRenderUtils.setAlphaLimit(0);
         DrRenderUtils.resetColor();
-        Fonts.ICONFONT_50.drawString(l, x + rectWidth  - (Fonts.ICONFONT_50.stringWidthINT(l) + 5),
-                y + Fonts.ICONFONT_50.getMiddleOfBox(categoryRectHeight), textColor);
+        Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.drawString(l, x + rectWidth - (Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.stringWidth(l) + 5),
+                y + Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.getMiddleOfBox(categoryRectHeight), textColor);
 
         if (category.name().equalsIgnoreCase("Client")){
-            Fonts.fontCheck42.drawString("b", x + rectWidth - (Fonts.fontCheck42.stringWidthINT("b") + 5),
-                    y + Fonts.ICONFONT_50.getMiddleOfBox(categoryRectHeight), textColor);
+            Fonts.CheckFont.CheckFont_20.CheckFont_20.drawString("b", x + rectWidth - (Fonts.CheckFont.CheckFont_20.CheckFont_20.stringWidth("b") + 5),
+                    y + Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.getMiddleOfBox(categoryRectHeight), textColor);
         }
+
+        //     ClickGuiMod clickGUIMod = (ClickGuiMod) Tenacity.INSTANCE.getModuleCollection().get(ClickGuiMod.class);
 
         if (ClickGUIModule.INSTANCE.getScrollMode().get().equals("Value")) {
             Main.allowedClickGuiHeight =  ClickGUIModule.INSTANCE.getClickHeight().get().floatValue();
@@ -112,9 +115,11 @@ public class MainScreen implements Screen {
 
         float allowedHeight = Main.allowedClickGuiHeight;
 
+
         boolean hoveringMods = DrRenderUtils.isHovering(x, y + categoryRectHeight, rectWidth, allowedHeight, mouseX, mouseY);
 
-        Math.max(1, (float) openingAnimation.getOutput() + .7f);
+
+        float scaleAnim = Math.max(1, (float) openingAnimation.getOutput() + .7f);
         float width = rectWidth;
 
         StencilUtil.initStencilToWrite();
@@ -137,6 +142,7 @@ public class MainScreen implements Screen {
             moduleRect.width = rectWidth;
             moduleRect.drawScreen(mouseX, mouseY);
 
+            // count ups by one but then accounts for setting animation opening
             count += 1 + (moduleRect.getSettingSize());
         }
 

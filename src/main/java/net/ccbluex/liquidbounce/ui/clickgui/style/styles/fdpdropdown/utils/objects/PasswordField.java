@@ -6,9 +6,7 @@
 package net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.objects;
 
 import com.google.common.base.Predicate;
-import lombok.Getter;
-import lombok.Setter;
-import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
+import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiPageButtonList;
 import net.minecraft.client.gui.GuiScreen;
@@ -21,10 +19,9 @@ import net.minecraft.util.MathHelper;
 
 public class PasswordField extends Gui {
 
-    @Getter
     private final int id;
     private final int height;
-    private final GameFontRenderer fontRenderer;
+    private final FontRenderer fontRenderer;
     /**
      * The width of this text field.
      */
@@ -38,20 +35,15 @@ public class PasswordField extends Gui {
     public double placeHolderTextX;
     /**
      * Has the current text being edited on the textbox.
-     * -- GETTER --
-     *  Returns the contents of the textbox
-
      */
-    @Getter
     private String text = "";
-    /**
-     * -- GETTER --
-     *  returns the maximum number of character that can be contained in this textbox
-     */
-    @Getter
     private int maxStringLength = 32;
     private int cursorCounter;
-    private final boolean enableBackgroundDrawing = true;
+    private boolean enableBackgroundDrawing = true;
+    /**
+     * if true the textbox can lose focus by clicking elsewhere on the screen
+     */
+    private boolean canLoseFocus = true;
     /**
      * If this value is true along with isEnabled, keyTyped will process the keys.
      */
@@ -64,27 +56,21 @@ public class PasswordField extends Gui {
      * The current character index that should be used as start of the rendered text.
      */
     private int lineScrollOffset;
-    /**
-     * -- GETTER --
-     *  returns the current position of the cursor
-     */
-    @Getter
     private int cursorPosition;
     /**
      * other selection position, maybe the same as the cursor
-     * -- GETTER --
-     *  the side of the selection that is not the cursor, may be the same as the cursor
-
      */
-    @Getter
     private int selectionEnd;
-
-    @Setter
+    private int enabledColor = 14737632;
+    private int disabledColor = 7368816;
+    /**
+     * True if this textbox is visible
+     */
     private boolean visible = true;
     private GuiPageButtonList.GuiResponder field_175210_x;
-    private final Predicate<String> field_175209_y = s -> true;
+    private Predicate<String> field_175209_y = s -> true;
 
-    public PasswordField(String placeholder, int componentId, int x, int y, int par5Width, int par6Height, GameFontRenderer fr) {
+    public PasswordField(String placeholder, int componentId, int x, int y, int par5Width, int par6Height, FontRenderer fr) {
         this.placeholder = placeholder;
         this.id = componentId;
         this.xPosition = x;
@@ -94,6 +80,38 @@ public class PasswordField extends Gui {
         this.fontRenderer = fr;
         placeHolderTextX = (xPosition + width) / 2f;
     }
+
+    public PasswordField(String placeholder, int componentId, int x, int y, int par5Width, int par6Height, FontRenderer fr, int textColor) {
+        this.placeholder = placeholder;
+        this.id = componentId;
+        this.xPosition = x;
+        this.yPosition = y;
+        this.width = par5Width;
+        this.height = par6Height;
+        this.fontRenderer = fr;
+        this.textColor = textColor;
+        placeHolderTextX = (xPosition + width) / 2f;
+
+    }
+
+    public void func_175207_a(GuiPageButtonList.GuiResponder p_175207_1_) {
+        this.field_175210_x = p_175207_1_;
+    }
+
+    /**
+     * Increments the cursor counter
+     */
+    public void updateCursorCounter() {
+        ++this.cursorCounter;
+    }
+
+    /**
+     * Returns the contents of the textbox
+     */
+    public String getText() {
+        return this.text;
+    }
+
     /**
      * Sets the text of the textbox
      */
@@ -118,6 +136,10 @@ public class PasswordField extends Gui {
         return this.text.substring(i, j);
     }
 
+    public void func_175205_a(Predicate<String> p_175205_1_) {
+        this.field_175209_y = p_175205_1_;
+    }
+
     /**
      * replaces selected text, or inserts text at the position on the cursor
      */
@@ -129,7 +151,7 @@ public class PasswordField extends Gui {
         int k = this.maxStringLength - this.text.length() - (i - j);
         int l;
 
-        if (!this.text.isEmpty()) {
+        if (this.text.length() > 0) {
             s = s + this.text.substring(0, i);
         }
 
@@ -141,7 +163,7 @@ public class PasswordField extends Gui {
             l = s1.length();
         }
 
-        if (!this.text.isEmpty() && j < this.text.length()) {
+        if (this.text.length() > 0 && j < this.text.length()) {
             s = s + this.text.substring(j);
         }
 
@@ -160,7 +182,7 @@ public class PasswordField extends Gui {
      * the cursor.
      */
     public void deleteWords(int p_146177_1_) {
-        if (!this.text.isEmpty()) {
+        if (this.text.length() != 0) {
             if (this.selectionEnd != this.cursorPosition) {
                 this.writeText("");
             } else {
@@ -173,11 +195,15 @@ public class PasswordField extends Gui {
         drawTextBox(text, false);
     }
 
+    public void drawPasswordBox() {
+        drawTextBox(text, true);
+    }
+
     /**
      * delete the selected text, otherwsie deletes characters from either side of the cursor. params: delete num
      */
     public void deleteFromCursor(int p_146175_1_) {
-        if (!this.text.isEmpty()) {
+        if (this.text.length() != 0) {
             if (this.selectionEnd != this.cursorPosition) {
                 this.writeText("");
             } else {
@@ -207,6 +233,10 @@ public class PasswordField extends Gui {
                 }
             }
         }
+    }
+
+    public int getId() {
+        return this.id;
     }
 
     /**
@@ -278,18 +308,22 @@ public class PasswordField extends Gui {
     /**
      * Call this method from your GuiScreen to process the keys into the textbox
      */
-    public void textboxKeyTyped(char p_146201_1_, int p_146201_2_) {
+    public boolean textboxKeyTyped(char p_146201_1_, int p_146201_2_) {
         if (!this.isFocused) {
+            return false;
         } else if (GuiScreen.isKeyComboCtrlA(p_146201_2_)) {
             this.setCursorPositionEnd();
             this.setSelectionPos(0);
+            return true;
         } else if (GuiScreen.isKeyComboCtrlC(p_146201_2_)) {
             GuiScreen.setClipboardString(this.getSelectedText());
+            return true;
         } else if (GuiScreen.isKeyComboCtrlV(p_146201_2_)) {
             if (this.isEnabled) {
                 this.writeText(GuiScreen.getClipboardString());
             }
 
+            return true;
         } else if (GuiScreen.isKeyComboCtrlX(p_146201_2_)) {
             GuiScreen.setClipboardString(this.getSelectedText());
 
@@ -297,6 +331,7 @@ public class PasswordField extends Gui {
                 this.writeText("");
             }
 
+            return true;
         } else {
             switch (p_146201_2_) {
                 case 14:
@@ -308,7 +343,7 @@ public class PasswordField extends Gui {
                         this.deleteFromCursor(-1);
                     }
 
-                    return;
+                    return true;
 
                 case 199:
                     if (GuiScreen.isShiftKeyDown()) {
@@ -317,7 +352,7 @@ public class PasswordField extends Gui {
                         this.setCursorPositionZero();
                     }
 
-                    return;
+                    return true;
 
                 case 203:
                     if (GuiScreen.isShiftKeyDown()) {
@@ -332,7 +367,7 @@ public class PasswordField extends Gui {
                         this.moveCursorBy(-1);
                     }
 
-                    return;
+                    return true;
 
                 case 205:
                     if (GuiScreen.isShiftKeyDown()) {
@@ -347,7 +382,7 @@ public class PasswordField extends Gui {
                         this.moveCursorBy(1);
                     }
 
-                    return;
+                    return true;
 
                 case 207:
                     if (GuiScreen.isShiftKeyDown()) {
@@ -356,7 +391,7 @@ public class PasswordField extends Gui {
                         this.setCursorPositionEnd();
                     }
 
-                    return;
+                    return true;
 
                 case 211:
                     if (GuiScreen.isCtrlKeyDown()) {
@@ -367,7 +402,7 @@ public class PasswordField extends Gui {
                         this.deleteFromCursor(1);
                     }
 
-                    return;
+                    return true;
 
                 default:
                     if (ChatAllowedCharacters.isAllowedCharacter(p_146201_1_)) {
@@ -375,8 +410,9 @@ public class PasswordField extends Gui {
                             this.writeText(Character.toString(p_146201_1_));
                         }
 
+                        return true;
                     } else {
-
+                        return false;
                     }
             }
         }
@@ -388,7 +424,9 @@ public class PasswordField extends Gui {
     public void mouseClicked(int p_146192_1_, int p_146192_2_, int p_146192_3_) {
         boolean flag = p_146192_1_ >= this.xPosition && p_146192_1_ < this.xPosition + this.width && p_146192_2_ >= this.yPosition && p_146192_2_ < this.yPosition + this.height;
 
-        this.setFocused(flag);
+        if (this.canLoseFocus) {
+            this.setFocused(flag);
+        }
 
         if (this.isFocused && flag && p_146192_3_ == 0) {
             int i = p_146192_1_ - this.xPosition;
@@ -407,7 +445,7 @@ public class PasswordField extends Gui {
      */
     public void drawTextBox(String text, boolean password) {
         if (password)
-            text = text.replaceAll("\\.", "*");
+            text = text.replaceAll(".", "*");
 
         if (this.getVisible()) {
             if (this.getEnableBackgroundDrawing()) {
@@ -434,9 +472,9 @@ public class PasswordField extends Gui {
                 k = s.length();
             }
 
-            if (!s.isEmpty()) {
+            if (s.length() > 0) {
                 String s1 = flag ? s.substring(0, j) : s;
-                j1 = fontRenderer.drawString(s1, (float) l, (float) i1, i);
+                j1 = (int) fontRenderer.drawString(s1, (float) l, (float) i1, i);
             }
 
             boolean flag2 = this.cursorPosition < text.length() || text.length() >= this.getMaxStringLength();
@@ -449,9 +487,9 @@ public class PasswordField extends Gui {
                 --j1;
             }
 
-            if (!s.isEmpty() && flag && j < s.length()) {
+            if (s.length() > 0 && flag && j < s.length()) {
                 GlStateManager.color(1, 1, 1, 1);
-                j1 = fontRenderer.drawString(s.substring(j), (float) j1 + 6, (float) i1, i);
+                j1 = (int) fontRenderer.drawString(s.substring(j), (float) j1 + 6, (float) i1, i);
             }
 
             if (flag1) {
@@ -464,10 +502,9 @@ public class PasswordField extends Gui {
             }
 
             if (k != j) {
-                int l1 = l + fontRenderer.stringWidthINT(s.substring(0, k));
+                int l1 = (int) (l + fontRenderer.stringWidth(s.substring(0, k)));
                 this.drawCursorVertical(k1, i1 - 1, l1 - 1, i1 + 1 + fontRenderer.getHeight());
             }
-
 
             GlStateManager.color(1, 1, 1, 1);
         }
@@ -514,6 +551,29 @@ public class PasswordField extends Gui {
     }
 
     /**
+     * returns the maximum number of character that can be contained in this textbox
+     */
+    public int getMaxStringLength() {
+        return this.maxStringLength;
+    }
+
+    public void setMaxStringLength(int p_146203_1_) {
+        this.maxStringLength = p_146203_1_;
+
+        if (this.text.length() > p_146203_1_) {
+            this.text = this.text.substring(0, p_146203_1_);
+        }
+    }
+
+
+    /**
+     * returns the current position of the cursor
+     */
+    public int getCursorPosition() {
+        return this.cursorPosition;
+    }
+
+    /**
      * sets the position of the cursor to the provided index
      */
     public void setCursorPosition(int p_146190_1_) {
@@ -531,9 +591,21 @@ public class PasswordField extends Gui {
     }
 
     /**
+     * enable drawing background and outline
+     */
+    public void setEnableBackgroundDrawing(boolean p_146185_1_) {
+        this.enableBackgroundDrawing = p_146185_1_;
+    }
+
+    /**
      * Sets the text colour for this textbox (disabled text will not use this colour)
      */
     public void setTextColor(int p_146193_1_) {
+        this.enabledColor = p_146193_1_;
+    }
+
+    public void setDisabledTextColour(int p_146204_1_) {
+        this.disabledColor = p_146204_1_;
     }
 
     /**
@@ -556,6 +628,13 @@ public class PasswordField extends Gui {
 
     public void setEnabled(boolean p_146184_1_) {
         this.isEnabled = p_146184_1_;
+    }
+
+    /**
+     * the side of the selection that is not the cursor, may be the same as the cursor
+     */
+    public int getSelectionEnd() {
+        return this.selectionEnd;
     }
 
     /**
@@ -605,10 +684,23 @@ public class PasswordField extends Gui {
     }
 
     /**
+     * if true the textbox can lose focus by clicking elsewhere on the screen
+     */
+    public void setCanLoseFocus(boolean p_146205_1_) {
+        this.canLoseFocus = p_146205_1_;
+    }
+
+    /**
      * returns true if this textbox is visible
      */
     public boolean getVisible() {
         return this.visible;
     }
 
+    /**
+     * Sets whether or not this textbox is visible
+     */
+    public void setVisible(boolean p_146189_1_) {
+        this.visible = p_146189_1_;
+    }
 }

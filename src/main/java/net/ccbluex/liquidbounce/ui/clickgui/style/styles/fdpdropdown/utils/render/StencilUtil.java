@@ -15,6 +15,10 @@ import static org.lwjgl.opengl.GL11.*;
 public class StencilUtil {
     static Minecraft mc = Minecraft.getMinecraft();
 
+    /*
+     * Given to me by igs
+     *                    */
+
     public static void checkSetupFBO(Framebuffer framebuffer) {
         if (framebuffer != null) {
             if (framebuffer.depthBuffer > -1) {
@@ -25,6 +29,7 @@ public class StencilUtil {
     }
 
     /**
+     * @param framebuffer
      * @implNote Sets up the Framebuffer for Stencil use
      */
 

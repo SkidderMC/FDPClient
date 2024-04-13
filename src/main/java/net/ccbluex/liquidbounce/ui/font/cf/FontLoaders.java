@@ -20,8 +20,8 @@ public abstract class FontLoaders {
     public static final CFontRenderer C12 = new CFontRenderer(FontLoaders.getComfortaa(12), true, true);
     public static final CFontRenderer C16 = new CFontRenderer(FontLoaders.getComfortaa(16), true, true);
     public static final CFontRenderer C18 = new CFontRenderer(FontLoaders.getComfortaa(18), true, true);
-    public static final CFontRenderer R12 = new CFontRenderer(FontLoaders.getRoboto(), true, true);
-    public static final CFontRenderer R15 = new CFontRenderer(FontLoaders.getRoboto(), true, true);
+    public static final CFontRenderer R12 = new CFontRenderer(FontLoaders.getRoboto(12), true, true);
+    public static final CFontRenderer R15 = new CFontRenderer(FontLoaders.getRoboto(15), true, true);
     public static Font getFont(int size) {
         Font font;
         try {
@@ -49,17 +49,17 @@ public abstract class FontLoaders {
         return font;
     }
 
-    private static Font getRoboto() {
+    private static Font getRoboto(int size) {
         Font font;
         try {
             InputStream is = MinecraftInstance.mc.getResourceManager()
                     .getResource(new ResourceLocation("fdpclient/font/roboto-regular.ttf")).getInputStream();
             font = Font.createFont(0, is);
-            font = font.deriveFont(Font.PLAIN, 12);
+            font = font.deriveFont(Font.PLAIN, size);
         } catch (Exception ex) {
             ex.printStackTrace();
             System.out.println("Error loading font");
-            font = new Font("default", Font.PLAIN, 12);
+            font = new Font("default", Font.PLAIN, size);
         }
         return font;
     }
