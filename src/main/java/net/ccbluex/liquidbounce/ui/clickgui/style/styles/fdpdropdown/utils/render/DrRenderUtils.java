@@ -20,7 +20,21 @@ import java.awt.*;
 import static org.lwjgl.opengl.GL11.*;
 
 public class DrRenderUtils implements Utils {
-
+    /**
+     * Draws a textured rectangle at z = 0. Args: x, y, u, v, width, height, textureWidth, textureHeight
+     */
+    public static void drawModalRectWithCustomSizedTexture(float x, float y, float u, float v, float width, float height, float textureWidth, float textureHeight) {
+        float f = 1.0F / textureWidth;
+        float f1 = 1.0F / textureHeight;
+        Tessellator tessellator = Tessellator.getInstance();
+        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
+        worldrenderer.pos((double) x, (double) (y + height), 0.0D).tex((double) (u * f), (double) ((v + (float) height) * f1)).endVertex();
+        worldrenderer.pos((double) (x + width), (double) (y + height), 0.0D).tex((double) ((u + (float) width) * f), (double) ((v + (float) height) * f1)).endVertex();
+        worldrenderer.pos((double) (x + width), (double) y, 0.0D).tex((double) ((u + (float) width) * f), (double) (v * f1)).endVertex();
+        worldrenderer.pos((double) x, (double) y, 0.0D).tex((double) (u * f), (double) (v * f1)).endVertex();
+        tessellator.draw();
+    }
     public static void drawGradientRect2(double x, double y, double width, double height, int startColor, int endColor) {
         drawGradientRect(x, y, x + width, y + height, startColor, endColor);
     }
@@ -119,6 +133,17 @@ public class DrRenderUtils implements Utils {
         return interpolateColorC(cColor1, cColor2, amount).getRGB();
     }
 
+    // Bad rounded rect method but the shader one requires scaling that sucks
+    public static void renderRoundedRect(float x, float y, float width, float height, float radius, int color) {
+        drawGoodCircle(x + radius, y + radius, radius, color);
+        drawGoodCircle(x + width - radius, y + radius, radius, color);
+        drawGoodCircle(x + radius, y + height - radius, radius, color);
+        drawGoodCircle(x + width - radius, y + height - radius, radius, color);
+
+        drawRect2(x + radius, y, width - radius * 2, height, color);
+        drawRect2(x, y + radius, width, height - radius * 2, color);
+    }
+
     public static Color darker(Color color, float FACTOR) {
         return new Color(Math.max((int) (color.getRed() * FACTOR), 0),
                 Math.max((int) (color.getGreen() * FACTOR), 0),
@@ -172,6 +197,7 @@ public class DrRenderUtils implements Utils {
         Color old = new Color(color);
         return applyOpacity(old, opacity).getRGB();
     }
+    // TODO: Replace this with a shader as GL_POINTS is not consistent with gui scales
     public static void drawGoodCircle(double x, double y, float radius, int color) {
         color(color);
         GLUtil.setup2DRendering(() -> {
@@ -211,7 +237,7 @@ public class DrRenderUtils implements Utils {
         glShadeModel(GL_FLAT);
         setAlphaLimit(1);
     }
-    
+
     public static Color brighter(Color color, float FACTOR) {
         int r = color.getRed();
         int g = color.getGreen();
@@ -280,4 +306,3 @@ public class DrRenderUtils implements Utils {
         color(color, (float) (color >> 24 & 255) / 255.0F);
     }
 }
-

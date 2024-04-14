@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.BlockAir
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
@@ -22,6 +23,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.stats.StatList
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.Timer
 import kotlin.math.floor
 
 class VerusFlys : FlyMode("Verus") {
@@ -53,6 +55,14 @@ class VerusFlys : FlyMode("Verus") {
     private var jumped = false
     private var waitTicks = 0
 
+    // Optimize code
+    val player: EntityPlayerSP
+        get() = mc.thePlayer
+    val settings: GameSettings
+        get() = mc.gameSettings
+
+    
+    
 
 
     override fun onEnable() {
@@ -61,7 +71,7 @@ class VerusFlys : FlyMode("Verus") {
         ticks = 0
         justEnabled = true
         if (flys.equals("Custom")) {
-            if (!mc.thePlayer.onGround && onlyOnGround.get()) return
+            if (!player.onGround && onlyOnGround.get()) return
             waitTicks = 0
         }
 
@@ -74,15 +84,15 @@ class VerusFlys : FlyMode("Verus") {
         when (flys.get()) {
             "Jump" -> {
                 if (boostValue.get()) {
-                    mc.gameSettings.keyBindJump.pressed = false
+                    settings.keyBindJump.pressed = false
                     if (times < 5 && !moveBeforeDamage.get()) {
                         MovementUtils.strafe(0f)
                     }
-                    if (mc.thePlayer.onGround && times < 5) {
+                    if (player.onGround && times < 5) {
                         times++
                         timer.reset()
                         if (times <5) {
-                            mc.thePlayer.jump()
+                            player.jump()
                             MovementUtils.strafe(0.48F)
                         }
                     }
@@ -95,10 +105,10 @@ class VerusFlys : FlyMode("Verus") {
                         }
                     }
                 } else {
-                    mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
-                    if (mc.thePlayer.onGround && MovementUtils.isMoving()) {
-                        mc.gameSettings.keyBindJump.pressed = false
-                        mc.thePlayer.jump()
+                    settings.keyBindJump.pressed = GameSettings.isKeyDown(settings.keyBindJump)
+                    if (player.onGround && MovementUtils.isMoving()) {
+                        settings.keyBindJump.pressed = false
+                        player.jump()
                         MovementUtils.strafe(0.48F)
                     } else if(airStrafeValue.get()) {
                         MovementUtils.strafe()
@@ -107,10 +117,10 @@ class VerusFlys : FlyMode("Verus") {
             }
             "Basic" -> {
                 if (verusMode.get() === "Packet1") {
-                    if(mc.thePlayer.motionY < 0.4) {
-                        mc.thePlayer.motionY = 0.0
+                    if(player.motionY < 0.4) {
+                        player.motionY = 0.0
                     }
-                    mc.thePlayer.onGround = true
+                    player.onGround = true
                 }
             }
         }
@@ -141,22 +151,22 @@ class VerusFlys : FlyMode("Verus") {
     override fun onMove(event: MoveEvent) {
         when (flys.get()) {
             "Collide" -> {
-                mc.gameSettings.keyBindJump.pressed = false
-                mc.gameSettings.keyBindSneak.pressed = false
-                if (ticks % 14 == 0 && mc.thePlayer.onGround) {
+                settings.keyBindJump.pressed = false
+                settings.keyBindSneak.pressed = false
+                if (ticks % 14 == 0 && player.onGround) {
                     justEnabled = false
                     MovementUtils.strafe(0.69f)
                     event.y = 0.42
                     ticks = 0
-                    mc.thePlayer.motionY = -(mc.thePlayer.posY - floor(mc.thePlayer.posY))
+                    player.motionY = -(player.posY - floor(player.posY))
                 } else {
-                    if (GameSettings.isKeyDown(mc.gameSettings.keyBindJump) && ticks % 2 == 1) {
-                        if (mc.thePlayer.ticksExisted % 2 == 0) {
-                            mc.thePlayer.motionY = 0.42
+                    if (GameSettings.isKeyDown(settings.keyBindJump) && ticks % 2 == 1) {
+                        if (player.ticksExisted % 2 == 0) {
+                            player.motionY = 0.42
                             MovementUtils.strafe(0.3f)
                         }
                     }
-                    if (mc.thePlayer.onGround) {
+                    if (player.onGround) {
                         if (!justEnabled) {
                             MovementUtils.strafe(1.01f)
                         }
@@ -168,13 +178,13 @@ class VerusFlys : FlyMode("Verus") {
             }
             "Basic" -> {
                 if (verusMode.get() === "Packet2") {
-                    val pos = mc.thePlayer.position.add(0.0, -1.5, 0.0)
+                    val pos = player.position.add(0.0, -1.5, 0.0)
                     PacketUtils.sendPacketNoEvent(
                         C08PacketPlayerBlockPlacement(pos, 1,
                             ItemStack(Blocks.stone.getItem(mc.theWorld, pos)), 0.0F, 0.5F + Math.random().toFloat() * 0.44.toFloat(), 0.0F)
                     )
-                    if(mc.thePlayer.onGround && !jumped) {
-                        mc.thePlayer.jump()
+                    if(player.onGround && !jumped) {
+                        player.jump()
                         event.y = 0.42
                         jumped = true
                     }else {
@@ -185,13 +195,13 @@ class VerusFlys : FlyMode("Verus") {
             }
             "Custom" -> {
                 if (MovementUtils.isMoving()) {
-                    if (mc.thePlayer.onGround) {
+                    if (player.onGround) {
                         MovementUtils.strafe(groundSpeedValue.get())
                         waitTicks++
                         if (waitTicks >= hopDelayValue.get()) {
                             waitTicks = 0
-                            mc.thePlayer.triggerAchievement(StatList.jumpStat)
-                            mc.thePlayer.motionY = 0.0
+                            player.triggerAchievement(StatList.jumpStat)
+                            player.motionY = 0.0
                             event.y = 0.41999998688698
                         }
                     } else {

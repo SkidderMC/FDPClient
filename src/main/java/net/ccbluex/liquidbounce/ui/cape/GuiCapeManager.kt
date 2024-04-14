@@ -31,7 +31,7 @@ object GuiCapeManager : GuiScreen() {
     private val capeList = mutableListOf<ICape>()
 
     init {
-        arrayOf("classic", "classic2", "aurora", "forest", "rose", "lavender", "ocean", "modern1", "modern2", "lava", "citrus", "fire", "owner").forEach {
+        arrayOf("classic", "classic2", "aurora", "forest", "rose", "lavender", "ocean", "modern1", "modern2", "lava", "citrus", "fire", "blue", "abstract", "owner").forEach {
             try {
                 embeddedCapes.add(loadCapeFromResource(it, "assets/minecraft/fdpclient/cosmetic/cape/$it.png"))
             } catch (e: Throwable) {

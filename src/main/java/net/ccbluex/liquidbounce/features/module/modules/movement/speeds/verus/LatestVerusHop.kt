@@ -9,6 +9,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.*
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.potion.Potion
 
 class LatestVerusHop : SpeedMode ("LatestVerusHop") {
@@ -27,6 +28,10 @@ class LatestVerusHop : SpeedMode ("LatestVerusHop") {
     private val boost = BoolValue("${valuePrefix}-Damage-Boost", false)
     private val boostvalue = FloatValue("${valuePrefix}-Boost-Speed", 1f, 0.1f,9f).displayable { boost.get() }
 
+    // Optimize code
+    val player: EntityPlayerSP
+        get() = mc.thePlayer
+    
     private var ticks = 0
 
     override fun onEnable() {
@@ -34,37 +39,37 @@ class LatestVerusHop : SpeedMode ("LatestVerusHop") {
     }
 
     override fun onUpdate() {
-        if (mc.thePlayer.isPotionActive(Potion.moveSpeed) && MovementUtils.isMoving()) {
+        if (player.isPotionActive(Potion.moveSpeed) && MovementUtils.isMoving()) {
             ++ticks
-            mc.thePlayer.jumpMovementFactor = if (customSpeed.get()) { custommovementfactorPOT.get() } else { 0.02f }
-            mc.thePlayer.speedInAir = if (customSpeed.get()) { customSpeedValue.get() / 100 } else { 0.028f }
+            player.jumpMovementFactor = if (customSpeed.get()) { custommovementfactorPOT.get() } else { 0.02f }
+            player.speedInAir = if (customSpeed.get()) { customSpeedValue.get() / 100 } else { 0.028f }
             mc.gameSettings.keyBindJump.pressed = false
-            if (boost.get() && mc.thePlayer.hurtTime == 9) {
+            if (boost.get() && player.hurtTime == 9) {
                 MovementUtils.strafe(boostvalue.get())
             }
-            if (mc.thePlayer.onGround) {
-                mc.thePlayer.jump()
+            if (player.onGround) {
+                player.jump()
                 ticks = 0
-                mc.thePlayer.motionY = 0.41999998688697815
+                player.motionY = 0.41999998688697815
                 MovementUtils.strafe(if (customSpeed.get()) { customstrafe.get() } else { 0.48f })
             }
             MovementUtils.strafe()
         } else {
-            mc.thePlayer.jumpMovementFactor = if (customSpeed.get()) { custommovementfactorNOPOT.get() } else { 0.02f }
-            if (boost.get() && mc.thePlayer.hurtTime == 9) {
-                MovementUtils.strafe(boostvalue.get());
+            player.jumpMovementFactor = if (customSpeed.get()) { custommovementfactorNOPOT.get() } else { 0.02f }
+            if (boost.get() && player.hurtTime == 9) {
+                MovementUtils.strafe(boostvalue.get())
             }
-            mc.thePlayer.speedInAir = if (customSpeed.get()) { customSpeedNoValue.get() / 100 } else { 0.02f }
+            player.speedInAir = if (customSpeed.get()) { customSpeedNoValue.get() / 100 } else { 0.02f }
             mc.gameSettings.keyBindJump.pressed = false
-            if (mc.thePlayer.onGround) {
-                mc.thePlayer.jump()
-                mc.thePlayer.motionY = 0.41999998688697815
+            if (player.onGround) {
+                player.jump()
+                player.motionY = 0.41999998688697815
                 MovementUtils.strafe(if (customSpeed.get()) { customNOstrafe.get() } else { 0.48f })
             }
             MovementUtils.strafe()
         }
     }
     override fun onDisable() {
-        mc.thePlayer.speedInAir = 0.02f
+        player.speedInAir = 0.02f
     }
 }

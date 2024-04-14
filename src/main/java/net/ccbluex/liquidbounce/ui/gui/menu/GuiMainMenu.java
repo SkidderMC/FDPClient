@@ -128,7 +128,7 @@ public class GuiMainMenu extends GuiScreen implements  GuiYesNoCallback {
         GlStateManager.color(1.0F, 1.0F, 1.0F);
         mc.getTextureManager().bindTexture(logo);
         Gui.drawModalRectWithCustomSizedTexture(this.width / 2 - 25, this.height / 2 - 68, 0, 0, 49, 49, 49, 49);
-        FontLoaders.R15.drawCenteredString("by SkidderMC with love ", (float) this.width / 2 - 0.25F, this.height / 2 - 18, new Color(30, 30, 30, 70).getRGB());
+        FontLoaders.R15.drawCenteredString("by SkidderMC with love ", (float) this.width / 2 - 0.25F, (double) this.height / 2 - 18, new Color(30, 30, 30, 70).getRGB());
         FontLoaders.R15.drawCenteredString("by SkidderMC with love ", (float) this.width / 2, (float) this.height / 2 - 19, -1);
         this.btnSinglePlayer.drawButton(mouseX, mouseY);
         this.btnMultiplayer.drawButton(mouseX, mouseY);

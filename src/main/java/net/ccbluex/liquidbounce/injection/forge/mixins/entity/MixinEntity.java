@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoFluid;
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
+import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixer;
 import net.ccbluex.liquidbounce.injection.access.IWorld;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
@@ -359,12 +360,12 @@ public abstract class MixinEntity implements ICommandSender {
         final HitBox hitBoxes = Objects.requireNonNull(FDPClient.moduleManager.getModule(HitBox.class));
 
         if (hitBoxes.getState() && EntityUtils.INSTANCE.isSelected(((Entity) ((Object) this)), true)) {
-            if (ProtocolBase.getManager().getTargetVersion().newerThan(ProtocolVersion.v1_8) && !MinecraftInstance.mc.isIntegratedServerRunning()) {
+            if (ProtocolFixer.newerThan1_8()) {
                 callbackInfoReturnable.setReturnValue(hitBoxes.getSizeValue().get());
             } else {
                 callbackInfoReturnable.setReturnValue(0.1F + hitBoxes.getSizeValue().get());
             }
-        } else if (ProtocolBase.getManager().getTargetVersion().newerThan(ProtocolVersion.v1_8) && !MinecraftInstance.mc.isIntegratedServerRunning()) {
+        } else if (ProtocolFixer.newerThan1_8()) {
             callbackInfoReturnable.setReturnValue(0.0F);
         }
     }

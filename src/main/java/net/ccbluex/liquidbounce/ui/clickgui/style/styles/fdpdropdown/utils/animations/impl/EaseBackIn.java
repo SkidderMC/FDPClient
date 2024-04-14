@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.animations.impl;
 
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.animations.Animation;
+
 public class EaseBackIn extends Animation {
     private final float easeAmount;
 
@@ -13,7 +14,6 @@ public class EaseBackIn extends Animation {
         super(ms, endPoint);
         this.easeAmount = easeAmount;
     }
-
 
     @Override
     protected boolean correctOutput() {

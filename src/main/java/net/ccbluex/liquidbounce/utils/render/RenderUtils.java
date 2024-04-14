@@ -66,6 +66,11 @@ public final class RenderUtils extends MinecraftInstance {
     private static long startTime;
     private static int animationDuration = 500;
     public static int deltaTime;
+    public static void scaleStart(float x, float y, float scale) {
+        glTranslatef(x, y, 0);
+        glScalef(scale, scale, 1);
+        glTranslatef(-x, -y, 0);
+    }
 
     public static int width() {
         return new ScaledResolution(Minecraft.getMinecraft()).getScaledWidth();

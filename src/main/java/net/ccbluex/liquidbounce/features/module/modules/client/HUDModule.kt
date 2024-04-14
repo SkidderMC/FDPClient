@@ -56,7 +56,6 @@ object HUDModule : Module() {
 
     // CrossHair
     val crossHairValue = BoolValue("CrossHair", false)
-    val tpDebugValue = BoolValue("TP-Debug", false)
     val nof5crossHair = BoolValue("NoF5-CrossHair", true)
 
     // MISC

@@ -5,9 +5,6 @@
  */
 package net.ccbluex.liquidbounce.handler.protocol.api;
 
-/**
- * This interface is used to access platform specific fields.
- */
 public interface VFPlatform {
 
     /**

@@ -6,7 +6,7 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.util.EnumParticleTypes
 
 class JetpackFly : FlyMode("Jetpack") {
-    private val particleValue = BoolValue("${valuePrefix}Particle", true)
+    private val particleValue = BoolValue("${valuePrefix}-Particle", true)
     override fun onUpdate(event: UpdateEvent) {
         if (mc.gameSettings.keyBindJump.isKeyDown) {
             if(particleValue.get()) mc.effectRenderer.spawnEffectParticle(EnumParticleTypes.FLAME.particleID, mc.thePlayer.posX, mc.thePlayer.posY + 0.2, mc.thePlayer.posZ, -mc.thePlayer.motionX, -0.5, -mc.thePlayer.motionZ)

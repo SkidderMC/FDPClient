@@ -12,8 +12,11 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.utils.TransferUtils
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.util.Timer
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -26,6 +29,10 @@ class OldMatrixBoostFly : FlyMode("OldMatrixBoost") {
     private val boostTimer = FloatValue("${valuePrefix}BoostTimer", 1f, 0.5f, 3f)
     private var boostMotion = 0
 
+    // Optimize code
+    val player: EntityPlayerSP
+        get() = mc.thePlayer
+
     override fun onEnable() {
         boostMotion = 0
     }
@@ -34,24 +41,24 @@ class OldMatrixBoostFly : FlyMode("OldMatrixBoost") {
 
     override fun onUpdate(event: UpdateEvent) {
         if (boostMotion == 0) {
-            val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
+            val yaw = Math.toRadians(player.rotationYaw.toDouble())
             mc.netHandler.addToSendQueue(
                 C03PacketPlayer.C04PacketPlayerPosition(
-                    mc.thePlayer.posX,
-                    mc.thePlayer.posY,
-                    mc.thePlayer.posZ,
+                    player.posX,
+                    player.posY,
+                    player.posZ,
                     true
                 )
             )
             if (bypassMode.equals("Test")) {
                 MovementUtils.strafe(5f)
-                mc.thePlayer.motionY = 2.0
+                player.motionY = 2.0
             } else {
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX + -sin(yaw) * 1.5,
-                        mc.thePlayer.posY + 1,
-                        mc.thePlayer.posZ + cos(yaw) * 1.5,
+                        player.posX + -sin(yaw) * 1.5,
+                        player.posY + 1,
+                        player.posZ + cos(yaw) * 1.5,
                         false
                     )
                 )
@@ -60,26 +67,26 @@ class OldMatrixBoostFly : FlyMode("OldMatrixBoost") {
             mc.timer.timerSpeed = jumpTimer.get()
         } else if (boostMotion == 1 && bypassMode.equals("Test")) {
             MovementUtils.strafe(1.89f)
-            mc.thePlayer.motionY = 2.0
+            player.motionY = 2.0
         } else if (boostMotion == 2) {
             MovementUtils.strafe(speed.get())
             when (bypassMode.get().lowercase()) {
-                "stable" -> mc.thePlayer.motionY = 0.8
-                "new" -> mc.thePlayer.motionY = 0.48
+                "stable" -> player.motionY = 0.8
+                "new" -> player.motionY = 0.48
                 "test" -> {
-                    val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
-                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(mc.thePlayer.posX + -sin(yaw) * 2,mc.thePlayer.posY + 2.0,mc.thePlayer.posZ + cos(yaw) * 2,true))
-                    mc.thePlayer.motionY = 2.0
+                    val yaw = Math.toRadians(player.rotationYaw.toDouble())
+                    mc.netHandler.addToSendQueue(C03PacketPlayer.C04PacketPlayerPosition(player.posX + -sin(yaw) * 2,player.posY + 2.0,player.posZ + cos(yaw) * 2,true))
+                    player.motionY = 2.0
                     MovementUtils.strafe(1.89f)
                 }
-                "custom" -> mc.thePlayer.motionY = customYMotion.get().toDouble()
+                "custom" -> player.motionY = customYMotion.get().toDouble()
             }
             boostMotion = 3
         } else if (boostMotion < 5) {
             boostMotion++
         } else if (boostMotion >= 5) {
             mc.timer.timerSpeed = boostTimer.get()
-            if (mc.thePlayer.posY < fly.launchY - 1.0) {
+            if (player.posY < fly.launchY - 1.0) {
                 boostMotion = 0
             }
         }

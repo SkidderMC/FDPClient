@@ -295,6 +295,7 @@ object AntiVoid : Module() {
                     enabled = false
                     BlinkUtils.setBlinkState(off = true, release = true)
                     mc.thePlayer.setPosition(posX, posY, posZ)
+                    MovementUtils.resetMotion(true)
                 }
             }
             "blink" -> {

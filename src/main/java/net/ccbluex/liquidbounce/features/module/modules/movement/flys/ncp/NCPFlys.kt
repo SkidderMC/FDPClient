@@ -12,11 +12,14 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.util.Timer
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -36,6 +39,11 @@ class NCPFlys : FlyMode("NCP") {
     private var cancelTp = true
     private var wasOnGround = false
 
+    // Optimize code
+    val player: EntityPlayerSP
+        get() = mc.thePlayer
+
+
     override fun onEnable() {
         if (!flys.equals("Latest")) { sendLegacy() }
 
@@ -43,7 +51,7 @@ class NCPFlys : FlyMode("NCP") {
             "Latest" -> {
                 cancelTp = true
                 if (verusBypass.get()) {
-                    val pos = mc.thePlayer.position.add(0.0, -1.5, 0.0)
+                    val pos = player.position.add(0.0, -1.5, 0.0)
                     mc.netHandler.addToSendQueue(
                         C08PacketPlayerBlockPlacement(pos, 1,
                             ItemStack(Blocks.stone.getItem(mc.theWorld, pos)), 0.0F, 0.5F + Math.random().toFloat() * 0.44.toFloat(), 0.0F)
@@ -51,25 +59,25 @@ class NCPFlys : FlyMode("NCP") {
                 }
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.motionY,
-                        mc.thePlayer.motionZ,
+                        player.posX,
+                        player.motionY,
+                        player.motionZ,
                         false
                     )
                 )
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.motionY - 0.1,
-                        mc.thePlayer.motionZ,
+                        player.posX,
+                        player.motionY - 0.1,
+                        player.motionZ,
                         false
                     )
                 )
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX,
-                        mc.thePlayer.motionY,
-                        mc.thePlayer.motionZ,
+                        player.posX,
+                        player.motionY,
+                        player.motionZ,
                         false
                     )
                 )
@@ -90,9 +98,9 @@ class NCPFlys : FlyMode("NCP") {
                 mc.timer.timerSpeed = 0.4f
                 MovementUtils.strafe()
 
-                if (mc.thePlayer.onGround) {
+                if (player.onGround) {
                     wasOnGround = true
-                    mc.thePlayer.motionY = 0.42
+                    player.motionY = 0.42
                     MovementUtils.strafe(10f)
                 } else if (wasOnGround) {
                     MovementUtils.strafe(9.6f)
@@ -100,29 +108,29 @@ class NCPFlys : FlyMode("NCP") {
                 }
             }
             "Packet" -> {
-                val yaw = Math.toRadians(mc.thePlayer.rotationYaw.toDouble())
+                val yaw = Math.toRadians(player.rotationYaw.toDouble())
                 val x = -sin(yaw) * speedValue.get()
                 val z = cos(yaw) * speedValue.get()
                 MovementUtils.resetMotion(true)
                 mc.timer.timerSpeed = timerValue.get()
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX + x,
-                        mc.thePlayer.motionY,
-                        mc.thePlayer.motionZ + z,
+                        player.posX + x,
+                        player.motionY,
+                        player.motionZ + z,
                         false
                     )
                 )
                 mc.netHandler.addToSendQueue(
                     C03PacketPlayer.C04PacketPlayerPosition(
-                        mc.thePlayer.posX + x,
-                        mc.thePlayer.motionY - 490,
-                        mc.thePlayer.motionZ + z,
+                        player.posX + x,
+                        player.motionY - 490,
+                        player.motionZ + z,
                         true
                     )
                 )
-                mc.thePlayer.posX += x
-                mc.thePlayer.posZ += z
+                player.posX += x
+                player.posZ += z
             }
         }
     }

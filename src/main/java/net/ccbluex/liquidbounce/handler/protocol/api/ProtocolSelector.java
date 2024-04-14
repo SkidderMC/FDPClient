@@ -6,13 +6,12 @@
 package net.ccbluex.liquidbounce.handler.protocol.api;
 
 import com.mojang.realmsclient.gui.ChatFormatting;
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiSlot;
-import net.raphimc.vialoader.util.ProtocolVersionList;
+import net.raphimc.vialoader.util.VersionEnum;
 import org.lwjgl.input.Keyboard;
 
 import java.io.IOException;
@@ -38,7 +37,7 @@ public class ProtocolSelector extends GuiScreen {
     @Override
     public void initGui() {
         super.initGui();
-        buttonList.add(new GuiButton(1, 5, height - 25, 20, 20, "<-"));
+        buttonList.add(new GuiButton(1, 5, height - 25, 60, 20, "Done"));
 
         list = new SlotList(mc, width, height, -26 + (fontRendererObj.FONT_HEIGHT) * 3 /* title is 2 */, height, fontRendererObj.FONT_HEIGHT);
     }
@@ -68,7 +67,6 @@ public class ProtocolSelector extends GuiScreen {
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
         list.drawScreen(mouseX, mouseY, partialTicks);
-
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
 
@@ -80,12 +78,12 @@ public class ProtocolSelector extends GuiScreen {
 
         @Override
         protected int getSize() {
-            return ProtocolVersionList.getProtocolsNewToOld().size();
+            return ProtocolBase.versions.size();
         }
 
         @Override
         protected void elementClicked(int index, boolean b, int i1, int i2) {
-            finishedCallback.finished(ProtocolVersionList.getProtocolsNewToOld().get(index), parent);
+            finishedCallback.finished(ProtocolBase.versions.get(index), parent);
         }
 
         @Override
@@ -100,8 +98,8 @@ public class ProtocolSelector extends GuiScreen {
 
         @Override
         protected void drawSlot(int index, int x, int y, int slotHeight, int mouseX, int mouseY) {
-            final ProtocolVersion targetVersion = ProtocolBase.getManager().getTargetVersion();
-            final ProtocolVersion version = ProtocolVersionList.getProtocolsNewToOld().get(index);
+            final VersionEnum targetVersion = ProtocolBase.getManager().getTargetVersion();
+            final VersionEnum version = ProtocolBase.versions.get(index);
 
             String color;
             if (targetVersion == version) {
@@ -116,7 +114,7 @@ public class ProtocolSelector extends GuiScreen {
 
     public interface FinishedCallback {
 
-        void finished(final ProtocolVersion version, final GuiScreen parent);
+        void finished(final VersionEnum version, final GuiScreen parent);
 
     }
 

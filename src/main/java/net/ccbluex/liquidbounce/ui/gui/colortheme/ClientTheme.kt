@@ -17,7 +17,7 @@ import java.awt.Color
 object ClientTheme {
     val ClientColorMode = ListValue(
         "ColorMode",
-        arrayOf("Zywl", "FDP", "Magic", "DarkNight", "Sun", "Tree", "Flower", "Loyoi", "Soniga", "May", "Mint", "Cero", "Azure", "Rainbow", "Astolfo", "Pumpkin", "Polarized", "Sundae", "Terminal", "Coral"),
+        arrayOf("Zywl", "FDP", "Magic", "DarkNight", "Sun", "Tree", "Flower", "Loyoi", "Soniga", "May", "Mint", "Cero", "Azure", "Rainbow", "Astolfo", "Pumpkin", "Polarized", "Sundae", "Terminal", "Coral", "Fire", "Aqua", "Peony"),
         "Mint"
     ).displayable { false }
     val textValue = BoolValue("TextStaticColor", false).displayable { false }
@@ -145,6 +145,21 @@ object ClientTheme {
                 return Color(244, 168, 150, alpha)
             } else if (type == "END") {
                 return Color(52, 133, 151, alpha)
+            }
+            "fire" -> if (type == "START") {
+                return Color(255, 45, 30, alpha)
+            } else if  (type == "END") {
+                return Color (255, 123, 15, alpha)
+            }
+            "aqua" -> if (type == "START") {
+                return Color(80, 255, 255, alpha)
+            } else if  (type == "END") {
+                return Color (80, 190, 255, alpha)
+            }
+            "peony" -> if (type == "START") {
+                return Color(255, 120, 255, alpha)
+            } else if  (type == "END") {
+                return Color (255, 190, 255, alpha)
             }
 
         }
@@ -285,6 +300,24 @@ object ClientTheme {
                 fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,
                 index
             )
+            "fire" -> return ColorUtils.mixColors(
+                Color(255, 45, 30),
+                Color(255, 123, 15),
+                fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,
+                index
+            )
+            "aqua" -> return ColorUtils.mixColors(
+                Color(80, 255, 255),
+                Color(80, 190, 255),
+                fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,
+                index
+            )
+            "peony" -> return ColorUtils.mixColors(
+                Color(255, 120, 255),
+                Color(255, 190, 255),
+                fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,
+                index
+            )
         }
         return Color(-1)
     }
@@ -404,6 +437,24 @@ object ClientTheme {
             "coral" -> return ColorUtils.mixColors(
                 Color(52, 133, 151),
                 Color(244, 168, 150),
+                fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,
+                index
+            )
+            "fire" -> return ColorUtils.mixColors(
+                Color(255, 45, 30),
+                Color(255, 123, 15),
+                fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,
+                index
+            )
+            "aqua" -> return ColorUtils.mixColors(
+                Color(80, 255, 255),
+                Color(80, 190, 255),
+                fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,
+                index
+            )
+            "peony" -> return ColorUtils.mixColors(
+                Color(255, 120, 255),
+                Color(255, 190, 255),
                 fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,
                 index
             )
@@ -527,6 +578,24 @@ object ClientTheme {
             "coral" -> return ColorUtils.mixColors(
                 Color(52, 133, 151),
                 Color(244, 168, 150),
+                fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,
+                index
+            ).setAlpha(alpha)
+            "fire" -> return ColorUtils.mixColors(
+                Color(255, 45, 30),
+                Color(255, 123, 15),
+                fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,
+                index
+            ).setAlpha(alpha)
+            "aqua" -> return ColorUtils.mixColors(
+                Color(80, 255, 255),
+                Color(80, 190, 255),
+                fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,
+                index
+            ).setAlpha(alpha)
+            "peony" -> return ColorUtils.mixColors(
+                Color(255, 120, 255),
+                Color(255, 190, 255),
                 fadespeed.get() / 7.0 * if (updown.get()) 1 else -1,
                 index
             ).setAlpha(alpha)

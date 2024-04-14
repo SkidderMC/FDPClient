@@ -27,7 +27,7 @@ class GrimDamage : FlyMode("GrimDamage") {
         if(mc.isSingleplayer) return
 
         if (velocitypacket){
-            mc.thePlayer.setPositionAndRotation(mc.thePlayer.posX+50, mc.thePlayer.posY, mc.thePlayer.posZ+50, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch);
+            mc.thePlayer.setPositionAndRotation(mc.thePlayer.posX+50, mc.thePlayer.posY, mc.thePlayer.posZ+50, mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
             velocitypacket = false
         }
     }

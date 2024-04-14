@@ -12,22 +12,29 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C00PacketKeepAlive
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.util.Timer
 
 class VanillaFly : FlyMode("Vanilla") {
-    private val smoothValue = BoolValue("${valuePrefix}Smooth", false)
-    private val speedValue = FloatValue("${valuePrefix}Speed", 2f, 0f, 5f)
-    private val vspeedValue = FloatValue("${valuePrefix}Vertical", 2f, 0f, 5f)
-    private val kickBypassValue = BoolValue("${valuePrefix}KickBypass", false)
-    private val kickBypassModeValue = ListValue("${valuePrefix}KickBypassMode", arrayOf("Motion", "Packet"), "Packet").displayable { kickBypassValue.get() }
+    private val smoothValue = BoolValue("${valuePrefix}-Smooth", false)
+    private val speedValue = FloatValue("${valuePrefix}-Speed", 2f, 0f, 5f)
+    private val vspeedValue = FloatValue("${valuePrefix}-Vertical", 2f, 0f, 5f)
+    private val kickBypassValue = BoolValue("${valuePrefix}-KickBypass", false)
+    private val kickBypassModeValue = ListValue("${valuePrefix}-KickBypassMode", arrayOf("Motion", "Packet"), "Packet").displayable { kickBypassValue.get() }
     private val kickBypassMotionSpeedValue = FloatValue("${valuePrefix}KickBypass-MotionSpeed", 0.0626F, 0.05F, 0.1F).displayable { kickBypassModeValue.get() == "Motion" && kickBypassValue.get() }
-    private val keepAliveValue = BoolValue("${valuePrefix}KeepAlive", false)
-    private val noClipValue = BoolValue("${valuePrefix}NoClip", false)
-    private val spoofValue = BoolValue("${valuePrefix}SpoofGround", false)
+    private val keepAliveValue = BoolValue("${valuePrefix}-KeepAlive", false)
+    private val noClipValue = BoolValue("${valuePrefix}-NoClip", false)
+    private val spoofValue = BoolValue("${valuePrefix}-SpoofGround", false)
 
     private var packets = 0
     private var kickBypassMotion = 0f
+
+    // Optimize code
+    val player: EntityPlayerSP
+        get() = mc.thePlayer
 
     override fun onEnable() {
         packets = 0
@@ -40,32 +47,32 @@ class VanillaFly : FlyMode("Vanilla") {
         }
 
         if (noClipValue.get()) {
-            mc.thePlayer.noClip = true
+            player.noClip = true
         }
 
         if(kickBypassValue.get()) {
             if(kickBypassModeValue.get() === "Motion") {
                 kickBypassMotion = kickBypassMotionSpeedValue.get()
 
-                if (mc.thePlayer.ticksExisted % 2 == 0) {
+                if (player.ticksExisted % 2 == 0) {
                     kickBypassMotion = -kickBypassMotion
                 }
 
                 if(!mc.gameSettings.keyBindJump.pressed && !mc.gameSettings.keyBindSneak.pressed) {
-                    mc.thePlayer.motionY = kickBypassMotion.toDouble()
+                    player.motionY = kickBypassMotion.toDouble()
                 }
             }
         }
 
         if(smoothValue.get()) {
-            mc.thePlayer.capabilities.isFlying = true
-            mc.thePlayer.capabilities.flySpeed = speedValue.get() * 0.05f
+            player.capabilities.isFlying = true
+            player.capabilities.flySpeed = speedValue.get() * 0.05f
         } else {
-            mc.thePlayer.capabilities.isFlying = false
+            player.capabilities.isFlying = false
             MovementUtils.resetMotion(true)
-            if (mc.gameSettings.keyBindJump.isKeyDown) mc.thePlayer.motionY += vspeedValue.get()
+            if (mc.gameSettings.keyBindJump.isKeyDown) player.motionY += vspeedValue.get()
 
-            if (mc.gameSettings.keyBindSneak.isKeyDown) mc.thePlayer.motionY -= vspeedValue.get()
+            if (mc.gameSettings.keyBindSneak.isKeyDown) player.motionY -= vspeedValue.get()
 
             MovementUtils.strafe(speedValue.get())
         }

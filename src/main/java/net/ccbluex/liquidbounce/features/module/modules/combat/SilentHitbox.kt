@@ -68,6 +68,12 @@ class SilentHitbox : Module() {
             enabled = false
         }
 
+        var oldYaw = mc.thePlayer.rotationYaw
+        var oldPitch = mc.thePlayer.rotationPitch
+
+        mc.thePlayer.rotationYaw = FreeLook.cameraYaw
+        mc.thePlayer.rotationPitch = FreeLook.cameraPitch
+
         val range = rangeValue.get()
         val entity = mc.theWorld.loadedEntityList
             .filter {
@@ -75,6 +81,9 @@ class SilentHitbox : Module() {
                         mc.thePlayer.getDistanceToEntityBox(it) <= range && RotationUtils.getRotationDifference(it) <= fovValue.get()
             }
             .minByOrNull { RotationUtils.getRotationDifference(it) } ?: return
+
+        mc.thePlayer.rotationYaw = oldYaw
+        mc.thePlayer.rotationPitch = oldPitch
 
         dontReset = true
 
@@ -96,7 +105,7 @@ class SilentHitbox : Module() {
 
         val rotationCenter = RotationUtils.limitAngleChange(
             playerRot, targetRot,
-            15f + (Math.random().toFloat() * 0.5f)
+            10f + (Math.random().toFloat() * 4f)
         )
 
         rotationCenter.toPlayer(mc.thePlayer)

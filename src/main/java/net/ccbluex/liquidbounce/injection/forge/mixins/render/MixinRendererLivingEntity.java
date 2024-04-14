@@ -121,8 +121,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         if ((Objects.requireNonNull(FDPClient.moduleManager.getModule(NameTags.class)).getState() && EntityUtils.INSTANCE.isSelected(entity, false)))
             callbackInfoReturnable.setReturnValue(false);
 
-        if (!NameTags.INSTANCE.getRenderNameTags()
-                || NameTags.INSTANCE.shouldCancelNameTag(entity)) {
+        if (!NameTags.INSTANCE.getRenderNameTags() || NameTags.INSTANCE.shouldCancelNameTag(entity)) {
         }
     }
 

@@ -11,10 +11,12 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.Block
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.potion.Potion
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
+import net.minecraft.util.Timer
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.math.cos
@@ -38,31 +40,37 @@ class NCPSpeeds : SpeedMode("NCP") {
     private var mspeed = 0.0
     private var justJumped = false
 
+    // Optimize code
+    val player: EntityPlayerSP
+        get() = mc.thePlayer
+    val timer: Timer
+        get() = mc.timer
+
 
 
     override fun onEnable() {
         when (modeValue.get()) {
             "NCPBhop" -> {
-                mc.timer.timerSpeed = 1f
+                timer.timerSpeed = 1f
                 level = if (mc.theWorld.getCollidingBoundingBoxes(
-                        mc.thePlayer,
-                        mc.thePlayer.entityBoundingBox.offset(0.0, mc.thePlayer.motionY, 0.0)
-                    ).size > 0 || mc.thePlayer.isCollidedVertically
+                        player,
+                        player.entityBoundingBox.offset(0.0, player.motionY, 0.0)
+                    ).size > 0 || player.isCollidedVertically
                 ) 1 else 4
             }
             "NCPFHop" -> {
-                mc.timer.timerSpeed = 1.0866f
+                timer.timerSpeed = 1.0866f
                 super.onEnable()
             }
             "NCPHop" -> {
-                mc.timer.timerSpeed = 1.0866f
+                timer.timerSpeed = 1.0866f
                 super.onEnable()
             }
             "NCPStable" -> {
-                mc.timer.timerSpeed = ncpstabletimerValue.get()
+                timer.timerSpeed = ncpstabletimerValue.get()
             }
             "LNCPHop" -> {
-                mc.timer.timerSpeed = 1.0865f
+                timer.timerSpeed = 1.0865f
             }
         }
     }
@@ -70,36 +78,36 @@ class NCPSpeeds : SpeedMode("NCP") {
     override fun onDisable() {
         when (modeValue.get()) {
             "NCPBhop" -> {
-                mc.timer.timerSpeed = 1f
+                timer.timerSpeed = 1f
                 moveSpeed = baseMoveSpeed
                 level = 0
             }
             "NCPFHop" -> {
-                mc.thePlayer.speedInAir = 0.02f
-                mc.timer.timerSpeed = 1f
+                player.speedInAir = 0.02f
+                timer.timerSpeed = 1f
                 super.onDisable()
             }
             "NCPHop" -> {
-                mc.thePlayer.speedInAir = 0.02f
-                mc.timer.timerSpeed = 1f
+                player.speedInAir = 0.02f
+                timer.timerSpeed = 1f
                 super.onDisable()
             }
             "NCPLatest" -> {
-                mc.thePlayer.jumpMovementFactor = 0.02f
+                player.jumpMovementFactor = 0.02f
             }
             "NCPStable" -> {
-                mc.timer.timerSpeed = 1f
-                mc.thePlayer.jumpMovementFactor = 0.2f
-                mc.thePlayer.setVelocity(
+                timer.timerSpeed = 1f
+                player.jumpMovementFactor = 0.2f
+                player.setVelocity(
                     // reduce the motion a bit to avoid flags but don't stop completely
-                    mc.thePlayer.motionX / 3,
-                    mc.thePlayer.motionY,
-                    mc.thePlayer.motionZ / 3
+                    player.motionX / 3,
+                    player.motionY,
+                    player.motionZ / 3
                 )
             }
             "LNCPHop" -> {
-                mc.thePlayer.speedInAir = 0.02f
-                mc.timer.timerSpeed = 1f
+                player.speedInAir = 0.02f
+                timer.timerSpeed = 1f
             }
         }
 
@@ -109,45 +117,45 @@ class NCPSpeeds : SpeedMode("NCP") {
         when (modeValue.get()) {
             "NCPFHop" -> {
                 if (MovementUtils.isMoving()) {
-                    if (mc.thePlayer.onGround) {
-                        mc.thePlayer.jump()
-                        mc.thePlayer.motionX *= 1.01
-                        mc.thePlayer.motionZ *= 1.01
-                        mc.thePlayer.speedInAir = 0.0223f
+                    if (player.onGround) {
+                        player.jump()
+                        player.motionX *= 1.01
+                        player.motionZ *= 1.01
+                        player.speedInAir = 0.0223f
                     }
-                    mc.thePlayer.motionY -= 0.00099999
+                    player.motionY -= 0.00099999
                     MovementUtils.strafe()
                 } else {
-                    mc.thePlayer.motionX = 0.0
-                    mc.thePlayer.motionZ = 0.0
+                    player.motionX = 0.0
+                    player.motionZ = 0.0
                 }
             }
             "NCPHop" -> {
                 if (MovementUtils.isMoving()) {
-                    if (mc.thePlayer.onGround) {
-                        mc.thePlayer.jump()
-                        mc.thePlayer.speedInAir = 0.0223f
+                    if (player.onGround) {
+                        player.jump()
+                        player.speedInAir = 0.0223f
                     }
                     MovementUtils.strafe()
                 } else {
-                    mc.thePlayer.motionX = 0.0
-                    mc.thePlayer.motionZ = 0.0
+                    player.motionX = 0.0
+                    player.motionZ = 0.0
                 }
             }
             "NCPLatest" -> {
-                if (mc.thePlayer.ticksExisted % 20 <= 9) {
-                    mc.timer.timerSpeed = 1.05f
+                if (player.ticksExisted % 20 <= 9) {
+                    timer.timerSpeed = 1.05f
                 } else {
-                    mc.timer.timerSpeed = 0.98f
+                    timer.timerSpeed = 0.98f
                 }
 
                 if (MovementUtils.isMoving()) {
-                    if (mc.thePlayer.onGround) {
+                    if (player.onGround) {
                         wasSlow = false
-                        mc.thePlayer.jump()
+                        player.jump()
                         MovementUtils.strafe(0.47f)
-                        if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
-                            MovementUtils.strafe(0.48f * (1.0f + 0.13f * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)))
+                        if (player.isPotionActive(Potion.moveSpeed)) {
+                            MovementUtils.strafe(0.48f * (1.0f + 0.13f * (player.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)))
                         }
                     }
                     if (MovementUtils.getSpeed() < 0.277)
@@ -157,28 +165,28 @@ class NCPSpeeds : SpeedMode("NCP") {
 
 
                 } else {
-                    mc.thePlayer.motionX = 0.0
-                    mc.thePlayer.motionZ = 0.0
+                    player.motionX = 0.0
+                    player.motionZ = 0.0
                     wasSlow = true
                 }
             }
             "NCPStable" -> {
                 if (MovementUtils.isMoving()) {
-                    mc.thePlayer.jumpMovementFactor = ncpstablejumpMovementFactorValue.get()
-                    if (mc.thePlayer.onGround) {
-                        mc.thePlayer.jump()
+                    player.jumpMovementFactor = ncpstablejumpMovementFactorValue.get()
+                    if (player.onGround) {
+                        player.jump()
                     }
                     MovementUtils.strafe(max(MovementUtils.getSpeed(), MovementUtils.getSpeedWithPotionEffects(0.27).toFloat()))
                 } else {
-                    mc.thePlayer.motionX = 0.0
-                    mc.thePlayer.motionZ = 0.0
+                    player.motionX = 0.0
+                    player.motionZ = 0.0
                 }
             }
             "LNCPHop" -> {
                 if (MovementUtils.isMoving()) {
-                    if (mc.thePlayer.onGround) {
-                        mc.thePlayer.jump()
-                        mspeed = MovementUtils.defaultSpeed().toDouble() * 1.73
+                    if (player.onGround) {
+                        player.jump()
+                        mspeed = MovementUtils.defaultSpeed() * 1.73
 
                         justJumped = true
                     } else {
@@ -189,13 +197,13 @@ class NCPSpeeds : SpeedMode("NCP") {
                             mspeed -= mspeed / 159
                         }
                     }
-                    if (mspeed < MovementUtils.defaultSpeed().toDouble())
-                        mspeed = MovementUtils.defaultSpeed().toDouble()
+                    if (mspeed < MovementUtils.defaultSpeed())
+                        mspeed = MovementUtils.defaultSpeed()
 
                     MovementUtils.strafe(mspeed.toFloat())
                 } else {
-                    mc.thePlayer.motionX = 0.0
-                    mc.thePlayer.motionZ = 0.0
+                    player.motionX = 0.0
+                    player.motionZ = 0.0
                 }
             }
         }
@@ -204,8 +212,8 @@ class NCPSpeeds : SpeedMode("NCP") {
     override fun onPreMotion() {
         when (modeValue.get()) {
             "NCPBhop" -> {
-                val xDist = mc.thePlayer.posX - mc.thePlayer.prevPosX
-                val zDist = mc.thePlayer.posZ - mc.thePlayer.prevPosZ
+                val xDist = player.posX - player.prevPosX
+                val zDist = player.posZ - player.prevPosZ
                 lastDist = sqrt(xDist * xDist + zDist * zDist)
             }
         }
@@ -218,34 +226,34 @@ class NCPSpeeds : SpeedMode("NCP") {
                 timerDelay %= 5
 
                 if (timerDelay != 0) {
-                    mc.timer.timerSpeed = 1f
+                    timer.timerSpeed = 1f
                 } else {
-                    if (MovementUtils.isMoving()) mc.timer.timerSpeed = 32767f
+                    if (MovementUtils.isMoving()) timer.timerSpeed = 32767f
                     if (MovementUtils.isMoving()) {
-                        mc.timer.timerSpeed = 1.3f
-                        mc.thePlayer.motionX *= 1.0199999809265137
-                        mc.thePlayer.motionZ *= 1.0199999809265137
+                        timer.timerSpeed = 1.3f
+                        player.motionX *= 1.0199999809265137
+                        player.motionZ *= 1.0199999809265137
                     }
                 }
 
-                if (mc.thePlayer.onGround && MovementUtils.isMoving()) level = 2
+                if (player.onGround && MovementUtils.isMoving()) level = 2
 
-                if (round(mc.thePlayer.posY - mc.thePlayer.posY.toInt().toDouble()) == round(0.138)) {
-                    val thePlayer = mc.thePlayer
+                if (round(player.posY - player.posY.toInt().toDouble()) == round(0.138)) {
+                    val thePlayer = player
                     thePlayer.motionY -= 0.08
                     event.y = event.y - 0.09316090325960147
                     thePlayer.posY -= 0.09316090325960147
                 }
 
                 when {
-                    (level == 1 && (mc.thePlayer.moveForward != 0.0f || mc.thePlayer.moveStrafing != 0.0f)) -> {
+                    (level == 1 && (player.moveForward != 0.0f || player.moveStrafing != 0.0f)) -> {
                         level = 2
                         moveSpeed = 1.35 * baseMoveSpeed - 0.01
                     }
 
                     level == 2 -> {
                         level = 3
-                        mc.thePlayer.motionY = 0.399399995803833
+                        player.motionY = 0.399399995803833
                         event.y = 0.399399995803833
                         moveSpeed *= 2.149
                     }
@@ -258,19 +266,19 @@ class NCPSpeeds : SpeedMode("NCP") {
 
                     else -> {
                         if (mc.theWorld.getCollidingBoundingBoxes(
-                                mc.thePlayer,
-                                mc.thePlayer.entityBoundingBox.offset(0.0, mc.thePlayer.motionY, 0.0)
-                            ).size > 0 || mc.thePlayer.isCollidedVertically
+                                player,
+                                player.entityBoundingBox.offset(0.0, player.motionY, 0.0)
+                            ).size > 0 || player.isCollidedVertically
                         ) level = 1
                         moveSpeed = lastDist - lastDist / 159.0
                     }
                 }
 
                 moveSpeed = moveSpeed.coerceAtLeast(baseMoveSpeed)
-                val movementInput = mc.thePlayer.movementInput
+                val movementInput = player.movementInput
                 var forward = movementInput.moveForward
                 var strafe = movementInput.moveStrafe
-                var yaw = mc.thePlayer.rotationYaw
+                var yaw = player.rotationYaw
 
                 if (forward == 0.0f && strafe == 0.0f) {
                     event.x = 0.0
@@ -294,7 +302,7 @@ class NCPSpeeds : SpeedMode("NCP") {
                 val mz2 = sin(Math.toRadians((yaw + 90.0f).toDouble()))
                 event.x = forward.toDouble() * moveSpeed * mx2 + strafe.toDouble() * moveSpeed * mz2
                 event.z = forward.toDouble() * moveSpeed * mz2 - strafe.toDouble() * moveSpeed * mx2
-                mc.thePlayer.stepHeight = 0.6f
+                player.stepHeight = 0.6f
                 if (forward == 0.0f && strafe == 0.0f) {
                     event.x = 0.0
                     event.z = 0.0
@@ -306,7 +314,7 @@ class NCPSpeeds : SpeedMode("NCP") {
     private val baseMoveSpeed: Double
         get() {
             var baseSpeed = 0.2873
-            if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) baseSpeed *= 1.0 + 0.2 * (mc.thePlayer.getActivePotionEffect(
+            if (player.isPotionActive(Potion.moveSpeed)) baseSpeed *= 1.0 + 0.2 * (player.getActivePotionEffect(
                 Potion.moveSpeed
             ).amplifier + 1)
             return baseSpeed
@@ -323,7 +331,7 @@ class NCPSpeeds : SpeedMode("NCP") {
     }
 
     private fun getBlock(offset: Double): Block? {
-        return this.getBlock(mc.thePlayer.entityBoundingBox.offset(0.0, offset, 0.0))
+        return this.getBlock(player.entityBoundingBox.offset(0.0, offset, 0.0))
     }
 
     private fun round(value: Double): Double {

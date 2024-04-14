@@ -15,8 +15,8 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
 class BlockdropFly : FlyMode("BlockDrop") {
-    private val hSpeedValue = FloatValue("${valuePrefix}HorizontalSpeed", 1f, 0.1f, 5f)
-    private val vSpeedValue = FloatValue("${valuePrefix}VerticalSpeed", 1f, 0.1f, 5f)
+    private val hSpeedValue = FloatValue("${valuePrefix}-HorizontalSpeed", 1f, 0.1f, 5f)
+    private val vSpeedValue = FloatValue("${valuePrefix}-VerticalSpeed", 1f, 0.1f, 5f)
     private var startx = 0.0
     private var starty = 0.0
     private var startz = 0.0

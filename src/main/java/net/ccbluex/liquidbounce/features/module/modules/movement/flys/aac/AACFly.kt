@@ -9,7 +9,10 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.util.Timer
 import org.lwjgl.input.Keyboard
 
 
@@ -21,11 +24,16 @@ class AACFly : FlyMode("AAC") {
     // Val
     private val speedAAC1910Value = FloatValue("AAC1.9.10-Speed", 0.3f, 0.2f, 1.7f).displayable { flys.equals("AAC1.9.10") }
     private val fastAAC305Value = BoolValue("AAC3.0.5-Fast", true).displayable { flys.equals("AAC.3.0.5") }
-    private val AAC3312motionValue = FloatValue("AAC3.3.12-Motion", 10f, 0.1f, 10f).displayable { flys.equals("AAC.3.3.12") }
+    private val aac3312motionValue = FloatValue("AAC3.3.12-Motion", 10f, 0.1f, 10f).displayable { flys.equals("AAC.3.3.12") }
 
     // Var
     private var aacJump = 0.0
     private var delay = 0
+
+    // Optimize code
+    val player: EntityPlayerSP
+        get() = mc.thePlayer
+
 
     override fun onEnable() {
         aacJump = -3.8
@@ -39,9 +47,9 @@ class AACFly : FlyMode("AAC") {
 
                 if (mc.gameSettings.keyBindSneak.isKeyDown) aacJump -= 0.2
 
-                if (fly.launchY + aacJump > mc.thePlayer.posY) {
+                if (fly.launchY + aacJump > player.posY) {
                     mc.netHandler.addToSendQueue(C03PacketPlayer(true))
-                    mc.thePlayer.motionY = 0.8
+                    player.motionY = 0.8
                     MovementUtils.strafe(speedAAC1910Value.get())
                 }
 
@@ -49,21 +57,21 @@ class AACFly : FlyMode("AAC") {
             }
             "AAC3.0.5" -> {
                 if (delay == 2) {
-                    mc.thePlayer.motionY = 0.1
+                    player.motionY = 0.1
                 } else if (delay > 2) {
                     delay = 0
                 }
 
                 if (fastAAC305Value.get()) {
-                    if (mc.thePlayer.movementInput.moveStrafe.toDouble() == 0.0) mc.thePlayer.jumpMovementFactor =
-                        0.08f else mc.thePlayer.jumpMovementFactor = 0f
+                    if (player.movementInput.moveStrafe.toDouble() == 0.0) player.jumpMovementFactor =
+                        0.08f else player.jumpMovementFactor = 0f
                 }
 
                 delay++
             }
            "AAC3.3.12" -> {
-               if (mc.thePlayer.posY < -70) {
-                   mc.thePlayer.motionY = AAC3312motionValue.get().toDouble()
+               if (player.posY < -70) {
+                   player.motionY = aac3312motionValue.get().toDouble()
                }
 
                mc.timer.timerSpeed = 1F

@@ -34,6 +34,4 @@ public class GLUtil {
         f.run();
         GlStateManager.popMatrix();
     }
-
-
 }

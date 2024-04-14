@@ -51,6 +51,7 @@ object Breaker : Module() {
      * SETTINGS
      */
     private val blockValue = BlockValue("Block", 26)
+    private val hypixelValue = BoolValue("HypixelHomosexual", false)
     private val swingValue = ListValue("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
     private val ignoreFirstBlockValue = BoolValue("IgnoreFirstDetection", false)
     private val onClickMouse = BoolValue("OnClick", false)
@@ -59,6 +60,7 @@ object Breaker : Module() {
     private val noMoveValue = BoolValue("NoMove", false)
     private val noEatValue = BoolValue("NoEat", true)
     private val throughWallsValue = ListValue("ThroughWalls", arrayOf("None", "Raycast", "Around", "Hypixel"), "None")
+    private val sortValue = ListValue("SortType", arrayOf("Distance", "XYZ"), "Distance")
     private val actionValue = ListValue("Action", arrayOf("Destroy", "Use"), "Destroy")
     private val rangeValue = FloatValue("Range", 5F, 1F, 7F)
     private val switchValue = IntegerValue("SwitchDelay", 250, 0, 1000)
@@ -247,7 +249,7 @@ object Breaker : Module() {
         }
 
         // Face block
-        if (rotationsValue.get()) {
+        if (rotationsValue.get() && !hypixelValue.get()) {
             RotationUtils.setTargetRotation(rotations.rotation)
         }
 
@@ -295,17 +297,29 @@ object Breaker : Module() {
                         pos = null
                         return
                     }
+
+                    if (hypixelValue.get()) {
+                        mc.netHandler.addToSendQueue(C0APacketAnimation())
+                        RotationUtils.setTargetRotation(rotations.rotation)
+                    }
                 }
 
-                if (swingValue.equals("Normal")) {
-                    mc.thePlayer.swingItem()
-                } else if (swingValue.equals("Packet")) {
-                    mc.netHandler.addToSendQueue(C0APacketAnimation())
+                if (!hypixelValue.get()) {
+                    if (swingValue.equals("Normal")) {
+                        mc.thePlayer.swingItem()
+                    } else if (swingValue.equals("Packet")) {
+                        mc.netHandler.addToSendQueue(C0APacketAnimation())
+                    }
                 }
+
                 currentDamage += block.getPlayerRelativeBlockHardness(mc.thePlayer, mc.theWorld, currentPos)
                 mc.theWorld.sendBlockBreakProgress(mc.thePlayer.entityId, currentPos, (currentDamage * 10F).toInt() - 1)
 
                 if (currentDamage > 1F) {
+                    if (hypixelValue.get()) {
+                        mc.netHandler.addToSendQueue(C0APacketAnimation())
+                        RotationUtils.setTargetRotation(rotations.rotation)
+                    }
                     mc.netHandler.addToSendQueue(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK,
                             currentPos, EnumFacing.DOWN))
                     mc.playerController.onPlayerDestroyBlock(currentPos, EnumFacing.DOWN)
@@ -382,7 +396,7 @@ object Breaker : Module() {
             damage = currentDamage
         }
         if (showProcess.get()) {
-            if (damage != 0F) {
+            if (damage != 0F && pos != null) {
                 mc.fontRendererObj.drawString(
                     d.format(damage * 100) + "%",
                     width / 2F,
@@ -424,10 +438,19 @@ object Breaker : Module() {
 
                     val distance = getCenterDistance(blockPos)
                     if (distance > rangeValue.get()) continue
-                    if (nearestBlockDistance < distance) continue
+                    if (sortValue.equals("Distance")) {
+                        if (nearestBlockDistance < distance) continue
+                    } else if (sortValue.equals("XYZ")) {
+                        if (blockPos.x + blockPos.y + blockPos.z > nearestBlockDistance) continue
+                    }
                     if (!isHitable(blockPos) && !surroundingsValue.get()) continue
 
-                    nearestBlockDistance = distance
+                    if (sortValue.equals("Distance")) {
+                        nearestBlockDistance = distance
+                    } else if (sortValue.equals("XYZ")) {
+                        nearestBlockDistance = (blockPos.x + blockPos.y + blockPos.z).toDouble()
+                    }
+
                     nearestBlock = blockPos
                 }
             }

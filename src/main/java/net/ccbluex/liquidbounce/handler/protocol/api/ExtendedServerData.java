@@ -5,15 +5,15 @@
  */
 package net.ccbluex.liquidbounce.handler.protocol.api;
 
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
+import net.raphimc.vialoader.util.VersionEnum;
 
 /**
  * This interface is used to store the target version for a specific server in the server list.
  */
 public interface ExtendedServerData {
 
-    ProtocolVersion viaForge$getVersion();
+    VersionEnum viaForge$getVersion();
 
-    void viaForge$setVersion(final ProtocolVersion version);
+    void viaForge$setVersion(final VersionEnum version);
 
 }

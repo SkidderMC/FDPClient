@@ -25,9 +25,9 @@ public class StencilUtil {
     }
 
     /**
+     * @param framebuffer
      * @implNote Sets up the Framebuffer for Stencil use
      */
-
     public static void setupFBO(Framebuffer framebuffer) {
         EXTFramebufferObject.glDeleteRenderbuffersEXT(framebuffer.depthBuffer);
         final int stencilDepthBufferID = EXTFramebufferObject.glGenRenderbuffersEXT();

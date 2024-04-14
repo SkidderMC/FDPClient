@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import com.google.common.collect.Lists;
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.special.spoof.ClientSpoofHandler;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
@@ -24,6 +23,7 @@ import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.common.FMLCommonHandler;
+import net.raphimc.vialoader.util.VersionEnum;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -112,7 +112,7 @@ public abstract class MixinGuiOverlayDebug {
             originalList.add("[LC Async Resources] Full Quality: 0 textures, 0 B");
         } else {
 
-            final ProtocolVersion version = ProtocolBase.getManager().getTargetVersion();
+            final VersionEnum version = ProtocolBase.getManager().getTargetVersion();
 
             originalList.add("");
 

@@ -8,11 +8,9 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.minecraft.client.settings.GameSettings
 import net.minecraft.potion.Potion
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.server.S12PacketEntityVelocity
@@ -31,11 +29,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
     private val glide = BoolValue("${valuePrefix}Glide", true)
 
 
-    private var minSpeed = 0.0
-  
-    private var wasOnGround = false
     private var offGroundTicks = 0
-    private var groundTick = 0
 
     override fun onPreMotion() {
         if (!MovementUtils.isMoving()) {
@@ -76,7 +70,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
         }
 
         if (glide.get()) {
-            if (offGroundTicks > 10 && offGroundTicks < 15) {
+            if (offGroundTicks in 11..14) {
                 mc.thePlayer.motionY = 0.0
                 mc.thePlayer.onGround = true
                 MovementUtils.strafe()
@@ -95,18 +89,11 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
 
                 if (mc.thePlayer.onGround) {
                     mc.thePlayer.jump()
-                    MovementUtils.strafe()
 
                     if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) {
                         MovementUtils.strafe(0.51f)
                     } else {
-                        if (MovementUtils.getSpeed() < 0.46f)
-                            MovementUtils.strafe(0.465f)
-                    }
-
-                    if (mc.thePlayer.isBlocking || FDPClient.moduleManager[KillAura::class.java]!!.blockingStatus) {
-                        mc.thePlayer.motionX *= 0.5
-                        mc.thePlayer.motionZ *= 0.5
+                        MovementUtils.strafe(0.465f)
                     }
                     
                 } else {
@@ -135,7 +122,7 @@ class HypixelHopSpeed : SpeedMode("HypixelHop") {
     }
                     
    
-
+    
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
 

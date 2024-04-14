@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.anima
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.normal.TimerUtil;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.objects.Drag;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils;
-import net.ccbluex.liquidbounce.ui.font.Fonts;
+import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.render.RoundedUtil;
 import net.minecraft.client.gui.ScaledResolution;
@@ -22,8 +22,8 @@ import java.util.HashMap;
 
 public class SideGui extends GuiPanel {
 
-  //  private final ConfigPanel configPanel = new ConfigPanel();
-  //  private final ScriptPanel scriptPanel = new ScriptPanel();
+    //  private final ConfigPanel configPanel = new ConfigPanel();
+    //  private final ScriptPanel scriptPanel = new ScriptPanel();
     private final String[] categories = {"Scripts", "Configs", "Design"};
     public boolean focused;
     public Animation clickAnimation;
@@ -59,15 +59,15 @@ public class SideGui extends GuiPanel {
 
         hoverAnimation = new DecelerateAnimation(250, 1);
         hoverAnimation.setDirection(Direction.BACKWARDS);
-      //  configPanel.initGui();
-     //   scriptPanel.initGui();
+        //  configPanel.initGui();
+        //   scriptPanel.initGui();
     }
 
     @Override
     public void keyTyped(char typedChar, int keyCode) {
         switch (currentCategory) {
             case "Configs":
-           //     configPanel.keyTyped(typedChar, keyCode);
+                //     configPanel.keyTyped(typedChar, keyCode);
                 break;
             case "Scripts":
                 //scriptPanel.keyTyped(typedChar, keyCode);
@@ -77,13 +77,13 @@ public class SideGui extends GuiPanel {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks, int alpha) {
-       // if (configPanel.reInit) {
+        // if (configPanel.reInit) {
         //    configPanel.initGui();
-       //     configPanel.reInit = false;
-      //  }
+        //     configPanel.reInit = false;
+        //  }
         //if (scriptPanel.reInit) {
-          //  scriptPanel.initGui();
-       // }
+        //  scriptPanel.initGui();
+        // }
 
         clickAnimation.setDirection(focused ? Direction.FORWARDS : Direction.BACKWARDS);
         boolean hovering = DrRenderUtils.isHovering(drag.getX(), drag.getY(), rectWidth, rectHeight, mouseX, mouseY);
@@ -94,14 +94,12 @@ public class SideGui extends GuiPanel {
         textAnimation.setDirection(setDirection ? Direction.FORWARDS : Direction.BACKWARDS);
 
 
-        if (textAnimation.isDone()) {
-            if (textAnimation.getDirection().equals(Direction.FORWARDS)) {
-                textAnimation.isDone();
-            }
-        }//    FontUtil.iconFont26.drawString(FontUtil.PLAY, drag.getX() -
-//              ((FontUtil.iconFont26.getStringWidth(FontUtil.PLAY) + 10) * textAnimation.getOutput()),
-//     drag.getY() + FontUtil.iconFont26.getMiddleOfBox(rectHeight),
-//   ColorUtil.applyOpacity(-1, (float) textAnimation.getOutput() * 0.5F));
+        if(!textAnimation.isDone() || textAnimation.getDirection().equals(Direction.FORWARDS) && textAnimation.isDone()) {
+            //    FontUtil.iconFont26.drawString(FontUtil.PLAY, drag.getX() -
+            //              ((FontUtil.iconFont26.getStringWidth(FontUtil.PLAY) + 10) * textAnimation.getOutput()),
+            //     drag.getY() + FontUtil.iconFont26.getMiddleOfBox(rectHeight),
+            //   ColorUtil.applyOpacity(-1, (float) textAnimation.getOutput() * 0.5F));
+        }
 
 
         if (!clickAnimation.isDone()) {
@@ -131,7 +129,7 @@ public class SideGui extends GuiPanel {
             float xVal = x + rectWidth / 2f - 50 + seperation;
             float yVal = y + 15;
 
-            boolean hovered = DrRenderUtils.isHovering(xVal - 30, yVal - 5, 60, Fonts.fontBold26.getHeight() + 10, mouseX, mouseY);
+            boolean hovered = DrRenderUtils.isHovering(xVal - 30, yVal - 5, 60, Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.getHeight() + 10, mouseX, mouseY);
             Animation hoverAnimation = categoryAnimation.get(category)[0];
             Animation enableAnimation = categoryAnimation.get(category)[1];
 
@@ -144,26 +142,29 @@ public class SideGui extends GuiPanel {
             Color hoverColor = DrRenderUtils.interpolateColorC(categoryColor, DrRenderUtils.brighter(categoryColor, .8f), (float) hoverAnimation.getOutput());
             Color finalColor = DrRenderUtils.interpolateColorC(hoverColor, DrRenderUtils.applyOpacity(color22, alpha / 255f), (float) enableAnimation.getOutput());
 
-            RoundedUtil.drawRound(xVal - 30, yVal - 5, 60, Fonts.fontBold26.getHeight() + 10, 6, finalColor);
+            RoundedUtil.drawRound(xVal - 30, yVal - 5, 60, Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.getHeight() + 10, 6, finalColor);
 
             DrRenderUtils.resetColor();
-            Fonts.fontBold26.drawCenteredString(category, xVal, y + 15, textColor);
+            Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawCenteredString(category, xVal, y + 15, textColor);
             seperation += 100;
         }
 
         DrRenderUtils.drawRect2(x + 20, y + 50, rectWidth - 40, 1, new Color(45, 45, 45, alpha).getRGB());
 
 
-        /* scriptPanel.x = x;
+        if (currentCategory.equals("Scripts")) {
+           /* scriptPanel.x = x;
             scriptPanel.rawY = y;
             scriptPanel.rectWidth = rectWidth;
             scriptPanel.rectHeight = rectHeight;
             scriptPanel.drawScreen(mouseX, mouseY, partialTicks, (int) rectAlpha);*/
-        //  configPanel.x = x;
-        //     configPanel.rawY = y;
-        //  configPanel.rectWidth = rectWidth;
-        // configPanel.rectHeight = rectHeight;
-        //configPanel.drawScreen(mouseX, mouseY, partialTicks, (int) rectAlpha);
+        } else {
+            //  configPanel.x = x;
+            //     configPanel.rawY = y;
+            //  configPanel.rectWidth = rectWidth;
+            // configPanel.rectHeight = rectHeight;
+            //configPanel.drawScreen(mouseX, mouseY, partialTicks, (int) rectAlpha);
+        }
         DrRenderUtils.setAlphaLimit(0);
         DrRenderUtils.drawGradientRect2(x + 20, y + 51, rectWidth - 40, 8, new Color(0, 0, 0, (int) (60 * (alpha / 255f))).getRGB(), new Color(0, 0, 0, 0).getRGB());
 
@@ -195,7 +196,7 @@ public class SideGui extends GuiPanel {
                 float xVal = x + rectWidth / 2f - 50 + seperation;
                 float yVal = y + 15;
 
-                boolean hovered = DrRenderUtils.isHovering(xVal - 30, yVal - 5, 60, Fonts.fontBold26.getHeight() + 10, mouseX, mouseY);
+                boolean hovered = DrRenderUtils.isHovering(xVal - 30, yVal - 5, 60, Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.getHeight() + 10, mouseX, mouseY);
 
                 if (hovered) {
                     currentCategory = category;
@@ -204,8 +205,11 @@ public class SideGui extends GuiPanel {
                 seperation += 100;
             }
 
-            //   configPanel.mouseClicked(mouseX, mouseY, button);
-            // scriptPanel.mouseClicked(mouseX, mouseY, button);
+            if (currentCategory.equals("Configs")) {
+
+            } else {
+
+            }
 
         }
 
@@ -219,7 +223,9 @@ public class SideGui extends GuiPanel {
             if (drag.getX() + rectWidth > sr.getScaledWidth() && clickAnimation.isDone()) {
                 focused = false;
             }
-            //   configPanel.mouseReleased(mouseX, mouseY, button);
+            if (currentCategory.equals("Configs")) {
+
+            }
         }
     }
 }
