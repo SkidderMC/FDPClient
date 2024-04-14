@@ -11,7 +11,7 @@ import net.minecraft.network.play.INetHandlerPlayServer
 import net.minecraft.network.play.server.*
 
 object PacketUtils : MinecraftInstance() {
-    val packets = ArrayList<Packet<INetHandlerPlayServer>>()
+    val packets = ArrayList<Packet<*>>()
 
     fun handleSendPacket(packet: Packet<*>): Boolean {
         if (packets.contains(packet)) {
