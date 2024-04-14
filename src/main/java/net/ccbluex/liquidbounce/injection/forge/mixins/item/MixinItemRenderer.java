@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.item;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
-import net.ccbluex.liquidbounce.features.module.modules.combat.LegitAura;
+import net.ccbluex.liquidbounce.features.module.modules.ghost.LegitAura;
 import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.utils.SpoofItemUtils;
 import net.minecraft.client.Minecraft;

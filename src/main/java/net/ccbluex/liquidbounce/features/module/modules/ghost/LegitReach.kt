@@ -3,11 +3,12 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.combat
+package net.ccbluex.liquidbounce.features.module.modules.ghost
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.*
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
@@ -21,7 +22,7 @@ import net.minecraft.network.play.INetHandlerPlayClient
 import net.minecraft.world.WorldSettings
 import java.util.concurrent.LinkedBlockingQueue
 
-@ModuleInfo(name = "LegitReach", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "LegitReach", category = ModuleCategory.GHOST)
 class LegitReach : Module() {
 
     var fakePlayer: EntityOtherPlayerMP? = null

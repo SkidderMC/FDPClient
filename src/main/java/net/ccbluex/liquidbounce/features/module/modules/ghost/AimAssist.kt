@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.combat
+package net.ccbluex.liquidbounce.features.module.modules.ghost
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
@@ -21,7 +21,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import kotlin.random.Random
 
-@ModuleInfo(name = "AimAssist", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "AimAssist", category = ModuleCategory.GHOST)
 class AimAssist : Module() {
 
     private val rangeValue = FloatValue("Range", 4.4F, 1F, 8F)

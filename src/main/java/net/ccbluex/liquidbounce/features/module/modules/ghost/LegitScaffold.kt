@@ -8,7 +8,7 @@
     Made by: Dg636
     2/12/24
  */
-package net.ccbluex.liquidbounce.features.module.modules.movement
+package net.ccbluex.liquidbounce.features.module.modules.ghost
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -20,7 +20,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.client.settings.GameSettings
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
-import net.ccbluex.liquidbounce.features.module.modules.visual.XRay
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.InventoryUtils
@@ -43,7 +42,7 @@ import net.minecraft.potion.Potion
 import java.awt.Color
 import kotlin.math.roundToInt
 
-@ModuleInfo(name = "LegitScaffold",  category = ModuleCategory.MOVEMENT)
+@ModuleInfo(name = "LegitScaffold",  category = ModuleCategory.GHOST)
 object LegitScaffold : Module() {
     val modeValue = ListValue("Mode", arrayOf("Simple", "SpeedBridge", "Breezily", "JitterBridge", "TellyBridge","GodBridge"), "Simple")
 

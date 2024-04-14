@@ -16,6 +16,7 @@ enum class ModuleCategory(val displayName: String, val configName: String, val h
     VISUAL("%module.category.visual%", "Visual", "&#xe417;", 225, 15, false, true),
     CLIENT("%module.category.client%", "Client", "&#xe869;", 15, 330, false, true),
     OTHER("%module.category.other%", "Other", "&#xe5d3;", 15, 330, false, true),
+    GHOST("%module.category.ghost%", "Ghost", "&#xe821;", 120, 180, false, true),
     EXPLOIT("%module.category.exploit%", "Exploit", "&#xe868;", 120, 180, false, true);
 
     private var expanded: Boolean

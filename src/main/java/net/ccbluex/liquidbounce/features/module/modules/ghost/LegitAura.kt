@@ -2,7 +2,7 @@
 *  LiquidLite Ghost Client -> FDP
 */
 
-package net.ccbluex.liquidbounce.features.module.modules.combat
+package net.ccbluex.liquidbounce.features.module.modules.ghost
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.Module
@@ -30,7 +30,7 @@ import java.awt.Color
 import kotlin.math.*
 import kotlin.random.Random
 
-@ModuleInfo(name = "LegitAura", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "LegitAura", category = ModuleCategory.GHOST)
 object LegitAura : Module() {
 
     private val cpsMode = ListValue("CPSMode", arrayOf("Normal", "Jitter", "Butterfly"), "Normal")
@@ -74,9 +74,9 @@ object LegitAura : Module() {
     private val rotationMode = ListValue("RotationMode", arrayOf("Advanced", "Simple", "Smooth", "LockView"), "Advanced")
     private val turnSpeedValue = IntegerValue("RotationSpeed", 40, 1, 180).displayable { !rotationMode.equals("LockView") }
     private val turnSpeedRandomValue = FloatValue("RotationSpeedRandom", 6f, 0f, 15f).displayable { !rotationMode.equals("LockView") }
-    private val aimLocationValue = ListValue("AimLocation", arrayOf("LiquidBounce", "Full", "HalfUp", "HalfDown", "CenterSimple", "CenterLine", "CenterLarge", "CenterDot", "MidRange", "HeadRange"), "CenterLarge").displayable {rotationMode.equals("Simple") || rotationMode.equals("Smooth") }
-    private val jitterValue = FloatValue("JitterAmount", 1f, 0f, 3f).displayable {rotationMode.equals("Simple") || rotationMode.equals("Smooth") }
-    private val smoothMode = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "QuadSine").displayable {rotationMode.equals("Smooth") }
+    private val aimLocationValue = ListValue("AimLocation", arrayOf("LiquidBounce", "Full", "HalfUp", "HalfDown", "CenterSimple", "CenterLine", "CenterLarge", "CenterDot", "MidRange", "HeadRange"), "CenterLarge").displayable { rotationMode.equals("Simple") || rotationMode.equals("Smooth") }
+    private val jitterValue = FloatValue("JitterAmount", 1f, 0f, 3f).displayable { rotationMode.equals("Simple") || rotationMode.equals("Smooth") }
+    private val smoothMode = ListValue("SmoothMode", arrayOf("Custom", "Line", "Quad", "Sine", "QuadSine"), "QuadSine").displayable { rotationMode.equals("Smooth") }
     private val customSmoothValue = FloatValue("CustomSmoothSpeed", 2.4f, 1f, 4f).displayable { rotationMode.equals("Smooth") && smoothMode.equals("Custom") }
 
     private val playerPredictValue = FloatValue("PlayerPredictAmount", 1.2f, -2f, 3f)
@@ -166,7 +166,7 @@ object LegitAura : Module() {
             BlinkUtils.setBlinkState(off = true, release = true)
         }
 
-        val entity = currentTarget?: inRangeDiscoveredTargets.getOrNull(0)?: return
+        val entity = currentTarget ?: inRangeDiscoveredTargets.getOrNull(0)?: return
         currentTarget = entity as EntityLivingBase?
 
         if (rotationMode.equals("Advanced")) {
@@ -348,7 +348,8 @@ object LegitAura : Module() {
                 }
                 "block", "otherblock" -> {
                     val bb = it.entityBoundingBox
-                    it.entityBoundingBox = it.entityBoundingBox.expand(blockMarkExpandValue.get().toDouble(),
+                    it.entityBoundingBox = it.entityBoundingBox.expand(
+                        blockMarkExpandValue.get().toDouble(),
                         blockMarkExpandValue.get().toDouble(),
                         blockMarkExpandValue.get().toDouble())
                     RenderUtils.drawEntityBox(
