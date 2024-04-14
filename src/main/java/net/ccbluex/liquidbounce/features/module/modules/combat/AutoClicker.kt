@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.MathUtils
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemSword
@@ -30,7 +31,9 @@ class AutoClicker : Module() {
     private val modeValue = ListValue("Mode", arrayOf("Normal", "Gaussian", "LegitJitter", "LegitButterfly"), "Normal")
     private val legitJitterValue = ListValue("LegitJitterMode", arrayOf("Jitter1", "Jitter2", "Jitter3", "SimpleJitter"), "Jitter1").displayable {modeValue.equals("LegitJitter")}
     private val legitButterflyValue = ListValue("LegitButterflyMode", arrayOf("Butterfly1", "Butterfly2"), "Butterfly1").displayable {modeValue.equals("LegitButterfly")}
-    
+    private val extraRandomization = FloatValue("ExtraRandomization", 0.4f, 0f, 1f)
+    private val exhaustion = IntegerValue("Exhaust", 30, 0, 100)
+
     private val doubleClickValue = BoolValue("DoubleClick", true)
     private val doubleClickCPSValue = IntegerValue("DCCPSActivation", 5, 0, 10).displayable { doubleClickValue.get() }
     private val doubleClickChanceValue = FloatValue("DoubleClickChance", 0.8f, 0f, 1f).displayable { doubleClickValue.get() }
@@ -98,6 +101,12 @@ class AutoClicker : Module() {
     private var clickBlocked = false
     private var blockTicks = 0
 
+    private var extraRandomDelay = 0L
+    private val extraRandomTimer = MSTimer()
+    private var extraRandomAmount = 0L
+
+    private var exhaust = 1f
+
 
 
     @EventTarget
@@ -153,6 +162,12 @@ class AutoClicker : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        exhaust *= 0.995f
+        if (extraRandomTimer.hasTimePassed(extraRandomDelay)) {
+            extraRandomDelay = RandomUtils.nextInt(700,2000).toLong()
+            extraRandomAmount = (RandomUtils.nextFloat(-0.3f, 0.7f) * extraRandomization.get() * 40f).toLong()
+        }
+
         blockTicks ++
         if (jitterValue.get() && (leftValue.get() && mc.gameSettings.keyBindAttack.isKeyDown || rightValue.get() && mc.gameSettings.keyBindUseItem.isKeyDown && !mc.thePlayer.isUsingItem)) {
             if (Random.nextBoolean()) mc.thePlayer.rotationYaw += if (Random.nextBoolean()) -RandomUtils.nextFloat(0F, 1F) else RandomUtils.nextFloat(0F, 1F)
@@ -326,7 +341,11 @@ class AutoClicker : Module() {
                 }
             }
         }
-        return cDelay
+        if (exhaust > 1) {
+            exhaust = 1f
+        }
+        exhaust += 0.17f/(100.5f - exhaustion.get().toFloat())
+        return (cDelay + extraRandomAmount.toInt()) * (1 + (exhaust * exhaustion.get() / 4).toInt())
     }
 
     override val tag: String

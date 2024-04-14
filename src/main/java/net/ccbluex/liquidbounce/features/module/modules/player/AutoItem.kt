@@ -1,5 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.player
 
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -17,6 +18,7 @@ import net.minecraft.util.MovingObjectPosition
 @ModuleInfo(name = "AutoItem", category = ModuleCategory.PLAYER)
 object AutoItem : Module() {
     private val autoTool = BoolValue("AutoTool", true)
+    private val noCombat = BoolValue("NoCombat", true).displayable { autoTool.get() }
     private val autoWeapon = BoolValue("AutoWeapon", false)
     private val onlySwordValue = BoolValue("OnlySword", false).displayable { autoWeapon.get() }
     private val silent = BoolValue("Spoof", false)
@@ -31,7 +33,7 @@ object AutoItem : Module() {
     fun onRender2D(event: Render2DEvent) {
         if (autoTool.get()) {
             if (!mc.gameSettings.keyBindUseItem.isKeyDown && mc.gameSettings.keyBindAttack.isKeyDown && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-
+                if (noCombat.get() && FDPClient.combatManager.inCombat) return
                 var bestSpeed = 0
                 if (!mining) {
                     prevItem = mc.thePlayer.inventory.currentItem

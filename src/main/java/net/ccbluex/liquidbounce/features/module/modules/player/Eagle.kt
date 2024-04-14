@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -15,7 +14,6 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.settings.GameSettings
-import net.ccbluex.liquidbounce.utils.MouseUtils
 import net.minecraft.block.BlockLiquid
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
@@ -25,6 +23,7 @@ import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import org.lwjgl.input.Mouse
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.minecraft.client.settings.KeyBinding
 
 @ModuleInfo(name = "Eagle", category = ModuleCategory.PLAYER)
 object Eagle : Module() {
@@ -41,6 +40,11 @@ object Eagle : Module() {
     private val holdTimer = MSTimer()
     
     private var sneakValue = false
+
+    private var l = 0L
+    private var f = 0
+    private var lm: MovingObjectPosition? = null
+    private var lp: BlockPos? = null
     
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
@@ -51,28 +55,11 @@ object Eagle : Module() {
                 mc.theWorld.getBlockState(BlockPos(mc.thePlayer.posX + mc.thePlayer.motionX.toDouble() * motionPredictValue.get().toDouble(), mc.thePlayer.posY - 1.0, mc.thePlayer.posZ + mc.thePlayer.motionZ.toDouble() * motionPredictValue.get().toDouble())).block == Blocks.air) {
             sneakValue = true
             holdTimer.reset()
-        } else if (holdTimer.hasTimePassed(holdTime.get().toLong()) && limitTimeValue.get()) {
+        } else if (holdTimer.hasTimePassed(holdTime.get().toLong()) || !limitTimeValue.get()) {
             sneakValue = false
         }
         mc.gameSettings.keyBindSneak.pressed = (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak) || sneakValue)
-    }
-    
-    override fun onEnable() {
-        sneakValue = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
-        holdTimer.reset()
-    }
 
-    override fun onDisable() {
-        mc.gameSettings.keyBindSneak.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
-    }
-
-    private var l = 0L
-    private var f = 0
-    private var lm: MovingObjectPosition? = null
-    private var lp: BlockPos? = null
-
-    @EventTarget
-    fun onRender(event: Render3DEvent) {
         if (autoPlace.get() && sneakValue) {
             if (mc.currentScreen == null && !mc.thePlayer.capabilities.isFlying) {
                 val i = mc.thePlayer.heldItem
@@ -88,18 +75,7 @@ object Eagle : Module() {
                                 val b = mc.theWorld.getBlockState(pos).block
                                 if (b != null && b !== Blocks.air && b !is BlockLiquid) {
                                     if (!md.get() || Mouse.isButtonDown(1)) {
-                                        val n = System.currentTimeMillis()
-                                        if (n - this.l >= 70L) {
-                                            this.l = n
-                                            if (mc.playerController.onPlayerRightClick(mc.thePlayer, mc.theWorld, i, pos, m.sideHit, m.hitVec)) {
-                                                MouseUtils.setMouseButtonState(1, true)
-                                                mc.thePlayer.swingItem()
-                                                mc.itemRenderer.resetEquippedProgress()
-                                                MouseUtils.setMouseButtonState(1, false)
-                                                this.lp = pos
-                                                this.f = 0
-                                            }
-                                        }
+                                        KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
                                     }
                                 }
                             }
@@ -108,5 +84,14 @@ object Eagle : Module() {
                 }
             }
         }
+    }
+    
+    override fun onEnable() {
+        sneakValue = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
+        holdTimer.reset()
+    }
+
+    override fun onDisable() {
+        mc.gameSettings.keyBindSneak.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)
     }
 }
