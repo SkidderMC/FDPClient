@@ -68,7 +68,7 @@ object InvManager : Module() {
     private val onlySwordDamage = BoolValue("OnlySwordWeapon", true)
     private val swingValue = BoolValue("Swing", true)
     private val nbtGoalValue = ListValue("NBTGoal", ItemUtils.EnumNBTPriorityType.values().map { it.toString() }.toTypedArray(), "NONE")
-    private val nbtItemNotGarbage = BoolValue("NBTItemNotGarbage", true).displayable { !nbtGoalValue.equals("NONE") }
+    private val nbtItemNotGarbage = BoolValue("NBTItemNotGarbage", false).displayable { !nbtGoalValue.equals("NONE") }
     private val nbtArmorPriority = FloatValue("NBTArmorPriority", 0f, 0f, 5f).displayable { !nbtGoalValue.equals("NONE") }
     private val nbtWeaponPriority = FloatValue("NBTWeaponPriority", 0f, 0f, 5f).displayable { !nbtGoalValue.equals("NONE") }
     private val ignoreVehiclesValue = BoolValue("IgnoreVehicles", false)
