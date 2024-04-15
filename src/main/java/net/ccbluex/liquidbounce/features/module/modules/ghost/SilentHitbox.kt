@@ -3,8 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.combat
-
+package net.ccbluex.liquidbounce.features.module.modules.ghost
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
@@ -22,7 +21,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
 
-@ModuleInfo(name = "SilentHitbox", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "SilentHitbox", category = ModuleCategory.GHOST)
 class SilentHitbox : Module() {
 
     private val rangeValue = FloatValue("Range", 4.4F, 1F, 8F)
@@ -54,6 +53,11 @@ class SilentHitbox : Module() {
             mc.thePlayer.rotationYaw = FreeLook.cameraYaw
             mc.thePlayer.rotationPitch = FreeLook.cameraPitch
         }
+
+        if (!FreeLook.isEnabled) {
+            FreeLook.enable()
+            // prevent noncompatability with legit scaffold or aura
+        }
         if (mc.gameSettings.keyBindAttack.isKeyDown) {
             clickTimer.reset()
         }
@@ -82,6 +86,8 @@ class SilentHitbox : Module() {
             }
             .minByOrNull { RotationUtils.getRotationDifference(it) } ?: return
 
+        val fovDist = RotationUtils.getRotationDifference(entity)
+
         mc.thePlayer.rotationYaw = oldYaw
         mc.thePlayer.rotationPitch = oldPitch
 
@@ -91,15 +97,25 @@ class SilentHitbox : Module() {
             enabled = true
         }
 
-
-        targetRot = (RotationUtils.calculateCenter(
-            "LiquidBounce",
-            "Horizontal",
-            0.1,
-            entity.hitBox,
-            true,
-            false)
-                )!!.rotation
+        if (fovDist > 2) {
+          targetRot = (RotationUtils.calculateCenter(
+              "LiquidBounce",
+              "Horizontal",
+              0.1,
+              entity.hitBox,
+              true,
+              false)
+                  )!!.rotation
+        } else {
+          targetRot = (RotationUtils.calculateCenter(
+              "Optimal",
+              "Cubic",
+              0.1,
+              entity.hitBox,
+              true,
+              false)
+                  )!!.rotation
+        }
 
         playerRot = Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)
 
