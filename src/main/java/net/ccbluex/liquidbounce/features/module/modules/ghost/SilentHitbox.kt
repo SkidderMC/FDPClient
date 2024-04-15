@@ -55,7 +55,7 @@ class SilentHitbox : Module() {
         }
 
         if (!FreeLook.isEnabled) {
-            FreeLook.enable()
+            FDPClient.moduleManager[FreeLook::class.java]!!.enable()
             // prevent noncompatability with legit scaffold or aura
         }
         if (mc.gameSettings.keyBindAttack.isKeyDown) {
