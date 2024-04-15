@@ -25,6 +25,18 @@ import kotlin.math.sqrt
 @ModuleInfo(name = "Velocity", category = ModuleCategory.COMBAT)
 class Velocity : Module() {
 
+    val horizontalValue = FloatValue("Horizontal", 0f, -2f, 2f).displayable { getValue("Simple")?.value == true || getValue("Tick")?.value == true }
+    val verticalValue = FloatValue("Vertical", 0f, -2f, 2f).displayable { getValue("Simple")?.value == true || getValue("Tick")?.value == true }
+    val chanceValue = IntegerValue("Chance", 100, 0, 100).displayable { getValue("Simple")?.value == true }
+    val velocityTickValue = IntegerValue("VelocityTick", 1, 0, 10).displayable { getValue("Tick")?.value == true}
+    val onlyGroundValue = BoolValue("OnlyGround", false)
+    val onlyCombatValue = BoolValue("OnlyCombat", false)
+    // private val onlyHitVelocityValue = BoolValue("OnlyHitVelocity",false)
+    private val noFireValue = BoolValue("noFire", false)
+
+    private val overrideDirectionValue = ListValue("OverrideDirection", arrayOf("None", "Hard", "Offset"), "None")
+    private val overrideDirectionYawValue = FloatValue("OverrideDirectionYaw", 0F, -180F, 180F)
+        .displayable { !overrideDirectionValue.equals("None") }
     private val mode = LinkedList<BoolValue>()
     private val mode2 = LinkedList<VelocityMode>()
     private val settings = arrayListOf<Value<*>>()
@@ -66,19 +78,6 @@ class Velocity : Module() {
         antiDesync = false
         needReset = true
     }
-
-    val horizontalValue = FloatValue("Horizontal", 0f, -2f, 2f).displayable { getValue("Simple")?.value == true || getValue("Tick")?.value == true }
-    val verticalValue = FloatValue("Vertical", 0f, -2f, 2f).displayable { getValue("Simple")?.value == true || getValue("Tick")?.value == true }
-    val chanceValue = IntegerValue("Chance", 100, 0, 100).displayable { getValue("Simple")?.value == true }
-    val velocityTickValue = IntegerValue("VelocityTick", 1, 0, 10).displayable { getValue("Tick")?.value == true}
-    val onlyGroundValue = BoolValue("OnlyGround", false)
-    val onlyCombatValue = BoolValue("OnlyCombat", false)
-    // private val onlyHitVelocityValue = BoolValue("OnlyHitVelocity",false)
-    private val noFireValue = BoolValue("noFire", false)
-
-    private val overrideDirectionValue = ListValue("OverrideDirection", arrayOf("None", "Hard", "Offset"), "None")
-    private val overrideDirectionYawValue = FloatValue("OverrideDirectionYaw", 0F, -180F, 180F)
-        .displayable { !overrideDirectionValue.equals("None") }
 
     val velocityTimer = MSTimer()
     var wasTimer = false
