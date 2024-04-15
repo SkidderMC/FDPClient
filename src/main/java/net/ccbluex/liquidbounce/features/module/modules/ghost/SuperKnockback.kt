@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.combat
+package net.ccbluex.liquidbounce.features.module.modules.ghost
 
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -22,7 +22,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C0BPacketEntityAction
 
-@ModuleInfo(name = "SuperKnockback", category = ModuleCategory.COMBAT)
+@ModuleInfo(name = "SuperKnockback", category = ModuleCategory.GHOST)
 class SuperKnockback : Module() {
 
     private val hurtTimeValue = IntegerValue("HurtTime", 10, 0, 10)
