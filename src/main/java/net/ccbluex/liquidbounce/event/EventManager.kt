@@ -29,7 +29,8 @@ class EventManager : MinecraftInstance() {
                     invokableEventTargets.add(EventHook(listener, method, eventTarget))
                     registry[eventClass] = invokableEventTargets
                 } catch (t: Throwable) {
-                    t.printStackTrace()
+                    //t.printStackTrace()
+                    null 
                 }
             }
         }
