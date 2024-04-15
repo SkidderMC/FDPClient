@@ -30,7 +30,7 @@ import java.awt.Color
  *
  * Shows a list of enabled modules
  */
-@ElementInfo(name = "Arraylist", single = true, blur = true)
+@ElementInfo(name = "Arraylist", single = true)
 class Arraylist(
     x: Double = 5.0,
     y: Double = 3.0,
@@ -67,7 +67,7 @@ class Arraylist(
     private val roundStrength = FloatValue("Rounded-Strength", 0.57F, 0F, 2F).displayable { rectDisplay.get() }
 
     // Shadow Options
-    private val shadowShaderValue = BoolValue("Shadow", true)
+    private val shadowShaderValue = BoolValue("Shadow", false)
     private val shadowNoCutValue = BoolValue("Shadow-NoCut", false).displayable { shadowShaderValue.get() }
     private val shadowStrength = IntegerValue("Shadow-Strength", 30, 1, 40).displayable { shadowShaderValue.get() }
     private val shadowColorMode = ListValue("Shadow-Color", arrayOf("Background", "Text", "Custom"), "Text").displayable { shadowShaderValue.get() }
@@ -255,7 +255,6 @@ class Arraylist(
                 modules.forEachIndexed { index, module ->
                     val displayString = getModuleName(module)
 
-                    val width = fontRenderer.getStringWidth(displayString)
                     val xPos = -module.slide - 2
 
                     RenderUtils.customRounded(
