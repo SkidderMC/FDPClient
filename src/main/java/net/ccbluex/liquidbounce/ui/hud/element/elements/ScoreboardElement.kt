@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.ui.hud.element.elements
 import com.google.common.collect.Iterables
 import com.google.common.collect.Lists
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.hud.element.Border
 import net.ccbluex.liquidbounce.ui.hud.element.Element
 import net.ccbluex.liquidbounce.ui.hud.element.ElementInfo
@@ -16,21 +15,16 @@ import net.ccbluex.liquidbounce.ui.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.ShadowUtils
-import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FontValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.scoreboard.ScoreObjective
 import net.minecraft.scoreboard.ScorePlayerTeam
 import net.minecraft.scoreboard.Scoreboard
-import net.minecraft.util.EnumChatFormatting
 import java.awt.Color
-import org.lwjgl.opengl.GL11
 
 /**
  * CustomHUD scoreboard

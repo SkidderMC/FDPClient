@@ -12,13 +12,24 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.anima
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.normal.TimerUtil;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.objects.Drag;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils;
+import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders;
 import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme;
 import net.ccbluex.liquidbounce.utils.MathUtils;
+import net.ccbluex.liquidbounce.utils.render.BlendUtils;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.RoundedUtil;
+import net.ccbluex.liquidbounce.utils.render.Stencil;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.util.ResourceLocation;
+import org.lwjgl.input.Mouse;
+import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.HashMap;
+
+import static net.ccbluex.liquidbounce.utils.MouseUtils.mouseWithinBounds;
 
 public class SideGui extends GuiPanel {
 
@@ -35,6 +46,9 @@ public class SideGui extends GuiPanel {
     private String currentCategory = "Configs";
 
     private TimerUtil timerUtil;
+    private float scroll = 0F;
+    private boolean text = false;
+    private float animScroll = 0F;
 
 
     @Override
@@ -77,6 +91,7 @@ public class SideGui extends GuiPanel {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks, int alpha) {
+
         // if (configPanel.reInit) {
         //    configPanel.initGui();
         //     configPanel.reInit = false;
@@ -151,6 +166,57 @@ public class SideGui extends GuiPanel {
 
         DrRenderUtils.drawRect2(x + 20, y + 50, rectWidth - 40, 1, new Color(45, 45, 45, alpha).getRGB());
 
+        if (currentCategory.equals("Design")) {
+
+            // Text
+            text = ClientTheme.INSTANCE.getTextValue().get();
+            RenderUtils.drawRoundedRect(25F, 350.0f, 40F, 365.0f, 5F, textColor);
+            RenderUtils.drawRoundedOutline(25F, 350.0f, 40F, 365.0f, 7F, 1F, Color.WHITE.getRGB());
+            FontLoaders.C12.drawStringWithShadow("Text White Color", 43.0, 351.5, Color.WHITE.getRGB());
+            FontLoaders.C12.drawStringWithShadow("Fade Side : " + ClientTheme.INSTANCE.getUpdown().get(), 25.0, 376.5, Color.WHITE.getRGB());
+            FontLoaders.C12.drawStringWithShadow("FadeSpeed : " + ClientTheme.INSTANCE.getFadespeed().get(), 25.0, 401.5, Color.WHITE.getRGB());
+            GlStateManager.resetColor();
+
+            Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString("Not Finished - SOOOOOOOOON", x + rectWidth / 2, y + rectHeight / 2, DrRenderUtils.applyOpacity(-1, alpha / 255f));
+
+            int wheel = Mouse.getDWheel();
+            if (wheel != 0) {
+                if (wheel > 0) {
+                    scroll += 15f;
+                } else {
+                    scroll -= 15f;
+                }
+            }
+            if (scroll < -100F) {
+                scroll = -100F;
+            }
+            if (scroll > 0F) {
+                scroll = 0F;
+            }
+
+            RenderUtils.drawRoundedOutline(
+                    x + 22f,
+                    y + 163.0f + scroll,
+                    x + 126.4f,
+                    y + 237.0f + scroll,
+                    23.5F,
+                    4F,
+                    new Color(255, 255, 255).getRGB()
+            );
+            RenderUtils.drawRoundedGradientRectCorner(
+                    x + 24F,
+                    y + 164.5F + scroll,
+                    x + 124.5F,
+                    y + 235F + scroll,
+                    20F,
+                    ClientTheme.INSTANCE.getColorFromName("Tree", 0).getRGB(),
+                    ClientTheme.INSTANCE.getColorFromName("Tree", 90).getRGB(),
+                    ClientTheme.INSTANCE.getColorFromName("Tree", 180).getRGB(),
+                    ClientTheme.INSTANCE.getColorFromName("Tree", 270).getRGB()
+            );
+            FontLoaders.F18.drawStringWithShadow("Tree", x + 60.0, y + 240.0 + scroll, ClientTheme.INSTANCE.getColorFromName("Tree", 1).getRGB());
+
+        }
 
         if (currentCategory.equals("Scripts")) {
            /* scriptPanel.x = x;
@@ -210,9 +276,116 @@ public class SideGui extends GuiPanel {
             } else {
 
             }
-
         }
 
+        if (currentCategory.equals("Design")) {
+            if (mouseWithinBounds(mouseX, mouseY, 25, 70 + animScroll, 122, 140 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("Cherry");
+            }
+
+            if (mouseWithinBounds(mouseX, mouseY, 150, 70 + animScroll, 247, 140 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("Water");
+            }
+
+            if (mouseWithinBounds(mouseX, mouseY, 275, 70 + animScroll, 372, 140 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("Magic");
+            }
+
+            if (mouseWithinBounds(mouseX, mouseY, 400, 70 + animScroll, 497, 140 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("DarkNight");
+            }
+
+            if (mouseWithinBounds(mouseX, mouseY, 525, 70 + animScroll, 622, 140 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("Sun");
+            }
+
+            // Line 2
+
+            if (mouseWithinBounds(mouseX, mouseY, 25, 165 + animScroll, 122, 235 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("Tree");
+            }
+
+            if (mouseWithinBounds(mouseX, mouseY, 150, 165 + animScroll, 247, 235 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("Flower");
+            }
+
+            if (mouseWithinBounds(mouseX, mouseY, 275, 165 + animScroll, 372, 235 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("Loyoi");
+            }
+
+            if (mouseWithinBounds(mouseX, mouseY, 400, 165 + animScroll, 497, 235 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("Cero");
+            }
+
+            if (mouseWithinBounds(mouseX, mouseY, 525, 165 + animScroll, 622, 235 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("Soniga");
+            }
+
+            // Line 3
+
+            if (mouseWithinBounds(mouseX, mouseY, 25, 260 + animScroll, 122, 330 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("May");
+            }
+            if (mouseWithinBounds(mouseX, mouseY, 150, 260 + animScroll, 247, 330 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("Mint");
+            }
+            if (mouseWithinBounds(mouseX, mouseY, 275, 260 + animScroll, 372, 330 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("Azure");
+            }
+            if (mouseWithinBounds(mouseX, mouseY, 400, 260 + animScroll, 497, 330 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("Rainbow");
+            }
+            if (mouseWithinBounds(mouseX, mouseY, 525, 260 + animScroll, 622, 330 + animScroll)) {
+                ClientTheme.INSTANCE.getClientColorMode().set("Astolfo");
+            }
+
+            // Line 4
+            if (animScroll < -75) {
+                if (mouseWithinBounds(mouseX, mouseY, 25, 355 + animScroll, 122, 425 + animScroll)) {
+                    ClientTheme.INSTANCE.getClientColorMode().set("Pumpkin");
+                }
+                if (mouseWithinBounds(mouseX, mouseY, 150, 355 + animScroll, 247, 425 + animScroll)) {
+                    ClientTheme.INSTANCE.getClientColorMode().set("Polarized");
+                }
+                if (mouseWithinBounds(mouseX, mouseY, 275, 355 + animScroll, 372, 425 + animScroll)) {
+                    ClientTheme.INSTANCE.getClientColorMode().set("Sundae");
+                }
+                if (mouseWithinBounds(mouseX, mouseY, 400, 355 + animScroll, 497, 425 + animScroll)) {
+                    ClientTheme.INSTANCE.getClientColorMode().set("Terminal");
+                }
+                if (mouseWithinBounds(mouseX, mouseY, 525, 355 + animScroll, 622, 425 + animScroll)) {
+                    ClientTheme.INSTANCE.getClientColorMode().set("Coral");
+                }
+            }
+            // Line 5
+            if (animScroll < -115) {
+                if (mouseWithinBounds(mouseX, mouseY, 25, 450 + animScroll, 122, 520 + animScroll)) {
+                    ClientTheme.INSTANCE.getClientColorMode().set("Fire");
+                }
+                if (mouseWithinBounds(mouseX, mouseY, 150, 450 + animScroll, 247, 520 + animScroll)) {
+                    ClientTheme.INSTANCE.getClientColorMode().set("Aqua");
+                }
+                if (mouseWithinBounds(mouseX, mouseY, 275, 450 + animScroll, 372, 520 + animScroll)) {
+                    ClientTheme.INSTANCE.getClientColorMode().set("Peony");
+                }
+
+            }
+
+            if (mouseWithinBounds(mouseX, mouseY, 25, 350, 40, 365)) {
+                ClientTheme.INSTANCE.getTextValue().set(!ClientTheme.INSTANCE.getTextValue().get());
+            }
+            if (mouseWithinBounds(mouseX, mouseY, 90, 375, 140, 390)) {
+                ClientTheme.INSTANCE.getUpdown().set(!ClientTheme.INSTANCE.getUpdown().get());
+            }
+            if (mouseWithinBounds(mouseX, mouseY, 160, 380, 180, 400)) {
+                if (ClientTheme.INSTANCE.getFadespeed().get() != 20)
+                    ClientTheme.INSTANCE.getFadespeed().set(ClientTheme.INSTANCE.getFadespeed().get() + 1);
+            }
+            if (mouseWithinBounds(mouseX, mouseY, 160, 410, 180, 430)) {
+                if (ClientTheme.INSTANCE.getFadespeed().get() != 0)
+                    ClientTheme.INSTANCE.getFadespeed().set(ClientTheme.INSTANCE.getFadespeed().get() - 1);
+            }
+        }
     }
 
     @Override

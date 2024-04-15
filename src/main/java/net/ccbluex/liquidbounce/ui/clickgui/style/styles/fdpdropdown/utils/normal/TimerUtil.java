@@ -13,7 +13,6 @@ public class TimerUtil {
         lastMS = System.currentTimeMillis();
     }
 
-
     public boolean hasTimeElapsed(long time) {
         return System.currentTimeMillis() - lastMS > time;
     }

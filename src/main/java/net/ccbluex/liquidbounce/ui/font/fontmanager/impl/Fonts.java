@@ -34,7 +34,6 @@ public interface Fonts {
 		final class CheckFont_20 { public static final FontRenderer CheckFont_20 = CheckFont.ofSize(20); private CheckFont_20() {} }
 	}
 
-
 	interface SF {
 
 		FontFamily SF = FONT_MANAGER.fontFamily(FontType.SF);

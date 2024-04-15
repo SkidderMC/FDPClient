@@ -120,6 +120,12 @@ class UpdateModelEvent(val player: EntityPlayer, val model: ModelPlayer) : Event
  */
 class EntityDamageEvent(val damagedEntity: Entity): Event()
 
+
+/**
+ * Called after motion
+ */
+class PostMotionEvent: Event()
+
 /**
  * Called in "onLivingUpdate" when the player is using a use item.
  *

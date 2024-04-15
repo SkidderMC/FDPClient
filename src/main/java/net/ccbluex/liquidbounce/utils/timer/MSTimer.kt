@@ -16,9 +16,8 @@ class MSTimer {
         return MS + time - System.currentTimeMillis()
     }
 
-    fun timePassed(): Long {
-        return System.currentTimeMillis() - time
-    }
+    val reachedTime: Long
+        get() = System.currentTimeMillis() - time
 
     fun zero() {
         time = -1L

@@ -56,6 +56,8 @@ public abstract class MixinGuiScreen {
     @Shadow
     protected abstract void actionPerformed(GuiButton p_actionPerformed_1_);
 
+    @Shadow public abstract void initGui();
+
     @Inject(method = "drawWorldBackground", at = @At("HEAD"), cancellable = true)
     private void drawWorldBackground(final CallbackInfo callbackInfo) {
         if (!fDPClient$shouldRenderBackground()) {
