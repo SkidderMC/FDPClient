@@ -54,8 +54,8 @@ object FakeLag : Module() {
     private var hasPlace = false
     override fun onDisable() {
         releasePackets()
-        hasPlace = false;
-        clear();
+        hasPlace = false
+        clear()
     }
 
     fun fakeLagPacket(event: PacketEvent) {
