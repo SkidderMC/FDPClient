@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
 import net.ccbluex.liquidbounce.features.module.modules.movement.Freeze
-import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
+import net.ccbluex.liquidbounce.features.module.modules.ghost.FreeLook
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.client.settings.GameSettings

@@ -19,7 +19,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.client.settings.GameSettings
-import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.InventoryUtils
