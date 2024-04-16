@@ -40,7 +40,7 @@ class BetterTickBase : Module() {
         val entityMotionX = (entity.posX - entity.lastTickPosX)
         val entityMotionZ = (entity.posZ - entity.lastTickPosZ)
         val predictionTicks = (MathUtils.getDistance(mc.thePlayer.posX, mc.thePlayer.posZ, entity.posX, entity.posZ) - 3.3) / (
-                ((mc.thePlayer.motionX * differenceX + mc.thePlayer.motionZ * differenceZ)
+                ((mc.thePlayer.motionX * -differenceX + mc.thePlayer.motionZ * -differenceZ)
                         / MathUtils.getDistance(0.0,0.0, differenceX, differenceZ)) +
                 ((entityMotionX * differenceX + entityMotionZ * differenceZ)
                             / MathUtils.getDistance(0.0,0.0, differenceX, differenceZ))
