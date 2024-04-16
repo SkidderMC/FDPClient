@@ -71,7 +71,6 @@ class ClientSpoof : Module() {
             "Melon",
             "LiquidBounce",
             "Wolfram",
-            "Rise",
             "Hyperium",
             "Badlion",
             "PVP",
