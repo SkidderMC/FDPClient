@@ -6,10 +6,14 @@
 package net.ccbluex.liquidbounce.utils.extensions
 
 import net.ccbluex.liquidbounce.utils.ClientUtils.mc
+import net.ccbluex.liquidbounce.utils.InventoryUtils.serverSlot
+import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.getState
 import net.ccbluex.liquidbounce.utils.render.GLUtils
 import net.minecraft.client.Minecraft
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -23,12 +27,13 @@ import net.minecraft.entity.passive.EntityBat
 import net.minecraft.entity.passive.EntitySquid
 import net.minecraft.entity.passive.EntityVillager
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.MovingObjectPosition
-import net.minecraft.util.ResourceLocation
-import net.minecraft.util.Vec3
+import net.minecraft.item.ItemBlock
+import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
+import net.minecraft.util.*
 import net.minecraft.world.World
 import net.minecraft.world.chunk.Chunk
+import net.minecraftforge.event.ForgeEventFactory
 import javax.vecmath.Vector3d
 import kotlin.math.*
 
@@ -137,6 +142,66 @@ fun World.getEntitiesInRadius(entity: Entity, radius: Double = 16.0): List<Entit
     }
     return entities
 }
+
+fun EntityPlayerSP.onPlayerRightClick(
+    clickPos: BlockPos, side: EnumFacing, clickVec: Vec3,
+    stack: ItemStack? = inventory.mainInventory[serverSlot],
+): Boolean {
+    if (clickPos !in worldObj.worldBorder)
+        return false
+
+    val (facingX, facingY, facingZ) = (clickVec - clickPos.toVec()).toFloatTriple()
+
+    val sendClick = {
+        PacketUtils.sendPacket(C08PacketPlayerBlockPlacement(clickPos, side.index, stack, facingX, facingY, facingZ))
+        true
+    }
+
+    // If player is a spectator, send click and return true
+    if (mc.playerController.isSpectator)
+        return sendClick()
+
+    val item = stack?.item
+
+    if (item?.onItemUseFirst(stack, this, worldObj, clickPos, side, facingX, facingY, facingZ) == true)
+        return true
+
+    val blockState = getState(clickPos)
+
+    // If click had activated a block, send click and return true
+    if ((!isSneaking || item == null || item.doesSneakBypassUse(worldObj, clickPos, this))
+        && blockState?.block?.onBlockActivated(worldObj,
+            clickPos,
+            blockState,
+            this,
+            side,
+            facingX,
+            facingY,
+            facingZ
+        ) == true)
+        return sendClick()
+
+    if (item is ItemBlock && !item.canPlaceBlockOnSide(worldObj, clickPos, side, this, stack))
+        return false
+
+    sendClick()
+
+    if (stack == null)
+        return false
+
+    val prevMetadata = stack.metadata
+    val prevSize = stack.stackSize
+
+    return stack.onItemUse(this, worldObj, clickPos, side, facingX, facingY, facingZ).also {
+        if (mc.playerController.isInCreativeMode) {
+            stack.itemDamage = prevMetadata
+            stack.stackSize = prevSize
+        } else if (stack.stackSize <= 0) {
+            ForgeEventFactory.onPlayerDestroyItem(this, stack)
+        }
+    }
+}
+
 
 val Entity.rotation: Rotation
     get() = Rotation(rotationYaw, rotationPitch)

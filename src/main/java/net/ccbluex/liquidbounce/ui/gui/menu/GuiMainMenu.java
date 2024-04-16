@@ -229,7 +229,6 @@ public class GuiMainMenu extends GuiScreen implements  GuiYesNoCallback {
         GlStateManager.enableDepth();
     }
 
-
     private void rotateAndBlurSkybox(float p_73968_1_) {
         GL11.glTexParameteri(3553, 10241, 9729);
         GL11.glTexParameteri(3553, 10240, 9729);

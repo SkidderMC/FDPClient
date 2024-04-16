@@ -23,11 +23,15 @@ fun BlockPos.getBlock() = BlockUtils.getBlock(this)
  */
 fun BlockPos.getVec() = Vec3(x + 0.5, y + 0.5, z + 0.5)
 
+fun BlockPos.toVec() = Vec3(this)
+
+fun BlockPos.isReplaceable() = BlockUtils.isReplaceable(this)
+
+fun BlockPos.canBeClicked() = BlockUtils.canBeClicked(this)
+
 fun BlockPos.getMaterial() = getBlock()?.material
 
 fun BlockPos.isFullBlock() = getBlock()?.isFullBlock
-
-fun BlockPos.isReplaceable() = getMaterial()?.isReplaceable ?: false
 
 fun BlockPos.getCenterDistance() = mc.thePlayer.getDistance(x + 0.5, y + 0.5, z + 0.5)
 
@@ -79,4 +83,3 @@ inline fun collideBlock(aabb: AxisAlignedBB, predicate: (Block?) -> Boolean): Bo
 
     return true
 }
-

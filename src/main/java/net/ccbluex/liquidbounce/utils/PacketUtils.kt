@@ -22,6 +22,15 @@ object PacketUtils : MinecraftInstance() {
     }
 
     @JvmStatic
+    @JvmOverloads
+    fun sendPacket(packet: Packet<*>, triggerEvent: Boolean = true) {
+        if (triggerEvent) {
+            mc.netHandler?.addToSendQueue(packet)
+            return
+        }
+    }
+
+    @JvmStatic
     fun sendPacketNoEvent(packet: Packet<INetHandlerPlayServer>) {
         packets.add(packet)
         mc.netHandler.addToSendQueue(packet)

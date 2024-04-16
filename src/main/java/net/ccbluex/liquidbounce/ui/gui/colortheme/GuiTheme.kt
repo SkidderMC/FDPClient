@@ -71,6 +71,10 @@ class GuiTheme : GuiScreen() {
             textX: Double,
             textY: Double
         ) {
+            GlowUtils.drawGlow(x1 - 2F, y1 + 35F + animScroll,108.4f, 40F, 10, Color(20, 20, 20, 100))
+            GlowUtils.drawGlow(x1 - 1F, y1 + animScroll - 2F,62f, 39F, 10, ClientTheme.getColorFromName(mode, 0))
+            GlowUtils.drawGlow(x1 - 4F + 54.2F, y1 + animScroll -2F,56.2f, 39F, 10, ClientTheme.getColorFromName(mode, 90))
+            RenderUtils.drawRoundedGradientRectCorner(x1 + 2, y1 + 1.5F + animScroll, x2 - 2, y2 - 2.5F + animScroll, 20F, gradientColors[0], gradientColors[1])
             RenderUtils.customRounded(x1 + 2, y1 + 35F + animScroll, x2 - 2, y2 - 2.5F + animScroll, 0F, 0F, 10F, 10F, Color(20, 20, 20).rgb)
             if (ClientTheme.ClientColorMode.get() == mode) {
                 RenderUtils.drawRoundedOutline(x1, y1 - 0.5F + animScroll, x2, y2 - 1.3F + animScroll, 23.5F, 4F, Color(255, 255, 255).rgb)
@@ -79,7 +83,7 @@ class GuiTheme : GuiScreen() {
         }
 
         val modes = listOf(
-            "Cherry", "Water", "Magic", "DarkNight", "Sun",
+            "Zywl", "FDP", "Magic", "DarkNight", "Sun",
             "Tree", "Flower", "Loyoi", "Cero", "Soniga",
             "May", "Mint", "Azure", "Rainbow", "Astolfo",
             "Pumpkin", "Polarized", "Sundae", "Terminal", "Coral",
@@ -102,12 +106,12 @@ class GuiTheme : GuiScreen() {
             Pair(58.0, 525.0), Pair(185.0, 525.0), Pair(305.0, 525.0)
         )
 
-        val gradientColors = List(4) { i -> ClientTheme.getColorFromName(modes[i], i * 90).rgb }
-
         for (i in modes.indices) {
             val mode = modes[i]
             val position = modePositions[i]
             val textPosition = textPositions[i]
+            val gradientColors = List(4) { ClientTheme.getColorFromName(mode, it * 90).rgb }
+
             drawMode(mode, position.first, position.second, position.first + 104.4f, position.second + 74f, gradientColors, mode, textPosition.first, textPosition.second)
         }
 
@@ -127,11 +131,11 @@ class GuiTheme : GuiScreen() {
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (mouseWithinBounds(mouseX, mouseY, 25F, 70F + animScroll, 122F, 140F + animScroll)) {
-            ClientTheme.ClientColorMode.set("Cherry")
+            ClientTheme.ClientColorMode.set("Zywl")
         }
 
         if (mouseWithinBounds(mouseX, mouseY, 150F, 70F + animScroll, 247F, 140F + animScroll)) {
-            ClientTheme.ClientColorMode.set("Water")
+            ClientTheme.ClientColorMode.set("FDP")
         }
 
         if (mouseWithinBounds(mouseX, mouseY, 275F, 70F + animScroll, 372F, 140F + animScroll)) {
