@@ -263,7 +263,7 @@ object HotbarSettings : Module() {
     }
     // end of mojang code
 
-    // rise
+
     private var easeAnimation: Animation? = null
     private var easingValue = 0
         get() {

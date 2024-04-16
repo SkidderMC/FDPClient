@@ -78,7 +78,6 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             RemixTH(this),
             SlowlyTH(this),
             SimplicityTH(this),
-            RiseTH(this),
             J3UltimateTH(this),
         ).toTypedArray(), "Simple")
     }
