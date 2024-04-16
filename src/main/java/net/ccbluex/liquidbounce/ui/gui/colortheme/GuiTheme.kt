@@ -71,9 +71,9 @@ class GuiTheme : GuiScreen() {
             textX: Double,
             textY: Double
         ) {
-            GlowUtils.drawGlow(x1 - 2F, y1 + 35F + animScroll,108.4f, 40F, 10, Color(20, 20, 20, 100))
-            GlowUtils.drawGlow(x1 - 1F, y1 + animScroll - 2F,62f, 39F, 10, ClientTheme.getColorFromName(mode, 0))
-            GlowUtils.drawGlow(x1 - 4F + 54.2F, y1 + animScroll -2F,56.2f, 39F, 10, ClientTheme.getColorFromName(mode, 90))
+//            GlowUtils.drawGlow(x1 - 2F, y1 + 35F + animScroll,108.4f, 40F, 10, Color(20, 20, 20, 100))
+//            GlowUtils.drawGlow(x1 - 1F, y1 + animScroll - 2F,62f, 39F, 10, ClientTheme.getColorFromName(mode, 0))
+//            GlowUtils.drawGlow(x1 - 4F + 54.2F, y1 + animScroll -2F,56.2f, 39F, 10, ClientTheme.getColorFromName(mode, 90))
             RenderUtils.drawRoundedGradientRectCorner(x1 + 2, y1 + 1.5F + animScroll, x2 - 2, y2 - 2.5F + animScroll, 20F, gradientColors[0], gradientColors[1])
             RenderUtils.customRounded(x1 + 2, y1 + 35F + animScroll, x2 - 2, y2 - 2.5F + animScroll, 0F, 0F, 10F, 10F, Color(20, 20, 20).rgb)
             if (ClientTheme.ClientColorMode.get() == mode) {
