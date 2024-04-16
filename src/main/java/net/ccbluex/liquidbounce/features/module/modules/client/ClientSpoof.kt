@@ -86,7 +86,6 @@ class ClientSpoof : Module() {
             "better" -> BetterButtonRenderer(button!!)
             "rounded" -> RoundedButtonRenderer(button!!)
             "fline" -> FLineButtonRenderer(button!!)
-            "rise" -> RiseButtonRenderer(button!!)
             "hyperium" -> HyperiumButtonRenderer(button!!)
             "rgb" -> RGBButtonRenderer(button!!)
             "badlion" -> BadlionTwoButtonRenderer(button!!)
