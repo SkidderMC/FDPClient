@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual;
 
-import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.EventTarget;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
@@ -16,7 +15,6 @@ import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.animations.Animation;
 import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation;
-import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.ShaderUtil;
 import net.ccbluex.liquidbounce.value.BoolValue;
@@ -101,7 +99,6 @@ public class GlowESP extends Module {
     @EventTarget
     public void onrender2D(final Render2DEvent event) {
 
-        ScaledResolution sr = new ScaledResolution(mc);
         if (framebuffer != null && outlineFrameBuffer != null && entities.size() > 0) {
             GlStateManager.enableAlpha();
             GlStateManager.alphaFunc(516, 0.0f);

@@ -45,7 +45,6 @@ object NameTags : Module() {
     private val fontValue = FontValue("Font", Fonts.font40)
     private val borderValue = BoolValue("Border", true)
     private val fontShadowValue = BoolValue("Shadow", true)
-    private val hackerValue = BoolValue("Hacker", true)
     private val jelloColorValue = BoolValue("JelloHPColor", true).displayable { modeValue.equals("Jello") }
     private val jelloAlphaValue = IntegerValue("JelloAlpha", 170, 0, 255).displayable { modeValue.equals("Jello") }
     private val scaleValue = FloatValue("Scale", 1F, 1F, 4F)
@@ -166,7 +165,6 @@ object NameTags : Module() {
         // Draw nametag
         when (modeValue.get().lowercase()) {
             "simple" -> {
-                val playerName = getPlayerName(entity)
                 val healthPercent = (entity.health / entity.maxHealth).coerceAtMost(1F)
                 val width = fontRenderer.getStringWidth(tag).coerceAtLeast(30) / 2
                 val maxWidth = width * 2 + 12F
@@ -291,7 +289,6 @@ object NameTags : Module() {
 
             "jello" -> {
                 // colors
-                val playerName = getPlayerName(entity)
                 var hpBarColor = Color(255, 255, 255, jelloAlphaValue.get())
                 val name = entity.displayName.unformattedText
                 if (jelloColorValue.get() && name.startsWith("§")) {
@@ -322,7 +319,6 @@ object NameTags : Module() {
 
             "modern" -> {
                 // colors
-                val playerName = getPlayerName(entity)
                 val width = fontRenderer.getStringWidth(tag) / 2
 
                 // render bg
