@@ -17,6 +17,8 @@ import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam
 import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixer
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.*
+import net.ccbluex.liquidbounce.utils.ClientUtils.runTimeTicks
+import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithServerSideRotation
@@ -130,7 +132,10 @@ object KillAura : Module() {
     ).displayable { modeDisplay.get() }
 
     private val targetModeValue = ListValue("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch").displayable { modeDisplay.get() }
+
+    private val maxSwitchFOV = FloatValue("MaxSwitchFOV", 90f, 30f,180f).displayable { targetModeValue.equals("Switch") && modeDisplay.get() }
     private val switchDelayValue = IntegerValue("SwitchDelay", 15, 1, 2000).displayable { targetModeValue.equals("Switch") && modeDisplay.get() }
+
     private val limitedMultiTargetsValue = IntegerValue("LimitedMultiTargets", 0, 0, 50).displayable { targetModeValue.equals("Multi") && modeDisplay.get() }
 
     // AutoBlock
@@ -151,6 +156,10 @@ object KillAura : Module() {
     private val legitBlockBlinkValue = BoolValue("Legit2Blink", true).displayable { autoBlockPacketValue.displayable && autoBlockPacketValue.equals("Legit2") }
     private val blinkBlockMode = ListValue("BlinkBlockType", arrayOf("Blatant", "Legit3tick", "Legit4tick", "Legit5tick", "Dynamic"), "Legit3tick").displayable { autoBlockPacketValue.displayable && autoBlockPacketValue.equals("Blink") }
     private val alwaysBlockDisplayValue = BoolValue("AlwaysRenderBlocking", true).displayable { autoBlockValue.displayable && autoBlockValue.equals("Range") }
+
+    // Hit delay
+    private val useHitDelay = BoolValue("UseHitDelay", false)
+    private val hitDelayTicks = IntegerValue("HitDelayTicks", 1, 1,5).displayable { useHitDelay.get() }
 
     // Rotations
     private val rotationDisplay = BoolValue("Rotation Options:", true)
@@ -287,6 +296,7 @@ object KillAura : Module() {
     private val rotationTimer = MSTimer()
     private var attackDelay = 0L
     private var clicks = 0
+    private var attackTickTimes = mutableListOf<Pair<MovingObjectPosition, Int>>()
 
     // Container Delay
     private var containerOpen = -1L
@@ -363,6 +373,7 @@ object KillAura : Module() {
         discoveredTargets.clear()
         inRangeDiscoveredTargets.clear()
         attackTimer.reset()
+        attackTickTimes.clear()
         clicks = 0
         canSwing = false
 
@@ -443,6 +454,11 @@ object KillAura : Module() {
 
         runAttackLoop()
 
+    }
+
+    @EventTarget
+    fun onWorldChange(event: WorldEvent) {
+        attackTickTimes.clear()
     }
 
     /**
@@ -780,7 +796,8 @@ object KillAura : Module() {
             val entityFov = RotationUtils.getRotationDifference(entity)
 
             if (distance <= discoverRangeValue.get() && (fov == 180F || entityFov <= fov)) {
-                discoveredTargets.add(entity)
+                if (switchMode && isLookingOnEntities(entity, maxSwitchFOV.get().toDouble()) || !switchMode)
+                    discoveredTargets.add(entity)
             }
         }
 
@@ -1210,6 +1227,24 @@ object KillAura : Module() {
      */
     private fun getAttackDelay(minCps: Int, maxCps: Int): Long {
         return TimeUtils.randomClickDelay(minCps.coerceAtMost(maxCps), minCps.coerceAtLeast(maxCps))
+    }
+
+    /**
+     * Check if raycast landed on a different object
+     *
+     * The game requires at least 1 tick of cooldown on raycast object type change (miss, block, entity)
+     * We are doing the same thing here but allow more cool down.
+     */
+
+    // no finished
+    private fun shouldDelayClick(type: MovingObjectPosition.MovingObjectType): Boolean {
+        if (!useHitDelay.get()) {
+            return false
+        }
+
+        val lastAttack = attackTickTimes.lastOrNull()
+
+        return lastAttack != null && lastAttack.first.typeOfHit != type && runTimeTicks - lastAttack.second <= hitDelayTicks.get()
     }
 
     /**

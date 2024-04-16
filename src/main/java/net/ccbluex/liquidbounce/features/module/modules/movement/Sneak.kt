@@ -72,6 +72,8 @@ object Sneak : Module() {
                     else -> null
                 }
             }
+
+            else -> {}
         }
     }
 }

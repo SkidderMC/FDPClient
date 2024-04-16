@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.ui.hud
 
-import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
-import net.ccbluex.liquidbounce.FDPClient.CLIENT_VERSION
 import net.ccbluex.liquidbounce.FDPClient.isInDev
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.ui.font.Fonts

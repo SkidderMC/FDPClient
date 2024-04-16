@@ -26,20 +26,6 @@ import net.minecraft.util.EnumFacing
  */
 class AttackEvent(val targetEntity: Entity) : CancellableEvent()
 
-class FogColorEvent(var red: Float, var green: Float, var blue: Float, var alpha: Int) : Event(){
-    @JvmName("setRed1")
-    fun setRed(red: Int) {
-        this.red = red.toFloat()
-    }
-    @JvmName("setGreen1")
-    fun setGreen(green: Int) {
-        this.green = green.toFloat()
-    }
-    @JvmName("setBlue1")
-    fun setBlue(blue: Int) {
-        this.blue = blue.toFloat()
-    }
-}
 /**
  * Called when player killed other entity
  *
@@ -119,6 +105,12 @@ class UpdateModelEvent(val player: EntityPlayer, val model: ModelPlayer) : Event
  * Called when an entity receives damage
  */
 class EntityDamageEvent(val damagedEntity: Entity): Event()
+
+
+/**
+ * Called after motion
+ */
+class PostMotionEvent: Event()
 
 /**
  * Called in "onLivingUpdate" when the player is using a use item.

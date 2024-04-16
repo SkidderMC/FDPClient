@@ -14,6 +14,9 @@ import org.lwjgl.opengl.Display
 
 object
 ClientUtils : MinecraftInstance() {
+
+    var runTimeTicks = 0
+
     @JvmStatic
     val logger = LogManager.getLogger("FDPClient")
 
