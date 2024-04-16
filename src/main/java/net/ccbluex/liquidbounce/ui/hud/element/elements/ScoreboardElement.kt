@@ -33,8 +33,8 @@ import java.awt.Color
  */
 @ElementInfo(name = "Scoreboard", blur = true)
 class ScoreboardElement(
-    x: Double = 12.0,
-    y: Double = 0.0,
+    x: Double = 10.0,
+    y: Double = -2.0,
     scale: Float = 1F,
     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)
 ) : Element(x, y, scale, side) {
@@ -49,8 +49,8 @@ class ScoreboardElement(
     private val backgroundColorAlphaValue = IntegerValue("Background-Alpha", 90, 0, 255)
 
     private val shadowValue = BoolValue("ShadowText", false)
-    private val roundValue = BoolValue("Rounded", true)
-    private val topShadowValue = BoolValue("TopShadow", true)
+    private val roundValue = BoolValue("Rounded", false)
+    private val topShadowValue = BoolValue("TopShadow", true).displayable { !roundValue.get() }
     private val serverValue = ListValue("ServerIp", arrayOf("None", "ClientName", "Website", "WebsiteNoHttp"), "None")
     private val fontValue = FontValue("Font", Fonts.minecraftFont)
 

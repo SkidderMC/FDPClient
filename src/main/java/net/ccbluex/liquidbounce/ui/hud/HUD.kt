@@ -63,7 +63,6 @@ open class HUD : MinecraftInstance() {
                 .addElement(Clientcredits)
                 .addElement(Arraylist())
                 .addElement(ScoreboardElement())
-                .addElement(Notifications())
                 .addElement(Targets())
         }
     }
