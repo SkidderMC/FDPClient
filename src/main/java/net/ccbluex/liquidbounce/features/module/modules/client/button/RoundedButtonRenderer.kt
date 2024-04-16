@@ -23,7 +23,7 @@ class RoundedButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) 
             } else {
                 Color(31, 31, 31, 150)
             }).rgb)
-        if (HUDModule.buttonShadowValue.equals(true)) {
+        if (HUDModule.uiEffectValue.get() && HUDModule.buttonShadowValue.equals(true)) {
             shadowRenderUtils.drawShadowWithCustomAlpha(button.xPosition.toFloat(),
                 button.yPosition.toFloat(),
                 button.width.toFloat(),

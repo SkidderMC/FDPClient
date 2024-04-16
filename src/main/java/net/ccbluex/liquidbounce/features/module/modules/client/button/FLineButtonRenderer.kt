@@ -48,7 +48,7 @@ class FLineButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
 
         lastUpdate = time
 
-            if (HUDModule.buttonShadowValue.equals(true)){
+            if (HUDModule.uiEffectValue.get() && HUDModule.buttonShadowValue.equals(true)){
             shadowRenderUtils.drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f)
             }
     }
