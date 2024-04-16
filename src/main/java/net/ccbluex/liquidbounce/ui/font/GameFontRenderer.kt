@@ -91,17 +91,18 @@ class GameFontRenderer(font: Font) : FontRenderer(
 
         if (shadow) {
             when {
-                HUDModule.shadowValue.get().equals("Normal", ignoreCase = true) ->    drawText(currentText, x + 1f, currY + 1f, Color(20, 20, 20, 200).rgb, true)
-                HUDModule.shadowValue.get().equals("LiquidBounce", ignoreCase = true) -> drawText(currentText, x + 1f, currY + 1f, Color(0, 0, 0, 150).rgb, true)
-                HUDModule.shadowValue.get().equals("Default", ignoreCase = true) -> drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
-                HUDModule.shadowValue.get().equals("Autumn", ignoreCase = true) -> drawText(currentText, x + 1f, currY + 1f, Color(20, 20, 20, 200).rgb, true)
-                HUDModule.shadowValue.get().equals("Outline", ignoreCase = true) -> {
+                HUDModule.shadowValue.get() == "Normal" ->    drawText(currentText, x + 1f, currY + 1f, Color(20, 20, 20, 200).rgb, true)
+                HUDModule.shadowValue.get() == "LiquidBounce" -> drawText(currentText, x + 1f, currY + 1f, Color(0, 0, 0, 150).rgb, true)
+                HUDModule.shadowValue.get() == "Default" -> drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
+                HUDModule.shadowValue.get() == "Autumn" -> drawText(currentText, x + 1f, currY + 1f, Color(20, 20, 20, 200).rgb, true)
+                HUDModule.shadowValue.get() == "Outline" -> {
                     drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
                     drawText(currentText, x - 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
                     drawText(currentText, x + 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
                     drawText(currentText, x - 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
                 }
             }
+
         }
 
         return drawText(currentText, x, currY, color, false, rainbow)
