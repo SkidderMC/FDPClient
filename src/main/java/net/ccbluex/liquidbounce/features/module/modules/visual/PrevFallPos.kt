@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.player
+package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
@@ -22,7 +22,7 @@ import net.minecraft.util.BlockPos
 import java.awt.Color
 import kotlin.math.abs
 
-@ModuleInfo(name = "PrevFallPos", category = ModuleCategory.PLAYER)
+@ModuleInfo(name = "PrevFallPos", category = ModuleCategory.VISUAL)
 object PrevFallPos : Module() {
 
     private val modeValue = ListValue("Mode", arrayOf("Box", "OtherBox", "Outline"), "Box")
@@ -59,7 +59,8 @@ object PrevFallPos : Module() {
     fun onRender3d(event: Render3DEvent) {
         pos ?: return
 
-        val color = if (colorRainbowValue.get()) ColorUtils.rainbowWithAlpha(colorAlphaValue.get()) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
+        val color = if (colorRainbowValue.get()) ColorUtils.rainbowWithAlpha(colorAlphaValue.get()) else Color(
+            colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), colorAlphaValue.get())
         when (modeValue.get().lowercase()) {
             "box" -> {
                 RenderUtils.drawBlockBox(pos, color, true, true, outlineWidthValue.get())

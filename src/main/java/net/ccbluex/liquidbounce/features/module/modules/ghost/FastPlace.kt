@@ -22,7 +22,9 @@ object FastPlace : Module() {
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (!blockonlyValue.get() || mc.thePlayer.heldItem.item is ItemBlock) {
-            mc.rightClickDelayTimer = speedValue.get()
+            if (mc.thePlayer.ticksExisted % speedValue.get() == 0 || speedValue.get() == 0) {
+                mc.rightClickDelayTimer = 1
+            }
         }
     }
 }
