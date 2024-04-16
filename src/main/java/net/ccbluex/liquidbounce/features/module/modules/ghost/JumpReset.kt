@@ -25,7 +25,7 @@ class JumpReset : Module() {
         } else if (mc.thePlayer.hurtTime >= 4) {
             mc.gameSettings.keyBindJump.pressed = false
             mc.gameSettings.keyBindForward.pressed = false
-        } else {
+        } else if (mc.thePlayer.hurtTime > 1){
             mc.gameSettings.keyBindForward.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindForward)
             mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
         }

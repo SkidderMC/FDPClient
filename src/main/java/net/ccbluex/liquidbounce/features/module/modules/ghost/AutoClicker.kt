@@ -344,7 +344,7 @@ class AutoClicker : Module() {
         if (exhaust > 1) {
             exhaust = 1f
         }
-        exhaust += 0.17f/(100.5f - exhaustion.get().toFloat())
+        exhaust += 0.04f/(100.5f - exhaustion.get().toFloat())
         return (cDelay + extraRandomAmount.toInt()) * (1 + (exhaust * exhaustion.get() / 4).toInt())
     }
 
