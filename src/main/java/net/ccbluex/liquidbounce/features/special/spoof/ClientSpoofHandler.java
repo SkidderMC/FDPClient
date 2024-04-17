@@ -94,7 +94,6 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
         }
     }
 
-    // zywl... w h y -bread
     public static void checkIconAndTitle() {
         IconUtils iu = new IconUtils();
         Util.EnumOS util$enumos = Util.getOSType();

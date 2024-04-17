@@ -20,9 +20,6 @@ OWNER | https://github.com/opZywl
 ### Co丶Dynamic 
 DEV | https://github.com/contionability
 
-### gatodepan (v4.35-5.0.0b)
-DEV | https://github.com/gatooooooo
-
 ### DinoFeng
 DEV | https://github.com/DinoFengz
 
