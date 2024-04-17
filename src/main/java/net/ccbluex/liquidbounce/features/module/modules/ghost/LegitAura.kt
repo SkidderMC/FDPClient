@@ -11,10 +11,12 @@ import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
+import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
@@ -81,7 +83,7 @@ object LegitAura : Module() {
 
     private val movementFixValue = BoolValue("MovementFix", true)
 
-    private val markValue = ListValue("Mark", arrayOf("Liquid", "Block", "OtherBlock", "Eternal"), "OtherBlock")
+    private val markValue = ListValue("Mark", arrayOf("Liquid", "Block", "OtherBlock", "Eternal", "Modern"), "OtherBlock")
     private val blockMarkExpandValue = FloatValue("BlockExpand", 0f, 0.5f, 1f).displayable { markValue.equals("Block") || markValue.equals("OtherBlock") }
 
 
@@ -383,6 +385,72 @@ object LegitAura : Module() {
                     GL11.glTranslated(0.0, 0.0, 0.3)
                     c.draw(radius, 0F, 0.3f, side, 1)
                     RenderUtils.disableSmoothLine()
+                    GL11.glPopMatrix()
+                }
+                "modern" -> {
+                    val everyTime = 3000
+                    val drawTime = (System.currentTimeMillis() % everyTime).toInt()
+                    val drawMode = drawTime > (everyTime / 2)
+                    var drawPercent = drawTime / (everyTime / 2.0)
+                    // true when goes up
+                    if (!drawMode) {
+                        drawPercent = 1 - drawPercent
+                    } else {
+                        drawPercent -= 1
+                    }
+                    drawPercent = EaseUtils.easeInOutQuad(drawPercent)
+                    mc.entityRenderer.disableLightmap()
+                    GL11.glPushMatrix()
+                    GL11.glDisable(GL11.GL_TEXTURE_2D)
+                    GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+                    GL11.glEnable(GL11.GL_LINE_SMOOTH)
+                    GL11.glEnable(GL11.GL_BLEND)
+                    GL11.glDisable(GL11.GL_DEPTH_TEST)
+                    GL11.glDisable(GL11.GL_CULL_FACE)
+                    GL11.glShadeModel(7425)
+                    mc.entityRenderer.disableLightmap()
+
+                    val bb = it.hitBox
+                    val radius = ((bb.maxX - bb.minX) + (bb.maxZ - bb.minZ)) * 0.5f
+                    val height = bb.maxY - bb.minY
+                    val x =
+                        it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+                    val y =
+                        (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
+                    val z =
+                        it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                    val eased = (height / 3) * (if (drawPercent > 0.5) {
+                        1 - drawPercent
+                    } else {
+                        drawPercent
+                    }) * (if (drawMode) {
+                        -1
+                    } else {
+                        1
+                    })
+                    for (i in 5..360 step 5) {
+                        val color = ClientTheme.getColor(1)
+                        val x1 = x - sin(i * Math.PI / 180F) * radius
+                        val z1 = z + cos(i * Math.PI / 180F) * radius
+                        val x2 = x - sin((i - 5) * Math.PI / 180F) * radius
+                        val z2 = z + cos((i - 5) * Math.PI / 180F) * radius
+                        GL11.glBegin(GL11.GL_QUADS)
+                        RenderUtils.glColor(color, 0f)
+                        GL11.glVertex3d(x1, y + eased, z1)
+                        GL11.glVertex3d(x2, y + eased, z2)
+                        RenderUtils.glColor(color, 150f)
+                        GL11.glVertex3d(x2, y, z2)
+                        GL11.glVertex3d(x1, y, z1)
+                        GL11.glEnd()
+                    }
+
+                    GL11.glEnable(GL11.GL_CULL_FACE)
+                    GL11.glShadeModel(7424)
+                    GL11.glColor4f(1f, 1f, 1f, 1f)
+                    GL11.glEnable(GL11.GL_DEPTH_TEST)
+                    GL11.glDisable(GL11.GL_LINE_SMOOTH)
+                    GL11.glDisable(GL11.GL_BLEND)
+                    GL11.glEnable(GL11.GL_TEXTURE_2D)
                     GL11.glPopMatrix()
                 }
             }

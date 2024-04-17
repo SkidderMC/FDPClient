@@ -53,7 +53,7 @@ object LegitScaffold : Module() {
 
     // Visuals
     private val counter = BoolValue("Counter", true)
-    private val counterDisplayValue = ListValue("Counter-Mode", arrayOf("FDP", "Simple"), "FDP").displayable { counter.get() }
+    private val counterDisplayValue = ListValue("Counter-Mode", arrayOf("FDP", "Simple", "Modern"), "FDP").displayable { counter.get() }
     private val barrier = ItemStack(Item.getItemById(166), 0, 0)
 
 
@@ -235,7 +235,7 @@ object LegitScaffold : Module() {
                     rpitch = 75.6
                 }
 
-                if (rpitch == 75.0) {
+                if (((camYaw / 45).roundToInt()) % 2 == 0) {
                     playerRot = Rotation(((camYaw / 45).roundToInt() * 45f) - 135, rpitch.toFloat())
                     correctControls(3)
                 } else {
@@ -343,6 +343,43 @@ object LegitScaffold : Module() {
                         -1,
                         true
                     )
+                }
+                "modern" -> {
+                    GlStateManager.pushMatrix()
+                    val info = blocksAmount.toString()
+                    val slot = InventoryUtils.findAutoBlockBlock()
+                    val height = event.scaledResolution.scaledHeight
+                    val width = event.scaledResolution.scaledWidth
+                    val w2 = (mc.fontRendererObj.getStringWidth(info))
+                    RenderUtils.drawRoundedCornerRect(
+                        (width - w2 - 20) / 2f,
+                        height * 0.8f - 24f,
+                        (width + w2 + 18) / 2f,
+                        height * 0.8f + 12f,
+                        5f,
+                        Color(20, 20, 20, 100).rgb
+                    )
+                    var stack = barrier
+                    if (slot != -1) {
+                        if (mc.thePlayer.inventory.getCurrentItem() != null) {
+                            val handItem = mc.thePlayer.inventory.getCurrentItem().item
+                            if (handItem is ItemBlock && InventoryUtils.canPlaceBlock(handItem.block)) {
+                                stack = mc.thePlayer.inventory.getCurrentItem()
+                            }
+                        }
+                        if (stack == barrier) {
+                            stack = mc.thePlayer.inventory.getStackInSlot(InventoryUtils.findAutoBlockBlock() - 36)
+                            if (stack == null) {
+                                stack = barrier
+                            }
+                        }
+                    }
+
+                    RenderHelper.enableGUIStandardItemLighting()
+                    mc.renderItem.renderItemIntoGUI(stack, width / 2 - 9, (height * 0.8 - 20).toInt())
+                    RenderHelper.disableStandardItemLighting()
+                    mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
+                    GlStateManager.popMatrix()
                 }
             }
         }

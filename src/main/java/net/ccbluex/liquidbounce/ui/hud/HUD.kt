@@ -61,6 +61,7 @@ open class HUD : MinecraftInstance() {
                 .addElement(ClientName)
                 .addElement(Clientversion)
                 .addElement(Clientcredits)
+                .addElement(Notifications())
                 .addElement(Arraylist())
                 .addElement(ScoreboardElement())
                 .addElement(Targets())

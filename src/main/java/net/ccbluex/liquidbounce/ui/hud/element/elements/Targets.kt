@@ -74,11 +74,13 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             VapeTH(this),
             FluxTH(this),
             LiquidTH(this),
+            Tenacity5TH(this),
             ChillTH(this),
             RemixTH(this),
             SlowlyTH(this),
             SimplicityTH(this),
             J3UltimateTH(this),
+            ModernTH(this)
         ).toTypedArray(), "Simple")
     }
     var mainTarget: EntityLivingBase? = null

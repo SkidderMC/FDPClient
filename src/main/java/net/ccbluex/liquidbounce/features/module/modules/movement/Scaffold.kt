@@ -205,7 +205,7 @@ class Scaffold : Module() {
     // Visuals
     private val renderOptions = BoolValue("Render-Options", true)
     
-    private val counterDisplayValue = ListValue("Counter", arrayOf("FDP", "Simple"), "FDP").displayable { renderOptions.get() }
+    private val counterDisplayValue = ListValue("Counter", arrayOf("FDP", "Simple", "Modern", "Modern2"), "FDP").displayable { renderOptions.get() }
     private val markValue = BoolValue("Mark", false).displayable { renderOptions.get() }
     private val markRedValue = IntegerValue("MarkColorRed", 68, 0, 255).displayable { markValue.get() && markValue.displayable }
     private val markGreenValue = IntegerValue("MarkColorGreen", 117, 0, 255).displayable { markValue.get() && markValue.displayable }
@@ -1131,6 +1131,61 @@ class Scaffold : Module() {
                     (scaledResolution.scaledHeight / 2 + 20).toFloat(),
                     -1,
                     true
+                )
+            }
+            "modern" -> {
+                GlStateManager.pushMatrix()
+                val info = blocksAmount.toString()
+                val slot = InventoryUtils.findAutoBlockBlock()
+                val height = event.scaledResolution.scaledHeight
+                val width = event.scaledResolution.scaledWidth
+                val w2= mc.fontRendererObj.getStringWidth(info)
+                RenderUtils.drawRoundedCornerRect(
+                    (width - w2 - 20) / 2f,
+                    height * 0.8f - 24f,
+                    (width + w2 + 18) / 2f,
+                    height * 0.8f + 12f,
+                    5f,
+                    Color(20, 20, 20, 100).rgb
+                )
+                var stack = barrier
+                if (slot != -1) {
+                    if (mc.thePlayer.inventory.getCurrentItem() != null) {
+                        val handItem = mc.thePlayer.inventory.getCurrentItem().item
+                        if (handItem is ItemBlock && InventoryUtils.canPlaceBlock(handItem.block)) {
+                            stack = mc.thePlayer.inventory.getCurrentItem()
+                        }
+                    }
+                    if (stack == barrier) {
+                        stack = mc.thePlayer.inventory.getStackInSlot(InventoryUtils.findAutoBlockBlock() - 36)
+                        if (stack == null) {
+                            stack = barrier
+                        }
+                    }
+                }
+
+                RenderHelper.enableGUIStandardItemLighting()
+                mc.renderItem.renderItemIntoGUI(stack, width / 2 - 9, (height * 0.8 - 20).toInt())
+                RenderHelper.disableStandardItemLighting()
+                mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
+                GlStateManager.popMatrix()
+            }
+            "modern2" -> {
+                RenderUtils.drawRoundedCornerRect(
+                    (scaledResolution.scaledWidth - mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") - 12) / 2f,
+                    scaledResolution.scaledHeight * 0.8f - 10f,
+                    (scaledResolution.scaledWidth + mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") - 12) / 2f,
+                    scaledResolution.scaledHeight * 0.8f + 10f,
+                    5f,
+                    Color(20, 20, 20, 100).rgb
+                )
+                mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") / 2
+                Fonts.minecraftFont.drawCenteredString(
+                    blocksAmount.toString() + " Blocks",
+                    scaledResolution.scaledWidth / 2f,
+                    scaledResolution.scaledHeight * 0.8f,
+                    Color.WHITE.rgb,
+                    false
                 )
             }
         }
