@@ -17,6 +17,9 @@ OWNER | https://github.com/hax0r31337
 ### Zywl
 OWNER | https://github.com/opZywl
 
+## gatodepan (v4.35-5.0.0b)
+DEV | https://github.com/gatooooooo
+
 ### Co丶Dynamic 
 DEV | https://github.com/contionability
 
@@ -25,6 +28,9 @@ DEV | https://github.com/DinoFengz
 
 ### Dg636
 DEV | https://github.com/C00LC0D35
+
+### Vprah
+DEV | https://github.com/PrahXZ
 
 ### XiGuaHanHan
 DEV | https://github.com/Wlenk
