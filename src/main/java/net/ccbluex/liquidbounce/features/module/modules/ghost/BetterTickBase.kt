@@ -35,17 +35,10 @@ class BetterTickBase : Module() {
             }
             .minByOrNull { RotationUtils.getRotationDifference(it) } ?: return
 
-        val differenceX = mc.thePlayer.posX - entity.posX
-        val differenceZ = mc.thePlayer.posZ - entity.posZ
         val entityMotionX = (entity.posX - entity.lastTickPosX)
         val entityMotionZ = (entity.posZ - entity.lastTickPosZ)
         val predictionTicks = (MathUtils.getDistance(mc.thePlayer.posX, mc.thePlayer.posZ, entity.posX, entity.posZ) - 3.3) / (
-                ((mc.thePlayer.motionX * -differenceX + mc.thePlayer.motionZ * -differenceZ)
-                        / MathUtils.getDistance(0.0,0.0, differenceX, differenceZ)) +
-                ((entityMotionX * differenceX + entityMotionZ * differenceZ)
-                            / MathUtils.getDistance(0.0,0.0, differenceX, differenceZ))
-                // dot product to get vector projections. sum and divide to find how many ticks are needed
-                )
+                MathUtils.getDistance(0.0,0.0, mc.thePlayer.motionX - entityMotionX, mc.thePlayer.motionZ - entityMotionZ))
         var f = 0
         var startTime = System.currentTimeMillis()
         while (System.currentTimeMillis() < startTime + (predictionTicks * 50).coerceAtMost(maxDelayValue.get().toDouble())) {

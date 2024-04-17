@@ -1173,9 +1173,9 @@ class Scaffold : Module() {
             "modern2" -> {
                 RenderUtils.drawRoundedCornerRect(
                     (scaledResolution.scaledWidth - mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") - 12) / 2f,
-                    scaledResolution.scaledHeight * 0.8f - 10f,
-                    (scaledResolution.scaledWidth + mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") - 12) / 2f,
-                    scaledResolution.scaledHeight * 0.8f + 10f,
+                    scaledResolution.scaledHeight * 0.8f - 4f,
+                    (scaledResolution.scaledWidth + mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") + 12) / 2f,
+                    scaledResolution.scaledHeight * 0.8f + 12f,
                     5f,
                     Color(20, 20, 20, 100).rgb
                 )

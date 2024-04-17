@@ -230,7 +230,7 @@ object LegitScaffold : Module() {
             "godbridge" -> {
                 var rpitch = 0.0
                 if (((camYaw / 45).roundToInt()) % 2 == 0) {
-                    rpitch = 75.8
+                    rpitch = 75.5
                 } else  {
                     rpitch = 75.6
                 }

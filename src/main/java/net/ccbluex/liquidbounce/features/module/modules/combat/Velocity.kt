@@ -27,8 +27,8 @@ class Velocity : Module() {
 
     val horizontalValue = FloatValue("Horizontal", 0f, -2f, 2f).displayable { getValue("Simple")?.value == true || getValue("Tick")?.value == true }
     val verticalValue = FloatValue("Vertical", 0f, -2f, 2f).displayable { getValue("Simple")?.value == true || getValue("Tick")?.value == true }
-    val chanceValue = IntegerValue("Chance", 100, 0, 100).displayable { getValue("Simple")?.value == true }
-    val velocityTickValue = IntegerValue("VelocityTick", 1, 0, 10).displayable { getValue("Tick")?.value == true}
+    val chanceValue = IntegerValue("Chance", 100, 0, 100).displayable { getValue("Simple")?.value == true || getValue("Tick")?.value == true }
+    val velocityTickValue = IntegerValue("VelocityTick", 1, 0, 10).displayable { getValue("Tick")?.value == true }
     val onlyGroundValue = BoolValue("OnlyGround", false)
     val onlyCombatValue = BoolValue("OnlyCombat", false)
     // private val onlyHitVelocityValue = BoolValue("OnlyHitVelocity",false)
@@ -39,7 +39,7 @@ class Velocity : Module() {
         .displayable { !overrideDirectionValue.equals("None") }
     private val mode = LinkedList<BoolValue>()
     private val mode2 = LinkedList<VelocityMode>()
-    private val settings = arrayListOf<Value<*>>()
+    private val settings = arrayListOf<Value<*>>(horizontalValue, verticalValue, chanceValue, velocityTickValue, onlyGroundValue, onlyCombatValue, noFireValue, overrideDirectionValue, overrideDirectionYawValue)
 
     private val modeList = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.velocitys",  VelocityMode::class.java)
         .map { it.newInstance() as VelocityMode }

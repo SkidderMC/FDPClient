@@ -48,6 +48,7 @@ class SilentHitbox : Module() {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
+        if (FDPClient.moduleManager[FreeLook::class.java]!!.state) return
         if (!enabled) {
             mc.thePlayer.rotationYaw = FreeLook.cameraYaw
             mc.thePlayer.rotationPitch = FreeLook.cameraPitch
