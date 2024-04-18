@@ -20,6 +20,7 @@ class DiscordRPCModule : Module() {
     val showOtherValue = BoolValue("ShowOther", false)
     val showModuleValue = BoolValue("ShowModule", false)
     val animated = BoolValue("ShouldAnimate?", true)
+    val gato = BoolValue("BreadRetard", false)
 
     override fun onEnable() {
         DiscordRPC.run()
