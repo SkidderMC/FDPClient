@@ -17,6 +17,7 @@ public abstract class Animation {
     @Getter
     @Setter
     protected double endPoint;
+    @Getter
     protected Direction direction;
 
     public Animation(int ms, double endPoint) {
@@ -24,7 +25,6 @@ public abstract class Animation {
         this.endPoint = endPoint;
         this.direction = Direction.FORWARDS;
     }
-
 
     public Animation(int ms, double endPoint, Direction direction) {
         this.duration = ms; //Time in milliseconds of how long you want the animation to take.
@@ -50,10 +50,6 @@ public abstract class Animation {
 
     public void changeDirection() {
         setDirection(direction.opposite());
-    }
-
-    public Direction getDirection() {
-        return direction;
     }
 
     public void setDirection(Direction direction) {

@@ -19,7 +19,6 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.max
 
-
 /**
  * CustomHUD Notification element
  */
@@ -34,7 +33,7 @@ class Notifications(x: Double = 0.0, y: Double = 0.0, scale: Float = 1F,side: Si
     private val whiteText = BoolValue("WhiteTextColor", true)
     private val modeColored = BoolValue("CustomModeColored", true)
     companion object {
-        val styleValue = ListValue("Mode", arrayOf("Classic", "FDP", "Modern", "LiquidBounce"), "FDP")
+        val styleValue = ListValue("Mode", arrayOf("Classic", "FDP", "Modern"), "FDP")
     }
 
     /**
@@ -189,7 +188,7 @@ class Notification(
         val nTypeError = type.renderColor == Color(0xFF2F2F)
 
 
-        if (style.equals("Modern")) {
+        if (style == "Modern") {
 
             if (blurRadius != 0f) {
                 BlurUtils.draw(4 + (x + transX).toFloat() * scale, (y + transY).toFloat() * scale, (width * scale), (27f - 5f) * scale, blurRadius)
@@ -293,7 +292,7 @@ class Notification(
             return false
         }
 
-        if(style.equals("Classic")) {
+        if(style == "Classic") {
             if (blurRadius != 0f)
                 BlurUtils.draw((x + transX).toFloat() * scale, (y + transY).toFloat() * scale, width * scale, classicHeight * scale, blurRadius) 
                 

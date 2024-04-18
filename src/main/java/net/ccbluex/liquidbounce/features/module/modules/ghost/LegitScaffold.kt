@@ -19,7 +19,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.minecraft.client.settings.GameSettings
-import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.InventoryUtils
@@ -54,7 +53,7 @@ object LegitScaffold : Module() {
 
     // Visuals
     private val counter = BoolValue("Counter", true)
-    private val counterDisplayValue = ListValue("Counter-Mode", arrayOf("FDP", "Rise", "Simple"), "FDP").displayable { counter.get() }
+    private val counterDisplayValue = ListValue("Counter-Mode", arrayOf("FDP", "Simple", "Modern"), "FDP").displayable { counter.get() }
     private val barrier = ItemStack(Item.getItemById(166), 0, 0)
 
 
@@ -231,12 +230,12 @@ object LegitScaffold : Module() {
             "godbridge" -> {
                 var rpitch = 0.0
                 if (((camYaw / 45).roundToInt()) % 2 == 0) {
-                    rpitch = 75.8
+                    rpitch = 75.5
                 } else  {
                     rpitch = 75.6
                 }
 
-                if (rpitch == 75.0) {
+                if (((camYaw / 45).roundToInt()) % 2 == 0) {
                     playerRot = Rotation(((camYaw / 45).roundToInt() * 45f) - 135, rpitch.toFloat())
                     correctControls(3)
                 } else {
@@ -336,8 +335,16 @@ object LegitScaffold : Module() {
                     mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
                     GlStateManager.popMatrix()
                 }
-
-                "rise" -> {
+                "simple" -> {
+                    Fonts.minecraftFont.drawString(
+                        blocksAmount.toString() + " Blocks",
+                        scaledResolution.scaledWidth / 1.95f,
+                        (scaledResolution.scaledHeight / 2 + 20).toFloat(),
+                        -1,
+                        true
+                    )
+                }
+                "modern" -> {
                     GlStateManager.pushMatrix()
                     val info = blocksAmount.toString()
                     val slot = InventoryUtils.findAutoBlockBlock()
@@ -373,16 +380,6 @@ object LegitScaffold : Module() {
                     RenderHelper.disableStandardItemLighting()
                     mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
                     GlStateManager.popMatrix()
-                }
-
-                "simple" -> {
-                    Fonts.minecraftFont.drawString(
-                        blocksAmount.toString() + " Blocks",
-                        scaledResolution.scaledWidth / 1.95f,
-                        (scaledResolution.scaledHeight / 2 + 20).toFloat(),
-                        -1,
-                        true
-                    )
                 }
             }
         }

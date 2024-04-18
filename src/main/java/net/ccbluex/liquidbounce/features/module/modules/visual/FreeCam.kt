@@ -112,7 +112,7 @@ object FreeCam : Module() {
                     PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(fakePlayer.posX, fakePlayer.posY, fakePlayer.posZ, fakePlayer.rotationYaw, fakePlayer.rotationPitch, fakePlayer.onGround))
                 } else {
                     packetCount++
-                    PacketUtils.sendPacketNoEvent(C03PacketPlayer(fakePlayer!!.onGround))
+                    PacketUtils.sendPacketNoEvent(C03PacketPlayer(fakePlayer.onGround))
                 }
                 event.cancelEvent()
             }

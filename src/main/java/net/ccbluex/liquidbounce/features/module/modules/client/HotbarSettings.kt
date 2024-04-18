@@ -35,7 +35,7 @@ import java.awt.Color
 @ModuleInfo(name = "Hotbar", category = ModuleCategory.CLIENT, array = false, defaultOn = true)
 object HotbarSettings : Module() {
 
-    val hotbarValue = ListValue("HotbarMode", arrayOf("Minecraft", "Rounded", "Rounded2", "Full", "LB", "Rise", "Gradient", "Overflow", "Glow", "Glowing", "Dock", "Exhi", "BlueIce", "Bread"), "Minecraft")
+    val hotbarValue = ListValue("HotbarMode", arrayOf("Minecraft", "Rounded", "Rounded2", "Full", "LB", "Gradient", "Overflow", "Glow", "Glowing", "Dock", "Exhi", "BlueIce", "Bread"), "Minecraft")
     private val hotbarAlphaValue = IntegerValue("HotbarAlpha", 70, 0, 255)
     private val hotbarEaseValue = BoolValue("HotbarEase", false)
     val spoofHotbar = BoolValue("ItemSpoof-Hotbar", false)
@@ -56,17 +56,6 @@ object HotbarSettings : Module() {
         GlStateManager.enableBlend()
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         when {
-            hotbarValue.get() ==  "Rise" -> {
-                if(BlurValue.get() && BlurAmount.get() > 1F ) {
-                    BlurUtils.draw((i - 91).toFloat(), (sr.scaledHeight - 22).toFloat(), 182F, 22F, BlurAmount.get())
-                }
-                RenderUtils.drawRect((i - 91).toFloat(), (sr.scaledHeight - 22).toFloat(), (i + 91).toFloat(), sr.scaledHeight.toFloat(), Color(0, 0, 0, hotbarAlphaValue.get()))
-                RenderUtils.drawRect(itemX.toFloat(), (sr.scaledHeight - 22).toFloat(), (itemX + 22).toFloat(), (sr.scaledHeight - 21).toFloat(), rainbow())
-                RenderUtils.drawRect(itemX.toFloat(), (sr.scaledHeight - 21).toFloat(), (itemX + 22).toFloat(), sr.scaledHeight.toFloat(), Color(0, 0, 0, hotbarAlphaValue.get()))
-                RenderHelper.enableGUIStandardItemLighting()
-                for (Index: Int in 0..8) { HotbarItems(Index, sr.scaledWidth / 2 - 90 + Index * 20 + 2, sr.scaledHeight - 19); HotbarTextOverlay(sr.scaledWidth / 2 - 90 + Index * 20 + 2, sr.scaledHeight - 19, null as String?, Index) }
-                RenderHelper.disableStandardItemLighting()
-            }
             hotbarValue.get() == "Full" -> {
                 if(BlurValue.get() && BlurAmount.get() > 1F ) { BlurUtils.draw(0F, (sr.scaledHeight - 23).toFloat(), sr.scaledWidth.toFloat(), 23F, BlurAmount.get()) }
                 RenderUtils.drawRect(0f, (sr.scaledHeight - 23).toFloat(), sr.scaledWidth.toFloat(), sr.scaledHeight.toFloat(), Color(0, 0, 0, hotbarAlphaValue.get()))
@@ -274,7 +263,7 @@ object HotbarSettings : Module() {
     }
     // end of mojang code
 
-    // rise
+
     private var easeAnimation: Animation? = null
     private var easingValue = 0
         get() {

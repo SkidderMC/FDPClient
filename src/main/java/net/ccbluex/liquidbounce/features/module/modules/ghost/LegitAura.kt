@@ -8,7 +8,6 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
@@ -17,8 +16,8 @@ import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.utils.render.EaseUtils
+import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.settings.GameSettings
@@ -84,7 +83,7 @@ object LegitAura : Module() {
 
     private val movementFixValue = BoolValue("MovementFix", true)
 
-    private val markValue = ListValue("Mark", arrayOf("Liquid", "Block", "OtherBlock", "Rise", "Eternal"), "OtherBlock")
+    private val markValue = ListValue("Mark", arrayOf("Liquid", "Block", "OtherBlock", "Eternal", "Modern"), "OtherBlock")
     private val blockMarkExpandValue = FloatValue("BlockExpand", 0f, 0.5f, 1f).displayable { markValue.equals("Block") || markValue.equals("OtherBlock") }
 
 
@@ -361,7 +360,34 @@ object LegitAura : Module() {
                     )
                     it.entityBoundingBox = bb
                 }
-                "rise" -> {
+                "eternal" -> {
+                    val radius = 0.15f
+                    val side = 4
+                    GL11.glPushMatrix()
+                    GL11.glTranslated(
+                        it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX,
+                        (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + it.height * 1.1,
+                        it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+                    )
+                    GL11.glRotatef(-it.width, 0.0f, 1.0f, 0.0f)
+                    GL11.glRotatef((mc.thePlayer.ticksExisted + mc.timer.renderPartialTicks) * 5, 0f, 1f, 0f)
+                    RenderUtils.glColor(if (it.hurtTime <= 0) Color(80, 255, 80) else Color(255, 0, 0))
+                    RenderUtils.enableSmoothLine(1.5F)
+                    val c = Cylinder()
+                    GL11.glRotatef(-90.0f, 1.0f, 0.0f, 0.0f)
+                    c.draw(0F, radius, 0.3f, side, 1)
+                    c.drawStyle = 100012
+                    GL11.glTranslated(0.0, 0.0, 0.3)
+                    c.draw(radius, 0f, 0.3f, side, 1)
+                    GL11.glRotatef(90.0f, 0.0f, 0.0f, 1.0f)
+                    GL11.glTranslated(0.0, 0.0, -0.3)
+                    c.draw(0F, radius, 0.3f, side, 1)
+                    GL11.glTranslated(0.0, 0.0, 0.3)
+                    c.draw(radius, 0F, 0.3f, side, 1)
+                    RenderUtils.disableSmoothLine()
+                    GL11.glPopMatrix()
+                }
+                "modern" -> {
                     val everyTime = 3000
                     val drawTime = (System.currentTimeMillis() % everyTime).toInt()
                     val drawMode = drawTime > (everyTime / 2)
@@ -425,34 +451,6 @@ object LegitAura : Module() {
                     GL11.glDisable(GL11.GL_LINE_SMOOTH)
                     GL11.glDisable(GL11.GL_BLEND)
                     GL11.glEnable(GL11.GL_TEXTURE_2D)
-                    GL11.glPopMatrix()
-                }
-
-                "eternal" -> {
-                    val radius = 0.15f
-                    val side = 4
-                    GL11.glPushMatrix()
-                    GL11.glTranslated(
-                        it.lastTickPosX + (it.posX - it.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX,
-                        (it.lastTickPosY + (it.posY - it.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + it.height * 1.1,
-                        it.lastTickPosZ + (it.posZ - it.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
-                    )
-                    GL11.glRotatef(-it.width, 0.0f, 1.0f, 0.0f)
-                    GL11.glRotatef((mc.thePlayer.ticksExisted + mc.timer.renderPartialTicks) * 5, 0f, 1f, 0f)
-                    RenderUtils.glColor(if (it.hurtTime <= 0) Color(80, 255, 80) else Color(255, 0, 0))
-                    RenderUtils.enableSmoothLine(1.5F)
-                    val c = Cylinder()
-                    GL11.glRotatef(-90.0f, 1.0f, 0.0f, 0.0f)
-                    c.draw(0F, radius, 0.3f, side, 1)
-                    c.drawStyle = 100012
-                    GL11.glTranslated(0.0, 0.0, 0.3)
-                    c.draw(radius, 0f, 0.3f, side, 1)
-                    GL11.glRotatef(90.0f, 0.0f, 0.0f, 1.0f)
-                    GL11.glTranslated(0.0, 0.0, -0.3)
-                    c.draw(0F, radius, 0.3f, side, 1)
-                    GL11.glTranslated(0.0, 0.0, 0.3)
-                    c.draw(radius, 0F, 0.3f, side, 1)
-                    RenderUtils.disableSmoothLine()
                     GL11.glPopMatrix()
                 }
             }

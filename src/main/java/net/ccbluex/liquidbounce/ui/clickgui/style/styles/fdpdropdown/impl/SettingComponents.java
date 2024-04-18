@@ -22,6 +22,7 @@ import net.ccbluex.liquidbounce.value.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
@@ -30,6 +31,7 @@ import java.util.HashMap;
 import static org.lwjgl.opengl.GL11.*;
 
 public class SettingComponents extends Component {
+
     public static float scale;
     private final Module module;
     public Animation settingHeightScissor;
@@ -90,8 +92,6 @@ public class SettingComponents extends Component {
                 modesHoverAnimation.put(modeSetting, modeMap);
             }
 
-
-
         }
     }
 
@@ -102,7 +102,7 @@ public class SettingComponents extends Component {
 
     @Override
     public void keyTyped(char typedChar, int keyCode) {
-        /*
+
         if (binding != null) {
             selectedField = null;
             selectedStringSetting = null;
@@ -113,8 +113,6 @@ public class SettingComponents extends Component {
             binding = null;
             return;
         }
-
-         */
 
         if (selectedField != null) {
             if (keyCode == 1) {
@@ -145,12 +143,8 @@ public class SettingComponents extends Component {
         Color accentedColor = DrRenderUtils.applyOpacity(colors[0], alphaAnimation / 255f);
         Color accentedColor2 = DrRenderUtils.applyOpacity(colors[1], alphaAnimation / 255f);
 
-
         double count = 0;
 
-
-
-        //
         for (Value setting : module.getValues()) {
             if (!setting.getDisplayable())
                 continue;
@@ -173,7 +167,6 @@ public class SettingComponents extends Component {
 
                 Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.getRGB());
 
-
                 Animation hoverAnimation = sliderfloatAnimMap.get(numberSetting)[0];
                 Animation selectAnimtion = sliderfloatAnimMap.get(numberSetting)[1];
 
@@ -189,9 +182,7 @@ public class SettingComponents extends Component {
                     draggingNumber = numberSetting;
                 }
 
-
                 double currentValue = numberSetting.getValue();
-
 
                 if (draggingNumber != null && draggingNumber == setting) {
                     float percent = Math.min(1, Math.max(0, (mouseX - (x + 5)) / totalSliderWidth));
@@ -202,7 +193,6 @@ public class SettingComponents extends Component {
 
                 float sliderMath = (float) (((currentValue) - numberSetting.getMinimum())
                         / (numberSetting.getMaximum() - numberSetting.getMinimum()));
-
 
                 sliderfloatMap.put(numberSetting, (float) DrRenderUtils.animate(totalSliderWidth * sliderMath, sliderfloatMap.get(numberSetting), .1));
 
@@ -235,7 +225,6 @@ public class SettingComponents extends Component {
 
                 Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.getRGB());
 
-
                 Animation hoverAnimation = sliderintAnimMap.get(numberSetting)[0];
                 Animation selectAnimtion = sliderintAnimMap.get(numberSetting)[1];
 
@@ -251,9 +240,7 @@ public class SettingComponents extends Component {
                     draggingNumber = numberSetting;
                 }
 
-
                 double currentValue = numberSetting.getValue();
-
 
                 if (draggingNumber != null && draggingNumber == setting) {
                     float percent = Math.min(1, Math.max(0, (mouseX - (x + 5)) / totalSliderWidth));
@@ -265,9 +252,7 @@ public class SettingComponents extends Component {
                 float sliderMath = (float) (((currentValue) - numberSetting.getMinimum())
                         / (numberSetting.getMaximum() - numberSetting.getMinimum()));
 
-
                 sliderintMap.put(numberSetting, (float) DrRenderUtils.animate(totalSliderWidth * sliderMath, sliderintMap.get(numberSetting), .1));
-
 
                 float sliderY = (settingY + 18);
                 RoundedUtil.drawRound(x + 5, sliderY, totalSliderWidth, 3, 1.5f, DrRenderUtils.applyOpacity(darkRectHover, (float) (.4f + (.2 * hoverAnimation.getOutput()))));
@@ -297,7 +282,6 @@ public class SettingComponents extends Component {
 
                 Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.getRGB());
 
-
                 Animation hoverAnimation = sliderAnimMap.get(numberSetting)[0];
                 Animation selectAnimtion = sliderAnimMap.get(numberSetting)[1];
 
@@ -313,9 +297,7 @@ public class SettingComponents extends Component {
                     draggingNumber = numberSetting;
                 }
 
-
                 double currentValue = numberSetting.getValue();
-
 
                 if (draggingNumber != null && draggingNumber == setting) {
                     float percent = Math.min(1, Math.max(0, (mouseX - (x + 5)) / totalSliderWidth));
@@ -327,9 +309,7 @@ public class SettingComponents extends Component {
                 float sliderMath = (float) (((currentValue) - numberSetting.getMinimum())
                         / (numberSetting.getMaximum() - numberSetting.getMinimum()));
 
-
                 sliderMap.put(numberSetting, (float) DrRenderUtils.animate(totalSliderWidth * sliderMath, sliderMap.get(numberSetting), .1));
-
 
                 float sliderY = (settingY + 18);
                 RoundedUtil.drawRound(x + 5, sliderY, totalSliderWidth, 3, 1.5f, DrRenderUtils.applyOpacity(darkRectHover, (float) (.4f + (.2 * hoverAnimation.getOutput()))));
@@ -382,7 +362,6 @@ public class SettingComponents extends Component {
                         settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) + 1, 6.5f,
                         6.5f, 3, textColor);
 
-
             }
             if (setting instanceof ListValue) {
                 ListValue modeSetting = (ListValue) setting;
@@ -414,16 +393,11 @@ public class SettingComponents extends Component {
                     float modeY = (float) (settingY + rectHeight + 11 + ((8 + (modeCount * rectHeight)) * openAnimation.getOutput()));
                     DrRenderUtils.resetColor();
 
-                    //指针所指的String
                     boolean hoveringMode = isClickable(modeY - 5) && openAnimation.getDirection().equals(Direction.FORWARDS) &&
                             DrRenderUtils.isHovering(x + 5, modeY - 5, width - 10, rectHeight, mouseX, mouseY);
                     Animation modeHoverAnimation = modesHoverAnimation.get(modeSetting).get(mode);
 
-
-
-
                     modeHoverAnimation.setDirection(hoveringMode ? Direction.FORWARDS : Direction.BACKWARDS);
-
 
                     if (modeHoverAnimation.finished(Direction.FORWARDS) || !modeHoverAnimation.isDone()) {
                         RoundedUtil.drawRound(x + 5, modeY - 5, width - 10, rectHeight, 3,
@@ -433,12 +407,10 @@ public class SettingComponents extends Component {
                         modeSettingClick.put(modeSetting, !modeSettingClick.get(modeSetting));
                         modeSetting.set(mode);
                     }
+
                     if (openAnimation.isDone() && openAnimation.getDirection().equals(Direction.FORWARDS) || !openAnimation.isDone()) {
-                        //      RoundedUtil.drawRound(x + 5 + ((width - 10) / 2f - selectRectWidth / 2f), settingY + rectHeight + 10.5f,
-                        //    Math.max(2, selectRectWidth), 1.5f, .5f, accent ? accentedColor2 : textColor);
                         Fonts.SF.SF_18.SF_18.drawString(mode, x + 13, modeY,DrRenderUtils.applyOpacity(textColor, (float) openAnimation.getOutput()).getRGB());
                     }
-                    //   Fonts.SF.SF_18.SF_18.drawString(mode, x + 13, modeY,DrRenderUtils.applyOpacity(textColor, (float) openAnimation.getOutput()).getRGB());
                     modeCount++;
                 }
                 if (!openAnimation.isDone() && type == GuiEvents.DRAW) {
@@ -456,23 +428,20 @@ public class SettingComponents extends Component {
 
 
                 float selectRectWidth = (float) ((width - 10) * openAnimation.getOutput());
-                // DrRenderUtils.renderRoundedRect(x + 5, settingY + rectHeight + 7, width - 10, 2, .5f, disabledTextColor.getRGB());
                 if (openAnimation.isDone() && openAnimation.getDirection().equals(Direction.FORWARDS) || !openAnimation.isDone()) {
+
                     RoundedUtil.drawRound(x + 5 + ((width - 10) / 2f - selectRectWidth / 2f), settingY + rectHeight + 10.5f,
                             Math.max(2, selectRectWidth), 1.5f, .5f, accent ? accentedColor2 : textColor);
-                    //   Fonts.SF.SF_18.SF_18.drawString(mode, x + 13, modeY,DrRenderUtils.applyOpacity(textColor, (float) openAnimation.getOutput()).getRGB());
                 }
 
-                //Mode的名字
                 Fonts.SF.SF_14.SF_14.drawString(modeSetting.getName(), x + 13, settingY + 9, textColor.getRGB());
 
                 DrRenderUtils.resetColor();
-                //当先选择的mode
+
                 Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(modeSetting.get(), x + 13, (float) (settingY + 17.5), textColor.getRGB());
 
                 DrRenderUtils.resetColor();
                 DrRenderUtils.drawClickGuiArrow(x + width - 15, settingY + 17, 5, openAnimation, textColor.getRGB());
-
 
                 count += 1 + ((math / rectHeight) * openAnimation.getOutput());
             }
@@ -501,51 +470,49 @@ public class SettingComponents extends Component {
                 }
 
                 stringSettingField.drawTextBox();
-                //Writes to StringSetting
+
                 stringSetting.set(stringSettingField.getText());
 
                 count++;
             }
+
+            // Render bind option first
+            String bind = Keyboard.getKeyName(module.getKeyBind());
+
+            boolean hoveringBindRect = isClickable(y + Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getMiddleOfBox(rectHeight) - 1)
+                    && DrRenderUtils.isHovering(x + width - (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 10),
+                    y + Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getMiddleOfBox(rectHeight) - 1, (float) (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 8),
+                    Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getHeight() + 6, mouseX, mouseY);
+
+            if (type == GuiEvents.CLICK && hoveringBindRect && button == 0) {
+                binding = module;
+                return;
+            }
+
+            Animation[] animations = keySettingAnimMap.get(module);
+
+            animations[1].setDirection(binding == module ? Direction.FORWARDS : Direction.BACKWARDS);
+
+            animations[0].setDirection(hoveringBindRect ? Direction.FORWARDS : Direction.BACKWARDS);
+
             /*
-                String bind = Keyboard.getKeyName(module.getKeyBind());
+            please guys dont delete it
 
-                boolean hoveringBindRect = isClickable(settingY + Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getMiddleOfBox(rectHeight) - 1)
-                        && DrRenderUtils.isHovering((float) (x + width - (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 7)),
-                        settingY + Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getMiddleOfBox(rectHeight) - 1, (float) (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 4),
-                        Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getHeight() + 4, mouseX, mouseY);
+            int offsetX = 10;
+            float bindButtonY = y + 4; // Ajuste conforme necessário
 
-                if (type == GuiEvents.CLICK && hoveringBindRect && button == 0) {
-                    binding = module;
-                    return;
-                }
-                Animation[] animations = keySettingAnimMap.get(module);
+            RoundedUtil.drawRound(x + width - (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 12) + offsetX,
+                    bindButtonY, (float) (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 8),
+                    Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getHeight() + 6, 5, DrRenderUtils.applyOpacity(darkRectHover, (float) (.4 + (.2 * animations[0].getOutput()))));
 
-                animations[1].setDirection(binding == module ? Direction.FORWARDS : Direction.BACKWARDS);
-
-                Fonts.SF.SF_18.SF_18.drawString("Bind", x + 5,
-                        settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) + 1,
-                        textColor.getRGB());
-
-
-                animations[0].setDirection(hoveringBindRect ? Direction.FORWARDS : Direction.BACKWARDS);
-
-
-                RoundedUtil.drawRound((float) (x + width - (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 9)),
-                        settingY + Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getMiddleOfBox(rectHeight) - 1, (float) (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 5),
-                        Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getHeight() + 3.5f, 5, DrRenderUtils.applyOpacity(darkRectHover, (float) (.4 + (.2 * animations[0].getOutput()))));
-
-                Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(bind, x + width - (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 6),
-                        settingY + Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getMiddleOfBox(rectHeight) + 1,
-                        DrRenderUtils.interpolateColor(textColor.getRGB(), accentedColor2.getRGB(), (float) animations[1].getOutput()));
-
-
+            Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(bind, x + width - (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 9) + offsetX,
+                    bindButtonY + Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getMiddleOfBox(rectHeight) + 1,
+                    DrRenderUtils.interpolateColor(textColor.getRGB(), accentedColor2.getRGB(), (float) animations[1].getOutput()));
              */
             count++;
         }
         settingSize = count;
-        // settingSize = count;
     }
-
 
     @Override
     public void drawScreen(int mouseX, int mouseY) {
@@ -561,7 +528,6 @@ public class SettingComponents extends Component {
     public void mouseReleased(int mouseX, int mouseY, int state) {
         handle(mouseX, mouseY, state, GuiEvents.RELEASE);
     }
-
 
     public boolean isClickable(float y) {
         return y > panelLimitY && y < panelLimitY + 17 + Main.allowedClickGuiHeight;

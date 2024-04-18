@@ -96,6 +96,7 @@ public class PasswordField extends Gui {
     /**
      * True if this textbox is visible
      */
+    @Setter
     private boolean visible = true;
     private GuiPageButtonList.GuiResponder field_175210_x;
     private Predicate<String> field_175209_y = s -> true;
@@ -679,12 +680,5 @@ public class PasswordField extends Gui {
      */
     public boolean getVisible() {
         return this.visible;
-    }
-
-    /**
-     * Sets whether or not this textbox is visible
-     */
-    public void setVisible(boolean p_146189_1_) {
-        this.visible = p_146189_1_;
     }
 }

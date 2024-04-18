@@ -101,7 +101,7 @@ object Breaker : Module() {
     private val posList: MutableList<BlockPos> = ArrayList()
     private var color = Color.CYAN
     private var thread: Thread? = null
-    var rotTicks = 0
+    private var rotTicks = 0
 
 
     override fun onEnable() {
@@ -172,8 +172,8 @@ object Breaker : Module() {
 
         val targetId = blockValue.get()
 
-        if (pos == null || Block.getIdFromBlock(BlockUtils.getBlock(pos)) != targetId ||
-            BlockUtils.getCenterDistance(pos!!) > rangeValue.get()) {
+        if (pos == null || Block.getIdFromBlock(getBlock(pos)) != targetId ||
+            getCenterDistance(pos!!) > rangeValue.get()) {
             pos = find(targetId)
 
         }
@@ -193,10 +193,10 @@ object Breaker : Module() {
 
         if (throughWallsValue.equals("Hypixel")) {
             val blockPos = find(26) ?: return
-            if (BlockUtils.isFullBlock(blockPos.up())) {
-                pos = blockPos.up()?: return
+            pos = if (BlockUtils.isFullBlock(blockPos.up())) {
+                blockPos.up()?: return
             } else {
-                pos = blockPos?: return
+                blockPos
             }
         }
 
@@ -410,11 +410,11 @@ object Breaker : Module() {
             val timeLeft = "Cooldown: ${(coolDownTimer.hasTimeLeft(coolDownValue.get().toLong() * 1000L) / 1000L).toInt()}s"
             val strWidth = Fonts.minecraftFont.getStringWidth(timeLeft)
 
-            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2 - 1, sc.getScaledHeight() / 2 - 70, 0x000000)
-            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2 + 1, sc.getScaledHeight() / 2 - 70, 0x000000)
-            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2, sc.getScaledHeight() / 2 - 69, 0x000000)
-            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2, sc.getScaledHeight() / 2 - 71, 0x000000)
-            Fonts.minecraftFont.drawString(timeLeft, sc.getScaledWidth() / 2 - strWidth / 2, sc.getScaledHeight() / 2 - 70, -1)
+            Fonts.minecraftFont.drawString(timeLeft, sc.scaledWidth / 2 - strWidth / 2 - 1, sc.scaledHeight / 2 - 70, 0x000000)
+            Fonts.minecraftFont.drawString(timeLeft, sc.scaledWidth / 2 - strWidth / 2 + 1, sc.scaledHeight / 2 - 70, 0x000000)
+            Fonts.minecraftFont.drawString(timeLeft, sc.scaledWidth / 2 - strWidth / 2, sc.scaledHeight / 2 - 69, 0x000000)
+            Fonts.minecraftFont.drawString(timeLeft, sc.scaledWidth / 2 - strWidth / 2, sc.scaledHeight / 2 - 71, 0x000000)
+            Fonts.minecraftFont.drawString(timeLeft, sc.scaledWidth / 2 - strWidth / 2, sc.scaledHeight / 2 - 70, -1)
         }
     }
 
@@ -459,7 +459,7 @@ object Breaker : Module() {
     if (ignoreFirstBlockValue.get() && nearestBlock != null) {
         if (firstPos == null) {
             firstPos = nearestBlock
-            FDPClient.hud.addNotification(Notification(name,"Found first ${getBlockName(targetID)} block at ${nearestBlock!!.x.toInt()} ${nearestBlock!!.y.toInt()} ${nearestBlock!!.z.toInt()}",  NotifyType.SUCCESS))
+            FDPClient.hud.addNotification(Notification(name,"Found first ${getBlockName(targetID)} block at ${nearestBlock.x} ${nearestBlock.y} ${nearestBlock.z}",  NotifyType.SUCCESS))
         }
         if (targetID == 26 && firstPos != null && firstPosBed == null) { // bed
             firstPosBed = when (true) {
@@ -471,7 +471,7 @@ object Breaker : Module() {
                 false -> TODO()
             }
             if (firstPosBed != null)
-                FDPClient.hud.addNotification(Notification(name,"Found second ${getBlockName(targetID)} block at ${firstPosBed!!.x.toInt()} ${firstPosBed!!.y.toInt()} ${firstPosBed!!.z.toInt()}", NotifyType.SUCCESS))
+                FDPClient.hud.addNotification(Notification(name,"Found second ${getBlockName(targetID)} block at ${firstPosBed!!.x} ${firstPosBed!!.y} ${firstPosBed!!.z}", NotifyType.SUCCESS))
         }
     }
     return if (ignoreFirstBlockValue.get() && (firstPos == nearestBlock || firstPosBed == nearestBlock)) null else nearestBlock
@@ -530,7 +530,7 @@ object Breaker : Module() {
         }
     }
 
-    fun switchSlot(blockPos: BlockPos) {
+    private  fun switchSlot(blockPos: BlockPos) {
         var bestSpeed = 1F
         var bestSlot = -1
 
@@ -552,5 +552,5 @@ object Breaker : Module() {
     }
 
     override val tag: String
-        get() = BlockUtils.getBlockName(blockValue.get())
+        get() = getBlockName(blockValue.get())
 }

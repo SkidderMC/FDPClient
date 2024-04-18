@@ -132,7 +132,7 @@ object JumpCircle : Module() {
     class Circle(val time: Long, val x: Double, val y: Double, val z: Double){
         var entity: EntityLivingBase = mc.thePlayer
         private val jumpModule = FDPClient.moduleManager.getModule(JumpCircle::class.java) as JumpCircle
-        var colorModeValue = jumpModule.colorModeValue.get()
+        private var colorModeValue = jumpModule.colorModeValue.get()
         var colorRedValue = jumpModule.colorRedValue.get()
         var colorGreenValue = jumpModule.colorGreenValue.get()
         var colorBlueValue = jumpModule.colorBlueValue.get()

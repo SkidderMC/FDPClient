@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;
 import net.ccbluex.liquidbounce.features.module.modules.ghost.LegitAura;
 import net.ccbluex.liquidbounce.features.module.modules.ghost.Reach;
 import net.ccbluex.liquidbounce.features.module.modules.visual.Ambience;
-import net.ccbluex.liquidbounce.features.module.modules.visual.FreeLook;
+import net.ccbluex.liquidbounce.features.module.modules.ghost.FreeLook;
 import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.utils.Interpolator;
 import net.minecraft.block.Block;

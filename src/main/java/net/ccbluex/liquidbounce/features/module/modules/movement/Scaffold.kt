@@ -29,6 +29,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.render.GlowUtils
 import net.minecraft.block.BlockAir
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -205,7 +206,7 @@ class Scaffold : Module() {
     // Visuals
     private val renderOptions = BoolValue("Render-Options", true)
     
-    private val counterDisplayValue = ListValue("Counter", arrayOf("FDP", "Rise", "Simple"), "FDP").displayable { renderOptions.get() }
+    private val counterDisplayValue = ListValue("Counter", arrayOf("FDP", "Simple", "Modern", "Modern2"), "FDP").displayable { renderOptions.get() }
     private val markValue = BoolValue("Mark", false).displayable { renderOptions.get() }
     private val markRedValue = IntegerValue("MarkColorRed", 68, 0, 255).displayable { markValue.get() && markValue.displayable }
     private val markGreenValue = IntegerValue("MarkColorGreen", 117, 0, 255).displayable { markValue.get() && markValue.displayable }
@@ -232,7 +233,7 @@ class Scaffold : Module() {
     private var zitterDirection = false
 
     // Delay
-    var placing = false
+    private var placing = false
     private val delayTimer = MSTimer()
     private val zitterTimer = MSTimer()
     private val clickTimer = MSTimer()
@@ -443,7 +444,7 @@ class Scaffold : Module() {
                 var dif = 0.5
                 val blockPos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY - 1.0, mc.thePlayer.posZ)
                 if (edgeDistanceValue.get() > 0) {
-                    for (facingType in EnumFacing.values()) {
+                    for (facingType in EnumFacing.entries) {
                         if (facingType == EnumFacing.UP || facingType == EnumFacing.DOWN) {
                             continue
                         }
@@ -737,14 +738,14 @@ class Scaffold : Module() {
                 if (mc.thePlayer.posY % 1 <= 0.00153598) {
                     mc.thePlayer.setPosition(
                         mc.thePlayer.posX,
-                        Math.floor(mc.thePlayer.posY),
+                        floor(mc.thePlayer.posY),
                         mc.thePlayer.posZ
                     )
                     mc.thePlayer.motionY = 0.41998
                 } else if (mc.thePlayer.posY % 1 < 0.1 && offGroundTicks != 0) {
                     mc.thePlayer.setPosition(
                         mc.thePlayer.posX,
-                        Math.floor(mc.thePlayer.posY),
+                        floor(mc.thePlayer.posY),
                         mc.thePlayer.posZ
                     )
                 }
@@ -890,10 +891,10 @@ class Scaffold : Module() {
                     jumpGround = mc.thePlayer.posY
                     mc.thePlayer.motionY = 0.41999998688698
                 }
-                if (mc.thePlayer.posY > jumpGround + 1.04 && MovementUtils.isMoving()) {
+                if (mc.thePlayer.posY > jumpGround + 0.65 && MovementUtils.isMoving()) {
                     fakeJump()
                     mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
-                    mc.thePlayer.motionY = 0.45
+                    mc.thePlayer.motionY = 0.36
                     jumpGround = mc.thePlayer.posY
                 }
             }
@@ -926,7 +927,7 @@ class Scaffold : Module() {
         } else {
             BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ).down()
         }
-        if (!expand && (!BlockUtils.isReplaceable(blockPosition) || search(blockPosition, !shouldGoDown))) return
+        if (!expand && (!isReplaceable(blockPosition) || search(blockPosition, !shouldGoDown))) return
         if (expand) {
             for (i in 0 until expandLengthValue.get()) {
                 if (search(blockPosition.add(if (mc.thePlayer.horizontalFacing == EnumFacing.WEST) -i else if (mc.thePlayer.horizontalFacing == EnumFacing.EAST) i else 0,
@@ -1051,7 +1052,8 @@ class Scaffold : Module() {
         lockRotation = null
         mc.timer.timerSpeed = 1f
         shouldGoDown = false
-        val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation!!, Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch)!!, 58f)
+        val limitedRotation = RotationUtils.limitAngleChange(RotationUtils.serverRotation!!,
+            Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch), 58f)
         RotationUtils.setTargetRotation(limitedRotation, 2)
         SpoofItemUtils.stopSpoof()
     }
@@ -1123,13 +1125,22 @@ class Scaffold : Module() {
                 mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
                 GlStateManager.popMatrix()
             }
-            "rise" -> {
+            "simple" -> {
+                Fonts.minecraftFont.drawString(
+                    blocksAmount.toString() + " Blocks",
+                    scaledResolution.scaledWidth / 1.95f,
+                    (scaledResolution.scaledHeight / 2 + 20).toFloat(),
+                    -1,
+                    true
+                )
+            }
+            "modern" -> {
                 GlStateManager.pushMatrix()
                 val info = blocksAmount.toString()
                 val slot = InventoryUtils.findAutoBlockBlock()
                 val height = event.scaledResolution.scaledHeight
                 val width = event.scaledResolution.scaledWidth
-                val w2=(mc.fontRendererObj.getStringWidth(info))
+                val w2= mc.fontRendererObj.getStringWidth(info)
                 RenderUtils.drawRoundedCornerRect(
                     (width - w2 - 20) / 2f,
                     height * 0.8f - 24f,
@@ -1160,13 +1171,30 @@ class Scaffold : Module() {
                 mc.fontRendererObj.drawCenteredString(info, width / 2f, height * 0.8f, Color.WHITE.rgb, false)
                 GlStateManager.popMatrix()
             }
-            "simple" -> {
-                Fonts.minecraftFont.drawString(
+            "modern2" -> {
+                RenderUtils.drawRoundedCornerRect(
+                    (scaledResolution.scaledWidth - mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") - 14) / 2f,
+                    scaledResolution.scaledHeight * 0.8f - 5f,
+                    (scaledResolution.scaledWidth + mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") + 14) / 2f,
+                    scaledResolution.scaledHeight * 0.8f + 13f,
+                    5f,
+                    Color(20, 20, 20, 100).rgb
+                )
+                GlowUtils.drawGlow((
+                        scaledResolution.scaledWidth - mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") - 14) / 2f,
+                    scaledResolution.scaledHeight * 0.8f - 5f,
+                    (scaledResolution.scaledWidth + mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") + 14) / 2f,
+                    scaledResolution.scaledHeight * 0.8f + 13f,
+                    5,
+                    Color(0,0,0, 100)
+                )
+                mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") / 2
+                Fonts.minecraftFont.drawCenteredString(
                     blocksAmount.toString() + " Blocks",
-                    scaledResolution.scaledWidth / 1.95f,
-                    (scaledResolution.scaledHeight / 2 + 20).toFloat(),
-                    -1,
-                    true
+                    scaledResolution.scaledWidth / 2f,
+                    scaledResolution.scaledHeight * 0.8f,
+                    Color.WHITE.rgb,
+                    false
                 )
             }
         }
@@ -1188,7 +1216,7 @@ class Scaffold : Module() {
                 mc.thePlayer.posZ + if (mc.thePlayer.horizontalFacing == EnumFacing.NORTH) -i else if (mc.thePlayer.horizontalFacing == EnumFacing.SOUTH) i else 0
             )
             val placeInfo = get(blockPos)
-            if (BlockUtils.isReplaceable(blockPos) && placeInfo != null) {
+            if (isReplaceable(blockPos) && placeInfo != null) {
                 RenderUtils.drawBlockBox(blockPos, Color(markRedValue.get(), markGreenValue.get(), markBlueValue.get(), 100), false, true, 1f)
                 break
             }
@@ -1203,7 +1231,7 @@ class Scaffold : Module() {
      * @return
      */
     private fun search(blockPosition: BlockPos, checks: Boolean): Boolean {
-        if (!BlockUtils.isReplaceable(blockPosition)) return false
+        if (!isReplaceable(blockPosition)) return false
         val eyesPos = Vec3(
             mc.thePlayer.posX,
             mc.thePlayer.entityBoundingBox.minY + mc.thePlayer.getEyeHeight(),
@@ -1293,10 +1321,10 @@ class Scaffold : Module() {
                 "backwards" -> {
                     var calcyaw = ((MovementUtils.movingYaw - 180) / 45).roundToInt() * 45
                     var calcpitch = 0f
-                    if (calcyaw % 90 == 0) {
-                        calcpitch = 82f
+                    calcpitch = if (calcyaw % 90 == 0) {
+                        82f
                     } else {
-                        calcpitch = 78f
+                        78f
                     }
                     Rotation(calcyaw.toFloat(), calcpitch)
                 }
@@ -1364,10 +1392,10 @@ class Scaffold : Module() {
                 "backwards" -> {
                     var calcyaw = ((MovementUtils.movingYaw - 180) / 45).roundToInt() * 45
                     var calcpitch = 0f
-                    if (calcyaw % 90 == 0) {
-                        calcpitch = 82f
+                    calcpitch = if (calcyaw % 90 == 0) {
+                        82f
                     } else {
-                        calcpitch = 78f
+                        78f
                     }
                     Rotation(calcyaw.toFloat(), calcpitch)
                 }

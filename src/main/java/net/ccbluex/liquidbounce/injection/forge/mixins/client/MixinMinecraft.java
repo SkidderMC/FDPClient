@@ -40,9 +40,9 @@ import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
-import net.minecraft.util.Util;
 import net.minecraftforge.client.MinecraftForgeClient;
 import org.apache.commons.lang3.SystemUtils;
+import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.objectweb.asm.Opcodes;
@@ -90,7 +90,7 @@ public abstract class MixinMinecraft {
     @Shadow
     public int leftClickCounter;
     @Unique
-    private long fDPClient$lastFrame = Minecraft.getSystemTime();
+    private long fDPClient$lastFrame = getTime();
 
     @Shadow
     public abstract RenderManager getRenderManager();
@@ -218,6 +218,15 @@ public abstract class MixinMinecraft {
         fDPClient$lastFrame = currentTime;
 
         RenderUtils.deltaTime = deltaTime;
+    }
+
+    public long getTime() {
+        return (Sys.getTime() * 1000) / Sys.getTimerResolution();
+    }
+
+    @Inject(method = "runTick", at = @At("HEAD"))
+    private void injectGameRuntimeTicks(CallbackInfo ci) {
+        ClientUtils.INSTANCE.setRunTimeTicks(ClientUtils.INSTANCE.getRunTimeTicks() + 1);
     }
 
     @Inject(method = "runTick", at = @At("HEAD"))

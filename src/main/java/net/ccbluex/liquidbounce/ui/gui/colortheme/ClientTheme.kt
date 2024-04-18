@@ -18,7 +18,7 @@ object ClientTheme {
     val ClientColorMode = ListValue(
         "ColorMode",
         arrayOf("Zywl", "FDP", "Magic", "DarkNight", "Sun", "Tree", "Flower", "Loyoi", "Soniga", "May", "Mint", "Cero", "Azure", "Rainbow", "Astolfo", "Pumpkin", "Polarized", "Sundae", "Terminal", "Coral", "Fire", "Aqua", "Peony"),
-        "Mint"
+        "Aqua"
     ).displayable { false }
     val textValue = BoolValue("TextStaticColor", false).displayable { false }
     val fadespeed = IntegerValue("Fade-speed", 7, 1, 10).displayable { false }

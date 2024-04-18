@@ -51,11 +51,9 @@ object FakeLag : Module() {
 
     private val packets: LinkedList<PacketEvent> = LinkedList()
     private val entityPosMap: LinkedHashMap<Int, PosData> = LinkedHashMap()
-    private var hasPlace = false
     override fun onDisable() {
         releasePackets()
-        hasPlace = false;
-        clear();
+        clear()
     }
 
     fun fakeLagPacket(event: PacketEvent) {
@@ -202,7 +200,6 @@ object FakeLag : Module() {
             } else if (packet is C08PacketPlayerBlockPlacement) {
                 val place: C08PacketPlayerBlockPlacement = packet as C08PacketPlayerBlockPlacement
                 if (place.placedBlockDirection == 255) return
-                hasPlace = true
             }
         }
     }
@@ -217,6 +214,7 @@ object FakeLag : Module() {
                     val packet = event.packet as Packet<INetHandlerPlayClient>
                     packet.processPacket(handler)
                 } catch (ignored: Exception) {
+                    alert("Failed to process packet: " + event.packet.javaClass.name.replace("net.minecraft.network.play.server.", " "))
                 }
             }
         }

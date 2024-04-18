@@ -64,9 +64,9 @@ object HUDModule : Module() {
     private val antiTabComplete = BoolValue("AntiTabComplete", false)
 
     // UI EFFECT
-    private val uiEffectValue = BoolValue("UIEffect", true)
-    val buttonShadowValue = BoolValue("ShadowButton", true).displayable  { uiEffectValue.get() }
-    val UiShadowValue = ListValue("UIEffectMode", arrayOf("Shadow", "Glow", "None"), "Shadow").displayable  { uiEffectValue.get() }
+    val uiEffectValue = BoolValue("UIEffect", true)
+    val buttonShadowValue = BoolValue("ShadowButton", false).displayable  { uiEffectValue.get() }
+    val UiShadowValue = ListValue("UIEffectMode", arrayOf("Shadow", "Glow", "None"), "None").displayable  { uiEffectValue.get() }
 
     // CAMERA
     private val viewValue = BoolValue("BetterView", true)

@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.roundToInt
 
-class RiseTH(inst: Targets) : TargetStyle("Rise", inst, true) {
+class ModernTH(inst: Targets) : TargetStyle("Modern", inst, true) {
 
     override fun drawTarget(entity: EntityLivingBase) {
 

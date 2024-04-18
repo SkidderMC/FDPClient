@@ -28,7 +28,7 @@ import java.awt.Color
 @ModuleInfo(name = "Breadcrumbs", category = ModuleCategory.VISUAL)
 object Breadcrumbs : Module() {
 
-    private val typeValue = ListValue("Type", arrayOf("Line", "Rect", "Sphere", "Rise"), "Line")
+    private val typeValue = ListValue("Type", arrayOf("Line", "Rect", "Sphere"), "Line")
     private val colorDisplay = BoolValue("Color", true)
     private val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { colorDisplay.get() }
     private val colorGreenValue = IntegerValue("Green", 179, 0, 255).displayable { colorDisplay.get() }
@@ -42,7 +42,7 @@ object Breadcrumbs : Module() {
     private val fadeTimeValue = IntegerValue("FadeTime", 5, 1, 20).displayable { fadeValue.get() }
     private val precisionValue = IntegerValue("Precision", 4, 1, 20)
     private val lineWidthValue = IntegerValue("LineWidth", 1, 1, 10).displayable { typeValue.equals("Line") }
-    private val sphereScaleValue = FloatValue("SphereScale", 0.6f, 0.1f, 2f).displayable { typeValue.equals("Sphere") || typeValue.equals("Rise")}
+    private val sphereScaleValue = FloatValue("SphereScale", 0.6f, 0.1f, 2f).displayable { typeValue.equals("Sphere")}
     private val onlyThirdPersonValue = BoolValue("OnlyThirdPerson", true)
 
     private val points = mutableMapOf<Int, MutableList<BreadcrumbPoint>>()
@@ -126,31 +126,6 @@ object Breadcrumbs : Module() {
                         GL11.glScalef(sphereScaleValue.get(), sphereScaleValue.get(), sphereScaleValue.get())
                         GL11.glCallList(sphereList)
                         GL11.glPopMatrix()
-                    }
-                    "rise" -> {
-                        
-                        val circleScale = sphereScaleValue.get()
-                        RenderUtils.glColor(point.color, 38)
-                        GL11.glPushMatrix()
-                        GL11.glTranslated(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
-                        GL11.glScalef(circleScale * 2.3f, circleScale * 2.3f, circleScale * 2.3f)
-                        GL11.glCallList(sphereList)
-                        GL11.glPopMatrix()
-
-                        RenderUtils.glColor(point.color, 63)
-                        GL11.glPushMatrix()
-                        GL11.glTranslated(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
-                        GL11.glScalef(circleScale * 1.4f, circleScale * 1.4f, circleScale * 1.4f)
-                        GL11.glCallList(sphereList)
-                        GL11.glPopMatrix()
-
-                        RenderUtils.glColor(point.color, 153)
-                        GL11.glPushMatrix()
-                        GL11.glTranslated(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
-                        GL11.glScalef(circleScale * 0.7f, circleScale * 0.7f, circleScale * 0.7f)
-                        GL11.glCallList(sphereList)
-                        GL11.glPopMatrix()
-
                     }
                 }
             }

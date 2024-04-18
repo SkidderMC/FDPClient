@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.other.AntiBot
 import net.ccbluex.liquidbounce.features.module.modules.other.Teams
-import net.ccbluex.liquidbounce.features.module.modules.player.HackerDetector
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.utils.EntityUtils
@@ -46,7 +45,6 @@ object NameTags : Module() {
     private val fontValue = FontValue("Font", Fonts.font40)
     private val borderValue = BoolValue("Border", true)
     private val fontShadowValue = BoolValue("Shadow", true)
-    private val hackerValue = BoolValue("Hacker", true)
     private val jelloColorValue = BoolValue("JelloHPColor", true).displayable { modeValue.equals("Jello") }
     private val jelloAlphaValue = IntegerValue("JelloAlpha", 170, 0, 255).displayable { modeValue.equals("Jello") }
     private val scaleValue = FloatValue("Scale", 1F, 1F, 4F)
@@ -85,7 +83,7 @@ object NameTags : Module() {
         for (entity in mc.theWorld.loadedEntityList) {
             if (EntityUtils.isSelected(entity, false)) {
                 renderNameTag(entity as EntityLivingBase,
-                    if (hackerValue.get() && FDPClient.moduleManager[HackerDetector::class.java]!!.isHacker(entity)) { "§c" } else { "" } + if (!modeValue.equals("Liquid") && AntiBot.isBot(entity)) { "§e" } else { "" } +
+                            if (!modeValue.equals("Liquid") && AntiBot.isBot(entity)) { "§e" } else { "" } +
                             if (clearNamesValue.get()) { entity.name } else { entity.getDisplayName().unformattedText })
             }
         }
@@ -167,7 +165,6 @@ object NameTags : Module() {
         // Draw nametag
         when (modeValue.get().lowercase()) {
             "simple" -> {
-                val playerName = getPlayerName(entity)
                 val healthPercent = (entity.health / entity.maxHealth).coerceAtMost(1F)
                 val width = fontRenderer.getStringWidth(tag).coerceAtLeast(30) / 2
                 val maxWidth = width * 2 + 12F
@@ -292,7 +289,6 @@ object NameTags : Module() {
 
             "jello" -> {
                 // colors
-                val playerName = getPlayerName(entity)
                 var hpBarColor = Color(255, 255, 255, jelloAlphaValue.get())
                 val name = entity.displayName.unformattedText
                 if (jelloColorValue.get() && name.startsWith("§")) {
@@ -323,7 +319,6 @@ object NameTags : Module() {
 
             "modern" -> {
                 // colors
-                val playerName = getPlayerName(entity)
                 val width = fontRenderer.getStringWidth(tag) / 2
 
                 // render bg

@@ -124,7 +124,6 @@ public class ModuleRect extends Component {
         }
         settingSize = settingHeight;
 
-
     }
 
     public void mouseClicked(int mouseX, int mouseY, int button) {
