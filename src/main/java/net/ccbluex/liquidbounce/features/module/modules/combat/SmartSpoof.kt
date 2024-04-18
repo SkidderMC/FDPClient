@@ -59,7 +59,12 @@ object SmartSpoof : Module() {
             if (packet is S08PacketPlayerPosLook) {
                 targetDelay = 0L
                 while (!packets.isEmpty()) {
-                    PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
+                    val packet = packets.take() as Packet<INetHandlerPlayClient?>
+                    try {
+                        PacketUtils.handlePacket(packet)
+                    } catch (ignored: Exception) {
+                        alert("Failed to process packet: " + packet.javaClass.name.replace("net.minecraft.network.play.server.", " "))
+                    }
                 }
                 times.clear()
                 return

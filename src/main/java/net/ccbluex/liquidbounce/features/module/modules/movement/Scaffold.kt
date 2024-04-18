@@ -29,6 +29,7 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.render.GlowUtils
 import net.minecraft.block.BlockAir
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
@@ -1172,12 +1173,20 @@ class Scaffold : Module() {
             }
             "modern2" -> {
                 RenderUtils.drawRoundedCornerRect(
-                    (scaledResolution.scaledWidth - mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") - 12) / 2f,
-                    scaledResolution.scaledHeight * 0.8f - 4f,
-                    (scaledResolution.scaledWidth + mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") + 12) / 2f,
-                    scaledResolution.scaledHeight * 0.8f + 12f,
+                    (scaledResolution.scaledWidth - mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") - 14) / 2f,
+                    scaledResolution.scaledHeight * 0.8f - 5f,
+                    (scaledResolution.scaledWidth + mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") + 14) / 2f,
+                    scaledResolution.scaledHeight * 0.8f + 13f,
                     5f,
                     Color(20, 20, 20, 100).rgb
+                )
+                GlowUtils.drawGlow((
+                        scaledResolution.scaledWidth - mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") - 14) / 2f,
+                    scaledResolution.scaledHeight * 0.8f - 5f,
+                    (scaledResolution.scaledWidth + mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") + 14) / 2f,
+                    scaledResolution.scaledHeight * 0.8f + 13f,
+                    5,
+                    Color(0,0,0, 100)
                 )
                 mc.fontRendererObj.getStringWidth(blocksAmount.toString() + " Blocks") / 2
                 Fonts.minecraftFont.drawCenteredString(

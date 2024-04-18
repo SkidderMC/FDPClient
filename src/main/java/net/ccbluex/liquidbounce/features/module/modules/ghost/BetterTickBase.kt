@@ -31,7 +31,7 @@ class BetterTickBase : Module() {
         val entity = mc.theWorld.loadedEntityList
             .filter {
                 EntityUtils.isSelected(it, true) && mc.thePlayer.canEntityBeSeen(it) &&
-                        mc.thePlayer.getDistanceToEntityBox(it) <= 5.0 && RotationUtils.getRotationDifference(it) <= fovValue.get()
+                        mc.thePlayer.getDistanceToEntityBox(it) <= 7.0 && RotationUtils.getRotationDifference(it) <= fovValue.get()
             }
             .minByOrNull { RotationUtils.getRotationDifference(it) } ?: return
 
