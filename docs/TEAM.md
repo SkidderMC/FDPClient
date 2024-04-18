@@ -23,9 +23,6 @@ DEV | https://github.com/contionability
 ### DinoFeng
 DEV | https://github.com/DinoFengz
 
-### Dg636
-DEV | https://github.com/C00LC0D35
-
 ### Vprah
 DEV | https://github.com/PrahXZ
 
