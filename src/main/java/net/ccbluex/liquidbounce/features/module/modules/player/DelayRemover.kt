@@ -43,7 +43,7 @@ object DelayRemover : Module() {
             mc.playerController.blockHitDelay = 0
         }
 
-        if (mc.currentScreen == null) {
+        if (mc.currentScreen == null && exitGuiValue.get()) {
             if (prevGui) MovementUtils.updateControls()
             prevGui = false
         } else {
