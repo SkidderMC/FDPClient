@@ -40,6 +40,7 @@ object AutoItem : Module() {
             if (!mc.gameSettings.keyBindUseItem.isKeyDown && mc.gameSettings.keyBindAttack.isKeyDown && mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
                 if (noCombat.get() && FDPClient.combatManager.inCombat) return
                 var bestSpeed = 0
+                bestSlot = -1
                 if (!mining) {
                     prevItem = mc.thePlayer.inventory.currentItem
                     if (silent.get())
