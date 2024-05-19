@@ -297,11 +297,11 @@ object Breaker : Module() {
                         pos = null
                         return
                     }
+                }
 
-                    if (hypixelValue.get()) {
-                        mc.netHandler.addToSendQueue(C0APacketAnimation())
-                        RotationUtils.setTargetRotation(rotations.rotation)
-                    }
+                if (hypixelValue.get()) {
+                    mc.netHandler.addToSendQueue(C0APacketAnimation())
+                    RotationUtils.setTargetRotation(rotations.rotation)
                 }
 
                 if (!hypixelValue.get()) {
