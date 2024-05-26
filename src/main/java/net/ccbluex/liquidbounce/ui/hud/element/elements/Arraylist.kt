@@ -8,8 +8,9 @@ package net.ccbluex.liquidbounce.ui.hud.element.elements
 import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
-import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.hud.element.Border
 import net.ccbluex.liquidbounce.ui.hud.element.Element
@@ -17,10 +18,10 @@ import net.ccbluex.liquidbounce.ui.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.hud.element.Side
 import net.ccbluex.liquidbounce.ui.hud.element.Side.Horizontal
 import net.ccbluex.liquidbounce.ui.hud.element.Side.Vertical
-import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.AnimationUtils
-import net.ccbluex.liquidbounce.utils.render.*
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ShadowUtils
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
 import java.awt.Color

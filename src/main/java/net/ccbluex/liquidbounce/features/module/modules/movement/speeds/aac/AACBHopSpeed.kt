@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMod
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.entity.EntityPlayerSP
-import net.minecraft.client.settings.GameSettings
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Timer
 import kotlin.math.cos

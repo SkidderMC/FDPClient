@@ -5,18 +5,18 @@
  */
 package net.ccbluex.liquidbounce.ui.hud.element.elements
 
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.FontValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.hud.element.Border
 import net.ccbluex.liquidbounce.ui.hud.element.Element
 import net.ccbluex.liquidbounce.ui.hud.element.ElementInfo
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.CPSCounterUtils
 import net.ccbluex.liquidbounce.utils.render.GlowUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.FontValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import java.awt.Color
 
 @ElementInfo(name = "CPSCounter")

@@ -11,19 +11,22 @@ import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.utils.timer.TimeUtils
 import net.ccbluex.liquidbounce.utils.CPSCounterUtils
-import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.MathUtils
+import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.utils.timer.TimeUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemSword
-import kotlin.random.Random
 import org.lwjgl.input.Mouse
+import kotlin.random.Random
 
 @ModuleInfo(name = "AutoClicker", category = ModuleCategory.GHOST)
 class AutoClicker : Module() {

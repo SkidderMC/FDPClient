@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.matrix
 
 import me.zywl.fdpclient.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
-import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.minecraft.network.play.server.S12PacketEntityVelocity
 
 class MatrixReverseVelocity : VelocityMode("MatrixReverse") {
     override fun onVelocityPacket(event: PacketEvent) {

@@ -6,8 +6,6 @@
 
 package net.ccbluex.liquidbounce.utils.misc
 
-import com.google.common.io.ByteStreams
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import org.apache.commons.io.FileUtils
 import java.io.*
 import java.net.HttpURLConnection

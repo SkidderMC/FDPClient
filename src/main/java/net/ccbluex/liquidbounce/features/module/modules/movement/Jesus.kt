@@ -6,15 +6,14 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import me.zywl.fdpclient.event.*
-import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.movement.jesus.JesusMode
 import net.ccbluex.liquidbounce.utils.ClassUtils
+import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.minecraft.block.BlockLiquid
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos

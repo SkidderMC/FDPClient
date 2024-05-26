@@ -6,15 +6,13 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.verus
 
 import me.zywl.fdpclient.event.*
-import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
-import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.entity.EntityPlayerSP
-import net.minecraft.client.settings.GameSettings
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C03PacketPlayer

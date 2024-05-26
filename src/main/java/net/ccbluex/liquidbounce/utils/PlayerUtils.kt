@@ -7,12 +7,12 @@ package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.utils.MinecraftInstance.mc
 import net.minecraft.block.BlockSlime
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemBucketMilk
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemPotion
 import net.minecraft.util.AxisAlignedBB
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.MathHelper
 
 object PlayerUtils {

@@ -6,13 +6,13 @@
 package net.ccbluex.liquidbounce.ui.gui.options
 
 import me.zywl.fdpclient.FDPClient
+import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule
+import net.ccbluex.liquidbounce.ui.clickgui.ClickGui
+import net.ccbluex.liquidbounce.ui.clickgui.ClickGuiConfig
 import net.ccbluex.liquidbounce.ui.gui.EnumLaunchFilter
 import net.ccbluex.liquidbounce.ui.gui.LaunchFilterInfo
 import net.ccbluex.liquidbounce.ui.gui.LaunchOption
-import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule
-import net.ccbluex.liquidbounce.ui.clickgui.ClickGuiConfig
 import net.ccbluex.liquidbounce.ui.gui.menu.GuiMainMenu
-import net.ccbluex.liquidbounce.ui.clickgui.ClickGui
 import java.io.File
 
 @LaunchFilterInfo([EnumLaunchFilter.MODERN_UI])

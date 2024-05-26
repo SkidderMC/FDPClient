@@ -5,15 +5,16 @@
  */
 package net.ccbluex.liquidbounce.ui.hud.element.elements.targets.impl
 
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.hud.element.Border
 import net.ccbluex.liquidbounce.ui.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.hud.element.elements.targets.TargetStyle
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+
 class FluxTH(inst: Targets) : TargetStyle("Flux", inst, true) {
     
     override fun drawTarget(entity: EntityLivingBase) {

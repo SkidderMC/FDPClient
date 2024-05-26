@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.rende
 import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.minecraft.client.gui.ScaledResolution;
+
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Comparator;

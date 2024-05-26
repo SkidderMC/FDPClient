@@ -5,10 +5,10 @@
  */
 package net.ccbluex.liquidbounce.ui.hud.element.elements.targets.impl
 
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.hud.element.Border
 import net.ccbluex.liquidbounce.ui.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.hud.element.elements.targets.TargetStyle
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.darker
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.renderer.GlStateManager

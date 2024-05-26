@@ -8,12 +8,13 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.other
 import me.zywl.fdpclient.FDPClient
 import me.zywl.fdpclient.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
-import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.minecraft.potion.Potion
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.server.S12PacketEntityVelocity
+import net.minecraft.potion.Potion
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 

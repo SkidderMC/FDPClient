@@ -9,7 +9,6 @@ import me.zywl.fdpclient.event.PacketEvent
 import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 import net.minecraft.network.play.server.S12PacketEntityVelocity
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 
 class HypixelVelocity : VelocityMode("Hypixel") {
 

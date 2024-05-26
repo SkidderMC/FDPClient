@@ -9,16 +9,12 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.texture.SimpleTexture
 import net.minecraft.client.shader.Framebuffer
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import net.minecraft.client.renderer.GlStateManager.resetColor
-import net.minecraft.client.renderer.GlStateManager.disableLighting
-import net.minecraft.client.renderer.GlStateManager.disableFog
-import net.minecraft.client.renderer.GlStateManager.disableDepth
-import net.minecraft.client.renderer.GlStateManager.enableTexture2D
 
 object SplashProgress {
     private const val MAX = 4

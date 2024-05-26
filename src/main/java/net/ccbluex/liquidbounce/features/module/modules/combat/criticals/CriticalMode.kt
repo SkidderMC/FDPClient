@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.features.module.modules.combat.criticals
 
 import me.zywl.fdpclient.FDPClient
 import me.zywl.fdpclient.event.*
-import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance

@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.norm
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleManager;
+
 import java.util.List;
 import java.util.stream.Collectors;
 

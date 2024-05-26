@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import me.zywl.fdpclient.event.*
-import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -17,11 +16,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.settings.GameSettings
-import net.minecraft.network.play.client.C03PacketPlayer
-import net.minecraft.network.play.client.C0BPacketEntityAction
-import net.minecraft.network.play.client.C0DPacketCloseWindow
-import net.minecraft.network.play.client.C0EPacketClickWindow
-import net.minecraft.network.play.client.C16PacketClientStatus
+import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard

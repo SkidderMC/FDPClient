@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
-import java.awt.*
+import java.awt.Color
 import kotlin.math.abs
 
 class BlackoutButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {

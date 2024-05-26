@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.vanill
 
 import me.zywl.fdpclient.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
-import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
+import net.minecraft.network.play.server.S12PacketEntityVelocity
 
 class SimpleVelocity : VelocityMode("Simple") {
     override fun onVelocityPacket(event: PacketEvent) {

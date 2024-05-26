@@ -21,7 +21,6 @@ import net.ccbluex.liquidbounce.utils.render.RoundedUtil;
 import net.ccbluex.liquidbounce.value.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
-
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;
 

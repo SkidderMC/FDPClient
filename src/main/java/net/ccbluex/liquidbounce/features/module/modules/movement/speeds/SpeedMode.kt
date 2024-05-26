@@ -10,7 +10,6 @@ import me.zywl.fdpclient.event.JumpEvent
 import me.zywl.fdpclient.event.MotionEvent
 import me.zywl.fdpclient.event.MoveEvent
 import me.zywl.fdpclient.event.PacketEvent
-import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance

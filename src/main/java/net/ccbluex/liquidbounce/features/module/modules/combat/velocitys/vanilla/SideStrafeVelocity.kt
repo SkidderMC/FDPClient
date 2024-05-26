@@ -9,9 +9,9 @@ import me.zywl.fdpclient.FDPClient
 import me.zywl.fdpclient.event.PacketEvent
 import me.zywl.fdpclient.event.StrafeEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
-import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
 import kotlin.math.cos

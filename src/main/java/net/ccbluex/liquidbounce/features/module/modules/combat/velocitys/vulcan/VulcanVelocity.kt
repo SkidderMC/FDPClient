@@ -5,11 +5,9 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.vulcan
 
-import me.zywl.fdpclient.event.UpdateEvent
 import me.zywl.fdpclient.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction
-import net.minecraft.network.play.server.S12PacketEntityVelocity
 
 class VulcanVelocity : VelocityMode("Vulcan") {
     override fun onPacket(event: PacketEvent) {

@@ -6,9 +6,9 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.vanilla
 
 import me.zywl.fdpclient.event.PacketEvent
+import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.network.play.server.S12PacketEntityVelocity
-import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 
 class CancelVelocity : VelocityMode("Cancel") {
     val cancelHorizontal = BoolValue("CancelHorizontalVelocity", true)

@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.handler.combat
 
 import me.zywl.fdpclient.FDPClient
 import me.zywl.fdpclient.event.*
-import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MovementUtils

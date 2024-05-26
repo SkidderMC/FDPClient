@@ -12,10 +12,8 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.anima
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.animations.Direction;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.animations.impl.EaseInOutQuad;
-
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.normal.Main;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils;
-
 import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.GL11;

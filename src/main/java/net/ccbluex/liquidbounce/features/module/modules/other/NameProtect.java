@@ -6,12 +6,12 @@
 package net.ccbluex.liquidbounce.features.module.modules.other;
 
 import me.zywl.fdpclient.FDPClient;
+import me.zywl.fdpclient.config.impl.FriendsConfig;
 import me.zywl.fdpclient.event.EventTarget;
 import me.zywl.fdpclient.event.TextEvent;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
-import me.zywl.fdpclient.config.impl.FriendsConfig;
 import net.ccbluex.liquidbounce.utils.misc.StringUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;

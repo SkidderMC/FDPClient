@@ -10,11 +10,13 @@ import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
-import net.minecraft.client.settings.GameSettings
 import net.minecraft.block.BlockLiquid
+import net.minecraft.client.settings.GameSettings
+import net.minecraft.client.settings.KeyBinding
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
 import net.minecraft.util.BlockPos
@@ -22,8 +24,6 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.MovingObjectPosition.MovingObjectType
 import org.lwjgl.input.Mouse
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.minecraft.client.settings.KeyBinding
 
 @ModuleInfo(name = "Eagle", category = ModuleCategory.PLAYER)
 object Eagle : Module() {

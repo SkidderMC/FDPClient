@@ -5,15 +5,14 @@
  */
 package net.ccbluex.liquidbounce.ui.gui.colortheme
 
+import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme.fadespeed
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme.textValue
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme.updown
-import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders
 import net.ccbluex.liquidbounce.utils.MouseUtils.mouseWithinBounds
 import net.ccbluex.liquidbounce.utils.animations.animLinear
 import net.ccbluex.liquidbounce.utils.animations.animSmooth
 import net.ccbluex.liquidbounce.utils.render.BlendUtils
-import net.ccbluex.liquidbounce.utils.render.GlowUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.Stencil
 import net.minecraft.client.gui.GuiScreen

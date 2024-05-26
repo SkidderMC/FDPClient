@@ -1,13 +1,11 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.matrix
 
+import me.zywl.fdpclient.event.JumpEvent
 import me.zywl.fdpclient.event.PacketEvent
 import me.zywl.fdpclient.event.UpdateEvent
-import me.zywl.fdpclient.event.JumpEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJumpMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
-import kotlin.math.cos
-import kotlin.math.sin
 
 
 class MatrixFlagLongjump : LongJumpMode("MatrixFlag") {

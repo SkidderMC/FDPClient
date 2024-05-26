@@ -2,7 +2,6 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.glides
 
 import me.zywl.fdpclient.FDPClient
 import me.zywl.fdpclient.event.*
-import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.Glide
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance

@@ -9,7 +9,6 @@ import lombok.Getter;
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-
 import org.lwjgl.opengl.GL11;
 
 import java.awt.*;

@@ -1,16 +1,15 @@
 package net.ccbluex.liquidbounce.features.module.modules.player.nofalls.other
 
-import me.zywl.fdpclient.event.EventTarget
 import me.zywl.fdpclient.event.PacketEvent
 import me.zywl.fdpclient.event.Render2DEvent
 import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMode
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.minecraft.network.play.client.C03PacketPlayer
 import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.network.play.client.C03PacketPlayer
 
 class HypixelBlinkNofall : NoFallMode("HypixelBlink") {
 

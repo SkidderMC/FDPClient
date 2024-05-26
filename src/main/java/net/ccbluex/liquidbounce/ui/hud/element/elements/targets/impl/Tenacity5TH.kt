@@ -7,8 +7,10 @@ import net.ccbluex.liquidbounce.ui.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
 import net.ccbluex.liquidbounce.utils.extensions.skin
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RoundedUtil
 import net.minecraft.entity.EntityLivingBase
-import net.ccbluex.liquidbounce.utils.render.*
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.roundToInt

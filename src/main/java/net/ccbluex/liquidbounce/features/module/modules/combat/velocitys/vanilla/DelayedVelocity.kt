@@ -7,18 +7,18 @@ package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.other
 
 import me.zywl.fdpclient.event.PacketEvent
 import me.zywl.fdpclient.event.UpdateEvent
+import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
+import net.ccbluex.liquidbounce.utils.BlinkUtils
+import net.ccbluex.liquidbounce.utils.PacketUtils
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.utils.BlinkUtils
-import net.minecraft.network.play.server.S12PacketEntityVelocity
-import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayClient
-import java.util.concurrent.LinkedBlockingQueue
+import net.minecraft.network.play.server.S12PacketEntityVelocity
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import java.util.*
+import java.util.concurrent.LinkedBlockingQueue
 import kotlin.concurrent.schedule
 
 class DelayedVelocity : VelocityMode("Delayed") {

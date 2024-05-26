@@ -7,10 +7,11 @@ package net.ccbluex.liquidbounce.ui.gui.menu;
 
 import me.zywl.fdpclient.FDPClient;
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager;
-import net.ccbluex.liquidbounce.ui.gui.menu.elements.*;
-import net.ccbluex.liquidbounce.ui.gui.menu.elements.GuiButton;
 import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders;
 import net.ccbluex.liquidbounce.ui.gui.altmanager.GuiAltManager;
+import net.ccbluex.liquidbounce.ui.gui.menu.elements.GuiButton;
+import net.ccbluex.liquidbounce.ui.gui.menu.elements.ImageButton;
+import net.ccbluex.liquidbounce.ui.gui.menu.elements.QuitButton;
 import net.ccbluex.liquidbounce.utils.GitUtils;
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
 import net.minecraft.client.gui.*;

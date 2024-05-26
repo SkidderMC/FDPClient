@@ -2,13 +2,12 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys
 
 import me.zywl.fdpclient.FDPClient
 import me.zywl.fdpclient.event.*
-import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
+import net.ccbluex.liquidbounce.ui.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.value.Value
-import net.ccbluex.liquidbounce.ui.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.hud.element.elements.NotifyType
 
 abstract class FlyMode(val modeName: String) : MinecraftInstance() {
     protected val valuePrefix = "$modeName-"

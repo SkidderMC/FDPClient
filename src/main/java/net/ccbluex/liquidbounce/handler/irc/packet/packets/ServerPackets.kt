@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.handler.irc.packet.packets
 
 import com.google.gson.annotations.SerializedName
-import net.ccbluex.liquidbounce.handler.irc.packet.packets.Packet
 import java.util.*
 
 /**

@@ -11,7 +11,10 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.ghost.LegitScaffold
-import net.ccbluex.liquidbounce.features.module.modules.movement.*
+import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
+import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold
+import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix
+import net.ccbluex.liquidbounce.features.module.modules.movement.TargetStrafe
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam
 import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixer

@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import me.zywl.fdpclient.event.*
-import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -16,11 +15,11 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.network.play.client.C03PacketPlayer
-import net.minecraft.stats.StatList
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
+import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
+import net.minecraft.stats.StatList
 import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.sin

@@ -35,7 +35,8 @@ import net.minecraft.world.World
 import net.minecraft.world.chunk.Chunk
 import net.minecraftforge.event.ForgeEventFactory
 import javax.vecmath.Vector3d
-import kotlin.math.*
+import kotlin.math.ceil
+import kotlin.math.floor
 
 /**
  * Allows to get the distance between the current entity and [entity] from the nearest corner of the bounding box

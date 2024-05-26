@@ -8,18 +8,18 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 import me.zywl.fdpclient.FDPClient
 import me.zywl.fdpclient.event.PacketEvent
 import me.zywl.fdpclient.event.UpdateEvent
+import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
+import net.ccbluex.liquidbounce.features.module.modules.ghost.FreeLook
+import net.ccbluex.liquidbounce.features.module.modules.movement.Freeze
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
-import net.ccbluex.liquidbounce.features.module.modules.movement.Freeze
-import net.ccbluex.liquidbounce.features.module.modules.ghost.FreeLook
 import net.ccbluex.liquidbounce.value.BoolValue
-import net.minecraft.network.play.server.S27PacketExplosion
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.client.settings.GameSettings
-import net.minecraft.item.ItemFireball
 import net.minecraft.client.settings.KeyBinding
+import net.minecraft.item.ItemFireball
+import net.minecraft.network.play.server.S27PacketExplosion
 
 class FireballFly : FlyMode("Fireball") {
 

@@ -1,7 +1,6 @@
 package net.ccbluex.liquidbounce.utils;
 
 import java.awt.*;
-import java.text.NumberFormat;
 
 public class Colors {
     public static int getColor(int color,int a){

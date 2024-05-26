@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.vulcan
 
 import me.zywl.fdpclient.event.*
-import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils
@@ -18,6 +17,8 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.BlockLadder
+import net.minecraft.block.material.Material
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C0BPacketEntityAction
@@ -25,13 +26,11 @@ import net.minecraft.network.play.client.C0FPacketConfirmTransaction
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
+import net.minecraft.util.Timer
 import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 import kotlin.math.sqrt
-import net.minecraft.block.material.Material
-import net.minecraft.client.entity.EntityPlayerSP
-import net.minecraft.util.Timer
 
 class VulcanFlys : FlyMode("Vulcan") {
 

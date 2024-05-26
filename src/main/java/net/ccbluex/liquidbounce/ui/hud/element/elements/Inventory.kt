@@ -5,12 +5,12 @@
  */
 package net.ccbluex.liquidbounce.ui.hud.element.elements
 
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.hud.element.Border
 import net.ccbluex.liquidbounce.ui.hud.element.Element
 import net.ccbluex.liquidbounce.ui.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.hud.element.Side
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.drawCenteredString
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils

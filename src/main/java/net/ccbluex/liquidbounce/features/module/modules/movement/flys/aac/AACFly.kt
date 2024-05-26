@@ -7,14 +7,13 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys.aac
 
 import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
-import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.entity.EntityPlayerSP
-import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
-import net.minecraft.util.Timer
 import org.lwjgl.input.Keyboard
-
 
 
 class AACFly : FlyMode("AAC") {

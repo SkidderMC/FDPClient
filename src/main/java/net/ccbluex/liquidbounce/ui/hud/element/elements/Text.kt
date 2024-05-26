@@ -6,15 +6,16 @@
 package net.ccbluex.liquidbounce.ui.hud.element.elements
 
 import me.zywl.fdpclient.FDPClient
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.hud.element.Border
 import net.ccbluex.liquidbounce.ui.hud.element.Element
 import net.ccbluex.liquidbounce.ui.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.hud.element.Side
-import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.CPSCounterUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.ServerUtils
 import net.ccbluex.liquidbounce.utils.extensions.ping
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils

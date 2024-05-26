@@ -9,10 +9,10 @@ import me.liuli.elixir.manage.AccountSerializer
 import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.ui.gui.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.gui.elements.GuiPasswordField
+import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField
-import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import org.lwjgl.input.Keyboard
 
 class GuiAdd(private val prevGui: GuiAltManager) : GuiScreen() {

@@ -3,8 +3,8 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.jesus.vanilla
 import me.zywl.fdpclient.event.BlockBBEvent
 import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.jesus.JesusMode
-import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.block.BlockLiquid
 import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB

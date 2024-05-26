@@ -2,8 +2,8 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.intave
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.minecraft.client.settings.GameSettings
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.minecraft.client.settings.GameSettings
 
 class IntaveHopSpeed : SpeedMode("IntaveHop") {
     private val groundStrafe = BoolValue("${valuePrefix}Strafe", false)

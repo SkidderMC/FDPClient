@@ -10,7 +10,10 @@ import me.zywl.fdpclient.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.ui.clickgui.style.styles.*
+import net.ccbluex.liquidbounce.ui.clickgui.style.styles.AstolfoStyle
+import net.ccbluex.liquidbounce.ui.clickgui.style.styles.BlackStyle
+import net.ccbluex.liquidbounce.ui.clickgui.style.styles.MixedStyle
+import net.ccbluex.liquidbounce.ui.clickgui.style.styles.NullStyle
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic.DropdownGUI
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.FDPDropdownClickGUI
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme

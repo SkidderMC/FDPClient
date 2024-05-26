@@ -1,7 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 
 import me.zywl.fdpclient.event.*
-import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.timer.TickTimer
 import net.ccbluex.liquidbounce.value.FloatValue

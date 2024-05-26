@@ -5,14 +5,17 @@
  */
 package net.ccbluex.liquidbounce.ui.hud.element.elements;
 
+import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.ui.hud.element.Border;
 import net.ccbluex.liquidbounce.ui.hud.element.Element;
 import net.ccbluex.liquidbounce.ui.hud.element.ElementInfo;
-import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.RoundedUtil;
-import net.ccbluex.liquidbounce.value.*;
+import net.ccbluex.liquidbounce.value.BoolValue;
+import net.ccbluex.liquidbounce.value.FloatValue;
+import net.ccbluex.liquidbounce.value.IntegerValue;
+import net.ccbluex.liquidbounce.value.ListValue;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;

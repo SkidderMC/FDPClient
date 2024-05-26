@@ -16,15 +16,11 @@ import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders;
 import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme;
 import net.ccbluex.liquidbounce.utils.MathUtils;
-import net.ccbluex.liquidbounce.utils.render.BlendUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.RoundedUtil;
-import net.ccbluex.liquidbounce.utils.render.Stencil;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 import java.util.HashMap;

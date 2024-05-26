@@ -8,12 +8,13 @@ package net.ccbluex.liquidbounce.ui.font;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.client.gui.FontRenderer;
-import java.io.*;
+
+import java.awt.*;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-
-import java.awt.Font;
 
 public class Fonts {
 

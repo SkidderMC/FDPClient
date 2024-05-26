@@ -11,6 +11,7 @@ import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.modules.visual.Tracers
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
@@ -19,7 +20,6 @@ import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.projectile.EntityFireball
 import net.minecraft.network.play.client.C0APacketAnimation
-import net.ccbluex.liquidbounce.features.module.modules.visual.Tracers
 import java.awt.Color
 import java.util.*
 

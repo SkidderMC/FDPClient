@@ -5,14 +5,13 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import net.ccbluex.liquidbounce.handler.irc.Client
-
 import me.zywl.fdpclient.event.EventTarget
 import me.zywl.fdpclient.event.SessionEvent
 import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.handler.irc.Client
 import net.ccbluex.liquidbounce.handler.irc.packet.packets.*
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage

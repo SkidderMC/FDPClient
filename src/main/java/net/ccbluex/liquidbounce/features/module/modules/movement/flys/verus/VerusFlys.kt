@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.verus
 
 import me.zywl.fdpclient.event.*
-import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
@@ -24,7 +23,6 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.stats.StatList
 import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.Timer
 import kotlin.math.floor
 
 class VerusFlys : FlyMode("Verus") {

@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.ui.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.SplashProgress
 import net.minecraft.client.Minecraft
 import org.lwjgl.input.Keyboard
 

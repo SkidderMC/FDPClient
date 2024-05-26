@@ -12,14 +12,21 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.value.*
-import net.minecraft.network.handshake.client.*
-import net.minecraft.network.login.client.*
-import net.minecraft.network.login.server.*
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.Value
+import net.minecraft.network.handshake.client.C00Handshake
+import net.minecraft.network.login.client.C00PacketLoginStart
+import net.minecraft.network.login.client.C01PacketEncryptionResponse
+import net.minecraft.network.login.server.S00PacketDisconnect
+import net.minecraft.network.login.server.S01PacketEncryptionRequest
+import net.minecraft.network.login.server.S02PacketLoginSuccess
+import net.minecraft.network.login.server.S03PacketEnableCompression
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.server.*
-import net.minecraft.network.status.client.*
-import net.minecraft.network.status.server.*
+import net.minecraft.network.status.client.C00PacketServerQuery
+import net.minecraft.network.status.client.C01PacketPing
+import net.minecraft.network.status.server.S00PacketServerInfo
+import net.minecraft.network.status.server.S01PacketPong
 
 @ModuleInfo(name = "PacketDebugger", category = ModuleCategory.OTHER)
 object PacketDebugger : Module() {

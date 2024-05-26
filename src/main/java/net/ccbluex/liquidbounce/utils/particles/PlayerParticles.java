@@ -5,9 +5,9 @@
  */
 package net.ccbluex.liquidbounce.utils.particles;
 
-import net.minecraft.block.*;
+import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.util.*;
+import net.minecraft.util.BlockPos;
 
 public class PlayerParticles {
     private static final Minecraft mc = Minecraft.getMinecraft();

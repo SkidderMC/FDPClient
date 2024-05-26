@@ -13,10 +13,8 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.entity.EntityPlayerSP
-import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C00PacketKeepAlive
 import net.minecraft.network.play.client.C03PacketPlayer
-import net.minecraft.util.Timer
 
 class VanillaFly : FlyMode("Vanilla") {
     private val smoothValue = BoolValue("${valuePrefix}-Smooth", false)

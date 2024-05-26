@@ -6,14 +6,14 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import me.zywl.fdpclient.event.AttackEvent
-import me.zywl.fdpclient.event.UpdateEvent
 import me.zywl.fdpclient.event.EventTarget
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.entity.EntityLivingBase
 
 @ModuleInfo(name = "TickBase", category = ModuleCategory.COMBAT)

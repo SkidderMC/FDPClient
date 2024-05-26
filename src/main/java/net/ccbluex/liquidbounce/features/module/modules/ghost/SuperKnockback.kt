@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.ghost
 
 import me.zywl.fdpclient.event.AttackEvent
-import me.zywl.fdpclient.event.UpdateEvent
 import me.zywl.fdpclient.event.EventTarget
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -18,8 +18,8 @@ import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
-import net.minecraft.entity.EntityLivingBase
 import net.minecraft.client.settings.GameSettings
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C0BPacketEntityAction
 
 @ModuleInfo(name = "SuperKnockback", category = ModuleCategory.GHOST)

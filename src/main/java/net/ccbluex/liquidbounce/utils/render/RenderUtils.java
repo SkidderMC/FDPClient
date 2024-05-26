@@ -51,8 +51,10 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ConcurrentModificationException;
+import java.util.HashMap;
 import java.util.List;
-import java.util.*;
+import java.util.Map;
 
 import static java.lang.Math.*;
 import static net.minecraft.client.renderer.GlStateManager.disableBlend;

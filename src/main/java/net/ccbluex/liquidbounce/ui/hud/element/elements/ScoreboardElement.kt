@@ -8,11 +8,11 @@ package net.ccbluex.liquidbounce.ui.hud.element.elements
 import com.google.common.collect.Iterables
 import com.google.common.collect.Lists
 import me.zywl.fdpclient.FDPClient
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.hud.element.Border
 import net.ccbluex.liquidbounce.ui.hud.element.Element
 import net.ccbluex.liquidbounce.ui.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.hud.element.Side
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue

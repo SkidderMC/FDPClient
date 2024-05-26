@@ -1,18 +1,17 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import me.zywl.fdpclient.event.*
-import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.minecraft.network.play.server.S12PacketEntityVelocity
-import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayClient
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.network.play.server.S12PacketEntityVelocity
 import java.util.concurrent.LinkedBlockingQueue
 
 @ModuleInfo(name = "SmartSpoof", category = ModuleCategory.COMBAT)

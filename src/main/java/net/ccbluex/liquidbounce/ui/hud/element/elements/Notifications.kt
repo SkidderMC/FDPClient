@@ -6,15 +6,21 @@
 package net.ccbluex.liquidbounce.ui.hud.element.elements
 
 import me.zywl.fdpclient.FDPClient
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.cf.CFontRenderer
 import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders
 import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner
-import net.ccbluex.liquidbounce.ui.hud.element.*
+import net.ccbluex.liquidbounce.ui.hud.element.Border
+import net.ccbluex.liquidbounce.ui.hud.element.Element
+import net.ccbluex.liquidbounce.ui.hud.element.ElementInfo
+import net.ccbluex.liquidbounce.ui.hud.element.Side
+import net.ccbluex.liquidbounce.utils.render.BlurUtils
+import net.ccbluex.liquidbounce.utils.render.EaseUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.*
-import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.value.*
 import net.ccbluex.liquidbounce.utils.render.shadowRenderUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.max

@@ -7,11 +7,10 @@ package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.grim
 
 import me.zywl.fdpclient.event.PacketEvent
 import me.zywl.fdpclient.event.TickEvent
-import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
+import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
@@ -19,7 +18,6 @@ import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
-import net.minecraft.world.World
 
 class GrimVelocity2 : VelocityMode("GrimC07") {
     private val alwaysValue = BoolValue("Always", true)

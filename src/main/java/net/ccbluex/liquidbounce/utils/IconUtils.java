@@ -9,6 +9,7 @@ package net.ccbluex.liquidbounce.utils;
 import net.minecraft.util.Util;
 import org.apache.commons.io.IOUtils;
 import org.lwjgl.opengl.Display;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
