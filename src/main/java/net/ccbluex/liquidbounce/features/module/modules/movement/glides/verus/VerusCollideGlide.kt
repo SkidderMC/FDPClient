@@ -1,8 +1,8 @@
 
 package net.ccbluex.liquidbounce.features.module.modules.movement.glides.verus
 
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import me.zywl.fdpclient.event.PacketEvent
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.glides.GlideMode
 import net.minecraft.network.play.client.C03PacketPlayer
 

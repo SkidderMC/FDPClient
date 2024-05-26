@@ -5,10 +5,10 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.event.EventTarget
+import me.zywl.fdpclient.event.Render3DEvent
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -28,7 +28,6 @@ import net.minecraft.block.BlockLiquid
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.C07PacketPlayerDigging
-import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3

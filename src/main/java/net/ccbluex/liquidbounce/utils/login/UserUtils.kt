@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.utils.login
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import net.ccbluex.liquidbounce.config.FileManager.Companion.PRETTY_GSON
+import me.zywl.fdpclient.config.FileManager.Companion.PRETTY_GSON
 
 import org.apache.http.HttpHeaders
 import org.apache.http.client.methods.HttpGet

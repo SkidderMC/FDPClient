@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.flys.default
 
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
 
 class CreativeFly : FlyMode("Creative") {

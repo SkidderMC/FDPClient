@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.ui.gui.altmanager
 
 import me.liuli.elixir.account.MinecraftAccount
-import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.event.SessionEvent
+import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.event.SessionEvent
 import net.ccbluex.liquidbounce.ui.gui.altmanager.sub.GuiAdd
 import net.ccbluex.liquidbounce.ui.gui.altmanager.sub.GuiDirectLogin
 import net.ccbluex.liquidbounce.ui.gui.altmanager.sub.GuiMicrosoftLoginPending

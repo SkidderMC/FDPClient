@@ -5,6 +5,10 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
+import me.zywl.fdpclient.event.EventTarget
+import me.zywl.fdpclient.event.PacketEvent
+import me.zywl.fdpclient.event.UpdateEvent
+import me.zywl.fdpclient.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo

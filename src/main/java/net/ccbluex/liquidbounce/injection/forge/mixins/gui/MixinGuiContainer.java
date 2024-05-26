@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import lombok.Setter;
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.event.KeyEvent;
+import me.zywl.fdpclient.FDPClient;
+import me.zywl.fdpclient.event.KeyEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.player.InvManager;

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils;
 
-import net.ccbluex.liquidbounce.event.*;
+import me.zywl.fdpclient.event.*;
 import net.ccbluex.liquidbounce.utils.timer.MSTimer;
 import net.minecraft.client.gui.GuiDownloadTerrain;
 import net.minecraft.client.gui.GuiScreen;

@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.player.nofalls.aac
 
-import net.ccbluex.liquidbounce.event.PacketEvent
+import me.zywl.fdpclient.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMode
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.S12PacketEntityVelocity

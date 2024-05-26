@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.value
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.awt.Color
 import kotlin.jvm.internal.Intrinsics

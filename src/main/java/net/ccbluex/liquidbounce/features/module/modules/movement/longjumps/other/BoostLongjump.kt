@@ -1,8 +1,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.other
 
-import net.ccbluex.liquidbounce.event.JumpEvent
-import net.ccbluex.liquidbounce.event.MoveEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import me.zywl.fdpclient.event.JumpEvent
+import me.zywl.fdpclient.event.MoveEvent
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJumpMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.value.FloatValue

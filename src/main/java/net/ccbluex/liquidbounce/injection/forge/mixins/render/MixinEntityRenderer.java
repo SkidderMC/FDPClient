@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import com.google.common.base.Predicates;
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.event.Render3DEvent;
+import me.zywl.fdpclient.FDPClient;
+import me.zywl.fdpclient.event.Render3DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.HurtCam;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;

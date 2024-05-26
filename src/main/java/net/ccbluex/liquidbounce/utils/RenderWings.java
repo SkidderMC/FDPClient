@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import me.zywl.fdpclient.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.Wings;
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;

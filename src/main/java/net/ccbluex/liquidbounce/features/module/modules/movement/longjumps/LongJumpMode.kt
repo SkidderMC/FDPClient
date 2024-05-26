@@ -1,6 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.longjumps
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.event.*
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump
 import net.ccbluex.liquidbounce.utils.ClassUtils

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.item;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import me.zywl.fdpclient.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.ghost.LegitAura;

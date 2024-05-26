@@ -5,7 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.event.*
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
 import net.ccbluex.liquidbounce.utils.ClassUtils

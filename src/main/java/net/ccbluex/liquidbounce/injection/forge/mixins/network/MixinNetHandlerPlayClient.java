@@ -6,10 +6,10 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
 import io.netty.buffer.Unpooled;
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.event.EntityDamageEvent;
-import net.ccbluex.liquidbounce.event.EntityMovementEvent;
-import net.ccbluex.liquidbounce.event.PacketEvent;
+import me.zywl.fdpclient.FDPClient;
+import me.zywl.fdpclient.event.EntityDamageEvent;
+import me.zywl.fdpclient.event.EntityMovementEvent;
+import me.zywl.fdpclient.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.PackSpoofer;
 import net.ccbluex.liquidbounce.features.module.modules.other.NoRotateSet;
 import net.ccbluex.liquidbounce.handler.network.ClientFixes;

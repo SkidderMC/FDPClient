@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.glides.other
 
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.glides.GlideMode
 import net.ccbluex.liquidbounce.value.FloatValue
 

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.handler.macro
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 
 class Macro(val key: Int, val command: String) {
     fun exec() {

@@ -5,11 +5,11 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
-import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.KeyEvent
-import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.event.EventTarget
+import me.zywl.fdpclient.event.KeyEvent
+import me.zywl.fdpclient.event.Listenable
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.handler.other.AutoDisable
 import net.ccbluex.liquidbounce.ui.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.hud.element.elements.NotifyType
@@ -41,12 +41,12 @@ class ModuleManager : Listenable {
 
         modules.forEach {
             it.onInitialize()
-            SplashProgress.setSecondary("Initializing Module " + it.name)
+          //  SplashProgress.setSecondary("Initializing Module " + it.name)
         }
 
         modules.forEach {
             it.onLoad()
-            SplashProgress.setSecondary("Loading Module " + it.name)
+          //  SplashProgress.setSecondary("Loading Module " + it.name)
         }
 
         FDPClient.eventManager.registerListener(AutoDisable)

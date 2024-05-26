@@ -1,7 +1,8 @@
 
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.event.*
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
@@ -263,11 +264,11 @@ object NoSlow : Module() {
                     }
                 }
                 "spamitemchange" -> {
-                    if (event.eventState == EventState.PRE) 
+                    if (event.eventState == EventState.PRE)
                         mc.netHandler.addToSendQueue(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                 }
                 "spamplace" -> {
-                    if (event.eventState == EventState.PRE) 
+                    if (event.eventState == EventState.PRE)
                         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.inventory.getCurrentItem()))
                 }
             }

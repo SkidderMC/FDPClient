@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.grim
 
-import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C0APacketAnimation

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.hud
 
-import net.ccbluex.liquidbounce.FDPClient.isInDev
+import me.zywl.fdpclient.FDPClient.isInDev
 import net.ccbluex.liquidbounce.injection.access.StaticStorage
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner

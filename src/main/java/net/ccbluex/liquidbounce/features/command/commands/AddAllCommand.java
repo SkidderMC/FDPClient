@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands;
 
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.config.impl.FriendsConfig;
+import me.zywl.fdpclient.FDPClient;
+import me.zywl.fdpclient.config.impl.FriendsConfig;
 import net.ccbluex.liquidbounce.features.command.Command;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.minecraft.scoreboard.ScorePlayerTeam;

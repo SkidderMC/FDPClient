@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.gui.menu
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.features.module.modules.other.AntiBot
 import net.ccbluex.liquidbounce.ui.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.hud.element.elements.NotifyType

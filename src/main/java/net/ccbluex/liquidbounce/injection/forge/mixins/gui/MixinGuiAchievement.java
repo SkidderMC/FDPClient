@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import me.zywl.fdpclient.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.minecraft.client.gui.achievement.GuiAchievement;
 import org.spongepowered.asm.mixin.Mixin;

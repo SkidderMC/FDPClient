@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.hud.designer
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.ui.hud.element.Element
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard

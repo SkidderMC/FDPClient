@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.glides.vulcan
 
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.glides.GlideMode
 
 class Vulcan263Glide : GlideMode("Vulcan2.6.3") {

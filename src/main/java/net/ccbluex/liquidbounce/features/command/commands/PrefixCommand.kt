@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 
 class PrefixCommand : Command("prefix", emptyArray()) {

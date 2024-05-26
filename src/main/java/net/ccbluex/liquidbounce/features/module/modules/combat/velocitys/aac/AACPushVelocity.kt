@@ -5,9 +5,9 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.aac
 
-import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.event.JumpEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.event.JumpEvent
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.value.BoolValue

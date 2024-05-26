@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.animalValue
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.deadValue
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.invisibleValue

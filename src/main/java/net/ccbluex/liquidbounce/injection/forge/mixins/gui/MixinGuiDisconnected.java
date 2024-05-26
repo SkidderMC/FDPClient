@@ -5,9 +5,8 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
 import me.liuli.elixir.account.MinecraftAccount;
-import net.ccbluex.liquidbounce.FDPClient;
+import me.zywl.fdpclient.FDPClient;
 import net.ccbluex.liquidbounce.handler.network.AutoReconnect;
 import net.ccbluex.liquidbounce.handler.network.ClientFixes;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat.criticals.ncp
 
-import net.ccbluex.liquidbounce.event.AttackEvent
+import me.zywl.fdpclient.event.AttackEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.criticals.CriticalMode
 
 class OtherNCPPacketCritical : CriticalMode("OtherNCPPacket") {

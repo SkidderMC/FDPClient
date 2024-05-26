@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.gui.keybind
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.handler.macro.Macro
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.cf.FontLoaders

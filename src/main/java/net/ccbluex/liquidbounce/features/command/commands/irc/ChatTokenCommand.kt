@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands.irc
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.modules.client.IRCModule
 import net.ccbluex.liquidbounce.handler.irc.packet.packets.ServerRequestJWTPacket

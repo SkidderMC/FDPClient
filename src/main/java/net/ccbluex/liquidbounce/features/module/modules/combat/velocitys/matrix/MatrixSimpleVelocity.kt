@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.matrix
 
-import net.ccbluex.liquidbounce.event.PacketEvent
+import me.zywl.fdpclient.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 

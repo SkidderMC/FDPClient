@@ -3,9 +3,9 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.config.impl
+package me.zywl.fdpclient.config.impl
 
-import net.ccbluex.liquidbounce.config.FileConfig
+import me.zywl.fdpclient.config.FileConfig
 import java.io.File
 
 class FriendsConfig(file: File) : FileConfig(file) {

@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.event.PacketEvent;
+import me.zywl.fdpclient.FDPClient;
+import me.zywl.fdpclient.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.FakeLag;
 import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;

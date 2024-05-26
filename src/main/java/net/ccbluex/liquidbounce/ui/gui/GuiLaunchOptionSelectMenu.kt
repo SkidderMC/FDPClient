@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.gui
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import java.awt.Color

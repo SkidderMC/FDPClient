@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.event.*
+import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -400,7 +400,8 @@ object KillAura : Module() {
      */
     @EventTarget
     fun onRender2D(
-        event: Render2DEvent) {
+        event: Render2DEvent
+    ) {
         if (displayDebug.get()) {
             val sr = ScaledResolution(mc)
             val blockingStatus = mc.thePlayer.isBlocking

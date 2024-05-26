@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils
 
 import com.google.gson.JsonObject
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.minecraft.client.Minecraft
 import net.minecraft.util.IChatComponent
 import org.apache.logging.log4j.LogManager

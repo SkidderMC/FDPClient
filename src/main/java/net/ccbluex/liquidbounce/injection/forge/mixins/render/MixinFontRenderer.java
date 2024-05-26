@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.event.TextEvent;
+import me.zywl.fdpclient.FDPClient;
+import me.zywl.fdpclient.event.TextEvent;
 import net.minecraft.client.gui.FontRenderer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

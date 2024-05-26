@@ -3,13 +3,13 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce
+package me.zywl.fdpclient
 
 import com.google.gson.JsonParser
-import net.ccbluex.liquidbounce.config.FileManager
-import net.ccbluex.liquidbounce.config.core.ConfigManager
-import net.ccbluex.liquidbounce.event.ClientShutdownEvent
-import net.ccbluex.liquidbounce.event.EventManager
+import me.zywl.fdpclient.config.FileManager
+import me.zywl.fdpclient.config.core.ConfigManager
+import me.zywl.fdpclient.event.ClientShutdownEvent
+import me.zywl.fdpclient.event.EventManager
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.module.modules.client.ClientSpoof
@@ -59,15 +59,11 @@ object FDPClient {
     private var latest = ""
 
     @JvmField
-    val gitInfo = Properties().also {
-        val inputStream = FDPClient::class.java.classLoader.getResourceAsStream("git.properties")
-        if (inputStream != null) {
-            it.load(inputStream)
-        } else {
-            it["git.branch"] = "Main"
-        }
+    val gitInfo = Properties().apply {
+        FDPClient::class.java.classLoader.getResourceAsStream("git.properties")?.use {
+            load(it)
+        } ?: setProperty("git.branch", "Main")
     }
-
 
     // Managers
     lateinit var moduleManager: ModuleManager
@@ -88,7 +84,6 @@ object FDPClient {
     // Discord RPC
     private lateinit var discordRPC: DiscordRPC
 
-
     // Menu Background
     var background: ResourceLocation? = ResourceLocation("fdpclient/gui/design/background.png")
 
@@ -97,35 +92,86 @@ object FDPClient {
         get() = ClassUtils.resolvePackage(
             "${LaunchOption::class.java.`package`.name}.options",
             LaunchOption::class.java
-        )
-            .filter {
-                val annotation = it.getDeclaredAnnotation(LaunchFilterInfo::class.java)
-                if (annotation != null) {
-                    return@filter annotation.filters.toMutableList() == launchFilters
-                }
-                false
+        ).filter {
+            it.getDeclaredAnnotation(LaunchFilterInfo::class.java)?.filters?.toMutableList() == launchFilters
+        }.mapNotNull {
+            try {
+                it.newInstance()
+            } catch (e: Exception) {
+                ClassUtils.getObjectInstance(it) as? LaunchOption
             }
-            .map {
-                try {
-                    it.newInstance()
-                } catch (e: IllegalAccessException) {
-                    ClassUtils.getObjectInstance(it) as LaunchOption
-                }
-            }.toTypedArray()
+        }.toTypedArray()
 
     /**
      * Execute if client will be started
      */
     fun initClient() {
-        mc.fontRendererObj.also { mc.fontRendererObj = it }
-        SplashProgress.setProgress(2, "Initializing Minecraft")
+        mc.fontRendererObj = mc.fontRendererObj
+        // SplashProgress.setProgress(2, "Initializing Minecraft")
         ClientUtils.logInfo("Loading $CLIENT_NAME $CLIENT_VERSION")
         ClientUtils.logInfo("Initializing...")
         val startTime = System.currentTimeMillis()
 
         // Initialize managers
-        SplashProgress.setProgress(2, "Initializing $CLIENT_NAME")
-        SplashProgress.setSecondary("Initializing Managers")
+        // SplashProgress.setProgress(2, "Initializing $CLIENT_NAME")
+        // SplashProgress.setSecondary("Initializing Managers")
+        initializeManagers()
+
+        // Load language
+        // SplashProgress.setSecondary("Initializing Language")
+        LanguageManager.switchLanguage(Minecraft.getMinecraft().gameSettings.language)
+
+        // Register listeners
+        // SplashProgress.setSecondary("Initializing Listeners")
+        registerListeners()
+
+        // Init Discord RPC
+        discordRPC = DiscordRPC
+
+        // Load client fonts
+        Fonts.loadFonts()
+
+        // Setup default states on first launch
+        if (!fileManager.loadLegacy()) {
+            ClientUtils.logInfo("Setting up default modules..")
+            moduleManager.getModule(ClientSpoof::class.java)?.state = true
+            moduleManager.getModule(net.ccbluex.liquidbounce.features.module.modules.client.DiscordRPCModule::class.java)?.state = true
+        }
+
+        // Setup modules
+        // SplashProgress.setSecondary("Initializing Modules")
+        moduleManager.registerModules()
+
+        // SplashProgress.setSecondary("Initializing Scripts")
+        // Load and enable scripts
+        loadAndEnableScripts()
+
+        // Register commands
+        // SplashProgress.setSecondary("Initializing Commands")
+        commandManager.registerCommands()
+
+        // Load GUI
+        // SplashProgress.setSecondary("Initializing GUI")
+        loadGui()
+
+        // Load configs
+        // SplashProgress.setSecondary("Initializing Configs")
+        loadConfigs()
+
+        // Run update checker
+        if (CLIENT_VERSION != "unknown") {
+            thread(start = true) { checkUpdate() }
+        }
+
+        // Set title
+        ClientUtils.setTitle()
+
+        // Log success
+        ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis() - startTime)}ms!")
+        // SplashProgress.setSecondary("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis() - startTime)}ms!")
+    }
+
+    private fun initializeManagers() {
         fileManager = FileManager()
         configManager = ConfigManager()
         eventManager = EventManager()
@@ -136,60 +182,37 @@ object FDPClient {
         keyBindManager = KeyBindManager()
         combatManager = CombatManager()
         tipSoundManager = TipSoundManager()
+    }
 
-        // Load language
-        SplashProgress.setSecondary("Initializing Language")
-        LanguageManager.switchLanguage(Minecraft.getMinecraft().gameSettings.language)
-
-        // Register listeners
-        SplashProgress.setSecondary("Initializing Listeners")
-        eventManager.registerListener(RotationUtils())
-        eventManager.registerListener(ClientFixes)
-        eventManager.registerListener(InventoryUtils)
-        eventManager.registerListener(BungeeCordSpoof())
-        eventManager.registerListener(SessionUtils())
-        eventManager.registerListener(macroManager)
-        eventManager.registerListener(combatManager)
-        eventManager.registerListener(ClientSpoofHandler())
-
-        // Init Discord RPC
-        discordRPC = DiscordRPC
-
-        // Load client fonts
-        Fonts.loadFonts()
-
-        // Setup default states on first launch
-        if (!fileManager.loadLegacy()) {
-            ClientUtils.logInfo("Setting up default modules...")
-            moduleManager.getModule(ClientSpoof::class.java)?.state = true
-            moduleManager.getModule(net.ccbluex.liquidbounce.features.module.modules.client.DiscordRPCModule::class.java)?.state = true
+    private fun registerListeners() {
+        with(eventManager) {
+            registerListener(RotationUtils())
+            registerListener(ClientFixes)
+            registerListener(InventoryUtils)
+            registerListener(BungeeCordSpoof())
+            registerListener(SessionUtils())
+            registerListener(macroManager)
+            registerListener(combatManager)
+            registerListener(ClientSpoofHandler())
         }
+    }
 
-        // Setup modules
-        SplashProgress.setSecondary("Initializing Modules")
-        moduleManager.registerModules()
-
-        SplashProgress.setSecondary("Initializing Scripts")
-        // Load and enable scripts
+    private fun loadAndEnableScripts() {
         try {
             scriptManager.loadScripts()
             scriptManager.enableScripts()
         } catch (throwable: Throwable) {
             ClientUtils.logError("Failed to load scripts.", throwable)
         }
+    }
 
-        // Register commands
-        SplashProgress.setSecondary("Initializing Commands")
-        commandManager.registerCommands()
-
-        // Load GUI
-        SplashProgress.setSecondary("Initializing GUI")
+    private fun loadGui() {
         GuiCapeManager.load()
         mainMenu = GuiLaunchOptionSelectMenu()
         hud = HUD.createDefault()
+    }
 
-        // Load configs
-        SplashProgress.setSecondary("Initializing Configs")
+    private fun loadConfigs() {
         fileManager.loadConfigs(
             fileManager.accountsConfig,
             fileManager.friendsConfig,
@@ -198,28 +221,13 @@ object FDPClient {
             fileManager.hudConfig,
             fileManager.xrayConfig
         )
-
-        // Run update checker
-        if (CLIENT_VERSION != "unknown") {
-            thread(block = this::checkUpdate)
-        }
-
-        // Set title
-        ClientUtils.setTitle()
-
-        // Log success
-        ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis() - startTime)}ms!")
-        SplashProgress.setSecondary("$CLIENT_NAME $CLIENT_VERSION loaded in ${(System.currentTimeMillis() - startTime)}ms!")
     }
 
     private fun checkUpdate() {
         try {
             val get = HttpUtils.get("https://api.github.com/repos/SkidderMC/FDPClient/commits/${gitInfo["git.branch"]}")
-
-            val jsonObj = JsonParser()
-                .parse(get).asJsonObject
-
-            latest = jsonObj.get("sha").asString.substring(0, 7)
+            val jsonObj = JsonParser().parse(get).asJsonObject
+            latest = jsonObj["sha"].asString.substring(0, 7)
 
             if (latest != gitInfo["git.commit.id.abbrev"]) {
                 ClientUtils.logInfo("New version available: $latest")
@@ -232,13 +240,10 @@ object FDPClient {
     }
 
     /**
-     * Execute if client ui type is selected
+     * Execute if client UI type is selected
      */
-    // Start dynamic launch options
     fun startClient() {
-        dynamicLaunchOptions.forEach {
-            it.start()
-        }
+        dynamicLaunchOptions.forEach { it.start() }
 
         // Load configs
         configManager.loadLegacySupport()
@@ -249,9 +254,8 @@ object FDPClient {
         isLoadingConfig = false
 
         ClientUtils.logInfo("$CLIENT_NAME $CLIENT_VERSION started!")
-        mc.fontRendererObj.also { mc.fontRendererObj = it }
-        SplashProgress.setProgress(4, "Initializing $CLIENT_NAME")
-
+        mc.fontRendererObj = mc.fontRendererObj
+        // SplashProgress.setProgress(4, "Initializing $CLIENT_NAME")
     }
 
     /**
@@ -271,9 +275,7 @@ object FDPClient {
             fileManager.saveAllConfigs() // Save file manager configs
 
             // Stop dynamic launch options
-            dynamicLaunchOptions.forEach {
-                it.stop()
-            }
+            dynamicLaunchOptions.forEach { it.stop() }
 
             // Stop Discord RPC
             DiscordRPC.stop()

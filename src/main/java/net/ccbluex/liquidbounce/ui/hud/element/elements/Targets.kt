@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.hud.element.elements
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.animations.impl.EaseBackIn
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner

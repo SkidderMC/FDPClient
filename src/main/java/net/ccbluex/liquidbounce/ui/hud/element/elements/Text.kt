@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.hud.element.elements
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.hud.element.Border
@@ -98,7 +98,8 @@ class Text(
                 "health" -> return DECIMAL_FORMAT.format(mc.thePlayer.health)
                 "yaw" -> return DECIMAL_FORMAT.format(mc.thePlayer.rotationYaw)
                 "pitch" -> return DECIMAL_FORMAT.format(mc.thePlayer.rotationPitch)
-                "attackDist" -> return if (FDPClient.combatManager.target != null) mc.thePlayer.getDistanceToEntity(FDPClient.combatManager.target).toString() + " Blocks" else "Hasn't attacked"
+                "attackDist" -> return if (FDPClient.combatManager.target != null) mc.thePlayer.getDistanceToEntity(
+                    FDPClient.combatManager.target).toString() + " Blocks" else "Hasn't attacked"
             }
         }
 

@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.grim
 
+import me.zywl.fdpclient.event.PacketEvent
+import me.zywl.fdpclient.event.TickEvent
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 import net.ccbluex.liquidbounce.value.BoolValue

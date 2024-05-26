@@ -5,9 +5,9 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.event.AttackEvent;
-import net.ccbluex.liquidbounce.event.ClickWindowEvent;
+import me.zywl.fdpclient.FDPClient;
+import me.zywl.fdpclient.event.AttackEvent;
+import me.zywl.fdpclient.event.ClickWindowEvent;
 import net.ccbluex.liquidbounce.utils.CooldownHelper;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.entity.Entity;

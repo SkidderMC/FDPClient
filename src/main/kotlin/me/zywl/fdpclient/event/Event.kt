@@ -3,9 +3,10 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.event
+package me.zywl.fdpclient.event
 
 open class Event
+
 open class CancellableEvent : Event() {
 
     /**

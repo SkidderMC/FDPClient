@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.event.*;
+import me.zywl.fdpclient.FDPClient;
+import me.zywl.fdpclient.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;

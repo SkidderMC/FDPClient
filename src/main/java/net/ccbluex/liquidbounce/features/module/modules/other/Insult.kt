@@ -8,13 +8,13 @@ package net.ccbluex.liquidbounce.features.module.modules.other
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
-import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.event.EntityKilledEvent
-import net.ccbluex.liquidbounce.event.EventTarget
+import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.event.EntityKilledEvent
+import me.zywl.fdpclient.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.config.FileManager
+import me.zywl.fdpclient.config.FileManager
 import net.ccbluex.liquidbounce.utils.FileUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.value.BoolValue

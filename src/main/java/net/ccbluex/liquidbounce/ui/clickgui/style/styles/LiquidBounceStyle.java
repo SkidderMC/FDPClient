@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.clickgui.style.styles;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import me.zywl.fdpclient.FDPClient;
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.clickgui.Panel;
 import net.ccbluex.liquidbounce.ui.clickgui.elements.ButtonElement;

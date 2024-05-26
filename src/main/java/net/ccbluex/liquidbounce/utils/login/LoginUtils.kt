@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.utils.login
 
 import me.liuli.elixir.account.CrackedAccount
-import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.event.SessionEvent
+import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.event.SessionEvent
 import net.ccbluex.liquidbounce.ui.gui.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils

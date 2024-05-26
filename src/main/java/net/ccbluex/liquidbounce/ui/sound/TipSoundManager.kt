@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.sound
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.utils.FileUtils
 import java.io.File
 

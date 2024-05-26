@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat.criticals.normal
 
-import net.ccbluex.liquidbounce.event.AttackEvent
+import me.zywl.fdpclient.event.AttackEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.criticals.CriticalMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.minecraft.stats.StatList

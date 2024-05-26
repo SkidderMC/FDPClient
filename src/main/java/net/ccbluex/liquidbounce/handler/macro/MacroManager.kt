@@ -5,9 +5,9 @@
  */
 package net.ccbluex.liquidbounce.handler.macro
 
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.KeyEvent
-import net.ccbluex.liquidbounce.event.Listenable
+import me.zywl.fdpclient.event.EventTarget
+import me.zywl.fdpclient.event.KeyEvent
+import me.zywl.fdpclient.event.Listenable
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 
 class MacroManager : Listenable, MinecraftInstance() {

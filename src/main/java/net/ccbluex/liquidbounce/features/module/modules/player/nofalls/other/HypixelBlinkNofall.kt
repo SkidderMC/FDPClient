@@ -1,9 +1,9 @@
 package net.ccbluex.liquidbounce.features.module.modules.player.nofalls.other
 
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.Render2DEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import me.zywl.fdpclient.event.EventTarget
+import me.zywl.fdpclient.event.PacketEvent
+import me.zywl.fdpclient.event.Render2DEvent
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMode
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.minecraft.network.play.client.C03PacketPlayer

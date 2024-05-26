@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat.criticals.aac
 
-import net.ccbluex.liquidbounce.event.AttackEvent
+import me.zywl.fdpclient.event.AttackEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.criticals.CriticalMode
 
 class AAC431OldHYTCritical : CriticalMode("AAC4.3.1OldHYT") {

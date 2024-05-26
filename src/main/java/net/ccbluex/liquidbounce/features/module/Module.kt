@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
-import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.event.Listenable
+import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.event.Listenable
 import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule
 import net.ccbluex.liquidbounce.ui.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.hud.element.elements.NotifyType

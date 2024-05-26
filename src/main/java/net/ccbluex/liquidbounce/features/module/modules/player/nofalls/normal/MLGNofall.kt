@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.player.nofalls.normal
 
-import net.ccbluex.liquidbounce.event.EventState
-import net.ccbluex.liquidbounce.event.MotionEvent
+import me.zywl.fdpclient.event.EventState
+import me.zywl.fdpclient.event.MotionEvent
 import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMode
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.VecRotation

@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.ui.font
 
-import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.event.TextEvent
+import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.event.TextEvent
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.utils.ClassUtils

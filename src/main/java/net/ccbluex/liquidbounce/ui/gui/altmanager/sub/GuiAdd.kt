@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.ui.gui.altmanager.sub
 
 import me.liuli.elixir.manage.AccountSerializer
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.ui.gui.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.gui.elements.GuiPasswordField
 import net.minecraft.client.gui.GuiButton

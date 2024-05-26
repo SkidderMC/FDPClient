@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.handler.script
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.handler.script.remapper.Remapper
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import java.io.File

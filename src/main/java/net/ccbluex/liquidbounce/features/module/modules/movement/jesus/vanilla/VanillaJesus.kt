@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.jesus.vanilla
 
-import net.ccbluex.liquidbounce.event.BlockBBEvent
+import me.zywl.fdpclient.event.BlockBBEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.jesus.JesusMode
 import net.minecraft.block.BlockLiquid
 import net.minecraft.util.AxisAlignedBB

@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.jesus.vanilla
 
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.jesus.JesusMode
 import net.minecraft.util.BlockPos
 

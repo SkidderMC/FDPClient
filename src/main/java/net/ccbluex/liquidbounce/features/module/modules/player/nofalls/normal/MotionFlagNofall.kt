@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.player.nofalls.normal
 
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMode
 import net.ccbluex.liquidbounce.value.FloatValue
 

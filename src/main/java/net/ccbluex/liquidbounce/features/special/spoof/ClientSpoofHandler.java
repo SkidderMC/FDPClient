@@ -5,8 +5,11 @@
  */
 package net.ccbluex.liquidbounce.features.special.spoof;
 
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.event.*;
+import me.zywl.fdpclient.FDPClient;
+import me.zywl.fdpclient.event.EventTarget;
+import me.zywl.fdpclient.event.Listenable;
+import me.zywl.fdpclient.event.PacketEvent;
+import me.zywl.fdpclient.event.TeleportEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.ClientSpoof;
 import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixer;
 import net.ccbluex.liquidbounce.utils.ClientUtils;
@@ -24,7 +27,6 @@ import org.lwjgl.opengl.Display;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
-import java.util.Objects;
 
 
 public class ClientSpoofHandler extends MinecraftInstance implements Listenable {

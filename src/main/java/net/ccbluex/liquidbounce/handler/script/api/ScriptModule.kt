@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.handler.script.api
 
 import jdk.nashorn.api.scripting.JSObject
+import me.zywl.fdpclient.event.*
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
-import net.ccbluex.liquidbounce.FDPClient;
+import me.zywl.fdpclient.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.minecraft.block.BlockSoulSand;
 import org.spongepowered.asm.mixin.Mixin;

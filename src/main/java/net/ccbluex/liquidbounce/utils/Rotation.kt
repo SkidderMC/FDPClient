@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils
 
-import net.ccbluex.liquidbounce.event.StrafeEvent
+import me.zywl.fdpclient.event.StrafeEvent
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo
 import net.minecraft.entity.player.EntityPlayer

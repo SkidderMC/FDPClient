@@ -5,9 +5,9 @@
  */
 package net.ccbluex.liquidbounce.utils
 
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.event.PacketEvent
+import me.zywl.fdpclient.event.EventTarget
+import me.zywl.fdpclient.event.Listenable
+import me.zywl.fdpclient.event.PacketEvent
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
 import net.minecraft.block.Block

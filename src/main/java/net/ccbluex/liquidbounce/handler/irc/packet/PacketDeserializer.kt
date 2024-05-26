@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.handler.irc.packet
 import com.google.gson.*
 import me.liuli.elixir.utils.set
 import net.ccbluex.liquidbounce.handler.irc.packet.packets.Packet
-import net.ccbluex.liquidbounce.config.FileManager.Companion.PRETTY_GSON
+import me.zywl.fdpclient.config.FileManager.Companion.PRETTY_GSON
 
 import java.lang.reflect.Type
 

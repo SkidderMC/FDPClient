@@ -9,7 +9,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import net.ccbluex.liquidbounce.handler.irc.packet.packets.Packet
-import net.ccbluex.liquidbounce.config.FileManager.Companion.PRETTY_GSON
+import me.zywl.fdpclient.config.FileManager.Companion.PRETTY_GSON
 
 import java.lang.reflect.Type
 

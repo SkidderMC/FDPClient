@@ -5,9 +5,9 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.event.EntityKilledEvent
-import net.ccbluex.liquidbounce.event.EventTarget
+import me.zywl.fdpclient.event.AttackEvent
+import me.zywl.fdpclient.event.EntityKilledEvent
+import me.zywl.fdpclient.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo

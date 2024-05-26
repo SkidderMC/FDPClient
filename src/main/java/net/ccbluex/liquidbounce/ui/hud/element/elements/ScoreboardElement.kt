@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.ui.hud.element.elements
 
 import com.google.common.collect.Iterables
 import com.google.common.collect.Lists
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.ui.hud.element.Border
 import net.ccbluex.liquidbounce.ui.hud.element.Element
 import net.ccbluex.liquidbounce.ui.hud.element.ElementInfo

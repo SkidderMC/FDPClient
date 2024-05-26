@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils
 
-import net.ccbluex.liquidbounce.event.MoveEvent
+import me.zywl.fdpclient.event.MoveEvent
 import net.minecraft.client.Minecraft
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.entity.EntityLivingBase

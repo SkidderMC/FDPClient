@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.gui.menu
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolSelector
 import net.ccbluex.liquidbounce.ui.gui.colortheme.GuiTheme
 import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner

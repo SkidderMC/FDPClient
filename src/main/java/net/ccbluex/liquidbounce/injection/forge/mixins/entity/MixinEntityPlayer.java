@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import com.mojang.authlib.GameProfile;
-import net.ccbluex.liquidbounce.FDPClient;
+import me.zywl.fdpclient.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KeepSprint;
 import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixer;
 import net.ccbluex.liquidbounce.utils.CooldownHelper;

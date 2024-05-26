@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.gui.options
 
-import net.ccbluex.liquidbounce.FDPClient
+import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.ui.gui.EnumLaunchFilter
 import net.ccbluex.liquidbounce.ui.gui.LaunchFilterInfo
 import net.ccbluex.liquidbounce.ui.gui.LaunchOption

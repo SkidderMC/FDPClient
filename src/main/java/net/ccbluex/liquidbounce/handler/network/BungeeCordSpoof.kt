@@ -6,9 +6,9 @@
 
 package net.ccbluex.liquidbounce.handler.network
 
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.event.PacketEvent
+import me.zywl.fdpclient.event.EventTarget
+import me.zywl.fdpclient.event.Listenable
+import me.zywl.fdpclient.event.PacketEvent
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.network.EnumConnectionState
 import net.minecraft.network.handshake.client.C00Handshake

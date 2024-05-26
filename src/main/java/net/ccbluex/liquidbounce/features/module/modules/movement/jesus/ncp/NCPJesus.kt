@@ -1,8 +1,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.jesus.ncp
 
-import net.ccbluex.liquidbounce.event.BlockBBEvent
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import me.zywl.fdpclient.event.BlockBBEvent
+import me.zywl.fdpclient.event.PacketEvent
+import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.jesus.JesusMode
 import net.minecraft.block.BlockLiquid
 import net.minecraft.block.material.Material

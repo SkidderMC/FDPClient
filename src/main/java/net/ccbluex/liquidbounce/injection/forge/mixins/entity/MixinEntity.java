@@ -5,18 +5,15 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
-import com.viaversion.viaversion.api.protocol.version.ProtocolVersion;
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.event.StrafeEvent;
+import me.zywl.fdpclient.FDPClient;
+import me.zywl.fdpclient.event.StrafeEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.Performance;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoFluid;
 import net.ccbluex.liquidbounce.features.module.modules.movement.StrafeFix;
-import net.ccbluex.liquidbounce.handler.protocol.ProtocolBase;
 import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixer;
 import net.ccbluex.liquidbounce.injection.access.IWorld;
 import net.ccbluex.liquidbounce.utils.EntityUtils;
-import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.command.ICommandSender;
