@@ -8,8 +8,8 @@ package me.zywl.fdpclient.config.core.sections
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import me.zywl.fdpclient.FDPClient
-import net.ccbluex.liquidbounce.handler.macro.Macro
 import me.zywl.fdpclient.config.core.ConfigSection
+import net.ccbluex.liquidbounce.handler.macro.Macro
 
 class MacrosSection : ConfigSection("macros") {
     override fun load(json: JsonObject) {

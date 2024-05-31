@@ -21,13 +21,13 @@ import net.ccbluex.liquidbounce.handler.network.BungeeCordSpoof
 import net.ccbluex.liquidbounce.handler.network.ClientFixes
 import net.ccbluex.liquidbounce.handler.script.ScriptManager
 import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.gui.EnumLaunchFilter
 import net.ccbluex.liquidbounce.ui.gui.GuiLaunchOptionSelectMenu
 import net.ccbluex.liquidbounce.ui.gui.LaunchFilterInfo
 import net.ccbluex.liquidbounce.ui.gui.LaunchOption
-import net.ccbluex.liquidbounce.ui.hud.HUD
 import net.ccbluex.liquidbounce.ui.gui.keybind.KeyBindManager
-import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.hud.HUD
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
 import net.ccbluex.liquidbounce.ui.sound.TipSoundManager
 import net.ccbluex.liquidbounce.utils.*

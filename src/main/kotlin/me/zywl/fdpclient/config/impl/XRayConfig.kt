@@ -8,9 +8,9 @@ package me.zywl.fdpclient.config.impl
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
 import me.zywl.fdpclient.FDPClient
-import net.ccbluex.liquidbounce.features.module.modules.visual.XRay
 import me.zywl.fdpclient.config.FileConfig
 import me.zywl.fdpclient.config.FileManager
+import net.ccbluex.liquidbounce.features.module.modules.visual.XRay
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.minecraft.block.Block
 import java.io.File

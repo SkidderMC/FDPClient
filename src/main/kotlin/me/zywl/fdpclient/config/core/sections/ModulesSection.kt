@@ -7,9 +7,9 @@ package me.zywl.fdpclient.config.core.sections
 
 import com.google.gson.JsonObject
 import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.config.core.ConfigSection
 import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
 import net.ccbluex.liquidbounce.features.module.EnumTriggerType
-import me.zywl.fdpclient.config.core.ConfigSection
 
 class ModulesSection : ConfigSection("modules") {
     override fun load(json: JsonObject) {

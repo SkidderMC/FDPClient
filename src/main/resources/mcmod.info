@@ -2,13 +2,11 @@
   {
     "modid": "fdpclient",
     "name": "FDPClient",
-    "description": "Minecraft Utility mod",
+    "description": "A Minecraft Forge Mixin-Based Hacked Client.",
     "version": "${version}",
-    "mcversion": "${mcversion}",
+    "mcversion": "1.8.9",
     "url": "https://fdpinfo.github.io",
-    "updateUrl": "",
-    "authorList": ["CCBlueX", "Zywl", "SkidderMC"],
-    "credits": "",
+    "authorList": ["Zywl", "SkidderMC"],
     "logoFile": "",
     "screenshots": [],
     "dependencies": []

@@ -6,9 +6,9 @@
 package me.zywl.fdpclient.event
 
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import java.lang.ref.WeakReference
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import java.lang.ref.WeakReference
 
 class EventManager : MinecraftInstance() {
 

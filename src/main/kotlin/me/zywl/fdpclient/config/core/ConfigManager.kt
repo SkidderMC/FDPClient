@@ -8,8 +8,8 @@ package me.zywl.fdpclient.config.core
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import me.zywl.fdpclient.FDPClient
-import net.ccbluex.liquidbounce.features.module.modules.client.Target
 import me.zywl.fdpclient.config.FileManager
+import net.ccbluex.liquidbounce.features.module.modules.client.Target
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
