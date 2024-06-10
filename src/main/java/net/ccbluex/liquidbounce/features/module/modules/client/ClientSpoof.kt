@@ -156,7 +156,7 @@ class ClientSpoof : Module() {
                         "Lunar" -> PacketUtils.sendPacketNoEvent(
                             C17PacketCustomPayload(
                                 "MC|Brand",
-                                PacketBuffer(Unpooled.buffer()).writeString("lunarclient:v2.14.5-2411")
+                                PacketBuffer(Unpooled.buffer()).writeString("lunarclient:v2.15.6-2422")
                             )
                         )
 

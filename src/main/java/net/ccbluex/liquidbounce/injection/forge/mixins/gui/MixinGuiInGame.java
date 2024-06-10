@@ -12,8 +12,10 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.HotbarSettings;
 import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
 import net.ccbluex.liquidbounce.injection.access.StaticStorage;
+import net.ccbluex.liquidbounce.utils.ClassUtils;
 import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.ccbluex.liquidbounce.utils.SpoofItemUtils;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiIngame;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
@@ -21,6 +23,7 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -31,6 +34,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.awt.*;
 import java.util.Objects;
 
 import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
@@ -76,6 +80,29 @@ public abstract class MixinGuiInGame extends MixinGui {
     @Overwrite
     protected void renderTooltip(ScaledResolution sr, float partialTicks) {
         final EntityPlayer entityplayer = (EntityPlayer) mc.getRenderViewEntity();
+        HUDModule hudModule = FDPClient.moduleManager.getModule(HUDModule.class);
+
+        if (Objects.requireNonNull(hudModule).getInventoryOnHotbar().get()){
+            GlStateManager.pushMatrix();
+            int scaledWidth = sr.getScaledWidth();
+            int scaledHeight = sr.getScaledHeight();
+            GlStateManager.translate((float) scaledWidth / 2 - 90, (float) scaledHeight - 25, 0);
+            RenderUtils.drawBorderedRect(0, 1, 180, -58, 1, new Color(0,0,0,255).getRGB(), new Color(0,0,0,130).getRGB());
+            RenderHelper.enableGUIStandardItemLighting();
+
+            int initialSlot = 9;
+            for (int row = 0; row < 3; row++) {
+                for (int column = 0; column < 9; column++) {
+                    int slot = initialSlot + row * 9 + column;
+                    int x = 1 + column * 20;
+                    int y = -16 - row * 20;
+                    renderItem(slot, x, y, mc.thePlayer);
+                }
+            }
+
+            RenderHelper.disableStandardItemLighting();
+            GlStateManager.popMatrix();
+        }
 
         float tabHope = mc.gameSettings.keyBindPlayerList.isKeyDown() ? 1f : 0f;
         final Animations animations = Animations.INSTANCE;
@@ -137,6 +164,21 @@ public abstract class MixinGuiInGame extends MixinGui {
             if (Objects.requireNonNull(FDPClient.moduleManager.getModule(HUDModule.class)).getCrossHairValue().get()
                 || mc.gameSettings.thirdPersonView != 0 && Objects.requireNonNull(FDPClient.moduleManager.getModule(HUDModule.class)).getNof5crossHair().get())
                 cir.setReturnValue(false);
+        }
+    }
+
+    @Inject(method = "renderTooltip", at = @At("RETURN"))
+    private void renderTooltipPost(ScaledResolution sr, float partialTicks, CallbackInfo callbackInfo) {
+        if (!ClassUtils.hasClass("net.labymod.api.LabyModAPI")) {
+            FDPClient.eventManager.callEvent(new Render2DEvent(partialTicks, sr));
+        }
+    }
+
+    private void renderItem(int i, int x, int y , EntityPlayer player) {
+        ItemStack itemstack = player.inventory.mainInventory[i];
+        if (itemstack != null) {
+            mc.getRenderItem().renderItemAndEffectIntoGUI(itemstack, x, y);
+            mc.getRenderItem().renderItemOverlays(mc.fontRendererObj, itemstack, x-1, y-1);
         }
     }
  }

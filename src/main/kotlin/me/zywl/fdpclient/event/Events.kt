@@ -89,7 +89,6 @@ class MotionEvent(val eventState: EventState) : Event() {
     }
 }
 
-
 /**
  * Called when entity is going to be rendered
  */
@@ -105,7 +104,6 @@ class UpdateModelEvent(val player: EntityPlayer, val model: ModelPlayer) : Event
  * Called when an entity receives damage
  */
 class EntityDamageEvent(val damagedEntity: Entity): Event()
-
 
 /**
  * Called after motion
@@ -124,7 +122,6 @@ class SlowDownEvent(var strafe: Float, var forward: Float) : Event()
  * Called in "moveFlying"
  */
 class StrafeEvent(val strafe: Float, val forward: Float, val friction: Float) : CancellableEvent()
-
 
 /**
  * Called when an other entity moves

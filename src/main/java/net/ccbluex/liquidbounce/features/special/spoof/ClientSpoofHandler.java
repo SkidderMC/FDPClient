@@ -81,7 +81,7 @@ public class ClientSpoofHandler extends MinecraftInstance implements Listenable 
         }
     }
 
-    public static final String LUNAR_DISPLAY_NAME = "lunarclient:v2.14.5-2411";
+    public static final String LUNAR_DISPLAY_NAME = "lunarclient:v2.15.6-2422";
 
     public static String handleClientBrand() {
         final ClientSpoof clientSpoof = FDPClient.moduleManager.getModule(ClientSpoof.class);

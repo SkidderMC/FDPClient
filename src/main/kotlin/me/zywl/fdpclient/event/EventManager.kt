@@ -21,7 +21,7 @@ class EventManager : MinecraftInstance() {
      * @param listener The listener to register.
      */
     fun registerListener(listener: Listenable) {
-        try {
+        runCatching {
             val listenerRef = WeakReference(listener)
             for (method in listener.javaClass.declaredMethods) {
                 if (method.isAnnotationPresent(EventTarget::class.java) && method.parameterTypes.size == 1) {
@@ -32,17 +32,12 @@ class EventManager : MinecraftInstance() {
 
                     val eventTarget = method.getAnnotation(EventTarget::class.java)
                     val invokableEventTargets = registry.getOrPut(eventClass) { mutableListOf() }
-                    invokableEventTargets.add(
-                        EventHook(
-                            listenerRef,
-                            method,
-                            eventTarget
-                        )
-                    )
-                    invokableEventTargets.sortByDescending { it.priority } // Sort by priority
+                    val eventHook = EventHook(listenerRef, method, eventTarget)
+                    invokableEventTargets.add(eventHook)
+                    invokableEventTargets.sortByDescending { it.getPriority() } // Sort by priority
                 }
             }
-        } catch (e: Exception) {
+        }.onFailure { e ->
             logError("Error while registering the listener", e)
         }
     }
@@ -53,31 +48,26 @@ class EventManager : MinecraftInstance() {
      * @param listenable Listener to unregister.
      */
     fun unregisterListener(listenable: Listenable) {
-        try {
-            registry.values.forEach { it.removeIf { hook -> hook.listenerRef.get() == null || hook.listenerRef.get() === listenable } }
+        runCatching {
+            registry.values.forEach { it.removeIf { hook -> hook.getListener() == null || hook.getListener() === listenable } }
             registry.entries.removeIf { it.value.isEmpty() }
-        } catch (e: Exception) {
+        }.onFailure { e ->
             logError("Error while unregistering the listener", e)
         }
     }
-
     /**
      * Calls an event for the listeners.
      *
      * @param event Event to be called.
      */
     fun callEvent(event: Event) {
-        try {
+        runCatching {
             registry[event.javaClass]?.let { targets ->
-                targets.toList().forEach { invokableEventTarget ->
-                    invokableEventTarget.listenerRef.get()?.let { listener ->
-                        if (invokableEventTarget.isIgnoreCondition || listener.handleEvents()) {
-                            invokableEventTarget.method.invoke(listener, event)
-                        }
-                    }
+                targets.forEach { eventHook ->
+                    eventHook.invokeEvent(event)
                 }
             }
-        } catch (e: Exception) {
+        }.onFailure { e ->
             logError("Error while calling the event", e)
         }
     }
@@ -89,7 +79,10 @@ class EventManager : MinecraftInstance() {
      * @param throwable Associated exception.
      */
     private fun logError(message: String, throwable: Throwable) {
-        val logger: Logger = LoggerFactory.getLogger(EventManager::class.java)
         logger.error(message, throwable)
+    }
+
+    companion object {
+        private val logger: Logger = LoggerFactory.getLogger(EventManager::class.java)
     }
 }

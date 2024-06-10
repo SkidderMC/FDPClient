@@ -31,8 +31,10 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.GuiChat
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.WorldRenderer
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -56,6 +58,9 @@ object HUDModule : Module() {
     private val waterMark = BoolValue("Watermark", false)
     val modeValue = ListValue("Watermark-Mode", arrayOf("FDPCLIENT", "Classic", "FDP", "Blur", "Clean", "Zywl", "ZAVZ", "Slide"), "FDPCLIENT").displayable { waterMark.get() }
     private val colorModeValue = ListValue("Color", arrayOf("Custom", "Health", "Theme"), "Health").displayable { waterMark.get() }
+
+    // InventoryPlus
+    val inventoryOnHotbar = BoolValue("InventoryOnHotbar", true)
 
     // CrossHair
     val crossHairValue = BoolValue("CrossHair", false)
