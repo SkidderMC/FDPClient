@@ -10,7 +10,6 @@ import jdk.nashorn.api.scripting.ScriptUtils
 import me.zywl.fdpclient.value.*
 import me.zywl.fdpclient.value.impl.*
 import net.ccbluex.liquidbounce.features.*
-import net.ccbluex.liquidbounce.value.*
 
 /**
  * Object used by the script API to provide an idiomatic way of creating module values.
