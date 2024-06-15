@@ -10,7 +10,7 @@ import me.zywl.fdpclient.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.value.BoolValue
+import me.zywl.fdpclient.value.impl.BoolValue
 
 @ModuleInfo(name = "SafeWalk", category = ModuleCategory.MOVEMENT)
 object SafeWalk : Module() {

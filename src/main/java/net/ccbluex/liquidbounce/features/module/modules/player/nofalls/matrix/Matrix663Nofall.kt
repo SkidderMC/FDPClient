@@ -4,7 +4,7 @@ import me.zywl.fdpclient.event.PacketEvent
 import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMode
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
-import net.ccbluex.liquidbounce.value.BoolValue
+import me.zywl.fdpclient.value.impl.BoolValue
 import net.minecraft.network.play.client.C03PacketPlayer
 
 import kotlin.math.abs

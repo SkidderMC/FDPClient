@@ -14,8 +14,8 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
+import me.zywl.fdpclient.value.impl.BoolValue
+import me.zywl.fdpclient.value.impl.FloatValue
 
 @ModuleInfo(name = "Timer", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.RESPAWN)
 object Timer : Module() {

@@ -11,9 +11,9 @@ import me.zywl.fdpclient.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.TextValue
+import me.zywl.fdpclient.value.impl.BoolValue
+import me.zywl.fdpclient.value.impl.IntegerValue
+import me.zywl.fdpclient.value.impl.TextValue
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S45PacketTitle
 import java.util.*

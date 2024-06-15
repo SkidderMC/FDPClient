@@ -10,7 +10,7 @@ import me.zywl.fdpclient.event.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.value.Value
+import me.zywl.fdpclient.value.Value
 
 abstract class VelocityMode(val modeName: String) : MinecraftInstance() {
     protected val valuePrefix = "$modeName-"

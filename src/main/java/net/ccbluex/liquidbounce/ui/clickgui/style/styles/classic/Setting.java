@@ -6,12 +6,13 @@
 package net.ccbluex.liquidbounce.ui.clickgui.style.styles.classic;
 
 import lombok.Setter;
+import me.zywl.fdpclient.value.*;
+import me.zywl.fdpclient.value.impl.*;
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.font.Fonts;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.TickTimer;
-import net.ccbluex.liquidbounce.value.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.util.MathHelper;

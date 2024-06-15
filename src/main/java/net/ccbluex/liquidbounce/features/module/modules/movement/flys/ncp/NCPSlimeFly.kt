@@ -16,8 +16,8 @@ import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.extensions.rayTraceWithCustomRotation
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.ListValue
+import me.zywl.fdpclient.value.impl.BoolValue
+import me.zywl.fdpclient.value.impl.ListValue
 import net.minecraft.block.BlockAir
 import net.minecraft.item.ItemBlock
 import net.minecraft.network.Packet

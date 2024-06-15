@@ -11,8 +11,8 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.Velocit
 import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import me.zywl.fdpclient.value.impl.BoolValue
+import me.zywl.fdpclient.value.impl.IntegerValue
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayClient
 import net.minecraft.network.play.server.S12PacketEntityVelocity

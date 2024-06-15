@@ -11,20 +11,21 @@ import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import me.zywl.fdpclient.value.impl.BoolValue
+import me.zywl.fdpclient.value.impl.FloatValue
+import me.zywl.fdpclient.value.impl.IntegerValue
+import me.zywl.fdpclient.value.impl.ListValue
 import net.minecraft.network.play.server.S03PacketTimeUpdate
 import net.minecraft.network.play.server.S2BPacketChangeGameState
 
 @ModuleInfo(name = "Ambience", category = ModuleCategory.VISUAL)
 object Ambience : Module() {
 
-    private val timeModeValue = ListValue("TimeMode", arrayOf("None", "Normal", "Custom"), "Custom")
+    private val timeModeValue = ListValue("TimeMode", arrayOf("Normal", "Custom", "Day", "Dusk", "Night", "Dynamic", "None"), "Custom")
 
     private val customWorldTimeValue = IntegerValue("CustomTime", 6, 0, 24).displayable { timeModeValue.equals("Custom") }
     private val changeWorldTimeSpeedValue = IntegerValue("ChangeWorldTimeSpeed", 150, 10, 500).displayable { timeModeValue.equals("Normal") }
+    private val dynamicSpeed = IntegerValue("DynamicSpeed", 20, 1, 50).displayable { timeModeValue.equals("Dynamic") }
 
     private val weatherModeValue = ListValue("WeatherMode", arrayOf("None", "Sun", "Rain", "Thunder"), "None")
     private val weatherStrengthValue = FloatValue("WeatherStrength", 1f, 0f, 1f).displayable { !weatherModeValue.equals("None") }
@@ -53,6 +54,23 @@ object Ambience : Module() {
             }
             "custom" -> {
                 mc.theWorld.worldTime = customWorldTimeValue.get().toLong() * 1000
+            }
+            "day" -> {
+                mc.theWorld.worldTime = 2000
+            }
+            "dusk" -> {
+                mc.theWorld.worldTime = 13050
+            }
+            "night" -> {
+                mc.theWorld.worldTime = 16000
+            }
+            "dynamic" -> {
+                if (i < 24000) {
+                    i += dynamicSpeed.get()
+                } else {
+                    i = 0
+                }
+                mc.theWorld.worldTime = i
             }
         }
 

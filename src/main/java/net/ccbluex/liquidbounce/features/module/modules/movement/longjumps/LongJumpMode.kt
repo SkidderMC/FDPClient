@@ -7,7 +7,7 @@ import net.ccbluex.liquidbounce.ui.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.value.Value
+import me.zywl.fdpclient.value.Value
 
 abstract class LongJumpMode(val modeName: String) : MinecraftInstance() {
     protected val valuePrefix = "$modeName-"

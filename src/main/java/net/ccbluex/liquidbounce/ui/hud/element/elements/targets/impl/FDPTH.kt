@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.ui.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.FontValue
+import me.zywl.fdpclient.value.impl.FontValue
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color

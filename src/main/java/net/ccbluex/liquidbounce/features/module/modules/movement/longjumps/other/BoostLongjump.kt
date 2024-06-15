@@ -5,7 +5,7 @@ import me.zywl.fdpclient.event.MoveEvent
 import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJumpMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.FloatValue
+import me.zywl.fdpclient.value.impl.FloatValue
 
 class BoostLongjump : LongJumpMode("Boost") {
     private val speedValue = FloatValue("${valuePrefix}Speed", 0.48f, 0.0f, 3.0f)

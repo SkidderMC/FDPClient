@@ -17,8 +17,8 @@ import net.ccbluex.liquidbounce.utils.particles.Particle;
 import net.ccbluex.liquidbounce.utils.particles.Vec3;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.timer.TimerUtils;
-import net.ccbluex.liquidbounce.value.BoolValue;
-import net.ccbluex.liquidbounce.value.IntegerValue;
+import me.zywl.fdpclient.value.impl.BoolValue;
+import me.zywl.fdpclient.value.impl.IntegerValue;
 import net.minecraft.entity.EntityLivingBase;
 
 import java.util.List;

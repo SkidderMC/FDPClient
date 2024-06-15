@@ -9,12 +9,12 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import me.zywl.fdpclient.FDPClient
 import me.zywl.fdpclient.config.FileManager
+import me.zywl.fdpclient.value.impl.*
 import net.ccbluex.liquidbounce.features.module.modules.client.Target
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
-import net.ccbluex.liquidbounce.value.*
 import org.lwjgl.input.Keyboard
 import java.io.File
 import java.nio.file.Files

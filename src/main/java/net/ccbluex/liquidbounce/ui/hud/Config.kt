@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.ui.hud.HUD.Companion.elements
 import net.ccbluex.liquidbounce.ui.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.hud.element.Side
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.value.FontValue
+import me.zywl.fdpclient.value.impl.FontValue
 
 class Config {
 

@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.ListValue
+import me.zywl.fdpclient.value.impl.ListValue
 
 @ModuleInfo(name = "NoWeb", category = ModuleCategory.MOVEMENT)
 object NoWeb : Module() {

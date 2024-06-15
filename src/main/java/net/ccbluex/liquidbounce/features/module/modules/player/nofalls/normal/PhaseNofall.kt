@@ -3,7 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.player.nofalls.normal
 import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMode
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
-import net.ccbluex.liquidbounce.value.IntegerValue
+import me.zywl.fdpclient.value.impl.IntegerValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import java.util.*
 import kotlin.concurrent.schedule

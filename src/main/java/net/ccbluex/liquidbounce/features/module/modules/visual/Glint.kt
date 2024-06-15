@@ -10,8 +10,8 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import me.zywl.fdpclient.value.impl.IntegerValue
+import me.zywl.fdpclient.value.impl.ListValue
 import java.awt.Color
 
 @ModuleInfo(name = "Glint", category = ModuleCategory.VISUAL)

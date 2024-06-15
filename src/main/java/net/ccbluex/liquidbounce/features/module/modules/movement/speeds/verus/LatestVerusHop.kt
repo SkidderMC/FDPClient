@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.verus
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
+import me.zywl.fdpclient.value.impl.BoolValue
+import me.zywl.fdpclient.value.impl.FloatValue
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.potion.Potion
 

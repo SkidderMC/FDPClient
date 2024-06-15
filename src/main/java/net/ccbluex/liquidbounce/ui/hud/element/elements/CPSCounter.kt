@@ -13,10 +13,10 @@ import net.ccbluex.liquidbounce.ui.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.utils.CPSCounterUtils
 import net.ccbluex.liquidbounce.utils.render.GlowUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.FontValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import me.zywl.fdpclient.value.impl.BoolValue
+import me.zywl.fdpclient.value.impl.FloatValue
+import me.zywl.fdpclient.value.impl.FontValue
+import me.zywl.fdpclient.value.impl.IntegerValue
 import java.awt.Color
 
 @ElementInfo(name = "CPSCounter")

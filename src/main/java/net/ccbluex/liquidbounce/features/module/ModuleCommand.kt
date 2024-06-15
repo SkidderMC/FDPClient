@@ -5,10 +5,11 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
+import me.zywl.fdpclient.value.*
+import me.zywl.fdpclient.value.impl.*
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
-import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
 
 /**

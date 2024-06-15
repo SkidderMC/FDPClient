@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 
 import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
-import net.ccbluex.liquidbounce.value.BoolValue
+import me.zywl.fdpclient.value.impl.BoolValue
 import net.minecraft.util.EnumParticleTypes
 
 class JetpackFly : FlyMode("Jetpack") {

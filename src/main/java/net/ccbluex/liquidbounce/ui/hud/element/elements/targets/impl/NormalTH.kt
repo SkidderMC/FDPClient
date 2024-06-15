@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.ui.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.BoolValue
+import me.zywl.fdpclient.value.impl.BoolValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import java.awt.Color

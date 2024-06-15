@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import me.zywl.fdpclient.event.EventTarget
 import me.zywl.fdpclient.event.Render3DEvent
 import me.zywl.fdpclient.event.UpdateEvent
+import me.zywl.fdpclient.value.impl.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
@@ -17,7 +18,6 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
 import net.minecraft.block.BlockLiquid
 import net.minecraft.init.Blocks

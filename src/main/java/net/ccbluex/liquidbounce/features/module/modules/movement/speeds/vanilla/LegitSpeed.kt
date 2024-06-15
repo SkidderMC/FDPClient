@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speeds.vanilla
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.BoolValue
+import me.zywl.fdpclient.value.impl.BoolValue
 import net.minecraft.client.settings.GameSettings
 
 class LegitSpeed : SpeedMode("Legit") {

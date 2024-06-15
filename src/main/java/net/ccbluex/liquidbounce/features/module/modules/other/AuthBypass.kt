@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.ui.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.hud.element.elements.NotifyType
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.IntegerValue
+import me.zywl.fdpclient.value.impl.IntegerValue
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemSkull
 import net.minecraft.item.ItemStack

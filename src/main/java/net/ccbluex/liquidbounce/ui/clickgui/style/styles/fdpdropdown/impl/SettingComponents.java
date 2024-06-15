@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.impl;
 
+import me.zywl.fdpclient.value.*;
+import me.zywl.fdpclient.value.impl.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.ui.clickgui.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.animations.Animation;
@@ -18,7 +20,6 @@ import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.rende
 import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.render.RoundedUtil;
-import net.ccbluex.liquidbounce.value.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import org.lwjgl.input.Keyboard;

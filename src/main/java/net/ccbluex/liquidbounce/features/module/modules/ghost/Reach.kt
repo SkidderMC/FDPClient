@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.ghost
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.value.FloatValue
+import me.zywl.fdpclient.value.impl.FloatValue
 import kotlin.math.max
 
 @ModuleInfo(name = "Reach", category = ModuleCategory.GHOST)

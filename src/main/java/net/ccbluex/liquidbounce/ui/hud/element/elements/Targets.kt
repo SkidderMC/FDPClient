@@ -6,6 +6,11 @@
 package net.ccbluex.liquidbounce.ui.hud.element.elements
 
 import me.zywl.fdpclient.FDPClient
+import me.zywl.fdpclient.value.*
+import me.zywl.fdpclient.value.impl.BoolValue
+import me.zywl.fdpclient.value.impl.FloatValue
+import me.zywl.fdpclient.value.impl.IntegerValue
+import me.zywl.fdpclient.value.impl.ListValue
 import net.ccbluex.liquidbounce.ui.clickgui.style.styles.fdpdropdown.utils.animations.impl.EaseBackIn
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
 import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner
@@ -16,7 +21,6 @@ import net.ccbluex.liquidbounce.ui.hud.element.Side
 import net.ccbluex.liquidbounce.ui.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.hud.element.elements.targets.impl.*
 import net.ccbluex.liquidbounce.utils.render.*
-import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase

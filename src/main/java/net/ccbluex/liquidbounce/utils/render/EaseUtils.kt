@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils.render
 
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.value.ListValue
+import me.zywl.fdpclient.value.impl.ListValue
 import kotlin.math.*
 
 /***

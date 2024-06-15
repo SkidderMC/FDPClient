@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.ui.clickgui.style.styles;
 
+import me.zywl.fdpclient.value.*;
+import me.zywl.fdpclient.value.impl.*;
 import net.ccbluex.liquidbounce.ui.clickgui.Panel;
 import net.ccbluex.liquidbounce.ui.clickgui.elements.ButtonElement;
 import net.ccbluex.liquidbounce.ui.clickgui.elements.ModuleElement;
@@ -14,7 +16,6 @@ import net.ccbluex.liquidbounce.ui.font.GameFontRenderer;
 import net.ccbluex.liquidbounce.ui.i18n.LanguageManager;
 import net.ccbluex.liquidbounce.utils.block.BlockUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.value.*;
 import net.minecraft.client.audio.PositionedSoundRecord;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;

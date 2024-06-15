@@ -3,10 +3,11 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.value
+package me.zywl.fdpclient.value.impl
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
+import me.zywl.fdpclient.value.Value
 
 /**
  * List value represents a selectable list of values
@@ -16,7 +17,7 @@ open class ListValue(name: String, val values: Array<String>, value: String) : V
     var openList = false
 
     @JvmField
-    var open=true;
+    var open=true
 
     init {
         this.value = value
@@ -34,14 +35,6 @@ open class ListValue(name: String, val values: Array<String>, value: String) : V
                 break
             }
         }
-    }
-
-    open fun getModes() : List<String> {
-        return this.values.toList()
-    }
-
-    open fun getModeGet(i: Int): String {
-        return values[i]
     }
 
     fun indexOf(mode: String): Int {

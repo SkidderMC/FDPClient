@@ -3,26 +3,26 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.value
+package me.zywl.fdpclient.value.impl
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
+import me.zywl.fdpclient.value.Value
 
 /**
- * Text value represents a value with a string
+ * Float value represents a value with a float
  */
-open class TextValue(name: String, value: String) : Value<String>(name, value) {
+open class FloatValue(name: String, value: Float, val minimum: Float = 0F, val maximum: Float = Float.MAX_VALUE) : Value<Float>(name, value) {
+
+    fun set(newValue: Number) {
+        set(newValue.toFloat())
+    }
+
     override fun toJson() = JsonPrimitive(value)
 
     override fun fromJson(element: JsonElement) {
         if (element.isJsonPrimitive) {
-            value = element.asString
+            value = element.asFloat
         }
-
     }
-    fun append(o: Any): TextValue {
-        set(get() + o)
-        return this
-    }
-
 }

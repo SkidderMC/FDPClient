@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils
 
-import net.ccbluex.liquidbounce.value.Value
+import me.zywl.fdpclient.value.Value
 import org.apache.logging.log4j.core.config.plugins.ResolverUtil
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter

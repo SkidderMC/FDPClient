@@ -15,8 +15,8 @@ import net.ccbluex.liquidbounce.features.module.modules.client.button.*
 import net.ccbluex.liquidbounce.features.special.spoof.ClientSpoofHandler
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.value.ListValue
-import net.ccbluex.liquidbounce.value.TextValue
+import me.zywl.fdpclient.value.impl.ListValue
+import me.zywl.fdpclient.value.impl.TextValue
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.network.PacketBuffer
 import net.minecraft.network.play.client.C17PacketCustomPayload
@@ -163,7 +163,7 @@ class ClientSpoof : Module() {
                         "MineBuilders" -> PacketUtils.sendPacketNoEvent(
                             C17PacketCustomPayload(
                                 "MC|Brand",
-                                PacketBuffer(Unpooled.buffer()).writeString("minebuilders8")
+                                PacketBuffer(Unpooled.buffer()).writeString("minebuilders9")
                             )
                         )
 

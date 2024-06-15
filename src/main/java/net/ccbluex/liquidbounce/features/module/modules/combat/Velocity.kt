@@ -7,13 +7,17 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import me.zywl.fdpclient.FDPClient
 import me.zywl.fdpclient.event.*
+import me.zywl.fdpclient.value.*
+import me.zywl.fdpclient.value.impl.BoolValue
+import me.zywl.fdpclient.value.impl.FloatValue
+import me.zywl.fdpclient.value.impl.IntegerValue
+import me.zywl.fdpclient.value.impl.ListValue
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.value.*
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import java.util.*
 import kotlin.math.cos

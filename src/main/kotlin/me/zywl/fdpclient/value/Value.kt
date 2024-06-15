@@ -3,14 +3,11 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient
  */
-package net.ccbluex.liquidbounce.value
+package me.zywl.fdpclient.value
 
 import com.google.gson.JsonElement
-import com.google.gson.JsonPrimitive
 import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import java.awt.Color
-import kotlin.jvm.internal.Intrinsics
 
 abstract class Value<T>(val name: String, var value: T) {
     val default = value
@@ -60,19 +57,6 @@ abstract class Value<T>(val name: String, var value: T) {
     protected open fun onChange(oldValue: T, newValue: T) {}
     protected open fun onChanged(oldValue: T, newValue: T) {}
 
-    open class ColorValue(name: String, value: Int, canDisplay: () -> Boolean) : Value<Int>(name, value) {
-        val minimum: Int = -10000000
-        val maximum: Int = 1000000
-        fun set(newValue: Number) {
-            set(newValue.toInt())
-        }
-        override fun toJson() = JsonPrimitive(value)
-        override fun fromJson(element: JsonElement) {
-            if (element.isJsonPrimitive)
-                value = element.asInt
-        }
-    }
-
     override fun equals(other: Any?): Boolean {
         other ?: return false
         if (value is String && other is String) {
@@ -101,15 +85,5 @@ abstract class Value<T>(val name: String, var value: T) {
 
     open fun isExpanded(): Boolean {
         return Expanded
-    }
-
-
-    open fun getAwtColor(): Color {
-        return Color((this as Value<Number>).value.toInt(), true)
-    }
-
-    open fun ColorValue(name: String, value: Int) {
-        Intrinsics.checkParameterIsNotNull(name, "name")
-        ColorValue(name, value)
     }
 }

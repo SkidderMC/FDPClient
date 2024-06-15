@@ -3,7 +3,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flys.other
 import me.zywl.fdpclient.event.BlockBBEvent
 import me.zywl.fdpclient.event.JumpEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.flys.FlyMode
-import net.ccbluex.liquidbounce.value.BoolValue
+import me.zywl.fdpclient.value.impl.BoolValue
 import net.minecraft.block.BlockAir
 import net.minecraft.util.AxisAlignedBB
 

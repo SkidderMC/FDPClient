@@ -9,7 +9,7 @@ import me.zywl.fdpclient.event.EventState
 import me.zywl.fdpclient.event.MotionEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speeds.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.value.ListValue
+import me.zywl.fdpclient.value.impl.ListValue
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Timer

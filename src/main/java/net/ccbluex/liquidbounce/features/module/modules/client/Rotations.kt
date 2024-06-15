@@ -20,9 +20,9 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Scaffold
 import net.ccbluex.liquidbounce.features.module.modules.player.Breaker
 import net.ccbluex.liquidbounce.features.module.modules.player.ChestAura
 import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
+import me.zywl.fdpclient.value.impl.BoolValue
+import me.zywl.fdpclient.value.impl.FloatValue
+import me.zywl.fdpclient.value.impl.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 
 @ModuleInfo(name = "Rotations", category = ModuleCategory.CLIENT)

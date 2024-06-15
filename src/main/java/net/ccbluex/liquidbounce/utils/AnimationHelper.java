@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils;
 
 import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.value.BoolValue;
+import me.zywl.fdpclient.value.impl.BoolValue;
 
 public class AnimationHelper {
     public float animationX;

@@ -10,8 +10,8 @@ import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.BlurUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.Value
+import me.zywl.fdpclient.value.impl.FloatValue
+import me.zywl.fdpclient.value.Value
 import net.minecraft.entity.player.EntityPlayer
 import kotlin.math.abs
 import kotlin.math.max

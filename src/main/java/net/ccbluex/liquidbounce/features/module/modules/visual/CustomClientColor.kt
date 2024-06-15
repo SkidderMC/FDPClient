@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleCategory
 import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.value.IntegerValue
+import me.zywl.fdpclient.value.impl.IntegerValue
 import java.awt.Color
 
 @ModuleInfo(name = "CustomClientColor", category = ModuleCategory.VISUAL)

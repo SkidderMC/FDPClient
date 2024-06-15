@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.revers
 import me.zywl.fdpclient.event.PacketEvent
 import me.zywl.fdpclient.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.velocitys.VelocityMode
-import net.ccbluex.liquidbounce.value.FloatValue
+import me.zywl.fdpclient.value.impl.FloatValue
 
 class SmoothReverseVelocity : VelocityMode("SmoothReverse") {
     private val smoothReverseStrengthValue = FloatValue("SmoothReverseStrength", 0.05F, 0.02F, 0.1F)

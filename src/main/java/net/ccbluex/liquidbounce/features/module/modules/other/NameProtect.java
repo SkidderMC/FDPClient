@@ -14,8 +14,8 @@ import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
 import net.ccbluex.liquidbounce.utils.misc.StringUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorUtils;
-import net.ccbluex.liquidbounce.value.BoolValue;
-import net.ccbluex.liquidbounce.value.TextValue;
+import me.zywl.fdpclient.value.impl.BoolValue;
+import me.zywl.fdpclient.value.impl.TextValue;
 import net.minecraft.client.network.NetworkPlayerInfo;
 
 import java.util.Objects;
