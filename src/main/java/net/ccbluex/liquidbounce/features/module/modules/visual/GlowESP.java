@@ -5,21 +5,26 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual;
 
+import me.zywl.fdpclient.FDPClient;
 import me.zywl.fdpclient.event.EventTarget;
 import me.zywl.fdpclient.event.Render2DEvent;
 import me.zywl.fdpclient.event.Render3DEvent;
+import me.zywl.fdpclient.value.impl.ListValue;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.ModuleCategory;
 import net.ccbluex.liquidbounce.features.module.ModuleInfo;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme;
 import net.ccbluex.liquidbounce.utils.MathUtils;
 import net.ccbluex.liquidbounce.utils.animations.Animation;
 import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation;
+import net.ccbluex.liquidbounce.utils.render.ColorUtils;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.ShaderUtil;
 import me.zywl.fdpclient.value.impl.BoolValue;
 import me.zywl.fdpclient.value.impl.FloatValue;
 import me.zywl.fdpclient.value.impl.IntegerValue;
+import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import net.minecraft.client.renderer.culling.Frustum;
@@ -36,6 +41,7 @@ import java.awt.*;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static org.lwjgl.opengl.GL20.glUniform1;
 @ModuleInfo(name = "GlowESP", category = ModuleCategory.VISUAL)
@@ -44,13 +50,16 @@ public class GlowESP extends Module {
     public final FloatValue radius = new FloatValue("Radius", 2, 1F, 30F);
     public final FloatValue exposure = new FloatValue("Exposure", 2.2F, 1F, 3.5F);
     public final BoolValue seperate = new BoolValue("Seperate Texture", false);
-
-    private final IntegerValue colorRedValue = new IntegerValue("Color-Red", 255, 0, 255);
-    private final IntegerValue colorGreenValue = new IntegerValue("Color-Green", 255, 0, 255);
-    private final IntegerValue colorBlueValue = new IntegerValue("Color-Blue", 255, 0, 255);
     public final BoolValue Players = new BoolValue("Players", false);
     public final BoolValue Animals = new BoolValue("Animals", false);
     public final BoolValue Mobs = new BoolValue("Mobs", false);
+
+    public final ListValue colorMode = new ListValue("ColorMode", new String[]{"Rainbow", "Light Rainbow", "Static", "Double Color", "Default"}, "Light Rainbow");
+    public final BoolValue movingcolors = new BoolValue("MovingColors", false);
+    public final BoolValue hueInterpolation = new BoolValue("hueInterpolation", false);
+    public static final IntegerValue colorRedValue = new IntegerValue("R", 0, 0, 255);
+    public static final IntegerValue colorGreenValue = new IntegerValue("G", 160, 0, 255);
+    public static final IntegerValue colorBlueValue = new IntegerValue("B", 255, 0, 255);
 
     public static boolean renderNameTags = true;
     private final ShaderUtil outlineShader = new ShaderUtil("shaders/outline.frag");
@@ -59,12 +68,13 @@ public class GlowESP extends Module {
     public Framebuffer framebuffer;
     public Framebuffer outlineFrameBuffer;
     public Framebuffer glowFrameBuffer;
+    private final Frustum frustum = new Frustum();
     private final Frustum frustum2 = new Frustum();
 
     private final List<Entity> entities = new ArrayList<>();
 
     public static Animation fadeIn;
-    
+
     private boolean isInView(Entity ent) {
         frustum2.setPosition(mc.getRenderViewEntity().posX, mc.getRenderViewEntity().posY, mc.getRenderViewEntity().posZ);
         return frustum2.isBoundingBoxInFrustum(ent.getEntityBoundingBox()) || ent.ignoreFrustumCheck;
@@ -98,6 +108,7 @@ public class GlowESP extends Module {
     @EventTarget
     public void onrender2D(final Render2DEvent event) {
 
+        ScaledResolution sr = new ScaledResolution(mc);
         if (framebuffer != null && outlineFrameBuffer != null && entities.size() > 0) {
             GlStateManager.enableAlpha();
             GlStateManager.alphaFunc(516, 0.0f);
@@ -145,7 +156,7 @@ public class GlowESP extends Module {
 
 
     public void setupGlowUniforms(float dir1, float dir2) {
-        Color color = getColor(1);
+        Color color = getColor();
         glowShader.setUniformi("texture", 0);
         if (seperate.get()) {
             glowShader.setUniformi("textureToCheck", 16);
@@ -153,13 +164,13 @@ public class GlowESP extends Module {
         glowShader.setUniformf("radius", radius.get());
         glowShader.setUniformf("texelSize", 1.0f / mc.displayWidth, 1.0f / mc.displayHeight);
         glowShader.setUniformf("direction", dir1, dir2);
-        glowShader.setUniformf("color", colorRedValue.get(),  colorGreenValue.get(),  colorBlueValue.get());
+        glowShader.setUniformf("color", color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
         glowShader.setUniformf("exposure", (float) (exposure.get() * fadeIn.getOutput()));
         glowShader.setUniformi("avoidTexture", seperate.get() ? 1 : 0);
 
         final FloatBuffer buffer = BufferUtils.createFloatBuffer(256);
         for (int i = 1; i <= radius.getValue(); i++) {
-            buffer.put(MathUtils.INSTANCE.calculateGaussianValue(i, radius.get() / 2));
+            buffer.put(MathUtils.calculateGaussianValue(i, radius.get() / 2));
         }
         buffer.rewind();
 
@@ -168,12 +179,12 @@ public class GlowESP extends Module {
 
 
     public void setupOutlineUniforms(float dir1, float dir2) {
-        Color color = getColor(1);
+        Color color = getColor();
         outlineShader.setUniformi("texture", 0);
         outlineShader.setUniformf("radius", radius.get() / 1.5f);
         outlineShader.setUniformf("texelSize", 1.0f / mc.displayWidth, 1.0f / mc.displayHeight);
         outlineShader.setUniformf("direction", dir1, dir2);
-        outlineShader.setUniformf("color", colorRedValue.get(),  colorGreenValue.get(),  colorBlueValue.get());
+        outlineShader.setUniformf("color", color.getRed() / 255f, color.getGreen() / 255f, color.getBlue() / 255f);
     }
 
     public void renderEntities(float ticks) {
@@ -184,9 +195,13 @@ public class GlowESP extends Module {
         });
     }
 
-    private Color getColor(int index) {
-        final Color clientTheme = ClientTheme.getColor(1);
-        return clientTheme;
+    private Color getColor() {
+        Color[] colors = getClientColors();
+        if (movingcolors.get()) {
+            return colors[0];
+        } else {
+            return ColorUtils.interpolateColorsBackAndForth(15, 0, colors[0], colors[1], hueInterpolation.get());
+        }
     }
 
     public void collectEntities() {
@@ -206,6 +221,34 @@ public class GlowESP extends Module {
                 entities.add(entity);
             }
         }
+    }
+
+    public Color[] getClientColors() {
+        Color firstColor;
+        Color secondColor;
+        switch (colorMode.get().toLowerCase(Locale.getDefault())) {
+            case "light rainbow":
+                firstColor = ColorUtils.rainbowc(15, 1, .6f, 1F, 1F);
+                secondColor = ColorUtils.rainbowc(15, 40, .6f, 1F, 1F);
+                break;
+            case "rainbow":
+                firstColor = ColorUtils.rainbowc(15, 1, 1F, 1F, 1F);
+                secondColor = ColorUtils.rainbowc(15, 40, 1F, 1F, 1F);
+                break;
+            case "double color":
+                firstColor = ColorUtils.interpolateColorsBackAndForth(15, 0, Color.PINK, Color.BLUE, hueInterpolation.get());
+                secondColor = ColorUtils.interpolateColorsBackAndForth(15, 90, Color.PINK, Color.BLUE, hueInterpolation.get());
+                break;
+            case "static":
+                firstColor = new Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get());
+                secondColor = firstColor;
+                break;
+            default:
+                firstColor = new Color(-1);
+                secondColor = new Color(-1);
+                break;
+        }
+        return new Color[]{firstColor, secondColor};
     }
 
 }

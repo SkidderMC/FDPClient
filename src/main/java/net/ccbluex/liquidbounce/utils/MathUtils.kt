@@ -156,6 +156,7 @@ object MathUtils {
         return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble()).toInt()
     }
 
+    @JvmStatic
     fun calculateGaussianValue(x: Float, sigma: Float): Float {
         val PI = 3.141592653
         val output = 1.0 / Math.sqrt(2.0 * PI * (sigma * sigma))

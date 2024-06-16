@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.exploit
+package net.ccbluex.liquidbounce.features.module.modules.other
 
 import me.zywl.fdpclient.FDPClient
 import me.zywl.fdpclient.event.EventTarget
@@ -80,7 +80,4 @@ class ArmorFilter : Module() {
             }
         }
     }
-
-    val suffix: String
-        get() = percentage.value.toString() + "%"
 }
