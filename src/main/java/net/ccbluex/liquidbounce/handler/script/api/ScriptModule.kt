@@ -86,8 +86,6 @@ class ScriptModule(private val moduleObject: JSObject) : Module() {
         when(motionEvent.eventState) {
             EventState.PRE -> callEvent("premotion", motionEvent)
             EventState.POST -> callEvent("postmotion", motionEvent)
-            EventState.SEND -> TODO()
-            EventState.RECEIVE -> TODO()
         }
     }
     @EventTarget

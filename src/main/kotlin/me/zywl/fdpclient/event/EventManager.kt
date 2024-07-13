@@ -6,83 +6,91 @@
 package me.zywl.fdpclient.event
 
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import java.lang.ref.WeakReference
 
 class EventManager : MinecraftInstance() {
 
-    // Event registry
-    private val registry = hashMapOf<Class<out Event>, MutableList<EventHook>>()
+    private val registry = HashMap<Class<out Event>, MutableList<EventHook>>()
+
+//    private val counter = HashMap<Class<out Event>, Int>()
+//    private var lastSyncTime = System.currentTimeMillis()
 
     /**
-     * Registers a listener to handle events.
-     *
-     * @param listener The listener to register.
+     * Register [listener]
      */
     fun registerListener(listener: Listenable) {
-        runCatching {
-            val listenerRef = WeakReference(listener)
-            for (method in listener.javaClass.declaredMethods) {
-                if (method.isAnnotationPresent(EventTarget::class.java) && method.parameterTypes.size == 1) {
-                    method.isAccessible = true
+        for (method in listener.javaClass.declaredMethods) {
+            if (method.isAnnotationPresent(EventTarget::class.java) && method.parameterTypes.size == 1) {
+                try {
+                    if (!method.isAccessible) {
+                        method.isAccessible = true
+                    }
 
-                    val eventClass = method.parameterTypes[0] as? Class<out Event>
-                    requireNotNull(eventClass) { "The method parameter is not a subclass of Event" }
-
+                    val eventClass = method.parameterTypes[0] as Class<out Event>
                     val eventTarget = method.getAnnotation(EventTarget::class.java)
+
                     val invokableEventTargets = registry.getOrPut(eventClass) { mutableListOf() }
-                    val eventHook = EventHook(listenerRef, method, eventTarget)
-                    invokableEventTargets.add(eventHook)
-                    invokableEventTargets.sortByDescending { it.getPriority() } // Sort by priority
+                    invokableEventTargets.add(EventHook(listener, method, eventTarget))
+                    registry[eventClass] = invokableEventTargets
+                } catch (t: Throwable) {
+                    t.printStackTrace()
                 }
             }
-        }.onFailure { e ->
-            logError("Error while registering the listener", e)
         }
     }
 
     /**
-     * Unregisters a listener.
+     * Unregister listener
      *
-     * @param listenable Listener to unregister.
+     * @param listenable for unregister
      */
     fun unregisterListener(listenable: Listenable) {
-        runCatching {
-            registry.values.forEach { it.removeIf { hook -> hook.getListener() == null || hook.getListener() === listenable } }
-            registry.entries.removeIf { it.value.isEmpty() }
-        }.onFailure { e ->
-            logError("Error while unregistering the listener", e)
+        for ((key, targets) in registry) {
+            targets.removeIf { it.eventClass == listenable }
+
+            registry[key] = targets
         }
     }
+
+//    private fun printProfiler() {
+//        println("--- Event Profiler(${Date()}) ---")
+//
+//        var total = 0
+//        for((key, value) in counter.toList().sortedBy { it.second }) {
+//            println("${key.simpleName}: $value")
+//            total += value
+//        }
+//        println("total: $total")
+//
+//        counter.clear()
+//    }
+
     /**
-     * Calls an event for the listeners.
+     * Call event to listeners
      *
-     * @param event Event to be called.
+     * @param event to call
      */
     fun callEvent(event: Event) {
-        runCatching {
-            registry[event.javaClass]?.let { targets ->
-                targets.forEach { eventHook ->
-                    eventHook.invokeEvent(event)
+//        if(System.currentTimeMillis() - lastSyncTime > 1000) {
+//            printProfiler()
+//            lastSyncTime = System.currentTimeMillis()
+//        }
+//        counter[event.javaClass] = counter.getOrDefault(event.javaClass, 0) + 1
+
+        val targets = registry[event.javaClass] ?: return
+        try {
+            for (invokableEventTarget in targets) {
+                try {
+                    if (!invokableEventTarget.eventClass.handleEvents() && !invokableEventTarget.isIgnoreCondition) {
+                        continue
+                    }
+
+                    invokableEventTarget.method.invoke(invokableEventTarget.eventClass, event)
+                } catch (throwable: Throwable) {
+                    throwable.printStackTrace()
                 }
             }
-        }.onFailure { e ->
-            logError("Error while calling the event", e)
+        }catch (e :Exception){
+            e.printStackTrace();
         }
-    }
-
-    /**
-     * Logs an error.
-     *
-     * @param message Error message.
-     * @param throwable Associated exception.
-     */
-    private fun logError(message: String, throwable: Throwable) {
-        logger.error(message, throwable)
-    }
-
-    companion object {
-        private val logger: Logger = LoggerFactory.getLogger(EventManager::class.java)
     }
 }

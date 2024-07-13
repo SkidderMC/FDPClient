@@ -1221,7 +1221,7 @@ object KillAura : Module() {
     fun onJump(event: JumpEvent) {
         if (jumpFixValue.get()) {
             if (discoveredTargets.isNotEmpty()) {
-                event.yaw = RotationUtils.serverRotation!!.yaw
+                event.motion = RotationUtils.serverRotation!!.yaw
             }
         }
     }
