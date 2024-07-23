@@ -1,15 +1,16 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.utils.render.shader.shaders
 
 import net.ccbluex.liquidbounce.utils.render.shader.Shader
-import org.lwjgl.opengl.GL20
+import org.lwjgl.opengl.GL20.glUniform1f
+import org.lwjgl.opengl.GL20.glUniform2f
 import java.io.Closeable
 
-class RainbowFontShader : Shader("rainbow_font_shader.frag"), Closeable {
+object RainbowFontShader : Shader("rainbow_font_shader.frag"), Closeable {
     var isInUse = false
         private set
 
@@ -23,8 +24,8 @@ class RainbowFontShader : Shader("rainbow_font_shader.frag"), Closeable {
     }
 
     override fun updateUniforms() {
-        GL20.glUniform2f(getUniform("strength"), strengthX, strengthY)
-        GL20.glUniform1f(getUniform("offset"), offset)
+        glUniform2f(getUniform("strength"), strengthX, strengthY)
+        glUniform1f(getUniform("offset"), offset)
     }
 
     override fun startShader() {
@@ -44,23 +45,16 @@ class RainbowFontShader : Shader("rainbow_font_shader.frag"), Closeable {
             stopShader()
     }
 
-    companion object {
-        @JvmField
-        val INSTANCE = RainbowFontShader()
+    @Suppress("NOTHING_TO_INLINE")
+    inline fun begin(enable: Boolean, x: Float, y: Float, offset: Float): RainbowFontShader {
+        if (enable) {
+            strengthX = x
+            strengthY = y
+            this.offset = offset
 
-        @Suppress("NOTHING_TO_INLINE")
-        inline fun begin(enable: Boolean, x: Float, y: Float, offset: Float): RainbowFontShader {
-            val instance = INSTANCE
-
-            if (enable) {
-                instance.strengthX = x
-                instance.strengthY = y
-                instance.offset = offset
-
-                instance.startShader()
-            }
-
-            return instance
+            startShader()
         }
+
+        return this
     }
 }

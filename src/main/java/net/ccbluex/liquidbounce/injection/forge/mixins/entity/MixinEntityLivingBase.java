@@ -1,19 +1,24 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
-import me.zywl.fdpclient.FDPClient;
-import me.zywl.fdpclient.event.JumpEvent;
-import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
+import net.ccbluex.liquidbounce.event.EventManager;
+import net.ccbluex.liquidbounce.event.JumpEvent;
+import net.ccbluex.liquidbounce.features.module.modules.movement.AirJump;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
-import net.ccbluex.liquidbounce.features.module.modules.player.DelayRemover;
-import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
-import net.ccbluex.liquidbounce.handler.protocol.api.ProtocolFixer;
+import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
+import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
+import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
+import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
+import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.*;
+import net.ccbluex.liquidbounce.utils.MovementUtils;
+import net.ccbluex.liquidbounce.utils.Rotation;
+import net.ccbluex.liquidbounce.utils.RotationUtils;
+import net.ccbluex.liquidbounce.utils.extensions.MathExtensionsKt;
 import net.minecraft.block.Block;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
@@ -25,182 +30,148 @@ import net.minecraft.util.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Constant;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Objects;
 
 @Mixin(EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends MixinEntity {
 
-    /**
-     * The Is jumping.
-     */
     @Shadow
-    protected boolean isJumping;
-    /**
-     * The Jump ticks.
-     */
+    public float rotationYawHead;
+    @Shadow
+    public boolean isJumping;
     @Shadow
     public int jumpTicks;
 
     @Shadow
-    public float moveStrafing;
-
-    @Shadow
-    public float moveForward;
-
-    /**
-     * Gets jump upwards motion.
-     *
-     * @return the jump upwards motion
-     */
-    @Shadow
     protected abstract float getJumpUpwardsMotion();
 
-    /**
-     * Gets active potion effect.
-     *
-     * @param potionIn the potion in
-     * @return the active potion effect
-     */
     @Shadow
     public abstract PotionEffect getActivePotionEffect(Potion potionIn);
 
-    /**
-     * Is potion active boolean.
-     *
-     * @param potionIn the potion in
-     * @return the boolean
-     */
     @Shadow
     public abstract boolean isPotionActive(Potion potionIn);
 
-    /**
-     * On living update.
-     */
     @Shadow
     public void onLivingUpdate() {
     }
 
-    /**
-     * Update fall state.
-     *
-     * @param y          the y
-     * @param onGroundIn the on ground in
-     * @param blockIn    the block in
-     * @param pos        the pos
-     */
     @Shadow
     protected abstract void updateFallState(double y, boolean onGroundIn, Block blockIn, BlockPos pos);
 
-    /**
-     * Gets health.
-     *
-     * @return the health
-     */
     @Shadow
     public abstract float getHealth();
 
-    /**
-     * Gets held item.
-     *
-     * @return the held item
-     */
     @Shadow
     public abstract ItemStack getHeldItem();
 
-    /**
-     * Update ai tick.
-     */
     @Shadow
     protected abstract void updateAITick();
 
-    @Shadow
-    protected void updateEntityActionState() {
-    }
-
     /**
-     * Update distance float.
-     *
-     * @author opZywl
-     * @reason Rotation
+     * @author CCBlueX
      */
     @Overwrite
     protected void jump() {
-        final JumpEvent jumpEvent = new JumpEvent(this.getJumpUpwardsMotion(), this.rotationYaw);
-        FDPClient.eventManager.callEvent(jumpEvent);
-        if (jumpEvent.isCancelled())
-            return;
+        final JumpEvent jumpEvent = new JumpEvent(getJumpUpwardsMotion());
+        EventManager.INSTANCE.callEvent(jumpEvent);
+        if (jumpEvent.isCancelled()) return;
 
-        this.motionY = jumpEvent.getMotion();
+        motionY = jumpEvent.getMotion();
 
-        if (this.isPotionActive(Potion.jump))
-            this.motionY += (float) (this.getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F;
+        if (isPotionActive(Potion.jump))
+            motionY += (float) (getActivePotionEffect(Potion.jump).getAmplifier() + 1) * 0.1F;
 
-        if (this.isSprinting()) {
-            float f = jumpEvent.getYaw() * 0.017453292F;
+        if (isSprinting()) {
+            float fixedYaw = this.rotationYaw;
 
-            this.motionX -= (MathHelper.sin(f) * 0.2F);
-            this.motionZ += (MathHelper.cos(f) * 0.2F);
+            final RotationUtils rotationUtils = RotationUtils.INSTANCE;
+            final Rotation currentRotation = rotationUtils.getCurrentRotation();
+            final RotationUtils.RotationData rotationData = rotationUtils.getRotationData();
+            if (currentRotation != null && rotationData != null && rotationData.getStrafe()) {
+                fixedYaw = currentRotation.getYaw();
+            }
+
+            final Sprint sprint = Sprint.INSTANCE;
+            if (sprint.handleEvents() && sprint.getAllDirections() && sprint.getJumpDirections()) {
+                fixedYaw += MathExtensionsKt.toDegreesF(MovementUtils.INSTANCE.getDirection()) - this.rotationYaw;
+            }
+
+            final float f = fixedYaw * 0.017453292F;
+            motionX -= MathHelper.sin(f) * 0.2F;
+            motionZ += MathHelper.cos(f) * 0.2F;
         }
 
-        this.isAirBorne = true;
+        isAirBorne = true;
     }
 
     @Inject(method = "onLivingUpdate", at = @At("HEAD"))
     private void headLiving(CallbackInfo callbackInfo) {
-        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(DelayRemover.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(DelayRemover.class)).getJumpDelay().get())
-            jumpTicks = Objects.requireNonNull(FDPClient.moduleManager.getModule(DelayRemover.class)).getJumpDelayTicks().get();
+        if (NoJumpDelay.INSTANCE.handleEvents() || Scaffold.INSTANCE.handleEvents() && Tower.INSTANCE.getTowerModeValues().equals("Pulldown")) jumpTicks = 0;
     }
 
     @Inject(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;isJumping:Z", ordinal = 1))
     private void onJumpSection(CallbackInfo callbackInfo) {
-        final Jesus jesus = FDPClient.moduleManager.getModule(Jesus.class);
+        if (AirJump.INSTANCE.handleEvents() && isJumping && jumpTicks == 0) {
+            jump();
+            jumpTicks = 10;
+        }
 
-        if (Objects.requireNonNull(jesus).getState() && !isJumping && !isSneaking() && isInWater() &&
-                jesus.getModeValue().equals("Legit")) {
-            this.updateAITick();
+        final Jesus liquidWalk = Jesus.INSTANCE;
+
+        if (liquidWalk.handleEvents() && !isJumping && !isSneaking() && isInWater() && liquidWalk.getMode().equals("Swim")) {
+            updateAITick();
         }
     }
 
     @Inject(method = "getLook", at = @At("HEAD"), cancellable = true)
     private void getLook(CallbackInfoReturnable<Vec3> callbackInfoReturnable) {
+        //noinspection ConstantConditions
         if (((EntityLivingBase) (Object) this) instanceof EntityPlayerSP)
-            callbackInfoReturnable.setReturnValue(getVectorForRotation(this.rotationPitch, this.rotationYaw));
-    }
-
-    @Inject(method = "isPotionActive(Lnet/minecraft/potion/Potion;)Z", at = @At("HEAD"), cancellable = true)
-    private void isPotionActive(Potion p_isPotionActive_1_, final CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        final VanillaTweaks camera = FDPClient.moduleManager.getModule(VanillaTweaks.class);
-
-        if ((p_isPotionActive_1_ == Potion.confusion || p_isPotionActive_1_ == Potion.blindness) && Objects.requireNonNull(camera).getState() && camera.getAntiBlindValue().get() && camera.getConfusionEffectValue().get())
-            callbackInfoReturnable.setReturnValue(false);
-    }
-
-    @ModifyConstant(method = "onLivingUpdate", constant = @Constant(doubleValue = 0.005D))
-    private double ViaVersion_MovementThreshold(double constant) {
-        if (ProtocolFixer.newerThan1_8())
-            return 0.003D;
-        return 0.005D;
+            callbackInfoReturnable.setReturnValue(getVectorForRotation(rotationPitch, rotationYaw));
     }
 
     /**
-     * @author Liuli
-     * @reason Get Arm Swing Animation End
+     * Inject head yaw rotation modification
      */
-    @Overwrite
-    private int getArmSwingAnimationEnd() {
-        int speed = this.isPotionActive(Potion.digSpeed) ? 6 - (1 + this.getActivePotionEffect(Potion.digSpeed).getAmplifier()) : (this.isPotionActive(Potion.digSlowdown) ? 6 + (1 + this.getActivePotionEffect(Potion.digSlowdown).getAmplifier()) * 2 : 6);
+    @Inject(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EntityLivingBase;updateEntityActionState()V", shift = At.Shift.AFTER))
+    private void hookHeadRotations(CallbackInfo ci) {
+        Rotation rotation = Rotations.INSTANCE.getRotation(false);
 
-        if (this.equals(Minecraft.getMinecraft().thePlayer)) {
-            speed = (int) (speed * Animations.INSTANCE.getSwingSpeedValue().get());
-        }
+        //noinspection ConstantValue
+        this.rotationYawHead = ((EntityLivingBase) (Object) this) instanceof EntityPlayerSP && Rotations.INSTANCE.shouldUseRealisticMode() && rotation != null ? rotation.getYaw() : this.rotationYawHead;
+    }
 
-        return speed;
+    /**
+     * Inject body rotation modification
+     */
+    @Redirect(method = "onUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;rotationYaw:F", ordinal = 0))
+    private float hookBodyRotationsA(EntityLivingBase instance) {
+        Rotation rotation = Rotations.INSTANCE.getRotation(false);
+
+        return instance instanceof EntityPlayerSP && Rotations.INSTANCE.shouldUseRealisticMode() && rotation != null ? rotation.getYaw() : instance.rotationYaw;
+    }
+
+
+    /**
+     * Inject body rotation modification
+     */
+    @Redirect(method = "updateDistance", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;rotationYaw:F"))
+    private float hookBodyRotationsB(EntityLivingBase instance) {
+        Rotation rotation = Rotations.INSTANCE.getRotation(false);
+
+        return instance instanceof EntityPlayerSP && Rotations.INSTANCE.shouldUseRealisticMode() && rotation != null ? rotation.getYaw() : instance.rotationYaw;
+    }
+
+    /**
+     * @author SuperSkidder
+     * @reason Animations swing speed
+     */
+    @ModifyConstant(method = "getArmSwingAnimationEnd", constant = @Constant(intValue = 6))
+    private int injectAnimationsModule(int constant) {
+        Animations module = Animations.INSTANCE;
+
+        return module.handleEvents() ? (2 + (20 - module.getSwingSpeed())) : constant;
     }
 }

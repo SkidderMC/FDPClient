@@ -5,28 +5,25 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
+import net.ccbluex.liquidbounce.FDPClient.discordRPC
+import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.special.discord.DiscordRPC
-import me.zywl.fdpclient.value.impl.BoolValue
+import net.ccbluex.liquidbounce.value.BoolValue
 
-@ModuleInfo(name = "DiscordRPC", category = ModuleCategory.CLIENT, defaultOn = true)
-class DiscordRPCModule : Module() {
+object DiscordRPCModule : Module("DiscordRPC", Category.CLIENT, hideModule = false) {
 
-    val showServerValue = BoolValue("ShowServer", true)
+    val showServerValue = BoolValue("ShowServer", false)
     val showNameValue = BoolValue("ShowName", true)
     val showHealthValue = BoolValue("ShowHealth", false)
     val showOtherValue = BoolValue("ShowOther", false)
     val showModuleValue = BoolValue("ShowModule", false)
-    val animated = BoolValue("ShouldAnimate?", true)
-    val gato = BoolValue("BreadRetard", false)
+    val animated = BoolValue("ShouldAnimate", true)
 
     override fun onEnable() {
-        DiscordRPC.run()
+        discordRPC.run()
     }
 
     override fun onDisable() {
-        DiscordRPC.stop()
+        discordRPC.stop()
     }
 }

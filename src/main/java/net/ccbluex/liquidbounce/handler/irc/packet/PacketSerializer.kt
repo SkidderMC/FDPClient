@@ -1,15 +1,15 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.handler.irc.packet
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
-import me.zywl.fdpclient.config.FileManager.Companion.PRETTY_GSON
 import net.ccbluex.liquidbounce.handler.irc.packet.packets.Packet
+import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
 import java.lang.reflect.Type
 
 /**
@@ -45,7 +45,7 @@ class PacketSerializer : JsonSerializer<Packet> {
      */
     override fun serialize(src: Packet, typeOfSrc: Type, context: JsonSerializationContext): JsonElement {
         val packetName = packetRegistry.getOrDefault(src.javaClass, "UNKNOWN")
-        val serializedPacket = SerializedPacket(packetName, if(src.javaClass.constructors.none { it.parameterCount != 0 }) null else src )
+        val serializedPacket = SerializedPacket(packetName, if (src.javaClass.constructors.none { it.parameterCount != 0 }) null else src )
 
         return PRETTY_GSON.toJsonTree(serializedPacket)
     }

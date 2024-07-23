@@ -3,344 +3,209 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.font;
+package net.ccbluex.liquidbounce.ui.font
 
-import net.ccbluex.liquidbounce.utils.ClientUtils;
-import net.ccbluex.liquidbounce.utils.MinecraftInstance;
-import net.minecraft.client.gui.FontRenderer;
+import com.google.gson.JsonArray
+import com.google.gson.JsonNull
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
+import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
+import net.ccbluex.liquidbounce.file.FileManager.fontsDir
+import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.misc.HttpUtils.download
+import net.minecraft.client.gui.FontRenderer
+import java.awt.Font
+import java.io.File
+import java.io.IOException
+import java.nio.file.Paths
+import java.util.zip.ZipInputStream
+import kotlin.io.path.inputStream
 
-import java.awt.*;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
-
-public class Fonts {
+object Fonts : MinecraftInstance() {
 
     @FontDetails(fontName = "Minecraft Font")
-    public static final FontRenderer minecraftFont = MinecraftInstance.mc.fontRendererObj;
-    private static final List<GameFontRenderer> CUSTOM_FONT_RENDERERS = new ArrayList<>();
+    val minecraftFont: FontRenderer = mc.fontRendererObj
 
-    // ROBOTO
-    @FontDetails(fontName = "regular", fontSize = 28)
-    public static GameFontRenderer font28;
-    @FontDetails(fontName = "regular", fontSize = 32)
-    public static GameFontRenderer font32;
-    @FontDetails(fontName = "regular", fontSize = 35)
-    public static GameFontRenderer font35;
-    @FontDetails(fontName = "regular", fontSize = 40)
-    public static GameFontRenderer font40;
-    @FontDetails(fontName = "regular", fontSize = 72)
-    public static GameFontRenderer font72;
-    @FontDetails(fontName = "regular", fontSize = 30)
-    public static GameFontRenderer fontSmall;
-    @FontDetails(fontName = "regular", fontSize = 24)
-    public static GameFontRenderer fontTiny;
-    @FontDetails(fontName = "regular", fontSize = 52)
-    public static GameFontRenderer fontLarge;
+    @FontDetails(fontName = "Roboto Medium", fontSize = 35)
+    lateinit var font35: GameFontRenderer
 
-    // BOLD
-    @FontDetails(fontName = "Roboto Bold", fontSize = 26)
-    public static GameFontRenderer fontBold26;
-    @FontDetails(fontName = "Roboto Bold", fontSize = 32)
-    public static GameFontRenderer fontBold32;
-    @FontDetails(fontName = "Roboto Bold", fontSize = 35)
-    public static GameFontRenderer fontBold35;
-    @FontDetails(fontName = "Roboto Bold", fontSize = 40)
-    public static GameFontRenderer fontBold40;
+    @FontDetails(fontName = "Roboto Medium", fontSize = 40)
+    lateinit var font40: GameFontRenderer
 
-    // SFUI
-    @FontDetails(fontName = "SFUI Regular", fontSize = 16)
-    public static GameFontRenderer fontSFUI16;
-    @FontDetails(fontName = "SFUI Regular", fontSize = 18)
-    public static GameFontRenderer fontSFUI18;
-    @FontDetails(fontName = "SFUI Regular", fontSize = 32)
-    public static GameFontRenderer fontSFUI32;
-    @FontDetails(fontName = "SFUI Regular", fontSize = 35)
-    public static GameFontRenderer fontSFUI35;
-    @FontDetails(fontName = "SFUI Regular", fontSize = 37)
-    public static GameFontRenderer fontSFUI37;
-    @FontDetails(fontName = "SFUI Regular", fontSize = 40)
-    public static GameFontRenderer fontSFUI40;
+    @FontDetails(fontName = "Roboto Bold", fontSize = 180)
+    lateinit var fontBold180: GameFontRenderer
 
-    // TAHOMA
-    @FontDetails(fontName = "Tahoma Bold", fontSize = 35)
-    public static GameFontRenderer fontTahoma;
-    @FontDetails(fontName = "Tahoma Bold", fontSize = 30)
-    public static GameFontRenderer fontTahoma30;
-    public static TTFFontRenderer fontTahomaSmall;
+    @FontDetails(fontName = "Roboto Medium", fontSize = 30)
+    lateinit var fontSmall: GameFontRenderer
 
-    // ICONS
-    @FontDetails(fontName = "Check", fontSize = 42)
-    public static GameFontRenderer fontCheck42;
-    @FontDetails(fontName = "ICONFONT", fontSize = 50)
-    public static GameFontRenderer ICONFONT_50;
+    @FontDetails(fontName = "Roboto Medium", fontSize = 24)
+    lateinit var fontTiny: GameFontRenderer
 
-    // SFAPPLE
-    @FontDetails(fontName = "SFApple", fontSize = 40)
-    public static GameFontRenderer SFApple40;
-    @FontDetails(fontName = "SFApple", fontSize = 50)
-    public static GameFontRenderer SFApple50;
+    @FontDetails(fontName = "Roboto Medium", fontSize = 20)
+    lateinit var font20: GameFontRenderer
 
-    public static void loadFonts() {
-        // ROBOTO
-        font28 = new GameFontRenderer(getRobotoMedium(28));
-        font32 = new GameFontRenderer(getRobotoMedium(32));
-        font35 = new GameFontRenderer(getRobotoMedium(35));
-        font40 = new GameFontRenderer(getRobotoMedium(40));
-        font72 = new GameFontRenderer(getRobotoMedium(72));
+    @FontDetails(fontName = "Roboto Medium", fontSize = 15)
+    lateinit var font15: GameFontRenderer
 
-        fontSmall = new GameFontRenderer(getRobotoMedium(30));
-        fontTiny = new GameFontRenderer(getRobotoMedium(24));
-        fontLarge = new GameFontRenderer(getRobotoMedium(60));
+    private val CUSTOM_FONT_RENDERERS = hashMapOf<FontInfo, FontRenderer>()
 
-        // ROBOTO BOLD
-        fontBold26 = new GameFontRenderer(getRobotoBold(26));
-        fontBold32 = new GameFontRenderer(getRobotoBold(32));
-        fontBold35 = new GameFontRenderer(getRobotoBold(35));
-        fontBold40 = new GameFontRenderer(getRobotoBold(40));
+    fun loadFonts() {
+        val l = System.currentTimeMillis()
+        LOGGER.info("Loading Fonts.")
 
-        // SFUI
-        fontSFUI16 = new GameFontRenderer(getSFUI(16));
-        fontSFUI18 = new GameFontRenderer(getSFUI(18));
-        fontSFUI32 = new GameFontRenderer(getSFUI(32));
-        fontSFUI35 = new GameFontRenderer(getSFUI(35));
-        fontSFUI37 = new GameFontRenderer(getSFUI(37));
-        fontSFUI40 = new GameFontRenderer(getSFUI(40));
+        downloadFonts()
+        font35 = GameFontRenderer(getFont("Roboto-Medium.ttf", 35))
+        font40 = GameFontRenderer(getFont("Roboto-Medium.ttf", 40))
+        fontBold180 = GameFontRenderer(getFont("Roboto-Bold.ttf", 180))
+        fontSmall = GameFontRenderer(getFont("Roboto-Medium.ttf", 30))
+        fontTiny = GameFontRenderer(getFont("Roboto-Medium.ttf", 24))
+        font20 = GameFontRenderer(getFont("Roboto-Medium.ttf", 20))
+        font15 = GameFontRenderer(getFont("Roboto-Medium.ttf", 15))
 
-        // TAHOMA
-        fontTahoma = new GameFontRenderer(getTahomaBold(35));
-        fontTahoma30 = new GameFontRenderer(getTahomaBold(30));
-        fontTahomaSmall = new TTFFontRenderer(getTahoma(11));
-
-        // ICONS
-        ICONFONT_50 = new GameFontRenderer(getIcons(50));
-        fontCheck42 = new GameFontRenderer(getCheck(42));
-
-        // SFAPPLE
-        SFApple40 = new GameFontRenderer(getSFApple(40));
-        SFApple50 = new GameFontRenderer(getSFApple(50));
-
-        ClientUtils.getLogger().info("Loaded Fonts");
-    }
-
-    public static FontRenderer getFontRenderer(final String name, final int size) {
-        for (final Field field : Fonts.class.getDeclaredFields()) {
-            try {
-                field.setAccessible(true);
-
-                final Object o = field.get(null);
-
-                if (o instanceof FontRenderer) {
-                    final FontDetails fontDetails = field.getAnnotation(FontDetails.class);
-
-                    if (fontDetails.fontName().equals(name) && fontDetails.fontSize() == size)
-                        return (FontRenderer) o;
+        try {
+            CUSTOM_FONT_RENDERERS.clear()
+            val fontsFile = File(fontsDir, "fonts.json")
+            if (fontsFile.exists()) {
+                val jsonElement = JsonParser().parse(fontsFile.bufferedReader())
+                if (jsonElement is JsonNull) return
+                val jsonArray = jsonElement as JsonArray
+                for (element in jsonArray) {
+                    if (element is JsonNull) return
+                    val fontObject = element as JsonObject
+                    val font = getFont(fontObject["fontFile"].asString, fontObject["fontSize"].asInt)
+                    CUSTOM_FONT_RENDERERS[FontInfo(font)] = GameFontRenderer(font)
                 }
-            } catch (final IllegalAccessException e) {
-                e.printStackTrace();
+            } else {
+                fontsFile.createNewFile()
+
+                fontsFile.writeText(PRETTY_GSON.toJson(JsonArray()))
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
-        for (final GameFontRenderer liquidFontRenderer : CUSTOM_FONT_RENDERERS) {
-            final Font font = liquidFontRenderer.getDefaultFont().getFont();
-
-            if (font.getName().equals(name) && font.getSize() == size)
-                return liquidFontRenderer;
-        }
-
-        return minecraftFont;
+        LOGGER.info("Loaded Fonts. (" + (System.currentTimeMillis() - l) + "ms)")
     }
 
-    public static Object[] getFontDetails(final FontRenderer fontRenderer) {
-        for (final Field field : Fonts.class.getDeclaredFields()) {
+    private fun downloadFonts() {
+        try {
+            val outputFile = File(fontsDir, "roboto.zip")
+            if (!outputFile.exists()) {
+                LOGGER.info("Downloading fonts...")
+                download("$CLIENT_CLOUD/fonts/Roboto.zip", outputFile)
+                LOGGER.info("Extract fonts...")
+                extractZip(outputFile.path, fontsDir.path)
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    fun getFontRenderer(name: String, size: Int): FontRenderer {
+        for (field in Fonts::class.java.declaredFields) {
             try {
-                field.setAccessible(true);
-
-                final Object o = field.get(null);
-
-                if (o.equals(fontRenderer)) {
-                    final FontDetails fontDetails = field.getAnnotation(FontDetails.class);
-
-                    return new Object[]{fontDetails.fontName(), fontDetails.fontSize()};
+                field.isAccessible = true
+                val obj = field[null]
+                if (obj is FontRenderer) {
+                    val fontDetails = field.getAnnotation(FontDetails::class.java)
+                    if (fontDetails.fontName == name && fontDetails.fontSize == size) return obj
                 }
-            } catch (final IllegalAccessException e) {
-                e.printStackTrace();
+            } catch (e: IllegalAccessException) {
+                e.printStackTrace()
             }
         }
-
-        if (fontRenderer instanceof GameFontRenderer) {
-            final Font font = ((GameFontRenderer) fontRenderer).getDefaultFont().getFont();
-
-            return new Object[]{font.getName(), font.getSize()};
-        }
-
-        return null;
+        return CUSTOM_FONT_RENDERERS.getOrDefault(FontInfo(name, size), minecraftFont)
     }
 
-    public static List<FontRenderer> getFonts() {
-        final List<FontRenderer> fonts = new ArrayList<>();
-
-        for (final Field fontField : Fonts.class.getDeclaredFields()) {
+    fun getFontDetails(fontRenderer: FontRenderer): FontInfo? {
+        for (field in Fonts::class.java.declaredFields) {
             try {
-                fontField.setAccessible(true);
-
-                final Object fontObj = fontField.get(null);
-
-                if (fontObj instanceof FontRenderer) fonts.add((FontRenderer) fontObj);
-            } catch (final IllegalAccessException e) {
-                e.printStackTrace();
+                field.isAccessible = true
+                val obj = field[null]
+                if (obj == fontRenderer) {
+                    val fontDetails = field.getAnnotation(FontDetails::class.java)
+                    return FontInfo(fontDetails.fontName, fontDetails.fontSize)
+                }
+            } catch (e: IllegalAccessException) {
+                e.printStackTrace()
             }
         }
-
-        fonts.addAll(CUSTOM_FONT_RENDERERS);
-
-        return fonts;
-    }
-
-    private static Font getSFUI(final int size) {
-        try {
-            InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/sfui.ttf");
-
-            if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + "sfui.ttf");
-            }
-
-            Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size);
-            inputStream.close();
-            return awtClientFont;
-        } catch (final Exception e) {
-            e.printStackTrace();
-            return new Font("sfui", Font.PLAIN, size);
+        for ((key, value) in CUSTOM_FONT_RENDERERS) {
+            if (value === fontRenderer) return key
         }
+        return null
     }
 
-    private static Font getRobotoMedium(final int size) {
-        try {
-            InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/regular.ttf");
-
-            if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + "regular.ttf");
+    val fonts: List<FontRenderer>
+        get() {
+            val fonts = mutableListOf<FontRenderer>()
+            for (fontField in Fonts::class.java.declaredFields) {
+                try {
+                    fontField.isAccessible = true
+                    val fontObj = fontField[null]
+                    if (fontObj is FontRenderer) fonts += fontObj
+                } catch (e: IllegalAccessException) {
+                    e.printStackTrace()
+                }
             }
-
-            Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size);
-            inputStream.close();
-            return awtClientFont;
-        } catch (final Exception e) {
-            e.printStackTrace();
-            return new Font("regular", Font.PLAIN, size);
+            fonts += CUSTOM_FONT_RENDERERS.values
+            return fonts
         }
-    }
 
-    private static Font getSFApple(final int size) {
+    private fun getFont(fontName: String, size: Int) =
         try {
-            InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/SFApple.ttf");
+            val inputStream = File(fontsDir, fontName).inputStream()
+            var awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream)
+            awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size.toFloat())
+            inputStream.close()
+            awtClientFont
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Font("default", Font.PLAIN, size)
+        }
 
-            if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + "SFApple");
+    private fun extractZip(zipFile: String, outputFolder: String) {
+        val buffer = ByteArray(1024)
+        try {
+            val folder = File(outputFolder)
+            if (!folder.exists()) folder.mkdir()
+            val zipInputStream = ZipInputStream(Paths.get(zipFile).inputStream())
+            var zipEntry = zipInputStream.nextEntry
+            while (zipEntry != null) {
+                val newFile = File(outputFolder + File.separator + zipEntry.name)
+                File(newFile.parent).mkdirs()
+                val fileOutputStream = newFile.outputStream()
+                var i: Int
+                while (zipInputStream.read(buffer).also { i = it } > 0) fileOutputStream.write(buffer, 0, i)
+                fileOutputStream.close()
+                zipEntry = zipInputStream.nextEntry
             }
-
-            Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size);
-            inputStream.close();
-            return awtClientFont;
-        } catch (final Exception e) {
-            e.printStackTrace();
-            return new Font("SFApple", Font.PLAIN, size);
+            zipInputStream.closeEntry()
+            zipInputStream.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
     }
 
-    private static Font getRobotoBold(final int size) {
-        try {
-            InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/Roboto-Bold.ttf");
+    class FontInfo(val name: String?, val fontSize: Int) {
 
-            if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + "Roboto-Bold.ttf");
-            }
+        constructor(font: Font) : this(font.name, font.size)
 
-            Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size);
-            inputStream.close();
-            return awtClientFont;
-        } catch (final Exception e) {
-            e.printStackTrace();
-            return new Font("Roboto-Bold", Font.PLAIN, size);
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || javaClass != other.javaClass) return false
+
+            val fontInfo = other as FontInfo
+
+            return fontSize == fontInfo.fontSize && name == fontInfo.name
         }
-    }
 
-    private static Font getTahomaBold(final int size) {
-        try {
-            InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/TahomaBold.ttf");
-
-            if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + "TahomaBold.ttf");
-            }
-
-            Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size);
-            inputStream.close();
-            return awtClientFont;
-        } catch (final Exception e) {
-            e.printStackTrace();
-            return new Font("TahomaBold", Font.PLAIN, size);
-        }
-    }
-
-    private static Font getTahoma(final int size) {
-        try {
-            InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/Tahoma.ttf");
-
-            if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + "Tahoma.ttf");
-            }
-
-            Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size);
-            inputStream.close();
-            return awtClientFont;
-        } catch (final Exception e) {
-            e.printStackTrace();
-            return new Font("Tahoma", Font.PLAIN, size);
-        }
-    }
-
-
-    private static Font getIcons(final int size) {
-        try {
-            InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/stylesicons.ttf");
-
-            if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + "stylesicons.ttf");
-            }
-
-            Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size);
-            inputStream.close();
-            return awtClientFont;
-        } catch (final Exception e) {
-            e.printStackTrace();
-            return new Font("stylesicons", Font.PLAIN, size);
-        }
-    }
-
-    private static Font getCheck(final int size) {
-        try {
-            InputStream inputStream = Fonts.class.getResourceAsStream("/assets/minecraft/fdpclient/font/check.ttf");
-
-            if (inputStream == null) {
-                throw new FileNotFoundException("Font file not found: " + "check.ttf");
-            }
-
-            Font awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size);
-            inputStream.close();
-            return awtClientFont;
-        } catch (final Exception e) {
-            e.printStackTrace();
-            return new Font("check", Font.PLAIN, size);
+        override fun hashCode(): Int {
+            var result = name?.hashCode() ?: 0
+            result = 31 * result + fontSize
+            return result
         }
     }
 }

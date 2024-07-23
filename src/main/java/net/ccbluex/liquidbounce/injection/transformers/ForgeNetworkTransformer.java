@@ -1,17 +1,17 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.injection.transformers;
 
-import net.ccbluex.liquidbounce.features.special.spoof.ClientSpoofHandler;
-import net.ccbluex.liquidbounce.handler.script.remapper.injection.utils.NodeUtils;
-import net.ccbluex.liquidbounce.utils.ClassUtils;
-import net.minecraft.client.Minecraft;
+import net.ccbluex.liquidbounce.handler.payload.ClientFixes;
+import net.ccbluex.liquidbounce.script.remapper.injection.utils.ClassUtils;
+import net.ccbluex.liquidbounce.script.remapper.injection.utils.NodeUtils;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.tree.*;
 
+import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
 import static org.objectweb.asm.Opcodes.*;
 
 /**
@@ -46,7 +46,7 @@ public class ForgeNetworkTransformer implements IClassTransformer {
                 });
 
                 return ClassUtils.INSTANCE.toBytes(classNode);
-            } catch (final Throwable throwable) {
+            } catch(final Throwable throwable) {
                 throwable.printStackTrace();
             }
         }
@@ -70,7 +70,7 @@ public class ForgeNetworkTransformer implements IClassTransformer {
                 });
 
                 return ClassUtils.INSTANCE.toBytes(classNode);
-            } catch (final Throwable throwable) {
+            } catch(final Throwable throwable) {
                 throwable.printStackTrace();
             }
         }
@@ -79,6 +79,6 @@ public class ForgeNetworkTransformer implements IClassTransformer {
     }
 
     public static boolean returnMethod() {
-        return ClientSpoofHandler.enabled && !Minecraft.getMinecraft().isIntegratedServerRunning();
+        return ClientFixes.INSTANCE.getFmlFixesEnabled() && ClientFixes.INSTANCE.getBlockFML() && !mc.isIntegratedServerRunning();
     }
 }

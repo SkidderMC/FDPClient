@@ -3,41 +3,40 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.utils.render.shader.shaders;
+package net.ccbluex.liquidbounce.utils.render.shader.shaders
 
-import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.utils.render.shader.Shader;
-import net.minecraft.client.gui.ScaledResolution;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.GL20;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
+import net.ccbluex.liquidbounce.utils.render.shader.Shader
+import org.lwjgl.opengl.Display
+import org.lwjgl.opengl.GL20.*
+import java.io.File
+import java.io.IOException
 
-public final class BackgroundShader extends Shader {
+class BackgroundShader : Shader {
+    constructor() : super("background.frag")
 
-    public final static BackgroundShader BACKGROUND_SHADER = new BackgroundShader();
+    @Throws(IOException::class)
+    constructor(fragmentShader: File) : super(fragmentShader)
 
-    private float time;
-
-    public BackgroundShader() {
-        super("background.frag");
+    companion object {
+        val BACKGROUND_SHADER = BackgroundShader()
     }
 
-    @Override
-    public void setupUniforms() {
-        setupUniform("iResolution");
-        setupUniform("iTime");
+    private var time = 0f
+
+    override fun setupUniforms() {
+        setupUniform("iResolution")
+        setupUniform("iTime")
     }
 
-    @Override
-    public void updateUniforms() {
-        final ScaledResolution scaledResolution = new ScaledResolution(mc);
+    override fun updateUniforms() {
+        val resolutionID = getUniform("iResolution")
+        if (resolutionID > -1)
+            glUniform2f(resolutionID, Display.getWidth().toFloat(), Display.getHeight().toFloat())
 
-        final int resolutionID = getUniform("iResolution");
-        if(resolutionID > -1)
-            GL20.glUniform2f(resolutionID, (float) Display.getWidth(), (float) Display.getHeight());
-        final int timeID = getUniform("iTime");
-        if(timeID > -1) GL20.glUniform1f(timeID, time);
+        val timeID = getUniform("iTime")
+        if (timeID > -1) glUniform1f(timeID, time)
 
-        time += 0.005F * RenderUtils.deltaTime;
+        time += 0.003f * deltaTime
     }
-
 }

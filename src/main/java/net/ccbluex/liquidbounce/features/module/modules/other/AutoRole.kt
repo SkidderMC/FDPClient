@@ -5,20 +5,18 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import me.zywl.fdpclient.FDPClient
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.UpdateEvent
-import me.zywl.fdpclient.value.impl.BoolValue
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.file.FileManager.friendsConfig
+import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
+import net.ccbluex.liquidbounce.value.BoolValue
 
-@ModuleInfo(name = "AutoRole", category = ModuleCategory.EXPLOIT)
-class AutoRole : Module() {
+object AutoRole : Module("AutoRole", Category.OTHER, gameDetecting = false, hideModule = false) {
     private val formattingValue = BoolValue("Formatting", true)
 
-    companion object {
         private val STAFF_PREFIXES = arrayOf(
             "[Moderador] ",
             "[MODERADOR] ",
@@ -51,7 +49,6 @@ class AutoRole : Module() {
             "[CEO] ",
             "[TRIAL] "
         )
-    }
 
     private fun isStaff(prefix: String): Boolean {
         return STAFF_PREFIXES.toList().contains(stripColor(prefix))
@@ -59,7 +56,7 @@ class AutoRole : Module() {
 
     @EventTarget
     fun handle(event: UpdateEvent?) {
-        val friendManager = FDPClient.fileManager.friendsConfig
+        val friendManager = friendsConfig
 
         val formatCodes = arrayOf("§k", "§l", "§m", "§n", "§o")
         var currentFormatIndex = 0
@@ -79,7 +76,7 @@ class AutoRole : Module() {
                             }
                         }
 
-                        chat("§7[§d!§7]§7 ADDED: $colorPrefix$member")
+                        Chat.print("§7[§d!§7]§7 ADDED: $colorPrefix$member")
                     }
                 }
             }

@@ -6,13 +6,10 @@
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import me.zywl.fdpclient.value.impl.BoolValue
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.value.BoolValue
 
-@ModuleInfo(name = "TrueSight", category = ModuleCategory.VISUAL)
-object TrueSight : Module() {
-
-    val barriersValue = BoolValue("Barriers", true)
-    val entitiesValue = BoolValue("Entities", true)
+object TrueSight : Module("TrueSight", Category.VISUAL) {
+    val barriers by BoolValue("Barriers", true)
+    val entities by BoolValue("Entities", true)
 }

@@ -5,48 +5,65 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import me.zywl.fdpclient.FDPClient
+import net.ccbluex.liquidbounce.FDPClient.isStarting
+import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.command.CommandManager
-import net.ccbluex.liquidbounce.features.module.modules.other.Insult
-import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
+import net.ccbluex.liquidbounce.file.FileManager.accountsConfig
+import net.ccbluex.liquidbounce.file.FileManager.clickGuiConfig
+import net.ccbluex.liquidbounce.file.FileManager.friendsConfig
+import net.ccbluex.liquidbounce.file.FileManager.hudConfig
+import net.ccbluex.liquidbounce.file.FileManager.loadConfig
+import net.ccbluex.liquidbounce.file.FileManager.modulesConfig
+import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
+import net.ccbluex.liquidbounce.script.ScriptManager.disableScripts
+import net.ccbluex.liquidbounce.script.ScriptManager.reloadScripts
+import net.ccbluex.liquidbounce.script.ScriptManager.unloadScripts
 import net.ccbluex.liquidbounce.ui.font.Fonts
 
-class ReloadCommand : Command("reload", emptyArray()) {
+object ReloadCommand : Command("reload", "configreload") {
     /**
      * Execute commands with provided [args]
      */
     override fun execute(args: Array<String>) {
-        alert("Reloading...")
-        alert("§c§lReloading commands...")
-        FDPClient.commandManager = CommandManager()
-        FDPClient.commandManager.registerCommands()
-        FDPClient.isStarting = true
-        FDPClient.isLoadingConfig = true
-        FDPClient.scriptManager.disableScripts()
-        FDPClient.scriptManager.unloadScripts()
-        for (module in FDPClient.moduleManager.modules)
-            FDPClient.moduleManager.generateCommand(module)
-        alert("§c§lReloading scripts...")
-        FDPClient.scriptManager.loadScripts()
-        FDPClient.scriptManager.enableScripts()
-        alert("§c§lReloading fonts...")
+        chat("Reloading...")
+        isStarting = true
+
+        chat("§c§lReloading commands...")
+        CommandManager.registerCommands()
+
+        disableScripts()
+        unloadScripts()
+
+        for (module in moduleManager.modules)
+            moduleManager.generateCommand(module)
+
+        chat("§c§lReloading scripts...")
+        reloadScripts()
+
+        chat("§c§lReloading fonts...")
         Fonts.loadFonts()
-        alert("§c§lReloading modules...")
-        FDPClient.configManager.load(FDPClient.configManager.nowConfig, false)
-        Insult.loadFile()
-        GuiCapeManager.load()
-        alert("§c§lReloading accounts...")
-        FDPClient.fileManager.loadConfig(FDPClient.fileManager.accountsConfig)
-        alert("§c§lReloading friends...")
-        FDPClient.fileManager.loadConfig(FDPClient.fileManager.friendsConfig)
-        alert("§c§lReloading xray...")
-        FDPClient.fileManager.loadConfig(FDPClient.fileManager.xrayConfig)
-        alert("§c§lReloading HUD...")
-        FDPClient.fileManager.loadConfig(FDPClient.fileManager.hudConfig)
-        alert("Reloaded.")
-        FDPClient.isStarting = false
-        FDPClient.isLoadingConfig = false
-        System.gc()
+
+        chat("§c§lReloading modules...")
+        loadConfig(modulesConfig)
+
+
+        chat("§c§lReloading values...")
+        loadConfig(valuesConfig)
+
+        chat("§c§lReloading accounts...")
+        loadConfig(accountsConfig)
+
+        chat("§c§lReloading friends...")
+        loadConfig(friendsConfig)
+
+        chat("§c§lReloading HUD...")
+        loadConfig(hudConfig)
+
+        chat("§c§lReloading ClickGUI...")
+        loadConfig(clickGuiConfig)
+
+        isStarting = false
+        chat("Reloaded.")
     }
 }

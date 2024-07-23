@@ -1,17 +1,12 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.utils
 
-import me.zywl.fdpclient.value.Value
+import net.ccbluex.liquidbounce.value.Value
 import org.apache.logging.log4j.core.config.plugins.ResolverUtil
-import org.objectweb.asm.ClassReader
-import org.objectweb.asm.ClassWriter
-import org.objectweb.asm.tree.AbstractInsnNode
-import org.objectweb.asm.tree.ClassNode
-import org.objectweb.asm.tree.InsnList
 import java.lang.reflect.Modifier
 
 object ClassUtils {
@@ -19,41 +14,10 @@ object ClassUtils {
     private val cachedClasses = mutableMapOf<String, Boolean>()
 
     /**
-     * Read bytes to class node
-     *
-     * @param bytes ByteArray of class
-     */
-    fun toClassNode(bytes: ByteArray): ClassNode {
-        val classReader = ClassReader(bytes)
-        val classNode = ClassNode()
-        classReader.accept(classNode, 0)
-
-        return classNode
-    }
-    /**
-     * Write class node to bytes
-     *
-     * @param classNode ClassNode of class
-     */
-    fun toBytes(classNode: ClassNode): ByteArray {
-        val classWriter = ClassWriter(ClassWriter.COMPUTE_MAXS)
-        classNode.accept(classWriter)
-
-        return classWriter.toByteArray()
-    }
-    fun toNodes(vararg nodes: AbstractInsnNode): InsnList {
-        val insnList = InsnList()
-        for (node in nodes)
-            insnList.add(node)
-        return insnList
-    }
-
-    /**
      * Allows you to check for existing classes with the [className]
      */
-    @JvmStatic
-    fun hasClass(className: String): Boolean {
-        return if (cachedClasses.containsKey(className))
+    fun hasClass(className: String) =
+        if (className in cachedClasses)
             cachedClasses[className]!!
         else try {
             Class.forName(className)
@@ -65,9 +29,7 @@ object ClassUtils {
 
             false
         }
-    }
 
-    fun hasForge() = hasClass("net.minecraftforge.common.MinecraftForge")
 
     fun getObjectInstance(clazz: Class<*>): Any {
         clazz.declaredFields.forEach {
@@ -120,4 +82,7 @@ object ClassUtils {
 
         return list
     }
+
+    fun hasForge() = hasClass("net.minecraftforge.common.MinecraftForge")
+
 }

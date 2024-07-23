@@ -5,52 +5,44 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
-import me.zywl.fdpclient.FDPClient
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.KeyEvent
-import me.zywl.fdpclient.event.Listenable
-import me.zywl.fdpclient.event.UpdateEvent
-import net.ccbluex.liquidbounce.handler.other.AutoDisable
-import net.ccbluex.liquidbounce.ui.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.event.EventManager.registerListener
+import net.ccbluex.liquidbounce.event.EventManager.unregisterListener
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.KeyEvent
+import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.features.command.CommandManager.registerCommand
 import net.ccbluex.liquidbounce.utils.ClassUtils
-import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.minecraft.client.Minecraft
-import org.lwjgl.input.Keyboard
+import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
+import java.util.*
 
-class ModuleManager : Listenable {
+object ModuleManager : Listenable {
 
-    val modules = mutableListOf<Module>()
+    val modules = TreeSet<Module> { module1, module2 -> module1.name.compareTo(module2.name) }
     private val moduleClassMap = hashMapOf<Class<*>, Module>()
-    fun getModuleInCategory(category: ModuleCategory) = modules.filter { it.category == category }
-    var pendingBindModule: Module? = null
 
     init {
-        FDPClient.eventManager.registerListener(this)
+        registerListener(this)
     }
 
     /**
      * Register all modules
      */
     fun registerModules() {
-        ClientUtils.logInfo("[ModuleManager] Loading modules...")
+        LOGGER.info("[ModuleManager] Loading modules...")
 
+        // Register modules
         ClassUtils.resolvePackage("${this.javaClass.`package`.name}.modules", Module::class.java)
             .forEach(this::registerModule)
 
         modules.forEach {
             it.onInitialize()
-          //  SplashProgress.setSecondary("Initializing Module " + it.name)
+            //  SplashProgress.setSecondary("Initializing Module " + it.name)
         }
 
-        modules.forEach {
-            it.onLoad()
-          //  SplashProgress.setSecondary("Loading Module " + it.name)
-        }
+        InventoryManager.startCoroutine()
 
-        FDPClient.eventManager.registerListener(AutoDisable)
-
-        ClientUtils.logInfo("[ModuleManager] Loaded ${modules.size} modules.")
+        LOGGER.info("[ModuleManager] Loaded ${modules.size} modules.")
     }
 
     /**
@@ -59,15 +51,13 @@ class ModuleManager : Listenable {
     fun registerModule(module: Module) {
         modules += module
         moduleClassMap[module.javaClass] = module
-        modules.sortBy { it.name }
 
         generateCommand(module)
-
-        FDPClient.eventManager.registerListener(module)
+        registerListener(module)
     }
 
     /**
-     * Register [moduleClass]
+     * Register [moduleClass] with new instance
      */
     private fun registerModule(moduleClass: Class<out Module>) {
         try {
@@ -76,9 +66,22 @@ class ModuleManager : Listenable {
             // this module is a kotlin object
             registerModule(ClassUtils.getObjectInstance(moduleClass) as Module)
         } catch (e: Throwable) {
-            ClientUtils.logError("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
+            LOGGER.error("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
         }
     }
+
+    /**
+     * Register a list of modules
+     */
+    @SafeVarargs
+    fun registerModules(vararg modules: Class<out Module>) = modules.forEach(this::registerModule)
+
+
+    /**
+     * Register a list of modules
+     */
+    @SafeVarargs
+    fun registerModules(vararg modules: Module) = modules.forEach(this::registerModule)
 
     /**
      * Unregister module
@@ -86,28 +89,19 @@ class ModuleManager : Listenable {
     fun unregisterModule(module: Module) {
         modules.remove(module)
         moduleClassMap.remove(module::class.java)
-        FDPClient.eventManager.unregisterListener(module)
+        unregisterListener(module)
     }
 
     /**
      * Generate command for [module]
      */
     internal fun generateCommand(module: Module) {
-        if (!module.moduleCommand) {
-            return
-        }
-
         val values = module.values
 
-        if (values.isEmpty()) {
+        if (values.isEmpty())
             return
-        }
 
-        FDPClient.commandManager.registerCommand(ModuleCommand(module, values))
-    }
-
-    fun getModulesByName(name: String): List<Module> {
-        return this.modules.filter { it.name.lowercase().contains(name.lowercase()) }
+        registerCommand(ModuleCommand(module, values))
     }
 
     /**
@@ -124,7 +118,7 @@ class ModuleManager : Listenable {
      */
     fun getModule(moduleName: String?) = modules.find { it.name.equals(moduleName, ignoreCase = true) }
 
-    fun getKeyBind(key: Int) = modules.filter { it.keyBind == key }
+    operator fun get(name: String) = getModule(name)
 
     /**
      * Module related events
@@ -133,31 +127,8 @@ class ModuleManager : Listenable {
     /**
      * Handle incoming key presses
      */
-    private var skip = 0
     @EventTarget
-    private fun onKey(event: KeyEvent) {
-        if (pendingBindModule == null) {
-            modules.toMutableList().filter { it.triggerType == EnumTriggerType.TOGGLE && it.keyBind == event.key }.forEach { it.toggle() }
-        } else {
-            skip++
-            if (skip <= 1) {
-                return
-            }
-            skip = 0
-            pendingBindModule!!.keyBind = event.key
-            ClientUtils.displayAlert("Bound module §a§l${pendingBindModule!!.name}§3 to key §a§l${Keyboard.getKeyName(event.key)}§3.")
-            FDPClient.hud.addNotification(Notification("KeyBind", "Bound ${pendingBindModule!!.name} to ${Keyboard.getKeyName(event.key)}.", NotifyType.INFO))
-            pendingBindModule = null
-        }
-    }
-
-    @EventTarget
-    private fun onUpdate(event: UpdateEvent) {
-        if (pendingBindModule != null || Minecraft.getMinecraft().currentScreen != null) {
-            return
-        }
-        modules.filter { it.triggerType == EnumTriggerType.PRESS }.forEach { it.state = Keyboard.isKeyDown(it.keyBind) }
-    }
+    private fun onKey(event: KeyEvent) = modules.forEach { if (it.keyBind == event.key) it.toggle() }
 
     override fun handleEvents() = true
 }

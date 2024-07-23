@@ -1,16 +1,16 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.item;
 
-import me.zywl.fdpclient.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
-import net.ccbluex.liquidbounce.features.module.modules.ghost.LegitAura;
-import net.ccbluex.liquidbounce.features.module.modules.visual.VanillaTweaks;
-import net.ccbluex.liquidbounce.utils.SpoofItemUtils;
+import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
+import net.ccbluex.liquidbounce.features.module.modules.client.Animation;
+import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
+import net.ccbluex.liquidbounce.features.module.modules.visual.AntiBlind;
+import net.ccbluex.liquidbounce.utils.render.FakeItemRender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -19,25 +19,27 @@ import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.MathHelper;
-import org.lwjgl.opengl.GL11;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.Objects;
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 @Mixin(ItemRenderer.class)
+@SideOnly(Side.CLIENT)
 public abstract class MixinItemRenderer {
+
     @Shadow
     private float prevEquippedProgress;
 
@@ -47,117 +49,70 @@ public abstract class MixinItemRenderer {
     @Shadow
     @Final
     private Minecraft mc;
+    @Shadow
+    private ItemStack itemToRender;
 
-    /**
-     * Rotate arround x and y.
-     *
-     * @param angle  the angle
-     * @param angleY the angle y
-     */
     @Shadow
     protected abstract void rotateArroundXAndY(float angle, float angleY);
 
-    /**
-     * Sets light map from player.
-     *
-     * @param clientPlayer the client player
-     */
     @Shadow
     protected abstract void setLightMapFromPlayer(AbstractClientPlayer clientPlayer);
 
-    /**
-     * Rotate with player rotations.
-     *
-     * @param entityPlayerSP the entityplayersp in
-     * @param partialTicks     the partial ticks
-     */
     @Shadow
-    protected abstract void rotateWithPlayerRotations(EntityPlayerSP entityPlayerSP, float partialTicks);
+    protected abstract void rotateWithPlayerRotations(EntityPlayerSP entityplayerspIn, float partialTicks);
 
-    @Shadow
-    private ItemStack itemToRender;
-    @Shadow
-    private int equippedItemSlot = -1;
-    /**
-     * Render item map.
-     *
-     * @param clientPlayer      the client player
-     * @param pitch             the pitch
-     * @param equipmentProgress the equipment progress
-     * @param swingProgress     the swing progress
-     */
     @Shadow
     protected abstract void renderItemMap(AbstractClientPlayer clientPlayer, float pitch, float equipmentProgress, float swingProgress);
 
-    /**
-     * Perform drinking.
-     *
-     * @param clientPlayer the client player
-     * @param partialTicks the partial ticks
-     */
+    @Shadow
+    protected abstract void transformFirstPersonItem(float equipProgress, float swingProgress);
+
     @Shadow
     protected abstract void performDrinking(AbstractClientPlayer clientPlayer, float partialTicks);
 
-    /**
-     * Do block transformations.
-     */
-    @Shadow
-    protected abstract void doBlockTransformations();
-
-    /**
-     * Do bow transformations.
-     *
-     * @param partialTicks the partial ticks
-     * @param clientPlayer the client player
-     */
     @Shadow
     protected abstract void doBowTransformations(float partialTicks, AbstractClientPlayer clientPlayer);
 
-    /**
-     * Do item used transformations.
-     *
-     * @param swingProgress the swing progress
-     */
     @Shadow
     protected abstract void doItemUsedTransformations(float swingProgress);
 
-    /**
-     * Render item.
-     *
-     * @param entityIn  the entity in
-     * @param heldStack the held stack
-     * @param transform the transform
-     */
     @Shadow
     public abstract void renderItem(EntityLivingBase entityIn, ItemStack heldStack, ItemCameraTransforms.TransformType transform);
 
-    /**
-     * Render player arm.
-     *
-     * @param clientPlayer  the client player
-     * @param equipProgress the equip progress
-     * @param swingProgress the swing progress
-     */
     @Shadow
     protected abstract void renderPlayerArm(AbstractClientPlayer clientPlayer, float equipProgress, float swingProgress);
 
-    private final Animations fDPClient$animations = Animations.INSTANCE;
-    @Inject(method = "updateEquippedItem", at = @At("HEAD"), cancellable = true)
-    public void updateEquippedItemHead(CallbackInfo i) {
+    @Shadow
+    private int equippedItemSlot = -1;
+
+    /**
+     * @author SuperSkidder
+     * @reason Make fake items render correctly
+     */
+    @Overwrite
+    public void updateEquippedItem() {
         this.prevEquippedProgress = this.equippedProgress;
-        ItemStack itemstack = SpoofItemUtils.INSTANCE.getStack();
+        EntityPlayer entityplayer = this.mc.thePlayer;
+        ItemStack itemstack = entityplayer.inventory.getCurrentItem();
+        if (FakeItemRender.INSTANCE.getFakeItem() != -1) {
+            itemstack = entityplayer.inventory.getStackInSlot(FakeItemRender.INSTANCE.getFakeItem());
+        }
         boolean flag = false;
         if (this.itemToRender != null && itemstack != null) {
             if (!this.itemToRender.getIsItemStackEqual(itemstack)) {
-                if (!this.itemToRender.getItem().shouldCauseReequipAnimation(this.itemToRender, itemstack, this.equippedItemSlot != SpoofItemUtils.INSTANCE.getSlot())) {
+                if (!this.itemToRender.getItem().shouldCauseReequipAnimation(this.itemToRender, itemstack, this.equippedItemSlot != entityplayer.inventory.currentItem)) {
                     this.itemToRender = itemstack;
-                    this.equippedItemSlot = SpoofItemUtils.INSTANCE.getSlot();
+                    this.equippedItemSlot = entityplayer.inventory.currentItem;
                     return;
                 }
 
                 flag = true;
             }
-        } else flag = this.itemToRender != null || itemstack != null;
+        } else if (this.itemToRender == null && itemstack == null) {
+            flag = false;
+        } else {
+            flag = true;
+        }
 
         float f = 0.4F;
         float f1 = flag ? 0.0F : 1.0F;
@@ -165,388 +120,106 @@ public abstract class MixinItemRenderer {
         this.equippedProgress += f2;
         if (this.equippedProgress < 0.1F) {
             this.itemToRender = itemstack;
-            this.equippedItemSlot = SpoofItemUtils.INSTANCE.getSlot();
+            this.equippedItemSlot = entityplayer.inventory.currentItem;
         }
-        //Fix Optifine Crash
-        i.cancel();
-    }
-    /**
-     * @author Liuli
-     * @reason Transform First Person Item
-     */
-    @Overwrite
-    private void transformFirstPersonItem(float equipProgress, float swingProgress) {
-        fDPClient$doItemRenderGLTranslate();
-        GlStateManager.translate(0.0F, equipProgress * -0.6F, 0.0F);
-        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-        float f = MathHelper.sin(swingProgress * swingProgress * 3.1415927F);
-        float f1 = MathHelper.sin(MathHelper.sqrt_float(swingProgress) * 3.1415927F);
-        GlStateManager.rotate(f * -20.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(f1 * -20.0F, 0.0F, 0.0F, 1.0F);
-        GlStateManager.rotate(f1 * -80.0F, 1.0F, 0.0F, 0.0F);
-        fDPClient$doItemRenderGLScale();
+
     }
 
     /**
-     * @author Liuli
-     * @reason Render Item In First Person
+     * @author CCBlueX
      */
     @Overwrite
     public void renderItemInFirstPerson(float partialTicks) {
-        float f = 1.0F - (this.prevEquippedProgress + (this.equippedProgress - this.prevEquippedProgress) * partialTicks);
+        final KillAura killAura = KillAura.INSTANCE;
+        float f = 1f - (prevEquippedProgress + (equippedProgress - prevEquippedProgress) * partialTicks);
         EntityPlayerSP abstractclientplayer = mc.thePlayer;
         float f1 = abstractclientplayer.getSwingProgress(partialTicks);
         float f2 = abstractclientplayer.prevRotationPitch + (abstractclientplayer.rotationPitch - abstractclientplayer.prevRotationPitch) * partialTicks;
         float f3 = abstractclientplayer.prevRotationYaw + (abstractclientplayer.rotationYaw - abstractclientplayer.prevRotationYaw) * partialTicks;
-        this.rotateArroundXAndY(f2, f3);
-        this.setLightMapFromPlayer(abstractclientplayer);
-        this.rotateWithPlayerRotations(abstractclientplayer, partialTicks);
-        GlStateManager.enableRescaleNormal();
-        GlStateManager.pushMatrix();
+        rotateArroundXAndY(f2, f3);
+        setLightMapFromPlayer(abstractclientplayer);
+        rotateWithPlayerRotations(abstractclientplayer, partialTicks);
+        enableRescaleNormal();
+        pushMatrix();
 
-        if (this.itemToRender != null) {
-            final boolean displayBlocking = Objects.requireNonNull(FDPClient.moduleManager.getModule(KillAura.class)).getDisplayBlocking() || Objects.requireNonNull(FDPClient.moduleManager.getModule(LegitAura.class)).getDisplayBlocking();
+        if (Animations.INSTANCE.handleEvents()) {
+            float scale = Animations.INSTANCE.getHandItemScale();
+            float x = Animations.INSTANCE.getHandX();
+            float y = Animations.INSTANCE.getHandY();
+            float rotX = Animations.INSTANCE.getHandPosX();
+            float rotY = Animations.INSTANCE.getHandPosY();
+            float rotZ = Animations.INSTANCE.getHandPosZ();
 
-            if (this.itemToRender.getItem() instanceof ItemMap) {
-                this.renderItemMap(abstractclientplayer, f2, f, f1);
-            } else if ((abstractclientplayer.isUsingItem() || (mc.gameSettings.keyBindUseItem.isKeyDown() && fDPClient$animations.getAnythingBlockValue().get())) || ((itemToRender.getItem() instanceof ItemSword || fDPClient$animations.getAnythingBlockValue().get()) && displayBlocking)) {
-                switch((displayBlocking || fDPClient$animations.getAnythingBlockValue().get()) ? EnumAction.BLOCK : this.itemToRender.getItemUseAction()) {
+            translate(x, y, scale);
+            rotate(rotX, 1f, 0f, 0f);
+            rotate(rotY, 0f, 1f, 0f);
+            rotate(rotZ, 0f, 0f, 1f);
+        }
+
+        if (itemToRender != null) {
+            boolean isForceBlocking = (itemToRender.getItem() instanceof ItemSword &&
+                    (killAura.getRenderBlocking() || killAura.getTarget() != null && (killAura.getBlinkAutoBlock() || killAura.getForceBlockRender()))
+                    || NoSlow.INSTANCE.isUNCPBlocking());
+
+            if (itemToRender.getItem() instanceof ItemMap) {
+                renderItemMap(abstractclientplayer, f2, f, f1);
+            } else if (abstractclientplayer.getItemInUseCount() > 0 || isForceBlocking) {
+                EnumAction enumaction = isForceBlocking ? EnumAction.BLOCK : itemToRender.getItemUseAction();
+
+                switch (enumaction) {
                     case NONE:
-                        this.transformFirstPersonItem(f, 0.0F);
+                        transformFirstPersonItem(f, 0f);
                         break;
                     case EAT:
                     case DRINK:
-                        this.performDrinking(abstractclientplayer, partialTicks);
-                        this.transformFirstPersonItem(f, f1);
+                        performDrinking(abstractclientplayer, partialTicks);
+                        transformFirstPersonItem(f, f1);
                         break;
                     case BLOCK:
-                        GL11.glTranslated(fDPClient$animations.getTranslateXValue().get(), fDPClient$animations.getTranslateYValue().get(), fDPClient$animations.getTranslateZValue().get());
-                        GlStateManager.rotate(fDPClient$animations.getRotateXValue().get(), 1.0F, 0.0F, 0.0F);
-                        GlStateManager.rotate(fDPClient$animations.getRotateYValue().get(), 0.0F, 1.0F, 0.0F);
-                        GlStateManager.rotate(fDPClient$animations.getRotateZValue().get(), 0.0F, 0.0F, 1.0F);
+                        final Animations animations = Animations.INSTANCE;
+                        final Animation animation;
 
-                        switch (fDPClient$animations.getBlockingModeValue().get()) {
-                            case "1.7": {
-                                transformFirstPersonItem(f, f1);
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "Akrien": {
-                                transformFirstPersonItem(f1, 0.0F);
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "Avatar": {
-                                fDPClient$avatar(f1);
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "ETB": {
-                                fDPClient$etb(f, f1);
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "Exhibition": {
-                                transformFirstPersonItem(f, 0.83F);
-                                float f4 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.83F);
-                                GlStateManager.translate(-0.5F, 0.2F, 0.2F);
-                                GlStateManager.rotate(-f4 * 0.0F, 0.0F, 0.0F, 0.0F);
-                                GlStateManager.rotate(-f4 * 43.0F, 58.0F, 23.0F, 45.0F);
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "Push": {
-                                fDPClient$push(f1);
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "Reverse": {
-                                transformFirstPersonItem(f1, f1);
-                                doBlockTransformations();
-                                GlStateManager.rotate(0.0F, 1.0F, 0.0F, 0.0F);
-                                break;
-                            }
-                            case "Shield": {
-                                fDPClient$jello(f1);
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "SigmaNew": {
-                                fDPClient$doItemRenderGLTranslate();
-                                GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-                                float var11 = MathHelper.sin(f1 * f1 * 3.1415927F);
-                                float var12 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
-                                GlStateManager.rotate(var12 * -5.0F, 1.0F, 0.0F, 0.0F);
-                                GlStateManager.rotate(var12 * 0.0F, 0.0F, 0.0F, 1.0F);
-                                GlStateManager.rotate(var12 * 25.0F, 0.0F, 1.0F, 0.0F);
-                                fDPClient$doItemRenderGLScale();
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "SigmaOld": {
-                                fDPClient$sigmaOld(f);
-                                float var15 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
-                                GlStateManager.rotate(-var15 * 55.0F / 2.0F, -8.0F, -0.0F, 9.0F);
-                                GlStateManager.rotate(-var15 * 45.0F, 1.0F, var15 / 2.0F, -0.0F);
-                                doBlockTransformations();
-                                GL11.glTranslated(1.2D, 0.3D, 0.5D);
-                                GL11.glTranslatef(-1.0F, mc.thePlayer.isSneaking() ? -0.1F : -0.2F, 0.2F);
-                                GlStateManager.scale(1.2F, 1.2F, 1.2F);
-                                break;
-                            }
-                            case "Slide": {
-                                fDPClient$slide(f1);
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "SlideDown": {
-                                transformFirstPersonItem(0.2F, f1);
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "Swong": {
-                                transformFirstPersonItem(f / 2.0F, 0.0F);
-                                GlStateManager.rotate(-MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F) * 40.0F / 2.0F, MathHelper.sqrt_float(f1) / 2.0F, -0.0F, 9.0F);
-                                GlStateManager.rotate(-MathHelper.sqrt_float(f1) * 30.0F, 1.0F, MathHelper.sqrt_float(f1) / 2.0F, -0.0F);
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "VisionFX": {
-                                fDPClient$continuity(f1);
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "Swank":{
-                                GL11.glTranslated(-0.1, 0.15, 0.0);
-                                this.transformFirstPersonItem(f / 0.15f, f1);
-                                final float rot = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927f);
-                                GlStateManager.rotate(rot * 30.0f, 2.0f, -rot, 9.0f);
-                                GlStateManager.rotate(rot * 35.0f, 1.0f, -rot, -0.0f);
-                                this.doBlockTransformations();
-                                break;
-                            }
-                            case "Jello":{
-                                this.transformFirstPersonItem(0.0f, 0.0f);
-                                this.doBlockTransformations();
-                                final int alpha = (int)Math.min(255L, ((System.currentTimeMillis() % 255L > 127L) ? Math.abs(Math.abs(System.currentTimeMillis()) % 255L - 255L) : (System.currentTimeMillis() % 255L)) * 2L);
-                                GlStateManager.translate(0.3f, -0.0f, 0.4f);
-                                GlStateManager.rotate(0.0f, 0.0f, 0.0f, 1.0f);
-                                GlStateManager.translate(0.0f, 0.5f, 0.0f);
-                                GlStateManager.rotate(90.0f, 1.0f, 0.0f, -1.0f);
-                                GlStateManager.translate(0.6f, 0.5f, 0.0f);
-                                GlStateManager.rotate(-90.0f, 1.0f, 0.0f, -1.0f);
-                                GlStateManager.rotate(-10.0f, 1.0f, 0.0f, -1.0f);
-                                GlStateManager.rotate(abstractclientplayer.isSwingInProgress ? (-alpha / 5.0f) : 1.0f, 1.0f, -0.0f, 1.0f);
-                                break;
-                            }
-                            case "HSlide":{
-                                transformFirstPersonItem(f1!=0?Math.max(1-(f1*2),0)*0.7F:0, 1F);
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "None":{
-                                transformFirstPersonItem(0F,0F);
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "Rotate":{
-                                fDPClient$rotateSword(f1);
-                                break;
-                            }
-                            case "Liquid": {
-                                this.transformFirstPersonItem(f + 0.1F, f1);
-                                this.doBlockTransformations();
-                                GlStateManager.translate(-0.5F, 0.2F, 0.0F);
-                                break;
-                            }
-                            case "Fall": {
-                                fDPClient$doItemRenderGLTranslate();
-                                GlStateManager.translate(0.0F, f * -0.6F, 0.0F);
-                                GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-                                fDPClient$doItemRenderGLScale();
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "Yeet": {
-                                fDPClient$doItemRenderGLTranslate();
-                                GlStateManager.translate(0.0F, f * -0.6F, 0.0F);
-                                GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-                                float var11 = MathHelper.sin(f1 * f1 * 3.1415927F);
-                                float var12 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
-                                GlStateManager.rotate(var11 * 0.0F, 0.0F, 1.0F, 0.0F);
-                                GlStateManager.rotate(var12 * 0.0F, 0.0F, 0.0F, 1.0F);
-                                GlStateManager.rotate(var12 * -40.0F + 10F, 1.0F, 0.0F, 0.0F);
-                                fDPClient$doItemRenderGLScale();
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "Yeet2": {
-                                fDPClient$doItemRenderGLTranslate();
-                                GlStateManager.translate(0.0F, f * -0.8F, 0.0F);
-                                GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-                                float var11 = MathHelper.sin(f1 * f1 * 3.1415927F);
-                                float var12 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
-                                GlStateManager.rotate(var11 * 0.0F, 0.0F, 1.0F, 0.0F);
-                                GlStateManager.rotate(var12 * 0.0F, 0.0F, 0.0F, 1.0F);
-                                GlStateManager.rotate(var12 * -20.0F - 9.5F, 1.0F, 0.0F, 0.0F);
-                                fDPClient$doItemRenderGLScale();
-                                doBlockTransformations();
-                                break;
-                            }
-                            case "Dortware": {
-                                float var9 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927F);
-                                GL11.glTranslated(-0.04D, 0.0D, 0.0D);
-                                this.transformFirstPersonItem(f / 2.5F, 0.0f);
-                                GlStateManager.rotate(-var9 * 0.0F / 2.0F, var9 / 2.0F, 1.0F, 4.0F);
-                                GlStateManager.rotate(-var9 * 120.0F, 1.0F, var9 / 3.0F, -0.0F);
-                                GlStateManager.translate(-0.5F, 0.2F, 0.0F);
-                                GlStateManager.rotate(30.0F, 0.0F, 1.0F, 0.0F);
-                                GlStateManager.rotate(-80.0F, 1.0F, 0.0F, 0.0F);
-                                GlStateManager.rotate(60.0F, 0.0F, 1.0F, 0.0F);
-                                break;
-                            }
+                        if (animations.handleEvents()) {
+                            animation = animations.getAnimation();
+                        } else { // Use 1.7 animation
+                            animation = animations.getDefaultAnimation();
+                        }
 
+                        if (animation != null) {
+                            animation.transform(f1, f, abstractclientplayer);
                         }
                         break;
                     case BOW:
-                        this.transformFirstPersonItem(f, f1);
-                        this.doBowTransformations(partialTicks, abstractclientplayer);
+                        transformFirstPersonItem(f, f1);
+                        doBowTransformations(partialTicks, abstractclientplayer);
                 }
-            }else{
-                if (!fDPClient$animations.getSwingAnimValue().get())
-                    this.doItemUsedTransformations(f1);
-                this.transformFirstPersonItem(f, f1);
+            } else {
+                final Animations animations = Animations.INSTANCE;
+
+                if (!animations.handleEvents() || !animations.getOddSwing()) {
+                    doItemUsedTransformations(f1);
+                }
+
+                transformFirstPersonItem(f, f1);
             }
 
-            this.renderItem(abstractclientplayer, this.itemToRender, ItemCameraTransforms.TransformType.FIRST_PERSON);
-        }else if(!abstractclientplayer.isInvisible()) {
-            this.renderPlayerArm(abstractclientplayer, f, f1);
+            renderItem(abstractclientplayer, itemToRender, ItemCameraTransforms.TransformType.FIRST_PERSON);
+        } else if (!abstractclientplayer.isInvisible()) {
+            renderPlayerArm(abstractclientplayer, f, f1);
         }
 
-        GlStateManager.popMatrix();
-        GlStateManager.disableRescaleNormal();
+        popMatrix();
+        disableRescaleNormal();
         RenderHelper.disableStandardItemLighting();
     }
 
-    private void fDPClient$doItemRenderGLTranslate(){
-        GlStateManager.translate(fDPClient$animations.getItemPosXValue().get(), fDPClient$animations.getItemPosYValue().get(), fDPClient$animations.getItemPosZValue().get());
-    }
 
-    private void fDPClient$doItemRenderGLScale(){
-        GlStateManager.scale(fDPClient$animations.getItemScaleValue().get(), fDPClient$animations.getItemScaleValue().get(), fDPClient$animations.getItemScaleValue().get());
-    }
-
-    private void fDPClient$sigmaOld(float f) {
-        fDPClient$doItemRenderGLTranslate();
-        GlStateManager.translate(0.0F, f * -0.6F, 0.0F);
-        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(0F, 0.0F, 1.0F, 0.2F);
-        GlStateManager.rotate(0F, 0.2F, 0.1F, 1.0F);
-        GlStateManager.rotate(0F, 1.3F, 0.1F, 0.2F);
-        fDPClient$doItemRenderGLScale();
-    }
-
-    //methods in LiquidBounce b73 Animation-No-Cross
-    private void fDPClient$avatar(float swingProgress) {
-        fDPClient$doItemRenderGLTranslate();
-        GlStateManager.translate(0.0F, 0.0F, 0.0F);
-        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-        float f = MathHelper.sin(swingProgress * swingProgress * 3.1415927F);
-        float f2 = MathHelper.sin(MathHelper.sqrt_float(swingProgress) * 3.1415927F);
-        GlStateManager.rotate(f * -20.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(f2 * -20.0F, 0.0F, 0.0F, 1.0F);
-        GlStateManager.rotate(f2 * -40.0F, 1.0F, 0.0F, 0.0F);
-        fDPClient$doItemRenderGLScale();
-    }
-
-    private void fDPClient$slide(float var9) {
-        fDPClient$doItemRenderGLTranslate();
-        GlStateManager.translate(0.0F, 0.0F, 0.0F);
-        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-        float var11 = MathHelper.sin(var9 * var9 * 3.1415927F);
-        float var12 = MathHelper.sin(MathHelper.sqrt_float(var9) * 3.1415927F);
-        GlStateManager.rotate(var11 * 0.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(var12 * 0.0F, 0.0F, 0.0F, 1.0F);
-        GlStateManager.rotate(var12 * -40.0F, 1.0F, 0.0F, 0.0F);
-        fDPClient$doItemRenderGLScale();
-    }
-
-    private void fDPClient$rotateSword(float f1){
-        fDPClient$genCustom();
-        doBlockTransformations();
-        GlStateManager.translate(-0.5F, 0.2F, 0.0F);
-        GlStateManager.rotate(MathHelper.sqrt_float(f1) * 10.0F * 40.0F, 1.0F, -0.0F, 2.0F);
-    }
-
-    private void fDPClient$genCustom() {
-        GlStateManager.translate(0.56F, -0.52F, -0.71999997F);
-        GlStateManager.translate(0.0F, (float) 0.0 * -0.6F, 0.0F);
-        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-        float var3 = MathHelper.sin((float) 0.0 * (float) 0.0 * 3.1415927F);
-        float var4 = MathHelper.sin(MathHelper.sqrt_float((float) 0.0) * 3.1415927F);
-        GlStateManager.rotate(var3 * -34.0F, 0.0F, 1.0F, 0.2F);
-        GlStateManager.rotate(var4 * -20.7F, 0.2F, 0.1F, 1.0F);
-        GlStateManager.rotate(var4 * -68.6F, 1.3F, 0.1F, 0.2F);
-        GlStateManager.scale(0.4F, 0.4F, 0.4F);
-    }
-
-
-    private void fDPClient$jello(float var12) {
-        fDPClient$doItemRenderGLTranslate();
-        GlStateManager.rotate(48.57F, 0.0F, 0.24F, 0.14F);
-        float var13 = MathHelper.sin(var12 * var12 * 3.1415927F);
-        float var14 = MathHelper.sin(MathHelper.sqrt_float(var12) * 3.1415927F);
-        GlStateManager.rotate(var13 * -35.0F, 0.0F, 0.0F, 0.0F);
-        GlStateManager.rotate(var14 * 0.0F, 0.0F, 0.0F, 0.0F);
-        GlStateManager.rotate(var14 * 20.0F, 1.0F, 1.0F, 1.0F);
-        fDPClient$doItemRenderGLScale();
-    }
-
-    private void fDPClient$continuity(float var10) {
-        fDPClient$doItemRenderGLTranslate();
-        GlStateManager.translate(0.0F, 0.0F, 0.0F);
-        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-        float var12 = -MathHelper.sin(var10 * var10 * 3.1415927F);
-        float var13 = MathHelper.cos(MathHelper.sqrt_float(var10) * 3.1415927F);
-        float var14 = MathHelper.abs(MathHelper.sqrt_float((float) 0.1) * 3.1415927F);
-        GlStateManager.rotate(var12 * var14 * 30.0F, 0.0F, 1.0F, 0.0F);
-        GlStateManager.rotate(var13 * 0.0F, 0.0F, 0.0F, 1.0F);
-        GlStateManager.rotate(var13 * 20.0F, 1.0F, 0.0F, 0.0F);
-        fDPClient$doItemRenderGLScale();
-    }
-
-    private void fDPClient$etb(float equipProgress, float swingProgress) {
-        fDPClient$doItemRenderGLTranslate();
-        GlStateManager.translate(0.0F, equipProgress * -0.6F, 0.0F);
-        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-        float var3 = MathHelper.sin(swingProgress * swingProgress * 3.1415927F);
-        float var4 = MathHelper.sin(MathHelper.sqrt_float(swingProgress) * 3.1415927F);
-        GlStateManager.rotate(var3 * -34.0F, 0.0F, 1.0F, 0.2F);
-        GlStateManager.rotate(var4 * -20.7F, 0.2F, 0.1F, 1.0F);
-        GlStateManager.rotate(var4 * -68.6F, 1.3F, 0.1F, 0.2F);
-        fDPClient$doItemRenderGLScale();
-    }
-
-    private void fDPClient$push(float idc) {
-        fDPClient$doItemRenderGLTranslate();
-        GlStateManager.translate(0.0F, (float) 0.1 * -0.6F, 0.0F);
-        GlStateManager.rotate(45.0F, 0.0F, 1.0F, 0.0F);
-        float var3 = MathHelper.sin(idc * idc * 3.1415927F);
-        float var4 = MathHelper.sin(MathHelper.sqrt_float(idc) * 3.1415927F);
-        GlStateManager.rotate(var3 * -10.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.rotate(var4 * -10.0F, 1.0F, 1.0F, 1.0F);
-        GlStateManager.rotate(var4 * -10.0F, 1.0F, 1.0F, 1.0F);
-        fDPClient$doItemRenderGLScale();
-    }
-
-    /**
-     * @author Liuli
-     */
-    @Redirect(method="renderFireInFirstPerson", at=@At(value="INVOKE", target="Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V"))
+    @Redirect(method = "renderFireInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V"))
     private void renderFireInFirstPerson(float p_color_0_, float p_color_1_, float p_color_2_, float p_color_3_) {
-        if(p_color_3_ != 1F && Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getAntiBlindValue().get()){
-            GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, Objects.requireNonNull(FDPClient.moduleManager.getModule(VanillaTweaks.class)).getFireEffectValue().get());
-        }else{
+        final AntiBlind antiBlind = AntiBlind.INSTANCE;
+        if (p_color_3_ != 1F && antiBlind.handleEvents()) {
+            GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, antiBlind.getFireEffect());
+        } else {
             GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, p_color_3_);
         }
     }

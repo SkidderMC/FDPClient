@@ -2,11 +2,13 @@
   {
     "modid": "fdpclient",
     "name": "FDPClient",
-    "description": "A Minecraft Forge Mixin-Based Hacked Client.",
+    "description": "A free mixin-based injection hacked-client",
     "version": "${version}",
     "mcversion": "1.8.9",
     "url": "https://fdpinfo.github.io",
-    "authorList": ["Zywl", "SkidderMC"],
+    "updateUrl": "",
+    "authorList": ["Zywl"],
+    "credits": "",
     "logoFile": "",
     "screenshots": [],
     "dependencies": []

@@ -5,136 +5,110 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import me.zywl.fdpclient.event.*
-import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.JumpEvent
+import net.ccbluex.liquidbounce.event.MoveEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.movement.longjumps.LongJumpMode
-import net.ccbluex.liquidbounce.utils.ClassUtils
-import net.ccbluex.liquidbounce.utils.MovementUtils
-import me.zywl.fdpclient.value.impl.BoolValue
-import me.zywl.fdpclient.value.impl.FloatValue
-import me.zywl.fdpclient.value.impl.ListValue
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.aac.AACv1
+import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.aac.AACv2
+import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.aac.AACv3
+import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.ncp.NCP
+import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.other.Hycraft
+import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.other.Redesky
+import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.other.Buzz
+import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.other.VerusDamage
+import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.other.VerusDamage.damaged
+import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
+import net.ccbluex.liquidbounce.utils.MovementUtils.speed
+import net.ccbluex.liquidbounce.utils.extensions.tryJump
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.ListValue
 
-@ModuleInfo(name = "LongJump", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.FLAG)
-object LongJump : Module() {
+object LongJump : Module("LongJump", Category.MOVEMENT) {
 
-    private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.longjumps", LongJumpMode::class.java)
-        .map { it.newInstance() as LongJumpMode }
-        .sortedBy { it.modeName }
+    private val longJumpModes = arrayOf(
+        // NCP
+        NCP,
 
-    private val mode: LongJumpMode
-        get() = modes.find { modeValue.equals(it.modeName) } ?: throw NullPointerException() // this should not happen
+        // AAC
+        AACv1, AACv2, AACv3,
 
-    private val modeValue: ListValue = object : ListValue("Mode", modes.map { it.modeName }.toTypedArray(), "Boost") {
-        override fun onChange(oldValue: String, newValue: String) {
-            if (state) onDisable()
-        }
+        // Other
+        Redesky, Hycraft, Buzz, VerusDamage
+    )
 
-        override fun onChanged(oldValue: String, newValue: String) {
-            if (state) onEnable()
-        }
-    }
+    private val modes = longJumpModes.map { it.modeName }.toTypedArray()
 
-    val autoJumpValue = BoolValue("AutoJump", true)
-    val autoDisableValue = BoolValue("AutoDisable", true)
-    val timerValue = FloatValue("GlobalTimer", 1.0f, 0.1f, 2.0f)
-    val onlyAirValue = BoolValue("TimerOnlyAir", true)
-    val legacyWarningValue = BoolValue("LegacyWarn", true)
-    var airTick = 0
-    var isJumped = false
-    var noTimerModify = false
+    val mode by ListValue("Mode", modes, "NCP")
+        val ncpBoost by FloatValue("NCPBoost", 4.25f, 1f..10f) { mode == "NCP" }
 
-    override fun onEnable() {
-        airTick = 0
-        isJumped = false
-        noTimerModify = false
-        mode.onEnable()
-    }
+    private val autoJump by BoolValue("AutoJump", true)
 
-    override fun onDisable() {
-        mc.thePlayer.capabilities.isFlying = false
-        mc.thePlayer.capabilities.flySpeed = 0.05f
-        mc.thePlayer.noClip = false
-        mc.timer.timerSpeed = 1F
-        mc.thePlayer.speedInAir = 0.02F
-        mode.onDisable()
-    }
+    val autoDisable by BoolValue("AutoDisable", true) { mode == "VerusDamage" }
+
+    var jumped = false
+    var canBoost = false
+    var teleported = false
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if(!state) return
-        if ((!onlyAirValue.get() || !mc.thePlayer.onGround) && !noTimerModify) {
-            mc.timer.timerSpeed = timerValue.get()
-        }
-        if (!mc.thePlayer.onGround) {
-            airTick++
-        }else {
-            if (airTick > 1 && autoDisableValue.get()) {
-                mode.onAttemptDisable()
-            } else if (!autoDisableValue.get()) {
-                airTick = 0
+        if (jumped) {
+            val mode = mode
+
+            if (mc.thePlayer.onGround || mc.thePlayer.capabilities.isFlying) {
+                jumped = false
+
+                if (mode == "NCP") {
+                    mc.thePlayer.motionX = 0.0
+                    mc.thePlayer.motionZ = 0.0
+                }
+                return
             }
-        }
-        mode.onUpdate(event)
-        if (autoJumpValue.get() && mc.thePlayer.onGround && MovementUtils.isMoving() && airTick < 2) {
-            mode.onAttemptJump()
-        }
-    }
 
-    @EventTarget
-    fun onMotion(event: MotionEvent) {
-        if(!state) return
-        mode.onMotion(event)
-        if(event.eventState != EventState.PRE) return
-        mode.onPreMotion(event)
-    }
+            modeModule.onUpdate()
+        }
+        if (autoJump && mc.thePlayer.onGround && isMoving) {
+            if (autoDisable && !damaged) {
+                return
+            }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        if(!state) return
-        mode.onPacket(event)
+            jumped = true
+            mc.thePlayer.tryJump()
+        }
     }
 
     @EventTarget
     fun onMove(event: MoveEvent) {
-        if(!state) return
-        mode.onMove(event)
+        modeModule.onMove(event)
     }
 
     @EventTarget
-    fun onBlockBB(event: BlockBBEvent) {
-        if(!state) return
-        mode.onBlockBB(event)
+    override fun onEnable() {
+        modeModule.onEnable()
     }
 
     @EventTarget
+    override fun onDisable() {
+        modeModule.onDisable()
+    }
+
+    @EventTarget(ignoreCondition = true)
     fun onJump(event: JumpEvent) {
-        if(!state) return
-        mode.onJump(event)
-    }
+        jumped = true
+        canBoost = true
+        teleported = false
 
-    @EventTarget
-    fun onStep(event: StepEvent) {
-        if(!state) return
-        mode.onStep(event)
-    }
-
-    override val tag: String
-        get() = modeValue.get()
-
-    /**
-     * 读取mode中的value并和本体中的value合并
-     * 所有的value必须在这个之前初始化
-     */
-    override val values = super.values.toMutableList().also {
-        modes.map {
-            mode -> mode.values.forEach { value ->
-                //it.add(value.displayable { modeValue.equals(mode.modeName) })
-                val displayableFunction = value.displayableFunction
-                it.add(value.displayable { displayableFunction.invoke() && modeValue.equals(mode.modeName) })
-            }
+        if (handleEvents()) {
+            modeModule.onJump(event)
         }
     }
+
+    override val tag
+        get() = mode
+
+    private val modeModule
+        get() = longJumpModes.find { it.modeName == mode }!!
 }

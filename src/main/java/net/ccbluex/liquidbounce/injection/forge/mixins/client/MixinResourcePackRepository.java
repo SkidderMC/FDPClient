@@ -1,7 +1,7 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
@@ -15,9 +15,6 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.File;
 import java.util.List;
@@ -27,26 +24,20 @@ public class MixinResourcePackRepository {
 
     @Shadow
     @Final
-    private static Logger logger;
-    @Shadow
-    @Final
     private File dirServerResourcepacks;
 
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    @Inject(method = "deleteOldServerResourcesPacks", at = @At("HEAD"))
-    private void createDirectory(CallbackInfo ci) {
-        if (!this.dirServerResourcepacks.exists())
-            this.dirServerResourcepacks.mkdirs();
-    }
+    @Shadow
+    @Final
+    private static Logger logger;
 
     /**
-     * @author opZywl
-     * @reason Fix ResourcePacks
+     * @author Mojang
+     * @reason Fix a bug
      */
     @Overwrite
     private void deleteOldServerResourcesPacks() {
         try {
-            List<File> lvt_1_1_ = Lists.newArrayList(FileUtils.listFiles(this.dirServerResourcepacks, TrueFileFilter.TRUE, null));
+            List<File> lvt_1_1_ = Lists.newArrayList(FileUtils.listFiles(dirServerResourcepacks, TrueFileFilter.TRUE, null));
             lvt_1_1_.sort(LastModifiedFileComparator.LASTMODIFIED_REVERSE);
             int lvt_2_1_ = 0;
 
@@ -56,7 +47,7 @@ public class MixinResourcePackRepository {
                     FileUtils.deleteQuietly(lvt_4_1_);
                 }
             }
-        } catch (final Throwable e) {
+        } catch(final Throwable e) {
             e.printStackTrace();
         }
     }

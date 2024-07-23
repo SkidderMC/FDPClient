@@ -5,10 +5,12 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import me.zywl.fdpclient.FDPClient
+import net.ccbluex.liquidbounce.FDPClient.commandManager
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.file.FileManager.saveConfig
+import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
 
-class PrefixCommand : Command("prefix", emptyArray()) {
+object PrefixCommand : Command("prefix") {
     /**
      * Execute commands with provided [args]
      */
@@ -21,13 +23,13 @@ class PrefixCommand : Command("prefix", emptyArray()) {
         val prefix = args[1]
 
         if (prefix.length > 1) {
-            alert("§cPrefix can only be one character long!")
+            chat("§cPrefix can only be one character long!")
             return
         }
 
-        FDPClient.commandManager.prefix = prefix.single()
-        FDPClient.fileManager.saveConfig(FDPClient.fileManager.specialConfig)
+        commandManager.prefix = prefix.single()
+        saveConfig(valuesConfig)
 
-        alert("Successfully changed command prefix to '§8$prefix§3'")
+        chat("Successfully changed command prefix to '§8$prefix§3'")
     }
 }

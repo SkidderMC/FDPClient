@@ -5,15 +5,14 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Plugins
 
-class PluginsCommand : Command("plugins", arrayOf("pl")) {
+object PluginsCommand : Command("plugins") {
     /**
      * Execute commands with provided [args]
      */
     override fun execute(args: Array<String>) {
-        FDPClient.moduleManager.getModule(Plugins::class.java)?.state = true
+        Plugins.toggle()
     }
 }

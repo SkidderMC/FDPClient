@@ -5,124 +5,81 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.features.module.modules.other.AntiBot
-import net.ccbluex.liquidbounce.ui.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.utils.pathfinder.MainPathFinder
-import net.ccbluex.liquidbounce.utils.pathfinder.Vec3
+import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
+import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.extensions.*
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.util.MovingObjectPosition.MovingObjectType.BLOCK
+import net.minecraft.util.Vec3
+import kotlin.math.ceil
+import kotlin.math.roundToInt
 
-class TeleportCommand : Command("tp", arrayOf("teleport")) {
+object TeleportCommand : Command("tp", "teleport") {
+	/**
+	 * Execute commands with provided [args]
+	 */
+	override fun execute(args: Array<String>) {
+		val usedAlias = args[0].lowercase()
 
-    /**
-     * Execute commands with provided [args]
-     */
-    override fun execute(args: Array<String>) {
-        if (args.size == 2) {
-            val theName = args[1]
+		if (args.size !in 4..5 ) {
+			chatSyntax("$usedAlias <x> <y> <z> [maxDistancePerPacket = 5]")
+			return
+		}
 
-            // Get target player data
-            val targetPlayer =
-                    mc.theWorld.playerEntities.firstOrNull { !AntiBot.isBot(it) && it.name.equals(theName, true) }
+		val (x, y, z) = args.drop(1).map { it.toDoubleOrNull() }
 
-            // Attempt to teleport to player's position.
-            if (targetPlayer != null) {
-                Thread {
-                    val path: ArrayList<Vec3> = MainPathFinder.computePath(
-                            Vec3(
-                                    mc.thePlayer.posX,
-                                    mc.thePlayer.posY,
-                                    mc.thePlayer.posZ
-                            ),
-                            Vec3(targetPlayer.posX, targetPlayer.posY, targetPlayer.posZ)
-                    )
-                    for (point in path) PacketUtils.sendPacketNoEvent(
-                            C04PacketPlayerPosition(
-                                    point.x,
-                                    point.y,
-                                    point.z,
-                                    true
-                            )
-                    )
-                    mc.thePlayer.setPosition(targetPlayer.posX, targetPlayer.posY, targetPlayer.posZ)
-                }.start()
-                FDPClient.hud.addNotification(
-                        Notification(
-                                "Successfully teleported to §a${targetPlayer.name}", "Done",
-                                NotifyType.SUCCESS
-                        )
-                )
-                return
-            } else {
-                FDPClient.hud.addNotification(
-                        Notification(
-                                "No players found!","Error",
-                                NotifyType.ERROR
-                        )
-                )
-                return
-            }
-        } else if (args.size == 4) {
-            try {
-                val posX = if (args[1].equals("~", true)) mc.thePlayer.posX else args[1].toDouble()
-                val posY = if (args[2].equals("~", true)) mc.thePlayer.posY else args[2].toDouble()
-                val posZ = if (args[3].equals("~", true)) mc.thePlayer.posZ else args[3].toDouble()
-                Thread {
-                    val path: ArrayList<Vec3> = MainPathFinder.computePath(
-                            Vec3(
-                                    mc.thePlayer.posX,
-                                    mc.thePlayer.posY,
-                                    mc.thePlayer.posZ
-                            ),
-                            Vec3(posX, posY, posZ)
-                    )
-                    for (point in path) PacketUtils.sendPacketNoEvent(
-                            C04PacketPlayerPosition(
-                                    point.x,
-                                    point.y,
-                                    point.z,
-                                    true
-                            )
-                    )
-                    mc.thePlayer.setPosition(posX, posY, posZ)
-                }.start()
-                FDPClient.hud.addNotification(
-                        Notification(
-                                "Successfully teleported to §a$posX, $posY, $posZ","Done",
-                                NotifyType.SUCCESS
-                        )
-                )
-                return
-            } catch (e: NumberFormatException) {
-                FDPClient.hud.addNotification(
-                        Notification(
-                                "Failed to teleport","Error",
-                                NotifyType.ERROR
-                        )
-                )
-                return
-            }
-        }
+		val maxDistancePerPacket = args.getOrNull(4)?.toDoubleOrNull() ?: 5.0
 
-        chatSyntax("tp <player name/x y z>")
-    }
+		// <= 0 will crash the client
+		if (maxDistancePerPacket <= 0) {
+			chat("MaxDistancePerPacket must >= 0.")
+			return
+		}
 
-    override fun tabComplete(args: Array<String>): List<String> {
-        if (args.isEmpty()) return emptyList()
+		if (x == null || y == null || z == null) {
+			chatSyntax("$usedAlias <x> <y> <z> [maxDistancePerPacket = 5]")
+			return
+		}
 
-        val pref = args[0]
+		val moveVec = Vec3(x, y, z) - mc.thePlayer.positionVector
 
-        return when (args.size) {
-            1 -> mc.theWorld.playerEntities
-                    .filter { !AntiBot.isBot(it) && it.name.startsWith(pref, true) }
-                    .map { it.name }
-                    .toList()
+		val packetsNeeded = ceil(moveVec.lengthVector() / maxDistancePerPacket).toInt()
 
-            else -> emptyList()
-        }
-    }
+		repeat(packetsNeeded) {
+			val ratio = it / packetsNeeded.toDouble()
 
+			val vec = mc.thePlayer.positionVector + moveVec * ratio
+
+			val (pathX, pathY, pathZ) = vec
+
+			if (it == packetsNeeded - 1)
+				mc.thePlayer.setPositionAndUpdate(x, y, z)
+			else sendPacket(C04PacketPlayerPosition(pathX, pathY, pathZ, false))
+		}
+
+		chat("Teleported to §a$x $y $z§3.")
+	}
+
+	override fun tabComplete(args: Array<String>): List<String> {
+		// TODO: Should try to check for collisions by offsetting player's collision box instead
+		val rayTrace = mc.thePlayer.rayTrace(500.0, 1f)
+
+		if (rayTrace == null || rayTrace.typeOfHit != BLOCK)
+			return emptyList()
+
+		val (x, y, z) = rayTrace.blockPos ?: return emptyList()
+
+		val suggestion = when (args.size) {
+			1 -> x
+			2 -> y + 1
+			3 -> z
+			else -> return emptyList()
+		}.toString()
+
+		return if (suggestion.startsWith(args.last()))
+			listOf(suggestion)
+		else
+			emptyList()
+	}
 }

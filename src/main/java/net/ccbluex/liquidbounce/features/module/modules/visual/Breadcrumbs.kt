@@ -5,184 +5,79 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.Render3DEvent
-import me.zywl.fdpclient.event.UpdateEvent
-import me.zywl.fdpclient.event.WorldEvent
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
-import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import me.zywl.fdpclient.value.impl.BoolValue
-import me.zywl.fdpclient.value.impl.FloatValue
-import me.zywl.fdpclient.value.impl.IntegerValue
-import me.zywl.fdpclient.value.impl.ListValue
-import net.minecraft.entity.EntityLivingBase
-import org.lwjgl.opengl.GL11
-import org.lwjgl.util.glu.GLU
-import org.lwjgl.util.glu.Sphere
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import org.lwjgl.opengl.GL11.*
 import java.awt.Color
+import java.util.*
 
-@ModuleInfo(name = "Breadcrumbs", category = ModuleCategory.VISUAL)
-object Breadcrumbs : Module() {
+object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) {
+    val colorRainbow by BoolValue("Rainbow", false)
+        val colorRed by IntegerValue("R", 255, 0..255) { !colorRainbow }
+        val colorGreen by IntegerValue("G", 179, 0..255) { !colorRainbow }
+        val colorBlue by IntegerValue("B", 72, 0..255) { !colorRainbow }
 
-    private val typeValue = ListValue("Type", arrayOf("Line", "Rect", "Sphere"), "Line")
-    private val colorDisplay = BoolValue("Color", true)
-    private val colorRedValue = IntegerValue("Red", 255, 0, 255).displayable { colorDisplay.get() }
-    private val colorGreenValue = IntegerValue("Green", 179, 0, 255).displayable { colorDisplay.get() }
-    private val colorBlueValue = IntegerValue("Blue", 72, 0, 255).displayable { colorDisplay.get() }
-    private val colorAlphaValue = IntegerValue("Alpha", 255, 0, 255).displayable { colorDisplay.get() }
-    private val colorThemeClient = BoolValue("Client Color", true).displayable { colorDisplay.get() }
-
-    private val fadeValue = BoolValue("Fade", true)
-    private val drawThePlayerValue = BoolValue("DrawThePlayer", true)
-    private val drawTargetsValue = BoolValue("DrawTargets", true)
-    private val fadeTimeValue = IntegerValue("FadeTime", 5, 1, 20).displayable { fadeValue.get() }
-    private val precisionValue = IntegerValue("Precision", 4, 1, 20)
-    private val lineWidthValue = IntegerValue("LineWidth", 1, 1, 10).displayable { typeValue.equals("Line") }
-    private val sphereScaleValue = FloatValue("SphereScale", 0.6f, 0.1f, 2f).displayable { typeValue.equals("Sphere")}
-    private val onlyThirdPersonValue = BoolValue("OnlyThirdPerson", true)
-
-    private val points = mutableMapOf<Int, MutableList<BreadcrumbPoint>>()
-
-    val color: Color
-        get() = if (colorThemeClient.get()) ClientTheme.getColor(1) else Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get())
-
-    private val sphereList = GL11.glGenLists(1)
-
-    init {
-        GL11.glNewList(sphereList, GL11.GL_COMPILE)
-
-        val shaft = Sphere()
-        shaft.drawStyle = GLU.GLU_FILL
-        shaft.draw(0.3f, 25, 10)
-
-        GL11.glEndList()
-    }
+    private val positions = LinkedList<DoubleArray>()
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        if (onlyThirdPersonValue.get() && mc.gameSettings.thirdPersonView == 0) return
+        val color = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
 
-        val fTime = fadeTimeValue.get() * 1000
-        val fadeSec = System.currentTimeMillis() - fTime
-        val colorAlpha = colorAlphaValue.get() / 255.0f
+        synchronized(positions) {
+            glPushMatrix()
+            glDisable(GL_TEXTURE_2D)
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+            glEnable(GL_LINE_SMOOTH)
+            glEnable(GL_BLEND)
+            glDisable(GL_DEPTH_TEST)
 
-        GL11.glPushMatrix()
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glDisable(GL11.GL_DEPTH_TEST)
-        mc.entityRenderer.disableLightmap()
-        val renderPosX = mc.renderManager.viewerPosX
-        val renderPosY = mc.renderManager.viewerPosY
-        val renderPosZ = mc.renderManager.viewerPosZ
-        points.forEach { (_, mutableList) ->
-            var lastPosX = 114514.0
-            var lastPosY = 114514.0
-            var lastPosZ = 114514.0
-            when(typeValue.get().lowercase()) {
-                "line" -> {
-                    GL11.glLineWidth(lineWidthValue.get().toFloat())
-                    GL11.glEnable(GL11.GL_LINE_SMOOTH)
-                    GL11.glBegin(GL11.GL_LINE_STRIP)
-                }
-                "rect" -> {
-                    GL11.glDisable(GL11.GL_CULL_FACE)
-                }
-            }
-            for (point in mutableList.reversed()) {
-                val alpha = if (fadeValue.get()) {
-                    val pct = (point.time - fadeSec).toFloat() / fTime
-                    if (pct < 0 || pct > 1) {
-                        mutableList.remove(point)
-                        continue
-                    }
-                    pct
-                } else { 1f } * colorAlpha
-                if (!typeValue.equals("Rise")) {
-                    RenderUtils.glColor(point.color, alpha)
-                }
-                when(typeValue.get().lowercase()) {
-                    "line" -> GL11.glVertex3d(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
-                    "rect" -> {
-                        if(!(lastPosX==114514.0 && lastPosY==114514.0 && lastPosZ==114514.0)) {
-                            GL11.glBegin(GL11.GL_QUADS)
-                            GL11.glVertex3d(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
-                            GL11.glVertex3d(lastPosX, lastPosY, lastPosZ)
-                            GL11.glVertex3d(lastPosX, lastPosY + mc.thePlayer.height, lastPosZ)
-                            GL11.glVertex3d(point.x - renderPosX, point.y - renderPosY + mc.thePlayer.height, point.z - renderPosZ)
-                            GL11.glEnd()
-                        }
-                        lastPosX = point.x - renderPosX
-                        lastPosY = point.y - renderPosY
-                        lastPosZ = point.z - renderPosZ
-                    }
-                    "sphere" -> {
-                        GL11.glPushMatrix()
-                        GL11.glTranslated(point.x - renderPosX, point.y - renderPosY, point.z - renderPosZ)
-                        GL11.glScalef(sphereScaleValue.get(), sphereScaleValue.get(), sphereScaleValue.get())
-                        GL11.glCallList(sphereList)
-                        GL11.glPopMatrix()
-                    }
-                }
-            }
-            when(typeValue.get().lowercase()) {
-                "line" -> {
-                    GL11.glEnd()
-                    GL11.glDisable(GL11.GL_LINE_SMOOTH)
-                }
-                "rect" -> {
-                    GL11.glEnable(GL11.GL_CULL_FACE)
-                }
-            }
+            mc.entityRenderer.disableLightmap()
+
+            glBegin(GL_LINE_STRIP)
+            glColor(color)
+
+            val renderPosX = mc.renderManager.viewerPosX
+            val renderPosY = mc.renderManager.viewerPosY
+            val renderPosZ = mc.renderManager.viewerPosZ
+
+            for (pos in positions)
+                glVertex3d(pos[0] - renderPosX, pos[1] - renderPosY, pos[2] - renderPosZ)
+
+            glColor4d(1.0, 1.0, 1.0, 1.0)
+            glEnd()
+            glEnable(GL_DEPTH_TEST)
+            glDisable(GL_LINE_SMOOTH)
+            glDisable(GL_BLEND)
+            glEnable(GL_TEXTURE_2D)
+            glPopMatrix()
         }
-        GL11.glColor4d(1.0, 1.0, 1.0, 1.0)
-        GL11.glEnable(GL11.GL_DEPTH_TEST)
-        GL11.glDisable(GL11.GL_BLEND)
-        GL11.glEnable(GL11.GL_TEXTURE_2D)
-        GL11.glPopMatrix()
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        // clear points for entities not exist
-        points.forEach { (id, _) ->
-            if(mc.theWorld.getEntityByID(id) == null) {
-                points.remove(id)
-            }
-        }
-        // add new points
-        if(mc.thePlayer.ticksExisted % precisionValue.get() != 0) {
-            return // skip if not on tick
-        }
-        if(drawTargetsValue.get()) {
-            mc.theWorld.loadedEntityList.forEach {
-                if(EntityUtils.isSelected(it, true)) {
-                    updatePoints(it as EntityLivingBase)
-                }
-            }
-        }
-        if(drawThePlayerValue.get()) {
-            updatePoints(mc.thePlayer)
+        synchronized(positions) {
+            positions += doubleArrayOf(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY, mc.thePlayer.posZ)
         }
     }
 
-    private fun updatePoints(entity: EntityLivingBase) {
-        (points[entity.entityId] ?: mutableListOf<BreadcrumbPoint>().also { points[entity.entityId] = it })
-            .add(BreadcrumbPoint(entity.posX, entity.entityBoundingBox.minY, entity.posZ, System.currentTimeMillis(), color.rgb))
-    }
+    override fun onEnable() {
+        val thePlayer = mc.thePlayer ?: return
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
-        points.clear()
+        synchronized(positions) {
+            positions += doubleArrayOf(thePlayer.posX, thePlayer.posY + thePlayer.eyeHeight * 0.5f, thePlayer.posZ)
+
+            positions += doubleArrayOf(thePlayer.posX, thePlayer.posY, thePlayer.posZ)
+        }
     }
 
     override fun onDisable() {
-        points.clear()
+        synchronized(positions) { positions.clear() }
     }
-
-    class BreadcrumbPoint(val x: Double, val y: Double, val z: Double, val time: Long, val color: Int)
 }

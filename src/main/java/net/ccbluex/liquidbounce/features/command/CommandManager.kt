@@ -6,11 +6,12 @@
 package net.ccbluex.liquidbounce.features.command
 
 import net.ccbluex.liquidbounce.utils.ClassUtils
-import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
 
-class CommandManager {
-    val commands = HashMap<String, Command>()
-    var latestAutoComplete: Array<String> = emptyArray()
+object CommandManager {
+    val commands = mutableListOf<Command>()
+    var latestAutoComplete = emptyArray<String>()
 
     var prefix = '.'
 
@@ -27,43 +28,59 @@ class CommandManager {
      */
     fun executeCommands(input: String) {
         val args = input.split(" ").toTypedArray()
-        val command = commands[args[0].substring(1).lowercase()]
 
-        if (command != null) {
-            command.execute(args)
-        } else {
-            ClientUtils.displayChatMessage("§cCommand not found. Type ${prefix}help to view all commands.")
+        for (command in commands) {
+            if (args[0].equals(prefix.toString() + command.command, ignoreCase = true)) {
+                command.execute(args)
+                return
+            }
+
+            for (alias in command.alias) {
+                if (!args[0].equals(prefix.toString() + alias, ignoreCase = true)) continue
+
+                command.execute(args)
+                return
+            }
         }
+
+        displayChatMessage("§cCommand not found. Type ${prefix}help to view all commands.")
     }
 
     /**
      * Updates the [latestAutoComplete] array based on the provided [input].
      *
      * @param input text that should be used to check for auto completions.
-     * @author NurMarvin
      */
     fun autoComplete(input: String): Boolean {
-        this.latestAutoComplete = this.getCompletions(input) ?: emptyArray()
-        return input.startsWith(this.prefix) && this.latestAutoComplete.isNotEmpty()
+        latestAutoComplete = getCompletions(input) ?: emptyArray()
+        return input.startsWith(prefix) && latestAutoComplete.isNotEmpty()
     }
 
     /**
      * Returns the auto completions for [input].
      *
      * @param input text that should be used to check for auto completions.
-     * @author NurMarvin
      */
     private fun getCompletions(input: String): Array<String>? {
-        if (input.isNotEmpty() && input.toCharArray()[0] == this.prefix) {
+        if (input.isNotEmpty() && input[0] == prefix) {
             val args = input.split(" ")
 
             return if (args.size > 1) {
                 val command = getCommand(args[0].substring(1))
-                val tabCompletions = command?.tabComplete(args.drop(1).toTypedArray())
-
-                tabCompletions?.toTypedArray()
+                command?.tabComplete(args.drop(1).toTypedArray())?.toTypedArray()
             } else {
-                commands.map { ".${it.key}" }.filter { it.lowercase().startsWith(args[0].lowercase()) }.toTypedArray()
+                val rawInput = input.substring(1)
+                commands
+                    .filter {
+                        it.command.startsWith(rawInput, true) ||
+                                it.alias.any { alias -> alias.startsWith(rawInput, true) }
+                    }
+                    .map {
+                        val alias = if (it.command.startsWith(rawInput, true)) it.command
+                        else it.alias.first { alias -> alias.startsWith(rawInput, true) }
+                        prefix + alias
+                    }
+                    .toTypedArray()
             }
         }
         return null
@@ -72,18 +89,17 @@ class CommandManager {
     /**
      * Get command instance by given [name]
      */
-    fun getCommand(name: String): Command? {
-        return commands[name.lowercase()]
-    }
+    fun getCommand(name: String) =
+        commands.find {
+            it.command.equals(name, ignoreCase = true) ||
+                    it.alias.any { alias -> alias.equals(name, true) }
+        }
 
     /**
      * Register [command] by just adding it to the commands registry
      */
     fun registerCommand(command: Command) {
-        commands[command.command.lowercase()] = command
-        command.alias.forEach {
-            commands[it.lowercase()] = command
-        }
+        commands.add(command)
     }
 
     /**
@@ -91,9 +107,13 @@ class CommandManager {
      */
     private fun registerCommand(commandClass: Class<out Command>) {
         try {
-            registerCommand(commandClass.newInstance())
+            val constructor = commandClass.getDeclaredConstructor()
+            if (!constructor.isAccessible) {
+                constructor.isAccessible = true
+            }
+            registerCommand(constructor.newInstance())
         } catch (e: Throwable) {
-            ClientUtils.logError("Failed to load command: ${commandClass.name} (${e.javaClass.name}: ${e.message})")
+            LOGGER.info("Failed to load command: ${commandClass.name} (${e.javaClass.name}: ${e.message})")
         }
     }
 
@@ -101,10 +121,6 @@ class CommandManager {
      * Unregister [command] by just removing it from the commands registry
      */
     fun unregisterCommand(command: Command) {
-        commands.toList().forEach {
-            if (it.second == command) {
-                commands.remove(it.first)
-            }
-        }
+        commands.removeIf { it == command }
     }
 }

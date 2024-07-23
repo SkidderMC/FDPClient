@@ -5,55 +5,91 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
-import net.ccbluex.liquidbounce.utils.misc.StringUtils
+import net.ccbluex.liquidbounce.features.module.ModuleManager
+import net.ccbluex.liquidbounce.features.module.modules.other.AutoDisable
 
-/**
- * AutoDisable Command
- *
- * Allows you to manage the list of modules that are automatically disabled.
- * It provides subcommands to add, remove, list and clear modules from the auto-disable list.
- */
-class AutoDisableCommand : Command("autodisable", arrayOf("ad")) {
-    private val modes = EnumAutoDisableType.values().map { it.name.lowercase() }.toTypedArray()
+object AutoDisableCommand : Command("autodisable") {
 
+    /**
+     * Execute commands with provided [args]
+     */
     override fun execute(args: Array<String>) {
-        if (args.size > 2) {
-            val module = FDPClient.moduleManager.getModule(args[1])
-
-            if (module == null) {
-                alert("Module '${args[1]}' not found.")
-                return
-            }
-
-            module.autoDisable = try {
-                EnumAutoDisableType.valueOf(args[2].uppercase())
-            } catch (e: IllegalArgumentException) {
-                EnumAutoDisableType.NONE
-            }
-            playEdit()
-
-            alert("Set module §l${module.name}§r AutoDisable state to §l${module.autoDisable}§r.")
-
+        if (args.size < 2) {
+            chatSyntax("autodisable <add/remove/list>")
             return
         }
 
-        chatSyntax("autodisable <module> [${StringUtils.toCompleteString(modes,0,",")}]")
+        when (args[1].lowercase()) {
+            "add" -> {
+                if (args.size < 3) {
+                    chatSyntax("autodisable add <module>")
+                    return
+                }
+
+                val moduleName = args[2]
+                val module = ModuleManager.getModule(moduleName)
+
+                if (module != null) {
+                    if (AutoDisable.getModules().contains(module)) {
+                        chat("§cModule §b$moduleName §cis already in the auto-disable list.")
+                    } else {
+                        AutoDisable.addModule(module)
+                        chat("§b$moduleName §ahas been added to the auto-disable list.")
+                    }
+                } else {
+                    chat("§cModule §b$moduleName §cnot found.")
+                }
+            }
+            "remove" -> {
+                if (args.size < 3) {
+                    chatSyntax("autodisable remove <module>")
+                    return
+                }
+
+                val moduleName = args[2]
+                val module = ModuleManager.getModule(moduleName)
+
+                if (module != null) {
+                    if (AutoDisable.getModules().contains(module)) {
+                        AutoDisable.removeModule(module)
+                        chat("§b$moduleName §6has been removed from the auto-disable list.")
+                    } else {
+                        chat("§cModule §b$moduleName §cis not in the auto-disable list.")
+                    }
+                } else {
+                    chat("§cModule §b$moduleName §cnot found.")
+                }
+            }
+            "list" -> {
+                val modules = AutoDisable.getModules()
+                chat("Modules in the auto-disable list:")
+                modules.forEach { chat(it.name) }
+            }
+            else -> chatSyntax("autodisable <add/remove/list>")
+        }
     }
 
     override fun tabComplete(args: Array<String>): List<String> {
-        if (args.isEmpty()) return emptyList()
+        if (args.isEmpty()) {
+            return emptyList()
+        }
 
         return when (args.size) {
-            1 -> FDPClient.moduleManager.modules
-                .map { it.name }
-                .filter { it.startsWith(args[0], true) }
-                .toList()
-
-            2 -> modes.filter { it.startsWith(args[1], true) }
-
+            1 -> listOf("add", "remove", "list").filter { it.startsWith(args[0], true) }
+            2 -> {
+                when (args[0].lowercase()) {
+                    "add" -> {
+                        val input = args[1].lowercase()
+                        ModuleManager.modules.filter { it.name.lowercase().startsWith(input) }.map { it.name }
+                    }
+                    "remove" -> {
+                        val input = args[1].lowercase()
+                        AutoDisable.getModules().filter { it.name.lowercase().startsWith(input) }.map { it.name }
+                    }
+                    else -> emptyList()
+                }
+            }
             else -> emptyList()
         }
     }

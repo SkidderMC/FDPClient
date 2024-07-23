@@ -5,38 +5,40 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.MoveEvent
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import me.zywl.fdpclient.value.impl.BoolValue
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
+import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.minecraft.block.BlockAir
+import net.minecraft.util.BlockPos
 
-@ModuleInfo(name = "SafeWalk", category = ModuleCategory.MOVEMENT)
-object SafeWalk : Module() {
+object SafeWalk : Module("SafeWalk", Category.MOVEMENT, hideModule = false) {
 
-    private val airSafeValue = BoolValue("AirSafe", false)
-    private val onlyVoidValue = BoolValue("OnlyPredictVoid", false)
+    private val airSafe by BoolValue("AirSafe", false)
+    private val maxFallDistanceValue = IntegerValue("MaxFallDistance", 5, 0..100)
+
+    private var lastGroundY: Double? = null
+    private var lastCollisionY: Int? = null
 
     @EventTarget
     fun onMove(event: MoveEvent) {
-        if (onlyVoidValue.get() && !checkVoid()) {
-            return
-        } else {
-            if (airSafeValue.get() || mc.thePlayer.onGround) {
-                event.isSafeWalk = true
-            }
-        }
-    }
+        val player = mc.thePlayer ?: return
+        if (player.capabilities.allowFlying || player.capabilities.isFlying
+            || !mc.playerController.gameIsSurvivalOrAdventure()) return
 
-    private fun checkVoid(): Boolean {
-        var i = (-(mc.thePlayer.posY-1.4857625)).toInt()
-        var dangerous = true
-		while (i <= 0) {
-			dangerous = mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(mc.thePlayer.motionX * 1.4, i.toDouble(), mc.thePlayer.motionZ * 1.4)).isEmpty()
-			i++
-			if (!dangerous) break
-		}
-        return dangerous
+        if (!maxFallDistanceValue.isMinimal() && player.onGround && getBlock(BlockPos(player).down()) !is BlockAir) {
+            lastGroundY = player.posY
+            lastCollisionY = FallingPlayer(player, true).findCollision(60)?.pos?.y
+        }
+
+        if (airSafe || player.onGround) {
+            event.isSafeWalk = maxFallDistanceValue.isMinimal()
+                    || (lastGroundY != null && lastCollisionY != null
+                    && lastGroundY!! - lastCollisionY!! > maxFallDistanceValue.get() + 1)
+        }
     }
 }

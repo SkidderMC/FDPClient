@@ -3,97 +3,146 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.utils;
+package net.ccbluex.liquidbounce.utils
 
-import me.liuli.path.Cell;
-import me.liuli.path.Pathfinder;
-import net.ccbluex.liquidbounce.utils.block.MinecraftWorldProvider;
-import net.minecraft.util.MathHelper;
-import net.minecraft.util.Vec3;
+import me.liuli.path.Cell
+import me.liuli.path.Pathfinder
+import net.ccbluex.liquidbounce.utils.block.MinecraftWorldProvider
+import net.minecraft.util.Vec3
+import javax.vecmath.Vector3d
+import kotlin.math.*
 
-import javax.vecmath.Vector3d;
-import java.util.ArrayList;
-import java.util.List;
+object PathUtils : MinecraftInstance() {
+    fun findBlinkPath(tpX: Double, tpY: Double, tpZ: Double): List<Vector3d> {
+        val positions = mutableListOf<Vector3d>()
 
-public final class PathUtils extends MinecraftInstance {
-    public static List<Vec3> findBlinkPath(final double tpX, final double tpY, final double tpZ){
-        return findBlinkPath(tpX, tpY, tpZ,5);
+        var curX = mc.thePlayer.posX
+        var curY = mc.thePlayer.posY
+        var curZ = mc.thePlayer.posZ
+        var distance = abs(curX - tpX) + abs(curY - tpY) + abs(curZ - tpZ)
+
+        var count = 0
+        while (distance > 0) {
+            distance = abs(curX - tpX) + abs(curY - tpY) + abs(curZ - tpZ)
+
+            val diffX = curX - tpX
+            val diffY = curY - tpY
+            val diffZ = curZ - tpZ
+            val offset = if (count and 1 == 0) 0.4 else 0.1
+
+            val minX = diffX.coerceIn(-offset, offset)
+            curX -= minX
+
+            val minY = diffY.coerceIn(-0.25, 0.25)
+            curY -= minY
+
+            val minZ = diffZ.coerceIn(-offset, offset)
+            curZ -= minZ
+
+            positions += Vector3d(curX, curY, curZ)
+            count++
+        }
+
+        return positions
     }
 
-    public static List<Vec3> findBlinkPath(final double tpX, final double tpY, final double tpZ,final double dist){
-        return findBlinkPath(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, tpX, tpY, tpZ, dist);
+
+    fun findBlinkPath(tpX: Double, tpY: Double, tpZ: Double, dist: Double): List<Vec3> {
+        return findBlinkPath(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, tpX, tpY, tpZ, dist)
     }
 
-    public static List<Vec3> findBlinkPath(double curX, double curY, double curZ, final double tpX, final double tpY, final double tpZ, final double dashDistance) {
-        final MinecraftWorldProvider worldProvider = new MinecraftWorldProvider(mc.theWorld);
-        final Pathfinder pathfinder = new Pathfinder(new Cell((int)curX, (int)curY, (int)curZ), new Cell((int)tpX, (int)tpY, (int)tpZ),
-                Pathfinder.COMMON_NEIGHBORS, worldProvider);
+    fun findBlinkPath(
+        curX: Double,
+        curY: Double,
+        curZ: Double,
+        tpX: Double,
+        tpY: Double,
+        tpZ: Double,
+        dashDistance: Double
+    ): List<Vec3> {
+        val worldProvider = MinecraftWorldProvider(mc.theWorld)
+        val pathfinder = Pathfinder(
+            Cell(curX.toInt(), curY.toInt(), curZ.toInt()), Cell(tpX.toInt(), tpY.toInt(), tpZ.toInt()),
+            Pathfinder.COMMON_NEIGHBORS, worldProvider
+        )
 
-        return simplifyPath(pathfinder.findPath(3000), dashDistance, worldProvider);
+        return simplifyPath(pathfinder.findPath(3000), dashDistance, worldProvider)
     }
 
-    public static ArrayList<Vec3> simplifyPath(final ArrayList<Cell> path, final double dashDistance, final MinecraftWorldProvider worldProvider) {
-        final ArrayList<Vec3> finalPath = new ArrayList<>();
 
-        Cell cell = path.get(0);
-        Vec3 vec3;
-        Vec3 lastLoc = new Vec3(cell.x + 0.5, cell.y, cell.z + 0.5);
-        Vec3 lastDashLoc = lastLoc;
-        for (int i = 1; i < path.size() - 1; i++) {
-            cell = path.get(i);
-            vec3 = new Vec3(cell.x + 0.5, cell.y, cell.z + 0.5);
-            boolean canContinue = true;
+    fun findPath(tpX: Double, tpY: Double, tpZ: Double, offset: Double): List<Vector3d> {
+        val positions = mutableListOf<Vector3d>()
+        val steps = ceil(getDistance(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, tpX, tpY, tpZ) / offset)
+
+        val dX = tpX - mc.thePlayer.posX
+        val dY = tpY - mc.thePlayer.posY
+        val dZ = tpZ - mc.thePlayer.posZ
+
+        var d = 1.0
+        while (d <= steps) {
+            positions += Vector3d(mc.thePlayer.posX + dX * d / steps, mc.thePlayer.posY + dY * d / steps, mc.thePlayer.posZ + dZ * d / steps)
+            ++d
+        }
+
+        return positions
+    }
+
+    private fun getDistance(x1: Double, y1: Double, z1: Double, x2: Double, y2: Double, z2: Double): Double {
+        val xDiff = x1 - x2
+        val yDiff = y1 - y2
+        val zDiff = z1 - z2
+
+        return sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff)
+    }
+
+    fun simplifyPath(
+        path: ArrayList<Cell>,
+        dashDistance: Double,
+        worldProvider: MinecraftWorldProvider
+    ): ArrayList<Vec3> {
+        val finalPath = ArrayList<Vec3>()
+
+        var cell = path[0]
+        var vec3: Vec3
+        var lastLoc = Vec3(cell.x + 0.5, cell.y.toDouble(), cell.z + 0.5)
+        var lastDashLoc = lastLoc
+        for (i in 1 until path.size - 1) {
+            cell = path[i]
+            vec3 = Vec3(cell.x + 0.5, cell.y.toDouble(), cell.z + 0.5)
+            var canContinue = true
             if (vec3.squareDistanceTo(lastDashLoc) > dashDistance * dashDistance) {
-                canContinue = false;
+                canContinue = false
             } else {
-                double smallX = Math.min(lastDashLoc.xCoord, vec3.xCoord);
-                double smallY = Math.min(lastDashLoc.yCoord, vec3.yCoord);
-                double smallZ = Math.min(lastDashLoc.zCoord, vec3.zCoord);
-                double bigX = Math.max(lastDashLoc.xCoord, vec3.xCoord);
-                double bigY = Math.max(lastDashLoc.yCoord, vec3.yCoord);
-                double bigZ = Math.max(lastDashLoc.zCoord, vec3.zCoord);
-                cordsLoop:
-                for (int x = (int) smallX; x <= bigX; x++) {
-                    for (int y = (int) smallY; y <= bigY; y++) {
-                        for (int z = (int) smallZ; z <= bigZ; z++) {
+                val smallX = min(lastDashLoc.xCoord, vec3.xCoord)
+                val smallY = min(lastDashLoc.yCoord, vec3.yCoord)
+                val smallZ = min(lastDashLoc.zCoord, vec3.zCoord)
+                val bigX = max(lastDashLoc.xCoord, vec3.xCoord)
+                val bigY = max(lastDashLoc.yCoord, vec3.yCoord)
+                val bigZ = max(lastDashLoc.zCoord, vec3.zCoord)
+                var x = smallX.toInt()
+                cordsLoop@ while (x <= bigX) {
+                    var y = smallY.toInt()
+                    while (y <= bigY) {
+                        var z = smallZ.toInt()
+                        while (z <= bigZ) {
                             if (worldProvider.isBlocked(x, y, z)) {
-                                canContinue = false;
-                                break cordsLoop;
+                                canContinue = false
+                                break@cordsLoop
                             }
+                            z++
                         }
+                        y++
                     }
+                    x++
                 }
             }
             if (!canContinue) {
-                finalPath.add(lastLoc);
-                lastDashLoc = lastLoc;
+                finalPath.add(lastLoc)
+                lastDashLoc = lastLoc
             }
-            lastLoc = vec3;
+            lastLoc = vec3
         }
 
-        return finalPath;
+        return finalPath
     }
-
-    public static List<Vector3d> findPath(final double tpX, final double tpY, final double tpZ, final double offset) {
-        final List<Vector3d> positions = new ArrayList<>();
-        final double steps = Math.ceil(getDistance(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, tpX, tpY, tpZ) / offset);
-
-        final double dX = tpX - mc.thePlayer.posX;
-        final double dY = tpY - mc.thePlayer.posY;
-        final double dZ = tpZ - mc.thePlayer.posZ;
-
-        for (double d = 1D; d <= steps; ++d) {
-            positions.add(new Vector3d(mc.thePlayer.posX + (dX * d) / steps, mc.thePlayer.posY + (dY * d) / steps, mc.thePlayer.posZ + (dZ * d) / steps));
-        }
-
-        return positions;
-    }
-
-    private static double getDistance(final double x1, final double y1, final double z1, final double x2, final double y2, final double z2) {
-        final double xDiff = x1 - x2;
-        final double yDiff = y1 - y2;
-        final double zDiff = z1 - z2;
-        return MathHelper.sqrt_double(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff);
-    }
-
 }

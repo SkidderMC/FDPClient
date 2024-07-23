@@ -5,138 +5,104 @@
  */
 package net.ccbluex.liquidbounce.ui.font
 
-import me.zywl.fdpclient.FDPClient
-import me.zywl.fdpclient.event.TextEvent
-import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule
-import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
-import net.ccbluex.liquidbounce.utils.ClassUtils
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.features.module.modules.visual.NameProtect
+import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawLine
+import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientFontShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
 import net.minecraft.client.gui.FontRenderer
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.resources.IResourceManager
+import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.util.ResourceLocation
-import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL20
+import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL20.glUseProgram
 import java.awt.Color
 import java.awt.Font
 
-class GameFontRenderer(font: Font) : FontRenderer(
-    MinecraftInstance.mc.gameSettings,
-    ResourceLocation("textures/font/ascii.png"),
-    if (ClassUtils.hasForge()) null else MinecraftInstance.mc.textureManager,
-    false
-) {
+class GameFontRenderer(font: Font) : FontRenderer(mc.gameSettings, ResourceLocation("textures/font/ascii.png"), mc.textureManager, false) {
 
-    var defaultFont = AWTFontRenderer(font)
-    private var boldFont = AWTFontRenderer(font.deriveFont(Font.BOLD))
-    private var italicFont = AWTFontRenderer(font.deriveFont(Font.ITALIC))
-    private var boldItalicFont = AWTFontRenderer(font.deriveFont(Font.BOLD or Font.ITALIC))
+    val fontHeight: Int
+    val defaultFont = AWTFontRenderer(font)
+    private val boldFont = AWTFontRenderer(font.deriveFont(Font.BOLD))
+    private val italicFont = AWTFontRenderer(font.deriveFont(Font.ITALIC))
+    private val boldItalicFont = AWTFontRenderer(font.deriveFont(Font.BOLD or Font.ITALIC))
 
-    val height: Int
+    val height
         get() = defaultFont.height / 2
 
-    val size: Int
+    val size
         get() = defaultFont.font.size
 
     init {
-        FONT_HEIGHT = height
+        fontHeight = height
     }
 
     fun drawString(s: String, x: Float, y: Float, color: Int) = drawString(s, x, y, color, false)
 
-    fun drawStringFade(s: String, x: Float, y: Float, color: Color) {
-        drawString(s, x+0.7F, y+0.7F, Color(0,0,0,color.alpha).rgb, false)
-        drawString(s, x, y, color.rgb, false)
+    override fun drawStringWithShadow(text: String, x: Float, y: Float, color: Int) = drawString(text, x, y, color, true)
+
+    fun drawCenteredString(s: String, x: Float, y: Float, color: Int, shadow: Boolean) {
+        if (shadow) {
+            drawStringWithShadow(s, x - getStringWidth(s) / 2F, y, color)
+        } else {
+            drawString(s, x - getStringWidth(s) / 2F, y, color)
+        }
     }
 
-    fun stringWidth(text: CharSequence?) {}
-
-    fun stringWidthINT(text: CharSequence?): Int {
-        return if (text.isNullOrEmpty()) 0 else getStringWidth(text.toString())
-    }
-
-    fun drawCenteredTextScaled(text: String?, givenX: Int, givenY: Int, color: Int, givenScale: Double) {
-        GL11.glPushMatrix()
-        GL11.glTranslated(givenX.toDouble(), givenY.toDouble(), 0.0)
-        GL11.glScaled(givenScale, givenScale, givenScale)
-        this.drawCenteredString(text!!, 0.0f, 0.0f, color)
-        GL11.glPopMatrix()
-    }
-
-    fun getMiddleOfBox(boxHeight: Float): Float {
-        return boxHeight / 2f - height / 2f
-    }
-
-    override fun drawStringWithShadow(text: String, x: Float, y: Float, color: Int) =
-        drawString(text, x, y, color, true)
-
-    fun drawCenteredString(s: String, x: Float, y: Float, color: Int, shadow: Boolean) =
-        drawString(s, x - getStringWidth(s) / 2F, y, color, shadow)
-
-    fun drawCenteredString(s: String, x: Float, y: Float, color: Int) =
+    fun drawCenteredStringWithShadow(s: String, x: Float, y: Float, color: Int) =
         drawStringWithShadow(s, x - getStringWidth(s) / 2F, y, color)
 
-    override fun drawString(text: String, x: Float, y: Float, color: Int, shadow: Boolean): Int {
-        var currentText = text
+    fun drawCenteredStringWithoutShadow(s: String, x: Float, y: Float, color: Int) =
+        drawString(s, x - getStringWidth(s) / 2F, y, color)
 
-        val event = TextEvent(currentText)
-        FDPClient.eventManager.callEvent(event)
-        currentText = event.text ?: return 0
-
-        val currY = y - 3F
-        val rainbow = RainbowFontShader.INSTANCE.isInUse
-
-        if (shadow) {
-            when {
-                HUDModule.shadowValue.get() == "Normal" ->    drawText(currentText, x + 1f, currY + 1f, Color(20, 20, 20, 200).rgb, true)
-                HUDModule.shadowValue.get() == "LiquidBounce" -> drawText(currentText, x + 1f, currY + 1f, Color(0, 0, 0, 150).rgb, true)
-                HUDModule.shadowValue.get() == "Default" -> drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
-                HUDModule.shadowValue.get() == "Autumn" -> drawText(currentText, x + 1f, currY + 1f, Color(20, 20, 20, 200).rgb, true)
-                HUDModule.shadowValue.get() == "Outline" -> {
-                    drawText(currentText, x + 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
-                    drawText(currentText, x - 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
-                    drawText(currentText, x + 0.5f, currY - 0.5f, Color(0, 0, 0, 130).rgb, true)
-                    drawText(currentText, x - 0.5f, currY + 0.5f, Color(0, 0, 0, 130).rgb, true)
-                }
-            }
-
-        }
-
-        return drawText(currentText, x, currY, color, false, rainbow)
+    fun drawCenteredTextScaled(text: String?, givenX: Int, givenY: Int, color: Int, givenScale: Double) {
+        glPushMatrix()
+        glTranslated(givenX.toDouble(), givenY.toDouble(), 0.0)
+        glScaled(givenScale, givenScale, givenScale)
+        this.drawCenteredString(text!!, 0.0f, 0.0f, color, shadow = true)
+        glPopMatrix()
     }
 
-    private fun drawText(text: String?, x: Float, y: Float, color: Int, ignoreColor: Boolean, rainbow: Boolean = false): Int {
-        if (text == null)
-            return 0
+    override fun drawString(text: String, x: Float, y: Float, color: Int, shadow: Boolean): Int {
+        val currentText = NameProtect.handleTextMessage(text)
+        val currY = y - 3F
+        val rainbow = RainbowFontShader.isInUse
+        val gradient = GradientFontShader.isInUse
+
+        if (shadow) {
+            glUseProgram(0)
+            drawText(currentText, x + 1f, currY + 1f, Color(0, 0, 0, 150).rgb, true)
+        }
+
+        return drawText(currentText, x, currY, color, false, rainbow, gradient)
+    }
+
+    private fun drawText(text: String, x: Float, y: Float, color: Int, ignoreColor: Boolean, rainbow: Boolean = false, gradient: Boolean = false): Int {
         if (text.isEmpty())
             return x.toInt()
 
-        GlStateManager.translate(x - 1.5, y + 0.5, 0.0)
-        GlStateManager.enableAlpha()
-        GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
-        GlStateManager.enableTexture2D()
+        val rainbowShaderId = RainbowFontShader.programId
+        if (rainbow) glUseProgram(rainbowShaderId)
+
+        val gradientShaderId = GradientFontShader.programId
+        if (gradient) glUseProgram(gradientShaderId)
+
+        glTranslated(x - 1.5, y + 0.5, 0.0)
+        enableAlpha()
+        enableBlend()
+        tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
+        enableTexture2D()
 
         var currentColor = color
-
         if (currentColor and -0x4000000 == 0)
             currentColor = currentColor or -16777216
 
-        val defaultColor = currentColor
+        val alpha = (currentColor shr 24 and 0xff)
 
-        val alpha: Int = (currentColor shr 24 and 0xff)
-
-        if (text.contains("§")) {
+        if ("§" in text) {
             val parts = text.split("§")
-
             var currentFont = defaultFont
-
             var width = 0.0
-
-            // Color code states
             var randomCase = false
             var bold = false
             var italic = false
@@ -144,8 +110,7 @@ class GameFontRenderer(font: Font) : FontRenderer(
             var underline = false
 
             parts.forEachIndexed { index, part ->
-                if (part.isEmpty())
-                    return@forEachIndexed
+                if (part.isEmpty()) return@forEachIndexed
 
                 if (index == 0) {
                     currentFont.drawString(part, width, 0.0, currentColor)
@@ -153,16 +118,13 @@ class GameFontRenderer(font: Font) : FontRenderer(
                 } else {
                     val words = part.substring(1)
                     val type = part[0]
-
                     when (val colorIndex = getColorIndex(type)) {
                         in 0..15 -> {
                             if (!ignoreColor) {
                                 currentColor = ColorUtils.hexColors[colorIndex] or (alpha shl 24)
-
-                                if (rainbow)
-                                    GL20.glUseProgram(0)
+                                if (rainbow) glUseProgram(0)
+                                if (gradient) glUseProgram(0)
                             }
-
                             bold = false
                             italic = false
                             randomCase = false
@@ -176,12 +138,9 @@ class GameFontRenderer(font: Font) : FontRenderer(
                         20 -> italic = true
                         21 -> {
                             currentColor = color
-
-                            if (currentColor and -67108864 == 0)
-                                currentColor = currentColor or -16777216
-
-
-
+                            if (currentColor and -67108864 == 0) currentColor = currentColor or -16777216
+                            if (rainbow) glUseProgram(rainbowShaderId)
+                            if (gradient) glUseProgram(gradientShaderId)
                             bold = false
                             italic = false
                             randomCase = false
@@ -190,181 +149,52 @@ class GameFontRenderer(font: Font) : FontRenderer(
                         }
                     }
 
-                    currentFont = if (bold && italic)
-                        boldItalicFont
-                    else if (bold)
-                        boldFont
-                    else if (italic)
-                        italicFont
-                    else
-                        defaultFont
+                    currentFont = when {
+                        bold && italic -> boldItalicFont
+                        bold -> boldFont
+                        italic -> italicFont
+                        else -> defaultFont
+                    }
 
                     currentFont.drawString(if (randomCase) ColorUtils.randomMagicText(words) else words, width, 0.0, currentColor)
-
                     if (strikeThrough)
-                        RenderUtils.drawLine(width / 2.0 + 1, currentFont.height / 3.0,
+                        drawLine(width / 2.0 + 1, currentFont.height / 3.0,
                             (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 3.0,
-                            FONT_HEIGHT / 16F)
+                            fontHeight / 16F)
 
                     if (underline)
-                        RenderUtils.drawLine(width / 2.0 + 1, currentFont.height / 2.0,
+                        drawLine(width / 2.0 + 1, currentFont.height / 2.0,
                             (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 2.0,
-                            FONT_HEIGHT / 16F)
+                            fontHeight / 16F)
 
                     width += currentFont.getStringWidth(words)
                 }
             }
         } else {
-            // Color code states
             defaultFont.drawString(text, 0.0, 0.0, currentColor)
         }
 
-        GlStateManager.disableBlend()
-        GlStateManager.translate(-(x - 1.5), -(y + 0.5), 0.0)
-        GlStateManager.color(1f, 1f, 1f, 1f)
+        disableBlend()
+        glTranslated(-(x - 1.5), -(y + 0.5), 0.0)
+        glColor4f(1f, 1f, 1f, 1f)
 
         return (x + getStringWidth(text)).toInt()
     }
 
-    private fun drawText(text: String?, x: Float, y: Float, colorHex: Int, ignoreColor: Boolean): Int {
-        if (text == null)
-            return 0
-        if (text.isEmpty())
-            return x.toInt()
-
-        GlStateManager.translate(x - 1.5, y + 0.5, 0.0)
-        GlStateManager.enableAlpha()
-        GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
-        GlStateManager.enableTexture2D()
-
-        var hexColor = colorHex
-        if (hexColor and -67108864 == 0)
-            hexColor = hexColor or -16777216
-
-        val alpha: Int = (hexColor shr 24 and 0xff)
-
-        if (text.contains("§")) {
-            val parts = text.split("§")
-
-            var currentFont = defaultFont
-
-            var width = 0.0
-
-            // Color code states
-            var randomCase = false
-            var bold = false
-            var italic = false
-            var strikeThrough = false
-            var underline = false
-
-            parts.forEachIndexed { index, part ->
-                if (part.isEmpty())
-                    return@forEachIndexed
-
-                if (index == 0) {
-                    currentFont.drawString(part, width, 0.0, hexColor)
-                    width += currentFont.getStringWidth(part)
-                } else {
-                    val words = part.substring(1)
-                    val type = part[0]
-
-                    when (val colorIndex = getColorIndex(type)) {
-                        in 0..15 -> {
-                            if (!ignoreColor) {
-                                hexColor = ColorUtils.hexColors[colorIndex] or (alpha shl 24)
-                            }
-
-                            bold = false
-                            italic = false
-                            randomCase = false
-                            underline = false
-                            strikeThrough = false
-                        }
-
-                        16 -> randomCase = true
-                        17 -> bold = true
-                        18 -> strikeThrough = true
-                        19 -> underline = true
-                        20 -> italic = true
-                        21 -> {
-                            hexColor = colorHex
-                            if (hexColor and -67108864 == 0)
-                                hexColor = hexColor or -16777216
-
-                            bold = false
-                            italic = false
-                            randomCase = false
-                            underline = false
-                            strikeThrough = false
-                        }
-                    }
-
-                    currentFont = if (bold && italic)
-                        boldItalicFont
-                    else if (bold)
-                        boldFont
-                    else if (italic)
-                        italicFont
-                    else
-                        defaultFont
-
-                    currentFont.drawString(
-                        if (randomCase) ColorUtils.randomMagicText(words) else words,
-                        width,
-                        0.0,
-                        hexColor
-                    )
-
-                    if (strikeThrough)
-                        RenderUtils.drawLine(
-                            width / 2.0 + 1, currentFont.height / 3.0,
-                            (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 3.0,
-                            FONT_HEIGHT / 16F
-                        )
-
-                    if (underline)
-                        RenderUtils.drawLine(
-                            width / 2.0 + 1, currentFont.height / 2.0,
-                            (width + currentFont.getStringWidth(words)) / 2.0 + 1, currentFont.height / 2.0,
-                            FONT_HEIGHT / 16F
-                        )
-
-                    width += currentFont.getStringWidth(words)
-                }
-            }
-        } else
-            defaultFont.drawString(text, 0.0, 0.0, hexColor)
-
-        GlStateManager.disableBlend()
-        GlStateManager.translate(-(x - 1.5), -(y + 0.5), 0.0)
-        GlStateManager.color(1f, 1f, 1f, 1f)
-
-        return (x + getStringWidth(text)).toInt()
-    }
-
-    override fun getColorCode(charCode: Char) =
-        ColorUtils.hexColors[getColorIndex(charCode)]
+    override fun getColorCode(charCode: Char) = ColorUtils.hexColors[getColorIndex(charCode)]
 
     override fun getStringWidth(text: String): Int {
-        val TranslatedCurrentText = LanguageManager.replace(text)
-        var currentText = TranslatedCurrentText
+        val currentText = NameProtect.handleTextMessage(text)
 
-        val event = TextEvent(currentText)
-        FDPClient.eventManager.callEvent(event)
-        currentText = event.text ?: return 0
-
-        return if (currentText.contains("§")) {
+        return if ("§" in currentText) {
             val parts = currentText.split("§")
-
             var currentFont = defaultFont
             var width = 0
             var bold = false
             var italic = false
 
             parts.forEachIndexed { index, part ->
-                if (part.isEmpty())
-                    return@forEachIndexed
+                if (part.isEmpty()) return@forEachIndexed
 
                 if (index == 0) {
                     width += currentFont.getStringWidth(part)
@@ -377,7 +207,6 @@ class GameFontRenderer(font: Font) : FontRenderer(
                             bold = false
                             italic = false
                         }
-
                         colorIndex == 17 -> bold = true
                         colorIndex == 20 -> italic = true
                         colorIndex == 21 -> {
@@ -385,49 +214,31 @@ class GameFontRenderer(font: Font) : FontRenderer(
                             italic = false
                         }
                     }
-
-                    currentFont = if (bold && italic)
-                        boldItalicFont
-                    else if (bold)
-                        boldFont
-                    else if (italic)
-                        italicFont
-                    else
-                        defaultFont
-
+                    currentFont = when {
+                        bold && italic -> boldItalicFont
+                        bold -> boldFont
+                        italic -> italicFont
+                        else -> defaultFont
+                    }
                     width += currentFont.getStringWidth(words)
                 }
             }
-
             width / 2
-        } else
+        } else {
             defaultFont.getStringWidth(currentText) / 2
+        }
     }
 
     override fun getCharWidth(character: Char) = getStringWidth(character.toString())
 
-    override fun onResourceManagerReload(resourceManager: IResourceManager) {}
-
-    override fun bindTexture(location: ResourceLocation?) {}
-
     companion object {
-        @JvmStatic
-        fun getColorIndex(type: Char): Int {
-            return when (type) {
+        fun getColorIndex(type: Char) =
+            when (type) {
                 in '0'..'9' -> type - '0'
                 in 'a'..'f' -> type - 'a' + 10
                 in 'k'..'o' -> type - 'k' + 16
                 'r' -> 21
                 else -> -1
             }
-        }
-
-        fun drawOutlineStringWithoutGL(s: String, x: Float, y: Float, color: Int,fontRenderer: FontRenderer) {
-            fontRenderer.drawString(ColorUtils.stripColor(s), (x * 2 - 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
-            fontRenderer.drawString(ColorUtils.stripColor(s), (x * 2 + 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
-            fontRenderer.drawString(ColorUtils.stripColor(s), (x * 2).toInt(), (y * 2 - 1).toInt(), Color.BLACK.rgb)
-            fontRenderer.drawString(ColorUtils.stripColor(s), (x * 2).toInt(), (y * 2 + 1).toInt(), Color.BLACK.rgb)
-            fontRenderer.drawString(s, (x * 2).toInt(), (y * 2).toInt(), color)
-        }
     }
 }

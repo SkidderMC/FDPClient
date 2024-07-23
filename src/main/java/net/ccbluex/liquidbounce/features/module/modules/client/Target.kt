@@ -6,16 +6,15 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import me.zywl.fdpclient.value.impl.BoolValue
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.value.BoolValue
 
-@ModuleInfo(name = "Target", category = ModuleCategory.CLIENT, canEnable = false)
-object Target : Module() {
-    val playerValue = BoolValue("Player", true)
-    val animalValue = BoolValue("Animal", true)
-    val mobValue = BoolValue("Mob", true)
-    val invisibleValue = BoolValue("Invisible", false)
-    val deadValue = BoolValue("Dead", false)
+object Target : Module("Target", Category.CLIENT, defaultInArray = false, gameDetecting = false, hideModule = true) {
+    var playerValue by BoolValue("Player", true)
+    var animalValue by BoolValue("Animal", true)
+    var mobValue by BoolValue("Mob", true)
+    var invisibleValue by BoolValue("Invisible", false)
+    var deadValue by BoolValue("Dead", false)
+
     override fun handleEvents() = true
 }

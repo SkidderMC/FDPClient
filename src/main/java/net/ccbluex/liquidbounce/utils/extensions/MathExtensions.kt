@@ -1,7 +1,7 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.utils.extensions
 
@@ -91,10 +91,10 @@ class RangeIterator(
 operator fun ClosedFloatingPointRange<Double>.iterator() = RangeIterator(this)
 infix fun ClosedFloatingPointRange<Double>.step(step: Double) = RangeIterator(this, step)
 
-fun ClosedFloatingPointRange<Float>.random(): Double {
+fun ClosedFloatingPointRange<Float>.random(): Float {
     require(start.isFinite())
     require(endInclusive.isFinite())
-    return start + (endInclusive - start) * Math.random()
+    return (start + (endInclusive - start) * Math.random()).toFloat()
 }
 
 /**

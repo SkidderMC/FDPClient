@@ -6,19 +6,12 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import me.zywl.fdpclient.value.impl.BoolValue
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.value.BoolValue
 
-@ModuleInfo(name = "ChatControl", category = ModuleCategory.CLIENT, defaultOn = true)
-object ChatControl : Module() {
+object ChatControl : Module("ChatControl", Category.CLIENT, gameDetecting = false, hideModule = true) {
 
-    val chatLimitValue = BoolValue("NoChatLimit", true)
-    val chatClearValue = BoolValue("NoChatClear", true)
-    val chatCombineValue = BoolValue("ChatCombine", true)
-    val fontChatValue = BoolValue("FontChat", false)
-    val chatRectValue = BoolValue("ChatBackGround", false)
-    val betterChatRectValue = BoolValue("BetterChatRect", false)
-    val chatAnimValue = BoolValue("ChatAnimation", false)
-
+    val chatLimitValue by BoolValue("NoChatLimit", true)
+    val chatClearValue by BoolValue("NoChatClear", true)
+    val fontChatValue by BoolValue("FontChat", false)
 }

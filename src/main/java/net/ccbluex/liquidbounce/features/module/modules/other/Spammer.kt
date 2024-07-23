@@ -5,90 +5,85 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import me.zywl.fdpclient.FDPClient
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.UpdateEvent
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import net.ccbluex.liquidbounce.utils.timer.TimeUtils
-import me.zywl.fdpclient.value.impl.IntegerValue
-import me.zywl.fdpclient.value.impl.ListValue
-import me.zywl.fdpclient.value.impl.TextValue
-import net.minecraft.client.gui.GuiChat
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils.randomString
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.TextValue
 
-@ModuleInfo(name = "Spammer", category = ModuleCategory.OTHER)
-object Spammer : Module() {
+object Spammer : Module("Spammer", Category.OTHER, subjective = true, hideModule = false) {
+    private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 1000, 0..5000) {
+        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(minDelay)
 
-    private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 1000, 0, 5000) {
         override fun onChanged(oldValue: Int, newValue: Int) {
-            val minDelayValueObject = minDelayValue.get()
-            if (minDelayValueObject > newValue) set(minDelayValueObject)
-            delay = TimeUtils.randomDelay(minDelayValue.get(), this.get())
+            delay = randomDelay(minDelay, get())
         }
     }
-    private val minDelayValue: IntegerValue = object : IntegerValue("MinDelay", 500, 0, 5000) {
+    private val maxDelay by maxDelayValue
+
+    private val minDelay: Int by object : IntegerValue("MinDelay", 500, 0..5000) {
+        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtMost(maxDelay)
+
         override fun onChanged(oldValue: Int, newValue: Int) {
-            val maxDelayValueObject = maxDelayValue.get()
-            if (maxDelayValueObject < newValue) set(maxDelayValueObject)
-            delay = TimeUtils.randomDelay(this.get(), maxDelayValue.get())
+            delay = randomDelay(get(), maxDelay)
         }
+
+        override fun isSupported() = !maxDelayValue.isMinimal()
     }
 
-    private val modeValue = ListValue("Mode", arrayOf("Single", "Insult", "OrderInsult"), "Single")
-    private val endingCharsValue = IntegerValue("EndingRandomChars",5,0,30)
-    private val messageValue = TextValue("Message", "Buy %r Minecraft %r Legit %r and %r stop %r using %r cracked %r servers %r%r")
-        .displayable { !modeValue.contains("insult") }
-    private val insultMessageValue = TextValue("InsultMessage", "[%s] %w [%s]")
-        .displayable { modeValue.contains("insult") }
+    private val message by
+        TextValue("Message", "$CLIENT_NAME Client | liquidbounce(.net) | CCBlueX on yt")
+
+    private val custom by BoolValue("Custom", false)
 
     private val msTimer = MSTimer()
-    private var delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
-    private var lastIndex = -1
-
-    override fun onEnable() {
-        lastIndex = -1
-    }
+    private var delay = randomDelay(minDelay, maxDelay)
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (mc.currentScreen != null && mc.currentScreen is GuiChat) {
-            return
-        }
-        if (modeValue.equals("Single") && messageValue.get().startsWith(".")) {
-            FDPClient.commandManager.executeCommands(messageValue.get())
-            return
-        }
-
         if (msTimer.hasTimePassed(delay)) {
-            mc.thePlayer.sendChatMessage(when (modeValue.get().lowercase()) {
-                "insult" -> {
-                    replaceAbuse(Insult.getRandomOne())
-                }
-                "orderinsult" -> {
-                    lastIndex++
-                    if (lastIndex >= (Insult.insultWords.size - 1)) {
-                        lastIndex = 0
-                    }
-                    replaceAbuse(Insult.insultWords[lastIndex])
-                }
-                else -> replace(messageValue.get())
-            })
+            mc.thePlayer.sendChatMessage(
+                if (custom) replace(message)
+                else message + " >" + randomString(nextInt(5, 11)) + "<"
+            )
             msTimer.reset()
-            delay = TimeUtils.randomDelay(minDelayValue.get(), maxDelayValue.get())
+            delay = randomDelay(minDelay, maxDelay)
         }
     }
 
-    private fun replaceAbuse(str: String): String {
-        return replace(insultMessageValue.get().replace("%w", str))
+    private fun replace(text: String): String {
+        var replacedStr = text
+
+        replaceMap.forEach { (key, valueFunc) ->
+            while (key in replacedStr) {
+                // You have to replace them one by one, otherwise all parameters like %s would be set to the same random string.
+                replacedStr = replacedStr.replaceFirst(key, valueFunc())
+            }
+        }
+
+        return replacedStr
     }
 
-    private fun replace(str: String): String {
-        return str.replace("%r", RandomUtils.nextInt(0, 99).toString())
-                    .replace("%s", RandomUtils.randomString(3))
-                    .replace("%c", RandomUtils.randomString(1))
-                    .replace("%name%", if (FDPClient.combatManager.target != null) { FDPClient.combatManager.target!!.name } else { "You" }) + (RandomUtils.randomString(endingCharsValue.get().toInt()).toString())
-    }
+    private fun randomPlayer() =
+        mc.netHandler.playerInfoMap
+            .map { playerInfo -> playerInfo.gameProfile.name }
+            .filter { name -> name != mc.thePlayer.name }
+            .randomOrNull() ?: "none"
+
+    private val replaceMap = mapOf(
+        "%f" to { nextFloat().toString() },
+        "%i" to { nextInt(0, 10000).toString() },
+        "%ss" to { randomString(nextInt(1, 6)) },
+        "%s" to { randomString(nextInt(1, 10)) },
+        "%ls" to { randomString(nextInt(1, 17)) },
+        "%p" to { randomPlayer() }
+    )
 }

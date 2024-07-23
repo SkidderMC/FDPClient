@@ -5,46 +5,34 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import me.zywl.fdpclient.FDPClient
+import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.ui.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.hud.element.elements.NotifyType
+import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import org.lwjgl.input.Keyboard
 
-/**
- * Bind Command
- *
- * Allows you to bind a key to a module, which means that the module will be activated when the key is pressed.
- */
-class BindCommand : Command("bind", emptyArray()) {
+object BindCommand : Command("bind") {
     /**
      * Execute commands with provided [args]
      */
     override fun execute(args: Array<String>) {
-        if (args.size > 1) {
+        if (args.size > 2) {
             // Get module by name
-            val module = FDPClient.moduleManager.getModule(args[1])
+            val module = moduleManager[args[1]]
 
             if (module == null) {
-                alert("Module §l" + args[1] + "§r not found.")
+                chat("Module §a§l" + args[1] + "§3 not found.")
                 return
             }
+            // Find key by name and change
+            val key = Keyboard.getKeyIndex(args[2].uppercase())
+            module.keyBind = key
 
-            if (args.size > 2) {
-                // Find key by name and change
-                val key = Keyboard.getKeyIndex(args[2].uppercase())
-                module.keyBind = key
-
-                // Response to user
-                alert("Bound module §l${module.name}§r to key §a§l${Keyboard.getKeyName(key)}§3.")
-                FDPClient.hud.addNotification(
-                    Notification("KeyBind", "Bound ${module.name} to ${Keyboard.getKeyName(key)}.", NotifyType.INFO)
-                )
-                playEdit()
-            } else {
-                FDPClient.moduleManager.pendingBindModule = module
-                alert("Press any key to bind module ${module.name}")
-            }
+            // Response to user
+            chat("Bound module §a§l${module.getName()}§3 to key §a§l${Keyboard.getKeyName(key)}§3.")
+            addNotification(Notification("Bound ${module.getName()} to ${Keyboard.getKeyName(key)}", "SUCESS", Type.SUCCESS))
+            playEdit()
             return
         }
 
@@ -57,7 +45,7 @@ class BindCommand : Command("bind", emptyArray()) {
         val moduleName = args[0]
 
         return when (args.size) {
-            1 -> FDPClient.moduleManager.modules
+            1 -> moduleManager.modules
                     .map { it.name }
                     .filter { it.startsWith(moduleName, true) }
                     .toList()

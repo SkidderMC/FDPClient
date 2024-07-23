@@ -1,13 +1,14 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.block;
 
-import me.zywl.fdpclient.FDPClient;
-import me.zywl.fdpclient.event.BlockBBEvent;
+import net.ccbluex.liquidbounce.event.BlockBBEvent;
+import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.GhostHand;
 import net.ccbluex.liquidbounce.features.module.modules.player.DelayRemover;
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall;
 import net.ccbluex.liquidbounce.features.module.modules.visual.XRay;
@@ -22,7 +23,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -32,17 +36,20 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
-import java.util.Objects;
 
 @Mixin(Block.class)
+@SideOnly(Side.CLIENT)
 public abstract class MixinBlock {
+
+    @Shadow
+    @Final
+    protected BlockState blockState;
 
     @Shadow
     public abstract AxisAlignedBB getCollisionBoundingBox(World worldIn, BlockPos pos, IBlockState state);
 
     @Shadow
-    @Final
-    protected BlockState blockState;
+    public abstract void setBlockBounds(float minX, float minY, float minZ, float maxX, float maxY, float maxZ);
 
     // Has to be implemented since a non-virtual call on an abstract method is illegal
     @Shadow
@@ -52,48 +59,60 @@ public abstract class MixinBlock {
 
     /**
      * @author CCBlueX
-     * @reason Add Collision Boxes To List
      */
     @Overwrite
     public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity) {
-        AxisAlignedBB axisalignedbb = this.getCollisionBoundingBox(worldIn, pos, state);
-        final BlockBBEvent blockBBEvent = new BlockBBEvent(pos, blockState.getBlock(), axisalignedbb);
-        FDPClient.eventManager.callEvent(blockBBEvent);
+        AxisAlignedBB axisalignedbb = getCollisionBoundingBox(worldIn, pos, state);
+        BlockBBEvent blockBBEvent = new BlockBBEvent(pos, blockState.getBlock(), axisalignedbb);
+        EventManager.INSTANCE.callEvent(blockBBEvent);
+
         axisalignedbb = blockBBEvent.getBoundingBox();
-        if(axisalignedbb != null && mask.intersectsWith(axisalignedbb))
-            list.add(axisalignedbb);
+
+        if (axisalignedbb != null && mask.intersectsWith(axisalignedbb)) list.add(axisalignedbb);
     }
 
     @Inject(method = "shouldSideBeRendered", at = @At("HEAD"), cancellable = true)
-    private void shouldSideBeRendered(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
+    private void shouldSideBeRendered(IBlockAccess p_shouldSideBeRendered_1_, BlockPos p_shouldSideBeRendered_2_, EnumFacing p_shouldSideBeRendered_3_, CallbackInfoReturnable<Boolean> cir) {
+        if (XRay.INSTANCE.handleEvents()) {
+            cir.setReturnValue(XRay.INSTANCE.getXrayBlocks().contains((Block) (Object) this));
+        }
+    }
 
-        if(Objects.requireNonNull(FDPClient.moduleManager.getModule(XRay.class)).getState())
-            callbackInfoReturnable.setReturnValue(Objects.requireNonNull(FDPClient.moduleManager.getModule(XRay.class)).getXrayBlocks().contains(this));
+    @Inject(method = "isCollidable", at = @At("HEAD"), cancellable = true)
+    private void isCollidable(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
+        final GhostHand ghostHand = GhostHand.INSTANCE;
+
+        if (ghostHand.handleEvents() && !(ghostHand.getBlock() == Block.getIdFromBlock((Block) (Object) this))) {
+            callbackInfoReturnable.setReturnValue(false);
+        }
     }
 
     @Inject(method = "getAmbientOcclusionLightValue", at = @At("HEAD"), cancellable = true)
-    private void getAmbientOcclusionLightValue(final CallbackInfoReturnable<Float> floatCallbackInfoReturnable) {
-        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(XRay.class)).getState())
-            floatCallbackInfoReturnable.setReturnValue(1F);
+    private void getAmbientOcclusionLightValue(CallbackInfoReturnable<Float> cir) {
+        if (XRay.INSTANCE.handleEvents()) {
+            cir.setReturnValue(1F);
+        }
     }
 
     @Inject(method = "getPlayerRelativeBlockHardness", at = @At("RETURN"), cancellable = true)
     public void modifyBreakSpeed(EntityPlayer playerIn, World worldIn, BlockPos pos, final CallbackInfoReturnable<Float> callbackInfo) {
         float f = callbackInfo.getReturnValue();
 
-        if (Objects.requireNonNull(FDPClient.moduleManager.getModule(DelayRemover.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(DelayRemover.class)).getNoSlowBreak().get()) {
-            if (Objects.requireNonNull(FDPClient.moduleManager.getModule(DelayRemover.class)).getWaterValue().get() && playerIn.isInsideOfMaterial(Material.water) &&
-                    !EnchantmentHelper.getAquaAffinityModifier(playerIn)) {
-                f *= 5.0F;
+        // NoSlowBreak
+        final DelayRemover delayRemover = DelayRemover.INSTANCE;
+        if (delayRemover.handleEvents()) {
+            if (delayRemover.getWater() && playerIn.isInsideOfMaterial(Material.water) && !EnchantmentHelper.getAquaAffinityModifier(playerIn)) {
+                f *= 5f;
             }
 
-            if (Objects.requireNonNull(FDPClient.moduleManager.getModule(DelayRemover.class)).getAirValue().get() && !playerIn.onGround) {
-                f *= 5.0F;
+            if (delayRemover.getAir() && !playerIn.onGround) {
+                f *= 5f;
             }
         } else if (playerIn.onGround) { // NoGround
+            final NoFall noFall = NoFall.INSTANCE;
+            final Criticals criticals = Criticals.INSTANCE;
 
-            if (Objects.requireNonNull(FDPClient.moduleManager.getModule(NoFall.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(NoFall.class)).getMode().equals("NoGround") ||
-                    Objects.requireNonNull(FDPClient.moduleManager.getModule(Criticals.class)).getState() && Objects.requireNonNull(FDPClient.moduleManager.getModule(Criticals.class)).getModeValue().equals("NoGround")) {
+            if (noFall.handleEvents() && noFall.getMode().equals("NoGround") || criticals.handleEvents() && criticals.getMode().equals("NoGround")) {
                 f /= 5F;
             }
         }

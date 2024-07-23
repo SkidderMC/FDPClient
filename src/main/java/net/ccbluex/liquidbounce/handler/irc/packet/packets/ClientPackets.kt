@@ -1,7 +1,7 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.handler.irc.packet.packets
 
@@ -53,13 +53,13 @@ data class ClientNewJWTPacket(
  */
 data class ClientMessagePacket(
 
-    @SerializedName("author_id")
+        @SerializedName("author_id")
         val id: String,
 
-    @SerializedName("author_info")
+        @SerializedName("author_info")
         val user: User,
 
-    @SerializedName("content")
+        @SerializedName("content")
         val content: String
 
 ) : Packet
@@ -74,13 +74,13 @@ data class ClientMessagePacket(
  */
 data class ClientPrivateMessagePacket(
 
-    @SerializedName("author_id")
+        @SerializedName("author_id")
         val id: String,
 
-    @SerializedName("author_info")
+        @SerializedName("author_info")
         val user: User,
 
-    @SerializedName("content")
+        @SerializedName("content")
         val content: String
 
 ) : Packet

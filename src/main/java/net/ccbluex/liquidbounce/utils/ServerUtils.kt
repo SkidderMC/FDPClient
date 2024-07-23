@@ -1,37 +1,86 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
-package net.ccbluex.liquidbounce.utils;
+package net.ccbluex.liquidbounce.utils
 
-import me.zywl.fdpclient.FDPClient;
-import net.minecraft.client.gui.GuiMultiplayer;
-import net.minecraft.client.multiplayer.GuiConnecting;
-import net.minecraft.client.multiplayer.ServerData;
+import net.ccbluex.liquidbounce.ui.client.gui.GuiMainMenu
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import net.minecraft.client.gui.GuiMultiplayer
+import net.minecraft.client.multiplayer.GuiConnecting
+import net.minecraft.client.multiplayer.ServerAddress
+import net.minecraft.client.multiplayer.ServerData
+import net.minecraft.client.network.NetHandlerLoginClient
+import net.minecraft.network.EnumConnectionState
+import net.minecraft.network.NetworkManager
+import net.minecraft.network.handshake.client.C00Handshake
+import net.minecraft.network.login.client.C00PacketLoginStart
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
+import java.net.InetAddress
 
-public final class ServerUtils extends MinecraftInstance {
+@SideOnly(Side.CLIENT)
+object ServerUtils : MinecraftInstance() {
+    var serverData: ServerData? = null
+    private val sessionTimer: MSTimer = MSTimer()
 
-    public static ServerData serverData;
+    @JvmOverloads
+    fun connectToLastServer(noGLContext: Boolean = false) {
+        if (serverData == null) return
 
-    public static void connectToLastServer() {
-        if(serverData == null)
-            return;
+        if (noGLContext) {
+            Thread {
+                // Code ported from GuiConnecting.connect
+                // Used in AutoAccount's ReconnectDelay.
+                // You cannot do this in the normal way because of required OpenGL context in current thread.
+                // When you delay a call, it gets run in a new TimerThread.
 
-        mc.displayGuiScreen(new GuiConnecting(new GuiMultiplayer(FDPClient.mainMenu), mc, serverData));
+                val serverAddress = ServerAddress.fromString(serverData!!.serverIP)
+                mc.theWorld = null
+                mc.setServerData(serverData)
+
+                val inetAddress = InetAddress.getByName(serverAddress.ip)
+                val networkManager = NetworkManager.createNetworkManagerAndConnect(
+                    inetAddress,
+                    serverAddress.port,
+                    mc.gameSettings.isUsingNativeTransport
+                )
+                networkManager.netHandler = NetHandlerLoginClient(networkManager, mc, GuiMainMenu())
+
+                networkManager.sendPacket(
+                    C00Handshake(47, serverAddress.ip, serverAddress.port, EnumConnectionState.LOGIN, true)
+                )
+
+                networkManager.sendPacket(
+                    C00PacketLoginStart(mc.session.profile)
+                )
+            }.start()
+        } else mc.displayGuiScreen(GuiConnecting(GuiMultiplayer(GuiMainMenu()), mc, serverData))
     }
 
-    public static String getRemoteIp() {
-        String serverIp = "Idling";
+    val remoteIp: String
+        get() {
+            var serverIp = "Singleplayer"
 
-        if (mc.isIntegratedServerRunning()) {
-            serverIp = "SinglePlayer";
-        } else if (mc.theWorld != null && mc.theWorld.isRemote) {
-            final ServerData serverData = mc.getCurrentServerData();
-            if(serverData != null)
-                serverIp = serverData.serverIP;
+            // This can throw NPE during LB startup, if an element has server ip in it
+            if (mc.theWorld?.isRemote == true) {
+                val serverData = mc.currentServerData
+                if (serverData != null) serverIp = serverData.serverIP
+            }
+
+            return serverIp
         }
 
-        return serverIp;
+    fun formatSessionTime(): String {
+        if (System.currentTimeMillis() - sessionTimer.time < 0L) sessionTimer.reset()
+
+        val realTime =
+            (System.currentTimeMillis() - sessionTimer.time).toInt() / 1000
+        val hours = realTime / 3600
+        val seconds = (realTime % 3600) % 60
+        val minutes = (realTime % 3600) / 60
+
+        return hours.toString() + "h " + minutes + "m " + seconds + "s"
     }
 }

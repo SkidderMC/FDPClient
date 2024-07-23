@@ -1,8 +1,3 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
- */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.minecraft.entity.Entity;
@@ -13,9 +8,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/**
- * The type Mixin tile entity mob spawner renderer.
- */
 @Mixin(net.minecraft.client.renderer.tileentity.TileEntityMobSpawnerRenderer.class)
 public class MixinTileEntityMobSpawnerRenderer {
 

@@ -5,16 +5,16 @@
  */
 package net.ccbluex.liquidbounce.handler.combat
 
-import me.zywl.fdpclient.FDPClient
-import me.zywl.fdpclient.event.*
+import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 
-class CombatManager : Listenable, MinecraftInstance() {
+object CombatManager : Listenable, MinecraftInstance() {
     private val lastAttackTimer = MSTimer()
 
     var inCombat = false
@@ -72,16 +72,6 @@ class CombatManager : Listenable, MinecraftInstance() {
         target = null
         attackedEntityList.clear()
         focusedPlayerList.clear()
-    }
-
-    fun getNearByEntity(radius: Float): EntityLivingBase? {
-        return try {
-            mc.theWorld.loadedEntityList
-                .filter { mc.thePlayer.getDistanceToEntity(it) < radius && EntityUtils.isSelected(it, true) }
-                .sortedBy { it.getDistanceToEntity(mc.thePlayer) }[0] as EntityLivingBase?
-        } catch (e: Exception) {
-            null
-        }
     }
 
     fun isFocusEntity(entity: EntityPlayer): Boolean {

@@ -5,10 +5,10 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import me.zywl.fdpclient.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.handler.combat.CombatManager.focusedPlayerList
 
-class FocusCommand : Command("focus", emptyArray()) {
+object FocusCommand : Command("focus") {
 
     /**
      * Execute commands with provided [args]
@@ -19,31 +19,31 @@ class FocusCommand : Command("focus", emptyArray()) {
             val target = args[2]
             val entity = mc.theWorld.playerEntities.filter { it.name.equals(target, true) && !it.equals(mc.thePlayer) }.also {
                 if (it.isEmpty()) {
-                    alert("§6Couldn't find anyone named §a${target.lowercase()}§6 in the world.")
+                    chat("§6Couldn't find anyone named §a${target.lowercase()}§6 in the world.")
                     return
                 }
             }[0]
 
             when (focused.lowercase()) {
                 "add" -> {
-                    FDPClient.combatManager.focusedPlayerList.add(entity)
-                    alert("Successfully added §a${target.lowercase()}§3 into the focus list.")
+                    focusedPlayerList.add(entity)
+                    chat("Successfully added §a${target.lowercase()}§3 into the focus list.")
                     return
                 }
                 "remove" -> {
-                    if (FDPClient.combatManager.focusedPlayerList.contains(entity)) {
-                        FDPClient.combatManager.focusedPlayerList.remove(entity)
-                        alert("Successfully removed §a${target.lowercase()}§3 from the focus list.")
+                    if (focusedPlayerList.contains(entity)) {
+                        focusedPlayerList.remove(entity)
+                        chat("Successfully removed §a${target.lowercase()}§3 from the focus list.")
                         return
                     } else {
-                        alert("§6Couldn't find anyone named §a${target.lowercase()}§6 in the focus list.")
+                        chat("§6Couldn't find anyone named §a${target.lowercase()}§6 in the focus list.")
                         return
                     }
                 }
             }
         } else if (args.size == 2 && args[1].equals("clear", true)) {
-            FDPClient.combatManager.focusedPlayerList.clear()
-            alert("Successfully cleared the focus list.")
+            focusedPlayerList.clear()
+            chat("Successfully cleared the focus list.")
             return
         }
 

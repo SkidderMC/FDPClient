@@ -6,14 +6,14 @@
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import me.zywl.fdpclient.value.impl.FloatValue
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 
-@ModuleInfo(name = "ItemPhysics", category = ModuleCategory.VISUAL)
-object ItemPhysics : Module() {
+object ItemPhysics: Module("ItemPhysics", Category.VISUAL, hideModule = false) {
 
-    val itemWeight = FloatValue("Weight", 0.5F, 0F, 1F)
-    override val tag: String
-        get() = "${itemWeight.get()}"
+    val realistic by BoolValue("Realistic", false)
+    val weight by FloatValue("Weight", 0.5F, 0.1F..3F)
+    val rotationSpeed by FloatValue("RotationSpeed", 1.0F, 0.01F..3F)
+
 }

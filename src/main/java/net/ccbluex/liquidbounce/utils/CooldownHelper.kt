@@ -1,11 +1,11 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.utils
 
-import net.ccbluex.liquidbounce.utils.MinecraftInstance.mc
+import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
 import net.minecraft.item.*
 import net.minecraft.potion.Potion
 import net.minecraft.util.MathHelper
@@ -14,7 +14,7 @@ import kotlin.math.min
 /**
  * Capable of simulating 1.9+ cooldowns for usage on 1.9+ servers while playing with 1.8.9.
  *
- * @Zywl
+ * @author kawaiinekololis
  */
 object CooldownHelper {
 
@@ -48,10 +48,11 @@ object CooldownHelper {
         }
         
         if (mc.thePlayer.isPotionActive(Potion.digSlowdown)) {
-            genericAttackSpeed *= 1.0 - min(1.0, 0.1 * (mc.thePlayer.getActivePotionEffect(Potion.digSlowdown).getAmplifier() + 1))
+            genericAttackSpeed *= 1.0 - min(1.0, 0.1 * (mc.thePlayer.getActivePotionEffect(Potion.digSlowdown).amplifier + 1))
         }
+        
         if (mc.thePlayer.isPotionActive(Potion.digSpeed)) {
-            genericAttackSpeed *= 1.0 + (0.1 * (mc.thePlayer.getActivePotionEffect(Potion.digSpeed).getAmplifier() + 1))
+            genericAttackSpeed *= 1.0 + 0.1 * (mc.thePlayer.getActivePotionEffect(Potion.digSpeed).amplifier + 1)
         } 
     }
 
@@ -60,11 +61,11 @@ object CooldownHelper {
     fun getAttackCooldownProgress() = MathHelper.clamp_double((lastAttackedTicks + mc.timer.renderPartialTicks) / getAttackCooldownProgressPerTick(), 0.0, 1.0)
 
     fun resetLastAttackedTicks() {
-        this.lastAttackedTicks = 0
+        lastAttackedTicks = 0
     }
 
     fun incrementLastAttackedTicks() {
-        this.lastAttackedTicks++
+        lastAttackedTicks++
     }
 
 }

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils
 
-import me.zywl.fdpclient.FDPClient
+import net.ccbluex.liquidbounce.FDPClient
 import java.util.*
 
 class GitUtils {

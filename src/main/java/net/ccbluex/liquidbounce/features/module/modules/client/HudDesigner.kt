@@ -5,13 +5,11 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
+import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.ui.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 
-@ModuleInfo(name = "HudDesigner", category = ModuleCategory.CLIENT, canEnable = false)
-object HudDesigner : Module() {
+object HudDesigner : Module("HudDesigner", Category.CLIENT, canBeEnabled = false) {
     override fun onEnable() {
         mc.displayGuiScreen(GuiHudDesigner())
     }

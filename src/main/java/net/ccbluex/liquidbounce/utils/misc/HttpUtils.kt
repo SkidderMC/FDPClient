@@ -1,13 +1,17 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
-
 package net.ccbluex.liquidbounce.utils.misc
 
-import org.apache.commons.io.FileUtils
-import java.io.*
+import org.apache.commons.io.FileUtils.copyInputStreamToFile
+import org.apache.http.HttpEntity
+import org.apache.http.client.methods.HttpPost
+import org.apache.http.impl.client.HttpClientBuilder
+import java.io.File
+import java.io.IOException
+import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -20,18 +24,13 @@ import java.net.URL
  */
 object HttpUtils {
 
-    const val DEFAULT_AGENT = "Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.7113.93 Safari/537.36 Java/1.8.0_191"
+    private const val DEFAULT_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0"
 
     init {
         HttpURLConnection.setFollowRedirects(true)
     }
 
-    fun make(
-        url: String,
-        method: String,
-        data: String = "",
-        agent: String = DEFAULT_AGENT
-    ): HttpURLConnection {
+    private fun make(url: String, method: String, agent: String = DEFAULT_AGENT, headers: Array<Pair<String, String>> = emptyArray()) : HttpURLConnection {
         val httpConnection = URL(url).openConnection() as HttpURLConnection
 
         httpConnection.requestMethod = method
@@ -40,35 +39,62 @@ object HttpUtils {
 
         httpConnection.setRequestProperty("User-Agent", agent)
 
+        for ((key, value) in headers) {
+            httpConnection.setRequestProperty(key, value)
+        }
+
         httpConnection.instanceFollowRedirects = true
         httpConnection.doOutput = true
-
-        if (data.isNotEmpty()) {
-            val dataOutputStream = DataOutputStream(httpConnection.outputStream)
-            dataOutputStream.writeBytes(data)
-            dataOutputStream.flush()
-        }
 
         return httpConnection
     }
 
-    fun request(
-        url: String,
-        method: String,
-        data: String = "",
-        agent: String = DEFAULT_AGENT
-    ): String {
-        val connection = make(url, method, data, agent)
+    @Throws(IOException::class)
+    fun request(url: String, method: String, agent: String = DEFAULT_AGENT, headers: Array<Pair<String, String>> = emptyArray()) =
+        requestStream(url, method, agent, headers).let { (stream, code) -> stream.reader().readText() to code }
 
-        return connection.inputStream.reader().readText()
+    fun post(url: String, agent: String = DEFAULT_AGENT, headers: Array<Pair<String, String>> = emptyArray(), entity: () -> HttpEntity): String {
+        val httpClient = HttpClientBuilder
+            .create()
+            .setUserAgent(agent)
+            .build()
+
+        val httpPost = HttpPost(url)
+        httpPost.entity = entity()
+
+        for ((key, value) in headers) {
+            httpPost.setHeader(key, value)
+        }
+
+        val response = httpClient.execute(httpPost)
+        return response.entity.content.reader().readText()
     }
 
     @Throws(IOException::class)
-    @JvmStatic
-    fun download(url: String, file: File) = FileUtils.copyInputStreamToFile(make(url, "GET").inputStream, file)
+    fun requestStream(url: String, method: String, agent: String = DEFAULT_AGENT, headers: Array<Pair<String, String>> = emptyArray()) : Pair<InputStream, Int> {
+        val conn = make(url, method, agent, headers)
+        // Return either the input stream or the error stream
+        return (if (conn.responseCode < 400) conn.inputStream else conn.errorStream) to conn.responseCode
+    }
 
+
+    @Throws(IOException::class)
     fun get(url: String) = request(url, "GET")
 
-    fun post(url: String, data: String) = request(url, "POST", data = data)
+    @Throws(IOException::class)
+    fun responseCode(url: String, method: String, agent: String = DEFAULT_AGENT) =
+        make(url, method, agent).responseCode
+
+    @Throws(IOException::class)
+    fun download(url: String, file: File) {
+        val (stream, code) = requestStream(url, "GET")
+
+        // Check if code is 200
+        if (code != 200) {
+            error("Response code is $code")
+        }
+
+        copyInputStreamToFile(stream, file)
+    }
 
 }

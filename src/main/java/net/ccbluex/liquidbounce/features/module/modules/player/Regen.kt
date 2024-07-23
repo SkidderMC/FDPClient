@@ -5,102 +5,75 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import me.zywl.fdpclient.value.impl.BoolValue
-import me.zywl.fdpclient.value.impl.IntegerValue
-import me.zywl.fdpclient.value.impl.ListValue
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
+import net.ccbluex.liquidbounce.utils.MovementUtils.serverOnGround
+import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.potion.Potion
 
-@ModuleInfo(name = "Regen", category = ModuleCategory.PLAYER)
-class Regen : Module() {
+object Regen : Module("Regen", Category.PLAYER) {
 
-    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "OldSpartan", "NewSpartan", "AAC4NoFire"), "Vanilla")
-    private val healthValue = IntegerValue("Health", 18, 0, 20)
-    private val delayValue = IntegerValue("Delay", 0, 0, 1000)
-    private val foodValue = IntegerValue("Food", 18, 0, 20)
-    private val speedValue = IntegerValue("Speed", 100, 1, 100)
-    private val noAirValue = BoolValue("NoAir", false)
-    private val potionEffectValue = BoolValue("PotionEffect", false)
+    private val mode by ListValue("Mode", arrayOf("Vanilla", "Spartan"), "Vanilla")
+        private val speed by IntegerValue("Speed", 100, 1..100) { mode == "Vanilla" }
+
+    private val delay by IntegerValue("Delay", 0, 0..10000)
+    private val health by IntegerValue("Health", 18, 0..20)
+    private val food by IntegerValue("Food", 18, 0..20)
+
+    private val noAir by BoolValue("NoAir", false)
+    private val potionEffect by BoolValue("PotionEffect", false)
 
     private val timer = MSTimer()
-    private var resetTimer = false
 
-    override fun onEnable() {
-        timer.reset()
-    }
+    private var resetTimer = false
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         if (resetTimer) {
             mc.timer.timerSpeed = 1F
+        } else {
             resetTimer = false
         }
 
-        if ((!noAirValue.get() || mc.thePlayer.onGround) &&
-            !mc.thePlayer.capabilities.isCreativeMode &&
-            mc.thePlayer.foodStats.foodLevel > foodValue.get() &&
-            mc.thePlayer.isEntityAlive &&
-            mc.thePlayer.health < healthValue.get()
-        ) {
-            if (potionEffectValue.get() && !mc.thePlayer.isPotionActive(Potion.regeneration)) {
-                return
+        val thePlayer = mc.thePlayer ?: return
+
+        if (
+            !mc.playerController.gameIsSurvivalOrAdventure()
+            || noAir && !serverOnGround
+            || thePlayer.foodStats.foodLevel <= food
+            || !thePlayer.isEntityAlive
+            || thePlayer.health >= health
+            || (potionEffect && !thePlayer.isPotionActive(Potion.regeneration))
+            || !timer.hasTimePassed(delay)
+        ) return
+
+        when (mode.lowercase()) {
+            "vanilla" -> {
+                repeat(speed) {
+                    sendPacket(C03PacketPlayer(serverOnGround))
+                }
             }
 
-            if(!(timer.hasTimePassed(delayValue.get().toLong()))) {
-                return
-            }
-
-            when (modeValue.get().lowercase()) {
-                "vanilla" -> {
-                    repeat(speedValue.get()) {
-                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
-                    }
-                }
-
-                "aac4nofire" -> {
-                    if (mc.thePlayer.isBurning && mc.thePlayer.ticksExisted % 10 == 0) {
-                        repeat(35) {
-                            mc.netHandler.addToSendQueue(C03PacketPlayer(true))
-                        }
-                    }
-                }
-
-                "newspartan" -> {
-                    if (mc.thePlayer.ticksExisted % 5 == 0) {
-                        resetTimer = true
-                        mc.timer.timerSpeed = 0.98F
-                        repeat(10) {
-                            mc.netHandler.addToSendQueue(C03PacketPlayer(true))
-                        }
-                    } else {
-                        if (MovementUtils.isMoving()) mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
-                    }
-                }
-
-                "oldspartan" -> {
-                    if (MovementUtils.isMoving() || !mc.thePlayer.onGround) {
-                        return
-                    }
-
+            "spartan" -> {
+                if (!isMoving && serverOnGround) {
                     repeat(9) {
-                        mc.netHandler.addToSendQueue(C03PacketPlayer(mc.thePlayer.onGround))
+                        sendPacket(C03PacketPlayer(serverOnGround))
                     }
 
                     mc.timer.timerSpeed = 0.45F
                     resetTimer = true
                 }
             }
-
-            timer.reset()
         }
+
+        timer.reset()
     }
-    override val tag: String
-        get() = modeValue.get()
 }

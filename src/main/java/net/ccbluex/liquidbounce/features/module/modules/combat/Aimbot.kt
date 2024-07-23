@@ -5,105 +5,179 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.StrafeEvent
+import net.ccbluex.liquidbounce.event.EventState
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.MotionEvent
+import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.Rotation
-import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
-import net.ccbluex.liquidbounce.utils.extensions.hitBox
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import me.zywl.fdpclient.value.impl.BoolValue
-import me.zywl.fdpclient.value.impl.FloatValue
-import me.zywl.fdpclient.value.impl.IntegerValue
-import me.zywl.fdpclient.value.impl.ListValue
-import kotlin.random.Random
+import net.ccbluex.liquidbounce.features.module.modules.player.Reach
+import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
+import net.ccbluex.liquidbounce.utils.RotationUtils.getRotationDifference
+import net.ccbluex.liquidbounce.utils.RotationUtils.isFaced
+import net.ccbluex.liquidbounce.utils.RotationUtils.limitAngleChange
+import net.ccbluex.liquidbounce.utils.RotationUtils.searchCenter
+import net.ccbluex.liquidbounce.utils.RotationUtils.toRotation
+import net.ccbluex.liquidbounce.utils.SimulatedPlayer
+import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.minecraft.entity.Entity
+import java.util.*
+import kotlin.math.atan
 
-@ModuleInfo(name = "Aimbot", category = ModuleCategory.COMBAT)
-class Aimbot : Module() {
+object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
 
-    private val rangeValue = FloatValue("Range", 4.4F, 1F, 8F)
-    private val turnSpeedValue = FloatValue("TurnSpeed", 2F, 1F, 180F)
-    private val randomTurnValue = FloatValue("TurnSpeedRandomRate", 1.0F, 0F, 15F)
-    private val smoothValue = BoolValue("Smooth", false)
-    private val smoothAngleValue = IntegerValue("SmoothMinAngle", 30, 1, 180).displayable { smoothValue.get() }
-    private val fovValue = FloatValue("FOV", 180F, 1F, 180F)
-    private val rotMode = ListValue("RotationMode", arrayOf("LiquidBounce", "Full", "HalfUp", "HalfDown", "CenterSimple", "CenterLine"), "HalfUp")
-    private val lockValue = BoolValue("Lock", true)
-    private val onClickValue = BoolValue("OnClick", false)
-    private val onClickDurationValue = IntegerValue("OnClickDuration", 500, 100, 1000).displayable { onClickValue.get() }
-    private val jitterValue = BoolValue("Jitter", false)
-    private val randomJitterValue = FloatValue("JitterRandomRate", 1.0F, 0F, 5.0F).displayable { jitterValue.get() }
-    private val breakStopValue = BoolValue("NoBreak", true)
+    private val horizontalAim by BoolValue("HorizontalAim", true)
+    private val verticalAim by BoolValue("VerticalAim", true)
+    private val range by FloatValue("Range", 4.4F, 1F..8F)
+    private val startFirstRotationSlow by BoolValue("StartFirstRotationSlow", true) { horizontalAim || verticalAim }
+    private val turnSpeed by FloatValue("TurnSpeed", 10f, 1F..180F) { horizontalAim || verticalAim }
+    private val inViewTurnSpeed by FloatValue("InViewTurnSpeed", 35f, 1f..180f) { horizontalAim || verticalAim }
+    private val predictClientMovement by IntegerValue("PredictClientMovement", 2, 0..5)
+    private val predictEnemyPosition by FloatValue("PredictEnemyPosition", 1.5f, -1f..2f)
+    private val fov by FloatValue("FOV", 180F, 1F..180F)
+    private val lock by BoolValue("Lock", true) { horizontalAim || verticalAim }
+    private val onClick by BoolValue("OnClick", false) { horizontalAim || verticalAim }
+    private val jitter by BoolValue("Jitter", false)
+    private val yawJitterMultiplier by FloatValue("JitterYawMultiplier", 1f, 0.1f..2.5f)
+    private val pitchJitterMultiplier by FloatValue("JitterPitchMultiplier", 1f, 0.1f..2.5f)
+    private val center by BoolValue("Center", false)
+    private val headLock by BoolValue("Headlock", false) { center && lock }
+    private val headLockBlockHeight by FloatValue("HeadBlockHeight", -1f, -2f..0f) { headLock && center && lock }
+    private val breakBlocks by BoolValue("BreakBlocks", true)
 
     private val clickTimer = MSTimer()
 
     @EventTarget
-    fun onStrafe(event: StrafeEvent) {
-        if (breakStopValue.get() && mc.playerController.curBlockDamageMP == 0F) {
-            return
-        }
-        if (mc.gameSettings.keyBindAttack.isKeyDown) {
-            clickTimer.reset()
-        }
+    fun onMotion(event: MotionEvent) {
+        if (event.eventState != EventState.POST) return
 
-        if (onClickValue.get() && clickTimer.hasTimePassed(onClickDurationValue.get().toLong())) {
-            return
-        }
+        val thePlayer = mc.thePlayer ?: return
 
-        val range = rangeValue.get()
-        val entity = mc.theWorld.loadedEntityList
-            .filter {
-                EntityUtils.isSelected(it, true) && mc.thePlayer.canEntityBeSeen(it) &&
-                        mc.thePlayer.getDistanceToEntityBox(it) <= range && RotationUtils.getRotationDifference(it) <= fovValue.get()
+        // Clicking delay
+        if (mc.gameSettings.keyBindAttack.isKeyDown) clickTimer.reset()
+
+        if (onClick && (clickTimer.hasTimePassed(150) || (!mc.gameSettings.keyBindAttack.isKeyDown && AutoClicker.handleEvents()))) return
+
+        // Search for the best enemy to target
+        val entity = mc.theWorld.loadedEntityList.filter {
+            var result = false
+
+            Backtrack.runWithNearestTrackedDistance(it) {
+                result = isSelected(it, true)
+                    && thePlayer.canEntityBeSeen(it)
+                    && thePlayer.getDistanceToEntityBox(it) <= range
+                    && getRotationDifference(it) <= fov
             }
-            .minByOrNull { RotationUtils.getRotationDifference(it) } ?: return
 
-        if (!lockValue.get() && RotationUtils.isFaced(entity, range.toDouble())) {
+            result
+        }.minByOrNull { mc.thePlayer.getDistanceToEntityBox(it) } ?: return
+
+        // Should it always keep trying to lock on the enemy or just try to assist you?
+        if (!lock && isFaced(entity, range.toDouble())) return
+
+        val random = Random()
+
+        var shouldReturn = false
+
+        Backtrack.runWithNearestTrackedDistance(entity) {
+            shouldReturn = !findRotation(entity, random)
+        }
+
+        if (shouldReturn) {
             return
         }
-        
-        val calcBaseSpeed = turnSpeedValue.get() + Math.random() * randomTurnValue.get() - Math.random() * randomTurnValue.get()
-        val angleDiff = RotationUtils.getRotationDifference(entity)
-        val calcPrecent = if (angleDiff >= smoothAngleValue.get() || !smoothValue.get()) { 1.0 } else { angleDiff / smoothAngleValue.get() }
-        
-        val rotation = RotationUtils.limitAngleChange(
-            Rotation(mc.thePlayer.rotationYaw, mc.thePlayer.rotationPitch),
-            (RotationUtils.calculateCenter(
-                rotMode.get(),
-                "Horizontal",
-                0.1,
-                entity.hitBox,
-                false,
-                true)
-                    )!!.rotation,
-            (calcBaseSpeed * calcPrecent).toFloat()
+
+        // Jitter
+        // Some players do jitter on their mouses causing them to shake around. This is trying to simulate this behavior.
+        if (jitter) {
+            if (random.nextBoolean()) {
+                thePlayer.fixedSensitivityYaw += ((random.nextGaussian() - 0.5f) * yawJitterMultiplier).toFloat()
+            }
+
+            if (random.nextBoolean()) {
+                thePlayer.fixedSensitivityPitch += ((random.nextGaussian() - 0.5f) * pitchJitterMultiplier).toFloat()
+            }
+        }
+    }
+
+    private fun findRotation(entity: Entity, random: Random): Boolean {
+        val player = mc.thePlayer ?: return false
+        if (mc.playerController.isHittingBlock && breakBlocks) {
+            return false
+        }
+
+        val (predictX, predictY, predictZ) = entity.currPos.subtract(entity.prevPos)
+            .times(2 + predictEnemyPosition.toDouble())
+
+        val boundingBox = entity.hitBox.offset(predictX, predictY, predictZ)
+        val (currPos, oldPos) = player.currPos to player.prevPos
+
+        val simPlayer = SimulatedPlayer.fromClientPlayer(player.movementInput)
+
+        repeat(predictClientMovement + 1) {
+            simPlayer.tick()
+        }
+
+        player.setPosAndPrevPos(simPlayer.pos)
+
+        val playerRotation = player.rotation
+
+        val destinationRotation = if (center) {
+            toRotation(boundingBox.center, true)
+        } else {
+            searchCenter(boundingBox,
+                outborder = false,
+                random = false,
+                gaussianOffset = false,
+                predict = true,
+                lookRange = range,
+                attackRange = if (Reach.handleEvents()) Reach.combatReach else 3f
+            )
+        }
+
+        if (destinationRotation == null) {
+            player.setPosAndPrevPos(currPos, oldPos)
+            return false
+        }
+
+        // look headLockBlockHeight higher
+        if (headLock && center && lock) {
+            val distance = player.getDistanceToEntityBox(entity)
+            val playerEyeHeight = player.eyeHeight
+            val blockHeight = headLockBlockHeight
+
+            // Calculate the pitch offset needed to shift the view one block up
+            val pitchOffset = Math.toDegrees(atan((blockHeight + playerEyeHeight) / distance)).toFloat()
+
+            destinationRotation.pitch -= pitchOffset
+        }
+
+        // Figure out the best turn speed suitable for the distance and configured turn speed
+        val rotationDiff = getRotationDifference(playerRotation, destinationRotation)
+
+        // is enemy visible to player on screen. Fov is about to be right with that you can actually see on the screen. Still not 100% accurate, but it is fast check.
+        val supposedTurnSpeed = if (rotationDiff < mc.gameSettings.fovSetting) {
+            inViewTurnSpeed
+        } else {
+            turnSpeed
+        }
+
+        val gaussian = random.nextGaussian()
+
+        val realisticTurnSpeed = rotationDiff * ((supposedTurnSpeed + (gaussian - 0.5)) / 180)
+        val rotation = limitAngleChange(player.rotation,
+            destinationRotation,
+            realisticTurnSpeed.toFloat(),
+            startOffSlow = startFirstRotationSlow
         )
 
-        rotation.toPlayer(mc.thePlayer)
+        rotation.toPlayer(player, horizontalAim, verticalAim)
 
-        if (jitterValue.get()) {
-            val yaw = Random.nextBoolean()
-            val pitch = Random.nextBoolean()
-            val yawNegative = Random.nextBoolean()
-            val pitchNegative = Random.nextBoolean()
+        player.setPosAndPrevPos(currPos, oldPos)
 
-            if (yaw) {
-                mc.thePlayer.rotationYaw += if (yawNegative) -RandomUtils.nextFloat(0F, randomJitterValue.get()) else RandomUtils.nextFloat(0F, randomJitterValue.get())
-            }
-
-            if (pitch) {
-                mc.thePlayer.rotationPitch += if (pitchNegative) -RandomUtils.nextFloat(0F, randomJitterValue.get()) else RandomUtils.nextFloat(0F, randomJitterValue.get())
-                if (mc.thePlayer.rotationPitch > 90) {
-                    mc.thePlayer.rotationPitch = 90F
-                } else if (mc.thePlayer.rotationPitch < -90) {
-                    mc.thePlayer.rotationPitch = -90F
-                }
-            }
-        }
+        return true
     }
 }

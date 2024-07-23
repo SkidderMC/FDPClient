@@ -6,65 +6,67 @@
 package net.ccbluex.liquidbounce.utils
 
 import com.google.gson.JsonObject
-import me.zywl.fdpclient.FDPClient
-import net.minecraft.client.Minecraft
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
+import net.minecraft.client.settings.GameSettings
+import net.minecraft.network.NetworkManager
+import net.minecraft.network.login.client.C01PacketEncryptionResponse
+import net.minecraft.network.login.server.S01PacketEncryptionRequest
 import net.minecraft.util.IChatComponent
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import org.apache.logging.log4j.LogManager
-import org.lwjgl.opengl.Display
+import org.apache.logging.log4j.Logger
+import java.lang.reflect.Field
+import java.security.PublicKey
+import javax.crypto.SecretKey
 
-object
-ClientUtils : MinecraftInstance() {
-
+@SideOnly(Side.CLIENT)
+object ClientUtils : MinecraftInstance() {
+    private var fastRenderField: Field? = null
     var runTimeTicks = 0
 
-    @JvmStatic
-    val logger = LogManager.getLogger("FDPClient")
+    init {
+        try {
+            val declaredField = GameSettings::class.java.getDeclaredField("ofFastRender")
 
-
-    fun logInfo(msg: String) {
-        logger.info(msg)
+            fastRenderField = declaredField
+        } catch (ignored: NoSuchFieldException) { }
     }
 
-    fun logWarn(msg: String) {
-        logger.warn(msg)
+    val LOGGER: Logger = LogManager.getLogger("FDPCLIENT")
+
+    fun disableFastRender() {
+        try {
+            fastRenderField?.let {
+                if (!it.isAccessible)
+                    it.isAccessible = true
+
+                it.setBoolean(mc.gameSettings, false)
+            }
+        } catch (ignored: IllegalAccessException) {
+        }
     }
 
-    fun logError(msg: String) {
-        logger.error(msg)
-    }
-
-    fun logError(msg: String, t: Throwable) {
-        logger.error(msg, t)
-    }
-
-    fun logDebug(msg: String) {
-        logger.debug(msg)
-    }
-
-    fun setTitle() {
-        Display.setTitle("${FDPClient.CLIENT_NAME} ${FDPClient.CLIENT_VERSION} | ${FDPClient.CLIENT_WEBSITE}")
-    }
-
-    fun displayAlert(message: String) {
-        displayChatMessage(FDPClient.CLIENT_CHAT + message)
+    fun sendEncryption(
+        networkManager: NetworkManager,
+        secretKey: SecretKey?,
+        publicKey: PublicKey?,
+        encryptionRequest: S01PacketEncryptionRequest
+    ) {
+        networkManager.sendPacket(C01PacketEncryptionResponse(secretKey, publicKey, encryptionRequest.verifyToken),
+            { networkManager.enableEncryption(secretKey) }
+        )
     }
 
     fun displayChatMessage(message: String) {
         if (mc.thePlayer == null) {
-            logger.info("(MCChat) $message")
+            LOGGER.info("(MCChat) $message")
             return
         }
+
+        val prefixMessage = "§7[§b§l$CLIENT_NAME§7]§r $message"
         val jsonObject = JsonObject()
-        jsonObject.addProperty("text", message)
+        jsonObject.addProperty("text", prefixMessage)
         mc.thePlayer.addChatMessage(IChatComponent.Serializer.jsonToComponent(jsonObject.toString()))
-    }
-
-    /**
-     * Minecraft instance
-     */
-    val mc = Minecraft.getMinecraft()!!
-
-    enum class EnumOSType {
-        WINDOWS, LINUX, MACOS, UNKNOWN;
     }
 }

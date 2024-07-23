@@ -1,152 +1,149 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import me.zywl.fdpclient.FDPClient
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.PacketEvent
-import me.zywl.fdpclient.event.Render3DEvent
-import me.zywl.fdpclient.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
+import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.visual.Breadcrumbs
 import net.ccbluex.liquidbounce.utils.BlinkUtils
-import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import me.zywl.fdpclient.value.impl.BoolValue
-import me.zywl.fdpclient.value.impl.IntegerValue
-import net.minecraft.client.entity.EntityOtherPlayerMP
-import net.minecraft.network.Packet
-import net.minecraft.network.play.INetHandlerPlayClient
-import org.lwjgl.opengl.GL11
-import java.util.*
-import java.util.concurrent.LinkedBlockingQueue
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.network.play.server.S02PacketChat
+import net.minecraft.network.play.server.S40PacketDisconnect
+import net.minecraft.network.status.client.C01PacketPing
+import net.minecraft.network.handshake.client.C00Handshake
+import net.minecraft.network.status.client.C00PacketServerQuery
+import org.lwjgl.opengl.GL11.*
+import java.awt.Color
 
-@ModuleInfo(name = "Blink", category = ModuleCategory.PLAYER)
-object Blink : Module() {
-    
-    private val outgoingValue = BoolValue("OutGoing", true)
-    private val inboundValue = BoolValue("Inbound", false)
-    private val pulseValue = BoolValue("Pulse", false)
-    private val minPulseDelayValue = IntegerValue("MinPulseDelay", 1000, 100, 5000).displayable { pulseValue.get() }
-    private val maxPulseDelayValue = IntegerValue("MaxPulseDelay", 1500, 100, 5000)
+object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModule = false) {
+
+	private val mode by ListValue("Mode", arrayOf("Sent", "Received", "Both"), "Sent")
+
+    private val pulse by BoolValue("Pulse", false)
+		private val pulseDelay by IntegerValue("PulseDelay", 1000, 500..5000) { pulse }
+
+    private val fakePlayerMenu by BoolValue("FakePlayer", true)
 
     private val pulseTimer = MSTimer()
-    private var pulseDelay = 0
-    private var fakePlayer: EntityOtherPlayerMP? = null
-    private val positions = LinkedList<DoubleArray>()
-    
-    private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayClient>>()
-
 
     override fun onEnable() {
-        if (mc.thePlayer == null) return
-        if (outgoingValue.get()) {
-            BlinkUtils.setBlinkState(all = true)
-            if (!pulseValue.get()) {
-                fakePlayer = EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.gameProfile)
-                fakePlayer!!.clonePlayer(mc.thePlayer, true)
-                fakePlayer!!.copyLocationAndAnglesFrom(mc.thePlayer)
-                fakePlayer!!.rotationYawHead = mc.thePlayer.rotationYawHead
-                mc.theWorld.addEntityToWorld(-1337, fakePlayer)
-            } else {
-                pulseDelay = RandomUtils.nextInt(minPulseDelayValue.get(), maxPulseDelayValue.get())
-            }
-        }
-        packets.clear()
-        synchronized(positions) {
-            positions.add(doubleArrayOf(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY + mc.thePlayer.getEyeHeight() / 2, mc.thePlayer.posZ))
-            positions.add(doubleArrayOf(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY, mc.thePlayer.posZ))
-        }
-        
-        
         pulseTimer.reset()
+
+        if (fakePlayerMenu)
+            BlinkUtils.addFakePlayer()
     }
 
     override fun onDisable() {
-        synchronized(positions) { positions.clear() }
-        if (mc.thePlayer == null) return
-        BlinkUtils.setBlinkState(off = true, release = true)
-        clearPackets()
-        if (fakePlayer != null) {
-            mc.theWorld.removeEntityFromWorld(fakePlayer!!.entityId)
-            fakePlayer = null
+        if (mc.thePlayer == null)
+            return
+
+        BlinkUtils.unblink()
+    }
+
+    @EventTarget
+    fun onPacket(event: PacketEvent) {
+        val packet = event.packet
+
+        if (mc.thePlayer == null || mc.thePlayer.isDead)
+            return
+
+        if (event.isCancelled)
+            return
+
+        when (packet) {
+            is C00Handshake, is C00PacketServerQuery, is C01PacketPing, is S02PacketChat, is S40PacketDisconnect -> {
+                return
+            }
+        }
+
+        when (mode.lowercase()) {
+            "sent" -> {
+                BlinkUtils.blink(packet, event, sent = true, receive = false)
+            }
+            "received" -> {
+                BlinkUtils.blink(packet, event, sent = false, receive = true)
+            }
+            "both" -> {
+                BlinkUtils.blink(packet, event)
+            }
         }
     }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        
-        synchronized(positions) {
-            positions.add(
-                doubleArrayOf(
-                    mc.thePlayer.posX,
-                    mc.thePlayer.entityBoundingBox.minY,
-                    mc.thePlayer.posZ
-                )
-            )
-        }
-        if (pulseValue.get() && pulseTimer.hasTimePassed(pulseDelay.toLong())) {
-            synchronized(positions) { positions.clear() }
-            BlinkUtils.releasePacket()
-            clearPackets()
-            pulseTimer.reset()
-            pulseDelay = RandomUtils.nextInt(minPulseDelayValue.get(), maxPulseDelayValue.get())
-        }
-    }
-    
-    private fun clearPackets() {
-        while (!packets.isEmpty()) {
-            PacketUtils.handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
-        }
-    }
-    
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        if (!inboundValue.get()) return
-        val packet = event.packet
-        if (packet.javaClass.simpleName.startsWith("S", ignoreCase = true)) {
-            if (mc.thePlayer.ticksExisted < 20) return
-            event.cancelEvent()
-            packets.add(packet as Packet<INetHandlerPlayClient>)
+    fun onMotion(event: MotionEvent) {
+        if (event.eventState == EventState.POST) {
+            val thePlayer = mc.thePlayer ?: return
+
+            if (thePlayer.isDead || mc.thePlayer.ticksExisted <= 10) {
+                BlinkUtils.unblink()
+            }
+
+            when (mode.lowercase()) {
+                "sent" -> {
+                    BlinkUtils.syncSent()
+                }
+
+                "received" -> {
+                    BlinkUtils.syncReceived()
+                }
+            }
+
+            if (pulse && pulseTimer.hasTimePassed(pulseDelay)) {
+                BlinkUtils.unblink()
+                if (fakePlayerMenu) {
+                    BlinkUtils.addFakePlayer()
+                }
+                pulseTimer.reset()
+            }
         }
     }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        if (!outgoingValue.get()) return
-        val breadcrumbs = FDPClient.moduleManager[Breadcrumbs::class.java]!!
-        synchronized(positions) {
-            GL11.glPushMatrix()
-            GL11.glDisable(GL11.GL_TEXTURE_2D)
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-            GL11.glEnable(GL11.GL_LINE_SMOOTH)
-            GL11.glEnable(GL11.GL_BLEND)
-            GL11.glDisable(GL11.GL_DEPTH_TEST)
+        val color =
+            if (Breadcrumbs.colorRainbow) rainbow()
+            else Color(Breadcrumbs.colorRed, Breadcrumbs.colorGreen, Breadcrumbs.colorBlue)
+
+        synchronized(BlinkUtils.positions) {
+            glPushMatrix()
+            glDisable(GL_TEXTURE_2D)
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+            glEnable(GL_LINE_SMOOTH)
+            glEnable(GL_BLEND)
+            glDisable(GL_DEPTH_TEST)
             mc.entityRenderer.disableLightmap()
-            GL11.glLineWidth(2F)
-            GL11.glBegin(GL11.GL_LINE_STRIP)
-            RenderUtils.glColor(breadcrumbs.color)
+            glBegin(GL_LINE_STRIP)
+            glColor(color)
+
             val renderPosX = mc.renderManager.viewerPosX
             val renderPosY = mc.renderManager.viewerPosY
             val renderPosZ = mc.renderManager.viewerPosZ
-            for (pos in positions) GL11.glVertex3d(pos[0] - renderPosX, pos[1] - renderPosY, pos[2] - renderPosZ)
-            GL11.glColor4d(1.0, 1.0, 1.0, 1.0)
-            GL11.glEnd()
-            GL11.glEnable(GL11.GL_DEPTH_TEST)
-            GL11.glDisable(GL11.GL_LINE_SMOOTH)
-            GL11.glDisable(GL11.GL_BLEND)
-            GL11.glEnable(GL11.GL_TEXTURE_2D)
-            GL11.glPopMatrix()
+
+            for (pos in BlinkUtils.positions)
+                glVertex3d(pos.xCoord - renderPosX, pos.yCoord - renderPosY, pos.zCoord - renderPosZ)
+
+            glColor4d(1.0, 1.0, 1.0, 1.0)
+            glEnd()
+            glEnable(GL_DEPTH_TEST)
+            glDisable(GL_LINE_SMOOTH)
+            glDisable(GL_BLEND)
+            glEnable(GL_TEXTURE_2D)
+            glPopMatrix()
         }
     }
 
-    override val tag: String
-        get() = "" + BlinkUtils.bufferSize().toString()
+    override val tag
+        get() = (BlinkUtils.packets.size + BlinkUtils.packetsReceived.size).toString()
+
+    fun blinkingSend() = handleEvents() && (mode == "Sent" || mode == "Both")
+    fun blinkingReceive() = handleEvents() && (mode == "Received" || mode == "Both")
 }

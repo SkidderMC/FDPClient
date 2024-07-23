@@ -1,37 +1,50 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.utils.login
 
-import me.liuli.elixir.account.CrackedAccount
-import me.zywl.fdpclient.FDPClient
-import me.zywl.fdpclient.event.SessionEvent
-import net.ccbluex.liquidbounce.ui.gui.altmanager.GuiAltManager
+import com.google.gson.JsonParser
+import net.ccbluex.liquidbounce.event.EventManager.callEvent
+import net.ccbluex.liquidbounce.event.SessionEvent
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.minecraft.util.Session
+import java.util.*
+
+fun me.liuli.elixir.compat.Session.intoMinecraftSession() = Session(username, uuid, token, type)
 
 object LoginUtils : MinecraftInstance() {
-    fun loginCracked(username: String) {
-        mc.session = CrackedAccount().also { it.name = username }.session.let { Session(it.username, it.uuid, it.token, it.type) }
-        FDPClient.eventManager.callEvent(SessionEvent())
-    }
 
-    fun randomCracked() {
-        var name = GuiAltManager.randomAltField.text
-
-        while (name.contains("%n") || name.contains("%s")) {
-            if (name.contains("%n")) {
-                name = name.replaceFirst("%n", RandomUtils.nextInt(0, 9).toString())
-            }
-
-            if (name.contains("%s")) {
-                name = name.replaceFirst("%s", RandomUtils.randomString(1))
-            }
+    fun loginSessionId(sessionId: String): LoginResult {
+        val decodedSessionData = try {
+            String(Base64.getDecoder().decode(sessionId.split(".")[1]), Charsets.UTF_8)
+        } catch (e: Exception) {
+            return LoginResult.FAILED_PARSE_TOKEN
         }
 
-        loginCracked(name)
+        val sessionObject = try {
+            JsonParser().parse(decodedSessionData).asJsonObject
+        } catch (e: java.lang.Exception) {
+            return LoginResult.FAILED_PARSE_TOKEN
+        }
+        val uuid = sessionObject["spr"].asString
+        val accessToken = sessionObject["yggt"].asString
+
+        if (!UserUtils.isValidToken(accessToken)) {
+            return LoginResult.INVALID_ACCOUNT_DATA
+        }
+
+        val username = UserUtils.getUsername(uuid) ?: return LoginResult.INVALID_ACCOUNT_DATA
+
+        mc.session = Session(username, uuid, accessToken, "mojang")
+        callEvent(SessionEvent())
+
+        return LoginResult.LOGGED
     }
+
+    enum class LoginResult {
+        INVALID_ACCOUNT_DATA, LOGGED, FAILED_PARSE_TOKEN
+    }
+
 }

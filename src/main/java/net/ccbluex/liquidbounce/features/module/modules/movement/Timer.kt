@@ -5,52 +5,31 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.UpdateEvent
-import me.zywl.fdpclient.event.WorldEvent
-import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import me.zywl.fdpclient.value.impl.BoolValue
-import me.zywl.fdpclient.value.impl.FloatValue
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.ListValue
 
-@ModuleInfo(name = "Timer", category = ModuleCategory.MOVEMENT, autoDisable = EnumAutoDisableType.RESPAWN)
-object Timer : Module() {
+object Timer : Module("Timer", Category.MOVEMENT, gameDetecting = false, hideModule = false) {
 
-    // private val minSpeedValue = FloatValue("Speed", 2F, 0.1F, 10F)
-    val maxSpeedValue: FloatValue = object : FloatValue("Max-Timer", 2F, 0.1F, 10F) {
-        fun onChanged(oldValue: Int, newValue: Int) {
-            val minTimer = minSpeedValue.get()
-            if (minTimer > newValue) {
-                set(minTimer)
-            }
-        }
-    }
-    private val minSpeedValue: FloatValue = object : FloatValue("Min-Timer", 2F, 0.1F, 10F)  {
-        fun onChanged(oldValue: Int, newValue: Int) {
-            val maxTimer = maxSpeedValue.get()
-            if (maxTimer < newValue) {
-                set(maxTimer)
-            }
-        }
-    }
-    private val onMoveValue = BoolValue("OnMove", true)
-    private val autoDisableValue = BoolValue("AutoDisable", true)
-    val smart = BoolValue("Smart", false)
+    private val mode by ListValue("Mode", arrayOf("OnMove", "NoMove", "Always"), "OnMove")
+    private val speed by FloatValue("Speed", 2F, 0.1F..10F)
 
     override fun onDisable() {
+        if (mc.thePlayer == null)
+            return
+
         mc.timer.timerSpeed = 1F
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (mc.thePlayer == null || mc.theWorld == null) return
-
-        if(MovementUtils.isMoving() || !onMoveValue.get()) {
-            mc.timer.timerSpeed = RandomUtils.nextFloat(minSpeedValue.get(), maxSpeedValue.get())
+        if (mode == "Always" || mode == "OnMove" && isMoving || mode == "NoMove" && !isMoving) {
+            mc.timer.timerSpeed = speed
             return
         }
 
@@ -62,9 +41,6 @@ object Timer : Module() {
         if (event.worldClient != null)
             return
 
-        if (autoDisableValue.get()) state = false
+        state = false
     }
-
-    override val tag: String?
-        get() = "${RandomUtils.nextFloat(minSpeedValue.get(), maxSpeedValue.get()).toString()}"
 }

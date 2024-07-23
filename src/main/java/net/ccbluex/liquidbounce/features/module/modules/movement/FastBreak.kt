@@ -5,29 +5,29 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.player.Breaker
-import me.zywl.fdpclient.value.impl.FloatValue
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.modules.other.Fucker
+import net.ccbluex.liquidbounce.features.module.modules.other.Nuker
+import net.ccbluex.liquidbounce.value.FloatValue
 
-@ModuleInfo(name = "FastBreak", category = ModuleCategory.MOVEMENT)
-object FastBreak : Module() {
+object FastBreak : Module("FastBreak", Category.MOVEMENT, hideModule = false) {
 
-    private val breakDamageValue = FloatValue("BreakDamage", 0.8F, 0.1F, 1F)
+    private val breakDamage by FloatValue("BreakDamage", 0.8F, 0.1F..1F)
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         mc.playerController.blockHitDelay = 0
 
-        if (mc.playerController.curBlockDamageMP > breakDamageValue.get()) {
+        if (mc.playerController.curBlockDamageMP > breakDamage)
             mc.playerController.curBlockDamageMP = 1F
-        }
 
-        if (Breaker.currentDamage > breakDamageValue.get()) {
-            Breaker.currentDamage = 1F
-        }
+        if (Fucker.currentDamage > breakDamage)
+            Fucker.currentDamage = 1F
+
+        if (Nuker.currentDamage > breakDamage)
+            Nuker.currentDamage = 1F
     }
 }

@@ -5,75 +5,90 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import me.zywl.fdpclient.event.EventState
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.MotionEvent
+import net.ccbluex.liquidbounce.event.EventState
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.MotionEvent
+import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import me.zywl.fdpclient.value.impl.BoolValue
-import me.zywl.fdpclient.value.impl.ListValue
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
+import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C0BPacketEntityAction
+import net.minecraft.network.play.client.C0BPacketEntityAction.Action.START_SNEAKING
+import net.minecraft.network.play.client.C0BPacketEntityAction.Action.STOP_SNEAKING
 
-@ModuleInfo(name = "Sneak", category = ModuleCategory.MOVEMENT)
-object Sneak : Module() {
+object Sneak : Module("Sneak", Category.MOVEMENT, hideModule = false) {
 
-    private val modeValue = ListValue("Mode", arrayOf("Vanilla", "Vanilla2", "Packet", "NCP"), "Vanilla")
-    private val onlySneakValue = BoolValue("OnlySneak", false).displayable { !modeValue.equals("Vanilla") }
+    val mode by ListValue("Mode", arrayOf("Legit", "Vanilla", "Switch", "MineSecure"), "MineSecure")
+    val stopMove by BoolValue("StopMove", false)
 
-    override fun onEnable() {
-        if (modeValue.equals("Packet")) {
-            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SNEAKING))
+    private var sneaking = false
+
+    @EventTarget
+    fun onMotion(event: MotionEvent) {
+        if (stopMove && isMoving) {
+            if (sneaking)
+                onDisable()
+            return
+        }
+
+        when (mode.lowercase()) {
+            "legit" -> mc.gameSettings.keyBindSneak.pressed = true
+            "vanilla" -> {
+                if (sneaking)
+                    return
+
+                sendPacket(C0BPacketEntityAction(mc.thePlayer, START_SNEAKING))
+            }
+
+            "switch" -> {
+                when (event.eventState) {
+                    EventState.PRE -> {
+                        sendPackets(
+                            C0BPacketEntityAction(mc.thePlayer, START_SNEAKING),
+                            C0BPacketEntityAction(mc.thePlayer, STOP_SNEAKING)
+                        )
+                    }
+                    EventState.POST -> {
+                        sendPackets(
+                            C0BPacketEntityAction(mc.thePlayer, STOP_SNEAKING),
+                            C0BPacketEntityAction(mc.thePlayer, START_SNEAKING)
+                        )
+                    }
+
+                    else -> {}
+                }
+            }
+
+            "minesecure" -> {
+                if (event.eventState == EventState.PRE)
+                    return
+
+                sendPacket(C0BPacketEntityAction(mc.thePlayer, START_SNEAKING))
+            }
         }
     }
 
-    override fun onDisable() {
-        if (modeValue.equals("Packet")) {
-            mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING))
-        }
-    } 
-    
     @EventTarget
-    fun onMotion(event: MotionEvent) {
-        if(onlySneakValue.get() && !GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) return
+    fun onWorld(worldEvent: WorldEvent) {
+        sneaking = false
+    }
 
-        when(event.eventState) {
-            EventState.PRE -> {
-                when(modeValue.get().lowercase()) {
-                    "vanilla" -> {
-                        mc.gameSettings.keyBindSneak.pressed = true
-                    }
+    override fun onDisable() {
+        val player = mc.thePlayer ?: return
 
-                    "vanilla2" -> {
-                        mc.thePlayer.movementInput.sneak = mc.thePlayer.sendQueue.doneLoadingTerrain
-                    }
-
-                    "ncp" -> {
-                        mc.thePlayer.movementInput.sneak = mc.thePlayer.sendQueue.doneLoadingTerrain
-                        mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.STOP_SNEAKING))
-                    }
-
-                    else -> null
+        when (mode.lowercase()) {
+            "legit" -> {
+                if (!GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
+                    mc.gameSettings.keyBindSneak.pressed = false
                 }
             }
-
-            EventState.POST -> {
-                when(modeValue.get().lowercase()) {
-                    "vanilla2" -> {
-                        mc.thePlayer.movementInput.sneak = mc.thePlayer.sendQueue.doneLoadingTerrain
-                        mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SNEAKING))
-                    }
-
-                    "ncp" -> {
-                        mc.netHandler.addToSendQueue(C0BPacketEntityAction(mc.thePlayer, C0BPacketEntityAction.Action.START_SNEAKING))
-                    }
-
-                    else -> null
-                }
-            }
-
-            else -> {}
+            "vanilla", "switch", "minesecure" -> sendPacket(C0BPacketEntityAction(player, STOP_SNEAKING))
         }
+        sneaking = false
     }
 }

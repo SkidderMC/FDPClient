@@ -1,23 +1,28 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
-package net.ccbluex.liquidbounce.utils;
+package net.ccbluex.liquidbounce.utils
 
 /**
- * A buffer which stores it's contents in an array.
+ * A buffer which stores its contents in an array.
  * You can only add contents to it. If you add more elements than it can hold it will overflow and
  * overwrite the first element. Made to improve performance for time measurements.
  *
  * @author superblaubeere27
  */
-public class RollingArrayLongBuffer {
-    private final long[] contents;
-    private int currentIndex = 0;
+class RollingArrayLongBuffer(length: Int) {
+    /**
+     * @return The contents of the buffer
+     */
+    var contents: LongArray
+        private set
 
-    public RollingArrayLongBuffer(int length) {
-        this.contents = new long[length];
+    private var currentIndex = 0
+
+    init {
+        contents = LongArray(length)
     }
 
     /**
@@ -25,9 +30,9 @@ public class RollingArrayLongBuffer {
      *
      * @param l The element to be added
      */
-    public void add(long l) {
-        currentIndex = (currentIndex + 1) % contents.length;
-        contents[currentIndex] = l;
+    fun add(l: Long) {
+        currentIndex = (currentIndex + 1) % contents.size
+        contents[currentIndex] = l
     }
 
     /**
@@ -37,14 +42,14 @@ public class RollingArrayLongBuffer {
      * @param l The threshold timestamp
      * @return The count
      */
-    public int getTimestampsSince(long l) {
-        for (int i = 0; i < contents.length; i++) {
-            if (contents[currentIndex < i ? contents.length - i + currentIndex : currentIndex - i] < l) {
-                return i;
+    fun getTimestampsSince(l: Long): Int {
+        for (i in contents.indices) {
+            if (contents[if (currentIndex < i) contents.size - i + currentIndex else currentIndex - i] < l) {
+                return i
             }
         }
 
         // If every element is lower than l, return the array length
-        return contents.length;
+        return contents.size
     }
 }

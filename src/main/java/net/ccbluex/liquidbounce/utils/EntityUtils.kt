@@ -5,130 +5,107 @@
  */
 package net.ccbluex.liquidbounce.utils
 
-import me.zywl.fdpclient.FDPClient
+import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.animalValue
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.deadValue
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.invisibleValue
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.mobValue
 import net.ccbluex.liquidbounce.features.module.modules.client.Target.playerValue
-import net.ccbluex.liquidbounce.features.module.modules.other.AntiBot.isBot
-import net.ccbluex.liquidbounce.features.module.modules.other.Teams
-import net.ccbluex.liquidbounce.utils.extensions.toRadiansD
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
+import net.ccbluex.liquidbounce.features.module.modules.client.Teams
+import net.ccbluex.liquidbounce.handler.combat.CombatManager.isFocusEntity
+import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.misc.StringUtils.contains
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
-import net.minecraft.entity.boss.EntityDragon
-import net.minecraft.entity.monster.EntityGhast
-import net.minecraft.entity.monster.EntityGolem
-import net.minecraft.entity.monster.EntityMob
-import net.minecraft.entity.monster.EntitySlime
-import net.minecraft.entity.passive.EntityAnimal
-import net.minecraft.entity.passive.EntityBat
-import net.minecraft.entity.passive.EntitySquid
-import net.minecraft.entity.passive.EntityVillager
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.Vec3
 import kotlin.math.cos
 import kotlin.math.sin
 
 object EntityUtils : MinecraftInstance() {
-    fun isSelected(entity: Entity, canAttackCheck: Boolean): Boolean {
-        if (entity is EntityLivingBase && (deadValue.get() || entity.isEntityAlive()) && entity !== mc.thePlayer) {
-            if (invisibleValue.get() || !entity.isInvisible()) {
-                if (playerValue.get() && entity is EntityPlayer) {
+
+    private val healthSubstrings = arrayOf("hp", "health", "❤", "lives")
+
+    fun isSelected(entity: Entity?, canAttackCheck: Boolean): Boolean {
+        if (entity is EntityLivingBase && (deadValue || entity.isEntityAlive) && entity != mc.thePlayer) {
+            if (invisibleValue || !entity.isInvisible) {
+                if (playerValue && entity is EntityPlayer) {
                     if (canAttackCheck) {
-                        if (isBot(entity)) {
+                        if (isBot(entity))
+                            return false
+
+                        if (entity.isClientFriend())
+                            return false
+
+                        if (entity.isSpectator) return false
+
+                        if (!isFocusEntity(entity)) {
                             return false
                         }
 
-                        if (isFriend(entity)) {
-                            return false
-                        }
-
-                        if (entity.isSpectator) {
-                            return false
-                        }
-
-                        if (entity.isPlayerSleeping) {
-                            return false
-                        }
-
-                        if (!FDPClient.combatManager.isFocusEntity(entity)) {
-                            return false
-                        }
-
-                        val teams = FDPClient.moduleManager.getModule(Teams::class.java)
-                        return !teams!!.state || !teams.isInYourTeam(entity)
+                        return !Teams.handleEvents() || !Teams.isInYourTeam(entity)
                     }
-
                     return true
                 }
-                return mobValue.get() && isMob(entity) || animalValue.get() && isAnimal(entity)
+
+                return mobValue && entity.isMob() || animalValue && entity.isAnimal()
             }
         }
         return false
     }
 
-    fun isLookingOnEntities(entity: Entity, maxAngleDifference: Double): Boolean {
+    fun isLookingOnEntities(entity: Any, maxAngleDifference: Double): Boolean {
         val player = mc.thePlayer ?: return false
-        val playerRotation = player.rotationYawHead
+        val playerYaw = player.rotationYawHead
         val playerPitch = player.rotationPitch
 
         val maxAngleDifferenceRadians = Math.toRadians(maxAngleDifference)
 
         val lookVec = Vec3(
-            -sin(playerRotation.toRadiansD()),
+            -sin(playerYaw.toRadiansD()),
             -sin(playerPitch.toRadiansD()),
-            cos(playerRotation.toRadiansD())
+            cos(playerYaw.toRadiansD())
         ).normalize()
 
         val playerPos = player.positionVector.addVector(0.0, player.eyeHeight.toDouble(), 0.0)
-        val entityPos = entity.positionVector.addVector(0.0, entity.eyeHeight.toDouble(), 0.0)
+
+        val entityPos = when (entity) {
+            is Entity -> entity.positionVector.addVector(0.0, entity.eyeHeight.toDouble(), 0.0)
+            is TileEntity -> Vec3(
+                entity.pos.x.toDouble(),
+                entity.pos.y.toDouble(),
+                entity.pos.z.toDouble()
+            )
+            else -> return false
+        }
 
         val directionToEntity = entityPos.subtract(playerPos).normalize()
         val dotProductThreshold = lookVec.dotProduct(directionToEntity)
 
         return dotProductThreshold > cos(maxAngleDifferenceRadians)
     }
-    
-    fun canRayCast(entity: Entity): Boolean {
-        if (entity is EntityLivingBase) {
-            if (entity is EntityPlayer) {
-                val teams = FDPClient.moduleManager.getModule(Teams::class.java)
-                return !teams!!.state || !teams.isInYourTeam(entity)
-            } else {
-                return mobValue.get() && isMob(entity) || animalValue.get() && isAnimal(entity)
-            }
+
+    fun getHealth(entity: EntityLivingBase, fromScoreboard: Boolean = false, absorption: Boolean = true): Float {
+        if (fromScoreboard && entity is EntityPlayer) run {
+            val scoreboard = entity.worldScoreboard
+            val objective = scoreboard.getValueFromObjective(entity.name, scoreboard.getObjectiveInDisplaySlot(2))
+
+            if (healthSubstrings !in objective.objective?.displayName)
+                return@run
+
+            val scoreboardHealth = objective.scorePoints
+
+            if (scoreboardHealth > 0)
+                return scoreboardHealth.toFloat()
         }
-        return false
-    }
 
-    fun isFriend(entity: Entity): Boolean {
-        return entity is EntityPlayer && entity.getName() != null && FDPClient.fileManager.friendsConfig.isFriend(stripColor(entity.getName()))
-    }
+        var health = entity.health
 
-    fun isFriend(entity: String): Boolean {
-        return FDPClient.fileManager.friendsConfig.isFriend(entity)
-    }
+        if (absorption)
+            health += entity.absorptionAmount
 
-    fun isAnimal(entity: Entity): Boolean {
-        return entity is EntityAnimal || entity is EntitySquid || entity is EntityGolem || entity is EntityVillager || entity is EntityBat
-    }
-
-    fun isMob(entity: Entity): Boolean {
-        return entity is EntityMob || entity is EntitySlime || entity is EntityGhast || entity is EntityDragon
-    }
-
-    fun isRendered(entityToCheck: Entity?): Boolean {
-        return mc.theWorld != null && mc.theWorld.getLoadedEntityList().contains(entityToCheck)
-    }
-
-    fun getPing(entityPlayer: EntityPlayer?): Int {
-        if (entityPlayer == null) return 0
-
-        val networkPlayerInfo = mc.netHandler.getPlayerInfo(entityPlayer.uniqueID)
-
-        return networkPlayerInfo?.responseTime ?: 0
+        return if (health > 0) health else 20f
     }
 
 }

@@ -6,14 +6,13 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import me.zywl.fdpclient.value.impl.BoolValue
-import me.zywl.fdpclient.value.impl.FloatValue
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.value.FloatValue
 
-@ModuleInfo(name = "KeepSprint", category = ModuleCategory.COMBAT)
-class KeepSprint : Module() {
+object KeepSprint : Module("KeepSprint", Category.COMBAT, hideModule = false) {
+    private val motionAfterAttackOnGround by FloatValue("MotionAfterAttackOnGround", 0.6f, 0.0f..1f)
+    private val motionAfterAttackInAir by FloatValue("MotionAfterAttackInAir", 0.6f, 0.0f..1f)
 
-    val s = FloatValue("Motion", 0.0F , 0.0F, 1.0F)
-    val aws = BoolValue("AlwaysSprint", false)
+    val motionAfterAttack
+        get() = if (mc.thePlayer.onGround) motionAfterAttackOnGround else motionAfterAttackInAir
 }

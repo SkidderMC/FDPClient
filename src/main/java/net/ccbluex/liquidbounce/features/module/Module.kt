@@ -5,147 +5,126 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
-import me.zywl.fdpclient.FDPClient
-import me.zywl.fdpclient.event.Listenable
-import net.ccbluex.liquidbounce.features.module.modules.client.SoundModule
-import net.ccbluex.liquidbounce.ui.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.hud.element.elements.NotifyType
-import net.ccbluex.liquidbounce.ui.i18n.LanguageManager
-import net.ccbluex.liquidbounce.utils.AnimationHelper
-import net.ccbluex.liquidbounce.utils.ClassUtils
-import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.FDPClient.isStarting
+import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.features.module.modules.client.GameDetector
+import net.ccbluex.liquidbounce.file.FileManager.modulesConfig
+import net.ccbluex.liquidbounce.file.FileManager.saveConfig
+import net.ccbluex.liquidbounce.handler.lang.translation
+import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Arraylist
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
-import net.ccbluex.liquidbounce.utils.render.Translate
-import me.zywl.fdpclient.value.Value
+import net.ccbluex.liquidbounce.utils.extensions.toLowerCamelCase
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.TickScheduler
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.Value
+import net.minecraft.client.audio.PositionedSoundRecord
+import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 
-open class Module : MinecraftInstance(), Listenable {
+open class Module constructor(
+
+    val name: String,
+    val category: Category,
+    defaultKeyBind: Int = Keyboard.KEY_NONE,
+    val defaultInArray: Boolean = true, // Used in HideCommand to reset modules visibility.
+    private val canBeEnabled: Boolean = true,
+    private val forcedDescription: String? = null,
+
+    // Adds spaces between lowercase and uppercase letters (KillAura -> Kill Aura)
+    val spacedName: String = name.split("(?<=[a-z])(?=[A-Z])".toRegex()).joinToString(separator = " "),
+    val subjective: Boolean = category == Category.VISUAL,
+    val gameDetecting: Boolean = canBeEnabled,
+    val hideModule: Boolean = false
+
+) : MinecraftInstance(), Listenable {
+
+    // Value that determines whether the module should depend on GameDetector
+    private val onlyInGameValue = BoolValue("OnlyInGame", true, subjective = true) { GameDetector.state }
+
+    protected val TickScheduler = TickScheduler(this)
+
     // Module information
-    val translate = Translate(0F,0F)
-    val tab = Translate(0f , 0f)
-    val animation: AnimationHelper
-    var name: String
-    private var suffix: String? = null
-    private val properties: List<Value<*>> = ArrayList()
-    var expanded: Boolean = false
-    private var toggled = false
-    var localizedName = ""
-        get() = field.ifEmpty { name }
-    var description: String
-    var category: ModuleCategory
-    var keyBind = Keyboard.CHAR_NONE
+
+    // Get normal or spaced name
+    fun getName(spaced: Boolean = Arraylist.spacedModules) = if (spaced) spacedName else name
+
+    var keyBind = defaultKeyBind
         set(keyBind) {
             field = keyBind
 
-            if (!FDPClient.isStarting) {
-                FDPClient.configManager.smartSave()
-            }
-        }
-    var array = true
-        set(array) {
-            field = array
-
-            if (!FDPClient.isStarting) {
-                FDPClient.configManager.smartSave()
-            }
+            saveConfig(modulesConfig)
         }
 
-    val canEnable: Boolean
-    var autoDisable: EnumAutoDisableType
-    var triggerType: EnumTriggerType
-    val moduleCommand: Boolean
-    val moduleInfo = javaClass.getAnnotation(ModuleInfo::class.java)!!
+    val hideModuleValue: BoolValue = object : BoolValue("Hide", false, subjective = true) {
+        override fun onUpdate(value: Boolean) {
+            inArray = !value
+        }
+    }
+
+    // Use for synchronizing
+    val hideModuleValues: BoolValue = object : BoolValue("HideSync", hideModuleValue.get(), subjective = true) {
+        override fun onUpdate(value: Boolean) {
+            hideModuleValue.set(value)
+        }
+    }
+
+    var inArray = defaultInArray
+        set(value) {
+            field = value
+
+            saveConfig(modulesConfig)
+        }
+
+    val description
+        get() = forcedDescription ?: translation("module.${name.toLowerCamelCase()}.description")
 
     var slideStep = 0F
-    var splicedName = ""
-        get() {
-            if (field.isEmpty()) {
-                val sb = StringBuilder()
-                val arr = name.toCharArray()
-                for (i in arr.indices) {
-                    val char = arr[i]
-                    if (i != 0 && !Character.isLowerCase(char) && Character.isLowerCase(arr[i - 1])) {
-                        sb.append(' ')
-                    }
-                    sb.append(char)
-                }
-                field = sb.toString()
-            }
-            return field
-        }
-
-    init {
-        name = moduleInfo.name
-        animation = AnimationHelper(this)
-        description = moduleInfo.description.ifEmpty { LanguageManager.getAndFormat("module.$name.description") }
-        category = moduleInfo.category
-        keyBind = moduleInfo.keyBind
-        array = moduleInfo.array
-        canEnable = moduleInfo.canEnable
-        autoDisable = moduleInfo.autoDisable
-        moduleCommand = moduleInfo.moduleCommand
-        triggerType = moduleInfo.triggerType
-    }
-
-    open fun onLoad() {
-        localizedName = if(LanguageManager.getAndFormat("module.$name.name") == "module.$name.name") {
-            name
-        } else {
-            LanguageManager.getAndFormat("module.$name.name")
-        }
-    }
 
     // Current state of module
     var state = false
         set(value) {
-            if (field == value) return
+            if (field == value)
+                return
 
             // Call toggle
             onToggle(value)
 
+            TickScheduler.clear()
+
             // Play sound and add notification
-            if (!FDPClient.isStarting) {
-                if (value) {
-                    SoundModule.playSound(true)
-                    FDPClient.hud.addNotification(Notification(LanguageManager.getAndFormat("notify.module.title"), LanguageManager.getAndFormat("notify.module.enable", localizedName), NotifyType.SUCCESS))
-                } else {
-                    SoundModule.playSound(false)
-                    FDPClient.hud.addNotification(Notification(LanguageManager.getAndFormat("notify.module.title"), LanguageManager.getAndFormat("notify.module.disable", localizedName), NotifyType.ERROR))
-                }
+            if (!isStarting) {
+                mc.soundHandler.playSound(PositionedSoundRecord.create(ResourceLocation("random.click"), 1F))
+                addNotification(Notification(name,"${if (value) "Enabled" else "Disabled"} §r$name", if (value) Type.SUCCESS else Type.ERROR, 1000))
             }
 
             // Call on enabled or disabled
-            try {
-                field = canEnable && value
-                if (value) {
-                    onEnable()
-                } else {
-                    onDisable()
-                }
-            } catch (e: Throwable) {
-                e.printStackTrace()
+            if (value) {
+                onEnable()
+
+                if (canBeEnabled)
+                    field = true
+            } else {
+                onDisable()
+                field = false
             }
 
             // Save module state
-            FDPClient.configManager.smartSave()
+            saveConfig(modulesConfig)
         }
 
+
     // HUD
-    var slide = 0f
-    var yPos = 0f
+    val hue = nextFloat()
+    var slide = 0F
+    var yAnim = 0f
 
     // Tag
     open val tag: String?
         get() = null
-
-    val tagName: String
-        get() = "$name${if (tag == null) "" else " §7$tag"}"
-
-    val colorlessTagName: String
-        get() = "$name${if (tag == null) "" else " " + stripColor(tag!!)}"
-
-    var width = 10
 
     /**
      * Toggle module
@@ -153,42 +132,11 @@ open class Module : MinecraftInstance(), Listenable {
     fun toggle() {
         state = !state
     }
-    open fun getSuffix(): String? {
-        return suffix
-    }
-
-    open fun setSuffix(suffix: String?) {
-        this.suffix = suffix
-    }
-
-    open fun getProperties(): List<Value<*>?>? {
-        return properties
-    }
-
-    open fun hasMode(): Boolean {
-        return suffix != null
-    }
-    open fun isToggled(): Boolean {
-        return toggled
-    }
-    open fun toggleSilent() {
-        this.toggled = !this.toggled
-        if (this.toggled) {
-            onEnable()
-        } else {
-            onDisable()
-        }
-    }
 
     /**
-     * Print [msg] to chat as alert
+     * Called when module initialized
      */
-    protected fun alert(msg: String) = ClientUtils.displayAlert(msg)
-
-    /**
-     * Print [msg] to chat as plain text
-     */
-    protected fun chat(msg: String) = ClientUtils.displayChatMessage(msg)
+    open fun onInitialize() {}
 
     /**
      * Called when module toggled
@@ -206,24 +154,38 @@ open class Module : MinecraftInstance(), Listenable {
     open fun onDisable() {}
 
     /**
-     * Called when module initialized
-     */
-    open fun onInitialize() {}
-
-    /**
-     * Get all values of module
-     */
-    open val values: List<Value<*>>
-        get() = ClassUtils.getValues(this.javaClass, this)
-
-    /**
-     * Get module by [valueName]
+     * Get value by [valueName]
      */
     open fun getValue(valueName: String) = values.find { it.name.equals(valueName, ignoreCase = true) }
 
     /**
+     * Get value via `module[valueName]`
+     */
+    operator fun get(valueName: String) = getValue(valueName)
+
+    /**
+     * Get all values of module with unique names
+     */
+    open val values
+        get() = javaClass.declaredFields
+            .map { field ->
+                field.isAccessible = true
+                field[this]
+            }.filterIsInstance<Value<*>>().toMutableList()
+            .also {
+                if (gameDetecting)
+                    it.add(onlyInGameValue)
+
+                if (!hideModule)
+                    it.add(hideModuleValue)
+            }
+            .distinctBy { it.name }
+
+    val isActive
+        get() = !gameDetecting || !onlyInGameValue.get() || GameDetector.isInGame()
+
+    /**
      * Events should be handled when module is enabled
      */
-    override fun handleEvents() = state
-
+    override fun handleEvents() = state && isActive
 }

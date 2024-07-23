@@ -14,7 +14,6 @@ import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
 
-
 class LunarButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
     var fade = 40F
     override fun render(mouseX: Int, mouseY: Int, mc: Minecraft) {

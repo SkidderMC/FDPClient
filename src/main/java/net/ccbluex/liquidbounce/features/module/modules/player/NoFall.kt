@@ -1,167 +1,156 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import me.zywl.fdpclient.FDPClient
-import me.zywl.fdpclient.event.*
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.features.module.modules.player.nofalls.NoFallMode
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.AAC
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.AAC3311
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.AAC3315
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.LAAC
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other.*
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other.Blink
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam
-import net.ccbluex.liquidbounce.utils.ClassUtils
-import net.ccbluex.liquidbounce.utils.block.BlockUtils
-import me.zywl.fdpclient.value.impl.BoolValue
-import me.zywl.fdpclient.value.impl.ListValue
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlock
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.BlockLiquid
-import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.AxisAlignedBB.fromBounds
 
-@ModuleInfo(name = "NoFall", category = ModuleCategory.PLAYER)
-object NoFall : Module() {
+object NoFall : Module("NoFall", Category.PLAYER, hideModule = false) {
+    private val noFallModes = arrayOf(
+        SpoofGround,
+        NoGround,
+        Packet,
+        MLG,
+        AAC,
+        LAAC,
+        AAC3311,
+        AAC3315,
+        Cancel,
+        Spartan,
+        CubeCraft,
+        Hypixel,
+        Blink,
+        VulcanFast288
+    )
 
-    private val modes = ClassUtils.resolvePackage("${this.javaClass.`package`.name}.nofalls", NoFallMode::class.java)
-        .map { it.newInstance() as NoFallMode }
-        .sortedBy { it.modeName }
+    private val modes = noFallModes.map { it.modeName }.toTypedArray()
 
-    val mode: NoFallMode
-        get() = modes.find { modeValue.equals(it.modeName) } ?: throw NullPointerException() // this should not happen
+    val mode by ListValue("Mode", modes, "SpoofGround")
 
-    private val modeValue: ListValue = object : ListValue("Mode", modes.map { it.modeName }.toTypedArray(), "Vanilla") {
-        override fun onChange(oldValue: String, newValue: String) {
-            if (state) onDisable()
-        }
+    val minFallDistance by FloatValue("MinMLGHeight", 5f, 2f..50f, subjective = true) { mode == "MLG" }
+    val retrieveDelay by IntegerValue("RetrieveDelay", 100, 100..500, subjective = true) { mode == "MLG" }
 
-        override fun onChanged(oldValue: String, newValue: String) {
-            if (state) onEnable()
-        }
+    // Using too many times of simulatePlayer could result timer flag. Hence, why this is disabled by default.
+    val checkFallDist by BoolValue("CheckFallDistance", false, subjective = true)
+
+    val minFallDist: FloatValue = object : FloatValue("MinFallDistance", 2.5f, 0f..10f, subjective = true) {
+        override fun isSupported() = mode == "Blink" && checkFallDist
+        override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(maxFallDist.get())
     }
-    
-    private val noVoid = BoolValue("NoVoid", false)
+    val maxFallDist: FloatValue = object : FloatValue("MaxFallDistance", 20f, 0f..100f, subjective = true) {
+        override fun isSupported() = mode == "Blink" && checkFallDist
+        override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtLeast(minFallDist.get())
+    }
 
-    var launchX = 0.0
-    var launchY = 0.0
-    var launchZ = 0.0
-    var launchYaw = 0f
-    var launchPitch = 0f
-
-    var antiDesync = false
-
-    var needReset = true
-
-    var wasTimer = false
+    val autoOff by BoolValue("AutoOff", true) { mode == "Blink" }
+    val simulateDebug by BoolValue("SimulationDebug", false, subjective = true) { mode == "Blink" }
+    val fakePlayer by BoolValue("FakePlayer", true, subjective = true) { mode == "Blink" }
 
     override fun onEnable() {
-        needReset = true
-        launchX = mc.thePlayer.posX
-        launchY = mc.thePlayer.posY
-        launchZ = mc.thePlayer.posZ
-        launchYaw = mc.thePlayer.rotationYaw
-        launchPitch = mc.thePlayer.rotationPitch
-        wasTimer = false
-
-        mode.onEnable()
+        modeModule.onEnable()
     }
 
     override fun onDisable() {
-        mc.thePlayer.capabilities.isFlying = false
-        mc.thePlayer.capabilities.flySpeed = 0.05f
-        mc.thePlayer.noClip = false
-
-        mc.timer.timerSpeed = 1F
-        mc.thePlayer.speedInAir = 0.02F
-        mode.onDisable()
+        modeModule.onDisable()
     }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (wasTimer) {
-            mc.timer.timerSpeed = 1.0f
-            wasTimer = false
-        }
-        mode.onUpdate(event)
-        if (!state || FDPClient.moduleManager[FreeCam::class.java]!!.state) {
-            return
-        }
+        val thePlayer = mc.thePlayer
 
-        if (mc.thePlayer.isSpectator || mc.thePlayer.capabilities.allowFlying || mc.thePlayer.capabilities.disableDamage) {
-            return
-        }
+        if (FreeCam.handleEvents()) return
 
-        if (BlockUtils.collideBlock(mc.thePlayer.entityBoundingBox) { it is BlockLiquid } || BlockUtils.collideBlock(
-                AxisAlignedBB(mc.thePlayer.entityBoundingBox.maxX, mc.thePlayer.entityBoundingBox.maxY, mc.thePlayer.entityBoundingBox.maxZ, mc.thePlayer.entityBoundingBox.minX, mc.thePlayer.entityBoundingBox.minY - 0.01, mc.thePlayer.entityBoundingBox.minZ)
-            ) { it is BlockLiquid }) {
-            return
-        }
-        
-        if (checkVoid() && noVoid.get()) return
+        if (collideBlock(thePlayer.entityBoundingBox) { it is BlockLiquid } || collideBlock(
+                fromBounds(
+                    thePlayer.entityBoundingBox.maxX,
+                    thePlayer.entityBoundingBox.maxY,
+                    thePlayer.entityBoundingBox.maxZ,
+                    thePlayer.entityBoundingBox.minX,
+                    thePlayer.entityBoundingBox.minY - 0.01,
+                    thePlayer.entityBoundingBox.minZ
+                )
+            ) { it is BlockLiquid }
+        ) return
 
-        mode.onNoFall(event)
+        modeModule.onUpdate()
     }
 
     @EventTarget
-    fun onMotion(event: MotionEvent) {
-        mode.onMotion(event)
+    fun onRender3D(event: Render3DEvent) {
+        modeModule.onRender3D(event)
     }
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
-        mode.onPacket(event)
+        mc.thePlayer ?: return
+
+        modeModule.onPacket(event)
     }
 
     @EventTarget
-    fun onMove(event: MoveEvent) {
-        mode.onMove(event)
+    fun onBB(event: BlockBBEvent) {
+        mc.thePlayer ?: return
+
+        modeModule.onBB(event)
     }
 
-    @EventTarget
-    fun onBlockBB(event: BlockBBEvent) {
-        mode.onBlockBB(event)
-    }
-
-    @EventTarget
+    // Ignore condition used in LAAC mode
+    @EventTarget(ignoreCondition = true)
     fun onJump(event: JumpEvent) {
-        mode.onJump(event)
+        modeModule.onJump(event)
     }
 
     @EventTarget
     fun onStep(event: StepEvent) {
-        mode.onStep(event)
+        modeModule.onStep(event)
     }
 
     @EventTarget
-    fun onRender2D(event: Render2DEvent) {
-        mode.onRender2D(event)
+    fun onMotion(event: MotionEvent) {
+        modeModule.onMotion(event)
     }
 
-    override val tag: String
-        get() = modeValue.get()
-        
-    private fun checkVoid(): Boolean {
-        var i = (-(mc.thePlayer.posY-1.4857625)).toInt()
-        var dangerous = true
-        while (i <= 0) {
-            dangerous = mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(mc.thePlayer.motionX * 0.5, i.toDouble(), mc.thePlayer.motionZ * 0.5)).isEmpty()
-            i++
-            if (!dangerous) break
-        }
-        return dangerous
+    @EventTarget
+    fun onMove(event: MoveEvent) {
+        val thePlayer = mc.thePlayer
+
+        if (collideBlock(thePlayer.entityBoundingBox) { it is BlockLiquid }
+            || collideBlock(
+                fromBounds(
+                    thePlayer.entityBoundingBox.maxX,
+                    thePlayer.entityBoundingBox.maxY,
+                    thePlayer.entityBoundingBox.maxZ,
+                    thePlayer.entityBoundingBox.minX,
+                    thePlayer.entityBoundingBox.minY - 0.01,
+                    thePlayer.entityBoundingBox.minZ
+                )
+            ) { it is BlockLiquid }
+        ) return
+
+        modeModule.onMove(event)
     }
 
+    override val tag
+        get() = mode
 
-    /**
-     * 读取mode中的value并和本体中的value合并
-     * 所有的value必须在这个之前初始化
-     */
-    override val values = super.values.toMutableList().also {
-        modes.map {
-            mode -> mode.values.forEach { value ->
-                //it.add(value.displayable { modeValue.equals(mode.modeName) })
-                val displayableFunction = value.displayableFunction
-                it.add(value.displayable { displayableFunction.invoke() && modeValue.equals(mode.modeName) })
-            }
-        }
-    }
+    private val modeModule
+        get() = noFallModes.find { it.modeName == mode }!!
 }

@@ -1,7 +1,7 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.handler.irc
 
@@ -13,8 +13,7 @@ import io.netty.handler.codec.http.websocketx.CloseWebSocketFrame
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame
 import io.netty.handler.codec.http.websocketx.WebSocketClientHandshaker
 import io.netty.handler.codec.http.websocketx.WebSocketHandshakeException
-import net.ccbluex.liquidbounce.utils.ClientUtils
-
+import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 
 class ClientHandler(val client: Client, private val handshaker: WebSocketClientHandshaker) : SimpleChannelInboundHandler<Any>() {
 
@@ -57,9 +56,9 @@ class ClientHandler(val client: Client, private val handshaker: WebSocketClientH
      * Subclasses may override this method to change behavior.
      */
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable) {
-        ClientUtils.logError("LiquidChat error", cause)
+        LOGGER.error("IRC error", cause)
         client.onError(cause)
-        if(!handshakeFuture.isDone) handshakeFuture.setFailure(cause)
+        if (!handshakeFuture.isDone) handshakeFuture.setFailure(cause)
         ctx.close()
     }
 
@@ -77,12 +76,12 @@ class ClientHandler(val client: Client, private val handshaker: WebSocketClientH
     override fun channelRead0(ctx: ChannelHandlerContext, msg: Any) {
         val channel = ctx.channel()
 
-        if(!handshaker.isHandshakeComplete) {
+        if (!handshaker.isHandshakeComplete) {
             try{
                 handshaker.finishHandshake(channel, msg as FullHttpResponse)
                 handshakeFuture.setSuccess()
 
-            }catch (exception: WebSocketHandshakeException) {
+            } catch (exception: WebSocketHandshakeException) {
                 handshakeFuture.setFailure(exception)
             }
 

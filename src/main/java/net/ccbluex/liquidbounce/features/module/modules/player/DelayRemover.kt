@@ -5,46 +5,42 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.MotionEvent
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.MotionEvent
+import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils.updateControls
+import net.ccbluex.liquidbounce.value.BoolValue
 
-import me.zywl.fdpclient.value.impl.BoolValue
-import me.zywl.fdpclient.value.impl.IntegerValue
+object DelayRemover : Module("DelayRemover", Category.PLAYER, hideModule = false) {
 
-@ModuleInfo(name = "DelayRemover", category = ModuleCategory.PLAYER, defaultOn = true)
-object DelayRemover : Module() {
+   // val jumpDelay by BoolValue("NoJumpDelay", false)
+  //  val jumpDelayTicks by IntegerValue("JumpDelayTicks", 0, 0.. 4) { jumpDelay }
 
-    val jumpDelay = BoolValue("NoJumpDelay", false)
-    val jumpDelayTicks = IntegerValue("JumpDelayTicks", 0, 0, 4).displayable { jumpDelay.get() }
+    val noClickDelay by BoolValue("NoClickDelay", true)
 
-    val noClickDelay = BoolValue("NoClickDelay", true)
+    val blockBreakDelay by BoolValue("NoBlockHitDelay", false)
 
-    val blockBreakDelay = BoolValue("NoBlockHitDelay", false)
+    val noSlowBreak by BoolValue("NoSlowBreak", false)
+    val air by BoolValue("Air", true) { noSlowBreak }
+    val water by BoolValue("Water", false) { noSlowBreak }
 
-    val noSlowBreak = BoolValue("NoSlowBreak", false)
-    val airValue = BoolValue("Air", true).displayable { noSlowBreak.get() }
-    val waterValue = BoolValue("Water", false).displayable { noSlowBreak.get() }
-
-    val exitGuiValue = BoolValue("NoExitGuiDelay", true)
+    val exitGuiValue by BoolValue("NoExitGuiDelay", true)
 
     private var prevGui = false
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (mc.thePlayer != null && mc.theWorld != null && noClickDelay.get()) {
+        if (mc.thePlayer != null && mc.theWorld != null && noClickDelay) {
             mc.leftClickCounter = 0
         }
 
-        if (blockBreakDelay.get()) {
+        if (blockBreakDelay) {
             mc.playerController.blockHitDelay = 0
         }
 
-        if (mc.currentScreen == null && exitGuiValue.get()) {
-            if (prevGui) MovementUtils.updateControls()
+        if (mc.currentScreen == null && exitGuiValue) {
+            if (prevGui) updateControls()
             prevGui = false
         } else {
             prevGui = true

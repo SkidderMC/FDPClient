@@ -1,3 +1,11 @@
+
+/run/
+/out/
+/build/
+/.settings/
+/bin/
+/.gradle/
+
 # eclipse
 eclipse
 bin

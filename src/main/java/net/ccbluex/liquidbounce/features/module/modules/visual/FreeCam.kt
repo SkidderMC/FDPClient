@@ -5,30 +5,28 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.PacketEvent
-import me.zywl.fdpclient.event.UpdateEvent
-import me.zywl.fdpclient.event.WorldEvent
-import net.ccbluex.liquidbounce.features.module.EnumAutoDisableType
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.PacketUtils
-import me.zywl.fdpclient.value.impl.BoolValue
-import me.zywl.fdpclient.value.impl.FloatValue
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
-@ModuleInfo(name = "FreeCam", category = ModuleCategory.VISUAL, autoDisable = EnumAutoDisableType.RESPAWN)
-object FreeCam : Module() {
+object FreeCam : Module("FreeCam", Category.VISUAL, gameDetecting = false, hideModule = false) {
 
-    private val speedValue = FloatValue("Speed", 0.8f, 0.1f, 2f)
-    private val flyValue = BoolValue("Fly", true)
-    private val noClipValue = BoolValue("NoClip", true)
-    private val motionValue = BoolValue("RecordMotion", true)
-    private val c03SpoofValue = BoolValue("C03Spoof", false)
+    private val speed by FloatValue("Speed", 0.8f, 0.1f..2f)
+    private val fly by BoolValue("Fly", true)
+    private val noClip by BoolValue("NoClip", true)
+    private val motion by BoolValue("RecordMotion", true)
+    private val c03Spoof by BoolValue("C03Spoof", false)
 
     private lateinit var fakePlayer: EntityOtherPlayerMP
     private var motionX = 0.0
@@ -41,7 +39,7 @@ object FreeCam : Module() {
             return
         }
 
-        if (motionValue.get()) {
+        if (motion) {
             motionX = mc.thePlayer.motionX
             motionY = mc.thePlayer.motionY
             motionZ = mc.thePlayer.motionZ
@@ -58,7 +56,7 @@ object FreeCam : Module() {
         fakePlayer.absorptionAmount = mc.thePlayer.absorptionAmount
         fakePlayer.copyLocationAndAnglesFrom(mc.thePlayer)
         mc.theWorld.addEntityToWorld(-1000, fakePlayer)
-        if (noClipValue.get()) {
+        if (noClip) {
             mc.thePlayer.noClip = true
         }
     }
@@ -77,27 +75,26 @@ object FreeCam : Module() {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (noClipValue.get()) {
+        if (noClip) {
             mc.thePlayer.noClip = true
         }
 
         mc.thePlayer.fallDistance = 0f
 
-        if (flyValue.get()) {
-            val value = speedValue.get()
+        if (fly) {
             mc.thePlayer.motionY = 0.0
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionZ = 0.0
 
             if (mc.gameSettings.keyBindJump.isKeyDown) {
-                mc.thePlayer.motionY += value.toDouble()
+                mc.thePlayer.motionY += speed
             }
 
             if (mc.gameSettings.keyBindSneak.isKeyDown) {
-                mc.thePlayer.motionY -= value.toDouble()
+                mc.thePlayer.motionY -= speed
             }
 
-            MovementUtils.strafe(value)
+            strafe(speed)
         }
     }
 
@@ -105,14 +102,14 @@ object FreeCam : Module() {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if (c03SpoofValue.get()) {
+        if (c03Spoof) {
             if (packet is C03PacketPlayer && (packet.rotating || packet.isMoving)) {
                 if (packetCount >= 20) {
                     packetCount = 0
-                    PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(fakePlayer.posX, fakePlayer.posY, fakePlayer.posZ, fakePlayer.rotationYaw, fakePlayer.rotationPitch, fakePlayer.onGround))
+                    sendPacket(C06PacketPlayerPosLook(fakePlayer.posX, fakePlayer.posY, fakePlayer.posZ, fakePlayer.rotationYaw, fakePlayer.rotationPitch, fakePlayer.onGround), false)
                 } else {
                     packetCount++
-                    PacketUtils.sendPacketNoEvent(C03PacketPlayer(fakePlayer.onGround))
+                    sendPacket(C03PacketPlayer(fakePlayer.onGround), false)
                 }
                 event.cancelEvent()
             }
@@ -128,8 +125,8 @@ object FreeCam : Module() {
             motionY = 0.0
             motionZ = 0.0
 
-            // apply the flag to bypass some AntiCheat
-            PacketUtils.sendPacketNoEvent(C03PacketPlayer.C06PacketPlayerPosLook(fakePlayer.posX, fakePlayer.posY, fakePlayer.posZ, fakePlayer.rotationYaw, fakePlayer.rotationPitch, fakePlayer.onGround))
+            // apply the flag to bypass some anticheats
+            sendPacket(C06PacketPlayerPosLook(fakePlayer.posX, fakePlayer.posY, fakePlayer.posZ, fakePlayer.rotationYaw, fakePlayer.rotationPitch, fakePlayer.onGround), false)
 
             event.cancelEvent()
         }

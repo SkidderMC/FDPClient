@@ -5,19 +5,18 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.SessionEvent
-import me.zywl.fdpclient.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
 import net.ccbluex.liquidbounce.handler.irc.Client
 import net.ccbluex.liquidbounce.handler.irc.packet.packets.*
-import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.SessionEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.login.UserUtils
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
-import me.zywl.fdpclient.value.impl.BoolValue
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.EnumChatFormatting
@@ -27,15 +26,14 @@ import java.net.URISyntaxException
 import java.util.regex.Pattern
 import kotlin.concurrent.thread
 
-@ModuleInfo(name = "IRC", category = ModuleCategory.CLIENT, array = false)
-object IRCModule : Module() {
+object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecting = false) {
 
     init {
         state = true
-        array = false
+        inArray = false
     }
 
-    val jwtValue = object : BoolValue("JWT", false) {
+    var jwt by object : BoolValue("JWT", false) {
         override fun onChanged(oldValue: Boolean, newValue: Boolean) {
             if (state) {
                 state = false
@@ -51,12 +49,12 @@ object IRCModule : Module() {
         /**
          * Handle connect to web socket
          */
-        override fun onConnect() = displayChatMessage("§7[§b§lChat§7] §9Connecting to chat server...")
+        override fun onConnect() = displayChatMessage("§7[§a§lChat§7] §9Connecting to chat server...")
 
         /**
          * Handle connect to web socket
          */
-        override fun onConnected() = displayChatMessage("§7[§b§lChat§7] §9Connected to chat server!")
+        override fun onConnected() = displayChatMessage("§7[§a§lChat§7] §9Connected to chat server!")
 
         /**
          * Handle handshake
@@ -66,12 +64,12 @@ object IRCModule : Module() {
         /**
          * Handle disconnect
          */
-        override fun onDisconnect() = displayChatMessage("§7[§b§lChat§7] §cDisconnected from chat server!")
+        override fun onDisconnect() = displayChatMessage("§7[§a§lChat§7] §cDisconnected from chat server!")
 
         /**
          * Handle logon to web socket with minecraft account
          */
-        override fun onLogon() = displayChatMessage("§7[§b§lChat§7] §9Logging in...")
+        override fun onLogon() = displayChatMessage("§7[§a§lChat§7] §9Logging in...")
 
         /**
          * Handle incoming packets
@@ -82,28 +80,28 @@ object IRCModule : Module() {
                     val thePlayer = mc.thePlayer
 
                     if (thePlayer == null) {
-                        ClientUtils.logInfo("[IRC] ${packet.user.name}: ${packet.content}")
+                        LOGGER.info("[LiquidChat] ${packet.user.name}: ${packet.content}")
                         return
                     }
 
-                    val chatComponent = ChatComponentText("§7[§b§lChat§7] §9${packet.user.name}: ")
+                    val chatComponent = ChatComponentText("§7[§a§lChat§7] §9${packet.user.name}: ")
                     val messageComponent = toChatComponent(packet.content)
                     chatComponent.appendSibling(messageComponent)
 
                     thePlayer.addChatMessage(chatComponent)
                 }
-                is ClientPrivateMessagePacket -> displayChatMessage("§7[§b§lChat§7] §c(P)§9 ${packet.user.name}: §7${packet.content}")
+                is ClientPrivateMessagePacket -> displayChatMessage("§7[§a§lChat§7] §c(P)§9 ${packet.user.name}: §7${packet.content}")
                 is ClientErrorPacket -> {
                     val message = when (packet.message) {
                         "NotSupported" -> "This method is not supported!"
                         "LoginFailed" -> "Login Failed!"
-                        "NotLoggedIn" -> "You must be logged in to use the chat! Enable IRC Module."
+                        "NotLoggedIn" -> "You must be logged in to use the chat! Enable LiquidChat."
                         "AlreadyLoggedIn" -> "You are already logged in!"
                         "MojangRequestMissing" -> "Mojang request missing!"
                         "NotPermitted" -> "You are missing the required permissions!"
                         "NotBanned" -> "You are not banned!"
                         "Banned" -> "You are banned!"
-                        "RateLimited" -> "Please do not spam."
+                        "RateLimited" -> "You have been rate limited. Please try again later."
                         "PrivateMessageNotAccepted" -> "Private message not accepted!"
                         "EmptyMessage" -> "You are trying to send an empty message!"
                         "MessageTooLong" -> "Message is too long!"
@@ -113,23 +111,23 @@ object IRCModule : Module() {
                         else -> packet.message
                     }
 
-                    displayChatMessage("§7[§b§lChat§7] §cError: §7$message")
+                    displayChatMessage("§7[§a§lChat§7] §cError: §7$message")
                 }
                 is ClientSuccessPacket -> {
                     when (packet.reason) {
                         "Login" -> {
-                            displayChatMessage("§7[§b§lChat§7] §9Logged in!")
+                            displayChatMessage("§7[§a§lChat§7] §9Logged in!")
 
                             displayChatMessage("====================================")
-                            displayChatMessage("§c>> §l§bIRC MODULE")
-                            displayChatMessage("§7Write message: §b.chat <message>")
-                            displayChatMessage("§7Write private message: §b.pchat <user> <message>")
+                            displayChatMessage("§c>> §lIRC")
+                            displayChatMessage("§7Write message: §a.chat <message>")
+                            displayChatMessage("§7Write private message: §a.pchat <user> <message>")
                             displayChatMessage("====================================")
 
                             loggedIn = true
                         }
-                        "Ban" -> displayChatMessage("§7[§b§lChat§7] §9Successfully banned user!")
-                        "Unban" -> displayChatMessage("§7[§b§lChat§7] §9Successfully unbanned user!")
+                        "Ban" -> displayChatMessage("§7[§a§lChat§7] §9Successfully banned user!")
+                        "Unban" -> displayChatMessage("§7[§a§lChat§7] §9Successfully unbanned user!")
                     }
                 }
                 is ClientNewJWTPacket -> {
@@ -145,7 +143,7 @@ object IRCModule : Module() {
         /**
          * Handle error
          */
-        override fun onError(cause: Throwable) = displayChatMessage("§7[§b§lChat§7] §c§lError: §7${cause.javaClass.name}: ${cause.message}")
+        override fun onError(cause: Throwable) = displayChatMessage("§7[§a§lChat§7] §c§lError: §7${cause.javaClass.name}: ${cause.message}")
     }
 
     private var loggedIn = false
@@ -178,8 +176,8 @@ object IRCModule : Module() {
     private fun connect() {
         if (client.isConnected() || (loginThread?.isAlive == true)) return
 
-        if (jwtValue.get() && jwtToken.isEmpty()) {
-            displayChatMessage("§7[§b§lChat§7] §cError: §7No token provided!")
+        if (jwt && jwtToken.isEmpty()) {
+            displayChatMessage("§7[§a§lChat§7] §cError: §7No token provided!")
             state = false
             return
         }
@@ -190,14 +188,14 @@ object IRCModule : Module() {
             try {
                 client.connect()
 
-                if (jwtValue.get())
+                if (jwt)
                     client.loginJWT(jwtToken)
                 else if (UserUtils.isValidTokenOffline(mc.session.token)) {
                     client.loginMojang()
                 }
             } catch (cause: Exception) {
-                ClientUtils.logError("IRC Module error", cause)
-                displayChatMessage("§7[§b§lChat§7] §cError: §7${cause.javaClass.name}: ${cause.message}")
+                LOGGER.error("IRC error", cause)
+                displayChatMessage("§7[§a§lChat§7] §cError: §7${cause.javaClass.name}: ${cause.message}")
             }
 
             loginThread = null

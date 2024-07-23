@@ -1,16 +1,11 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
- */
 plugins {
     id "java"
     id "idea"
     id "org.jetbrains.kotlin.jvm"
     id "com.github.johnrengelman.shadow" version "6.1.0"
-    id 'com.gorylenko.gradle-git-properties' version '2.4.1'
     id "net.minecraftforge.gradle.forge"
     id "org.spongepowered.mixin"
+    id "com.gorylenko.gradle-git-properties" version "2.4.0"
     id "maven-publish"
 }
 
@@ -27,9 +22,6 @@ archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
-println('Java: ' + System.getProperty('java.version') + ' JVM: ' + System.getProperty('java.vm.version') + '(' + System.getProperty('java.vendor') + ') Arch: ' + System.getProperty('os.arch'))
-println("Give us stars -> https://github.com/SkidderMC/FDPClient")
-
 sourceCompatibility = targetCompatibility = 1.8
 compileJava.options.encoding = "UTF-8"
 
@@ -44,7 +36,7 @@ minecraft {
     runDir = "run"
     mappings = "stable_22"
     makeObfSourceJar = false
-    clientJvmArgs = ["-Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.TransformerLoader", "-Xmx2048m", "-Xms2048m", "-Ddev-mode"]
+    clientJvmArgs += ["-Dfml.coreMods.load=net.ccbluex.liquidbounce.injection.forge.MixinLoader", "-Xmx4096m", "-Xms1024m", "-Ddev-mode"]
 }
 
 configurations {
@@ -59,10 +51,7 @@ configurations {
 
 dependencies {
 
-    include 'org.projectlombok:lombok:1.18.32'
-    annotationProcessor 'org.projectlombok:lombok:1.18.32'
-
-    include("org.spongepowered:mixin:${project.mixin_version}") {
+    include("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         transitive = false
         exclude module: "guava"
         exclude module: "commons-io"
@@ -72,32 +61,19 @@ dependencies {
         exclude module: "slf4j-api"
     }
 
-    include "com.viaversion:viaversion:${project.viaversion_version}"
-    include "com.viaversion:viabackwards:${project.viabackwards_version}"
-    include "com.viaversion:viarewind-universal:${project.viarewind_version}"
-    include ("net.raphimc:ViaLegacy:${project.vialegacy_version}") {
-        exclude group: "com.google.code.gson", module: "gson"
-    }
-    include "net.raphimc:ViaAprilFools:${project.viaaprilfools_version}"
-    include "net.raphimc:ViaLoader:${project.vialoader_version}"
-
-    include "org.slf4j:slf4j-api:${project.slf4j_version}"
-    include "org.yaml:snakeyaml:${project.snake_yml_version}"
+    annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
 
     include "com.squareup.okhttp3:okhttp:${project.okhttp_version}"
 
-    annotationProcessor("org.spongepowered:mixin:${project.mixin_version}")
+    include('com.github.half-cambodian-hacker-man:Koffee:d8cee73') {
+        exclude module: 'asm-commons'
+        exclude module: 'asm-tree'
+        exclude module: 'asm'
+    }
 
     include "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
-    include("me.friwi:jcefmaven:$jcef_version") {
-        exclude module: 'commons-compress'
-        exclude module: 'jogl-all'
-        exclude module: 'gluegen-rt'
-    }
-
-    include('com.jagrosh:DiscordIPC:0.4') {
-        exclude module: "gson"
+    include("com.jagrosh:DiscordIPC:0.4") {
         exclude module: "log4j"
     }
 
@@ -106,30 +82,28 @@ dependencies {
         exclude module: "authlib"
     }
 
-    include("com.github.zh79325:open-gif:1.0.4") {
-        exclude module: 'slf4j-api'
-        exclude module: 'logback-core'
-        exclude module: 'logback-classic'
-        exclude module: 'junit'
-    }
+    include("com.github.UnlegitMC:Astar3d:bec2291cf2")
+    include 'com.jhlabs:filters:2.0.235'
+    include "org.apache.httpcomponents:httpmime:4.5.14"
 
-    include("com.github.UnlegitMC:Astar3d:bec2291cf2") // pathfinding
-    include 'com.jhlabs:filters:2.0.235-1'
-    include fileTree(dir: "libs", include: ["*.jar"])
+    include "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
+
+    include fileTree(include: ["*.jar"], dir: "libs")
 }
 
 shadowJar {
     archiveClassifier.set("")
     configurations = [project.configurations.include]
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    duplicatesStrategy DuplicatesStrategy.EXCLUDE
 
-    // Exclusions
-    exclude 'native-binaries/**'
-    exclude 'LICENSE.txt'
-    exclude 'META-INF/maven/**'
-    exclude 'META-INF/versions/**'
-    exclude 'org/apache/**'
-    exclude 'org/junit/**'
+    exclude "LICENSE.txt"
+
+    exclude "META-INF/maven/**"
+    exclude "META-INF/versions/**"
+
+    exclude "org/apache/log4j/**"
+    exclude "org/apache/commons/**"
+    exclude "org/junit/**"
 }
 
 processResources {
@@ -143,9 +117,10 @@ processResources {
     rename "(.+_at.cfg)", "META-INF/\$1"
 }
 
-tasks.register('moveResources') {
+task moveResources {
     doLast {
-        "${buildDir}/classes/java"
+        ant.move file: "${buildDir}/resources/main",
+                todir: "${buildDir}/classes/java"
     }
 }
 
@@ -154,14 +129,14 @@ classes.dependsOn(moveResources)
 
 jar {
     manifest.attributes(
-            "FMLCorePlugin": "net.ccbluex.liquidbounce.injection.forge.TransformerLoader",
+            "FMLCorePlugin": "net.ccbluex.liquidbounce.injection.forge.MixinLoader",
             "FMLCorePluginContainsFMLMod": true,
             "ForceLoadAsMod": true,
-            "MixinConfigs": "mixins.fdpclient.json",
+            "MixinConfigs": "fdpclient.forge.mixins.json",
             "ModSide": "CLIENT",
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "TweakOrder": "0",
-            "FMLAT": "fdpclient_at.cfg"
+            "FMLAT": "fdpclient_at.cfg",
     )
 
     enabled = false
@@ -170,7 +145,7 @@ jar {
 mixin {
     disableRefMapWarning = true
     defaultObfuscationEnv searge
-    add sourceSets.main, "mixins.fdpclient.refmap.json"
+    add sourceSets.main, "fdpclient.mixins.refmap.json"
 }
 
 reobf {
@@ -178,7 +153,6 @@ reobf {
         mappingType = "SEARGE"
     }
 }
-
 jar.dependsOn("shadowJar")
 
 configurations {
@@ -190,17 +164,12 @@ configurations {
     }
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = group
-            artifactId = archivesBaseName
-            version = version
-
-            from components.java
-        }
-    }
-}
-
 tasks.reobfShadowJar.mustRunAfter shadowJar
 tasks.reobfJar.dependsOn(shadowJar)
+
+task copyZipInclude(type: Copy) {
+    from 'zip_include/'
+    into 'build/libs/zip'
+}
+
+build.dependsOn copyZipInclude

@@ -5,19 +5,19 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import me.zywl.fdpclient.event.EventState
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.MotionEvent
-import me.zywl.fdpclient.event.WorldEvent
+import net.ccbluex.liquidbounce.event.EventState
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.MotionEvent
+import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.utils.timer.MSTimer
+import net.ccbluex.liquidbounce.script.api.global.Chat
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemPotion
 
-@ModuleInfo(name = "DrinkingAlert",  category = ModuleCategory.OTHER)
-class DrinkingAlert : Module() {
+object DrinkingAlert : Module("DrinkingAlert", Category.OTHER, hideModule = false) {
+
     private val alertTimer = MSTimer()
     private val drinkers = arrayListOf<EntityLivingBase>()
 
@@ -35,7 +35,7 @@ class DrinkingAlert : Module() {
         if (event.eventState == EventState.PRE) {
             for (player in mc.theWorld.playerEntities) {
                 if (player !in drinkers && player != mc.thePlayer && player.isUsingItem && player.heldItem != null && player.heldItem.item is ItemPotion) {
-                    chat("§e" + player.name + "§r is drinking!")
+                    Chat.print("§e" + player.name + "§r is drinking!")
                     drinkers.add(player)
                     alertTimer.reset()
                 }

@@ -1,14 +1,13 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.utils.login
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import me.zywl.fdpclient.config.FileManager.Companion.PRETTY_GSON
-
+import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
 import org.apache.http.HttpHeaders
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
@@ -77,14 +76,14 @@ object UserUtils {
             HttpURLConnection.setFollowRedirects(true)
             httpConnection.doOutput = true
 
-            if(httpConnection.responseCode != 200)
+            if (httpConnection.responseCode != 200)
                 return ""
 
             // Read response content and get id from json
             InputStreamReader(httpConnection.inputStream).use {
                 val jsonElement = JsonParser().parse(it)
 
-                if(jsonElement.isJsonObject) {
+                if (jsonElement.isJsonObject) {
                     return jsonElement.asJsonObject["id"].asString
                 }
             }

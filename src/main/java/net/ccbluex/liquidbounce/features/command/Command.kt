@@ -5,13 +5,13 @@
  */
 package net.ccbluex.liquidbounce.features.command
 
-import me.zywl.fdpclient.FDPClient
-import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.FDPClient.commandManager
+import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.util.ResourceLocation
 
-abstract class Command(val command: String, val alias: Array<String>) : MinecraftInstance() {
+abstract class Command(val command: String, vararg val alias: String) : MinecraftInstance() {
     /**
      * Execute commands with provided [args]
      */
@@ -25,39 +25,32 @@ abstract class Command(val command: String, val alias: Array<String>) : Minecraf
      * @return a list of matching completions for the command the player is trying to autocomplete
      * @author NurMarvin
      */
-    open fun tabComplete(args: Array<String>): List<String> {
-        return emptyList()
-    }
+    open fun tabComplete(args: Array<String>) = emptyList<String>()
 
     /**
-     * Print [msg] to chat as alert
+     * Print [msg] to chat
      */
-    protected fun alert(msg: String) = ClientUtils.displayAlert(msg)
-
-    /**
-     * Print [msg] to chat as plain text
-     */
-    protected fun chat(msg: String) = ClientUtils.displayChatMessage(msg)
+    protected fun chat(msg: String) = displayChatMessage("§3$msg")
 
     /**
      * Print [syntax] of command to chat
      */
-    protected fun chatSyntax(syntax: String) = ClientUtils.displayAlert("Syntax: §7${FDPClient.commandManager.prefix}$syntax")
+    protected fun chatSyntax(syntax: String) = displayChatMessage("§3Syntax: §7${commandManager.prefix}$syntax")
 
     /**
      * Print [syntaxes] of command to chat
      */
     protected fun chatSyntax(syntaxes: Array<String>) {
-        ClientUtils.displayAlert("Syntax:")
+        displayChatMessage("§3Syntax:")
 
         for (syntax in syntaxes)
-            ClientUtils.displayChatMessage("§8> §7${FDPClient.commandManager.prefix}$command ${syntax.lowercase()}")
+            displayChatMessage("§8> §7${commandManager.prefix}$command ${syntax.lowercase()}")
     }
 
     /**
      * Print a syntax error to chat
      */
-    protected fun chatSyntaxError() = ClientUtils.displayAlert("Syntax error")
+    protected fun chatSyntaxError() = displayChatMessage("§3Syntax error")
 
     /**
      * Play edit sound

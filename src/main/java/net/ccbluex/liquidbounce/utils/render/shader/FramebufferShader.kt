@@ -1,109 +1,111 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
-package net.ccbluex.liquidbounce.utils.render.shader;
+package net.ccbluex.liquidbounce.utils.render.shader
 
-import net.ccbluex.liquidbounce.injection.access.StaticStorage;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.RenderHelper;
-import net.minecraft.client.shader.Framebuffer;
-
-import java.awt.*;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL20.glUseProgram;
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager.*
+import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.client.shader.Framebuffer
+import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL20.glUseProgram
+import java.awt.Color
+import kotlin.math.roundToInt
 
 /**
- * @author TheSlowly
+ * @author TheSlowly, Navex
  */
-public abstract class FramebufferShader extends Shader {
+abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader) {
 
-    private static Framebuffer framebuffer;
-
-    protected float red, green, blue, alpha = 1F;
-    protected float radius = 2F;
-    protected float quality = 1F;
-
-    private boolean entityShadows;
-
-    public FramebufferShader(final String fragmentShader) {
-        super(fragmentShader);
+    companion object {
+        private var framebuffer: Framebuffer? = null
+    }
+    
+    protected var red = 1f
+    protected var green = 1f
+    protected var blue = 1f
+    protected var alpha = 1f
+    protected var radius = 5
+    protected var fade = 10
+    protected var renderScale = 1f
+    protected var targetAlpha = 0f
+    
+    private var entityShadows = false
+    fun startDraw(partialTicks: Float, renderScale: Float) {
+        this.renderScale = renderScale
+        
+        pushMatrix()
+        enableAlpha()
+        pushAttrib()
+        
+        framebuffer = setupFrameBuffer(framebuffer, renderScale)
+        framebuffer!!.framebufferClear()
+        framebuffer!!.bindFramebuffer(true)
+        
+        entityShadows = mc.gameSettings.entityShadows
+        mc.gameSettings.entityShadows = false
+        mc.entityRenderer.setupCameraTransform(partialTicks, 0)
     }
 
-    public void startDraw(final float partialTicks) {
-        GlStateManager.enableAlpha();
-
-        GlStateManager.pushMatrix();
-        GlStateManager.pushAttrib();
-
-        framebuffer = setupFrameBuffer(framebuffer);
-        framebuffer.framebufferClear();
-        framebuffer.bindFramebuffer(true);
-        entityShadows = mc.gameSettings.entityShadows;
-        mc.gameSettings.entityShadows = false;
-        mc.entityRenderer.setupCameraTransform(partialTicks, 0);
-    }
-
-    public void stopDraw(final Color color, final float radius, final float quality) {
-        mc.gameSettings.entityShadows = entityShadows;
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        mc.getFramebuffer().bindFramebuffer(true);
-
-        red = color.getRed() / 255F;
-        green = color.getGreen() / 255F;
-        blue = color.getBlue() / 255F;
-        alpha = color.getAlpha() / 255F;
-        this.radius = radius;
-        this.quality = quality;
-
-        mc.entityRenderer.disableLightmap();
-        RenderHelper.disableStandardItemLighting();
-
-        startShader();
-        mc.entityRenderer.setupOverlayRendering();
-        drawFramebuffer(framebuffer);
-        stopShader();
-
-        mc.entityRenderer.disableLightmap();
-
-        GlStateManager.popMatrix();
-        GlStateManager.popAttrib();
-    }
-
-    /**
-     * @param frameBuffer
-     * @return frameBuffer
-     * @author TheSlowly
-     */
-    public Framebuffer setupFrameBuffer(Framebuffer frameBuffer) {
-        if(frameBuffer != null)
-            frameBuffer.deleteFramebuffer();
-
-        frameBuffer = new Framebuffer(mc.displayWidth, mc.displayHeight, true);
-
-        return frameBuffer;
+    fun stopDraw(color: Color, radius: Int, fade: Int, targetAlpha: Float) {
+        mc.gameSettings.entityShadows = entityShadows
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        mc.framebuffer.bindFramebuffer(true)
+        
+        red = color.red / 255f
+        green = color.green / 255f
+        blue = color.blue / 255f
+        alpha = color.alpha / 255f
+        this.radius = radius
+        this.fade = fade
+        this.targetAlpha = targetAlpha
+        
+        mc.entityRenderer.disableLightmap()
+        RenderHelper.disableStandardItemLighting()
+        
+        startShader()
+        mc.entityRenderer.setupOverlayRendering()
+        drawFramebuffer(framebuffer!!)
+        stopShader()
+        
+        mc.entityRenderer.disableLightmap()
+        
+        popMatrix()
+        popAttrib()
     }
 
     /**
-     * @author TheSlowly
+     * @author TheSlowly, Navex
      */
-    public void drawFramebuffer(final Framebuffer framebuffer) {
-        final ScaledResolution scaledResolution = StaticStorage.scaledResolution;
-        glBindTexture(GL_TEXTURE_2D, framebuffer.framebufferTexture);
-        glBegin(GL_QUADS);
-        glTexCoord2d(0, 1);
-        glVertex2d(0, 0);
-        glTexCoord2d(0, 0);
-        glVertex2d(0, scaledResolution.getScaledHeight());
-        glTexCoord2d(1, 0);
-        glVertex2d(scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight());
-        glTexCoord2d(1, 1);
-        glVertex2d(scaledResolution.getScaledWidth(), 0);
-        glEnd();
-        glUseProgram(0);
+    fun setupFrameBuffer(frameBuffer: Framebuffer?, renderScale: Float): Framebuffer {
+        frameBuffer?.deleteFramebuffer()
+        
+        return Framebuffer((mc.displayWidth * renderScale).roundToInt(), (mc.displayHeight * renderScale).roundToInt(), true)
+    }
+
+    /**
+     * @author Navex
+     */
+    fun drawFramebuffer(framebuffer: Framebuffer) {
+        val scaledResolution = ScaledResolution(mc)
+        val scaledWidth = scaledResolution.scaledWidth_double
+        val scaledHeight = scaledResolution.scaledHeight_double
+        
+        val tessellator = Tessellator.getInstance()
+        val buffer = tessellator.worldRenderer
+        
+        glBindTexture(GL_TEXTURE_2D, framebuffer.framebufferTexture)
+        buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX)
+        buffer.pos(0.0, 0.0, 1.0).tex(0.0, 1.0).endVertex()
+        buffer.pos(0.0, scaledHeight, 1.0).tex(0.0, 0.0).endVertex()
+        buffer.pos(scaledWidth, scaledHeight, 1.0).tex(1.0, 0.0).endVertex()
+        buffer.pos(scaledWidth, 0.0, 0.0).tex(1.0, 1.0).endVertex()
+        tessellator.draw()
+        glUseProgram(0)
     }
 }

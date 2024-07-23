@@ -1,34 +1,36 @@
 /*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * LiquidBounce Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/CCBlueX/LiquidBounce/
  */
 package net.ccbluex.liquidbounce.utils
 
-import me.zywl.fdpclient.event.StrafeEvent
-import net.ccbluex.liquidbounce.features.module.modules.client.Rotations
+import net.ccbluex.liquidbounce.event.StrafeEvent
+import net.ccbluex.liquidbounce.utils.RotationUtils.getFixedAngleDelta
+import net.ccbluex.liquidbounce.utils.RotationUtils.getFixedSensitivityAngle
+import net.ccbluex.liquidbounce.utils.RotationUtils.serverRotation
 import net.ccbluex.liquidbounce.utils.block.PlaceInfo
+import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
+import kotlin.math.*
 
 /**
  * Rotations
  */
-data class Rotation(var yaw: Float, var pitch: Float) {
+data class Rotation(var yaw: Float, var pitch: Float) : MinecraftInstance() {
 
     /**
      * Set rotations to [player]
      */
-    fun toPlayer(player: EntityPlayer) {
-        if ((yaw.isNaN() || pitch.isNaN()) && Rotations.nanValue.get()) {
-            return
-        }
+    fun toPlayer(player: EntityPlayer = mc.thePlayer, changeYaw: Boolean = true, changePitch: Boolean = true) {
+        if (yaw.isNaN() || pitch.isNaN() || pitch > 90 || pitch < -90) return
 
-        fixedSensitivity(MinecraftInstance.mc.gameSettings.mouseSensitivity)
+        fixedSensitivity()
 
-        player.rotationYaw = yaw
-        player.rotationPitch = pitch
+        if (changeYaw) player.rotationYaw = yaw
+        if (changePitch) player.rotationPitch = pitch
     }
 
     /**
@@ -36,22 +38,17 @@ data class Rotation(var yaw: Float, var pitch: Float) {
      *
      * @see net.minecraft.client.renderer.EntityRenderer.updateCameraAndRender
      */
-    fun fixedSensitivity(sensitivity: Float) {
-        val f = sensitivity * (1 + Math.random().toFloat() / 10000000) * 0.6F + 0.2F
-        val gcd = f * f * f * 1.2F
+    fun fixedSensitivity(sensitivity: Float = mc.gameSettings.mouseSensitivity): Rotation {
+        // Previous implementation essentially floored the subtraction.
+        // This way it returns rotations closer to the original.
 
-        // get previous rotation
-        val rotation = RotationUtils.serverRotation
+        // Only calculate GCD once
+        val gcd = getFixedAngleDelta(sensitivity)
 
-        // fix yaw
-        var deltaYaw = yaw - rotation!!.yaw
-        deltaYaw -= deltaYaw % gcd
-        yaw = rotation.yaw + deltaYaw
+        yaw = getFixedSensitivityAngle(yaw, serverRotation.yaw, gcd)
+        pitch = getFixedSensitivityAngle(pitch, serverRotation.pitch, gcd).coerceIn(-90f, 90f)
 
-        // fix pitch
-        var deltaPitch = pitch - rotation.pitch
-        deltaPitch -= deltaPitch % gcd
-        pitch = rotation.pitch + deltaPitch
+        return this
     }
 
     /**
@@ -59,95 +56,54 @@ data class Rotation(var yaw: Float, var pitch: Float) {
      *
      * @author bestnub
      */
-    fun applyStrafeToPlayer(event: StrafeEvent) {
-        val player = MinecraftInstance.mc.thePlayer
-        val dif = ((MathHelper.wrapAngleTo180_float(player.rotationYaw - this.yaw -
-                23.5f - 135) +
-                180) / 45).toInt()
+    fun applyStrafeToPlayer(event: StrafeEvent, strict: Boolean = false) {
+        val player = mc.thePlayer
 
-        val yaw = this.yaw
+        val diff = (player.rotationYaw - yaw).toRadians()
 
-        val strafe = event.strafe
-        val forward = event.forward
         val friction = event.friction
 
-        var calcForward = 0f
-        var calcStrafe = 0f
+        var calcForward: Float
+        var calcStrafe: Float
 
-        when (dif) {
-            0 -> {
-                calcForward = forward
-                calcStrafe = strafe
-            }
-            1 -> {
-                calcForward += forward
-                calcStrafe -= forward
-                calcForward += strafe
-                calcStrafe += strafe
-            }
-            2 -> {
-                calcForward = strafe
-                calcStrafe = -forward
-            }
-            3 -> {
-                calcForward -= forward
-                calcStrafe -= forward
-                calcForward += strafe
-                calcStrafe -= strafe
-            }
-            4 -> {
-                calcForward = -forward
-                calcStrafe = -strafe
-            }
-            5 -> {
-                calcForward -= forward
-                calcStrafe += forward
-                calcForward -= strafe
-                calcStrafe -= strafe
-            }
-            6 -> {
-                calcForward = -strafe
-                calcStrafe = forward
-            }
-            7 -> {
-                calcForward += forward
-                calcStrafe += forward
-                calcForward -= strafe
-                calcStrafe += strafe
-            }
-        }
+        if (!strict) {
+            // Remove modifier, replay the updatePlayerMoveState() logic
+            val (strafe, forward) = Pair(event.strafe / 0.98f, event.forward / 0.98f)
 
-        if (calcForward > 1f || calcForward < 0.9f && calcForward > 0.3f || calcForward < -1f || calcForward > -0.9f && calcForward < -0.3f) {
-            calcForward *= 0.5f
-        }
+            // Filter out previous sneak / block input modifications by rounding inputs up
+            val modifiedForward = ceil(abs(forward)) * forward.sign
+            val modifiedStrafe = ceil(abs(strafe)) * strafe.sign
 
-        if (calcStrafe > 1f || calcStrafe < 0.9f && calcStrafe > 0.3f || calcStrafe < -1f || calcStrafe > -0.9f && calcStrafe < -0.3f) {
-            calcStrafe *= 0.5f
+            // Remake the rotation-based input using the modified inputs
+            calcForward = round(modifiedForward * MathHelper.cos(diff) + modifiedStrafe * MathHelper.sin(diff))
+            calcStrafe = round(modifiedStrafe * MathHelper.cos(diff) - modifiedForward * MathHelper.sin(diff))
+
+            // Was the user sneaking? Blocking? Both? Neither?
+            val f = if (event.forward != 0f) event.forward else event.strafe
+
+            // Apply original modifications back
+            calcForward *= abs(f)
+            calcStrafe *= abs(f)
+        } else {
+            calcForward = event.forward
+            calcStrafe = event.strafe
         }
 
         var d = calcStrafe * calcStrafe + calcForward * calcForward
 
         if (d >= 1.0E-4f) {
-            d = MathHelper.sqrt_float(d)
-            if (d < 1.0f) d = 1.0f
-            d = friction / d
+            d = friction / sqrt(d).coerceAtLeast(1f)
+
             calcStrafe *= d
             calcForward *= d
-            val yawSin = MathHelper.sin((yaw * Math.PI / 180f).toFloat())
-            val yawCos = MathHelper.cos((yaw * Math.PI / 180f).toFloat())
-            player.motionX += calcStrafe * yawCos - calcForward * yawSin.toDouble()
-            player.motionZ += calcForward * yawCos + calcStrafe * yawSin.toDouble()
+
+            val yawRad = yaw.toRadians()
+            val yawSin = MathHelper.sin(yawRad)
+            val yawCos = MathHelper.cos(yawRad)
+
+            player.motionX += calcStrafe * yawCos - calcForward * yawSin
+            player.motionZ += calcForward * yawCos + calcStrafe * yawSin
         }
-    }
-    fun toDirection(): Vec3 {
-        val f: Float = MathHelper.cos(-yaw * 0.017453292f - Math.PI.toFloat())
-        val f1: Float = MathHelper.sin(-yaw * 0.017453292f - Math.PI.toFloat())
-        val f2: Float = -MathHelper.cos(-pitch * 0.017453292f)
-        val f3: Float = MathHelper.sin(-pitch * 0.017453292f)
-        return Vec3((f1 * f2).toDouble(), f3.toDouble(), (f * f2).toDouble())
-    }
-    override fun toString(): String {
-        return "Rotation(yaw=$yaw, pitch=$pitch)"
     }
 }
 

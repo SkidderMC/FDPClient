@@ -5,133 +5,129 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import me.zywl.fdpclient.event.EventTarget
-import me.zywl.fdpclient.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.ui.gui.colortheme.ClientTheme
-import net.ccbluex.liquidbounce.utils.EntityUtils
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
+import net.ccbluex.liquidbounce.features.module.modules.client.Teams
+import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
+import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import me.zywl.fdpclient.value.impl.BoolValue
-import me.zywl.fdpclient.value.impl.FloatValue
-import me.zywl.fdpclient.value.impl.IntegerValue
-import me.zywl.fdpclient.value.impl.ListValue
-import net.minecraft.client.renderer.GlStateManager
+import net.ccbluex.liquidbounce.utils.extensions.isClientFriend
+import net.ccbluex.liquidbounce.utils.extensions.toRadians
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.Vec3
-import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.*
 import java.awt.Color
-import java.util.*
+import kotlin.math.pow
 
-@ModuleInfo(name = "Tracers", category = ModuleCategory.VISUAL)
-object Tracers : Module() {
+object Tracers : Module("Tracers", Category.VISUAL, hideModule = false) {
 
-    private val colorMode = ListValue("Color", arrayOf("Custom", "Theme", "DistanceColor"), "Theme")
+    private val colorMode by ListValue("Color", arrayOf("Custom", "DistanceColor", "Rainbow"), "Custom")
+    private val colorRed by IntegerValue("R", 0, 0..255) { colorMode == "Custom" }
+    private val colorGreen by IntegerValue("G", 160, 0..255) { colorMode == "Custom" }
+    private val colorBlue by IntegerValue("B", 255, 0..255) { colorMode == "Custom" }
 
-    private val playerHeightValue = BoolValue("PlayerHeight", true)
-    private val entityHeightValue = BoolValue("EntityHeight", true)
+    private val thickness by FloatValue("Thickness", 2F, 1F..5F)
 
-    private val thicknessValue = FloatValue("Thickness", 2F, 1F, 5F)
-    private val colorAlphaValue = IntegerValue("Alpha", 150, 0, 255)
+    private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
+        override fun onInit(value: Int) {
+            maxRenderDistanceSq = value.toDouble().pow(2.0)
+        }
+        override fun onUpdate(value: Int) {
+            maxRenderDistanceSq = value.toDouble().pow(2.0)
+        }
+    }
 
-    private val colorRedValue = IntegerValue("R", 0, 0, 255)
-    private val colorGreenValue = IntegerValue("G", 160, 0, 255)
-    private val colorBlueValue = IntegerValue("B", 255, 0, 255)
+    private var maxRenderDistanceSq = 0.0
 
+    private val bot by BoolValue("Bots", true)
+    private val teams by BoolValue("Teams", false)
 
-    private val directLineValue = BoolValue("Directline", false)
-    private val fovModeValue = ListValue("FOV-Mode", arrayOf("All", "Back", "Front"), "All")
-    private val fovValue = FloatValue("FOV", 180F, 0F, 180F).displayable { !fovModeValue.get().equals("all", true) }
+    private val onLook by BoolValue("OnLook", false)
+    private val maxAngleDifference by FloatValue("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
+
+    private val thruBlocks by BoolValue("ThruBlocks", true)
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glEnable(GL11.GL_LINE_SMOOTH)
-        GL11.glLineWidth(thicknessValue.get())
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glDisable(GL11.GL_DEPTH_TEST)
-        GL11.glDepthMask(false)
+        val thePlayer = mc.thePlayer ?: return
 
-        GL11.glBegin(GL11.GL_LINES)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_BLEND)
+        glEnable(GL_LINE_SMOOTH)
+        glLineWidth(thickness)
+        glDisable(GL_TEXTURE_2D)
+        glDisable(GL_DEPTH_TEST)
+        glDepthMask(false)
 
-        for (entity in if (fovModeValue.get().equals("all", true)) mc.theWorld.loadedEntityList else mc.theWorld.loadedEntityList.filter { if (fovModeValue.get().equals("back", true)) RotationUtils.getRotationBackDifference(it) <= fovValue.get() else RotationUtils.getRotationDifference(it) <= fovValue.get() }) {
-            if (entity != null && entity != mc.thePlayer && EntityUtils.isSelected(entity, false)) {
-                var dist = (mc.thePlayer.getDistanceToEntity(entity) * 2).toInt()
+        glBegin(GL_LINES)
 
-                if (dist > 255) dist = 255
+        for (entity in mc.theWorld.loadedEntityList) {
+            val distanceSquared = thePlayer.getDistanceSqToEntity(entity)
 
-                val colorMode = colorMode.get().lowercase(Locale.getDefault())
-                val color = when {
-                    EntityUtils.isFriend(entity) -> Color(0, 255, 0, 200)
-                    colorMode == "custom" -> Color(colorRedValue.get(), colorGreenValue.get(), colorBlueValue.get(), 150)
-                    colorMode == "distancecolor" -> Color(255 - dist, dist, 0, 150)
-                    colorMode == "theme" ->  ClientTheme.getColorWithAlpha(1, colorAlphaValue.get())
-                    else -> Color(255, 255, 255, 150)
+            if (distanceSquared <= maxRenderDistanceSq) {
+                if (onLook && !isLookingOnEntities(entity, maxAngleDifference.toDouble())) continue
+                if (entity !is EntityLivingBase || !bot && isBot(entity)) continue
+                if (!thruBlocks && !RotationUtils.isVisible(Vec3(entity.posX, entity.posY, entity.posZ))) continue
+
+                if (entity != thePlayer && isSelected(entity, false)) {
+                    val dist = (thePlayer.getDistanceToEntity(entity) * 2).toInt().coerceAtMost(255)
+
+                    val colorMode = colorMode.lowercase()
+                    val color = when {
+                        entity is EntityPlayer && entity.isClientFriend() -> Color(0, 0, 255, 150)
+                        teams && Teams.state && Teams.isInYourTeam(entity) -> Color(0, 162, 232)
+                        colorMode == "custom" -> Color(colorRed, colorGreen, colorBlue, 150)
+                        colorMode == "distancecolor" -> Color(255 - dist, dist, 0, 150)
+                        colorMode == "rainbow" -> ColorUtils.rainbow()
+                        else -> Color(255, 255, 255, 150)
+                    }
+
+                    drawTraces(entity, color)
                 }
-
-                drawTraces(entity, color, !directLineValue.get())
             }
         }
 
-        GL11.glEnd()
+        glEnd()
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D)
-        GL11.glDisable(GL11.GL_LINE_SMOOTH)
-        GL11.glEnable(GL11.GL_DEPTH_TEST)
-        GL11.glDepthMask(true)
-        GL11.glDisable(GL11.GL_BLEND)
-        GlStateManager.resetColor()
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_LINE_SMOOTH)
+        glEnable(GL_DEPTH_TEST)
+        glDepthMask(true)
+        glDisable(GL_BLEND)
+        glColor4f(1f, 1f, 1f, 1f)
     }
 
     private fun drawTraces(entity: Entity, color: Color) {
-        val x = (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks -
-                mc.renderManager.renderPosX)
-        val y = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.timer.renderPartialTicks -
-                mc.renderManager.renderPosY)
-        val z = (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks -
-                mc.renderManager.renderPosZ)
-        val eyeVector = Vec3(0.0, 0.0, 1.0)
-            .rotatePitch((-Math.toRadians(mc.thePlayer.rotationPitch.toDouble())).toFloat())
-            .rotateYaw((-Math.toRadians(mc.thePlayer.rotationYaw.toDouble())).toFloat())
+        val thePlayer = mc.thePlayer ?: return
 
-        RenderUtils.glColor(color, colorAlphaValue.get())
-
-        GL11.glBegin(GL11.GL_LINE_STRIP)
-        GL11.glVertex3d(eyeVector.xCoord,
-            if(playerHeightValue.get()) { mc.thePlayer.getEyeHeight().toDouble() } else { 0.0 } + eyeVector.yCoord,
-            eyeVector.zCoord)
-        GL11.glVertex3d(x, y, z)
-        if(entityHeightValue.get()) {
-            GL11.glVertex3d(x, y + entity.height, z)
-        }
-        GL11.glEnd()
-    }
-    fun drawTraces(entity: Entity, color: Color, drawHeight: Boolean) {
         val x = (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks
-                - mc.renderManager.renderPosX)
+            - mc.renderManager.renderPosX)
         val y = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.timer.renderPartialTicks
-                - mc.renderManager.renderPosY)
+            - mc.renderManager.renderPosY)
         val z = (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks
-                - mc.renderManager.renderPosZ)
+            - mc.renderManager.renderPosZ)
 
-        val eyeVector = Vec3(0.0, 0.0, 1.0)
-            .rotatePitch((-Math.toRadians(mc.thePlayer.rotationPitch.toDouble())).toFloat())
-            .rotateYaw((-Math.toRadians(mc.thePlayer.rotationYaw.toDouble())).toFloat())
+        val yaw = thePlayer.prevRotationYaw + (thePlayer.rotationYaw - thePlayer.prevRotationYaw) * mc.timer.renderPartialTicks
+        val pitch = thePlayer.prevRotationPitch + (thePlayer.rotationPitch - thePlayer.prevRotationPitch) * mc.timer.renderPartialTicks
 
-        RenderUtils.glColor(color, colorAlphaValue.get())
+        val eyeVector = Vec3(0.0, 0.0, 1.0).rotatePitch(-pitch.toRadians()).rotateYaw(-yaw.toRadians())
 
-        GL11.glBegin(GL11.GL_LINE_STRIP)
-        GL11.glVertex3d(eyeVector.xCoord,
-            if(playerHeightValue.get()) { mc.thePlayer.getEyeHeight().toDouble() } else { 0.0 } + eyeVector.yCoord,
-            eyeVector.zCoord)
-        if(drawHeight) {
-            GL11.glVertex3d(x, y + entity.height, z)
-        } else {
-            GL11.glVertex3d(x, y, z)
-        }
-        GL11.glEnd()
+        glColor(color)
+
+        glVertex3d(eyeVector.xCoord, thePlayer.getEyeHeight() + eyeVector.yCoord, eyeVector.zCoord)
+        glVertex3d(x, y, z)
+        glVertex3d(x, y, z)
+        glVertex3d(x, y + entity.height, z)
     }
 }

@@ -5,13 +5,11 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
+import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleCategory
-import net.ccbluex.liquidbounce.features.module.ModuleInfo
-import net.ccbluex.liquidbounce.ui.cape.GuiCapeManager
+import net.ccbluex.liquidbounce.ui.client.gui.GuiCapeManager
 
-@ModuleInfo(name = "CapeManager", category = ModuleCategory.CLIENT, canEnable = false)
-object CapeManager : Module() {
+object CapeManager : Module("CapeManager", Category.CLIENT, canBeEnabled = false) {
     override fun onEnable() {
         mc.displayGuiScreen(GuiCapeManager)
     }
