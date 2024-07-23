@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client.button
 
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.buttonShadowValue
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.uiEffectValue
 import net.ccbluex.liquidbounce.utils.UIEffectRenderer.drawShadowWithCustomAlpha
@@ -16,6 +17,7 @@ import kotlin.math.sqrt
 
 class RoundedButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
 
+    val hud = HUDModule
 
     override fun render(mouseX: Int, mouseY: Int, mc: Minecraft) {
         RenderUtils.drawRoundedCornerRect(button.xPosition.toFloat(), button.yPosition.toFloat(),
@@ -26,7 +28,7 @@ class RoundedButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) 
             } else {
                 Color(31, 31, 31, 150)
             }).rgb)
-        if (uiEffectValue && buttonShadowValue) {
+        if (hud.handleEvents() && uiEffectValue && buttonShadowValue) {
             drawShadowWithCustomAlpha(button.xPosition.toFloat(),
                 button.yPosition.toFloat(),
                 button.width.toFloat(),

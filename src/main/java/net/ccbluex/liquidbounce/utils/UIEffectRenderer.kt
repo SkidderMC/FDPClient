@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils
 
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.UiShadowValue
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.uiEffectValue
 import net.minecraft.client.Minecraft
@@ -17,14 +18,7 @@ import java.util.*
 
 object UIEffectRenderer {
 
-    @JvmStatic
-    private val glCapMap: MutableMap<Int, Boolean> = HashMap()
-
-    @JvmStatic
-    var deltaTime = 0
-
-    @JvmStatic
-    private val DISPLAY_LISTS_2D = IntArray(4)
+    val hud = HUDModule
 
     @JvmStatic
     fun drawGlowWithCustomAlpha(x: Float, y: Float, width: Float, height: Float, alpha: Float) {
@@ -40,7 +34,7 @@ object UIEffectRenderer {
 
     @JvmStatic
     fun drawShadowWithCustomAlpha(x: Float, y: Float, width: Float, height: Float, alpha: Float) {
-        if (uiEffectValue && UiShadowValue == "Shadow") {
+        if (hud.handleEvents() && uiEffectValue && UiShadowValue == "Shadow") {
             drawTexturedRectWithCustomAlpha(x - 9, y - 9, 9f, 9f, "paneltopleft", alpha)
             drawTexturedRectWithCustomAlpha(x - 9, y + height, 9f, 9f, "panelbottomleft", alpha)
             drawTexturedRectWithCustomAlpha(x + width, y + height, 9f, 9f, "panelbottomright", alpha)
@@ -49,7 +43,7 @@ object UIEffectRenderer {
             drawTexturedRectWithCustomAlpha(x + width, y, 9f, height, "panelright", alpha)
             drawTexturedRectWithCustomAlpha(x, y - 9, width, 9f, "paneltop", alpha)
             drawTexturedRectWithCustomAlpha(x, y + height, width, 9f, "panelbottom", alpha)
-        } else if (uiEffectValue && UiShadowValue == "Glow") {
+        } else if (hud.handleEvents() && uiEffectValue && UiShadowValue == "Glow") {
             drawTexturedRectWithCustomAlpha(x - 9, y - 9, 9f, 9f, "glowpaneltopleft", alpha)
             drawTexturedRectWithCustomAlpha(x - 9, y + height, 9f, 9f, "glowpanelbottomleft", alpha)
             drawTexturedRectWithCustomAlpha(x + width, y + height, 9f, 9f, "glowpanelbottomright", alpha)
@@ -58,7 +52,7 @@ object UIEffectRenderer {
             drawTexturedRectWithCustomAlpha(x + width, y, 9f, height, "glowpanelright", alpha)
             drawTexturedRectWithCustomAlpha(x, y - 9, width, 9f, "glowpaneltop", alpha)
             drawTexturedRectWithCustomAlpha(x, y + height, width, 9f, "glowpanelbottom", alpha)
-        } else if (UiShadowValue == "None") {
+        } else if (hud.handleEvents() && UiShadowValue == "None") {
             return
         }
     }

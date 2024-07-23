@@ -5,6 +5,7 @@ https://github.com/SkidderMC/FDPClient/
 */
 package net.ccbluex.liquidbounce.features.module.modules.client.button
 
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.buttonShadowValue
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.uiEffectValue
 import net.ccbluex.liquidbounce.utils.UIEffectRenderer.drawShadowWithCustomAlpha
@@ -16,11 +17,13 @@ import kotlin.math.abs
 
 class BlackoutButtonRenderer(button: GuiButton) : AbstractButtonRenderer(button) {
 
+    val hud = HUDModule
+
     private var fading = 100F
     override fun render(mouseX: Int, mouseY: Int, mc: Minecraft) {
         fading = fade(if(button.hovered) { 50F } else { 100F }, fading, 0.6F )
         RenderUtils.drawRect(button.xPosition.toFloat(), button.yPosition.toFloat(), button.xPosition.toFloat() + button.width.toFloat(), button.yPosition.toFloat() + button.height.toFloat(), Color(0, 0, 0, fading.toInt().coerceIn(50, 100)))
-        if (uiEffectValue && buttonShadowValue) { drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f) }
+        if (hud.handleEvents() && uiEffectValue && buttonShadowValue) { drawShadowWithCustomAlpha(button.xPosition.toFloat(), button.yPosition.toFloat(), button.width.toFloat(), button.height.toFloat(), 240f) }
     }
 
     fun fade(target: Float, current: Float, smooth: Float): Float {

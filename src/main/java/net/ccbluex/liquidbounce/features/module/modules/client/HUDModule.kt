@@ -21,13 +21,15 @@ import java.awt.Color
 
 object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDetecting = false, hideModule = true) {
     val blackHotbar by BoolValue("BlackHotbar", true)
-    val inventoryParticle by BoolValue("InventoryParticle", false)
-    private val blur by BoolValue("Blur", false)
 
     // UI EFFECT
     val uiEffectValue by BoolValue("UIEffect", true)
     val buttonShadowValue by BoolValue("ShadowButton", true){ uiEffectValue }
     val UiShadowValue by ListValue("UIEffectMode", arrayOf("Shadow", "Glow", "None"), "Shadow") { uiEffectValue }
+
+    private val blur by BoolValue("Blur", false)
+
+    val inventoryParticle by BoolValue("InventoryParticle", false)
 
     // UI
     private val intefaceColor by BoolValue("Interface Color", true)
