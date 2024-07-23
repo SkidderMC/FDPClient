@@ -83,7 +83,7 @@ dependencies {
     }
 
     include("com.github.UnlegitMC:Astar3d:bec2291cf2")
-    include 'com.jhlabs:filters:2.0.235'
+    include 'com.jhlabs:filters:2.0.235-1'
     include "org.apache.httpcomponents:httpmime:4.5.14"
 
     include "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4"
