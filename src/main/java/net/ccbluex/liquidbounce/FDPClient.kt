@@ -47,6 +47,7 @@ import net.ccbluex.liquidbounce.utils.ClientUtils.disableFastRender
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.render.MiniMapRegister
 import net.ccbluex.liquidbounce.utils.timing.TickedActions
+import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 
 object FDPClient {
 
@@ -124,6 +125,7 @@ object FDPClient {
                     registerListener(TimerBalanceUtils)
                     registerListener(BPSUtils)
                     registerListener(Tower)
+                    registerListener(WaitTickUtils)
 
                     // Load client fonts
                     loadFonts()

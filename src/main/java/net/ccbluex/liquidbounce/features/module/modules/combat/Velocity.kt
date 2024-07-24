@@ -464,7 +464,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
      * Tick Event (Abuse Timer Balance)
      */
     @EventTarget
-    fun onTick(event: TickEvent) {
+    fun onTick(event: GameTickEvent) {
         val player = mc.thePlayer ?: return
 
         if (mode != "GrimC03")

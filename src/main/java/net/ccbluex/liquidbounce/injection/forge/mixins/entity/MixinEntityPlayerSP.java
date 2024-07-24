@@ -744,4 +744,20 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             worldObj.theProfiler.endSection();
         }
     }
+
+    @Inject(method = "onUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/AbstractClientPlayer;onUpdate()V", shift = At.Shift.BEFORE, ordinal = 0), cancellable = true)
+    private void preTickEvent(CallbackInfo ci) {
+        final PlayerTickEvent tickEvent = new PlayerTickEvent(EventState.PRE);
+        EventManager.INSTANCE.callEvent(tickEvent);
+
+        if (tickEvent.isCancelled()) {
+            ci.cancel();
+        }
+    }
+
+    @Inject(method = "onUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/AbstractClientPlayer;onUpdate()V", shift = At.Shift.AFTER, ordinal = 0))
+    private void postTickEvent(CallbackInfo ci) {
+        final PlayerTickEvent tickEvent = new PlayerTickEvent(EventState.POST);
+        EventManager.INSTANCE.callEvent(tickEvent);
+    }
 }

@@ -145,7 +145,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
     }
 
     @EventTarget
-    fun onTick(event: TickEvent) {
+    fun onTick(event: GameTickEvent) {
         if (mc.thePlayer.isSneaking)
             return
 

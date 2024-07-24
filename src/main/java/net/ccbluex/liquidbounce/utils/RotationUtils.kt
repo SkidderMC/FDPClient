@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils
 
@@ -246,14 +246,6 @@ object RotationUtils : MinecraftInstance(), Listenable {
 
             if (dist <= attackRange && diff in 1f..10f && (intercept != null && isVisible(intercept.hitVec) || dist <= throughWallsRange))
                 return randomRotation
-        }
-
-        val vector = eyes + getVectorForRotation(currRotation) * attackRange.toDouble()
-
-        val intercept = if (isInsideEnemy) {
-            return currRotation
-        } else {
-            bb.calculateIntercept(eyes, vector)
         }
 
         var attackRotation: Pair<Rotation, Float>? = null

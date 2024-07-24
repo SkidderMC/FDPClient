@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.TickEvent
+import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
@@ -37,7 +37,7 @@ object Refill : Module("Refill", Category.PLAYER, hideModule = false) {
     private val noMoveGround by InventoryManager.noMoveGroundValue
 
     @EventTarget
-    fun onTick(event: TickEvent) {
+    fun onTick(event: GameTickEvent) {
         if (!CLICK_TIMER.hasTimePassed(delay))
             return
 
