@@ -276,7 +276,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
                 x + 12, y + height, Color.GRAY.rgb)
 
         if (Mouse.isButtonDown(0) && !mouseDown && mouseX in x..x + width && mouseY in y + height..y + height + 10) {
-            val values = Side.Horizontal.entries.toTypedArray()
+            val values = Side.Horizontal.values()
             val currIndex = values.indexOf(element.side.horizontal)
 
             val x = element.renderX
@@ -298,7 +298,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
                 x + 12, y + height, Color.GRAY.rgb)
 
         if (Mouse.isButtonDown(0) && !mouseDown && mouseX in x..x + width && mouseY in y + height..y + height + 10) {
-            val values = Side.Vertical.entries.toTypedArray()
+            val values = Side.Vertical.values()
             val currIndex = values.indexOf(element.side.vertical)
 
             val y = element.renderY
