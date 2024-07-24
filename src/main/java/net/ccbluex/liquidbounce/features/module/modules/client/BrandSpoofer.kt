@@ -39,7 +39,7 @@ object BrandSpoofer : Module("BrandSpoofer", Category.CLIENT, hideModule = false
 
     val customValue = TextValue("Custom-Brand", "WTF") { possibleBrands.get().equals("Custom", true) }
 
-    val buttonValue = ListValue(
+    private val buttonValue = ListValue(
         "Button",
         arrayOf(
             "Dark",

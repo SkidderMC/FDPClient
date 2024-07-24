@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
@@ -245,6 +246,53 @@ object RenderUtils : MinecraftInstance() {
         )
     }
 
+    /**
+     * Draws a rectangle.
+     *
+     * @param left The left coordinate.
+     * @param top The top coordinate.
+     * @param right The right coordinate.
+     * @param bottom The bottom coordinate.
+     * @param color The color of the rectangle.
+     */
+    fun drawFilledRect(left: Float, top: Float, right: Float, bottom: Float, color: Int) {
+        var left = left
+        var top = top
+        var right = right
+        var bottom = bottom
+
+        if (left < right) {
+            val i = left
+            left = right
+            right = i
+        }
+
+        if (top < bottom) {
+            val j = top
+            top = bottom
+            bottom = j
+        }
+
+        val alpha = (color shr 24 and 255) / 255.0f
+        val red = (color shr 16 and 255) / 255.0f
+        val green = (color shr 8 and 255) / 255.0f
+        val blue = (color and 255) / 255.0f
+        val tessellator = Tessellator.getInstance()
+        val worldRenderer = tessellator.worldRenderer
+        enableBlend()
+        disableTexture2D()
+        tryBlendFuncSeparate(770, 771, 1, 0)
+        color(red, green, blue, alpha)
+        worldRenderer.begin(7, DefaultVertexFormats.POSITION)
+        worldRenderer.pos(left.toDouble(), bottom.toDouble(), 0.0).endVertex()
+        worldRenderer.pos(right.toDouble(), bottom.toDouble(), 0.0).endVertex()
+        worldRenderer.pos(right.toDouble(), top.toDouble(), 0.0).endVertex()
+        worldRenderer.pos(left.toDouble(), top.toDouble(), 0.0).endVertex()
+        tessellator.draw()
+        enableTexture2D()
+        disableBlend()
+    }
+
     fun drawFilledBox(axisAlignedBB: AxisAlignedBB) {
         val tessellator = Tessellator.getInstance()
         val worldRenderer = tessellator.worldRenderer
@@ -464,6 +512,42 @@ object RenderUtils : MinecraftInstance() {
         glVertex2d(x.toDouble(), y2.toDouble())
         glVertex2d(x2.toDouble(), y2.toDouble())
         glEnd()
+    }
+
+    /**
+     * Draws a rectangle with borders.
+     *
+     * @param x The x coordinate of the top-left corner.
+     * @param y The y coordinate of the top-left corner.
+     * @param x2 The x coordinate of the bottom-right corner.
+     * @param y2 The y coordinate of the bottom-right corner.
+     * @param borderWidth The width of the border.
+     * @param borderColor The color of the border.
+     * @param fillColor The color of the fill.
+     */
+    fun drawRectWithBorder(x: Float, y: Float, x2: Float, y2: Float, borderWidth: Float, borderColor: Int, fillColor: Int) {
+        drawFilledRect(x, y, x2, y2, fillColor)
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
+
+        glColor(borderColor)
+        glLineWidth(borderWidth)
+        glBegin(GL_LINES)
+        glVertex2d(x.toDouble(), y.toDouble())
+        glVertex2d(x.toDouble(), y2.toDouble())
+        glVertex2d(x2.toDouble(), y2.toDouble())
+        glVertex2d(x2.toDouble(), y.toDouble())
+        glVertex2d(x.toDouble(), y.toDouble())
+        glVertex2d(x2.toDouble(), y.toDouble())
+        glVertex2d(x.toDouble(), y2.toDouble())
+        glVertex2d(x2.toDouble(), y2.toDouble())
+        glEnd()
+
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
+        glDisable(GL_LINE_SMOOTH)
     }
 
     fun quickDrawBorderedRect(x: Float, y: Float, x2: Float, y2: Float, width: Float, color1: Int, color2: Int) {
@@ -1903,13 +1987,13 @@ object RenderUtils : MinecraftInstance() {
         val tessellator = Tessellator.getInstance()
         val worldrenderer = tessellator.worldRenderer
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR)
-        worldrenderer.pos(right.toDouble(), top.toDouble(), RenderUtils.zLevel.toDouble()).color(f1, f2, f3, f)
+        worldrenderer.pos(right.toDouble(), top.toDouble(), zLevel.toDouble()).color(f1, f2, f3, f)
             .endVertex()
-        worldrenderer.pos(left.toDouble(), top.toDouble(), RenderUtils.zLevel.toDouble()).color(f1, f2, f3, f)
+        worldrenderer.pos(left.toDouble(), top.toDouble(), zLevel.toDouble()).color(f1, f2, f3, f)
             .endVertex()
-        worldrenderer.pos(left.toDouble(), bottom.toDouble(), RenderUtils.zLevel.toDouble()).color(f5, f6, f7, f4)
+        worldrenderer.pos(left.toDouble(), bottom.toDouble(), zLevel.toDouble()).color(f5, f6, f7, f4)
             .endVertex()
-        worldrenderer.pos(right.toDouble(), bottom.toDouble(), RenderUtils.zLevel.toDouble()).color(f5, f6, f7, f4)
+        worldrenderer.pos(right.toDouble(), bottom.toDouble(), zLevel.toDouble()).color(f5, f6, f7, f4)
             .endVertex()
         tessellator.draw()
         shadeModel(7424)

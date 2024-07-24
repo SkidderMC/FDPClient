@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
+import net.ccbluex.liquidbounce.features.module.modules.client.SnakeGame;
 import net.ccbluex.liquidbounce.features.module.modules.visual.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
@@ -30,6 +31,9 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.Objects;
 
 import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
 import static net.minecraft.client.renderer.GlStateManager.*;
@@ -65,6 +69,15 @@ public abstract class MixinGuiInGame extends Gui {
 
     @Shadow
     protected abstract void renderHotbarItem(int index, int xPos, int yPos, float partialTicks, EntityPlayer player);
+
+    @Inject(method = "showCrosshair", at = @At("HEAD"), cancellable = true)
+    private void showCrosshair(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
+        final HUDModule hud = HUDModule.INSTANCE;
+        final SnakeGame snakeGame = SnakeGame.INSTANCE;
+
+        if (snakeGame.getState() || hud.handleEvents() && hud.getCsgoCrosshairValue() || mc.gameSettings.thirdPersonView != 0)
+            callbackInfoReturnable.setReturnValue(false);
+    }
 
     @Inject(method = "renderScoreboard", at = @At("HEAD"), cancellable = true)
     private void renderScoreboard(CallbackInfo callbackInfo) {
