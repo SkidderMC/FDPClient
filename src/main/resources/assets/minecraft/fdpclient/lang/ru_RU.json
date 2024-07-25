@@ -1,7 +1,7 @@
 {
     "locale": "ru_RU",
     "contributors": [
-        "WDIlsb"
+        "WDIlsb, vinesso"
     ],
     "translations": {
         "menu.altManager": "Alt Менеджер",
@@ -13,13 +13,13 @@
         "notification.moduleEnabled": "Включен %s",
         "notification.moduleDisabled": "Выключен %s",
 
-        "module.aimbot.description": "Автоматически наводит прицел на врагов вокруг вас.",
+        "module.aimbot.description": "Автоматически наводится на игроков",
 
         "module.autoArmor.description": "Автоматически одевает лучшую броню из инвентаря.",
 
         "module.autoBow.description": "Автоматически выпускает стрелу когда лук натянут.",
 
-        "module.autoClicker.description": "Кликает за вас при удержании кнопки атаки.",
+        "module.autoClicker.description": "Кликает за вас при удержании левой кнопки",
 
         "module.autoLeave.description": "Автоматически выходит с сервера при малом ХП.",
 
@@ -31,308 +31,367 @@
 
         "module.autoWeapon.description": "Автоматически выбирает лучшее оружие из хотбара.",
 
-        "module.backtrack.description": "Позволяет бить игроков, атакуя их предыдущие кэшированные позиции.",
+        "module.backtrack.description": "Позволяет бить игроков, атакуя их предыдушую позицию",
 
         "module.bowAimbot.description": "Автоматически целится в игроков из лука.",
 
-        "module.criticals.description": "Каждый удар наносит критический урон(криты).",
+        "module.criticals.description": "Каждый удар наносит критический урон.",
 
         "module.fastBow.description": "Превращает ваш лук в пулемет.",
 
-        "module.hitBox.description": "Увеличивает хитбоксы врагов.",
+        "module.hitBox.description": "Увеличивает хитбоксы врагов/игроков.",
 
         "module.ignite.description": "Автоматически поджигает врагов.",
 
-        "module.killAura.description": "Автоматически атакует врагов вокруг.",
+        "module.killAura.description": "Автоматически атакует врагов вокруг вас.",
 
-        "module.noFriends.description": "Позволяет атаковать друзей.",
+        "module.noFriends.description": "Позволяет атаковать добавленных друзей через midclick",
 
-        "module.superKnockback.description": "Увеличивает вашу отталкивающую силу(КБ) при ударе.",
+        "module.superKnockback.description": "Увеличивает отталкивание игрока/кб.",
 
         "module.teleportHit.description": "Позволяет бить цели с большого расстояния.",
 
-        "module.tNTBlock.description": "Автоматический блок мечом при взрыве TNT.",
+        "module.tNTBlock.description": "Автоматический зажимает блок мечом при взрыве TNT.",
 
-        "module.velocity.description": "Позволяет изменить количество получаемого КБ(сила отталкивания).",
+        "module.velocity.description": "Позволяет вам меньше откидываться(отталкивание)",
 
         "module.abortBreaking.description": "Позволяет прервать ломание блока без потери прогресса.",
 
-        "module.ambience.description": "Изменяет время и погоду на клиенте (визуально).",
+        "module.ambience.description": "Изменяет время и погоду для вас (визуально).",
 
         "module.antiHunger.description": "Убирает уменьшение шкалы голода.",
 
         "module.bedGodMode.description": "Позволяет ходить, лёжа в кровати. (Для 1.9)",
 
         "module.clip.description": "Позволяет проходить сквозь блоки.",
-        
+
         "module.airJump.description": "Позволяет прыгать в воздухе",
-        
+
         "module.airLadder.description": "Позволяет подниматься по лестницам/листве, не касаясь их.",
-        
-        "module.animations.description": "Кастомизация анимаций блокирования.",
-        
+
+        "module.animations.description": "Кастомизация анимаций блока(правая кнопка мыши) меча.",
+
         "module.antiAFK.description": "Предотвращает кик за АФК.",
-        
-        "module.antiBlind.description": "Убирает эффект слепоты.",
-        
-        "module.antiBot.description": "KillAura не будет атаковать Античит ботов.",
-        
-        "module.antiCactus.description": "Отключает урон от кактусов.",
-        
-        "module.antiFireball.description": "Автоматически отталкивает фаерболы.",
-        
+
+        "module.antiBlind.description": "Убирает эффект слепоты и других негативных эффектов.",
+
+        "module.antiBot.description": "KillAura не будет атаковать ботов от античита.",
+
+        "module.antiCactus.description": "Убирает урон от кактусов.",
+
+        "module.antiFireball.description": "Автоматически отталкивает от вас фаерболы.",
+
         "module.atAllProvider.description": "Автоматическое упоминание всех участников сервера при использовании '@a' в сообщении.",
-        
+
         "module.attackEffects.description": "Показывает эффект при атаке",
-        
+
         "module.autoAccount.description": "Наиболее функциональный менеджер авторегистрации/логина учетных записей.",
-        
+
         "module.autoBreak.description": "Автоматически ломает блок, на который смотрите.",
-        
+
         "module.autoFish.description": "Автоматически ловит рыбу",
 
-        "module.autoProjectile.description": "UNTRANSLATED: Automatically throws egg/snowball.",
-        
+        "module.autoProjectile.description": "Автоматически бросает яйцо/снежок.",
+
         "module.autoRespawn.description": "Автоматическое возраждение после смерти.",
-        
+
         "module.autoTool.description": "Автоматически выбирает инструмент из хотбара для ломания блока.",
-        
+
         "module.autoWalk.description": "Автоматическая ходьба.",
 
         "module.avoidHazards.description": "Предотвращает попадание в блоки, наносящие урон.",
-        
+
         "module.blink.description": "Приостанавливает все пакеты перемещения.",
 
-        "module.bedProtectionESP.description": "UNTRANSLATED: Allows you to see where the blocks should be placed to protect a bed",
-        
-        "module.blockESP.description": "Позволяет видеть выбранный блок сквозь стены.",
-        
-        "module.blockOverlay.description": "Изменяет текстуру блока, на который вы смотрите.",
-        
+        "module.bedProtectionESP.description": "Позволяет увидеть, где должны располагаться блоки для защиты кровати.",
+
+        "module.blockESP.description": "Позволяет видеть выбранный блок сквозь стены и другие блоки.",
+
+        "module.blockOverlay.description": "Изменяет обводку блока, на который вы смотрите.",
+
         "module.blockWalk.description": "Позволяет ходить по полублокам.",
 
         "module.breadcrumbs.description": "Оставляет след за вами.",
-        
+
         "module.bufferSpeed.description": "Позволяет быстрее подниматься по плитам и лестницам.",
-        
-        "module.bugUp.description": "Автоматически телепортирует назад после падения с некой высоты.",
-        
+
+        "module.bugUp.description": "Автоматически телепортирует назад после падения с высоты.",
+
         "module.cameraClip.description": "Позволяет видеть сквозь стены с видом от третьего лица.",
-        
+
         "module.chams.description": "Позволяет видеть врагов сквозь блоки.",
-        
-        "module.chestAura.description": "Автоматически открывает сундуки вокруг вас.",
-        
+
+        "module.chestAura.description": "Автоматически открывает сундуки за вас.",
+
         "module.chestStealer.description": "Автоматически забирает всё из сундука.",
-        
+
         "module.civBreak.description": "Позволяет мгновенно разрушать блоки.",
-        
-        "module.clickGUI.description": "Открывает ClickGUI.",
-        
+
+        "module.clickGUI.description": "Открывает ClickGUI(меню чита).",
+
         "module.componentOnHover.description": "Позволяет видеть действие нажатия и значение компонентов сообщений чата при наведении курсора.",
-        
-        "module.consoleSpammer.description": "Спамит ошибками в консоль сервера.",
-        
+
+        "module.consoleSpammer.description": "Спамит разными ошибками в консоль сервера.",
+
         "module.damage.description": "Наносит урон самому себе.",
-        
+
         "module.derp.description": "Иллюзия будто вы копаете блоки вокруг.",
-        
+
         "module.eSP.description": "Позволяет видеть цели сквозь блоки.",
-        
+
         "module.eagle.description": "Не даёт упасть когда строитесь (FastBridge).",
-        
-        "module.fakeLag.description": "UNTRANSLATED: Lags you behind server side until first hit.",
-        
+
+        "module.fakeLag.description": "Использует пакеты имитируя лаги от лица противника в PVP.",
+
         "module.fastBreak.description": "Позволяет ломать блоки быстрее.",
-        
+
         "module.fastClimb.description": "Позволяет забираться по лестницам/листве быстрее.",
-        
+
         "module.fastPlace.description": "Позволяет ставить блоки быстрее.",
-        
+
         "module.fastStairs.description": "Позволяет быстрее забираться по лестнице.",
-        
-        "module.fastUse.description": "Позволяет быстрее использовать предметы.",
-        
+
+        "module.fastUse.description": "Позволяет быстрее использовать предметы(еду).",
+
         "module.fly.description": "Позволяет летать.",
-        
+
         "module.forceUnicodeChat.description": "Позволяет отправлять в чат сообщения в юникоде.",
-        
-        "module.freeCam.description": "Свободная летающая камера.",
-        
+
+        "module.freeCam.description": "Свободная камера.",
+
         "module.freeze.description": "Позволяет зависнуть в воздухе.",
-        
+
         "module.fucker.description": "Ломает выбранные блоки вокруг. (IDNuker)",
-        
+
         "module.fullbright.description": "Освещает мир вокруг вас.",
 
-        "module.gameDetector.description": "UNTRANSLATED: Detects if you are in an ongoing game.",
-        
+        "module.gameDetector.description": "Определяет, находитесь ли вы в текущей игре..",
+
         "module.ghost.description": "Позволяет ходить и взаимодействовать с окружающей средой после смерти.",
-        
+
         "module.ghostHand.description": "Позволяет взаимодействовать с выбранными блоками сквозь стены.",
-        
+
         "module.godMode.description": "GodMode эксплойт для AAC",
-        
+
         "module.hUD.description": "Включает отображение Худа(HUD).",
-        
+
         "module.highJump.description": "Позволяет прыгать выше.",
-        
+
         "module.iceSpeed.description": "Позволяет быстрее двигаться по льду.",
-        
-        "module.inventoryCleaner.description": "Автоматически выкидывает бесполезные вещи.",
-        
+
+        "module.inventoryCleaner.description": "Автоматически выкидывает бесполезные вещи c (приоритетом).",
+
         "module.inventoryMove.description": "Позволяет ходить с открытым инвентарем.",
-        
+
         "module.itemESP.description": "Позволяет видеть лут сквозь стены.",
-        
+
         "module.itemTeleport.description": "Позволяет подбирать лут издалека.",
 
-        "module.itemPhysics.description": "UNTRANSLATED: Allows dropped items to have physics",
-        
+        "module.itemPhysics.description": "Позволяет выпавшим предметам иметь физику падения",
+
         "module.keepAlive.description": "Пытается не дать вам умереть",
-        
+
         "module.keepContainer.description": "Позволяет открыть ранее закрытый инвентарь в любом месте. (Для открытия нажать INSERT)",
 
         "module.keyPearl.description": "Позволяет бросать эндер пёрлы из хотбара, используя определенную клавишу.",
 
         "module.kick.description": "Позволяет кикнуть самого себя с сервера.",
-        
+
         "module.ladderJump.description": "Повышает скорость при касании лестницы. (AAC)",
-        
+
         "module.liquidChat.description": "Чат для общения с другими пользователями LiquidBounce.",
-        
+
         "module.liquidWalk.description": "Позволяет ходить по воде.",
-        
+
         "module.liquids.description": "Позволяет взаимодействовать с жидкостями (вода/лава...).",
-        
+
         "module.longJump.description": "Позволяет прыгать дальше.",
-        
+
         "module.midClick.description": "Позволяет добавить в друзья, щелкнув по игроку средней кнопкой мыши.",
-        
+
         "module.moreCarry.description": "Позволяет хранить вещи в слотах для крафта.",
-        
+
         "module.multiActions.description": "Позволяет использовать предметы, пока ломаешь блок",
-        
-        "module.nameProtect.description": "Изменяет ники игроков на клиенте (визуально).",
-        
+
+        "module.nameProtect.description": "Изменяет ники игроков (визуально).",
+
         "module.nameTags.description": "Изменяет масштаб ников, чтобы их всегда можно было прочитать.",
-        
+
         "module.noBob.description": "Отключает эффект покачивания изображения.",
-        
-        "module.noBooks.description": "Не даёт серверу открывать книги вам в лицо (реклама и т.д.)",
-        
+
+        "module.noBooks.description": "Не даёт серверу открывать книги при заходе (реклама и т.д.)",
+
         "module.noClip.description": "Позволяет свободно ходить сквозь блоки (На голову дожен упасть песок).",
-        
+
         "module.noFOV.description": "Отключает изменения FOV(поле зрения), вызванные эффектом скорости и т.д.",
-        
+
         "module.noFall.description": "Предтовращает урон от падения.",
-        
+
         "module.noFluid.description": "Игнорирует жидкости вроде воды или лавы.",
-        
-        "module.noHurtCam.description": "Отключает эффект камеры ранения при получении урона.",
-        
+
+        "module.noHurtCam.description": "Отключает эффект покачивания камеры при получении урона.",
+
         "module.noJumpDelay.description": "Убирает задержку между прыжками.",
-        
+
         "module.noPitchLimit.description": "Позволяет вертеть головой во все стороны.",
-        
+
         "module.noRotateSet.description": "Не даёт серверу поворачивать вашу голову.",
-        
+
         "module.noScoreboard.description": "Убирает табло с информацией.",
 
         "module.noSlotSet.description": "Не даёт серверу менять ваш слот.",
-        
+
         "module.noSlow.description": "Убирает эффекты замедления, вызванные песком души и использованием предметов.",
-        
+
         "module.noSlowBreak.description": "Убирает эффекты замедления скорости ломания блоков.",
-        
+
         "module.noSwing.description": "Откоючает анимацию рук при ударах, ломании.",
-        
+
         "module.noWeb.description": "Отключает замедление в паутине.",
-        
+
         "module.nuker.description": "Ломает все блоки вокруг.",
-        
+
         "module.parkour.description": "Автоматически прыгает при достижении края блока.",
-        
+
         "module.perfectHorseJump.description": "Автоматически прыгает на лошади максимально высоко.",
-        
+
         "module.phase.description": "Позволяет проходить сквозь блоки.",
-        
-        "module.pingSpoof.description": "Поднимает ваш пинг до выбранного значения",
-        
+
+        "module.pingSpoof.description": "Поднимает ваш пинг до вашего значения",
+
         "module.plugins.description": "Позволяет видеть какие плагины установлены на сервере.",
-        
+
         "module.portalMenu.description": "Позволяет открывать меню, находясь в портале.",
-        
+
         "module.potionSaver.description": "Замораживает таймер всез эффектов зелий, пока вы стоите на месте.",
 
-        "module.potionSpoof.description": "Позволяет получить эффект от зелья, без самого зелья.",
-        
-        "module.projectiles.description": "Позволяет видеть куда приземлится стрела.",
-        
+        "module.potionSpoof.description": "Позволяет получить эффект от зелья, без самого зелья (визуально).",
+
+        "module.projectiles.description": "Позволяет видеть куда приземлится стрела/эндер-перл.",
+
         "module.prophuntESP.description": "Позволяет видеть спрятавшихся игроков в PropHunt.",
 
-        "module.reach.description": "Увеличивает расстояние взаимодействия (удлиняет руки).",
-        
+        "module.reach.description": "Увеличивает расстояние удара по игроку (дистанцию).",
+
         "module.refill.description": "Пополняет запасы таких предметов, как блоки и еда, из инвентаря в хотбаре.",
-        
-        "module.regen.description": "Быстрее восстанавливает здоровье.",
-        
-        "module.resourcePackSpoof.description": "Серверы больше не заставят вас скачивать Ресурс паки.",
-        
+
+        "module.regen.description": "Используя пакеты восстанавливает здоровье.",
+
+        "module.resourcePackSpoof.description": "Сервера больше не смогут скачивать Ресурс паки для вас.",
+
         "module.reverseStep.description": "Позволяет быстрее спускаться по блокам.",
-        
-        "module.rotations.description": "Позволяет видеть повороты тела и головы на стороне сервере.",
-        
+
+        "module.rotations.description": "Позволяет видеть повороты тела и головы на стороне сервера.",
+
         "module.safeWalk.description": "Не даёт вам упасть, будто идёте на шифте.",
-        
+
         "module.scaffold.description": "Автоматически ставит блоки под ногами.",
-        
-        "module.serverCrasher.description": "Позволяет крашить некоторые сервера.",
-        
+
+        "module.serverCrasher.description": "Позволяет крашить сервера с плохой защитой.",
+
         "module.skinDerp.description": "Делает ваш скин мигающим (Требуется многослойный скин).",
 
         "module.slimeJump.description": "Позволяет выше прыгать на слайм блоках.",
-        
+
         "module.sneak.description": "Автоматически идёт(крадётся) на шифте.",
-        
+
         "module.spammer.description": "Спамит в чат определённым сообщением.",
-        
+
         "module.speed.description": "Позволяет двигаться быстрее.",
-        
+
         "module.sprint.description": "Автоматический спринт (бег).",
 
         "module.step.description": "Позволяет забираться на блоки.",
-        
+
         "module.storageESP.description": "Позволяет видеть сундуки, и т.д. сквозь стены.",
-        
+
         "module.strafe.description": "Позволяет свободно двигаться в воздухе (стрейфить).",
-        
+
         "module.tNTESP.description": "Позволяет видеть активированный TNT сквозь блоки.",
-        
+
         "module.teams.description": "Не даёт Killaura атаковать тиммейтов.",
-        
+
         "module.teleport.description": "Позволяет недалеко телепортироваться.",
 
-        "module.timerRange.description": "UNTRANSLATED: Allows you to manipulate the game speed in order to gain an advantage against your enemies.",
+        "module.timerRange.description": "Позволяет манипулировать скоростью игры, чтобы получить преимущество перед врагами (телепортирует к ним).",
 
-        "module.timer.description": "Изменяет скорость всей игры.",
-        
-        "module.tracers.description": "Рисует линии (трасеры) к врагам.",
-        
+        "module.timer.description": "Изменяет скорость игры.",
+
+        "module.tracers.description": "Рисует линии (трасера) к врагам.",
+
         "module.trueSight.description": "Позволяет видить невидимые сущности и барьеры.",
-        
+
         "module.vehicleOneHit.description": "Позволяет ломать транспортные средства одним ударом.",
-        
+
         "module.wallClimb.description": "Позволяет ползать по стенам как паук.",
 
         "module.waterSpeed.description": "Позволяет плавать быстрее.",
-        
+
         "module.xRay.description": "Позволяет видеть руды сквозь блоки.",
-        
+
         "module.zoot.description": "Убирает все негативные эффекты зелий/огня.",
 
-        "module.keepSprint.description": "UNTRANSLATED: Keeps you sprinting after attacking.",
+        "module.keepSprint.description": "Поддерживает спринт после аттаки игрока (не сбрасывает) его.",
 
-        "module.disabler.description": "UNTRANSLATED: Disables either a server or a specific anticheat detection."
+        "module.disabler.description": "Отключает чеки античита для обхода сервера.",
+
+        "module.infiniteAura.description": "Позволяет вам бить дальше чем некое кол-во блоков в обычной Killaura",
+
+        "module.tickBase.description": "Позволяет манипулировать скоростью игры, так же как и в timerRange",
+
+        "module.autoPlay.description": "Автоматически закидывает в следующую игру.",
+
+        "module.delayRemover.description": "Убирает задержку ударов на 1.8.",
+
+        "module.gapple.description": "Использует золотые или зачарованные яблоки во время PVP.",
+
+        "module.lightningdetect.description": "Обнаруживает молнию которая ударила и на каких координатах.",
+
+        "module.packetDebugger.description": "Логирует в чате определененный пакет выбранный вами.",
+
+        "module.autoDisable.description": "Автоматическое отключение выбранного модуля по заданным событиям.",
+
+        "module.autoRole.description": "Добавляет специальную (визуальную) роль для вас",
+
+        "module.bedDefender.description": "Автоматически защищает кровать с помощью блоков.",
+
+        "module.drinkingAlert": "Автоматически оповещает о выпитом зелье",
+
+        "module.flagCheck.description": "Определяет флаги античита и ресетит их через кол-во времени.",
+
+        "module.overrideRaycast": "Заменяет ваш рейкаст, основанный на ротациии рейкастом, основанным на ротации сервера.",
+
+        "module.staffDetector.description": "Обнаруживает и оповещает игроку о стаффах(модераторах) на сервере",
+
+        "module.brandSpoofer.description": "Заменяет ваш бренд клиента на выбранный для обхода серверов и прочего.",
+
+        "module.capeManager.description": "Менеджер клиентских плащей.",
+
+        "module.chatControl.description": "Контроль над вашем чатом, изменение лимитов чата и прочего.",
+
+        "module.discordRPC.description": "Показывает активность клиента в вашем дискорд профиле.",
+
+        "module.hudDesigner.description": "Кастомизация вашего худа(Hud).",
+
+        "module.iRC.description": "Отдельный чат для юзеров клиента.",
+
+        "module.noAchievement.description": "Убирает отображение внутриигровых ачивок.",
+
+        "module.snakeGame.description": "Игра в змейку прямо в клиенте.",
+
+        "module.target.description": "Таргет на игроков, мобов, животных и тд.",
+
+        "module.wings.description": "Добавляет визуальные крылья для вас.",
+
+        "module.customModel.description": "Добавляет кастомные модельки для игроков.",
+
+        "module.tNTTimer.description": "отображает таймер, показывающий, сколько времени осталось до взрыва близлежащего TNT.",
+
+        "module.tNTTrails.description": "Показывает трасера TNT.",
+
+        "module.antiBounce.description": "Предотвращает подпрыгивание на блоках.",
+
+        "module.jesus.description": "Позволяет быстро передвигаться сверху на воде имитируя иисуса",
+
     }
 }
