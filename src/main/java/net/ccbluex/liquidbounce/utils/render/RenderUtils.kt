@@ -14,11 +14,8 @@ import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.GlStateManager.*
-import net.minecraft.client.renderer.OpenGlHelper
-import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
@@ -223,6 +220,28 @@ object RenderUtils : MinecraftInstance() {
         val renderManager = mc.renderManager
         val renderY = y - renderManager.renderPosY
         drawAxisAlignedBB(AxisAlignedBB.fromBounds(size, renderY + 0.02, size, -size, renderY, -size), color)
+    }
+    
+
+    fun drawPlatformESP(entity: Entity, color: Color) {
+        val renderManager = mc.renderManager
+        val timer = mc.timer
+
+        val axisAlignedBB = entity.entityBoundingBox.offset(-entity.posX, -entity.posY, -entity.posZ).offset(
+            (entity.lastTickPosX + ((entity.posX - entity.lastTickPosX) * (timer.renderPartialTicks.toDouble()))) - renderManager.renderPosX,
+            (entity.lastTickPosY + ((entity.posY - entity.lastTickPosY) * (timer.renderPartialTicks.toDouble()))) - renderManager.renderPosY,
+            (entity.lastTickPosZ + ((entity.posZ - entity.lastTickPosZ) * (timer.renderPartialTicks.toDouble()))) - renderManager.renderPosZ
+        )
+       drawAxisAlignedBB(
+            AxisAlignedBB(
+                axisAlignedBB.minX,
+                axisAlignedBB.maxY - 0.5,
+                axisAlignedBB.minZ,
+                axisAlignedBB.maxX,
+                axisAlignedBB.maxY + 0.2,
+                axisAlignedBB.maxZ
+            ), color
+        )
     }
 
     fun drawPlatform(entity: Entity, color: Color) {
@@ -2185,5 +2204,45 @@ object RenderUtils : MinecraftInstance() {
             top.toInt(), right.toInt(), bottom.toInt(), startColor, endColor
         )
         Stencil.dispose()
+    }
+
+    fun drawEntityBoxESP(entity: Entity, color: Color) {
+        val renderManager = mc.renderManager
+        val timer = mc.timer
+        pushMatrix()
+        glBlendFunc(770, 771)
+        enableGlCap(3042)
+        disableGlCap(3553, 2929)
+        glDepthMask(false)
+        val x = (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks
+                - renderManager.renderPosX)
+        val y = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks
+                - renderManager.renderPosY)
+        val z = (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks
+                - renderManager.renderPosZ)
+        val entityBox = entity.entityBoundingBox
+        val axisAlignedBB = AxisAlignedBB(
+            entityBox.minX - entity.posX + x - 0.05,
+            entityBox.minY - entity.posY + y,
+            entityBox.minZ - entity.posZ + z - 0.05,
+            entityBox.maxX - entity.posX + x + 0.05,
+            entityBox.maxY - entity.posY + y + 0.15,
+            entityBox.maxZ - entity.posZ + z + 0.05
+        )
+        glTranslated(x, y, z)
+        glRotated(-entity.rotationYawHead.toDouble(), 0.0, 1.0, 0.0)
+        glTranslated(-x, -y, -z)
+        glLineWidth(3.0f)
+        enableGlCap(2848)
+        glColor(0, 0, 0, 255)
+        RenderGlobal.drawSelectionBoundingBox(axisAlignedBB)
+        glLineWidth(1.0f)
+        enableGlCap(2848)
+        glColor(color.red, color.green, color.blue, 255)
+        RenderGlobal.drawSelectionBoundingBox(axisAlignedBB)
+        resetColor()
+        glDepthMask(true)
+        resetCaps()
+        popMatrix()
     }
 }
