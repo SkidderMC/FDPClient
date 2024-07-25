@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -24,7 +25,7 @@ import java.util.*
 
 object KillESP : Module("KillESP", Category.COMBAT) {
 
-    private val modeValue by ListValue("Mode", arrayOf("Box", "Head", "Mark"), "Crystal")
+    private val modeValue by ListValue("Mode", arrayOf("Box", "RoundBox", "Head", "Mark"), "Mark")
     private val colorRedValue by IntegerValue("R", 0, 0.. 255)
     private val colorGreenValue by IntegerValue("G", 160, 0..255)
     private val colorBlueValue by IntegerValue("B", 255, 0.. 255)
@@ -32,6 +33,7 @@ object KillESP : Module("KillESP", Category.COMBAT) {
     private val killLightningBoltValue by BoolValue("LightningBolt", true)
     private val rainbow by BoolValue("RainBow", false)
     private val hurt by BoolValue("HurtTime", true)
+    private val boxOutline by BoolValue("Outline", true, subjective = true) { modeValue == "RoundBox" }
 
     private val targetList = HashMap<EntityLivingBase, Long>()
     private val combat = CombatManager
@@ -101,6 +103,15 @@ object KillESP : Module("KillESP", Category.COMBAT) {
                 if ((hurt && entityLivingBase.hurtTime > 3)) Color(255, 50, 50, 75) else color
             )
 
+            "roundbox" -> RenderUtils.drawEntityBox(
+                entityLivingBase,
+                if (hurt && entityLivingBase.hurtTime > 3)
+                    Color(37, 126, 255, 70)
+                else
+                    Color(255, 0, 0, 70),
+                boxOutline
+            )
+
             "head" -> RenderUtils.drawPlatformESP(
                 entityLivingBase,
                 if ((hurt && entityLivingBase.hurtTime > 3)) Color(255, 50, 50, 75) else color
@@ -108,7 +119,7 @@ object KillESP : Module("KillESP", Category.COMBAT) {
 
             "mark" -> RenderUtils.drawPlatform(
                 entityLivingBase,
-                if ((hurt && entityLivingBase.hurtTime > 3)) Color(255, 50, 50, 75) else color
+                if ((hurt && entityLivingBase.hurtTime > 3)) Color(37, 126, 255, 70) else Color(255, 0, 0, 70)
             )
         }
     }
