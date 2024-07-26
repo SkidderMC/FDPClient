@@ -5,7 +5,9 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player.scaffolds
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
@@ -124,7 +126,9 @@ object Tower : MinecraftInstance(), Listenable {
                 turnSpeed = Scaffold.minHorizontalSpeed..Scaffold.maxHorizontalSpeed to Scaffold.minVerticalSpeed..Scaffold.maxVerticalSpeed,
                 smootherMode = Scaffold.smootherMode,
                 simulateShortStop = Scaffold.simulateShortStop,
-                startOffSlow = Scaffold.startFirstRotationSlow
+                startOffSlow = Scaffold.startRotatingSlow,
+                slowDownOnDirChange = Scaffold.slowDownOnDirectionChange,
+                useStraightLinePath = Scaffold.useStraightLinePath
             )
         }
 
@@ -149,7 +153,11 @@ object Tower : MinecraftInstance(), Listenable {
                 if (search(blockPos)) {
                     val vecRotation = faceBlock(blockPos)
                     if (vecRotation != null) {
-                        setTargetRotation(vecRotation.rotation, startOffSlow = Scaffold.startFirstRotationSlow)
+                        setTargetRotation(vecRotation.rotation,
+                            startOffSlow = Scaffold.startRotatingSlow,
+                            slowDownOnDirChange = Scaffold.slowDownOnDirectionChange,
+                            useStraightLinePath = Scaffold.useStraightLinePath
+                        )
                         placeInfo!!.vec3 = vecRotation.vec
                     }
                 }

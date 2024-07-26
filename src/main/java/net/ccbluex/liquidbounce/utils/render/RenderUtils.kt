@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils.render
 
 import com.jhlabs.image.GaussianFilter
+import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.UIEffectRenderer.drawTexturedRect
@@ -14,8 +15,11 @@ import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.GlStateManager.*
+import net.minecraft.client.renderer.OpenGlHelper
+import net.minecraft.client.renderer.RenderGlobal
+import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
@@ -34,6 +38,7 @@ import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL14
+import org.lwjgl.util.glu.Cylinder
 import java.awt.Color
 import java.awt.image.BufferedImage
 import kotlin.math.cos
@@ -264,6 +269,79 @@ object RenderUtils : MinecraftInstance() {
             ), color
         )
     }
+
+    fun enableSmoothLine(width: Float) {
+        glDisable(3008)
+        glEnable(3042)
+        glBlendFunc(770, 771)
+        glDisable(3553)
+        glDisable(2929)
+        glDepthMask(false)
+        glEnable(2884)
+        glEnable(2848)
+        glHint(3154, 4354)
+        glHint(3155, 4354)
+        glLineWidth(width)
+    }
+
+    fun disableSmoothLine() {
+        glEnable(3553)
+        glEnable(2929)
+        glDisable(3042)
+        glEnable(3008)
+        glDepthMask(true)
+        glCullFace(1029)
+        glDisable(2848)
+        glHint(3154, 4352)
+        glHint(3155, 4352)
+    }
+
+    /**
+     * Draws an ESP (Extra Sensory Perception) effect around the given entity.
+     *
+     * @param entity The entity to draw the ESP effect around.
+     * @param color The color of the ESP effect.
+     * @param e The Render3DEvent containing partial ticks for interpolation.
+     */
+    fun drawCrystal(entity: EntityLivingBase, color: Int, e: Render3DEvent) {
+        val x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * e.partialTicks - mc.renderManager.renderPosX
+        val y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * e.partialTicks - mc.renderManager.renderPosY
+        val z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * e.partialTicks - mc.renderManager.renderPosZ
+        val radius = 0.15f
+        val side = 4
+
+        glPushMatrix()
+        glTranslated(x, y + 2, z)
+        glRotatef(-entity.width, 0.0f, 1.0f, 0.0f)
+
+        glColor(color)
+        enableSmoothLine(1.5f)
+
+        val c = Cylinder()
+        glRotatef(-90.0f, 1.0f, 0.0f, 0.0f)
+        c.drawStyle = 100012
+        glColor(if (entity.hurtTime <= 0) Color(80, 255, 80, 200) else Color(255, 0, 0, 200))
+        c.draw(0.0f, radius, 0.3f, side, 1)
+        c.drawStyle = 100012
+
+        glTranslated(0.0, 0.0, 0.3)
+        c.draw(radius, 0.0f, 0.3f, side, 1)
+
+        glRotatef(90.0f, 0.0f, 0.0f, 1.0f)
+        c.drawStyle = 100011
+
+        glTranslated(0.0, 0.0, -0.3)
+        glColor(color)
+        c.draw(0.0f, radius, 0.3f, side, 1)
+        c.drawStyle = 100011
+
+        glTranslated(0.0, 0.0, 0.3)
+        c.draw(radius, 0.0f, 0.3f, side, 1)
+
+        disableSmoothLine()
+        glPopMatrix()
+    }
+
 
     /**
      * Draws a rectangle.

@@ -120,6 +120,13 @@ object KillESP : Module("KillESP", Category.COMBAT) {
                 entityLivingBase,
                 if ((hurt && entityLivingBase.hurtTime > 3)) Color(37, 126, 255, 70) else Color(255, 0, 0, 70)
             )
+
+         /*  "sims" -> RenderUtils.drawCrystal(
+                entityLivingBase,
+                if ((hurt && entityLivingBase.hurtTime > 3)) Color(37, 126, 255, 70) else Color(255, 0, 0, 70)
+            )
+
+          */
         }
     }
 }

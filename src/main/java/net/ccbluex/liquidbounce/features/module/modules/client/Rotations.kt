@@ -17,13 +17,8 @@ object Rotations : Module("Rotations", Category.CLIENT, gameDetecting = false, h
 
     private val realistic by BoolValue("Realistic", false)
     private val body by BoolValue("Body", true) { !realistic }
-
     val debugRotations by BoolValue("DebugRotations", false)
-    val experimentalCurve by BoolValue("ExperimentalLinearCurveRotation", false)
-    val startSecondRotationSlow by BoolValue("StartSecondRotationSlow", false)
-    val slowDownOnDirectionChange by BoolValue("SlowDownOnDirectionChange", false)
-    val useStraightLinePath by BoolValue("UseStraightLinePath", false)
-    
+
     var prevHeadPitch = 0f
     var headPitch = 0f
 

@@ -58,8 +58,9 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
     }
 
     private val simulateShortStop by BoolValue("SimulateShortStop", false) { rotations }
-    private val startFirstRotationSlow by BoolValue("StartFirstRotationSlow", false) { rotations }
-
+    private val startRotatingSlow by BoolValue("StartRotatingSlow", false) { rotations }
+    private val slowDownOnDirectionChange by BoolValue("SlowDownOnDirectionChange", false) { rotations }
+    private val useStraightLinePath by BoolValue("UseStraightLinePath", true) { rotations }
     private val maxHorizontalSpeedValue = object : FloatValue("MaxHorizontalSpeed", 180f, 1f..180f) {
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtLeast(minHorizontalSpeed)
         override fun isSupported() = rotations
@@ -140,7 +141,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
                     val block = world.getBlockState(blockPos).block
                     if (block == Blocks.bed) {
                         val metadata = block.getMetaFromState(world.getBlockState(blockPos))
-                        
+
                         if (metadata >= 8) {
                             bedTopPositions.add(blockPos)
                         } else {
@@ -171,7 +172,9 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
                     angleThresholdForReset = angleThresholdUntilReset,
                     smootherMode = smootherMode,
                     simulateShortStop = simulateShortStop,
-                    startOffSlow = startFirstRotationSlow
+                    startOffSlow = startRotatingSlow,
+                    slowDownOnDirChange = slowDownOnDirectionChange,
+                    useStraightLinePath = useStraightLinePath
                 )
             }
 
@@ -291,7 +294,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
     private fun isPlaceablePos(pos: BlockPos): Boolean {
         val player = mc.thePlayer ?: return false
         val world = mc.theWorld ?: return false
-        
+
         return when (raycastMode.lowercase()) {
             "normal" -> {
                 val eyesPos = player.eyes
@@ -299,9 +302,9 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
 
                 movingObjectPosition != null && movingObjectPosition.blockPos == pos
             }
-            
+
             "around" -> EnumFacing.values().any { !isFullBlock(pos.offset(it)) }
-            
+
             else -> true
         }
     }

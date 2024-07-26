@@ -51,8 +51,8 @@ import kotlin.math.sqrt
 object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false) {
 
     private val smartDelay by BoolValue("SmartDelay", false)
-    private val multiplier by IntegerValue("DelayMultiplier", 120, 0..500){ smartDelay }
-    private val smartOrder by BoolValue("SmartOrder", true){ smartDelay }
+    private val multiplier by IntegerValue("DelayMultiplier", 120, 0..500) { smartDelay }
+    private val smartOrder by BoolValue("SmartOrder", true) { smartDelay }
 
     private val simulateShortStop by BoolValue("SimulateShortStop", false)
 
@@ -129,6 +129,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
                 return true
 
             // If NoMove is violated, wait a tick and check again
+            // If there is no delay, very weird things happen: https://www.guilded.gg/CCBlueX/groups/1dgpg8Jz/channels/034be45e-1b72-4d5a-bee7-d6ba52ba1657/chat?messageId=94d314cd-6dc4-41c7-84a7-212c8ea1cc2a
             delay(50)
         }
     }
@@ -166,7 +167,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
 
             val itemsToSteal = getItemsToSteal()
 
-            run scheduler@ {
+            run scheduler@{
                 itemsToSteal.forEachIndexed { index, (slot, stack, sortableTo) ->
                     // Wait for NoMove or cancel click
                     if (!shouldOperate()) {
@@ -261,14 +262,14 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
         }
     }
 
-    private fun getCords(slot: Int): Pair<Int,Int> {
+    private fun getCords(slot: Int): Pair<Int, Int> {
         val x = slot % 9
         val y = slot / 9
-        return Pair(x,y)
+        return Pair(x, y)
     }
-    private fun getSquaredDistanceBwSlots(from:Pair<Int,Int>, to:Pair<Int,Int>): Int {
-        val distance = (from.first-to.first)*(from.first-to.first) + (from.second-to.second)*(from.second-to.second)
-        return distance
+
+    private fun getSquaredDistanceBwSlots(from: Pair<Int, Int>, to: Pair<Int, Int>): Int {
+        return (from.first - to.first) * (from.first - to.first) + (from.second - to.second) * (from.second - to.second)
     }
 
     private fun getItemsToSteal(): MutableList<Triple<Int, ItemStack, Int?>> {
@@ -316,7 +317,10 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
                         val hotbarStack = stacks.getOrNull(stacks.size - 9 + hotbarIndex)
 
                         // If occupied hotbar slot isn't already sorted or isn't strictly best, sort to it
-                        if (!canBeSortedTo(hotbarIndex, hotbarStack?.item) || !isStackUseful(hotbarStack, stacks, strictlyBest = true)) {
+                        if (!canBeSortedTo(hotbarIndex, hotbarStack?.item) || !isStackUseful(hotbarStack,
+                                stacks,
+                                strictlyBest = true
+                            )) {
                             sortableTo = hotbarIndex
                             sortBlacklist[hotbarIndex] = true
                             break
@@ -337,12 +341,12 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
             .sortedByDescending { it.third != null }
 
             .toMutableList()
-            .also {
+            .also { it ->
                 // Fully prioritise armor pieces when it is possible to equip armor while in chest
                 if (AutoArmor.canEquipFromChest())
                     it.sortByDescending { it.second.item is ItemArmor }
             }
-        if (smartOrder){
+        if (smartOrder) {
             sortBasedOnOptimumPath(itemsToSteal)
         }
         return itemsToSteal
@@ -369,7 +373,6 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
         }
     }
 
-
     // Progress bar
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
@@ -389,7 +392,12 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
 
         drawRect(minX - 2, minY - 2, maxX + 2, maxY + 2, Color(200, 200, 200).rgb)
         drawRect(minX, minY, maxX, maxY, Color(50, 50, 50).rgb)
-        drawRect(minX, minY, minX + (maxX - minX) * easingProgress, maxY, Color.HSBtoRGB(easingProgress / 5, 1f, 1f) or 0xFF0000)
+        drawRect(minX,
+            minY,
+            minX + (maxX - minX) * easingProgress,
+            maxY,
+            Color.HSBtoRGB(easingProgress / 5, 1f, 1f) or 0xFF0000
+        )
     }
 
     @EventTarget
@@ -399,6 +407,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
                 receivedId = null
                 progress = null
             }
+
             is S30PacketWindowItems -> {
                 // Chests never have windowId 0
                 if (packet.func_148911_c() == 0)
@@ -420,7 +429,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
 
         when (chestDebug.lowercase()) {
             "text" -> Chat.print(message)
-            "notification" -> hud.addNotification(Notification(message, "!!!", Type.INFO, 500))
+            "notification" -> hud.addNotification(Notification(message, "debug", Type.INFO, 500))
         }
     }
 }
