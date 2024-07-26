@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.renderer.entity.RenderManager
@@ -24,19 +25,28 @@ import java.util.*
 
 object KillESP : Module("KillESP", Category.COMBAT) {
 
-    private val modeValue by ListValue("Mode", arrayOf("Box", "RoundBox", "Head", "Mark"), "Mark")
-    private val colorRedValue by IntegerValue("R", 0, 0.. 255)
-    private val colorGreenValue by IntegerValue("G", 160, 0..255)
-    private val colorBlueValue by IntegerValue("B", 255, 0.. 255)
+    private val modeValue by ListValue("Mode", arrayOf("Box", "RoundBox", "Head", "Mark", "Sims", "Zavz"), "Mark")
+    val colorRedValue by IntegerValue("R", 0, 0.. 255)
+    val colorGreenValue by IntegerValue("G", 160, 0..255)
+    val colorBlueValue by IntegerValue("B", 255, 0.. 255)
+
     private val alphaValue by IntegerValue("Alpha", 255, 0.. 255)
+
+    val colorRedTwoValue by IntegerValue("Red 2", 0, 0.. 255) { modeValue == "Zavz" }
+    val colorGreenTwoValue by IntegerValue("Green 2", 160, 0..255) { modeValue == "Zavz" }
+    val colorBlueTwoValue by IntegerValue("Blue 2", 255, 0.. 255) { modeValue == "Zavz" }
+
     private val killLightningBoltValue by BoolValue("LightningBolt", true)
     private val rainbow by BoolValue("RainBow", false)
     private val hurt by BoolValue("HurtTime", true)
     private val boxOutline by BoolValue("Outline", true, subjective = true) { modeValue == "RoundBox" }
+    val speed = FloatValue("Speed", 0.1f, 0.0f.. 10.0f) { modeValue == "Zavz" }
 
     private val targetList = HashMap<EntityLivingBase, Long>()
     private val combat = CombatManager
-    var random: Random = Random()
+    var random = Random()
+    const val DOUBLE_PI = Math.PI * 2
+    var start = 0.0
 
     @EventTarget
     fun onUpdate(event: UpdateEvent?) {
@@ -118,15 +128,20 @@ object KillESP : Module("KillESP", Category.COMBAT) {
 
             "mark" -> RenderUtils.drawPlatform(
                 entityLivingBase,
-                if ((hurt && entityLivingBase.hurtTime > 3)) Color(37, 126, 255, 70) else Color(255, 0, 0, 70)
+                if ((hurt && entityLivingBase.hurtTime > 3)) Color(37, 126, 255, 70) else color
             )
 
-         /*  "sims" -> RenderUtils.drawCrystal(
+            "sims" -> RenderUtils.drawCrystal(
                 entityLivingBase,
-                if ((hurt && entityLivingBase.hurtTime > 3)) Color(37, 126, 255, 70) else Color(255, 0, 0, 70)
+                if ((hurt && entityLivingBase.hurtTime <= 0)) Color(80, 255, 80, 200).rgb else Color(255, 0, 0, 200).rgb,
+                event!!
             )
 
-          */
+            "zavz" -> RenderUtils.drawZavz(
+                entityLivingBase,
+                event!!,
+                dual = true, // or false based on your requirement
+            )
         }
     }
 }

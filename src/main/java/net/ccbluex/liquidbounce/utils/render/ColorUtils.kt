@@ -105,6 +105,20 @@ object ColorUtils {
         return Color.getHSBColor(hue, saturation, brightness)
     }
 
+    fun getGradientOffset(color1: Color, color2: Color, offset: Double): Color {
+        var offset = offset
+        if (offset > 1) {
+            val left = offset % 1
+            val off = offset.toInt()
+            offset = if (off % 2 == 0) left else 1 - left
+        }
+        val percent = 1 - offset
+        val red = (color1.red * percent + color2.red * offset).toInt()
+        val green = (color1.green * percent + color2.green * offset).toInt()
+        val part = (color1.blue * percent + color2.blue * offset).toInt()
+        return Color(red, green, part)
+    }
+
     fun setColor(color: Int) {
         setColorAlpha(color)
     }

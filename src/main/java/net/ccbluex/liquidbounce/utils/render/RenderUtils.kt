@@ -6,7 +6,19 @@
 package net.ccbluex.liquidbounce.utils.render
 
 import com.jhlabs.image.GaussianFilter
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.DOUBLE_PI
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorBlueTwoValue
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorBlueValue
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorGreenTwoValue
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorGreenValue
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorRedTwoValue
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorRedValue
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.start
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blue2Value
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.green2Value
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.red2Value
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.UIEffectRenderer.drawTexturedRect
@@ -41,10 +53,8 @@ import org.lwjgl.opengl.GL14
 import org.lwjgl.util.glu.Cylinder
 import java.awt.Color
 import java.awt.image.BufferedImage
-import kotlin.math.cos
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.sin
+import java.util.*
+import kotlin.math.*
 
 
 object RenderUtils : MinecraftInstance() {
@@ -84,6 +94,7 @@ object RenderUtils : MinecraftInstance() {
         quickDrawRect(-7.3f, -20.3f, -4f, -20f)
         glEndList()
     }
+
 
     fun drawBlockBox(blockPos: BlockPos, color: Color, outline: Boolean) {
         val renderManager = mc.renderManager
@@ -284,6 +295,34 @@ object RenderUtils : MinecraftInstance() {
         glLineWidth(width)
     }
 
+    /**
+     * Enables smooth line and polygon rendering.
+     * Adjusts the OpenGL settings to achieve smooth rendering effects.
+     */
+    fun startSmooth() {
+        glEnable(GL_LINE_SMOOTH)
+        glEnable(GL_POLYGON_SMOOTH)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
+        glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST)
+        glHint(GL_POINT_SMOOTH_HINT, GL_NICEST)
+    }
+
+    /**
+     * Disables smooth line and polygon rendering.
+     * Restores the OpenGL settings after smooth rendering effects were applied.
+     */
+    fun endSmooth() {
+        glDisable(GL_LINE_SMOOTH)
+        glDisable(GL_POLYGON_SMOOTH)
+        glEnable(GL_BLEND)
+    }
+
+    /**
+     * Disables the smooth in line effect.
+     * Restores the OpenGL states to their defaults for regular rendering.
+     */
     fun disableSmoothLine() {
         glEnable(3553)
         glEnable(2929)
@@ -295,6 +334,7 @@ object RenderUtils : MinecraftInstance() {
         glHint(3154, 4352)
         glHint(3155, 4352)
     }
+
 
     /**
      * Draws an ESP (Extra Sensory Perception) effect around the given entity.
@@ -320,7 +360,7 @@ object RenderUtils : MinecraftInstance() {
         val c = Cylinder()
         glRotatef(-90.0f, 1.0f, 0.0f, 0.0f)
         c.drawStyle = 100012
-        glColor(if (entity.hurtTime <= 0) Color(80, 255, 80, 200) else Color(255, 0, 0, 200))
+        glColor(if ((entity.hurtTime <= 0)) Color(80, 255, 80, 200) else Color(255, 0, 0, 200))
         c.draw(0.0f, radius, 0.3f, side, 1)
         c.drawStyle = 100012
 
@@ -342,6 +382,98 @@ object RenderUtils : MinecraftInstance() {
         glPopMatrix()
     }
 
+    /**
+     * Draws a visual effect around the specified entity in 3D space.
+     *
+     * @param event The render event containing the partial tick time for smooth rendering.
+     */
+    fun drawZavz(entity: EntityLivingBase, event: Render3DEvent, dual: Boolean) {
+        val speed = 0.1f
+
+        val ticks = event.partialTicks
+        glPushMatrix()
+        glDisable(GL_TEXTURE_2D)
+
+        startSmooth()
+
+        glDisable(GL_DEPTH_TEST)
+        glDepthMask(false)
+        glLineWidth(2.0f)
+        glBegin(GL_LINE_STRIP)
+
+        val x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * ticks - mc.renderManager.renderPosX
+        val z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * ticks - mc.renderManager.renderPosZ
+        var y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * ticks - mc.renderManager.renderPosY
+
+        val radius = 0.65
+        val precision = 360
+
+        var startPos = start % 360
+
+        start += speed
+
+        for (i in 0..precision) {
+            val posX = x + radius * cos(startPos + i * DOUBLE_PI / (precision / 2.0))
+            val posZ = z + radius * sin(startPos + i * DOUBLE_PI / (precision / 2.0))
+
+            glColor(ColorUtils.getGradientOffset(Color(colorRedValue, colorGreenValue, colorBlueValue), Color(colorRedTwoValue, colorGreenTwoValue, colorBlueTwoValue, 1), abs((System.currentTimeMillis() / 10L).toDouble()) / 100.0 + y))
+
+            glVertex3d(posX, y, posZ)
+
+            y += entity.height / precision
+
+            glColor(0, 0, 0, 0)
+        }
+
+        glEnd()
+        glDepthMask(true)
+        glEnable(GL_DEPTH_TEST)
+
+        endSmooth()
+
+        glEnable(GL_TEXTURE_2D)
+        glPopMatrix()
+
+        if (dual) {
+            glPushMatrix()
+            glDisable(GL_TEXTURE_2D)
+
+            startSmooth()
+
+            glDisable(GL_DEPTH_TEST)
+            glDepthMask(false)
+            glLineWidth(2.0f)
+            glBegin(GL_LINE_STRIP)
+
+            startPos = start % 360
+
+            start += speed
+
+            y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * ticks - mc.renderManager.renderPosY + entity.height
+
+            for (i in 0..precision) {
+                val posX = x + radius * cos(-(startPos + i * DOUBLE_PI / (precision / 2.0)))
+                val posZ = z + radius * sin(-(startPos + i * DOUBLE_PI / (precision / 2.0)))
+
+                glColor(ColorUtils.getGradientOffset(Color(colorRedValue, colorGreenValue, colorBlueValue), Color(colorRedTwoValue, colorGreenTwoValue, colorBlueTwoValue, 1), abs((System.currentTimeMillis() / 10L).toDouble()) / 100.0 + y))
+
+                glVertex3d(posX, y, posZ)
+
+                y -= entity.height / precision
+
+                glColor(0, 0, 0, 0)
+            }
+
+            glEnd()
+            glDepthMask(true)
+            glEnable(GL_DEPTH_TEST)
+
+            endSmooth()
+
+            glEnable(GL_TEXTURE_2D)
+            glPopMatrix()
+        }
+    }
 
     /**
      * Draws a rectangle.
