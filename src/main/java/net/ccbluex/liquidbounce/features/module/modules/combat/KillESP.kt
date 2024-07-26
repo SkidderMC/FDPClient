@@ -40,7 +40,6 @@ object KillESP : Module("KillESP", Category.COMBAT) {
     private val rainbow by BoolValue("RainBow", false)
     private val hurt by BoolValue("HurtTime", true)
     private val boxOutline by BoolValue("Outline", true, subjective = true) { modeValue == "RoundBox" }
-    val speed = FloatValue("Speed", 0.1f, 0.0f.. 10.0f) { modeValue == "Zavz" }
 
     private val targetList = HashMap<EntityLivingBase, Long>()
     private val combat = CombatManager
