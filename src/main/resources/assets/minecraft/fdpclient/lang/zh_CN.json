@@ -94,7 +94,7 @@
     
             "module.atAllProvider.description": "当你在消息中使用'@a'时，自动提及服务器上的所有人。",
             
-            "module.attackEffects.description": "自定义攻击时显示的效果。",
+            "module.combatVisuals.description": "自定义攻击时显示的效果。",
             
             "module.autoAccount.description": "功能丰富的自动注册/登录和帐号管理器。",
             

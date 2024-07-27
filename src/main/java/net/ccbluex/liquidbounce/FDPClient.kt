@@ -71,7 +71,7 @@ object FDPClient {
      * Defines if the client is in development mode.
      * This will enable update checking on commit time instead of regular legacy versioning.
      */
-    const val IN_DEV = false
+    const val IN_DEV = true
 
     val clientTitle = CLIENT_NAME + " " + clientVersionText + " " + clientCommit + "  | " + if (IN_DEV) " | DEVELOPMENT BUILD" else ""
 

@@ -83,7 +83,7 @@
 
         "module.atAllProvider.description": "Автоматическое упоминание всех участников сервера при использовании '@a' в сообщении.",
 
-        "module.attackEffects.description": "Показывает эффект при атаке",
+        "module.combatVisuals.description": "Показывает эффект при атаке",
 
         "module.autoAccount.description": "Наиболее функциональный менеджер авторегистрации/логина учетных записей.",
 

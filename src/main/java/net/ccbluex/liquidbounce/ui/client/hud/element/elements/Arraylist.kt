@@ -75,7 +75,7 @@ class Arraylist(
         arrayOf("Custom", "Fade", "Random", "Rainbow", "Gradient"),
         "Rainbow"
     ) { rectMode != "None" }
-    private val isCustomRectSupported = { rectMode != "None" && rectColorMode == "Custom" }
+    private val isCustomRectSupported = { rectMode != "None" && rectColorMode in listOf("Custom", "Fade") }
     private val rectRed by IntegerValue("Rect-R", 255, 0..255, isSupported = isCustomRectSupported)
     private val rectGreen by IntegerValue("Rect-G", 255, 0..255, isSupported = isCustomRectSupported)
     private val rectBlue by IntegerValue("Rect-B", 255, 0..255, isSupported = isCustomRectSupported)
@@ -102,10 +102,10 @@ class Arraylist(
 
     private val roundedBackgroundRadius by FloatValue("RoundedBackGround-Radius", 0F, 0F..5F)
     private val backgroundMode by ListValue("Background-Color", arrayOf("Custom", "Fade", "Random", "Rainbow", "Gradient"), "Custom")
-    private val backgroundRed by IntegerValue("Background-R", 0, 0..255) { backgroundMode == "Custom" }
-    private val backgroundGreen by IntegerValue("Background-G", 0, 0..255) { backgroundMode == "Custom" }
-    private val backgroundBlue by IntegerValue("Background-B", 0, 0..255) { backgroundMode == "Custom" }
-    private val backgroundAlpha by IntegerValue("Background-Alpha", 170, 0..255) { backgroundMode == "Custom" }
+    private val backgroundRed by IntegerValue("Background-R", 0, 0..255) { backgroundMode in listOf("Custom", "Fade") }
+    private val backgroundGreen by IntegerValue("Background-G", 0, 0..255) { backgroundMode in listOf("Custom", "Fade") }
+    private val backgroundBlue by IntegerValue("Background-B", 0, 0..255) { backgroundMode in listOf("Custom", "Fade") }
+    private val backgroundAlpha by IntegerValue("Background-Alpha", 170, 0..255) { backgroundMode in listOf("Custom", "Fade") }
 
     private val gradientBackgroundSpeed by FloatValue("Background-Gradient-Speed", 1f, 0.5f..10f) { backgroundMode == "Gradient" }
 

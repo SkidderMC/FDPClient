@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.minecraft.client.entity.EntityOtherPlayerMP
 
-object FakePlayer : Module("FakePlayer", Category.OTHER) {
+object FakePlayer : Module("FakePlayer", Category.OTHER, hideModule = false) {
 
     // Stores the reference to the fake player
     private var fakePlayer: EntityOtherPlayerMP? = null

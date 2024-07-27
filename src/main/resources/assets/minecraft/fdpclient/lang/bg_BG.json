@@ -83,7 +83,7 @@
         
         "module.atAllProvider.description": "Автоматично споменава всички на сървъра, когато използвате '@a' във вашето съобщение.",
         
-        "module.attackEffects.description": "Покажете ефект, когато атакувате",
+        "module.combatVisuals.description": "Покажете ефект, когато атакувате",
         
         "module.autoAccount.description": "Позволява за автоматично сменяне на акаунти.",
         

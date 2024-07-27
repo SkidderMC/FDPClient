@@ -98,7 +98,7 @@
 
         "module.atAllProvider.description": "Automatically mentions everyone on the server when using '@a' in your message.",
 
-        "module.attackEffects.description": "Show effect when you attack",
+        "module.combatVisuals.description": "Show effect when you attack",
 
         "module.autoAccount.description": "Most feature-packed auto register/login & account manager.",
 

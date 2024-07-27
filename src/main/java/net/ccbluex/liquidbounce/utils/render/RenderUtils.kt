@@ -7,14 +7,14 @@ package net.ccbluex.liquidbounce.utils.render
 
 import com.jhlabs.image.GaussianFilter
 import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.DOUBLE_PI
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorBlueTwoValue
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorBlueValue
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorGreenTwoValue
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorGreenValue
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorRedTwoValue
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorRedValue
-import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.start
+import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.DOUBLE_PI
+import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorBlueTwoValue
+import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorBlueValue
+import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorGreenTwoValue
+import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorGreenValue
+import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorRedTwoValue
+import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorRedValue
+import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.start
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.UIEffectRenderer.drawTexturedRect

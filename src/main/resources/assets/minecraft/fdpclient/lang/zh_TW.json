@@ -93,7 +93,7 @@
            
             "module.atAllProvider.description": "當你在訊息中使用'@a'時，自動提及伺服器上的所有人。",
            
-            "module.attackEffects.description": "自訂攻擊時顯示的效果。",
+            "module.combatVisuals.description": "自訂攻擊時顯示的效果。",
            
             "module.autoAccount.description": "功能豐富的自動註冊/登入和帳號管理員。",
            

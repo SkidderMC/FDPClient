@@ -1,0 +1,191 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+package net.ccbluex.liquidbounce.features.module.modules.visual
+
+import net.ccbluex.liquidbounce.event.AttackEvent
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.handler.combat.CombatManager
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.block.Block
+import net.minecraft.client.renderer.entity.RenderManager
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.effect.EntityLightningBolt
+import net.minecraft.init.Blocks
+import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
+import net.minecraft.util.EnumParticleTypes
+import java.awt.Color
+import java.util.*
+
+object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = false, subjective = true) {
+
+    // Mark
+
+    private val markValue by ListValue("MarkMode", arrayOf("None", "Box", "RoundBox", "Head", "Mark", "Sims", "Zavz"), "Zavz")
+    private val isMarkMode: Boolean
+        get() = markValue != "None"
+
+    val colorRedValue by IntegerValue("Mark-Red", 0, 0.. 255) { isMarkMode }
+    val colorGreenValue by IntegerValue("Mark-Green", 160, 0..255) { isMarkMode }
+    val colorBlueValue by IntegerValue("Mark-Blue", 255, 0.. 255) { isMarkMode }
+
+    private val alphaValue by IntegerValue("Alpha", 255, 0.. 255) { isMarkMode && markValue == "Zavz" }
+
+    val colorRedTwoValue by IntegerValue("Mark-Red 2", 0, 0.. 255) { isMarkMode && markValue == "Zavz" }
+    val colorGreenTwoValue by IntegerValue("Mark-Green 2", 160, 0..255) { isMarkMode && markValue == "Zavz" }
+    val colorBlueTwoValue by IntegerValue("Mark-Blue 2", 255, 0.. 255) { isMarkMode && markValue == "Zavz" }
+
+    private val rainbow by BoolValue("Mark-RainBow", false) { isMarkMode }
+    private val hurt by BoolValue("Mark-HurtTime", true) { isMarkMode }
+    private val boxOutline by BoolValue("Mark-Outline", true, subjective = true) { isMarkMode && markValue == "RoundBox" }
+
+    // Sound
+
+    private val particle by ListValue("Particle",
+        arrayOf("None", "Blood", "Lighting", "Fire", "Heart", "Water", "Smoke", "Magic", "Crits"), "Blood")
+
+    private val amount by IntegerValue("ParticleAmount", 5, 1..20) { particle != "None" }
+
+    //Sound
+    private val sound by ListValue("Sound", arrayOf("None", "Hit", "Explode", "Orb", "Pop", "Splash", "Lightning"), "Hit")
+
+    private val volume by FloatValue("Volume", 1f, 0.1f.. 5f) { sound != "None" }
+    private val pitch by FloatValue("Pitch", 1f, 0.1f..5f) { sound != "None" }
+
+    // variables
+    private val targetList = HashMap<EntityLivingBase, Long>()
+    private val combat = CombatManager
+    var random = Random()
+    const val DOUBLE_PI = Math.PI * 2
+    var start = 0.0
+
+    @EventTarget
+    fun onWorld(event: WorldEvent?) {
+        targetList.clear()
+    }
+
+    @EventTarget
+    fun onRender3D(event: Render3DEvent?) {
+        val color: Color = if (rainbow) ColorUtils.rainbow() else Color(
+            colorRedValue,
+            colorGreenValue,
+            colorBlueValue,
+            alphaValue
+        )
+        val renderManager: RenderManager = mc.renderManager
+        val entityLivingBase: EntityLivingBase = combat.target ?: return
+        (entityLivingBase.lastTickPosX + (entityLivingBase.posX - entityLivingBase.lastTickPosX) * mc.timer.renderPartialTicks
+                - renderManager.renderPosX)
+        (entityLivingBase.lastTickPosY + (entityLivingBase.posY - entityLivingBase.lastTickPosY) * mc.timer.renderPartialTicks
+                - renderManager.renderPosY)
+        (entityLivingBase.lastTickPosZ + (entityLivingBase.posZ - entityLivingBase.lastTickPosZ) * mc.timer.renderPartialTicks
+                - renderManager.renderPosZ)
+        when (markValue.lowercase()) {
+            "box" -> RenderUtils.drawEntityBoxESP(
+                entityLivingBase,
+                if ((hurt && entityLivingBase.hurtTime > 3)) Color(255, 50, 50, 75) else color
+            )
+
+            "roundbox" -> RenderUtils.drawEntityBox(
+                entityLivingBase,
+                if (hurt && entityLivingBase.hurtTime > 3)
+                    Color(37, 126, 255, 70)
+                else
+                    Color(255, 0, 0, 70),
+                boxOutline
+            )
+
+            "head" -> RenderUtils.drawPlatformESP(
+                entityLivingBase,
+                if ((hurt && entityLivingBase.hurtTime > 3)) Color(255, 50, 50, 75) else color
+            )
+
+            "mark" -> RenderUtils.drawPlatform(
+                entityLivingBase,
+                if ((hurt && entityLivingBase.hurtTime > 3)) Color(37, 126, 255, 70) else color
+            )
+
+            "sims" -> RenderUtils.drawCrystal(
+                entityLivingBase,
+                if ((hurt && entityLivingBase.hurtTime <= 0)) Color(80, 255, 80, 200).rgb else Color(255, 0, 0, 200).rgb,
+                event!!
+            )
+
+            "zavz" -> RenderUtils.drawZavz(
+                entityLivingBase,
+                event!!,
+                dual = true, // or false based on your requirement
+            )
+        }
+    }
+
+
+    @EventTarget
+    fun onAttack(event: AttackEvent) {
+        val target = event.targetEntity as? EntityLivingBase ?: return
+
+        repeat(amount) {
+            doEffect(target)
+        }
+
+        doSound()
+    }
+
+    private fun doSound() {
+        val player = mc.thePlayer
+
+        when (sound) {
+            "Hit" -> player.playSound("random.bowhit", volume, pitch)
+            "Orb" -> player.playSound("random.orb", volume, pitch)
+            "Pop" -> player.playSound("random.pop", volume, pitch)
+            "Splash" -> player.playSound("random.splash", volume, pitch)
+            "Lightning" -> player.playSound("ambient.weather.thunder", volume, pitch)
+            "Explode" -> player.playSound("random.explode", volume, pitch)
+        }
+    }
+
+    private fun doEffect(target: EntityLivingBase) {
+        when (particle) {
+            "Blood" -> spawnBloodParticle(EnumParticleTypes.BLOCK_CRACK, target)
+            "Crits" -> spawnEffectParticle(EnumParticleTypes.CRIT, target)
+            "Magic" -> spawnEffectParticle(EnumParticleTypes.CRIT_MAGIC, target)
+            "Lighting" -> spawnLightning(target)
+            "Smoke" -> spawnEffectParticle(EnumParticleTypes.SMOKE_NORMAL, target)
+            "Water" -> spawnEffectParticle(EnumParticleTypes.WATER_DROP, target)
+            "Heart" -> spawnEffectParticle(EnumParticleTypes.HEART, target)
+            "Fire" -> spawnEffectParticle(EnumParticleTypes.LAVA, target)
+        }
+    }
+
+    private fun spawnBloodParticle(particleType: EnumParticleTypes, target: EntityLivingBase) {
+        mc.theWorld.spawnParticle(particleType,
+            target.posX, target.posY + target.height - 0.75, target.posZ,
+            0.0, 0.0, 0.0,
+            Block.getStateId(Blocks.redstone_block.defaultState)
+        )
+    }
+
+    private fun spawnEffectParticle(particleType: EnumParticleTypes, target: EntityLivingBase) {
+        mc.effectRenderer.spawnEffectParticle(particleType.particleID,
+            target.posX, target.posY, target.posZ,
+            target.posX, target.posY, target.posZ
+        )
+    }
+
+    private fun spawnLightning(target: EntityLivingBase) {
+        mc.netHandler.handleSpawnGlobalEntity(S2CPacketSpawnGlobalEntity(
+            EntityLightningBolt(mc.theWorld, target.posX, target.posY, target.posZ)
+        ))
+    }
+}

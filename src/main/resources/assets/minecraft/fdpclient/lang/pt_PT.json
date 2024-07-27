@@ -82,7 +82,7 @@
         
         "module.atAllProvider.description": "Automaticamente menciona todos no servidor quando for utilizado '@a' na tua mensagem.",
         
-        "module.attackEffects.description": "Mostra efeitos quanto tu atacas.",
+        "module.combatVisuals.description": "Mostra efeitos quanto tu atacas.",
         
         "module.autoAccount.description": "UNTRANSLATED: Most feature-packed auto register/login & account manager.",
         
