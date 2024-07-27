@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.command.special
 
 import net.ccbluex.liquidbounce.features.command.Command
@@ -12,12 +17,12 @@ object PrivateChatCommand : Command("pchat", "privatechat", "lcpm") {
     override fun execute(args: Array<String>) {
         if (args.size > 2) {
             if (!IRCModule.state) {
-                chat("§cError: §7LiquidChat is disabled!")
+                chat("§cError: §7IRC is disabled!")
                 return
             }
 
             if (!IRCModule.client.isConnected()) {
-                chat("§cError: §LiquidChat is currently not connected to the server!")
+                chat("§cError: §7IRC is currently not connected to the server!")
                 return
             }
 

@@ -80,7 +80,7 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
                     val thePlayer = mc.thePlayer
 
                     if (thePlayer == null) {
-                        LOGGER.info("[LiquidChat] ${packet.user.name}: ${packet.content}")
+                        LOGGER.info("[IRC] ${packet.user.name}: ${packet.content}")
                         return
                     }
 
