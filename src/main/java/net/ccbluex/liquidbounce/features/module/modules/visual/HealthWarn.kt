@@ -32,7 +32,7 @@ object HealthWarn: Module("HealthWarn", Category.VISUAL, hideModule = false) {
     fun onUpdate(event: UpdateEvent) {
         if (mc.thePlayer.health <= healthValue) {
             if (canWarn) {
-                addNotification(Notification("HP Warning","YOU ARE AT LOW HP!", Type.ERROR))
+                addNotification(Notification("HP Warning","YOU ARE AT LOW HP!", Type.ERROR, 3000))
 
                 canWarn = false
             }

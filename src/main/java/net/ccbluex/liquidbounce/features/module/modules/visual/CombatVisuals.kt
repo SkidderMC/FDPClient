@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -20,18 +21,20 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.entity.RenderManager
+import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.effect.EntityLightningBolt
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
+import net.minecraft.potion.Potion
 import net.minecraft.util.EnumParticleTypes
+import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
 
-object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = false, subjective = true) {
+object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Keyboard.KEY_R, hideModule = false, subjective = true) {
 
     // Mark
-
     private val markValue by ListValue("MarkMode", arrayOf("None", "Box", "RoundBox", "Head", "Mark", "Sims", "Zavz"), "Zavz")
     private val isMarkMode: Boolean
         get() = markValue != "None"
@@ -50,6 +53,9 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
     private val hurt by BoolValue("Mark-HurtTime", true) { isMarkMode }
     private val boxOutline by BoolValue("Mark-Outline", true, subjective = true) { isMarkMode && markValue == "RoundBox" }
 
+    // fake sharp
+    private val fakeSharp by BoolValue("FakeSharp", true, subjective = true)
+
     // Sound
 
     private val particle by ListValue("Particle",
@@ -58,7 +64,7 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
     private val amount by IntegerValue("ParticleAmount", 5, 1..20) { particle != "None" }
 
     //Sound
-    private val sound by ListValue("Sound", arrayOf("None", "Hit", "Explode", "Orb", "Pop", "Splash", "Lightning"), "Hit")
+    private val sound by ListValue("Sound", arrayOf("None", "Hit", "Explode", "Orb", "Pop", "Splash", "Lightning"), "Pop")
 
     private val volume by FloatValue("Volume", 1f, 0.1f.. 5f) { sound != "None" }
     private val pitch by FloatValue("Pitch", 1f, 0.1f..5f) { sound != "None" }
@@ -140,6 +146,33 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
         }
 
         doSound()
+        attackEntity(target)
+    }
+
+    @EventTarget
+    private fun attackEntity(entity: EntityLivingBase) {
+        val thePlayer = mc.thePlayer
+
+        // Extra critical effects
+        repeat(3) {
+            // Critical Effect
+            if (thePlayer.fallDistance > 0F && !thePlayer.onGround && !thePlayer.isOnLadder && !thePlayer.isInWater && !thePlayer.isPotionActive(
+                    Potion.blindness
+                ) && thePlayer.ridingEntity == null || Criticals.handleEvents() && Criticals.msTimer.hasTimePassed(
+                    Criticals.delay
+                ) && !thePlayer.isInWater && !thePlayer.isInLava && !thePlayer.isInWeb) {
+                thePlayer.onCriticalHit(entity)
+            }
+
+            // Enchant Effect
+            if (EnchantmentHelper.getModifierForCreature(thePlayer.heldItem,
+                    entity.creatureAttribute
+                ) > 0f || fakeSharp
+            ) {
+                thePlayer.onEnchantmentCritical(entity)
+            }
+        }
+
     }
 
     private fun doSound() {

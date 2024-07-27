@@ -818,25 +818,6 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
             }
         }
 
-        // Extra critical effects
-        repeat(3) {
-            // Critical Effect
-            if (thePlayer.fallDistance > 0F && !thePlayer.onGround && !thePlayer.isOnLadder && !thePlayer.isInWater && !thePlayer.isPotionActive(
-                    Potion.blindness
-                ) && thePlayer.ridingEntity == null || Criticals.handleEvents() && Criticals.msTimer.hasTimePassed(
-                    Criticals.delay
-                ) && !thePlayer.isInWater && !thePlayer.isInLava && !thePlayer.isInWeb) {
-                thePlayer.onCriticalHit(entity)
-            }
-
-            // Enchant Effect
-            if (EnchantmentHelper.getModifierForCreature(thePlayer.heldItem,
-                    entity.creatureAttribute
-                ) > 0f || fakeSharp) {
-                thePlayer.onEnchantmentCritical(entity)
-            }
-        }
-
         CPSCounter.registerClick(CPSCounter.MouseButton.LEFT)
 
         // Start blocking after attack
