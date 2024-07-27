@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.utils.render
 
 import com.jhlabs.image.GaussianFilter
-import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.DOUBLE_PI
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorBlueTwoValue
@@ -16,9 +15,6 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorGree
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorRedTwoValue
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.colorRedValue
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillESP.start
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blue2Value
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.green2Value
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.red2Value
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.UIEffectRenderer.drawTexturedRect
@@ -28,11 +24,8 @@ import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInOutQuad
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.GlStateManager.*
-import net.minecraft.client.renderer.OpenGlHelper
-import net.minecraft.client.renderer.RenderGlobal
-import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
@@ -50,7 +43,6 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL14
 import org.lwjgl.util.glu.Cylinder
@@ -891,6 +883,43 @@ object RenderUtils : MinecraftInstance() {
         val (newX1, newY1, newX2, newY2) = orderPoints(x1, y1, x2, y2)
 
         drawRoundedRectangle(newX1, newY1, newX2, newY2, red, green, blue, alpha, radius)
+    }
+
+    fun drawArrayRect(left: Float, top: Float, right: Float, bottom: Float, color: Int) {
+        var left = left
+        var top = top
+        var right = right
+        var bottom = bottom
+        if (left < right) {
+            val i = left
+            left = right
+            right = i
+        }
+
+        if (top < bottom) {
+            val j = top
+            top = bottom
+            bottom = j
+        }
+
+        val f3 = (color shr 24 and 255).toFloat() / 255.0f
+        val f = (color shr 16 and 255).toFloat() / 255.0f
+        val f1 = (color shr 8 and 255).toFloat() / 255.0f
+        val f2 = (color and 255).toFloat() / 255.0f
+        val tessellator = Tessellator.getInstance()
+        val worldrenderer = tessellator.worldRenderer
+        enableBlend()
+        disableTexture2D()
+        tryBlendFuncSeparate(770, 771, 1, 0)
+        color(f, f1, f2, f3)
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION)
+        worldrenderer.pos(left.toDouble(), bottom.toDouble(), 0.0).endVertex()
+        worldrenderer.pos(right.toDouble(), bottom.toDouble(), 0.0).endVertex()
+        worldrenderer.pos(right.toDouble(), top.toDouble(), 0.0).endVertex()
+        worldrenderer.pos(left.toDouble(), top.toDouble(), 0.0).endVertex()
+        tessellator.draw()
+        enableTexture2D()
+        disableBlend()
     }
 
     /**

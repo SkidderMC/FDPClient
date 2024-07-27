@@ -18,7 +18,10 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Vertical
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawArrayRect
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientFontShader
@@ -64,7 +67,7 @@ class Arraylist(
     private val gradientTextGreen4 by FloatValue("Text-Gradient-G4", 0f, 0f..255f) { textColorMode == "Gradient" }
     private val gradientTextBlue4 by FloatValue("Text-Gradient-B4", 0f, 0f..255f) { textColorMode == "Gradient" }
 
-    private val rectMode by ListValue("Rect", arrayOf("None", "Left", "Right"), "None")
+    private val rectMode by ListValue("Rect", arrayOf("None", "Left", "Right", "Outline", "Special"), "None")
     private val roundedRectRadius by FloatValue("RoundedRect-Radius", 0F, 0F..2F)
     private val rectColorMode by ListValue(
         "Rect-Color",
@@ -207,7 +210,6 @@ class Arraylist(
     }
 
     override fun drawElement(): Border? {
-
         AWTFontRenderer.assumeNonVolatile = true
 
         // Slide animation - update every render
@@ -441,6 +443,40 @@ class Arraylist(
                                         rectColor,
                                         roundedRectRadius
                                     )
+
+                                    "Outline" -> drawArrayRect(
+                                        -1F, yPos - 1F, 0F,
+                                        yPos + textHeight, rectColor
+                                    ).also {
+                                        drawArrayRect(
+                                            xPos - 3, yPos, xPos - 2, yPos + textHeight,
+                                            rectColor
+                                        )
+
+                                        if (module != modules[0]) {
+                                            val displayStrings = getDisplayString(modules[index - 1])
+                                            drawArrayRect(
+                                                xPos - 3 - (font.getStringWidth(displayStrings) - font.getStringWidth(displayString)),
+                                                yPos,
+                                                xPos - 2,
+                                                yPos + 1,
+                                                rectColor
+                                            )
+                                            if (module == modules[modules.size - 1]) {
+                                                drawArrayRect(
+                                                    xPos - 3, yPos + textHeight, 0.0F,
+                                                    yPos + textHeight + 1,
+                                                    rectColor
+                                                )
+                                            }
+                                        } else {
+                                            drawArrayRect(
+                                                xPos - 3, yPos, 0F,
+                                                yPos - 1,
+                                                rectColor
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
