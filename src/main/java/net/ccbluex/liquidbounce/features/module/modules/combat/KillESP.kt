@@ -25,7 +25,7 @@ import java.util.*
 
 object KillESP : Module("KillESP", Category.COMBAT) {
 
-    private val modeValue by ListValue("Mode", arrayOf("Box", "RoundBox", "Head", "Mark", "Sims", "Zavz"), "Mark")
+    private val modeValue by ListValue("Mode", arrayOf("Box", "RoundBox", "Head", "Mark", "Sims", "Zavz"), "Zavz")
     val colorRedValue by IntegerValue("R", 0, 0.. 255)
     val colorGreenValue by IntegerValue("G", 160, 0..255)
     val colorBlueValue by IntegerValue("B", 255, 0.. 255)

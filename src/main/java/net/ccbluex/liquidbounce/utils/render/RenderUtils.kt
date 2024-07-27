@@ -25,6 +25,7 @@ import net.ccbluex.liquidbounce.utils.UIEffectRenderer.drawTexturedRect
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
+import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInOutQuad
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager.*
@@ -46,8 +47,10 @@ import net.minecraft.item.ItemSword
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.ResourceLocation
+import net.minecraft.util.Vec3
 import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
+import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL14
 import org.lwjgl.util.glu.Cylinder
@@ -473,6 +476,87 @@ object RenderUtils : MinecraftInstance() {
             glEnable(GL_TEXTURE_2D)
             glPopMatrix()
         }
+    }
+
+    /**
+     * Draws a jello-like effect around the given entity.
+     *
+     * @param entity The entity to draw the jello effect around.
+     * @param partialTicks The partial ticks for smooth rendering.
+     */
+    fun drawJello(entity: EntityLivingBase, partialTicks: Float) {
+        val drawTime = (System.currentTimeMillis() % 2000).toInt()
+        val drawMode = drawTime > 1000
+        var drawPercent = drawTime / 1000.0
+        // true when going up
+        if (!drawMode) {
+            drawPercent = 1 - drawPercent
+        } else {
+            drawPercent -= 1
+        }
+        drawPercent = easeInOutQuad(drawPercent.toLong(), 1L, 1.0, 2.0)
+
+        val points = mutableListOf<Vec3>()
+        val bb = entity.entityBoundingBox
+        val radius = bb.maxX - bb.minX
+        val height = bb.maxY - bb.minY
+        val posX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks
+        var posY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks
+        if (drawMode) {
+            posY -= 0.5
+        } else {
+            posY += 0.5
+        }
+        val posZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks
+
+        for (i in 0..360 step 7) {
+            points.add(
+                Vec3(posX - sin(Math.toRadians(i.toDouble())) * radius,
+                posY + height * drawPercent,
+                posZ + cos(Math.toRadians(i.toDouble())) * radius)
+            )
+        }
+        points.add(points[0])
+
+        // Draw
+        mc.entityRenderer.disableLightmap()
+        glPushMatrix()
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
+        glEnable(GL_BLEND)
+        glDisable(GL_DEPTH_TEST)
+        glBegin(GL_LINE_STRIP)
+        val baseMove = if (drawPercent > 0.5) 1 - drawPercent else drawPercent * 2
+        val min = (height / 60) * 20 * (1 - baseMove) * if (drawMode) -1 else 1
+
+        for (i in 0..20) {
+            var moveFace = (height / 60F) * i * baseMove
+            if (drawMode) {
+                moveFace = -moveFace
+            }
+            val firstPoint = points[0]
+            glVertex3d(
+                firstPoint.xCoord - mc.renderManager.viewerPosX,
+                firstPoint.yCoord - moveFace - min - mc.renderManager.viewerPosY,
+                firstPoint.zCoord - mc.renderManager.viewerPosZ
+            )
+            glColor4f(1F, 1F, 1F, 0.7F * (i / 20F))
+            for (vec3 in points) {
+                glVertex3d(
+                    vec3.xCoord - mc.renderManager.viewerPosX,
+                    vec3.yCoord - moveFace - min - mc.renderManager.viewerPosY,
+                    vec3.zCoord - mc.renderManager.viewerPosZ
+                )
+            }
+            glColor4f(0F, 0F, 0F, 0F)
+        }
+        glEnd()
+        glEnable(GL_DEPTH_TEST)
+        glDisable(GL_LINE_SMOOTH)
+        glDisable(GL_BLEND)
+        glEnable(GL_TEXTURE_2D)
+        glPopMatrix()
     }
 
     /**
