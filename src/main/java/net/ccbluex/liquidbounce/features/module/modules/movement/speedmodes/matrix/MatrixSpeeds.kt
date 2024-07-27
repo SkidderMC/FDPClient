@@ -167,14 +167,6 @@ object MatrixSpeeds : SpeedMode("MatrixSpeeds") {
                     noVelocityY = 10
                 }
             }
-            "Matrix Beta" -> {
-                if (packet is S12PacketEntityVelocity) {
-                    if (mc.thePlayer == null || (mc.theWorld?.getEntityByID(packet.entityID) ?: return) != mc.thePlayer) {
-                        return
-                    }
-                    noVelocityY = 10
-                }
-            }
         }
     }
 

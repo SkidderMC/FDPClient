@@ -188,10 +188,12 @@ public abstract class MixinItemRenderer {
                         if (animation != null) {
                             animation.transform(f1, f, abstractclientplayer);
                         }
+
                         break;
                     case BOW:
                         transformFirstPersonItem(f, f1);
                         doBowTransformations(partialTicks, abstractclientplayer);
+                        break;
                 }
             } else {
                 final Animations animations = Animations.INSTANCE;

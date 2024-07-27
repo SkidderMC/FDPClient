@@ -9,7 +9,12 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations.animations
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations.defaultAnimation
+import net.ccbluex.liquidbounce.features.module.modules.client.Animations.delay
+import net.ccbluex.liquidbounce.features.module.modules.client.Animations.itemRotate
+import net.ccbluex.liquidbounce.features.module.modules.client.Animations.itemRotateSpeed
+import net.ccbluex.liquidbounce.features.module.modules.client.Animations.itemRotationMode
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -17,7 +22,8 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.util.MathHelper
-import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL11.glTranslated
+import org.lwjgl.opengl.GL11.glTranslatef
 
 /**
  * Animations module
@@ -63,8 +69,48 @@ object Animations : Module("Animations", Category.CLIENT, gameDetecting = false,
     val handPosY by FloatValue("PositionRotationY", 0f, -50f..50f)
     val handPosZ by FloatValue("PositionRotationZ", 0f, -50f..50f)
 
+    var itemRotate by BoolValue("ItemRotate", false)
+    val itemRotationMode by ListValue("ItemRotateMode", arrayOf("None", "Straight", "Forward", "Nano", "Uh"), "None") { itemRotate }
+    val itemRotateSpeed by FloatValue("RotateSpeed", 8f, 1f.. 15f)  { itemRotate }
+
+    var delay = 0f
+
     fun getAnimation() = animations.firstOrNull { it.name == animationMode }
 
+}
+
+
+/**
+ * Item Render Rotation
+ *
+ * This class allows you to rotate item animation.
+ *
+ * @author Zywl
+ */
+fun itemRenderRotate() {
+    val rotationTimer = MSTimer()
+
+    if (itemRotationMode == "none") {
+        itemRotate = false
+        return
+    }
+
+    when (itemRotationMode.toLowerCase()) {
+        "straight" -> rotate(delay, 0.0f, 1.0f, 0.0f)
+        "forward" -> rotate(delay, 1.0f, 1.0f, 0.0f)
+        "nano" -> rotate(delay, 0.0f, 0.0f, 0.0f)
+        "uh" -> rotate(delay, 1.0f, 0.0f, 1.0f)
+    }
+
+    if (rotationTimer.hasTimePassed(1L)) {
+        delay++
+        delay += itemRotateSpeed
+        rotationTimer.reset()
+    }
+
+    if (delay > 360.0f) {
+        delay = 0.0f
+    }
 }
 
 /**
@@ -88,6 +134,9 @@ abstract class Animation(val name: String) : MinecraftInstance() {
         rotate(30f, 0f, 1f, 0f)
         rotate(-80f, 1f, 0f, 0f)
         rotate(60f, 0f, 1f, 0f)
+        if (itemRotate) {
+            itemRenderRotate()
+        }
     }
 
     /**
@@ -105,6 +154,9 @@ abstract class Animation(val name: String) : MinecraftInstance() {
         rotate(f1 * -20f, 0f, 0f, 1f)
         rotate(f1 * -80f, 1f, 0f, 0f)
         scale(0.4f, 0.4f, 0.4f)
+        if (itemRotate) {
+            itemRenderRotate()
+        }
     }
 
 }
@@ -119,6 +171,9 @@ class OneSevenAnimation : Animation("OneSeven") {
         transformFirstPersonItem(f, f1)
         doBlockTransformations()
         translate(-0.5f, 0.2f, 0f)
+        if (itemRotate) {
+            itemRenderRotate()
+        }
     }
 
 }
@@ -127,6 +182,9 @@ class OldAnimation : Animation("Old") {
     override fun transform(f1: Float, f: Float, clientPlayer: AbstractClientPlayer) {
         transformFirstPersonItem(f, f1)
         doBlockTransformations()
+        if (itemRotate) {
+            itemRenderRotate()
+        }
     }
 }
 
@@ -157,6 +215,9 @@ class PushdownAnimation : Animation("Pushdown") {
         rotate(60f, 0f, 1f, 0f)
         glTranslated(1.05, 0.35, 0.4)
         glTranslatef(-1f, 0f, 0f)
+        if (itemRotate) {
+            itemRenderRotate()
+        }
     }
 
 }
@@ -172,6 +233,9 @@ class HeliumAnimation : Animation("Helium") {
         val c1 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927f)
         rotate(-c1 * 55.0f, 30.0f, c0 / 5.0f, 0.0f)
         doBlockTransformations()
+        if (itemRotate) {
+            itemRenderRotate()
+        }
     }
 }
 
@@ -188,6 +252,9 @@ class ArgonAnimation : Animation("Argon") {
         rotate(c2 * 50.0f, 200.0f, -c2 / 2.0f, -0.0f)
         translate(0.0, 0.3, 0.0)
         doBlockTransformations()
+        if (itemRotate) {
+            itemRenderRotate()
+        }
     }
 }
 
@@ -203,7 +270,9 @@ class CesiumAnimation : Animation("Cesium") {
         rotate(-c4 * 30.0f, 0.0f, c4 / 3.0f, 0.0f)
         rotate(-c4 * 10.0f, 1.0f, c4/10.0f, 0.0f)
         translate(0.0, 0.2, 0.0)
-        doBlockTransformations()
+        if (itemRotate) {
+            itemRenderRotate()
+        }
     }
 }
 
@@ -219,5 +288,8 @@ class SulfurAnimation : Animation("Sulfur") {
         rotate(-c5 * 30.0f, c5 / 10.0f, c6 / 10.0f, 0.0f)
         translate(c5 / 1.5, 0.2, 0.0)
         doBlockTransformations()
+        if (itemRotate) {
+            itemRenderRotate()
+        }
     }
 }

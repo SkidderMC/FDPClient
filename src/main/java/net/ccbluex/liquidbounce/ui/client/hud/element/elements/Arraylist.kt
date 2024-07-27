@@ -18,7 +18,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Vertical
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawArrayRect
@@ -43,7 +42,7 @@ class Arraylist(
     side: Side = Side(Horizontal.RIGHT, Vertical.UP)
 ) : Element(x, y, scale, side) {
 
-    private val textColorMode by ListValue("Text-Color", arrayOf("Custom", "Fade", "Random", "Rainbow", "Gradient"), "Custom")
+    private val textColorMode by ListValue("Text-Color", arrayOf("Custom", "Fade", "Random", "Rainbow", "Gradient"), "Fade")
     private val textRed by IntegerValue("Text-R", 255, 0..255) { textColorMode in listOf("Custom", "Fade") }
     private val textGreen by IntegerValue("Text-G", 255, 0..255) { textColorMode in listOf("Custom", "Fade") }
     private val textBlue by IntegerValue("Text-B", 255, 0..255) { textColorMode in listOf("Custom", "Fade") }
@@ -68,12 +67,12 @@ class Arraylist(
     private val gradientTextGreen4 by FloatValue("Text-Gradient-G4", 0f, 0f..255f) { textColorMode == "Gradient" }
     private val gradientTextBlue4 by FloatValue("Text-Gradient-B4", 0f, 0f..255f) { textColorMode == "Gradient" }
 
-    private val rectMode by ListValue("Rect", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "None")
-    private val roundedRectRadius by FloatValue("RoundedRect-Radius", 0F, 0F..2F)
+    private val rectMode by ListValue("Rect", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "Right")
+    private val roundedRectRadius by FloatValue("RoundedRect-Radius", 2F, 0F..2F)
     private val rectColorMode by ListValue(
         "Rect-Color",
         arrayOf("Custom", "Fade", "Random", "Rainbow", "Gradient"),
-        "Rainbow"
+        "Fade"
     ) { rectMode != "None" }
     private val isCustomRectSupported = { rectMode != "None" && rectColorMode in listOf("Custom", "Fade") }
     private val rectRed by IntegerValue("Rect-R", 255, 0..255, isSupported = isCustomRectSupported)
@@ -100,12 +99,12 @@ class Arraylist(
     private val gradientRectGreen4 by FloatValue("Rect-Gradient-G4", 0f, 0f..255f) { rectColorMode == "Gradient" }
     private val gradientRectBlue4 by FloatValue("Rect-Gradient-B4", 0f, 0f..255f) { rectColorMode == "Gradient" }
 
-    private val roundedBackgroundRadius by FloatValue("RoundedBackGround-Radius", 0F, 0F..5F)
+    private val roundedBackgroundRadius by FloatValue("RoundedBackGround-Radius", 2F, 0F..5F)
     private val backgroundMode by ListValue("Background-Color", arrayOf("Custom", "Fade", "Random", "Rainbow", "Gradient"), "Custom")
     private val backgroundRed by IntegerValue("Background-R", 0, 0..255) { backgroundMode in listOf("Custom", "Fade") }
     private val backgroundGreen by IntegerValue("Background-G", 0, 0..255) { backgroundMode in listOf("Custom", "Fade") }
     private val backgroundBlue by IntegerValue("Background-B", 0, 0..255) { backgroundMode in listOf("Custom", "Fade") }
-    private val backgroundAlpha by IntegerValue("Background-Alpha", 170, 0..255) { backgroundMode in listOf("Custom", "Fade") }
+    private val backgroundAlpha by IntegerValue("Background-Alpha", 140, 0..255) { backgroundMode in listOf("Custom", "Fade") }
 
     private val gradientBackgroundSpeed by FloatValue("Background-Gradient-Speed", 1f, 0.5f..10f) { backgroundMode == "Gradient" }
 
