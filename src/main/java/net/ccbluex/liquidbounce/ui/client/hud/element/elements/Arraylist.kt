@@ -18,10 +18,10 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Vertical
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawArrayRect
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientFontShader
@@ -43,10 +43,11 @@ class Arraylist(
     side: Side = Side(Horizontal.RIGHT, Vertical.UP)
 ) : Element(x, y, scale, side) {
 
-    private val textColorMode by ListValue("Text-Color", arrayOf("Custom", "Random", "Rainbow", "Gradient"), "Custom")
-    private val textRed by IntegerValue("Text-R", 255, 0..255) { textColorMode == "Custom" }
-    private val textGreen by IntegerValue("Text-G", 255, 0..255) { textColorMode == "Custom" }
-    private val textBlue by IntegerValue("Text-B", 255, 0..255) { textColorMode == "Custom" }
+    private val textColorMode by ListValue("Text-Color", arrayOf("Custom", "Fade", "Random", "Rainbow", "Gradient"), "Custom")
+    private val textRed by IntegerValue("Text-R", 255, 0..255) { textColorMode in listOf("Custom", "Fade") }
+    private val textGreen by IntegerValue("Text-G", 255, 0..255) { textColorMode in listOf("Custom", "Fade") }
+    private val textBlue by IntegerValue("Text-B", 255, 0..255) { textColorMode in listOf("Custom", "Fade") }
+    private val textAlpha by IntegerValue("Alpha", 255, 0..255) { textColorMode in listOf("Custom", "Fade") }
 
     private val gradientTextSpeed by FloatValue("Text-Gradient-Speed", 1f, 0.5f..10f) { textColorMode == "Gradient" }
 
@@ -71,7 +72,7 @@ class Arraylist(
     private val roundedRectRadius by FloatValue("RoundedRect-Radius", 0F, 0F..2F)
     private val rectColorMode by ListValue(
         "Rect-Color",
-        arrayOf("Custom", "Random", "Rainbow", "Gradient"),
+        arrayOf("Custom", "Fade", "Random", "Rainbow", "Gradient"),
         "Rainbow"
     ) { rectMode != "None" }
     private val isCustomRectSupported = { rectMode != "None" && rectColorMode == "Custom" }
@@ -100,7 +101,7 @@ class Arraylist(
     private val gradientRectBlue4 by FloatValue("Rect-Gradient-B4", 0f, 0f..255f) { rectColorMode == "Gradient" }
 
     private val roundedBackgroundRadius by FloatValue("RoundedBackGround-Radius", 0F, 0F..5F)
-    private val backgroundMode by ListValue("Background-Color", arrayOf("Custom", "Random", "Rainbow", "Gradient"), "Custom")
+    private val backgroundMode by ListValue("Background-Color", arrayOf("Custom", "Fade", "Random", "Rainbow", "Gradient"), "Custom")
     private val backgroundRed by IntegerValue("Background-R", 0, 0..255) { backgroundMode == "Custom" }
     private val backgroundGreen by IntegerValue("Background-G", 0, 0..255) { backgroundMode == "Custom" }
     private val backgroundBlue by IntegerValue("Background-B", 0, 0..255) { backgroundMode == "Custom" }
@@ -133,6 +134,7 @@ class Arraylist(
     private val rainbowY by FloatValue("Rainbow-Y", -1000F, -2000F..2000F) { isColorModeUsed("Rainbow") }
     private val gradientX by FloatValue("Gradient-X", -1000F, -2000F..2000F) { isColorModeUsed("Gradient") }
     private val gradientY by FloatValue("Gradient-Y", -1000F, -2000F..2000F) { isColorModeUsed("Gradient") }
+    private val fadeDistanceValue by IntegerValue("Fade-Distance", 50, 0.. 100) { isColorModeUsed("Fade") }
 
     private val tags by BoolValue("Tags", true)
     private val tagsStyle by object : ListValue("TagsStyle", arrayOf("[]", "()", "<>", "-", "|", "Space"), "Space") {
@@ -311,6 +313,15 @@ class Arraylist(
                         gradientOffset
                     ).use {
                         RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
+                            val fadeColor = fade(
+                                Color(
+                                    backgroundRed,
+                                    backgroundGreen,
+                                    backgroundBlue,
+                                    backgroundAlpha
+                                ), index * fadeDistanceValue, 100
+                            ).rgb
+
                             drawRoundedRect(
                                 xPos - if (rectMode == "Right") 5 else 2,
                                 yPos,
@@ -320,6 +331,7 @@ class Arraylist(
                                     "Gradient" -> 0
                                     "Rainbow" -> 0
                                     "Random" -> moduleColor
+                                    "Fade" -> fadeColor
                                     else -> backgroundCustomColor
                                 },
                                 roundedBackgroundRadius
@@ -364,6 +376,14 @@ class Arraylist(
                             rainbowY,
                             rainbowOffset
                         ).use {
+                            val fadeColor = fade(
+                                Color(
+                                    textRed,
+                                    textGreen,
+                                    textBlue,
+                                    textAlpha
+                                ), index * fadeDistanceValue, 100
+                            ).rgb
                             font.drawString(
                                 displayString, xPos - if (rectMode == "Right") 3 else 0, yPos + textY,
                                 if (markAsInactive) inactiveColor
@@ -371,6 +391,7 @@ class Arraylist(
                                     "Gradient" -> 0
                                     "Rainbow" -> 0
                                     "Random" -> moduleColor
+                                    "Fade" -> fadeColor
                                     else -> textCustomColor
                                 },
                                 textShadow
@@ -416,12 +437,21 @@ class Arraylist(
                                 rainbowY,
                                 rainbowOffset
                             ).use {
+                                val fadeColor = fade(
+                                    Color(
+                                        rectRed,
+                                        rectGreen,
+                                        rectBlue,
+                                        rectAlpha
+                                    ), index * fadeDistanceValue, 100
+                                ).rgb
                                 val rectColor =
                                     if (markAsInactive) inactiveColor
                                     else when (rectColorMode) {
                                         "Gradient" -> 0
                                         "Rainbow" -> 0
                                         "Random" -> moduleColor
+                                        "Fade" -> fadeColor
                                         else -> rectCustomColor
                                     }
 
@@ -534,12 +564,22 @@ class Arraylist(
                         gradientOffset
                     ).use {
                         RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
+                            val fadeColor = fade(
+                                Color(
+                                    textRed,
+                                    textGreen,
+                                    textBlue,
+                                    textAlpha
+                                ), index * fadeDistanceValue, 100
+                            ).rgb
+
                             drawRoundedRect(
                                 0F, yPos, xPos + width + if (rectMode == "Right") 5 else 2, yPos + textHeight,
                                 when (backgroundMode) {
                                     "Gradient" -> 0
                                     "Rainbow" -> 0
                                     "Random" -> moduleColor
+                                    "Fade" -> fadeColor
                                     else -> backgroundCustomColor
                                 },
                                 roundedBackgroundRadius
@@ -584,6 +624,15 @@ class Arraylist(
                             rainbowY,
                             rainbowOffset
                         ).use {
+                            val fadeColor = fade(
+                                Color(
+                                    textRed,
+                                    textGreen,
+                                    textBlue,
+                                    textAlpha
+                                ), index * fadeDistanceValue, 100
+                            ).rgb
+
                             font.drawString(
                                 displayString, xPos, yPos + textY,
                                 if (markAsInactive) inactiveColor
@@ -591,6 +640,7 @@ class Arraylist(
                                     "Gradient" -> 0
                                     "Rainbow" -> 0
                                     "Random" -> moduleColor
+                                    "Fade" -> fadeColor
                                     else -> textCustomColor
                                 },
                                 textShadow
@@ -636,12 +686,22 @@ class Arraylist(
                             rainbowOffset
                         ).use {
                             if (rectMode != "None") {
+                                val fadeColor = fade(
+                                    Color(
+                                        rectRed,
+                                        rectGreen,
+                                        rectBlue,
+                                        rectAlpha
+                                    ), index * fadeDistanceValue, 100
+                                ).rgb
+
                                 val rectColor =
                                     if (markAsInactive) inactiveColor
                                     else when (rectColorMode) {
                                         "Gradient" -> 0
                                         "Rainbow" -> 0
                                         "Random" -> moduleColor
+                                        "Fade" -> fadeColor
                                         else -> rectCustomColor
                                     }
 
