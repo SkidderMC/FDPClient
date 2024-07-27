@@ -6,9 +6,9 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.verus
 
 import net.ccbluex.liquidbounce.event.MoveEvent
-import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.YPort2speedValue
-import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.YPortspeedValue
-import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.modeValue
+import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.verusYPort2speedValue
+import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.verusYPortspeedValue
+import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.verusSpeed
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
@@ -26,7 +26,7 @@ object VerusSpeeds : SpeedMode("VerusSpeeds") {
     }
 
     override fun onUpdate() {
-        when (modeValue) {
+        when (verusSpeed) {
             "OldHop" -> {
                 if (isMoving) {
                     mc.gameSettings.keyBindJump.pressed = false
@@ -45,10 +45,10 @@ object VerusSpeeds : SpeedMode("VerusSpeeds") {
     }
 
      fun onPreMotion() {
-        when (modeValue) {
+        when (verusSpeed) {
             "Ground" -> {
                 if (mc.thePlayer.onGround)
-                    if (modeValue == "Ground") {
+                    if (verusSpeed == "Ground") {
                         if (mc.thePlayer.ticksExisted % 12 == 0) {
                             firstHop = false
                             MovementUtils.strafe(0.69f)
@@ -100,14 +100,14 @@ object VerusSpeeds : SpeedMode("VerusSpeeds") {
     }
 
     override fun onMove(event: MoveEvent) {
-        when (modeValue) {
+        when (verusSpeed) {
             "YPort" -> {
                 if (isMoving) {
                     mc.gameSettings.keyBindJump.pressed = false
                     if (mc.thePlayer.onGround) {
                         mc.thePlayer.jump()
                         mc.thePlayer.motionY = 0.0
-                        MovementUtils.strafe(YPortspeedValue)
+                        MovementUtils.strafe(verusYPortspeedValue)
                         event.y = 0.41999998688698
                     } else {
                         MovementUtils.strafe()
@@ -118,7 +118,7 @@ object VerusSpeeds : SpeedMode("VerusSpeeds") {
                if (isMoving) {
                    mc.gameSettings.keyBindJump.pressed = false
                    if (mc.thePlayer.onGround) {
-                       MovementUtils.strafe(YPort2speedValue)
+                       MovementUtils.strafe(verusYPort2speedValue)
                        event.y = 0.41999998688698
                    } else {
                        MovementUtils.strafe()

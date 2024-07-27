@@ -71,6 +71,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         OldMatrixHop,
         MatrixHop,
         MatrixSlowHop,
+        MatrixSpeeds,
 
         // Server specific
         TeleportCubeCraft,
@@ -104,6 +105,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
                 onEnable()
         }
     }
+    // Custom
     val customSpeed by FloatValue("CustomSpeed", 1.6f, 0.2f..2f) { mode == "Custom" }
     val customY by FloatValue("CustomY", 0f, 0f..4f) { mode == "Custom" }
     val customTimer by FloatValue("CustomTimer", 1f, 0.1f..2f) { mode == "Custom" }
@@ -111,10 +113,19 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
     val resetXZ by BoolValue("CustomResetXZ", false) { mode == "Custom" }
     val resetY by BoolValue("CustomResetY", false) { mode == "Custom" }
 
-    val modeValue by ListValue("Verus-Mode", arrayOf("OldHop", "Float", "Ground", "YPort", "YPort2"), "OldHop") { mode == "VerusSpeeds" }
-    val YPortspeedValue by FloatValue("YPort-Speed", 0.61f, 0.1f.. 1f)  { mode == "VerusSpeeds" }
-    val YPort2speedValue by FloatValue("YPort2-Speed", 0.61f, 0.1f.. 1f)  { mode == "VerusSpeeds" }
+    // Verus
+    val verusSpeed by ListValue("Verus-Mode", arrayOf("OldHop", "Float", "Ground", "YPort", "YPort2"), "OldHop") { mode == "VerusSpeeds" }
+    val verusYPortspeedValue by FloatValue("YPort-Speed", 0.61f, 0.1f.. 1f)  { mode == "VerusSpeeds" }
+    val verusYPort2speedValue by FloatValue("YPort2-Speed", 0.61f, 0.1f.. 1f)  { mode == "VerusSpeeds" }
 
+    // Matrix
+    val matrixSpeed by ListValue("Matrix-Mode", arrayOf("MatrixHop2", "Matrix6.6.1", "Matrix6.9.2"), "MatrixHop2") { mode == "MatrixSpeeds" }
+    val matrixGroundStrafe by BoolValue("GroundStrafe-Hop2", false) { mode == "MatrixSpeeds" }
+    val matrixVeloBoostValue by BoolValue("VelocBoost-6.6.1", true) { mode == "MatrixSpeeds" }
+    val matrixTimerBoostValue by BoolValue("TimerBoost-6.6.1", false) { mode == "MatrixSpeeds" }
+    val matrixUsePreMotion by BoolValue("UsePreMotion6.6.1", false) { mode == "MatrixSpeeds" }
+
+    // Server
     val cubecraftPortLength by FloatValue("CubeCraft-PortLength", 1f, 0.1f..2f) { mode == "TeleportCubeCraft" }
 
     @EventTarget
