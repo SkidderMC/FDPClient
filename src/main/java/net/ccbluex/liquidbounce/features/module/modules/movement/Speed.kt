@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.spec
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.verus.NewVerusLowHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.verus.VerusHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.verus.VerusLowHop
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.verus.VerusSpeeds
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanGround288
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanLowHop
@@ -59,6 +60,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         VerusHop,
         VerusLowHop,
         NewVerusLowHop,
+        VerusSpeeds,
 
         // Vulcan
         VulcanHop,
@@ -75,6 +77,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         HypixelHop,
 
         // Other
+        BlocksMCSpeed,
         Boost,
         Frame,
         MiJump,
@@ -107,6 +110,10 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
     val customStrafe by BoolValue("CustomStrafe", true) { mode == "Custom" }
     val resetXZ by BoolValue("CustomResetXZ", false) { mode == "Custom" }
     val resetY by BoolValue("CustomResetY", false) { mode == "Custom" }
+
+    val modeValue by ListValue("Verus-Mode", arrayOf("OldHop", "Float", "Ground", "YPort", "YPort2"), "OldHop") { mode == "VerusSpeeds" }
+    val YPortspeedValue by FloatValue("YPort-Speed", 0.61f, 0.1f.. 1f)  { mode == "VerusSpeeds" }
+    val YPort2speedValue by FloatValue("YPort2-Speed", 0.61f, 0.1f.. 1f)  { mode == "VerusSpeeds" }
 
     val cubecraftPortLength by FloatValue("CubeCraft-PortLength", 1f, 0.1f..2f) { mode == "TeleportCubeCraft" }
 

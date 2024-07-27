@@ -14,13 +14,17 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCrystal
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBoxESP
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatformESP
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawZavz
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.Block
-import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.effect.EntityLightningBolt
@@ -82,15 +86,15 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Keyboard.KEY_R, 
     }
 
     @EventTarget
-    fun onRender3D(event: Render3DEvent?) {
+    fun onRender3D(event: Render3DEvent) {
         val color: Color = if (rainbow) ColorUtils.rainbow() else Color(
             colorRedValue,
             colorGreenValue,
             colorBlueValue,
             alphaValue
         )
-        val renderManager: RenderManager = mc.renderManager
-        val entityLivingBase: EntityLivingBase = combat.target ?: return
+        val renderManager = mc.renderManager
+        val entityLivingBase = combat.target ?: return
         (entityLivingBase.lastTickPosX + (entityLivingBase.posX - entityLivingBase.lastTickPosX) * mc.timer.renderPartialTicks
                 - renderManager.renderPosX)
         (entityLivingBase.lastTickPosY + (entityLivingBase.posY - entityLivingBase.lastTickPosY) * mc.timer.renderPartialTicks
@@ -98,12 +102,12 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Keyboard.KEY_R, 
         (entityLivingBase.lastTickPosZ + (entityLivingBase.posZ - entityLivingBase.lastTickPosZ) * mc.timer.renderPartialTicks
                 - renderManager.renderPosZ)
         when (markValue.lowercase()) {
-            "box" -> RenderUtils.drawEntityBoxESP(
+            "box" -> drawEntityBoxESP(
                 entityLivingBase,
                 if ((hurt && entityLivingBase.hurtTime > 3)) Color(255, 50, 50, 75) else color
             )
 
-            "roundbox" -> RenderUtils.drawEntityBox(
+            "roundbox" -> drawEntityBox(
                 entityLivingBase,
                 if (hurt && entityLivingBase.hurtTime > 3)
                     Color(37, 126, 255, 70)
@@ -112,30 +116,29 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Keyboard.KEY_R, 
                 boxOutline
             )
 
-            "head" -> RenderUtils.drawPlatformESP(
+            "head" -> drawPlatformESP(
                 entityLivingBase,
                 if ((hurt && entityLivingBase.hurtTime > 3)) Color(255, 50, 50, 75) else color
             )
 
-            "mark" -> RenderUtils.drawPlatform(
+            "mark" -> drawPlatform(
                 entityLivingBase,
                 if ((hurt && entityLivingBase.hurtTime > 3)) Color(37, 126, 255, 70) else color
             )
 
-            "sims" -> RenderUtils.drawCrystal(
+            "sims" -> drawCrystal(
                 entityLivingBase,
                 if ((hurt && entityLivingBase.hurtTime <= 0)) Color(80, 255, 80, 200).rgb else Color(255, 0, 0, 200).rgb,
-                event!!
+                event
             )
 
-            "zavz" -> RenderUtils.drawZavz(
+            "zavz" -> drawZavz(
                 entityLivingBase,
-                event!!,
+                event,
                 dual = true, // or false based on your requirement
             )
         }
     }
-
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
@@ -172,7 +175,6 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Keyboard.KEY_R, 
                 thePlayer.onEnchantmentCritical(entity)
             }
         }
-
     }
 
     private fun doSound() {
