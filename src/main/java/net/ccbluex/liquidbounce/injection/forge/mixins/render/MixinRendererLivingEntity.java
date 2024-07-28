@@ -144,7 +144,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         disableCull();
         this.mainModel.swingProgress = this.getSwingProgress(entity, partialTicks);
         this.mainModel.isRiding = entity.isRiding();
-        this.mainModel.isChild = customModel.getBaby() && (customModel.getOnlyMe() && entity == mc.thePlayer || customModel.getOnlyOther() && entity != mc.thePlayer) && customModel.handleEvents() || entity.isChild();
+        this.mainModel.isChild = entity.isChild();
 
         try
         {

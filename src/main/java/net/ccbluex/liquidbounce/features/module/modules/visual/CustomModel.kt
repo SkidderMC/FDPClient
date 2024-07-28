@@ -11,11 +11,8 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.ListValue
 
 object CustomModel : Module("CustomModel", Category.VISUAL, hideModule = false) {
-    val mode by ListValue("Mode", arrayOf("Imposter", "Rabbit", "Freddy"), "Imposter")
+    val mode by ListValue("Mode", arrayOf("Imposter", "Rabbit", "Freddy", "None"), "Imposter")
 
-    val onlyMe by BoolValue("OnlyMe", true)
-    val onlyOther by BoolValue("OnlyOther", true)
-    val baby by BoolValue("Baby", true)
     val rotatePlayer by  BoolValue("RotatePlayer", false)
 
     override val tag: String
