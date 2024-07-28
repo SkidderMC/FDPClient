@@ -117,7 +117,6 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
                     when (event.eventState) {
                         EventState.PRE -> {
                             when {
-                                player.ticksExisted % 3 == 0 -> sendPacket(C08PacketPlayerBlockPlacement(BlockPos.ORIGIN, 255, heldItem, 0f, 0f, 0f))
                                 player.ticksExisted % 3 == 1 -> sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP))
                             }
                         }
