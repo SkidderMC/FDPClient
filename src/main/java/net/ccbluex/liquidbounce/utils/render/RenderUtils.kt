@@ -24,8 +24,11 @@ import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInOutQuad
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.GlStateManager.*
+import net.minecraft.client.renderer.OpenGlHelper
+import net.minecraft.client.renderer.RenderGlobal
+import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
@@ -48,7 +51,6 @@ import org.lwjgl.opengl.GL14
 import org.lwjgl.util.glu.Cylinder
 import java.awt.Color
 import java.awt.image.BufferedImage
-import java.util.*
 import kotlin.math.*
 
 
@@ -663,6 +665,32 @@ object RenderUtils : MinecraftInstance() {
     fun drawBorderedRect(x: Int, y: Int, x2: Int, y2: Int, width: Int, borderColor: Int, rectColor: Int) {
         drawRect(x, y, x2, y2, rectColor)
         drawBorder(x, y, x2, y2, width, borderColor)
+    }
+
+    @JvmStatic
+    fun drawOnBorderedRect(x: Float, y: Float, x2: Float, y2: Float, width: Float, color1: Int, color2: Int) {
+        drawRect(x, y, x2, y2, color2)
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
+
+        glColor(color1)
+        glLineWidth(width)
+        glBegin(1)
+        glVertex2d(x.toDouble(), y.toDouble())
+        glVertex2d(x.toDouble(), y2.toDouble())
+        glVertex2d(x2.toDouble(), y2.toDouble())
+        glVertex2d(x2.toDouble(), y.toDouble())
+        glVertex2d(x.toDouble(), y.toDouble())
+        glVertex2d(x2.toDouble(), y.toDouble())
+        glVertex2d(x.toDouble(), y2.toDouble())
+        glVertex2d(x2.toDouble(), y2.toDouble())
+        glEnd()
+
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
+        glDisable(GL_LINE_SMOOTH)
     }
 
     fun drawRoundedBorderRect(x: Float, y: Float, x2: Float, y2: Float, width: Float, color1: Int, color2: Int, radius: Float) {

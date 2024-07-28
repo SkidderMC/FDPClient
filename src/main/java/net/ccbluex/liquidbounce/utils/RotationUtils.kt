@@ -16,12 +16,11 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
 import net.minecraft.entity.Entity
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.*
-import java.security.SecureRandom
 import kotlin.math.*
 
 object RotationUtils : MinecraftInstance(), Listenable {
 
-    private var targetRotation: Rotation? = null
+    var targetRotation: Rotation? = null
 
     var currentRotation: Rotation? = null
     var serverRotation = Rotation(0f, 0f)
