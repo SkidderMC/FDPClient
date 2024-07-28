@@ -83,7 +83,7 @@ object FDPClient {
     val eventManager = EventManager
     val fileManager = FileManager
     val scriptManager = ScriptManager
-    var combatManager = CombatManager
+    private var combatManager = CombatManager
 
     // HUD & ClickGUI
     val hud = HUD
