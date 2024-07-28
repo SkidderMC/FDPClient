@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animation;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.visual.AntiBlind;
+import net.ccbluex.liquidbounce.features.module.modules.visual.Chams;
 import net.ccbluex.liquidbounce.utils.render.FakeItemRender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -18,6 +19,9 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.client.renderer.block.model.ItemCameraTransforms;
+import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderManager;
+import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
@@ -35,6 +39,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import static net.minecraft.client.renderer.GlStateManager.*;
+import static org.lwjgl.opengl.GL11.glColor4f;
 
 @Mixin(ItemRenderer.class)
 @SideOnly(Side.CLIENT)
@@ -80,9 +85,6 @@ public abstract class MixinItemRenderer {
     public abstract void renderItem(EntityLivingBase entityIn, ItemStack heldStack, ItemCameraTransforms.TransformType transform);
 
     @Shadow
-    protected abstract void renderPlayerArm(AbstractClientPlayer clientPlayer, float equipProgress, float swingProgress);
-
-    @Shadow
     private int equippedItemSlot = -1;
 
     /**
@@ -108,11 +110,7 @@ public abstract class MixinItemRenderer {
 
                 flag = true;
             }
-        } else if (this.itemToRender == null && itemstack == null) {
-            flag = false;
-        } else {
-            flag = true;
-        }
+        } else flag = this.itemToRender != null || itemstack != null;
 
         float f = 0.4F;
         float f1 = flag ? 0.0F : 1.0F;
@@ -126,7 +124,8 @@ public abstract class MixinItemRenderer {
     }
 
     /**
-     * @author CCBlueX
+     * @author Zywl
+     * @reason render item in first person
      */
     @Overwrite
     public void renderItemInFirstPerson(float partialTicks) {
@@ -207,7 +206,7 @@ public abstract class MixinItemRenderer {
 
             renderItem(abstractclientplayer, itemToRender, ItemCameraTransforms.TransformType.FIRST_PERSON);
         } else if (!abstractclientplayer.isInvisible()) {
-            renderPlayerArm(abstractclientplayer, f, f1);
+            this.renderPlayerArm(abstractclientplayer, f, f1);
         }
 
         popMatrix();
@@ -215,6 +214,46 @@ public abstract class MixinItemRenderer {
         RenderHelper.disableStandardItemLighting();
     }
 
+    /**
+     * @author opZywl
+     * @reason Hand Chams
+     */
+    @Overwrite
+    private void renderPlayerArm(AbstractClientPlayer clientPlayer, float equipProgress, float swingProgress) {
+        final RenderManager renderManager = mc.getRenderManager();
+        final Chams chams = Chams.INSTANCE;
+        float f = -0.3F * MathHelper.sin(MathHelper.sqrt_float(swingProgress) * 3.1415927F);
+        float f1 = 0.4F * MathHelper.sin(MathHelper.sqrt_float(swingProgress) * 3.1415927F * 2.0F);
+        float f2 = -0.4F * MathHelper.sin(swingProgress * 3.1415927F);
+        translate(f, f1, f2);
+        translate(0.64000005F, -0.6F, -0.71999997F);
+        translate(0.0F, swingProgress * -0.6F, 0.0F);
+        rotate(45.0F, 0.0F, 1.0F, 0.0F);
+        float f3 = MathHelper.sin(swingProgress * swingProgress * 3.1415927F);
+        float f4 = MathHelper.sin(MathHelper.sqrt_float(swingProgress) * 3.1415927F);
+        rotate(f4 * 70.0F, 0.0F, 1.0F, 0.0F);
+        rotate(f3 * -20.0F, 0.0F, 0.0F, 1.0F);
+        translate(-1.0F, 3.6F, 3.5F);
+        rotate(120.0F, 0.0F, 0.0F, 1.0F);
+        rotate(200.0F, 1.0F, 0.0F, 0.0F);
+        rotate(-135.0F, 0.0F, 1.0F, 0.0F);
+        scale(1.0F, 1.0F, 1.0F);
+        translate(5.6F, 0.0F, 0.0F);
+        Render<AbstractClientPlayer> render = renderManager.getEntityRenderObject(this.mc.thePlayer);
+        disableCull();
+        RenderPlayer renderplayer = (RenderPlayer)render;
+        if (chams.shouldRenderHand()) {
+            chams.preHandRender();
+        } else {
+            this.mc.getTextureManager().bindTexture(clientPlayer.getLocationSkin());
+            glColor4f(1f, 1f, 1f ,1f);
+        }
+        renderplayer.renderRightArm(this.mc.thePlayer);
+        if (chams.shouldRenderHand()) {
+            chams.postHandRender();
+        }
+        enableCull();
+    }
 
     @Redirect(method = "renderFireInFirstPerson", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/GlStateManager;color(FFFF)V"))
     private void renderFireInFirstPerson(float p_color_0_, float p_color_1_, float p_color_2_, float p_color_3_) {

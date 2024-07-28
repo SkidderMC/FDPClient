@@ -156,4 +156,25 @@ object ColorUtils {
     fun clearColor() {
         GlStateManager.color(1f, 1f, 1f, 1f)
     }
+
+    fun reAlpha(color: Int, alpha: Float): Color {
+        val c = Color(color)
+        val r = 0.003921569f * c.red.toFloat()
+        val g = 0.003921569f * c.green.toFloat()
+        val b = 0.003921569f * c.blue.toFloat()
+        return (Color(r, g, b, alpha))
+    }
+
+    @JvmStatic
+    fun inAlpha(color: Color, alpha: Int): Color = Color(color.red, color.green, color.blue, alpha.coerceIn(0, 255))
+
+    @JvmStatic
+    fun getOppositeColor(color: Color): Color = Color(255 - color.red, 255 - color.green, 255 - color.blue, color.alpha)
+
+    fun rainbowEffect(offset: Long, saturation: Float, fade: Float): Color {
+        val hue = (System.nanoTime() + offset).toFloat() / 1.0E10f % 1.0f
+        val color = Integer.toHexString(Color.HSBtoRGB(hue, saturation, 1.0f)).toLong(16)
+        val c = Color(color.toInt())
+        return Color(c.red / 255.0f * fade, c.green / 255.0f * fade, c.blue / 255.0f * fade, c.alpha / 255.0f)
+    }
 }
