@@ -26,6 +26,9 @@ import java.awt.Color
 object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDetecting = false, hideModule = true) {
     val blackHotbar by BoolValue("BlackHotbar", true)
 
+    // InventoryPlus
+    val inventoryOnHotbar = BoolValue("InventoryOnHotbar", true)
+
     // CROSSHAIR
     val csgoCrosshairValue by BoolValue("CSGO-Crosshair", false)
 
