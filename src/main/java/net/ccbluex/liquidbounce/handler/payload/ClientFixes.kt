@@ -6,10 +6,12 @@
 package net.ccbluex.liquidbounce.handler.payload
 
 import io.netty.buffer.Unpooled
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.client.BrandSpoofer
+import net.ccbluex.liquidbounce.features.module.modules.client.BrandSpoofer.possibleBrands
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.network.PacketBuffer
@@ -50,8 +52,10 @@ object ClientFixes : MinecraftInstance(), Listenable {
                             "Fabric" -> "fabric"
                             "PvPLounge" -> "PLC18"
                             "Geyser" -> "geyser"
-                            "Minebuilders" -> "minebuilders9"
-                            "Feather" -> "Feather Forge"
+                            "Minebuilders" -> "Minebuilders"
+                            "Feather" -> "feather"
+                            "FML" -> "fml,forge"
+                            "Log4j" -> "LOLG4J"
                             "Custom" -> BrandSpoofer.customValue.get()
                             else -> {
                                 // do nothing
@@ -64,6 +68,11 @@ object ClientFixes : MinecraftInstance(), Listenable {
         }
     }.onFailure {
         LOGGER.error("Failed to handle packet on client fixes.", it)
+    }
+
+    @JvmStatic
+    fun getClientModName(): String {
+        return possibleBrands.get()
     }
 
     override fun handleEvents() = true
