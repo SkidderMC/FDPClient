@@ -6,11 +6,10 @@
 package net.ccbluex.liquidbounce.handler.payload
 
 import io.netty.buffer.Unpooled
-import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.features.module.modules.client.BrandSpoofer
+import net.ccbluex.liquidbounce.features.module.modules.client.BrandSpoofer.customValue
 import net.ccbluex.liquidbounce.features.module.modules.client.BrandSpoofer.possibleBrands
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
@@ -44,7 +43,7 @@ object ClientFixes : MinecraftInstance(), Listenable {
                     event.cancelEvent()
                 } else if (packet.channelName == "MC|Brand") {
                     packet.data = PacketBuffer(Unpooled.buffer()).writeString(
-                        when (BrandSpoofer.possibleBrands.get()) {
+                        when (possibleBrands.get()) {
                             "Vanilla" -> "vanilla"
                             "LunarClient" -> "lunarclient:v2.15.6-2422"
                             "OptiFine" -> "optifine"
@@ -52,11 +51,11 @@ object ClientFixes : MinecraftInstance(), Listenable {
                             "Fabric" -> "fabric"
                             "PvPLounge" -> "PLC18"
                             "Geyser" -> "geyser"
-                            "Minebuilders" -> "Minebuilders"
+                            "Minebuilders" -> "minebuilders9"
                             "Feather" -> "feather"
                             "FML" -> "fml,forge"
                             "Log4j" -> "LOLG4J"
-                            "Custom" -> BrandSpoofer.customValue.get()
+                            "Custom" -> customValue.get()
                             else -> {
                                 // do nothing
                                 return@runCatching

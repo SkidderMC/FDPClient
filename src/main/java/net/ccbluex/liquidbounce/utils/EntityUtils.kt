@@ -6,11 +6,11 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.animalValue
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.deadValue
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.invisibleValue
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.mobValue
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.playerValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.animalValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.deadValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.invisibleValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.mobValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.playerValue
 import net.ccbluex.liquidbounce.features.module.modules.client.Teams
 import net.ccbluex.liquidbounce.handler.combat.CombatManager.isFocusEntity
 import net.ccbluex.liquidbounce.utils.extensions.*

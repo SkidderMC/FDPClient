@@ -6,10 +6,10 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.animalValue
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.invisibleValue
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.mobValue
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.playerValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.animalValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.invisibleValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.mobValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.playerValue
 
 object TargetCommand : Command("target") {
     /**

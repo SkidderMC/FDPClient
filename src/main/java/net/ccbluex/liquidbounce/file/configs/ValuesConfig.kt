@@ -13,11 +13,11 @@ import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.handler.cape.CapeService
 import net.ccbluex.liquidbounce.features.module.modules.client.BrandSpoofer
 import net.ccbluex.liquidbounce.features.module.modules.client.IRCModule.jwtToken
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.animalValue
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.deadValue
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.invisibleValue
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.mobValue
-import net.ccbluex.liquidbounce.features.module.modules.client.Target.playerValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.animalValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.deadValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.invisibleValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.mobValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.playerValue
 import net.ccbluex.liquidbounce.handler.other.AutoReconnect.delay
 import net.ccbluex.liquidbounce.handler.payload.ClientFixes.blockFML
 import net.ccbluex.liquidbounce.handler.payload.ClientFixes.blockPayloadPackets
