@@ -9,6 +9,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
@@ -19,6 +21,12 @@ import net.minecraft.util.Vec3
 
 @ElementInfo(name = "RearView")
 class RearView : Element() {
+
+    private var Fov by IntegerValue("Fov", 110, 30..170)
+    private var framebufferWidth by IntegerValue("Framebuffer Width", 800, 800..1920)
+    private var framebufferHeight by IntegerValue("Framebuffer Height", 600, 600..1080)
+    private var thirdPersonView by BoolValue("Third Person View", false)
+
     var pos: Vec3
 
     var yaw: Float
@@ -33,16 +41,13 @@ class RearView : Element() {
 
     private var firstUpdate = false
 
-    private val frameBuffer: Framebuffer
-
-    private val WIDTH_RESOLUTION = 800
-    private val HEIGHT_RESOLUTION = 600
+    private lateinit var frameBuffer: Framebuffer
 
     init {
         this.pos = Vec3(0.0, 0.0, 0.0)
         this.yaw = 0f
         this.pitch = 0f
-        this.frameBuffer = Framebuffer(WIDTH_RESOLUTION, HEIGHT_RESOLUTION, true)
+        updateFramebuffer()
     }
 
     override fun updateElement() {
@@ -62,17 +67,13 @@ class RearView : Element() {
             -1
         ) //background
         if (this.isValid) {
-            this.pos =
-                mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks).subtract(0.0, 1.0, 0.0)
+            this.pos = mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks).subtract(0.0, 1.0, 0.0)
             this.yaw = mc.thePlayer.rotationYaw - 180.0f
             this.pitch = 0.0f
             this.render(
                 sr.scaledWidth - xOffset - 200,
-
                 sr.scaledHeight - yOffset - 120,
-
                 sr.scaledWidth - xOffset,
-
                 sr.scaledHeight - yOffset
             )
         }
@@ -112,6 +113,13 @@ class RearView : Element() {
         }
     }
 
+    private fun updateFramebuffer() {
+        if (::frameBuffer.isInitialized) {
+            frameBuffer.deleteFramebuffer()
+        }
+        frameBuffer = Framebuffer(framebufferWidth, framebufferHeight, true)
+    }
+
     private fun updateFbo() {
         if (!this.firstUpdate) {
             mc.renderGlobal.loadRenderers()
@@ -136,7 +144,7 @@ class RearView : Element() {
 
             val hideGUI = mc.gameSettings.hideGUI
             val clouds = mc.gameSettings.clouds
-            val thirdPersonView = mc.gameSettings.thirdPersonView
+            val thirdPersonViewSetting = mc.gameSettings.thirdPersonView
             val gamma = mc.gameSettings.gammaSetting
             val ambientOcclusion = mc.gameSettings.ambientOcclusion
             val viewBobbing = mc.gameSettings.viewBobbing
@@ -167,15 +175,15 @@ class RearView : Element() {
 
             mc.gameSettings.hideGUI = true
             mc.gameSettings.clouds = 0
-            mc.gameSettings.thirdPersonView = 0
+            mc.gameSettings.thirdPersonView = if (thirdPersonView) 1 else 0
             mc.gameSettings.ambientOcclusion = 0
             mc.gameSettings.viewBobbing = false
             mc.gameSettings.particleSetting = 0
-            mc.displayWidth = WIDTH_RESOLUTION
-            mc.displayHeight = HEIGHT_RESOLUTION
+            mc.displayWidth = framebufferWidth
+            mc.displayHeight = framebufferHeight
 
             mc.gameSettings.limitFramerate = 10
-            mc.gameSettings.fovSetting = 110f
+            mc.gameSettings.fovSetting = Fov.toFloat()  // Use the dynamically set FOV value
 
             this.isRecording = true
             frameBuffer.bindFramebuffer(true)
@@ -206,7 +214,7 @@ class RearView : Element() {
 
             mc.gameSettings.hideGUI = hideGUI
             mc.gameSettings.clouds = clouds
-            mc.gameSettings.thirdPersonView = thirdPersonView
+            mc.gameSettings.thirdPersonView = thirdPersonViewSetting
             mc.gameSettings.gammaSetting = gamma
             mc.gameSettings.ambientOcclusion = ambientOcclusion
             mc.gameSettings.viewBobbing = viewBobbing
@@ -219,5 +227,27 @@ class RearView : Element() {
             this.isValid = true
             this.isRendering = false
         }
+    }
+
+    fun changeFov(fov: Int) {
+        if (fov in 30..170) {
+            Fov = fov
+        } else {
+            throw IllegalArgumentException("FOV must be between 30 and 170")
+        }
+    }
+
+    fun changeFramebufferResolution(width: Int, height: Int) {
+        if (width in 100..1920 && height in 100..1080) {
+            framebufferWidth = width
+            framebufferHeight = height
+            updateFramebuffer()
+        } else {
+            throw IllegalArgumentException("Resolution must be within valid range")
+        }
+    }
+
+    fun toggleThirdPersonView(enabled: Boolean) {
+        thirdPersonView = enabled
     }
 }
