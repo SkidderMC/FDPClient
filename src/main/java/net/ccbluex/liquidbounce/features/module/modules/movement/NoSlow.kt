@@ -30,17 +30,18 @@ import net.minecraft.network.status.client.C01PacketPing
 import net.minecraft.network.status.server.S01PacketPong
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import java.util.Arrays
 
 object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideModule = false) {
 
     private val swordMode by ListValue("SwordMode", arrayOf("None", "NCP", "UpdatedNCP", "AAC5", "SwitchItem", "InvalidC08", "Blink"), "None")
 
-    private val reblinkTicks by IntegerValue("ReblinkTicks", 10,1..20) { swordMode == "Blink" }
+    private val reblinkTicks by IntegerValue("ReblinkTicks", 10, 1..20) { swordMode == "Blink" }
 
     private val blockForwardMultiplier by FloatValue("BlockForwardMultiplier", 1f, 0.2F..1f)
     private val blockStrafeMultiplier by FloatValue("BlockStrafeMultiplier", 1f, 0.2F..1f)
 
-    private val consumePacket by ListValue("ConsumeMode", arrayOf("None", "UpdatedNCP", "AAC5", "SwitchItem", "InvalidC08"), "None")
+    private val consumePacket by ListValue("ConsumeMode", arrayOf("None", "UpdatedNCP", "AAC5", "SwitchItem", "InvalidC08", "Intave"), "None")
 
     // TODO: Add individual option for consume (Food, Potion, Milk)
     private val consumeForwardMultiplier by FloatValue("ConsumeForwardMultiplier", 1f, 0.2F..1f)
@@ -110,7 +111,22 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
                         }
                     }
                 }
-                
+
+                "intave" -> {
+                    // Food Only
+                    when (event.eventState) {
+                        EventState.PRE -> {
+                            when {
+                                player.ticksExisted % 3 == 0 -> sendPacket(C08PacketPlayerBlockPlacement(BlockPos.ORIGIN, 255, heldItem, 0f, 0f, 0f))
+                                player.ticksExisted % 3 == 1 -> sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP))
+                            }
+                        }
+                        EventState.POST -> {
+                            sendPacket(C08PacketPlayerBlockPlacement(BlockPos.ORIGIN, 255, heldItem, 0f, 0f, 0f))
+                        }
+                    }
+                }
+
                 else -> return
             }
         }
@@ -119,13 +135,13 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
             when (bowPacket.lowercase()) {
                 "aac5" ->
                     sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, heldItem, 0f, 0f, 0f))
-                
+
                 "switchitem" ->
                     if (event.eventState == EventState.PRE) {
                         serverSlot = (serverSlot + 1) % 9
                         serverSlot = currentItem
                     }
-                
+
                 "updatedncp" ->
                     if (event.eventState == EventState.PRE && shouldSwap) {
                         serverSlot = (serverSlot + 1) % 9
@@ -268,6 +284,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
             }
         }
     }
+    
     @EventTarget
     fun onSlowDown(event: SlowDownEvent) {
         val heldItem = mc.thePlayer.heldItem?.item
