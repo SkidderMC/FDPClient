@@ -58,7 +58,7 @@ class Notifications(
         val green2Value by IntegerValue("Green2", 255, 0.. 255)
         val blue2Value by IntegerValue("Blue2", 255, 0.. 255)
 
-        val alphaValue by IntegerValue("Alpha", 255, 0.. 255)
+        val alphaValue by IntegerValue("Alpha", 0, 0.. 255)
     }
 
     /**
