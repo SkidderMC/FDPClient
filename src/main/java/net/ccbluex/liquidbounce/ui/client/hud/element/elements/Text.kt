@@ -132,7 +132,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
             alpha = value.alpha
         }
 
-    private fun getReplacement(str: String): Any? {
+    fun getReplacement(str: String): Any? {
         val thePlayer = mc.thePlayer
 
         if (thePlayer != null) {

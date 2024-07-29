@@ -15,6 +15,8 @@ import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Tower
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Text
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.ClientUtils.runTimeTicks
 import net.ccbluex.liquidbounce.utils.CooldownHelper.getAttackCooldownProgress
@@ -45,6 +47,7 @@ import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
@@ -69,6 +72,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
+import java.awt.Color
 import kotlin.math.max
 
 object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule = false) {
@@ -318,7 +322,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
     )
 
     // Visuals
-    private val fakeSharp by BoolValue("FakeSharp", true, subjective = true)
+    private val displayDebug = BoolValue("Debug", false)
 
     /**
      * MODULE
@@ -348,6 +352,9 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
 
     // Blink AutoBlock
     private var blinked = false
+
+    // text
+    private val textElement = Text()
 
     /**
      * Disable kill aura module
@@ -520,6 +527,38 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
                 clicks++
             attackTimer.reset()
             attackDelay = randomClickDelay(minCPS, maxCPS)
+        }
+    }
+
+    /**
+     * Render event
+     */
+    @EventTarget
+    fun onRender2D(event: Render2DEvent) {
+            if (displayDebug.get()) {
+                val sr = ScaledResolution(mc)
+                val blockingStatus = blockStatus
+                val maxRange = this.maxRange
+
+                val reach = if (target != null) {
+                    mc.thePlayer.getDistanceToEntityBox(target!!)
+                } else {
+                    0.0
+                }
+
+                val formattedReach = String.format("%.2f", reach)
+
+                val rangeString = "Range: $maxRange"
+                val reachString = "Reach: $formattedReach"
+
+                val cpsString = textElement.getReplacement("cps")
+                val status = "Blocking: ${if (blockingStatus) "Yes" else "No"}, CPS: $cpsString, $reachString, $rangeString"
+                Fonts.minecraftFont.drawStringWithShadow(
+                    status,
+                    sr.scaledWidth / 2f - Fonts.minecraftFont.getStringWidth(status) / 2f,
+                    sr.scaledHeight / 2f - 60f,
+                    Color.orange.rgb
+                )
         }
     }
 
