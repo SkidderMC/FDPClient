@@ -62,14 +62,11 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
 
     private val BlinkTimer = TickTimer()
 
-    private var PacketSent = false
-
     override fun onDisable() {
         shouldSwap = false
         shouldBlink = true
         BlinkTimer.reset()
         BlinkUtils.unblink()
-        PacketSent = false
     }
 
     @EventTarget
@@ -116,10 +113,9 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
                 }
 
                 "intave" -> {
-                    // Food Only
-                    if (event.eventState == EventState.PRE && !PacketSent) {
+                    if (event.eventState == EventState.PRE && !shouldSwap) {
                         sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP))
-                        PacketSent = true
+                        shouldSwap = true
                     }
                 }
 
@@ -274,7 +270,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
             is C08PacketPlayerBlockPlacement -> {
                 if (packet.stack?.item != null && player.heldItem?.item != null && packet.stack.item == mc.thePlayer.heldItem?.item) {
                     if ((consumePacket == "UpdatedNCP" && (packet.stack.item is ItemFood || packet.stack.item is ItemPotion || packet.stack.item is ItemBucketMilk)) || (bowPacket == "UpdatedNCP" && packet.stack.item is ItemBow)) {
-                        shouldSwap = true;
+                        shouldSwap = true
                     }
                 }
             }
