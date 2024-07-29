@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.utils
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.handler.api.ClientApi
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.modules.client.Target
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
@@ -84,11 +84,11 @@ object SettingsUtils {
                     }
                 }
 
-                "targetPlayer", "targetPlayers" -> setTargetSetting(Target::playerValue, args)
-                "targetMobs" -> setTargetSetting(Target::mobValue, args)
-                "targetAnimals" -> setTargetSetting(Target::animalValue, args)
-                "targetInvisible" -> setTargetSetting(Target::invisibleValue, args)
-                "targetDead" -> setTargetSetting(Target::deadValue, args)
+                "targetPlayer", "targetPlayers" -> setTargetSetting(TargetModule::playerValue, args)
+                "targetMobs" -> setTargetSetting(TargetModule::mobValue, args)
+                "targetAnimals" -> setTargetSetting(TargetModule::animalValue, args)
+                "targetInvisible" -> setTargetSetting(TargetModule::invisibleValue, args)
+                "targetDead" -> setTargetSetting(TargetModule::deadValue, args)
 
                 else -> {
                     if (args.size < 3) {

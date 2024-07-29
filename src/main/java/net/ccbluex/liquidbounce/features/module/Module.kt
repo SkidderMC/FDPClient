@@ -25,7 +25,7 @@ import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 
-open class Module constructor(
+open class Module(
 
     val name: String,
     val category: Category,

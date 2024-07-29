@@ -24,18 +24,16 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.Objects;
+import java.awt.Color;
 
 import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
+import static net.ccbluex.liquidbounce.utils.render.RenderUtils.drawOnBorderedRect;
 import static net.minecraft.client.renderer.GlStateManager.*;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.glEnable;
@@ -133,6 +131,28 @@ public abstract class MixinGuiInGame extends Gui {
     protected void renderTooltip(ScaledResolution sr, float partialTicks) {
         final HUDModule hud = HUDModule.INSTANCE;
 
+        if (hud.getInventoryOnHotbar().get()){
+            GlStateManager.pushMatrix();
+            int scaledWidth = sr.getScaledWidth();
+            int scaledHeight = sr.getScaledHeight();
+            GlStateManager.translate((float) scaledWidth / 2 - 90, (float) scaledHeight - 25, 0);
+            drawOnBorderedRect(0, 1, 180, -58, 1, new Color(0,0,0,255).getRGB(), new Color(0,0,0,130).getRGB());
+            RenderHelper.enableGUIStandardItemLighting();
+
+            int initialSlot = 9;
+            for (int row = 0; row < 3; row++) {
+                for (int column = 0; column < 9; column++) {
+                    int slot = initialSlot + row * 9 + column;
+                    int x = 1 + column * 20;
+                    int y = -16 - row * 20;
+                    renderItem(slot, x, y, mc.thePlayer);
+                }
+            }
+
+            RenderHelper.disableStandardItemLighting();
+            GlStateManager.popMatrix();
+        }
+
         if (mc.getRenderViewEntity() instanceof EntityPlayer) {
             EntityPlayer entityPlayer = (EntityPlayer) mc.getRenderViewEntity();
             int slot = entityPlayer.inventory.currentItem;
@@ -212,5 +232,13 @@ public abstract class MixinGuiInGame extends Gui {
 
         if (antiBlind.handleEvents() && antiBlind.getBossHealth())
             callbackInfo.cancel();
+    }
+
+    private void renderItem(int i, int x, int y , EntityPlayer player) {
+        ItemStack itemstack = player.inventory.mainInventory[i];
+        if (itemstack != null) {
+            mc.getRenderItem().renderItemAndEffectIntoGUI(itemstack, x, y);
+            mc.getRenderItem().renderItemOverlays(mc.fontRendererObj, itemstack, x-1, y-1);
+        }
     }
 }

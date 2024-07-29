@@ -40,7 +40,6 @@ class Armor(x: Double = -8.0, y: Double = 57.0, scale: Float = 1F,
     private val percentageY by IntegerValue("PositionY", -19, -50..50)
     private val percentageX by IntegerValue("PositionX", 21, -50..50)
     var borderThickness by IntegerValue("Border", 0, 0..255)
-    var borderRadius by FloatValue("Radius", 4.5f, 0.1f..8.0f)
     private val red by IntegerValue("Red", 255, 0..255)
     private val green by IntegerValue("Green", 255, 0..255)
     private val blue by IntegerValue("Blue", 255, 0..255)

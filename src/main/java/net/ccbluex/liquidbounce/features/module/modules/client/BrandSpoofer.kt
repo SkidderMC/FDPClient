@@ -31,6 +31,7 @@ object BrandSpoofer : Module("BrandSpoofer", Category.CLIENT, hideModule = false
             "CheatBreaker",
             "PvPLounge",
             "Minebuilders",
+            "FML",
             "Geyser",
             "Log4j",
             "Custom",
