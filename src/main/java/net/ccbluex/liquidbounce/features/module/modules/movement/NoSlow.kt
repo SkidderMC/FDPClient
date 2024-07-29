@@ -62,11 +62,14 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
 
     private val BlinkTimer = TickTimer()
 
+    private var PacketSent = false
+
     override fun onDisable() {
         shouldSwap = false
         shouldBlink = true
         BlinkTimer.reset()
         BlinkUtils.unblink()
+        PacketSent = false
     }
 
     @EventTarget
@@ -114,10 +117,11 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
 
                 "intave" -> {
                     // Food Only
-                    if (event.eventState == EventState.PRE) {
+                    if (event.eventState == EventState.PRE && !PacketSent) {
                         sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP))
-                        }
+                        PacketSent = true
                     }
+                }
 
                 else -> return
             }
