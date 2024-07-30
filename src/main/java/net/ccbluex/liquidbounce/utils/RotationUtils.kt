@@ -209,8 +209,8 @@ object RotationUtils : MinecraftInstance(), Listenable {
 
         if (random) {
             currRotation += Rotation(
-                if (Math.random() > 0.25) nextFloat(-10f, 10f) else 0f,
-                if (Math.random() > 0.25) nextFloat(-10f, 10f) else 0f
+                if (Math.random() > 0.25) nextFloat(-5f, 5f) else 0f,
+                if (Math.random() > 0.25) nextFloat(-5f, 5f) else 0f
             )
         }
 
@@ -446,7 +446,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
 
             if (Rotations.debugRotations) {
                 ClientUtils.displayChatMessage(if (shouldStartSlow) {
-                    "STARTED OFF SLOW, TICKS SINCE LAST START: ${ticks}"
+                    "STARTED OFF SLOW, TICKS SINCE LAST START: $ticks"
                 } else "STARTED SLOW ON DIRECTION CHANGE, OLD DIFF: ${oldDiff}, SUPPOSED DIFF: $newDiff"
                 )
             }
