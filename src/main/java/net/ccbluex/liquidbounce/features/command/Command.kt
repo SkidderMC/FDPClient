@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.command
 
 import net.ccbluex.liquidbounce.FDPClient.commandManager
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraft.client.audio.PositionedSoundRecord
@@ -26,6 +27,12 @@ abstract class Command(val command: String, vararg val alias: String) : Minecraf
      * @author NurMarvin
      */
     open fun tabComplete(args: Array<String>) = emptyList<String>()
+
+
+    /**
+     * Print [msg] to chat as alert
+     */
+    protected fun alert(msg: String) = ClientUtils.displayAlert(msg)
 
     /**
      * Print [msg] to chat

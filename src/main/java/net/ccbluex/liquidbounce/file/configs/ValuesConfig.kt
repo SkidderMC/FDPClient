@@ -11,7 +11,7 @@ import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.FDPClient.commandManager
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.handler.cape.CapeService
-import net.ccbluex.liquidbounce.features.module.modules.client.BrandSpoofer
+import net.ccbluex.liquidbounce.features.module.modules.client.BrandSpoofer.possibleBrands
 import net.ccbluex.liquidbounce.features.module.modules.client.IRCModule.jwtToken
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.animalValue
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.deadValue
@@ -67,7 +67,7 @@ class ValuesConfig(file: File) : FileConfig(file) {
                     if (jsonValue.has("AntiForgeProxy")) blockProxyPacket = jsonValue["AntiForgeProxy"].asBoolean
                     if (jsonValue.has("AntiForgePayloads")) blockPayloadPackets = jsonValue["AntiForgePayloads"].asBoolean
                     if (jsonValue.has("FixResourcePackExploit")) blockResourcePackExploit = jsonValue["FixResourcePackExploit"].asBoolean
-                    if (jsonValue.has("ClientBrand")) BrandSpoofer.possibleBrands.set(jsonValue["ClientBrand"].asString)
+                    if (jsonValue.has("ClientBrand")) possibleBrands.set(jsonValue["ClientBrand"].asString)
                     if (jsonValue.has("AutoReconnectDelay")) delay = jsonValue["AutoReconnectDelay"].asInt
                 }
                 key.equals("liquidchat", true) -> {
@@ -137,7 +137,7 @@ class ValuesConfig(file: File) : FileConfig(file) {
             addProperty("AntiForgeProxy", blockProxyPacket)
             addProperty("AntiForgePayloads", blockPayloadPackets)
             addProperty("FixResourcePackExploit", blockResourcePackExploit)
-            addProperty("ClientBrand", BrandSpoofer.possibleBrands.get())
+            addProperty("ClientBrand", possibleBrands.get())
             addProperty("AutoReconnectDelay", delay)
         }
         jsonObject.add("features", jsonFeatures)

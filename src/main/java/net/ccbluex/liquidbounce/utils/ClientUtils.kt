@@ -58,6 +58,10 @@ object ClientUtils : MinecraftInstance() {
         )
     }
 
+    fun displayAlert(message: String) {
+        displayChatMessage("§7[§b§l$CLIENT_NAME§7]§r $message")
+    }
+
     fun displayChatMessage(message: String) {
         if (mc.thePlayer == null) {
             LOGGER.info("(MCChat) $message")

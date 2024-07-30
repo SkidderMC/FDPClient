@@ -40,7 +40,6 @@ import java.awt.Color
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 
-
 object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
     private val nextBacktrackDelay by IntegerValue("NextBacktrackDelay", 0, 0..2000) { mode == "Modern" }
@@ -81,11 +80,27 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
     private val smart by BoolValue("Smart", true) { mode == "Modern" }
 
     // ESP
-    val espMode by ListValue("ESP-Mode", arrayOf("None", "Box", "Player"), "Box", subjective = true) { mode == "Modern" }
+    val espMode by ListValue("ESP-Mode",
+        arrayOf("None", "Box", "Player"),
+        "Box",
+        subjective = true
+    ) { mode == "Modern" }
     private val rainbow by BoolValue("Rainbow", true, subjective = true) { mode == "Modern" && espMode == "Box" }
-    private val red by IntegerValue("R", 0, 0..255, subjective = true) { !rainbow && mode == "Modern" && espMode == "Box" }
-    private val green by IntegerValue("G", 255, 0..255, subjective = true) { !rainbow && mode == "Modern" && espMode == "Box" }
-    private val blue by IntegerValue("B", 0, 0..255, subjective = true) { !rainbow && mode == "Modern" && espMode == "Box" }
+    private val red by IntegerValue("R",
+        0,
+        0..255,
+        subjective = true
+    ) { !rainbow && mode == "Modern" && espMode == "Box" }
+    private val green by IntegerValue("G",
+        255,
+        0..255,
+        subjective = true
+    ) { !rainbow && mode == "Modern" && espMode == "Box" }
+    private val blue by IntegerValue("B",
+        0,
+        0..255,
+        subjective = true
+    ) { !rainbow && mode == "Modern" && espMode == "Box" }
 
     private val packetQueue = LinkedHashMap<Packet<*>, Long>()
     private val positions = mutableListOf<Pair<Vec3, Long>>()
@@ -168,8 +183,14 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
             "modern" -> {
                 // Prevent cancelling packets when not needed
-                if (packetQueue.isEmpty() || !shouldBacktrack())
+                if (packetQueue.isEmpty() && !shouldBacktrack())
                     return
+
+                // Flush if packetQueue is not empty when not needed
+                if (packetQueue.isNotEmpty() && !shouldBacktrack()) {
+                    clearPackets()
+                    return
+                }
 
                 when (packet) {
                     // Ignore server related packets
@@ -460,17 +481,17 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
     }
 
     private fun clearPackets(handlePackets: Boolean = true) {
-        if (!packetQueue.isEmpty()) {
+        if (packetQueue.isNotEmpty()) {
             delayForNextBacktrack = System.currentTimeMillis() + nextBacktrackDelay
         }
-        
+
         synchronized(packetQueue) {
             if (handlePackets)
                 PacketUtils.queuedPackets.addAll(packetQueue.keys)
 
             packetQueue.clear()
         }
-        
+
         positions.clear()
         shouldRender = false
         ignoreWholeTick = true
@@ -608,8 +629,8 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
     fun shouldBacktrack() =
         System.currentTimeMillis() >= delayForNextBacktrack && target?.let {
-            !it.isDead && isEnemy(it) && (mc.thePlayer?.ticksExisted ?: 0) > 20 && !ignoreWholeTick
-        } ?: false 
+            isEnemy(it) && (mc.thePlayer?.ticksExisted ?: 0) > 20 && !ignoreWholeTick
+        } ?: false
 
     private fun reset() {
         target = null

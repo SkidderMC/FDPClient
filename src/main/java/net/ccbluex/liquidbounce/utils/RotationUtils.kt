@@ -185,7 +185,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
      * @return center
      */
     fun searchCenter(
-        bb: AxisAlignedBB, outborder: Boolean, random: Boolean, useSpots: Boolean, predict: Boolean,
+        bb: AxisAlignedBB, outborder: Boolean, random: Boolean, predict: Boolean,
         lookRange: Float, attackRange: Float, throughWallsRange: Float = 0f,
         bodyPoints: List<String> = listOf("Head", "Feet"),
     ): Rotation? {
@@ -202,25 +202,17 @@ object RotationUtils : MinecraftInstance(), Listenable {
 
         val eyes = mc.thePlayer.eyes
 
-        val isInsideEnemy = bb.isVecInside(eyes)
-
         var currRotation = currentRotation ?: mc.thePlayer.rotation
 
         var attackRotation: Pair<Rotation, Float>? = null
         var lookRotation: Pair<Rotation, Float>? = null
 
-        if (random && !useSpots) {
+        if (random) {
             currRotation += Rotation(
                 if (Math.random() > 0.25) nextFloat(-10f, 10f) else 0f,
                 if (Math.random() > 0.25) nextFloat(-10f, 10f) else 0f
             )
         }
-
-        val oldYawDiff = getAngleDifference(serverRotation.yaw, lastServerRotation.yaw)
-        val yawSign = if (oldYawDiff == 0f) 1f else oldYawDiff.sign
-        val chanceToRandomize = Math.random() > 0.75
-        val threshold = nextFloat(10f, 25f)
-        val signToFollow = if (Math.random() > 0.5) yawSign else -yawSign
 
         for (x in 0.0..1.0) {
             for (y in min..max) {
@@ -228,10 +220,6 @@ object RotationUtils : MinecraftInstance(), Listenable {
                     val vec = bb.lerpWith(x, y, z)
 
                     val rotation = toRotation(vec, predict).fixedSensitivity()
-                    val yawAngleDiff = getAngleDifference(rotation.yaw, currRotation.yaw)
-
-                    if (!(!random || !useSpots || chanceToRandomize && getRotationDifference(rotation, currRotation) > threshold && yawAngleDiff.sign == signToFollow))
-                        continue
 
                     // Calculate actual hit vec after applying fixed sensitivity to rotation
                     val gcdVec = bb.calculateIntercept(eyes,
@@ -475,7 +463,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
     }
 
     private fun computeFactor(rotationDifference: Float, turnSpeed: Float): Float {
-        return (rotationDifference / 180 * turnSpeed).coerceIn(0f, 180f)
+        return (rotationDifference / nextFloat(120f, 150f) * turnSpeed).coerceIn(0f, 180f)
     }
 
     /**

@@ -262,10 +262,12 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
 
     private val simulateShortStop by BoolValue("SimulateShortStop", false) { !noRotation }
     private val randomizeRotations by BoolValue("RandomizeRotations", true) { !noRotation }
-    private val useSpotsToRandomize by BoolValue("UseSpotsToRandomize", false) { randomizeRotations && !noRotation }
     private val outborder by BoolValue("Outborder", false) { !noRotation }
 
-    private val highestBodyPointToTargetValue: ListValue = object : ListValue("HighestBodyPointToTarget", arrayOf("Head", "Body", "Feet"), "Head") {
+    private val highestBodyPointToTargetValue: ListValue = object : ListValue("HighestBodyPointToTarget",
+        arrayOf("Head", "Body", "Feet"),
+        "Head"
+    ) {
         override fun isSupported() = !noRotation
 
         override fun onChange(oldValue: String, newValue: String): String {
@@ -277,7 +279,10 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
     }
     private val highestBodyPointToTarget by highestBodyPointToTargetValue
 
-    private val lowestBodyPointToTargetValue: ListValue = object : ListValue("LowestBodyPointToTarget", arrayOf("Head", "Body", "Feet"), "Feet") {
+    private val lowestBodyPointToTargetValue: ListValue = object : ListValue("LowestBodyPointToTarget",
+        arrayOf("Head", "Body", "Feet"),
+        "Feet"
+    ) {
         override fun isSupported() = !noRotation
 
         override fun onChange(oldValue: String, newValue: String): String {
@@ -924,7 +929,6 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
             boundingBox,
             outborder && !attackTimer.hasTimePassed(attackDelay / 2),
             randomizeRotations,
-            useSpots = useSpotsToRandomize,
             predict = false,
             lookRange = range + scanRange,
             attackRange = range,
