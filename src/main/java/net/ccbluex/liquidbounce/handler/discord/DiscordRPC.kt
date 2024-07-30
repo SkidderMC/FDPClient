@@ -107,7 +107,7 @@ object DiscordRPC : MinecraftInstance() {
                 } else {
                     "https://raw.githubusercontent.com/SkidderMC/FDPClient/main/src/main/resources/assets/minecraft/fdpclient/fdp.png"
                 }
-                builder.setLargeImage(logoUrl, "$CLIENT_NAME $CLIENT_VERSION")
+                builder.setLargeImage(logoUrl, "made by Zywl ❤")
 
                 // Set details with fdpwebsite and CLIENT_VERSION
                 builder.setDetails("$fdpwebsite$CLIENT_VERSION")

@@ -7,10 +7,14 @@ package net.ccbluex.liquidbounce.file
 
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.FDPClient.background
 import net.ccbluex.liquidbounce.FDPClient.isStarting
 import net.ccbluex.liquidbounce.file.configs.*
 import net.ccbluex.liquidbounce.utils.Background.Companion.createBackground
+import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraftforge.fml.relauncher.Side
@@ -19,6 +23,8 @@ import java.io.File
 
 @SideOnly(Side.CLIENT)
 object FileManager : MinecraftInstance() {
+
+    private val sections = mutableListOf<ConfigSection>()
 
     val dir = File(mc.mcDataDir, "FDPCLIENT")
     val fontsDir = File(dir, "fonts")
@@ -41,6 +47,11 @@ object FileManager : MinecraftInstance() {
     init {
         setupFolder()
     }
+
+    /**
+     * Current config
+     */
+    var nowConfig = "default"
 
     /**
      * Setup folder
@@ -159,4 +170,42 @@ object FileManager : MinecraftInstance() {
             background = createBackground(backgroundFile)
         }
     }
+
+    /**
+     * Load a specific config
+     *
+     * @param name the name of the config
+     * @param save whether to save the current config before loading the new one
+     */
+    fun load(name: String, save: Boolean = true) {
+        FDPClient.isLoadingConfig = true
+        if (save && nowConfig != name) {
+            saveAllConfigs() // Save all current configs before loading the new one
+        }
+
+        nowConfig = name
+        val configFile = File(settingsDir, "$name.json")
+
+        val json = if (configFile.exists()) {
+            JsonParser().parse(configFile.reader(Charsets.UTF_8)).asJsonObject
+        } else {
+            JsonObject()
+        }
+
+        for (section in sections) {
+            section.load(if (json.has(section.sectionName)) { json.getAsJsonObject(section.sectionName) } else { JsonObject() })
+        }
+
+        if (!configFile.exists()) {
+            saveAllConfigs() // Save the new config if it doesn't exist
+        }
+
+        if (save) {
+            saveAllConfigs()
+        }
+
+        LOGGER.info("Config $name.json loaded.")
+        FDPClient.isLoadingConfig = false
+    }
+
 }

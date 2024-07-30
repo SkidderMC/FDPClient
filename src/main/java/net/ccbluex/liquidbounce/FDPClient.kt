@@ -76,6 +76,7 @@ object FDPClient {
     val clientTitle = CLIENT_NAME + " " + clientVersionText + " " + clientCommit + "  | " + if (IN_DEV) " | DEVELOPMENT BUILD" else ""
 
     var isStarting = true
+    var isLoadingConfig = true
 
     // Managers
     val moduleManager = ModuleManager
@@ -101,6 +102,7 @@ object FDPClient {
      */
     fun startClient() {
         isStarting = true
+        isLoadingConfig = true
 
         LOGGER.info("Launching...")
 

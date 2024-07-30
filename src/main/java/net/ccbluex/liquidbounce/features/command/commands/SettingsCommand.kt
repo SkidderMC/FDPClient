@@ -19,8 +19,10 @@ import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.SettingsUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils.get
 import net.ccbluex.liquidbounce.utils.misc.StringUtils
+import java.awt.Desktop
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
+import java.io.File
 
 object SettingsCommand : Command("autosettings", "autosetting", "settings", "setting", "config") {
 
@@ -31,7 +33,7 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
         val usedAlias = args[0].lowercase()
 
         if (args.size <= 1) {
-            chatSyntax("$usedAlias <load/list/upload/report>")
+            chatSyntax("$usedAlias <load/list/upload/report/create/openfolder/current/copy>")
             return
         }
 
@@ -41,7 +43,14 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                 "report" -> reportSettings(args)
                 "upload" -> uploadSettings(args)
                 "list" -> listSettings()
-                else -> chatSyntax("$usedAlias <load/list/upload/report>")
+                "create" -> createConfig(args)
+                "delete" -> deleteConfig(args)
+                "openfolder" -> openFolder()
+                "save" -> saveConfig(args)
+                "rename" -> renameConfig(args)
+                "current" -> currentConfig()
+                "copy" -> copyConfig(args)
+                else -> chatSyntax("$usedAlias <load/list/upload/report/create/delete/openfolder/save/rename/current/copy>")
             }
         }
     }
@@ -153,16 +162,97 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
         }
     }
 
+    private suspend fun createConfig(args: Array<String>) {
+        withContext(Dispatchers.IO) {
+            if (args.size < 3) {
+                chatSyntax("${args[0].lowercase()} create <configName>")
+                return@withContext
+            }
+            if (args.size > 2) {
+                val file = File(FDPClient.fileManager.settingsDir, "${args[2]}.json")
+                if (!file.exists()) {
+                    FDPClient.fileManager.load(args[2], true)
+                    alert("Created config ${args[2]}")
+                } else {
+                    alert("Config ${args[2]} already exists")
+                }
+            } else {
+                chatSyntax("${args[1]} <configName>")
+            }
+            chat("Creating config: ${args[2]}")
+        }
+    }
+
+    // Delete subcommand
+    private suspend fun deleteConfig(args: Array<String>) {
+        withContext(Dispatchers.IO) {
+            if (args.size < 3) {
+                chatSyntax("${args[0].lowercase()} delete <configName>")
+                return@withContext
+            }
+            // logic
+            chat("Deleting config: ${args[2]}")
+        }
+    }
+
+    // Open folder subcommand
+    private suspend fun openFolder() {
+        withContext(Dispatchers.IO) {
+            Desktop.getDesktop().open(FDPClient.fileManager.settingsDir)
+            chat("Opening folder...")
+        }
+    }
+
+    // Save subcommand
+    private suspend fun saveConfig(args: Array<String>) {
+        withContext(Dispatchers.IO) {
+            // logic
+            chat("Saving current config...")
+        }
+    }
+
+    // Rename subcommand
+    private suspend fun renameConfig(args: Array<String>) {
+        withContext(Dispatchers.IO) {
+            if (args.size < 4) {
+                chatSyntax("${args[0].lowercase()} rename <configName> <newName>")
+                return@withContext
+            }
+            // logic
+            chat("Renaming config ${args[2]} to ${args[3]}")
+        }
+    }
+
+    // Current subcommand
+    private suspend fun currentConfig() {
+        withContext(Dispatchers.IO) {
+            alert("Current config is ${FDPClient.fileManager.nowConfig}")
+            chat("Displaying current config...")
+        }
+    }
+
+    // Copy subcommand
+    private suspend fun copyConfig(args: Array<String>) {
+        withContext(Dispatchers.IO) {
+            if (args.size < 4) {
+                chatSyntax("${args[0].lowercase()} copy <configName> <newName>")
+                return@withContext
+            }
+            //  logic
+            chat("Copying config ${args[2]} to ${args[3]}")
+        }
+    }
+
     override fun tabComplete(args: Array<String>): List<String> {
         if (args.isEmpty()) {
             return emptyList()
         }
 
         return when (args.size) {
-            1 -> listOf("list", "load", "upload", "report").filter { it.startsWith(args[0], true) }
+            1 -> listOf("list", "load", "upload", "report", "create", "delete", "openfolder", "save", "rename", "current", "copy").filter { it.startsWith(args[0], true) }
             2 -> {
                 when (args[0].lowercase()) {
-                    "load", "report" -> {
+                    "load", "report", "create", "delete", "rename", "copy" -> {
                         if (autoSettingsList == null) {
                             loadSettings(true, 500) {}
                         }
