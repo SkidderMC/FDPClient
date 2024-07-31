@@ -11,12 +11,12 @@ import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.font.Fonts.font35
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawGradientRect
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.GlStateManager
-import org.lwjgl.opengl.GL11
+import net.minecraft.client.renderer.GlStateManager.*
+import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
 object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, hideModule = false) {
@@ -96,7 +96,7 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
                 startY - i + 15,
                 startX + fieldWidth + i - 15,
                 startY + fieldHeight + i - 15,
-                Color(255, 255, 255, 120).rgb
+                Color(6, 70, 255, 120).rgb
             )
         }
 
@@ -105,7 +105,7 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
         val foodX = food.x * blockSize + startX
         val foodY = food.y * blockSize + startY
 
-        drawRect(foodX, foodY, foodX + blockSize, foodY + blockSize, Color(255, 169, 67).rgb)
+        drawRect(foodX, foodY, foodX + blockSize, foodY + blockSize, Color(255, 15, 15).rgb)
 
         for (index in snake.indices) {
             val snakeStartX = snake[index].x * blockSize + startX
@@ -124,7 +124,7 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
             setupGame()
         }
 
-        Fonts.font15.drawStringWithShadow(
+        font35.drawStringWithShadow(
             "Score: §a$score",
             startX.toFloat(),
             (startY - 14.0).toFloat(),
@@ -151,27 +151,27 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
         val green = (color shr 8 and 0xFF) / 255.0F
         val blue = (color and 0xFF) / 255.0F
 
-        GL11.glEnable(GL11.GL_BLEND)
-        GL11.glDisable(GL11.GL_TEXTURE_2D)
-        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
 
-        GL11.glPushMatrix()
-        GL11.glColor4f(red, green, blue, alpha)
-        GL11.glBegin(GL11.GL_TRIANGLE_FAN)
-        GL11.glVertex2d(paramXEnd, paramYStart)
-        GL11.glVertex2d(paramXStart, paramYStart)
-        GL11.glVertex2d(paramXStart, paramYEnd)
-        GL11.glVertex2d(paramXEnd, paramYEnd)
+        glPushMatrix()
+        glColor4f(red, green, blue, alpha)
+        glBegin(GL_TRIANGLE_FAN)
+        glVertex2d(paramXEnd, paramYStart)
+        glVertex2d(paramXStart, paramYStart)
+        glVertex2d(paramXStart, paramYEnd)
+        glVertex2d(paramXEnd, paramYEnd)
 
-        GL11.glEnd()
-        GL11.glPopMatrix()
+        glEnd()
+        glPopMatrix()
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D)
-        GL11.glDisable(GL11.GL_BLEND)
-        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
+        glDisable(GL_LINE_SMOOTH)
 
-        GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
+        glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
     }
 
     private fun drawBorder(paramXStart: Double, paramYStart: Double, paramXEnd: Double, paramYEnd: Double, color: Int) {
@@ -180,33 +180,33 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
         val green = (color shr 8 and 0xFF) / 255.0f
         val blue = (color and 0xFF) / 255.0f
 
-        GlStateManager.enableBlend()
-        GlStateManager.disableTexture2D()
-        GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        enableBlend()
+        disableTexture2D()
+        blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
 
-        GlStateManager.pushMatrix()
-        GL11.glColor4f(red, green, blue, alpha)
-        GL11.glLineWidth(1f)
-        GL11.glBegin(GL11.GL_LINE_LOOP)
-        GL11.glVertex2d(paramXEnd, paramYStart)
-        GL11.glVertex2d(paramXStart, paramYStart)
-        GL11.glVertex2d(paramXStart, paramYEnd)
-        GL11.glVertex2d(paramXEnd, paramYEnd)
+        pushMatrix()
+        glColor4f(red, green, blue, alpha)
+        glLineWidth(1f)
+        glBegin(GL_LINE_LOOP)
+        glVertex2d(paramXEnd, paramYStart)
+        glVertex2d(paramXStart, paramYStart)
+        glVertex2d(paramXStart, paramYEnd)
+        glVertex2d(paramXEnd, paramYEnd)
 
-        GL11.glEnd()
-        GlStateManager.popMatrix()
+        glEnd()
+        popMatrix()
 
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
-        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        enableTexture2D()
+        disableBlend()
+        glDisable(GL_LINE_SMOOTH)
 
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+        color(1.0f, 1.0f, 1.0f, 1.0f)
     }
 
     data class Position(var x: Int, var y: Int)
 
-    private val blockSize = 10
-    private val fieldWidth = 200
-    private val fieldHeight = 150
+    private const val blockSize = 10
+    private const val fieldWidth = 200
+    private const val fieldHeight = 150
 }
