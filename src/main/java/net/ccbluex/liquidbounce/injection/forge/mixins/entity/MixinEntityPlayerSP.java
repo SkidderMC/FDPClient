@@ -206,6 +206,8 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
         EventManager.INSTANCE.callEvent(new MotionEvent(EventState.POST));
 
+        EventManager.INSTANCE.callEvent(new RotationUpdateEvent());
+
         ci.cancel();
     }
 

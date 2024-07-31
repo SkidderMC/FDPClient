@@ -62,11 +62,8 @@ object AntiFireball : Module("AntiFireball", Category.PLAYER, hideModule = false
     private var target: Entity? = null
 
     @EventTarget
-    private fun onMotion(event: MotionEvent) {
+    fun onRotationUpdate(event: RotationUpdateEvent) {
         val player = mc.thePlayer ?: return
-
-        if (event.eventState != EventState.POST)
-            return
 
         target = null
 

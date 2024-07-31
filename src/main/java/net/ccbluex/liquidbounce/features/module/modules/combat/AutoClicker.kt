@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.extensions.fixedSensitivityPitch
 import net.ccbluex.liquidbounce.utils.extensions.fixedSensitivityYaw
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
+import net.ccbluex.liquidbounce.utils.extensions.isBlock
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomClickDelay
@@ -49,7 +50,7 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) 
     private val blockDelay by IntegerValue("BlockDelay", 50, 0..100) { block }
 
     private val requiresNoInput by BoolValue("RequiresNoInput", false) { left }
-    private val maxAngleDifference by FloatValue("maxAngleDifference", 30f, 10f..180f) { left && requiresNoInput }
+    private val maxAngleDifference by FloatValue("MaxAngleDifference", 30f, 10f..180f) { left && requiresNoInput }
     private val range by FloatValue("Range", 3f, 0.1f..5f) { left && requiresNoInput }
 
     private var rightDelay = randomClickDelay(minCPS, maxCPS)
@@ -60,7 +61,7 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) 
     private var lastBlocking = 0L
 
     private val shouldAutoClick
-        get() =  mc.thePlayer.capabilities.isCreativeMode || mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK
+        get() = mc.thePlayer.capabilities.isCreativeMode || !mc.objectMouseOver.typeOfHit.isBlock
 
     private var shouldJitter = false
 
@@ -106,7 +107,7 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) 
     @EventTarget
     fun onTick(event: UpdateEvent) {
         mc.thePlayer?.let { thePlayer ->
-            shouldJitter = mc.objectMouseOver.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK && (thePlayer.isSwingInProgress || mc.gameSettings.keyBindAttack.pressTime != 0)
+            shouldJitter = !mc.objectMouseOver.typeOfHit.isBlock && (thePlayer.isSwingInProgress || mc.gameSettings.keyBindAttack.pressTime != 0)
 
             if (jitter && ((left && shouldAutoClick && shouldJitter) || (right && !mc.thePlayer.isUsingItem && mc.gameSettings.keyBindUseItem.isKeyDown))) {
                 if (nextBoolean()) thePlayer.fixedSensitivityYaw += nextFloat(-1F, 1F)

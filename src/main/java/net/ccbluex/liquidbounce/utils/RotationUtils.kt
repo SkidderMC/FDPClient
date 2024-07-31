@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.FastBow
-import net.ccbluex.liquidbounce.features.module.modules.client.Rotations
+import net.ccbluex.liquidbounce.features.module.modules.client.Rotations.debugRotations
 import net.ccbluex.liquidbounce.utils.RaycastUtils.raycastEntity
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
@@ -319,10 +319,6 @@ object RotationUtils : MinecraftInstance(), Listenable {
         nonDataSlowDownOnDirChange: Boolean = false,
         nonDataUseStraightLinePath: Boolean = false,
     ): Rotation {
-        if (rotationData?.simulateShortStop == true && Math.random() > 0.75) {
-            return currentRotation
-        }
-
         val firstSlow = rotationData?.startOffSlow == true || nonDataStartOffSlow
         val slowOnDirChange = rotationData?.slowDownOnDirChange == true || nonDataSlowDownOnDirChange
         val useStraightLine = rotationData?.useStraightLinePath == true || nonDataUseStraightLinePath
@@ -356,8 +352,8 @@ object RotationUtils : MinecraftInstance(), Listenable {
         vSpeed: Float, startFirstSlow: Boolean, useStraightLinePath: Boolean,
         slowDownOnDirChange: Boolean, smootherMode: String,
     ): Rotation {
-        val yawDifference = getAngleDifference(targetRotation.yaw, currentRotation.yaw)
-        val pitchDifference = getAngleDifference(targetRotation.pitch, currentRotation.pitch)
+        var yawDifference = getAngleDifference(targetRotation.yaw, currentRotation.yaw)
+        var pitchDifference = getAngleDifference(targetRotation.pitch, currentRotation.pitch)
 
         val yawTicks = ClientUtils.runTimeTicks - sameYawDiffTicks
         val pitchTicks = ClientUtils.runTimeTicks - samePitchDiffTicks
@@ -367,6 +363,11 @@ object RotationUtils : MinecraftInstance(), Listenable {
 
         val secondOldYawDiff = getAngleDifference(lastServerRotation.yaw, secondLastRotation.yaw)
         val secondOldPitchDiff = getAngleDifference(lastServerRotation.pitch, secondLastRotation.pitch)
+
+        if (rotationData?.simulateShortStop == true && Math.random() > 0.9 && yawDifference.sign == oldYawDiff.sign && secondOldYawDiff.sign == oldYawDiff.sign) {
+            yawDifference = 0f
+            pitchDifference = 0f
+        }
 
         val rotationDifference = hypot(yawDifference, pitchDifference)
 
@@ -384,7 +385,6 @@ object RotationUtils : MinecraftInstance(), Listenable {
         } else abs(pitchDifference).coerceIn(-vFactor, vFactor)
 
         var (yawDirChange, pitchDirChange) = false to false
-
 
         straightLineYaw = applySlowDown(straightLineYaw,
             oldYawDiff,
@@ -444,7 +444,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
                 tickUpdate()
             }
 
-            if (Rotations.debugRotations) {
+            if (debugRotations) {
                 ClientUtils.displayChatMessage(if (shouldStartSlow) {
                     "STARTED OFF SLOW, TICKS SINCE LAST START: $ticks"
                 } else "STARTED SLOW ON DIRECTION CHANGE, OLD DIFF: ${oldDiff}, SUPPOSED DIFF: $newDiff"
@@ -688,12 +688,11 @@ object RotationUtils : MinecraftInstance(), Listenable {
         }
     }
 
+    /**
+     * Handle rotation update
+     */
     @EventTarget(priority = -1)
-    fun onMotion(event: MotionEvent) {
-        if (event.eventState != EventState.POST) {
-            return
-        }
-
+    fun onRotationUpdate(event: RotationUpdateEvent) {
         rotationData?.let {
             // Was the rotation update immediate? Allow updates the next tick.
             if (it.immediate) {
@@ -740,7 +739,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
             val yawDiff = getAngleDifference(packet.yaw, serverRotation.yaw)
             val pitchDiff = getAngleDifference(packet.pitch, serverRotation.pitch)
 
-            if (Rotations.debugRotations) {
+            if (debugRotations) {
                 ClientUtils.displayChatMessage("PREV YAW: $yawDiff, PREV PITCH: $pitchDiff")
             }
         }

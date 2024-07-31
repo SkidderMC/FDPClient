@@ -85,10 +85,7 @@ object CivBreak : Module("CivBreak", Category.OTHER) {
     }
 
     @EventTarget
-    fun onMotion(event: MotionEvent) {
-        if (event.eventState != EventState.POST) {
-            return
-        }
+    fun onRotationUpdate(event: RotationUpdateEvent) {
 
         val pos = blockPos ?: return
         val isAirBlock = getBlock(pos) == air

@@ -118,6 +118,8 @@ object Tower : MinecraftInstance(), Listenable {
         if (towerModeValues.get() == "None") return
         if (onJumpValues.get() && !mc.gameSettings.keyBindJump.isKeyDown) return
 
+        // TODO: Proper event is needed to update rotations
+
         // Lock Rotation
         if (Scaffold.keepRotation && lockRotation != null) {
             setTargetRotation(
@@ -357,7 +359,7 @@ object Tower : MinecraftInstance(), Listenable {
 
                         val obj = mc.theWorld.rayTraceBlocks(eyesPos, vector, false, false, true) ?: continue
 
-                        if (obj.typeOfHit != MovingObjectPosition.MovingObjectType.BLOCK || obj.blockPos != neighbor)
+                        if (!obj.typeOfHit.isBlock || obj.blockPos != neighbor)
                             continue
 
                         if (placeRotation == null || getRotationDifference(rotation) < getRotationDifference(
