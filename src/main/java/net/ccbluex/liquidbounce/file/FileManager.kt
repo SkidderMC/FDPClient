@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.FDPClient.background
 import net.ccbluex.liquidbounce.FDPClient.isStarting
 import net.ccbluex.liquidbounce.file.configs.*
 import net.ccbluex.liquidbounce.utils.Background.Companion.createBackground
-import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraftforge.fml.relauncher.Side
@@ -207,5 +206,4 @@ object FileManager : MinecraftInstance() {
         LOGGER.info("Config $name.json loaded.")
         FDPClient.isLoadingConfig = false
     }
-
 }

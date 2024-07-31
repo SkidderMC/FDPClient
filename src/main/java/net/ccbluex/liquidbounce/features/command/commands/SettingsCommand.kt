@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.handler.api.Status
 import net.ccbluex.liquidbounce.handler.api.autoSettingsList
 import net.ccbluex.liquidbounce.handler.api.loadSettings
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.file.FileManager.settingsDir
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
@@ -23,6 +24,7 @@ import java.awt.Desktop
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.io.File
+import java.io.IOException
 
 object SettingsCommand : Command("autosettings", "autosetting", "settings", "setting", "config") {
 
@@ -33,7 +35,7 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
         val usedAlias = args[0].lowercase()
 
         if (args.size <= 1) {
-            chatSyntax("$usedAlias <load/list/upload/report/create/openfolder/current/copy>")
+            chatSyntax("$usedAlias <load/list/upload/report/create/delete/openfolder/save/rename/current/copy>")
             return
         }
 
@@ -43,7 +45,7 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                 "report" -> reportSettings(args)
                 "upload" -> uploadSettings(args)
                 "list" -> listSettings()
-                "create" -> createConfig(args)
+                "create" -> createSettings(args)
                 "delete" -> deleteConfig(args)
                 "openfolder" -> openFolder()
                 "save" -> saveConfig(args)
@@ -153,33 +155,65 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
     // List subcommand
     private suspend fun listSettings() {
         withContext(Dispatchers.IO) {
-            chat("Loading settings...")
-            loadSettings(false) {
-                for (setting in it) {
-                    chat("> ${setting.settingId} (Last updated: ${setting.date}, Status: ${setting.statusType.displayName})")
+            try {
+                chat("Loading settings...")
+                loadSettings(false) { settingsList ->
+                    // List existing settings
+                    if (settingsList.isNotEmpty()) {
+                        settingsList.forEach { setting ->
+                            chat("> ${setting.settingId} (Last updated: ${setting.date}, Status: ${setting.statusType.displayName})")
+                        }
+                    } else {
+                        chat("No internal settings found.")
+                    }
+
+                    // List additional config files
+                    val configFiles = FDPClient.fileManager.settingsDir.listFiles { _, name ->
+                        name.endsWith(".txt")
+                    }
+
+                    if (configFiles.isNullOrEmpty()) {
+                        chat("No additional configuration files found.")
+                    } else {
+                        chat("Additional configs:")
+                        configFiles.forEach { file ->
+                            val configName = file.nameWithoutExtension
+                            if (settingsList.none { it.settingId == configName }) {
+                                chat("§b> $configName")
+                            }
+                        }
+                    }
                 }
+            } catch (e: Exception) {
+                LOGGER.error("Failed to list configs", e)
+                chat("Failed to list configs: ${e.message}")
             }
         }
     }
 
-    private suspend fun createConfig(args: Array<String>) {
+
+    // Create subcommand
+    private suspend fun createSettings(args: Array<String>) {
         withContext(Dispatchers.IO) {
-            if (args.size < 3) {
-                chatSyntax("${args[0].lowercase()} create <configName>")
+            if (args.size <= 2) {
+                chatSyntax("${args[0].lowercase()} create <name>")
                 return@withContext
             }
-            if (args.size > 2) {
-                val file = File(FDPClient.fileManager.settingsDir, "${args[2]}.json")
-                if (!file.exists()) {
-                    FDPClient.fileManager.load(args[2], true)
-                    alert("Created config ${args[2]}")
-                } else {
-                    alert("Config ${args[2]} already exists")
-                }
-            } else {
-                chatSyntax("${args[1]} <configName>")
+
+            val settingsFile = File(settingsDir, args[2] + ".txt")
+
+            if (settingsFile.exists()) {
+                chat("§cSettings file already exists!")
+                return@withContext
             }
-            chat("Creating config: ${args[2]}")
+
+            try {
+                settingsFile.createNewFile()
+                chat("§6Settings file created successfully.")
+            } catch (e: IOException) {
+                e.printStackTrace()
+                chat("§cFailed to create settings file: ${e.message}")
+            }
         }
     }
 
@@ -190,8 +224,26 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                 chatSyntax("${args[0].lowercase()} delete <configName>")
                 return@withContext
             }
-            // logic
-            chat("Deleting config: ${args[2]}")
+
+            val configName = args[2]
+
+            if (configName.startsWith("http")) {
+                chat("§cCannot delete URL configs.")
+                return@withContext
+            }
+
+            val file = File(FDPClient.fileManager.settingsDir, "$configName.txt")
+
+            if (file.exists()) {
+                val success = file.delete()
+                if (success) {
+                    chat("§9Config '$configName' deleted successfully.")
+                } else {
+                    chat("§9Failed to delete config '$configName'.")
+                }
+            } else {
+                chat("§9Config '$configName' does not exist.")
+            }
         }
     }
 
@@ -206,8 +258,41 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
     // Save subcommand
     private suspend fun saveConfig(args: Array<String>) {
         withContext(Dispatchers.IO) {
-            // logic
-            chat("Saving current config...")
+            if (args.size <= 2) {
+                chatSyntax("${args[0].lowercase()} save <name> [all/values/binds/states]...")
+                return@withContext
+            }
+
+            val settingsFile = File(settingsDir, args[2] + ".txt")
+
+            try {
+                if (settingsFile.exists())
+                    settingsFile.delete()
+
+                settingsFile.createNewFile()
+
+                val option = if (args.size > 3) StringUtils.toCompleteString(args, 3).lowercase() else "all"
+                val all = "all" in option
+                val values = all || "values" in option
+                val binds = all || "binds" in option
+                val states = all || "states" in option
+
+                if (!values && !binds && !states) {
+                    chatSyntaxError()
+                    return@withContext
+                }
+
+                chat("§9Creating settings...")
+                val settingsScript = SettingsUtils.generateScript(values, binds, states)
+
+                chat("§9Saving settings...")
+                settingsFile.writeText(settingsScript)
+
+                chat("§6Settings saved successfully.")
+            } catch (throwable: Throwable) {
+                chat("§cFailed to create local config: §3${throwable.message}")
+                LOGGER.error("Failed to create local config.", throwable)
+            }
         }
     }
 
@@ -218,10 +303,35 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                 chatSyntax("${args[0].lowercase()} rename <configName> <newName>")
                 return@withContext
             }
-            // logic
-            chat("Renaming config ${args[2]} to ${args[3]}")
+
+            val oldName = args[2]
+            val newName = args[3]
+
+            if (oldName.startsWith("http")) {
+                chat("§cCannot rename URL configs.")
+                return@withContext
+            }
+
+            val oldFile = File(FDPClient.fileManager.settingsDir, "$oldName.txt")
+            val newFile = File(FDPClient.fileManager.settingsDir, "$newName.txt")
+
+            if (oldFile.exists()) {
+                if (!newFile.exists()) {
+                    val success = oldFile.renameTo(newFile)
+                    if (success) {
+                        chat("§9Config '$oldName' renamed to '$newName' successfully.")
+                    } else {
+                        chat("§9Failed to rename config '$oldName'.")
+                    }
+                } else {
+                    chat("§9Config '$newName' already exists.")
+                }
+            } else {
+                chat("§9Config '$oldName' does not exist.")
+            }
         }
     }
+
 
     // Current subcommand
     private suspend fun currentConfig() {
@@ -238,10 +348,25 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                 chatSyntax("${args[0].lowercase()} copy <configName> <newName>")
                 return@withContext
             }
-            //  logic
-            chat("Copying config ${args[2]} to ${args[3]}")
+
+            val oldName = args[2]
+            val newName = args[3]
+            val oldFile = File(FDPClient.fileManager.settingsDir, "$oldName.txt")
+            val newFile = File(FDPClient.fileManager.settingsDir, "$newName.txt")
+
+            if (oldFile.exists()) {
+                if (!newFile.exists()) {
+                    oldFile.copyTo(newFile)
+                    chat("§bConfig '$oldName' copied to '$newName' successfully.")
+                } else {
+                    chat("§bConfig '$newName' already exists.")
+                }
+            } else {
+                chat("§9Config '$oldName' does not exist.")
+            }
         }
     }
+
 
     override fun tabComplete(args: Array<String>): List<String> {
         if (args.isEmpty()) {
@@ -257,8 +382,13 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                             loadSettings(true, 500) {}
                         }
 
-                        return autoSettingsList?.filter { it.settingId.startsWith(args[1], true) }?.map { it.settingId }
-                            ?: emptyList()
+                        val configFiles = FDPClient.fileManager.settingsDir.listFiles { _, name ->
+                            name.endsWith(".txt")
+                        }?.map { it.nameWithoutExtension } ?: emptyList()
+
+                        val allConfigs = autoSettingsList?.map { it.settingId }?.plus(configFiles)?.distinct() ?: configFiles
+
+                        return allConfigs.filter { it.startsWith(args[1], true) }
                     }
                     "upload" -> {
                         return listOf("all", "values", "binds", "states").filter { it.startsWith(args[1], true) }
