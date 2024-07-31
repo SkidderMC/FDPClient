@@ -23,6 +23,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts.font35
 import net.ccbluex.liquidbounce.utils.UIEffectRenderer
 import net.ccbluex.liquidbounce.utils.UIEffectRenderer.drawShadowWithCustomAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.Stencil
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -85,11 +86,10 @@ class Notifications(
 
             exampleNotification.fadeState = FadeState.STAY
             exampleNotification.displayTime = System.currentTimeMillis()
-//            exampleNotification.x = exampleNotification.textLength + 8F
 
             if (styleValue == "IDE") return Border(-180F, -30F, 0F, 0F)
             if (styleValue == "ZAVZ") return Border(-185F, -30F, 0F, 0F)
-            if (styleValue == "CLASSIC") return Border(-180F, -30F, 0F, 0F)
+            if (styleValue == "CLASSIC") return Border(0F, -30F, 135F, 0F)
             else return Border(-exampleNotification.width.toFloat(), exampleNotification.height.toFloat(), 0F,0F)
         }
 
@@ -182,9 +182,9 @@ class Notification(
                 }
             }
 
-            RenderUtils.drawRect(0F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, parent.alphaValue))
+            drawRect(0F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, parent.alphaValue))
             drawShadowWithCustomAlpha(0F, 0F, width.toFloat(), height.toFloat(), 240f)
-            RenderUtils.drawRect(0F, height - 2F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), height.toFloat(), type.renderColor)
+            drawRect(0F, height - 2F, max(width - width * ((nowTime - displayTime) / (animeTime * 2F + time)), 0F), height.toFloat(), type.renderColor)
             font35.drawString(title, 4F, 4F, textColor, false)
             font35.drawString(content, 4F, 17F, textColor, false)
 
@@ -243,14 +243,14 @@ class Notification(
             Stencil.write(true)
 
             if (type == Type.ERROR) {
-                RenderUtils.drawRect(
+                drawRect(
                     -textLength - 23f + 5,
                     -y.toFloat(),
                     kek + 21f,
                     height.toFloat(),
                     Color(115, 69, 75).rgb
                 )
-                RenderUtils.drawRect(
+                drawRect(
                     -textLength.toFloat() - 22f + 5,
                     -y.toFloat() + 1,
                     kek + 20,
@@ -265,14 +265,14 @@ class Notification(
                 )
             }
             if (type == Type.INFO) {
-                RenderUtils.drawRect(
+                drawRect(
                     -textLength - 23f + 5,
                     -y.toFloat(),
                     textLength.toFloat() - 162,
                     height.toFloat(),
                     Color(70, 94, 115).rgb
                 )
-                RenderUtils.drawRect(
+                drawRect(
                     -textLength.toFloat() - 22f + 5,
                     -y + 1f,
                     textLength.toFloat() - 163,
@@ -287,14 +287,14 @@ class Notification(
                 )
             }
             if (type == Type.SUCCESS) {
-                RenderUtils.drawRect(
+                drawRect(
                     -textLength - 23f + 5,
                     -y.toFloat(),
                     kek + 21f,
                     height.toFloat(),
                     Color(67, 104, 67).rgb
                 )
-                RenderUtils.drawRect(
+                drawRect(
                     -textLength.toFloat() - 22f + 5,
                     -y + 1f,
                     kek + 20,
@@ -309,14 +309,14 @@ class Notification(
                 )
             }
             if (type == Type.WARNING) {
-                RenderUtils.drawRect(
+                drawRect(
                     -textLength - 23f + 5,
                     -y.toFloat(),
                     kek + 21f,
                     height.toFloat(),
                     Color(103, 103, 63).rgb
                 )
-                RenderUtils.drawRect(
+                drawRect(
                     -textLength.toFloat() - 22f + 5,
                     -y + 1f,
                     kek + 20,

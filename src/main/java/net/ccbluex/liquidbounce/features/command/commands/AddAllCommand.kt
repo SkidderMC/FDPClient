@@ -16,7 +16,7 @@ import net.minecraft.util.EnumChatFormatting
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Consumer
 
-class AddAllCommand : Command("addall", *arrayOf<String>("")) {
+object AddAllCommand : Command("addall", *arrayOf<String>("")) {
     override fun execute(arguments: Array<String>) {
         if (arguments.size == 2) {
             val tag = translateAlternateColorCodes(arguments[1])

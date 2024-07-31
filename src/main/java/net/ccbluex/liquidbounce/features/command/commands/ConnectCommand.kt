@@ -11,7 +11,7 @@ import net.minecraft.client.gui.GuiMultiplayer
 import net.minecraft.client.multiplayer.GuiConnecting
 import net.minecraft.client.multiplayer.ServerData
 
-class ConnectCommand : Command("connect") {
+object ConnectCommand : Command("connect") {
 
     /**
      * Execute commands with provided [args]
