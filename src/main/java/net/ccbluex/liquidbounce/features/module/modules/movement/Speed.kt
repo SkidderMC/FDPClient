@@ -41,6 +41,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         NCPYPort,
         UNCPHop,
         UNCPHop2,
+        UNCPLowHop,
 
         // AAC
         AACHop3313,
