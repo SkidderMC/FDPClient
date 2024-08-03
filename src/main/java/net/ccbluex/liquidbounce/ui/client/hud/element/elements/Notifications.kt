@@ -11,33 +11,19 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.alphaValue
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blue2Value
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blueValue
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.green2Value
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.greenValue
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.red2Value
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.redValue
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.Fonts.font35
-import net.ccbluex.liquidbounce.utils.UIEffectRenderer
 import net.ccbluex.liquidbounce.utils.UIEffectRenderer.drawShadowWithCustomAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.Stencil
-import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-import java.math.BigDecimal
-import kotlin.math.abs
-import kotlin.math.cos
 import kotlin.math.max
-import kotlin.math.sin
-
 /**
  * CustomHUD Notification element
  */
@@ -51,15 +37,15 @@ class Notifications(
      */
     private val exampleNotification = Notification("Notification", "This is an example notification.", Type.INFO)
     companion object {
-        val styleValue by ListValue("Mode", arrayOf("IDE", "ZAVZ", "CLASSIC"), "IDE")
-        val redValue by IntegerValue("Red", 255, 0.. 255)
-        val greenValue by IntegerValue("Green", 255, 0.. 255)
-        val blueValue by IntegerValue("Blue", 255, 0.. 255)
-        val red2Value by IntegerValue("Red2", 255, 0.. 255)
-        val green2Value by IntegerValue("Green2", 255, 0.. 255)
-        val blue2Value by IntegerValue("Blue2", 255, 0.. 255)
+        val styleValue by ListValue("Mode", arrayOf("IDE", "CLASSIC"), "CLASSIC")
+        val redValue by IntegerValue("Red", 255, 0.. 255) { styleValue == "ZAVZ"}
+        val greenValue by IntegerValue("Green", 255, 0.. 255) { styleValue == "ZAVZ"}
+        val blueValue by IntegerValue("Blue", 255, 0.. 255) { styleValue == "ZAVZ"}
+        val red2Value by IntegerValue("Red2", 255, 0.. 255) { styleValue == "ZAVZ"}
+        val green2Value by IntegerValue("Green2", 255, 0.. 255) { styleValue == "ZAVZ"}
+        val blue2Value by IntegerValue("Blue2", 255, 0.. 255) { styleValue == "ZAVZ"}
 
-        val alphaValue by IntegerValue("Alpha", 0, 0.. 255)
+        val alphaValue by IntegerValue("Alpha", 0, 0.. 255) { styleValue == "CLASSIC"}
     }
 
     /**
@@ -119,8 +105,7 @@ class Notification(
     var displayTime = System.currentTimeMillis()
     private var animeXTime = System.currentTimeMillis()
     private var animeYTime = System.currentTimeMillis()
-
-    var textColor = Color(255, 255, 255).rgb
+    private var textColor = Color(255, 255, 255).rgb
 
     /**
      * Draw notification

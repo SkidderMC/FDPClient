@@ -35,13 +35,14 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
         val usedAlias = args[0].lowercase()
 
         if (args.size <= 1) {
-            chatSyntax("$usedAlias <load/list/upload/report/create/delete/openfolder/save/rename/current/copy>")
+            chatSyntax("$usedAlias <load/loadlocal/list/upload/report/create/delete/openfolder/save/rename/current/copy>")
             return
         }
 
         GlobalScope.launch {
             when (args[1].lowercase()) {
                 "load" -> loadSettings(args)
+                "loadlocal" -> localSettings(args)
                 "report" -> reportSettings(args)
                 "upload" -> uploadSettings(args)
                 "list" -> listSettings()
@@ -52,7 +53,7 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                 "rename" -> renameConfig(args)
                 "current" -> currentConfig()
                 "copy" -> copyConfig(args)
-                else -> chatSyntax("$usedAlias <load/list/upload/report/create/delete/openfolder/save/rename/current/copy>")
+                else -> chatSyntax("$usedAlias <load/loadlocal/list/upload/report/create/delete/openfolder/save/rename/current/copy>")
             }
         }
     }
@@ -85,6 +86,34 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
             } catch (e: Exception) {
                 LOGGER.error("Failed to load settings", e)
                 chat("Failed to load settings: ${e.message}")
+            }
+        }
+    }
+
+    private suspend fun localSettings(args: Array<String>) {
+        withContext(Dispatchers.IO) {
+            if (args.size <= 2) {
+                chatSyntax("${args[0].lowercase()} loadlocal <name>")
+                return@withContext
+            }
+
+            val settingsFile = File(settingsDir, args[2] + ".txt")
+
+            if (!settingsFile.exists()) {
+                chat("§cSettings file does not exist! §e(Ensure its .txt)")
+                return@withContext
+            }
+
+            try {
+                chat("§9Loading settings...")
+                val settings = settingsFile.readText()
+                chat("§9Set settings...")
+                SettingsUtils.applyScript(settings)
+                chat("§6Settings applied successfully.")
+                addNotification(Notification("Updated Settings", "SUCESS", Type.SUCCESS))
+                playEdit()
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
         }
     }
@@ -374,10 +403,10 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
         }
 
         return when (args.size) {
-            1 -> listOf("list", "load", "upload", "report", "create", "delete", "openfolder", "save", "rename", "current", "copy").filter { it.startsWith(args[0], true) }
+            1 -> listOf("list", "load", "loadlocal", "upload", "report", "create", "delete", "openfolder", "save", "rename", "current", "copy").filter { it.startsWith(args[0], true) }
             2 -> {
                 when (args[0].lowercase()) {
-                    "load", "report", "create", "delete", "rename", "copy" -> {
+                    "load", "loadlocal", "report", "create", "delete", "rename", "copy" -> {
                         if (autoSettingsList == null) {
                             loadSettings(true, 500) {}
                         }

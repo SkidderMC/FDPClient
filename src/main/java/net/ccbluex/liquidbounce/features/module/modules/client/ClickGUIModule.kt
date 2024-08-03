@@ -21,7 +21,7 @@ import org.lwjgl.input.Keyboard
 
 object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT, canBeEnabled = false) {
     private val style by
-        object : ListValue("Style", arrayOf("neverlose","nextgen", "Black"), "Black") {
+        object : ListValue("Style", arrayOf("Black"), "Black") {
             override fun onChanged(oldValue: String, newValue: String) = updateStyle()
         }
     var scale by FloatValue("Scale", 0.8f, 0.5f..1.5f)
