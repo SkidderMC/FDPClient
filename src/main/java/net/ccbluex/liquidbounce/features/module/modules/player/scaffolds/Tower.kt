@@ -64,6 +64,7 @@ object Tower : MinecraftInstance(), Listenable {
     val stopWhenBlockAboveValues = BoolValue("StopWhenBlockAbove", false) { towerModeValues.get() != "None" }
 
     val onJumpValues = BoolValue("TowerOnJump", true) { towerModeValues.get() != "None" }
+    val notOnMoveValues = BoolValue("TowerNotOnMove", false) { towerModeValues.get() != "None" }
     val matrixValues = BoolValue("TowerMatrix", false) { towerModeValues.get() != "None" }
     val placeModeValues = ListValue(
         "TowerPlaceTiming",
@@ -72,7 +73,7 @@ object Tower : MinecraftInstance(), Listenable {
     ) { towerModeValues.get() != "Packet" && towerModeValues.get() != "None" }
 
     // Jump mode
-    val jumpMotionValues = FloatValue("jumpMotion", 0.42f, 0.3681289f..0.79f) { towerModeValues.get() == "MotionJump" }
+    val jumpMotionValues = FloatValue("JumpMotion", 0.42f, 0.3681289f..0.79f) { towerModeValues.get() == "MotionJump" }
     val jumpDelayValues = IntegerValue(
         "jumpDelay",
         0,
@@ -118,6 +119,7 @@ object Tower : MinecraftInstance(), Listenable {
     @EventTarget
     fun onMotion(event: MotionEvent) {
         if (towerModeValues.get() == "None") return
+        if (notOnMoveValues.get() && isMoving) return
         if (onJumpValues.get() && !mc.gameSettings.keyBindJump.isKeyDown) return
 
         // TODO: Proper event is needed to update rotations
