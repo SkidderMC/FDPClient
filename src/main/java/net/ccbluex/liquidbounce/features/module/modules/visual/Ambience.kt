@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
@@ -26,6 +27,13 @@ object Ambience : Module("Ambience", Category.VISUAL, gameDetecting = false, hid
     private val weatherMode by ListValue("WeatherMode", arrayOf("None", "Sun", "Rain", "Thunder"), "None")
         private val weatherStrength by FloatValue("WeatherStrength", 1f, 0f..1f)
             { weatherMode == "Rain" || weatherMode == "Thunder" }
+
+    // world color
+
+    val worldColor by BoolValue("WorldColor", false)
+    val worldColorRed by IntegerValue("WorldRed", 255, 0..255) { worldColor }
+    val worldColorGreen by IntegerValue("WorldGreen", 255, 0..255) { worldColor }
+    val worldColorBlue by IntegerValue("WorldBlue", 255, 0.. 255) { worldColor }
 
     private var i = 0L
 
