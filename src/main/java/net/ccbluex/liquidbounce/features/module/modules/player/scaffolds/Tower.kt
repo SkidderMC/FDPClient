@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.PlaceRotation
 import net.ccbluex.liquidbounce.utils.Rotation
@@ -54,6 +55,7 @@ object Tower : MinecraftInstance(), Listenable {
             "Teleport",
             "AAC3.3.9",
             "AAC3.6.4",
+            "Vulcan2.9.0",
             "Pulldown"
         ),
         "None"
@@ -291,6 +293,23 @@ object Tower : MinecraftInstance(), Listenable {
                 }
             }
 
+            // Credit: @localpthebest / Nextgen
+            "vulcan2.9.0" -> {
+                if (thePlayer.ticksExisted % 10 == 0) {
+                    // Prevent Flight Flag
+                    thePlayer.motionY = -0.1
+                    return
+                }
+
+                fakeJump()
+
+                if (thePlayer.ticksExisted % 2 == 0) {
+                    thePlayer.motionY = 0.7
+                } else {
+                    thePlayer.motionY = if (isMoving) 0.42 else 0.6
+                }
+            }
+
             "aac3.3.9" -> {
                 if (thePlayer.onGround) {
                     fakeJump()
@@ -309,6 +328,21 @@ object Tower : MinecraftInstance(), Listenable {
             } else if (thePlayer.ticksExisted % 4 == 0) {
                 thePlayer.motionY = -0.5
                 thePlayer.setPosition(thePlayer.posX + 0.035, thePlayer.posY, thePlayer.posZ)
+            }
+        }
+    }
+
+    @EventTarget
+    fun onPacket(event: PacketEvent) {
+        val player = mc.thePlayer ?: return
+        val packet = event.packet
+
+        if (towerModeValues.get() == "Vulcan2.9.0") {
+            if (packet is C04PacketPlayerPosition) {
+                if (!isMoving && player.ticksExisted % 2 == 0) {
+                    packet.x += 0.1
+                    packet.z += 0.1
+                }
             }
         }
     }
