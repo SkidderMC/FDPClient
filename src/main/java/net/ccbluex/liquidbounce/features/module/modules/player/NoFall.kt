@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
@@ -25,20 +25,31 @@ import net.minecraft.util.AxisAlignedBB.fromBounds
 
 object NoFall : Module("NoFall", Category.PLAYER, hideModule = false) {
     private val noFallModes = arrayOf(
+
+        // Main
         SpoofGround,
         NoGround,
         Packet,
+        Cancel,
         MLG,
+        Blink,
+
+        // AAC
         AAC,
         LAAC,
         AAC3311,
         AAC3315,
-        Cancel,
+
+        // Hypixel (Watchdog)
+        Hypixel,
+        HypixelTimer,
+
+        // Vulcan
+        VulcanFast288,
+
+        // Other Server
         Spartan,
         CubeCraft,
-        Hypixel,
-        Blink,
-        VulcanFast288
     )
 
     private val modes = noFallModes.map { it.modeName }.toTypedArray()
