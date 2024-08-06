@@ -480,5 +480,4 @@ enum class Type(var renderColor: Color) {
     INFO( Color(106, 106, 220));
 }
 
-
 enum class FadeState { IN, STAY, OUT, END }
