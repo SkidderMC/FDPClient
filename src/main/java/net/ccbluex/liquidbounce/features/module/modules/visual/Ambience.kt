@@ -18,9 +18,10 @@ import net.minecraft.network.play.server.S2BPacketChangeGameState
 
 object Ambience : Module("Ambience", Category.VISUAL, gameDetecting = false, hideModule = false) {
 
-    private val timeMode by ListValue("Mode", arrayOf("None", "Normal", "Custom"), "Custom")
-        private val customWorldTime by IntegerValue("Time", 19000, 0..24000) { timeMode == "Custom" }
+    private val timeMode by ListValue("Mode", arrayOf("None", "Normal", "Custom", "Day", "Dusk", "Night", "Dynamic"), "Custom")
+        private val customWorldTime by IntegerValue("Time", 6, 0..24) { timeMode == "Custom" }
         private val changeWorldTimeSpeed by IntegerValue("TimeSpeed", 150, 10..500) { timeMode == "Normal" }
+        private val dynamicSpeed by IntegerValue("DynamicSpeed", 20, 1.. 50) { timeMode =="Dynamic" }
 
     private val weatherMode by ListValue("WeatherMode", arrayOf("None", "Sun", "Rain", "Thunder"), "None")
         private val weatherStrength by FloatValue("WeatherStrength", 1f, 0f..1f)
@@ -41,7 +42,24 @@ object Ambience : Module("Ambience", Category.VISUAL, gameDetecting = false, hid
                 mc.theWorld.worldTime = i
             }
             "custom" -> {
-                mc.theWorld.worldTime = customWorldTime.toLong()
+                mc.theWorld.worldTime = customWorldTime.toLong() * 1000
+            }
+            "day" -> {
+                mc.theWorld.worldTime = 2000
+            }
+            "dusk" -> {
+                mc.theWorld.worldTime = 13050
+            }
+            "night" -> {
+                mc.theWorld.worldTime = 16000
+            }
+            "dynamic" -> {
+                if (i < 24000) {
+                    i += dynamicSpeed
+                } else {
+                    i = 0
+                }
+                mc.theWorld.worldTime = i
             }
         }
 
