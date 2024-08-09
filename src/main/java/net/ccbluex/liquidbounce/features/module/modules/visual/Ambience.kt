@@ -29,7 +29,6 @@ object Ambience : Module("Ambience", Category.VISUAL, gameDetecting = false, hid
             { weatherMode == "Rain" || weatherMode == "Thunder" }
 
     // world color
-
     val worldColor by BoolValue("WorldColor", false)
     val worldColorRed by IntegerValue("WorldRed", 255, 0..255) { worldColor }
     val worldColorGreen by IntegerValue("WorldGreen", 255, 0..255) { worldColor }
