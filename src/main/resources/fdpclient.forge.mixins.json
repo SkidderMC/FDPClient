@@ -75,6 +75,7 @@
     "block.MixinBlockSlime",
     "gui.MixinGuiAchievement",
     "gui.MixinGuiContainer",
+    "gui.MixinGuiInGameForge",
     "tweaks.MixinEntityFX"
   ]
 }
