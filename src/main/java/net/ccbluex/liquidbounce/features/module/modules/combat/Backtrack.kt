@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
 import net.ccbluex.liquidbounce.features.module.modules.client.Teams
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
+import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.misc.StringUtils.contains
@@ -306,7 +307,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
     @EventTarget
     fun onAttack(event: AttackEvent) {
-        if (!isEnemy(event.targetEntity))
+        if (!isSelected(event.targetEntity, true))
             return
 
         // Clear all packets, start again on enemy change
@@ -516,22 +517,6 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
     private fun removeBacktrackData(id: UUID) = backtrackedPlayer.remove(id)
 
-    private fun isEnemy(entity: Entity?): Boolean {
-        if (entity is EntityLivingBase && entity != mc.thePlayer) {
-            if (entity is EntityPlayer) {
-                if (entity.isSpectator || isBot(entity)) return false
-
-                if (entity.isClientFriend()) return false
-
-                return !Teams.handleEvents() || !Teams.isInYourTeam(entity)
-            }
-
-            return true
-        }
-
-        return false
-    }
-
     /**
      * This function will return the nearest tracked range of an entity.
      */
@@ -624,7 +609,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
     fun shouldBacktrack() =
         mc.thePlayer != null && System.currentTimeMillis() >= delayForNextBacktrack && target?.let {
-            isEnemy(it) && (mc.thePlayer?.ticksExisted ?: 0) > 20 && !ignoreWholeTick
+            isSelected(it, true) && (mc.thePlayer?.ticksExisted ?: 0) > 20 && !ignoreWholeTick
         } ?: false
 
     private fun reset() {
