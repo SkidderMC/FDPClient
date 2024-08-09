@@ -29,6 +29,7 @@
     "gui.MixinGuiDownloadTerrain",
     "gui.MixinGuiEditSign",
     "gui.MixinGuiInGame",
+    "gui.MixinGuiInGameForge",
     "gui.MixinGuiIngameMenu",
     "gui.MixinGuiKeyBindingList",
     "gui.MixinGuiMultiplayer",
@@ -75,7 +76,6 @@
     "block.MixinBlockSlime",
     "gui.MixinGuiAchievement",
     "gui.MixinGuiContainer",
-    "gui.MixinGuiInGameForge",
     "tweaks.MixinEntityFX"
   ]
 }

@@ -165,6 +165,8 @@ object Flight : Module("Fly", Category.MOVEMENT, Keyboard.KEY_F, hideModule = fa
 
     val angleThresholdUntilReset by FloatValue("AngleThresholdUntilReset", 5f, 0.1f..180f) { rotations && mode == "Fireball" }
 
+    val minRotationDifference by FloatValue("MinRotationDifference", 0f, 0f..1f) { rotations && mode == "Fireball" }
+
     val autoJump by BoolValue("AutoJump", true)
 
     // Visuals
