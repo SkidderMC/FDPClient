@@ -971,6 +971,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
             smootherMode,
             simulateShortStop,
             startRotatingSlow,
+            slowDownOnDirChange = slowDownOnDirectionChange,
             useStraightLinePath = useStraightLinePath,
             minRotationDifference = minRotationDifference
         )

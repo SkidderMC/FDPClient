@@ -48,7 +48,7 @@ object BrandSpoofer : Module("BrandSpoofer", Category.CLIENT, hideModule = false
             "Rounded",
             "LiquidBounce",
             "Fline",
-            "fdp",
+            "FDP",
             "PVP",
             "Vanilla"
         ),

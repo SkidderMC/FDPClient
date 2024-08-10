@@ -41,7 +41,7 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Keyboard.KEY_R, 
     // Mark
     private val markValue by ListValue("MarkMode", arrayOf("None", "Box", "RoundBox", "Head", "Mark", "Sims", "Zavz"), "Zavz")
     private val isMarkMode: Boolean
-        get() = markValue != "None"
+        get() = markValue != "None" && markValue != "Sims"
 
     val colorRedValue by IntegerValue("Mark-Red", 0, 0.. 255) { isMarkMode }
     val colorGreenValue by IntegerValue("Mark-Green", 160, 0..255) { isMarkMode }
