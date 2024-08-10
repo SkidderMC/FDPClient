@@ -24,10 +24,11 @@ import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
 object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDetecting = false, hideModule = true) {
+
     val blackHotbar by BoolValue("BlackHotbar", true)
 
     // InventoryPlus
-    val inventoryOnHotbar = BoolValue("InventoryOnHotbar", true)
+    val inventoryOnHotbar = BoolValue("InventoryOnHotbar", false)
 
     // CROSSHAIR
     val csgoCrosshairValue by BoolValue("CSGO-Crosshair", false)
@@ -47,6 +48,22 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
     val colorGreen by IntegerValue("G", 160, 0..255) { intefaceColor }
     val colorBlue by IntegerValue("B", 255, 0..255) { intefaceColor }
     private val colorRainbowValue = BoolValue("Rainbow", true) { intefaceColor }
+
+    // CLIENT THEME
+    val colorOptions = arrayOf(
+        "Zywl", "Water", "Magic", "DarkNight", "Sun", "Tree", "Flower", "Loyoi", "Soniga", "May",
+        "Mint", "Cero", "Azure", "Rainbow", "Astolfo", "Pumpkin", "Polarized", "Sundae", "Terminal",
+        "Coral", "Fire", "Aqua", "Peony"
+    )
+
+    var ClientColorMode by ListValue("ColorMode", colorOptions, "Zywl")
+
+    var textValue by BoolValue("TextStaticColor", false)
+    var ThemeFadeSpeed by IntegerValue("Fade-speed", 1, 1..10)
+    var updown by BoolValue(
+        "Fade-Type",
+        false
+    )
 
     val guiColor
         get() = if (colorRainbowValue.get()) ColorUtils.rainbow().rgb

@@ -12,6 +12,7 @@ import java.util.regex.Pattern
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.sin
 
 object ColorUtils {
     /** Array of the special characters that are allowed in any text drawing of Minecraft.  */
@@ -176,5 +177,16 @@ object ColorUtils {
         val color = Integer.toHexString(Color.HSBtoRGB(hue, saturation, 1.0f)).toLong(16)
         val c = Color(color.toInt())
         return Color(c.red / 255.0f * fade, c.green / 255.0f * fade, c.blue / 255.0f * fade, c.alpha / 255.0f)
+    }
+
+
+    fun mixColors(color1: Color, color2: Color, ms: Double, offset: Int): Color {
+        val timer = (System.currentTimeMillis() / 1E+8 * ms) * 4E+5
+        val percent =  (sin(timer + offset * 0.55f) + 1) * 0.5f
+        val inverse_percent = 1.0 - percent
+        val redPart = (color1.red * percent + color2.red * inverse_percent).toInt()
+        val greenPart = (color1.green * percent + color2.green * inverse_percent).toInt()
+        val bluePart = (color1.blue * percent + color2.blue * inverse_percent).toInt()
+        return Color(redPart, greenPart, bluePart)
     }
 }

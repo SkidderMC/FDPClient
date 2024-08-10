@@ -2596,4 +2596,22 @@ object RenderUtils : MinecraftInstance() {
         resetCaps()
         popMatrix()
     }
+
+    fun SkyRainbow(var2: Int, st: Float, bright: Float): Int {
+        var v1 = ceil((System.currentTimeMillis() + (var2 * 109).toLong()).toDouble()) / 5
+        return Color.getHSBColor(
+            if ((((360.0.also { v1 %= it }) / 360.0).toFloat()) < 0.5) -((v1 / 360.0).toFloat()) else (v1 / 360.0).toFloat(),
+            st,
+            bright
+        ).rgb
+    }
+
+    fun skyRainbow(var2: Int, st: Float, bright: Float, speed: Float): Color {
+        var v1 = ceil((System.currentTimeMillis() + (var2 * 109 * speed).toLong()).toDouble()) / 5
+        return Color.getHSBColor(
+            if ((((360.0.also { v1 %= it }) / 360.0).toFloat()) < 0.5) -((v1 / 360.0).toFloat()) else (v1 / 360.0).toFloat(),
+            st,
+            bright
+        )
+    }
 }
