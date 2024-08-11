@@ -179,8 +179,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
     val blinkAutoBlock by BoolValue("BlinkAutoBlock", false)
     { autoBlock !in arrayOf("Off", "Fake") }
 
-    val watchdogAutoBlock by BoolValue("WatchDogBlock", false)
-    { autoBlock !in arrayOf("Off", "Fake") }
+    private val blinkBlockTicks by IntegerValue("BlinkBlockTicks", 3, 2..5)
+    { autoBlock !in arrayOf("Off", "Fake") && blinkAutoBlock }
 
     // AutoBlock conditions
     private val smartAutoBlock by BoolValue("SmartAutoBlock", false) { autoBlock != "Off" }
@@ -466,9 +466,9 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
         }
 
         if (blinkAutoBlock) {
-            when (mc.thePlayer.ticksExisted % 5) {
+            when (mc.thePlayer.ticksExisted % (blinkBlockTicks + 1)) {
                 0 -> {
-                    if (blockStatus && !blinked) {
+                    if (blockStatus && !blinked && !BlinkUtils.isBlinking) {
                         blinked = true
                     }
                 }
@@ -479,14 +479,11 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
                     }
                 }
 
-                3 -> {
-                    if (blinked && BlinkUtils.isBlinking) {
+                blinkBlockTicks -> {
+                    if (!blockStatus && blinked && BlinkUtils.isBlinking) {
                         BlinkUtils.unblink()
-                    }
-                }
-                4 -> {
-                    if (blinked && !BlinkUtils.isBlinking) {
                         blinked = false
+
                         startBlocking(target!!, interactAutoBlock, autoBlock == "Fake") // block again
                     }
                 }
@@ -1099,7 +1096,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
         if (!fake) {
             if (!(blockRate > 0 && nextInt(endExclusive = 100) <= blockRate)) return
 
-            if (interact || watchdogAutoBlock) {
+            if (interact) {
                 val positionEye = player.eyes
 
                 val boundingBox = interactEntity.hitBox
@@ -1112,16 +1109,6 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
 
                 val movingObject = boundingBox.calculateIntercept(positionEye, lookAt) ?: return
                 val hitVec = movingObject.hitVec
-
-                if (watchdogAutoBlock) {
-                    InventoryUtils.serverSlot = (InventoryUtils.serverSlot + 1) % 9
-                    InventoryUtils.serverSlot = player.inventory.currentItem
-
-                    sendPackets(
-                        C02PacketUseEntity(interactEntity, hitVec - interactEntity.positionVector),
-                        C02PacketUseEntity(interactEntity, INTERACT)
-                    )
-                }
 
                 sendPackets(
                     C02PacketUseEntity(interactEntity, hitVec - interactEntity.positionVector),
