@@ -43,7 +43,7 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
     val inventoryParticle by BoolValue("InventoryParticle", false)
 
     // UI
-    private val intefaceColor by BoolValue("Interface Color", true)
+    private val intefaceColor by BoolValue("Interface Color", false)
     val colorRed by IntegerValue("R", 0, 0..255) { intefaceColor }
     val colorGreen by IntegerValue("G", 160, 0..255) { intefaceColor }
     val colorBlue by IntegerValue("B", 255, 0..255) { intefaceColor }
@@ -56,14 +56,14 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
         "Coral", "Fire", "Aqua", "Peony"
     )
 
-    var ClientColorMode by ListValue("ColorMode", colorOptions, "Zywl")
+    var ClientColorMode by ListValue("ColorMode", colorOptions, "Zywl") { intefaceColor }
 
-    var textValue by BoolValue("TextStaticColor", false)
-    var ThemeFadeSpeed by IntegerValue("Fade-speed", 1, 1..10)
+    var textValue by BoolValue("TextStaticColor", false) { intefaceColor }
+    var ThemeFadeSpeed by IntegerValue("Fade-speed", 1, 1..10) { intefaceColor }
     var updown by BoolValue(
         "Fade-Type",
         false
-    )
+    ) { intefaceColor }
 
     val guiColor
         get() = if (colorRainbowValue.get()) ColorUtils.rainbow().rgb

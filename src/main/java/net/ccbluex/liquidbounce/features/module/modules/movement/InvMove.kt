@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
@@ -23,6 +23,8 @@ import net.minecraft.client.gui.GuiIngameMenu
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.client.settings.GameSettings
+import net.minecraft.client.settings.KeyBinding
+import org.lwjgl.input.Mouse
 
 object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = false, hideModule = false) {
 
@@ -37,12 +39,12 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
     private val noMoveGround by InventoryManager.noMoveGroundValue
     private val undetectable by InventoryManager.undetectableValue
 
-        // If player violates nomove check and inventory is open, close inventory and reopen it when still
-        private val silentlyCloseAndReopen by BoolValue("SilentlyCloseAndReopen", false)
-            { noMove && (noMoveAir || noMoveGround) }
-            // Reopen closed inventory just before a click (could flag for clicking too fast after opening inventory)
-            private val reopenOnClick by BoolValue("ReopenOnClick", false)
-                { silentlyCloseAndReopen && noMove && (noMoveAir || noMoveGround) }
+    // If player violates nomove check and inventory is open, close inventory and reopen it when still
+    private val silentlyCloseAndReopen by BoolValue("SilentlyCloseAndReopen", false)
+    { noMove && (noMoveAir || noMoveGround) }
+    // Reopen closed inventory just before a click (could flag for clicking too fast after opening inventory)
+    private val reopenOnClick by BoolValue("ReopenOnClick", false)
+    { silentlyCloseAndReopen && noMove && (noMoveAir || noMoveGround) }
 
     private val affectedBindings = arrayOf(
         mc.gameSettings.keyBindForward,
@@ -73,8 +75,8 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
         }
 
         for (affectedBinding in affectedBindings)
-            affectedBinding.pressed = GameSettings.isKeyDown(affectedBinding)
-                || (affectedBinding == mc.gameSettings.keyBindSprint && Sprint.handleEvents() && Sprint.mode == "Legit" && (!Sprint.onlyOnSprintPress || mc.thePlayer.isSprinting))
+            affectedBinding.pressed = isButtonPressed(affectedBinding)
+                    || (affectedBinding == mc.gameSettings.keyBindSprint && Sprint.handleEvents() && Sprint.mode == "Legit" && (!Sprint.onlyOnSprintPress || mc.thePlayer.isSprinting))
     }
 
     @EventTarget
@@ -88,7 +90,7 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
     fun onJump(event: JumpEvent) {
         if (isIntave) event.cancelEvent()
     }
-    
+
     @EventTarget
     fun onClick(event: ClickWindowEvent) {
         if (!canClickInventory()) event.cancelEvent()
@@ -97,7 +99,15 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
 
     override fun onDisable() {
         for (affectedBinding in affectedBindings)
-            affectedBinding.pressed = GameSettings.isKeyDown(affectedBinding)
+            affectedBinding.pressed = isButtonPressed(affectedBinding)
+    }
+
+    private fun isButtonPressed(keyBinding: KeyBinding): Boolean {
+        return if (keyBinding.keyCode < 0) {
+            Mouse.isButtonDown(keyBinding.keyCode + 100)
+        } else {
+            GameSettings.isKeyDown(keyBinding)
+        }
     }
 
     override val tag
