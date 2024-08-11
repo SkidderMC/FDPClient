@@ -29,6 +29,12 @@ import java.util.concurrent.ConcurrentHashMap
 
 object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = false, hideModule = false) {
 
+    private val staffMode by object : ListValue("StaffMode", arrayOf("BlocksMC", "CubeCraft", "Gamster", "AgeraPvP"), "BlocksMC") {
+        override fun onUpdate(value: String) {
+            loadStaffData()
+        }
+    }
+
     private val tab by BoolValue("TAB", true)
     private val packet by BoolValue("Packet", true)
 
@@ -47,12 +53,14 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
     private var attemptLeave = false
 
     private var staffList = mapOf<String, Set<String>?>()
+    private var serverIp = ""
 
-    override fun onEnable() {
-        loadStaffData()
-    }
+    private val moduleJob = SupervisorJob()
+    private val moduleScope = CoroutineScope(Dispatchers.IO + moduleJob)
 
     override fun onDisable() {
+        serverIp = ""
+        moduleJob.cancel()
         checkedStaff.clear()
         checkedSpectator.clear()
         playersInSpectatorMode.clear()
@@ -67,30 +75,20 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
         checkedStaff.clear()
         checkedSpectator.clear()
         playersInSpectatorMode.clear()
-
-        if (event.worldClient == null && mc.currentServerData == null) {
-            staffList = emptyMap()
-        } else {
-            if (staffList.isEmpty())
-                loadStaffData()
-        }
     }
 
     private fun loadStaffData() {
-        if (mc.thePlayer == null)
-            return
+        val serverIpMap = mapOf(
+            "blocksmc" to "blocksmc.com",
+            "cubecraft" to "cubecraft.net",
+            "gamster" to "gamster.org",
+            "agerapvp" to "agerapvp.club"
+        )
 
-        val serverEntry = mc.currentServerData ?: return
-        val address = serverEntry.serverIP
+        serverIp = serverIpMap[staffMode.lowercase()] ?: return
 
-        val serverIp = if (address.isNotEmpty()) {
-            address.substringBeforeLast(":")
-        } else {
-            ServerUtils.remoteIp.lowercase()
-        }
-
-        runBlocking {
-            launch { staffList = loadStaffList("$CLIENT_CLOUD/staffs/${serverIp}") }
+        moduleScope.launch {
+            staffList = loadStaffList("$CLIENT_CLOUD/staffs/$serverIp")
         }
     }
 
@@ -307,15 +305,14 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
             return
         }
 
-        if (!attemptLeave) {
+        if (!attemptLeave && autoLeave != "Off") {
             when (autoLeave.lowercase()) {
-                "off" -> return
                 "leave" -> mc.thePlayer.sendChatMessage("/leave")
                 "lobby" -> mc.thePlayer.sendChatMessage("/lobby")
                 "quit" -> mc.theWorld.sendQuittingDisconnectingPacket()
             }
+            attemptLeave = true
         }
-        attemptLeave = true
     }
 
     private fun handleOtherChecks(packet: Packet<*>?) {
@@ -360,7 +357,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
 
             when (code) {
                 200 -> {
-                    val staffList = response.split("\n")
+                    val staffList = response.lineSequence()
                         .filter { it.isNotBlank() }
                         .map { it.trim() }
                         .toSet()
@@ -389,4 +386,10 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
             HttpUtils.request(url, "GET").let { Pair(it.first, it.second) }
         }
     }
+
+    /**
+     * HUD TAG
+     */
+    override val tag
+        get() = staffMode
 }
