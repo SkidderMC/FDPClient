@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils.inventory
 
@@ -22,34 +22,34 @@ object InventoryManager: MinecraftInstance() {
 
 	// Shared no move click values
 	val noMoveValue = BoolValue("NoMoveClicks", false)
-		val noMoveAirValue = BoolValue("NoClicksInAir", false) { noMoveValue.get() }
-		val noMoveGroundValue = BoolValue("NoClicksOnGround", true) { noMoveValue.get() }
+	val noMoveAirValue = BoolValue("NoClicksInAir", false) { noMoveValue.get() }
+	val noMoveGroundValue = BoolValue("NoClicksOnGround", true) { noMoveValue.get() }
 
 	// Shared values between AutoArmor and InventoryCleaner
 	val invOpenValue = BoolValue("InvOpen", false)
-		val simulateInventoryValue = BoolValue("SimulateInventory", true) { !invOpenValue.get() }
-		val autoCloseValue = BoolValue("AutoClose", false) { invOpenValue.get() }
+	val simulateInventoryValue = BoolValue("SimulateInventory", true) { !invOpenValue.get() }
+	val autoCloseValue = BoolValue("AutoClose", false) { invOpenValue.get() }
 
-		val startDelayValue = IntegerValue("StartDelay", 0, 0..500)
-			{ invOpenValue.get() || simulateInventoryValue.get() }
-		val closeDelayValue = IntegerValue("CloseDelay", 0, 0..500)
-			{ if (invOpenValue.get()) autoCloseValue.get() else simulateInventoryValue.get() }
+	val startDelayValue = IntegerValue("StartDelay", 0, 0..500)
+	{ invOpenValue.get() || simulateInventoryValue.get() }
+	val closeDelayValue = IntegerValue("CloseDelay", 0, 0..500)
+	{ if (invOpenValue.get()) autoCloseValue.get() else simulateInventoryValue.get() }
 
 	// Shared highlight slot values between AutoArmor and InventoryCleaner
 	val highlightSlotValue = BoolValue("Highlight-Slot", false, subjective = true)
 
 	// Shared highlight slot background values between AutoArmor and InventoryCleaner
-	val backgroundRedValue = IntegerValue("Background-R", 128, 0..255) { highlightSlotValue.get() }
-	val backgroundGreenValue = IntegerValue("Background-G", 128, 0..255) { highlightSlotValue.get() }
-	val backgroundBlueValue = IntegerValue("Background-B", 128, 0..255) { highlightSlotValue.get() }
-	val backgroundAlphaValue = IntegerValue("Background-Alpha", 128, 0..255) { highlightSlotValue.get() }
+	val backgroundRedValue = IntegerValue("Background-R", 128, 0..255, subjective = true) { highlightSlotValue.get() }
+	val backgroundGreenValue = IntegerValue("Background-G", 128, 0..255, subjective = true) { highlightSlotValue.get() }
+	val backgroundBlueValue = IntegerValue("Background-B", 128, 0..255, subjective = true) { highlightSlotValue.get() }
+	val backgroundAlphaValue = IntegerValue("Background-Alpha", 128, 0..255, subjective = true) { highlightSlotValue.get() }
 
 	// Shared highlight slot border values between AutoArmor and InventoryCleaner
-	val borderStrength = IntegerValue("Border-Strength", 3, 1..5) { highlightSlotValue.get() }
-	val borderRed = IntegerValue("Border-R", 128, 0..255) { highlightSlotValue.get() }
-	val borderGreen = IntegerValue("Border-G", 128, 0..255) { highlightSlotValue.get() }
-	val borderBlue = IntegerValue("Border-B", 128, 0..255) { highlightSlotValue.get() }
-	val borderAlpha = IntegerValue("Border-Alpha", 255, 0..255) { highlightSlotValue.get() }
+	val borderStrength = IntegerValue("Border-Strength", 3, 1..5, subjective = true) { highlightSlotValue.get() }
+	val borderRed = IntegerValue("Border-R", 128, 0..255, subjective = true) { highlightSlotValue.get() }
+	val borderGreen = IntegerValue("Border-G", 128, 0..255, subjective = true) { highlightSlotValue.get() }
+	val borderBlue = IntegerValue("Border-B", 128, 0..255, subjective = true) { highlightSlotValue.get() }
+	val borderAlpha = IntegerValue("Border-Alpha", 255, 0..255, subjective = true) { highlightSlotValue.get() }
 
 	// Undetectable
 	val undetectableValue = BoolValue("Undetectable", false)
