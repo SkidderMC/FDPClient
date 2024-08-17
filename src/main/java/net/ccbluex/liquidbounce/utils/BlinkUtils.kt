@@ -7,8 +7,10 @@ package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
+import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.RotationUtils.serverRotation
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.network.Packet
 import net.minecraft.network.handshake.client.C00Handshake
@@ -148,6 +150,35 @@ object BlinkUtils {
         }
     }
 
+    fun cancel() {
+        val player = mc.thePlayer ?: return
+        val firstPosition = positions.firstOrNull() ?: return
+
+        player.setPositionAndUpdate(firstPosition.xCoord, firstPosition.yCoord, firstPosition.zCoord)
+
+        synchronized(packets) {
+            packets.removeIf {
+                when (it) {
+                    is C03PacketPlayer -> true
+                    else -> {
+                        sendPacket(it)
+                        true
+                    }
+                }
+            }
+        }
+
+        synchronized(positions) {
+            positions.clear()
+        }
+
+        // Remove fake player
+        fakePlayer?.apply {
+            fakePlayer?.entityId?.let { mc.theWorld?.removeEntityFromWorld(it) }
+            fakePlayer = null
+        }
+    }
+
     fun unblink() {
         synchronized(packetsReceived) {
             PacketUtils.queuedPackets.addAll(packetsReceived)
@@ -159,8 +190,8 @@ object BlinkUtils {
         clear()
 
         // Remove fake player
-        fakePlayer?.let {
-            mc.theWorld?.removeEntityFromWorld(it.entityId)
+        fakePlayer?.apply {
+            fakePlayer?.entityId?.let { mc.theWorld?.removeEntityFromWorld(it) }
             fakePlayer = null
         }
     }
@@ -190,7 +221,7 @@ object BlinkUtils {
         faker.copyLocationAndAnglesFrom(player)
         faker.rotationYawHead = player.rotationYawHead
         faker.inventory = player.inventory
-        world.addEntityToWorld(-1337, faker)
+        world.addEntityToWorld(RandomUtils.nextInt(Int.MIN_VALUE, Int.MAX_VALUE), faker)
 
         fakePlayer = faker
 
