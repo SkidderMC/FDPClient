@@ -10,6 +10,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.verus
  * https://github.com/SkidderMC/FDPClient/
  */
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
+import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
 
 /*
 * Working on Verus: b3896/b3901
@@ -24,8 +25,13 @@ object VerusGlide : FlyMode("VerusGlide") {
         if (player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
 
         if (!player.onGround && player.fallDistance > 1) {
-            // Good job verus
+            // Good job, Verus
             player.motionY = -0.09800000190734863
+            if (player.movementInput.moveForward != 0f && player.movementInput.moveStrafe != 0f) {
+                strafe(0.33f)
+            } else {
+                strafe(0.3345f)
+            }
         }
     }
 }
