@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils.inventory
 
@@ -84,6 +84,14 @@ object InventoryUtils : MinecraftInstance(), Listenable {
         Blocks.redstone_torch,
         Blocks.ladder
     )
+
+    fun findItemArray(startInclusive: Int, endInclusive: Int, items: Array<Item>): Int? {
+        for (i in startInclusive..endInclusive)
+            if (mc.thePlayer.openContainer.getSlot(i).stack?.item in items)
+                return i
+
+        return null
+    }
 
     fun findItem(startInclusive: Int, endInclusive: Int, item: Item): Int? {
         for (i in startInclusive..endInclusive)
