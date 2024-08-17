@@ -21,7 +21,7 @@ object HypixelHop : SpeedMode("HypixelHop") {
                 player.tryJump()
             } else {
                 player.tryJump()
-                strafe(0.4f)
+                strafe(0.48f)
             }
         }
 
