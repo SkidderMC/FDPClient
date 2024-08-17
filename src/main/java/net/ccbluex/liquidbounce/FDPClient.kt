@@ -39,6 +39,7 @@ import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.u
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager.Companion.loadActiveGenerators
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
+import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts.loadFonts
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.ClassUtils.hasForge
@@ -85,6 +86,7 @@ object FDPClient {
     val fileManager = FileManager
     val scriptManager = ScriptManager
     private var combatManager = CombatManager
+    val keyBindManager = KeyBindManager
 
     // HUD & ClickGUI
     val hud = HUD
@@ -138,6 +140,7 @@ object FDPClient {
 
                     // Register commands
                     registerCommands()
+                    KeyBindManager
 
                     // Setup module manager and register modules
                     registerModules()

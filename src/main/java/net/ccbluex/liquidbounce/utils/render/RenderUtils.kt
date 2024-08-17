@@ -913,6 +913,104 @@ object RenderUtils : MinecraftInstance() {
         drawRoundedRectangle(newX1, newY1, newX2, newY2, red, green, blue, alpha, radius)
     }
 
+    fun drawRoundedBindRect(
+        paramXStart: Float,
+        paramYStart: Float,
+        paramXEnd: Float,
+        paramYEnd: Float,
+        radius: Float,
+        color: Int,
+        popPush: Boolean
+    ) {
+        var paramXStart = paramXStart
+        var paramYStart = paramYStart
+        var paramXEnd = paramXEnd
+        var paramYEnd = paramYEnd
+        val alpha = (color shr 24 and 0xFF) / 255.0f
+        val red = (color shr 16 and 0xFF) / 255.0f
+        val green = (color shr 8 and 0xFF) / 255.0f
+        val blue = (color and 0xFF) / 255.0f
+
+        var z = 0f
+        if (paramXStart > paramXEnd) {
+            z = paramXStart
+            paramXStart = paramXEnd
+            paramXEnd = z
+        }
+
+        if (paramYStart > paramYEnd) {
+            z = paramYStart
+            paramYStart = paramYEnd
+            paramYEnd = z
+        }
+
+        val x1 = (paramXStart + radius).toDouble()
+        val y1 = (paramYStart + radius).toDouble()
+        val x2 = (paramXEnd - radius).toDouble()
+        val y2 = (paramYEnd - radius).toDouble()
+
+        if (popPush) glPushMatrix()
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
+        glLineWidth(1f)
+
+        glColor4f(red, green, blue, alpha)
+        glBegin(GL_POLYGON)
+
+        val degree = Math.PI / 180
+        run {
+            var i = 0.0
+            while (i <= 90) {
+                glVertex2d(x2 + sin(i * degree) * radius, y2 + cos(i * degree) * radius)
+                i += 1.0
+            }
+        }
+        run {
+            var i = 90.0
+            while (i <= 180) {
+                glVertex2d(
+                    x2 + sin(i * degree) * radius,
+                    y1 + cos(i * degree) * radius
+                )
+                i += 1.0
+            }
+        }
+        run {
+            var i = 180.0
+            while (i <= 270) {
+                glVertex2d(
+                    x1 + sin(i * degree) * radius,
+                    y1 + cos(i * degree) * radius
+                )
+                i += 1.0
+            }
+        }
+        var i = 270.0
+        while (i <= 360) {
+            glVertex2d(x1 + sin(i * degree) * radius, y2 + cos(i * degree) * radius)
+            i += 1.0
+        }
+        glEnd()
+
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
+        glDisable(GL_LINE_SMOOTH)
+        if (popPush) glPopMatrix()
+    }
+
+    fun drawRoundedBindRect(
+        paramXStart: Float,
+        paramYStart: Float,
+        paramXEnd: Float,
+        paramYEnd: Float,
+        radius: Float,
+        color: Int
+    ) {
+        drawRoundedBindRect(paramXStart, paramYStart, paramXEnd, paramYEnd, radius, color, true)
+    }
+
     fun drawArrayRect(left: Float, top: Float, right: Float, bottom: Float, color: Int) {
         var left = left
         var top = top

@@ -118,6 +118,8 @@ object ModuleManager : Listenable {
      */
     fun getModule(moduleName: String?) = modules.find { it.name.equals(moduleName, ignoreCase = true) }
 
+    fun getKeyBind(key: Int) = modules.filter { it.keyBind == key }
+
     operator fun get(name: String) = getModule(name)
 
     /**
