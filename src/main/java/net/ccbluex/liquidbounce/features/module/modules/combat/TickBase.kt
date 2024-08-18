@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.Vec3
@@ -27,6 +28,7 @@ import java.awt.Color
 
 object TickBase : Module("TickBase", Category.COMBAT) {
 
+    private val mode by ListValue("Mode", arrayOf("Past", "Future"), "Past")
     private val onlyOnKillAura by BoolValue("OnlyOnKillAura", true)
 
     private val change by IntegerValue("Changes", 100, 0..100)
@@ -69,6 +71,9 @@ object TickBase : Module("TickBase", Category.COMBAT) {
     private var reachedTheLimit = false
     private val tickBuffer = mutableListOf<TickData>()
     private var duringTickModification = false
+
+    override val tag
+        get() = mode
 
     override fun onToggle(state: Boolean) {
         duringTickModification = false
@@ -121,15 +126,30 @@ object TickBase : Module("TickBase", Category.COMBAT) {
 
             duringTickModification = true
 
-            ticksToSkip = bestTick + pauseAfterTick
+            if (mode == "Past") {
+                ticksToSkip = bestTick + pauseAfterTick
 
-            WaitTickUtils.scheduleTicks(ticksToSkip) {
-                repeat(bestTick) {
+                WaitTickUtils.scheduleTicks(ticksToSkip) {
+                    repeat(bestTick) {
+                        player.onUpdate()
+                        tickBalance -= 1
+                    }
+
+                    duringTickModification = false
+                }
+            } else {
+                val skipTicks = bestTick + pauseAfterTick
+
+                repeat(skipTicks) {
                     player.onUpdate()
                     tickBalance -= 1
                 }
 
-                duringTickModification = false
+                ticksToSkip = skipTicks
+
+                WaitTickUtils.scheduleTicks(ticksToSkip) {
+                    duringTickModification = false
+                }
             }
         }
     }
