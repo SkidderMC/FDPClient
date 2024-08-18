@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
-import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSmall
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawExhiEnchants
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -44,9 +44,12 @@ class Armor(
     private val green by IntegerValue("Green", 255, 0..255)
     private val blue by IntegerValue("Blue", 255, 0..255)
     private val alpha by IntegerValue("Alpha", 255, 0..255)
-    private val repairReminderThreshold by IntegerValue("Alert Repair Reminder Threshold", 10, 0..100)
-    private val durabilityThreshold by IntegerValue("Alert Durability Threshold", 20, 0..100)
+    private val repairReminderThreshold by IntegerValue("Alert Repair Reminder Threshold", 0, 0..100)
+    private val durabilityThreshold by IntegerValue("Alert Durability Threshold", 0, 0..100)
     private val mc = MinecraftInstance.mc
+
+    private var blinkTimer = 0L
+    private var blinkState = false
 
     override fun drawElement(): Border {
         val mode = modeValue
@@ -64,6 +67,12 @@ class Armor(
         val isInsideWater = player.isInsideOfMaterial(Material.water)
         val x = 1
         val y = if (isInsideWater) -10 else 0
+
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - blinkTimer >= 500) {
+            blinkState = !blinkState
+            blinkTimer = currentTime
+        }
 
         if (mode.equals("Horizontal", ignoreCase = true)) {
             enableCull()
@@ -140,13 +149,19 @@ class Armor(
             val value = stack.maxDamage - stack.itemDamage
             val percentage = value.toFloat() / stack.maxDamage.toFloat() * 100.0f
 
+            val displayColor = if (percentage <= durabilityThreshold && blinkState) {
+                java.awt.Color.RED.rgb
+            } else {
+                color
+            }
+
             when (showAttributes) {
                 "Value" -> {
-                    Fonts.fontSmall.drawString(
+                    fontSmall.drawString(
                         value.toString(),
                         x + percentageXOffset,
-                        y + 15.0f + Fonts.fontSmall.height + percentageYOffset,
-                        color
+                        y + 15.0f + fontSmall.height + percentageYOffset,
+                        displayColor
                     )
                 }
                 "Percentage" -> {
@@ -155,20 +170,20 @@ class Armor(
                     } else {
                         String.format("%.0f%%", percentage)
                     }
-                    Fonts.fontSmall.drawString(
+                    fontSmall.drawString(
                         percentageText,
                         x + percentageXOffset,
-                        y + 15.0f + Fonts.fontSmall.height + percentageYOffset,
-                        color
+                        y + 15.0f + fontSmall.height + percentageYOffset,
+                        displayColor
                     )
                 }
                 "All" -> {
                     val damageText = String.format("%d/%d (%.0f%%)", value, stack.maxDamage, percentage)
-                    Fonts.fontSmall.drawString(
+                    fontSmall.drawString(
                         damageText,
                         x + percentageXOffset,
-                        y + 15.0f + Fonts.fontSmall.height + percentageYOffset,
-                        color
+                        y + 15.0f + fontSmall.height + percentageYOffset,
+                        displayColor
                     )
                 }
             }
@@ -179,7 +194,6 @@ class Armor(
         }
 
         if (stack.itemDamage > stack.maxDamage * (1 - durabilityThreshold / 100.0)) {
-
             drawDurabilityAlert(stack, x, y, color)
         }
 
@@ -187,8 +201,7 @@ class Armor(
     }
 
     private fun drawDurabilityAlert(stack: ItemStack, x: Int, y: Int, color: Int) {
-
         val alertColor = java.awt.Color.RED.rgb
-        Fonts.fontSmall.drawString("⚠", x.toFloat(), y.toFloat(), alertColor)
+        fontSmall.drawString("⚠", x.toFloat(), y.toFloat(), alertColor)
     }
 }
