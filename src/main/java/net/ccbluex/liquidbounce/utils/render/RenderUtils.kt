@@ -2471,12 +2471,12 @@ object RenderUtils : MinecraftInstance() {
 
     //TAHOMA
     private fun drawExhiOutlined(text: String, x: Float, y: Float, borderColor: Int, mainColor: Int): Float {
-        Fonts.font35.drawString(text, x, y - 0.35.toFloat(), borderColor)
-        Fonts.font35.drawString(text, x, y + 0.35.toFloat(), borderColor)
-        Fonts.font35.drawString(text, x - 0.35.toFloat(), y, borderColor)
-        Fonts.font35.drawString(text, x + 0.35.toFloat(), y, borderColor)
-        if (true) Fonts.font35.drawString(text, x, y, mainColor)
-        return x + Fonts.font35.getStringWidth(text) - 2f
+        Fonts.fontSmall.drawString(text, x, y - 0.35.toFloat(), borderColor)
+        Fonts.fontSmall.drawString(text, x, y + 0.35.toFloat(), borderColor)
+        Fonts.fontSmall.drawString(text, x - 0.35.toFloat(), y, borderColor)
+        Fonts.fontSmall.drawString(text, x + 0.35.toFloat(), y, borderColor)
+        Fonts.fontSmall.drawString(text, x, y, mainColor)
+        return x + Fonts.fontSmall.getStringWidth(text) - 2f
     }
 
     private fun getBorderColor(level: Int): Int {
