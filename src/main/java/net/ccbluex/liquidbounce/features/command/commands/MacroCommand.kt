@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.FDPClient.macroManager
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
@@ -24,7 +24,7 @@ object MacroCommand : Command("macro", "m") {
                         if (key != Keyboard.KEY_NONE) {
                             var comm = StringUtils.toCompleteString(args, 3)
                             if (!comm.startsWith(".")) comm = ".$comm"
-                            FDPClient.macroManager.macros.add(Macro(key, comm))
+                            macroManager.macros.add(Macro(key, comm))
                             alert("Bound macro $comm to key ${Keyboard.getKeyName(key)}.")
                         } else {
                             alert("Unknown key to bind macro.")
@@ -38,12 +38,12 @@ object MacroCommand : Command("macro", "m") {
                 "remove" -> {
                     if (args.size > 2) {
                         if (args[2].startsWith(".")) {
-                            FDPClient.macroManager.macros.filter { it.command == StringUtils.toCompleteString(args, 2) }
+                            macroManager.macros.filter { it.command == StringUtils.toCompleteString(args, 2) }
                         } else {
                             val key = Keyboard.getKeyIndex(args[2].uppercase())
-                            FDPClient.macroManager.macros.filter { it.key == key }
+                            macroManager.macros.filter { it.key == key }
                         }.forEach {
-                            FDPClient.macroManager.macros.remove(it)
+                            macroManager.macros.remove(it)
                             alert("Remove macro ${it.command}.")
                         }
                         save()
@@ -54,7 +54,7 @@ object MacroCommand : Command("macro", "m") {
 
                 "list" -> {
                     alert("Macros:")
-                    FDPClient.macroManager.macros.forEach {
+                    macroManager.macros.forEach {
                         alert("key=${Keyboard.getKeyName(it.key)}, command=${it.command}")
                     }
                 }

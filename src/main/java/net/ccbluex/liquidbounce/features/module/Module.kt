@@ -52,8 +52,6 @@ open class Module(
     // Get normal or spaced name
     fun getName(spaced: Boolean = Arraylist.spacedModules) = if (spaced) spacedName else name
 
-    var localizedName = ""
-
     var keyBind = defaultKeyBind
         set(keyBind) {
             field = keyBind
