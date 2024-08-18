@@ -86,7 +86,7 @@ object FDPClient {
     val eventManager = EventManager
     val fileManager = FileManager
     val scriptManager = ScriptManager
-    private var combatManager = CombatManager
+    var combatManager = CombatManager
     val keyBindManager = KeyBindManager
     val macroManager = MacroManager
 
