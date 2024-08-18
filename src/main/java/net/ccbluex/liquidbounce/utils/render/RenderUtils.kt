@@ -22,13 +22,11 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInOutQuad
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.GlStateManager.*
-import net.minecraft.client.renderer.OpenGlHelper
-import net.minecraft.client.renderer.RenderGlobal
-import net.minecraft.client.renderer.RenderHelper
-import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
@@ -2693,23 +2691,5 @@ object RenderUtils : MinecraftInstance() {
         glDepthMask(true)
         resetCaps()
         popMatrix()
-    }
-
-    fun SkyRainbow(var2: Int, st: Float, bright: Float): Int {
-        var v1 = ceil((System.currentTimeMillis() + (var2 * 109).toLong()).toDouble()) / 5
-        return Color.getHSBColor(
-            if ((((360.0.also { v1 %= it }) / 360.0).toFloat()) < 0.5) -((v1 / 360.0).toFloat()) else (v1 / 360.0).toFloat(),
-            st,
-            bright
-        ).rgb
-    }
-
-    fun skyRainbow(var2: Int, st: Float, bright: Float, speed: Float): Color {
-        var v1 = ceil((System.currentTimeMillis() + (var2 * 109 * speed).toLong()).toDouble()) / 5
-        return Color.getHSBColor(
-            if ((((360.0.also { v1 %= it }) / 360.0).toFloat()) < 0.5) -((v1 / 360.0).toFloat()) else (v1 / 360.0).toFloat(),
-            st,
-            bright
-        )
     }
 }

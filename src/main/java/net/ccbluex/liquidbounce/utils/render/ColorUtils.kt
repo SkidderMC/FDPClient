@@ -9,10 +9,7 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
 import net.minecraft.client.renderer.GlStateManager
 import java.awt.Color
 import java.util.regex.Pattern
-import kotlin.math.abs
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.sin
+import kotlin.math.*
 
 object ColorUtils {
     /** Array of the special characters that are allowed in any text drawing of Minecraft.  */
@@ -188,5 +185,14 @@ object ColorUtils {
         val greenPart = (color1.green * percent + color2.green * inverse_percent).toInt()
         val bluePart = (color1.blue * percent + color2.blue * inverse_percent).toInt()
         return Color(redPart, greenPart, bluePart)
+    }
+
+    fun skyRainbow(var2: Int, st: Float, bright: Float, speed: Float): Color {
+        var v1 = ceil((System.currentTimeMillis() + (var2 * 109 * speed).toLong()).toDouble()) / 5
+        return Color.getHSBColor(
+            if ((((360.0.also { v1 %= it }) / 360.0).toFloat()) < 0.5) -((v1 / 360.0).toFloat()) else (v1 / 360.0).toFloat(),
+            st,
+            bright
+        )
     }
 }
