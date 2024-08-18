@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
+import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
@@ -19,7 +20,6 @@ import net.minecraft.block.material.Material
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.item.ItemStack
-import net.minecraft.util.ChatComponentText
 
 /**
  * CustomHUD Armor element
@@ -189,7 +189,7 @@ class Armor(
             }
 
             if (percentage <= repairReminderThreshold) {
-                mc.thePlayer.addChatMessage(ChatComponentText("!! ${stack.displayName} has low durability!"))
+                Chat.print("!! ${stack.displayName} has low durability!")
             }
         }
 
