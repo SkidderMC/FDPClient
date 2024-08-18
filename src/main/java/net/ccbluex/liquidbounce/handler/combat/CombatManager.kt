@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 
-object CombatManager : Listenable, MinecraftInstance() {
+object CombatManager : MinecraftInstance(), Listenable {
     private val lastAttackTimer = MSTimer()
 
     var inCombat = false

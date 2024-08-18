@@ -27,6 +27,7 @@ import net.ccbluex.liquidbounce.file.FileManager.loadAllConfigs
 import net.ccbluex.liquidbounce.file.FileManager.saveAllConfigs
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.handler.lang.LanguageManager.loadLanguages
+import net.ccbluex.liquidbounce.handler.macro.MacroManager
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.ScriptManager.enableScripts
 import net.ccbluex.liquidbounce.script.ScriptManager.loadScripts
@@ -87,6 +88,8 @@ object FDPClient {
     val scriptManager = ScriptManager
     private var combatManager = CombatManager
     val keyBindManager = KeyBindManager
+    val macroManager = MacroManager
+
 
     // HUD & ClickGUI
     val hud = HUD
@@ -120,6 +123,7 @@ object FDPClient {
 
                     registerListener(CapeService)
                     registerListener(combatManager)
+                    registerListener(macroManager)
                     registerListener(InventoryUtils)
                     registerListener(MiniMapRegister)
                     registerListener(TickedActions)

@@ -6,7 +6,10 @@
 package net.ccbluex.liquidbounce.ui.client.keybind
 
 import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.FDPClient.macroManager
+import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.handler.macro.Macro
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -41,7 +44,7 @@ class KeyInfo(
     private val direction = posY >= 100
 
     private var modules = ArrayList<Module>()
-   // private var macros = ArrayList<Macro>()
+    private var macros = ArrayList<Macro>()
     private var hasKeyBind = false
     private var stroll = 0
     private var maxStroll = 0
@@ -78,7 +81,7 @@ class KeyInfo(
             }
             yOffset += 20
         }
-     /*   for (macro in macros) {
+        for (macro in macros) {
             if (yOffset> 0 && (yOffset - 20) <100) {
                 GL11.glPushMatrix()
                 GL11.glTranslatef(0F, yOffset, 0F)
@@ -91,14 +94,14 @@ class KeyInfo(
                 GL11.glPopMatrix()
             }
             yOffset += 20
+            yOffset += 20
         }
-        */
 
         // cover the excess
         RenderUtils.drawRoundedBindRect(0F, 0F, baseTabWidth.toFloat(), 12F + Fonts.font40.height + 10F, 6F, Color.WHITE.rgb)
         RenderUtils.drawRoundedBindRect(0F, baseTabHeight - 22F - Fonts.font40.height, baseTabWidth.toFloat(), baseTabHeight.toFloat(), 6F, Color.WHITE.rgb)
         Fonts.font40.drawString("Key $keyDisplayName", 12F, 12F, Color.BLACK.rgb, false)
-        Fonts.font40.drawString("Add", baseTabWidth - 12F - Fonts.font40.getStringWidth("Add"), baseTabHeight - 12F - Fonts.font40.height, Color(0, 191, 255).rgb/*sky blue*/,false)
+        Fonts.font40.drawString("Add", baseTabWidth - 12F - Fonts.font40.getStringWidth("Add"), baseTabHeight - 12F - Fonts.font40.height, Color(0, 191, 255).rgb,false)
 
         GL11.glPopMatrix()
     }
@@ -117,11 +120,11 @@ class KeyInfo(
     }
 
     fun update() {
-        modules = FDPClient.moduleManager.getKeyBind(key) as ArrayList<Module>
-     //   macros = FDPClient.macroManager.macros.filter { it.key == key } as ArrayList<Macro>
-        hasKeyBind = (modules.size/* + macros.size*/)> 0
+        modules = moduleManager.getKeyBind(key) as ArrayList<Module>
+        macros = macroManager.macros.filter { it.key == key } as ArrayList<Macro>
+        hasKeyBind = (modules.size + macros.size)> 0
         stroll = 0
-        maxStroll = modules.size * 30/* + macros.size*/ * 30
+        maxStroll = modules.size * 30 + macros.size * 30
     }
 
     fun click(mouseX: Float, mouseY: Float) {
@@ -154,15 +157,14 @@ class KeyInfo(
                         }
                         yOffset += 20
                     }
-                   /* for (macro in macros) {
+                   for (macro in macros) {
                         if (scaledMouseY> (yOffset + 5) && scaledMouseY <(yOffset + 15)) {
-                          //  FDPClient.macroManager.macros.remove(macro)
+                            macroManager.macros.remove(macro)
                             update()
                             break
                         }
                         yOffset += 20
                     }
-                    */
                 }
             }
         }

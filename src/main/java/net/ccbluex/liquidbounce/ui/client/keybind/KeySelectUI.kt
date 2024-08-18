@@ -5,9 +5,11 @@
  */
 package net.ccbluex.liquidbounce.ui.client.keybind
 
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.FDPClient.keyBindManager
+import net.ccbluex.liquidbounce.FDPClient.macroManager
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.handler.macro.Macro
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.util.ChatAllowedCharacters
@@ -65,8 +67,8 @@ class KeySelectUI(val info: KeyInfo) : PopUI("Select a module to bind") {
             return
         } else if (keyCode == Keyboard.KEY_RETURN) {
             if (str.startsWith(".")) {
-              //  FDPClient.macroManager.macros.add(Macro(info.key, str))
-             //   FDPClient.keyBindManager.updateAllKeys()
+                macroManager.macros.add(Macro(info.key, str))
+                keyBindManager.updateAllKeys()
                 close()
             } else if (modules.isNotEmpty()) {
                 apply(modules[0])
@@ -104,12 +106,12 @@ class KeySelectUI(val info: KeyInfo) : PopUI("Select a module to bind") {
 
     private fun apply(module: Module) {
         module.keyBind = info.key
-        FDPClient.keyBindManager.updateAllKeys()
+        keyBindManager.updateAllKeys()
         close()
     }
 
     override fun close() {
-        FDPClient.keyBindManager.popUI = null
+        keyBindManager.popUI = null
     }
 
     private fun update() {
