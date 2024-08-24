@@ -41,6 +41,10 @@ object AnimationUtil {
         }
     }
 
+    fun easeInOutQuadX(x: Double): Double {
+        return if (x < 0.5) { 2 * x * x } else { 1 - (-2 * x + 2).pow(2) / 2 }
+    }
+
     fun easeInElastic(t: Double, b: Double, c: Double, d: Double): Double {
         var t = t
         var s = 1.70158

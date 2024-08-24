@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.utils.render
 import com.jhlabs.image.GaussianFilter
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.DOUBLE_PI
+import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.alphaValue
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorBlueTwoValue
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorBlueValue
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorGreenTwoValue
@@ -16,13 +17,14 @@ import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.col
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorRedValue
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.start
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.ClientThemesUtils.getColor
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.UIEffectRenderer.drawTexturedRect
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.setColour
-import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInOutQuad
+import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInOutQuadX
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.*
@@ -44,6 +46,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
+import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL14
 import org.lwjgl.util.glu.Cylinder
@@ -479,41 +482,33 @@ object RenderUtils : MinecraftInstance() {
      * @param entity The entity to draw the jello effect around.
      * @param partialTicks The partial ticks for smooth rendering.
      */
-    fun drawJello(entity: EntityLivingBase, partialTicks: Float) {
+    fun drawJello(entity: EntityLivingBase) {
+
         val drawTime = (System.currentTimeMillis() % 2000).toInt()
         val drawMode = drawTime > 1000
         var drawPercent = drawTime / 1000.0
-        // true when going up
-        if (!drawMode) {
-            drawPercent = 1 - drawPercent
-        } else {
-            drawPercent -= 1
-        }
-        drawPercent = easeInOutQuad(drawPercent.toLong(), 1L, 1.0, 2.0)
 
-        val points = mutableListOf<Vec3>()
+        drawPercent = if (drawMode) drawPercent - 1 else 1 - drawPercent
+        drawPercent = easeInOutQuadX(drawPercent)
+
         val bb = entity.entityBoundingBox
         val radius = bb.maxX - bb.minX
         val height = bb.maxY - bb.minY
-        val posX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks
-        var posY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks
-        if (drawMode) {
-            posY -= 0.5
-        } else {
-            posY += 0.5
-        }
-        val posZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks
+        val posX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks
+        var posY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.timer.renderPartialTicks
+        posY += if (drawMode) -0.5 else 0.5
+        val posZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks
 
+        val points = mutableListOf<Vec3>()
         for (i in 0..360 step 7) {
-            points.add(
-                Vec3(posX - sin(Math.toRadians(i.toDouble())) * radius,
+            points.add(Vec3(
+                posX - sin(i * Math.PI / 180F) * radius,
                 posY + height * drawPercent,
-                posZ + cos(Math.toRadians(i.toDouble())) * radius)
-            )
+                posZ + cos(i * Math.PI / 180F) * radius
+            ))
         }
         points.add(points[0])
 
-        // Draw
         mc.entityRenderer.disableLightmap()
         glPushMatrix()
         glDisable(GL_TEXTURE_2D)
@@ -522,20 +517,21 @@ object RenderUtils : MinecraftInstance() {
         glEnable(GL_BLEND)
         glDisable(GL_DEPTH_TEST)
         glBegin(GL_LINE_STRIP)
-        val baseMove = if (drawPercent > 0.5) 1 - drawPercent else drawPercent * 2
-        val min = (height / 60) * 20 * (1 - baseMove) * if (drawMode) -1 else 1
+
+        val baseMove = if (drawPercent > 0.5) 1 - drawPercent else drawPercent
+        val min = (height / 60) * 20 * (1 - baseMove) * (if (drawMode) -1 else 1)
 
         for (i in 0..20) {
             var moveFace = (height / 60F) * i * baseMove
-            if (drawMode) {
-                moveFace = -moveFace
-            }
+            if (drawMode) moveFace = -moveFace
+
             val firstPoint = points[0]
             glVertex3d(
                 firstPoint.xCoord - mc.renderManager.viewerPosX,
                 firstPoint.yCoord - moveFace - min - mc.renderManager.viewerPosY,
                 firstPoint.zCoord - mc.renderManager.viewerPosZ
             )
+
             glColor4f(1F, 1F, 1F, 0.7F * (i / 20F))
             for (vec3 in points) {
                 glVertex3d(
@@ -544,8 +540,9 @@ object RenderUtils : MinecraftInstance() {
                     vec3.zCoord - mc.renderManager.viewerPosZ
                 )
             }
-            glColor4f(0F, 0F, 0F, 0F)
+            glColor4f(0F,0F,0F,0F)
         }
+
         glEnd()
         glEnable(GL_DEPTH_TEST)
         glDisable(GL_LINE_SMOOTH)
@@ -553,6 +550,124 @@ object RenderUtils : MinecraftInstance() {
         glEnable(GL_TEXTURE_2D)
         glPopMatrix()
     }
+
+    fun drawFDP(entity: EntityLivingBase, event: Render3DEvent) {
+
+        val themeTextColor = getColor(1).rgb
+
+        val drawTime = (System.currentTimeMillis() % 1500).toInt()
+        val drawMode = drawTime > 750
+        var drawPercent = drawTime / 750.0
+        // true when goes up
+        if (!drawMode) {
+            drawPercent = 1 - drawPercent
+        } else {
+            drawPercent -= 1
+        }
+        drawPercent = easeInOutQuadX(drawPercent)
+        mc.entityRenderer.disableLightmap()
+        glPushMatrix()
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
+        glEnable(GL_BLEND)
+        glDisable(GL_DEPTH_TEST)
+
+        val bb = entity.entityBoundingBox
+        val radius = ((bb.maxX - bb.minX) + (bb.maxZ - bb.minZ)) * 0.5f
+        val height = bb.maxY - bb.minY
+        val x =
+            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+        val y =
+            (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
+        val z =
+            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+        mc.entityRenderer.disableLightmap()
+        glLineWidth((radius * 8f).toFloat())
+        glBegin(GL_LINE_STRIP)
+        for (i in 0..360 step 10) {
+            glColor(themeTextColor)
+            glVertex3d(x - sin(i * Math.PI / 180F) * radius, y, z + cos(i * Math.PI / 180F) * radius)
+        }
+        glEnd()
+
+        glEnable(GL_DEPTH_TEST)
+        glDisable(GL_LINE_SMOOTH)
+        glDisable(GL_BLEND)
+        glEnable(GL_TEXTURE_2D)
+        glPopMatrix()
+    }
+
+    fun drawLies(entity: EntityLivingBase, event: Render3DEvent) {
+
+        val themeTextColor = getColor(1)
+
+        val everyTime = 3000
+        val drawTime = (System.currentTimeMillis() % everyTime).toInt()
+        val drawMode = drawTime > (everyTime / 2)
+        var drawPercent = drawTime / (everyTime / 2.0)
+
+        if (!drawMode) {
+            drawPercent = 1 - drawPercent
+        } else {
+            drawPercent -= 1
+        }
+        drawPercent = easeInOutQuadX(drawPercent)
+        mc.entityRenderer.disableLightmap()
+        glPushMatrix()
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
+        glEnable(GL_BLEND)
+        glDisable(GL_DEPTH_TEST)
+        glDisable(GL_CULL_FACE)
+        glShadeModel(7425)
+        mc.entityRenderer.disableLightmap()
+
+        val bb = entity.entityBoundingBox
+        val radius = ((bb.maxX - bb.minX) + (bb.maxZ - bb.minZ)) * 0.5f
+        val height = bb.maxY - bb.minY
+        val x =
+            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
+        val y =
+            (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
+        val z =
+            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
+        val eased = (height / 3) * (if (drawPercent > 0.5) {
+            1 - drawPercent
+        } else {
+            drawPercent
+        }) * (if (drawMode) {
+            -1
+        } else {
+            1
+        })
+
+        for (i in 5..360 step 5) {
+            val x1 = x - sin(i * Math.PI / 180F) * radius
+            val z1 = z + cos(i * Math.PI / 180F) * radius
+            val x2 = x - sin((i - 5) * Math.PI / 180F) * radius
+            val z2 = z + cos((i - 5) * Math.PI / 180F) * radius
+            glBegin(GL_QUADS)
+            glFloatColor(themeTextColor, 0f)
+            glVertex3d(x1, y + eased, z1)
+            glVertex3d(x2, y + eased, z2)
+            glFloatColor(themeTextColor, 150f)
+            glVertex3d(x2, y, z2)
+            glVertex3d(x1, y, z1)
+            glEnd()
+        }
+
+        glEnable(GL_CULL_FACE)
+        glShadeModel(7424)
+        glColor4f(1f, 1f, 1f, 1f)
+        glEnable(GL_DEPTH_TEST)
+        glDisable(GL_LINE_SMOOTH)
+        glDisable(GL_BLEND)
+        glEnable(GL_TEXTURE_2D)
+        glPopMatrix()
+    }
+
 
     /**
      * Draws a rectangle.
@@ -1393,7 +1508,7 @@ object RenderUtils : MinecraftInstance() {
         var y = y
         var x1 = x1
         var y1 = y1
-        ColorUtils.setColour(-1)
+        setColour(-1)
         glEnable(GL_BLEND)
         glDisable(GL_TEXTURE_2D)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -1408,7 +1523,7 @@ object RenderUtils : MinecraftInstance() {
         y1 *= 2.0.toFloat()
         glEnable(GL_BLEND)
         glDisable(GL_TEXTURE_2D)
-        ColorUtils.setColour(color)
+        setColour(color)
         glEnable(GL_LINE_SMOOTH)
         glShadeModel(GL_SMOOTH)
         glBegin(6)
@@ -1420,7 +1535,7 @@ object RenderUtils : MinecraftInstance() {
             )
             i += 3
         }
-        ColorUtils.setColour(color2)
+        setColour(color2)
         i = 90
         while (i <= 180) {
             glVertex2d(
@@ -1429,13 +1544,13 @@ object RenderUtils : MinecraftInstance() {
             )
             i += 3
         }
-        ColorUtils.setColour(color3)
+        setColour(color3)
         i = 0
         while (i <= 90) {
             glVertex2d(x1 - radius + sin(i * Math.PI / 180.0) * radius, y1 - radius + cos(i * Math.PI / 180.0) * radius)
             i += 3
         }
-        ColorUtils.setColour(color4)
+        setColour(color4)
         i = 90
         while (i <= 180) {
             glVertex2d(
@@ -1458,7 +1573,7 @@ object RenderUtils : MinecraftInstance() {
         glDisable(GL_BLEND)
         glDisable(GL_LINE_SMOOTH)
         glShadeModel(GL_FLAT)
-        ColorUtils.setColour(-1)
+        setColour(-1)
     }
 
     fun drawRoundedGradientRectCorner(
@@ -1945,6 +2060,13 @@ object RenderUtils : MinecraftInstance() {
     fun glColor(red: Int, green: Int, blue: Int, alpha: Int) =
         glColor4f(red / 255f, green / 255f, blue / 255f, alpha / 255f)
 
+    fun glFloatColor(color: Color, alpha: Float) {
+        val red = color.red / 255f
+        val green = color.green / 255f
+        val blue = color.blue / 255f
+
+        color(red, green, blue, alpha)
+    }
 
     /**
      * Gl color.

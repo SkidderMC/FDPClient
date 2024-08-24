@@ -17,6 +17,9 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCrystal
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBoxESP
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawFDP
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawJello
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawLies
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatformESP
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawZavz
@@ -36,18 +39,22 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
 
-object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Keyboard.KEY_R, hideModule = false, subjective = true) {
+object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = false, subjective = true) {
 
-    // Mark
-    private val markValue by ListValue("MarkMode", arrayOf("None", "Box", "RoundBox", "Head", "Mark", "Sims", "Zavz"), "Zavz")
+    init {
+        state = true
+    }
+
+    // Mark - TargetESP
+    private val markValue by ListValue("MarkMode", arrayOf("None", "Zavz", "Jello", "Lies", "FDP", "Sims", "Box", "RoundBox", "Head", "Mark"), "Zavz")
     private val isMarkMode: Boolean
-        get() = markValue != "None" && markValue != "Sims"
+        get() = markValue != "None" && markValue != "Sims" && markValue != "FDP"  && markValue != "Lies" && markValue != "Sigma"
 
     val colorRedValue by IntegerValue("Mark-Red", 0, 0.. 255) { isMarkMode }
     val colorGreenValue by IntegerValue("Mark-Green", 160, 0..255) { isMarkMode }
     val colorBlueValue by IntegerValue("Mark-Blue", 255, 0.. 255) { isMarkMode }
 
-    private val alphaValue by IntegerValue("Alpha", 255, 0.. 255) { isMarkMode && markValue == "Zavz" }
+    val alphaValue by IntegerValue("Alpha", 255, 0.. 255) { isMarkMode && markValue == "Zavz" && markValue == "Jello"}
 
     val colorRedTwoValue by IntegerValue("Mark-Red 2", 0, 0.. 255) { isMarkMode && markValue == "Zavz" }
     val colorGreenTwoValue by IntegerValue("Mark-Green 2", 160, 0..255) { isMarkMode && markValue == "Zavz" }
@@ -136,6 +143,20 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Keyboard.KEY_R, 
                 entityLivingBase,
                 event,
                 dual = true, // or false based on your requirement
+            )
+
+            "jello" -> drawJello(
+                entityLivingBase,
+            )
+
+            "fdp" -> drawFDP(
+                entityLivingBase,
+                event
+            )
+
+            "lies" -> drawLies(
+                entityLivingBase,
+                event
             )
         }
     }
