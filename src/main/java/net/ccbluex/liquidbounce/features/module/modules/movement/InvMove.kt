@@ -44,12 +44,13 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
     private val noMoveGround by InventoryManager.noMoveGroundValue
     private val undetectable by InventoryManager.undetectableValue
 
-    // If player violates nomove check and inventory is open, close inventory and reopen it when still
-    private val silentlyCloseAndReopen by BoolValue("SilentlyCloseAndReopen", false)
-    { noMove && (noMoveAir || noMoveGround) }
-    // Reopen closed inventory just before a click (could flag for clicking too fast after opening inventory)
-    private val reopenOnClick by BoolValue("ReopenOnClick", false)
-    { silentlyCloseAndReopen && noMove && (noMoveAir || noMoveGround) }
+    private val silentlyCloseAndReopen by BoolValue("SilentlyCloseAndReopen", false) {
+        noMove && (noMoveAir || noMoveGround)
+    }
+
+    private val reopenOnClick by BoolValue("ReopenOnClick", false) {
+        silentlyCloseAndReopen && noMove && (noMoveAir || noMoveGround)
+    }
 
     private val affectedBindings = arrayOf(
         mc.gameSettings.keyBindForward,
@@ -64,46 +65,43 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
     fun onUpdate(event: UpdateEvent) {
         val screen = mc.currentScreen
 
-        // Don't make player move when chat or ESC menu are open
-        if (!fullMovements && (screen is GuiChat || screen is GuiIngameMenu))
-            return
+        if (!fullMovements && (screen is GuiChat || screen is GuiIngameMenu)) return
 
-        if (undetectable && (screen != null && screen !is GuiHudDesigner && screen !is ClickGui))
-            return
+        if (undetectable && screen != null && screen !is GuiHudDesigner && screen !is ClickGui) return
 
-        if (notInChests && screen is GuiChest)
-            return
+        if (notInChests && screen is GuiChest) return
 
         if (silentlyCloseAndReopen && screen is GuiInventory) {
             if (canClickInventory(closeWhenViolating = true) && !reopenOnClick)
                 serverOpenInventory = true
         }
 
-        for (affectedBinding in affectedBindings)
-            affectedBinding.pressed = isButtonPressed(affectedBinding)
-                    || (affectedBinding == mc.gameSettings.keyBindSprint && Sprint.handleEvents() && Sprint.mode == "Legit" && (!Sprint.onlyOnSprintPress || mc.thePlayer.isSprinting))
+        for (affectedBinding in affectedBindings) {
+            affectedBinding.pressed = isButtonPressed(affectedBinding) ||
+                    (affectedBinding == mc.gameSettings.keyBindSprint && Sprint.handleEvents() && Sprint.mode == "Legit" && (!Sprint.onlyOnSprintPress || mc.thePlayer.isSprinting))
+        }
     }
 
     private fun updateKeyState() {
-        if (mc.currentScreen != null && mc.currentScreen !is GuiChat && (!noDetectableValue || mc.currentScreen !is GuiContainer)) {
+        if (mc.currentScreen != null && mc.currentScreen !is GuiChat &&
+            (!noDetectableValue || mc.currentScreen !is GuiContainer)
+        ) {
             MovementUtils.updateControls()
 
             if (rotate) {
-                if (Keyboard.isKeyDown(Keyboard.KEY_UP)) {
-                    if (mc.thePlayer.rotationPitch > -90) {
+                when {
+                    Keyboard.isKeyDown(Keyboard.KEY_UP) && mc.thePlayer.rotationPitch > -90 -> {
                         mc.thePlayer.rotationPitch -= 5
                     }
-                }
-                if (Keyboard.isKeyDown(Keyboard.KEY_DOWN)) {
-                    if (mc.thePlayer.rotationPitch < 90) {
+                    Keyboard.isKeyDown(Keyboard.KEY_DOWN) && mc.thePlayer.rotationPitch < 90 -> {
                         mc.thePlayer.rotationPitch += 5
                     }
-                }
-                if (Keyboard.isKeyDown(Keyboard.KEY_LEFT)) {
-                    mc.thePlayer.rotationYaw -= 5
-                }
-                if (Keyboard.isKeyDown(Keyboard.KEY_RIGHT)) {
-                    mc.thePlayer.rotationYaw += 5
+                    Keyboard.isKeyDown(Keyboard.KEY_LEFT) -> {
+                        mc.thePlayer.rotationYaw -= 5
+                    }
+                    Keyboard.isKeyDown(Keyboard.KEY_RIGHT) -> {
+                        mc.thePlayer.rotationYaw += 5
+                    }
                 }
             }
         }
@@ -123,8 +121,11 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
 
     @EventTarget
     fun onClick(event: ClickWindowEvent) {
-        if (!canClickInventory()) event.cancelEvent()
-        else if (reopenOnClick) serverOpenInventory = true
+        if (!canClickInventory()) {
+            event.cancelEvent()
+        } else if (reopenOnClick) {
+            serverOpenInventory = true
+        }
 
         if (noMoveClicksValue && MovementUtils.isMoving) {
             event.cancelEvent()
@@ -142,8 +143,9 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
     }
 
     override fun onDisable() {
-        for (affectedBinding in affectedBindings)
+        for (affectedBinding in affectedBindings) {
             affectedBinding.pressed = isButtonPressed(affectedBinding)
+        }
     }
 
     private fun isButtonPressed(keyBinding: KeyBinding): Boolean {

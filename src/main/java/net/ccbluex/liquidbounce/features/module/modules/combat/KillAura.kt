@@ -778,11 +778,14 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
             "hurttime" -> targets.sortBy { it.hurtTime } // Sort by hurt time
             "healthabsorption" -> targets.sortBy { it.health + it.absorptionAmount } // Sort by full health with absorption effect
             "regenamplifier" -> targets.sortBy {
-                if (it.isPotionActive(Potion.regeneration)) it.getActivePotionEffect(
-                    Potion.regeneration
-                ).amplifier else -1
+                if (it.isPotionActive(Potion.regeneration)) it.getActivePotionEffect(Potion.regeneration).amplifier else -1
             }
+            "inweb" -> targets.sortBy { if (it.isInWeb) 0 else 1 } // Sort by whether the target is inside a web block
+            "isjumping" -> targets.sortBy { if (it.isJumping) 0 else 1 } // Sort by whether the target is jumping
+            "onladder" -> targets.sortBy { if (it.isOnLadder) 0 else 1 } // Sort by whether the target is on a ladder
+            "inliquid" -> targets.sortBy { if (it.isInWater || it.isInLava) 0 else 1  } // Sort by whether the target is in water or lava
         }
+
 
         // Find best target
         for (entity in targets) {
