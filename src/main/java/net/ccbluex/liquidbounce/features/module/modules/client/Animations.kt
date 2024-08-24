@@ -50,7 +50,8 @@ object Animations : Module("Animations", Category.CLIENT, gameDetecting = false,
 
     private val animations = arrayOf(
         OneSevenAnimation(),
-        PushdownAnimation(),
+        OldPushdownAnimation(),
+        NewPushdownAnimation(),
         OldAnimation(),
         HeliumAnimation(),
         ArgonAnimation(),
@@ -191,7 +192,7 @@ class OldAnimation : Animation("Old") {
 /**
  * Pushdown animation
  */
-class PushdownAnimation : Animation("Pushdown") {
+class OldPushdownAnimation : Animation("Pushdown") {
 
     /**
      * @author CzechHek. Taken from Animations script.
@@ -218,6 +219,33 @@ class PushdownAnimation : Animation("Pushdown") {
         if (itemRotate) {
             itemRenderRotate()
         }
+    }
+
+}
+
+/**
+ * New Pushdown animation.
+ * @author EclipsesDev
+ *
+ */
+class NewPushdownAnimation : Animation("NewPushdown") {
+
+    override fun transform(f1: Float, f: Float, clientPlayer: AbstractClientPlayer) {
+        val x = Animations.handPosX - 0.08
+        val y = Animations.handPosY + 0.12
+        val z = Animations.handPosZ.toDouble()
+        translate(x, y, z)
+
+        val var9 = MathHelper.sin(MathHelper.sqrt_float(f1) * 3.1415927f)
+        translate(0.0, 0.0, 0.0)
+
+        transformFirstPersonItem(f / 1.4f, 0.0f)
+
+        rotate(-var9 * 65.0f / 2.0f, var9 / 2.0f, 1.0f, 4.0f)
+        rotate(-var9 * 60.0f, 1.0f, var9 / 3.0f, -0.0f)
+        doBlockTransformations()
+
+        scale(1.0, 1.0, 1.0)
     }
 
 }
