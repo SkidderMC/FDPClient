@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.utils.render
 
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
 import net.minecraft.client.renderer.GlStateManager
+import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.regex.Pattern
 import kotlin.math.*
@@ -163,6 +164,10 @@ object ColorUtils {
         return (Color(r, g, b, alpha))
     }
 
+    fun targetReAlpha(color: Color, alpha: Float): Color {
+        return Color(color.red / 255f, color.green / 255f, color.blue / 255f, alpha)
+    }
+
     @JvmStatic
     fun inAlpha(color: Color, alpha: Int): Color = Color(color.red, color.green, color.blue, alpha.coerceIn(0, 255))
 
@@ -175,7 +180,6 @@ object ColorUtils {
         val c = Color(color.toInt())
         return Color(c.red / 255.0f * fade, c.green / 255.0f * fade, c.blue / 255.0f * fade, c.alpha / 255.0f)
     }
-
 
     fun mixColors(color1: Color, color2: Color, ms: Double, offset: Int): Color {
         val timer = (System.currentTimeMillis() / 1E+8 * ms) * 4E+5
@@ -195,4 +199,93 @@ object ColorUtils {
             bright
         )
     }
+
+    fun getHealthColor(health: Float, maxHealth: Float): Color {
+        val fractions = floatArrayOf(0.0f, 0.5f, 1.0f)
+        val colors = arrayOf(Color(108, 0, 0), Color(255, 51, 0), Color.GREEN)
+        val progress = health / maxHealth
+        return blendColors(fractions, colors, progress).brighter()
+    }
+
+    fun blendColors(fractions: FloatArray, colors: Array<Color>, progress: Float): Color {
+        if (fractions.size == colors.size) {
+            val indices: IntArray =
+               getFractionIndices(fractions, progress)
+            val range = floatArrayOf(fractions[indices[0]], fractions[indices[1]])
+            val colorRange = arrayOf(colors[indices[0]], colors[indices[1]])
+            val max = range[1] - range[0]
+            val value = progress - range[0]
+            val weight = value / max
+            return blend(
+                colorRange[0],
+                colorRange[1],
+                (1.0f - weight).toDouble()
+            )
+        } else {
+            throw IllegalArgumentException("Fractions and colours must have equal number of elements")
+        }
+    }
+
+    fun getFractionIndices(fractions: FloatArray, progress: Float): IntArray {
+        val range = IntArray(2)
+
+        var startPoint: Int
+        startPoint = 0
+        while (startPoint < fractions.size && fractions[startPoint] <= progress) {
+            ++startPoint
+        }
+
+        if (startPoint >= fractions.size) {
+            startPoint = fractions.size - 1
+        }
+
+        range[0] = startPoint - 1
+        range[1] = startPoint
+        return range
+    }
+
+    fun blend(color1: Color, color2: Color, ratio: Double): Color {
+        val r = ratio.toFloat()
+        val ir = 1.0f - r
+        val rgb1 = color1.getColorComponents(FloatArray(3))
+        val rgb2 = color2.getColorComponents(FloatArray(3))
+        var red = rgb1[0] * r + rgb2[0] * ir
+        var green = rgb1[1] * r + rgb2[1] * ir
+        var blue = rgb1[2] * r + rgb2[2] * ir
+        if (red < 0.0f) {
+            red = 0.0f
+        } else if (red > 255.0f) {
+            red = 255.0f
+        }
+
+        if (green < 0.0f) {
+            green = 0.0f
+        } else if (green > 255.0f) {
+            green = 255.0f
+        }
+
+        if (blue < 0.0f) {
+            blue = 0.0f
+        } else if (blue > 255.0f) {
+            blue = 255.0f
+        }
+
+        var color3: Color? = null
+
+        try {
+            color3 = Color(red, green, blue)
+        } catch (ignored: java.lang.IllegalArgumentException) {
+        }
+
+        return color3!!
+    }
+
+    fun setColour(colour: Int) {
+        val a = (colour shr 24 and 0xFF) / 255.0f
+        val r = (colour shr 16 and 0xFF) / 255.0f
+        val g = (colour shr 8 and 0xFF) / 255.0f
+        val b = (colour and 0xFF) / 255.0f
+        GL11.glColor4f(r, g, b, a)
+    }
+
 }

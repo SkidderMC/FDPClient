@@ -14,7 +14,9 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.getState
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverSlot
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.entity.monster.EntityGhast
 import net.minecraft.entity.monster.EntityGolem
@@ -28,10 +30,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.BlockPos
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 import net.minecraftforge.event.ForgeEventFactory
 
 /**
@@ -72,6 +71,12 @@ fun getNearestPointBB(eye: Vec3, box: AxisAlignedBB): Vec3 {
 
 fun EntityPlayer.getPing() = mc.netHandler.getPlayerInfo(uniqueID)?.responseTime ?: 0
 
+val EntityLivingBase.renderHurtTime: Float
+    get() = this.hurtTime - if (this.hurtTime != 0) { mc.timer.renderPartialTicks } else { 0f }
+
+val EntityLivingBase.hurtPercent: Float
+    get() = (this.renderHurtTime) / 10
+
 fun Entity.isAnimal() =
     this is EntityAnimal
         || this is EntitySquid
@@ -90,6 +95,9 @@ fun EntityPlayer.isClientFriend(): Boolean {
 
     return friendsConfig.isFriend(stripColor(entityName))
 }
+
+val EntityLivingBase.skin: ResourceLocation
+    get() = if (this is EntityPlayer) { mc.netHandler.getPlayerInfo(this.uniqueID)?.locationSkin } else { null } ?: DefaultPlayerSkin.getDefaultSkinLegacy()
 
 val Entity?.rotation
     get() = Rotation(this?.rotationYaw ?: 0f, this?.rotationPitch ?: 0f)

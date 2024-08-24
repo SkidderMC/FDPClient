@@ -58,7 +58,6 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
 
     var ClientColorMode by ListValue("ColorMode", colorOptions, "Zywl") { intefaceColor }
 
-    var textValue by BoolValue("TextStaticColor", false) { intefaceColor }
     var ThemeFadeSpeed by IntegerValue("Fade-speed", 1, 1..10) { intefaceColor }
     var updown by BoolValue(
         "Fade-Type",

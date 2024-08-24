@@ -63,7 +63,6 @@ object GuiCapeManager : GuiScreen() {
         OWNER(APIConnecter.callImage("owner", "cape")),
     }
 
-
     override fun onGuiClosed() {
 
     }
