@@ -11,6 +11,10 @@ import net.ccbluex.liquidbounce.value.BoolValue
 
 object ChatControl : Module("ChatControl", Category.CLIENT, gameDetecting = false, hideModule = false, subjective = true) {
 
+    init {
+        state = true
+    }
+
     val chatLimitValue by BoolValue("NoChatLimit", true)
     val chatClearValue by BoolValue("NoChatClear", true)
     val fontChatValue by BoolValue("FontChat", false)

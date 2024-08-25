@@ -48,7 +48,7 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
     // Mark - TargetESP
     private val markValue by ListValue("MarkMode", arrayOf("None", "Zavz", "Jello", "Lies", "FDP", "Sims", "Box", "RoundBox", "Head", "Mark"), "Zavz")
     private val isMarkMode: Boolean
-        get() = markValue != "None" && markValue != "Sims" && markValue != "FDP"  && markValue != "Lies" && markValue != "Sigma"
+        get() = markValue != "None" && markValue != "Sims" && markValue != "FDP"  && markValue != "Lies" && markValue != "Jello"
 
     val colorRedValue by IntegerValue("Mark-Red", 0, 0.. 255) { isMarkMode }
     val colorGreenValue by IntegerValue("Mark-Green", 160, 0..255) { isMarkMode }

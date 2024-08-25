@@ -16,8 +16,10 @@ import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.extensions.getPing
+import net.ccbluex.liquidbounce.utils.extensions.isClientFriend
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawExhiEnchants
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexturedModalRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.quickDrawBorderedRect
@@ -40,6 +42,7 @@ import kotlin.math.pow
 import kotlin.math.roundToInt
 
 object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
+
     private val health by BoolValue("Health", true)
         private val healthFromScoreboard by BoolValue("HealthFromScoreboard", false) { health }
         private val absorption by BoolValue("Absorption", false) { health || healthBar }
@@ -49,12 +52,14 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
             private val healthPrefixText by TextValue("HealthPrefixText", "") { health && healthPrefix }
 
         private val healthSuffix by BoolValue("HealthSuffix", true) { health }
-            private val healthSuffixText by TextValue("HealthSuffixText", " HP") { health && healthSuffix }
+            private val healthSuffixText by TextValue("HealthSuffixText", " ❤") { health && healthSuffix }
 
+    private val indicator by BoolValue("Indicator", false)
     private val ping by BoolValue("Ping", false)
-    private val healthBar by BoolValue("Bar", true)
+    private val healthBar by BoolValue("Bar", false)
     private val distance by BoolValue("Distance", false)
     private val armor by BoolValue("Armor", true)
+    private val enchant by BoolValue("Enchant", true)
     private val bot by BoolValue("Bots", true)
     private val potion by BoolValue("Potions", true)
     private val clearNames by BoolValue("ClearNames", false)
@@ -68,7 +73,7 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
         private val backgroundColorBlue by IntegerValue("Background-B", 0, 0..255) { background }
         private val backgroundColorAlpha by IntegerValue("Background-Alpha", 70, 0..255) { background }
 
-    private val border by BoolValue("Border", true)
+    private val border by BoolValue("Border", false)
         private val borderColorRed by IntegerValue("Border-R", 0, 0..255) { border }
         private val borderColorGreen by IntegerValue("Border-G", 0, 0..255) { border }
         private val borderColorBlue by IntegerValue("Border-B", 0, 0..255) { border }
@@ -92,7 +97,6 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
 
     private val inventoryBackground = ResourceLocation("textures/gui/container/inventory.png")
     private val decimalFormat = DecimalFormat("##0.00", DecimalFormatSymbols(Locale.ENGLISH))
-
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -138,6 +142,7 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
     }
 
     private fun renderNameTag(entity: EntityLivingBase, name: String) {
+
         val thePlayer = mc.thePlayer ?: return
 
         // Set fontrenderer local
@@ -169,6 +174,15 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
         // Modify tag
         val bot = isBot(entity)
         val nameColor = if (bot) "§3" else if (entity.isInvisible) "§6" else if (entity.isSneaking) "§4" else "§7"
+
+        val isFriend = indicator && (entity is EntityPlayer && entity.isClientFriend())
+        val symbol = if (indicator) "§a✦" else ""
+        val symbolColor = if (indicator) {
+            if (isFriend) "§a" else "§c"
+        } else {
+            ""
+        }
+
         val playerPing = if (entity is EntityPlayer) entity.getPing() else 0
         val playerDistance = thePlayer.getDistanceToEntity(entity)
 
@@ -178,7 +192,7 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
         val healthText = if (health) " " + getHealthString(entity) else ""
         val botText = if (bot) " §c§lBot" else ""
 
-        val text = "$distanceText$pingText$nameColor$name$healthText$botText"
+        val text = "$symbolColor$symbol $distanceText$pingText$nameColor$name$healthText$botText"
 
         // Calculate health color based on entity's health
         val healthColor = when {
@@ -301,6 +315,29 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
             enableTexture2D()
         }
 
+        if (enchant && entity is EntityPlayer) {
+            glPushMatrix()
+            for (index in 0..4) {
+                if (entity.getEquipmentInSlot(index) == null)
+                    continue
+
+                mc.renderItem.renderItemOverlays(mc.fontRendererObj, entity.getEquipmentInSlot(index), -50 + index * 20, if (potion && foundPotion) -42 else -22)
+                drawExhiEnchants(entity.getEquipmentInSlot(index), -50f + index * 20f, if (potion && foundPotion) -42f else -22f)
+            }
+
+            // Disable lightning and depth test
+            glDisable(GL_LIGHTING)
+            glDisable(GL_DEPTH_TEST)
+
+            glEnable(GL_LINE_SMOOTH)
+
+            // Enable blend
+            glEnable(GL_BLEND)
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+            glPopMatrix()
+        }
+
         // Reset caps
         resetCaps()
 
@@ -313,21 +350,47 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
     }
 
     private fun getHealthString(entity: EntityLivingBase): String {
-        val prefix = if (healthPrefix) healthPrefixText else ""
-        val suffix = if (healthSuffix) healthSuffixText else ""
+        return if (indicator) {
+            val isFriend = entity is EntityPlayer && entity.isClientFriend()
 
-        val result = getHealth(entity, healthFromScoreboard, absorption)
+            val friendColor = "§a"
+            val enemyColor = "§c"
 
-        val healthPercentage = (getHealth(entity, healthFromScoreboard) / entity.maxHealth).coerceIn(0.0F, 1.0F)
-        val healthColor = when {
-            entity.health <= 0 -> "§4"
-            healthPercentage >= 0.75 -> "§a"
-            healthPercentage >= 0.5 -> "§e"
-            healthPercentage >= 0.25 -> "§6"
-            else -> "§c"
+            val prefixColor = if (isFriend) friendColor else enemyColor
+            val suffixColor = if (isFriend) friendColor else enemyColor
+
+            val prefix = if (healthPrefix) "$prefixColor$healthPrefixText" else ""
+            val suffix = if (healthSuffix) "$suffixColor$healthSuffixText" else ""
+
+            val result = getHealth(entity, healthFromScoreboard, absorption)
+
+            val healthPercentage = (getHealth(entity, healthFromScoreboard) / entity.maxHealth).coerceIn(0.0F, 1.0F)
+            val healthColor = when {
+                entity.health <= 0 -> enemyColor
+                healthPercentage >= 0.75 -> friendColor
+                healthPercentage >= 0.5 -> if (isFriend) "§e" else enemyColor
+                healthPercentage >= 0.25 -> if (isFriend) "§6" else enemyColor
+                else -> enemyColor
+            }
+
+            "$healthColor$prefix${if (roundedHealth) result.roundToInt() else decimalFormat.format(result)}$suffix"
+        } else {
+            val prefix = if (healthPrefix) healthPrefixText else ""
+            val suffix = if (healthSuffix) healthSuffixText else ""
+
+            val result = getHealth(entity, healthFromScoreboard, absorption)
+
+            val healthPercentage = (getHealth(entity, healthFromScoreboard) / entity.maxHealth).coerceIn(0.0F, 1.0F)
+            val healthColor = when {
+                entity.health <= 0 -> "§4"
+                healthPercentage >= 0.75 -> "§a"
+                healthPercentage >= 0.5 -> "§e"
+                healthPercentage >= 0.25 -> "§6"
+                else -> "§c"
+            }
+
+            "$healthColor$prefix${if (roundedHealth) result.roundToInt() else decimalFormat.format(result)}$suffix"
         }
-
-        return "$healthColor$prefix${if (roundedHealth) result.roundToInt() else decimalFormat.format(result)}$suffix"
     }
 
     fun shouldRenderNameTags(entity: Entity) =
