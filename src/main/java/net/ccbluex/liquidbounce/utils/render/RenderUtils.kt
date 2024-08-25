@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.utils.render
 import com.jhlabs.image.GaussianFilter
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.DOUBLE_PI
-import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.alphaValue
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorBlueTwoValue
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorBlueValue
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorGreenTwoValue
@@ -46,7 +45,6 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL14
 import org.lwjgl.util.glu.Cylinder
@@ -2050,10 +2048,22 @@ object RenderUtils : MinecraftInstance() {
         val tessellator = Tessellator.getInstance()
         val worldrenderer = tessellator.worldRenderer
         worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX)
-        worldrenderer.pos(x.toDouble(), (y + height).toDouble(), zLevel.toDouble()).tex((textureX.toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble()).endVertex()
-        worldrenderer.pos((x + width).toDouble(), (y + height).toDouble(), zLevel.toDouble()).tex(((textureX + width).toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble()).endVertex()
-        worldrenderer.pos((x + width).toDouble(), y.toDouble(), zLevel.toDouble()).tex(((textureX + width).toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble()).endVertex()
-        worldrenderer.pos(x.toDouble(), y.toDouble(), zLevel.toDouble()).tex((textureX.toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble()).endVertex()
+        worldrenderer.pos(x.toDouble(), (y + height).toDouble(), zLevel.toDouble()).tex(
+            (textureX.toFloat() * f).toDouble(),
+            ((textureY + height).toFloat() * f1).toDouble()
+        ).endVertex()
+        worldrenderer.pos((x + width).toDouble(), (y + height).toDouble(), zLevel.toDouble()).tex(
+            ((textureX + width).toFloat() * f).toDouble(),
+            ((textureY + height).toFloat() * f1).toDouble()
+        ).endVertex()
+        worldrenderer.pos((x + width).toDouble(), y.toDouble(), zLevel.toDouble()).tex(
+            ((textureX + width).toFloat() * f).toDouble(),
+            (textureY.toFloat() * f1).toDouble()
+        ).endVertex()
+        worldrenderer.pos(x.toDouble(), y.toDouble(), zLevel.toDouble()).tex(
+            (textureX.toFloat() * f).toDouble(),
+            (textureY.toFloat() * f1).toDouble()
+        ).endVertex()
         tessellator.draw()
     }
 

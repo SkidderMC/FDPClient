@@ -288,4 +288,32 @@ object ColorUtils {
         GL11.glColor4f(r, g, b, a)
     }
 
+    enum class potionColor(val c: Int) {
+        WHITE(-65794),
+        GREY(-9868951);
+
+        companion object {
+            fun getColor(brightness: Int): Int {
+                return getColor(brightness, brightness, brightness, 255)
+            }
+
+            fun getColor(brightness: Int, alpha: Int): Int {
+                return getColor(brightness, brightness, brightness, alpha)
+            }
+
+            fun getColor(red: Int, green: Int, blue: Int): Int {
+                return getColor(red, green, blue, 255)
+            }
+
+            fun getColor(red: Int, green: Int, blue: Int, alpha: Int): Int {
+                var color = 0
+                color = color or (alpha shl 24)
+                color = color or (red shl 16)
+                color = color or (green shl 8)
+                color = color or blue
+                return color
+            }
+        }
+    }
+
 }
