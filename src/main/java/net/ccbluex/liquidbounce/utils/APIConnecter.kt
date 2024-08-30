@@ -75,7 +75,12 @@ object APIConnecter {
                 val fileName = i.split(":")[0]
                 val picType = i.split(":")[1]
                 tlsAuthConnectionFixes()
-                gotImage = ImageIO.read(URL(URLComponent.PICTURES + picType + "/" + fileName + ".png"))
+                val imageUrl = URL(URLComponent.PICTURES + picType + "/" + fileName + ".png")
+                val imageRequest = Request.Builder().url(imageUrl).build()
+                val imageBytes = nameClient.newCall(imageRequest).execute().use { response ->
+                    response.body!!.byteStream().readBytes()
+                }
+                gotImage = ImageIO.read(imageBytes.inputStream())
                 pictures.add(
                     Triple(
                         fileName,
@@ -124,7 +129,12 @@ object APIConnecter {
                 val uuid = i.split(":")[0]
                 val cape = i.split(":")[1]
                 tlsAuthConnectionFixes()
-                gotCapes = ImageIO.read(URL(URLComponent.DONORS + cape))
+                val imageUrl = URL(URLComponent.DONORS + cape)
+                val imageRequest = Request.Builder().url(imageUrl).build()
+                val imageBytes = nameClient.newCall(imageRequest).execute().use { response ->
+                    response.body!!.byteStream().readBytes()
+                }
+                gotCapes = ImageIO.read(imageBytes.inputStream())
                 donorCapeLocations.add(
                     Pair(
                         uuid,
