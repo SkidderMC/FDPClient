@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
@@ -37,7 +37,7 @@ import net.minecraft.init.Items
 import net.minecraft.item.*
 import net.minecraft.potion.Potion
 
-object InventoryCleaner: Module("InventoryCleaner", Category.MOVEMENT, hideModule = false) {
+object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule = false) {
 	private val drop by BoolValue("Drop", true, subjective = true)
 	val sort by BoolValue("Sort", true, subjective = true)
 
@@ -52,10 +52,12 @@ object InventoryCleaner: Module("InventoryCleaner", Category.MOVEMENT, hideModul
 	private val minItemAge by IntegerValue("MinItemAge", 0, 0..2000)
 
 	private val limitStackCounts by BoolValue("LimitStackCounts", true, subjective = true)
-		private val maxBlockStacks by IntegerValue("MaxBlockStacks", 5, 0..36, subjective = true) { limitStackCounts }
-		private val maxFoodStacks by IntegerValue("MaxFoodStacks", 5, 0..36, subjective = true) { limitStackCounts }
-		private val maxThrowableStacks by IntegerValue("MaxThrowableStacks", 5, 0..36, subjective = true) { limitStackCounts }
-		// TODO: max potion, vehicle, ..., stacks?
+	private val maxBlockStacks by IntegerValue("MaxBlockStacks", 5, 0..36, subjective = true) { limitStackCounts }
+	private val maxFoodStacks by IntegerValue("MaxFoodStacks", 5, 0..36, subjective = true) { limitStackCounts }
+	private val maxThrowableStacks by IntegerValue("MaxThrowableStacks", 5, 0..36, subjective = true) { limitStackCounts }
+	// TODO: max potion, vehicle, ..., stacks?
+
+	private val maxFishingRodStacks by IntegerValue("MaxFishingRodStacks", 1, 1..10, subjective = true)
 
 	private val mergeStacks by BoolValue("MergeStacks", true, subjective = true)
 
@@ -153,7 +155,7 @@ object InventoryCleaner: Module("InventoryCleaner", Category.MOVEMENT, hideModul
 						// Only try to merge non-full stacks, without limiting stack counts in isStackUseful
 						.filter {
 							it.value.hasItemAgePassed(minItemAge) &&
-							it.value.stackSize != it.value.maxStackSize && isStackUseful(it.value, stacks, noLimits = true)
+									it.value.stackSize != it.value.maxStackSize && isStackUseful(it.value, stacks, noLimits = true)
 						}
 						// Prioritise stacks that are lower in inventory
 						.sortedByDescending { it.index }
@@ -164,10 +166,10 @@ object InventoryCleaner: Module("InventoryCleaner", Category.MOVEMENT, hideModul
 					sortedStacks.firstOrNull { (_, clickedStack) ->
 						sortedStacks.any { (_, stackToMerge) ->
 							clickedStack != stackToMerge
-								&& clickedStack.stackSize + stackToMerge.stackSize <= clickedStack.maxStackSize
-								// Check if stacks have the same NBT data and are actually mergeable
-								&& clickedStack.isItemEqual(stackToMerge)
-								&& ItemStack.areItemStackTagsEqual(clickedStack, stackToMerge)
+									&& clickedStack.stackSize + stackToMerge.stackSize <= clickedStack.maxStackSize
+									// Check if stacks have the same NBT data and are actually mergeable
+									&& clickedStack.isItemEqual(stackToMerge)
+									&& ItemStack.areItemStackTagsEqual(clickedStack, stackToMerge)
 						}
 					}?.index
 				}
@@ -309,8 +311,7 @@ object InventoryCleaner: Module("InventoryCleaner", Category.MOVEMENT, hideModul
 
 						// If occupied hotbar slot isn't already sorted or isn't strictly best, sort to it
 						if (!canBeSortedTo(hotbarIndex, hotbarStack?.item)
-							|| !isStackUseful(hotbarStack, stacks, strictlyBest = true)
-						)
+							|| !isStackUseful(hotbarStack, stacks, strictlyBest = true))
 						{
 							// Sort repaired item to hotbar right after repairing
 							click(0, hotbarIndex, 2)
@@ -459,13 +460,10 @@ object InventoryCleaner: Module("InventoryCleaner", Category.MOVEMENT, hideModul
 
 			is ItemEnderPearl, is ItemEnchantedBook, is ItemBed -> true
 
-			// TODO: Maybe save only 1x fishing rods
-			is ItemFishingRod -> true
-
 			is ItemFood -> isUsefulFood(stack, stacks, entityStacksMap, noLimits, strictlyBest)
 			is ItemBlock -> isUsefulBlock(stack, stacks, entityStacksMap, noLimits, strictlyBest)
 
-			is ItemArmor, is ItemTool, is ItemSword, is ItemBow -> isUsefulEquipment(stack, stacks, entityStacksMap)
+			is ItemArmor, is ItemTool, is ItemSword, is ItemBow, is ItemFishingRod -> isUsefulEquipment(stack, stacks, entityStacksMap)
 
 			is ItemBoat, is ItemMinecart -> !ignoreVehicles
 
@@ -496,6 +494,16 @@ object InventoryCleaner: Module("InventoryCleaner", Category.MOVEMENT, hideModul
 
 				return hasBestParameters(stack, stacks, entityStacksMap) {
 					it.item.getStrVsBlock(it, blockType) * it.durability
+				}
+			}
+
+			is ItemFishingRod -> {
+				val fishingRod = stacks.count { it?.item is ItemFishingRod }
+
+				if (fishingRod <= maxFishingRodStacks) return true
+
+				hasBestParameters(stack, stacks, entityStacksMap) {
+					it.durability.toFloat()
 				}
 			}
 
@@ -578,7 +586,7 @@ object InventoryCleaner: Module("InventoryCleaner", Category.MOVEMENT, hideModul
 		if (ignoreLimits || !limitStackCounts) {
 			if (!strictlyBest)
 				return true
-		// Skip checks if limit is set to 0
+			// Skip checks if limit is set to 0
 		} else if (maxFoodStacks == 0)
 			return false
 
@@ -644,7 +652,7 @@ object InventoryCleaner: Module("InventoryCleaner", Category.MOVEMENT, hideModul
 		if (ignoreLimits || !limitStackCounts) {
 			if (!strictlyBest)
 				return true
-		// Skip checks if limit is set to 0
+			// Skip checks if limit is set to 0
 		} else if (maxBlockStacks == 0)
 			return false
 
@@ -703,7 +711,7 @@ object InventoryCleaner: Module("InventoryCleaner", Category.MOVEMENT, hideModul
 		if (ignoreLimits || !limitStackCounts) {
 			if (!strictlyBest)
 				return true
-		// Skip checks if limit is set to 0
+			// Skip checks if limit is set to 0
 		} else if (maxBlockStacks == 0)
 			return false
 
@@ -897,8 +905,8 @@ object InventoryCleaner: Module("InventoryCleaner", Category.MOVEMENT, hideModul
 	// Check if stack is repairable and either has no enchantments or just unbreaking.
 	private fun shouldBeRepaired(stack: ItemStack?) =
 		!stack.isEmpty() && stack.item.isRepairable && (
-			!stack.isItemEnchanted || (stack.enchantmentCount == 1 && Enchantment.unbreaking in stack.enchantments)
-		)
+				!stack.isItemEnchanted || (stack.enchantmentCount == 1 && Enchantment.unbreaking in stack.enchantments)
+				)
 
 	fun canBeRepairedWithOther(stack: ItemStack?, stacks: List<ItemStack?>): Boolean {
 		if (!handleEvents() || !repairEquipment)
