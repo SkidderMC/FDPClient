@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoArmor;
-import net.ccbluex.liquidbounce.features.module.modules.movement.InventoryCleaner;
+import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner;
 import net.ccbluex.liquidbounce.features.module.modules.other.ChestStealer;
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -12,7 +12,6 @@ import net.minecraft.client.gui.inventory.GuiInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;

@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.features.module.modules.movement
+package net.ccbluex.liquidbounce.features.module.modules.player
 
 import kotlinx.coroutines.delay
 import net.ccbluex.liquidbounce.features.module.Module
@@ -311,7 +311,8 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 
 						// If occupied hotbar slot isn't already sorted or isn't strictly best, sort to it
 						if (!canBeSortedTo(hotbarIndex, hotbarStack?.item)
-							|| !isStackUseful(hotbarStack, stacks, strictlyBest = true))
+							|| !isStackUseful(hotbarStack, stacks, strictlyBest = true)
+						)
 						{
 							// Sort repaired item to hotbar right after repairing
 							click(0, hotbarIndex, 2)
