@@ -80,9 +80,6 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
         private val borderColorAlpha by IntegerValue("Border-Alpha", 100, 0..255) { border }
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
-        override fun onInit(value: Int) {
-            maxRenderDistanceSq = value.toDouble().pow(2.0)
-        }
         override fun onUpdate(value: Int) {
             maxRenderDistanceSq = value.toDouble().pow(2.0)
         }
@@ -94,6 +91,9 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
     private val thruBlocks by BoolValue("ThruBlocks", true)
 
     private var maxRenderDistanceSq = 0.0
+        set(value) {
+            field = if (value <= 0.0) maxRenderDistance.toDouble().pow(2.0) else value
+        }
 
     private val inventoryBackground = ResourceLocation("textures/gui/container/inventory.png")
     private val decimalFormat = DecimalFormat("##0.00", DecimalFormatSymbols(Locale.ENGLISH))
