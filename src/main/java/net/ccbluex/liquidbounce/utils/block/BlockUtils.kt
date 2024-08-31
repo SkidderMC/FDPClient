@@ -80,6 +80,13 @@ object BlockUtils : MinecraftInstance() {
     }
 
     /**
+     * Get distance to same Pos [blockPos]
+     */
+    fun isSamePos(blockPos: BlockPos, blockPos2: BlockPos): Boolean {
+        return blockPos === blockPos2 || (blockPos.x == blockPos2.x && blockPos.y == blockPos2.y && blockPos.z == blockPos2.z)
+    }
+
+    /**
      * Get distance to center of [blockPos]
      */
     fun getCenterDistance(blockPos: BlockPos) =
