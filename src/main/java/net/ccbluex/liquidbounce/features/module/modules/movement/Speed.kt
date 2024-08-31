@@ -38,8 +38,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         NCPHop,
         NCPYPort,
         UNCPHop,
-        UNCPHop2,
-        UNCPLowHop,
+        UNCPHopNew,
 
         // AAC
         AACHop3313,
@@ -59,7 +58,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         VerusHop,
         VerusFHop,
         VerusLowHop,
-        NewVerusLowHop,
+        VerusLowHopNew,
         VerusSpeeds,
 
         // Vulcan
@@ -139,6 +138,16 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
     val strafeStrength by FloatValue("StrafeStrength", 0.29f, 0.1f..0.29f) { mode == "MineBlazeHop" }
     val groundTimer by FloatValue("GroundTimer", 0.5f, 0.1f..5f) { mode == "MineBlazeHop" }
     val airTimer by FloatValue("AirTimer", 1.09f, 0.1f..5f) { mode == "MineBlazeHop" }
+
+    // UNCPHopNew Speed
+    private val pullDown by BoolValue("PullDown", true) { mode == "UNCPHopNew" }
+    val onTick by IntegerValue("OnTick", 5, 5..9) { pullDown && mode == "UNCPHopNew" }
+    val onHurt by BoolValue("OnHurt", true) { pullDown && mode == "UNCPHopNew" }
+    val shouldBoost by BoolValue("ShouldBoost", true) { mode == "UNCPHopNew" }
+    val timerBoost by BoolValue("Timer", true) { mode == "UNCPHopNew" }
+    val damageBoost by BoolValue("DamageBoost", true) { mode == "UNCPHopNew" }
+    val lowHop by BoolValue("LowHop", true) { mode == "UNCPHopNew" }
+    val airStrafe by BoolValue("AirStrafe", true) { mode == "UNCPHopNew" }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
