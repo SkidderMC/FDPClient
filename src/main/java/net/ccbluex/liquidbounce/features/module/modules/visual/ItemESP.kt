@@ -23,6 +23,8 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.entity.item.EntityItem
+import net.minecraft.init.Items
+import net.minecraft.item.ItemStack
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
@@ -32,6 +34,7 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
     private val mode by ListValue("Mode", arrayOf("Box", "OtherBox", "Glow"), "Box")
 
     private val itemText by BoolValue("ItemText", false)
+    private val itemTextTag by ListValue("ItemTextTag", arrayOf("()", "x", "[]"), "()")
 
     private val glowRenderScale by FloatValue("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
     private val glowRadius by IntegerValue("Glow-Radius", 4, 1..5) { mode == "Glow" }
@@ -66,8 +69,6 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
 
     val color
         get() = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
-
-    // TODO: Removed highlighting of EntityArrow to not complicate things even further
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
@@ -121,7 +122,6 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
 
                     mc.renderManager.renderEntityStatic(entityItem, event.partialTicks, true)
 
-                    // Only render green boxes on useful items, if ItemESP is enabled, render boxes of ItemESP.color on useless items as well
                     GlowShader.stopDraw(if (isUseful) Color.green else color, glowRadius, glowFade, glowTargetAlpha)
                 }
         }.onFailure {
@@ -136,7 +136,6 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
         glPushAttrib(GL_ENABLE_BIT)
         glPushMatrix()
 
-        // Translate to entity position
         val partialTicks = mc.timer.renderPartialTicks
         val interpolatedPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks
         val interpolatedPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks + 1F
@@ -157,14 +156,17 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
 
         val fontRenderer = font
 
-        // Scale
         val scale = (thePlayer.getDistanceToEntity(entity) / 4F).coerceAtLeast(1F) / 150F * scale
         glScalef(-scale, -scale, scale)
 
         val itemStack = entity.entityItem
-        val text = itemStack.displayName + if (itemCounts) " (${itemStack.stackSize})" else ""
+        val itemTextTagFormatted = when (itemTextTag) {
+            "x" -> "x${itemStack.stackSize}"
+            "[]" -> "[${itemStack.stackSize}]"
+            else -> "(${itemStack.stackSize})"
+        }
+        val text = if (itemCounts) itemStack.displayName + " $itemTextTagFormatted" else itemStack.displayName
 
-        // Draw text
         val width = fontRenderer.getStringWidth(text) * 0.5f
         fontRenderer.drawString(
             text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, color.rgb, fontShadow
@@ -173,6 +175,18 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
         resetCaps()
         glPopMatrix()
         glPopAttrib()
+    }
+
+    private fun getItemColor(itemStack: ItemStack): Color {
+        return when (itemStack.item) {
+            Items.diamond -> Color(0, 255, 255)
+            Items.gold_ingot -> Color(255, 215, 0)
+            Items.iron_ingot -> Color(192, 192, 192)
+            Items.wooden_sword, Items.wooden_pickaxe, Items.wooden_axe -> Color(139, 69, 19)
+            Items.stone_sword, Items.stone_pickaxe, Items.stone_axe -> Color(169, 169, 169)
+            Items.chainmail_chestplate -> Color(105, 105, 105)
+            else -> color
+        }
     }
 
     override fun handleEvents() = super.handleEvents() || (InventoryCleaner.handleEvents() && InventoryCleaner.highlightUseful)
