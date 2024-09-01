@@ -10,6 +10,8 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.aac.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.hypixel.HypixelHop
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.intave.IntaveHop14
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.intave.IntaveTimer14
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.matrix.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.ncp.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.other.*
@@ -72,6 +74,10 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         MatrixSlowHop,
         MatrixSpeeds,
 
+        // Intave
+        IntaveHop14,
+        IntaveTimer14,
+
         // Server specific
         TeleportCubeCraft,
         HypixelHop,
@@ -84,9 +90,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         OnGround,
         SlowHop,
         Legit,
-        CustomSpeed,
-        MineBlazeHop,
-        MineBlazeTimer
+        CustomSpeed
     )
 
     private val modes = speedModes.map { it.modeName }.toTypedArray()
@@ -134,10 +138,11 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
     // Server
     val cubecraftPortLength by FloatValue("CubeCraft-PortLength", 1f, 0.1f..2f) { mode == "TeleportCubeCraft" }
 
-    val boost by BoolValue("Boost", true) { mode == "MineBlazeHop" }
-    val strafeStrength by FloatValue("StrafeStrength", 0.29f, 0.1f..0.29f) { mode == "MineBlazeHop" }
-    val groundTimer by FloatValue("GroundTimer", 0.5f, 0.1f..5f) { mode == "MineBlazeHop" }
-    val airTimer by FloatValue("AirTimer", 1.09f, 0.1f..5f) { mode == "MineBlazeHop" }
+    // IntaveHop14 Speed
+    val boost by BoolValue("Boost", true) { mode == "IntaveHop14" }
+    val strafeStrength by FloatValue("StrafeStrength", 0.29f, 0.1f..0.29f) { mode == "IntaveHop14" }
+    val groundTimer by FloatValue("GroundTimer", 0.5f, 0.1f..5f) { mode == "IntaveHop14" }
+    val airTimer by FloatValue("AirTimer", 1.09f, 0.1f..5f) { mode == "IntaveHop14" }
 
     // UNCPHopNew Speed
     private val pullDown by BoolValue("PullDown", true) { mode == "UNCPHopNew" }
