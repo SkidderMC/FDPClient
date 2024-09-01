@@ -351,7 +351,6 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
                     armorDurabilityText += when (showArmorDurability) {
                         "Value" -> " $durabilityValue"
                         "Percentage" -> " ${String.format("%.0f%%", durabilityPercentage)}"
-                        "All" -> " ${durabilityValue}/${item.maxDamage} (${String.format("%.0f%%", durabilityPercentage)})"
                         else -> ""
                     }
                 }
