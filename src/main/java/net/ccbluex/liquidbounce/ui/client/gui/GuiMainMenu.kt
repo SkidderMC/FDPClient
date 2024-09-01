@@ -163,13 +163,13 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             "API Connection: $apiMessage",
             ((width - 10f - minecraftFont.getStringWidth("API Connection: $apiMessage")).toDouble().toFloat()),
             32.0F,
-            Color(255, 255, 255, 100).rgb
+            Color(255, 255, 255, 140).rgb
         )
         minecraftFont.drawStringWithShadow(
             CLIENT_NAME,
             ((width - 4f - minecraftFont.getStringWidth(CLIENT_NAME)).toDouble().toFloat()),
             ((height - 23f).toDouble().toFloat()),
-            Color(255, 255, 255, 100).rgb
+            Color(255, 255, 255, 140).rgb
         )
         val uiMessage =
             if (canConnect && isLatest) " §e(Latest)" else if (!canConnect && isLatest) " §c(API Dead)" else " §c(Outdated)"
@@ -177,13 +177,13 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             "Your currently build is $clientVersionText$uiMessage",
             ((width - 4f - minecraftFont.getStringWidth("Your currently build is $clientVersionText$uiMessage")).toDouble().toFloat()),
             ((height - 12f).toDouble().toFloat()),
-            Color(255, 255, 255, 100).rgb
+            Color(255, 255, 255, 140).rgb
         )
         minecraftFont.drawStringWithShadow(
             "Changelogs:",
             3.0F,
             32.0F,
-            Color(255, 255, 255, 100).rgb
+            Color(255, 255, 255, 150).rgb
         )
         var changeY = 48
         val changeDetails: List<String> = changelogs.split("\n")
@@ -199,7 +199,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 formattedDetail,
                 4.0F,
                 changeY.toFloat().toDouble().toFloat(),
-                Color(255, 255, 255, 100).rgb
+                Color(255, 255, 255, 150).rgb
             )
             changeY += 8
         }
@@ -207,7 +207,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             "Known Bugs:",
             ((width - 10f - minecraftFont.getStringWidth("Known Bugs:")).toDouble().toFloat()),
             43.0F,
-            Color(255, 255, 255, 100).rgb
+            Color(255, 255, 255, 140).rgb
         )
         var bugsY = 55
         val bugDetails: List<String> = bugs.split("\n")
@@ -216,7 +216,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 detail,
                 ((width - 12f - minecraftFont.getStringWidth(detail)).toDouble().toFloat()),
                 bugsY.toFloat().toDouble().toFloat(),
-                Color(255, 255, 255, 100).rgb
+                Color(255, 255, 255, 140).rgb
             )
             bugsY += 11
         }
