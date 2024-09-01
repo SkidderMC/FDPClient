@@ -44,22 +44,23 @@ import kotlin.math.roundToInt
 object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
 
     private val health by BoolValue("Health", true)
-        private val healthFromScoreboard by BoolValue("HealthFromScoreboard", false) { health }
-        private val absorption by BoolValue("Absorption", false) { health || healthBar }
-        private val roundedHealth by BoolValue("RoundedHealth", true) { health }
+    private val healthFromScoreboard by BoolValue("HealthFromScoreboard", false) { health }
+    private val absorption by BoolValue("Absorption", false) { health || healthBar }
+    private val roundedHealth by BoolValue("RoundedHealth", true) { health }
 
-        private val healthPrefix by BoolValue("HealthPrefix", false) { health }
-            private val healthPrefixText by TextValue("HealthPrefixText", "") { health && healthPrefix }
+    private val healthPrefix by BoolValue("HealthPrefix", false) { health }
+    private val healthPrefixText by TextValue("HealthPrefixText", "") { health && healthPrefix }
 
-        private val healthSuffix by BoolValue("HealthSuffix", true) { health }
-            private val healthSuffixText by TextValue("HealthSuffixText", " ❤") { health && healthSuffix }
+    private val healthSuffix by BoolValue("HealthSuffix", true) { health }
+    private val healthSuffixText by TextValue("HealthSuffixText", " ❤") { health && healthSuffix }
 
     private val indicator by BoolValue("Indicator", false)
     private val ping by BoolValue("Ping", false)
     private val healthBar by BoolValue("Bar", false)
     private val distance by BoolValue("Distance", false)
     private val armor by BoolValue("Armor", true)
-    private val enchant by BoolValue("Enchant", true)
+    private val showArmorDurability by ListValue("Armor Durability", arrayOf("None", "Value", "Percentage"), "Percentage") { armor }
+    private val enchant by BoolValue("Enchant", true) { armor }
     private val bot by BoolValue("Bots", true)
     private val potion by BoolValue("Potions", true)
     private val clearNames by BoolValue("ClearNames", false)
@@ -68,16 +69,16 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
     private val fontShadow by BoolValue("Shadow", true)
 
     private val background by BoolValue("Background", true)
-        private val backgroundColorRed by IntegerValue("Background-R", 0, 0..255) { background }
-        private val backgroundColorGreen by IntegerValue("Background-G", 0, 0..255) { background }
-        private val backgroundColorBlue by IntegerValue("Background-B", 0, 0..255) { background }
-        private val backgroundColorAlpha by IntegerValue("Background-Alpha", 70, 0..255) { background }
+    private val backgroundColorRed by IntegerValue("Background-R", 0, 0..255) { background }
+    private val backgroundColorGreen by IntegerValue("Background-G", 0, 0..255) { background }
+    private val backgroundColorBlue by IntegerValue("Background-B", 0, 0..255) { background }
+    private val backgroundColorAlpha by IntegerValue("Background-Alpha", 70, 0..255) { background }
 
     private val border by BoolValue("Border", false)
-        private val borderColorRed by IntegerValue("Border-R", 0, 0..255) { border }
-        private val borderColorGreen by IntegerValue("Border-G", 0, 0..255) { border }
-        private val borderColorBlue by IntegerValue("Border-B", 0, 0..255) { border }
-        private val borderColorAlpha by IntegerValue("Border-Alpha", 100, 0..255) { border }
+    private val borderColorRed by IntegerValue("Border-R", 0, 0..255) { border }
+    private val borderColorGreen by IntegerValue("Border-G", 0, 0..255) { border }
+    private val borderColorBlue by IntegerValue("Border-B", 0, 0..255) { border }
+    private val borderColorAlpha by IntegerValue("Border-Alpha", 100, 0..255) { border }
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
         override fun onUpdate(value: Int) {
@@ -98,6 +99,11 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
     private val inventoryBackground = ResourceLocation("textures/gui/container/inventory.png")
     private val decimalFormat = DecimalFormat("##0.00", DecimalFormatSymbols(Locale.ENGLISH))
 
+    // Cache for health color and formatted strings
+    private var cachedHealthColor: Int = 0xFFFFFF
+    private var cachedHealthPrefix = ""
+    private var cachedHealthSuffix = ""
+
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         if (mc.theWorld == null || mc.thePlayer == null) return
@@ -105,13 +111,13 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
         glPushAttrib(GL_ENABLE_BIT)
         glPushMatrix()
 
-        // Disable lightning and depth test
+        // Disable lighting and depth test
         glDisable(GL_LIGHTING)
         glDisable(GL_DEPTH_TEST)
 
         glEnable(GL_LINE_SMOOTH)
 
-        // Enable blend
+        // Enable blending
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
@@ -145,10 +151,10 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
 
         val thePlayer = mc.thePlayer ?: return
 
-        // Set fontrenderer local
+        // Set local fontRenderer
         val fontRenderer = font
 
-        // Push
+        // Push matrix
         glPushMatrix()
 
         // Translate to player position
@@ -164,24 +170,26 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
         glRotatef(-mc.renderManager.playerViewY, 0F, 1F, 0F)
         glRotatef(mc.renderManager.playerViewX, 1F, 0F, 0F)
 
-        // Disable lightning and depth test
+        // Disable lighting and depth test
         disableGlCap(GL_LIGHTING, GL_DEPTH_TEST)
 
-        // Enable blend
+        // Enable blending
         enableGlCap(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+        // Determine friend or enemy status
+        val isFriend = indicator && (entity is EntityPlayer && entity.isClientFriend())
+
+        // Cache health color and formatted strings
+        cachedHealthColor = calculateHealthColor(entity)
+        cachedHealthPrefix = if (healthPrefix) healthPrefixText else ""
+        cachedHealthSuffix = if (isFriend) " §9❤" else healthSuffixText
 
         // Modify tag
         val bot = isBot(entity)
         val nameColor = if (bot) "§3" else if (entity.isInvisible) "§6" else if (entity.isSneaking) "§4" else "§7"
-
-        val isFriend = indicator && (entity is EntityPlayer && entity.isClientFriend())
-        val symbol = if (indicator) "§a✦" else ""
-        val symbolColor = if (indicator) {
-            if (isFriend) "§a" else "§c"
-        } else {
-            ""
-        }
+        val symbolColor = if (isFriend) "§a" else "§c"
+        val symbol = if (indicator) "$symbolColor✦" else ""
 
         val playerPing = if (entity is EntityPlayer) entity.getPing() else 0
         val playerDistance = thePlayer.getDistanceToEntity(entity)
@@ -192,20 +200,9 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
         val healthText = if (health) " " + getHealthString(entity) else ""
         val botText = if (bot) " §c§lBot" else ""
 
-        val text = "$symbolColor$symbol $distanceText$pingText$nameColor$name$healthText$botText"
+        val text = "$symbol $distanceText$pingText$nameColor$name$healthText$botText"
 
-        // Calculate health color based on entity's health
-        val healthColor = when {
-            entity.health <= 0 -> Color(255, 0, 0)
-            else -> {
-                val healthRatio = (getHealth(entity, healthFromScoreboard) / entity.maxHealth).coerceIn(0.0F, 1.0F)
-                val red = (255 * (1 - healthRatio)).toInt()
-                val green = (255 * healthRatio).toInt()
-                Color(red, green, 0)
-            }
-        }
-
-        // Scale
+        // Scale based on distance
         val scale = ((playerDistance / 4F).coerceAtLeast(1F) / 150F) * scale
 
         glScalef(-scale, -scale, scale)
@@ -256,7 +253,7 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
                 fontRenderer.FONT_HEIGHT + 3F,
                 -width - 2F + (dist * (getHealth(entity, healthFromScoreboard) / entity.maxHealth).coerceIn(0F, 1F)),
                 fontRenderer.FONT_HEIGHT + 4F,
-                healthColor.rgb
+                cachedHealthColor
             )
         }
 
@@ -325,35 +322,78 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
                 drawExhiEnchants(entity.getEquipmentInSlot(index), -50f + index * 20f, if (potion && foundPotion) -42f else -22f)
             }
 
-            // Disable lightning and depth test
+            // Disable lighting and depth test
             glDisable(GL_LIGHTING)
             glDisable(GL_DEPTH_TEST)
 
             glEnable(GL_LINE_SMOOTH)
 
-            // Enable blend
+            // Enable blending
             glEnable(GL_BLEND)
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
             glPopMatrix()
         }
 
-        // Reset caps
+        if (showArmorDurability != "None" && entity is EntityPlayer) {
+
+            val posX = if (potion && entity.activePotionEffects.isNotEmpty()) 10 else 12
+            val posY = if (potion && entity.activePotionEffects.isNotEmpty()) -50 else -35
+
+            val armorItems = entity.inventory.armorInventory
+            var armorDurabilityText = ""
+
+            for (item in armorItems) {
+                if (item != null) {
+                    val durabilityValue = item.maxDamage - item.itemDamage
+                    val durabilityPercentage = (durabilityValue.toFloat() / item.maxDamage.toFloat()) * 100.0f
+
+                    armorDurabilityText += when (showArmorDurability) {
+                        "Value" -> " $durabilityValue"
+                        "Percentage" -> " ${String.format("%.0f%%", durabilityPercentage)}"
+                        "All" -> " ${durabilityValue}/${item.maxDamage} (${String.format("%.0f%%", durabilityPercentage)})"
+                        else -> ""
+                    }
+                }
+            }
+
+            val width = fontRenderer.getStringWidth(armorDurabilityText.trim()) * 0.5f
+            fontRenderer.drawString(
+                armorDurabilityText.trim(),
+                posX - width,
+                posY.toFloat(),
+                0xFFFFFF, fontShadow
+            )
+        }
+
+        // Reset OpenGL caps
         resetCaps()
 
         // Reset color
         resetColor()
         glColor4f(1F, 1F, 1F, 1F)
 
-        // Pop
+        // Pop matrix
         glPopMatrix()
+    }
+
+    private fun calculateHealthColor(entity: EntityLivingBase): Int {
+        return when {
+            entity.health <= 0 -> 0xFF0000
+            else -> {
+                val healthRatio = (getHealth(entity, healthFromScoreboard, absorption) / entity.maxHealth).coerceIn(0.0F, 1.0F)
+                val red = (255 * (1 - healthRatio)).toInt()
+                val green = (255 * healthRatio).toInt()
+                Color(red, green, 0).rgb
+            }
+        }
     }
 
     private fun getHealthString(entity: EntityLivingBase): String {
         return if (indicator) {
             val isFriend = entity is EntityPlayer && entity.isClientFriend()
 
-            val friendColor = "§a"
+            val friendColor = "§9"
             val enemyColor = "§c"
 
             val prefixColor = if (isFriend) friendColor else enemyColor
