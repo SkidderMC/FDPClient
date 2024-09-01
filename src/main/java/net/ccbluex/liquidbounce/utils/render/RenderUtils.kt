@@ -812,11 +812,6 @@ object RenderUtils : MinecraftInstance() {
         drawRoundedBorder(x, y, x2, y2, width, color2, radius)
     }
 
-    fun drawRoundedBorderRectInt(x: Int, y: Int, x2: Int, y2: Int, width: Int, color1: Int, color2: Int, radius: Float) {
-        drawRoundedRectInt(x, y, x2, y2, color1, radius)
-        drawRoundedBorderInt(x, y, x2, y2, width.toFloat(), color2, radius)
-    }
-
     fun drawRectBasedBorder(x: Float, y: Float, x2: Float, y2: Float, width: Float, color1: Int) {
         drawRect(x - width / 2f, y - width / 2f, x2 + width / 2f, y + width / 2f, color1)
         drawRect(x - width / 2f, y + width / 2f, x + width / 2f, y2 + width / 2f, color1)
@@ -3636,9 +3631,29 @@ object RenderUtils : MinecraftInstance() {
         enableTexture2D()
     }
 
-    fun scaleStart(x: Float, y: Float, scale: Float) {
-        glTranslatef(x, y, 0f)
-        glScalef(scale, scale, 1f)
-        glTranslatef(-x, -y, 0f)
+    fun setGLCap(cap: Int, flag: Boolean) {
+        glCapMap[cap] = glGetBoolean(cap)
+        if (flag) {
+            glEnable(cap)
+        } else {
+            glDisable(cap)
+        }
+    }
+
+    private fun revertGLCap(cap: Int) {
+        val origCap: Boolean = glCapMap[cap] == true
+        if (origCap) {
+            glEnable(cap)
+        } else {
+            glDisable(cap)
+        }
+    }
+
+    fun revertAllCaps() {
+        val localIterator: Iterator<*> = glCapMap.keys.iterator()
+        while (localIterator.hasNext()) {
+            val cap = localIterator.next() as Int
+            revertGLCap(cap)
+        }
     }
 }
