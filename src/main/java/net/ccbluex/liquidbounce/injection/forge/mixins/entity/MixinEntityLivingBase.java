@@ -141,7 +141,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
      */
     @Inject(method = "onLivingUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/EntityLivingBase;updateEntityActionState()V", shift = At.Shift.AFTER))
     private void hookHeadRotations(CallbackInfo ci) {
-        Rotation rotation = Rotations.INSTANCE.getRotation(false);
+        Rotation rotation = Rotations.INSTANCE.getRotation();
 
         //noinspection ConstantValue
         this.rotationYawHead = ((EntityLivingBase) (Object) this) instanceof EntityPlayerSP && Rotations.INSTANCE.shouldUseRealisticMode() && rotation != null ? rotation.getYaw() : this.rotationYawHead;
@@ -152,7 +152,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
      */
     @Redirect(method = "onUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;rotationYaw:F", ordinal = 0))
     private float hookBodyRotationsA(EntityLivingBase instance) {
-        Rotation rotation = Rotations.INSTANCE.getRotation(false);
+        Rotation rotation = Rotations.INSTANCE.getRotation();
 
         return instance instanceof EntityPlayerSP && Rotations.INSTANCE.shouldUseRealisticMode() && rotation != null ? rotation.getYaw() : instance.rotationYaw;
     }
@@ -163,7 +163,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
      */
     @Redirect(method = "updateDistance", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;rotationYaw:F"))
     private float hookBodyRotationsB(EntityLivingBase instance) {
-        Rotation rotation = Rotations.INSTANCE.getRotation(false);
+        Rotation rotation = Rotations.INSTANCE.getRotation();
 
         return instance instanceof EntityPlayerSP && Rotations.INSTANCE.shouldUseRealisticMode() && rotation != null ? rotation.getYaw() : instance.rotationYaw;
     }
