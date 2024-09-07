@@ -70,7 +70,10 @@ class FDPClassicTH(inst: Targets) : TargetStyle("Classic", inst, true) {
 
         resetColor()
         color(1.0f, 1.0f, 1.0f)
-        drawEntityOnScreen(19, 38, 19, entity)
+        val playerInfo = mc.netHandler.getPlayerInfo(entity.uniqueID)
+        playerInfo?.locationSkin?.let { skinLocation ->
+            drawHead(skinLocation, 1, 1, 30, 30, (1F - targetInstance.getFadeProgress()).toInt().toFloat())
+        }
         resetColor()
 
     }
