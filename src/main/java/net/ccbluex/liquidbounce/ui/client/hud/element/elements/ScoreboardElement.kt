@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
@@ -44,13 +44,14 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
     private val roundedRectRadius by FloatValue("Rounded-Radius", 3F, 0F..5F)
 
     private val rect by BoolValue("Rect", false)
-        private val rectColorMode by ListValue("Rect-Color", arrayOf("Custom", "Rainbow"), "Custom") { rect }
-            private val rectColorRed by IntegerValue("Rect-R", 0, 0..255) { rect && rectColorMode == "Custom"}
-            private val rectColorGreen by IntegerValue("Rect-G", 111, 0..255) { rect && rectColorMode == "Custom"}
-            private val rectColorBlue by IntegerValue("Rect-B", 255, 0..255) { rect && rectColorMode == "Custom"}
-            private val rectColorAlpha by IntegerValue("Rect-Alpha", 255, 0..255) { rect && rectColorMode == "Custom"}
+    private val rectColorMode by ListValue("Rect-Color", arrayOf("Custom", "Rainbow"), "Custom") { rect }
+    private val rectColorRed by IntegerValue("Rect-R", 0, 0..255) { rect && rectColorMode == "Custom"}
+    private val rectColorGreen by IntegerValue("Rect-G", 111, 0..255) { rect && rectColorMode == "Custom"}
+    private val rectColorBlue by IntegerValue("Rect-B", 255, 0..255) { rect && rectColorMode == "Custom"}
+    private val rectColorAlpha by IntegerValue("Rect-Alpha", 255, 0..255) { rect && rectColorMode == "Custom"}
 
     private val serverIp by ListValue("ServerIP", arrayOf("Normal", "None", "Client", "Website"), "Normal")
+    private val showNumber by BoolValue("ShowNumber", true)
     private val shadow by BoolValue("Shadow", false)
     private val font by FontValue("Font", Fonts.minecraftFont)
 
@@ -91,7 +92,11 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
 
         for (score in scoreCollection) {
             val scorePlayerTeam = scoreboard.getPlayersTeam(score.playerName)
-            val width = "${ScorePlayerTeam.formatPlayerName(scorePlayerTeam, score.playerName)}: ${EnumChatFormatting.RED}${score.scorePoints}"
+            val width = if (showNumber) {
+                "${ScorePlayerTeam.formatPlayerName(scorePlayerTeam, score.playerName)}: ${EnumChatFormatting.RED}${score.scorePoints}"
+            } else {
+                ScorePlayerTeam.formatPlayerName(scorePlayerTeam, score.playerName)
+            }
             maxWidth = maxWidth.coerceAtLeast(fontRenderer.getStringWidth(width))
         }
 
@@ -104,7 +109,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
             val team = scoreboard.getPlayersTeam(score.playerName)
 
             var name = ScorePlayerTeam.formatPlayerName(team, score.playerName)
-            val scorePoints = "${EnumChatFormatting.RED}${score.scorePoints}"
+            val scorePoints = if (showNumber) "${EnumChatFormatting.RED}${score.scorePoints}" else ""
 
             val width = 5 - if (rect) 4 else 0
             val height = maxHeight - index * fontRenderer.FONT_HEIGHT.toFloat()
@@ -139,7 +144,9 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
             }
 
             fontRenderer.drawString(name, l1.toFloat(), height, textColor, shadow)
-            fontRenderer.drawString(scorePoints, (width - fontRenderer.getStringWidth(scorePoints)).toFloat(), height, textColor, shadow)
+            if (showNumber) {
+                fontRenderer.drawString(scorePoints, (width - fontRenderer.getStringWidth(scorePoints)).toFloat(), height, textColor, shadow)
+            }
 
             if (index == scoreCollection.size - 1) {
                 val displayName = objective.displayName
@@ -175,9 +182,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
         return Border(-maxWidth - 5f - if (rect) 3 else 0, -2F, 5F, maxHeight + fontRenderer.FONT_HEIGHT.toFloat())
     }
 
-    private fun backgroundColor() = Color(backgroundColorRed, backgroundColorGreen,
-            backgroundColorBlue, backgroundColorAlpha)
+    private fun backgroundColor() = Color(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha)
 
     private fun textColor() = Color(textRed, textGreen, textBlue)
-
 }
