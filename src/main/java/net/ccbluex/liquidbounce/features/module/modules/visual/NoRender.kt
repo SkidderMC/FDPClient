@@ -61,14 +61,12 @@ object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hid
 	// Event to control entity rendering
 	@EventTarget
 	fun onMotion(event: MotionEvent) {
-		mc.theWorld?.loadedEntityList?.forEach { entity ->
-			entity?.let {
-				if (shouldStopRender(it)) {
-					it.renderDistanceWeight = 0.0
-				} else if (autoResetValue) {
-					it.renderDistanceWeight = 1.0
-				}
-			}
+		for (en in mc.theWorld.loadedEntityList) {
+			val entity = en!!
+			if (shouldStopRender(entity))
+				entity.renderDistanceWeight = 0.0
+			else if (autoResetValue)
+				entity.renderDistanceWeight = 1.0
 		}
 	}
 
@@ -122,13 +120,14 @@ object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hid
 
 	// Function to determine if an entity should stop rendering
 	fun shouldStopRender(entity: Entity): Boolean {
-		return ((allEntitiesValue ||
-				(itemsValue && entity is EntityItem) ||
-				(playersValue && entity is EntityPlayer) ||
-				(mobsValue && entity.isMob()) ||
-				(animalsValue && entity.isAnimal()) ||
-				(armorStandValue && entity is EntityArmorStand)) && entity != mc.thePlayer
-				&& (mc.thePlayer?.getDistanceToEntityBox(entity)?.toFloat() ?: 0F) > maxRenderRange)
+		return (allEntitiesValue
+				||(itemsValue && entity is EntityItem)
+				|| (playersValue && entity is EntityPlayer)
+				|| (mobsValue && entity.isMob())
+				|| (animalsValue && entity.isAnimal())
+				|| (armorStandValue && entity is EntityArmorStand))
+				&& entity != mc.thePlayer!!
+				&& (mc.thePlayer!!.getDistanceToEntityBox(entity).toFloat() > maxRenderRange)
 	}
 
 	// Resets rendering when the module is disabled
@@ -143,12 +142,10 @@ object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hid
 		currentBlock = null
 
 		// Restore entity rendering
-		mc.theWorld?.loadedEntityList?.forEach { entity ->
-			entity?.let {
-				if (it != mc.thePlayer && it.renderDistanceWeight <= 0.0) {
-					it.renderDistanceWeight = 1.0
-				}
-			}
+		for (en in mc.theWorld.loadedEntityList) {
+			val entity = en!!
+			if (entity != mc.thePlayer!! && entity.renderDistanceWeight <= 0.0)
+				entity.renderDistanceWeight = 1.0
 		}
 	}
 
