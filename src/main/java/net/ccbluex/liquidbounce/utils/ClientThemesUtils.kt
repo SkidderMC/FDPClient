@@ -4,15 +4,49 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils
-import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.ClientColorMode
-import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.ThemeFadeSpeed
-import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.updown
 import net.ccbluex.liquidbounce.utils.extensions.setAlpha
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.mixColors
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import java.awt.Color
 
 object ClientThemesUtils {
+
+    var ClientColorMode by ListValue(
+        "ColorMode",
+        arrayOf(
+            "Zywl",
+            "Water",
+            "Magic",
+            "DarkNight",
+            "Sun",
+            "Tree",
+            "Flower",
+            "Loyoi",
+            "Soniga",
+            "May",
+            "Mint",
+            "Cero",
+            "Azure",
+            "Rainbow",
+            "Astolfo",
+            "Pumpkin",
+            "Polarized",
+            "Sundae",
+            "Terminal",
+            "Coral",
+            "Fire",
+            "Aqua",
+            "Peony"),
+        "Cherry"
+    ) { false }
+
+    var textValue by BoolValue("TextStaticColor", false)
+
+    var ThemeFadeSpeed by IntegerValue("Fade-speed", 7, 1..10)
+    var updown by BoolValue("Fade-Type", false)
 
     fun setColor(type: String, alpha: Int): Color {
         val mode = ClientColorMode.lowercase()

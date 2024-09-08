@@ -49,21 +49,6 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
     val colorBlue by IntegerValue("B", 255, 0..255) { intefaceColor }
     private val colorRainbowValue = BoolValue("Rainbow", true) { intefaceColor }
 
-    // CLIENT THEME
-    val colorOptions = arrayOf(
-        "Zywl", "Water", "Magic", "DarkNight", "Sun", "Tree", "Flower", "Loyoi", "Soniga", "May",
-        "Mint", "Cero", "Azure", "Rainbow", "Astolfo", "Pumpkin", "Polarized", "Sundae", "Terminal",
-        "Coral", "Fire", "Aqua", "Peony"
-    )
-
-    var ClientColorMode by ListValue("ColorMode", colorOptions, "Zywl") { intefaceColor }
-
-    var ThemeFadeSpeed by IntegerValue("Fade-speed", 1, 1..10) { intefaceColor }
-    var updown by BoolValue(
-        "Fade-Type",
-        false
-    ) { intefaceColor }
-
     val guiColor
         get() = if (colorRainbowValue.get()) ColorUtils.rainbow().rgb
         else Color(colorRed, colorGreen, colorBlue).rgb

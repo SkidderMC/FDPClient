@@ -198,5 +198,4 @@ object SettingsUtils {
                 }
             }.lines().filter { it.isNotBlank() }.joinToString("\n")
     }
-
 }

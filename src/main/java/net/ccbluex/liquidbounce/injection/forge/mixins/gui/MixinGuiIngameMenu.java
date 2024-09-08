@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.ui.client.gui.GuiTheme;
 import net.ccbluex.liquidbounce.utils.ServerUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiIngameMenu;
@@ -27,13 +28,19 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
             disconnectButton.width = 98;
             disconnectButton.height = 20;
             this.buttonList.add(new GuiButton(1068,this.width / 2 - 100,this.height / 4 + 128 + 24,"Switcher"));
-            this.buttonList.add(new GuiButton(1078,this.width / 2 - 100,this.height / 4 + 128 + 125,"Key Bind Manager"));
+            this.buttonList.add(new GuiButton(1078, this.width / 2 - 100, this.height / 4 + 128 + 48, "Key Bind Manager"));
+            this.buttonList.add(new GuiButton(16578, this.width / 2 - 100, this.height / 4 + 128, "Client Color"));
             buttonList.add(new GuiButton(1337, width / 2 - 100, height / 4 + 120 - 16, 98, 20, "Reconnect"));
         }
     }
 
     @Inject(method = "actionPerformed", at = @At("HEAD"))
     private void actionPerformed(GuiButton button, CallbackInfo callbackInfo) {
+
+        if(button.id == 16578) {
+            mc.displayGuiScreen(new GuiTheme());
+        }
+
         if (button.id == 1337) {
             mc.theWorld.sendQuittingDisconnectingPacket();
             ServerUtils.INSTANCE.connectToLastServer();

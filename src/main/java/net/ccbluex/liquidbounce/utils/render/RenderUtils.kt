@@ -863,6 +863,73 @@ object RenderUtils : MinecraftInstance() {
         drawRoundedBordered(x.toFloat(), y.toFloat(), x2.toFloat(), y2.toFloat(), color, width, radius)
     }
 
+    /** rounded rect outline
+     * @author Shoroa
+     * @param x : X pos
+     * @param y : Y pos
+     * @param x1 : X2 pos
+     * @param y1 : Y2 pos
+     * @param radius : round of edges;
+     * @param lineWidth : width of outline line;
+     * @param colour : color;
+     */
+    fun drawRoundedOutline(x: Float, y: Float, x1: Float, y1: Float, radius: Float, lineWidth: Float, colour: Int) {
+        var x = x
+        var y = y
+        var x1 = x1
+        var y1 = y1
+        glPushAttrib(0)
+        glScaled(0.5, 0.5, 0.5)
+        x *= 2.0.toFloat()
+        y *= 2.0.toFloat()
+        x1 *= 2.0.toFloat()
+        y1 *= 2.0.toFloat()
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        setColour(colour)
+        glEnable(GL_LINE_SMOOTH)
+        glLineWidth(lineWidth)
+        glBegin(GL_LINE_LOOP)
+        var i = 0
+        while (i <= 90) {
+            glVertex2d(
+                x + radius + sin(i * Math.PI / 180.0) * radius * -1.0,
+                y + radius + cos(i * Math.PI / 180.0) * radius * -1.0
+            )
+            i += 3
+        }
+        i = 90
+        while (i <= 180) {
+            glVertex2d(
+                x + radius + sin(i * Math.PI / 180.0) * radius * -1.0,
+                y1 - radius + cos(i * Math.PI / 180.0) * radius * -1.0
+            )
+            i += 3
+        }
+        i = 0
+        while (i <= 90) {
+            glVertex2d(x1 - radius + sin(i * Math.PI / 180.0) * radius, y1 - radius + cos(i * Math.PI / 180.0) * radius)
+            i += 3
+        }
+        i = 90
+        while (i <= 180) {
+            glVertex2d(
+                x1 - radius + sin(i * Math.PI / 180.0) * radius, y + radius + cos(i * Math.PI / 180.0) * radius
+            )
+            i += 3
+        }
+        glEnd()
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
+        glDisable(GL_LINE_SMOOTH)
+        glDisable(GL_BLEND)
+        glEnable(GL_TEXTURE_2D)
+        glScaled(2.0, 2.0, 2.0)
+        glPopAttrib()
+        glLineWidth(1f)
+        color(1.0f, 1.0f, 1.0f, 1.0f)
+    }
+
     private fun drawRoundedBordered(x1: Float, y1: Float, x2: Float, y2: Float, color: Int, width: Float, radius: Float) {
         val alpha = (color ushr 24 and 0xFF) / 255.0f
         val red = (color ushr 16 and 0xFF) / 255.0f

@@ -46,8 +46,6 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     private lateinit var btnQuit: QuitButton
     private lateinit var btnAddAccount: ImageButton
 
-    private val guiCapeManager: GuiCapeManager = GuiCapeManager
-
     override fun initGui() {
         logo = ResourceLocation("fdpclient/mainmenu/logo.png")
         val yPos = height - 20
@@ -117,7 +115,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 btnLanguage.hoverFade > 0 -> mc.displayGuiScreen(GuiLanguage(this, mc.gameSettings, mc.languageManager))
                 btnCommitInfo.hoverFade > 0 -> mc.displayGuiScreen(GuiCommitInfo())
                 btnForgeModList.hoverFade > 0 -> mc.displayGuiScreen(GuiModList(mc.currentScreen))
-                btnCosmetics.hoverFade > 0 -> mc.displayGuiScreen(guiCapeManager)
+                btnCosmetics.hoverFade > 0 -> mc.displayGuiScreen(GuiTheme())
                 btnAddAccount.hoverFade > 0 -> mc.displayGuiScreen(GuiAltManager(this))
                 btnConnectAPI.hoverFade > 0 -> {
                     checkStatus()
