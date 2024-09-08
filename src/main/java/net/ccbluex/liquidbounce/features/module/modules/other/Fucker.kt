@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.player.AutoTool
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.ClientThemesUtils.getColorWithAlpha
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.RotationUtils.faceBlock
@@ -22,6 +23,7 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isFullBlock
 import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
@@ -29,6 +31,8 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.init.Blocks
 import net.minecraft.init.Blocks.air
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.*
@@ -98,6 +102,12 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
 
     private val blockProgress by BoolValue("BlockProgress", true)
 
+    private val renderPos by BoolValue("Render-Pos", false)
+    private val clientTheme by BoolValue("RenderPos Color", true) { renderPos }
+    private val posProcess by BoolValue("PosProcess", false) { renderPos }
+
+    private val posOutline by BoolValue("PosOutline", false)
+
     private val scale by FloatValue("Scale", 2F, 1F..6F) { blockProgress }
     private val font by FontValue("Font", Fonts.font40) { blockProgress }
     private val fontShadow by BoolValue("Shadow", true) { blockProgress }
@@ -118,6 +128,7 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
     private var blockHitDelay = 0
     private val switchTimer = MSTimer()
     var currentDamage = 0F
+    private var damageAnim = 0F
 
     // Surroundings
     private var areSurroundings = false
@@ -354,6 +365,26 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
         // Check if it is the player's own bed
         if (ignoreOwnBed && isBedNearSpawn(pos)) {
             return
+        }
+        val x = pos.x - mc.renderManager.renderPosX
+        val y = pos.y - mc.renderManager.renderPosY
+        val z = pos.z - mc.renderManager.renderPosZ
+        val c = if (clientTheme) getColorWithAlpha(1, 80) else if (pos.getBlock() != Blocks.bed) Color(
+            255,
+            0,
+            0,
+            50
+        ) else Color(0, 255, 0, 50)
+        if (renderPos) {
+            if (posOutline) {
+                RenderUtils.renderOutlines(x + 0.5, y - 0.5, z + 0.5, if (posProcess) damageAnim.animSmooth(
+                    currentDamage, 0.5F) else 1.0f, if (posProcess) damageAnim.animSmooth(
+                    currentDamage, 0.5F) else 1.0f, c, 1.5F)
+                GlStateManager.resetColor()
+            } else {
+                RenderUtils.renderBox(x + 0.5, y - 0.5, z + 0.5, if (posProcess) currentDamage else 1.0f, if (posProcess) currentDamage else 1.0f, c)
+                GlStateManager.resetColor()
+            }
         }
 
         if (blockProgress) {
