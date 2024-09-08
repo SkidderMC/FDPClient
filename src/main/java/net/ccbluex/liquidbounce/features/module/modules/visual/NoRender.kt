@@ -14,14 +14,27 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.isAnimal
 import net.ccbluex.liquidbounce.utils.extensions.isMob
+import net.ccbluex.liquidbounce.value.BlockValue
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.minecraft.block.BlockGlass
+import net.minecraft.block.Block
+import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.util.BlockPos
 
+/**
+ * NoRender is a visual module that allows the player to control the rendering of entities
+ * and specific blocks in the game world. It provides functionality to hide or show selected
+ * entities and blocks dynamically, enhancing performance or reducing visual clutter.
+ *
+ * Usage: Toggle the module to hide specific entities and blocks. Adjust settings to control
+ * the visibility of certain elements in the game world.
+ *
+ * @author opZywl
+ */
 object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hideModule = false) {
 
 	private val allEntitiesValue by BoolValue("AllEntities", true)
@@ -32,7 +45,15 @@ object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hid
 	private val armorStandValue by BoolValue("ArmorStand", true) { !allEntitiesValue }
 	private val autoResetValue by BoolValue("AutoReset", true)
 	private val maxRenderRange by FloatValue("MaxRenderRange", 4F, 0F..16F)
-	private val clearGlassValue by BoolValue("ClearGlass", false)
+
+	// The specific block selected by its ID
+	private val specificBlockValue by BlockValue("SpecificBlock", 1)
+
+	// Stores hidden blocks and their original states
+	private val hiddenBlocks: MutableMap<BlockPos, IBlockState> = mutableMapOf()
+
+	// Stores the current block being hidden
+	private var currentBlock: Block? = null
 
 	// Event to control entity rendering
 	@EventTarget
@@ -48,19 +69,36 @@ object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hid
 		}
 	}
 
-	// Event to control block rendering (Clear Glass functionality)
+	// Event to control block rendering
 	@EventTarget
 	fun onRender3D(event: Render3DEvent) {
-		mc.thePlayer?.let { _ ->
-			val radius = maxRenderRange.toInt()
-			val blockList = searchBlocks(radius, null)  // Pass 'null' for targetBlocks
+		mc.thePlayer?.let {
+			val radius = 16
+			val selectedBlock = Block.getBlockById(specificBlockValue)
+
+			if (currentBlock == selectedBlock) return
+
+			restoreHiddenBlocks()
+
+			hiddenBlocks.clear()
+
+			currentBlock = selectedBlock
+
+			val blockList = searchBlocks(radius, setOf(selectedBlock))
 
 			blockList.forEach { (pos, block) ->
-				// Check if the block is glass and ClearGlass is active
-				if (clearGlassValue && block is BlockGlass) {
+				if (block == selectedBlock) {
+					hiddenBlocks[pos] = mc.theWorld.getBlockState(pos)
 					mc.theWorld.setBlockToAir(pos)
 				}
 			}
+		}
+	}
+
+	// Function to restore previously hidden blocks
+	private fun restoreHiddenBlocks() {
+		hiddenBlocks.forEach { (pos, blockState) ->
+			mc.theWorld.setBlockState(pos, blockState)
 		}
 	}
 
@@ -75,8 +113,14 @@ object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hid
 				&& (mc.thePlayer?.getDistanceToEntityBox(entity)?.toFloat() ?: 0F) > maxRenderRange)
 	}
 
-	// Reset rendering when the module is disabled
+	// Resets rendering when the module is disabled
 	override fun onDisable() {
+		restoreHiddenBlocks()
+
+		hiddenBlocks.clear()
+
+		currentBlock = null
+
 		mc.theWorld?.loadedEntityList?.forEach { entity ->
 			entity?.let {
 				if (it != mc.thePlayer && it.renderDistanceWeight <= 0.0) {
@@ -84,5 +128,10 @@ object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hid
 				}
 			}
 		}
+	}
+
+	// Forces re-rendering of blocks when the module is toggled
+	override fun onToggle(state: Boolean) {
+		mc.renderGlobal.loadRenderers()
 	}
 }
