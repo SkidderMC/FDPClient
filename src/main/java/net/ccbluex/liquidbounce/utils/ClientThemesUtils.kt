@@ -84,6 +84,7 @@ object ClientThemesUtils {
             Color(-1)
         }
     }
+
     fun getColorFromName(name: String, index: Int): Color {
         val colorMap = mapOf<String, (Double) -> Color>(
             "zywl" to { fadeSpeed -> mixColors(Color(206, 58, 98), Color(215, 171, 168), fadeSpeed, index) },
