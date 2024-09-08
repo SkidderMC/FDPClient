@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.ClientThemesUtils.getColor
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.BEDWARS_BLOCKS
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
@@ -53,7 +54,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
     private val maxLayers by IntegerValue("MaxLayers", 5, 1..10)
     private val scale by FloatValue("Scale", 3F, 1F..5F)
 
-    private val textMode by ListValue("Text-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
+    private val textMode by ListValue("Text-Color", arrayOf("Custom", "Rainbow", "Gradient", "Theme"), "Custom")
     private val textRed by IntegerValue("Text-R", 255, 0..255) { textMode == "Custom" }
     private val textGreen by IntegerValue("Text-G", 255, 0..255) { textMode == "Custom" }
     private val textBlue by IntegerValue("Text-B", 255, 0..255) { textMode == "Custom" }
@@ -79,7 +80,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
 
     private val roundedRectRadius by FloatValue("Rounded-Radius", 3F, 0F..5F)
 
-    private val backgroundMode by ListValue("Background-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
+    private val backgroundMode by ListValue("Background-Color", arrayOf("Custom", "Rainbow", "Gradient", "Theme"), "Custom")
     private val backgroundRed by IntegerValue("Background-R", 0, 0..255) { backgroundMode == "Custom" }
     private val backgroundGreen by IntegerValue("Background-G", 0, 0..255) { backgroundMode == "Custom" }
     private val backgroundBlue by IntegerValue("Background-B", 0, 0..255) { backgroundMode == "Custom" }
@@ -206,6 +207,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
     }
 
     private fun drawPlate(blockPos: BlockPos, index: Int) {
+        val themeColor = getColor(index).rgb
         val player = mc.thePlayer ?: return
         val renderManager = mc.renderManager ?: return
         val rotateX = if (mc.gameSettings.thirdPersonView == 2) -1.0f else 1.0f
@@ -291,6 +293,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
                     when (backgroundMode) {
                         "Gradient" -> 0
                         "Rainbow" -> 0
+                        "Theme" -> themeColor
                         else -> Color(backgroundRed, backgroundGreen, backgroundBlue, backgroundAlpha).rgb
                     },
                     roundedRectRadius
@@ -338,6 +341,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
                     when (textMode) {
                         "Gradient" -> 0
                         "Rainbow" -> 0
+                        "Theme" -> themeColor
                         else -> Color(textRed, textGreen, textBlue, 1).rgb
                     },
                     textShadow

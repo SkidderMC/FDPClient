@@ -31,7 +31,7 @@ import java.awt.Color
 import kotlin.math.pow
 
 object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
-    private val mode by ListValue("Mode", arrayOf("Box", "OtherBox", "Glow", "None"), "Box")
+    private val mode by ListValue("Mode", arrayOf("Box", "OtherBox", "Glow"), "Box")
 
     private val itemText by BoolValue("ItemText", false)
     private val itemTextTag by ListValue("ItemTextTag", arrayOf("()", "x", "[]"), "()")

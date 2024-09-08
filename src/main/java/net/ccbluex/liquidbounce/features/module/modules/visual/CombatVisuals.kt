@@ -54,7 +54,7 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
     val colorGreenValue by IntegerValue("Mark-Green", 160, 0..255) { isMarkMode }
     val colorBlueValue by IntegerValue("Mark-Blue", 255, 0.. 255) { isMarkMode }
 
-    val alphaValue by IntegerValue("Alpha", 255, 0.. 255) { isMarkMode && markValue == "Zavz" && markValue == "Jello"}
+    private val alphaValue by IntegerValue("Alpha", 255, 0.. 255) { isMarkMode && markValue == "Zavz" && markValue == "Jello"}
 
     val colorRedTwoValue by IntegerValue("Mark-Red 2", 0, 0.. 255) { isMarkMode && markValue == "Zavz" }
     val colorGreenTwoValue by IntegerValue("Mark-Green 2", 160, 0..255) { isMarkMode && markValue == "Zavz" }
