@@ -40,7 +40,7 @@ object ClientThemesUtils {
             "Fire",
             "Aqua",
             "Peony"),
-        "Cherry"
+        "Soniga"
     ) { false }
 
     var textValue by BoolValue("TextStaticColor", false)
