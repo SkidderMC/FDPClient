@@ -46,6 +46,9 @@ object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hid
 	private val autoResetValue by BoolValue("AutoReset", true)
 	private val maxRenderRange by FloatValue("MaxRenderRange", 4F, 0F..16F)
 
+	// Option to enable or disable specific block rendering
+	private val useSpecificBlock by BoolValue("Block", true)
+
 	// The specific block selected by its ID
 	private val specificBlockValue by BlockValue("SpecificBlock", 1)
 
@@ -72,20 +75,33 @@ object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hid
 	// Event to control block rendering
 	@EventTarget
 	fun onRender3D(event: Render3DEvent) {
+		// If the specific block feature is disabled, return without doing anything
+		if (!useSpecificBlock) {
+			// Ensure that all previously hidden blocks are restored if the option is disabled
+			restoreHiddenBlocks()
+			return
+		}
+
 		mc.thePlayer?.let {
 			val radius = 16
 			val selectedBlock = Block.getBlockById(specificBlockValue)
 
+			// If there is no change in the selected block, do nothing
 			if (currentBlock == selectedBlock) return
 
+			// Restore previously hidden blocks before hiding new ones
 			restoreHiddenBlocks()
 
+			// Clear the map for new block selection
 			hiddenBlocks.clear()
 
+			// Update the currently selected block
 			currentBlock = selectedBlock
 
+			// Search for blocks of the selected type in the player's vicinity
 			val blockList = searchBlocks(radius, setOf(selectedBlock))
 
+			// Hide the selected block and save its position and state
 			blockList.forEach { (pos, block) ->
 				if (block == selectedBlock) {
 					hiddenBlocks[pos] = mc.theWorld.getBlockState(pos)
@@ -100,6 +116,8 @@ object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hid
 		hiddenBlocks.forEach { (pos, blockState) ->
 			mc.theWorld.setBlockState(pos, blockState)
 		}
+		hiddenBlocks.clear()
+		currentBlock = null
 	}
 
 	// Function to determine if an entity should stop rendering
@@ -115,12 +133,16 @@ object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hid
 
 	// Resets rendering when the module is disabled
 	override fun onDisable() {
+		// Restore all hidden blocks when the module is disabled
 		restoreHiddenBlocks()
 
+		// Clear the list of hidden blocks
 		hiddenBlocks.clear()
 
+		// Reset the selected block
 		currentBlock = null
 
+		// Restore entity rendering
 		mc.theWorld?.loadedEntityList?.forEach { entity ->
 			entity?.let {
 				if (it != mc.thePlayer && it.renderDistanceWeight <= 0.0) {
