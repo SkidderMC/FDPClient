@@ -47,7 +47,7 @@ object Rotations : Module("Rotations", Category.CLIENT, gameDetecting = false, h
         headPitch = targetRotation.pitch
 
         thePlayer.rotationYawHead = targetRotation.yaw
-        if (shouldRotate() && body && !realistic || shouldUseRealisticMode()) {
+        if (shouldRotate() && body && !realistic) {
             thePlayer.renderYawOffset = thePlayer.rotationYawHead
         }
 
