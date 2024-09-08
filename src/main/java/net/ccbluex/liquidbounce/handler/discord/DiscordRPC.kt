@@ -102,9 +102,9 @@ object DiscordRPC : MinecraftInstance() {
 
             discordRPCModule?.let { module ->
                 val logoUrl = if (module.animated.get()) {
-                    "https://raw.githubusercontent.com/SkidderMC/FDPClient/main/src/main/resources/assets/minecraft/fdpclient/fdp.gif"
+                    "https://skiddermc.github.io/fdp/rpc/fdp.gif"
                 } else {
-                    "https://raw.githubusercontent.com/SkidderMC/FDPClient/main/src/main/resources/assets/minecraft/fdpclient/fdp.png"
+                    "https://skiddermc.github.io/fdp/rpc/fdp.png"
                 }
                 builder.setLargeImage(logoUrl, "made by Zywl <3")
 
