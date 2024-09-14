@@ -21,7 +21,7 @@ import net.ccbluex.liquidbounce.utils.RotationUtils.toRotation
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.isFullBlock
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.isBlockBBValid
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
@@ -481,7 +481,7 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
                 movingObjectPosition != null && movingObjectPosition.blockPos == blockPos
             }
 
-            "around" -> EnumFacing.values().any { !isFullBlock(blockPos.offset(it)) }
+            "around" -> EnumFacing.values().any { !isBlockBBValid(blockPos.offset(it)) }
 
             else -> true
         }

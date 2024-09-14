@@ -66,7 +66,6 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
 
         block.setBlockBoundsBasedOnState(mc.theWorld, blockPos)
 
-
         val thePlayer = mc.thePlayer ?: return
 
         val x = thePlayer.lastTickPosX + (thePlayer.posX - thePlayer.lastTickPosX) * partialTicks
