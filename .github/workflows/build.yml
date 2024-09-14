@@ -1,4 +1,4 @@
-name: Build
+name: build
 
 on:
   - push
@@ -7,12 +7,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository and submodules
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Setup Java
+      - name: Java setup
         uses: actions/setup-java@v4
         with:
           distribution: "zulu"
@@ -28,20 +28,6 @@ jobs:
 
       - name: Rename build artifacts
         run: mv build/libs/FDPClient-*.jar build/libs/FDPClient-build.jar
-
-      - name: Upload artifact
-        run: |
-          cd build/libs
-          export JAR=$(find . -regex '.*FDPClient-b[0-9|.]*\.jar')
-          export FDP_VERSION=$(echo $JAR | sed -r 's/.\/FDPClient-([a-zA-Z][0-9]+)\.jar/\1/')
-          export MINECRAFT_VERSION='1.8.9'
-          echo Version: $FDP_VERSION, Minecraft: $MINECRAFT_VERSION
-          mkdir -p zip
-          cp $JAR zip/fdpclient.jar
-          cd zip
-          zip -r fdpclient.zip *
-          md5sum fdpclient.zip
-          curl --connect-timeout 30 -m 300 -X POST -F "artifact=@fdpclient.zip" -H "Authorization: ${{ secrets.NIGHTLY_PASS }}" -F "gh_id=${{ github.event.head_commit.id }}" -F "gh_ref=${{ github.ref }}" -F "gh_message=${{ github.event.head_commit.message }}" -F "gh_timestamp=${{ github.event.head_commit.timestamp }}" -F "fdp_version=$FDP_VERSION" -F "mc_version=$MINECRAFT_VERSION" -F "jre_version=8" -F "subsystem=forge" https://api.liquidbounce.net/api/v1/version/new
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v3
