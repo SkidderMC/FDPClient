@@ -21,7 +21,9 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawFilledBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawSelectionBoundingBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.Block
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager.*
@@ -30,12 +32,15 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
 object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = false, hideModule = false) {
+    private val mode by ListValue("Mode", arrayOf("Box", "OtherBox", "Outline"), "Box")
+    private val thickness by FloatValue("Thickness", 2F, 1F..5F)
+
     val info by BoolValue("Info", false)
 
     private val colorRainbow by BoolValue("Rainbow", false)
-        private val colorRed by IntegerValue("R", 68, 0..255) { !colorRainbow }
-        private val colorGreen by IntegerValue("G", 117, 0..255) { !colorRainbow }
-        private val colorBlue by IntegerValue("B", 255, 0..255) { !colorRainbow }
+    private val colorRed by IntegerValue("R", 68, 0..255) { !colorRainbow }
+    private val colorGreen by IntegerValue("G", 117, 0..255) { !colorRainbow }
+    private val colorBlue by IntegerValue("B", 255, 0..255) { !colorRainbow }
 
     val currentBlock: BlockPos?
         get() {
@@ -55,12 +60,14 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
         val partialTicks = event.partialTicks
 
         val color = if (colorRainbow) rainbow(alpha = 0.4F) else Color(colorRed,
-                colorGreen, colorBlue, (0.4F * 255).toInt())
+            colorGreen, colorBlue, (0.4F * 255).toInt())
 
         enableBlend()
         tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
+        glEnable(GL_LINE_SMOOTH)
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
         glColor(color)
-        glLineWidth(2F)
+        glLineWidth(thickness)
         disableTexture2D()
         glDepthMask(false)
 
@@ -76,11 +83,19 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
             .expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
             .offset(-x, -y, -z)
 
-        drawSelectionBoundingBox(axisAlignedBB)
-        drawFilledBox(axisAlignedBB)
+        when (mode.lowercase()) {
+            "box" -> {
+                drawFilledBox(axisAlignedBB)
+                drawSelectionBoundingBox(axisAlignedBB)
+            }
+            "otherbox" -> drawFilledBox(axisAlignedBB)
+            "outline" -> drawSelectionBoundingBox(axisAlignedBB)
+        }
+
         glDepthMask(true)
         enableTexture2D()
         disableBlend()
+        glDisable(GL_LINE_SMOOTH)
         resetColor()
     }
 
@@ -94,11 +109,11 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
             val (width, height) = ScaledResolution(mc)
 
             drawBorderedRect(
-                    width / 2 - 2F,
-                    height / 2 + 5F,
-                    width / 2 + Fonts.font40.getStringWidth(info) + 2F,
-                    height / 2 + 16F,
-                    3F, Color.BLACK.rgb, Color.BLACK.rgb
+                width / 2 - 2F,
+                height / 2 + 5F,
+                width / 2 + Fonts.font40.getStringWidth(info) + 2F,
+                height / 2 + 16F,
+                3F, Color.BLACK.rgb, Color.BLACK.rgb
             )
 
             resetColor()
