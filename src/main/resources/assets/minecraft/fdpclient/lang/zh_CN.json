@@ -47,7 +47,7 @@
     "module.antiAFK.description": "防止挂机时被踢。",
     "module.antiBlind.description": "消除失明效果。(视觉上)",
     "module.antiBot.description": "防止杀戮光环攻击反作弊发的假人。",
-    "module.antiExploit": "防止服务器崩溃你。",
+    "module.antiExploit.description": "防止服务器崩溃你。",
     "module.antiCactus.description": "防止受到仙人掌伤害。",
     "module.antiFireball.description": "自动打走火球。",
     "module.antiVanish.description": "自动检测消失的玩家。",

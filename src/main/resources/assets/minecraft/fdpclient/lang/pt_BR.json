@@ -44,6 +44,7 @@
     "module.antiBot.description": "Impede que o KillAura ataque bots de AntiCheat.",
     "module.antiCactus.description": "Impede que cactos o danifiquem.",
     "module.antiFireball.description": "Automáticamente tira as bolas de fogo longe de você.",
+    "module.antiExploit.description": "UNTRANSLATED: Prevents server from crashing you.",
     "module.atAllProvider.description": "Menciona automaticamente todos no servidor ao usar '@a' em sua mensagem.",
     "module.combatVisuals.description": "Mostra um efeito quando você ataca.",
     "module.autoAccount.description": "Gerenciador de registro / login e conta automático mais completo.",

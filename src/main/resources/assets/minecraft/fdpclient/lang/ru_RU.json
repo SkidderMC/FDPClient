@@ -46,6 +46,7 @@
         "module.antiCactus.description": "Убирает урон от кактусов.",
         "module.antiFireball.description": "Автоматически отталкивает от вас фаерболы.",
         "module.atAllProvider.description": "Автоматическое упоминание всех участников сервера при использовании '@a' в сообщении.",
+        "module.antiExploit.description": "UNTRANSLATED: Prevents server from crashing you.",
         "module.combatVisuals.description": "Показывает эффект при атаке",
         "module.autoAccount.description": "Наиболее функциональный менеджер авторегистрации/логина учетных записей.",
         "module.autoBreak.description": "Автоматически ломает блок, на который смотрите.",

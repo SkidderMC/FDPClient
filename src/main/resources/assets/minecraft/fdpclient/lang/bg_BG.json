@@ -42,6 +42,7 @@
     "module.airJump.description": "Позволява ви да скачате във въздуха",
     "module.airLadder.description": "Позволява ви да се изкачвате по стълби/лиани, без да ги докосвате.",
     "module.antiBounce.description": "UNTRANSLATED: Prevents you from bouncing on blocks.",
+    "module.antiExploit.description": "UNTRANSLATED: Prevents server from crashing you.",
     "module.animations.description": "Персонализира вашата блокираща анимация.",
     "module.antiAFK.description": "Предотвратява да бъдете кикнати, защото сте AFK.",
     "module.antiBlind.description": "Отменя ефекта на слепотата (blindness) .",

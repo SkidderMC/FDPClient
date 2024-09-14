@@ -35,6 +35,7 @@
     "module.velocity.description": "Permite que tu modifiques a quantidade de \"\"knockback\"\" que tu levas.",
     "module.abortBreaking.description:": "UNTRANSLATED: Allows you to abort breaking.",
     "module.antiHunger.description": "Prevém que tu fiques com fome.",
+    "module.antiExploit.description": "UNTRANSLATED: Prevents server from crashing you.",
     "module.bedGodMode.description": "Permite que tu andes enquanto estás numa cama (Para 1.9)",
     "module.clip.description": "UNTRANSLATED: Allows you to clip through blocks.",
     "module.airJump.description": "Permite que tu saltes no meio do ár",
