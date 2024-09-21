@@ -137,13 +137,13 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
         // GhostBlock Checks | Checks is disabled when using VerusFly Disabler, to prevent false flag.
         if (!Disabler.handleEvents() || (Disabler.handleEvents() && Disabler.mode.contains("VerusFly") && !dontPlaceOnAttack)) {
             blockPlacementAttempts.filter { (_, timestamp) ->
-                currentTime - timestamp in 500 until 750
+                currentTime - timestamp > 700
             }.forEach { (blockPos, _) ->
                 val block = world.getBlockState(blockPos).block
                 val isNotUsing = !(player.isUsingItem || player.isBlocking || KillAura.renderBlocking || KillAura.blockStatus)
 
-                if (block == Blocks.air && player.swingProgressInt > 2 && successfulPlacements != blockPos && isNotUsing) {
-                    successfulPlacements.remove(blockPos)
+                if (block == Blocks.air && player.swingProgressInt > 2 && successfulPlacements.contains(blockPos) && isNotUsing) {
+                    successfulPlacements.clear()
                     flagCount++
                     Chat.print("§dDetected §3GhostBlock §b(§c${flagCount}x§b)")
                 }
