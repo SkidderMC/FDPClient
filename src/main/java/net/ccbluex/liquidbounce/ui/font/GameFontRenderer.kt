@@ -69,6 +69,9 @@ class GameFontRenderer(font: Font) : FontRenderer(mc.gameSettings, ResourceLocat
     }
 
     override fun drawString(text: String, x: Float, y: Float, color: Int, shadow: Boolean): Int {
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
         val currentText = NameProtect.handleTextMessage(text)
         val currY = y - 3F
         val rainbow = RainbowFontShader.isInUse
@@ -78,6 +81,8 @@ class GameFontRenderer(font: Font) : FontRenderer(mc.gameSettings, ResourceLocat
             glUseProgram(0)
             drawText(currentText, x + 1f, currY + 1f, Color(0, 0, 0, 150).rgb, true)
         }
+
+        glDisable(GL_BLEND)
 
         return drawText(currentText, x, currY, color, false, rainbow, gradient)
     }
