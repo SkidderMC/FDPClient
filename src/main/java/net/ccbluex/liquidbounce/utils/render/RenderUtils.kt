@@ -3102,6 +3102,34 @@ object RenderUtils : MinecraftInstance() {
         glShadeModel(7424)
     }
 
+
+    fun drawGradientSI(left: Float, top: Float, right: Float, bottom: Float, startColor: Int, endColor: Int) {
+        val f = (startColor shr 24 and 255) / 255.0f
+        val f1 = (startColor shr 16 and 255) / 255.0f
+        val f2 = (startColor shr 8 and 255) / 255.0f
+        val f3 = (startColor and 255) / 255.0f
+        val f4 = (endColor shr 24 and 255) / 255.0f
+        val f5 = (endColor shr 16 and 255) / 255.0f
+        val f6 = (endColor shr 8 and 255) / 255.0f
+        val f7 = (endColor and 255) / 255.0f
+        disableTexture2D()
+        enableBlend()
+        disableAlpha()
+        tryBlendFuncSeparate(770, 771, 1, 0)
+        shadeModel(7425)
+        val tessellator = Tessellator.getInstance()
+        val worldrenderer = tessellator.worldRenderer
+        worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR)
+        worldrenderer.pos(right.toDouble(), top.toDouble(), 0.0).color(f5, f6, f7, f4).endVertex()
+        worldrenderer.pos(left.toDouble(), top.toDouble(), 0.0).color(f1, f2, f3, f).endVertex()
+        worldrenderer.pos(left.toDouble(), bottom.toDouble(), 0.0).color(f1, f2, f3, f).endVertex()
+        worldrenderer.pos(right.toDouble(), bottom.toDouble(), 0.0).color(f5, f6, f7, f4).endVertex()
+        Tessellator.getInstance().draw()
+        shadeModel(7424)
+        disableBlend()
+        enableAlpha()
+        enableTexture2D()
+    }
     /**
      * Calculates a color at a given offset between two colors using linear interpolation (gradient).
      *

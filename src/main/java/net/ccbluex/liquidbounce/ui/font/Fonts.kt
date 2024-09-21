@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
 import net.ccbluex.liquidbounce.file.FileManager.fontsDir
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.URLComponent.FONTS
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils.download
 import net.minecraft.client.gui.FontRenderer
@@ -52,6 +53,9 @@ object Fonts : MinecraftInstance() {
     @FontDetails(fontName = "Roboto Medium", fontSize = 15)
     lateinit var font15: GameFontRenderer
 
+    @FontDetails(fontName = "Icons 35", fontSize = 20)
+    lateinit var fontIcons35: GameFontRenderer
+
     private val CUSTOM_FONT_RENDERERS = hashMapOf<FontInfo, FontRenderer>()
 
     fun loadFonts() {
@@ -67,6 +71,7 @@ object Fonts : MinecraftInstance() {
         fontTiny = GameFontRenderer(getFont("Roboto-Medium.ttf", 24))
         font20 = GameFontRenderer(getFont("Roboto-Medium.ttf", 20))
         font15 = GameFontRenderer(getFont("Roboto-Medium.ttf", 15))
+        fontIcons35 = GameFontRenderer(getFont("aquaIcons.ttf", 35))
 
         try {
             CUSTOM_FONT_RENDERERS.clear()
@@ -101,6 +106,13 @@ object Fonts : MinecraftInstance() {
                 download("$CLIENT_CLOUD/fonts/Roboto.zip", outputFile)
                 LOGGER.info("Extract fonts...")
                 extractZip(outputFile.path, fontsDir.path)
+            }
+            val fontZipFile = File(fontsDir, "font.zip")
+            if (!fontZipFile.exists()) {
+                LOGGER.info("Downloading additional fonts...")
+                download("${FONTS}/Font.zip", fontZipFile)
+                LOGGER.info("Extracting additional fonts...")
+                extractZip(fontZipFile.path, fontsDir.path)
             }
         } catch (e: IOException) {
             e.printStackTrace()

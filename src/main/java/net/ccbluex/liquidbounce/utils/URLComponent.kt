@@ -12,4 +12,5 @@ object URLComponent {
     const val BUGS = "$WEBSITE/database/bugs.txt"
     const val DONORS = "$WEBSITE/donors/"
     const val PICTURES = "$WEBSITE/pictures/"
+    const val FONTS = "$WEBSITE/cloud/fonts/"
 }

@@ -12,9 +12,8 @@ import net.ccbluex.liquidbounce.file.FileManager.modulesConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.handler.lang.translation
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Arraylist
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
+import net.ccbluex.liquidbounce.ui.client.hud.HUD.addPrint
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.toLowerCamelCase
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
@@ -99,6 +98,13 @@ open class Module(
             if (!isStarting) {
                 mc.soundHandler.playSound(PositionedSoundRecord.create(ResourceLocation("random.click"), 1F))
                 addNotification(Notification(name,"${if (value) "Enabled" else "Disabled"} §r$name", if (value) Type.SUCCESS else Type.ERROR, 1000))
+                addPrint(
+                    Prints.Print(
+                        "${if (value) "Enabled" else "Disabled"} §r$name",
+                        1000f,
+                        if (value) PrintType.SUCCESS else PrintType.ERROR
+                    )
+                )
             }
 
             // Call on enabled or disabled

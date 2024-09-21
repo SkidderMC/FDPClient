@@ -5,10 +5,6 @@
  */
 package net.ccbluex.liquidbounce
 
-import net.ccbluex.liquidbounce.handler.api.ClientUpdate.gitInfo
-import net.ccbluex.liquidbounce.handler.api.loadSettings
-import net.ccbluex.liquidbounce.handler.api.messageOfTheDay
-import net.ccbluex.liquidbounce.handler.cape.CapeService
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.event.EventManager.callEvent
@@ -19,25 +15,29 @@ import net.ccbluex.liquidbounce.features.command.CommandManager.registerCommands
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager.registerModules
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Tower
-import net.ccbluex.liquidbounce.handler.payload.ClientFixes
-import net.ccbluex.liquidbounce.handler.discord.DiscordRPC
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.FileManager.loadAllConfigs
 import net.ccbluex.liquidbounce.file.FileManager.saveAllConfigs
+import net.ccbluex.liquidbounce.handler.api.ClientUpdate.gitInfo
+import net.ccbluex.liquidbounce.handler.api.loadSettings
+import net.ccbluex.liquidbounce.handler.api.messageOfTheDay
+import net.ccbluex.liquidbounce.handler.cape.CapeService
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
+import net.ccbluex.liquidbounce.handler.discord.DiscordRPC
 import net.ccbluex.liquidbounce.handler.lang.LanguageManager.loadLanguages
 import net.ccbluex.liquidbounce.handler.macro.MacroManager
+import net.ccbluex.liquidbounce.handler.payload.ClientFixes
+import net.ccbluex.liquidbounce.handler.tabs.BlocksTab
+import net.ccbluex.liquidbounce.handler.tabs.ExploitsTab
+import net.ccbluex.liquidbounce.handler.tabs.HeadsTab
 import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.ScriptManager.enableScripts
 import net.ccbluex.liquidbounce.script.ScriptManager.loadScripts
 import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.script.remapper.Remapper.loadSrg
-import net.ccbluex.liquidbounce.handler.tabs.BlocksTab
-import net.ccbluex.liquidbounce.handler.tabs.ExploitsTab
-import net.ccbluex.liquidbounce.handler.tabs.HeadsTab
-import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.updateClientWindow
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager.Companion.loadActiveGenerators
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
+import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.updateClientWindow
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts.loadFonts

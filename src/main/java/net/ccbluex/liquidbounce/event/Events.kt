@@ -111,6 +111,13 @@ class PostSprintUpdateEvent : Event()
 class StrafeEvent(val strafe: Float, val forward: Float, val friction: Float) : CancellableEvent()
 
 /**
+ * Called in "onLivingUpdate" when an entity is updated.
+ *
+ * @param entity The entity that is being updated
+ */
+class LivingUpdateEvent(val entity: Entity) : CancellableEvent()
+
+/**
  * Called when player moves
  *
  * @param x motion

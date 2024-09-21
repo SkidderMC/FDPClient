@@ -22,6 +22,7 @@ object HUD : MinecraftInstance() {
 
   val elements = mutableListOf<Element>()
   val notifications = mutableListOf<Notification>()
+  val prints = mutableListOf<Prints.Print>()
 
     val ELEMENTS = ClassUtils.resolvePackage("${HUD::class.java.`package`.name}.element.elements", Element::class.java)
         .toTypedArray()
@@ -63,6 +64,10 @@ object HUD : MinecraftInstance() {
   /** Update all elements */
   fun update() {
     for (element in elements) element.updateElement()
+  }
+
+  fun livingupdate() {
+    for (element in elements) element.livingupdateElement()
   }
 
   /** Handle mouse click */
@@ -167,4 +172,11 @@ object HUD : MinecraftInstance() {
 
   /** Remove [notification] */
   fun removeNotification(notification: Notification) = notifications.remove(notification)
+
+  /** Add [print] */
+  fun addPrint(print: Prints.Print) =
+    elements.any { it is Prints } && prints.add(print)
+
+  /** Remove [print] */
+  fun removePrint(print: Prints.Print) = prints.remove(print)
 }

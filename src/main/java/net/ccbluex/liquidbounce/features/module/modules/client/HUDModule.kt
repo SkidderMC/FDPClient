@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.FDPClient.hud
 import net.ccbluex.liquidbounce.event.*
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRectWithBorder
@@ -21,6 +21,7 @@ import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.util.ResourceLocation
+import net.minecraftforge.event.entity.living.LivingEvent
 import java.awt.Color
 
 object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDetecting = false, hideModule = true) {
@@ -136,6 +137,9 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) = hud.update()
+
+    @EventTarget
+    fun onLivingUpdate(event: LivingUpdateEvent) = hud.livingupdate()
 
     @EventTarget
     fun onKey(event: KeyEvent) = hud.handleKey('a', event.key)

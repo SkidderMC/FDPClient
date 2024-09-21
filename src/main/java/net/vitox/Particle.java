@@ -4,6 +4,8 @@ import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Random;
 
 import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
@@ -18,7 +20,7 @@ import static net.vitox.particle.util.RenderUtils.connectPoints;
  * @version 3.0
  */
 @SideOnly(Side.CLIENT)
-class Particle {
+public class Particle {
 
     public float x;
     public float y;
@@ -107,6 +109,15 @@ class Particle {
 
         if (y < 1)
             y = scaledResolution.getScaledHeight();
+    }
+
+    public static double roundToPlace(final float value, final int places) {
+        if (places < 0) {
+            return value;
+        }
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
     }
 
     private float genRandom() {

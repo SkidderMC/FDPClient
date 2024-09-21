@@ -5,10 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.render
 
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.pow
-import kotlin.math.sin
+import kotlin.math.*
 
 object AnimationUtils {
     /**
@@ -59,5 +56,46 @@ object AnimationUtils {
         }
 
         return current
+    }
+
+    fun doubleAnimate(target: Double, current: Double, speed: Double): Double {
+        var current = current
+        var speed = speed
+        val larger = (target > current)
+
+        if (speed < 0.0) {
+            speed = 0.0
+        } else if (speed > 1.0) {
+            speed = 1.0
+        }
+
+        val dif = max(target, current) - min(target, current)
+        var factor = dif * speed
+
+        if (factor <= 0.1) factor = 0.1
+
+        if (larger) {
+            current += factor
+        } else {
+            current -= factor
+        }
+
+        return current
+    }
+
+    fun lstransition(now: Float, desired: Float, speed: Double): Float {
+        val dif = abs((desired - now).toDouble())
+        val a = abs((desired - (desired - (abs((desired - now).toDouble())))) / (100 - (speed * 10)))
+            .toFloat()
+        var x = now
+
+        if (dif > 0) {
+            if (now < desired) x += a * RenderUtils.deltaTime
+            else if (now > desired) x -= a * RenderUtils.deltaTime
+        } else x = desired
+
+        if (abs((desired - x).toDouble()) < 10.0E-3 && x != desired) x = desired
+
+        return x
     }
 }
