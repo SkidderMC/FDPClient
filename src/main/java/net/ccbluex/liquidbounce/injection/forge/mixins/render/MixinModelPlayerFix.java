@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
-import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.event.UpdateModelEvent;
 import net.ccbluex.liquidbounce.features.module.modules.visual.CustomModel;
@@ -28,7 +27,6 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
-import java.util.Objects;
 
 @Mixin(ModelPlayer.class)
 public class MixinModelPlayerFix extends ModelBiped {
@@ -75,21 +73,6 @@ public class MixinModelPlayerFix extends ModelBiped {
     public ModelRenderer jaw;
     public ModelRenderer handRight;
     public ModelRenderer handLeft;
-
-    @Shadow
-    public ModelRenderer bipedLeftArmwear;
-
-    @Shadow
-    public ModelRenderer bipedRightArmwear;
-
-    @Shadow
-    public ModelRenderer bipedLeftLegwear;
-
-    @Shadow
-    public ModelRenderer bipedRightLegwear;
-
-    @Shadow
-    public ModelRenderer bipedBodyWear;
 
     @Shadow
     private boolean smallArms;

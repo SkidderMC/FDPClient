@@ -113,6 +113,21 @@ object AnimationUtil {
         return c * t * t * ((s + 1) * t - s) + b
     }
 
+    fun easeInBackNotify(x: Double): Double {
+        val c1 = 1.70158;
+        val c3 = c1 + 1;
+
+        return c3 * x * x * x - c1 * x * x;
+    }
+
+
+    fun easeOutBackNotify(x: Double): Double {
+        val c1 = 1.70158;
+        val c3 = c1 + 1;
+
+        return 1 + c3 * (x - 1).pow(3) + c1 * (x - 1).pow(2);
+    }
+
     fun easeOutBack(t: Double, b: Double, c: Double, d: Double): Double {
         var t = t
         val s = 1.70158

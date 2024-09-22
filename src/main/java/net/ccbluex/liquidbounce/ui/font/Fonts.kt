@@ -29,6 +29,18 @@ object Fonts : MinecraftInstance() {
     @FontDetails(fontName = "Minecraft Font")
     val minecraftFont: FontRenderer = mc.fontRendererObj
 
+    @FontDetails(fontName = "Roboto Medium", fontSize = 15)
+    lateinit var font15: GameFontRenderer
+
+    @FontDetails(fontName = "Roboto Medium", fontSize = 20)
+    lateinit var font20: GameFontRenderer
+
+    @FontDetails(fontName = "Roboto Medium", fontSize = 24)
+    lateinit var fontTiny: GameFontRenderer
+
+    @FontDetails(fontName = "Roboto Medium", fontSize = 30)
+    lateinit var fontSmall: GameFontRenderer
+
     @FontDetails(fontName = "Roboto Medium", fontSize = 35)
     lateinit var font35: GameFontRenderer
 
@@ -41,20 +53,20 @@ object Fonts : MinecraftInstance() {
     @FontDetails(fontName = "Roboto Bold", fontSize = 180)
     lateinit var fontBold180: GameFontRenderer
 
-    @FontDetails(fontName = "Roboto Medium", fontSize = 30)
-    lateinit var fontSmall: GameFontRenderer
+    @FontDetails(fontName = "SFUI Medium", fontSize = 35)
+    lateinit var fontSFUI35: GameFontRenderer
 
-    @FontDetails(fontName = "Roboto Medium", fontSize = 24)
-    lateinit var fontTiny: GameFontRenderer
+    @FontDetails(fontName = "SFUI Medium", fontSize = 40)
+    lateinit var fontSFUI40: GameFontRenderer
 
-    @FontDetails(fontName = "Roboto Medium", fontSize = 20)
-    lateinit var font20: GameFontRenderer
-
-    @FontDetails(fontName = "Roboto Medium", fontSize = 15)
-    lateinit var font15: GameFontRenderer
-
-    @FontDetails(fontName = "Icons 35", fontSize = 20)
+    @FontDetails(fontName = "Aqua Icons", fontSize = 35)
     lateinit var fontIcons35: GameFontRenderer
+
+    @FontDetails(fontName = "XD Icons", fontSize = 85)
+    lateinit var fontIconXD85: GameFontRenderer
+
+    @FontDetails(fontName = "Novo Angular Icons", fontSize = 85)
+    lateinit var fontNovoAngularIcon85: GameFontRenderer
 
     private val CUSTOM_FONT_RENDERERS = hashMapOf<FontInfo, FontRenderer>()
 
@@ -63,15 +75,22 @@ object Fonts : MinecraftInstance() {
         LOGGER.info("Loading Fonts.")
 
         downloadFonts()
-        font35 = GameFontRenderer(getFont("Roboto-Medium.ttf", 35))
-        font40 = GameFontRenderer(getFont("Roboto-Medium.ttf", 40))
-        font72 = GameFontRenderer(getFont("Roboto-Medium.ttf", 72))
+        // roboto
         fontBold180 = GameFontRenderer(getFont("Roboto-Bold.ttf", 180))
         fontSmall = GameFontRenderer(getFont("Roboto-Medium.ttf", 30))
         fontTiny = GameFontRenderer(getFont("Roboto-Medium.ttf", 24))
-        font20 = GameFontRenderer(getFont("Roboto-Medium.ttf", 20))
         font15 = GameFontRenderer(getFont("Roboto-Medium.ttf", 15))
+        font20 = GameFontRenderer(getFont("Roboto-Medium.ttf", 20))
+        font35 = GameFontRenderer(getFont("Roboto-Medium.ttf", 35))
+        font40 = GameFontRenderer(getFont("Roboto-Medium.ttf", 40))
+        font72 = GameFontRenderer(getFont("Roboto-Medium.ttf", 72))
+        // sfui
+        fontSFUI35 = GameFontRenderer(getFont("sfui.ttf", 35))
+        fontSFUI40 = GameFontRenderer(getFont("sfui.ttf", 40))
+        // others
         fontIcons35 = GameFontRenderer(getFont("aquaIcons.ttf", 35))
+        fontIconXD85 = GameFontRenderer(getFont("iconxd.ttf", 85))
+        fontNovoAngularIcon85 = GameFontRenderer(getFont("novoangular.ttf", 85))
 
         try {
             CUSTOM_FONT_RENDERERS.clear()

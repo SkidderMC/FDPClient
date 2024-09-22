@@ -11,19 +11,35 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blue2Value
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blueValue
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.green2Value
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.greenValue
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.red2Value
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.redValue
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.Fonts.font35
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontIconXD85
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontNovoAngularIcon85
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI35
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI40
+import net.ccbluex.liquidbounce.utils.APIConnecter
 import net.ccbluex.liquidbounce.utils.UIEffectRenderer.drawShadowWithCustomAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.Stencil
+import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInBackNotify
+import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeOutBackNotify
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.math.BigDecimal
+import kotlin.math.abs
+import kotlin.math.cos
 import kotlin.math.max
+import kotlin.math.sin
 
 /**
  * CustomHUD Notification element
@@ -39,13 +55,13 @@ class Notifications(
     private val exampleNotification = Notification("Notification", "This is an example notification.", Type.INFO)
 
     companion object {
-        val styleValue by ListValue("Mode", arrayOf("IDE", "CLASSIC"), "CLASSIC")
+        val styleValue by ListValue("Mode", arrayOf("ZAVZ", "CLASSIC", "IDE"), "ZAVZ")
         val redValue by IntegerValue("Red", 255, 0..255) { styleValue == "ZAVZ" }
-        val greenValue by IntegerValue("Green", 255, 0..255) { styleValue == "ZAVZ" }
-        val blueValue by IntegerValue("Blue", 255, 0..255) { styleValue == "ZAVZ" }
-        val red2Value by IntegerValue("Red2", 255, 0..255) { styleValue == "ZAVZ" }
-        val green2Value by IntegerValue("Green2", 255, 0..255) { styleValue == "ZAVZ" }
-        val blue2Value by IntegerValue("Blue2", 255, 0..255) { styleValue == "ZAVZ" }
+        val greenValue by IntegerValue("Green", 0, 0..255) { styleValue == "ZAVZ" }
+        val blueValue by IntegerValue("Blue", 84, 0..255) { styleValue == "ZAVZ" }
+        val red2Value by IntegerValue("Red2", 0, 0..255) { styleValue == "ZAVZ" }
+        val green2Value by IntegerValue("Green2", 19, 0..255) { styleValue == "ZAVZ" }
+        val blue2Value by IntegerValue("Blue2", 0, 0..255) { styleValue == "ZAVZ" }
 
         val alphaValue by IntegerValue("Alpha", 0, 0..255) { styleValue == "CLASSIC" }
     }
@@ -294,15 +310,13 @@ class Notification(
             GlStateManager.disableAlpha()
             GlStateManager.resetColor()
             GL11.glColor4f(1F, 1F, 1F, 1F)
-            val pn = ResourceLocation(
-                when (type.name) {
-                    "SUCCESS" -> "fdpclient/notifications/checkmark.png"
-                    "ERROR" -> "fdpclient/notifications/error.png"
-                    "WARNING" -> "fdpclient/notifications/warning.png"
-                    "INFO" -> "fdpclient/notifications/info.png"
-                    else -> "fdpclient/notifications/error.png"
-                }
-            )
+            val pn = when (type.name) {
+                "SUCCESS" -> APIConnecter.callImage("checkmarkIDE", "notifications")
+                "ERROR" -> APIConnecter.callImage("errorIDE", "notifications")
+                "WARNING" -> APIConnecter.callImage("warningIDE", "notifications")
+                "INFO" -> APIConnecter.callImage("infoIDE", "notifications")
+                else -> APIConnecter.callImage("errorIDE", "notifications")
+            }
             RenderUtils.drawImage(pn, -textLength - 11, -y + 2, 7, 7)
             GlStateManager.enableAlpha()
             GL11.glPopMatrix()
@@ -310,135 +324,144 @@ class Notification(
             Fonts.minecraftFont.drawStringWithShadow(content, -textLength.toFloat() - 1, -y.toFloat() + 15, -1)
         }
 
-        /*  if (style == "ZAVZ") {
-           val width = 100.coerceAtLeast((Fonts.font35.getStringWidth(this.content)) + 70)
+        if (style == "ZAVZ") {
+            val width = 100.coerceAtLeast((font35.getStringWidth(this.content)) + 70)
 
-           //Y-Axis Animation
-           if (nowY != realY) {
-               var pct = (nowTime - animeYTime) / animeTime.toDouble()
-               if (pct > 1) {
-                   nowY = realY
-                   pct = 1.0
-               } else {
-              //     pct = easeOutBack(pct)
-               }
-               GL11.glTranslated(0.0, (realY - nowY) * pct, 0.0)
-           } else {
-               animeYTime = nowTime
-           }
-           GL11.glTranslated(0.0, nowY.toDouble(), 0.0)
+            // Y-Axis Animation
+            if (nowY != realY) {
+                var pct = (nowTime - animeYTime) / animeTime.toDouble()
+                if (pct > 1) {
+                    nowY = realY
+                    pct = 1.0
+                } else {
+                    // Ease-out back animation could be applied here
+                    pct = easeOutBackNotify(pct)
+                }
+                GL11.glTranslated(0.0, (realY - nowY) * pct, 0.0)
+            } else {
+                animeYTime = nowTime
+            }
+            GL11.glTranslated(0.0, nowY.toDouble(), 0.0)
 
-           //X-Axis Animation
-           var pct = (nowTime - animeXTime) / animeTime.toDouble()
-           when (fadeState) {
-               FadeState.IN -> {
-                   if (pct > 1) {
-                       fadeState = FadeState.STAY
-                       animeXTime = nowTime
-                       pct = 1.0
-                   }
-               //    pct = easeOutBack(pct)
-               }
+            // X-Axis Animation
+            var pct = (nowTime - animeXTime) / animeTime.toDouble()
+            when (fadeState) {
+                FadeState.IN -> {
+                    if (pct > 1) {
+                        fadeState = FadeState.STAY
+                        animeXTime = nowTime
+                        pct = 1.0
+                    }
+                    // Ease-out back animation could be applied here
+                    pct = easeOutBackNotify(pct)
+                }
 
-               FadeState.STAY -> {
-                   pct = 1.0
-                   if ((nowTime - animeXTime) > time) {
-                       fadeState = FadeState.OUT
-                       animeXTime = nowTime
-                   }
-               }
+                FadeState.STAY -> {
+                    pct = 1.0
+                    if ((nowTime - animeXTime) > time) {
+                        fadeState = FadeState.OUT
+                        animeXTime = nowTime
+                    }
+                }
 
-               FadeState.OUT -> {
-                   if (pct > 1) {
-                       fadeState = FadeState.END
-                       animeXTime = nowTime
-                       pct = 1.0
-                   }
-               //    pct = 1 - EaseUtils.easeInBack(pct)
-               }
+                FadeState.OUT -> {
+                    if (pct > 1) {
+                        fadeState = FadeState.END
+                        animeXTime = nowTime
+                        pct = 1.0
+                    }
+                    // Inverse easing could be applied here
+                    pct = 1 - easeInBackNotify(pct)
+                }
 
-               FadeState.END -> {
-                   return true
-               }
-           }
-           GL11.glScaled(pct, pct, pct)
-           GL11.glTranslatef(-width.toFloat(), -height.toFloat() + 30, 0F)
-           RenderUtils.drawShadow(1F, 0F, width.toFloat() - 1, height.toFloat())
-           RenderUtils.drawRect(1F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, 50))
-           fun drawCircle(x: Float, y: Float, radius: Float, start: Int, end: Int) {
-               GlStateManager.enableBlend()
-               GlStateManager.disableTexture2D()
-               GlStateManager.tryBlendFuncSeparate(
-                   GL11.GL_SRC_ALPHA,
-                   GL11.GL_ONE_MINUS_SRC_ALPHA,
-                   GL11.GL_ONE,
-                   GL11.GL_ZERO
-               )
-               GL11.glEnable(GL11.GL_LINE_SMOOTH)
-               GL11.glLineWidth(2f)
-               GL11.glBegin(GL11.GL_LINE_STRIP)
-               var i = end.toFloat()
-               while (i >= start) {
-                   var c = RenderUtils.getGradientOffset(
-                       Color(redValue, greenValue, blueValue),
-                       Color(red2Value, green2Value, blue2Value, 1),
-                       (abs(System.currentTimeMillis() / 360.0 + (i * 34 / 360) * 56 / 100) / 10)
-                   ).rgb
-                   val f2 = (c shr 24 and 255).toFloat() / 255.0f
-                   val f22 = (c shr 16 and 255).toFloat() / 255.0f
-                   val f3 = (c shr 8 and 255).toFloat() / 255.0f
-                   val f4 = (c and 255).toFloat() / 255.0f
-                   GlStateManager.color(f22, f3, f4, f2)
-                   GL11.glVertex2f(
-                       (x + cos(i * Math.PI / 180) * (radius * 1.001f)).toFloat(),
-                       (y + sin(i * Math.PI / 180) * (radius * 1.001f)).toFloat()
-                   )
-                   i -= 360f / 90.0f
-               }
-               GL11.glEnd()
-               GL11.glDisable(GL11.GL_LINE_SMOOTH)
-               GlStateManager.enableTexture2D()
-               GlStateManager.disableBlend()
-           }
+                FadeState.END -> {
+                    return true
+                }
+            }
+            GL11.glScaled(pct, pct, pct)
+            GL11.glTranslatef(-width.toFloat(), -height.toFloat() + 30, 0F)
 
-           RenderUtils.drawFilledForCircle(16f, 15f, 12.85f, Color(255, 255, 255, 255))
-           RenderUtils.drawGradientSideways(
-               1.0,
-               height.toFloat() + 0.0,
-               width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 0.0,
-               height.toFloat() + 2.0,
-               Color(redValue, greenValue, blueValue).rgb,
-               Color(red2Value, green2Value, blue2Value).rgb
-           )
-           drawCircle(16f, 15f, 13f, 0, 360)
-           when (type) {
-               Type.INFO -> {
-                   NOTIFICATIONS.drawString("B", 11F, 8F, 0)
-               }
-               Type.WARNING -> {
-                   NOTIFICATIONS.drawString("A", 14F, 8F, 0)
-               }
-               Type.ERROR -> {
-                   NOTIFICATIONS2.drawString("L", 9F, 10F, 0)
-               }
-               else -> {
-                   NOTIFICATIONS2.drawString("M", 8F, 10F, 0)
-               }
-           }
-           fontSFUI40.drawString(title, 34F, 4F, -1)
-           fontSFUI35.drawString(
-               "$content  (" + BigDecimal(((time - time * ((nowTime - displayTime) / (animeTime * 2F + time))) / 1000).toDouble()).setScale(
-                   1,
-                   BigDecimal.ROUND_HALF_UP
-               ).toString() + "s)", 34F, 17F, -1
-           )
+            // Rendering shapes and elements
+            RenderUtils.drawShadow(1F, 0F, width.toFloat() - 1, height.toFloat())
+            drawRect(1F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, 50))
 
+            // Draw Circle Function
+            fun drawCircle(x: Float, y: Float, radius: Float, start: Int, end: Int) {
+                GlStateManager.enableBlend()
+                GlStateManager.disableTexture2D()
+                GlStateManager.tryBlendFuncSeparate(
+                    GL11.GL_SRC_ALPHA,
+                    GL11.GL_ONE_MINUS_SRC_ALPHA,
+                    GL11.GL_ONE,
+                    GL11.GL_ZERO
+                )
+                GL11.glEnable(GL11.GL_LINE_SMOOTH)
+                GL11.glLineWidth(2f)
+                GL11.glBegin(GL11.GL_LINE_STRIP)
+                var i = end.toFloat()
+                while (i >= start) {
+                    val c = RenderUtils.getGradientOffset(
+                        Color(redValue, greenValue, blueValue),
+                        Color(red2Value, green2Value, blue2Value, 1),
+                        (abs(System.currentTimeMillis() / 360.0 + (i * 34 / 360) * 56 / 100) / 10)
+                    ).rgb
+                    val f2 = (c shr 24 and 255).toFloat() / 255.0f
+                    val f22 = (c shr 16 and 255).toFloat() / 255.0f
+                    val f3 = (c shr 8 and 255).toFloat() / 255.0f
+                    val f4 = (c and 255).toFloat() / 255.0f
+                    GlStateManager.color(f22, f3, f4, f2)
+                    GL11.glVertex2f(
+                        (x + cos(i * Math.PI / 180) * (radius * 1.001f)).toFloat(),
+                        (y + sin(i * Math.PI / 180) * (radius * 1.001f)).toFloat()
+                    )
+                    i -= 360f / 90.0f
+                }
+                GL11.glEnd()
+                GL11.glDisable(GL11.GL_LINE_SMOOTH)
+                GlStateManager.enableTexture2D()
+                GlStateManager.disableBlend()
+            }
 
-           GlStateManager.resetColor()
-           return false
-       }
-       return false
-      */
+            // Drawing the circle and additional elements
+            RenderUtils.drawFilledForCircle(16f, 15f, 12.85f, Color(255, 255, 255, 255))
+            RenderUtils.drawGradientSideways(
+                1.0,
+                height.toFloat() + 0.0,
+                width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 0.0,
+                height.toFloat() + 2.0,
+                Color(redValue, greenValue, blueValue).rgb,
+                Color(red2Value, green2Value, blue2Value).rgb
+            )
+            drawCircle(16f, 15f, 13f, 0, 360)
+
+            // Render Type-specific Icons
+            when (type) {
+                Type.INFO -> {
+                    fontIconXD85.drawString("B", 11F, 8F, 0)
+                }
+                Type.WARNING -> {
+                    fontIconXD85.drawString("A", 14F, 8F, 0)
+                }
+                Type.ERROR -> {
+                    fontNovoAngularIcon85.drawString("L", 9F, 10F, 0)
+                }
+                else -> {
+                    fontNovoAngularIcon85.drawString("M", 8F, 10F, 0)
+                }
+            }
+
+            // Render text content and timing
+            fontSFUI40.drawString(title, 34F, 4F, -1)
+            fontSFUI35.drawString(
+                "$content  (" + BigDecimal(((time - time * ((nowTime - displayTime) / (animeTime * 2F + time))) / 1000).toDouble()).setScale(
+                    1,
+                    BigDecimal.ROUND_HALF_UP
+                ).toString() + "s)", 34F, 17F, -1
+            )
+
+            GlStateManager.resetColor()
+            return false
+        }
 
         return false
     }
