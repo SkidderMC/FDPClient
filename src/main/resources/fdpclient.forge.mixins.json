@@ -29,7 +29,6 @@
     "gui.MixinGuiDownloadTerrain",
     "gui.MixinGuiEditSign",
     "gui.MixinGuiInGame",
-    "gui.MixinGuiInGameForge",
     "gui.MixinGuiIngameMenu",
     "gui.MixinGuiKeyBindingList",
     "gui.MixinGuiMultiplayer",
