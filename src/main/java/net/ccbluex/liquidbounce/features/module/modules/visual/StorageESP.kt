@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.ClientUtils.disableFastRender
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.checkSetupFBO
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
@@ -176,7 +175,6 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
                             glColor(color)
                             glLineWidth(1.5f)
 
-                            // Render tiles the first time
                             TileEntityRendererDispatcher.instance.renderTileEntity(
                                 tileEntity,
                                 event.partialTicks,
@@ -185,13 +183,6 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
 
                             glPopAttrib()
                             glPopMatrix()
-
-                            // Render tiles the second time
-                            TileEntityRendererDispatcher.instance.renderTileEntity(
-                                tileEntity,
-                                event.partialTicks,
-                                -1
-                            )
                         }
                     }
                 }
