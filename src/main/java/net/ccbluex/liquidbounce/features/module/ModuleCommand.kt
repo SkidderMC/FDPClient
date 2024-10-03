@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module
 
@@ -107,23 +107,6 @@ class ModuleCommand(val module: Module, val values: List<Value<*>> = module.valu
 
                             value.set(args[2]) to args[2]
                         }
-                        is MultiListValue -> {
-                            val newValue = value.value.toMutableList()
-                            val option = args[2]
-
-                            if (option !in value.values) {
-                                chatInvalid(option, value)
-                                return
-                            }
-
-                            if (newValue.contains(option)) {
-                                newValue.remove(option)
-                            } else {
-                                newValue.add(option)
-                            }
-
-                            value.set(newValue) to option
-                        }
                         is TextValue -> {
                             val string = StringUtils.toCompleteString(args, 2)
                             value.set(string) to string
@@ -158,23 +141,14 @@ class ModuleCommand(val module: Module, val values: List<Value<*>> = module.valu
                 when (module[args[0]]) {
                     is BlockValue -> {
                         return Item.itemRegistry.keys
-                                .map { it.resourcePath.lowercase() }
-                                .filter { it.startsWith(args[1], true) }
+                            .map { it.resourcePath.lowercase() }
+                            .filter { it.startsWith(args[1], true) }
                     }
                     is ListValue -> {
                         values.forEach { value ->
                             if (!value.name.equals(args[0], true))
                                 return@forEach
                             if (value is ListValue)
-                                return value.values.filter { it.startsWith(args[1], true) }
-                        }
-                        return emptyList()
-                    }
-                    is MultiListValue -> {
-                        values.forEach { value ->
-                            if (!value.name.equals(args[0], true))
-                                return@forEach
-                            if (value is MultiListValue)
                                 return value.values.filter { it.startsWith(args[1], true) }
                         }
                         return emptyList()
@@ -188,8 +162,8 @@ class ModuleCommand(val module: Module, val values: List<Value<*>> = module.valu
 
     private fun chatInvalid(arg: String, value: Value<*>, reason: String? = null) {
         val finalReason = reason ?:
-            if (value.get().toString().equals(arg, true)) "is already the value of"
-            else "isn't a valid value for"
+        if (value.get().toString().equals(arg, true)) "is already the value of"
+        else "isn't a valid value for"
 
         chat("§8$arg§7 $finalReason §8${value.name}§7!")
     }
