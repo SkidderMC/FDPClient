@@ -33,10 +33,10 @@ object Step : Module("Step", Category.MOVEMENT, gameDetecting = false, hideModul
     private val mode by ListValue("Mode",
         arrayOf("Vanilla", "Jump", "NCP", "MotionNCP", "OldNCP", "AAC", "LAAC", "AAC3.3.4", "Spartan", "Rewinside"), "NCP")
 
-        private val height by FloatValue("Height", 1F, 0.6F..10F)
-            { mode !in arrayOf("Jump", "MotionNCP", "LAAC", "AAC3.3.4") }
-        private val jumpHeight by FloatValue("JumpHeight", 0.42F, 0.37F..0.42F)
-            { mode == "Jump" }
+    private val height by FloatValue("Height", 1F, 0.6F..10F)
+    { mode !in arrayOf("Jump", "MotionNCP", "LAAC", "AAC3.3.4") }
+    private val jumpHeight by FloatValue("JumpHeight", 0.42F, 0.37F..0.42F)
+    { mode == "Jump" }
 
     private val delay by IntegerValue("Delay", 0, 0..500)
 
@@ -153,7 +153,7 @@ object Step : Module("Step", Category.MOVEMENT, gameDetecting = false, hideModul
         }
 
         // Some fly modes should disable step
-        if (Flight.handleEvents() && Flight.mode in arrayOf("Hypixel", "OtherHypixel", "LatestHypixel", "Rewinside", "Mineplex")
+        if (Fly.handleEvents() && Fly.mode.get() in arrayOf("Hypixel", "OtherHypixel", "LatestHypixel", "Rewinside", "Mineplex")
             && thePlayer.inventory.getCurrentItem() == null) {
             event.stepHeight = 0F
             return
@@ -163,7 +163,7 @@ object Step : Module("Step", Category.MOVEMENT, gameDetecting = false, hideModul
 
         // Set step to default in some cases
         if (!thePlayer.onGround || !timer.hasTimePassed(delay) ||
-                mode in arrayOf("Jump", "MotionNCP", "LAAC", "AAC3.3.4")) {
+            mode in arrayOf("Jump", "MotionNCP", "LAAC", "AAC3.3.4")) {
             thePlayer.stepHeight = 0.6F
             event.stepHeight = 0.6F
             return
@@ -268,7 +268,7 @@ object Step : Module("Step", Category.MOVEMENT, gameDetecting = false, hideModul
         val z = cos(yaw) * 0.4
 
         return mc.theWorld.getCollisionBoxes(mc.thePlayer.entityBoundingBox.offset(x, 1.001335979112147, z))
-                .isEmpty()
+            .isEmpty()
     }
 
     override val tag
