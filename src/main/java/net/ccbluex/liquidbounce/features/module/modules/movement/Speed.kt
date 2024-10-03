@@ -61,6 +61,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         VerusFHop,
         VerusLowHop,
         VerusLowHopNew,
+        VerusSpeeds,
 
         // Vulcan
         VulcanHop,
@@ -71,6 +72,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         OldMatrixHop,
         MatrixHop,
         MatrixSlowHop,
+        MatrixSpeeds,
 
         // Intave
         IntaveHop14,
@@ -81,6 +83,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         HypixelHop,
 
         // Other
+        BlocksMCSpeed,
         Boost,
         Frame,
         MiJump,
@@ -134,6 +137,18 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
     val notOnConsuming by BoolValue("NotOnConsuming", false) { mode.get() == "Custom" }
     val notOnFalling by BoolValue("NotOnFalling", false) { mode.get() == "Custom" }
     val notOnVoid by BoolValue("NotOnVoid", true) { mode.get() == "Custom" }
+
+    // Matrix
+    val matrixSpeed by ListValue("Matrix-Mode", arrayOf("MatrixHop2", "Matrix6.6.1", "Matrix6.9.2"), "MatrixHop2") { mode.get() == "MatrixSpeeds" }
+    val matrixGroundStrafe by BoolValue("GroundStrafe-Hop2", false) { mode.get() == "MatrixSpeeds" }
+    val matrixVeloBoostValue by BoolValue("VelocBoost-6.6.1", true) { mode.get() == "MatrixSpeeds" }
+    val matrixTimerBoostValue by BoolValue("TimerBoost-6.6.1", false) { mode.get() == "MatrixSpeeds" }
+    val matrixUsePreMotion by BoolValue("UsePreMotion6.6.1", false) { mode.get() == "MatrixSpeeds" }
+
+    // VerusSpeed
+    val verusSpeed by ListValue("Verus-Mode", arrayOf("OldHop", "Float", "Ground", "YPort", "YPort2"), "OldHop")  { mode.get() == "VerusSpeeds" }
+    val verusYPortspeedValue by FloatValue("YPort-Speed", 0.61f, 0.1f.. 1f)  { mode.get() == "VerusSpeeds" }
+    val verusYPort2speedValue by FloatValue("YPort2-Speed", 0.61f, 0.1f.. 1f)  { mode.get() == "VerusSpeeds" }
 
     // TeleportCubecraft Speed
     val cubecraftPortLength by FloatValue("CubeCraft-PortLength", 1f, 0.1f..2f) { mode.get() == "TeleportCubeCraft" }
