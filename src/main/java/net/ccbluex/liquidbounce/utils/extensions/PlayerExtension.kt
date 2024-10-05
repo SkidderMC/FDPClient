@@ -41,13 +41,13 @@ fun Entity.getDistanceToEntityBox(entity: Entity) = eyes.distanceTo(getNearestPo
 fun Entity.getDistanceToBox(box: AxisAlignedBB) = eyes.distanceTo(getNearestPointBB(eyes, box))
 
 fun EntityPlayerSP.isNearEdge(threshold: Float): Boolean {
-    val playerPos = Vec3(this.posX, this.posY, this.posZ)
+    val playerPos = Vec3(posX, posY, posZ)
     val blockPos = BlockPos(playerPos)
 
     for (x in -3..3) {
         for (z in -3..3) {
             val checkPos = blockPos.add(x, -1, z)
-            if (this.worldObj.isAirBlock(checkPos)) {
+            if (worldObj.isAirBlock(checkPos)) {
                 val checkPosCenter = Vec3(checkPos.x + 0.5, checkPos.y.toDouble(), checkPos.z + 0.5)
                 val distance = playerPos.distanceTo(checkPosCenter)
                 if (distance <= threshold) {
@@ -79,16 +79,16 @@ val EntityLivingBase.hurtPercent: Float
 
 fun Entity.isAnimal() =
     this is EntityAnimal
-        || this is EntitySquid
-        || this is EntityGolem
-        || this is EntityBat
+            || this is EntitySquid
+            || this is EntityGolem
+            || this is EntityBat
 
 fun Entity.isMob() =
     this is EntityMob
-        || this is EntityVillager
-        || this is EntitySlime
-        || this is EntityGhast
-        || this is EntityDragon
+            || this is EntityVillager
+            || this is EntitySlime
+            || this is EntityGhast
+            || this is EntityDragon
 
 fun EntityPlayer.isClientFriend(): Boolean {
     val entityName = name ?: return false
@@ -99,8 +99,22 @@ fun EntityPlayer.isClientFriend(): Boolean {
 val EntityLivingBase.skin: ResourceLocation
     get() = if (this is EntityPlayer) { mc.netHandler.getPlayerInfo(this.uniqueID)?.locationSkin } else { null } ?: DefaultPlayerSkin.getDefaultSkinLegacy()
 
-val Entity?.rotation
+var Entity?.rotation
     get() = Rotation(this?.rotationYaw ?: 0f, this?.rotationPitch ?: 0f)
+    set(value) {
+        this?.run {
+            rotationYaw = value.yaw
+            rotationPitch = value.pitch
+        }
+    }
+var Entity?.prevRotation
+    get() = Rotation(this?.prevRotationYaw ?: 0f, this?.prevRotationPitch ?: 0f)
+    set(value) {
+        this?.run {
+            prevRotationYaw = value.yaw
+            prevRotationPitch = value.pitch
+        }
+    }
 
 val Entity.hitBox: AxisAlignedBB
     get() {
@@ -112,16 +126,25 @@ val Entity.eyes: Vec3
     get() = getPositionEyes(1f)
 
 val Entity.prevPos: Vec3
-    get() = Vec3(this.prevPosX, this.prevPosY, this.prevPosZ)
+    get() = Vec3(prevPosX, prevPosY, prevPosZ)
 
 val Entity.currPos: Vec3
     get() = this.positionVector
 
-fun Entity.setPosAndPrevPos(currPos: Vec3, prevPos: Vec3 = currPos) {
+val Entity.lastTickPos: Vec3
+    get() = Vec3(lastTickPosX, lastTickPosY, lastTickPosZ)
+
+fun Entity.setPosAndPrevPos(currPos: Vec3, prevPos: Vec3 = currPos, lastTickPos: Vec3? = null) {
     setPosition(currPos.xCoord, currPos.yCoord, currPos.zCoord)
     prevPosX = prevPos.xCoord
     prevPosY = prevPos.yCoord
     prevPosZ = prevPos.zCoord
+
+    lastTickPos?.let {
+        this.lastTickPosX = it.xCoord
+        this.lastTickPosY = it.yCoord
+        this.lastTickPosZ = it.zCoord
+    }
 }
 
 fun EntityPlayerSP.setFixedSensitivityAngles(yaw: Float? = null, pitch: Float? = null) {
@@ -252,6 +275,6 @@ fun EntityPlayerSP.sendUseItem(stack: ItemStack): Boolean {
 
 fun EntityPlayerSP.tryJump() {
     if (!mc.gameSettings.keyBindJump.isKeyDown) {
-        this.jump()
+        jump()
     }
 }

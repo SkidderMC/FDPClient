@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
+import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam;
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity;
 import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.event.StrafeEvent;
@@ -269,5 +270,10 @@ public abstract class MixinEntity implements IMixinEntity {
         if (NoFluid.INSTANCE.handleEvents() && NoFluid.INSTANCE.getLava()) {
             cir.setReturnValue(false);
         }
+    }
+
+    @Inject(method = "getPositionEyes", at = @At("RETURN"), cancellable = true)
+    private void hookFreeCamModifiedRaycast(float tickDelta, CallbackInfoReturnable<Vec3> cir) {
+        cir.setReturnValue(FreeCam.INSTANCE.modifyRaycast(cir.getReturnValue(), (Entity) (Object) this, tickDelta));
     }
 }

@@ -1207,7 +1207,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
      * Check if run should be cancelled
      */
     private val cancelRun
-        inline get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer) || FreeCam.handleEvents() || (noConsumeAttack == "NoRotation" && isConsumingItem())
+        inline get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer) || (noConsumeAttack == "NoRotation" && isConsumingItem())
 
     /**
      * Check if [entity] is alive

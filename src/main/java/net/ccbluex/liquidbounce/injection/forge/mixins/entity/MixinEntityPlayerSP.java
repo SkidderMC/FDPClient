@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.InvMove;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sneak;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
+import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam;
 import net.ccbluex.liquidbounce.features.module.modules.visual.NoSwing;
 import net.ccbluex.liquidbounce.utils.CooldownHelper;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
@@ -170,8 +171,9 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             double yawDiff = yaw - this.lastReportedYaw;
             double pitchDiff = pitch - this.lastReportedPitch;
             boolean moved = xDiff * xDiff + yDiff * yDiff + zDiff * zDiff > 9.0E-4 || positionUpdateTicks >= 20;
-            boolean rotated = yawDiff != 0 || pitchDiff != 0;
+            boolean rotated = !FreeCam.INSTANCE.shouldDisableRotations() && (yawDiff != 0 || pitchDiff != 0);
 
+            // Replace implementation with list of rotations
             RotationUtils.INSTANCE.setSecondLastRotation(RotationUtils.INSTANCE.getLastServerRotation());
             RotationUtils.INSTANCE.setLastServerRotation(new Rotation(lastReportedYaw, lastReportedPitch));
 
@@ -311,6 +313,8 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         float f = 0.8F;
         boolean flag2 = movementInput.moveForward >= f;
         movementInput.updatePlayerMoveState();
+
+        EventManager.INSTANCE.callEvent(new MovementInputEvent(movementInput));
 
         final Rotation currentRotation = RotationUtils.INSTANCE.getCurrentRotation();
 
@@ -762,6 +766,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         EventManager.INSTANCE.callEvent(tickEvent);
 
         if (tickEvent.isCancelled()) {
+            EventManager.INSTANCE.callEvent(new RotationUpdateEvent());
             ci.cancel();
         }
     }

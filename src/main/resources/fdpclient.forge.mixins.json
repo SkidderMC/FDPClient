@@ -74,6 +74,7 @@
   "client": [
     "block.MixinBlockSlime",
     "gui.MixinGuiAchievement",
+    "render.MixinRenderGlobal",
     "gui.MixinGuiContainer",
     "tweaks.MixinEntityFX"
   ]

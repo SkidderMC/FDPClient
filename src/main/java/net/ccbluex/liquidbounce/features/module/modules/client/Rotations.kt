@@ -9,8 +9,10 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils.currentRotation
+import net.ccbluex.liquidbounce.utils.RotationUtils.serverRotation
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -38,6 +40,9 @@ object Rotations : Module("Rotations", Category.CLIENT, gameDetecting = false, h
 
     private var lastRotation: Rotation? = null
 
+    private val specialCases
+        get() = arrayListOf(FreeCam.shouldDisableRotations()).any { it }
+
     @EventTarget
     fun onMotion(event: MotionEvent) {
         val thePlayer = mc.thePlayer ?: return
@@ -61,7 +66,7 @@ object Rotations : Module("Rotations", Category.CLIENT, gameDetecting = false, h
     /**
      * Rotate when current rotation is not null.
      */
-    fun shouldRotate() = state && currentRotation != null
+    fun shouldRotate() = state && (specialCases || currentRotation != null)
 
     /**
      * Smooth out rotations between two points
@@ -85,7 +90,7 @@ object Rotations : Module("Rotations", Category.CLIENT, gameDetecting = false, h
      * Which rotation should the module use?
      */
     fun getRotation(): Rotation? {
-        val targetRotation = currentRotation
+        val targetRotation = if (specialCases) serverRotation else currentRotation
 
         return if (smoothRotations && lastRotation != null && targetRotation != null) {
             smoothRotation(lastRotation!!, targetRotation)
