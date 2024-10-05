@@ -206,6 +206,7 @@
     "module.brandSpoofer.description": "Finge a marca do cliente no servidor.",
     "module.wings.description": "Adiciona um visual de asas.",
     "module.targetModule.description": "Ativa ou Desativa o Ataque ao Alvo.",
-    "module.drinkingAlert.description": "Avisa jogadores se estiverem bebendo poções."
+    "module.drinkingAlert.description": "Avisa jogadores se estiverem bebendo poções.",
+    "module.freeLook.description": "Permite que você olhe ao redor livremente sem alterar a direção real do seu personagem."
   }
 }
