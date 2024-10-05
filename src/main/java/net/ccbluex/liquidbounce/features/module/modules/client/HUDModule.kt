@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRectWithBorder
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.Minecraft
@@ -21,12 +22,12 @@ import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.util.ResourceLocation
-import net.minecraftforge.event.entity.living.LivingEvent
 import java.awt.Color
 
 object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDetecting = false, hideModule = true) {
 
     val blackHotbar by BoolValue("BlackHotbar", true)
+    val roundedHotbarRadius by FloatValue("RoundedHotbar-Radius", 0F, 0F..5F) { blackHotbar }
 
     // InventoryPlus
     val inventoryOnHotbar = BoolValue("InventoryOnHotbar", false)
