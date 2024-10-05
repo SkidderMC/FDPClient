@@ -24,6 +24,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.material.Material
+import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
@@ -50,9 +51,9 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
     private val maxTrailSize by IntegerValue("MaxTrailSize", 20, 1..100)
 
     private val colorMode by ListValue("Color", arrayOf("Custom", "BowPower", "Rainbow"), "Custom")
-        private val colorRed by IntegerValue("R", 0, 0..255) { colorMode == "Custom" }
-        private val colorGreen by IntegerValue("G", 160, 0..255) { colorMode == "Custom" }
-        private val colorBlue by IntegerValue("B", 255, 0..255) { colorMode == "Custom" }
+    private val colorRed by IntegerValue("R", 0, 0..255) { colorMode == "Custom" }
+    private val colorGreen by IntegerValue("G", 160, 0..255) { colorMode == "Custom" }
+    private val colorBlue by IntegerValue("B", 255, 0..255) { colorMode == "Custom" }
 
     private val trailPositions = mutableMapOf<Entity, MutableList<Triple<Long, Vec3, Float>>>()
 
@@ -142,6 +143,8 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
 
             val tessellator = Tessellator.getInstance()
             val worldRenderer = tessellator.worldRenderer
+
+            glPushMatrix()
 
             // Start drawing of path
             glDepthMask(false)
@@ -244,7 +247,21 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
 
             // End the rendering of the path
             tessellator.draw()
+
+            glDepthMask(true)
+            resetCaps()
+            resetColor()
+
+            glPopMatrix()
+
             glPushMatrix()
+
+            glDepthMask(false)
+            enableGlCap(GL_BLEND, GL_LINE_SMOOTH)
+            disableGlCap(GL_DEPTH_TEST, GL_ALPHA_TEST, GL_TEXTURE_2D)
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+            glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
+
             glTranslated(
                 posX - renderManager.renderPosX, posY - renderManager.renderPosY,
                 posZ - renderManager.renderPosZ
@@ -274,25 +291,26 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
             cylinder.drawStyle = GLU.GLU_LINE
             cylinder.draw(0.2F, 0F, 0F, 60, 1)
 
-            glPopMatrix()
             glDepthMask(true)
             resetCaps()
-            glColor4f(1F, 1F, 1F, 1F)
+            resetColor()
+
+            glPopMatrix()
         }
+
+        glPushAttrib(GL_ALL_ATTRIB_BITS)
+        glPushMatrix()
+
+        glDisable(GL_TEXTURE_2D)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
+        glDisable(GL_DEPTH_TEST)
+        glDisable(GL_LIGHTING)
+        glLineWidth(2.0f)
 
         for ((entity, positions) in trailPositions) {
             if (positions.isEmpty()) continue
-
-            glPushMatrix()
-            glPushAttrib(GL_ALL_ATTRIB_BITS)
-
-            glDisable(GL_TEXTURE_2D)
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-            glEnable(GL_LINE_SMOOTH)
-            glEnable(GL_BLEND)
-            glDisable(GL_DEPTH_TEST)
-            glDisable(GL_LIGHTING)
-            glLineWidth(2.0f)
 
             val tessellator = Tessellator.getInstance()
             val worldRenderer = tessellator.worldRenderer
@@ -320,12 +338,16 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
             }
 
             tessellator.draw()
-
-            glColor4f(1f, 1f, 1f, 1f)
-
-            glPopAttrib()
-            glPopMatrix()
         }
+
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
+        glEnable(GL_DEPTH_TEST)
+        glEnable(GL_LIGHTING)
+        resetColor()
+
+        glPopMatrix()
+        glPopAttrib()
     }
 
     @EventTarget

@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.ui.client.gui
 
 import net.ccbluex.liquidbounce.FDPClient.scriptManager
-import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.file.FileManager.clickGuiConfig
 import net.ccbluex.liquidbounce.file.FileManager.hudConfig
 import net.ccbluex.liquidbounce.file.FileManager.loadConfig
@@ -17,7 +16,6 @@ import net.ccbluex.liquidbounce.script.ScriptManager.scriptsFolder
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiSlot
@@ -56,8 +54,6 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
         list.drawScreen(mouseX, mouseY, partialTicks)
 
         Fonts.font40.drawCenteredStringWithShadow("§9§lScripts", width / 2f, 28f, 0xffffff)
-
-        drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
@@ -138,11 +134,17 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
             }
             5 -> try {
                 Desktop.getDesktop().browse(URL("https://github.com/CCBlueX/Documentation/blob/master/md/scriptapi_v2/getting_started.md").toURI())
-            } catch (ignored: Exception) { }
+            } catch (e: Exception) {
+                LOGGER.error("Something went wrong while trying to open the web scripts docs.", e)
+                MiscUtils.showErrorPopup("Scripts Error | Manual Link", "github.com/CCBlueX/Documentation/blob/master/md/scriptapi_v2/getting_started.md")
+            }
 
             6 -> try {
                 Desktop.getDesktop().browse(URL("https://forums.ccbluex.net/category/9/scripts").toURI())
-            } catch (ignored: Exception) { }
+            } catch (e: Exception) {
+                LOGGER.error("Something went wrong while trying to open web scripts forums", e)
+                MiscUtils.showErrorPopup("Scripts Error | Manual Link", "forums.ccbluex.net/category/9/scripts")
+            }
         }
     }
 
@@ -161,7 +163,7 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
     }
 
     private inner class GuiList(gui: GuiScreen) :
-            GuiSlot(mc, gui.width, gui.height, 40, gui.height - 40, 30) {
+        GuiSlot(mc, gui.width, gui.height, 40, gui.height - 40, 30) {
 
         private var selectedSlot = 0
 

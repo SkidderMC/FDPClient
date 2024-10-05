@@ -29,7 +29,7 @@ import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader
 import net.ccbluex.liquidbounce.value.*
-import org.lwjgl.opengl.GL11.glColor4f
+import net.minecraft.client.renderer.GlStateManager.resetColor
 import java.awt.Color
 
 /**
@@ -276,6 +276,9 @@ class Arraylist(
             val markAsInactive = inactiveStyle == "Color" && !module.isActive
 
             val displayString = getDisplayString(module)
+            val displayStringWidth = font.getStringWidth(displayString)
+            val previousDisplayString = getDisplayString(modules[(if (index > 0) index else 1) - 1])
+            val previousDisplayStringWidth = font.getStringWidth(previousDisplayString)
 
             when (side.horizontal) {
                 Horizontal.RIGHT, Horizontal.MIDDLE -> {
@@ -328,7 +331,7 @@ class Arraylist(
                                 xPos - if (rectMode == "Right") 5 else 2,
                                 yPos,
                                 if (rectMode == "Right") -3F else 0F,
-                                yPos + textHeight,
+                                yPos + textSpacer,
                                 when (backgroundMode) {
                                     "Gradient" -> 0
                                     "Rainbow" -> 0
@@ -469,9 +472,9 @@ class Arraylist(
                                 when (rectMode) {
                                     "Left" -> drawRoundedRect(
                                         xPos - 5,
-                                        yPos + 0.8F,
+                                        yPos,
                                         xPos - 2,
-                                        yPos + textHeight,
+                                        yPos + textSpacer,
                                         rectColor,
                                         roundedRectRadius
                                     )
@@ -480,7 +483,7 @@ class Arraylist(
                                         -3F,
                                         yPos,
                                         0F,
-                                        yPos + textHeight,
+                                        yPos + textSpacer,
                                         rectColor,
                                         roundedRectRadius
                                     )
@@ -587,7 +590,7 @@ class Arraylist(
                             val themeColor = getColor(index).rgb
 
                             drawRoundedRect(
-                                0F, yPos, xPos + width + if (rectMode == "Right") 5 else 2, yPos + textHeight,
+                                0F, yPos, xPos + width + if (rectMode == "Right") 5 else 2, yPos + textSpacer,
                                 when (backgroundMode) {
                                     "Gradient" -> 0
                                     "Rainbow" -> 0
@@ -730,7 +733,7 @@ class Arraylist(
                                         0F,
                                         yPos - 1,
                                         3F,
-                                        yPos + textHeight,
+                                        yPos + textSpacer,
                                         rectColor,
                                         roundedRectRadius
                                     )
@@ -739,7 +742,7 @@ class Arraylist(
                                         xPos + width + 2,
                                         yPos,
                                         xPos + width + 2 + 3,
-                                        yPos + textHeight,
+                                        yPos + textSpacer,
                                         rectColor,
                                         roundedRectRadius
                                     )
@@ -782,7 +785,7 @@ class Arraylist(
         }
 
         AWTFontRenderer.assumeNonVolatile = false
-        glColor4f(1f, 1f, 1f, 1f)
+        resetColor()
         return null
     }
 
