@@ -151,7 +151,11 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
     // GodBridge mode sub-values
     private val waitForRots by BoolValue("WaitForRotations", false) { isGodBridgeEnabled }
-    private val customGodPitch by FloatValue("GodBridgePitch", 73.5f, 0f..90f) { isGodBridgeEnabled }
+    private val useOptimizedPitch by BoolValue("UseOptimizedPitch", false) { isGodBridgeEnabled }
+    private val customGodPitch by FloatValue("GodBridgePitch",
+        73.5f,
+        0f..90f
+    ) { isGodBridgeEnabled && useOptimizedPitch }
 
     val jumpAutomatically by BoolValue("JumpAutomatically", true) { scaffoldMode == "GodBridge" }
     private val maxBlocksToJump: IntegerValue = object : IntegerValue("MaxBlocksToJump", 4, 1..8) {
@@ -1381,7 +1385,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     /**
      * God-bridge rotation generation method from Nextgen
      *
-     * Credits to @OpZywl
+     * Credits to @opZywl
      */
     private fun generateGodBridgeRotations(ticks: Int) {
         val player = mc.thePlayer ?: return
@@ -1421,7 +1425,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
                 }
             }
 
-            Rotation(movingYaw + if (isOnRightSide) 45f else -45f, customGodPitch)
+            Rotation(movingYaw + if (isOnRightSide) 45f else -45f, if (useOptimizedPitch) 73.5f else customGodPitch)
         } else {
             Rotation(movingYaw, 75.6f)
         }.fixedSensitivity()
