@@ -9,10 +9,9 @@ import net.minecraft.block.Block
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
-import kotlin.math.abs
-import kotlin.math.roundToInt
 
 /**
  * Provides:
@@ -57,6 +56,15 @@ operator fun Vec3.plus(vec: Vec3): Vec3 = add(vec)
 operator fun Vec3.minus(vec: Vec3): Vec3 = subtract(vec)
 operator fun Vec3.times(number: Double) = Vec3(xCoord * number, yCoord * number, zCoord * number)
 operator fun Vec3.div(number: Double) = times(1 / number)
+
+fun Vec3.offset(direction: EnumFacing, value: Double): Vec3 {
+    val vec3i = direction.directionVec
+    return Vec3(
+        this.xCoord + value * vec3i.x.toDouble(),
+        this.yCoord + value * vec3i.y.toDouble(),
+        this.zCoord + value * vec3i.z.toDouble()
+    )
+}
 
 val Vec3_ZERO: Vec3
     get() = Vec3(0.0, 0.0, 0.0)
