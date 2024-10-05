@@ -69,7 +69,7 @@ class Arraylist(
     private val gradientTextBlue4 by FloatValue("Text-Gradient-B4", 0f, 0f..255f) { textColorMode == "Gradient" }
 
     private val rectMode by ListValue("Rect", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "Right")
-    private val roundedRectRadius by FloatValue("RoundedRect-Radius", 2F, 0F..2F)
+    private val roundedRectRadius by FloatValue("RoundedRect-Radius", 2F, 0F..2F) { rectMode !in setOf("None", "Outline") }
     private val rectColorMode by ListValue(
         "Rect-Color",
         arrayOf("Custom", "Fade", "Random", "Rainbow", "Gradient", "Theme"),
