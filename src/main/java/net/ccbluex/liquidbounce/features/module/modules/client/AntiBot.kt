@@ -54,14 +54,14 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
     private val alwaysInRadius by BoolValue("AlwaysInRadius", false)
     private val alwaysRadius by FloatValue("AlwaysInRadiusBlocks", 20f, 5f..30f) { alwaysInRadius }
 
-    private val groundList = mutableListOf<Int>()
-    private val airList = mutableListOf<Int>()
+    private val groundList = mutableSetOf<Int>()
+    private val airList = mutableSetOf<Int>()
     private val invalidGroundList = mutableMapOf<Int, Int>()
-    private val swingList = mutableListOf<Int>()
+    private val swingList = mutableSetOf<Int>()
     private val invisibleList = mutableListOf<Int>()
-    private val propertiesList = mutableListOf<Int>()
-    private val hitList = mutableListOf<Int>()
-    private val notAlwaysInRadiusList = mutableListOf<Int>()
+    private val propertiesList = mutableSetOf<Int>()
+    private val hitList = mutableSetOf<Int>()
+    private val notAlwaysInRadiusList = mutableSetOf<Int>()
     private val worldPlayerNames = mutableSetOf<String>()
     private val worldDuplicateNames = mutableSetOf<String>()
     private val tabPlayerNames = mutableSetOf<String>()
@@ -77,7 +77,6 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
             return false
 
         // Anti Bot checks
-
         if (color && "§" !in entity.displayName.formattedText.replace("§r", ""))
             return true
 
@@ -193,11 +192,7 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
         return entity.name.isEmpty() || entity.name == mc.thePlayer.name
     }
 
-    override fun onDisable() {
-        super.onDisable()
-    }
-
-    @EventTarget(ignoreCondition=true)
+    @EventTarget(ignoreCondition = true)
     fun onPacket(event: PacketEvent) {
         if (mc.thePlayer == null || mc.theWorld == null)
             return
@@ -215,15 +210,16 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
                     airList += entity.entityId
 
                 if (entity.onGround) {
-                    if (entity.fallDistance > 0.0 || entity.posY == entity.prevPosY) {
-                        invalidGroundList[entity.entityId] = invalidGroundList.getOrDefault(entity.entityId, 0) + 1
-                    } else if (!entity.isCollidedVertically) {
-                        invalidGroundList[entity.entityId] = invalidGroundList.getOrDefault(entity.entityId, 0) + 1
+                    if (entity.fallDistance > 0.0 || entity.posY == entity.prevPosY || !entity.isCollidedVertically) {
+                        invalidGroundList.putIfAbsent(entity.entityId,
+                            invalidGroundList.getOrDefault(entity.entityId, 0) + 1
+                        )
                     }
                 } else {
                     val currentVL = invalidGroundList.getOrDefault(entity.entityId, 0)
+
                     if (currentVL > 0) {
-                        invalidGroundList[entity.entityId] = currentVL - 1
+                        invalidGroundList.putIfAbsent(entity.entityId, currentVL - 1)
                     } else {
                         invalidGroundList.remove(entity.entityId)
                     }
@@ -262,28 +258,19 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
 
         if (packet is S13PacketDestroyEntities) {
             for (entityID in packet.entityIDs) {
-                // Check if entityID exists in groundList and remove if found
-                if (entityID in groundList) groundList -= entityID
-
-                // Check if entityID exists in airList and remove if found
-                if (entityID in airList) airList -= entityID
-
-                // Check if entityID exists in invalidGroundList and remove if found
-                if (entityID in invalidGroundList) invalidGroundList -= entityID
-
-                // Check if entityID exists in swingList and remove if found
-                if (entityID in swingList) swingList -= entityID
-
-                // Check if entityID exists in invisibleList and remove if found
-                if (entityID in invisibleList) invisibleList -= entityID
-
-                // Check if entityID exists in notAlwaysInRadiusList and remove if found
-                if (entityID in notAlwaysInRadiusList) notAlwaysInRadiusList -= entityID
+                // Remove [entityID] from every list upon deletion
+                groundList -= entityID
+                airList -= entityID
+                invalidGroundList -= entityID
+                swingList -= entityID
+                invisibleList -= entityID
+                notAlwaysInRadiusList -= entityID
+                propertiesList -= entityID
             }
         }
     }
 
-    @EventTarget(ignoreCondition=true)
+    @EventTarget(ignoreCondition = true)
     fun onAttack(e: AttackEvent) {
         val entity = e.targetEntity
 
@@ -291,7 +278,7 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
             hitList += entity.entityId
     }
 
-    @EventTarget(ignoreCondition=true)
+    @EventTarget(ignoreCondition = true)
     fun onWorld(event: WorldEvent) {
         clearAll()
     }
