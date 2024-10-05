@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.FastBow
-import net.ccbluex.liquidbounce.features.module.modules.client.Rotations.debugRotations
+import net.ccbluex.liquidbounce.features.module.modules.client.Rotations
 import net.ccbluex.liquidbounce.utils.RaycastUtils.raycastEntity
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
@@ -20,12 +20,25 @@ import kotlin.math.*
 
 object RotationUtils : MinecraftInstance(), Listenable {
 
-    var targetRotation: Rotation? = null
+    private var targetRotation: Rotation? = null
 
     var currentRotation: Rotation? = null
-    var serverRotation = Rotation(0f, 0f)
-    var lastServerRotation = Rotation(0f, 0f)
-    var secondLastRotation = Rotation(0f, 0f)
+    var serverRotation: Rotation
+        get() = lastRotations[0]
+        set(value) {
+            lastRotations = lastRotations.toMutableList().apply { set(0, value) }
+        }
+
+    var lastRotations = MutableList(3) { Rotation.ZERO }
+        set(value) {
+            val updatedList = MutableList(3) { Rotation.ZERO }
+
+            updatedList[0] = value[0]
+            updatedList[1] = field[0]
+            updatedList[2] = field[1]
+
+            field = updatedList
+        }
 
     var rotationData: RotationData? = null
 
@@ -33,6 +46,8 @@ object RotationUtils : MinecraftInstance(), Listenable {
 
     private var sameYawDiffTicks = 0
     private var samePitchDiffTicks = 0
+
+    private var sameSignTicks = 0
 
     /**
      * Face block
@@ -78,10 +93,10 @@ object RotationUtils : MinecraftInstance(), Listenable {
                     val currentRotation = currentRotation ?: player.rotation
 
                     if (raycast != null && raycast.blockPos == blockPos) {
-                        if (visibleVec == null || getRotationDifference(
+                        if (visibleVec == null || rotationDifference(
                                 currentVec.rotation,
                                 currentRotation
-                            ) < getRotationDifference(visibleVec.rotation, currentRotation)
+                            ) < rotationDifference(visibleVec.rotation, currentRotation)
                         ) {
                             visibleVec = currentVec
                         }
@@ -92,10 +107,10 @@ object RotationUtils : MinecraftInstance(), Listenable {
                             continue
                         }
 
-                        if (invisibleVec == null || getRotationDifference(
+                        if (invisibleVec == null || rotationDifference(
                                 currentVec.rotation,
                                 currentRotation
-                            ) < getRotationDifference(invisibleVec.rotation, currentRotation)
+                            ) < rotationDifference(invisibleVec.rotation, currentRotation)
                         ) {
                             invisibleVec = currentVec
                         }
@@ -239,7 +254,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
                     if (!isVisible(gcdVec) && distance > throughWallsRange)
                         continue
 
-                    val rotationWithDiff = rotation to getRotationDifference(rotation, currRotation)
+                    val rotationWithDiff = rotation to rotationDifference(rotation, currRotation)
 
                     if (distance <= attackRange) {
                         if (attackRotation == null || rotationWithDiff.second < attackRotation.second)
@@ -268,8 +283,8 @@ object RotationUtils : MinecraftInstance(), Listenable {
      * @param entity your entity
      * @return difference between rotation
      */
-    fun getRotationDifference(entity: Entity) =
-        getRotationDifference(toRotation(entity.hitBox.center, true), mc.thePlayer.rotation)
+    fun rotationDifference(entity: Entity) =
+        rotationDifference(toRotation(entity.hitBox.center, true), mc.thePlayer.rotation)
 
     /**
      * Calculate difference between two rotations
@@ -278,8 +293,8 @@ object RotationUtils : MinecraftInstance(), Listenable {
      * @param b rotation
      * @return difference between rotation
      */
-    fun getRotationDifference(a: Rotation, b: Rotation = serverRotation) =
-        hypot(getAngleDifference(a.yaw, b.yaw), a.pitch - b.pitch)
+    fun rotationDifference(a: Rotation, b: Rotation = serverRotation) =
+        hypot(angleDifference(a.yaw, b.yaw), a.pitch - b.pitch)
 
     /**
      * Limit your rotation using a turn speed
@@ -360,24 +375,26 @@ object RotationUtils : MinecraftInstance(), Listenable {
         vSpeed: Float, startFirstSlow: Boolean, useStraightLinePath: Boolean,
         slowDownOnDirChange: Boolean, minRotationDifference: Float, smootherMode: String,
     ): Rotation {
-        var yawDifference = getAngleDifference(targetRotation.yaw, currentRotation.yaw)
-        var pitchDifference = getAngleDifference(targetRotation.pitch, currentRotation.pitch)
+        var yawDifference = angleDifference(targetRotation.yaw, currentRotation.yaw)
+        var pitchDifference = angleDifference(targetRotation.pitch, currentRotation.pitch)
 
         val yawTicks = ClientUtils.runTimeTicks - sameYawDiffTicks
         val pitchTicks = ClientUtils.runTimeTicks - samePitchDiffTicks
 
-        val oldYawDiff = getAngleDifference(serverRotation.yaw, lastServerRotation.yaw)
-        val oldPitchDiff = getAngleDifference(serverRotation.pitch, lastServerRotation.pitch)
+        val oldYawDiff = angleDifference(serverRotation.yaw, lastRotations[1].yaw)
+        val oldPitchDiff = angleDifference(serverRotation.pitch, lastRotations[1].pitch)
 
-        val secondOldYawDiff = getAngleDifference(lastServerRotation.yaw, secondLastRotation.yaw)
-        val secondOldPitchDiff = getAngleDifference(lastServerRotation.pitch, secondLastRotation.pitch)
+        val secondOldYawDiff = angleDifference(lastRotations[1].yaw, lastRotations[2].yaw)
+        val secondOldPitchDiff = angleDifference(lastRotations[1].pitch, lastRotations[2].pitch)
 
-        if (rotationData?.simulateShortStop == true && Math.random() > 0.95 && yawDifference.sign == oldYawDiff.sign && secondOldYawDiff.sign == oldYawDiff.sign) {
+        val rotationDifference = hypot(yawDifference, pitchDifference)
+
+        val seconds = (2..10).random() * 20
+
+        if (rotationData?.simulateShortStop == true && (sameSignTicks >= seconds || Math.random() > 0.9)) {
             yawDifference = 0f
             pitchDifference = 0f
         }
-
-        val rotationDifference = hypot(yawDifference, pitchDifference)
 
         val (hFactor, vFactor) = if (smootherMode == "Relative") {
             computeFactor(rotationDifference, hSpeed) to computeFactor(rotationDifference, vSpeed)
@@ -458,7 +475,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
                 tickUpdate()
             }
 
-            if (debugRotations) {
+            if (Rotations.debugRotations) {
                 ClientUtils.displayChatMessage(if (shouldStartSlow) {
                     "STARTED OFF SLOW, TICKS SINCE LAST START: ${ticks}"
                 } else "STARTED SLOW ON DIRECTION CHANGE, OLD DIFF: ${oldDiff}, SUPPOSED DIFF: $newDiff"
@@ -493,7 +510,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
      * @param b angle point
      * @return difference between angle points
      */
-    fun getAngleDifference(a: Float, b: Float) = MathHelper.wrapAngleTo180_float(a - b)
+    fun angleDifference(a: Float, b: Float) = MathHelper.wrapAngleTo180_float(a - b)
 
     /**
      * Calculate rotation to vector
@@ -622,7 +639,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
         resetTicks = 0
         currentRotation?.let { rotation ->
             mc.thePlayer?.let {
-                it.rotationYaw = rotation.yaw + getAngleDifference(it.rotationYaw, rotation.yaw)
+                it.rotationYaw = rotation.yaw + angleDifference(it.rotationYaw, rotation.yaw)
                 syncRotations()
             }
         }
@@ -691,7 +708,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
         }
 
         if (resetTicks == 0) {
-            val distanceToPlayerRotation = getRotationDifference(currentRotation ?: serverRotation, playerRotation)
+            val distanceToPlayerRotation = rotationDifference(currentRotation ?: serverRotation, playerRotation)
 
             if (distanceToPlayerRotation <= data.resetThreshold || data.clientSide) {
                 resetRotation()
@@ -760,23 +777,32 @@ object RotationUtils : MinecraftInstance(), Listenable {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if (packet !is C03PacketPlayer || !packet.rotating) {
+        if (packet !is C03PacketPlayer) {
+            return
+        }
+
+        if (!packet.rotating) {
+            sameSignTicks = 0
             return
         }
 
         currentRotation?.let {
-            packet.yaw = it.yaw
-            packet.pitch = it.pitch
+            packet.rotation = it
 
-            val yawDiff = getAngleDifference(packet.yaw, serverRotation.yaw)
-            val pitchDiff = getAngleDifference(packet.pitch, serverRotation.pitch)
+            val yawDiff = angleDifference(packet.yaw, serverRotation.yaw)
+            val pitchDiff = angleDifference(packet.pitch, serverRotation.pitch)
 
-            if (debugRotations) {
+            if (Rotations.debugRotations) {
                 ClientUtils.displayChatMessage("PREV YAW: $yawDiff, PREV PITCH: $pitchDiff")
             }
         }
 
-        serverRotation = Rotation(packet.yaw, packet.pitch)
+        if (angleDifference(packet.yaw, serverRotation.yaw).sign ==
+            angleDifference(serverRotation.yaw, lastRotations[1].yaw).sign) {
+            sameSignTicks++
+        } else {
+            sameSignTicks = 0
+        }
     }
 
     enum class SmootherMode(val modeName: String) { LINEAR("Linear"), RELATIVE("Relative") }

@@ -28,7 +28,7 @@ import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.RaycastUtils.raycastEntity
 import net.ccbluex.liquidbounce.utils.RaycastUtils.runWithModifiedRaycastResult
 import net.ccbluex.liquidbounce.utils.RotationUtils.currentRotation
-import net.ccbluex.liquidbounce.utils.RotationUtils.getRotationDifference
+import net.ccbluex.liquidbounce.utils.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.RotationUtils.getVectorForRotation
 import net.ccbluex.liquidbounce.utils.RotationUtils.isRotationFaced
 import net.ccbluex.liquidbounce.utils.RotationUtils.isVisible
@@ -616,7 +616,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
                 // Can humans keep click consistency when performing massive rotation changes?
                 // (10-30 rotation difference/doing large mouse movements for example)
                 // Maybe apply to attacks too?
-                if (getRotationDifference(rotation) > maxRotationDifferenceToSwing) {
+                if (rotationDifference(rotation) > maxRotationDifferenceToSwing) {
                     // At the same time there is also a chance of the user clicking at least once in a while
                     // when the consistency has dropped a lot.
                     val shouldIgnore = swingWhenTicksLate.isActive() && ticksSinceClick() >= ticksLateToSwing
@@ -741,7 +741,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
                 }
             }
 
-            val entityFov = getRotationDifference(entity)
+            val entityFov = rotationDifference(entity)
 
             if (distance <= maxRange && (fov == 180F || entityFov <= fov)) {
                 if (switchMode && isLookingOnEntities(entity, maxSwitchFOV.toDouble()) || !switchMode) {
@@ -768,7 +768,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
                 var result = 0f
 
                 Backtrack.runWithNearestTrackedDistance(it) {
-                    result = getRotationDifference(it) // Sort by FOV
+                    result = rotationDifference(it) // Sort by FOV
                 }
 
                 result
@@ -1259,7 +1259,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
 
                     val rotationToPlayer = toRotation(mc.thePlayer.hitBox.center, true, target!!)
 
-                    if (getRotationDifference(rotationToPlayer, target!!.rotation) > maxDirectionDiff)
+                    if (rotationDifference(rotationToPlayer, target!!.rotation) > maxDirectionDiff)
                         return false
 
                     if (target!!.swingProgressInt > maxSwingProgress) return false

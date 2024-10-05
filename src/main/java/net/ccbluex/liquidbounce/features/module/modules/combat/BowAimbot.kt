@@ -5,13 +5,15 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.RotationUpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils.faceTrajectory
-import net.ccbluex.liquidbounce.utils.RotationUtils.getRotationDifference
+import net.ccbluex.liquidbounce.utils.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
@@ -76,7 +78,7 @@ object BowAimbot : Module("BowAimbot", Category.COMBAT, hideModule = false) {
         override fun isSupported() = !maxVerticalSpeedValue.isMinimal()
     }
     private val angleThresholdUntilReset by FloatValue("AngleThresholdUntilReset", 5f, 0.1f..180f)
-    private val minRotationDifference by FloatValue("MinRotationDifference", 0f, 0f..1f)
+    private val minRotationDifference by FloatValue("MinRotationDifference", 0f, 0f..2f)
 
     private var target: Entity? = null
 
@@ -145,7 +147,7 @@ object BowAimbot : Module("BowAimbot", Category.COMBAT, hideModule = false) {
 
         return when (priorityMode.uppercase()) {
             "DISTANCE" -> targets.minByOrNull { mc.thePlayer.getDistanceToEntityBox(it) }
-            "DIRECTION" -> targets.minByOrNull { getRotationDifference(it) }
+            "DIRECTION" -> targets.minByOrNull { rotationDifference(it) }
             "HEALTH" -> targets.minByOrNull { (it as EntityLivingBase).health }
             else -> null
         }

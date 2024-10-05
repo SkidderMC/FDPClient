@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.canClickInventory
+import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.hasScheduledInLastLoop
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.client.gui.GuiChat
@@ -34,8 +35,8 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
 
     private val rotate by BoolValue("Rotate", false)
 
-    private val intave by BoolValue("Intave", false)
     val aacAdditionPro by BoolValue("AACAdditionPro", false)
+    private val intave by BoolValue("Intave", false)
 
     private val isIntave = (mc.currentScreen is GuiInventory || mc.currentScreen is GuiChest) && intave
 
@@ -44,13 +45,13 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
     private val noMoveGround by InventoryManager.noMoveGroundValue
     private val undetectable by InventoryManager.undetectableValue
 
-    private val silentlyCloseAndReopen by BoolValue("SilentlyCloseAndReopen", false) {
-        noMove && (noMoveAir || noMoveGround)
-    }
+    // If player violates nomove check and inventory is open, close inventory and reopen it when still
+    private val silentlyCloseAndReopen by BoolValue("SilentlyCloseAndReopen", false)
+    { noMove && (noMoveAir || noMoveGround) }
 
-    private val reopenOnClick by BoolValue("ReopenOnClick", false) {
-        silentlyCloseAndReopen && noMove && (noMoveAir || noMoveGround)
-    }
+    // Reopen closed inventory just before a click (could flag for clicking too fast after opening inventory)
+    private val reopenOnClick by BoolValue("ReopenOnClick", false)
+    { silentlyCloseAndReopen && noMove && (noMoveAir || noMoveGround) }
 
     private val affectedBindings = arrayOf(
         mc.gameSettings.keyBindForward,
@@ -65,21 +66,26 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
     fun onUpdate(event: UpdateEvent) {
         val screen = mc.currentScreen
 
+        // Don't make player move when chat or ESC menu are open
+        if (screen is GuiChat || screen is GuiIngameMenu)
+            return
+
+        if (undetectable && (screen != null && screen !is GuiHudDesigner && screen !is ClickGui))
+            return
+
+        if (notInChests && screen is GuiChest)
+            return
+
         if (!fullMovements && (screen is GuiChat || screen is GuiIngameMenu)) return
-
-        if (undetectable && screen != null && screen !is GuiHudDesigner && screen !is ClickGui) return
-
-        if (notInChests && screen is GuiChest) return
 
         if (silentlyCloseAndReopen && screen is GuiInventory) {
             if (canClickInventory(closeWhenViolating = true) && !reopenOnClick)
                 serverOpenInventory = true
         }
 
-        for (affectedBinding in affectedBindings) {
-            affectedBinding.pressed = isButtonPressed(affectedBinding) ||
-                    (affectedBinding == mc.gameSettings.keyBindSprint && Sprint.handleEvents() && Sprint.mode == "Legit" && (!Sprint.onlyOnSprintPress || mc.thePlayer.isSprinting))
-        }
+        for (affectedBinding in affectedBindings)
+            affectedBinding.pressed = isButtonPressed(affectedBinding)
+                    || (affectedBinding == mc.gameSettings.keyBindSprint && Sprint.handleEvents() && Sprint.mode == "Legit" && (!Sprint.onlyOnSprintPress || mc.thePlayer.isSprinting))
     }
 
     private fun updateKeyState() {
@@ -121,9 +127,9 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
 
     @EventTarget
     fun onClick(event: ClickWindowEvent) {
-        if (!canClickInventory()) {
-            event.cancelEvent()
-        } else if (reopenOnClick) {
+        if (!canClickInventory()) event.cancelEvent()
+        else if (reopenOnClick) {
+            hasScheduledInLastLoop = false
             serverOpenInventory = true
         }
 
@@ -143,9 +149,8 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
     }
 
     override fun onDisable() {
-        for (affectedBinding in affectedBindings) {
+        for (affectedBinding in affectedBindings)
             affectedBinding.pressed = isButtonPressed(affectedBinding)
-        }
     }
 
     private fun isButtonPressed(keyBinding: KeyBinding): Boolean {

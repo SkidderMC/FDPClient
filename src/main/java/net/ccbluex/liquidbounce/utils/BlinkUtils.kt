@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
-import net.ccbluex.liquidbounce.utils.RotationUtils.serverRotation
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.network.Packet
@@ -115,9 +114,6 @@ object BlinkUtils {
                         val packetPos = Vec3(packet.x, packet.y, packet.z)
                         synchronized(positions) {
                             positions += packetPos
-                        }
-                        if (packet.rotating) {
-                            serverRotation = Rotation(packet.yaw, packet.pitch)
                         }
                     }
                 }
