@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.player
 
 import kotlinx.coroutines.delay
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoArmor
 import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.CoroutineUtils.waitUntil
@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.canClickInvento
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.hasScheduledInLastLoop
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.invCleanerCurrentSlot
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.invCleanerLastSlot
+import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.passedPostInventoryCloseDelay
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.isFirstInventoryClick
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.toHotbarIndex
@@ -37,7 +38,7 @@ import net.minecraft.init.Items
 import net.minecraft.item.*
 import net.minecraft.potion.Potion
 
-object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule = false) {
+object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule = false) {
 	private val drop by BoolValue("Drop", true, subjective = true)
 	val sort by BoolValue("Sort", true, subjective = true)
 
@@ -54,7 +55,11 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 	private val limitStackCounts by BoolValue("LimitStackCounts", true, subjective = true)
 	private val maxBlockStacks by IntegerValue("MaxBlockStacks", 5, 0..36, subjective = true) { limitStackCounts }
 	private val maxFoodStacks by IntegerValue("MaxFoodStacks", 5, 0..36, subjective = true) { limitStackCounts }
-	private val maxThrowableStacks by IntegerValue("MaxThrowableStacks", 5, 0..36, subjective = true) { limitStackCounts }
+	private val maxThrowableStacks by IntegerValue("MaxThrowableStacks",
+		5,
+		0..36,
+		subjective = true
+	) { limitStackCounts }
 	// TODO: max potion, vehicle, ..., stacks?
 
 	private val maxFishingRodStacks by IntegerValue("MaxFishingRodStacks", 1, 1..10, subjective = true)
@@ -66,6 +71,7 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 	private val invOpen by InventoryManager.invOpenValue
 	private val simulateInventory by InventoryManager.simulateInventoryValue
 
+	private val postInventoryCloseDelay by InventoryManager.postInventoryCloseDelayValue
 	private val autoClose by InventoryManager.autoCloseValue
 	private val startDelay by InventoryManager.startDelayValue
 	private val closeDelay by InventoryManager.closeDelayValue
@@ -113,6 +119,9 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 			if (!handleEvents())
 				return false
 
+			if (!passedPostInventoryCloseDelay)
+				return false
+
 			if (mc.playerController?.currentGameType?.isSurvivalOrAdventure != true)
 				return false
 
@@ -155,7 +164,10 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 						// Only try to merge non-full stacks, without limiting stack counts in isStackUseful
 						.filter {
 							it.value.hasItemAgePassed(minItemAge) &&
-									it.value.stackSize != it.value.maxStackSize && isStackUseful(it.value, stacks, noLimits = true)
+									it.value.stackSize != it.value.maxStackSize && isStackUseful(it.value,
+								stacks,
+								noLimits = true
+							)
 						}
 						// Prioritise stacks that are lower in inventory
 						.sortedByDescending { it.index }
@@ -311,9 +323,7 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 
 						// If occupied hotbar slot isn't already sorted or isn't strictly best, sort to it
 						if (!canBeSortedTo(hotbarIndex, hotbarStack?.item)
-							|| !isStackUseful(hotbarStack, stacks, strictlyBest = true)
-						)
-						{
+							|| !isStackUseful(hotbarStack, stacks, strictlyBest = true)) {
 							// Sort repaired item to hotbar right after repairing
 							click(0, hotbarIndex, 2)
 							continue@repair
@@ -366,7 +376,10 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 					val otherItem = otherStack?.item
 
 					// Check if an item is the correct type, isn't bad and isn't already sorted to a different slot
-					if (isRightType(otherItem) && isStackUseful(otherStack, stacks, strictlyBest = strictlyBest) && !canBeSortedTo(otherIndex, otherItem, stacks.size)) {
+					if (isRightType(otherItem) && isStackUseful(otherStack,
+							stacks,
+							strictlyBest = strictlyBest
+						) && !canBeSortedTo(otherIndex, otherItem, stacks.size)) {
 						// If best item to sort was found, but its item age hasn't yet passed, skip search for this hotbar slot
 						if (otherStack.hasItemAgePassed(minItemAge))
 							click(otherIndex, hotbarIndex, 2)
@@ -413,7 +426,10 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 		waitUntil(TickScheduler::isEmpty)
 	}
 
-	private suspend fun click(slot: Int, button: Int, mode: Int, allowDuplicates: Boolean = false, coerceTo: Int = Int.MAX_VALUE) {
+	private suspend fun click(
+		slot: Int, button: Int, mode: Int, allowDuplicates: Boolean = false,
+		coerceTo: Int = Int.MAX_VALUE,
+	) {
 		// Wait for NoMove or cancel click
 		if (!shouldOperate()) {
 			invCleanerCurrentSlot = -1
@@ -453,7 +469,10 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 	}
 
 	// TODO: Simplify all is useful checks by a single getBetterAlternativeCount and checking if it is above 0, above stack limit, ...
-	fun isStackUseful(stack: ItemStack?, stacks: List<ItemStack?>, entityStacksMap: Map<ItemStack, EntityItem>? = null, noLimits: Boolean = false, strictlyBest: Boolean = false): Boolean {
+	fun isStackUseful(
+		stack: ItemStack?, stacks: List<ItemStack?>, entityStacksMap: Map<ItemStack, EntityItem>? = null,
+		noLimits: Boolean = false, strictlyBest: Boolean = false,
+	): Boolean {
 		val item = stack?.item ?: return false
 
 		return when (item) {
@@ -464,7 +483,10 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 			is ItemFood -> isUsefulFood(stack, stacks, entityStacksMap, noLimits, strictlyBest)
 			is ItemBlock -> isUsefulBlock(stack, stacks, entityStacksMap, noLimits, strictlyBest)
 
-			is ItemArmor, is ItemTool, is ItemSword, is ItemBow, is ItemFishingRod -> isUsefulEquipment(stack, stacks, entityStacksMap)
+			is ItemArmor, is ItemTool, is ItemSword, is ItemBow, is ItemFishingRod -> isUsefulEquipment(stack,
+				stacks,
+				entityStacksMap
+			)
 
 			is ItemBoat, is ItemMinecart -> !ignoreVehicles
 
@@ -480,7 +502,10 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 		}
 	}
 
-	private fun isUsefulEquipment(stack: ItemStack?, stacks: List<ItemStack?>, entityStacksMap: Map<ItemStack, EntityItem>? = null): Boolean {
+	private fun isUsefulEquipment(
+		stack: ItemStack?, stacks: List<ItemStack?>,
+		entityStacksMap: Map<ItemStack, EntityItem>? = null,
+	): Boolean {
 		val item = stack?.item ?: return false
 
 		return when (item) {
@@ -534,7 +559,10 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 		return !isHarmful || (!onlyGoodPotions && isSplash)
 	}
 
-	private fun isUsefulLighter(stack: ItemStack?, stacks: List<ItemStack?>, entityStacksMap: Map<ItemStack, EntityItem>? = null): Boolean {
+	private fun isUsefulLighter(
+		stack: ItemStack?, stacks: List<ItemStack?>,
+		entityStacksMap: Map<ItemStack, EntityItem>? = null,
+	): Boolean {
 		val item = stack?.item ?: return false
 
 		if (item !is ItemFlintAndSteel) return false
@@ -578,7 +606,10 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 		}
 	}
 
-	private fun isUsefulFood(stack: ItemStack?, stacks: List<ItemStack?>, entityStacksMap: Map<ItemStack, EntityItem>?, ignoreLimits: Boolean, strictlyBest: Boolean): Boolean {
+	private fun isUsefulFood(
+		stack: ItemStack?, stacks: List<ItemStack?>, entityStacksMap: Map<ItemStack, EntityItem>?,
+		ignoreLimits: Boolean, strictlyBest: Boolean,
+	): Boolean {
 		val item = stack?.item ?: return false
 
 		if (item !is ItemFood) return false
@@ -638,6 +669,7 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 						!isSorted && (isOtherSorted || otherIndex > index)
 					}
 				}
+
 				else -> false
 			}
 		}
@@ -646,7 +678,10 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 		return if (strictlyBest) betterCount == 0 else betterCount < maxFoodStacks
 	}
 
-	private fun isUsefulBlock(stack: ItemStack?, stacks: List<ItemStack?>, entityStacksMap: Map<ItemStack, EntityItem>?, ignoreLimits: Boolean, strictlyBest: Boolean): Boolean {
+	private fun isUsefulBlock(
+		stack: ItemStack?, stacks: List<ItemStack?>, entityStacksMap: Map<ItemStack, EntityItem>?,
+		ignoreLimits: Boolean, strictlyBest: Boolean,
+	): Boolean {
 		if (!isSuitableBlock(stack)) return false
 
 		// Skip checks if there is no stack limit set and when you are not strictly searching for best option
@@ -695,6 +730,7 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 						!isSorted && (isOtherSorted || otherIndex > index)
 					}
 				}
+
 				else -> false
 			}
 		}
@@ -703,7 +739,10 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 		return if (strictlyBest) betterCount == 0 else betterCount < maxBlockStacks
 	}
 
-	private fun isUsefulThrowable(stack: ItemStack?, stacks: List<ItemStack?>, entityStacksMap: Map<ItemStack, EntityItem>?, ignoreLimits: Boolean, strictlyBest: Boolean): Boolean {
+	private fun isUsefulThrowable(
+		stack: ItemStack?, stacks: List<ItemStack?>,
+		entityStacksMap: Map<ItemStack, EntityItem>?, ignoreLimits: Boolean, strictlyBest: Boolean,
+	): Boolean {
 		val item = stack?.item ?: return false
 
 		if (item !in THROWABLE_ITEMS) return false
@@ -758,6 +797,7 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 						!isSorted && (isOtherSorted || otherIndex > index)
 					}
 				}
+
 				else -> false
 			}
 		}
@@ -767,7 +807,10 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 	}
 
 	// Limit buckets to max 1 per type
-	private fun isUsefulBucket(stack: ItemStack?, stacks: List<ItemStack?>, entityStacksMap: Map<ItemStack, EntityItem>?): Boolean {
+	private fun isUsefulBucket(
+		stack: ItemStack?, stacks: List<ItemStack?>,
+		entityStacksMap: Map<ItemStack, EntityItem>?,
+	): Boolean {
 		val item = stack?.item ?: return false
 
 		if (item !is ItemBucket) return false
@@ -810,7 +853,10 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 		}
 	}
 
-	private fun hasBestParameters(stack: ItemStack?, stacks: List<ItemStack?>, entityStacksMap: Map<ItemStack, EntityItem>? = null, parameters: (ItemStack) -> Float): Boolean {
+	private fun hasBestParameters(
+		stack: ItemStack?, stacks: List<ItemStack?>,
+		entityStacksMap: Map<ItemStack, EntityItem>? = null, parameters: (ItemStack) -> Float,
+	): Boolean {
 		val item = stack?.item ?: return false
 
 		val index = stacks.indexOf(stack)
@@ -853,7 +899,7 @@ object InventoryCleaner: Module("InventoryCleaner", Category.PLAYER, hideModule 
 					0 -> when (otherStack.totalDurability.compareTo(stack.totalDurability)) {
 						1 -> return false
 						// Both items are pretty much equally good, sorted item wins over not sorted, otherwise the one with higher index
-						0 ->  {
+						0 -> {
 							// Only true when both items are dropped on ground, if other item is closer, compared one isn't the best
 							if (index == otherIndex) {
 								val otherEntityItem = entityStacksMap?.get(otherStack) ?: return@forEachIndexed

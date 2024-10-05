@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import kotlinx.coroutines.delay
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner.canBeRepairedWithOther
 import net.ccbluex.liquidbounce.utils.CoroutineUtils.waitUntil
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.autoArmorCurren
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.autoArmorLastSlot
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.canClickInventory
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.hasScheduledInLastLoop
+import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.passedPostInventoryCloseDelay
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.isFirstInventoryClick
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverSlot
@@ -31,7 +32,7 @@ import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 
-object AutoArmor: Module("AutoArmor", Category.COMBAT, hideModule = false) {
+object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
 	private val maxDelay: Int by object : IntegerValue("MaxDelay", 50, 0..500) {
 		override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(minDelay)
 	}
@@ -45,6 +46,7 @@ object AutoArmor: Module("AutoArmor", Category.COMBAT, hideModule = false) {
 	private val invOpen by InventoryManager.invOpenValue
 	private val simulateInventory by InventoryManager.simulateInventoryValue
 
+	private val postInventoryCloseDelay by InventoryManager.postInventoryCloseDelayValue
 	private val autoClose by InventoryManager.autoCloseValue
 	private val startDelay by InventoryManager.startDelayValue
 	private val closeDelay by InventoryManager.closeDelayValue
@@ -58,10 +60,12 @@ object AutoArmor: Module("AutoArmor", Category.COMBAT, hideModule = false) {
 	private val noMoveGround by InventoryManager.noMoveGroundValue
 
 	private val hotbar by BoolValue("Hotbar", true)
-		// Sacrifices 1 tick speed for complete undetectability, needed to bypass Vulcan
-		private val delayedSlotSwitch by BoolValue("DelayedSlotSwitch", true) { hotbar }
-		// Prevents AutoArmor from hotbar equipping while any screen is open
-		private val notInContainers by BoolValue("NotInContainers", false) { hotbar }
+
+	// Sacrifices 1 tick speed for complete undetectability, needed to bypass Vulcan
+	private val delayedSlotSwitch by BoolValue("DelayedSlotSwitch", true) { hotbar }
+
+	// Prevents AutoArmor from hotbar equipping while any screen is open
+	private val notInContainers by BoolValue("NotInContainers", false) { hotbar }
 
 	val highlightSlot by InventoryManager.highlightSlotValue
 
@@ -126,12 +130,12 @@ object AutoArmor: Module("AutoArmor", Category.COMBAT, hideModule = false) {
 				thePlayer.inventory.mainInventory[hotbarIndex] = null
 			}
 
-			if (delayedSlotSwitch)
-				// Schedule for the following tick and wait for them to be sent
-				TickScheduler.scheduleAndSuspend(equippingAction)
-			else
-				// Schedule all possible hotbar clicks for the following tick (doesn't suspend the loop)
-				TickScheduler += equippingAction
+			// Schedule hotbar click
+			TickScheduler += equippingAction
+
+			if (delayedSlotSwitch) {
+				delay(randomDelay(minDelay, maxDelay).toLong())
+			}
 		}
 
 		// Not really needed to bypass
@@ -250,6 +254,9 @@ object AutoArmor: Module("AutoArmor", Category.COMBAT, hideModule = false) {
 	private suspend fun shouldOperate(onlyHotbar: Boolean = false): Boolean {
 		while (true) {
 			if (!handleEvents())
+				return false
+
+			if (!passedPostInventoryCloseDelay)
 				return false
 
 			if (mc.playerController?.currentGameType?.isSurvivalOrAdventure != true)

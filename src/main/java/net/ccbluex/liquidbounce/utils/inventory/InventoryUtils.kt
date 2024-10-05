@@ -63,6 +63,8 @@ object InventoryUtils : MinecraftInstance(), Listenable {
 
     var isFirstInventoryClick = true
 
+    var timeSinceClosedInventory = 0L
+
     val CLICK_TIMER = MSTimer()
 
     val BLOCK_BLACKLIST = listOf(
@@ -139,7 +141,7 @@ object InventoryUtils : MinecraftInstance(), Listenable {
         }.maxByOrNull { inventory.getSlot(it).stack.stackSize }
     }
 
-    fun findBlockStackInHotbarGreaterThan(amount:Int): Int? {
+    fun findBlockStackInHotbarGreaterThan(amount: Int): Int? {
         val player = mc.thePlayer ?: return null
         val inventory = player.openContainer
 
@@ -150,6 +152,7 @@ object InventoryUtils : MinecraftInstance(), Listenable {
             stack.item is ItemBlock && stack.stackSize > amount && block.isFullCube && block !in BLOCK_BLACKLIST && block !is BlockBush
         }.minByOrNull { (inventory.getSlot(it).stack.item as ItemBlock).block.isFullCube }
     }
+
     // Converts container slot to hotbar slot id, else returns null
     fun Int.toHotbarIndex(stacksSize: Int): Int? {
         val parsed = this - stacksSize + 9
@@ -183,6 +186,8 @@ object InventoryUtils : MinecraftInstance(), Listenable {
                 isFirstInventoryClick = false
                 _serverOpenInventory = false
                 serverOpenContainer = false
+
+                timeSinceClosedInventory = System.currentTimeMillis()
 
                 if (packet is S2DPacketOpenWindow) {
                     if (packet.guiId == "minecraft:chest" || packet.guiId == "minecraft:container")
