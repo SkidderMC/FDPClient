@@ -193,8 +193,7 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
             }
 
             // Check for scaffold
-            if ((Scaffold.handleEvents() || Tower.handleEvents()) &&
-                (Scaffold.placeRotation != null || Tower.placeInfo != null)) {
+            if ((Scaffold.handleEvents() || Tower.handleEvents()) && Scaffold.placeRotation != null) {
 
                 if (BlinkUtils.isBlinking && player.fallDistance < 1.5f) BlinkUtils.unblink()
                 if (pauseTicks < ticksToDelay) pauseTicks = ticksToDelay
