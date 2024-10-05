@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.features.module.modules.other.Nuker
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Tower
-import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Text
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.*
@@ -65,6 +64,7 @@ import net.minecraft.potion.Potion
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.Vec3
 import net.minecraft.world.WorldSettings
 import org.lwjgl.input.Keyboard
 import java.awt.Color
@@ -1019,7 +1019,19 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
             hittable = isRotationFaced(target, range.toDouble(), currentRotation)
         }
 
-        if (!hittable) {
+        var shouldExcept = false
+        chosenEntity ?: this.target?.run {
+            if (ForwardTrack.handleEvents()) {
+                ForwardTrack.includeEntityTruePos(this) {
+                    checkIfAimingAtBox(this, currentRotation, eyes, onSuccess = {
+                        hittable = true
+                        shouldExcept = true
+                    })
+                }
+            }
+        }
+
+        if (!hittable || shouldExcept) {
             return
         }
 
@@ -1035,27 +1047,21 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
 
         if (Backtrack.handleEvents()) {
             Backtrack.loopThroughBacktrackData(targetToCheck) {
-                if (targetToCheck.hitBox.isVecInside(eyes)) {
+                var result = false
+
+                checkIfAimingAtBox(targetToCheck, currentRotation, eyes, onSuccess = {
                     checkNormally = false
-                    return@loopThroughBacktrackData true
-                }
 
-                // Recreate raycast logic
-                val intercept = targetToCheck.hitBox.calculateIntercept(eyes,
-                    eyes + getVectorForRotation(currentRotation) * range.toDouble()
-                )
+                    result = true
+                }, onFail = {
+                    result = false
+                })
 
-                if (intercept != null) {
-                    // Is the entity box raycast vector visible? If not, check through-wall range
-                    hittable = isVisible(intercept.hitVec) || mc.thePlayer.getDistanceToEntityBox(targetToCheck) <= throughWallsRange
-
-                    if (hittable) {
-                        checkNormally = false
-                        return@loopThroughBacktrackData true
-                    }
-                }
-
-                return@loopThroughBacktrackData false
+                return@loopThroughBacktrackData result
+            }
+        } else if (ForwardTrack.handleEvents()) {
+            ForwardTrack.includeEntityTruePos(targetToCheck) {
+                checkIfAimingAtBox(targetToCheck, currentRotation, eyes, onSuccess = { checkNormally = false })
             }
         }
 
@@ -1201,6 +1207,29 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
         val lastAttack = attackTickTimes.lastOrNull()
 
         return lastAttack != null && lastAttack.first.typeOfHit != currentType && runTimeTicks - lastAttack.second <= hitDelayTicks
+    }
+
+    private fun checkIfAimingAtBox(
+        targetToCheck: Entity, currentRotation: Rotation, eyes: Vec3, onSuccess: () -> Unit,
+        onFail: () -> Unit = { },
+    ) {
+        if (targetToCheck.hitBox.isVecInside(eyes)) {
+            onSuccess()
+            return
+        }
+        // Recreate raycast logic
+        val intercept = targetToCheck.hitBox.calculateIntercept(eyes,
+            eyes + getVectorForRotation(currentRotation) * range.toDouble()
+        )
+        if (intercept != null) {
+            // Is the entity box raycast vector visible? If not, check through-wall range
+            hittable = isVisible(intercept.hitVec) || mc.thePlayer.getDistanceToEntityBox(targetToCheck) <= throughWallsRange
+            if (hittable) {
+                onSuccess()
+                return
+            }
+        }
+        onFail()
     }
 
     /**
