@@ -594,21 +594,21 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         }
 
         backtrackDataArray = backtrackDataArray.sortedBy { (x, y, z, _) ->
-            runWithSimulatedPastPosition(entity, Vec3(x, y, z)) {
+            runWithSimulatedPosition(entity, Vec3(x, y, z)) {
                 mc.thePlayer.getDistanceToBox(entity.hitBox)
             }
         }.toMutableList()
 
         val (x, y, z, _) = backtrackDataArray.first()
 
-        runWithSimulatedPastPosition(entity, Vec3(x, y, z)) {
+        runWithSimulatedPosition(entity, Vec3(x, y, z)) {
             f()
 
             null
         }
     }
 
-    private fun runWithSimulatedPastPosition(entity: Entity, vec3: Vec3, f: () -> Double?): Double? {
+    fun runWithSimulatedPosition(entity: Entity, vec3: Vec3, f: () -> Double?): Double? {
         val currPos = entity.currPos
         val prevPos = entity.prevPos
 
