@@ -172,8 +172,14 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
                             glEnable(GL_LINE_SMOOTH)
                             glEnable(GL_BLEND)
                             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-                            glColor(color)
                             glLineWidth(1.5f)
+
+                            glColor(color)
+                            TileEntityRendererDispatcher.instance.renderTileEntity(
+                                tileEntity,
+                                event.partialTicks,
+                                -1
+                            )
 
                             TileEntityRendererDispatcher.instance.renderTileEntity(
                                 tileEntity,
