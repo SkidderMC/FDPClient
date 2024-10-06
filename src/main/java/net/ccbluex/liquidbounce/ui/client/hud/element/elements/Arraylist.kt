@@ -79,28 +79,31 @@ class Arraylist(
     private val rectRed by IntegerValue("Rect-R", 255, 0..255, isSupported = isCustomRectSupported)
     private val rectGreen by IntegerValue("Rect-G", 255, 0..255, isSupported = isCustomRectSupported)
     private val rectBlue by IntegerValue("Rect-B", 255, 0..255, isSupported = isCustomRectSupported)
-    private val rectAlpha by IntegerValue("Rect-Alpha", 150, 0..255, isSupported = isCustomRectSupported)
+    private val rectAlpha by IntegerValue("Rect-Alpha", 255, 0..255) { rectMode != "None" && rectColorMode == "Custom" }
 
-    private val gradientRectSpeed by FloatValue("Rect-Gradient-Speed", 1f, 0.5f..10f) { rectColorMode == "Gradient" }
+    private val isCustomRectGradientSupported = { rectMode != "None" && rectAlpha > 0 && rectColorMode == "Gradient" }
+
+    private val gradientRectSpeed by FloatValue("Rect-Gradient-Speed", 1f, 0.5f..10f, isSupported = isCustomRectGradientSupported)
 
     // TODO: Make Color picker to fix this mess :/
-    private val gradientRectRed1 by FloatValue("Rect-Gradient-R1", 255f, 0f..255f) { rectColorMode == "Gradient" }
-    private val gradientRectGreen1 by FloatValue("Rect-Gradient-G1", 0f, 0f..255f) { rectColorMode == "Gradient" }
-    private val gradientRectBlue1 by FloatValue("Rect-Gradient-B1", 0f, 0f..255f) { rectColorMode == "Gradient" }
+    private val gradientRectRed1 by FloatValue("Rect-Gradient-R1", 255f, 0f..255f, isSupported = isCustomRectGradientSupported)
+    private val gradientRectGreen1 by FloatValue("Rect-Gradient-G1", 0f, 0f..255f, isSupported = isCustomRectGradientSupported)
+    private val gradientRectBlue1 by FloatValue("Rect-Gradient-B1", 0f, 0f..255f, isSupported = isCustomRectGradientSupported)
 
-    private val gradientRectRed2 by FloatValue("Rect-Gradient-R2", 0f, 0f..255f) { rectColorMode == "Gradient" }
-    private val gradientRectGreen2 by FloatValue("Rect-Gradient-G2", 255f, 0f..255f) { rectColorMode == "Gradient" }
-    private val gradientRectBlue2 by FloatValue("Rect-Gradient-B2", 0f, 0f..255f) { rectColorMode == "Gradient" }
+    private val gradientRectRed2 by FloatValue("Rect-Gradient-R2", 0f, 0f..255f, isSupported = isCustomRectGradientSupported)
+    private val gradientRectGreen2 by FloatValue("Rect-Gradient-G2", 255f, 0f..255f, isSupported = isCustomRectGradientSupported)
+    private val gradientRectBlue2 by FloatValue("Rect-Gradient-B2", 0f, 0f..255f, isSupported = isCustomRectGradientSupported)
 
-    private val gradientRectRed3 by FloatValue("Rect-Gradient-R3", 0f, 0f..255f) { rectColorMode == "Gradient" }
-    private val gradientRectGreen3 by FloatValue("Rect-Gradient-G3", 0f, 0f..255f) { rectColorMode == "Gradient" }
-    private val gradientRectBlue3 by FloatValue("Rect-Gradient-B3", 255f, 0f..255f) { rectColorMode == "Gradient" }
+    private val gradientRectRed3 by FloatValue("Rect-Gradient-R3", 0f, 0f..255f, isSupported = isCustomRectGradientSupported)
+    private val gradientRectGreen3 by FloatValue("Rect-Gradient-G3", 0f, 0f..255f, isSupported = isCustomRectGradientSupported)
+    private val gradientRectBlue3 by FloatValue("Rect-Gradient-B3", 255f, 0f..255f, isSupported = isCustomRectGradientSupported)
 
-    private val gradientRectRed4 by FloatValue("Rect-Gradient-R4", 0f, 0f..255f) { rectColorMode == "Gradient" }
-    private val gradientRectGreen4 by FloatValue("Rect-Gradient-G4", 0f, 0f..255f) { rectColorMode == "Gradient" }
-    private val gradientRectBlue4 by FloatValue("Rect-Gradient-B4", 0f, 0f..255f) { rectColorMode == "Gradient" }
+    private val gradientRectRed4 by FloatValue("Rect-Gradient-R4", 0f, 0f..255f, isSupported = isCustomRectGradientSupported)
+    private val gradientRectGreen4 by FloatValue("Rect-Gradient-G4", 0f, 0f..255f, isSupported = isCustomRectGradientSupported)
+    private val gradientRectBlue4 by FloatValue("Rect-Gradient-B4", 0f, 0f..255f, isSupported = isCustomRectGradientSupported)
 
-    private val roundedBackgroundRadius by FloatValue("RoundedBackGround-Radius", 2F, 0F..5F)
+    private val roundedBackgroundRadius by FloatValue("RoundedBackGround-Radius", 0F, 0F..5F) { backgroundAlpha > 0 }
+
     private val backgroundMode by ListValue("Background-Color", arrayOf("Custom", "Fade", "Random", "Rainbow", "Gradient", "Theme"), "Custom")
     private val backgroundRed by IntegerValue("Background-R", 0, 0..255) { backgroundMode in listOf("Custom", "Fade") }
     private val backgroundGreen by IntegerValue("Background-G", 0, 0..255) { backgroundMode in listOf("Custom", "Fade") }

@@ -1,10 +1,11 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
+import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
@@ -19,7 +20,7 @@ import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting
 import net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting
-import org.lwjgl.opengl.GL11.glColor4f
+import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
 
@@ -29,17 +30,17 @@ class Inventory : Element(300.0, 50.0) {
     private val font by FontValue("Font", Fonts.font35)
     private val title by ListValue("Title", arrayOf("Center", "Left", "Right", "None"), "Left")
     private val titleRainbow by BoolValue("TitleRainbow", false) { title != "None" }
-        private val titleRed by IntegerValue("TitleRed", 255, 0..255) { title != "None" && !titleRainbow }
-        private val titleGreen by IntegerValue("TitleGreen", 255, 0..255) { title != "None" && !titleRainbow }
-        private val titleBlue by IntegerValue("TitleBlue", 255, 0..255) { title != "None" && !titleRainbow }
+    private val titleRed by IntegerValue("TitleRed", 255, 0..255) { title != "None" && !titleRainbow }
+    private val titleGreen by IntegerValue("TitleGreen", 255, 0..255) { title != "None" && !titleRainbow }
+    private val titleBlue by IntegerValue("TitleBlue", 255, 0..255) { title != "None" && !titleRainbow }
 
     private val roundedRectRadius by FloatValue("Rounded-Radius", 3F, 0F..5F)
 
     private val borderValue by BoolValue("Border", true)
     private val borderRainbow by BoolValue("BorderRainbow", false) { borderValue }
-        private val borderRed by IntegerValue("Border-R", 255, 0..255) { borderValue && !borderRainbow }
-        private val borderGreen by IntegerValue("Border-G", 255, 0..255) { borderValue && !borderRainbow }
-        private val borderBlue by IntegerValue("Border-B", 255, 0..255) { borderValue && !borderRainbow }
+    private val borderRed by IntegerValue("Border-R", 255, 0..255) { borderValue && !borderRainbow }
+    private val borderGreen by IntegerValue("Border-G", 255, 0..255) { borderValue && !borderRainbow }
+    private val borderBlue by IntegerValue("Border-B", 255, 0..255) { borderValue && !borderRainbow }
 
     private val backgroundAlpha by IntegerValue("Background-Alpha", 150, 0..255)
 
@@ -94,8 +95,13 @@ class Inventory : Element(300.0, 50.0) {
             xOffset += 18
             val stack = mc.thePlayer.inventoryContainer.getSlot(i).stack ?: continue
 
+            // Prevent overlapping while editing
+            if (mc.currentScreen is GuiHudDesigner) glDisable(GL_DEPTH_TEST)
+
             mc.renderItem.renderItemAndEffectIntoGUI(stack, xOffset - 18, y)
             mc.renderItem.renderItemOverlays(font, stack, xOffset - 18, y)
+
+            if (mc.currentScreen is GuiHudDesigner) glEnable(GL_DEPTH_TEST)
         }
     }
 }

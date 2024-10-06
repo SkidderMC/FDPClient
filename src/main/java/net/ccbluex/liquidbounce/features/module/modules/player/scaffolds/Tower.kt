@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.blocksAmount
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -144,7 +145,7 @@ object Tower : MinecraftInstance(), Listenable {
     private fun move() {
         val player = mc.thePlayer ?: return
 
-        if (Scaffold.blocksAmount <= 0)
+        if (blocksAmount() <= 0)
             return
 
         when (towerModeValues.get().lowercase()) {
