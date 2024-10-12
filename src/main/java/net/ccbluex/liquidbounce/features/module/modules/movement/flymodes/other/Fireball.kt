@@ -8,12 +8,16 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.other
 import net.ccbluex.liquidbounce.event.EventState
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
+import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.options
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
 import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.extensions.getVec
+import net.ccbluex.liquidbounce.utils.extensions.isNearEdge
+import net.ccbluex.liquidbounce.utils.extensions.sendUseItem
+import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverSlot
 import net.ccbluex.liquidbounce.utils.timing.TickedActions
@@ -41,25 +45,19 @@ object Fireball : FlyMode("Fireball") {
         if (event.eventState != EventState.POST)
             return
 
-        val customRotation = Rotation(if (Flight.invertYaw) RotationUtils.invertYaw(player.rotationYaw) else player.rotationYaw, Flight.rotationPitch)
+        val customRotation = Rotation(if (Flight.invertYaw) RotationUtils.invertYaw(player.rotationYaw) else player.rotationYaw,
+            Flight.rotationPitch
+        )
 
-        if (player.onGround && !mc.theWorld.isAirBlock(BlockPos(player.posX, player.posY - 1, player.posZ))) Flight.firePosition = BlockPos(player.posX, player.posY - 1, player.posZ)
+        if (player.onGround && !mc.theWorld.isAirBlock(BlockPos(player.posX, player.posY - 1, player.posZ))) {
+            Flight.firePosition = BlockPos(player.posX, player.posY - 1, player.posZ)
+        }
 
         val smartRotation = Flight.firePosition?.getVec()?.let { RotationUtils.toRotation(it, false, player) }
         val rotation = if (Flight.pitchMode == "Custom") customRotation else smartRotation
 
-        if (Flight.rotations) {
-            if (rotation != null) {
-                RotationUtils.setTargetRotation(
-                    rotation,
-                    if (Flight.keepRotation) Flight.keepTicks else 1,
-                    turnSpeed = Flight.minHorizontalSpeed.get()..Flight.maxHorizontalSpeed.get() to Flight.minVerticalSpeed.get()..Flight.maxVerticalSpeed.get(),
-                    angleThresholdForReset = Flight.angleThresholdUntilReset,
-                    smootherMode = Flight.smootherMode,
-                    simulateShortStop = Flight.simulateShortStop,
-                    startOffSlow = Flight.startFirstRotationSlow
-                )
-            }
+        if (options.rotationsActive && rotation != null) {
+            RotationUtils.setTargetRotation(rotation, options, if (options.keepRotation) options.resetTicks else 1)
         }
 
         if (Flight.fireBallThrowMode == "Edge" && !player.isNearEdge(Flight.edgeThreshold))

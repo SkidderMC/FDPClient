@@ -22,7 +22,7 @@
     "module.autoSoup.description": "Automaticamente consome soupa sempre que a tua saúde estiver baixa.",
     "module.autoWeapon.description": "Automaticamente escolhe a melhor arma no teu Automatically selects the best weapon in your hotbar.",
     "module.backtrack.description": "Permite que tu ataques jogadores por clicar nas posições anteriores registades deles.",
-    "module.bowAimbot.description": "Automaticamente olha nas entidades selecionadas enquanto se usa um arco.",
+    "module.projectileAimbot.description": "Automaticamente olha nas entidades selecionadas enquanto se usa um arco.",
     "module.criticals.description": "Automaticamente dá ataques críticos.",
     "module.fastBow.description": "Torna o teu arco em uma metrelhadora.",
     "module.hitBox.description": "Torna as \"\"hitboxes\"\" dos alvos maiores.",

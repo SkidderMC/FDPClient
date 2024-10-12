@@ -24,7 +24,7 @@
     "module.autoWeapon.description": "Seleciona automaticamente a melhor arma da sua barra de atalhos.",
     "module.backtrack.description": "Permite que você atinja jogadores atacando suas posições armazenadas anteriormente.",
     "module.bedDefender.description": "Defende automaticamente a cama com blocos.",
-    "module.bowAimbot.description": "Mira automaticamente em jogadores ao usar um arco.",
+    "module.projectileAimbot.description": "Mira automaticamente em jogadores ao usar um arco.",
     "module.criticals.description": "Realiza automaticamente golpes críticos.",
     "module.fastBow.description": "Transforma seu arco em uma metralhadora.",
     "module.hitBox.description": "Aumenta as hitboxes dos alvos.",

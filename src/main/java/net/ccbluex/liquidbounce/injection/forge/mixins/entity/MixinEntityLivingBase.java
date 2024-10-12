@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
-import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.event.EventState;
 import net.ccbluex.liquidbounce.event.JumpEvent;
@@ -16,7 +15,9 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
-import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.*;
+import net.ccbluex.liquidbounce.utils.RotationSettings;
+import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold;
+import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Tower;
 import net.ccbluex.liquidbounce.utils.MovementUtils;
 import net.ccbluex.liquidbounce.utils.Rotation;
 import net.ccbluex.liquidbounce.utils.RotationUtils;
@@ -91,7 +92,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
             final RotationUtils rotationUtils = RotationUtils.INSTANCE;
             final Rotation currentRotation = rotationUtils.getCurrentRotation();
-            final RotationUtils.RotationData rotationData = rotationUtils.getRotationData();
+            final RotationSettings rotationData = rotationUtils.getActiveSettings();
             if (currentRotation != null && rotationData != null && rotationData.getStrafe()) {
                 fixedYaw = currentRotation.getYaw();
             }

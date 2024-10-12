@@ -23,7 +23,7 @@
     "module.autoWeapon.description": "Автоматично избира най-доброто оръжие от hotbar-а.",
     "module.backtrack.description": "Позволява ви да удряте играчи, като ги атакувате на техните предишни кеширани позиции.",
     "module.bedDefender.description": "UNTRANSLATED: Automatically defends bed with blocks",
-    "module.bowAimbot.description": "Автоматично се прицелва в играчите, когато се използва лък.",
+    "module.projectileAimbot.description": "Автоматично се прицелва в играчите, когато се използва лък.",
     "module.criticals.description": "Автоматично нанася критични удари.",
     "module.fastBow.description": "Превръща лъка ви в картечница.",
     "module.hitBox.description": "Прави хитбоксовете на цели по-големи.",

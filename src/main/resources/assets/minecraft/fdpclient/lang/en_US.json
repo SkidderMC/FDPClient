@@ -27,7 +27,7 @@
     "module.autoWeapon.description": "Automatically selects the best weapon in your hotbar.",
     "module.backtrack.description": "Allows you to hit players by attacking their previous cached positions.",
     "module.bedDefender.description": "Automatically defends bed with blocks",
-    "module.bowAimbot.description": "Automatically aims at players when using a bow.",
+    "module.projectileAimbot.description": "Automatically aims at players when using a bow.",
     "module.criticals.description": "Automatically deals critical hits.",
     "module.fastBow.description": "Turns your bow into a machine gun.",
     "module.hitBox.description": "Makes hitboxes of targets bigger.",

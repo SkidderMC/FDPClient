@@ -9,7 +9,7 @@ import io.netty.buffer.Unpooled;
 import net.ccbluex.liquidbounce.event.EntityMovementEvent;
 import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.AntiExploit;
-import net.ccbluex.liquidbounce.features.module.modules.movement.NoRotateSet;
+import net.ccbluex.liquidbounce.features.module.modules.other.NoRotateSet;
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink;
 import net.ccbluex.liquidbounce.handler.payload.ClientFixes;
 import net.ccbluex.liquidbounce.script.api.global.Chat;

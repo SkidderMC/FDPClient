@@ -14,7 +14,8 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
-import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.extensions.getBlock
+import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.blocksAmount
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -97,7 +98,7 @@ object Tower : MinecraftInstance(), Listenable {
         isTowering = false
 
         if (towerModeValues.get() == "None" || notOnMoveValues.get() && isMoving ||
-            onJumpValues.get() && !player.movementInput.jump) {
+            onJumpValues.get() && !mc.gameSettings.keyBindJump.isKeyDown) {
             return
         }
 

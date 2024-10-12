@@ -21,7 +21,7 @@
         "module.autoSoup.description": "Автоматически ест суп при низком ХП.",
         "module.autoWeapon.description": "Автоматически выбирает лучшее оружие из хотбара.",
         "module.backtrack.description": "Позволяет бить игроков, атакуя их предыдушую позицию",
-        "module.bowAimbot.description": "Автоматически целится в игроков из лука.",
+        "module.projectileAimbot.description": "Автоматически целится в игроков из лука.",
         "module.criticals.description": "Каждый удар наносит критический урон.",
         "module.fastBow.description": "Превращает ваш лук в пулемет.",
         "module.hitBox.description": "Увеличивает хитбоксы врагов/игроков.",
