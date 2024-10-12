@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.handler.lang.translation
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.addPrint
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
+import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.toLowerCamelCase
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
@@ -47,9 +48,9 @@ open class Module(
     protected val TickScheduler = TickScheduler(this)
 
     // List to register additional options from classes
-    private val valueClasses = mutableListOf<Class<*>>()
-    fun addClass(provider: Any) {
-        valueClasses += provider::class.java
+    private val configurables = mutableListOf<Class<*>>()
+    fun addConfigurable(provider: Any) {
+        configurables += provider::class.java
     }
 
     // Module information
@@ -180,24 +181,13 @@ open class Module(
      */
     open val values: Set<Value<*>>
         get() {
-            val orderedValues = mutableSetOf<Value<*>>()
+            var orderedValues = mutableSetOf<Value<*>>()
 
             javaClass.declaredFields.forEach { innerField ->
                 innerField.isAccessible = true
                 val element = innerField[this] ?: return@forEach
 
-                if (element::class.java in valueClasses) {
-                    element.javaClass.declaredFields.forEach {
-                        it.isAccessible = true
-                        val value = it[element]
-
-                        if (value is Value<*>) {
-                            orderedValues += value
-                        }
-                    }
-                } else if (element is Value<*>) {
-                    orderedValues += element
-                }
+                orderedValues = ClassUtils.findValues(element, configurables, orderedValues)
             }
 
             if (gameDetecting) orderedValues += onlyInGameValue

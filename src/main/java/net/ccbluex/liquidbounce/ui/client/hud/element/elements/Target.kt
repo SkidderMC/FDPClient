@@ -52,11 +52,11 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private val bgAlphaValue by IntegerValue("Background-Alpha", 120, 0.. 255)
 
     var target = FDPClient.combatManager.target
-    override val values: List<Value<*>>
+    override val values: Set<Value<*>>
         get() {
-            val valueList = mutableListOf<Value<*>>()
-            styleList.forEach { valueList.addAll(it.values) }
-            return super.values.toMutableList() + valueList
+            val valueSet = mutableSetOf<Value<*>>()
+            styleList.forEach { valueSet.addAll(it.values) }
+            return super.values + valueSet
         }
     init {
         styleValue = ListValue("Style", addStyles(

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.render
 
+import net.ccbluex.liquidbounce.utils.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11
@@ -121,6 +122,11 @@ object ColorUtils {
         return Color(red, green, part)
     }
 
+    fun fade(colorSettings: ColorSettingsInteger, speed: Int, count: Int): Color {
+        val color = colorSettings.color()
+
+        return fade(color, speed, count)
+    }
 
     fun fade(color: Color, index: Int, count: Int): Color {
         val hsb = FloatArray(3)
@@ -132,13 +138,15 @@ object ColorUtils {
         return Color(Color.HSBtoRGB(hsb[0], hsb[1], hsb[2]))
     }
 
-    fun fade(speed: Int, index: Int, color: Color, alpha: Float): Color {
+
+    fun fade(colorSettings: ColorSettingsInteger, speed: Int, index: Int, color: Color, alpha: Float): Color {
         val hsb = Color.RGBtoHSB(color.red, color.green, color.blue, null)
         var angle = ((System.currentTimeMillis() / speed + index) % 360L).toInt()
         angle = (if (angle > 180) 360 - angle else angle) + 180
         val colorHSB = Color(Color.HSBtoRGB(hsb[0], hsb[1], angle / 360.0f))
         return Color(colorHSB.red, colorHSB.green, colorHSB.blue, (max(0.0, min(255.0, (alpha * 255.0f).toDouble()))).toInt())
     }
+
 
     fun setColor(color: Int) {
         setColorAlpha(color)

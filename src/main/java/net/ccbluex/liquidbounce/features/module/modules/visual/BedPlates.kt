@@ -15,9 +15,11 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.ui.client.hud.element.Element.Companion.MAX_GRADIENT_COLORS
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.ClientThemesUtils.getColor
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.ColorSettingsFloat
+import net.ccbluex.liquidbounce.utils.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.BEDWARS_BLOCKS
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockTexture
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
@@ -25,6 +27,7 @@ import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientFontShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader
+import net.ccbluex.liquidbounce.utils.toColorArray
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
 import net.minecraft.block.BlockBed
@@ -33,14 +36,12 @@ import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
-import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11.*
-import java.awt.Color
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
+object BedPlates : Module("BedPlates", Category.OTHER, hideModule = false) {
     private val renderYOffset by IntegerValue("RenderYOffset", 1, 0..5)
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
@@ -56,56 +57,28 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
     private val maxLayers by IntegerValue("MaxLayers", 5, 1..10)
     private val scale by FloatValue("Scale", 3F, 1F..5F)
 
-    private val textMode by ListValue("Text-Color", arrayOf("Custom", "Rainbow", "Gradient", "Theme"), "Custom")
-    private val textRed by IntegerValue("Text-R", 255, 0..255) { textMode == "Custom" }
-    private val textGreen by IntegerValue("Text-G", 255, 0..255) { textMode == "Custom" }
-    private val textBlue by IntegerValue("Text-B", 255, 0..255) { textMode == "Custom" }
+    private val textMode by ListValue("Text-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
+    private val textColors = ColorSettingsInteger(this, "Text", withAlpha = false, applyMax = true) { textMode == "Custom" }
 
     private val gradientTextSpeed by FloatValue("Text-Gradient-Speed", 1f, 0.5f..10f) { textMode == "Gradient" }
 
-    // TODO: Make Color picker to fix this mess :/
-    private val gradientTextRed1 by FloatValue("Text-Gradient-R1", 255f, 0f..255f) { textMode == "Gradient" }
-    private val gradientTextGreen1 by FloatValue("Text-Gradient-G1", 0f, 0f..255f) { textMode == "Gradient" }
-    private val gradientTextBlue1 by FloatValue("Text-Gradient-B1", 0f, 0f..255f) { textMode == "Gradient" }
-
-    private val gradientTextRed2 by FloatValue("Text-Gradient-R2", 0f, 0f..255f) { textMode == "Gradient" }
-    private val gradientTextGreen2 by FloatValue("Text-Gradient-G2", 255f, 0f..255f) { textMode == "Gradient" }
-    private val gradientTextBlue2 by FloatValue("Text-Gradient-B2", 0f, 0f..255f) { textMode == "Gradient" }
-
-    private val gradientTextRed3 by FloatValue("Text-Gradient-R3", 0f, 0f..255f) { textMode == "Gradient" }
-    private val gradientTextGreen3 by FloatValue("Text-Gradient-G3", 0f, 0f..255f) { textMode == "Gradient" }
-    private val gradientTextBlue3 by FloatValue("Text-Gradient-B3", 255f, 0f..255f) { textMode == "Gradient" }
-
-    private val gradientTextRed4 by FloatValue("Text-Gradient-R4", 0f, 0f..255f) { textMode == "Gradient" }
-    private val gradientTextGreen4 by FloatValue("Text-Gradient-G4", 0f, 0f..255f) { textMode == "Gradient" }
-    private val gradientTextBlue4 by FloatValue("Text-Gradient-B4", 0f, 0f..255f) { textMode == "Gradient" }
+    private val maxTextGradientColors by IntegerValue("Max-Text-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS)
+    { textMode == "Gradient" }
+    private val textGradColors = ColorSettingsFloat.create(this, "Text-Gradient")
+    { textMode == "Gradient" && it <= maxTextGradientColors }
 
     private val roundedRectRadius by FloatValue("Rounded-Radius", 3F, 0F..5F)
 
-    private val backgroundMode by ListValue("Background-Color", arrayOf("Custom", "Rainbow", "Gradient", "Theme"), "Custom")
-    private val backgroundRed by IntegerValue("Background-R", 0, 0..255) { backgroundMode == "Custom" }
-    private val backgroundGreen by IntegerValue("Background-G", 0, 0..255) { backgroundMode == "Custom" }
-    private val backgroundBlue by IntegerValue("Background-B", 0, 0..255) { backgroundMode == "Custom" }
-    private val backgroundAlpha by IntegerValue("Background-Alpha", 100, 0..255) { backgroundMode == "Custom" }
+    private val backgroundMode by ListValue("Background-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
+    private val bgColors = ColorSettingsInteger(this, "Background") { backgroundMode == "Custom" }.with(a = 100)
 
-    private val gradientBackgroundSpeed by FloatValue("Background-Gradient-Speed", 1f, 0.5f..10f) { backgroundMode == "Gradient" }
+    private val gradientBackgroundSpeed by FloatValue("Background-Gradient-Speed", 1f, 0.5f..10f)
+    { backgroundMode == "Gradient" }
 
-    // TODO: Make Color picker to fix this mess :/
-    private val gradientBackgroundRed1 by FloatValue("Background-Gradient-R1", 255f, 0f..255f) { backgroundMode == "Gradient" }
-    private val gradientBackgroundGreen1 by FloatValue("Background-Gradient-G1", 0f, 0f..255f) { backgroundMode == "Gradient" }
-    private val gradientBackgroundBlue1 by FloatValue("Background-Gradient-B1", 0f, 0f..255f) { backgroundMode == "Gradient" }
-
-    private val gradientBackgroundRed2 by FloatValue("Background-Gradient-R2", 0f, 0f..255f) { backgroundMode == "Gradient" }
-    private val gradientBackgroundGreen2 by FloatValue("Background-Gradient-G2", 255f, 0f..255f) { backgroundMode == "Gradient" }
-    private val gradientBackgroundBlue2 by FloatValue("Background-Gradient-B2", 0f, 0f..255f) { backgroundMode == "Gradient" }
-
-    private val gradientBackgroundRed3 by FloatValue("Background-Gradient-R3", 0f, 0f..255f) { backgroundMode == "Gradient" }
-    private val gradientBackgroundGreen3 by FloatValue("Background-Gradient-G3", 0f, 0f..255f) { backgroundMode == "Gradient" }
-    private val gradientBackgroundBlue3 by FloatValue("Background-Gradient-B3", 255f, 0f..255f) { backgroundMode == "Gradient" }
-
-    private val gradientBackgroundRed4 by FloatValue("Background-Gradient-R4", 0f, 0f..255f) { backgroundMode == "Gradient" }
-    private val gradientBackgroundGreen4 by FloatValue("Background-Gradient-G4", 0f, 0f..255f) { backgroundMode == "Gradient" }
-    private val gradientBackgroundBlue4 by FloatValue("Background-Gradient-B4", 0f, 0f..255f) { backgroundMode == "Gradient" }
+    private val maxBackgroundGradientColors by IntegerValue("Max-Background-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS)
+    { backgroundMode == "Gradient" }
+    private val bgGradColors = ColorSettingsFloat.create(this, "Background-Gradient")
+    { backgroundMode == "Gradient" && it <= maxBackgroundGradientColors }
 
     private val textFont by FontValue("Font", Fonts.font35)
     private val textShadow by BoolValue("ShadowText", true)
@@ -209,7 +182,6 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
     }
 
     private fun drawPlate(blockPos: BlockPos, index: Int) {
-        val themeColor = getColor(index).rgb
         val player = mc.thePlayer ?: return
         val renderManager = mc.renderManager ?: return
         val rotateX = if (mc.gameSettings.thirdPersonView == 2) -1.0f else 1.0f
@@ -259,30 +231,8 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
             backgroundMode == "Gradient",
             gradientX,
             gradientY,
-            floatArrayOf(
-                gradientBackgroundRed1 / 255f,
-                gradientBackgroundGreen1 / 255f,
-                gradientBackgroundBlue1 / 255f,
-                1f
-            ),
-            floatArrayOf(
-                gradientBackgroundRed2 / 255f,
-                gradientBackgroundGreen2 / 255f,
-                gradientBackgroundBlue2 / 255f,
-                1f
-            ),
-            floatArrayOf(
-                gradientBackgroundRed3 / 255f,
-                gradientBackgroundGreen3 / 255f,
-                gradientBackgroundBlue3 / 255f,
-                1f
-            ),
-            floatArrayOf(
-                gradientBackgroundRed4 / 255f,
-                gradientBackgroundGreen4 / 255f,
-                gradientBackgroundBlue4 / 255f,
-                1f
-            ),
+            maxBackgroundGradientColors,
+            bgGradColors.toColorArray(maxBackgroundGradientColors),
             gradientBackgroundSpeed,
             gradientOffset
         ).use {
@@ -295,8 +245,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
                     when (backgroundMode) {
                         "Gradient" -> 0
                         "Rainbow" -> 0
-                        "Theme" -> themeColor
-                        else -> Color(backgroundRed, backgroundGreen, backgroundBlue, backgroundAlpha).rgb
+                        else -> bgColors.color().rgb
                     },
                     roundedRectRadius
                 )
@@ -308,30 +257,8 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
             textMode == "Gradient",
             gradientX,
             gradientY,
-            floatArrayOf(
-                gradientTextRed1 / 255f,
-                gradientTextGreen1 / 255f,
-                gradientTextBlue1 / 255f,
-                1f
-            ),
-            floatArrayOf(
-                gradientTextRed2 / 255f,
-                gradientTextGreen2 / 255f,
-                gradientTextBlue2 / 255f,
-                1f
-            ),
-            floatArrayOf(
-                gradientTextRed3 / 255f,
-                gradientTextGreen3 / 255f,
-                gradientTextBlue3 / 255f,
-                1f
-            ),
-            floatArrayOf(
-                gradientTextRed4 / 255f,
-                gradientTextGreen4 / 255f,
-                gradientTextBlue4 / 255f,
-                1f
-            ),
+            maxTextGradientColors,
+            textGradColors.toColorArray(maxTextGradientColors),
             gradientTextSpeed,
             gradientOffset
         ).use {
@@ -343,8 +270,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
                     when (textMode) {
                         "Gradient" -> 0
                         "Rainbow" -> 0
-                        "Theme" -> themeColor
-                        else -> Color(textRed, textGreen, textBlue, 1).rgb
+                        else -> textColors.color(1).rgb
                     },
                     textShadow
                 )
