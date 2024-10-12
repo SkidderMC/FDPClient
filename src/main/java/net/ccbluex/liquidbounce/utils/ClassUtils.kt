@@ -87,7 +87,7 @@ object ClassUtils {
         element: Any?, configurables: List<Class<*>>, orderedValues: MutableSet<Value<*>>,
     ): MutableSet<Value<*>> {
         if (element == null) return orderedValues
-        var list = orderedValues
+        var list = mutableSetOf<Value<*>>()
         if (element::class.java in configurables) {
             /**
              * For variables that hold a list of Value<*>
@@ -105,7 +105,7 @@ object ClassUtils {
                 if (fieldValue is Value<*>) {
                     list += fieldValue
                 } else {
-                    list = findValues(fieldValue, configurables, orderedValues)
+                    list = findValues(fieldValue, configurables, list)
                 }
             }
         } else if (element is Value<*>) {
@@ -118,11 +118,12 @@ object ClassUtils {
              */
             if (element is Collection<*>) {
                 element.forEach {
-                    list = findValues(it, configurables, orderedValues)
+                    list = findValues(it, configurables, list)
                 }
             }
         }
-        return list
+        orderedValues.addAll(list)
+        return orderedValues
     }
 
     fun hasForge() = hasClass("net.minecraftforge.common.MinecraftForge")
