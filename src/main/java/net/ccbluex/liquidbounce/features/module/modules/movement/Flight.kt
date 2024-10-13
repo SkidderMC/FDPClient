@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.other.
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.spartan.BugSpartan
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.spartan.Spartan
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.spartan.Spartan2
+import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vanilla.DefaultVanilla
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vanilla.SmoothVanilla
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vanilla.Vanilla
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.verus.Verus
@@ -47,7 +48,7 @@ import java.awt.Color
 
 object Flight : Module("Fly", Category.MOVEMENT, Keyboard.KEY_F, hideModule = false) {
     private val flyModes = arrayOf(
-        Vanilla, SmoothVanilla,
+        Vanilla, SmoothVanilla, DefaultVanilla,
 
         // NCP
         NCP, OldNCP,
@@ -126,6 +127,16 @@ object Flight : Module("Fly", Category.MOVEMENT, Keyboard.KEY_F, hideModule = fa
         subjective = true
     ) { mode in arrayOf("Vanilla", "SmoothVanilla") }
     val ncpMotion by FloatValue("NCPMotion", 0f, 0f..1f) { mode == "NCP" }
+
+    val smoothValue by BoolValue("Smooth", false) { mode == "DefaultVanilla" }
+    val speedValue by FloatValue("Speed", 2f, 0f.. 5f) { mode == "DefaultVanilla" }
+    val vspeedValue by FloatValue("Vertical", 2f, 0f..5f) { mode == "DefaultVanilla" }
+    val kickBypassValue by BoolValue("KickBypass", false) { mode == "DefaultVanilla" }
+    val kickBypassModeValue by ListValue("KickBypassMode", arrayOf("Motion", "Packet"), "Packet") {  kickBypassValue }
+    val kickBypassMotionSpeedValue by FloatValue("KickBypass-MotionSpeed", 0.0626F, 0.05F..0.1F) { kickBypassModeValue == "Motion" && kickBypassValue }
+    val keepAliveValue by BoolValue("KeepAlive", false) { mode == "DefaultVanilla" }
+    val noClipValue by BoolValue("NoClip", false) { mode == "DefaultVanilla" }
+    val spoofValue by BoolValue("SpoofGround", false) { mode == "DefaultVanilla" }
 
     // AAC
     val aacSpeed by FloatValue("AAC1.9.10-Speed", 0.3f, 0f..1f) { mode == "AAC1.9.10" }

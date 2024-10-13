@@ -21,6 +21,12 @@ import kotlin.math.sqrt
 
 object MovementUtils : MinecraftInstance(), Listenable {
 
+    fun resetMotion(y: Boolean) {
+        mc.thePlayer.motionX = 0.0
+        mc.thePlayer.motionZ = 0.0
+        if(y) mc.thePlayer.motionY = 0.0
+    }
+
     var speed
         get() = mc.thePlayer?.run { sqrt(motionX * motionX + motionZ * motionZ).toFloat() } ?: .0f
         set(value) {
