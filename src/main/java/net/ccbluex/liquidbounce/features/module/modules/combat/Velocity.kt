@@ -58,7 +58,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
             "Simple", "AAC", "AACPush", "AACZero", "AACv4",
             "Reverse", "SmoothReverse", "Jump", "Glitch", "Legit",
             "GhostBlock", "Vulcan", "S32Packet", "MatrixReduce",
-            "Intave", "Delay", "GrimC03", "HypixelAir"
+            "Intave", "Delay", "GrimC03", "Hypixel", "HypixelAir"
         ), "Simple"
     )
 
@@ -156,6 +156,9 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
 
     // Vulcan
     private var transaction = false
+
+    // Hypixel
+    private var absorbedVelocity = false
 
     // Pause On Explosion
     private var pauseTicks = 0
@@ -315,6 +318,12 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
                 }
             }
 
+            "hypixel" -> {
+                if (hasReceivedVelocity && thePlayer.onGround) {
+                    absorbedVelocity = false
+                }
+            }
+
             "hypixelair" -> {
                 if (hasReceivedVelocity) {
                     if (thePlayer.onGround) {
@@ -396,6 +405,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
                     var packetDirection = 0.0
                     when (packet) {
                         is S12PacketEntityVelocity -> {
+                            if (packet.entityID != thePlayer.entityId) return
                             val motionX = packet.motionX.toDouble()
                             val motionZ = packet.motionZ.toDouble()
 
@@ -428,7 +438,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
                 }
 
                 "matrixreduce" -> {
-                    if (packet is S12PacketEntityVelocity) {
+                    if (packet is S12PacketEntityVelocity && packet.entityID == thePlayer.entityId) {
                         packet.motionX = (packet.getMotionX() * 0.33).toInt()
                         packet.motionZ = (packet.getMotionZ() * 0.33).toInt()
 
@@ -444,6 +454,21 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
                     if (isMoving) {
                         hasReceivedVelocity = true
                         event.cancelEvent()
+                    }
+                }
+
+                "hypixel" -> {
+                    hasReceivedVelocity = true
+                    if (!thePlayer.onGround) {
+                        if (!absorbedVelocity) {
+                            event.cancelEvent()
+                            absorbedVelocity = true
+                            return
+                        }
+                    }
+                    if (packet is S12PacketEntityVelocity && packet.entityID == thePlayer.entityId) {
+                        packet.motionX = (thePlayer.motionX * 8000).toInt()
+                        packet.motionZ = (thePlayer.motionZ * 8000).toInt()
                     }
                 }
 
@@ -464,7 +489,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
         }
 
         if (mode == "Vulcan") {
-            if (Disabler.handleEvents() && (Disabler.verusCombat || Disabler.verusCombat && !Disabler.isOnCombat) || !isMoving) return
+            if (Disabler.handleEvents() && (Disabler.verusCombat || Disabler.verusCombat && !Disabler.isOnCombat)) return
 
             if (packet is S32PacketConfirmTransaction) {
                 event.cancelEvent()
