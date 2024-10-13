@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.event.*
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
@@ -35,15 +35,14 @@ import net.minecraft.entity.Entity
 import net.minecraft.network.Packet
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C07PacketPlayerDigging
+import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction
-import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.*
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing.DOWN
-import java.util.LinkedHashMap
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.sqrt
@@ -58,7 +57,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
             "Simple", "AAC", "AACPush", "AACZero", "AACv4",
             "Reverse", "SmoothReverse", "Jump", "Glitch", "Legit",
             "GhostBlock", "Vulcan", "S32Packet", "MatrixReduce",
-            "Intave", "Delay", "GrimC03", "Hypixel", "HypixelAir"
+            "IntaveReduce", "Delay", "GrimC03", "Hypixel", "HypixelAir"
         ), "Simple"
     )
 
@@ -113,6 +112,10 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
     private val spoofDelay by IntegerValue("SpoofDelay", 500, 0..5000) { mode == "Delay" }
     var delayMode = false
 
+    // IntaveReduce
+    private val reduceFactor by FloatValue("Factor", 0.6f, 0.6f..1f) { mode == "IntaveReduce" }
+    private val hurtTime by IntegerValue("HurtTime", 9, 1..10) { mode == "IntaveReduce" }
+
     private val pauseOnExplosion by BoolValue("PauseOnExplosion", true)
     private val ticksToPause by IntegerValue("TicksToPause", 20, 1..50) { pauseOnExplosion }
 
@@ -145,8 +148,10 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
     // Jump
     private var limitUntilJump = 0
 
-    // Intave
+    // IntaveReduce
     private var intaveTick = 0
+    private var lastAttackTime = 0L
+    private var intaveDamageTick = 0
 
     // Delay
     private val packets = LinkedHashMap<Packet<*>, Long>()
@@ -307,10 +312,13 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
                 }
             }
 
-            "intave" -> {
+            "IntaveReduce" -> {
+                if (!hasReceivedVelocity) return
                 intaveTick++
-                if (hasReceivedVelocity && mc.thePlayer.hurtTime == 2) {
-                    if (thePlayer.onGround && intaveTick % 2 == 0) {
+
+                if (mc.thePlayer.hurtTime == 2) {
+                    intaveDamageTick++
+                    if (thePlayer.onGround && intaveTick % 2 == 0 && intaveDamageTick <= 10) {
                         thePlayer.tryJump()
                         intaveTick = 0
                     }
@@ -333,6 +341,20 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
                 }
             }
         }
+    }
+
+    @EventTarget
+    fun onAttack(event: AttackEvent) {
+        val player = mc.thePlayer ?: return
+
+        if (mode != "IntaveReduce") return
+
+        if (player.hurtTime == hurtTime && System.currentTimeMillis() - lastAttackTime <= 8000) {
+            player.motionX *= reduceFactor
+            player.motionZ *= reduceFactor
+        }
+
+        lastAttackTime = System.currentTimeMillis()
     }
 
     private fun checkAir(blockPos: BlockPos): Boolean {
@@ -398,7 +420,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
             when (mode.lowercase()) {
                 "simple" -> handleVelocity(event)
 
-                "aac", "reverse", "smoothreverse", "aaczero", "ghostblock", "intave" -> hasReceivedVelocity = true
+                "aac", "reverse", "smoothreverse", "aaczero", "ghostblock", "intaveReduce" -> hasReceivedVelocity = true
 
                 "jump" -> {
                     // TODO: Recode and make all velocity modes support velocity direction checks
@@ -406,6 +428,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
                     when (packet) {
                         is S12PacketEntityVelocity -> {
                             if (packet.entityID != thePlayer.entityId) return
+
                             val motionX = packet.motionX.toDouble()
                             val motionZ = packet.motionZ.toDouble()
 
@@ -466,6 +489,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
                             return
                         }
                     }
+
                     if (packet is S12PacketEntityVelocity && packet.entityID == thePlayer.entityId) {
                         packet.motionX = (thePlayer.motionX * 8000).toInt()
                         packet.motionZ = (thePlayer.motionZ * 8000).toInt()
