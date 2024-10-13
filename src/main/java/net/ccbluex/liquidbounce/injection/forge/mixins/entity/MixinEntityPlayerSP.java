@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
@@ -125,7 +125,14 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
      */
     @Inject(method = "onUpdateWalkingPlayer", at = @At("HEAD"), cancellable = true)
     private void onUpdateWalkingPlayer(CallbackInfo ci) {
-        EventManager.INSTANCE.callEvent(new MotionEvent(EventState.PRE));
+        MotionEvent motionEvent = new MotionEvent(
+                posX,
+                getEntityBoundingBox().minY,
+                posZ,
+                onGround,
+                EventState.PRE
+        );
+        EventManager.INSTANCE.callEvent(motionEvent);
 
         final InvMove inventoryMove = InvMove.INSTANCE;
         final Sneak sneak = Sneak.INSTANCE;
@@ -165,9 +172,9 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 pitch = currentRotation.getPitch();
             }
 
-            double xDiff = posX - lastReportedPosX;
-            double yDiff = getEntityBoundingBox().minY - lastReportedPosY;
-            double zDiff = posZ - lastReportedPosZ;
+            double xDiff = motionEvent.getX() - lastReportedPosX;
+            double yDiff = motionEvent.getY() - lastReportedPosY;
+            double zDiff = motionEvent.getZ() - lastReportedPosZ;
             double yawDiff = yaw - this.lastReportedYaw;
             double pitchDiff = pitch - this.lastReportedPitch;
             boolean moved = xDiff * xDiff + yDiff * yDiff + zDiff * zDiff > 9.0E-4 || positionUpdateTicks >= 20;
@@ -175,26 +182,25 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
             if (ridingEntity == null) {
                 if (moved && rotated) {
-                    sendQueue.addToSendQueue(new C06PacketPlayerPosLook(posX, getEntityBoundingBox().minY, posZ, yaw, pitch, onGround));
+                    sendQueue.addToSendQueue(new C06PacketPlayerPosLook(motionEvent.getX(), motionEvent.getY(), motionEvent.getZ(), yaw, pitch, motionEvent.getOnGround()));
                 } else if (moved) {
-                    sendQueue.addToSendQueue(new C04PacketPlayerPosition(posX, getEntityBoundingBox().minY, posZ, onGround));
+                    sendQueue.addToSendQueue(new C04PacketPlayerPosition(motionEvent.getX(), motionEvent.getY(), motionEvent.getZ(), motionEvent.getOnGround()));
                 } else if (rotated) {
-                    sendQueue.addToSendQueue(new C05PacketPlayerLook(yaw, pitch, onGround));
+                    sendQueue.addToSendQueue(new C05PacketPlayerLook(yaw, pitch, motionEvent.getOnGround()));
                 } else {
-                    sendQueue.addToSendQueue(new C03PacketPlayer(onGround));
+                    sendQueue.addToSendQueue(new C03PacketPlayer(motionEvent.getOnGround()));
                 }
             } else {
-                sendQueue.addToSendQueue(new C06PacketPlayerPosLook(motionX, -999, motionZ, yaw, pitch, onGround));
+                sendQueue.addToSendQueue(new C06PacketPlayerPosLook(motionX, -999, motionZ, yaw, pitch, motionEvent.getOnGround()));
                 moved = false;
             }
 
             ++positionUpdateTicks;
 
             if (moved) {
-                lastReportedPosX = posX;
-                lastReportedPosY = getEntityBoundingBox().minY;
-                lastReportedPosZ = posZ;
-                positionUpdateTicks = 0;
+                lastReportedPosX = motionEvent.getX();
+                lastReportedPosY = motionEvent.getY();
+                lastReportedPosZ = motionEvent.getZ();
             }
 
             RotationUtils.INSTANCE.setServerRotation(new Rotation(yaw, pitch));
@@ -205,7 +211,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             }
         }
 
-        EventManager.INSTANCE.callEvent(new MotionEvent(EventState.POST));
+        EventManager.INSTANCE.callEvent(new MotionEvent(posX, getEntityBoundingBox().minY, posZ, onGround, EventState.POST));
 
         EventManager.INSTANCE.callEvent(new RotationUpdateEvent());
 
