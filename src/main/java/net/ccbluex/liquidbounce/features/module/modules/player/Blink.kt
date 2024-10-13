@@ -10,10 +10,9 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.visual.Breadcrumbs
 import net.ccbluex.liquidbounce.utils.BlinkUtils
-import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.utils.PacketUtils.handlePacket
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -22,6 +21,7 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.entity.EntityOtherPlayerMP
 import net.minecraft.network.Packet
 import net.minecraft.network.play.INetHandlerPlayClient
+import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import java.util.*
@@ -29,79 +29,61 @@ import java.util.concurrent.LinkedBlockingQueue
 
 object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModule = false) {
 
-	private val mode by ListValue("Mode", arrayOf("Sent", "Received", "Both"), "Sent")
+    private val mode by ListValue("Mode", arrayOf("Sent", "Received", "Both"), "Sent")
+    private val outgoingValue by BoolValue("OutGoing", true)
+    private val inboundValue by BoolValue("Inbound", false)
 
-    private val outgoingValue = BoolValue("OutGoing", true)
-
-    private val pulse by BoolValue("Pulse", false)
-		private var pulseDelay by IntegerValue("PulseDelay", 1000, 500..5000) { pulse }
-
-    private val outgoingMin by IntegerValue("MinOutGoing", 1000, 100.. 5000) { pulse }
-    private val outgoingMax by IntegerValue("MaxOutGoing", 1500, 100.. 5000) { pulse }
+    private val pulseValue by BoolValue("Pulse", false)
+    private val minPulseDelayValue by IntegerValue("MinPulseDelay", 1000, 100..5000) { pulseValue }
+    private val maxPulseDelayValue by IntegerValue("MaxPulseDelay", 1500, 100.. 5000) { pulseValue }
 
     private val fakePlayerMenu by BoolValue("FakePlayer", true)
-
     private val pulseTimer = MSTimer()
+    private var pulseDelay = 0
     private var fakePlayer: EntityOtherPlayerMP? = null
     private val positions = LinkedList<DoubleArray>()
-
     private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayClient>>()
-
 
     override fun onEnable() {
         if (mc.thePlayer == null) return
-        if (outgoingValue.get()) {
-            BlinkUtils.setBlinkState(all = true)
-            if (!pulse) {
-                fakePlayer = EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.gameProfile)
-                fakePlayer!!.clonePlayer(mc.thePlayer, true)
-                fakePlayer!!.copyLocationAndAnglesFrom(mc.thePlayer)
-                fakePlayer!!.rotationYawHead = mc.thePlayer.rotationYawHead
-                mc.theWorld.addEntityToWorld(-1337, fakePlayer)
-            } else {
-                pulseDelay = RandomUtils.nextInt(outgoingMin, outgoingMax)
+
+        pulseTimer.reset()
+        pulseDelay = RandomUtils.nextInt(minPulseDelayValue, maxPulseDelayValue)
+
+        if (fakePlayerMenu) {
+            fakePlayer = EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.gameProfile).apply {
+                clonePlayer(mc.thePlayer, true)
+                copyLocationAndAnglesFrom(mc.thePlayer)
+                rotationYawHead = mc.thePlayer.rotationYawHead
+                mc.theWorld.addEntityToWorld(-1337, this)
             }
         }
+
+        BlinkUtils.setBlinkState(all = true)
         packets.clear()
         synchronized(positions) {
             positions.add(doubleArrayOf(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY + mc.thePlayer.getEyeHeight() / 2, mc.thePlayer.posZ))
             positions.add(doubleArrayOf(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY, mc.thePlayer.posZ))
         }
-
-        pulseTimer.reset()
-
-        if (fakePlayerMenu)
-            BlinkUtils.addFakePlayer()
-    }
-
-    private fun clearPackets() {
-        while (!packets.isEmpty()) {
-            handlePacket(packets.take() as Packet<INetHandlerPlayClient?>)
-        }
     }
 
     override fun onDisable() {
-        if (mc.thePlayer == null)
-            return
-
         synchronized(positions) { positions.clear() }
         if (mc.thePlayer == null) return
+
         BlinkUtils.setBlinkState(off = true, release = true)
         clearPackets()
-        if (fakePlayer != null) {
-            mc.theWorld.removeEntityFromWorld(fakePlayer!!.entityId)
+        fakePlayer?.let {
+            mc.theWorld.removeEntityFromWorld(it.entityId)
             fakePlayer = null
         }
-
-        BlinkUtils.unblink()
     }
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if (mc.thePlayer == null || mc.thePlayer.isDead)
-            return
+        if (mc.thePlayer == null || mc.thePlayer.isDead) return
 
         when (mode.lowercase()) {
             "sent" -> {
@@ -127,21 +109,35 @@ object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModul
 
             when (mode.lowercase()) {
                 "sent" -> {
-                    BlinkUtils.syncSent()
+                    if (outgoingValue) BlinkUtils.syncSent()
                 }
-
                 "received" -> {
-                    BlinkUtils.syncReceived()
+                    if (inboundValue) BlinkUtils.syncReceived()
                 }
             }
 
-            if (pulse && pulseTimer.hasTimePassed(pulseDelay)) {
+            if (pulseValue && pulseTimer.hasTimePassed(pulseDelay)) {
                 BlinkUtils.unblink()
                 if (fakePlayerMenu) {
                     BlinkUtils.addFakePlayer()
                 }
                 pulseTimer.reset()
             }
+        }
+    }
+
+    @EventTarget
+    fun onUpdate(event: UpdateEvent) {
+        synchronized(positions) {
+            positions.add(doubleArrayOf(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY, mc.thePlayer.posZ))
+        }
+
+        if (pulseValue && pulseTimer.hasTimePassed(pulseDelay.toLong())) {
+            synchronized(positions) { positions.clear() }
+            BlinkUtils.releasePacket()
+            clearPackets()
+            pulseTimer.reset()
+            pulseDelay = RandomUtils.nextInt(minPulseDelayValue, maxPulseDelayValue)
         }
     }
 
@@ -179,8 +175,12 @@ object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModul
         }
     }
 
-    override val tag
+    override val tag: String
         get() = (BlinkUtils.packets.size + BlinkUtils.packetsReceived.size).toString()
+
+    private fun clearPackets() {
+        synchronized(packets) { packets.clear() }
+    }
 
     fun blinkingSend() = handleEvents() && (mode == "Sent" || mode == "Both")
     fun blinkingReceive() = handleEvents() && (mode == "Received" || mode == "Both")

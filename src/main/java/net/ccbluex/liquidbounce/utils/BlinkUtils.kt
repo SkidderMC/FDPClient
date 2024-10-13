@@ -24,13 +24,16 @@ import net.minecraft.util.Vec3
 import java.math.BigInteger
 import java.util.*
 
-object BlinkUtils {
+object BlinkUtils : MinecraftInstance() {
 
     val publicPacket: Packet<*>? = null
     val packets = mutableListOf<Packet<*>>()
     val packetsReceived = mutableListOf<Packet<*>>()
     private var fakePlayer: EntityOtherPlayerMP? = null
     val positions = mutableListOf<Vec3>()
+    val isBlinking
+        get() = (packets.size + packetsReceived.size) > 0
+
     private val playerBuffer = LinkedList<Packet<INetHandlerPlayServer>>()
     const val Invalid_Type = -301
     const val MisMatch_Type = -302
@@ -42,39 +45,24 @@ object BlinkUtils {
     var invStat = false
     var interactStat = false
     var otherPacket = false
-    val isBlinking
-        get() = (packets.size + packetsReceived.size) > 0
 
     private var packetToggleStat = booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
+
     init {
-        setBlinkState(
-            off = true,
-            release = true
-        )
+        setBlinkState(off = true, release = true)
         clearPacket()
     }
 
-    // TODO: Make better & more reliable BlinkUtils.
     fun blink(packet: Packet<*>, event: PacketEvent, sent: Boolean? = true, receive: Boolean? = true) {
         val player = mc.thePlayer ?: return
 
-        if (event.isCancelled || player.isDead)
-            return
+        if (event.isCancelled || player.isDead) return
 
         when (packet) {
-            is C00Handshake, is C00PacketServerQuery, is C01PacketPing, is S02PacketChat, is C01PacketChatMessage -> {
-                return
-            }
-
-            is S29PacketSoundEffect -> {
-                if (packet.soundName == "game.player.hurt") {
-                    return
-                }
-            }
+            is C00Handshake, is C00PacketServerQuery, is C01PacketPing, is S02PacketChat, is C01PacketChatMessage -> return
+            is S29PacketSoundEffect -> if (packet.soundName == "game.player.hurt") return
         }
 
-
-        // Don't blink on singleplayer
         if (mc.currentServerData != null) {
             if (sent == true && receive == false) {
                 if (event.eventType == EventState.RECEIVE) {
@@ -96,32 +84,30 @@ object BlinkUtils {
                     }
                 }
             }
-        }
 
-        if (receive == true && sent == false) {
-            if (event.eventType == EventState.RECEIVE && player.ticksExisted > 10) {
-                event.cancelEvent()
-                synchronized(packetsReceived) {
-                    packetsReceived += packet
-                }
-            }
-            if (event.eventType == EventState.SEND) {
-                synchronized(packets) {
-                    sendPackets(*packets.toTypedArray(), triggerEvents = false)
-                }
-                if (packet is C03PacketPlayer && packet.isMoving) {
-                    val packetPos = Vec3(packet.x, packet.y, packet.z)
-                    synchronized(positions) {
-                        positions += packetPos
+            if (receive == true && sent == false) {
+                if (event.eventType == EventState.RECEIVE && player.ticksExisted > 10) {
+                    event.cancelEvent()
+                    synchronized(packetsReceived) {
+                        packetsReceived += packet
                     }
                 }
-                packets.clear()
+                if (event.eventType == EventState.SEND) {
+                    synchronized(packets) {
+                        sendPackets(*packets.toTypedArray(), triggerEvents = false)
+                    }
+                    if (packet is C03PacketPlayer && packet.isMoving) {
+                        val packetPos = Vec3(packet.x, packet.y, packet.z)
+                        synchronized(positions) {
+                            positions += packetPos
+                        }
+                    }
+                    packets.clear()
+                }
             }
-        }
 
-        // Don't blink on singleplayer
-        if (mc.currentServerData != null) {
             if (sent == true && receive == true) {
+                // Processa pacotes enviados e recebidos
                 if (event.eventType == EventState.RECEIVE && player.ticksExisted > 10) {
                     event.cancelEvent()
                     synchronized(packetsReceived) {
@@ -143,8 +129,28 @@ object BlinkUtils {
             }
         }
 
-        if (sent == false && receive == false)
-            unblink()
+        if (sent == false && receive == false) unblink()
+    }
+
+    @EventTarget
+    fun onWorld(event: WorldEvent) {
+        if (event.worldClient == null) {
+            clear()
+        }
+    }
+
+    fun syncSent() {
+        synchronized(packetsReceived) {
+            PacketUtils.queuedPackets.addAll(packetsReceived)
+            packetsReceived.clear()
+        }
+    }
+
+    fun syncReceived() {
+        synchronized(packets) {
+            sendPackets(*packets.toTypedArray(), triggerEvents = false)
+            packets.clear()
+        }
     }
 
     fun releasePacket(packetType: String? = null, onlySelected: Boolean = false, amount: Int = -1, minBuff: Int = 0) {
@@ -222,16 +228,11 @@ object BlinkUtils {
         return false
     }
 
-    fun isBlacklisted(packetType: String = ""):Boolean {
+    private fun isBlacklisted(packetType: String = ""): Boolean {
         return when(packetType) {
             "C00Handshake", "C00PacketLoginStart", "C00PacketServerQuery", "C01PacketChatMessage", "C01PacketEncryptionResponse", "C01PacketPing" -> true
             else -> false
         }
-    }
-
-    fun setBlinkState() {
-        setBlinkState(off = true)
-        clearPacket()
     }
 
     fun setBlinkState(
@@ -247,9 +248,7 @@ object BlinkUtils {
         packetInteract: Boolean = interactStat,
         other: Boolean = otherPacket
     ) {
-        if (release) {
-            releasePacket()
-        }
+        if (release) releasePacket()
         movingPacketStat = (packetMoving && !off) || all
         transactionStat = (packetTransaction && !off) || all
         keepAliveStat = (packetKeepAlive && !off) || all
@@ -259,14 +258,12 @@ object BlinkUtils {
         interactStat = (packetInteract && !off) || all
         otherPacket = (other && !off) || all
         if (all) {
-            for(i in packetToggleStat.indices) {
-                packetToggleStat[i] = true
-            }
+            for(i in packetToggleStat.indices) packetToggleStat[i] = true
         } else {
             for(i in packetToggleStat.indices) {
                 when(i) {
                     0x00 -> packetToggleStat[i] = keepAliveStat
-                    0x01, 0x11, 0x12, 0x14, 0x15, 0x17, 0x18, 0x19 ->  packetToggleStat[i] = otherPacket
+                    0x01, 0x11, 0x12, 0x14, 0x15, 0x17, 0x18, 0x19 -> packetToggleStat[i] = otherPacket
                     0x03, 0x04, 0x05, 0x06 -> packetToggleStat[i] = movingPacketStat
                     0x0F -> packetToggleStat[i] = transactionStat
                     0x02, 0x09, 0x0A, 0x0B -> packetToggleStat[i] = actionStat
@@ -275,58 +272,6 @@ object BlinkUtils {
                     0x07, 0x08 -> packetToggleStat[i] = interactStat
                 }
             }
-        }
-    }
-
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
-        // Clear packets on disconnect only
-        if (event.worldClient == null) {
-            clear()
-        }
-    }
-
-    fun syncSent() {
-        synchronized(packetsReceived) {
-            PacketUtils.queuedPackets.addAll(packetsReceived)
-            packetsReceived.clear()
-        }
-    }
-
-    fun syncReceived() {
-        synchronized(packets) {
-            sendPackets(*packets.toTypedArray(), triggerEvents = false)
-            packets.clear()
-        }
-    }
-
-    fun cancel() {
-        val player = mc.thePlayer ?: return
-        val firstPosition = positions.firstOrNull() ?: return
-
-        player.setPositionAndUpdate(firstPosition.xCoord, firstPosition.yCoord, firstPosition.zCoord)
-
-        synchronized(packets) {
-            val iterator = packets.iterator()
-            while (iterator.hasNext()) {
-                val packet = iterator.next()
-                if (packet is C03PacketPlayer) {
-                    iterator.remove()
-                } else {
-                    sendPacket(packet)
-                    iterator.remove()
-                }
-            }
-        }
-
-        synchronized(positions) {
-            positions.clear()
-        }
-
-        // Remove fake player
-        fakePlayer?.apply {
-            fakePlayer?.entityId?.let { mc.theWorld?.removeEntityFromWorld(it) }
-            fakePlayer = null
         }
     }
 
@@ -340,45 +285,28 @@ object BlinkUtils {
 
         clear()
 
-        // Remove fake player
         fakePlayer?.apply {
-            fakePlayer?.entityId?.let { mc.theWorld?.removeEntityFromWorld(it) }
+            mc.theWorld?.removeEntityFromWorld(entityId)
             fakePlayer = null
         }
     }
 
     fun clear() {
-        synchronized(packetsReceived) {
-            packetsReceived.clear()
-        }
-
-        synchronized(packets) {
-            packets.clear()
-        }
-
-        synchronized(positions) {
-            positions.clear()
-        }
+        synchronized(packetsReceived) { packetsReceived.clear() }
+        synchronized(packets) { packets.clear() }
+        synchronized(positions) { positions.clear() }
     }
 
     fun addFakePlayer() {
         val player = mc.thePlayer ?: return
         val world = mc.theWorld ?: return
-
         val faker = EntityOtherPlayerMP(world, player.gameProfile)
-
         faker.rotationYawHead = player.rotationYawHead
         faker.renderYawOffset = player.renderYawOffset
         faker.copyLocationAndAnglesFrom(player)
         faker.rotationYawHead = player.rotationYawHead
         faker.inventory = player.inventory
         world.addEntityToWorld(RandomUtils.nextInt(Int.MIN_VALUE, Int.MAX_VALUE), faker)
-
         fakePlayer = faker
-
-        // Add positions indicating a blink start
-        // val pos = thePlayer.positionVector
-        // positions += pos.addVector(.0, thePlayer.eyeHeight / 2.0, .0)
-        // positions += pos
     }
 }
