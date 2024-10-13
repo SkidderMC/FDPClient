@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.aac.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.hypixel.HypixelHop
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.hypixel.HypixelLowHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.intave.IntaveHop14
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.intave.IntaveTimer14
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.matrix.*
@@ -81,6 +82,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         // Server specific
         TeleportCubeCraft,
         HypixelHop,
+        HypixelLowHop,
 
         // Other
         BlocksMCSpeed,
@@ -168,6 +170,9 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
     val damageBoost by BoolValue("DamageBoost", true) { mode.get() == "UNCPHopNew" }
     val lowHop by BoolValue("LowHop", true) { mode.get() == "UNCPHopNew" }
     val airStrafe by BoolValue("AirStrafe", true) { mode.get() == "UNCPHopNew" }
+
+    // HypixelLowHop Speed
+    val glide by BoolValue("Glide", true) { mode.get() == "HypixelLowHop" }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
