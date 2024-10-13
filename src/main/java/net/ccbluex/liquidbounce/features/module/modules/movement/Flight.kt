@@ -254,7 +254,7 @@ object Flight : Module("Fly", Category.MOVEMENT, Keyboard.KEY_F, hideModule = fa
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        if (!mark || mode == "Vanilla" || mode == "SmoothVanilla")
+        if (!mark || mode == "Vanilla" || mode == "SmoothVanilla" || mode == "DefaultVanilla")
             return
 
         val y = startY + 2.0 + (if (mode == "BoostHypixel") 0.42 else 0.0)

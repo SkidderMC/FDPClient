@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.event.*
-import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
@@ -25,16 +24,13 @@ import java.math.BigInteger
 import java.util.*
 
 object BlinkUtils : MinecraftInstance() {
-
     val publicPacket: Packet<*>? = null
     val packets = mutableListOf<Packet<*>>()
     val packetsReceived = mutableListOf<Packet<*>>()
     private var fakePlayer: EntityOtherPlayerMP? = null
     val positions = mutableListOf<Vec3>()
-    val isBlinking
-        get() = (packets.size + packetsReceived.size) > 0
-
     private val playerBuffer = LinkedList<Packet<INetHandlerPlayServer>>()
+
     const val Invalid_Type = -301
     const val MisMatch_Type = -302
     var movingPacketStat = false
@@ -46,25 +42,35 @@ object BlinkUtils : MinecraftInstance() {
     var interactStat = false
     var otherPacket = false
 
-    private var packetToggleStat = booleanArrayOf(false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false)
+    val isBlinking: Boolean
+        get() = packets.size + packetsReceived.size > 0
+
+    private var packetToggleStat = BooleanArray(26) { false }
 
     init {
         setBlinkState(off = true, release = true)
         clearPacket()
     }
 
-    fun blink(packet: Packet<*>, event: PacketEvent, sent: Boolean? = true, receive: Boolean? = true) {
+    fun blink(packet: Packet<*>, event: PacketEvent, sent: Boolean = true, receive: Boolean = true) {
         val player = mc.thePlayer ?: return
 
         if (event.isCancelled || player.isDead) return
 
+        if (isBlacklisted(packet.javaClass.simpleName)) return
+
+
         when (packet) {
-            is C00Handshake, is C00PacketServerQuery, is C01PacketPing, is S02PacketChat, is C01PacketChatMessage -> return
-            is S29PacketSoundEffect -> if (packet.soundName == "game.player.hurt") return
+            is C00Handshake, is C00PacketServerQuery, is C01PacketPing, is S02PacketChat, is C01PacketChatMessage -> {
+                return
+            }
+            is S29PacketSoundEffect -> {
+                if (packet.soundName == "game.player.hurt") return
+            }
         }
 
         if (mc.currentServerData != null) {
-            if (sent == true && receive == false) {
+            if (sent && !receive) {
                 if (event.eventType == EventState.RECEIVE) {
                     synchronized(packetsReceived) {
                         PacketUtils.queuedPackets.addAll(packetsReceived)
@@ -78,19 +84,13 @@ object BlinkUtils : MinecraftInstance() {
                     }
                     if (packet is C03PacketPlayer && packet.isMoving) {
                         val packetPos = Vec3(packet.x, packet.y, packet.z)
-                        synchronized(positions) {
-                            positions += packetPos
-                        }
+                        synchronized(positions) { positions += packetPos }
                     }
                 }
-            }
-
-            if (receive == true && sent == false) {
+            } else if (receive && !sent) {
                 if (event.eventType == EventState.RECEIVE && player.ticksExisted > 10) {
                     event.cancelEvent()
-                    synchronized(packetsReceived) {
-                        packetsReceived += packet
-                    }
+                    synchronized(packetsReceived) { packetsReceived += packet }
                 }
                 if (event.eventType == EventState.SEND) {
                     synchronized(packets) {
@@ -98,21 +98,14 @@ object BlinkUtils : MinecraftInstance() {
                     }
                     if (packet is C03PacketPlayer && packet.isMoving) {
                         val packetPos = Vec3(packet.x, packet.y, packet.z)
-                        synchronized(positions) {
-                            positions += packetPos
-                        }
+                        synchronized(positions) { positions += packetPos }
                     }
                     packets.clear()
                 }
-            }
-
-            if (sent == true && receive == true) {
-                // Processa pacotes enviados e recebidos
+            } else if (sent && receive) {
                 if (event.eventType == EventState.RECEIVE && player.ticksExisted > 10) {
                     event.cancelEvent()
-                    synchronized(packetsReceived) {
-                        packetsReceived += packet
-                    }
+                    synchronized(packetsReceived) { packetsReceived += packet }
                 }
                 if (event.eventType == EventState.SEND) {
                     event.cancelEvent()
@@ -121,21 +114,114 @@ object BlinkUtils : MinecraftInstance() {
                     }
                     if (packet is C03PacketPlayer && packet.isMoving) {
                         val packetPos = Vec3(packet.x, packet.y, packet.z)
-                        synchronized(positions) {
-                            positions += packetPos
-                        }
+                        synchronized(positions) { positions += packetPos }
                     }
                 }
             }
         }
 
-        if (sent == false && receive == false) unblink()
+        if (!sent && !receive)
+            unblink()
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
-        if (event.worldClient == null) {
-            clear()
+    fun releasePacket(packetType: String? = null, onlySelected: Boolean = false, amount: Int = -1, minBuff: Int = 0) {
+        var count = 0
+        when (packetType) {
+            null -> {
+                for (packet in playerBuffer) {
+                    val packetID = BigInteger(packet.javaClass.simpleName.substring(1..2), 16).toInt()
+                    if (packetToggleStat[packetID] || !onlySelected) {
+                        sendPacket(packet)
+                    }
+                }
+            }
+            else -> {
+                val tempBuffer = LinkedList<Packet<INetHandlerPlayServer>>()
+                for (packet in playerBuffer) {
+                    if (packet.javaClass.simpleName.equals(packetType, ignoreCase = true)) {
+                        tempBuffer.add(packet)
+                    }
+                }
+                while (tempBuffer.size > minBuff && (count < amount || amount <= 0)) {
+                    sendPacket(tempBuffer.pop())
+                    count++
+                }
+            }
+        }
+        clearPacket(packetType, onlySelected, count)
+    }
+
+    fun clearPacket(packetType: String? = null, onlySelected: Boolean = false, amount: Int = -1) {
+        when (packetType) {
+            null -> {
+                val tempBuffer = LinkedList<Packet<INetHandlerPlayServer>>()
+                for (packet in playerBuffer) {
+                    val packetID = BigInteger(packet.javaClass.simpleName.substring(1..2), 16).toInt()
+                    if (!packetToggleStat[packetID] && onlySelected) tempBuffer.add(packet)
+                }
+                playerBuffer.clear()
+                playerBuffer.addAll(tempBuffer)
+            }
+            else -> {
+                var count = 0
+                val tempBuffer = LinkedList<Packet<INetHandlerPlayServer>>()
+                for (packet in playerBuffer) {
+                    if (!packet.javaClass.simpleName.equals(packetType, ignoreCase = true)) {
+                        tempBuffer.add(packet)
+                    } else if (count++ > amount) {
+                        tempBuffer.add(packet)
+                    }
+                }
+                playerBuffer.clear()
+                playerBuffer.addAll(tempBuffer)
+            }
+        }
+    }
+
+    fun pushPacket(packet: Packet<*>): Boolean {
+        val packetID = BigInteger(packet.javaClass.simpleName.substring(1..2), 16).toInt()
+        return if (packetToggleStat[packetID] && !isBlacklisted(packet.javaClass.simpleName)) {
+            playerBuffer.add(packet as Packet<INetHandlerPlayServer>)
+            true
+        } else false
+    }
+
+    private fun isBlacklisted(packetType: String): Boolean {
+        return when (packetType) {
+            "C00Handshake", "C00PacketLoginStart", "C00PacketServerQuery", "C01PacketChatMessage", "C01PacketEncryptionResponse", "C01PacketPing" -> true
+            else -> false
+        }
+    }
+
+    fun setBlinkState(off: Boolean = false, release: Boolean = false, all: Boolean = false) {
+        if (release) releasePacket()
+        movingPacketStat = (movingPacketStat && !off) || all
+        transactionStat = (transactionStat && !off) || all
+        keepAliveStat = (keepAliveStat && !off) || all
+        actionStat = (actionStat && !off) || all
+        abilitiesStat = (abilitiesStat && !off) || all
+        invStat = (invStat && !off) || all
+        interactStat = (interactStat && !off) || all
+        otherPacket = (otherPacket && !off) || all
+        for (i in packetToggleStat.indices) {
+            packetToggleStat[i] = all || when (i) {
+                0x00 -> keepAliveStat
+                0x01, 0x11, 0x12, 0x14, 0x15, 0x17, 0x18, 0x19 -> otherPacket
+                0x03, 0x04, 0x05, 0x06 -> movingPacketStat
+                0x0F -> transactionStat
+                0x02, 0x09, 0x0A, 0x0B -> actionStat
+                0x0C, 0x13 -> abilitiesStat
+                0x0D, 0x0E, 0x10, 0x16 -> invStat
+                0x07, 0x08 -> interactStat
+                else -> false
+            }
+        }
+    }
+
+    fun bufferSize(packetType: String? = null): Int {
+        return if (packetType == null) playerBuffer.size else {
+            val tempBuffer = playerBuffer.filter { it.javaClass.simpleName.equals(packetType, ignoreCase = true) }
+            if (tempBuffer.isNotEmpty()) tempBuffer.size else MisMatch_Type
         }
     }
 
@@ -153,136 +239,39 @@ object BlinkUtils : MinecraftInstance() {
         }
     }
 
-    fun releasePacket(packetType: String? = null, onlySelected: Boolean = false, amount: Int = -1, minBuff: Int = 0) {
-        var count = 0
-        when(packetType) {
-            null -> {
-                count = -1
-                for (packets in playerBuffer) {
-                    val packetID = BigInteger(packets.javaClass.simpleName.substring(1..2), 16).toInt()
-                    if (packetToggleStat[packetID] || !onlySelected) {
-                        sendPacket(packets)
-                    }
-                }
-            }
-            else -> {
-                val tempBuffer = LinkedList<Packet<INetHandlerPlayServer>>()
-                for (packets in playerBuffer) {
-                    val className = packets.javaClass.simpleName
-                    if (className.equals(packetType, ignoreCase = true)) {
-                        tempBuffer.add(packets)
-                    }
-                }
-                while(tempBuffer.size > minBuff && (count < amount || amount <= 0)) {
-                    sendPacket(tempBuffer.pop())
-                    count++
+    fun cancel() {
+        val player = mc.thePlayer ?: return
+        val firstPosition = positions.firstOrNull() ?: return
+
+        player.setPositionAndUpdate(firstPosition.xCoord, firstPosition.yCoord, firstPosition.zCoord)
+
+        synchronized(packets) {
+            val iterator = packets.iterator()
+            while (iterator.hasNext()) {
+                val packet = iterator.next()
+                if (packet is C03PacketPlayer) {
+                    iterator.remove()
+                } else {
+                    sendPacket(packet)
+                    iterator.remove()
                 }
             }
         }
-        clearPacket(packetType = packetType, onlySelected = onlySelected, amount = count)
-    }
 
-    fun clearPacket(packetType: String? = null, onlySelected: Boolean = false, amount: Int = -1) {
-        when(packetType) {
-            null -> {
-                val tempBuffer = LinkedList<Packet<INetHandlerPlayServer>>()
-                for (packets in playerBuffer) {
-                    val packetID = BigInteger(packets.javaClass.simpleName.substring(1..2), 16).toInt()
-                    if (!packetToggleStat[packetID] && onlySelected) {
-                        tempBuffer.add(packets)
-                    }
-                }
-                playerBuffer.clear()
-                for (packets in tempBuffer) {
-                    playerBuffer.add(packets)
-                }
-            }
-            else -> {
-                var count = 0
-                val tempBuffer = LinkedList<Packet<INetHandlerPlayServer>>()
-                for (packets in playerBuffer) {
-                    val className = packets.javaClass.simpleName
-                    if (!className.equals(packetType, ignoreCase = true)) {
-                        tempBuffer.add(packets)
-                    } else {
-                        count++
-                        if (count > amount) {
-                            tempBuffer.add(packets)
-                        }
-                    }
-                }
-                playerBuffer.clear()
-                for (packets in tempBuffer) {
-                    playerBuffer.add(packets)
-                }
-            }
+        synchronized(positions) {
+            positions.clear()
         }
-    }
 
-    fun pushPacket(packets: Packet<*>):Boolean {
-        val packetID = BigInteger(packets.javaClass.simpleName.substring(1..2), 16).toInt()
-        if (packetToggleStat[packetID] && !isBlacklisted(packets.javaClass.simpleName)) {
-            playerBuffer.add(packets as Packet<INetHandlerPlayServer>)
-            return true
-        }
-        return false
-    }
-
-    private fun isBlacklisted(packetType: String = ""): Boolean {
-        return when(packetType) {
-            "C00Handshake", "C00PacketLoginStart", "C00PacketServerQuery", "C01PacketChatMessage", "C01PacketEncryptionResponse", "C01PacketPing" -> true
-            else -> false
-        }
-    }
-
-    fun setBlinkState(
-        off: Boolean = false,
-        release: Boolean = false,
-        all: Boolean = false,
-        packetMoving: Boolean = movingPacketStat,
-        packetTransaction: Boolean = transactionStat,
-        packetKeepAlive: Boolean = keepAliveStat,
-        packetAction: Boolean = actionStat,
-        packetAbilities: Boolean = abilitiesStat,
-        packetInventory: Boolean = invStat,
-        packetInteract: Boolean = interactStat,
-        other: Boolean = otherPacket
-    ) {
-        if (release) releasePacket()
-        movingPacketStat = (packetMoving && !off) || all
-        transactionStat = (packetTransaction && !off) || all
-        keepAliveStat = (packetKeepAlive && !off) || all
-        actionStat = (packetAction && !off) || all
-        abilitiesStat = (packetAbilities && !off) || all
-        invStat = (packetInventory && !off )|| all
-        interactStat = (packetInteract && !off) || all
-        otherPacket = (other && !off) || all
-        if (all) {
-            for(i in packetToggleStat.indices) packetToggleStat[i] = true
-        } else {
-            for(i in packetToggleStat.indices) {
-                when(i) {
-                    0x00 -> packetToggleStat[i] = keepAliveStat
-                    0x01, 0x11, 0x12, 0x14, 0x15, 0x17, 0x18, 0x19 -> packetToggleStat[i] = otherPacket
-                    0x03, 0x04, 0x05, 0x06 -> packetToggleStat[i] = movingPacketStat
-                    0x0F -> packetToggleStat[i] = transactionStat
-                    0x02, 0x09, 0x0A, 0x0B -> packetToggleStat[i] = actionStat
-                    0x0C, 0x13 -> packetToggleStat[i] = abilitiesStat
-                    0x0D, 0x0E, 0x10, 0x16 -> packetToggleStat[i] = invStat
-                    0x07, 0x08 -> packetToggleStat[i] = interactStat
-                }
-            }
+        // Remove fake player
+        fakePlayer?.apply {
+            fakePlayer?.entityId?.let { mc.theWorld?.removeEntityFromWorld(it) }
+            fakePlayer = null
         }
     }
 
     fun unblink() {
-        synchronized(packetsReceived) {
-            PacketUtils.queuedPackets.addAll(packetsReceived)
-        }
-        synchronized(packets) {
-            sendPackets(*packets.toTypedArray(), triggerEvents = false)
-        }
-
+        synchronized(packetsReceived) { PacketUtils.queuedPackets.addAll(packetsReceived) }
+        synchronized(packets) { sendPackets(*packets.toTypedArray(), triggerEvents = false) }
         clear()
 
         fakePlayer?.apply {
@@ -300,13 +289,21 @@ object BlinkUtils : MinecraftInstance() {
     fun addFakePlayer() {
         val player = mc.thePlayer ?: return
         val world = mc.theWorld ?: return
-        val faker = EntityOtherPlayerMP(world, player.gameProfile)
-        faker.rotationYawHead = player.rotationYawHead
-        faker.renderYawOffset = player.renderYawOffset
-        faker.copyLocationAndAnglesFrom(player)
-        faker.rotationYawHead = player.rotationYawHead
-        faker.inventory = player.inventory
-        world.addEntityToWorld(RandomUtils.nextInt(Int.MIN_VALUE, Int.MAX_VALUE), faker)
-        fakePlayer = faker
+
+        fakePlayer = EntityOtherPlayerMP(world, player.gameProfile).apply {
+            rotationYawHead = player.rotationYawHead
+            renderYawOffset = player.renderYawOffset
+            copyLocationAndAnglesFrom(player)
+            rotationYawHead = player.rotationYawHead
+            inventory = player.inventory
+            world.addEntityToWorld(RandomUtils.nextInt(Int.MIN_VALUE, Int.MAX_VALUE), this)
+        }
+    }
+
+    @EventTarget
+    fun onWorld(event: WorldEvent) {
+        if (event.worldClient == null) {
+            clear()
+        }
     }
 }
