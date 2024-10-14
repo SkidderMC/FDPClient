@@ -28,60 +28,34 @@ import java.util.concurrent.LinkedBlockingQueue
 object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModule = false) {
 
     private val mode by ListValue("Mode", arrayOf("Sent", "Received", "Both"), "Sent")
-    private val outgoingValue by BoolValue("OutGoing", true)
-    private val inboundValue by BoolValue("Inbound", false)
 
-    private val pulseValue by BoolValue("Pulse", false)
-    private val minPulseDelayValue by IntegerValue("MinPulseDelay", 1000, 100..5000) { pulseValue }
-    private val maxPulseDelayValue by IntegerValue("MaxPulseDelay", 1500, 100.. 5000) { pulseValue }
+    private val pulse by BoolValue("Pulse", false)
+    private val pulseDelay by IntegerValue("PulseDelay", 1000, 500..5000) { pulse }
 
     private val fakePlayerMenu by BoolValue("FakePlayer", true)
+
     private val pulseTimer = MSTimer()
-    private var pulseDelay = 0
-    private var fakePlayer: EntityOtherPlayerMP? = null
-    private val positions = LinkedList<DoubleArray>()
-    private val packets = LinkedBlockingQueue<Packet<INetHandlerPlayClient>>()
 
     override fun onEnable() {
-        if (mc.thePlayer == null) return
-
         pulseTimer.reset()
-        pulseDelay = RandomUtils.nextInt(minPulseDelayValue, maxPulseDelayValue)
 
-        if (fakePlayerMenu) {
-            fakePlayer = EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.gameProfile).apply {
-                clonePlayer(mc.thePlayer, true)
-                copyLocationAndAnglesFrom(mc.thePlayer)
-                rotationYawHead = mc.thePlayer.rotationYawHead
-                mc.theWorld.addEntityToWorld(-1337, this)
-            }
-        }
-
-        BlinkUtils.setBlinkState(all = true)
-        packets.clear()
-        synchronized(positions) {
-            positions.add(doubleArrayOf(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY + mc.thePlayer.getEyeHeight() / 2, mc.thePlayer.posZ))
-            positions.add(doubleArrayOf(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY, mc.thePlayer.posZ))
-        }
+        if (fakePlayerMenu)
+            BlinkUtils.addFakePlayer()
     }
 
     override fun onDisable() {
-        synchronized(positions) { positions.clear() }
-        if (mc.thePlayer == null) return
+        if (mc.thePlayer == null)
+            return
 
-        BlinkUtils.setBlinkState(off = true, release = true)
-        clearPackets()
-        fakePlayer?.let {
-            mc.theWorld.removeEntityFromWorld(it.entityId)
-            fakePlayer = null
-        }
+        BlinkUtils.unblink()
     }
 
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if (mc.thePlayer == null || mc.thePlayer.isDead) return
+        if (mc.thePlayer == null || mc.thePlayer.isDead)
+            return
 
         when (mode.lowercase()) {
             "sent" -> {
@@ -107,35 +81,21 @@ object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModul
 
             when (mode.lowercase()) {
                 "sent" -> {
-                    if (outgoingValue) BlinkUtils.syncSent()
+                    BlinkUtils.syncSent()
                 }
+
                 "received" -> {
-                    if (inboundValue) BlinkUtils.syncReceived()
+                    BlinkUtils.syncReceived()
                 }
             }
 
-            if (pulseValue && pulseTimer.hasTimePassed(pulseDelay)) {
+            if (pulse && pulseTimer.hasTimePassed(pulseDelay)) {
                 BlinkUtils.unblink()
                 if (fakePlayerMenu) {
                     BlinkUtils.addFakePlayer()
                 }
                 pulseTimer.reset()
             }
-        }
-    }
-
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        synchronized(positions) {
-            positions.add(doubleArrayOf(mc.thePlayer.posX, mc.thePlayer.entityBoundingBox.minY, mc.thePlayer.posZ))
-        }
-
-        if (pulseValue && pulseTimer.hasTimePassed(pulseDelay.toLong())) {
-            synchronized(positions) { positions.clear() }
-            BlinkUtils.releasePacket()
-            clearPackets()
-            pulseTimer.reset()
-            pulseDelay = RandomUtils.nextInt(minPulseDelayValue, maxPulseDelayValue)
         }
     }
 
@@ -173,12 +133,8 @@ object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModul
         }
     }
 
-    override val tag: String
+    override val tag
         get() = (BlinkUtils.packets.size + BlinkUtils.packetsReceived.size).toString()
-
-    private fun clearPackets() {
-        synchronized(packets) { packets.clear() }
-    }
 
     fun blinkingSend() = handleEvents() && (mode == "Sent" || mode == "Both")
     fun blinkingReceive() = handleEvents() && (mode == "Received" || mode == "Both")
