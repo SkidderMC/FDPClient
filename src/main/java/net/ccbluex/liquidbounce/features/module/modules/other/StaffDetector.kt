@@ -29,7 +29,7 @@ import java.util.concurrent.ConcurrentHashMap
 object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = false, hideModule = false) {
 
     private val staffMode by object : ListValue("StaffMode", arrayOf("BlocksMC", "CubeCraft", "Gamster",
-        "AgeraPvP", "HypeMC", "Hypixel", "SuperCraft", "PikaNetwork"), "BlocksMC") {
+        "AgeraPvP", "HypeMC", "Hypixel", "SuperCraft", "PikaNetwork", "GommeHD"), "BlocksMC") {
         override fun onUpdate(value: String) {
             loadStaffData()
         }
@@ -37,6 +37,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
 
     private val tab by BoolValue("TAB", true)
     private val packet by BoolValue("Packet", true)
+    private val velocity by BoolValue("Velocity", false)
 
     private val autoLeave by ListValue("AutoLeave", arrayOf("Off", "Leave", "Lobby", "Quit"), "Off") { tab || packet }
 
@@ -85,7 +86,8 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
             "hypemc" to "hypemc.pro",
             "hypixel" to "hypixel.net",
             "supercraft" to "supercraft.es",
-            "pikanetwork" to "pika-network.net"
+            "pikanetwork" to "pika-network.net",
+            "gommehd" to "gommehd.net"
         )
 
         serverIp = serverIpMap[staffMode.lowercase()] ?: return
@@ -113,7 +115,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
 
         /**
          * OLD BlocksMC Staff Spectator Check
-         * Original By HU & Modified by Eclipses
+         * Credit: By @HU & Modified by Eclipses & Zywk
          *
          * NOTE: Doesn't detect staff spectator all the time.
          */
@@ -161,6 +163,24 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
 
             // Handle other packets
             handleOtherChecks(packet)
+        }
+
+        /**
+         * Velocity Check
+         * Credit: @azureskylines / Nextgen
+         *
+         * Check if this is a regular velocity update
+         */
+        if (velocity) {
+            if (packet is S12PacketEntityVelocity && packet.entityID == mc.thePlayer?.entityId) {
+                if (packet.motionX == 0 && packet.motionZ == 0 && packet.motionY / 8000.0 > 0.075) {
+                    if (warn == "Chat") {
+                        Chat.print("§3Staff is Watching")
+                    } else {
+                        hud.addNotification(Notification("§3Staff is Watching", "!!!", Type.WARNING, 3000))
+                    }
+                }
+            }
         }
     }
 
