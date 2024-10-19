@@ -199,6 +199,10 @@ object ColorUtils {
         return Color(redPart, greenPart, bluePart)
     }
 
+    fun mixColors(color1: Color, color2: Color, percent: Float): Color {
+        return Color(color1.red + ((color2.red - color1.red) * percent).toInt(), color1.green + ((color2.green - color1.green) * percent).toInt(), color1.blue + ((color2.blue - color1.blue) * percent).toInt(), color1.alpha + ((color2.alpha - color1.alpha) * percent).toInt())
+    }
+
     fun skyRainbow(var2: Int, st: Float, bright: Float, speed: Float): Color {
         var v1 = ceil((System.currentTimeMillis() + (var2 * 109 * speed).toLong()).toDouble()) / 5
         return Color.getHSBColor(

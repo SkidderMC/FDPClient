@@ -2132,6 +2132,10 @@ object RenderUtils : MinecraftInstance() {
     fun glColor(red: Int, green: Int, blue: Int, alpha: Int) =
         glColor4f(red / 255f, green / 255f, blue / 255f, alpha / 255f)
 
+    fun glFloatColor(color: Color, alpha: Int) {
+        glFloatColor(color, alpha / 255f)
+    }
+
     fun glFloatColor(color: Color, alpha: Float) {
         val red = color.red / 255f
         val green = color.green / 255f
