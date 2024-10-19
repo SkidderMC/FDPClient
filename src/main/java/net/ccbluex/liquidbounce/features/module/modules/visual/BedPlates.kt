@@ -310,12 +310,12 @@ object BedPlates : Module("BedPlates", Category.OTHER, hideModule = false) {
             bedBlocks.add(mutableListOf())
         }
 
-        bedBlocks[index].clear()
-        if (beds.size <= index) {
-            beds.add(bedPos)
-        } else {
-            beds[index] = bedPos
+        while (beds.size <= index) {
+            beds.add(BlockPos(0, 0, 0))
         }
+
+        bedBlocks[index].clear()
+        beds[index] = bedPos
 
         if (bedBlock != Blocks.bed) {
             return false

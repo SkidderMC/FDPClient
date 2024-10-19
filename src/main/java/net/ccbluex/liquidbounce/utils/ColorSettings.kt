@@ -64,6 +64,7 @@ class ColorSettingsInteger(
     private var a by alpha
 
     fun color(a: Int = this.a) = Color(r, g, b, a)
+    fun color() = Color(r, g, b, a)
 
     fun with(r: Int? = null, g: Int? = null, b: Int? = null, a: Int? = null): ColorSettingsInteger {
         r?.let { red.set(it) }
