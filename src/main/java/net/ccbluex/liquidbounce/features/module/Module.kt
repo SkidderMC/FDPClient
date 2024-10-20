@@ -105,7 +105,11 @@ open class Module(
 
             // Play sound and add notification
             if (!isStarting) {
-                mc.soundHandler.playSound(PositionedSoundRecord.create(ResourceLocation("random.click"), 1F))
+                synchronized(mc.soundHandler) {
+                    mc.soundHandler.playSound(
+                        PositionedSoundRecord.create(ResourceLocation("random.click"), 1F)
+                    )
+                }
                 addNotification(Notification(name,"${if (value) "Enabled" else "Disabled"} §r$name", if (value) Type.SUCCESS else Type.ERROR, 1000))
                 addPrint(
                     Prints.Print(

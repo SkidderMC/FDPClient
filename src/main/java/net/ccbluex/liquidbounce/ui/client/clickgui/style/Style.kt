@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style
 
@@ -29,10 +29,21 @@ abstract class Style : MinecraftInstance() {
     abstract fun drawButtonElement(mouseX: Int, mouseY: Int, buttonElement: ButtonElement)
     abstract fun drawModuleElementAndClick(mouseX: Int, mouseY: Int, moduleElement: ModuleElement, mouseButton: Int?): Boolean
 
-    fun clickSound() = mc.soundHandler.playSound(PositionedSoundRecord.create(ResourceLocation("gui.button.press"), 1f))
+    fun clickSound() {
+        synchronized(mc.soundHandler) {
+            mc.soundHandler.playSound(
+                PositionedSoundRecord.create(ResourceLocation("gui.button.press"), 1F)
+            )
+        }
+    }
 
-    fun showSettingsSound() = mc.soundHandler.playSound(PositionedSoundRecord.create(ResourceLocation("random.bow"), 1f))
-
+    fun showSettingsSound() {
+        synchronized(mc.soundHandler) {
+            mc.soundHandler.playSound(
+                PositionedSoundRecord.create(ResourceLocation("random.bow"), 1F)
+            )
+        }
+    }
     protected fun round(v: Float): Float {
         var bigDecimal = BigDecimal(v.toString())
         bigDecimal = bigDecimal.setScale(2, 4)
