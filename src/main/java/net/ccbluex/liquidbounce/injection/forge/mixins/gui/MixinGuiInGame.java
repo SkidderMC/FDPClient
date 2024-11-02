@@ -210,20 +210,20 @@ public abstract class MixinGuiInGame extends Gui {
                 );
 
                 // Border - Background
-                render.drawRoundedBorderInt(
-                        middleScreen - 91, height - 22,
-                        middleScreen + 91, height,
-                        hud.getHotbarBorder(),
-                        hud.getHbBorderColors().color().getRGB(),
+                render.drawRoundedBorder(
+                        middleScreen - 91, height - 21.55F,
+                        middleScreen + 91 + 0.1F, height - 0.5F,
+                        hud.getHbBackgroundBorder(),
+                        hud.getHbBackgroundBorderColors().color().getRGB(),
                         hud.getRoundedHotbarRadius()
                 );
 
                 // Border - Highlight
                 render.drawRoundedBorder(
-                        middleScreen - 91 - 1 + slot * 20 + 1, height - 22,
-                        middleScreen - 91 - 1 + slot * 20 + 23, height - 23 - 1 + 24,
-                        hud.getHotbarBorder(),
-                        hud.getHbBorderColors().color().getRGB(),
+                        middleScreen - 91 - 1 + slot * 20 + 1, height - 21.5F,
+                        middleScreen - 91 - 1 + slot * 20 + 23.15F, height - 23 - 1 + 23.5F,
+                        hud.getHbHighlightBorder(),
+                        hud.getHbHighlightBorderColors().color().getRGB(),
                         hud.getRoundedHotbarRadius()
                 );
 
