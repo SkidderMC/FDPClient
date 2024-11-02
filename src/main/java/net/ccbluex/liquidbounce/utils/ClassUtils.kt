@@ -104,6 +104,25 @@ object ClassUtils {
                     }
                 }
 
+                val superclass = element::class.java.superclass
+
+                /**
+                 * For classes with values that include their value-containing super classes
+                 *
+                 * Example: class ClassWithValues() : OriginalClassWithValues()
+                 */
+                if (superclass?.`package`?.name?.contains("liquidbounce") == true && !Value::class.java.isAssignableFrom(superclass)) {
+                    superclass.declaredFields.forEach {
+                        it.isAccessible = true
+                        val fieldValue = it[element] ?: return@forEach
+                        if (fieldValue is Value<*>) {
+                            list += fieldValue
+                        } else {
+                            findValues(fieldValue, configurables, list)
+                        }
+                    }
+                }
+
                 element.javaClass.declaredFields.forEach {
                     it.isAccessible = true
                     val fieldValue = it[element] ?: return@forEach

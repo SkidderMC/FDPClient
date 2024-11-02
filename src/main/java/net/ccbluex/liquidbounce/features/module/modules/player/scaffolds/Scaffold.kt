@@ -51,7 +51,7 @@ import java.awt.Color
 import javax.vecmath.Color3f
 import kotlin.math.*
 
-object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_I, hideModule = false) {
+object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule = false) {
 
     /**
      * TOWER MODES & SETTINGS
@@ -225,9 +225,10 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_I, hideModule
     ) { eagleValue.isSupported() && eagle != "Off" }
 
     // Rotation Options
-    private val options = RotationSettings(this).apply {
+    private val modeList = ListValue("Rotations", arrayOf("Off", "Normal", "Stabilized", "GodBridge"), "Normal")
+
+    private val options = RotationSettingsWithRotationModes(this, modeList).apply {
         strictValue.isSupported = { false }
-        rotationModeValue.values = arrayOf("Off", "Normal", "Stabilized", "GodBridge")
         resetTicksValue.setSupport { { it && scaffoldMode != "Telly" } }
     }
 
@@ -296,7 +297,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_I, hideModule
     // Visuals
     private val mark by BoolValue("Mark", false, subjective = true)
     private val trackCPS by BoolValue("TrackCPS", false, subjective = true)
-    private val safetyLines by BoolValue("SafetyLines", false, subjective = true) { isGodBridgeEnabled }
 
     // Target placement
     var placeRotation: PlaceRotation? = null
@@ -819,6 +819,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_I, hideModule
         TickScheduler += {
             serverSlot = player.inventory.currentItem
         }
+
+        options.instant = false
     }
 
     // Entity movement event
@@ -868,8 +870,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_I, hideModule
             }
         }
 
-        displaySafetyLinesIfEnabled()
-
         if (!mark) {
             return
         }
@@ -908,6 +908,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_I, hideModule
         horizontalOnly: Boolean = false,
     ): Boolean {
         val player = mc.thePlayer ?: return false
+
+        options.instant = false
 
         if (!isReplaceable(blockPosition)) {
             if (autoF5) mc.gameSettings.thirdPersonView = 0
@@ -959,6 +961,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_I, hideModule
             val (factorH, factorV) = if (options.smootherMode == "Relative")
                 computeFactor(rotationDifference, hSpeed) to computeFactor(rotationDifference, vSpeed)
             else hSpeed to vSpeed
+
             options.instant = blockSafe && rotationDifference > (factorH + factorV) / 2f
 
             setRotation(placeRotation.rotation, if (scaffoldMode == "Telly") 1 else options.resetTicks)
@@ -1099,105 +1102,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_I, hideModule
                 serverSlot = switchSlot - 36
             }
         }
-    }
-
-    private fun displaySafetyLinesIfEnabled() {
-        if (!safetyLines || !isGodBridgeEnabled) {
-            return
-        }
-
-        val player = mc.thePlayer ?: return
-
-        // If player is not walking diagonally then continue
-        if (round(abs(MathHelper.wrapAngleTo180_float(player.rotationYaw)).roundToInt() / 45f) * 45f !in arrayOf(
-                135f,
-                45f
-            ) || player.movementInput.moveForward == 0f || player.movementInput.moveStrafe != 0f
-        ) {
-            val (posX, posY, posZ) = player.interpolatedPosition()
-
-            GL11.glPushMatrix()
-            GL11.glTranslated(-posX, -posY, -posZ)
-            GL11.glLineWidth(5.5f)
-            GL11.glDisable(GL11.GL_TEXTURE_2D)
-
-            val (yawX, yawZ) = player.horizontalFacing.directionVec.x * 1.5 to player.horizontalFacing.directionVec.z * 1.5
-
-            // The target rotation will either be the module's placeRotation or a forced rotation (usually that's where the GodBridge mode aims)
-            val targetRotation = run {
-                val yaw = floatArrayOf(-135f, -45f, 45f, 135f).minByOrNull {
-                    abs(
-                        RotationUtils.angleDifference(
-                            it,
-                            MathHelper.wrapAngleTo180_float(currRotation.yaw)
-                        )
-                    )
-                } ?: return
-
-                placeRotation?.rotation ?: Rotation(yaw, 73f)
-            }
-
-            // Calculate color based on rotation difference
-            val color = getColorForRotationDifference(
-                rotationDifference(
-                    targetRotation,
-                    currRotation
-                )
-            )
-
-            val main = BlockPos(player).down()
-
-            val pos = if (canBeClicked(main)) {
-                main
-            } else {
-                (-1..1).flatMap { x ->
-                    (-1..1).map { z ->
-                        val neighbor = main.add(x, 0, z)
-
-                        neighbor to BlockUtils.getCenterDistance(neighbor)
-                    }
-                }.filter { canBeClicked(it.first) }.minByOrNull { it.second }?.first ?: main
-            }.up().getVec()
-
-            for (offset in 0..1) {
-                for (i in -1..1 step 2) {
-                    for (x1 in 0.25..0.5 step 0.01) {
-                        val opposite = offset == 1
-
-                        val (offsetX, offsetZ) = if (opposite) 0.0 to x1 * i else x1 * i to 0.0
-                        val (lineX, lineZ) = if (opposite) yawX to 0.0 else 0.0 to yawZ
-
-                        val (x, y, z) = pos.add(Vec3(offsetX, -0.99, offsetZ))
-
-                        GL11.glBegin(GL11.GL_LINES)
-
-                        GL11.glColor3f(color.x, color.y, color.z)
-                        GL11.glVertex3d(x - lineX, y + 0.5, z - lineZ)
-                        GL11.glVertex3d(x + lineX, y + 0.5, z + lineZ)
-
-                        GL11.glEnd()
-                    }
-                }
-            }
-            GL11.glEnable(GL11.GL_TEXTURE_2D)
-            GL11.glPopMatrix()
-        }
-    }
-
-    private fun getColorForRotationDifference(rotationDifference: Float): Color3f {
-        val maxDifferenceForGreen = 10.0f
-        val maxDifferenceForYellow = 40.0f
-
-        val interpolationFactor = when {
-            rotationDifference <= maxDifferenceForGreen -> 0.0f
-            rotationDifference <= maxDifferenceForYellow -> (rotationDifference - maxDifferenceForGreen) / (maxDifferenceForYellow - maxDifferenceForGreen)
-            else -> 1.0f
-        }
-
-        val green = 1.0f - interpolationFactor
-        val blue = 0.0f
-
-        return Color3f(interpolationFactor, green, blue)
     }
 
     private fun updatePlacedBlocksForTelly() {

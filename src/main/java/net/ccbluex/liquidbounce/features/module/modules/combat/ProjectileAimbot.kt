@@ -52,10 +52,7 @@ object ProjectileAimbot : Module("ProjectileAimBot", Category.COMBAT, hideModule
     private val predictSize by FloatValue("PredictSize", 2F, 0.1F..5F)
     { predict && gravityType == "Projectile"}
 
-    private val options = RotationSettings(this).withoutKeepRotation().apply {
-        rotationModeValue.set("On")
-        rotationModeValue.isSupported = { false }
-    }
+    private val options = RotationSettings(this).withoutKeepRotation()
 
     private val randomizeRotations by BoolValue("RandomizeRotations", false) { options.rotationsActive }
 

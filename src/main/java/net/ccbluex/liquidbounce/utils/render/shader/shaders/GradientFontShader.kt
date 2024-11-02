@@ -20,7 +20,7 @@ object GradientFontShader : Shader("gradient_font_shader.frag"), Closeable {
     var offset = 0f
     var speed = 1f
 
-    var maxColors = 4
+    var maxColors = 9
     var colors: Array<FloatArray> = Array(maxColors) { floatArrayOf(0f, 0f, 0f, 1f) }
 
     override fun setupUniforms() {
@@ -68,11 +68,11 @@ object GradientFontShader : Shader("gradient_font_shader.frag"), Closeable {
             stopShader()
     }
 
-    fun begin(enable: Boolean, x: Float, y: Float, maxColors: Int, gradient: List<FloatArray>, speed: Float, offset: Float): GradientFontShader {
+    fun begin(enable: Boolean, x: Float, y: Float, gradient: List<FloatArray>, speed: Float, offset: Float): GradientFontShader {
         if (enable) {
             strengthX = x
             strengthY = y
-            this.maxColors = maxColors
+            this.maxColors = gradient.size
             colors = gradient.toTypedArray()
             this.speed = speed
             this.offset = offset

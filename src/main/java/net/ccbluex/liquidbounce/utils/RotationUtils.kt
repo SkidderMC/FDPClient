@@ -23,7 +23,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
     /**
      * Our final rotation point, which [currentRotation] follows.
      */
-    private var targetRotation: Rotation? = null
+    var targetRotation: Rotation? = null
 
     /**
      * The current rotation that is responsible for aiming at objects, synchronizing movement, etc.

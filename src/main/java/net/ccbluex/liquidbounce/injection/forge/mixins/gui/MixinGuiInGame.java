@@ -74,7 +74,9 @@ public abstract class MixinGuiInGame extends Gui {
     @Shadow
     protected abstract void renderHotbarItem(int index, int xPos, int yPos, float partialTicks, EntityPlayer player);
 
-    @Shadow @Final protected Minecraft mc;
+    @Shadow
+    @Final
+    protected Minecraft mc;
 
     @Inject(method = "showCrosshair", at = @At("HEAD"), cancellable = true)
     private void showCrosshair(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
@@ -173,7 +175,6 @@ public abstract class MixinGuiInGame extends Gui {
                             true,
                             gradientX,
                             gradientY,
-                            hud.getMaxHotbarGradientColors(),
                             gradientColors,
                             hud.getGradientHotbarSpeed(),
                             gradientOffset

@@ -274,7 +274,6 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
                 backgroundMode == "Gradient",
                 gradientX,
                 gradientY,
-                maxBackgroundGradientColors,
                 bgGradColors.toColorArray(maxBackgroundGradientColors),
                 gradientBackgroundSpeed,
                 gradientOffset
@@ -332,7 +331,6 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
             GradientFontShader.begin(gradient,
                 gradientX,
                 gradientY,
-                maxTextGradientColors,
                 textGradColors.toColorArray(maxTextGradientColors),
                 gradientTextSpeed,
                 gradientOffset

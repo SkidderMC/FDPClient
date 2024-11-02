@@ -12,9 +12,10 @@ import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 
 @Suppress("MemberVisibilityCanBePrivate")
-class RotationSettings(owner: Module, generalApply: () -> Boolean = { true }) {
+open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true }) {
 
-    var rotationModeValue = ListValue("Rotations", arrayOf("Off", "On"), "On") { generalApply() }
+    open val rotationsValue = BoolValue("Rotations", true) { generalApply() }
+
     val smootherModeValue = ListValue("SmootherMode",
         arrayOf("Linear", "Relative"),
         "Relative"
@@ -23,7 +24,9 @@ class RotationSettings(owner: Module, generalApply: () -> Boolean = { true }) {
     val simulateShortStopValue = BoolValue("SimulateShortStop", false) { rotationsActive && generalApply() }
     val strafeValue = BoolValue("Strafe", false) { rotationsActive && applyServerSide && generalApply() }
     val strictValue = BoolValue("Strict", false) { strafeValue.isActive() && generalApply() }
-    val keepRotationValue = BoolValue("KeepRotation", true) { rotationsActive && applyServerSide && generalApply() }
+    val keepRotationValue = BoolValue("KeepRotation",
+        true
+    ) { rotationsActive && applyServerSide && generalApply() }
     val resetTicksValue = object : IntegerValue("ResetTicks", 1, 1..20) {
         override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(minimum)
         override fun isSupported() = rotationsActive && applyServerSide && generalApply()
@@ -34,12 +37,18 @@ class RotationSettings(owner: Module, generalApply: () -> Boolean = { true }) {
         false
     ) { rotationsActive && generalApply() }
     val useStraightLinePathValue = BoolValue("UseStraightLinePath", true) { rotationsActive && generalApply() }
-    val maxHorizontalAngleChangeValue: FloatValue = object : FloatValue("MaxHorizontalAngleChange", 180f, 1f..180f) {
+    val maxHorizontalAngleChangeValue: FloatValue = object : FloatValue("MaxHorizontalAngleChange",
+        180f,
+        1f..180f
+    ) {
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtLeast(minHorizontalAngleChange)
         override fun isSupported() = rotationsActive && generalApply()
     }
 
-    val minHorizontalAngleChangeValue: FloatValue = object : FloatValue("MinHorizontalAngleChange", 180f, 1f..180f) {
+    val minHorizontalAngleChangeValue: FloatValue = object : FloatValue("MinHorizontalAngleChange",
+        180f,
+        1f..180f
+    ) {
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(maxHorizontalAngleChange)
         override fun isSupported() = !maxHorizontalAngleChangeValue.isMinimal() && rotationsActive && generalApply()
     }
@@ -65,7 +74,7 @@ class RotationSettings(owner: Module, generalApply: () -> Boolean = { true }) {
     ) { rotationsActive && generalApply() }
 
     // Variables for easier access
-    val rotationMode by rotationModeValue
+    val rotations by rotationsValue
     val smootherMode by smootherModeValue
     val applyServerSide by applyServerSideValue
     val simulateShortStop by simulateShortStopValue
@@ -87,8 +96,8 @@ class RotationSettings(owner: Module, generalApply: () -> Boolean = { true }) {
     var immediate = false
     var instant = false
 
-    val rotationsActive
-        get() = rotationMode != "Off"
+    open val rotationsActive
+        get() = rotations
 
     val horizontalSpeed
         get() = minHorizontalAngleChange..maxHorizontalAngleChange
@@ -101,6 +110,25 @@ class RotationSettings(owner: Module, generalApply: () -> Boolean = { true }) {
 
         return this
     }
+
+    init {
+        owner.addConfigurable(this)
+    }
+}
+
+class RotationSettingsWithRotationModes(
+    owner: Module, listValue: ListValue, generalApply: () -> Boolean = { true },
+) : RotationSettings(owner, generalApply) {
+
+    override val rotationsValue: BoolValue
+        get() = super.rotationsValue.apply { isSupported = { false } }
+
+    val rotationModeValue = listValue.apply { isSupported = generalApply }
+
+    val rotationMode by rotationModeValue
+
+    override val rotationsActive: Boolean
+        get() = rotationMode != "Off"
 
     init {
         owner.addConfigurable(this)
