@@ -89,7 +89,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
             text.bgColors.with(a = 100)
             text.onScaffold = true
             text.showBlock = true
-            text.backgroundScale = 3F
+            text.backgroundScale = 1F
 
             return text
         }
@@ -118,7 +118,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
 
     private val roundedBackgroundRadius by FloatValue("RoundedBackGround-Radius", 3F, 0F..5F)
 
-    private var backgroundScale by FloatValue("Background-Scale", 2.5F, 2.5F..5F)
+    private var backgroundScale by FloatValue("Background-Scale", 1F, 1F..3F)
 
     private val backgroundMode by ListValue("Background-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
 
@@ -258,6 +258,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
     override fun drawElement(): Border {
         val stack = mc.thePlayer?.inventory?.getStackInSlot(SilentHotbar.currentSlot)
         val shouldRender = showBlock && stack != null && stack.item is ItemBlock
+        val showBlockScale = if (shouldRender) 1.2F else 1F
 
         if ((Scaffold.handleEvents() && onScaffold) || !onScaffold) {
             val rainbow = textColorMode == "Rainbow"
@@ -281,10 +282,10 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
             ).use {
                 RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
                     drawRoundedRect(
-                        (-2F - if (shouldRender) 6F else 0F) * backgroundScale,
-                        -2F * backgroundScale,
-                        font.getStringWidth(displayText) + 2F * backgroundScale,
-                        (font.FONT_HEIGHT / 2F) * backgroundScale,
+                        ((-2F - if (shouldRender) 6F else 0F) * (1F + backgroundScale)) * (showBlockScale * 1.15F),
+                        (-2F * (1F + backgroundScale)) * showBlockScale,
+                        ((font.getStringWidth(displayText) + 2F) + backgroundScale) + showBlockScale,
+                        (font.FONT_HEIGHT * backgroundScale.coerceIn(1.2F, 2F)) * showBlockScale,
                         when (backgroundMode) {
                             "Gradient" -> 0
                             "Rainbow" -> 0
@@ -297,10 +298,10 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
 
             if (bgBorderColors.color().alpha > 0) {
                 drawRoundedBorder(
-                    (-2F - if (shouldRender) 6F else 0F) * backgroundScale,
-                    -2F * backgroundScale,
-                    font.getStringWidth(displayText) + 2F * backgroundScale,
-                    (font.FONT_HEIGHT / 2F) * backgroundScale,
+                    ((-2F - if (shouldRender) 6F else 0F) * (1F + backgroundScale)) * (showBlockScale * 1.15F),
+                    (-2F * (1F + backgroundScale)) * showBlockScale,
+                    ((font.getStringWidth(displayText) + 2F) + backgroundScale) + showBlockScale,
+                    (font.FONT_HEIGHT * backgroundScale.coerceIn(1.2F, 2F)) * showBlockScale,
                     backgroundBorder,
                     bgBorderColors.color().rgb,
                     roundedBackgroundRadius
@@ -360,10 +361,11 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
             updateElement()
         }
 
-        return Border((-2F - if (shouldRender) 6F else 0F) * backgroundScale,
-            -2F * backgroundScale,
-            font.getStringWidth(displayText) + 2F * backgroundScale,
-            (font.FONT_HEIGHT / 2F) * backgroundScale
+        return Border(
+            ((-2F - if (shouldRender) 6F else 0F) * (1F + backgroundScale)) * (showBlockScale * 1.15F),
+            (-2F * (1F + backgroundScale)) * showBlockScale,
+            ((font.getStringWidth(displayText) + 2F) + backgroundScale) + showBlockScale,
+            (font.FONT_HEIGHT * backgroundScale.coerceIn(1.2F, 2F)) * showBlockScale,
         )
     }
 

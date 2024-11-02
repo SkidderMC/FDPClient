@@ -206,7 +206,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         override fun isSupported() = allowClutching && scaffoldMode !in arrayOf("Telly", "Expand")
         override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceIn(minimum, maximum)
     }
-    private val blockSafe by BoolValue("BlockSafe", false)
+    private val blockSafe by BoolValue("BlockSafe", false) { !isGodBridgeEnabled }
 
     // Eagle
     private val eagleValue =
@@ -960,7 +960,11 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
                 computeFactor(rotationDifference, hSpeed) to computeFactor(rotationDifference, vSpeed)
             else hSpeed to vSpeed
 
-            options.instant = blockSafe && rotationDifference > (factorH + factorV) / 2f
+            val simPlayer = SimulatedPlayer.fromClientPlayer(player.movementInput)
+            simPlayer.tick()
+            // We don't want to use block safe all the time, so we check if it's not needed.
+            options.instant = blockSafe && simPlayer.fallDistance > player.fallDistance + 0.05 &&
+                    rotationDifference > (factorH + factorV) / 2f
 
             setRotation(placeRotation.rotation, if (scaffoldMode == "Telly") 1 else options.resetTicks)
         }
