@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.ccbluex.liquidbounce.utils.ClassUtils;
 import net.ccbluex.liquidbounce.utils.ColorSettingsKt;
+import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils;
 import net.ccbluex.liquidbounce.utils.render.FakeItemRender;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientShader;
@@ -144,13 +145,16 @@ public abstract class MixinGuiInGame extends Gui {
 
         if (mc.getRenderViewEntity() instanceof EntityPlayer) {
             EntityPlayer entityPlayer = (EntityPlayer) mc.getRenderViewEntity();
-            int slot = entityPlayer.inventory.currentItem;
+            float slot = entityPlayer.inventory.currentItem;
 
             if (FakeItemRender.INSTANCE.getFakeItem() != -1) {
                 slot = FakeItemRender.INSTANCE.getFakeItem();
             }
 
             if (hud.handleEvents() && hud.getCustomHotbar()) {
+                if (hud.getSmoothHotbarSlot()) {
+                    slot = InventoryUtils.INSTANCE.getLerpedSlot();
+                }
                 int middleScreen = sr.getScaledWidth() / 2;
                 int height = sr.getScaledHeight() - 1;
 
@@ -201,7 +205,7 @@ public abstract class MixinGuiInGame extends Gui {
                 }
 
                 // Inner - Highlight
-                render.drawRoundedRectInt(
+                render.drawRoundedRect(
                         middleScreen - 91 - 1 + slot * 20 + 1, height - 22,
                         middleScreen - 91 - 1 + slot * 20 + 23, height - 23 - 1 + 24,
                         hud.getHbHighlightColors().color().getRGB(),
@@ -218,7 +222,7 @@ public abstract class MixinGuiInGame extends Gui {
                 );
 
                 // Border - Highlight
-                render.drawRoundedBorderInt(
+                render.drawRoundedBorder(
                         middleScreen - 91 - 1 + slot * 20 + 1, height - 22,
                         middleScreen - 91 - 1 + slot * 20 + 23, height - 23 - 1 + 24,
                         hud.getHotbarBorder(),

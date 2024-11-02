@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.other.ChestAura
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.render.FakeItemRender
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.TickedActions
 import net.minecraft.block.BlockBush
@@ -60,6 +61,8 @@ object InventoryUtils : MinecraftInstance(), Listenable {
     // Backing fields
     private var _serverSlot = 0
     private var _serverOpenInventory = false
+
+    var lerpedSlot = 0f
 
     var isFirstInventoryClick = true
 
@@ -275,6 +278,17 @@ object InventoryUtils : MinecraftInstance(), Listenable {
         }
 
         return false
+    }
+
+    @EventTarget
+    fun onRender3D(event: Render3DEvent) {
+        val slotToUse = if (FakeItemRender.fakeItem != -1) {
+            FakeItemRender.fakeItem
+        } else mc.thePlayer?.inventory?.currentItem ?: 0
+        // Could just use serverSlot, but that would also mean getting slots from modules like Scaffold
+        // Where AutoBlock Spoof mode could be enabled and the user would maybe not like to see that
+        // (SilentHotbar module needed for this one)
+        lerpedSlot += (slotToUse - lerpedSlot) * 0.1f
     }
 
     @EventTarget

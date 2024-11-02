@@ -30,6 +30,7 @@ import java.awt.Color
 object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDetecting = false, hideModule = true) {
 
     val customHotbar by BoolValue("CustomHotbar", true)
+    val smoothHotbarSlot by BoolValue("SmoothHotbarSlot", true) { customHotbar }
     val roundedHotbarRadius by FloatValue("RoundedHotbar-Radius", 0F, 0F..5F) { customHotbar }
     val hotbarMode by ListValue("Hotbar-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom") { customHotbar }
     val hbHighlightColors = ColorSettingsInteger(this, "Hotbar-Highlight-Colors", applyMax = true)
