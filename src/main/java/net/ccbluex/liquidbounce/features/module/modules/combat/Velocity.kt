@@ -12,13 +12,13 @@ import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.isOnGround
 import net.ccbluex.liquidbounce.utils.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.PacketUtils.queuedPackets
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.toDegrees
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
@@ -474,7 +474,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
 
                 "grimc03" -> {
                     // Checks to prevent from getting flagged (BadPacketsE)
-                    if (isMoving) {
+                    if (thePlayer.isMoving) {
                         hasReceivedVelocity = true
                         event.cancelEvent()
                     }

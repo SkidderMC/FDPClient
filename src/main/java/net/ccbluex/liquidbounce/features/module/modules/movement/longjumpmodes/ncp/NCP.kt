@@ -10,8 +10,8 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump.canBoo
 import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump.jumped
 import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump.ncpBoost
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.LongJumpMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.speed
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 
 object NCP : LongJumpMode("NCP") {
     override fun onUpdate() {
@@ -20,7 +20,7 @@ object NCP : LongJumpMode("NCP") {
     }
 
     override fun onMove(event: MoveEvent) {
-        if (!isMoving && jumped) {
+        if (!mc.thePlayer.isMoving && jumped) {
             mc.thePlayer.motionX = 0.0
             mc.thePlayer.motionZ = 0.0
             event.zeroXZ()

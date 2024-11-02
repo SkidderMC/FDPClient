@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
@@ -104,7 +103,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
         if (ignoreWholeTick)
             return
 
-        if (pauseOnNoMove && !isMoving) {
+        if (pauseOnNoMove && !player.isMoving) {
             blink()
             return
         }

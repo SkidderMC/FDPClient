@@ -294,7 +294,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
         val fontRenderer = font
 
         // Scale
-        val scale = ((player.getDistanceSq(pos.xCoord, pos.yCoord, pos.zCoord) / 8F).coerceAtLeast(1.5) / 100F) * scale
+        val scale = (((player.getDistanceSq(pos.xCoord, pos.yCoord, pos.zCoord) / 8F).coerceIn(1.5, 5.0) / 100F) * scale)
         glScaled(-scale, -scale, scale)
 
         // Draw text

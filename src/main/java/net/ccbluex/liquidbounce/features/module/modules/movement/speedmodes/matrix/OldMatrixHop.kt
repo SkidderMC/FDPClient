@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.matrix
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 
 object OldMatrixHop : SpeedMode("OldMatrixHop") {
@@ -15,8 +15,8 @@ object OldMatrixHop : SpeedMode("OldMatrixHop") {
     override fun onUpdate() {
         val player = mc.thePlayer ?: return
         if (player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
-        
-        if (isMoving) {
+
+        if (player.isMoving) {
             if (player.onGround) {
                 player.tryJump()
                 player.speedInAir = 0.02098f

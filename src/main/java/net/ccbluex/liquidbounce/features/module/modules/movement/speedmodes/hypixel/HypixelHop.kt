@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.hypixel
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 
 object HypixelHop : SpeedMode("HypixelHop") {
@@ -16,7 +16,7 @@ object HypixelHop : SpeedMode("HypixelHop") {
         if (player.isInWater || player.isInLava)
             return
 
-        if (player.onGround && isMoving) {
+        if (player.onGround && player.isMoving) {
             if (player.isUsingItem) {
                 player.tryJump()
             } else {

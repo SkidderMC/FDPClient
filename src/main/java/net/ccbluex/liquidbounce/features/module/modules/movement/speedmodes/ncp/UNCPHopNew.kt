@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.ncp
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.minecraft.potion.Potion
 
@@ -35,7 +35,7 @@ object UNCPHopNew : SpeedMode("UNCPHopNew") {
             return
         }
 
-        if (!isMoving || player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
+        if (!player.isMoving || player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
 
         if (player.onGround) {
             if (Speed.lowHop) player.motionY = 0.4 else player.tryJump()

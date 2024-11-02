@@ -11,9 +11,9 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.combat.SuperKnockback
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.RotationUtils.activeSettings
 import net.ccbluex.liquidbounce.utils.RotationUtils.currentRotation
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -68,7 +68,7 @@ object Sprint : Module("Sprint", Category.MOVEMENT, gameDetecting = false, hideM
                 player.isSprinting = false
                 isSprinting = false
                 return
-            } else if (Scaffold.sprint && Scaffold.eagle == "Normal" && isMoving && player.onGround && Scaffold.eagleSneaking && Scaffold.eagleSprint) {
+            } else if (Scaffold.sprint && Scaffold.eagle == "Normal" && player.isMoving && player.onGround && Scaffold.eagleSneaking && Scaffold.eagleSprint) {
                 player.isSprinting = true
                 isSprinting = true
                 return
@@ -98,7 +98,7 @@ object Sprint : Module("Sprint", Category.MOVEMENT, gameDetecting = false, hideM
             movementInput.moveForward
         }
 
-        if (!isMoving) {
+        if (!player.isMoving) {
             return true
         }
 

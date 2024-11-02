@@ -6,14 +6,14 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.aac
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 
 object AACHop5 : SpeedMode("AACHop5") {
     override fun onUpdate() {
         val thePlayer = mc.thePlayer ?: return
 
-        if (!isMoving || thePlayer.isInWater || thePlayer.isInLava || thePlayer.isOnLadder || thePlayer.isRiding)
+        if (!thePlayer.isMoving || thePlayer.isInWater || thePlayer.isInLava || thePlayer.isOnLadder || thePlayer.isRiding)
             return
 
         if (thePlayer.onGround) {

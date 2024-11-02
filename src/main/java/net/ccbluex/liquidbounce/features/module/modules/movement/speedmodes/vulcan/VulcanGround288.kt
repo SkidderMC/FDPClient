@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vul
 import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.potion.Potion
 
@@ -18,7 +18,7 @@ object VulcanGround288 : SpeedMode("VulcanGround288") {
         val player = mc.thePlayer ?: return
         if (player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
 
-        if (isMoving && collidesBottom()) {
+        if (player.isMoving && collidesBottom()) {
             val speedEffect = player.getActivePotionEffect(Potion.moveSpeed)
             val isAffectedBySpeed = speedEffect != null && speedEffect.amplifier > 0
             val isMovingSideways = player.moveStrafing != 0f

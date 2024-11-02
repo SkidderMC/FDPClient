@@ -11,10 +11,10 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold.searchMode
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold.shouldGoDown
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.extensions.getBlock
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.blocksAmount
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
@@ -97,7 +97,7 @@ object Tower : MinecraftInstance(), Listenable {
 
         isTowering = false
 
-        if (towerModeValues.get() == "None" || notOnMoveValues.get() && isMoving ||
+        if (towerModeValues.get() == "None" || notOnMoveValues.get() && player.isMoving ||
             onJumpValues.get() && !mc.gameSettings.keyBindJump.isKeyDown) {
             return
         }
@@ -127,7 +127,7 @@ object Tower : MinecraftInstance(), Listenable {
                 return
             if (towerModeValues.get() == "None" || towerModeValues.get() == "Jump")
                 return
-            if (notOnMoveValues.get() && isMoving)
+            if (notOnMoveValues.get() && mc.thePlayer.isMoving)
                 return
             if (Speed.state || Flight.state)
                 return
@@ -258,7 +258,7 @@ object Tower : MinecraftInstance(), Listenable {
                 if (player.ticksExisted % 2 == 0) {
                     player.motionY = 0.7
                 } else {
-                    player.motionY = if (isMoving) 0.42 else 0.6
+                    player.motionY = if (player.isMoving) 0.42 else 0.6
                 }
             }
 
@@ -291,7 +291,7 @@ object Tower : MinecraftInstance(), Listenable {
         val packet = event.packet
 
         if (towerModeValues.get() == "Vulcan2.9.0" && packet is C04PacketPlayerPosition &&
-            !isMoving && player.ticksExisted % 2 == 0) {
+            !player.isMoving && player.ticksExisted % 2 == 0) {
             packet.x += 0.1
             packet.z += 0.1
         }

@@ -12,9 +12,9 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.matrixTim
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.matrixUsePreMotion
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.matrixVeloBoostValue
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import kotlin.math.sqrt
@@ -36,7 +36,7 @@ object MatrixSpeeds : SpeedMode("MatrixSpeeds") {
         when (matrixSpeed) {
             "MatrixHop2" -> {
                 mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
-                if (isMoving) {
+                if (mc.thePlayer.isMoving) {
                     if (mc.thePlayer.onGround) {
                         mc.gameSettings.keyBindJump.pressed = false
                         mc.timer.timerSpeed = 1.0f
@@ -68,14 +68,14 @@ object MatrixSpeeds : SpeedMode("MatrixSpeeds") {
                 } else {
                     timer(0.95f)
                 }
-                if (mc.thePlayer.onGround && isMoving) {
+                if (mc.thePlayer.onGround && mc.thePlayer.isMoving) {
                     mc.gameSettings.keyBindJump.pressed = false
                     timer(1.03f)
                     mc.thePlayer.jump()
                     if (mc.thePlayer.movementInput.moveStrafe <= 0.01 && mc.thePlayer.movementInput.moveStrafe >= -0.01) {
                         strafe((speed * 1.0071).toFloat())
                     }
-                } else if (!isMoving) {
+                } else if (!mc.thePlayer.isMoving) {
                     timer(1.0f)
                 }
                 if (speed < 0.22)
@@ -89,7 +89,7 @@ object MatrixSpeeds : SpeedMode("MatrixSpeeds") {
                 mc.thePlayer.motionY -= 0.00348
                 mc.thePlayer.jumpMovementFactor = 0.026f
                 mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
-                if (isMoving && mc.thePlayer.onGround) {
+                if (mc.thePlayer.isMoving && mc.thePlayer.onGround) {
                     mc.gameSettings.keyBindJump.pressed = false
                     mc.timer.timerSpeed = 1.35f
                     wasTimer = true
@@ -121,14 +121,14 @@ object MatrixSpeeds : SpeedMode("MatrixSpeeds") {
                 } else {
                     timer(0.95f)
                 }
-                if (mc.thePlayer.onGround && isMoving) {
+                if (mc.thePlayer.onGround && mc.thePlayer.isMoving) {
                     mc.gameSettings.keyBindJump.pressed = false
                     timer(1.03f)
                     mc.thePlayer.jump()
                     if (mc.thePlayer.movementInput.moveStrafe <= 0.01 && mc.thePlayer.movementInput.moveStrafe >= -0.01) {
                         strafe((speed * 1.0071).toFloat())
                     }
-                } else if (!isMoving) {
+                } else if (!mc.thePlayer.isMoving) {
                     timer(1.0f)
                 }
                 if (speed < 0.22)

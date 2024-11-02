@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.aac
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 
 object AACHop4 : SpeedMode("AACHop4") {
@@ -15,7 +15,7 @@ object AACHop4 : SpeedMode("AACHop4") {
 
         mc.timer.timerSpeed = 1f
 
-        if (!isMoving || thePlayer.isInWater || thePlayer.isInLava || thePlayer.isOnLadder || thePlayer.isRiding)
+        if (!thePlayer.isMoving || thePlayer.isInWater || thePlayer.isInLava || thePlayer.isOnLadder || thePlayer.isRiding)
             return
 
         if (thePlayer.onGround)

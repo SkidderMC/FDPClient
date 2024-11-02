@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.verusYPor
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.verusSpeed
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.minecraft.network.play.client.C03PacketPlayer
 
 object VerusSpeeds : SpeedMode("VerusSpeeds") {
@@ -28,7 +28,7 @@ object VerusSpeeds : SpeedMode("VerusSpeeds") {
     override fun onUpdate() {
         when (verusSpeed) {
             "OldHop" -> {
-                if (isMoving) {
+                if (mc.thePlayer.isMoving) {
                     mc.gameSettings.keyBindJump.pressed = false
                     if (mc.thePlayer.onGround) {
                         mc.thePlayer.jump()
@@ -102,7 +102,7 @@ object VerusSpeeds : SpeedMode("VerusSpeeds") {
     override fun onMove(event: MoveEvent) {
         when (verusSpeed) {
             "YPort" -> {
-                if (isMoving) {
+                if (mc.thePlayer.isMoving) {
                     mc.gameSettings.keyBindJump.pressed = false
                     if (mc.thePlayer.onGround) {
                         mc.thePlayer.jump()
@@ -115,7 +115,7 @@ object VerusSpeeds : SpeedMode("VerusSpeeds") {
                 }
             }
            "YPort2" -> {
-               if (isMoving) {
+               if (mc.thePlayer.isMoving) {
                    mc.gameSettings.keyBindJump.pressed = false
                    if (mc.thePlayer.onGround) {
                        MovementUtils.strafe(verusYPort2speedValue)

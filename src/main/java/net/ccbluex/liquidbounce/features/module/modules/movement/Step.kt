@@ -10,9 +10,9 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Phase
 import net.ccbluex.liquidbounce.utils.MovementUtils.direction
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -91,7 +91,7 @@ object Step : Module("Step", Category.MOVEMENT, gameDetecting = false, hideModul
                     thePlayer.onGround = true
                 } else isStep = false
             "AAC3.3.4" ->
-                if (thePlayer.isCollidedHorizontally && isMoving) {
+                if (thePlayer.isCollidedHorizontally && thePlayer.isMoving) {
                     if (thePlayer.onGround && couldStep()) {
                         thePlayer.motionX *= 1.26
                         thePlayer.motionZ *= 1.26

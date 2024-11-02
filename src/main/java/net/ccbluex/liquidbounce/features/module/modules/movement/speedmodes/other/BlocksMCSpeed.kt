@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.oth
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.minecraft.potion.Potion
 
 object BlocksMCSpeed : SpeedMode("Custom") {
@@ -27,7 +28,7 @@ object BlocksMCSpeed : SpeedMode("Custom") {
             mc.timer.timerSpeed = 0.98f
         }
       
-        if (MovementUtils.isMoving) {
+        if (mc.thePlayer.isMoving) {
             if (mc.thePlayer.onGround) {
                 mc.timer.timerSpeed = 1.2f
                 wasSlow = false

@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.ncp
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.minecraft.potion.Potion
 
@@ -19,7 +19,7 @@ object UNCPHop : SpeedMode("UNCPHop") {
         val player = mc.thePlayer ?: return
         if (player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
 
-        if (isMoving) {
+        if (player.isMoving) {
             if (player.onGround) {
                 speed = if (player.isPotionActive(Potion.moveSpeed)
                     && player.getActivePotionEffect(Potion.moveSpeed).amplifier >= 1)

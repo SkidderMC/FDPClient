@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.ncp
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import kotlin.math.cos
 import kotlin.math.sin
@@ -15,7 +15,7 @@ import kotlin.math.sin
 object NCPYPort : SpeedMode("NCPYPort") {
     private var jumps = 0
     override fun onMotion() {
-        if (mc.thePlayer.isOnLadder || mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || !isMoving || mc.thePlayer.isInWater) return
+        if (mc.thePlayer.isOnLadder || mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isInWeb || !mc.thePlayer.isMoving || mc.thePlayer.isInWater) return
         if (jumps >= 4 && mc.thePlayer.onGround) jumps = 0
         if (mc.thePlayer.onGround) {
             mc.thePlayer.motionY = if (jumps <= 1) 0.42 else 0.4

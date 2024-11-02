@@ -9,8 +9,8 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump
 import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump.autoDisable
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.LongJumpMode
 import net.ccbluex.liquidbounce.script.api.global.Chat
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.stopXZ
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
@@ -22,7 +22,7 @@ object VerusDamage : LongJumpMode("VerusDamage") {
     override fun onEnable() {
         val player = mc.thePlayer ?: return
         // Otherwise you'll get flagged.
-        if (!isMoving) {
+        if (!player.isMoving) {
             Chat.print("Pls move while toggling LongJump. Using AutoJump option is recommended.")
             return
         }
@@ -48,7 +48,7 @@ object VerusDamage : LongJumpMode("VerusDamage") {
         /**
          * You can long jump up to 13-14+ blocks
          */
-        if (damaged && isMoving) {
+        if (damaged && player.isMoving) {
             player.jumpMovementFactor = 0.15f
             player.motionY += 0.015f
 

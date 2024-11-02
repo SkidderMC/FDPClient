@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -58,7 +57,7 @@ object FreeCam : Module("FreeCam", Category.VISUAL, gameDetecting = false, hideM
         }
 
         val velocity = Vec3_ZERO.apply {
-            strafe(speed = speed, moveCheck = !isMoving)
+            strafe(speed = speed, moveCheck = !mc.thePlayer.isMoving)
 
             this.yCoord = yAxisMovement * speed
         }

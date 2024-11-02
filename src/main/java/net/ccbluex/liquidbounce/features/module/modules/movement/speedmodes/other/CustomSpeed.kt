@@ -16,8 +16,8 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.notOnCons
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.notOnFalling
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.notOnVoid
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.stopXZ
 import net.ccbluex.liquidbounce.utils.extensions.stopY
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
@@ -46,7 +46,7 @@ object CustomSpeed : SpeedMode("Custom") {
             return
         }
 
-        if (isMoving) {
+        if (player.isMoving) {
             if (player.onGround) {
                 if (customGroundStrafe > 0) {
                     strafe(customGroundStrafe)

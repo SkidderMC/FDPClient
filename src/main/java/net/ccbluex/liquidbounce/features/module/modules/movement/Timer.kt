@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.ListValue
 
@@ -28,7 +28,9 @@ object Timer : Module("Timer", Category.MOVEMENT, gameDetecting = false, hideMod
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (mode == "Always" || mode == "OnMove" && isMoving || mode == "NoMove" && !isMoving) {
+        val player = mc.thePlayer ?: return
+
+        if (mode == "Always" || mode == "OnMove" && player.isMoving || mode == "NoMove" && !player.isMoving) {
             mc.timer.timerSpeed = speed
             return
         }

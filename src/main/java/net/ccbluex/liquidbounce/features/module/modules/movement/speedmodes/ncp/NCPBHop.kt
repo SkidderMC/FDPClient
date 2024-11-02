@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.ncp
 
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.minecraft.potion.Potion
 import java.math.BigDecimal
@@ -47,14 +47,14 @@ object NCPBHop : SpeedMode("NCPBHop") {
         if (timerDelay != 0) {
             mc.timer.timerSpeed = 1f
         } else {
-            if (isMoving) mc.timer.timerSpeed = 32767f // What?
-            if (isMoving) {
+            if (mc.thePlayer.isMoving) mc.timer.timerSpeed = 32767f // What?
+            if (mc.thePlayer.isMoving) {
                 mc.timer.timerSpeed = 1.3f
                 mc.thePlayer.motionX *= 1.0199999809265137
                 mc.thePlayer.motionZ *= 1.0199999809265137
             }
         }
-        if (mc.thePlayer.onGround && isMoving) level = 2
+        if (mc.thePlayer.onGround && mc.thePlayer.isMoving) level = 2
         if (round(mc.thePlayer.posY - mc.thePlayer.posY.toInt().toDouble()) == round(0.138)) {
             val thePlayer = mc.thePlayer
 
@@ -62,7 +62,7 @@ object NCPBHop : SpeedMode("NCPBHop") {
             event.y -= 0.09316090325960147
             thePlayer.posY -= 0.09316090325960147
         }
-        if (level == 1 && isMoving) {
+        if (level == 1 && mc.thePlayer.isMoving) {
             level = 2
             moveSpeed = 1.35 * baseMoveSpeed - 0.01
         } else if (level == 2) {
@@ -105,7 +105,7 @@ object NCPBHop : SpeedMode("NCPBHop") {
         event.z = forward.toDouble() * moveSpeed * mz2 - strafe.toDouble() * moveSpeed * mx2
         mc.thePlayer.stepHeight = 0.6f
 
-        if (!isMoving) event.zeroXZ()
+        if (!mc.thePlayer.isMoving) event.zeroXZ()
     }
 
     private val baseMoveSpeed: Double

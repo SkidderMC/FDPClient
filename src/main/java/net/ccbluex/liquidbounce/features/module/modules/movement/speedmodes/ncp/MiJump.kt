@@ -6,13 +6,13 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.ncp
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 
 object MiJump : SpeedMode("MiJump") {
     override fun onMotion() {
-        if (!isMoving) return
+        if (!mc.thePlayer.isMoving) return
         if (mc.thePlayer.onGround && !mc.thePlayer.movementInput.jump) {
             mc.thePlayer.motionY += 0.1
             val multiplier = 1.8

@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.intave
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.NoWebMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 
 object IntaveNew : NoWebMode("IntaveNew") {
@@ -18,7 +18,7 @@ object IntaveNew : NoWebMode("IntaveNew") {
             return
         }
 
-        if (isMoving && thePlayer.moveStrafing == 0.0f) {
+        if (thePlayer.isMoving && thePlayer.moveStrafing == 0.0f) {
             if (thePlayer.onGround) {
                 if (mc.thePlayer.ticksExisted % 3 == 0) {
                     strafe(0.734f)

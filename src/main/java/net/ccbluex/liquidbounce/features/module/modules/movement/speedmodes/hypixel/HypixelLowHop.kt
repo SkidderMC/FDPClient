@@ -8,9 +8,9 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.hyp
 import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.glide
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.minecraft.potion.Potion
 
@@ -25,7 +25,7 @@ object HypixelLowHop : SpeedMode("HypixelLowHop") {
 
     override fun onUpdate() {
         val player = mc.thePlayer ?: return
-        if (!isMoving || player.fallDistance > 1.2) return
+        if (!player.isMoving || player.fallDistance > 1.2) return
 
         if (player.onGround) {
             player.tryJump()
@@ -66,7 +66,7 @@ object HypixelLowHop : SpeedMode("HypixelLowHop") {
 
     override fun onJump(event: JumpEvent) {
         val player = mc.thePlayer ?: return
-        if (!isMoving) return
+        if (!player.isMoving) return
         val atLeast = 0.281F + 0.13F * (player.getActivePotionEffect(Potion.moveSpeed)?.amplifier ?: 0)
 
         strafe(speed = speed.coerceAtLeast(atLeast))

@@ -6,35 +6,19 @@
 package net.ccbluex.liquidbounce.utils.inventory
 
 import kotlinx.coroutines.*
-import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoArmor
-import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner
 import net.ccbluex.liquidbounce.features.module.modules.other.ChestStealer
-import net.ccbluex.liquidbounce.injection.implementations.IMixinItemStack
+import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner
 import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.serverOnGround
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.timeSinceClosedInventory
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils
-import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.utils.timing.TimeUtils
 import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.gui.inventory.GuiInventory
-import net.minecraft.enchantment.Enchantment
-import net.minecraft.init.Blocks
 import net.minecraft.item.*
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import net.minecraft.network.play.client.C09PacketHeldItemChange
-import java.lang.System.currentTimeMillis
-import java.util.stream.Collectors
-import java.util.stream.IntStream
 
 object InventoryManager : MinecraftInstance() {
 
@@ -191,8 +175,7 @@ object InventoryManager : MinecraftInstance() {
 		}
 
 	fun canClickInventory(closeWhenViolating: Boolean = false) =
-		if (noMoveValue.get() && isMoving && if (serverOnGround) noMoveGroundValue.get() else noMoveAirValue.get()) {
-
+		if (noMoveValue.get() && mc.thePlayer.isMoving && if (serverOnGround) noMoveGroundValue.get() else noMoveAirValue.get()) {
 			// NoMove check is violated, close simulated inventory
 			if (closeWhenViolating)
 				serverOpenInventory = false

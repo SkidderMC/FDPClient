@@ -24,7 +24,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.veru
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanGround288
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanLowHop
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -181,7 +181,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         if (thePlayer.isSneaking)
             return
 
-        if (isMoving && !sprintManually)
+        if (thePlayer.isMoving && !sprintManually)
             thePlayer.isSprinting = true
 
         modeModule.onUpdate()
@@ -194,7 +194,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         if (thePlayer.isSneaking || event.eventState != EventState.PRE)
             return
 
-        if (isMoving && !sprintManually)
+        if (thePlayer.isMoving && !sprintManually)
             thePlayer.isSprinting = true
 
         modeModule.onMotion()

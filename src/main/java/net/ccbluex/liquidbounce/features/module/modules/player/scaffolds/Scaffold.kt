@@ -374,7 +374,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         randomDelay(minHorizontalPlacements.get(), maxHorizontalPlacements.get())
     private var verticalPlacements = randomDelay(minVerticalPlacements.get(), maxVerticalPlacements.get())
     private val shouldPlaceHorizontally
-        get() = scaffoldMode == "Telly" && MovementUtils.isMoving && (startHorizontally && blocksUntilAxisChange <= horizontalPlacements || !startHorizontally && blocksUntilAxisChange > verticalPlacements)
+        get() = scaffoldMode == "Telly" && mc.thePlayer.isMoving && (startHorizontally && blocksUntilAxisChange <= horizontalPlacements || !startHorizontally && blocksUntilAxisChange > verticalPlacements)
 
     // <--
 
@@ -483,7 +483,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         val player = mc.thePlayer
 
         // Jumping needs to be done here, so it doesn't get detected by movement-sensitive anti-cheats.
-        if (scaffoldMode == "Telly" && player.onGround && MovementUtils.isMoving && currRotation == player.rotation && ticksUntilJump >= jumpTicks) {
+        if (scaffoldMode == "Telly" && player.onGround && player.isMoving && currRotation == player.rotation && ticksUntilJump >= jumpTicks) {
             player.tryJump()
 
             ticksUntilJump = 0
@@ -613,7 +613,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     }
 
     private fun setRotation(rotation: Rotation, ticks: Int) {
-        if (scaffoldMode == "Telly" && MovementUtils.isMoving) {
+        if (scaffoldMode == "Telly" && mc.thePlayer.isMoving) {
             if (offGroundTicks < ticksUntilRotation.get() && ticksUntilJump >= jumpTicks) {
                 return
             }
@@ -850,7 +850,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         val player = mc.thePlayer ?: return
 
         val shouldBother =
-            !(shouldGoDown || scaffoldMode == "Expand" && expandLength > 1) && extraClicks && (MovementUtils.isMoving || MovementUtils.speed > 0.03)
+            !(shouldGoDown || scaffoldMode == "Expand" && expandLength > 1) && extraClicks && (player.isMoving || MovementUtils.speed > 0.03)
 
         if (shouldBother) {
             currRotation.let {
@@ -962,6 +962,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
             val simPlayer = SimulatedPlayer.fromClientPlayer(player.movementInput)
             simPlayer.tick()
+
             // We don't want to use block safe all the time, so we check if it's not needed.
             options.instant = blockSafe && simPlayer.fallDistance > player.fallDistance + 0.05 &&
                     rotationDifference > (factorH + factorV) / 2f
@@ -1249,7 +1250,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
         if (!player.isNearEdge(2.5f)) return
 
-        if (!MovementUtils.isMoving) {
+        if (!player.isMoving) {
             placeRotation?.run {
                 val axisMovement = floor(this.rotation.yaw / 90) * 90
 

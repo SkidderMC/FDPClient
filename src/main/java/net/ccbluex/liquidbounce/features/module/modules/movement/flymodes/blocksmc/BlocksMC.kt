@@ -12,9 +12,9 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.stopOnNo
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.timerSlowed
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
 import net.ccbluex.liquidbounce.script.api.global.Chat
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
@@ -55,7 +55,7 @@ object BlocksMC : FlyMode("BlocksMC") {
                 Flight.state = false
             }
 
-            if (!isMoving && stopOnNoMove) {
+            if (!player.isMoving && stopOnNoMove) {
                 if (debugFly)
                     Chat.print("No Movement Detected.. Stopping Fly. (Could be flagged)")
                 Flight.state = false

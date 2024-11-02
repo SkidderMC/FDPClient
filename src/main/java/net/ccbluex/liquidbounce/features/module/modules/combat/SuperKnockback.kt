@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.RotationUtils.angleDifference
@@ -115,7 +114,7 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT, hideModule = f
                 endExclusive = 100
             ) > chance) return
 
-        if (onlyMove && (!isMoving || onlyMoveForward && player.movementInput.moveStrafe != 0f)) return
+        if (onlyMove && (!player.isMoving || onlyMoveForward && player.movementInput.moveStrafe != 0f)) return
 
         // Is the enemy facing his back on us?
         if (angleDifferenceToPlayer > minEnemyRotDiffToIgnore && !target.hitBox.isVecInside(player.eyes)) return

@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.canClickInventory
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.hasScheduledInLastLoop
@@ -133,7 +134,7 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
             serverOpenInventory = true
         }
 
-        if (noMoveClicksValue && MovementUtils.isMoving) {
+        if (noMoveClicksValue && mc.thePlayer.isMoving) {
             event.cancelEvent()
         }
     }

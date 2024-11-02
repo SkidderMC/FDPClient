@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.int
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.isMoving
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 
 object IntaveHop14 : SpeedMode("IntaveHop14") {
@@ -16,7 +16,7 @@ object IntaveHop14 : SpeedMode("IntaveHop14") {
     override fun onUpdate() {
         val player = mc.thePlayer ?: return
 
-        if (!isMoving || player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
+        if (!player.isMoving || player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
 
         if (player.onGround) {
             player.tryJump()
