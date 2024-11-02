@@ -33,7 +33,9 @@ import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeOutBack
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.GlStateManager.resetColor
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.glColor4f
 import java.awt.Color
 import java.math.BigDecimal
 import kotlin.math.abs
@@ -128,6 +130,9 @@ class Notification(
      * Draw notification
      */
     fun drawNotification(index: Int, parent: Notifications.Companion, originalX: Float, originalY: Float): Boolean {
+        resetColor()
+        glColor4f(1f, 1f, 1f, 1f)
+
         val nowTime = System.currentTimeMillis()
         val style = parent.styleValue
         val realY = -(index + 1) * height
@@ -237,7 +242,7 @@ class Notification(
             val y = firstYz
             val kek = -x - 1 - 20F
 
-            GlStateManager.resetColor()
+            resetColor()
             Stencil.write(true)
 
             when (type) {
@@ -303,13 +308,12 @@ class Notification(
             }
 
             Stencil.erase(true)
-            GlStateManager.resetColor()
+            resetColor()
             Stencil.dispose()
 
             GL11.glPushMatrix()
             GlStateManager.disableAlpha()
-            GlStateManager.resetColor()
-            GL11.glColor4f(1F, 1F, 1F, 1F)
+            resetColor()
             val pn = when (type.name) {
                 "SUCCESS" -> APIConnecter.callImage("checkmarkIDE", "notifications")
                 "ERROR" -> APIConnecter.callImage("errorIDE", "notifications")
@@ -459,7 +463,7 @@ class Notification(
                 ).toString() + "s)", 34F, 17F, -1
             )
 
-            GlStateManager.resetColor()
+            resetColor()
             return false
         }
 

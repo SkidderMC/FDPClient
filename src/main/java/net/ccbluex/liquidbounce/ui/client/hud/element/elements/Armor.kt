@@ -19,7 +19,10 @@ import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.block.material.Material
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager.*
+import net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting
+import net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting
 import net.minecraft.item.ItemStack
+import org.lwjgl.opengl.GL11.glColor4f
 
 /**
  * CustomHUD Armor element
@@ -68,6 +71,9 @@ class Armor(
         val x = 1
         val y = if (isInsideWater) -10 else 0
 
+        resetColor()
+        glColor4f(1F, 1F, 1F, 1F)
+
         val currentTime = System.currentTimeMillis()
         if (currentTime - blinkTimer >= 500) {
             blinkState = !blinkState
@@ -97,8 +103,10 @@ class Armor(
         for (i in 3 downTo 0) {
             val stack = player.inventory.armorInventory[i] ?: continue
 
+            enableGUIStandardItemLighting()
             renderItem.renderItemIntoGUI(stack, x, y)
             renderItem.renderItemOverlays(mc.fontRendererObj, stack, x, y)
+            disableStandardItemLighting()
 
             pushMatrix()
             drawAttributesAndEnchantments(stack, x, y, color)
