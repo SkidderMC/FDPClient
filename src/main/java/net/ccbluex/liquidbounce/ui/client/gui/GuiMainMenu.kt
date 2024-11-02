@@ -17,12 +17,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts.minecraftFont
 import net.ccbluex.liquidbounce.utils.APIConnecter.bugs
 import net.ccbluex.liquidbounce.utils.APIConnecter.canConnect
 import net.ccbluex.liquidbounce.utils.APIConnecter.changelogs
-import net.ccbluex.liquidbounce.utils.APIConnecter.checkBugs
-import net.ccbluex.liquidbounce.utils.APIConnecter.checkChangelogs
-import net.ccbluex.liquidbounce.utils.APIConnecter.checkStatus
 import net.ccbluex.liquidbounce.utils.APIConnecter.isLatest
-import net.ccbluex.liquidbounce.utils.APIConnecter.loadDonors
-import net.ccbluex.liquidbounce.utils.APIConnecter.loadPictures
 import net.ccbluex.liquidbounce.utils.GitUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawShadowRect
@@ -30,6 +25,7 @@ import net.minecraft.client.gui.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.client.GuiModList
+import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
 
@@ -100,8 +96,9 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             width - 55,
             7
         )
+
         btnConnectAPI = ImageButton(
-            "Connect API",
+            "CHECK API",
             ResourceLocation("fdpclient/mainmenu/reload.png"),
             width - 37,
             7
@@ -126,13 +123,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 btnCosmetics.hoverFade > 0 -> mc.displayGuiScreen(GuiTheme())
                 btnClickGUI.hoverFade > 0 -> mc.displayGuiScreen(ClickGui)
                 btnAddAccount.hoverFade > 0 -> mc.displayGuiScreen(GuiAltManager(this))
-                btnConnectAPI.hoverFade > 0 -> {
-                    checkStatus()
-                    checkChangelogs()
-                    checkBugs()
-                    loadPictures()
-                    loadDonors()
-                }
+                btnConnectAPI.hoverFade > 0 -> mc.displayGuiScreen(GuiUpdate())
             }
         }
     }
@@ -147,6 +138,10 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawBackground(0)
+
+        if (Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
+            mc.displayGuiScreen(ClickGui)
+        }
 
         GlStateManager.pushMatrix()
         drawShadowRect(
