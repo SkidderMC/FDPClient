@@ -769,10 +769,4 @@ object RotationUtils : MinecraftInstance(), Listenable {
             else -> point
         }
     }
-
-    /**
-     * @return YESSSS!
-     */
-    override fun handleEvents() = true
-
 }

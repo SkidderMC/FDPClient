@@ -144,7 +144,7 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
             if (thePlayer.fallDistance < 1.5f && !simPlayer.onGround && simPlayer.fallDistance >= maxFallDistance) {
                 shouldBlink = true
             } else if (BlinkUtils.isBlinking) {
-                WaitTickUtils.scheduleTicks(blinkDelay) {
+                WaitTickUtils.schedule(blinkDelay) {
                     shouldBlink = false
                     BlinkUtils.cancel()
                 }

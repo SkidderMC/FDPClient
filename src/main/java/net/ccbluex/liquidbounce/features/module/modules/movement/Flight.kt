@@ -32,7 +32,6 @@ import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.RotationSettings
 import net.ccbluex.liquidbounce.utils.extensions.stop
 import net.ccbluex.liquidbounce.utils.extensions.stopXZ
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverSlot
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
@@ -228,7 +227,6 @@ object Flight : Module("Fly", Category.MOVEMENT, Keyboard.KEY_F, hideModule = fa
 
         wasFired = false
         firePosition = null
-        serverSlot = thePlayer.inventory.currentItem
         thePlayer.capabilities.isFlying = wasFlying
         mc.timer.timerSpeed = 1f
         thePlayer.speedInAir = 0.02f
@@ -244,7 +242,7 @@ object Flight : Module("Fly", Category.MOVEMENT, Keyboard.KEY_F, hideModule = fa
     @EventTarget
     fun onTick(event: GameTickEvent) {
         if (mode == "Fireball" && wasFired) {
-            WaitTickUtils.scheduleTicks(2) {
+            WaitTickUtils.schedule(2) {
                 Flight.state = false
             }
         }

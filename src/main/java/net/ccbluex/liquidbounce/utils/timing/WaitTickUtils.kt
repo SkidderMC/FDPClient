@@ -15,14 +15,16 @@ object WaitTickUtils : MinecraftInstance(), Listenable {
 
     private val scheduledActions = mutableListOf<ScheduledAction>()
 
-    fun scheduleTicks(ticks: Int, action: () -> Unit) {
-        if (ticks == 0) {
+    fun schedule(ticks: Int, action: () -> Unit) = conditionalSchedule(ticks) { action(); true }
+
+    fun conditionalSchedule(ticks: Int? = null, action: () -> Boolean) {
+        if (ticks != null && ticks == 0) {
             action()
 
             return
         }
 
-        scheduledActions.add(ScheduledAction(ClientUtils.runTimeTicks + ticks, action))
+        scheduledActions += ScheduledAction(ClientUtils.runTimeTicks + (ticks ?: 0), action)
     }
 
     @EventTarget(priority = -1)
@@ -32,14 +34,13 @@ object WaitTickUtils : MinecraftInstance(), Listenable {
 
         while (iterator.hasNext()) {
             val scheduledAction = iterator.next()
-            if (currentTick >= scheduledAction.ticks) {
-                scheduledAction.action.invoke()
+
+            if (currentTick >= scheduledAction.ticks && scheduledAction.action()) {
                 iterator.remove()
             }
         }
     }
 
-    private data class ScheduledAction(val ticks: Int, val action: () -> Unit)
+    private data class ScheduledAction(val ticks: Int, val action: () -> Boolean)
 
-    override fun handleEvents() = true
 }

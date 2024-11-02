@@ -6,13 +6,16 @@
 package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
+import net.ccbluex.liquidbounce.utils.SilentHotbar
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
+import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
@@ -68,7 +71,7 @@ object AutoPlay : Module("AutoPlay", Category.PLAYER, gameDetecting = false, hid
      * Update Event
      */
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    fun onGameTick(event: GameTickEvent) {
         val player = mc.thePlayer ?: return
 
         if (!playerInGame() || !player.inventory.hasItemStack(ItemStack(Items.paper))) {
@@ -84,11 +87,10 @@ object AutoPlay : Module("AutoPlay", Category.PLAYER, gameDetecting = false, hid
             "Paper" -> {
                 val paper = InventoryUtils.findItem(36, 44, Items.paper) ?: return
 
-                player.inventory.currentItem = (paper - 36)
-                mc.playerController.updateController()
+                SilentHotbar.selectSlotSilently(this, paper, immediate = true, resetManually = true)
 
                 if (delayTick >= delay) {
-                    mc.playerController.sendUseItem(player, mc.theWorld, player.inventoryContainer.getSlot(paper).stack)
+                    mc.playerController.sendUseItem(player, mc.theWorld, player.hotBarSlot(paper).stack)
                     delayTick = 0
                 }
             }

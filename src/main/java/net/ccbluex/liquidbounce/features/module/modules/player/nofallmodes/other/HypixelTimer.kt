@@ -31,7 +31,7 @@ object HypixelTimer : NoFallMode("HypixelTimer") {
                 packet.onGround = true
                 player.fallDistance = 0f
 
-                WaitTickUtils.scheduleTicks(1) {
+                WaitTickUtils.schedule(1) {
                     mc.timer.timerSpeed = 1f
                 }
             }

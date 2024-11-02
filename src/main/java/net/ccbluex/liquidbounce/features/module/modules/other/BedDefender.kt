@@ -10,17 +10,14 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.CPSCounter
+import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.Rotation
-import net.ccbluex.liquidbounce.utils.RotationSettings
-import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils.getVectorForRotation
 import net.ccbluex.liquidbounce.utils.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isBlockBBValid
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverSlot
+import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -45,7 +42,10 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
     private val autoBlock by ListValue("AutoBlock", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof")
     private val swing by BoolValue("Swing", true)
     private val placeDelay by IntegerValue("PlaceDelay", 500, 0..1000)
-    private val raycastMode by ListValue("Raycast", arrayOf("None", "Normal", "Around"), "Normal") { options.rotationsActive }
+    private val raycastMode by ListValue("Raycast",
+        arrayOf("None", "Normal", "Around"),
+        "Normal"
+    ) { options.rotationsActive }
     private val scannerMode by ListValue("Scanner", arrayOf("Nearest", "Random"), "Nearest")
 
     private val options = RotationSettings(this).apply {
@@ -62,7 +62,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
     private val bedBottomPositions = mutableListOf<BlockPos>()
 
     private val timerCounter = MSTimer()
-    private var blockPosition: BlockPos ?= null
+    private var blockPosition: BlockPos? = null
 
     override fun onDisable() {
         val player = mc.thePlayer ?: return
@@ -76,10 +76,6 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
         defenceBlocks.clear()
         bedTopPositions.clear()
         bedBottomPositions.clear()
-
-        TickScheduler += {
-            serverSlot = player.inventory.currentItem
-        }
     }
 
     // TODO: Proper event to update.
@@ -185,30 +181,24 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
     private fun placeBlock(blockPos: BlockPos, side: EnumFacing, hitVec: Vec3) {
         val player = mc.thePlayer ?: return
 
-        var stack = player.inventoryContainer.getSlot(serverSlot + 36).stack
+        var stack = player.inventorySlot(SilentHotbar.currentSlot + 36).stack
 
         if (stack == null || stack.item !is ItemBlock || (stack.item as ItemBlock).block is BlockBush
             || InventoryUtils.BLOCK_BLACKLIST.contains((stack.item as ItemBlock).block) || stack.stackSize <= 0) {
             val blockSlot = InventoryUtils.findBlockInHotbar() ?: return
 
-            when (autoBlock.lowercase()) {
-                "off" -> return
-
-                "pick" -> {
-                    player.inventory.currentItem = blockSlot - 36
-                    mc.playerController.updateController()
-                }
-
-                "spoof", "switch" -> serverSlot = blockSlot - 36
+            if (autoBlock != "Off") {
+                SilentHotbar.selectSlotSilently(this, blockSlot, immediate = true, render = autoBlock == "Pick", resetManually = true)
             }
-            stack = player.inventoryContainer.getSlot(blockSlot).stack
+
+            stack = player.inventorySlot(blockSlot).stack
         }
 
         tryToPlaceBlock(stack, blockPos, side, hitVec)
 
         // Since we violate vanilla slot switch logic if we send the packets now, we arrange them for the next tick
         if (autoBlock == "Switch")
-            serverSlot = player.inventory.currentItem
+            SilentHotbar.resetSlot(this, true)
 
         switchBlockNextTickIfPossible(stack)
 
@@ -233,7 +223,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
             if (swing) player.swingItem() else sendPacket(C0APacketAnimation())
 
             if (stack.stackSize <= 0) {
-                player.inventory.mainInventory[serverSlot] = null
+                player.inventory.mainInventory[SilentHotbar.currentSlot] = null
                 ForgeEventFactory.onPlayerDestroyItem(player, stack)
             } else if (stack.stackSize != prevSize || mc.playerController.isInCreativeMode)
                 mc.entityRenderer.itemRenderer.resetEquippedProgress()
@@ -266,18 +256,14 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
     }
 
     private fun switchBlockNextTickIfPossible(stack: ItemStack) {
-        val player = mc.thePlayer ?: return
-        if (autoBlock in arrayOf("Off","Switch")) return
-        if (stack.stackSize > 0) return
+        if (autoBlock in arrayOf("Off", "Switch") || stack.stackSize > 0)
+            return
 
         val switchSlot = InventoryUtils.findBlockInHotbar() ?: return
 
         TickScheduler += {
-            if (autoBlock == "Pick") {
-                player.inventory.currentItem = switchSlot - 36
-                mc.playerController.updateController()
-            } else {
-                serverSlot = switchSlot - 36
+            if (autoBlock != "Off") {
+                SilentHotbar.selectSlotSilently(this, switchSlot, immediate = true, render = autoBlock == "Pick", resetManually = true)
             }
         }
     }

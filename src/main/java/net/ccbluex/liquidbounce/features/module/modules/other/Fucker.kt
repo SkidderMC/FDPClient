@@ -239,10 +239,7 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
                     return
                 }
 
-                // Auto Tool
-                if (AutoTool.handleEvents()) {
-                    AutoTool.switchSlot(currentPos)
-                }
+                EventManager.callEvent(ClickBlockEvent(currentPos, raytrace.sideHit))
 
                 // Break block
                 if (instant && !hypixel) {

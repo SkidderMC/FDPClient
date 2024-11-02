@@ -10,29 +10,29 @@ import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.SnakeGame;
 import net.ccbluex.liquidbounce.features.module.modules.visual.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
+import net.ccbluex.liquidbounce.features.module.modules.visual.SilentHotbarModule;
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.ccbluex.liquidbounce.utils.ClassUtils;
+import net.ccbluex.liquidbounce.utils.SilentHotbar;
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils;
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsKt;
-import net.ccbluex.liquidbounce.utils.render.FakeItemRender;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientShader;
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiIngame;
-import net.minecraft.client.gui.GuiStreamIndicator;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.RenderHelper;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -45,29 +45,6 @@ import static org.lwjgl.opengl.GL11.glEnable;
 @Mixin(GuiIngame.class)
 @SideOnly(Side.CLIENT)
 public abstract class MixinGuiInGame extends Gui {
-
-
-    @Shadow
-    @Final
-    protected static ResourceLocation widgetsTexPath = new ResourceLocation("textures/gui/widgets.png");
-
-    @Shadow
-    protected int recordPlayingUpFor;
-    @Shadow
-    protected int titlesTimer;
-    @Shadow
-    protected String displayedTitle = "";
-    @Shadow
-    protected String displayedSubTitle = "";
-    @Shadow
-    protected int updateCounter;
-    @Shadow
-    @Final
-    protected GuiStreamIndicator streamIndicator;
-    @Shadow
-    protected int remainingHighlightTicks;
-    @Shadow
-    protected ItemStack highlightingItemStack;
 
     @Shadow
     protected abstract void renderHotbarItem(int index, int xPos, int yPos, float partialTicks, EntityPlayer player);
@@ -91,52 +68,17 @@ public abstract class MixinGuiInGame extends Gui {
             callbackInfo.cancel();
     }
 
-    /**
-     * @author SuperSkidder
-     * @reason keep fake item highlight name
-     */
-    @Overwrite
-    public void updateTick() {
-        if (this.recordPlayingUpFor > 0) {
-            --this.recordPlayingUpFor;
-        }
+    @Redirect(method = "updateTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/InventoryPlayer;getCurrentItem()Lnet/minecraft/item/ItemStack;"))
+    private ItemStack hookSilentHotbarHighlightedName(InventoryPlayer instance) {
+        SilentHotbarModule module = SilentHotbarModule.INSTANCE;
 
-        if (this.titlesTimer > 0) {
-            --this.titlesTimer;
-            if (this.titlesTimer <= 0) {
-                this.displayedTitle = "";
-                this.displayedSubTitle = "";
-            }
-        }
+        int slot = SilentHotbar.INSTANCE.renderSlot(module.handleEvents() && module.getKeepHighlightedName());
 
-        ++this.updateCounter;
-        this.streamIndicator.updateStreamAlpha();
-        if (mc.thePlayer != null) {
-            int slot = mc.thePlayer.inventory.currentItem;
-            if (FakeItemRender.INSTANCE.getFakeItem() != -1) {
-                slot = FakeItemRender.INSTANCE.getFakeItem();
-            }
-            ItemStack lvt_1_1_ = mc.thePlayer.inventory.getStackInSlot(slot);
-
-            if (lvt_1_1_ == null) {
-                this.remainingHighlightTicks = 0;
-            } else if (this.highlightingItemStack == null || lvt_1_1_.getItem() != this.highlightingItemStack.getItem() || !ItemStack.areItemStackTagsEqual(lvt_1_1_, this.highlightingItemStack) || !lvt_1_1_.isItemStackDamageable() && lvt_1_1_.getMetadata() != this.highlightingItemStack.getMetadata()) {
-                this.remainingHighlightTicks = 40;
-            } else if (this.remainingHighlightTicks > 0) {
-                --this.remainingHighlightTicks;
-            }
-
-            this.highlightingItemStack = lvt_1_1_;
-        }
-
+        return instance.getStackInSlot(slot);
     }
 
-    /**
-     * @author CCBlueX & SuperSkidder
-     * @reason custom hotbar and fake item
-     */
-    @Overwrite
-    protected void renderTooltip(ScaledResolution sr, float partialTicks) {
+    @Inject(method = "renderTooltip", at = @At("HEAD"), cancellable = true)
+    private void injectCustomHotbar(ScaledResolution resolution, float delta, CallbackInfo ci) {
         final HUDModule hud = HUDModule.INSTANCE;
         final RenderUtils render = RenderUtils.INSTANCE;
 
@@ -144,16 +86,13 @@ public abstract class MixinGuiInGame extends Gui {
             EntityPlayer entityPlayer = (EntityPlayer) mc.getRenderViewEntity();
             float slot = entityPlayer.inventory.currentItem;
 
-            if (FakeItemRender.INSTANCE.getFakeItem() != -1) {
-                slot = FakeItemRender.INSTANCE.getFakeItem();
-            }
-
             if (hud.handleEvents() && hud.getCustomHotbar()) {
                 if (hud.getSmoothHotbarSlot()) {
                     slot = InventoryUtils.INSTANCE.getLerpedSlot();
                 }
-                int middleScreen = sr.getScaledWidth() / 2;
-                int height = sr.getScaledHeight() - 1;
+
+                int middleScreen = resolution.getScaledWidth() / 2;
+                int height = resolution.getScaledHeight() - 1;
 
                 float gradientOffset = (System.currentTimeMillis() % 10000) / 10000f;
 
@@ -235,48 +174,22 @@ public abstract class MixinGuiInGame extends Gui {
                 for (int j = 0; j < 9; ++j) {
                     int l = height - 16 - 3;
                     int k = middleScreen - 90 + j * 20 + 2;
-                    renderHotbarItem(j, k, l, partialTicks, entityPlayer);
+                    renderHotbarItem(j, k, l, delta, entityPlayer);
                 }
 
                 RenderHelper.disableStandardItemLighting();
                 disableRescaleNormal();
                 disableBlend();
 
-                EventManager.INSTANCE.callEvent(new Render2DEvent(partialTicks));
-                AWTFontRenderer.Companion.garbageCollectionTick();
-            } else {
-                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
-                mc.getTextureManager().bindTexture(widgetsTexPath);
-                int lvt_4_1_ = sr.getScaledWidth() / 2;
-                float lvt_5_1_ = this.zLevel;
-                this.zLevel = -90.0F;
-                this.drawTexturedModalRect(lvt_4_1_ - 91, sr.getScaledHeight() - 22, 0, 0, 182, 22);
-                this.drawTexturedModalRect(lvt_4_1_ - 91 - 1 + slot * 20, sr.getScaledHeight() - 22 - 1, 0, 22, 24, 22);
-                this.zLevel = lvt_5_1_;
-                GlStateManager.enableRescaleNormal();
-                GlStateManager.enableBlend();
-                GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0);
-                RenderHelper.enableGUIStandardItemLighting();
-
-                for (int lvt_6_1_ = 0; lvt_6_1_ < 9; ++lvt_6_1_) {
-                    int lvt_7_1_ = sr.getScaledWidth() / 2 - 90 + lvt_6_1_ * 20 + 2;
-                    int lvt_8_1_ = sr.getScaledHeight() - 16 - 3;
-                    this.renderHotbarItem(lvt_6_1_, lvt_7_1_, lvt_8_1_, partialTicks, entityPlayer);
-                }
-
-                RenderHelper.disableStandardItemLighting();
-                GlStateManager.disableRescaleNormal();
-                GlStateManager.disableBlend();
+                ci.cancel();
             }
         }
+        liquidBounce$updateGarbageCollection(delta);
     }
 
     @Inject(method = "renderTooltip", at = @At("RETURN"))
-    private void renderTooltipPost(ScaledResolution sr, float partialTicks, CallbackInfo callbackInfo) {
-        if (!ClassUtils.INSTANCE.hasClass("net.labymod.api.LabyModAPI")) {
-            EventManager.INSTANCE.callEvent(new Render2DEvent(partialTicks));
-            AWTFontRenderer.Companion.garbageCollectionTick();
-        }
+    private void renderTooltipPost(ScaledResolution sr, float delta, CallbackInfo callbackInfo) {
+        liquidBounce$updateGarbageCollection(delta);
     }
 
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
@@ -293,6 +206,14 @@ public abstract class MixinGuiInGame extends Gui {
 
         if (antiBlind.handleEvents() && antiBlind.getBossHealth())
             callbackInfo.cancel();
+    }
+
+    @Unique
+    private void liquidBounce$updateGarbageCollection(float delta) {
+        if (!ClassUtils.INSTANCE.hasClass("net.labymod.api.LabyModAPI")) {
+            EventManager.INSTANCE.callEvent(new Render2DEvent(delta));
+            AWTFontRenderer.Companion.garbageCollectionTick();
+        }
     }
 
     private void renderItem(int i, int x, int y , EntityPlayer player) {

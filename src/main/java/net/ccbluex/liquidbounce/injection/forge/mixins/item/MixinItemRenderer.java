@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Animation;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.visual.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.visual.Chams;
-import net.ccbluex.liquidbounce.utils.render.FakeItemRender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -23,7 +22,6 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
@@ -83,45 +81,6 @@ public abstract class MixinItemRenderer {
 
     @Shadow
     public abstract void renderItem(EntityLivingBase entityIn, ItemStack heldStack, ItemCameraTransforms.TransformType transform);
-
-    @Shadow
-    private int equippedItemSlot = -1;
-
-    /**
-     * @author SuperSkidder
-     * @reason Make fake items render correctly
-     */
-    @Overwrite
-    public void updateEquippedItem() {
-        this.prevEquippedProgress = this.equippedProgress;
-        EntityPlayer entityplayer = this.mc.thePlayer;
-        ItemStack itemstack = entityplayer.inventory.getCurrentItem();
-        if (FakeItemRender.INSTANCE.getFakeItem() != -1) {
-            itemstack = entityplayer.inventory.getStackInSlot(FakeItemRender.INSTANCE.getFakeItem());
-        }
-        boolean flag = false;
-        if (this.itemToRender != null && itemstack != null) {
-            if (!this.itemToRender.getIsItemStackEqual(itemstack)) {
-                if (!this.itemToRender.getItem().shouldCauseReequipAnimation(this.itemToRender, itemstack, this.equippedItemSlot != entityplayer.inventory.currentItem)) {
-                    this.itemToRender = itemstack;
-                    this.equippedItemSlot = entityplayer.inventory.currentItem;
-                    return;
-                }
-
-                flag = true;
-            }
-        } else flag = this.itemToRender != null || itemstack != null;
-
-        float f = 0.4F;
-        float f1 = flag ? 0.0F : 1.0F;
-        float f2 = MathHelper.clamp_float(f1 - this.equippedProgress, -f, f);
-        this.equippedProgress += f2;
-        if (this.equippedProgress < 0.1F) {
-            this.itemToRender = itemstack;
-            this.equippedItemSlot = entityplayer.inventory.currentItem;
-        }
-
-    }
 
     /**
      * @author Zywl

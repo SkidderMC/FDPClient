@@ -21,7 +21,6 @@ import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.extensions.getPing
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverSlot
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsFloat
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -197,7 +196,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
                 "sneak", "sneaking" -> return (thePlayer.isSneaking || mc.gameSettings.keyBindSneak.isKeyDown)
                 "sprint", "sprinting" -> return (thePlayer.serverSprintState || thePlayer.isSprinting || mc.gameSettings.keyBindSprint.isKeyDown)
                 "inventory", "inv" -> return mc.currentScreen is GuiInventory || mc.currentScreen is GuiContainer
-                "serverslot" -> return serverSlot
+                "serverslot" -> return SilentHotbar.currentSlot
                 "clientslot" -> return thePlayer.inventory?.currentItem
                 "bps", "blockpersecond" -> return DECIMAL_FORMAT.format(BPSUtils.getBPS())
                 "blockamount", "blockcount" -> return InventoryUtils.blocksAmount()
@@ -257,7 +256,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
      * Draw element
      */
     override fun drawElement(): Border {
-        val stack = mc.thePlayer?.inventory?.getStackInSlot(serverSlot)
+        val stack = mc.thePlayer?.inventory?.getStackInSlot(SilentHotbar.currentSlot)
         val shouldRender = showBlock && stack != null && stack.item is ItemBlock
 
         if ((Scaffold.handleEvents() && onScaffold) || !onScaffold) {

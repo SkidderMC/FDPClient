@@ -23,7 +23,7 @@ import net.ccbluex.liquidbounce.utils.block.PlaceInfo
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.blocksAmount
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverSlot
+import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timing.DelayTimer
@@ -46,9 +46,7 @@ import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
 import net.minecraftforge.event.ForgeEventFactory
 import org.lwjgl.input.Keyboard
-import org.lwjgl.opengl.GL11
 import java.awt.Color
-import javax.vecmath.Color3f
 import kotlin.math.*
 
 object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule = false) {
@@ -594,7 +592,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
         simPlayer.tick()
 
-        if (!simPlayer.onGround  && !isManualJumpOptionActive || blocksPlacedUntilJump > blocksToJump) {
+        if (!simPlayer.onGround && !isManualJumpOptionActive || blocksPlacedUntilJump > blocksToJump) {
             event.originalInput.jump = true
 
             blocksPlacedUntilJump = 0
@@ -689,10 +687,13 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     private fun place(placeInfo: PlaceInfo) {
         val player = mc.thePlayer ?: return
         val world = mc.theWorld ?: return
+
         if (!delayTimer.hasTimePassed() || shouldKeepLaunchPosition && launchY - 1 != placeInfo.vec3.yCoord.toInt() && scaffoldMode != "Expand")
             return
 
-        var stack = player.inventoryContainer.getSlot(serverSlot + 36).stack
+        val currentSlot = SilentHotbar.currentSlot
+
+        var stack = player.hotBarSlot(currentSlot).stack
 
         //TODO: blacklist more blocks than only bushes
         if (stack == null || stack.item !is ItemBlock || (stack.item as ItemBlock).block is BlockBush || stack.stackSize <= 0 || sortByHighestAmount || earlySwitch) {
@@ -704,17 +705,16 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
                 InventoryUtils.findBlockInHotbar() ?: return
             }
 
-            when (autoBlock.lowercase()) {
-                "off" -> return
-
-                "pick" -> {
-                    player.inventory.currentItem = blockSlot - 36
-                    mc.playerController.updateController()
-                }
-
-                "spoof", "switch" -> serverSlot = blockSlot - 36
+            if (autoBlock != "Off") {
+                SilentHotbar.selectSlotSilently(this,
+                    blockSlot,
+                    immediate = true,
+                    render = autoBlock == "Pick",
+                    resetManually = true
+                )
             }
-            stack = player.inventoryContainer.getSlot(blockSlot).stack
+
+            stack = player.hotBarSlot(blockSlot).stack
         }
 
         // Line 437-440
@@ -732,7 +732,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         tryToPlaceBlock(stack, placeInfo.blockPos, placeInfo.enumFacing, placeInfo.vec3)
 
         if (autoBlock == "Switch")
-            serverSlot = player.inventory.currentItem
+            SilentHotbar.resetSlot(this, true)
 
         // Since we violate vanilla slot switch logic if we send the packets now, we arrange them for the next tick
         switchBlockNextTickIfPossible(stack)
@@ -746,7 +746,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         val player = mc.thePlayer ?: return
         val world = mc.theWorld ?: return
 
-        val stack = player.inventoryContainer.getSlot(serverSlot + 36).stack ?: return
+        val stack = player.hotBarSlot(SilentHotbar.currentSlot).stack ?: return
 
         if (stack.item !is ItemBlock || InventoryUtils.BLOCK_BLACKLIST.contains((stack.item as ItemBlock).block)) {
             return
@@ -816,9 +816,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         placeRotation = null
         mc.timer.timerSpeed = 1f
 
-        TickScheduler += {
-            serverSlot = player.inventory.currentItem
-        }
+        SilentHotbar.resetSlot(this)
 
         options.instant = false
     }
@@ -1064,13 +1062,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     private fun compareDifferences(
         new: PlaceRotation, old: PlaceRotation?, rotation: Rotation = currRotation,
     ): PlaceRotation {
-        if (old == null || rotationDifference(
-                new.rotation,
-                rotation
-            ) < rotationDifference(
-                old.rotation, rotation
-            )
-        ) {
+        if (old == null || rotationDifference(new.rotation, rotation) < rotationDifference(old.rotation, rotation)) {
             return new
         }
 
@@ -1078,8 +1070,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     }
 
     private fun switchBlockNextTickIfPossible(stack: ItemStack) {
-        val player = mc.thePlayer ?: return
-
         if (autoBlock in arrayOf("Off", "Switch"))
             return
 
@@ -1094,24 +1084,15 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             InventoryUtils.findBlockInHotbar()
         } ?: return
 
-        TickScheduler += {
-            if (autoBlock == "Pick") {
-                player.inventory.currentItem = switchSlot - 36
-                mc.playerController.updateController()
-            } else {
-                serverSlot = switchSlot - 36
-            }
-        }
+        SilentHotbar.selectSlotSilently(this, switchSlot, render = autoBlock == "Pick", resetManually = true)
     }
 
     private fun updatePlacedBlocksForTelly() {
         if (blocksUntilAxisChange > horizontalPlacements + verticalPlacements) {
             blocksUntilAxisChange = 0
 
-            horizontalPlacements =
-                randomDelay(minHorizontalPlacements.get(), maxHorizontalPlacements.get())
-            verticalPlacements =
-                randomDelay(minVerticalPlacements.get(), maxVerticalPlacements.get())
+            horizontalPlacements = randomDelay(minHorizontalPlacements.get(), maxHorizontalPlacements.get())
+            verticalPlacements = randomDelay(minVerticalPlacements.get(), maxVerticalPlacements.get())
             return
         }
 
@@ -1150,7 +1131,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             updatePlacedBlocksForTelly()
 
             if (stack.stackSize <= 0) {
-                thePlayer.inventory.mainInventory[serverSlot] = null
+                thePlayer.inventory.mainInventory[SilentHotbar.currentSlot] = null
                 ForgeEventFactory.onPlayerDestroyItem(thePlayer, stack)
             } else if (stack.stackSize != prevSize || mc.playerController.isInCreativeMode)
                 mc.entityRenderer.itemRenderer.resetEquippedProgress()

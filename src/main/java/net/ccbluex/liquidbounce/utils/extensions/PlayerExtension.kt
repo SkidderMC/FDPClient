@@ -10,8 +10,8 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils.getFixedSensitivityAngle
+import net.ccbluex.liquidbounce.utils.SilentHotbar
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getState
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverSlot
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.resources.DefaultPlayerSkin
@@ -194,10 +194,12 @@ fun EntityPlayerSP.stop() {
 // Modified mc.playerController.onPlayerRightClick() that sends correct stack in its C08
 fun EntityPlayerSP.onPlayerRightClick(
     clickPos: BlockPos, side: EnumFacing, clickVec: Vec3,
-    stack: ItemStack? = inventory.mainInventory[serverSlot],
+    stack: ItemStack? = inventory.mainInventory[SilentHotbar.currentSlot],
 ): Boolean {
     if (clickPos !in worldObj.worldBorder)
         return false
+
+    mc.playerController?.updateController()
 
     val (facingX, facingY, facingZ) = (clickVec - clickPos.toVec()).toFloatTriple()
 
@@ -256,6 +258,8 @@ fun EntityPlayerSP.sendUseItem(stack: ItemStack): Boolean {
     if (mc.playerController.isSpectator)
         return false
 
+    mc.playerController?.updateController()
+
     sendPacket(C08PacketPlayerBlockPlacement(stack))
 
     val prevSize = stack.stackSize
@@ -264,10 +268,10 @@ fun EntityPlayerSP.sendUseItem(stack: ItemStack): Boolean {
 
     return if (newStack != stack || newStack.stackSize != prevSize) {
         if (newStack.stackSize <= 0) {
-            mc.thePlayer.inventory.mainInventory[serverSlot] = null
+            mc.thePlayer.inventory.mainInventory[SilentHotbar.currentSlot] = null
             ForgeEventFactory.onPlayerDestroyItem(mc.thePlayer, newStack)
         } else
-            mc.thePlayer.inventory.mainInventory[serverSlot] = newStack
+            mc.thePlayer.inventory.mainInventory[SilentHotbar.currentSlot] = newStack
 
         true
     } else false

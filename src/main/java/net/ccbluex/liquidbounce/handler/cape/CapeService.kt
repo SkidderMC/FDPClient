@@ -260,8 +260,6 @@ object CapeService : Listenable, MinecraftInstance() {
         }
     }
 
-    override fun handleEvents() = true
-
 }
 
 data class CapeSelfUser(val token: String, var enabled: Boolean, var uuid: String, val capeName: String)

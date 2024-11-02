@@ -129,6 +129,7 @@ object FDPClient {
             registerListener(BPSUtils)
             registerListener(Tower)
             registerListener(WaitTickUtils)
+            registerListener(SilentHotbar)
 
             // Load client fonts
             loadFonts()

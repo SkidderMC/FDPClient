@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.event
 import java.lang.reflect.Method
 
 interface Listenable {
-    fun handleEvents(): Boolean
+    fun handleEvents() = true
 }
 
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)

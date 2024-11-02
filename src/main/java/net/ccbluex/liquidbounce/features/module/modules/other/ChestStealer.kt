@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.CoroutineUtils.waitUntil
+import net.ccbluex.liquidbounce.utils.SilentHotbar
 import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
 import net.ccbluex.liquidbounce.utils.extensions.shuffled
@@ -29,7 +30,6 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.chestStealerCur
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.chestStealerLastSlot
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.countSpaceInInventory
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.hasSpaceInInventory
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverSlot
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -85,7 +85,11 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
     val backgroundRed by IntegerValue("Background-R", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
     val backgroundGreen by IntegerValue("Background-G", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
     val backgroundBlue by IntegerValue("Background-B", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
-    val backgroundAlpha by IntegerValue("Background-Alpha", 255, 0..255, subjective = true) { highlightSlot && !silentGUI }
+    val backgroundAlpha by IntegerValue("Background-Alpha",
+        255,
+        0..255,
+        subjective = true
+    ) { highlightSlot && !silentGUI }
 
     val borderStrength by IntegerValue("Border-Strength", 3, 1..5, subjective = true) { highlightSlot && !silentGUI }
     val borderRed by IntegerValue("Border-R", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
@@ -171,7 +175,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
                 itemsToSteal.forEachIndexed { index, (slot, stack, sortableTo) ->
                     // Wait for NoMove or cancel click
                     if (!shouldOperate()) {
-                        TickScheduler += { serverSlot = thePlayer.inventory.currentItem }
+                        TickScheduler += { SilentHotbar.resetSlot() }
                         chestStealerCurrentSlot = -1
                         chestStealerLastSlot = -1
                         return
@@ -240,7 +244,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
                 progress = 1f
                 delay(closeDelay.toLong())
 
-                TickScheduler += { serverSlot = thePlayer.inventory.currentItem }
+                TickScheduler += { SilentHotbar.resetSlot() }
                 break
             }
 

@@ -10,7 +10,9 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner.canBeRepairedWithOther
 import net.ccbluex.liquidbounce.utils.CoroutineUtils.waitUntil
+import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
+import net.ccbluex.liquidbounce.utils.SilentHotbar
 import net.ccbluex.liquidbounce.utils.inventory.ArmorComparator.getBestArmorSet
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.autoArmorCurrentSlot
@@ -20,7 +22,6 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.hasScheduledInL
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.passedPostInventoryCloseDelay
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.isFirstInventoryClick
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverSlot
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.toHotbarIndex
 import net.ccbluex.liquidbounce.utils.inventory.hasItemAgePassed
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
@@ -145,7 +146,7 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
 
 		// Sync selected slot next tick
 		if (hasClickedHotbar)
-			TickScheduler += { serverSlot = thePlayer.inventory.currentItem }
+			TickScheduler += { sendPacket(C09PacketHeldItemChange(SilentHotbar.currentSlot)) }
 	}
 
 	suspend fun equipFromInventory() {

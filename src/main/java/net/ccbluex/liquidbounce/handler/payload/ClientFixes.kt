@@ -73,6 +73,4 @@ object ClientFixes : MinecraftInstance(), Listenable {
     fun getClientModName(): String {
         return possibleBrands.get()
     }
-
-    override fun handleEvents() = true
 }

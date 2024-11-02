@@ -6,15 +6,15 @@
 package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.SilentHotbar
 import net.ccbluex.liquidbounce.utils.extensions.sendUseItem
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.isFirstInventoryClick
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverSlot
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -24,7 +24,6 @@ import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.DROP_ITEM
-import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
@@ -51,8 +50,8 @@ object AutoSoup : Module("AutoSoup", Category.PLAYER, hideModule = false) {
     override val tag
         get() = health.toString()
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    @EventTarget(priority = -1)
+    fun onGameTick(event: GameTickEvent) {
         val thePlayer = mc.thePlayer ?: return
 
         if (!timer.hasTimePassed(delay))
@@ -61,18 +60,21 @@ object AutoSoup : Module("AutoSoup", Category.PLAYER, hideModule = false) {
         val soupInHotbar = InventoryUtils.findItem(36, 44, Items.mushroom_stew)
 
         if (thePlayer.health <= health && soupInHotbar != null) {
-            sendPacket(C09PacketHeldItemChange(soupInHotbar - 36))
+            SilentHotbar.selectSlotSilently(this, soupInHotbar, 1, true)
 
-            thePlayer.sendUseItem(thePlayer.inventory.mainInventory[serverSlot])
+            thePlayer.sendUseItem(thePlayer.inventory.mainInventory[SilentHotbar.currentSlot])
 
             // Schedule slot switch the next tick as we violate vanilla logic if we do it now.
             TickScheduler += {
-                if (bowl == "Drop")
-                    sendPacket(C07PacketPlayerDigging(DROP_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
+                if (bowl == "Drop") {
+                    if (!SilentHotbar.isSlotModified(this)) {
+                        SilentHotbar.selectSlotSilently(this, soupInHotbar, 0, true)
+                    }
 
-                TickScheduler += {
-                    serverSlot = thePlayer.inventory.currentItem
+                    sendPacket(C07PacketPlayerDigging(DROP_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
                 }
+
+                SilentHotbar.resetSlot(this)
             }
 
             timer.reset()

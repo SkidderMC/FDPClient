@@ -22,8 +22,10 @@ import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils.getVectorForRotation
+import net.ccbluex.liquidbounce.utils.SilentHotbar
 import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverSlot
+import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
+import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
 import net.ccbluex.liquidbounce.utils.timing.TickedActions
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
@@ -53,6 +55,7 @@ object MLG : NoFallMode("MLG") {
         val maxDist = mc.playerController.blockReachDistance + 1.5
         val collision = fallingPlayer.findCollision(ceil(1.0 / player.motionY * -maxDist).toInt()) ?: return
 
+        // There's gotta be a better way of doing this
         if (player.motionY < collision.pos.y + 1 - player.posY || player.eyes.distanceTo(Vec3(collision.pos).addVector(
                 0.5,
                 0.5,
@@ -62,13 +65,8 @@ object MLG : NoFallMode("MLG") {
             if (player.fallDistance < NoFall.minFallDistance) return
             currentMlgBlock = collision.pos
 
-            when (autoMLG.lowercase()) {
-                "pick" -> {
-                    player.inventory.currentItem = mlgSlot - 36
-                    mc.playerController.updateController()
-                }
-
-                "spoof", "switch" -> serverSlot = mlgSlot - 36
+            if (autoMLG != "Off") {
+                SilentHotbar.selectSlotSilently(this, mlgSlot, immediate = true, render = autoMLG == "Pick", resetManually = true)
             }
 
             currentMlgBlock?.toVec()?.let { RotationUtils.toRotation(it, false, player) }?.run {
@@ -85,7 +83,7 @@ object MLG : NoFallMode("MLG") {
     override fun onTick() {
         val player = mc.thePlayer ?: return
         val mlgSlot = findMlgSlot()
-        val stack = mlgSlot?.let { player.inventoryContainer.getSlot(it).stack } ?: return
+        val stack = mlgSlot?.let { player.hotBarSlot(it).stack } ?: return
 
         if (shouldUse && !bucketUsed) {
             TickedActions.TickScheduler(NoFall) += {
@@ -114,8 +112,8 @@ object MLG : NoFallMode("MLG") {
         }
 
         if (shouldUse) {
-            WaitTickUtils.scheduleTicks(retrieveDelay) {
-                if (!shouldUse) return@scheduleTicks // Without this, it'll retrieve twice idk.
+            WaitTickUtils.schedule(retrieveDelay) {
+                if (!shouldUse) return@schedule // Without this, it'll retrieve twice IDK.
 
                 if (stack.item is ItemBucket) {
                     player.sendUseItem(stack)
@@ -126,8 +124,8 @@ object MLG : NoFallMode("MLG") {
         }
 
         if (mlgInProgress && !shouldUse) {
-            WaitTickUtils.scheduleTicks(retrieveDelay + 2) {
-                serverSlot = player.inventory.currentItem
+            WaitTickUtils.schedule(retrieveDelay + 2) {
+                SilentHotbar.resetSlot(this)
 
                 mlgInProgress = false
                 bucketUsed = false
@@ -136,13 +134,11 @@ object MLG : NoFallMode("MLG") {
     }
 
     private fun placeBlock(blockPos: BlockPos, side: EnumFacing, hitVec: Vec3, stack: ItemStack) {
-        val player = mc.thePlayer ?: return
-
         tryToPlaceBlock(stack, blockPos, side, hitVec)
 
         // Since we violate vanilla slot switch logic if we send the packets now, we arrange them for the next tick
         if (autoMLG == "Switch")
-            serverSlot = player.inventory.currentItem
+            SilentHotbar.resetSlot(this)
 
         switchBlockNextTickIfPossible(stack)
     }
@@ -163,7 +159,7 @@ object MLG : NoFallMode("MLG") {
             if (swing) player.swingItem() else sendPacket(C0APacketAnimation())
 
             if (stack.stackSize <= 0) {
-                player.inventory.mainInventory[serverSlot] = null
+                player.inventory.mainInventory[SilentHotbar.currentSlot] = null
                 ForgeEventFactory.onPlayerDestroyItem(player, stack)
             } else if (stack.stackSize != prevSize || mc.playerController.isInCreativeMode)
                 mc.entityRenderer.itemRenderer.resetEquippedProgress()
@@ -179,20 +175,12 @@ object MLG : NoFallMode("MLG") {
     }
 
     private fun switchBlockNextTickIfPossible(stack: ItemStack) {
-        val player = mc.thePlayer ?: return
-        if (autoMLG in arrayOf("Off", "Switch")) return
-        if (stack.stackSize > 0) return
+        if (autoMLG in arrayOf("Off", "Switch") || stack.stackSize > 0)
+            return
 
         val switchSlot = findMlgSlot() ?: return
 
-        TickedActions.TickScheduler(NoFall) += {
-            if (autoMLG == "Pick") {
-                player.inventory.currentItem = switchSlot - 36
-                mc.playerController.updateController()
-            } else {
-                serverSlot = switchSlot - 36
-            }
-        }
+        SilentHotbar.selectSlotSilently(this, switchSlot, render = autoMLG == "Pick", resetManually = true)
     }
 
     private fun performBlockRaytrace(rotation: Rotation, maxReach: Float): MovingObjectPosition? {
@@ -211,11 +199,11 @@ object MLG : NoFallMode("MLG") {
         val player = mc.thePlayer ?: return null
 
         for (i in 36..44) {
-            val itemStack = player.inventoryContainer.getSlot(i).stack ?: continue
+            val itemStack = player.inventorySlot(i).stack ?: continue
 
             if (itemStack.item == Items.water_bucket ||
                 (itemStack.item is ItemBlock && (itemStack.item as ItemBlock).block == Blocks.web)) {
-                return i
+                return i - 36
             }
         }
 

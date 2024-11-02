@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.canClickInvento
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.CLICK_TIMER
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.utils.inventory.hasItemAgePassed
+import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
@@ -48,7 +49,7 @@ object Refill : Module("Refill", Category.PLAYER, hideModule = false) {
             return
 
         for (slot in 36..44) {
-            val stack = mc.thePlayer.inventoryContainer.getSlot(slot).stack ?: continue
+            val stack = mc.thePlayer.inventorySlot(slot).stack ?: continue
             if (stack.stackSize == stack.maxStackSize || !stack.hasItemAgePassed(minItemAge)) continue
 
             when (mode) {

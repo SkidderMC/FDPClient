@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorder
@@ -22,7 +23,6 @@ import net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting
 import net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
-
 
 @ElementInfo(name = "Inventory")
 class Inventory : Element(300.0, 50.0) {
@@ -55,7 +55,7 @@ class Inventory : Element(300.0, 50.0) {
         val titleColor = if (titleRainbow) ColorUtils.rainbow() else Color(titleRed, titleGreen, titleBlue)
 
         // draw rect and borders
-        drawRoundedRect2(0F, startY, width, height, Color(0,0,0, backgroundAlpha), roundedRectRadius)
+        drawRoundedRect2(0F, startY, width, height, Color(0, 0, 0, backgroundAlpha), roundedRectRadius)
         if (borderValue) {
             drawBorder(0f, startY, width, height, 3f, borderColor.rgb)
             drawRect(0F, 0f, width, 1f, borderColor)
@@ -64,12 +64,23 @@ class Inventory : Element(300.0, 50.0) {
         resetColor()
         glColor4f(1F, 1F, 1F, 1F)
 
-
         val invDisplayName = mc.thePlayer.inventory.displayName.formattedText
+
         when (title.lowercase()) {
-            "center" -> font.drawString(invDisplayName, width / 2 - font.getStringWidth(invDisplayName) / 2F, -(font.FONT_HEIGHT).toFloat(), titleColor.rgb, false)
+            "center" -> font.drawString(invDisplayName,
+                width / 2 - font.getStringWidth(invDisplayName) / 2F,
+                -(font.FONT_HEIGHT).toFloat(),
+                titleColor.rgb,
+                false
+            )
+
             "left" -> font.drawString(invDisplayName, padding, -(font.FONT_HEIGHT).toFloat(), titleColor.rgb, false)
-            "right" -> font.drawString(invDisplayName, width - padding - font.getStringWidth(invDisplayName), -(font.FONT_HEIGHT).toFloat(), titleColor.rgb, false)
+            "right" -> font.drawString(invDisplayName,
+                width - padding - font.getStringWidth(invDisplayName),
+                -(font.FONT_HEIGHT).toFloat(),
+                titleColor.rgb,
+                false
+            )
         }
 
         // render items
@@ -93,7 +104,7 @@ class Inventory : Element(300.0, 50.0) {
         var xOffset = x
         for (i in slot..endSlot) {
             xOffset += 18
-            val stack = mc.thePlayer.inventoryContainer.getSlot(i).stack ?: continue
+            val stack = mc.thePlayer.inventorySlot(i).stack ?: continue
 
             // Prevent overlapping while editing
             if (mc.currentScreen is GuiHudDesigner) glDisable(GL_DEPTH_TEST)

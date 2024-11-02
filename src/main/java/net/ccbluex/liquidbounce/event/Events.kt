@@ -217,6 +217,9 @@ class CameraPositionEvent(
         result = FreeCam.PositionPair(currPos.withY(value), prevPos.withY(value), lastTickPos.withY(value))
     }
 }
+
+class ClientSlotChange(var supposedSlot: Int, var modifiedSlot: Int) : Event()
+
 /**
  * Called when minecraft player will be updated
  */

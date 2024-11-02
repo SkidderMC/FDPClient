@@ -1074,8 +1074,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
             }
 
             if (switchStartBlock) {
-                InventoryUtils.serverSlot = (InventoryUtils.serverSlot + 1) % 9
-                InventoryUtils.serverSlot = player.inventory.currentItem
+                switchToSlot((SilentHotbar.currentSlot + 1) % 9)
             }
 
             sendPacket(C08PacketPlayerBlockPlacement(player.heldItem))
@@ -1092,21 +1091,19 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
      */
     private fun stopBlocking(forceStop: Boolean = false) {
         val player = mc.thePlayer ?: return
-        val currentItem = player.inventory?.currentItem ?: return
 
         if (!forceStop) {
             if (blockStatus && !mc.thePlayer.isBlocking) {
 
                 when (unblockMode.lowercase()) {
-                    "stop" -> sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
-                    "switch" -> {
-                        InventoryUtils.serverSlot = (InventoryUtils.serverSlot + 1) % 9
-                        InventoryUtils.serverSlot = currentItem
+                    "stop" -> {
+                        sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
                     }
-
+                    "switch" -> {
+                        switchToSlot((SilentHotbar.currentSlot + 1) % 9)
+                    }
                     "empty" -> {
-                        InventoryUtils.serverSlot = player.inventory.firstEmptyStack
-                        InventoryUtils.serverSlot = currentItem
+                        switchToSlot(player.inventory.firstEmptyStack)
                     }
                 }
 
@@ -1185,6 +1182,11 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
         }
 
         onFail()
+    }
+
+    private fun switchToSlot(slot: Int) {
+        SilentHotbar.selectSlotSilently(this, slot, immediate = true)
+        SilentHotbar.resetSlot(this, true)
     }
 
     /**

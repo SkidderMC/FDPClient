@@ -37,6 +37,4 @@ object ServerInfoCommand : Command("serverinfo"), Listenable {
         chat("§7ProtocolVersion: §8${data.version}")
         chat("§7Ping: §8${data.pingToServer}")
     }
-
-    override fun handleEvents() = true
 }

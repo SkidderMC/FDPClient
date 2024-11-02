@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.RaycastUtils.raycastEntity
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
+import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -90,7 +91,7 @@ object AutoProjectile : Module("AutoProjectile", Category.COMBAT, hideModule = f
 
                         switchBack = player.inventory.currentItem
 
-                        player.inventory.currentItem = projectile - 36
+                        player.inventory.currentItem = projectile
                         mc.playerController.updateController()
                     }
 
@@ -104,7 +105,7 @@ object AutoProjectile : Module("AutoProjectile", Category.COMBAT, hideModule = f
 
                         switchBack = player.inventory.currentItem
 
-                        player.inventory.currentItem = projectile - 36
+                        player.inventory.currentItem = projectile
                         mc.playerController.updateController()
                     }
 
@@ -121,9 +122,9 @@ object AutoProjectile : Module("AutoProjectile", Category.COMBAT, hideModule = f
         val player = mc.thePlayer ?: return
         val projectile = InventoryUtils.findItemArray(36, 44, arrayOf(snowball, egg)) ?: return
 
-        player.inventory.currentItem = projectile - 36
+        player.inventory.currentItem = projectile
 
-        mc.playerController.sendUseItem(player, mc.theWorld, player.inventoryContainer.getSlot(projectile).stack)
+        mc.playerController.sendUseItem(player, mc.theWorld, player.hotBarSlot(projectile).stack)
 
         projectileInUse = true
         projectilePullTimer.reset()

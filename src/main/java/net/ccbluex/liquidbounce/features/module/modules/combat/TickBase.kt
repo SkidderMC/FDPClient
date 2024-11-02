@@ -143,7 +143,7 @@ object TickBase : Module("TickBase", Category.COMBAT) {
             if (mode == "Past") {
                 ticksToSkip = skipTicks
 
-                WaitTickUtils.scheduleTicks(skipTicks) {
+                WaitTickUtils.schedule(skipTicks) {
                     skip()
 
                     duringTickModification = false
@@ -153,7 +153,7 @@ object TickBase : Module("TickBase", Category.COMBAT) {
 
                 ticksToSkip = skipTicks
 
-                WaitTickUtils.scheduleTicks(skipTicks) {
+                WaitTickUtils.schedule(skipTicks) {
                     duringTickModification = false
                 }
             }

@@ -20,6 +20,7 @@
     "entity.MixinEntityLivingBase",
     "entity.MixinEntityPlayer",
     "entity.MixinEntityPlayerSP",
+    "entity.MixinInventoryPlayer",
     "entity.MixinPlayerControllerMP",
     "gui.MixinGuiButton",
     "gui.MixinGuiButtonExt",

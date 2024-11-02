@@ -7,67 +7,48 @@ package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.event.ClickBlockEvent
 import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.utils.render.FakeItemRender
+import net.ccbluex.liquidbounce.utils.SilentHotbar
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.minecraft.util.BlockPos
 
-object AutoTool :
-    Module("AutoTool", Category.PLAYER, subjective = true, gameDetecting = false, hideModule = false) {
+object AutoTool : Module("AutoTool", Category.PLAYER, subjective = true, gameDetecting = false, hideModule = false) {
 
-    private val fakeItem by BoolValue("FakeItem", false)
     private val switchBack by BoolValue("SwitchBack", false)
     private val onlySneaking by BoolValue("OnlySneaking", false)
 
     @EventTarget
-    fun onClick(event: ClickBlockEvent) {
-        switchSlot(event.clickedBlock ?: return)
-    }
+    fun onGameTick(event: GameTickEvent) {
+        if (!switchBack || mc.gameSettings.keyBindAttack.isKeyDown)
+            return
 
-    var formerSlot = -1;
+        SilentHotbar.resetSlot(this)
+    }
 
     @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        // set fakeItem to null if mouse is not pressed
-        if (!mc.gameSettings.keyBindAttack.isKeyDown) {
-            if (switchBack && formerSlot != -1) {
-                mc.thePlayer.inventory.currentItem = formerSlot
-                formerSlot = -1
-            }
-            FakeItemRender.fakeItem = -1
-        }
-    }
+    fun onClick(event: ClickBlockEvent) {
+        val player = mc.thePlayer ?: return
 
-    fun switchSlot(blockPos: BlockPos) {
-        var bestSpeed = 1F
-        var bestSlot = -1
+        val block = mc.theWorld.getBlockState(event.clickedBlock ?: return).block
 
-        val blockState = mc.theWorld.getBlockState(blockPos)
+        if (onlySneaking && !player.isSneaking || block.getBlockHardness(mc.theWorld, event.clickedBlock) == 0f)
+            return
 
-        if (onlySneaking && !mc.thePlayer.isSneaking) return
+        var fastest = 1f
 
-        for (i in 0..8) {
-            val item = mc.thePlayer.inventory.getStackInSlot(i) ?: continue
-            val speed = item.getStrVsBlock(blockState.block)
+        val slot = (0..8).maxByOrNull {
+            val item = player.inventory.getStackInSlot(it) ?: return@maxByOrNull 1f
 
-            if (speed > bestSpeed) {
-                bestSpeed = speed
-                bestSlot = i
-            }
-        }
+            item.getStrVsBlock(block).also { speed -> fastest = fastest.coerceAtLeast(speed) }
+        } ?: return
 
-        if (bestSlot != -1 && mc.thePlayer.inventory.currentItem != bestSlot) {
-            if (fakeItem && FakeItemRender.fakeItem == -1) {
-                FakeItemRender.fakeItem = mc.thePlayer.inventory.currentItem
-            }
-            if (formerSlot == -1) {
-                formerSlot = mc.thePlayer.inventory.currentItem
-            }
-            mc.thePlayer.inventory.currentItem = bestSlot
-        }
+        if (fastest == (player.currentEquippedItem?.getStrVsBlock(block) ?: 1f))
+            return
 
+        SilentHotbar.selectSlotSilently(this, slot, render = false, resetManually = true)
     }
 
 }

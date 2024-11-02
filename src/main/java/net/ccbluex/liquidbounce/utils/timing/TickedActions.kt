@@ -49,8 +49,6 @@ object TickedActions : Listenable {
     @EventTarget
     fun onWorld(event: WorldEvent) = actions.clear()
 
-    override fun handleEvents() = true
-
     class TickScheduler(val module: Module) : MinecraftInstance() {
         fun schedule(id: Int, allowDuplicates: Boolean = false, action: () -> Unit) =
             schedule(id, module, allowDuplicates, action)

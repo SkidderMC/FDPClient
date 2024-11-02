@@ -5,13 +5,10 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.movement.FastBreak
-import net.ccbluex.liquidbounce.features.module.modules.player.AutoTool
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.RotationSettings
@@ -189,9 +186,7 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
                 currentBlock = blockPos
                 attackedBlocks += blockPos
 
-                // Call auto tool
-                if (AutoTool.handleEvents())
-                    AutoTool.switchSlot(blockPos)
+                EventManager.callEvent(ClickBlockEvent(blockPos, EnumFacing.DOWN))
 
                 // Start block breaking
                 if (currentDamage == 0F) {

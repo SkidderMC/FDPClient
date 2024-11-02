@@ -124,6 +124,4 @@ object GameDetector: Module("GameDetector", Category.CLIENT, gameDetecting = fal
     fun onWorld(event: WorldEvent) {
         isPlaying = false
     }
-
-    override fun handleEvents() = true
 }

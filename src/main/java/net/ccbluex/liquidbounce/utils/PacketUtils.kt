@@ -110,8 +110,6 @@ object PacketUtils : MinecraftInstance(), Listenable {
         }
     }
 
-    override fun handleEvents() = true
-
     @JvmStatic
     fun sendPacket(packet: Packet<*>, triggerEvent: Boolean = true) {
         if (triggerEvent) {

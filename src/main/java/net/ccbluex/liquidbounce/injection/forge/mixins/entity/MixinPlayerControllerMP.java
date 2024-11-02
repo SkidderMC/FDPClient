@@ -7,25 +7,33 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import net.ccbluex.liquidbounce.event.AttackEvent;
 import net.ccbluex.liquidbounce.event.ClickWindowEvent;
+import net.ccbluex.liquidbounce.event.ClientSlotChange;
 import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.AbortBreaking;
 import net.ccbluex.liquidbounce.utils.CooldownHelper;
+import net.ccbluex.liquidbounce.utils.SilentHotbar;
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerControllerMP.class)
 @SideOnly(Side.CLIENT)
 public class MixinPlayerControllerMP {
+
+    @Shadow
+    public int currentPlayerItem;
 
     @Inject(method = "attackEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/PlayerControllerMP;syncCurrentPlayItem()V"))
     private void attackEntity(EntityPlayer entityPlayer, Entity targetEntity, CallbackInfo callbackInfo) {
@@ -51,5 +59,18 @@ public class MixinPlayerControllerMP {
 
         // Only reset click delay, if a click didn't get cancelled
         InventoryUtils.INSTANCE.getCLICK_TIMER().reset();
+    }
+
+    @Redirect(method = "syncCurrentPlayItem", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/InventoryPlayer;currentItem:I"))
+    private int hookSilentHotbar(InventoryPlayer instance) {
+        SilentHotbar silentHotbar = SilentHotbar.INSTANCE;
+
+        int prevSlot = instance.currentItem;
+        int serverSlot = silentHotbar.getCurrentSlot();
+
+        ClientSlotChange event = new ClientSlotChange(prevSlot, serverSlot);
+        EventManager.INSTANCE.callEvent(event);
+
+        return event.getModifiedSlot();
     }
 }
