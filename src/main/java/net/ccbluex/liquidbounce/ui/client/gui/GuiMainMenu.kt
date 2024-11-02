@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColo
 import net.ccbluex.liquidbounce.ui.client.gui.button.ImageButton
 import net.ccbluex.liquidbounce.ui.client.gui.button.QuitButton
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
+import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.Fonts.minecraftFont
 import net.ccbluex.liquidbounce.utils.APIConnecter.bugs
@@ -40,6 +41,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     private lateinit var btnConnectAPI: ImageButton
     private lateinit var btnCommitInfo: ImageButton
     private lateinit var btnCosmetics: ImageButton
+    private lateinit var btnClickGUI: ImageButton
     private lateinit var btnMinecraftOptions: ImageButton
     private lateinit var btnLanguage: ImageButton
     private lateinit var btnForgeModList: ImageButton
@@ -56,6 +58,12 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         btnMultiplayer = GuiButton(1, width / 2 - 66, height / 2 - 80 + 95 - 2, buttonWidth, buttonHeight, "MULTI PLAYER")
         btnClientOptions = GuiButton(2, width / 2 - 66, height / 2 - 80 + 120 - 4, buttonWidth, buttonHeight, "SETTINGS")
 
+        btnClickGUI= ImageButton(
+            "CLICKGUI",
+            ResourceLocation("fdpclient/mainmenu/clickgui.png"),
+            width / 2 - 45,
+            yPos
+        )
         btnCommitInfo = ImageButton(
             "COMMIT INFO",
             ResourceLocation("fdpclient/mainmenu/github.png"),
@@ -116,6 +124,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 btnCommitInfo.hoverFade > 0 -> mc.displayGuiScreen(GuiCommitInfo())
                 btnForgeModList.hoverFade > 0 -> mc.displayGuiScreen(GuiModList(mc.currentScreen))
                 btnCosmetics.hoverFade > 0 -> mc.displayGuiScreen(GuiTheme())
+                btnClickGUI.hoverFade > 0 -> mc.displayGuiScreen(ClickGui)
                 btnAddAccount.hoverFade > 0 -> mc.displayGuiScreen(GuiAltManager(this))
                 btnConnectAPI.hoverFade > 0 -> {
                     checkStatus()
@@ -228,7 +237,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         listOf(btnSinglePlayer, btnMultiplayer, btnClientOptions).forEach {
             it.drawButton(mc, mouseX, mouseY)
         }
-        listOf(btnConnectAPI, btnCommitInfo, btnCosmetics, btnMinecraftOptions, btnLanguage, btnForgeModList, btnAddAccount, btnQuit).forEach {
+        listOf(btnConnectAPI, btnClickGUI, btnCommitInfo, btnCosmetics, btnMinecraftOptions, btnLanguage, btnForgeModList, btnAddAccount, btnQuit).forEach {
             it.drawButton(mouseX, mouseY)
         }
 
