@@ -297,5 +297,5 @@ object Tower : MinecraftInstance(), Listenable {
         }
     }
 
-    override fun handleEvents(): Boolean = Scaffold.handleEvents()
+    override fun handleEvents() = Scaffold.handleEvents() && towerModeValues.get() != "None"
 }
