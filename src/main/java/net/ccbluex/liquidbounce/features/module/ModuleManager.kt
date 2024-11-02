@@ -19,6 +19,7 @@ import java.util.*
 object ModuleManager : Listenable {
 
     val modules = TreeSet<Module> { module1, module2 -> module1.name.compareTo(module2.name) }
+    fun getModuleInCategory(category: Category) = modules.filter { it.category == category }
     private val moduleClassMap = hashMapOf<Class<*>, Module>()
 
     init {

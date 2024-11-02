@@ -37,6 +37,8 @@ import net.ccbluex.liquidbounce.script.remapper.Remapper
 import net.ccbluex.liquidbounce.script.remapper.Remapper.loadSrg
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager.Companion.loadActiveGenerators
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.font.manager.FontManager
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.manager.GUIManager
 import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.updateClientWindow
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
@@ -86,6 +88,8 @@ object FDPClient {
     val fileManager = FileManager
     val scriptManager = ScriptManager
     var combatManager = CombatManager
+    var customFontManager = FontManager()
+    var guiManager = GUIManager()
     val keyBindManager = KeyBindManager
     val macroManager = MacroManager
 
@@ -192,6 +196,12 @@ object FDPClient {
 
             // init discord rpc
             discordRPC = DiscordRPC
+
+            customFontManager = FontManager()
+            customFontManager.register()
+
+            guiManager = GUIManager()
+            guiManager.register()
 
             // Login into known token if not empty
             if (CapeService.knownToken.isNotBlank()) {

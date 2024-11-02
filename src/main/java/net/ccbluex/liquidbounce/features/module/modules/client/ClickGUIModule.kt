@@ -8,10 +8,11 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import net.ccbluex.liquidbounce.FDPClient.clickGui
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.yzyGUI
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
@@ -20,8 +21,9 @@ import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard
 
 object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT, canBeEnabled = false) {
+    private var lastScale = 0
     private val style by
-        object : ListValue("Style", arrayOf("Black"), "Black") {
+        object : ListValue("Style", arrayOf("Black", "Zywl"), "Black") {
             override fun onChanged(oldValue: String, newValue: String) = updateStyle()
         }
     var scale by FloatValue("Scale", 0.8f, 0.5f..1.5f)
@@ -33,8 +35,24 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
 
 
     override fun onEnable() {
-        updateStyle()
-        mc.displayGuiScreen(clickGui)
+        lastScale = mc.gameSettings.guiScale
+        mc.gameSettings.guiScale = 2
+
+        when {
+            style.equals("Zywl", ignoreCase = true) -> {
+                mc.displayGuiScreen(
+                    yzyGUI(
+                        this
+                    )
+                )
+                this.state = false
+            }
+            else -> {
+                updateStyle()
+                mc.displayGuiScreen(clickGui)
+                this.state = false
+            }
+        }
     }
 
     private fun updateStyle() {
@@ -49,5 +67,9 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
         val packet = event.packet
         if (packet is S2EPacketCloseWindow && mc.currentScreen is ClickGui)
             event.cancelEvent()
+    }
+
+    fun getLastScale(): Int {
+        return lastScale
     }
 }

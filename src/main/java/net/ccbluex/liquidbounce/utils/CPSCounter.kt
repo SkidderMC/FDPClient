@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils
 
@@ -11,9 +11,6 @@ import net.minecraftforge.fml.common.ObfuscationReflectionHelper
 import org.lwjgl.input.Mouse
 import java.nio.ByteBuffer
 
-/**
- * @author superblaubeere27
- */
 object CPSCounter {
     private const val MAX_CPS = 50
     private val TIMESTAMP_BUFFERS = Array(MouseButton.values().size) { RollingArrayLongBuffer(MAX_CPS) }
@@ -37,6 +34,10 @@ object CPSCounter {
 
 
     fun mouseWithinBounds(mouseX: Int, mouseY: Int, x: Float, y: Float, x2: Float, y2: Float) = mouseX >= x && mouseX < x2 && mouseY >= y && mouseY < y2
+
+    fun isHovering(mouseX: Int, mouseY: Int, x: Int, y: Int, width: Int, height: Int): Boolean {
+        return mouseX in x..width && mouseY >= y && mouseY <= height
+    }
 
     fun setMouseButtonState(mouseButton: Int, held: Boolean) {
         val m = MouseEvent()

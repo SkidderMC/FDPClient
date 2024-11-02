@@ -34,7 +34,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     private lateinit var btnSinglePlayer: GuiButton
     private lateinit var btnMultiplayer: GuiButton
     private lateinit var btnClientOptions: GuiButton
-    private lateinit var btnConnectAPI: ImageButton
+    private lateinit var btnCheckUpdate: GuiButton
     private lateinit var btnCommitInfo: ImageButton
     private lateinit var btnCosmetics: ImageButton
     private lateinit var btnClickGUI: ImageButton
@@ -53,6 +53,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         btnSinglePlayer = GuiButton(0, width / 2 - 66, height / 2 - 80 + 70, buttonWidth, buttonHeight, "SINGLE PLAYER")
         btnMultiplayer = GuiButton(1, width / 2 - 66, height / 2 - 80 + 95 - 2, buttonWidth, buttonHeight, "MULTI PLAYER")
         btnClientOptions = GuiButton(2, width / 2 - 66, height / 2 - 80 + 120 - 4, buttonWidth, buttonHeight, "SETTINGS")
+        btnCheckUpdate = GuiButton(3, width / 2 - 66, height / 2 - 80 + 145 - 6, buttonWidth, buttonHeight, "CHECK UPDATE")
 
         btnClickGUI= ImageButton(
             "CLICKGUI",
@@ -97,15 +98,9 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             7
         )
 
-        btnConnectAPI = ImageButton(
-            "CHECK API",
-            ResourceLocation("fdpclient/mainmenu/reload.png"),
-            width - 37,
-            7
-        )
         btnQuit = QuitButton(width - 17, 7)
 
-        buttonList.addAll(listOf(btnSinglePlayer, btnMultiplayer, btnClientOptions))
+        buttonList.addAll(listOf(btnSinglePlayer, btnMultiplayer, btnClientOptions, btnCheckUpdate))
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
@@ -123,7 +118,6 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 btnCosmetics.hoverFade > 0 -> mc.displayGuiScreen(GuiTheme())
                 btnClickGUI.hoverFade > 0 -> mc.displayGuiScreen(ClickGui)
                 btnAddAccount.hoverFade > 0 -> mc.displayGuiScreen(GuiAltManager(this))
-                btnConnectAPI.hoverFade > 0 -> mc.displayGuiScreen(GuiUpdate())
             }
         }
     }
@@ -133,6 +127,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             0 -> mc.displayGuiScreen(GuiSelectWorld(this))
             1 -> mc.displayGuiScreen(GuiMultiplayer(this))
             2 -> mc.displayGuiScreen(GuiInfo(this))
+            3 -> mc.displayGuiScreen(GuiUpdate())
         }
     }
 
@@ -229,10 +224,10 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
             width.toFloat() / 2, height.toFloat() / 2 - 19, Color(255, 255, 255, 100).rgb
         )
 
-        listOf(btnSinglePlayer, btnMultiplayer, btnClientOptions).forEach {
+        listOf(btnSinglePlayer, btnMultiplayer, btnClientOptions, btnCheckUpdate).forEach {
             it.drawButton(mc, mouseX, mouseY)
         }
-        listOf(btnConnectAPI, btnClickGUI, btnCommitInfo, btnCosmetics, btnMinecraftOptions, btnLanguage, btnForgeModList, btnAddAccount, btnQuit).forEach {
+        listOf(btnClickGUI, btnCommitInfo, btnCosmetics, btnMinecraftOptions, btnLanguage, btnForgeModList, btnAddAccount, btnQuit).forEach {
             it.drawButton(mouseX, mouseY)
         }
 

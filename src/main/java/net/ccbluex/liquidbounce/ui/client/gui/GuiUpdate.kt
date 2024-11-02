@@ -33,7 +33,7 @@ class GuiUpdate : GuiScreen() {
 
         buttonList.run {
             add(GuiButton(1, width / 2 + 2, j + 24 * 2, 98, 20, "Ignore"))
-            add(GuiButton(2, width / 2 - 100, j + 24 * 2, 98, 20, "Go to Update page"))
+            add(GuiButton(2, width / 2 - 100, j + 24 * 2, 98, 20, "Go to Download page"))
             add(GuiButton(3, width / 2 - 49, j + 24 * 3, 98, 20, "Reload API"))
         }
     }
