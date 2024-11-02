@@ -69,7 +69,6 @@ object PathUtils : MinecraftInstance() {
         return simplifyPath(pathfinder.findPath(3000), dashDistance, worldProvider)
     }
 
-
     fun findPath(tpX: Double, tpY: Double, tpZ: Double, offset: Double): List<Vector3d> {
         val positions = mutableListOf<Vector3d>()
         val steps = ceil(getDistance(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, tpX, tpY, tpZ) / offset)

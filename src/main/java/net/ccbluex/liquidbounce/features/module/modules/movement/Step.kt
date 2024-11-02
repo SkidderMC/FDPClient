@@ -30,7 +30,7 @@ object Step : Module("Step", Category.MOVEMENT, gameDetecting = false, hideModul
      * OPTIONS
      */
 
-    private val mode by ListValue("Mode",
+    var mode by ListValue("Mode",
         arrayOf("Vanilla", "Jump", "NCP", "MotionNCP", "OldNCP", "AAC", "LAAC", "AAC3.3.4", "Spartan", "Rewinside"), "NCP")
 
     private val height by FloatValue("Height", 1F, 0.6F..10F)

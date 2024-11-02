@@ -13,8 +13,10 @@ import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.stopXZ
 import net.ccbluex.liquidbounce.utils.extensions.toDegreesF
 import net.ccbluex.liquidbounce.utils.extensions.toRadiansD
+import net.minecraft.client.Minecraft
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.potion.Potion
 import net.minecraft.util.Vec3
 import kotlin.math.cos
 import kotlin.math.sin
@@ -36,6 +38,11 @@ object MovementUtils : MinecraftInstance(), Listenable {
 
     val hasMotion
         get() = mc.thePlayer?.run { motionX != .0 || motionY != .0 || motionZ != .0 } ?: false
+
+
+    fun hasTheMotion(): Boolean {
+        return mc.thePlayer.motionX != 0.0 && mc.thePlayer.motionZ != 0.0 && mc.thePlayer.motionY != 0.0
+    }
 
     var bps = 0.0
         private set
@@ -143,6 +150,16 @@ object MovementUtils : MinecraftInstance(), Listenable {
         mc.gameSettings.keyBindLeft.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindLeft)
         mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
         mc.gameSettings.keyBindSprint.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindSprint)
+    }
+
+    fun defaultSpeed(): Double {
+        var baseSpeed = 0.2873
+        if (Minecraft.getMinecraft().thePlayer.isPotionActive(Potion.moveSpeed)) {
+            val amplifier = Minecraft.getMinecraft().thePlayer.getActivePotionEffect(Potion.moveSpeed)
+                .amplifier
+            baseSpeed *= 1.0 + 0.2 * (amplifier + 1)
+        }
+        return baseSpeed
     }
 
     var serverOnGround = false

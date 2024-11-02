@@ -2202,7 +2202,7 @@ object RenderUtils : MinecraftInstance() {
 
     fun glColor(color: Color) = glColor(color.red, color.green, color.blue, color.alpha)
 
-    private fun glColor(hex: Int) =
+    fun glColor(hex: Int) =
         glColor(hex shr 16 and 0xFF, hex shr 8 and 0xFF, hex and 0xFF, hex shr 24 and 0xFF)
 
     fun draw2D(entity: EntityLivingBase, posX: Double, posY: Double, posZ: Double, color: Int, backgroundColor: Int) {
@@ -3950,5 +3950,13 @@ object RenderUtils : MinecraftInstance() {
         enableBlend()
         resetColor()
         popMatrix()
+    }
+
+    fun stopDrawing() {
+        glDisable(3042)
+        glEnable(3553)
+        glDisable(2848)
+        glDisable(3042)
+        glEnable(2929)
     }
 }
