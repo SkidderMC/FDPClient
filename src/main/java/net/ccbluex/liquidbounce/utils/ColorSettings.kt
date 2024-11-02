@@ -53,10 +53,22 @@ class ColorSettingsInteger(
     private val string = if (name == null) "" else "$name-"
     private val max = if (applyMax) 255 else 0
 
-    private var red = IntegerValue("${string}R${index ?: ""}", max, 0..255) { generalApply() && (!zeroAlphaCheck || a > 0) }
-    private var green = IntegerValue("${string}G${index ?: ""}", max, 0..255) { generalApply() && (!zeroAlphaCheck || a > 0) }
-    private var blue = IntegerValue("${string}B${index ?: ""}", max, 0..255) { generalApply() && (!zeroAlphaCheck || a > 0) }
-    private var alpha = IntegerValue("${string}Alpha${index ?: ""}", 255, 0..255) { alphaApply ?: generalApply() && withAlpha }
+    private var red = IntegerValue("${string}R${index ?: ""}",
+        max,
+        0..255
+    ) { generalApply() && (!zeroAlphaCheck || a > 0) }
+    private var green = IntegerValue("${string}G${index ?: ""}",
+        max,
+        0..255
+    ) { generalApply() && (!zeroAlphaCheck || a > 0) }
+    private var blue = IntegerValue("${string}B${index ?: ""}",
+        max,
+        0..255
+    ) { generalApply() && (!zeroAlphaCheck || a > 0) }
+    private var alpha = IntegerValue("${string}Alpha${index ?: ""}",
+        255,
+        0..255
+    ) { alphaApply ?: generalApply() && withAlpha }
 
     private var r by red
     private var g by green
@@ -64,6 +76,7 @@ class ColorSettingsInteger(
     private var a by alpha
 
     fun color(a: Int = this.a) = Color(r, g, b, a)
+
     fun color() = Color(r, g, b, a)
 
     fun with(r: Int? = null, g: Int? = null, b: Int? = null, a: Int? = null): ColorSettingsInteger {
@@ -103,12 +116,12 @@ class ColorSettingsInteger(
     }
 }
 
-fun List<ColorSettingsFloat>.toColorArray(max: Int) = (0 until MAX_GRADIENT_COLORS).map {
+fun List<ColorSettingsFloat>.toColorArray(max: Int) = (0 until max).map {
     val colors = this[it].color()
 
     floatArrayOf(colors.red.toFloat() / 255f,
         colors.green.toFloat() / 255f,
         colors.blue.toFloat() / 255f,
-        if (it > max - 1) 0f else 1f
+        1f
     )
 }
