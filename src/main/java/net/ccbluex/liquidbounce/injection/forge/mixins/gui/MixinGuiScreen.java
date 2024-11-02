@@ -92,8 +92,6 @@ public abstract class MixinGuiScreen {
             if (background == null) {
                 // Use default background shader
 
-                if (mc.currentScreen instanceof GuiScreenResourcePacks) return;
-
                 GL11.glPushMatrix();
                 BackgroundShader.Companion.getBACKGROUND_SHADER().startShader();
 
