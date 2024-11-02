@@ -295,7 +295,7 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
                 val color = ((colorRed and 0xFF) shl 16) or ((colorGreen and 0xFF) shl 8) or (colorBlue and 0xFF)
 
                 // Scale
-                val scale = (player.getDistanceSq(pos) / 8F).coerceAtLeast(1.5) / 150F * scale
+                val scale = ((player.getDistanceSq(pos) / 8F).coerceAtLeast(1.5) / 150F) * scale
                 glScaled(-scale, -scale, scale)
 
                 // Draw text

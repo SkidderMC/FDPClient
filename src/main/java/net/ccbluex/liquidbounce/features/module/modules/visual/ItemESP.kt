@@ -157,7 +157,7 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
 
         val fontRenderer = font
 
-        val scale = (thePlayer.getDistanceToEntity(entity) / 4F).coerceAtLeast(1F) / 150F * scale
+        val scale = ((thePlayer.getDistanceToEntity(entity) / 4F).coerceAtLeast(1F) / 150F) * scale
         glScalef(-scale, -scale, scale)
 
         val itemStack = entity.entityItem

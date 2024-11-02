@@ -18,8 +18,8 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element.Companion.MAX_GRADIENT_COLORS
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
-import net.ccbluex.liquidbounce.utils.ColorSettingsFloat
-import net.ccbluex.liquidbounce.utils.ColorSettingsInteger
+import net.ccbluex.liquidbounce.utils.render.ColorSettingsFloat
+import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.BEDWARS_BLOCKS
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockTexture
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
@@ -27,7 +27,7 @@ import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientFontShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader
-import net.ccbluex.liquidbounce.utils.toColorArray
+import net.ccbluex.liquidbounce.utils.render.toColorArray
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
 import net.minecraft.block.BlockBed
@@ -303,6 +303,8 @@ object BedPlates : Module("BedPlates", Category.OTHER, hideModule = false) {
         val bedPos = BlockPos(x, y, z)
         val world = mc.theWorld ?: return false
         val bedBlock: Block = world.getBlockState(bedPos).block
+
+        if (index < 0) return false
 
         while (bedBlocks.size <= index) {
             bedBlocks.add(mutableListOf())

@@ -92,7 +92,7 @@ object TNTTimer : Module("TNTTimer", Category.VISUAL, spacedName = "TNT Timer", 
         val fontRenderer = font
 
         // Scale
-        val scale = (thePlayer.getDistanceToEntity(tnt) / 4F).coerceAtLeast(1F) / 150F * scale
+        val scale = ((thePlayer.getDistanceToEntity(tnt) / 4F).coerceAtLeast(1F) / 150F) * scale
         glScalef(-scale, -scale, scale)
 
         // Draw text

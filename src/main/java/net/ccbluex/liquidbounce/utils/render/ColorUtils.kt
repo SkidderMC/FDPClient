@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils.render
 
-import net.ccbluex.liquidbounce.utils.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
 import net.minecraft.client.renderer.GlStateManager
 import org.lwjgl.opengl.GL11

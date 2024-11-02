@@ -199,6 +199,32 @@ object RenderUtils : MinecraftInstance() {
         resetCaps()
     }
 
+    fun drawPosBox(x: Double, y: Double, z: Double, width: Float, height: Float, color: Color, outline: Boolean) {
+        val renderManager = mc.renderManager
+        val adjustedX = x - renderManager.renderPosX
+        val adjustedY = y - renderManager.renderPosY
+        val adjustedZ = z - renderManager.renderPosZ
+        val axisAlignedBB = AxisAlignedBB.fromBounds(
+            adjustedX - width / 2, adjustedY, adjustedZ - width / 2,
+            adjustedX + width / 2, adjustedY + height, adjustedZ + width / 2
+        )
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        enableGlCap(GL_BLEND)
+        disableGlCap(GL_TEXTURE_2D, GL_DEPTH_TEST)
+        glDepthMask(false)
+        if (outline) {
+            glLineWidth(1f)
+            enableGlCap(GL_LINE_SMOOTH)
+            glColor(color.red, color.green, color.blue, 95)
+            drawSelectionBoundingBox(axisAlignedBB)
+        }
+        glColor(color.red, color.green, color.blue, if (outline) 26 else 35)
+        drawFilledBox(axisAlignedBB)
+        resetColor()
+        glDepthMask(true)
+        resetCaps()
+    }
+
     fun drawBacktrackBox(axisAlignedBB: AxisAlignedBB, color: Color) {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_BLEND)

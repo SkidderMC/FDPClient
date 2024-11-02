@@ -12,8 +12,8 @@ import net.ccbluex.liquidbounce.features.module.modules.visual.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.ccbluex.liquidbounce.utils.ClassUtils;
-import net.ccbluex.liquidbounce.utils.ColorSettingsKt;
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils;
+import net.ccbluex.liquidbounce.utils.render.ColorSettingsKt;
 import net.ccbluex.liquidbounce.utils.render.FakeItemRender;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientShader;
@@ -36,11 +36,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.awt.Color;
 import java.util.List;
 
-import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
-import static net.ccbluex.liquidbounce.utils.render.RenderUtils.drawOnBorderedRect;
 import static net.minecraft.client.renderer.GlStateManager.*;
 import static org.lwjgl.opengl.GL11.GL_BLEND;
 import static org.lwjgl.opengl.GL11.glEnable;

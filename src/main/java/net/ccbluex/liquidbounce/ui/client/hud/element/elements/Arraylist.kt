@@ -18,8 +18,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Vertical
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientThemesUtils.getColor
-import net.ccbluex.liquidbounce.utils.ColorSettingsFloat
-import net.ccbluex.liquidbounce.utils.ColorSettingsInteger
+import net.ccbluex.liquidbounce.utils.render.ColorSettingsFloat
+import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
@@ -30,7 +30,7 @@ import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientFontShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader
-import net.ccbluex.liquidbounce.utils.toColorArray
+import net.ccbluex.liquidbounce.utils.render.toColorArray
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import java.awt.Color
