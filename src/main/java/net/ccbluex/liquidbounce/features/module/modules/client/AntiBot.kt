@@ -9,9 +9,14 @@ import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.RotationUtils.angleDifference
+import net.ccbluex.liquidbounce.utils.RotationUtils.serverRotation
+import net.ccbluex.liquidbounce.utils.RotationUtils.toRotation
+import net.ccbluex.liquidbounce.utils.extensions.center
 import net.ccbluex.liquidbounce.utils.extensions.getFullName
+import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
@@ -23,6 +28,7 @@ import net.minecraft.network.play.server.S0BPacketAnimation
 import net.minecraft.network.play.server.S13PacketDestroyEntities
 import net.minecraft.network.play.server.S14PacketEntity
 import net.minecraft.network.play.server.S20PacketEntityProperties
+import kotlin.math.abs
 
 object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
 
@@ -49,10 +55,20 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
     private val needHit by BoolValue("NeedHit", false)
     private val duplicateInWorld by BoolValue("DuplicateInWorld", false)
     private val duplicateInTab by BoolValue("DuplicateInTab", false)
+    private val duplicateProfile by BoolValue("DuplicateProfile", false)
     private val properties by BoolValue("Properties", false)
 
     private val alwaysInRadius by BoolValue("AlwaysInRadius", false)
-    private val alwaysRadius by FloatValue("AlwaysInRadiusBlocks", 20f, 5f..30f) { alwaysInRadius }
+    private val alwaysRadius by FloatValue("AlwaysInRadiusBlocks", 20f, 3f..30f)
+    { alwaysInRadius }
+    private val alwaysRadiusTick by IntegerValue("AlwaysInRadiusTick", 50, 1..100)
+    { alwaysInRadius }
+
+    private val alwaysBehind by BoolValue("AlwaysBehind", false)
+    private val alwaysBehindRadius by FloatValue("AlwaysBehindInRadiusBlocks", 10f, 3f..30f)
+    { alwaysBehind }
+    private val behindRotDiffToIgnore by FloatValue("BehindRotationDiffToIgnore", 90f, 1f..180f)
+    { alwaysBehind }
 
     private val groundList = mutableSetOf<Int>()
     private val airList = mutableSetOf<Int>()
@@ -62,10 +78,12 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
     private val propertiesList = mutableSetOf<Int>()
     private val hitList = mutableSetOf<Int>()
     private val notAlwaysInRadiusList = mutableSetOf<Int>()
+    private val alwaysBehindList = mutableSetOf<Int>()
     private val worldPlayerNames = mutableSetOf<String>()
     private val worldDuplicateNames = mutableSetOf<String>()
     private val tabPlayerNames = mutableSetOf<String>()
     private val tabDuplicateNames = mutableSetOf<String>()
+    private val entityTickMap = mutableMapOf<Int, Int>()
 
     fun isBot(entity: EntityLivingBase): Boolean {
         // Check if entity is a player
@@ -133,6 +151,11 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
         if (invalidGround && invalidGroundList.getOrDefault(entity.entityId, 0) >= 10)
             return true
 
+        if (duplicateProfile) {
+            return mc.netHandler.playerInfoMap.count { it.gameProfile.name == entity.gameProfile.name
+                    && it.gameProfile.id != entity.gameProfile.id } == 1
+        }
+
         if (tab) {
             val equals = tabMode == "Equals"
             val targetName = stripColor(entity.displayName.formattedText)
@@ -161,9 +184,8 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
 
             if (worldDuplicateNames.isNotEmpty()) {
                 val duplicateCount = worldDuplicateNames.size
-                if (mc.theWorld.playerEntities.count { it.name in worldDuplicateNames } > duplicateCount) {
-                    return true
-                }
+
+                return mc.theWorld.playerEntities.count { it.name in worldDuplicateNames } > duplicateCount
             }
         }
 
@@ -180,13 +202,15 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
 
             if (tabDuplicateNames.isNotEmpty()) {
                 val duplicateCount = tabDuplicateNames.size
-                if (mc.netHandler.playerInfoMap.count { stripColor(it.getFullName()) in tabDuplicateNames } > duplicateCount) {
-                    return true
-                }
+
+                return mc.netHandler.playerInfoMap.count { stripColor(it.getFullName()) in tabDuplicateNames } > duplicateCount
             }
         }
 
         if (alwaysInRadius && entity.entityId !in notAlwaysInRadiusList)
+            return true
+
+        if (alwaysBehind && entity.entityId in alwaysBehindList)
             return true
 
         return entity.name.isEmpty() || entity.name == mc.thePlayer.name
@@ -230,14 +254,33 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
 
                 if (alwaysInRadius) {
                     val distance = mc.thePlayer.getDistanceToEntity(entity)
+                    val currentTicks = entityTickMap.getOrDefault(entity.entityId, 0)
 
                     if (distance < alwaysRadius) {
-                        if (entity.entityId in notAlwaysInRadiusList) {
-                            notAlwaysInRadiusList.remove(entity.entityId)
-                        }
+                        entityTickMap[entity.entityId] = currentTicks + 1
+                    } else {
+                        entityTickMap[entity.entityId] = 0
+                    }
+
+                    if (entityTickMap[entity.entityId]!! >= alwaysRadiusTick) {
+                        notAlwaysInRadiusList -= entity.entityId
                     } else {
                         if (entity.entityId !in notAlwaysInRadiusList) {
-                            notAlwaysInRadiusList.add(entity.entityId)
+                            notAlwaysInRadiusList += entity.entityId
+                        }
+                    }
+                }
+
+                if (alwaysBehind) {
+                    val distance = mc.thePlayer.getDistanceToEntity(entity)
+                    val rotationToEntity = toRotation(entity.hitBox.center, false, mc.thePlayer).fixedSensitivity().yaw
+                    val angleDifferenceToEntity = abs(angleDifference(rotationToEntity, serverRotation.yaw))
+
+                    if (distance < alwaysBehindRadius && angleDifferenceToEntity > behindRotDiffToIgnore) {
+                        alwaysBehindList += entity.entityId
+                    } else {
+                        if (entity.entityId in alwaysBehindList) {
+                            alwaysBehindList -= entity.entityId
                         }
                     }
                 }
@@ -294,6 +337,8 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
         worldDuplicateNames.clear()
         tabPlayerNames.clear()
         tabDuplicateNames.clear()
+        alwaysBehindList.clear()
+        entityTickMap.clear()
     }
 
 }
