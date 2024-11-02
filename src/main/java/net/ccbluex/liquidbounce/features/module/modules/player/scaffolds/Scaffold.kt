@@ -505,7 +505,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         val ticks = if (options.keepRotation) {
             if (scaffoldMode == "Telly") 1 else options.resetTicks
         } else {
-            RotationUtils.resetTicks
+            if (isGodBridgeEnabled) options.resetTicks else RotationUtils.resetTicks
         }
 
         if (!Tower.isTowering && isGodBridgeEnabled && options.rotationsActive) {
@@ -1155,6 +1155,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             } else if (stack.stackSize != prevSize || mc.playerController.isInCreativeMode)
                 mc.entityRenderer.itemRenderer.resetEquippedProgress()
 
+            placeRotation = null
         } else {
             if (thePlayer.sendUseItem(stack))
                 mc.entityRenderer.itemRenderer.resetEquippedProgress2()
@@ -1249,21 +1250,31 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     private fun generateGodBridgeRotations(ticks: Int) {
         val player = mc.thePlayer ?: return
 
-        val direction = MovementUtils.direction.toDegreesF() + 180f
+        val direction = if (options.applyServerSide) {
+            MovementUtils.direction.toDegreesF() + 180f
+        } else MathHelper.wrapAngleTo180_float(player.rotationYaw)
 
         val movingYaw = round(direction / 45) * 45
-        val isMovingStraight = movingYaw % 90 == 0f
+
+        val steps45 = arrayListOf(-135f, -45f, 45f, 135f)
+
+        val isMovingStraight = if (options.applyServerSide) {
+            movingYaw % 90 == 0f
+        } else movingYaw in steps45 && player.movementInput.isSideways
 
         if (!MovementUtils.isMoving) {
             placeRotation?.run {
                 val axisMovement = floor(this.rotation.yaw / 90) * 90
 
-                val yaw = axisMovement + 45
+                val yaw = axisMovement + 45f
                 val pitch = 75f
 
                 setRotation(Rotation(yaw, pitch), ticks)
                 return
             }
+
+            if (!options.keepRotation)
+                return
         }
 
         val rotation = if (isMovingStraight) {
@@ -1284,7 +1295,11 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
                 }
             }
 
-            Rotation(movingYaw + if (isOnRightSide) 45f else -45f, if (useOptimizedPitch) 73.5f else customGodPitch)
+            val side = if (options.applyServerSide) {
+                if (isOnRightSide) 45f else -45f
+            } else 0f
+
+            Rotation(movingYaw + side, if (useOptimizedPitch) 73.5f else customGodPitch)
         } else {
             Rotation(movingYaw, 75.6f)
         }.fixedSensitivity()
