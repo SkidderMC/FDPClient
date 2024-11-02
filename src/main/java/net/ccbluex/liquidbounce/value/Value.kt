@@ -25,6 +25,8 @@ abstract class Value<T>(
     var isSupported: (() -> Boolean)? = null,
 ) : ReadWriteProperty<Any?, T> {
 
+    var exclude: Boolean = false
+
     fun set(newValue: T): Boolean {
         if (newValue == value)
             return false

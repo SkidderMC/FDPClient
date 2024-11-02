@@ -120,8 +120,7 @@ class RotationSettingsWithRotationModes(
     owner: Module, listValue: ListValue, generalApply: () -> Boolean = { true },
 ) : RotationSettings(owner, generalApply) {
 
-    override val rotationsValue: BoolValue
-        get() = super.rotationsValue.apply { isSupported = { false } }
+    override val rotationsValue = super.rotationsValue.apply { exclude = true }
 
     val rotationModeValue = listValue.apply { isSupported = generalApply }
 
