@@ -158,7 +158,7 @@ object ClassUtils {
      * Useful in preventing the config system from reading the given [value]
      */
     fun checkIfExcluded(list: MutableSet<Value<*>>, value: Value<*>) {
-        if (value.exclude) {
+        if (value.excluded) {
             return
         }
         list += value

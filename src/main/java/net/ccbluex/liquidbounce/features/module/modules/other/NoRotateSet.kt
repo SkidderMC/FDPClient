@@ -22,9 +22,8 @@ object NoRotateSet : Module("NoRotateSet", Category.OTHER, gameDetecting = false
     val affectRotation by BoolValue("AffectRotation", true)
 
     private val options = RotationSettings(this) { affectRotation }.apply {
-        applyServerSideValue.isSupported = { false }
-        applyServerSideValue.note = BoolValue.NoteType.HIDE
-        resetTicksValue.isSupported = { false }
+        applyServerSideValue.excludeWithState(true)
+        resetTicksValue.excludeWithState(1)
 
         withoutKeepRotation()
     }

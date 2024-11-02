@@ -226,7 +226,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     private val modeList = ListValue("Rotations", arrayOf("Off", "Normal", "Stabilized", "GodBridge"), "Normal")
 
     private val options = RotationSettingsWithRotationModes(this, modeList).apply {
-        strictValue.isSupported = { false }
+        strictValue.excludeWithState()
         resetTicksValue.setSupport { { it && scaffoldMode != "Telly" } }
     }
 

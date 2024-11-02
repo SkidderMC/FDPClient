@@ -32,7 +32,6 @@ class ExhibitionTH(inst: Targets) : TargetStyle("Exhibition", inst, true) {
         val minWidth = 126F.coerceAtLeast(47F + font.getStringWidth(entity.name))
 
         drawExhiRect(0F, 0F, minWidth, 45F, 1F - targetInstance.getFadeProgress())
-
         drawRect(2.5F, 2.5F, 42.5F, 42.5F, getColor(Color(59, 59, 59)).rgb)
         drawRect(3F, 3F, 42F, 42F, getColor(Color(19, 19, 19)).rgb)
 
@@ -42,29 +41,22 @@ class ExhibitionTH(inst: Targets) : TargetStyle("Exhibition", inst, true) {
         font.drawString(entity.name, 46, 5, getColor(-1).rgb)
 
         val barLength = 70F * (entity.health / entity.maxHealth).coerceIn(0F, 1F)
-        drawRect(
-            45F,
-            14F,
-            45F + 70F,
-            18F,
-            getColor(ColorUtils.getHealthColor(entity.health, entity.maxHealth).darker(0.3F)).rgb
-        )
-        drawRect(
-            45F,
-            14F,
-            45F + barLength,
-            18F,
-            getColor(ColorUtils.getHealthColor(entity.health, entity.maxHealth)).rgb
-        )
 
-        for (i in 0..9)
-            drawRectBasedBorder(45F + i * 7F, 14F, 45F + (i + 1) * 7F, 18F, 0.5F, getColor(Color.black).rgb)
+        try {
+            val healthColor = ColorUtils.getHealthColor(entity.health, entity.maxHealth)
+            drawRect(45F, 14F, 45F + 70F, 18F, getColor(healthColor.darker(0.3F)).rgb)
+            drawRect(45F, 14F, 45F + barLength, 18F, getColor(healthColor).rgb)
+        } catch (e: Exception) {
+            drawRect(45F, 14F, 45F + barLength, 18F, getColor(Color.GRAY).rgb)
+        }
+
+        for (i in 0..9) {
+            drawRectBasedBorder(45F + i * 7F, 14F, 45F + (i + 1) * 7F, 18F, 0.5F, getColor(Color.BLACK).rgb)
+        }
 
         Fonts.fontSmall.drawString(
             "HP:${entity.health.toInt()} | Dist:${
-                mc.thePlayer.getDistanceToEntityBox(
-                    entity
-                ).toInt()
+                mc.thePlayer.getDistanceToEntityBox(entity).toInt()
             }", 45F, 21F, getColor(-1).rgb
         )
 
@@ -84,8 +76,7 @@ class ExhibitionTH(inst: Targets) : TargetStyle("Exhibition", inst, true) {
         for (index in 3 downTo 0) {
             val stack = entity.inventory[index] ?: continue
 
-            if (stack.item == null)
-                continue
+            if (stack.item == null) continue
 
             renderItem.renderItemIntoGUI(stack, x, y)
             renderItem.renderItemOverlays(mc.fontRendererObj, stack, x, y)

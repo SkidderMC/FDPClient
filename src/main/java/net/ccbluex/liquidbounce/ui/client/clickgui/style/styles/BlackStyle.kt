@@ -109,7 +109,7 @@ object BlackStyle : Style() {
         )
 
         // Draw settings
-        val moduleValues = moduleElement.module.values.filter { it.isSupported() }
+        val moduleValues = moduleElement.module.values.filter { it.shouldRender() }
         if (moduleValues.isNotEmpty()) {
             font35.drawString(
                 if (moduleElement.showSettings) "<" else ">",

@@ -211,30 +211,29 @@ object ColorUtils {
         )
     }
 
-    fun getHealthColor(health: Float, maxHealth: Float): Color {
+    fun getHealthColor(health: Float?, maxHealth: Float?): Color {
+        val safeHealth = health ?: 0.0f
+        val safeMaxHealth = maxHealth ?: 1.0f
+        val progress = (safeHealth / safeMaxHealth).coerceIn(0.0f, 1.0f)
         val fractions = floatArrayOf(0.0f, 0.5f, 1.0f)
         val colors = arrayOf(Color(108, 0, 0), Color(255, 51, 0), Color.GREEN)
-        val progress = health / maxHealth
         return blendColors(fractions, colors, progress).brighter()
     }
 
     fun blendColors(fractions: FloatArray, colors: Array<Color>, progress: Float): Color {
-        if (fractions.size == colors.size) {
-            val indices: IntArray =
-               getFractionIndices(fractions, progress)
-            val range = floatArrayOf(fractions[indices[0]], fractions[indices[1]])
-            val colorRange = arrayOf(colors[indices[0]], colors[indices[1]])
-            val max = range[1] - range[0]
-            val value = progress - range[0]
-            val weight = value / max
-            return blend(
-                colorRange[0],
-                colorRange[1],
-                (1.0f - weight).toDouble()
-            )
-        } else {
-            throw IllegalArgumentException("Fractions and colours must have equal number of elements")
+        if (fractions.size != colors.size) {
+            throw IllegalArgumentException("Fractions and colors must have equal number of elements")
         }
+
+        val indices = getFractionIndices(fractions, progress)
+        val range = floatArrayOf(fractions[indices[0]], fractions[indices[1]])
+        val colorRange = arrayOf(colors[indices[0]], colors[indices[1]])
+
+        val max = range[1] - range[0]
+        val value = progress - range[0]
+        val weight = value / max
+
+        return blend(colorRange[0], colorRange[1], (1.0f - weight).toDouble())
     }
 
     fun getFractionIndices(fractions: FloatArray, progress: Float): IntArray {

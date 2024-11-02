@@ -54,9 +54,8 @@ object AutoPot : Module("AutoPot", Category.COMBAT, hideModule = false) {
     private val mode by ListValue("Mode", arrayOf("Normal", "Jump", "Port"), "Normal")
 
     private val options = RotationSettings(this).withoutKeepRotation().apply {
-        applyServerSideValue.isSupported = { false }
-        applyServerSideValue.note = BoolValue.NoteType.HIDE
-        resetTicksValue.isSupported = { false }
+        applyServerSideValue.hideWithState(false)
+        resetTicksValue.hideWithState()
 
         immediate = true
     }

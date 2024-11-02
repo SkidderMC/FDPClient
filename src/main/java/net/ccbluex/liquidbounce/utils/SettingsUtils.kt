@@ -181,7 +181,7 @@ object SettingsUtils {
             .joinToString("\n") { module ->
                 buildString {
                     if (values) {
-                        val filteredValues = module.values.filter { all || (!it.subjective && it.isSupported()) }
+                        val filteredValues = module.values.filter { all || (!it.subjective && it.shouldRender()) }
                         if (filteredValues.isNotEmpty()) {
                             filteredValues.joinTo(this, separator = "\n") { "${module.name} ${it.name} ${it.get()}" }
                             appendLine()

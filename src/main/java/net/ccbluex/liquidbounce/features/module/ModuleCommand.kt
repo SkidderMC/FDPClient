@@ -135,7 +135,7 @@ class ModuleCommand(val module: Module, val values: Set<Value<*>> = module.value
 
         return when (args.size) {
             1 -> values
-                .filter { it !is FontValue && it.isSupported() && it.name.startsWith(args[0], true) }
+                .filter { it !is FontValue && it.shouldRender() && it.name.startsWith(args[0], true) }
                 .map { it.name.lowercase() }
             2 -> {
                 when (module[args[0]]) {

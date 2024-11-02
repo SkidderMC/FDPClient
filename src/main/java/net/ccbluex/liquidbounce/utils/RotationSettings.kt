@@ -16,61 +16,56 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
 
     open val rotationsValue = BoolValue("Rotations", true) { generalApply() }
 
-    val smootherModeValue = ListValue("SmootherMode",
-        arrayOf("Linear", "Relative"),
-        "Relative"
+    open val smootherModeValue = ListValue(
+        "SmootherMode", arrayOf("Linear", "Relative"), "Relative"
     ) { rotationsActive && generalApply() }
-    val applyServerSideValue = BoolValue("ApplyServerSide", true) { rotationsActive && generalApply() }
-    val simulateShortStopValue = BoolValue("SimulateShortStop", false) { rotationsActive && generalApply() }
-    val strafeValue = BoolValue("Strafe", false) { rotationsActive && applyServerSide && generalApply() }
-    val strictValue = BoolValue("Strict", false) { strafeValue.isActive() && generalApply() }
-    val keepRotationValue = BoolValue("KeepRotation",
-        true
+    open val applyServerSideValue = BoolValue("ApplyServerSide", true) { rotationsActive && generalApply() }
+    open val simulateShortStopValue = BoolValue("SimulateShortStop", false) { rotationsActive && generalApply() }
+    open val strafeValue = BoolValue("Strafe", false) { rotationsActive && applyServerSide && generalApply() }
+    open val strictValue = BoolValue("Strict", false) { strafeValue.isActive() && generalApply() }
+    open val keepRotationValue = BoolValue(
+        "KeepRotation", true
     ) { rotationsActive && applyServerSide && generalApply() }
-    val resetTicksValue = object : IntegerValue("ResetTicks", 1, 1..20) {
+    open val resetTicksValue = object : IntegerValue("ResetTicks", 1, 1..20) {
         override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(minimum)
         override fun isSupported() = rotationsActive && applyServerSide && generalApply()
     }
 
-    val startRotatingSlowValue = BoolValue("StartRotatingSlow", false) { rotationsActive && generalApply() }
-    val slowDownOnDirectionChangeValue = BoolValue("SlowDownOnDirectionChange",
-        false
+    open val startRotatingSlowValue = BoolValue("StartRotatingSlow", false) { rotationsActive && generalApply() }
+    open val slowDownOnDirectionChangeValue = BoolValue(
+        "SlowDownOnDirectionChange", false
     ) { rotationsActive && generalApply() }
-    val useStraightLinePathValue = BoolValue("UseStraightLinePath", true) { rotationsActive && generalApply() }
-    val maxHorizontalAngleChangeValue: FloatValue = object : FloatValue("MaxHorizontalAngleChange",
-        180f,
-        1f..180f
+    open val useStraightLinePathValue = BoolValue("UseStraightLinePath", true) { rotationsActive && generalApply() }
+    open val maxHorizontalAngleChangeValue: FloatValue = object : FloatValue(
+        "MaxHorizontalAngleChange", 180f, 1f..180f
     ) {
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtLeast(minHorizontalAngleChange)
         override fun isSupported() = rotationsActive && generalApply()
     }
 
-    val minHorizontalAngleChangeValue: FloatValue = object : FloatValue("MinHorizontalAngleChange",
-        180f,
-        1f..180f
+    open val minHorizontalAngleChangeValue: FloatValue = object : FloatValue(
+        "MinHorizontalAngleChange", 180f, 1f..180f
     ) {
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(maxHorizontalAngleChange)
         override fun isSupported() = !maxHorizontalAngleChangeValue.isMinimal() && rotationsActive && generalApply()
     }
 
-    val maxVerticalAngleChangeValue: FloatValue = object : FloatValue("MaxVerticalAngleChange", 180f, 1f..180f) {
+    open val maxVerticalAngleChangeValue: FloatValue = object : FloatValue("MaxVerticalAngleChange", 180f, 1f..180f) {
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtLeast(minVerticalAngleChange)
         override fun isSupported() = rotationsActive && generalApply()
     }
 
-    val minVerticalAngleChangeValue: FloatValue = object : FloatValue("MinVerticalAngleChange", 180f, 1f..180f) {
+    open val minVerticalAngleChangeValue: FloatValue = object : FloatValue("MinVerticalAngleChange", 180f, 1f..180f) {
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(maxVerticalAngleChange)
         override fun isSupported() = !maxVerticalAngleChangeValue.isMinimal() && rotationsActive && generalApply()
     }
 
-    val angleResetDifferenceValue = FloatValue("AngleResetDifference",
-        5f,
-        0.1f..180f
+    open val angleResetDifferenceValue = FloatValue(
+        "AngleResetDifference", 5f, 0.1f..180f
     ) { rotationsActive && applyServerSide && generalApply() }
 
-    val minRotationDifferenceValue = FloatValue("MinRotationDifference",
-        0f,
-        0f..1f
+    open val minRotationDifferenceValue = FloatValue(
+        "MinRotationDifference", 0f, 0f..1f
     ) { rotationsActive && generalApply() }
 
     // Variables for easier access
@@ -106,7 +101,7 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
         get() = minVerticalAngleChange..maxVerticalAngleChange
 
     fun withoutKeepRotation(): RotationSettings {
-        keepRotationValue.isSupported = { false }
+        keepRotationValue.excludeWithState()
 
         return this
     }
@@ -120,7 +115,7 @@ class RotationSettingsWithRotationModes(
     owner: Module, listValue: ListValue, generalApply: () -> Boolean = { true },
 ) : RotationSettings(owner, generalApply) {
 
-    override val rotationsValue = super.rotationsValue.apply { exclude = true }
+    override val rotationsValue = super.rotationsValue.apply { excludeWithState() }
 
     val rotationModeValue = listValue.apply { isSupported = generalApply }
 
