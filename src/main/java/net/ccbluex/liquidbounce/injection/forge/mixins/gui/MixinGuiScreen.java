@@ -101,7 +101,7 @@ public abstract class MixinGuiScreen {
                 final WorldRenderer worldRenderer = instance.getWorldRenderer();
 
                 GL11.glEnable(GL11.GL_BLEND);
-                GL11.glBlendFunc(BackgroundShader.Companion.getGlowOutline() ? GL11.GL_ONE : GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+                GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
                 worldRenderer.begin(7, DefaultVertexFormats.POSITION);
                 worldRenderer.pos(0, height, 0).endVertex();

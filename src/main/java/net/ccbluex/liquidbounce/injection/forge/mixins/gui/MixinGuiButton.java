@@ -7,16 +7,23 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.features.module.modules.client.BrandSpoofer;
 import net.ccbluex.liquidbounce.features.module.modules.client.button.AbstractButtonRenderer;
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
+import net.ccbluex.liquidbounce.ui.font.Fonts;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiButton;
+import net.minecraft.client.gui.*;
+import net.minecraft.util.MathHelper;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.awt.*;
+
+import static net.minecraft.client.renderer.GlStateManager.resetColor;
 
 @Mixin(GuiButton.class)
 @SideOnly(Side.CLIENT)
@@ -24,21 +31,40 @@ public abstract class MixinGuiButton extends Gui {
 
    @Shadow
    public boolean visible;
+
    @Shadow
    public int xPosition;
+
    @Shadow
    public int yPosition;
+
    @Shadow
    public int width;
+
    @Shadow
    public int height;
+
+   @Shadow
+   protected boolean hovered;
+
    @Shadow
    public boolean enabled;
-   @Shadow
-   public boolean hovered;
 
    @Shadow
    protected abstract void mouseDragged(Minecraft mc, int mouseX, int mouseY);
+
+   @Shadow
+   public String displayString;
+
+   @Shadow
+   @Final
+   protected static ResourceLocation buttonTextures;
+
+   @Shadow
+   public int id;
+
+   @Unique
+   private float progress;
 
    protected final AbstractButtonRenderer fDPClient$buttonRenderer = BrandSpoofer.INSTANCE.getButtonRenderer((GuiButton)(Object)this);
 
@@ -47,17 +73,55 @@ public abstract class MixinGuiButton extends Gui {
     */
    @Inject(method = "drawButton", at = @At("HEAD"), cancellable = true)
    public void drawButton(Minecraft mc, int mouseX, int mouseY, CallbackInfo ci) {
-      if(this.fDPClient$buttonRenderer != null) {
-         if(!visible) {
-            return;
-         }
+      if (!visible) {
+         return;
+      }
 
-          // Render custom button renderer if available
-         this.hovered = mouseX >= this.xPosition && mouseY >= this.yPosition && mouseX < this.xPosition + this.width && mouseY < this.yPosition + this.height;
-         this.mouseDragged(mc, mouseX, mouseY);
+      hovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
+
+      float deltaTime = RenderUtils.INSTANCE.getDeltaTime();
+      float supposedWidth = width;
+
+      if ((Object) this instanceof GuiOptionSlider) {
+         supposedWidth *= ((GuiOptionSlider) (Object) this).sliderValue;
+         hovered = true;
+      }
+
+      if ((Object) this instanceof GuiScreenOptionsSounds.Button) {
+         supposedWidth *= ((GuiScreenOptionsSounds.Button) (Object) this).field_146156_o;
+         hovered = true;
+      }
+
+      progress += (enabled && hovered ? 0.65f : -0.65f) * deltaTime;
+      progress = MathHelper.clamp_float(progress, 0f, supposedWidth);
+
+      float radius = 2.5F;
+
+      RenderUtils.INSTANCE.drawRoundedRect(xPosition, yPosition, xPosition + width, yPosition + height,
+              enabled ? new Color(0F, 0F, 0F, 120 / 255f).getRGB() : new Color(0.5F, 0.5F, 0.5F, 0.5F).getRGB(), radius);
+
+      if (enabled && progress != 0f) {
+         RenderUtils.INSTANCE.drawRoundedRect(xPosition, yPosition, xPosition + (int) progress, yPosition + height,
+                 new Color(0F, 0F, 1F, 1F).getRGB(), radius);
+      }
+
+      mc.getTextureManager().bindTexture(buttonTextures);
+      mouseDragged(mc, mouseX, mouseY);
+
+      if (fDPClient$buttonRenderer == null) {
+         AWTFontRenderer.Companion.setAssumeNonVolatile(true);
+         FontRenderer fontRenderer = Fonts.font35;
+         fontRenderer.drawStringWithShadow(displayString,
+                 (float) (xPosition + width / 2 - fontRenderer.getStringWidth(displayString) / 2),
+                 yPosition + (height - 5) / 2F, 14737632);
+         AWTFontRenderer.Companion.setAssumeNonVolatile(false);
+      } else {
          fDPClient$buttonRenderer.render(mouseX, mouseY, mc);
          fDPClient$buttonRenderer.drawButtonText(mc);
-         ci.cancel();
       }
+
+      resetColor();
+
+      ci.cancel();
    }
 }

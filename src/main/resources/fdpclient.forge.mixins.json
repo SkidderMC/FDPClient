@@ -70,7 +70,8 @@
     "tweaks.MixinMinecraftServer",
     "world.MixinChunk",
     "world.MixinWorld",
-    "world.MixinWorldClient"
+    "world.MixinWorldClient",
+    "gui.MixinGuiScreenOptionsSoundsButton"
   ],
   "client": [
     "block.MixinBlockSlime",
