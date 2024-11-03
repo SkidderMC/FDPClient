@@ -5,10 +5,12 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.event.EventManager.callEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.other.Fucker
 import net.ccbluex.liquidbounce.features.module.modules.other.Nuker
@@ -47,8 +49,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.item.ItemAxe
-import net.minecraft.item.ItemSword
+import net.minecraft.item.*
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C02PacketUseEntity.Action.*
 import net.minecraft.network.play.client.C07PacketPlayerDigging
@@ -141,6 +142,11 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
     // Settings
     private val autoF5 by BoolValue("AutoF5", false, subjective = true)
     private val onScaffold by BoolValue("OnScaffold", false)
+    private val noScaffValue = BoolValue("NoScaffold", false)
+    private val blinkCheck by BoolValue("BlinkCheck", false)
+    private val noFlyValue = BoolValue("NoFly", false)
+    private val noEat = BoolValue("NoEat", false)
+    private val noBlocking = BoolValue("NoBlocking", false)
     private val onDestroyBlock by BoolValue("OnDestroyBlock", false)
 
     // AutoBlock
@@ -299,9 +305,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
         subjective = true
     )
 
-    // Visuals
     private val displayDebug = BoolValue("Debug", false)
-
     /**
      * MODULE
      */
@@ -1188,8 +1192,29 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_R, hideModule
     /**
      * Check if run should be cancelled
      */
-    private val cancelRun
-        inline get() = mc.thePlayer.isSpectator || !isAlive(mc.thePlayer) || (noConsumeAttack == "NoRotation" && isConsumingItem())
+    private val cancelRun inline get(): Boolean {
+        return mc.thePlayer.isSpectator
+                || !isAlive(mc.thePlayer)
+                || (noConsumeAttack == "NoRotation" && isConsumingItem())
+                || shouldCancelDueToModuleState()
+                || isEatingDisallowed()
+                || isBlockingDisallowed()
+    }
+
+    private fun shouldCancelDueToModuleState(): Boolean {
+        return (blinkCheck && FDPClient.moduleManager[Blink::class.java]?.state == true)
+                || (noScaffValue.get() && FDPClient.moduleManager[Scaffold::class.java]?.state == true)
+                || (noFlyValue.get() && FDPClient.moduleManager[Flight::class.java]?.state == true)
+    }
+
+    private fun isEatingDisallowed(): Boolean {
+        return noEat.get() && mc.thePlayer.isUsingItem && (
+                mc.thePlayer.heldItem?.item is ItemFood || mc.thePlayer.heldItem?.item is ItemBucketMilk || mc.thePlayer.heldItem?.item is ItemPotion)
+    }
+
+    private fun isBlockingDisallowed(): Boolean {
+        return noBlocking.get() && mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item is ItemBlock
+    }
 
     /**
      * Check if [entity] is alive
