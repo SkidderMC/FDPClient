@@ -20,7 +20,6 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.IconUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
-import net.ccbluex.liquidbounce.utils.render.shader.shaders.BackgroundShader
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraftforge.fml.client.config.GuiSlider
@@ -77,7 +76,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : GuiScreen() {
                 4, width / 2 - 100, height / 4 + 25, "Client title (${if (enabledClientTitle) "On" else "Off"})"
             ).also { titleButton = it })
             add(GuiButton(
-                7,
+                10,
                 width / 2 - 100,
                 height / 4 + 50,
                 "Language (${LanguageManager.overrideLanguage.ifBlank { "Game" }})"
@@ -100,7 +99,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : GuiScreen() {
             // AltManager configuration buttons
             // Location > 3rd row
             add(GuiButton(
-                7,
+                9,
                 width / 2 - 100,
                 height / 4 + 25 + 185,
                 "Random alts mode (${if (stylisedAlts) "Stylised" else "Legacy"})"
@@ -161,7 +160,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : GuiScreen() {
                 altsSlider.updateSlider()
             }
 
-            6 -> {
+            9 -> {
                 stylisedAlts = !stylisedAlts
                 altsModeButton.displayString = "Random alts mode (${if (stylisedAlts) "Stylised" else "Legacy"})"
                 altsSlider.dispString =
@@ -223,7 +222,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : GuiScreen() {
                 if (backgroundShaderFile.exists()) backgroundShaderFile.deleteRecursively()
             }
 
-            7 -> {
+            10 -> {
                 val languageIndex = LanguageManager.knownLanguages.indexOf(LanguageManager.overrideLanguage)
 
                 // If the language is not found, set it to the first language
