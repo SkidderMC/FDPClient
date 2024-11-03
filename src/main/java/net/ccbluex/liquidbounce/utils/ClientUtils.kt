@@ -59,7 +59,7 @@ object ClientUtils : MinecraftInstance() {
     }
 
     fun displayAlert(message: String) {
-        displayChatMessage("§7[§b§l$CLIENT_NAME§7]§r $message")
+        displayChatMessage("§7[§b§l$CLIENT_NAME§7 §f»]§r $message")
     }
 
     fun displayChatMessage(message: String) {
@@ -68,7 +68,7 @@ object ClientUtils : MinecraftInstance() {
             return
         }
 
-        val prefixMessage = "§7[§b§l$CLIENT_NAME§7]§r $message"
+        val prefixMessage = "§7[§b§l$CLIENT_NAME§7] §f§l» §r $message"
         val jsonObject = JsonObject()
         jsonObject.addProperty("text", prefixMessage)
         mc.thePlayer.addChatMessage(IChatComponent.Serializer.jsonToComponent(jsonObject.toString()))
