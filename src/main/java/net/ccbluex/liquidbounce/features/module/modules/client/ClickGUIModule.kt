@@ -26,7 +26,7 @@ import java.awt.Color
 object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT, canBeEnabled = false) {
     var lastScale = 0
     private val style by
-        object : ListValue("Style", arrayOf("Black", "Zywl", "FDP"), "Black") {
+        object : ListValue("Style", arrayOf("Black", "Zywl", "FDP"), "FDP") {
             override fun onChanged(oldValue: String, newValue: String) = updateStyle()
         }
     var scale by FloatValue("Scale", 0.8f, 0.5f..1.5f)
