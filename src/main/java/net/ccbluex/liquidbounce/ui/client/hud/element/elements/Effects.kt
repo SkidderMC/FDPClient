@@ -67,7 +67,7 @@ class Effects(
         val xOffset = 0
         var yOffset = 0
 
-        val activePotions = mc.thePlayer.activePotionEffects
+        val activePotions = mc.thePlayer?.activePotionEffects ?: return Border(0F, 0F, 0F, 0F)
         val sortedPotions = activePotions.sortedByDescending { it.duration }
 
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
@@ -100,7 +100,9 @@ class Effects(
         GlStateManager.pushMatrix()
         var y = 0
 
-        for (potionEffect in mc.thePlayer.activePotionEffects) {
+        val activePotions = mc.thePlayer?.activePotionEffects ?: return Border(0F, 0F, 120F, 30F)
+
+        for (potionEffect in activePotions) {
             val potion = Potion.potionTypes[potionEffect.potionID] ?: continue
             val name = I18n.format(potion.name)
 
@@ -109,7 +111,7 @@ class Effects(
                     potionMap[potion] = it
                 }
 
-            if (mc.thePlayer.activePotionEffects.none { it.amplifier == potionData.level }) {
+            if (activePotions.none { it.amplifier == potionData.level }) {
                 potionMap.remove(potion)
             }
 
@@ -167,7 +169,9 @@ class Effects(
 
         assumeNonVolatile = true
 
-        for (effect in mc.thePlayer.activePotionEffects) {
+        val activePotions = mc.thePlayer?.activePotionEffects ?: return Border(2F, font.FONT_HEIGHT.toFloat(), -width - 2F, y + font.FONT_HEIGHT - 2F)
+
+        for (effect in activePotions) {
             val potion = Potion.potionTypes[effect.potionID] ?: continue
             val level = intToRoman(effect.amplifier + 1)
             val name = "${I18n.format(potion.name)} $level§f: §7${Potion.getDurationString(effect)}"
