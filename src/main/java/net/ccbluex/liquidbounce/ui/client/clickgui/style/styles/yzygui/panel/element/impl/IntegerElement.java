@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.el
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.font.renderer.FontRenderer;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.utils.RenderUtils;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.value.IntegerValue;
 import net.ccbluex.liquidbounce.value.Value;
 
@@ -54,13 +54,13 @@ public final class IntegerElement extends PanelElement {
         final double barWidth = percentage * value - percentage * min;
         final Color categoryColor = parent.getCategory().getColor();
 
-        RenderUtils.rectangle(
+        RenderUtils.INSTANCE.yzyRectangle(
                 x, y,
                 (float) barWidth, height,
                 categoryColor
         );
 
-        RenderUtils.rectangle(
+        RenderUtils.INSTANCE.yzyRectangle(
                 (float) (x + barWidth - 3.0f), y,
                 3.0f, height,
                 categoryColor.darker()

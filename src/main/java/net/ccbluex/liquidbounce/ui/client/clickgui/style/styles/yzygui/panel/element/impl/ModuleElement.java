@@ -10,8 +10,8 @@ import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.font.renderer.FontRenderer;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.utils.RenderUtils;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.FloatValue;
 import net.ccbluex.liquidbounce.value.IntegerValue;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author opZywl - Elements
+ * Author: opZywl - Elements
  */
 public final class ModuleElement extends PanelElement {
 
@@ -101,14 +101,18 @@ public final class ModuleElement extends PanelElement {
             moduleHeight += 2;
         }
 
-        RenderUtils.rectangle(
+        Color moduleColor = new Color(37, 37, 37);
+        if (module.getState()) {
+            yzyCategory category = yzyCategory.Companion.of(module.getCategory());
+            if (category != null) {
+                moduleColor = category.getColor();
+            }
+        }
+
+        RenderUtils.INSTANCE.yzyRectangle(
                 x + 0.5f, y,
                 width - 1.0f, moduleHeight,
-                extended
-                        ? new Color(26, 26, 26)
-                        : module.getState()
-                        ? yzyCategory.of(module.getCategory()).getColor()
-                        : new Color(37, 37, 37)
+                extended ? new Color(26, 26, 26) : moduleColor
         );
 
         String text = module.getName().toLowerCase();
@@ -123,7 +127,7 @@ public final class ModuleElement extends PanelElement {
                 text,
                 x + width - font.getWidth(text) - 3,
                 y + (height / 4.0f) + 0.5f,
-                extended && module.getState() ? yzyCategory.of(module.getCategory()).getColor().getRGB() : new Color(0xD2D2D2).getRGB()
+                extended && module.getState() ? moduleColor.getRGB() : new Color(0xD2D2D2).getRGB()
         );
 
         if (extended) {
@@ -201,5 +205,4 @@ public final class ModuleElement extends PanelElement {
     public void setBinding(boolean binding) {
         this.binding = binding;
     }
-
 }

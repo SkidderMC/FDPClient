@@ -21,7 +21,7 @@ import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard
 
 object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT, canBeEnabled = false) {
-    private var lastScale = 0
+    var lastScale = 0
     private val style by
         object : ListValue("Style", arrayOf("Black", "Zywl"), "Black") {
             override fun onChanged(oldValue: String, newValue: String) = updateStyle()
@@ -67,9 +67,5 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
         val packet = event.packet
         if (packet is S2EPacketCloseWindow && mc.currentScreen is ClickGui)
             event.cancelEvent()
-    }
-
-    fun getLastScale(): Int {
-        return lastScale
     }
 }

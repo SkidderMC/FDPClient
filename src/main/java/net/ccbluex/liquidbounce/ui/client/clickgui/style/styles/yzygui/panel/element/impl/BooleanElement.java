@@ -8,15 +8,15 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.el
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.utils.RenderUtils;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.ccbluex.liquidbounce.value.BoolValue;
 import net.ccbluex.liquidbounce.value.Value;
 
 import java.awt.*;
 
 /**
- * @author opZywl - Elements
+ * Author: opZywl - Elements
  */
 public final class BooleanElement extends PanelElement {
 
@@ -35,12 +35,16 @@ public final class BooleanElement extends PanelElement {
 
     @Override
     public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        RenderUtils.rectangle(
+        Color color = new Color(26, 26, 26);
+        yzyCategory category = yzyCategory.Companion.of(element.getModule().getCategory());
+        if (setting.get() && category != null) {
+            color = category.getColor();
+        }
+
+        RenderUtils.INSTANCE.yzyRectangle(
                 x, y,
                 width, height,
-                setting.get()
-                        ? yzyCategory.of(element.getModule().getCategory()).getColor()
-                        : new Color(26, 26, 26)
+                color
         );
 
         FDPClient.INSTANCE.getCustomFontManager().get("lato-bold-15")

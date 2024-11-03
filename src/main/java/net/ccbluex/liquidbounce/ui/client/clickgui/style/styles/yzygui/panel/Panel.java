@@ -13,8 +13,8 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.manager.GUIManager;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl.ModuleElement;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.utils.Pair;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.utils.RenderUtils;
 import net.ccbluex.liquidbounce.utils.CPSCounter;
+import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
@@ -127,13 +127,13 @@ public final class Panel {
             panelHeight += element.getExtendedHeight();
         }
 
-        RenderUtils.rectangle(
+        RenderUtils.INSTANCE.yzyRectangle(
                 x - 0.5f, y - 0.5f,
                 width + 1.0f, panelHeight + 3.0f,
                 category.getColor()
         );
 
-        RenderUtils.rectangle(
+        RenderUtils.INSTANCE.yzyRectangle(
                 x, y,
                 width,
                 panelHeight + 2.0f,
@@ -142,7 +142,7 @@ public final class Panel {
 
         FDPClient.INSTANCE.getCustomFontManager().get("lato-bold-15")
                 .drawStringWithShadow(
-                        category.getName().toLowerCase(),
+                        category.name().toLowerCase(),
                         x + 3,
                         y + (height / 4.0f) + 0.5f,
                         -1
@@ -156,7 +156,7 @@ public final class Panel {
 
         final int size = height - 7;
 
-        RenderUtils.texture(
+        RenderUtils.INSTANCE.yzyTexture(
                 x + width - size - size - 7,
                 y + (height / 4.0f),
                 0.0f,
@@ -167,7 +167,7 @@ public final class Panel {
 
         Minecraft.getMinecraft().getTextureManager().bindTexture(category.getIcon());
 
-        RenderUtils.texture(
+        RenderUtils.INSTANCE.yzyTexture(
                 x + width - size - 3,
                 y + (height / 4.0f),
                 0.0f,

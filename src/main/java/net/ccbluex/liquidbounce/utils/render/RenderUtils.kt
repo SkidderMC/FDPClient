@@ -3420,6 +3420,81 @@ object RenderUtils : MinecraftInstance() {
         return -1
     }
 
+    fun yzyTexture(
+        x: Double,
+        y: Double,
+        u: Float,
+        v: Float,
+        width: Double,
+        height: Double,
+        textureWidth: Float,
+        textureHeight: Float,
+        color: Color
+    ) {
+        val valueWidth = 1.0f / textureWidth
+        val valueHeight = 1.0f / textureHeight
+        val tessellator = Tessellator.getInstance()
+        val renderer = tessellator.worldRenderer
+
+        GlStateManager.color(
+            color.red / 255.0f,
+            color.green / 255.0f,
+            color.blue / 255.0f,
+            color.alpha / 255.0f
+        )
+
+        renderer.begin(7, DefaultVertexFormats.POSITION_TEX)
+        renderer.pos(x, y + height, 0.0).tex((u * valueWidth).toDouble(),
+            ((v + height.toFloat()) * valueHeight).toDouble()
+        ).endVertex()
+        renderer.pos(x + width, y + height, 0.0).tex(((u + width.toFloat()) * valueWidth).toDouble(),
+            ((v + height.toFloat()) * valueHeight).toDouble()
+        ).endVertex()
+        renderer.pos(x + width, y, 0.0).tex(((u + width.toFloat()) * valueWidth).toDouble(),
+            (v * valueHeight).toDouble()
+        ).endVertex()
+        renderer.pos(x, y, 0.0).tex((u * valueWidth).toDouble(), (v * valueHeight).toDouble()).endVertex()
+
+        tessellator.draw()
+
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+    }
+
+    fun yzyRectangle(
+        x: Float,
+        y: Float,
+        width: Float,
+        height: Float,
+        color: Color
+    ) {
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+
+        val renderer = Tessellator.getInstance().worldRenderer
+
+        GlStateManager.color(
+            color.red / 255.0f,
+            color.green / 255.0f,
+            color.blue / 255.0f,
+            color.alpha / 255.0f
+        )
+
+        renderer.begin(7, DefaultVertexFormats.POSITION)
+        renderer.pos(x.toDouble(), (y + height).toDouble(), 0.0).endVertex()
+        renderer.pos((x + width).toDouble(), (y + height).toDouble(), 0.0).endVertex()
+        renderer.pos((x + width).toDouble(), y.toDouble(), 0.0).endVertex()
+        renderer.pos(x.toDouble(), y.toDouble(), 0.0).endVertex()
+
+        Tessellator.getInstance().draw()
+
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+        GlStateManager.bindTexture(0)
+        GlStateManager.color(1f, 1f, 1f, 1f)
+    }
+
+
     fun drawExhiEnchants(stack: ItemStack, x: Float, y: Float) {
         var y = y
         RenderHelper.disableStandardItemLighting()

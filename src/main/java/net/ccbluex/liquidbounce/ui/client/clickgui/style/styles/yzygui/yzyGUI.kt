@@ -3,144 +3,117 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui
 
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.manager.GUIManager;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.utils.Pair;
-import net.minecraft.client.gui.GuiScreen;
-import org.lwjgl.input.Mouse;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.manager.GUIManager
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.utils.Pair
+import net.minecraft.client.gui.GuiScreen
+import org.lwjgl.input.Mouse
+import java.io.IOException
 
 /**
  * @author opZywl
  */
-public final class yzyGUI extends GuiScreen {
+class yzyGUI(private val clickGui: ClickGUIModule) : GuiScreen() {
 
-    private final List<Panel> panels = new ArrayList<>();
-    private final ClickGUIModule clickGui;
+    private val panels: MutableList<Panel> = ArrayList()
+    private val guiManager: GUIManager = FDPClient.guiManager
+    private var yShift = 0
+    var slide: Double = 0.0
+    var progress: Double = 0.0
+    var lastMS: Long = System.currentTimeMillis()
 
-    final GUIManager guiManager = FDPClient.INSTANCE.getGuiManager();
-    private int yShift = 0;
+    init {
+        var panelX = 5
+        for (category in yzyCategory.values()) {
+            val positions = guiManager.getPositions(category)
+            val panel: Panel
 
-    public double slide, progress = 0;
-
-    public long lastMS = System.currentTimeMillis();
-
-    public yzyGUI(final ClickGUIModule clickGui) {
-        this.clickGui = clickGui;
-
-        final GUIManager guiManager = FDPClient.INSTANCE.getGuiManager();
-        int panelX = 5;
-
-        for (final yzyCategory category : yzyCategory.values()) {
-            final Pair<Integer, Integer> positions = guiManager.getPositions(category);
-            Panel panel;
-
-            if (!guiManager.getPositions().containsKey(category)) {
-                panel = new Panel(this, category, panelX, 5);
-
-                panelX += panel.getWidth() + 5;
+            if (!guiManager.positions.containsKey(category)) {
+                panel = Panel(this, category, panelX, 5)
+                panelX += panel.width + 5
             } else {
-                panel = new Panel(this, category, positions.getKey(), positions.getValue());
-
-                panel.setExtended(guiManager.getExtendeds().get(category));
+                panel = Panel(this, category, positions.key, positions.value)
+                panel.isExtended = guiManager.extendeds[category] == true
             }
 
-            guiManager.getPositions().put(category, new Pair<>(panel.getX(), panel.getY()));
-            guiManager.getExtendeds().put(category, panel.isExtended());
+            guiManager.positions[category] = Pair(panel.x, panel.y)
+            guiManager.extendeds[category] = panel.isExtended
 
-            panels.add(panel);
-
-            panel.setExtended(guiManager.isExtended(category));
+            panels.add(panel)
+            panel.isExtended = guiManager.isExtended(category)
         }
     }
 
-    @Override
-    public void initGui() {
-        super.initGui();
-        slide = progress = 0;
-        lastMS = System.currentTimeMillis();
-
+    override fun initGui() {
+        super.initGui()
+        slide = 0.0
+        progress = 0.0
+        lastMS = System.currentTimeMillis()
     }
 
-
-    @Override
-    public void onGuiClosed() {
-        super.onGuiClosed();
-
-        mc.gameSettings.guiScale = clickGui.getLastScale();
-
-        panels.forEach(Panel::onGuiClosed);
-
-        mc.entityRenderer.loadEntityShader(null);
+    override fun onGuiClosed() {
+        super.onGuiClosed()
+        mc.gameSettings.guiScale = clickGui.lastScale
+        panels.forEach { it.onGuiClosed() }
+        mc.entityRenderer.loadEntityShader(null)
     }
 
-    private void handleScroll(final int wheel) {
-        if (wheel == 0)
-            return;
-
-        for(final Panel panel : panels)
-            panel.setY(panel.getY() + wheel);
+    private fun handleScroll(wheel: Int) {
+        if (wheel == 0) return
+        panels.forEach { it.y += wheel }
     }
 
-    @Override
-    public void drawScreen(final int mouseX, int mouseY, final float partialTicks) {
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (Mouse.hasWheel()) {
-            int wheel = Mouse.getDWheel();
-            boolean handledScroll = false;
+            val wheel = Mouse.getDWheel()
+            var handledScroll = false
 
-            for (int i = panels.size() - 1; i >= 0; i--)
-                if (panels.get(i).handleScroll(mouseX, mouseY, wheel)) {
-                    handledScroll = true;
-                    break;
+            for (i in panels.size - 1 downTo 0) {
+                if (panels[i].handleScroll(mouseX, mouseY, wheel)) {
+                    handledScroll = true
+                    break
                 }
-            if (!handledScroll)
-                handleScroll(wheel);
+            }
 
+            if (!handledScroll) {
+                handleScroll(wheel)
+            }
         }
-        int finalMouseY = mouseY;
-        panels.forEach(panel -> panel.drawScreen(mouseX, finalMouseY, partialTicks));
+
+        panels.forEach { it.drawScreen(mouseX, mouseY, partialTicks) }
     }
 
-    @Override
-    protected void mouseClicked(final int mouseX, int mouseY, final int mouseButton) throws IOException {
-        mouseY += yShift;
-        int finalMouseY = mouseY;
-        panels.forEach(panel -> panel.mouseClicked(mouseX, finalMouseY, mouseButton));
+    @Throws(IOException::class)
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        val adjustedMouseY = mouseY + yShift
+        panels.forEach { it.mouseClicked(mouseX, adjustedMouseY, mouseButton) }
     }
 
-    @Override
-    protected void mouseReleased(final int mouseX, int mouseY, final int state) {
-        mouseY += yShift;
-        int finalMouseY = mouseY;
-        panels.forEach(panel -> panel.mouseReleased(mouseX, finalMouseY, state));
+    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
+        val adjustedMouseY = mouseY + yShift
+        panels.forEach { it.mouseReleased(mouseX, adjustedMouseY, state) }
     }
 
-    @Override
-    protected void keyTyped(final char typedChar, final int keyCode) throws IOException {
-        super.keyTyped(typedChar, keyCode);
-
-        panels.forEach(panel -> panel.keyTyped(typedChar, keyCode));
+    @Throws(IOException::class)
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        super.keyTyped(typedChar, keyCode)
+        panels.forEach { it.keyTyped(typedChar, keyCode) }
     }
 
-    @Override
-    public boolean doesGuiPauseGame() {
-        return false;
+    override fun doesGuiPauseGame(): Boolean {
+        return false
     }
 
-    public List<Panel> getPanels() {
-        return panels;
+    fun getPanels(): List<Panel> {
+        return panels
     }
 
-    public ClickGUIModule getClickGui() {
-        return clickGui;
+    fun getClickGui(): ClickGUIModule {
+        return clickGui
     }
-
 }
