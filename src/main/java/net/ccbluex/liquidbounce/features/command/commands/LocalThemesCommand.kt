@@ -7,9 +7,9 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.file.FileManager.dir
-import net.ccbluex.liquidbounce.file.FileManager.themesDir
 import net.ccbluex.liquidbounce.file.FileManager.hudConfig
 import net.ccbluex.liquidbounce.file.FileManager.loadConfig
+import net.ccbluex.liquidbounce.file.FileManager.themesDir
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type

@@ -20,7 +20,7 @@ import kotlin.reflect.KProperty
 
 abstract class Value<T>(
     val name: String,
-    protected open var value: T,
+    open var value: T,
     val subjective: Boolean = false,
     var isSupported: (() -> Boolean)? = null,
 ) : ReadWriteProperty<Any?, T> {
@@ -259,7 +259,7 @@ open class BlockValue(
 open class ListValue(
     name: String,
     var values: Array<String>,
-    public override var value: String,
+    override var value: String,
     subjective: Boolean = false,
     isSupported: (() -> Boolean)? = null,
 ) : Value<String>(name, value, subjective, isSupported) {
@@ -287,7 +287,7 @@ open class ListValue(
 open class MultiListValue(
     name: String,
     val values: Array<String>,
-    public override var value: List<String>,
+    override var value: List<String>,
     subjective: Boolean = false,
     isSupported: (() -> Boolean)? = null
 ) : Value<List<String>>(name, value, subjective, isSupported) {
@@ -311,4 +311,44 @@ open class MultiListValue(
     }
 
     override fun fromJsonF(element: JsonElement) = if (element.isJsonArray) element.asJsonArray.map { it.asString } else null
+}
+
+/**
+ * Number value represents a value with a double
+ */
+open class NumberValue(
+    name: String,
+    value: Double,
+    val minimum: Double = 0.0,
+    val maximum: Double = Double.MAX_VALUE,
+    val increment: Double = 1.0,
+    subjective: Boolean = false,
+    isSupported: (() -> Boolean)? = null,
+) : Value<Double>(name, value, subjective, isSupported) {
+
+    fun set(newValue: Number): Boolean {
+        return set(newValue.toDouble().coerceIn(minimum, maximum))
+    }
+
+    override fun toJsonF() = JsonPrimitive(value)
+
+    override fun fromJsonF(element: JsonElement) = if (element.isJsonPrimitive) element.asDouble else null
+
+    fun isMinimal() = value <= minimum
+    fun isMaximal() = value >= maximum
+
+    fun getInc() = increment
+
+    fun append(o: Double): NumberValue {
+        set(get() + o)
+        return this
+    }
+
+    fun incrementValue() {
+        set(value + increment)
+    }
+
+    fun decrementValue() {
+        set(value - increment)
+    }
 }

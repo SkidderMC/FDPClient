@@ -35,6 +35,7 @@ open class Module(
     val defaultInArray: Boolean = true, // Used in HideCommand to reset modules visibility.
     private val canBeEnabled: Boolean = true,
     private val forcedDescription: String? = null,
+    var expanded: Boolean = false,
 
     // Adds spaces between lowercase and uppercase letters (KillAura -> Kill Aura)
     val spacedName: String = name.split("(?<=[a-z])(?=[A-Z])".toRegex()).joinToString(separator = " "),

@@ -95,7 +95,7 @@ object FDPClient {
 
 
     // HUD & ClickGUI
-    val hud = HUD
+    var hud = HUD
 
     val clickGui = ClickGui
 

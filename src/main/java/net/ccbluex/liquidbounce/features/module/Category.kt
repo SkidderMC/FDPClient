@@ -5,6 +5,11 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
+import lombok.Getter
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.objects.Drag
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.Scroll
+
 enum class Category(val displayName: String, val configName: String, val htmlIcon: String,  posX: Int, posY: Int, clicked: Boolean, showMods: Boolean) {
     COMBAT("Combat", "Combat", "&#xe000;", 15, 15, false, true),
     PLAYER("Player", "Player", "&#xe7fd;", 15, 180, false, true),
@@ -14,7 +19,6 @@ enum class Category(val displayName: String, val configName: String, val htmlIco
     OTHER("Other", "Other", "&#xe5d3;", 15, 330, false, true),
     EXPLOIT("Exploit", "Exploit", "&#xe868;", 120, 180, false, true);
 
-    /*
     private var expanded: Boolean
     private var posXs: Int
     private var posYs: Int
@@ -39,6 +43,4 @@ enum class Category(val displayName: String, val configName: String, val htmlIco
         showModsV = showMods
         Main.categoryCount++
     }
-
-     */
 }

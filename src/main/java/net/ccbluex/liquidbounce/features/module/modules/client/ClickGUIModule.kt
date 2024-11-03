@@ -12,18 +12,21 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.FDPDropdownClickGUI
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.yzyGUI
+import net.ccbluex.liquidbounce.utils.ClientThemesUtils
 import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard
+import java.awt.Color
 
 object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT, canBeEnabled = false) {
     var lastScale = 0
     private val style by
-        object : ListValue("Style", arrayOf("Black", "Zywl"), "Black") {
+        object : ListValue("Style", arrayOf("Black", "Zywl", "FDP"), "Black") {
             override fun onChanged(oldValue: String, newValue: String) = updateStyle()
         }
     var scale by FloatValue("Scale", 0.8f, 0.5f..1.5f)
@@ -33,6 +36,11 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
     val spacedModules by BoolValue("SpacedModules", false)
     val panelsForcedInBoundaries by BoolValue("PanelsForcedInBoundaries", false)
 
+
+    val backback by BoolValue("Background Accent", true)
+    val scrollMode by ListValue("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")
+    val colormode by ListValue("Setting Accent", arrayOf("White", "Color"), "Color")
+    val clickHeight by IntegerValue("Tab Height", 250, 100.. 500)
 
     override fun onEnable() {
         lastScale = mc.gameSettings.guiScale
@@ -45,6 +53,10 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
                         this
                     )
                 )
+                this.state = false
+            }
+            style.equals("FDP", ignoreCase = true) -> {
+                mc.displayGuiScreen(FDPDropdownClickGUI())
                 this.state = false
             }
             else -> {
@@ -60,6 +72,11 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
             "Black" -> BlackStyle
             else -> return
         }
+    }
+
+    @JvmStatic
+    fun generateColor(index: Int): Color {
+        return ClientThemesUtils.getColor(index)
     }
 
     @EventTarget(ignoreCondition = true)

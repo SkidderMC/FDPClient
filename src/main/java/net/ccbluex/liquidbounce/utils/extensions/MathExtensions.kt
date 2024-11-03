@@ -12,6 +12,9 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
+import java.math.BigDecimal
+import kotlin.math.ceil
+import kotlin.math.floor
 
 /**
  * Provides:
@@ -139,3 +142,41 @@ fun Block.lerpWith(x: Double, y: Double, z: Double) = Vec3(
     blockBoundsMinY + (blockBoundsMaxY - blockBoundsMinY) * y,
     blockBoundsMinZ + (blockBoundsMaxZ - blockBoundsMinZ) * z
 )
+
+fun interpolate(oldValue: Double, newValue: Double, interpolationValue: Double): Double {
+    return oldValue + (newValue - oldValue) * interpolationValue
+}
+
+fun interpolateFloat(oldValue: Float, newValue: Float, interpolationValue: Double): Float {
+    return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble()).toFloat()
+}
+
+fun round(value: Double, inc: Double): Double {
+    return if (inc == 0.0) value else if (inc == 1.0) Math.round(value).toDouble() else {
+        val halfOfInc = inc / 2.0
+        val floored = floor(value / inc) * inc
+        if (value >= floored + halfOfInc) BigDecimal(ceil(value / inc) * inc)
+            .toDouble() else BigDecimal(floored)
+            .toDouble()
+    }
+}
+
+fun roundToHalf(d: Double): Double {
+    return Math.round(d * 2.0) / 2.0
+}
+
+fun roundX(value: Double, inc: Double): Double {
+    when (inc) {
+        0.0 -> return value
+        1.0 -> return Math.round(value).toDouble()
+        else -> {
+            val halfOfInc = inc / 2.0
+            val floored = floor(value / inc) * inc
+
+            return if (value >= floored + halfOfInc) BigDecimal(ceil(value / inc) * inc)
+                .toDouble()
+            else BigDecimal(floored)
+                .toDouble()
+        }
+    }
+}

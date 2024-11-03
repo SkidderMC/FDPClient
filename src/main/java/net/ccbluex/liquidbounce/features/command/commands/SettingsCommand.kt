@@ -5,14 +5,17 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.file.FileManager.settingsDir
 import net.ccbluex.liquidbounce.handler.api.ClientApi
 import net.ccbluex.liquidbounce.handler.api.Status
 import net.ccbluex.liquidbounce.handler.api.autoSettingsList
 import net.ccbluex.liquidbounce.handler.api.loadSettings
-import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.file.FileManager.settingsDir
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
