@@ -57,7 +57,7 @@ object FreeCam : Module("FreeCam", Category.VISUAL, gameDetecting = false, hideM
         }
 
         val velocity = Vec3_ZERO.apply {
-            strafe(speed = speed, moveCheck = !mc.thePlayer.isMoving)
+            strafe(speed = speed, moveCheck = !event.originalInput.isMoving)
 
             this.yCoord = yAxisMovement * speed
         }

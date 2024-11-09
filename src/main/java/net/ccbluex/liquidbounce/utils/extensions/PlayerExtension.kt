@@ -134,8 +134,8 @@ val Entity.currPos: Vec3
 val Entity.lastTickPos: Vec3
     get() = Vec3(lastTickPosX, lastTickPosY, lastTickPosZ)
 
-val EntityLivingBase.isMoving: Boolean
-    get() = this.run { moveForward != 0F || moveStrafing != 0F }
+val EntityLivingBase?.isMoving: Boolean
+    get() = this?.run { moveForward != 0F || moveStrafing != 0F } == true
 
 fun Entity.setPosAndPrevPos(currPos: Vec3, prevPos: Vec3 = currPos, lastTickPos: Vec3? = null) {
     setPosition(currPos.xCoord, currPos.yCoord, currPos.zCoord)

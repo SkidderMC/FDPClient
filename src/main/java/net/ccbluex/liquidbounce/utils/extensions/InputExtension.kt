@@ -16,3 +16,5 @@ fun MovementInput.reset() {
 
 val MovementInput.isSideways
     get() = moveForward != 0f && moveStrafe != 0f
+val MovementInput.isMoving
+    get() = moveForward != 0f || moveStrafe != 0f

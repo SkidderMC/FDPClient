@@ -32,10 +32,8 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
-import net.minecraft.client.particle.EffectRenderer;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.crash.CrashReport;
-import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
@@ -46,10 +44,8 @@ import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.lib.Opcodes;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -80,9 +76,6 @@ public abstract class MixinMinecraft {
 
     @Shadow
     public EntityPlayerSP thePlayer;
-
-    @Shadow
-    public EffectRenderer effectRenderer;
 
     @Shadow
     public PlayerControllerMP playerController;
@@ -268,39 +261,21 @@ public abstract class MixinMinecraft {
         EventManager.INSTANCE.callEvent(new WorldEvent(p_loadWorld_1_));
     }
 
-    /**
-     * @author CCBlueX
-     */
-    @Overwrite
-    public void sendClickBlockToController(boolean leftClick) {
-        if (!leftClick) leftClickCounter = 0;
+    @Redirect(method = "sendClickBlockToController", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isUsingItem()Z"))
+    private boolean injectMultiActions(EntityPlayerSP instance) {
+        return instance.isUsingItem() || MultiActions.INSTANCE.handleEvents();
+    }
 
-        if (leftClickCounter <= 0 && (!thePlayer.isUsingItem() || MultiActions.INSTANCE.handleEvents())) {
-            if (leftClick && objectMouseOver != null && objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-                BlockPos blockPos = objectMouseOver.getBlockPos();
-
-                if (leftClickCounter == 0)
-                    EventManager.INSTANCE.callEvent(new ClickBlockEvent(blockPos, objectMouseOver.sideHit));
-
-
-                if (theWorld.getBlockState(blockPos).getBlock().getMaterial() != Material.air && playerController.onPlayerDamageBlock(blockPos, objectMouseOver.sideHit)) {
-                    effectRenderer.addBlockHitEffects(blockPos, objectMouseOver.sideHit);
-                    thePlayer.swingItem();
-                }
-            } else if (!AbortBreaking.INSTANCE.handleEvents()) {
-                playerController.resetBlockRemoving();
-            }
+    @Redirect(method = "sendClickBlockToController", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/PlayerControllerMP;resetBlockRemoving()V"))
+    private void injectAbortBreaking(PlayerControllerMP instance) {
+        if (!AbortBreaking.INSTANCE.handleEvents()) {
+            instance.resetBlockRemoving();
         }
     }
 
     @Redirect(method = "runGameLoop", at = @At(value = "INVOKE", target = "Ljava/util/Queue;isEmpty()Z"))
     private boolean injectTickBase(Queue instance) {
         return TickBase.INSTANCE.getDuringTickModification() || instance.isEmpty();
-    }
-
-    @Redirect(method = "*", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/InventoryPlayer;currentItem:I", opcode = Opcodes.GETFIELD))
-    private int hookSilentHotbar(InventoryPlayer inventory) {
-        return inventory.currentItem;
     }
 
     @Inject(method = "displayCrashReport", at = @At(value = "INVOKE", target = "Lnet/minecraft/crash/CrashReport;getFile()Ljava/io/File;"))
