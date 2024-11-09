@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.RaycastUtils.raycastEntity
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
@@ -57,7 +57,7 @@ object AutoProjectile : Module("AutoProjectile", Category.COMBAT, hideModule = f
                 if (switchBack != -1 && player.inventory.currentItem != switchBack) {
                     player.inventory.currentItem = switchBack
 
-                    mc.playerController.updateController()
+                    mc.playerController.syncCurrentPlayItem()
                 } else {
                     player.stopUsingItem()
                 }
@@ -92,7 +92,7 @@ object AutoProjectile : Module("AutoProjectile", Category.COMBAT, hideModule = f
                         switchBack = player.inventory.currentItem
 
                         player.inventory.currentItem = projectile
-                        mc.playerController.updateController()
+                        mc.playerController.syncCurrentPlayItem()
                     }
 
                     throwProjectile()
@@ -106,7 +106,7 @@ object AutoProjectile : Module("AutoProjectile", Category.COMBAT, hideModule = f
                         switchBack = player.inventory.currentItem
 
                         player.inventory.currentItem = projectile
-                        mc.playerController.updateController()
+                        mc.playerController.syncCurrentPlayItem()
                     }
 
                     throwProjectile()

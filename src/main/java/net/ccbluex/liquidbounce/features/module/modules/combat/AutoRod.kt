@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.EntityUtils.getHealth
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.RaycastUtils
@@ -68,7 +68,7 @@ object AutoRod : Module("AutoRod", Category.COMBAT, hideModule = false) {
                 if (switchBack != -1 && mc.thePlayer.inventory.currentItem != switchBack) {
                     // Switch back to previous item
                     mc.thePlayer.inventory.currentItem = switchBack
-                    mc.playerController.updateController()
+                    mc.playerController.syncCurrentPlayItem()
                 } else {
                     // Stop using rod
                     mc.thePlayer.stopUsingItem()
@@ -139,7 +139,7 @@ object AutoRod : Module("AutoRod", Category.COMBAT, hideModule = false) {
                     switchBack = mc.thePlayer.inventory.currentItem
 
                     mc.thePlayer.inventory.currentItem = rod - 36
-                    mc.playerController.updateController()
+                    mc.playerController.syncCurrentPlayItem()
                 }
 
                 rod()

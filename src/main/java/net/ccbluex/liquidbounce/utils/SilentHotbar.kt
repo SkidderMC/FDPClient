@@ -43,7 +43,7 @@ object SilentHotbar : Listenable, MinecraftInstance() {
         ticksSinceLastUpdate = 0
 
         if (immediate) {
-            mc.playerController?.updateController()
+            mc.playerController?.syncCurrentPlayItem()
         }
     }
 
@@ -58,7 +58,7 @@ object SilentHotbar : Listenable, MinecraftInstance() {
             hotbarState = null
 
             if (immediate) {
-                mc.playerController?.updateController()
+                mc.playerController?.syncCurrentPlayItem()
             }
         }
     }

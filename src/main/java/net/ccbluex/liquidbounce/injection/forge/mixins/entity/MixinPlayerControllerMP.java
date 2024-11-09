@@ -57,7 +57,7 @@ public class MixinPlayerControllerMP {
     }
 
     @Redirect(method = "syncCurrentPlayItem", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/InventoryPlayer;currentItem:I"))
-    private int hookSilentHotbar(InventoryPlayer instance) {
+    private int hookSilentHotbarA(InventoryPlayer instance) {
         SilentHotbar silentHotbar = SilentHotbar.INSTANCE;
 
         int prevSlot = instance.currentItem;
@@ -67,5 +67,10 @@ public class MixinPlayerControllerMP {
         EventManager.INSTANCE.callEvent(event);
 
         return event.getModifiedSlot();
+    }
+
+    @Redirect(method = "sendUseItem", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/InventoryPlayer;currentItem:I"))
+    private int hookSilentHotbarB(InventoryPlayer instance) {
+        return SilentHotbar.INSTANCE.getCurrentSlot();
     }
 }

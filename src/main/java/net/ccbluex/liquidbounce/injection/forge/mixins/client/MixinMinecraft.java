@@ -34,6 +34,7 @@ import net.minecraft.client.multiplayer.PlayerControllerMP;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.crash.CrashReport;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
@@ -286,6 +287,12 @@ public abstract class MixinMinecraft {
                         "Please make a screenshot of this screen and send it to developers\n"
                         + message,
                 "oops, game crashed!", JOptionPane.ERROR_MESSAGE);
+    }
+
+
+    @Redirect(method = {"middleClickMouse", "rightClickMouse"}, at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/InventoryPlayer;currentItem:I"))
+    private int injectSilentHotbar(InventoryPlayer instance) {
+        return SilentHotbar.INSTANCE.getCurrentSlot();
     }
 
     /**

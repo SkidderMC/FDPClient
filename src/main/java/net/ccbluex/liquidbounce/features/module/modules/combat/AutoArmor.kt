@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner.canBeRepairedWithOther
 import net.ccbluex.liquidbounce.utils.CoroutineUtils.waitUntil
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.SilentHotbar
 import net.ccbluex.liquidbounce.utils.inventory.ArmorComparator.getBestArmorSet
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
@@ -31,7 +30,6 @@ import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.entity.EntityLiving.getArmorPosition
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import net.minecraft.network.play.client.C09PacketHeldItemChange
 
 object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
 	private val maxDelay: Int by object : IntegerValue("MaxDelay", 50, 0..500) {
@@ -120,11 +118,16 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
 				// Set current slot being stolen for highlighting
 				autoArmorCurrentSlot = hotbarIndex
 
-				// Switch selected hotbar slot, right click to equip
-				sendPackets(
-					C09PacketHeldItemChange(hotbarIndex),
-					C08PacketPlayerBlockPlacement(stack)
+				SilentHotbar.selectSlotSilently(
+					this,
+					hotbarIndex,
+					immediate = true,
+					render = false,
+					resetManually = true
 				)
+
+				// Switch selected hotbar slot, right click to equip
+				sendPacket(C08PacketPlayerBlockPlacement(stack))
 
 				// Instantly update inventory on client-side to prevent repetitive clicking because of ping
 				thePlayer.inventory.armorInventory[armorPos] = stack
@@ -146,7 +149,7 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
 
 		// Sync selected slot next tick
 		if (hasClickedHotbar)
-			TickScheduler += { sendPacket(C09PacketHeldItemChange(SilentHotbar.currentSlot)) }
+			TickScheduler += { SilentHotbar.resetSlot(this) }
 	}
 
 	suspend fun equipFromInventory() {
@@ -244,10 +247,9 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
 		// Set current slot being stolen for highlighting
 		autoArmorCurrentSlot = hotbarIndex
 
-		sendPackets(
-			C09PacketHeldItemChange(hotbarIndex),
-			C08PacketPlayerBlockPlacement(stack)
-		)
+		SilentHotbar.selectSlotSilently(this, hotbarIndex, immediate = true, render = false, resetManually = true)
+
+		sendPacket(C08PacketPlayerBlockPlacement(stack))
 	}
 
 	fun canEquipFromChest() = handleEvents() && hotbar && !notInContainers

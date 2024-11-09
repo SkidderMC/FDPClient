@@ -199,10 +199,12 @@ fun EntityPlayerSP.onPlayerRightClick(
     clickPos: BlockPos, side: EnumFacing, clickVec: Vec3,
     stack: ItemStack? = inventory.mainInventory[SilentHotbar.currentSlot],
 ): Boolean {
+
+    val controller = mc.playerController ?: return false
+    controller.syncCurrentPlayItem()
+
     if (clickPos !in worldObj.worldBorder)
         return false
-
-    mc.playerController?.updateController()
 
     val (facingX, facingY, facingZ) = (clickVec - clickPos.toVec()).toFloatTriple()
 
@@ -212,7 +214,7 @@ fun EntityPlayerSP.onPlayerRightClick(
     }
 
     // If player is a spectator, send click and return true
-    if (mc.playerController.isSpectator)
+    if (controller.isSpectator)
         return sendClick()
 
     val item = stack?.item
@@ -247,7 +249,7 @@ fun EntityPlayerSP.onPlayerRightClick(
     val prevSize = stack.stackSize
 
     return stack.onItemUse(this, worldObj, clickPos, side, facingX, facingY, facingZ).also {
-        if (mc.playerController.isInCreativeMode) {
+        if (controller.isInCreativeMode) {
             stack.itemDamage = prevMetadata
             stack.stackSize = prevSize
         } else if (stack.stackSize <= 0) {
@@ -261,7 +263,7 @@ fun EntityPlayerSP.sendUseItem(stack: ItemStack): Boolean {
     if (mc.playerController.isSpectator)
         return false
 
-    mc.playerController?.updateController()
+    mc.playerController?.syncCurrentPlayItem()
 
     sendPacket(C08PacketPlayerBlockPlacement(stack))
 

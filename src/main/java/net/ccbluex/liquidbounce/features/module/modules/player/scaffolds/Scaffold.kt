@@ -129,7 +129,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     private val autoBlock by ListValue("AutoBlock", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof")
     private val sortByHighestAmount by BoolValue("SortByHighestAmount", false) { autoBlock != "Off" }
     private val earlySwitch by BoolValue("EarlySwitch", false) { autoBlock != "Off" && !sortByHighestAmount }
-    private val amountBeforeSwitch by IntegerValue("SlotAmountBeforeSwitch",
+    private val amountBeforeSwitch by IntegerValue(
+        "SlotAmountBeforeSwitch",
         3,
         1..10
     ) { earlySwitch && !sortByHighestAmount }
@@ -150,7 +151,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     // GodBridge mode sub-values
     private val waitForRots by BoolValue("WaitForRotations", false) { isGodBridgeEnabled }
     private val useOptimizedPitch by BoolValue("UseOptimizedPitch", false) { isGodBridgeEnabled }
-    private val customGodPitch by FloatValue("GodBridgePitch",
+    private val customGodPitch by FloatValue(
+        "GodBridgePitch",
         73.5f,
         0f..90f
     ) { isGodBridgeEnabled && !useOptimizedPitch }
@@ -644,7 +646,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         }
 
         if (!expand && (!isReplaceable(blockPosition) ||
-                    search(blockPosition, !shouldGoDown, area, shouldPlaceHorizontally))) {
+                    search(blockPosition, !shouldGoDown, area, shouldPlaceHorizontally))
+        ) {
             return
         }
 
@@ -678,7 +681,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             BlockUtils.getCenterDistance(blockPosition.add(it))
         }.forEach {
             if (canBeClicked(blockPosition.add(it)) ||
-                search(blockPosition.add(it), !shouldGoDown, area, shouldPlaceHorizontally)) {
+                search(blockPosition.add(it), !shouldGoDown, area, shouldPlaceHorizontally)
+            ) {
                 return
             }
         }
@@ -700,13 +704,15 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             val blockSlot = if (sortByHighestAmount) {
                 InventoryUtils.findLargestBlockStackInHotbar() ?: return
             } else if (earlySwitch) {
-                InventoryUtils.findBlockStackInHotbarGreaterThan(amountBeforeSwitch) ?: InventoryUtils.findBlockInHotbar() ?: return
+                InventoryUtils.findBlockStackInHotbarGreaterThan(amountBeforeSwitch)
+                    ?: InventoryUtils.findBlockInHotbar() ?: return
             } else {
                 InventoryUtils.findBlockInHotbar() ?: return
             }
 
             if (autoBlock != "Off") {
-                SilentHotbar.selectSlotSilently(this,
+                SilentHotbar.selectSlotSilently(
+                    this,
                     blockSlot,
                     immediate = true,
                     render = autoBlock == "Pick",
@@ -964,8 +970,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             simPlayer.tick()
 
             // We don't want to use block safe all the time, so we check if it's not needed.
-            options.instant = blockSafe && simPlayer.fallDistance > player.fallDistance + 0.05 &&
-                    rotationDifference > (factorH + factorV) / 2f
+            options.instant =
+                blockSafe && simPlayer.fallDistance > player.fallDistance + 0.05 && rotationDifference > (factorH + factorV) / 2f
 
             setRotation(placeRotation.rotation, if (scaffoldMode == "Telly") 1 else options.resetTicks)
         }
@@ -1033,7 +1039,9 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             if (raytrace.blockPos == offsetPos && (!raycast || raytrace.sideHit == side.opposite)) {
                 return PlaceRotation(
                     PlaceInfo(
-                        raytrace.blockPos, side.opposite, modifyVec(raytrace.hitVec, side, Vec3(offsetPos), !raycast)
+                        raytrace.blockPos,
+                        side.opposite,
+                        modifyVec(raytrace.hitVec, side, Vec3(offsetPos), !raycast)
                     ), currRotation
                 )
             }
@@ -1044,7 +1052,9 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         if (raytrace.blockPos == offsetPos && (!raycast || raytrace.sideHit == side.opposite)) {
             return PlaceRotation(
                 PlaceInfo(
-                    raytrace.blockPos, side.opposite, modifyVec(raytrace.hitVec, side, Vec3(offsetPos), !raycast)
+                    raytrace.blockPos,
+                    side.opposite,
+                    modifyVec(raytrace.hitVec, side, Vec3(offsetPos), !raycast)
                 ), rotation
             )
         }
@@ -1084,7 +1094,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             return
 
         val switchSlot = if (earlySwitch) {
-            InventoryUtils.findBlockStackInHotbarGreaterThan(amountBeforeSwitch) ?: InventoryUtils.findBlockInHotbar() ?: return
+            InventoryUtils.findBlockStackInHotbarGreaterThan(amountBeforeSwitch) ?: InventoryUtils.findBlockInHotbar()
+            ?: return
         } else {
             InventoryUtils.findBlockInHotbar()
         } ?: return
@@ -1267,13 +1278,12 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
         val rotation = if (isMovingStraight) {
             if (player.onGround) {
-                isOnRightSide = floor(player.posX + cos(movingYaw.toRadians()) * 0.5) != floor(player.posX) ||
-                        floor(player.posZ + sin(movingYaw.toRadians()) * 0.5) != floor(player.posZ)
+                isOnRightSide = floor(player.posX + cos(movingYaw.toRadians()) * 0.5) != floor(player.posX) || floor(
+                    player.posZ + sin(movingYaw.toRadians()) * 0.5
+                ) != floor(player.posZ)
 
-                val posInDirection = BlockPos(player.positionVector.offset(EnumFacing.fromAngle(movingYaw.toDouble()),
-                    0.6
-                )
-                )
+                val posInDirection =
+                    BlockPos(player.positionVector.offset(EnumFacing.fromAngle(movingYaw.toDouble()), 0.6))
 
                 val isLeaningOffBlock = getBlock(player.position.down()) == air
                 val nextBlockIsAir = getBlock(posInDirection.down()) == air
