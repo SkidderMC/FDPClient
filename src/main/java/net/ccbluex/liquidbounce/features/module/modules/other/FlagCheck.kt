@@ -6,11 +6,11 @@
 package net.ccbluex.liquidbounce.features.module.modules.other
 
 import net.ccbluex.liquidbounce.event.*
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler
-import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPosBox
@@ -126,7 +126,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
             if (deltaYaw > 90 || deltaPitch > 90) {
                 forceRotateDetected = true
                 flagCount++
-                Chat.print("§dDetected §3Force-Rotate §e(${deltaYaw.roundToLong()}° | ${deltaPitch.roundToLong()}°) §b(§c${flagCount}x§b)")
+                chat("§dDetected §3Force-Rotate §e(${deltaYaw.roundToLong()}° | ${deltaPitch.roundToLong()}°) §b(§c${flagCount}x§b)")
             } else {
                 forceRotateDetected = false
             }
@@ -134,7 +134,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
             if (!forceRotateDetected) {
                 lagbackDetected = true
                 flagCount++
-                Chat.print("§dDetected §3Lagback §b(§c${flagCount}x§b)")
+                chat("§dDetected §3Lagback §b(§c${flagCount}x§b)")
             }
 
             if (player.ticksExisted % 3 == 0) {
@@ -197,7 +197,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
 
                         if (block == Blocks.air && successfulPlacements.contains(blockPos)) {
                             flagCount++
-                            Chat.print("§dDetected §3GhostBlock §b(§c${flagCount}x§b)")
+                            chat("§dDetected §3GhostBlock §b(§c${flagCount}x§b)")
                             successfulPlacements.clear()
                             return@removeIf true
                         }
@@ -215,7 +215,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
         if (invalidReason.isNotEmpty()) {
             flagCount++
             val reasonString = invalidReason.joinToString(" §8|§e ")
-            Chat.print("§dDetected §3Invalid §e$reasonString §b(§c${flagCount}x§b)")
+            chat("§dDetected §3Invalid §e$reasonString §b(§c${flagCount}x§b)")
             invalidReason.clear()
         }
 
@@ -248,7 +248,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
         if (rubberbandReason.isNotEmpty()) {
             flagCount++
             val reasonString = rubberbandReason.joinToString(" §8|§e ")
-            Chat.print("§dDetected §3Rubberband §8(§e$reasonString§8) §b(§c${flagCount}x§b)")
+            chat("§dDetected §3Rubberband §8(§e$reasonString§8) §b(§c${flagCount}x§b)")
             rubberbandReason.clear()
         }
 

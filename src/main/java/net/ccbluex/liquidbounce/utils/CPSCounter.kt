@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils
 
+import net.ccbluex.liquidbounce.utils.ClientUtils.runTimeTicks
 import net.minecraftforge.client.event.MouseEvent
 import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper
@@ -20,7 +21,7 @@ object CPSCounter {
      *
      * @param button The clicked button
      */
-    fun registerClick(button: MouseButton) = TIMESTAMP_BUFFERS[button.ordinal].add(System.currentTimeMillis())
+    fun registerClick(button: MouseButton) = TIMESTAMP_BUFFERS[button.ordinal].add(runTimeTicks.toLong())
 
     /**
      * Gets the count of clicks that have occurred in the last 1000ms
@@ -28,7 +29,8 @@ object CPSCounter {
      * @param button The mouse button
      * @return The CPS
      */
-    fun getCPS(button: MouseButton) = TIMESTAMP_BUFFERS[button.ordinal].getTimestampsSince(System.currentTimeMillis() - 1000L)
+    fun getCPS(button: MouseButton, timeStampsSince: Int = runTimeTicks - 20) =
+        TIMESTAMP_BUFFERS[button.ordinal].getTimestampsSince(timeStampsSince.toLong())
 
     enum class MouseButton { LEFT, MIDDLE, RIGHT }
 

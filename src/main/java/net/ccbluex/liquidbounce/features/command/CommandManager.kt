@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.command
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
+import net.ccbluex.liquidbounce.utils.chat
 
 object CommandManager {
     val commands = mutableListOf<Command>()
@@ -43,7 +44,7 @@ object CommandManager {
             }
         }
 
-        displayChatMessage("§cCommand not found. Type ${prefix}help to view all commands.")
+        chat("§cCommand not found. Type ${prefix}help to view all commands.")
     }
 
     /**

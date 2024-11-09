@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other
 
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -12,9 +17,9 @@ import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.simulateDe
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.state
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.NoFallMode
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
-import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.ccbluex.liquidbounce.utils.SimulatedPlayer
+import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBacktrackBox
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
@@ -51,7 +56,7 @@ object Blink : NoFallMode("Blink") {
                 if (tick.hasTimePassed(100)) {
                     BlinkUtils.unblink()
                     blinked = false
-                    Chat.print("Unblink")
+                    chat("Unblink")
 
                     if (autoOff) {
                         state = false
@@ -68,7 +73,7 @@ object Blink : NoFallMode("Blink") {
                         event.packet.onGround = thePlayer.ticksExisted % 2 == 0
                     }
                 } else {
-                    Chat.print("rewriting ground")
+                    chat("rewriting ground")
                     BlinkUtils.unblink()
                     blinked = false
                     event.packet.onGround = false
@@ -100,14 +105,15 @@ object Blink : NoFallMode("Blink") {
         val fallingPlayer = FallingPlayer(thePlayer)
 
         if ((checkFallDist && simPlayer.fallDistance > minFallDist.get()) ||
-            !checkFallDist && fallingPlayer.findCollision(60) != null && simPlayer.motionY < 0) {
+            !checkFallDist && fallingPlayer.findCollision(60) != null && simPlayer.motionY < 0
+        ) {
             if (thePlayer.onGround && !blinked) {
                 blinked = true
 
                 if (fakePlayer)
                     BlinkUtils.addFakePlayer()
 
-                Chat.print("Blinked")
+                chat("Blinked")
                 BlinkUtils.blink(packet, event)
             }
         }

@@ -1,15 +1,15 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.other
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump
 import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump.autoDisable
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.LongJumpMode
-import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.stopXZ
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
@@ -23,14 +23,32 @@ object VerusDamage : LongJumpMode("VerusDamage") {
         val player = mc.thePlayer ?: return
         // Otherwise you'll get flagged.
         if (!player.isMoving) {
-            Chat.print("Pls move while toggling LongJump. Using AutoJump option is recommended.")
+            chat("Pls move while toggling LongJump. Using AutoJump option is recommended.")
             return
         }
 
         // Note: you'll flag once for Fly(G) | Loyisa Test Server
         sendPacket(C04PacketPlayerPosition(player.posX, player.posY + 3.0001, player.posZ, false))
-        sendPacket(C06PacketPlayerPosLook(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch, false))
-        sendPacket(C06PacketPlayerPosLook(player.posX, player.posY, player.posZ, player.rotationYaw, player.rotationPitch, true))
+        sendPacket(
+            C06PacketPlayerPosLook(
+                player.posX,
+                player.posY,
+                player.posZ,
+                player.rotationYaw,
+                player.rotationPitch,
+                false
+            )
+        )
+        sendPacket(
+            C06PacketPlayerPosLook(
+                player.posX,
+                player.posY,
+                player.posZ,
+                player.rotationYaw,
+                player.rotationPitch,
+                true
+            )
+        )
         damaged = true
     }
 

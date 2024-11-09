@@ -9,9 +9,9 @@ import kotlinx.coroutines.delay
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoArmor
-import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.CoroutineUtils.waitUntil
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isFullBlock
+import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.utils.extensions.shuffled
 import net.ccbluex.liquidbounce.utils.inventory.*
 import net.ccbluex.liquidbounce.utils.inventory.ArmorComparator.getBestArmorSet
@@ -55,7 +55,8 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
 	private val limitStackCounts by BoolValue("LimitStackCounts", true, subjective = true)
 	private val maxBlockStacks by IntegerValue("MaxBlockStacks", 5, 0..36, subjective = true) { limitStackCounts }
 	private val maxFoodStacks by IntegerValue("MaxFoodStacks", 5, 0..36, subjective = true) { limitStackCounts }
-	private val maxThrowableStacks by IntegerValue("MaxThrowableStacks",
+	private val maxThrowableStacks by IntegerValue(
+		"MaxThrowableStacks",
 		5,
 		0..36,
 		subjective = true
@@ -164,7 +165,8 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
 						// Only try to merge non-full stacks, without limiting stack counts in isStackUseful
 						.filter {
 							it.value.hasItemAgePassed(minItemAge) &&
-									it.value.stackSize != it.value.maxStackSize && isStackUseful(it.value,
+									it.value.stackSize != it.value.maxStackSize && isStackUseful(
+								it.value,
 								stacks,
 								noLimits = true
 							)
@@ -323,7 +325,8 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
 
 						// If occupied hotbar slot isn't already sorted or isn't strictly best, sort to it
 						if (!canBeSortedTo(hotbarIndex, hotbarStack?.item)
-							|| !isStackUseful(hotbarStack, stacks, strictlyBest = true)) {
+							|| !isStackUseful(hotbarStack, stacks, strictlyBest = true)
+						) {
 							// Sort repaired item to hotbar right after repairing
 							click(0, hotbarIndex, 2)
 							continue@repair
@@ -376,10 +379,12 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
 					val otherItem = otherStack?.item
 
 					// Check if an item is the correct type, isn't bad and isn't already sorted to a different slot
-					if (isRightType(otherItem) && isStackUseful(otherStack,
+					if (isRightType(otherItem) && isStackUseful(
+							otherStack,
 							stacks,
 							strictlyBest = strictlyBest
-						) && !canBeSortedTo(otherIndex, otherItem, stacks.size)) {
+						) && !canBeSortedTo(otherIndex, otherItem, stacks.size)
+					) {
 						// If best item to sort was found, but its item age hasn't yet passed, skip search for this hotbar slot
 						if (otherStack.hasItemAgePassed(minItemAge))
 							click(otherIndex, hotbarIndex, 2)
@@ -483,7 +488,8 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
 			is ItemFood -> isUsefulFood(stack, stacks, entityStacksMap, noLimits, strictlyBest)
 			is ItemBlock -> isUsefulBlock(stack, stacks, entityStacksMap, noLimits, strictlyBest)
 
-			is ItemArmor, is ItemTool, is ItemSword, is ItemBow, is ItemFishingRod -> isUsefulEquipment(stack,
+			is ItemArmor, is ItemTool, is ItemSword, is ItemBow, is ItemFishingRod -> isUsefulEquipment(
+				stack,
 				stacks,
 				entityStacksMap
 			)
@@ -983,7 +989,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
 					value.set(oldValue)
 					value.openList = true
 
-					displayChatMessage("§8[§9§lInventoryCleaner§8] §3Value §a${value.name}§3 was changed to §a$oldValue§3 to prevent conflicts.")
+					chat("§8[§9§lInventoryCleaner§8] §3Value §a${value.name}§3 was changed to §a$oldValue§3 to prevent conflicts.")
 				}
 			}
 	}

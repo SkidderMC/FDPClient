@@ -178,9 +178,10 @@ object RotationUtils : MinecraftInstance(), Listenable {
 
         return Rotation(
             atan2(posZ, posX).toDegreesF() - 90f,
-            -atan((finalVelocity * finalVelocity - sqrt(
-                finalVelocity * finalVelocity * finalVelocity * finalVelocity - gravityModifier * (gravityModifier * posSqrt * posSqrt + 2 * posY * finalVelocity * finalVelocity)
-            )) / (gravityModifier * posSqrt)
+            -atan(
+                (finalVelocity * finalVelocity - sqrt(
+                    finalVelocity * finalVelocity * finalVelocity * finalVelocity - gravityModifier * (gravityModifier * posSqrt * posSqrt + 2 * posY * finalVelocity * finalVelocity)
+                )) / (gravityModifier * posSqrt)
             ).toDegreesF()
         )
     }
@@ -258,7 +259,8 @@ object RotationUtils : MinecraftInstance(), Listenable {
                     val rotation = toRotation(vec, predict).fixedSensitivity()
 
                     // Calculate actual hit vec after applying fixed sensitivity to rotation
-                    val gcdVec = bb.calculateIntercept(eyes,
+                    val gcdVec = bb.calculateIntercept(
+                        eyes,
                         eyes + getVectorForRotation(rotation) * scanRange.toDouble()
                     )?.hitVec ?: continue
 
@@ -315,7 +317,11 @@ object RotationUtils : MinecraftInstance(), Listenable {
     fun rotationDifference(a: Rotation, b: Rotation = serverRotation) =
         hypot(angleDifference(a.yaw, b.yaw), a.pitch - b.pitch)
 
-    private fun limitAngleChange(currentRotation: Rotation, targetRotation: Rotation, settings: RotationSettings) : Rotation {
+    private fun limitAngleChange(
+        currentRotation: Rotation,
+        targetRotation: Rotation,
+        settings: RotationSettings
+    ): Rotation {
         val (hSpeed, vSpeed) = if (settings.instant) {
             180f to 180f
         } else settings.horizontalSpeed.random() to settings.verticalSpeed.random()
@@ -430,7 +436,8 @@ object RotationUtils : MinecraftInstance(), Listenable {
         val secondDiffDir = secondOldDiff.sign != oldDiff.sign || abs(secondOldDiff) <= abs(oldDiff)
 
         val shouldSlowDownOnDirChange = slowDownOnDirChange && diffDir && secondDiffDir
-        val shouldStartSlowAfterDirChange = slowDownOnDirChange && oldDiff.sign != newDiff.sign && !shouldSlowDownOnDirChange && newDiff != 0f
+        val shouldStartSlowAfterDirChange =
+            slowDownOnDirChange && oldDiff.sign != newDiff.sign && !shouldSlowDownOnDirChange && newDiff != 0f
 
         // Have we not rotated the previous tick or have just changed directions and should start slow?
         val factor = if (shouldStartSlow || shouldStartSlowAfterDirChange) {
@@ -439,9 +446,10 @@ object RotationUtils : MinecraftInstance(), Listenable {
             }
 
             if (Rotations.debugRotations) {
-                ClientUtils.displayChatMessage(if (shouldStartSlow) {
-                    "STARTED OFF SLOW, TICKS SINCE LAST START: $ticks"
-                } else "STARTED SLOW ON DIRECTION CHANGE, OLD DIFF: ${oldDiff}, SUPPOSED DIFF: $newDiff"
+                chat(
+                    if (shouldStartSlow) {
+                        "STARTED OFF SLOW, TICKS SINCE LAST START: $ticks"
+                    } else "STARTED SLOW ON DIRECTION CHANGE, OLD DIFF: ${oldDiff}, SUPPOSED DIFF: $newDiff"
                 )
             }
 
@@ -647,7 +655,8 @@ object RotationUtils : MinecraftInstance(), Listenable {
                 return
             }
 
-            currentRotation = limitAngleChange(currentRotation ?: serverRotation,
+            currentRotation = limitAngleChange(
+                currentRotation ?: serverRotation,
                 playerRotation,
                 settings
             ).fixedSensitivity()
@@ -737,12 +746,13 @@ object RotationUtils : MinecraftInstance(), Listenable {
             val pitchDiff = angleDifference(packet.pitch, serverRotation.pitch)
 
             if (Rotations.debugRotations) {
-                ClientUtils.displayChatMessage("PREV YAW: $yawDiff, PREV PITCH: $pitchDiff")
+                chat("PREV YAW: $yawDiff, PREV PITCH: $pitchDiff")
             }
         }
 
         if (angleDifference(packet.yaw, serverRotation.yaw).sign ==
-            angleDifference(serverRotation.yaw, lastRotations[1].yaw).sign) {
+            angleDifference(serverRotation.yaw, lastRotations[1].yaw).sign
+        ) {
             sameSignTicks++
         } else {
             sameSignTicks = 0

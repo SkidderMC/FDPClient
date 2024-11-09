@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.player.Reach
-import net.ccbluex.liquidbounce.script.api.global.Chat
+import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.BlinkUtils
@@ -485,7 +485,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
 
             if (shouldReset) {
                 if (chatDebug) {
-                    Chat.print("Lagback Received | Timer Reset")
+                    chat("Lagback Received | Timer Reset")
                 }
                 if (notificationDebug) {
                     hud.addNotification(Notification("Lagback Received | Timer Reset", "!!!", Type.INFO, 100))
@@ -501,7 +501,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
 
             if (shouldReset) {
                 if (chatDebug) {
-                    Chat.print("Knockback Received | Timer Reset")
+                    chat("Knockback Received | Timer Reset")
                 }
                 if (notificationDebug) {
                     hud.addNotification(Notification("Knockback Received | Timer Reset", "!!!", Type.INFO, 100))

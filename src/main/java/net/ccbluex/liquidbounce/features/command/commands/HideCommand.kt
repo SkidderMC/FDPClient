@@ -23,7 +23,7 @@ object HideCommand : Command("hide") {
             "list" -> {
                 chat("§c§lHidden")
                 moduleManager.modules.filter { !it.inArray }.forEach {
-                    displayChatMessage("§6> §c${it.getName()}")
+                    chat("§6> §c${it.getName()}")
                 }
             }
 

@@ -178,6 +178,11 @@ public abstract class MixinMinecraft {
         SilentHotbar.INSTANCE.updateSilentSlot();
     }
 
+    @Inject(method = "runTick", at = @At("TAIL"))
+    private void injectEndTickEvent(CallbackInfo ci) {
+        EventManager.INSTANCE.callEvent(new TickEndEvent());
+    }
+
     @Inject(method = "runTick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;joinPlayerCounter:I", ordinal = 0))
     private void onTick(final CallbackInfo callbackInfo) {
         EventManager.INSTANCE.callEvent(new GameTickEvent());

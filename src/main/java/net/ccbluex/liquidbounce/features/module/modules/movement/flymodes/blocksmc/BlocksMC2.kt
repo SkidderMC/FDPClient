@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.blocksmc
 
 import net.ccbluex.liquidbounce.event.*
@@ -10,10 +15,10 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.stopOnLa
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.stopOnNoMove
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.timerSlowed
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
-import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.PacketUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
+import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.minecraft.client.entity.EntityPlayerSP
@@ -53,13 +58,13 @@ object BlocksMC2 : FlyMode("BlocksMC2") {
         if (isFlying) {
             if (player.onGround && stopOnLanding) {
                 if (debugFly)
-                    Chat.print("Ground Detected.. Stopping Fly")
+                    chat("Ground Detected.. Stopping Fly")
                 Flight.state = false
             }
 
             if (!player.isMoving && stopOnNoMove) {
                 if (debugFly)
-                    Chat.print("No Movement Detected.. Stopping Fly. (Could be flagged)")
+                    chat("No Movement Detected.. Stopping Fly. (Could be flagged)")
                 Flight.state = false
             }
         }
@@ -80,7 +85,7 @@ object BlocksMC2 : FlyMode("BlocksMC2") {
             }
         } else {
             if (debugFly)
-                Chat.print("Pls stand under a block")
+                chat("Pls stand under a block")
         }
     }
 
@@ -167,7 +172,7 @@ object BlocksMC2 : FlyMode("BlocksMC2") {
             isBlinked = true
 
             if (debugFly)
-                Chat.print("blinked.. fly now!")
+                chat("blinked.. fly now!")
 
             if (event.eventType == EventState.RECEIVE && mc.thePlayer.ticksExisted > 10) {
                 event.cancelEvent()

@@ -74,3 +74,5 @@ object ClientUtils : MinecraftInstance() {
         mc.thePlayer.addChatMessage(IChatComponent.Serializer.jsonToComponent(jsonObject.toString()))
     }
 }
+
+fun chat(message: String) = ClientUtils.displayChatMessage(message)

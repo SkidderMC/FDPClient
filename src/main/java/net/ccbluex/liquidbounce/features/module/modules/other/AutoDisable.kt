@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.*
-import net.ccbluex.liquidbounce.script.api.global.Chat
+import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -69,7 +69,7 @@ object AutoDisable : Module("AutoDisable", Category.OTHER, gameDetecting = false
             }
 
             if (warn == "Chat") {
-                Chat.print("§eModules have been disabled due to §c$reason")
+                chat("§eModules have been disabled due to §c$reason")
             } else {
                 hud.addNotification(Notification("Modules have been disabled due to $reason", "!!!", Type.INFO, 60))
             }

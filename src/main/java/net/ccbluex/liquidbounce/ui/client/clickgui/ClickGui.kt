@@ -27,7 +27,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
+import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.utils.SettingsUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
@@ -96,15 +96,15 @@ object ClickGui : GuiScreen() {
                         ButtonElement(setting.name, { Integer.MAX_VALUE }) {
                             GlobalScope.launch {
                                 try {
-                                    displayChatMessage("Loading settings...")
+                                    chat("Loading settings...")
 
                                     // Load settings and apply them
                                     val settings = ClientApi.requestSettingsScript(setting.settingId)
 
-                                    displayChatMessage("Applying settings...")
+                                    chat("Applying settings...")
                                     SettingsUtils.applyScript(settings)
 
-                                    displayChatMessage("§6Settings applied successfully")
+                                    chat("§6Settings applied successfully")
                                     HUD.addNotification(Notification("Updated Settings", "!!!", Type.INFO, 60))
                                     synchronized(mc.soundHandler) {
                                         mc.soundHandler.playSound(
@@ -113,7 +113,7 @@ object ClickGui : GuiScreen() {
                                     }
                                 } catch (e: Exception) {
                                     ClientUtils.LOGGER.error("Failed to load settings", e)
-                                    displayChatMessage("Failed to load settings: ${e.message}")
+                                    chat("Failed to load settings: ${e.message}")
                                 }
                             }
                         }.apply {
