@@ -204,7 +204,10 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 lastReportedPosZ = motionEvent.getZ();
             }
 
-            RotationUtils.INSTANCE.setServerRotation(new Rotation(yaw, pitch));
+
+            if (!FreeCam.INSTANCE.shouldDisableRotations()) {
+                RotationUtils.INSTANCE.setServerRotation(new Rotation(yaw, pitch));
+            }
 
             if (rotated) {
                 this.lastReportedYaw = yaw;
