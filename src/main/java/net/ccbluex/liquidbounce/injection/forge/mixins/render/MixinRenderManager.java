@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
@@ -75,9 +75,9 @@ public abstract class MixinRenderManager {
                     entity.lastTickPosZ = entity.posZ;
                 }
 
-                double d0 = targetEntity.getTrueX();
-                double d1 = targetEntity.getTrueY();
-                double d2 = targetEntity.getTrueZ();
+                double d0 = targetEntity.getLerpX();
+                double d1 = targetEntity.getLerpY();
+                double d2 = targetEntity.getLerpZ();
                 float f = entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * tickDelta;
                 int i = entity.getBrightnessForRender(tickDelta);
                 if (entity.isBurning()) {

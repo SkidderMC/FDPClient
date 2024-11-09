@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
 import net.ccbluex.liquidbounce.features.module.modules.combat.FakeLag
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.NetworkManager
 import net.minecraft.network.Packet
@@ -43,21 +44,20 @@ object PacketUtils : MinecraftInstance(), Listenable {
         val world = mc.theWorld ?: return
 
         when (packet) {
-            is S0CPacketSpawnPlayer ->
-                (world.getEntityByID(packet.entityID) as? IMixinEntity)?.apply {
-                    trueX = packet.realX
-                    trueY = packet.realY
-                    trueZ = packet.realZ
-                    truePos = true
-                }
+            is S0CPacketSpawnPlayer -> (world.getEntityByID(packet.entityID) as? IMixinEntity)?.apply {
+                trueX = packet.realX
+                trueY = packet.realY
+                trueZ = packet.realZ
+                truePos = true
+            }
 
-            is S0FPacketSpawnMob ->
-                (world.getEntityByID(packet.entityID) as? IMixinEntity)?.apply {
-                    trueX = packet.realX
-                    trueY = packet.realY
-                    trueZ = packet.realZ
-                    truePos = true
-                }
+
+            is S0FPacketSpawnMob -> (world.getEntityByID(packet.entityID) as? IMixinEntity)?.apply {
+                trueX = packet.realX
+                trueY = packet.realY
+                trueZ = packet.realZ
+                truePos = true
+            }
 
             is S14PacketEntity -> {
                 val entity = packet.getEntity(world)
@@ -77,13 +77,12 @@ object PacketUtils : MinecraftInstance(), Listenable {
                 }
             }
 
-            is S18PacketEntityTeleport ->
-                (world.getEntityByID(packet.entityId) as? IMixinEntity)?.apply {
-                    trueX = packet.realX
-                    trueY = packet.realY
-                    trueZ = packet.realZ
-                    truePos = true
-                }
+            is S18PacketEntityTeleport -> (world.getEntityByID(packet.entityId) as? IMixinEntity)?.apply {
+                trueX = packet.realX
+                trueY = packet.realY
+                trueZ = packet.realZ
+                truePos = true
+            }
         }
     }
 
@@ -154,6 +153,13 @@ object PacketUtils : MinecraftInstance(), Listenable {
         }
 
     enum class PacketType { CLIENT, SERVER, UNKNOWN }
+}
+
+fun interpolatePosition(entity: IMixinEntity) = entity.run {
+    val delta = RenderUtils.deltaTimeNormalized(150)
+    lerpX += (trueX - lerpX) * delta
+    lerpY += (trueY - lerpY) * delta
+    lerpZ += (trueZ - lerpZ) * delta
 }
 
 var S12PacketEntityVelocity.realMotionX

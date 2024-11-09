@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
+import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBacktrackBox
 import net.ccbluex.liquidbounce.value.BoolValue
@@ -53,9 +54,7 @@ object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
             return if (!mc.isSingleplayer) {
                 val iEntity = entity as IMixinEntity
 
-                if (iEntity.truePos) {
-                    Vec3(iEntity.trueX, iEntity.trueY, iEntity.trueZ)
-                } else positionVector
+                if (iEntity.truePos) iEntity.interpolatedPosition else positionVector
             } else if (this is EntityLivingBase) {
                 Vec3(newPosX, newPosY, newPosZ)
             } else positionVector

@@ -52,6 +52,10 @@ public abstract class MixinEntity implements IMixinEntity {
 
     private double trueX;
 
+    private double lerpX;
+    private double lerpY;
+    private double lerpZ;
+
     public double getTrueX() {
         return trueX;
     }
@@ -276,9 +280,42 @@ public abstract class MixinEntity implements IMixinEntity {
     private void injectRotationSetEvent(float yaw, float pitch, CallbackInfo ci) {
         if ((Object) this != mc.thePlayer)
             return;
+
         RotationSetEvent event = new RotationSetEvent((float) (yaw * 0.15), (float) (pitch * 0.15));
+
         EventManager.INSTANCE.callEvent(event);
+
         if (event.isCancelled())
             ci.cancel();
+    }
+
+    @Override
+    public double getLerpX() {
+        return lerpX;
+    }
+
+    @Override
+    public void setLerpX(double lerpX) {
+        this.lerpX = lerpX;
+    }
+
+    @Override
+    public double getLerpY() {
+        return lerpY;
+    }
+
+    @Override
+    public void setLerpY(double lerpY) {
+        this.lerpY = lerpY;
+    }
+
+    @Override
+    public double getLerpZ() {
+        return lerpZ;
+    }
+
+    @Override
+    public void setLerpZ(double lerpZ) {
+        this.lerpZ = lerpZ;
     }
 }

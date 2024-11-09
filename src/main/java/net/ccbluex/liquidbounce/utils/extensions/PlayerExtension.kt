@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils.extensions
 
 import net.ccbluex.liquidbounce.file.FileManager.friendsConfig
+import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
 import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.Rotation
@@ -167,6 +168,9 @@ var EntityPlayerSP.fixedSensitivityPitch
     set(pitch) {
         rotationPitch = getFixedSensitivityAngle(pitch.coerceIn(-90f, 90f), rotationPitch)
     }
+
+val IMixinEntity.interpolatedPosition
+    get() = Vec3(lerpX, lerpY, lerpZ)
 
 // Makes fixedSensitivityYaw, ... += work
 operator fun EntityPlayerSP.plusAssign(value: Float) {

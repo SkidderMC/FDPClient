@@ -47,7 +47,7 @@ public abstract class MixinGuiButtonExt extends GuiButton {
 
         final float deltaTime = RenderUtils.INSTANCE.getDeltaTime();
 
-        progress += (enabled && hovered ? 0.65f : -0.65f) * deltaTime;
+        progress += (enabled && hovered ? 0.85f : -0.85f) * deltaTime;
         progress = MathHelper.clamp_float(progress, 0f, width);
 
         float radius = 2.5F;

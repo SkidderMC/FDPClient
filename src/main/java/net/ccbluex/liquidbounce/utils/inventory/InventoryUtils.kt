@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.other.ChestAura
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.SilentHotbar
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
@@ -233,7 +234,9 @@ object InventoryUtils : MinecraftInstance(), Listenable {
 
         val slotToUse = SilentHotbar.renderSlot(module.handleEvents() && module.keepHotbarSlot)
 
-        lerpedSlot = AnimationUtil.base(lerpedSlot.toDouble(), slotToUse.toDouble(), 0.1).toFloat()
+        lerpedSlot = AnimationUtil.base(lerpedSlot.toDouble(), slotToUse.toDouble(),
+            RenderUtils.deltaTimeNormalized().coerceAtLeast(0.1)
+        ).toFloat()
     }
 
     @EventTarget

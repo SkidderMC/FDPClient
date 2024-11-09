@@ -92,7 +92,7 @@ public abstract class MixinGuiButton extends Gui {
          hovered = true;
       }
 
-      progress += (enabled && hovered ? 0.65f : -0.65f) * deltaTime;
+      progress += (enabled && hovered ? 0.85f : -0.85f) * deltaTime;
       progress = MathHelper.clamp_float(progress, 0f, supposedWidth);
 
       float radius = 2.5F;

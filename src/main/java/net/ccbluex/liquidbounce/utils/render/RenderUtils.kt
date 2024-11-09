@@ -63,6 +63,8 @@ object RenderUtils : MinecraftInstance() {
     var startTime: Long = 0
     var animationDuration: Int = 500
 
+    fun deltaTimeNormalized(ticks: Int = 50) = (deltaTime / ticks.toDouble()).coerceAtMost(1.0)
+
     init {
         for (i in DISPLAY_LISTS_2D.indices) {
             DISPLAY_LISTS_2D[i] = glGenLists(1)

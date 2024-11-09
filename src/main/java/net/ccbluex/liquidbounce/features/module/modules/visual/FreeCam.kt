@@ -25,6 +25,7 @@ object FreeCam : Module("FreeCam", Category.VISUAL, gameDetecting = false, hideM
 
     data class PositionPair(var pos: Vec3, var lastPos: Vec3, var extraPos: Vec3 = lastPos) {
         operator fun plusAssign(velocity: Vec3) {
+            extraPos = pos
             lastPos = pos
             pos += velocity
         }
@@ -91,7 +92,7 @@ object FreeCam : Module("FreeCam", Category.VISUAL, gameDetecting = false, hideM
 
         val data = pos ?: return
 
-        player.setPosAndPrevPos(data.pos, data.lastPos, data.lastPos)
+        player.setPosAndPrevPos(data.pos, data.lastPos, data.extraPos)
     }
 
     fun restoreOriginalPosition() {
@@ -101,17 +102,17 @@ object FreeCam : Module("FreeCam", Category.VISUAL, gameDetecting = false, hideM
     }
 
     fun renderPlayerFromAllPerspectives(entity: EntityLivingBase) =
-        state && entity == mc.thePlayer || entity.isPlayerSleeping
+        handleEvents() && entity == mc.thePlayer || entity.isPlayerSleeping
 
     fun modifyRaycast(original: Vec3, entity: Entity, tickDelta: Float): Vec3 {
-        if (!state || entity != mc.thePlayer || !allowCameraInteract) {
+        if (!handleEvents() || entity != mc.thePlayer || !allowCameraInteract) {
             return original
         }
 
         return pos?.interpolate(tickDelta)?.apply { yCoord += entity.eyeHeight } ?: original
     }
 
-    fun shouldDisableRotations() = state && !allowRotationChange
+    fun shouldDisableRotations() = handleEvents() && !allowRotationChange
 
     @EventTarget
     fun onWorldChange(event: WorldEvent) {
