@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.RotationUtils.canUpdateRotation
 import net.ccbluex.liquidbounce.utils.RotationUtils.computeFactor
 import net.ccbluex.liquidbounce.utils.RotationUtils.getVectorForRotation
 import net.ccbluex.liquidbounce.utils.RotationUtils.rotationDifference
@@ -723,7 +724,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             stack = player.hotBarSlot(blockSlot).stack
         }
 
-        // Line 437-440
         if ((stack.item as? ItemBlock)?.canPlaceBlockOnSide(
                 world,
                 placeInfo.blockPos,
@@ -1049,7 +1049,10 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
         val raytrace = performBlockRaytrace(rotation, maxReach) ?: return null
 
-        if (raytrace.blockPos == offsetPos && (!raycast || raytrace.sideHit == side.opposite)) {
+        val multiplier = if (options.startRotatingSlow || options.slowDownOnDirectionChange) 3 else 1
+        if (raytrace.blockPos == offsetPos && (!raycast || raytrace.sideHit == side.opposite)
+            && canUpdateRotation(currRotation, rotation, multiplier)
+        ) {
             return PlaceRotation(
                 PlaceInfo(
                     raytrace.blockPos,

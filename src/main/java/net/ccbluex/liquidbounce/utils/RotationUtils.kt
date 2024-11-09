@@ -691,6 +691,18 @@ object RotationUtils : MinecraftInstance(), Listenable {
     }
 
     /**
+     * Checks if the rotation difference is not the same as the smallest GCD angle possible.
+     */
+    fun canUpdateRotation(current: Rotation, target: Rotation, multiplier: Int = 1): Boolean {
+        if (current == target)
+            return true
+        val smallestAnglePossible = getFixedAngleDelta()
+        val gcdRoundedTarget =
+            (rotationDifference(target, current) / smallestAnglePossible).roundToInt() * smallestAnglePossible
+        return gcdRoundedTarget > smallestAnglePossible * multiplier
+    }
+
+    /**
      * Handle rotation update
      */
     @EventTarget(priority = -1)
