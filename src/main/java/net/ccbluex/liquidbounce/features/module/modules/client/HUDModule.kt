@@ -59,7 +59,7 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
     val inventoryOnHotbar = boolean("InventoryOnHotbar", false)
 
     // CROSSHAIR
-    val csgoCrosshairValue by boolean("CSGO-Crosshair", false)
+    val csgoCrosshairValue by boolean("CSGO-Crosshair", true)
 
     // UI EFFECT
     val uiEffectValue by boolean("UIEffect", true)
