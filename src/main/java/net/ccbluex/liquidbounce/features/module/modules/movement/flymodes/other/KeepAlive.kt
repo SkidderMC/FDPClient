@@ -5,50 +5,23 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.other
 
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.MotionEvent
-import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.vanillaSpeed
+import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
+import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.SilentHotbar
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
-import net.ccbluex.liquidbounce.value.choices
-import net.minecraft.init.Items
-import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
+import net.minecraft.network.play.client.C00PacketKeepAlive
 
-object KeepAlive : Module("KeepAlive", Category.PLAYER) {
+object KeepAlive : FlyMode("KeepAlive") {
+	override fun onUpdate() {
+		sendPacket(C00PacketKeepAlive())
+		mc.thePlayer.capabilities.isFlying = false
 
-	val mode by choices("Mode", arrayOf("/heal", "Soup"), "/heal")
+		mc.thePlayer.motionY = when {
+			mc.gameSettings.keyBindJump.isKeyDown -> vanillaSpeed.toDouble()
+			mc.gameSettings.keyBindSneak.isKeyDown -> -vanillaSpeed.toDouble()
+			else -> 0.0
+		}
 
-	private var runOnce = false
-
-	@EventTarget
-	fun onMotion(event: MotionEvent) {
-		val thePlayer = mc.thePlayer ?: return
-
-		if (thePlayer.isDead || thePlayer.health <= 0) {
-			if (runOnce) return
-
-			when (mode.lowercase()) {
-				"/heal" -> thePlayer.sendChatMessage("/heal")
-				"soup" -> {
-					val soupInHotbar = InventoryUtils.findItem(36, 44, Items.mushroom_stew)
-
-					if (soupInHotbar != null) {
-						SilentHotbar.selectSlotSilently(this,
-							soupInHotbar,
-							immediate = true,
-							render = false,
-							resetManually = true
-						)
-						sendPacket(C08PacketPlayerBlockPlacement(thePlayer.heldItem))
-						SilentHotbar.resetSlot(this)
-					}
-				}
-			}
-
-			runOnce = true
-		} else
-			runOnce = false
+		strafe(vanillaSpeed, true)
 	}
 }

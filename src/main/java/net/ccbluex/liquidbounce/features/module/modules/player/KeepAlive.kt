@@ -9,12 +9,12 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
+import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.SilentHotbar
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.value.choices
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import net.minecraft.network.play.client.C09PacketHeldItemChange
 
 object KeepAlive : Module("KeepAlive", Category.PLAYER) {
 
@@ -35,11 +35,14 @@ object KeepAlive : Module("KeepAlive", Category.PLAYER) {
                     val soupInHotbar = InventoryUtils.findItem(36, 44, Items.mushroom_stew)
 
                     if (soupInHotbar != null) {
-                        sendPackets(
-                            C09PacketHeldItemChange(soupInHotbar - 36),
-                            C08PacketPlayerBlockPlacement(thePlayer.inventory.getStackInSlot(soupInHotbar)),
-                            C09PacketHeldItemChange(thePlayer.inventory.currentItem)
+                        SilentHotbar.selectSlotSilently(this,
+                            soupInHotbar,
+                            immediate = true,
+                            render = false,
+                            resetManually = true
                         )
+                        sendPacket(C08PacketPlayerBlockPlacement(thePlayer.heldItem))
+                        SilentHotbar.resetSlot(this)
                     }
                 }
             }
