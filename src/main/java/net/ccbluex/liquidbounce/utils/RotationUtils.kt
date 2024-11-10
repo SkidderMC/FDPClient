@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextBoolean
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
+import net.minecraft.entity.Entity
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.*
 import javax.vecmath.Vector2f
