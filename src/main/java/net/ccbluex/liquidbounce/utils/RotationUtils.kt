@@ -13,7 +13,9 @@ import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextDouble
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
-import net.minecraft.entity.Entity
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextBoolean
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
+import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.*
 import javax.vecmath.Vector2f
@@ -62,11 +64,6 @@ object RotationUtils : MinecraftInstance(), Listenable {
     var activeSettings: RotationSettings? = null
 
     var resetTicks = 0
-
-    private var timeSinceIdleYaw = 0
-    private var timeSinceIdlePitch = 0
-
-    private var sameSignTicks = 0
 
     /**
      * Face block
@@ -332,147 +329,126 @@ object RotationUtils : MinecraftInstance(), Listenable {
             targetRotation,
             hSpeed,
             vSpeed,
-            !settings.instant && settings.startRotatingSlow,
-            settings.useStraightLinePath,
-            !settings.instant && settings.slowDownOnDirectionChange,
+            !settings.instant && settings.legitimize,
             settings.minRotationDifference,
             settings.smootherMode,
         )
     }
 
     fun performAngleChange(
-        currentRotation: Rotation, targetRotation: Rotation, hSpeed: Float,
-        vSpeed: Float = hSpeed, startFirstSlow: Boolean, useStraightLinePath: Boolean,
-        slowDownOnDirChange: Boolean, minRotationDifference: Float, smootherMode: String,
+        currentRotation: Rotation,
+        targetRotation: Rotation,
+        hSpeed: Float,
+        vSpeed: Float = hSpeed,
+        legitimize: Boolean,
+        minRotationDiff: Float,
+        smootherMode: String,
     ): Rotation {
-        var yawDifference = angleDifference(targetRotation.yaw, currentRotation.yaw)
-        var pitchDifference = angleDifference(targetRotation.pitch, currentRotation.pitch)
+        var (yawDiff, pitchDiff) = angleDifferences(targetRotation, currentRotation)
 
-        val yawTicks = ClientUtils.runTimeTicks - timeSinceIdleYaw
-        val pitchTicks = ClientUtils.runTimeTicks - timeSinceIdlePitch
+        val rotationDifference = hypot(yawDiff, pitchDiff)
 
-        val oldYawDiff = angleDifference(serverRotation.yaw, lastRotations[1].yaw)
-        val oldPitchDiff = angleDifference(serverRotation.pitch, lastRotations[1].pitch)
+        val shortStopChance = activeSettings?.shortStopChance ?: 0
+        val isShortStopActive = WaitTickUtils.hasScheduled(this)
 
-        val secondOldYawDiff = angleDifference(lastRotations[1].yaw, lastRotations[2].yaw)
-        val secondOldPitchDiff = angleDifference(lastRotations[1].pitch, lastRotations[2].pitch)
+        if (isShortStopActive || activeSettings?.simulateShortStop == true &&
+            shortStopChance > 0 && nextInt(endExclusive = 100) <= shortStopChance
+        ) {
+            // Use the tick scheduling to our advantage as we can check if short stop is still active.
+            if (!isShortStopActive) {
+                WaitTickUtils.schedule(activeSettings?.shortStopDuration?.random()?.plus(1) ?: 0, this) {}
+            }
 
-        val rotationDifference = hypot(yawDifference, pitchDifference)
-
-        val seconds = (5..10).random() * 20
-
-        if (activeSettings?.simulateShortStop == true && (sameSignTicks >= seconds || Math.random() > 0.9)) {
-            yawDifference = 0f
-            pitchDifference = 0f
+            yawDiff = 0f
+            pitchDiff = 0f
         }
 
-        val (hFactor, vFactor) = if (smootherMode == "Relative") {
-            computeFactor(rotationDifference, hSpeed) to computeFactor(rotationDifference, vSpeed)
-        } else {
-            hSpeed to vSpeed
+        val (hFactor, vFactor) = computeFactor(rotationDifference, hSpeed to vSpeed, smootherMode == "Relative")
+
+        var (straightLineYaw, straightLinePitch) =
+            abs(yawDiff safeDiv rotationDifference) * hFactor to abs(pitchDiff safeDiv rotationDifference) * vFactor
+
+        straightLineYaw = yawDiff.coerceIn(-straightLineYaw, straightLineYaw)
+        straightLinePitch = pitchDiff.coerceIn(-straightLinePitch, straightLinePitch)
+
+        val rotationWithGCD = Rotation(straightLineYaw, straightLinePitch).fixedSensitivity()
+
+        if (abs(rotationWithGCD.yaw) <= nextFloat(min(minRotationDiff, getFixedAngleDelta()), minRotationDiff)) {
+            straightLineYaw = 0f
         }
 
-        var straightLineYaw = if (useStraightLinePath) {
-            abs(yawDifference safeDiv rotationDifference) * hFactor
-        } else abs(yawDifference).coerceIn(-hFactor, hFactor)
-        var straightLinePitch = if (useStraightLinePath) {
-            abs(pitchDifference safeDiv rotationDifference) * vFactor
-        } else abs(pitchDifference).coerceIn(-vFactor, vFactor)
-
-        var (yawDirChange, pitchDirChange) = false to false
-
-        straightLineYaw = applySlowDown(yawDifference.coerceIn(-straightLineYaw, straightLineYaw),
-            oldYawDiff,
-            secondOldYawDiff,
-            yawTicks,
-            startFirstSlow,
-            slowDownOnDirChange,
-            tickUpdate = { timeSinceIdleYaw = ClientUtils.runTimeTicks }) { yawDirChange = true }
-        straightLinePitch = applySlowDown(pitchDifference.coerceIn(-straightLinePitch, straightLinePitch),
-            oldPitchDiff,
-            secondOldPitchDiff,
-            pitchTicks,
-            startFirstSlow,
-            slowDownOnDirChange,
-            tickUpdate = { timeSinceIdlePitch = ClientUtils.runTimeTicks }) { pitchDirChange = true }
-
-        var coercedYaw = if (yawDirChange) {
-            oldYawDiff * nextFloat(0f, 0.3f)
-        } else yawDifference.coerceIn(-straightLineYaw, straightLineYaw)
-        var coercedPitch = if (pitchDirChange) {
-            oldPitchDiff * nextFloat(0f, 0.3f)
-        } else pitchDifference.coerceIn(-straightLinePitch, straightLinePitch)
-
-        val fixedSens = Rotation(coercedYaw, coercedPitch).fixedSensitivity()
-
-        if (abs(fixedSens.yaw) <= nextFloat(min(minRotationDifference, getFixedAngleDelta()), minRotationDifference)) {
-            coercedYaw = 0f
+        if (abs(rotationWithGCD.pitch) < nextFloat(min(minRotationDiff, getFixedAngleDelta()), minRotationDiff)) {
+            straightLinePitch = 0f
         }
 
-        if (abs(fixedSens.pitch) < nextFloat(min(minRotationDifference, getFixedAngleDelta()), minRotationDifference)) {
-            coercedPitch = 0f
+        if (legitimize) {
+            applySlowDown(straightLineYaw, true) {
+                straightLineYaw = it
+            }
+
+            applySlowDown(straightLinePitch, false) {
+                straightLinePitch = it
+            }
         }
 
-        return Rotation(currentRotation.yaw + coercedYaw, currentRotation.pitch + coercedPitch)
+        return Rotation(currentRotation.yaw + straightLineYaw, currentRotation.pitch + straightLinePitch)
     }
 
-    /**
-     * Rotation slow down calculation, which simulates the humanistic rotation patterns stated below:
-     *
-     * - Starting off slow after not rotating.
-     * - Starting off slow when changing directions.
-     * - Slowing down before changing directions.
-     *
-     * Useful for top-notch anti-cheats.
-     */
-    private fun applySlowDown(
-        newDiff: Float, oldDiff: Float, secondOldDiff: Float, ticks: Int, firstSlow: Boolean,
-        slowDownOnDirChange: Boolean, tickUpdate: () -> Unit, onDirChange: () -> Unit,
-    ): Float {
-        val result = abs(oldDiff safeDiv newDiff)
-
-        val shouldStartSlow = firstSlow && (oldDiff == 0f || ticks == 1) && newDiff != 0f
-
-        val diffDir = oldDiff.sign != newDiff.sign && newDiff != 0f && oldDiff != 0f
-        val secondDiffDir = secondOldDiff.sign != oldDiff.sign || abs(secondOldDiff) <= abs(oldDiff)
-
-        val shouldSlowDownOnDirChange = slowDownOnDirChange && diffDir && secondDiffDir
-        val shouldStartSlowAfterDirChange =
-            slowDownOnDirChange && oldDiff.sign != newDiff.sign && !shouldSlowDownOnDirChange && newDiff != 0f
-
-        // Have we not rotated the previous tick or have just changed directions and should start slow?
-        val factor = if (shouldStartSlow || shouldStartSlowAfterDirChange) {
-            if (oldDiff == 0f || shouldStartSlowAfterDirChange) {
-                tickUpdate()
-            }
-
-            if (Rotations.debugRotations) {
-                chat(
-                    if (shouldStartSlow) {
-                        "STARTED OFF SLOW, TICKS SINCE LAST START: $ticks"
-                    } else "STARTED SLOW ON DIRECTION CHANGE, OLD DIFF: ${oldDiff}, SUPPOSED DIFF: $newDiff"
-                )
-            }
-
-            val (min, max) = run {
-                if (oldDiff != 0f && !shouldStartSlowAfterDirChange) {
-                    0.2f to 0.3f
-                } else 0f to 0.2f
-            }
-
-            (if (shouldStartSlow) result else 0f) + nextFloat(min, max)
-        } else 1f
-
-        if (!shouldStartSlow && !shouldStartSlowAfterDirChange && shouldSlowDownOnDirChange) {
-            onDirChange()
-            return newDiff
+    private fun applySlowDown(diff: Float, yaw: Boolean, action: (Float) -> Unit) {
+        if (diff == 0f) {
+            action(diff)
+            return
         }
 
-        return abs(newDiff * factor)
+        var previous = serverRotation
+
+        val lastTickDiffs = lastRotations.slice(1 until lastRotations.size).map { rotation ->
+            val difference = angleDifferences(previous, rotation)
+
+            previous = rotation
+
+            if (yaw) difference.x else difference.y
+        }
+
+        val (lastTick1, lastTick2) = lastTickDiffs[0] to lastTickDiffs[1]
+
+        val smallestAngleGCD = getFixedAngleDelta() + 2.5F
+
+        when {
+            // Slow start
+            lastTick1 == 0f -> {
+                if ((diff <= smallestAngleGCD || diff > 50f) && nextBoolean())
+                    action((lastTick1..diff).lerpWith(nextFloat(0.55f, 0.65f)))
+                else action((lastTick1..diff).lerpWith(nextFloat(0f, 0.2f)))
+            }
+
+            // Second stage of slow start
+            lastTick2 == 0f && abs(lastTick1) <= abs(diff) -> {
+                action((lastTick1..diff).lerpWith(nextFloat(0f, 0.4f)))
+            }
+
+            // Slow down before direction change
+            abs(lastTick2) <= abs(lastTick1) && diff.sign != lastTick1.sign -> {
+                val beforeZero = nextFloat(0f, (0f - lastTick1) safeDiv (diff - lastTick1))
+
+                action((lastTick1..diff).lerpWith(beforeZero))
+            }
+
+            // Start slow after changing direction
+            abs(lastTick2) >= abs(lastTick1) && diff.sign != lastTick1.sign -> {
+                action((lastTick1..diff).lerpWith(nextFloat(0f, 0.4f)))
+            }
+        }
     }
 
-    fun computeFactor(rotationDifference: Float, turnSpeed: Float): Float {
-        return (rotationDifference / nextFloat(120f, 150f) * turnSpeed).coerceIn(nextFloat(0.5f, 1.5f), 180f)
+    fun computeFactor(rotationDifference: Float, axis: Pair<Float, Float>, isRelativeChosen: Boolean): Rotation {
+        val horizontalDivision = if (isRelativeChosen) nextFloat(120f, 150f) else axis.first
+        val verticalDivision = if (isRelativeChosen) nextFloat(120f, 150f) else axis.second
+
+        return Rotation(
+            (rotationDifference / horizontalDivision * axis.first).coerceAtMost(180f),
+            (rotationDifference / verticalDivision * axis.second).coerceIn(-90f, 90f)
+        )
     }
 
     /**
@@ -489,6 +465,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
      */
     fun angleDifferences(target: Rotation, current: Rotation) =
         Vector2f(angleDifference(target.yaw, current.yaw), target.pitch - current.pitch)
+
     /**
      * Calculate rotation to vector
      *
@@ -702,9 +679,12 @@ object RotationUtils : MinecraftInstance(), Listenable {
     fun canUpdateRotation(current: Rotation, target: Rotation, multiplier: Int = 1): Boolean {
         if (current == target)
             return true
+
         val smallestAnglePossible = getFixedAngleDelta()
+
         val gcdRoundedTarget =
             (rotationDifference(target, current) / smallestAnglePossible).roundToInt() * smallestAnglePossible
+
         return gcdRoundedTarget > smallestAnglePossible * multiplier
     }
 
@@ -748,12 +728,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if (packet !is C03PacketPlayer) {
-            return
-        }
-
-        if (!packet.rotating) {
-            sameSignTicks = 0
+        if (packet !is C03PacketPlayer || !packet.rotating) {
             return
         }
 
@@ -766,14 +741,6 @@ object RotationUtils : MinecraftInstance(), Listenable {
             if (Rotations.debugRotations) {
                 chat("PREV YAW: $yawDiff, PREV PITCH: $pitchDiff")
             }
-        }
-
-        if (angleDifference(packet.yaw, serverRotation.yaw).sign ==
-            angleDifference(serverRotation.yaw, lastRotations[1].yaw).sign
-        ) {
-            sameSignTicks++
-        } else {
-            sameSignTicks = 0
         }
     }
 

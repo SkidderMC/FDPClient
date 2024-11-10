@@ -18,6 +18,8 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
     ) { rotationsActive && generalApply() }
     open val applyServerSideValue = boolean("ApplyServerSide", true) { rotationsActive && generalApply() }
     open val simulateShortStopValue = boolean("SimulateShortStop", false) { rotationsActive && generalApply() }
+    open val shortStopChanceValue = int("ShortStopChance", 3, 1..25) { simulateShortStop }
+    open val shortStopDurationValue = intRange("ShortStopDuration", 1..2, 1..5) { simulateShortStop }
     open val strafeValue = boolean("Strafe", false) { rotationsActive && applyServerSide && generalApply() }
     open val strictValue = boolean("Strict", false) { strafeValue.isActive() && generalApply() }
     open val keepRotationValue = boolean(
@@ -28,11 +30,7 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
         override fun isSupported() = rotationsActive && applyServerSide && generalApply()
     }
 
-    open val startRotatingSlowValue = boolean("StartRotatingSlow", false) { rotationsActive && generalApply() }
-    open val slowDownOnDirectionChangeValue = boolean(
-        "SlowDownOnDirectionChange", false
-    ) { rotationsActive && generalApply() }
-    open val useStraightLinePathValue = boolean("UseStraightLinePath", true) { rotationsActive && generalApply() }
+    open val legitimizeValue = boolean("Legitimize", false) { rotationsActive && generalApply() }
     open val maxHorizontalAngleChangeValue: FloatValue = object : FloatValue(
         "MaxHorizontalAngleChange", 180f, 1f..180f
     ) {
@@ -70,13 +68,13 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
     val smootherMode by smootherModeValue
     val applyServerSide by applyServerSideValue
     val simulateShortStop by simulateShortStopValue
+    val shortStopChance by shortStopChanceValue
+    val shortStopDuration by shortStopDurationValue
     val strafe by strafeValue
     val strict by strictValue
     val keepRotation by keepRotationValue
     val resetTicks by resetTicksValue
-    val startRotatingSlow by startRotatingSlowValue
-    val slowDownOnDirectionChange by slowDownOnDirectionChangeValue
-    val useStraightLinePath by useStraightLinePathValue
+    val legitimize by legitimizeValue
     val maxHorizontalAngleChange by maxHorizontalAngleChangeValue
     val minHorizontalAngleChange by minHorizontalAngleChangeValue
     val maxVerticalAngleChange by maxVerticalAngleChangeValue

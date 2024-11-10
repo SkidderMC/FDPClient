@@ -965,9 +965,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         if (options.rotationsActive && !isGodBridgeEnabled) {
             val rotationDifference = rotationDifference(placeRotation.rotation, currRotation)
             val (hSpeed, vSpeed) = options.horizontalSpeed.random() to options.verticalSpeed.random()
-            val (factorH, factorV) = if (options.smootherMode == "Relative")
-                computeFactor(rotationDifference, hSpeed) to computeFactor(rotationDifference, vSpeed)
-            else hSpeed to vSpeed
+            val (factorH, factorV) = computeFactor(rotationDifference, hSpeed to vSpeed, options.smootherMode == "Relative")
 
             val simPlayer = SimulatedPlayer.fromClientPlayer(player.movementInput)
             simPlayer.tick()
@@ -1052,7 +1050,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
         val raytrace = performBlockRaytrace(rotation, maxReach) ?: return null
 
-        val multiplier = if (options.startRotatingSlow || options.slowDownOnDirectionChange) 3 else 1
+        val multiplier = if (options.legitimize) 3 else 1
 
         if (raytrace.blockPos == offsetPos && (!raycast || raytrace.sideHit == side.opposite)
             && canUpdateRotation(currRotation, rotation, multiplier)

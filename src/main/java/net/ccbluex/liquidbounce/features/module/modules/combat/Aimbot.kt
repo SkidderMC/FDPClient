@@ -36,12 +36,7 @@ object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
     private val range by float("Range", 4.4F, 1F..8F)
     private val horizontalAim by boolean("HorizontalAim", true)
     private val verticalAim by boolean("VerticalAim", true)
-    private val startRotatingSlow by boolean("StartRotatingSlow", true) { horizontalAim || verticalAim }
-    private val slowDownOnDirectionChange by boolean(
-        "SlowDownOnDirectionChange",
-        false
-    ) { horizontalAim || verticalAim }
-    private val useStraightLinePath by boolean("UseStraightLinePath", true) { horizontalAim || verticalAim }
+    private val legitimize by boolean("Legitimize", true) { horizontalAim || verticalAim }
     private val maxAngleChange by float("MaxAngleChange", 10f, 1F..180F) { horizontalAim || verticalAim }
     private val inViewMaxAngleChange by float("InViewMaxAngleChange", 35f, 1f..180f) { horizontalAim || verticalAim }
     private val predictClientMovement by int("PredictClientMovement", 2, 0..5)
@@ -238,10 +233,8 @@ object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
             player.rotation,
             destinationRotation,
             realisticTurnSpeed.toFloat(),
-            startFirstSlow = startRotatingSlow,
-            slowDownOnDirChange = slowDownOnDirectionChange,
-            useStraightLinePath = useStraightLinePath,
-            minRotationDifference = minRotationDifference,
+            legitimize = legitimize,
+            minRotationDiff = minRotationDifference,
             smootherMode = "Linear"
         )
 

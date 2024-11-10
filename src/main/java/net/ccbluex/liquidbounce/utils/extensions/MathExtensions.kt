@@ -16,6 +16,7 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
+import javax.vecmath.Vector2f
 import java.math.BigDecimal
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -29,6 +30,14 @@ import kotlin.math.roundToInt
 operator fun Vec3i.component1() = x
 operator fun Vec3i.component2() = y
 operator fun Vec3i.component3() = z
+
+/**
+ * Provides:
+ * ```
+ * val (x, y) = vec
+ */
+operator fun Vector2f.component1() = x
+operator fun Vector2f.component2() = y
 
 /**
  * Provides:
@@ -156,7 +165,7 @@ fun Vec3.lerpWith(other: Vec3, tickDelta: Double) = Vec3(
 fun Vec3.lerpWith(other: Vec3, tickDelta: Float) = lerpWith(other, tickDelta.toDouble())
 
 fun ClosedFloatingPointRange<Float>.lerpWith(t: Float) = start + (endInclusive - start) * t
-fun IntegerRangeValue.lerpWith(t: Float) = ceil(minimum + (maximum - minimum) * t).toInt()
+fun IntegerRangeValue.lerpWith(t: Float) = (minimum + (maximum - minimum) * t).roundToInt()
 fun FloatRangeValue.lerpWith(t: Float) = minimum + (maximum - minimum) * t
 fun IntegerValue.lerpWith(t: Float) = (minimum + (maximum - minimum) * t).roundToInt()
 fun FloatValue.lerpWith(t: Float) = minimum + (maximum - minimum) * t
