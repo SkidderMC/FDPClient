@@ -292,7 +292,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
     // Safety
     private val sameY by boolean("SameY", false) { scaffoldMode != "GodBridge" }
-    private val freezeCameraY by boolean("FreezeCameraY", false)
     private val jumpOnUserInput by boolean("JumpOnUserInput", true) { sameY && scaffoldMode != "GodBridge" }
 
     private val safeWalkValue = boolean("SafeWalk", true) { scaffoldMode != "GodBridge" }
@@ -571,14 +570,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
         event.forward *= eagleSpeed / 0.3f
         event.strafe *= eagleSpeed / 0.3f
-    }
-
-    @EventTarget
-    fun onCameraUpdate(event: CameraPositionEvent) {
-        if (!freezeCameraY || mc.thePlayer.posY < launchY || mc.thePlayer.posY - launchY > 1.5 || launchY == -999)
-            return
-
-        event.withY(launchY.toDouble())
     }
 
     @EventTarget

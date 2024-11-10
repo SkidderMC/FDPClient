@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 import com.google.common.base.Predicates;
 import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;
 import net.ccbluex.liquidbounce.features.module.modules.combat.ForwardTrack;
 import net.ccbluex.liquidbounce.features.module.modules.other.OverrideRaycast;
@@ -105,7 +106,8 @@ public abstract class MixinEntityRenderer {
 
     @ModifyConstant(method = "orientCamera", constant = @Constant(intValue = 8))
     private int injectCameraClip(int eight) {
-        return CameraView.INSTANCE.handleEvents() ? 0 : eight;
+        final CameraView cameraView = CameraView.INSTANCE;
+        return cameraView.getClipValue() && cameraView.handleEvents() ? 0 : eight;
     }
 
     @Inject(at = @At("HEAD"), method = "updateCameraAndRender")
