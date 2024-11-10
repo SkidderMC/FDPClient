@@ -124,20 +124,6 @@ public abstract class MixinEntityRenderer {
         FreeCam.INSTANCE.restoreOriginalPosition();
     }
 
-    @Inject(method = "setupCameraTransform", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/EntityRenderer;setupViewBobbing(F)V", shift = At.Shift.BEFORE))
-    private void setupCameraViewBobbingBefore(final CallbackInfo callbackInfo) {
-        if (Tracers.INSTANCE.handleEvents()) {
-            glPushMatrix();
-        }
-    }
-
-    @Inject(method = "setupCameraTransform", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/EntityRenderer;setupViewBobbing(F)V", shift = At.Shift.AFTER))
-    private void setupCameraViewBobbingAfter(final CallbackInfo callbackInfo) {
-        if (Tracers.INSTANCE.handleEvents()) {
-            glPopMatrix();
-        }
-    }
-
     /**
      * @author CCBlueX
      */
