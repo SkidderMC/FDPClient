@@ -40,7 +40,9 @@ object TickedActions : Listenable {
 
         for (triple in calledThisTick) {
             triple.third()
-            actions.removeFirst()
+            if (actions.isNotEmpty()) {
+                actions.removeFirst()
+            }
         }
 
         calledThisTick.clear()

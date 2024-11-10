@@ -15,10 +15,10 @@ import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationSettings
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils.setTargetRotation
+import net.ccbluex.liquidbounce.utils.SilentHotbar
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
-import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
 import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
 import net.ccbluex.liquidbounce.utils.inventory.isSplashPotion
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
@@ -31,7 +31,6 @@ import net.ccbluex.liquidbounce.value.int
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.item.ItemPotion
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
-import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.potion.Potion
 
 object AutoPot : Module("AutoPot", Category.PLAYER, hideModule = false) {
@@ -71,7 +70,7 @@ object AutoPot : Module("AutoPot", Category.PLAYER, hideModule = false) {
         val player = mc.thePlayer ?: return
 
         // Hotbar Potion
-        val potionInHotbar = findPotion(36, 45)
+        val potionInHotbar = findPotion(36, 44)
 
         if (potionInHotbar != null) {
             if (player.onGround) {
@@ -96,20 +95,18 @@ object AutoPot : Module("AutoPot", Category.PLAYER, hideModule = false) {
             }
 
             TickScheduler += {
-                sendPacket(C09PacketHeldItemChange(potion))
+                SilentHotbar.selectSlotSilently(this,
+                    potion - 36,
+                    immediate = true,
+                    render = false,
+                    resetManually = true
+                )
 
                 if (potion >= 0 && RotationUtils.serverRotation.pitch >= 75F) {
-                    val itemStack = player.hotBarSlot(potion).stack
+                    sendPacket(C08PacketPlayerBlockPlacement(player.heldItem))
+                    SilentHotbar.resetSlot(this)
 
-                    if (itemStack != null) {
-                        sendPackets(
-                            C08PacketPlayerBlockPlacement(itemStack),
-                            C09PacketHeldItemChange(player.inventory.currentItem)
-                        )
-
-                        msTimer.reset()
-                    }
-
+                    msTimer.reset()
                     potion = -1
                 }
             }
@@ -141,7 +138,7 @@ object AutoPot : Module("AutoPot", Category.PLAYER, hideModule = false) {
     private fun findPotion(startSlot: Int, endSlot: Int): Int? {
         val player = mc.thePlayer
 
-        for (i in startSlot until endSlot) {
+        for (i in startSlot..endSlot) {
             val stack = player.inventorySlot(i).stack
 
             if (stack == null || stack.item !is ItemPotion || !stack.isSplashPotion())

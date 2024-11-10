@@ -114,14 +114,14 @@ object Ignite : Module("Ignite", Category.COMBAT, hideModule = false) {
                     }
                 }
 
-                sendPackets(
-                    C09PacketHeldItemChange(player.inventory.currentItem),
-                    C05PacketPlayerLook(
-                        player.rotationYaw,
-                        player.rotationPitch,
-                        player.onGround
-                    )
+                SilentHotbar.selectSlotSilently(this,
+                    player.inventory.currentItem,
+                    immediate = true,
+                    render = false,
+                    resetManually = true
                 )
+                sendPacket(C05PacketPlayerLook(player.rotationYaw, player.rotationPitch, player.onGround))
+                SilentHotbar.resetSlot(this)
 
                 msTimer.reset()
                 break
