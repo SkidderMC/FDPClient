@@ -211,6 +211,7 @@
     "module.targetModule.description": "Disable or Enable Target Attack",
     "module.drinkingAlert.description": "Alert players if drinking potions",
     "module.freeLook.description": "Allows you to freely look around without changing your character's actual direction.",
-    "module.silentHotbarModule.description": "UNTRANSLATED: Controls in which scenarios the silently selected item should be rendered."
+    "module.silentHotbarModule.description": "UNTRANSLATED: Controls in which scenarios the silently selected item should be rendered.",
+    "module.pointerESP.description": "Allows you to see pointed entity positions."
   }
 }

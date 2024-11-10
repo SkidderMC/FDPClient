@@ -10,13 +10,13 @@ import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
 import net.ccbluex.liquidbounce.utils.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils
-import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
+import net.ccbluex.liquidbounce.utils.EntityUtils.getHealth
+import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.value.*
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11.*
@@ -24,175 +24,180 @@ import java.awt.Color
 import kotlin.math.*
 
 object PointerESP : Module("PointerESP", Category.VISUAL, gameDetecting = false, hideModule = false) {
+    private val dimension by choices("Dimension", arrayOf("2d", "3d"), "2d")
+    private val mode by choices("Mode", arrayOf("Solid", "Line", "LoopLine"), "Solid")
+    private val thickness by float("Thickness", 3f, 1f..5f) { mode.contains("Line") }
 
-    // Display settings
-    private val dimensionValue by choices("Dimension", arrayOf("2d", "3d"), "2d")
-    private val modeValue by choices("Mode", arrayOf("Solid", "Line", "LoopLine"), "Solid")
-    private val lineWidthValue by float("LineWidth", 4f, 1f..10f) { modeValue.contains("Line") }
+    private val colorMode by choices("Color-Mode", arrayOf("Custom", "Theme Client", "Rainbow", "Fade"), "Custom")
+    { healthMode == "None" }
+    private val colors = ColorSettingsInteger(this, "Colors", withAlpha = false)
+    { colorMode == "Custom" && healthMode == "None" }.with(255, 111, 255)
+    private val fadeDistance by int("Fade Distance", 50, 0..100) { colorMode == "Fade" }
 
-    // Color settings
-    private val colorMode by choices("Color Mode", arrayOf("Custom", "Theme Client", "Rainbow", "Fade"), "Custom")
-    private val colorRedValue by int("Red", 255, 0..255) { colorMode == "Custom" }
-    private val colorGreenValue by int("Green", 179, 0..255) { colorMode == "Custom" }
-    private val colorBlueValue by int("Blue", 72, 0..255) { colorMode == "Custom" }
-    private val rainbowSpeed by float("Rainbow Speed", 1.0f, 0.5f..5.0f) { colorMode == "Rainbow" }
-    private val fadeDistanceValue by int("Fade-Distance", 50, 0..100) { colorMode == "Fade" }
+    private val healthMode by choices("Health-Mode", arrayOf("None", "Custom"), "Custom")
+    private val healthColors = ColorSettingsInteger(this, "Health", withAlpha = false)
+    { healthMode == "Custom" }.with(255, 255, 0)
 
-    // Damage color settings
-    private val damageColorValue by boolean("DamageColor", true)
-    private val smoothDamageColorValue by boolean("SmoothDamageColor", false)
-    private val dmgRedValue by int("DamageRed", 255, 0..255) {  damageColorValue }
-    private val dmgGreenValue by int("DamageGreen", 0, 0..255) {  damageColorValue }
-    private val dmgBlueValue by int("DamageBlue", 0, 0..255) { damageColorValue }
+    private val absorption by boolean("Absorption", true) { healthMode == "Custom" }
+    private val healthFromScoreboard by boolean("HealthFromScoreboard", true) { healthMode == "Custom" }
 
-    // Opacity and distance settings
-    private val alphaValue: IntegerValue = object : IntegerValue("Alpha", 255, 0..255) {
-        override fun onChanged(oldValue: Int, newValue: Int) {
-            if (distanceAlphaValue && newValue < distanceValue) {
-                set(newValue)
-            }
+    private val alpha by int("Alpha", 255, 0..255)
+    private val distanceAlpha by boolean("DistanceAlpha", true)
+    private val alphaMin by int("AlphaMin", 100, -50..255) { distanceAlpha }
+
+    private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
+        override fun onUpdate(value: Int) {
+            maxRenderDistanceSq = value.toDouble().pow(2.0)
         }
     }
-    private val distanceAlphaValue by boolean("DistanceAlpha", true)
-    private val distanceValue by int("Distance", 70, 0..128) { distanceAlphaValue }
-    private val alphaMinValue by int("AlphaMin", 100, 0..255) { distanceAlphaValue }
 
-    // Indicator size settings
-    private val sizeValue by int("ArrowSize", 10, 1..30)
-    private val angleValue by int("AngleSize", 50, 10..90)
-    private val radiusValue by int("Radius", 70, 10..100)
+    private var maxRenderDistanceSq = 0.0
+        set(value) {
+            field = if (value <= 0.0) maxRenderDistance.toDouble().pow(2.0) else value
+        }
 
-    // Method to render 2D pointer on screen
+    private val arrowSize by int("ArrowSize", 10, 1..30)
+    private val arrowAngle by int("ArrowAngle", 50, 10..90)
+    private val arrowRadius by float("ArrowRadius", 50f, 10f..100f)
+
+    private val team by boolean("Team", true)
+    private val colorTeam by boolean("TeamColor", false) { team }
+    private val bot by boolean("Bots", true)
+
     @EventTarget
     fun onRender2D(event: Render2DEvent) {
-        if (dimensionValue != "2d") return
+        if (dimension != "2d") return
 
-        val mc = Minecraft.getMinecraft()
         val scaledResolution = ScaledResolution(mc)
 
         glPushMatrix()
-        glTranslatef(scaledResolution.scaledWidth / 2f, scaledResolution.scaledHeight / 2f, 0.0f)
+        glTranslatef(scaledResolution.scaledWidth / 2f, scaledResolution.scaledHeight / 2f, 0f)
 
-        draw()
-
-        glPopMatrix()
-    }
-
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        if (dimensionValue == "2d") return
-
-        glDisable(GL_CULL_FACE)
-        glEnable(GL_POLYGON_OFFSET_FILL)
-        glPolygonOffset(1.0f, -1000000f)
-
-        glPushMatrix()
-        glScaled(0.01, 0.01, 0.01)
-        glRotatef(90f, 1f, 0f, 0f)
-        glRotatef(180f + Minecraft.getMinecraft().thePlayer.rotationYaw, 0f, 0f, 1f)
-
-        draw() // Call method to draw the pointer
+        draw(event.partialTicks)
 
         glPopMatrix()
-
-        glPolygonOffset(1.0f, 1000000f)
-        glDisable(GL_POLYGON_OFFSET_FILL)
-        glEnable(GL_CULL_FACE)
     }
 
-    // Get the pointer color based on mode
-    private fun getPointerColor(index: Int): Color {
-        return when (colorMode) {
-            "Custom" -> Color(colorRedValue, colorGreenValue, colorBlueValue)
-            "Theme Client" -> ClientThemesUtils.getColor(1)
-            "Rainbow" -> ColorUtils.rainbow(rainbowSpeed)
-            "Fade" -> fade(Color(colorRedValue, colorGreenValue, colorBlueValue), index * fadeDistanceValue, 100)
-            else -> Color(255, 255, 255)
-        }
-    }
-
-    // Apply fade effect
     private fun fade(color: Color, distance: Int, maxDistance: Int): Color {
         val alpha = ((1.0 - (distance.toFloat() / maxDistance.toFloat())).coerceIn(0.0, 1.0) * 255).toInt()
         return Color(color.red, color.green, color.blue, alpha)
     }
 
-    // Draw the pointer indicator on the screen (shared between 2D and 3D)
-    private fun draw() {
-        val halfAngle = angleValue / 2
-        val radius = -radiusValue
-        val size = sizeValue
+    @EventTarget
+    fun onRender3D(event: Render3DEvent) {
+        if (dimension == "2d") return
 
-        val playerPosX = mc.thePlayer.posX + (mc.thePlayer.posX - mc.thePlayer.lastTickPosX) * mc.timer.renderPartialTicks
-        val playerPosZ = mc.thePlayer.posZ + (mc.thePlayer.posZ - mc.thePlayer.lastTickPosZ) * mc.timer.renderPartialTicks
+        val player = mc.thePlayer ?: return
+
+        glDisable(GL_CULL_FACE)
+        glEnable(GL_POLYGON_OFFSET_FILL)
+        glPolygonOffset(1f, -1000000f)
+
+        glPushMatrix()
+        glScaled(0.01, 0.01, 0.01)
+        glRotatef(90f, 1f, 0f, 0f)
+        glRotatef(180f + player.rotationYaw, 0f, 0f, 1f)
+
+        draw(event.partialTicks)
+
+        glPopMatrix()
+
+        glPolygonOffset(1f, 1000000f)
+        glDisable(GL_POLYGON_OFFSET_FILL)
+        glEnable(GL_CULL_FACE)
+    }
+
+    private fun draw(ticks: Float) {
+        val player = mc.thePlayer ?: return
+
+        val arrowRadius = -arrowRadius
+        val halfAngle = arrowAngle / 2
+
+        val playerPosX = player.lastTickPosX + (player.posX - player.lastTickPosX) * ticks
+        val playerPosZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * ticks
 
         glEnable(GL_BLEND)
         glDisable(GL_TEXTURE_2D)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_LINE_SMOOTH)
+        glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
 
-        // Iterate over entities to draw indicators
-        val index = 0
         for (entity in mc.theWorld.loadedEntityList) {
-            if (EntityUtils.isSelected(entity, true) && entity is EntityLivingBase) {
-                val entX = entity.posX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks
-                val entZ = entity.posZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks
-                val pos1 = (entX - playerPosX) * 0.2
-                val pos2 = (entZ - playerPosZ) * 0.2
+            if (entity !is EntityLivingBase || !bot && isBot(entity)) continue
+            if (!team && ESP.getColor(entity) == ESP.getColor(player)) continue
 
-                val cos = cos(mc.thePlayer.rotationYaw * (Math.PI / 180))
-                val sin = sin(mc.thePlayer.rotationYaw * (Math.PI / 180))
+            if (EntityUtils.isSelected(entity, false)) {
+                val interpolatedPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * ticks
+                val interpolatedPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * ticks
+                val pos1 = (interpolatedPosX - playerPosX) * 0.2
+                val pos2 = (interpolatedPosZ - playerPosZ) * 0.2
+
+                val cos = cos(player.rotationYaw * (PI / 180))
+                val sin = sin(player.rotationYaw * (PI / 180))
                 val rotY = -(pos2 * cos - pos1 * sin)
                 val rotX = -(pos1 * cos + pos2 * sin)
-                val angle = (atan2(rotY, rotX) * 180 / Math.PI).toFloat() + 90f
+                val arrowAngle = (atan2(rotY, rotX) * 180 / PI).toFloat() + 90f
 
-                // Get the pointer color based on entity damage
-                val color = getPointerColor(index)
-                RenderUtils.glFloatColor(
-                    if (entity.hurtTime > 0) {
-                        if (smoothDamageColorValue) {
-                            val percent = entity.hurtPercent.let {
-                                if (it > 0.5) it - 0.5f else 0.5f - it
-                            } * 2
-                            ColorUtils.mixColors(Color(dmgRedValue, dmgGreenValue, dmgBlueValue), color, percent)
-                        } else {
-                            Color(dmgRedValue, dmgGreenValue, dmgBlueValue)
-                        }
-                    } else {
-                        color
-                    },
-                    if (distanceAlphaValue) {
-                        (alphaValue.get() - (sqrt((playerPosX - entX).pow(2) + (playerPosZ - entZ).pow(2)) / distanceValue).coerceAtMost(1.0) * (alphaValue.get() - alphaMinValue)).toInt()
-                    } else {
-                        alphaValue.get()
+                if (player.getDistanceSqToEntity(entity) > maxRenderDistanceSq) continue
+
+                val alpha = if (distanceAlpha) {
+                    (alpha - (sqrt((playerPosX - interpolatedPosX).pow(2) + (playerPosZ - interpolatedPosZ).pow(2)) / maxRenderDistance)
+                        .coerceAtMost(1.0) * (alpha - alphaMin)).toInt()
+                } else alpha
+
+                val targetHealth = getHealth(entity, healthFromScoreboard, absorption)
+                val arrowsColor = when {
+                    targetHealth <= 0 -> Color(255, 0, 0, alpha)
+                    colorTeam -> ESP.getColor(entity)
+                    healthMode == "Custom" -> {
+                        ColorUtils.interpolateHealthColor(
+                            entity,
+                            healthColors.color().red,
+                            healthColors.color().green,
+                            healthColors.color().blue,
+                            alpha,
+                            healthFromScoreboard,
+                            absorption
+                        )
                     }
+                    colorMode == "Rainbow" -> ColorUtils.rainbow()
+                    colorMode ==  "Theme Client" -> ClientThemesUtils.getColor(1)
+                    colorMode == "Fade" -> fade(Color(colors.color().red, colors.color().green, colors.color().blue),
+                        player.getDistanceToEntity(entity).toInt(), fadeDistance)
+                    else -> Color(colors.color().red, colors.color().green, colors.color().blue, alpha)
+                }
+
+                glColor4f(
+                    arrowsColor.red / 255f,
+                    arrowsColor.green / 255f,
+                    arrowsColor.blue / 255f,
+                    arrowsColor.alpha / 255f
                 )
 
-                glRotatef(angle, 0.0f, 0.0f, 1.0f)
+                glRotatef(arrowAngle, 0f, 0f, 1f)
 
-                // Draw pointer based on mode (Solid, Line, LoopLine)
-                when (modeValue.lowercase()) {
+                when (mode.lowercase()) {
                     "solid" -> {
                         glBegin(GL_TRIANGLES)
-                        glVertex2f(0f, radius.toFloat())
-                        glVertex2d(sin(-halfAngle * Math.PI / 180) * size, radius + cos(-halfAngle * Math.PI / 180) * size)
-                        glVertex2d(sin(halfAngle * Math.PI / 180) * size, radius + cos(halfAngle * Math.PI / 180) * size)
+                        glVertex2f(0f, arrowRadius)
+                        glVertex2d(sin(-halfAngle * PI / 180) * arrowSize, arrowRadius + cos(-halfAngle * PI / 180) * arrowSize)
+                        glVertex2d(sin(halfAngle * PI / 180) * arrowSize, arrowRadius + cos(halfAngle * PI / 180) * arrowSize)
                         glEnd()
                     }
                     "line", "loopline" -> {
-                        glLineWidth(lineWidthValue)
+                        glLineWidth(thickness)
                         glBegin(GL_LINE_STRIP)
-                        glVertex2d(sin(-halfAngle * Math.PI / 180) * size, radius + cos(-halfAngle * Math.PI / 180) * size)
-                        glVertex2f(0f, radius.toFloat())
-                        glVertex2d(sin(halfAngle * Math.PI / 180) * size, radius + cos(halfAngle * Math.PI / 180) * size)
-                        if (modeValue == "loopline") {
-                            glVertex2d(sin(-halfAngle * Math.PI / 180) * size, radius + cos(-halfAngle * Math.PI / 180) * size)
+                        glVertex2d(sin(-halfAngle * PI / 180) * arrowSize, arrowRadius + cos(-halfAngle * PI / 180) * arrowSize)
+                        glVertex2f(0f, arrowRadius)
+                        glVertex2d(sin(halfAngle * PI / 180) * arrowSize, arrowRadius + cos(halfAngle * PI / 180) * arrowSize)
+                        if (mode == "LoopLine") {
+                            glVertex2d(sin(-halfAngle * PI / 180) * arrowSize, arrowRadius + cos(-halfAngle * PI / 180) * arrowSize)
                         }
                         glEnd()
                     }
                 }
 
-                glRotatef(-angle, 0.0f, 0.0f, 1.0f)
+                glRotatef(-arrowAngle, 0f, 0f, 1f)
             }
         }
 

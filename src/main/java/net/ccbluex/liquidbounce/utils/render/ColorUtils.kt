@@ -5,8 +5,10 @@
  */
 package net.ccbluex.liquidbounce.utils.render
 
+import net.ccbluex.liquidbounce.utils.EntityUtils.getHealth
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.regex.Pattern
@@ -324,6 +326,22 @@ object ColorUtils {
                 return color
             }
         }
+    }
+
+    fun interpolateHealthColor(
+        entity: EntityLivingBase,
+        r: Int,
+        g: Int,
+        b: Int,
+        a: Int,
+        healthFromScoreboard: Boolean,
+        absorption: Boolean
+    ): Color {
+        val entityHealth = getHealth(entity, healthFromScoreboard, absorption)
+        val healthRatio = (entityHealth / entity.maxHealth).coerceIn(0F, 1F)
+        val red = (r * (1 - healthRatio)).toInt()
+        val green = (g * healthRatio).toInt()
+        return Color(red, green, b, a)
     }
 
 }
