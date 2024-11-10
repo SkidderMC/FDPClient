@@ -141,13 +141,15 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
 
     // Settings
     private val autoF5 by boolean("AutoF5", false, subjective = true)
+    private val onSwording by boolean("OnSwording", true)
+    private val onDestroyBlock by boolean("OnDestroyBlock", false)
     private val onScaffold by boolean("OnScaffold", false)
-    private val noScaffValue by boolean("NoScaffold", false)
-    private val blinkCheck by boolean("BlinkCheck", false)
-    private val noFlyValue by boolean("NoFly", false)
+    private val noScaffold by boolean("NoScaffold", false)
+    private val noFly by boolean("NoFly", false)
     private val noEat by boolean("NoEat", false)
     private val noBlocking by boolean("NoBlocking", false)
-    private val onDestroyBlock by boolean("OnDestroyBlock", false)
+    private val noBedAura by boolean("BedAuraCheck", true)
+    private val blinkCheck by boolean("BlinkCheck", false)
 
     // AutoBlock
     val autoBlock by choices("AutoBlock", arrayOf("Off", "Packet", "Fake"), "Packet")
@@ -1218,8 +1220,10 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
 
     private fun shouldCancelDueToModuleState(): Boolean {
         return (blinkCheck && FDPClient.moduleManager[Blink::class.java]?.state == true)
-                || (noScaffValue && FDPClient.moduleManager[Scaffold::class.java]?.state == true)
-                || (noFlyValue && FDPClient.moduleManager[Flight::class.java]?.state == true)
+                || (noScaffold && FDPClient.moduleManager[Scaffold::class.java]?.state == true)
+                || (noFly && FDPClient.moduleManager[Flight::class.java]?.state == true)
+                || (noBedAura && FDPClient.moduleManager[Fucker::class.java]?.state == true)
+                || (onSwording && mc.thePlayer.heldItem?.item !is ItemSword)
     }
 
     private fun isEatingDisallowed(): Boolean {
