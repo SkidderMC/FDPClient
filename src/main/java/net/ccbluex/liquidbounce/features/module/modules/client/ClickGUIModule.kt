@@ -15,10 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.FDPDropdownClickGUI
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.yzyGUI
 import net.ccbluex.liquidbounce.utils.ClientThemesUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard
 import java.awt.Color
@@ -29,18 +26,18 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
         object : ListValue("Style", arrayOf("Black", "Zywl", "FDP"), "FDP") {
             override fun onChanged(oldValue: String, newValue: String) = updateStyle()
         }
-    var scale by FloatValue("Scale", 0.8f, 0.5f..1.5f)
-    val maxElements by IntegerValue("MaxElements", 15, 1..30)
-    val fadeSpeed by FloatValue("FadeSpeed", 1f, 0.5f..4f)
-    val scrolls by BoolValue("Scrolls", true)
-    val spacedModules by BoolValue("SpacedModules", false)
-    val panelsForcedInBoundaries by BoolValue("PanelsForcedInBoundaries", false)
+    var scale by float("Scale", 0.8f, 0.5f..1.5f)
+    val maxElements by int("MaxElements", 15, 1..30)
+    val fadeSpeed by float("FadeSpeed", 1f, 0.5f..4f)
+    val scrolls by boolean("Scrolls", true)
+    val spacedModules by boolean("SpacedModules", false)
+    val panelsForcedInBoundaries by boolean("PanelsForcedInBoundaries", false)
 
 
-    val backback by BoolValue("Background Accent", true)
-    val scrollMode by ListValue("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")
-    val colormode by ListValue("Setting Accent", arrayOf("White", "Color"), "Color")
-    val clickHeight by IntegerValue("Tab Height", 250, 100.. 500)
+    val backback by boolean("Background Accent", true)
+    val scrollMode by choices("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")
+    val colormode by choices("Setting Accent", arrayOf("White", "Color"), "Color")
+    val clickHeight by int("Tab Height", 250, 100.. 500)
 
     override fun onEnable() {
         lastScale = mc.gameSettings.guiScale

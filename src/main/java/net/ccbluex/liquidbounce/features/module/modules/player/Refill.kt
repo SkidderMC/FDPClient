@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.GameTickEvent
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.canClickInventory
@@ -16,22 +16,22 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.CLICK_TIMER
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.utils.inventory.hasItemAgePassed
 import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C0EPacketClickWindow
 
 object Refill : Module("Refill", Category.PLAYER, hideModule = false) {
-    private val delay by IntegerValue("Delay", 400, 10..1000)
+    private val delay by int("Delay", 400, 10..1000)
 
-    private val minItemAge by IntegerValue("MinItemAge", 400, 0..1000)
+    private val minItemAge by int("MinItemAge", 400, 0..1000)
 
-    private val mode by ListValue("Mode", arrayOf("Swap", "Merge"), "Swap")
+    private val mode by choices("Mode", arrayOf("Swap", "Merge"), "Swap")
 
-    private val invOpen by BoolValue("InvOpen", false)
-        private val simulateInventory by BoolValue("SimulateInventory", false) { !invOpen }
+    private val invOpen by boolean("InvOpen", false)
+    private val simulateInventory by boolean("SimulateInventory", false) { !invOpen }
 
     private val noMove by InventoryManager.noMoveValue
     private val noMoveAir by InventoryManager.noMoveAirValue
@@ -100,8 +100,10 @@ object Refill : Module("Refill", Category.PLAYER, hideModule = false) {
         if (simulateInventory) serverOpenInventory = true
 
         sendPacket(
-            C0EPacketClickWindow(mc.thePlayer.openContainer.windowId, slot, button, mode, stack,
-                mc.thePlayer.openContainer.getNextTransactionID(mc.thePlayer.inventory))
+            C0EPacketClickWindow(
+                mc.thePlayer.openContainer.windowId, slot, button, mode, stack,
+                mc.thePlayer.openContainer.getNextTransactionID(mc.thePlayer.inventory)
+            )
         )
     }
 }

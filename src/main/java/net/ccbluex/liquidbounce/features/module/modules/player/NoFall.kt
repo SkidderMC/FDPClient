@@ -17,10 +17,11 @@ import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationSettings
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlock
-import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.float
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.block.BlockLiquid
 import net.minecraft.util.AxisAlignedBB.fromBounds
 import net.minecraft.util.BlockPos
@@ -56,20 +57,20 @@ object NoFall : Module("NoFall", Category.PLAYER, hideModule = false) {
 
     private val modes = noFallModes.map { it.modeName }.toTypedArray()
 
-    val mode by ListValue("Mode", modes, "MLG")
+    val mode by choices("Mode", modes, "MLG")
 
-    val minFallDistance by FloatValue("MinMLGHeight", 5f, 2f..50f, subjective = true) { mode == "MLG" }
-    val retrieveDelay by IntegerValue("RetrieveDelayTicks", 5, 1..10, subjective = true) { mode == "MLG" }
+    val minFallDistance by float("MinMLGHeight", 5f, 2f..50f, subjective = true) { mode == "MLG" }
+    val retrieveDelay by int("RetrieveDelayTicks", 5, 1..10, subjective = true) { mode == "MLG" }
 
-    val autoMLG by ListValue("AutoMLG", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof") { mode == "MLG" }
-    val swing by BoolValue("Swing", true) { mode == "MLG" }
+    val autoMLG by choices("AutoMLG", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof") { mode == "MLG" }
+    val swing by boolean("Swing", true) { mode == "MLG" }
 
     val options = RotationSettings(this) { mode == "MLG" }.apply {
         resetTicksValue.setSupport { { it && keepRotation } }
     }
 
     // Using too many times of simulatePlayer could result timer flag. Hence, why this is disabled by default.
-    val checkFallDist by BoolValue("CheckFallDistance", false, subjective = true) { mode == "Blink" }
+    val checkFallDist by boolean("CheckFallDistance", false, subjective = true) { mode == "Blink" }
 
     val minFallDist: FloatValue = object : FloatValue("MinFallDistance", 2.5f, 0f..10f, subjective = true) {
         override fun isSupported() = mode == "Blink" && checkFallDist
@@ -80,9 +81,9 @@ object NoFall : Module("NoFall", Category.PLAYER, hideModule = false) {
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtLeast(minFallDist.get())
     }
 
-    val autoOff by BoolValue("AutoOff", true) { mode == "Blink" }
-    val simulateDebug by BoolValue("SimulationDebug", false, subjective = true) { mode == "Blink" }
-    val fakePlayer by BoolValue("FakePlayer", true, subjective = true) { mode == "Blink" }
+    val autoOff by boolean("AutoOff", true) { mode == "Blink" }
+    val simulateDebug by boolean("SimulationDebug", false, subjective = true) { mode == "Blink" }
+    val fakePlayer by boolean("FakePlayer", true, subjective = true) { mode == "Blink" }
 
     var currentMlgBlock: BlockPos? = null
     var mlgInProgress = false

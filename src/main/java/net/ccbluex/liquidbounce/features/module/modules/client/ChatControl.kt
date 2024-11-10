@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.boolean
 
 object ChatControl : Module("ChatControl", Category.CLIENT, gameDetecting = false, hideModule = false, subjective = true) {
 
@@ -15,7 +15,7 @@ object ChatControl : Module("ChatControl", Category.CLIENT, gameDetecting = fals
         state = true
     }
 
-    val chatLimitValue by BoolValue("NoChatLimit", true)
-    val chatClearValue by BoolValue("NoChatClear", true)
-    val fontChatValue by BoolValue("FontChat", false)
+    val chatLimitValue by boolean("NoChatLimit", true)
+    val chatClearValue by boolean("NoChatClear", true)
+    val fontChatValue by boolean("FontChat", false)
 }

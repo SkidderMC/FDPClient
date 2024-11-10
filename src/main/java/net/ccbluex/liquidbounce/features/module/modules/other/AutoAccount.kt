@@ -8,20 +8,19 @@ package net.ccbluex.liquidbounce.features.module.modules.other
 import me.liuli.elixir.account.CrackedAccount
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.event.EventManager.callEvent
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.file.FileManager.accountsConfig
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
-import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.ServerUtils
 import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.randomAccount
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.value.TextValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S40PacketDisconnect
 import net.minecraft.network.play.server.S45PacketTitle
@@ -33,8 +32,8 @@ import kotlin.concurrent.schedule
 object AutoAccount :
     Module("AutoAccount", Category.OTHER, subjective = true, gameDetecting = false, hideModule = false) {
 
-    private val register by BoolValue("AutoRegister", true)
-    private val login by BoolValue("AutoLogin", true)
+    private val register by boolean("AutoRegister", true)
+    private val login by boolean("AutoLogin", true)
 
     // Gamster requires 8 chars+
     private val passwordValue = object : TextValue("Password", "zywl1337#") {
@@ -63,14 +62,14 @@ object AutoAccount :
     private val password by passwordValue
 
     // Needed for Gamster
-    private val sendDelay by IntegerValue("SendDelay", 250, 0..500) { passwordValue.isSupported() }
+    private val sendDelay by int("SendDelay", 250, 0..500) { passwordValue.isSupported() }
 
-    private val autoSession by BoolValue("AutoSession", false)
-    private val startupValue = BoolValue("RandomAccountOnStart", false) { autoSession }
-    private val relogInvalidValue = BoolValue("RelogWhenPasswordInvalid", true) { autoSession }
-    private val relogKickedValue = BoolValue("RelogWhenKicked", false) { autoSession }
+    private val autoSession by boolean("AutoSession", false)
+    private val startupValue = boolean("RandomAccountOnStart", false) { autoSession }
+    private val relogInvalidValue = boolean("RelogWhenPasswordInvalid", true) { autoSession }
+    private val relogKickedValue = boolean("RelogWhenKicked", false) { autoSession }
 
-    private val reconnectDelayValue = IntegerValue("ReconnectDelay", 1000, 0..2500)
+    private val reconnectDelayValue = int("ReconnectDelay", 1000, 0..2500)
     { relogInvalidValue.isActive() || relogKickedValue.isActive() }
     private val reconnectDelay by reconnectDelayValue
 
@@ -88,7 +87,7 @@ object AutoAccount :
     }
     private val accountMode by accountModeValue
 
-    private val saveValue = BoolValue("SaveToAlts", false) {
+    private val saveValue = boolean("SaveToAlts", false) {
         accountModeValue.isSupported() && accountMode != "RandomAlt"
     }
 

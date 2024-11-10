@@ -8,13 +8,14 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.boolean
 
 object TargetModule : Module("Target", Category.CLIENT, defaultInArray = false, gameDetecting = false, hideModule = true, canBeEnabled = false) {
-    var playerValue by BoolValue("Player", true)
-    var animalValue by BoolValue("Animal", true)
-    var mobValue by BoolValue("Mob", true)
-    var invisibleValue by BoolValue("Invisible", false)
-    var deadValue by BoolValue("Dead", false)
+    var playerValue by boolean("Player", true)
+    var animalValue by boolean("Animal", true)
+    var mobValue by boolean("Mob", true)
+    var invisibleValue by boolean("Invisible", false)
+    var deadValue by boolean("Dead", false)
 
     override fun handleEvents() = true
 }

@@ -9,8 +9,8 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColo
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.APIConnecter
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
@@ -23,8 +23,8 @@ import java.util.*
 
 object GuiCapeManager : GuiScreen() {
 
-    val customCape = BoolValue("CustomCape", true)
-    val styleValue = ListValue(
+    val customCape = boolean("CustomCape", true)
+    val styleValue = choices(
         "Mode",
         arrayOf(
             "classic", "classic2", "aurora", "forest", "rose", "lavender",

@@ -6,24 +6,21 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 
 @Suppress("MemberVisibilityCanBePrivate")
 open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true }) {
 
-    open val rotationsValue = BoolValue("Rotations", true) { generalApply() }
+    open val rotationsValue = boolean("Rotations", true) { generalApply() }
 
-    open val smootherModeValue = ListValue(
+    open val smootherModeValue = choices(
         "SmootherMode", arrayOf("Linear", "Relative"), "Relative"
     ) { rotationsActive && generalApply() }
-    open val applyServerSideValue = BoolValue("ApplyServerSide", true) { rotationsActive && generalApply() }
-    open val simulateShortStopValue = BoolValue("SimulateShortStop", false) { rotationsActive && generalApply() }
-    open val strafeValue = BoolValue("Strafe", false) { rotationsActive && applyServerSide && generalApply() }
-    open val strictValue = BoolValue("Strict", false) { strafeValue.isActive() && generalApply() }
-    open val keepRotationValue = BoolValue(
+    open val applyServerSideValue = boolean("ApplyServerSide", true) { rotationsActive && generalApply() }
+    open val simulateShortStopValue = boolean("SimulateShortStop", false) { rotationsActive && generalApply() }
+    open val strafeValue = boolean("Strafe", false) { rotationsActive && applyServerSide && generalApply() }
+    open val strictValue = boolean("Strict", false) { strafeValue.isActive() && generalApply() }
+    open val keepRotationValue = boolean(
         "KeepRotation", true
     ) { rotationsActive && applyServerSide && generalApply() }
     open val resetTicksValue = object : IntegerValue("ResetTicks", 1, 1..20) {
@@ -31,11 +28,11 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
         override fun isSupported() = rotationsActive && applyServerSide && generalApply()
     }
 
-    open val startRotatingSlowValue = BoolValue("StartRotatingSlow", false) { rotationsActive && generalApply() }
-    open val slowDownOnDirectionChangeValue = BoolValue(
+    open val startRotatingSlowValue = boolean("StartRotatingSlow", false) { rotationsActive && generalApply() }
+    open val slowDownOnDirectionChangeValue = boolean(
         "SlowDownOnDirectionChange", false
     ) { rotationsActive && generalApply() }
-    open val useStraightLinePathValue = BoolValue("UseStraightLinePath", true) { rotationsActive && generalApply() }
+    open val useStraightLinePathValue = boolean("UseStraightLinePath", true) { rotationsActive && generalApply() }
     open val maxHorizontalAngleChangeValue: FloatValue = object : FloatValue(
         "MaxHorizontalAngleChange", 180f, 1f..180f
     ) {

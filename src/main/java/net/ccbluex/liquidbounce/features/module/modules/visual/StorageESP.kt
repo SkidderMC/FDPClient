@@ -27,10 +27,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.renderThree
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.renderTwo
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.setColor
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
 import net.minecraft.entity.item.EntityMinecartChest
 import net.minecraft.tileentity.*
@@ -43,15 +40,15 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
     private val mode by
         ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "Glow", "2D", "WireFrame"), "Outline")
 
-        private val glowRenderScale by FloatValue("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
-        private val glowRadius by IntegerValue("Glow-Radius", 4, 1..5) { mode == "Glow" }
-        private val glowFade by IntegerValue("Glow-Fade", 10, 0..30) { mode == "Glow" }
-        private val glowTargetAlpha by FloatValue("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
+        private val glowRenderScale by float("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
+        private val glowRadius by int("Glow-Radius", 4, 1..5) { mode == "Glow" }
+        private val glowFade by int("Glow-Fade", 10, 0..30) { mode == "Glow" }
+        private val glowTargetAlpha by float("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
 
-    private val customColor by BoolValue("CustomColor", false)
-        private val colorRed by IntegerValue("R", 255, 0..255) { customColor }
-        private val colorGreen by IntegerValue("G", 179, 0..255) { customColor }
-        private val colorBlue by IntegerValue("B", 72, 0..255) { customColor }
+    private val customColor by boolean("CustomColor", false)
+        private val colorRed by int("R", 255, 0..255) { customColor }
+        private val colorGreen by int("G", 179, 0..255) { customColor }
+        private val colorBlue by int("B", 72, 0..255) { customColor }
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..500) {
         override fun onUpdate(value: Int) {
@@ -59,24 +56,24 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
         }
     }
 
-    private val onLook by BoolValue("OnLook", false)
-    private val maxAngleDifference by FloatValue("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
+    private val onLook by boolean("OnLook", false)
+    private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
 
-    private val thruBlocks by BoolValue("ThruBlocks", true)
+    private val thruBlocks by boolean("ThruBlocks", true)
 
     private var maxRenderDistanceSq = 0.0
         set(value) {
             field = if (value <= 0.0) maxRenderDistance.toDouble().pow(2.0) else value
         }
 
-    private val chest by BoolValue("Chest", true)
-    private val enderChest by BoolValue("EnderChest", true)
-    private val furnace by BoolValue("Furnace", true)
-    private val dispenser by BoolValue("Dispenser", true)
-    private val hopper by BoolValue("Hopper", true)
-    private val enchantmentTable by BoolValue("EnchantmentTable", false)
-    private val brewingStand by BoolValue("BrewingStand", false)
-    private val sign by BoolValue("Sign", false)
+    private val chest by boolean("Chest", true)
+    private val enderChest by boolean("EnderChest", true)
+    private val furnace by boolean("Furnace", true)
+    private val dispenser by boolean("Dispenser", true)
+    private val hopper by boolean("Hopper", true)
+    private val enchantmentTable by boolean("EnchantmentTable", false)
+    private val brewingStand by boolean("BrewingStand", false)
+    private val sign by boolean("Sign", false)
 
     private fun getColor(tileEntity: TileEntity): Color? {
         return if (customColor) {

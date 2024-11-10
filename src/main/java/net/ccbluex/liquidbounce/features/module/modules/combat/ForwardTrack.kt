@@ -13,9 +13,9 @@ import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
 import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBacktrackBox
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -24,12 +24,12 @@ import net.minecraft.util.Vec3
 import java.awt.Color
 
 object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
-    val espMode by ListValue("ESP-Mode", arrayOf("Box", "Model"), "Model", subjective = true)
+    val espMode by choices("ESP-Mode", arrayOf("Box", "Model"), "Model", subjective = true)
 
-    private val rainbow by BoolValue("Rainbow", true, subjective = true) { espMode == "Box" }
-    private val red by IntegerValue("R", 0, 0..255, subjective = true) { !rainbow && espMode == "Box" }
-    private val green by IntegerValue("G", 255, 0..255, subjective = true) { !rainbow && espMode == "Box" }
-    private val blue by IntegerValue("B", 0, 0..255, subjective = true) { !rainbow && espMode == "Box" }
+    private val rainbow by boolean("Rainbow", true, subjective = true) { espMode == "Box" }
+    private val red by int("R", 0, 0..255, subjective = true) { !rainbow && espMode == "Box" }
+    private val green by int("G", 255, 0..255, subjective = true) { !rainbow && espMode == "Box" }
+    private val blue by int("B", 0, 0..255, subjective = true) { !rainbow && espMode == "Box" }
 
     val color
         get() = if (rainbow) ColorUtils.rainbow() else Color(red, green, blue)

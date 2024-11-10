@@ -33,39 +33,42 @@ import kotlin.math.sqrt
 object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hideModule = false) {
 
     // TODO: Model & Wireframe Render
-    private val renderServerPos by ListValue("RenderServerPos-Mode",
+    private val renderServerPos by choices(
+        "RenderServerPos-Mode",
         arrayOf("None", "Box"),
         "None",
         subjective = true
     )
 
-    private val resetFlagCounterTicks by IntegerValue("ResetCounterTicks", 5000, 1000..10000)
+    private val resetFlagCounterTicks by int("ResetCounterTicks", 5000, 1000..10000)
 
-    private val ghostBlockCheck by BoolValue("GhostBlock-Check", true)
-    private val ghostBlockDelay by IntegerValue("GhostBlockDelay", 750, 500..1000)
+    private val ghostBlockCheck by boolean("GhostBlock-Check", true)
+    private val ghostBlockDelay by int("GhostBlockDelay", 750, 500..1000)
     { ghostBlockCheck }
 
-    private val rubberbandCheck by BoolValue("Rubberband-Check", false)
-    private val rubberbandThreshold by FloatValue("RubberBandThreshold", 5.0f, 0.05f..10.0f)
+    private val rubberbandCheck by boolean("Rubberband-Check", false)
+    private val rubberbandThreshold by float("RubberBandThreshold", 5.0f, 0.05f..10.0f)
     { rubberbandCheck }
 
-    private val colors = ColorSettingsInteger(this,
+    private val colors = ColorSettingsInteger(
+        this,
         "Text",
         zeroAlphaCheck = true,
         alphaApply = true,
         applyMax = true
     ) { renderServerPos == "Box" }
 
-    private val boxColors = ColorSettingsInteger(this,
+    private val boxColors = ColorSettingsInteger(
+        this,
         "Box",
         zeroAlphaCheck = true,
         alphaApply = true,
         withAlpha = false
     ) { renderServerPos == "Box" }.with(r = 255, g = 255)
 
-    private val scale by FloatValue("Scale", 1F, 1F..6F) { renderServerPos == "Box" }
-    private val font by FontValue("Font", Fonts.font40) { renderServerPos == "Box" }
-    private val fontShadow by BoolValue("Shadow", true) { renderServerPos == "Box" }
+    private val scale by float("Scale", 1F, 1F..6F) { renderServerPos == "Box" }
+    private val font by font("Font", Fonts.font40) { renderServerPos == "Box" }
+    private val fontShadow by boolean("Shadow", true) { renderServerPos == "Box" }
 
     private var lastCheckTime = 0L
 
@@ -294,7 +297,8 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
         val fontRenderer = font
 
         // Scale
-        val scale = (((player.getDistanceSq(pos.xCoord, pos.yCoord, pos.zCoord) / 8F).coerceIn(1.5, 5.0) / 100F) * scale)
+        val scale =
+            (((player.getDistanceSq(pos.xCoord, pos.yCoord, pos.zCoord) / 8F).coerceIn(1.5, 5.0) / 100F) * scale)
         glScaled(-scale, -scale, scale)
 
         // Draw text

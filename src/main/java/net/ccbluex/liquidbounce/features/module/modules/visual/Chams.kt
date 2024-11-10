@@ -7,34 +7,31 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-
 object Chams : Module("Chams", Category.VISUAL, hideModule = false) {
-    val targets by BoolValue("Targets", true)
-    val chests by BoolValue("Chests", true)
-    val items by BoolValue("Items", true)
-    private val handValue by BoolValue("Hand", false)
+    val targets by boolean("Targets", true)
+    val chests by boolean("Chests", true)
+    val items by boolean("Items", true)
+    private val handValue by boolean("Hand", false)
 
-    val localPlayerValue by BoolValue("LocalPlayer", true)
-    val colorModeValue by ListValue("Color", arrayOf("Custom", "Fade"), "Custom") { !legacyMode }
+    val localPlayerValue by boolean("LocalPlayer", true)
+    val colorModeValue by choices("Color", arrayOf("Custom", "Fade"), "Custom") { !legacyMode }
 
-    val texturedValue by BoolValue("Textured", true) { !legacyMode }
-    val legacyMode by BoolValue("Legacy-Mode", false)
+    val texturedValue by boolean("Textured", true) { !legacyMode }
+    val legacyMode by boolean("Legacy-Mode", false)
 
-    val behindColorModeValue by ListValue("Behind-Color", arrayOf("Same", "Opposite", "Custom"), "Same") { !legacyMode }
-    val redValue by IntegerValue("Red", 255, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") }
-    val greenValue by IntegerValue("Green", 119, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") }
-    val blueValue by IntegerValue("Blue", 119, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") }
-    val alphaValue by IntegerValue("Alpha", 255, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue== "Fade") }
-    val behindRedValue by IntegerValue("BehindRed", 0, 0..255) { !legacyMode && (colorModeValue== "Custom" || colorModeValue== "Fade") && behindColorModeValue == "Custom" }
-    val behindGreenValue by IntegerValue("BehindGreen", 223, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") && behindColorModeValue == "Custom" }
-    val behindBlueValue by IntegerValue("BehindBlue", 255, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") && behindColorModeValue == "Custom" }
-    val behindAlphaValue by IntegerValue("BehindAlpha", 255, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") && behindColorModeValue == "Custom" }
+    val behindColorModeValue by choices("Behind-Color", arrayOf("Same", "Opposite", "Custom"), "Same") { !legacyMode }
+    val redValue by int("Red", 255, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") }
+    val greenValue by int("Green", 119, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") }
+    val blueValue by int("Blue", 119, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") }
+    val alphaValue by int("Alpha", 255, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue== "Fade") }
+    val behindRedValue by int("BehindRed", 0, 0..255) { !legacyMode && (colorModeValue== "Custom" || colorModeValue== "Fade") && behindColorModeValue == "Custom" }
+    val behindGreenValue by int("BehindGreen", 223, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") && behindColorModeValue == "Custom" }
+    val behindBlueValue by int("BehindBlue", 255, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") && behindColorModeValue == "Custom" }
+    val behindAlphaValue by int("BehindAlpha", 255, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") && behindColorModeValue == "Custom" }
 
     fun preHandRender() {
         GL11.glDisable(3553)

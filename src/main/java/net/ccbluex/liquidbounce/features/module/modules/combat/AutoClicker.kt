@@ -16,9 +16,10 @@ import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomClickDelay
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.float
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.Entity
 import net.minecraft.item.EnumAction
@@ -27,7 +28,7 @@ import kotlin.random.Random.Default.nextBoolean
 
 object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) {
 
-    private val simulateDoubleClicking by BoolValue("SimulateDoubleClicking", false)
+    private val simulateDoubleClicking by boolean("SimulateDoubleClicking", false)
 
     private val maxCPSValue: IntegerValue = object : IntegerValue("MaxCPS", 8, 1..20) {
         override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(minCPS)
@@ -40,17 +41,17 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) 
         override fun isSupported() = !maxCPSValue.isMinimal()
     }
 
-    private val right by BoolValue("Right", true)
-    private val left by BoolValue("Left", true)
-    private val jitter by BoolValue("Jitter", false)
-    private val block by BoolValue("AutoBlock", false) { left }
-    private val blockDelay by IntegerValue("BlockDelay", 50, 0..100) { block }
+    private val right by boolean("Right", true)
+    private val left by boolean("Left", true)
+    private val jitter by boolean("Jitter", false)
+    private val block by boolean("AutoBlock", false) { left }
+    private val blockDelay by int("BlockDelay", 50, 0..100) { block }
 
-    private val requiresNoInput by BoolValue("RequiresNoInput", false) { left }
-    private val maxAngleDifference by FloatValue("MaxAngleDifference", 30f, 10f..180f) { left && requiresNoInput }
-    private val range by FloatValue("Range", 3f, 0.1f..5f) { left && requiresNoInput }
+    private val requiresNoInput by boolean("RequiresNoInput", false) { left }
+    private val maxAngleDifference by float("MaxAngleDifference", 30f, 10f..180f) { left && requiresNoInput }
+    private val range by float("Range", 3f, 0.1f..5f) { left && requiresNoInput }
 
-    private val onlyBlocks by BoolValue("OnlyBlocks", true) { right }
+    private val onlyBlocks by boolean("OnlyBlocks", true) { right }
 
     private var rightDelay = randomClickDelay(minCPS, maxCPS)
     private var rightLastSwing = 0L
@@ -114,7 +115,8 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) 
 
             if (jitter && ((left && shouldAutoClick && shouldJitter)
                         || (right && !thePlayer.isUsingItem && mc.gameSettings.keyBindUseItem.isKeyDown
-                        && ((onlyBlocks && thePlayer.heldItem.item is ItemBlock) || !onlyBlocks)))) {
+                        && ((onlyBlocks && thePlayer.heldItem.item is ItemBlock) || !onlyBlocks)))
+            ) {
 
                 if (nextBoolean()) thePlayer.fixedSensitivityYaw += nextFloat(-1F, 1F)
                 if (nextBoolean()) thePlayer.fixedSensitivityPitch += nextFloat(-1F, 1F)

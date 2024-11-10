@@ -7,13 +7,13 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.float
 
 object ItemPhysics: Module("ItemPhysics", Category.VISUAL, hideModule = false) {
 
-    val realistic by BoolValue("Realistic", false)
-    val weight by FloatValue("Weight", 0.5F, 0.1F..3F)
-    val rotationSpeed by FloatValue("RotationSpeed", 1.0F, 0.01F..3F)
+    val realistic by boolean("Realistic", false)
+    val weight by float("Weight", 0.5F, 0.1F..3F)
+    val rotationSpeed by float("RotationSpeed", 1.0F, 0.01F..3F)
 
 }

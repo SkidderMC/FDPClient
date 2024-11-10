@@ -15,10 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Animations.itemRo
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations.itemRotationMode
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.util.MathHelper
@@ -59,27 +56,27 @@ object Animations : Module("Animations", Category.CLIENT, gameDetecting = false,
         SulfurAnimation()
     )
 
-    private val animationMode by ListValue("Mode", animations.map { it.name }.toTypedArray(), "Pushdown")
-    val oddSwing by BoolValue("OddSwing", false)
-    val swingSpeed by IntegerValue("SwingSpeed", 15, 0..20)
+    private val animationMode by choices("Mode", animations.map { it.name }.toTypedArray(), "Pushdown")
+    val oddSwing by boolean("OddSwing", false)
+    val swingSpeed by int("SwingSpeed", 15, 0..20)
 
-    val handItemScale by FloatValue("ItemScale", 0f, -5f..5f)
-    val handX by FloatValue("X", 0f, -5f..5f)
-    val handY by FloatValue("Y", 0f, -5f..5f)
-    val handPosX by FloatValue("PositionRotationX", 0f, -50f..50f)
-    val handPosY by FloatValue("PositionRotationY", 0f, -50f..50f)
-    val handPosZ by FloatValue("PositionRotationZ", 0f, -50f..50f)
+    val handItemScale by float("ItemScale", 0f, -5f..5f)
+    val handX by float("X", 0f, -5f..5f)
+    val handY by float("Y", 0f, -5f..5f)
+    val handPosX by float("PositionRotationX", 0f, -50f..50f)
+    val handPosY by float("PositionRotationY", 0f, -50f..50f)
+    val handPosZ by float("PositionRotationZ", 0f, -50f..50f)
 
-    var itemRotate by BoolValue("ItemRotate", false)
-    val itemRotationMode by ListValue("ItemRotateMode", arrayOf("None", "Straight", "Forward", "Nano", "Uh"), "None") { itemRotate }
-    val itemRotateSpeed by FloatValue("RotateSpeed", 8f, 1f.. 15f)  { itemRotate }
+
+    var itemRotate by boolean("ItemRotate", false)
+    val itemRotationMode by choices("ItemRotateMode", arrayOf("None", "Straight", "Forward", "Nano", "Uh"), "None") { itemRotate }
+    val itemRotateSpeed by float("RotateSpeed", 8f, 1f.. 15f)  { itemRotate }
 
     var delay = 0f
 
     fun getAnimation() = animations.firstOrNull { it.name == animationMode }
 
 }
-
 
 /**
  * Item Render Rotation

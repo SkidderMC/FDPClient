@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
 import net.minecraft.entity.Entity
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.*
+import javax.vecmath.Vector2f
 import kotlin.math.*
 
 object RotationUtils : MinecraftInstance(), Listenable {
@@ -483,6 +484,11 @@ object RotationUtils : MinecraftInstance(), Listenable {
      */
     fun angleDifference(a: Float, b: Float) = MathHelper.wrapAngleTo180_float(a - b)
 
+    /**
+     * Returns a 2-parameter vector with the calculated angle differences between [target] and [current] rotations
+     */
+    fun angleDifferences(target: Rotation, current: Rotation) =
+        Vector2f(angleDifference(target.yaw, current.yaw), target.pitch - current.pitch)
     /**
      * Calculate rotation to vector
      *

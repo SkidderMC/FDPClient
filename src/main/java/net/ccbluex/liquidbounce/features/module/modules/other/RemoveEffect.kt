@@ -5,23 +5,22 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.boolean
 import net.minecraft.potion.Potion
 
 object RemoveEffect : Module("RemoveEffect", Category.OTHER, hideModule = false) {
 
-    private val shouldRemoveSlowness by BoolValue("Slowness", false)
-    private val shouldRemoveMiningFatigue by BoolValue("Mining Fatigue", false)
-    private val shouldRemoveBlindness by BoolValue("Blindness", false)
-    private val shouldRemoveWeakness by BoolValue("Weakness", false)
-    private val shouldRemoveWither by BoolValue("Wither", false)
-    private val shouldRemovePoison by BoolValue("Poison", false)
-    private val shouldRemoveWaterBreathing by BoolValue("Water Breathing", false)
+    private val shouldRemoveSlowness by boolean("Slowness", false)
+    private val shouldRemoveMiningFatigue by boolean("Mining Fatigue", false)
+    private val shouldRemoveBlindness by boolean("Blindness", false)
+    private val shouldRemoveWeakness by boolean("Weakness", false)
+    private val shouldRemoveWither by boolean("Wither", false)
+    private val shouldRemovePoison by boolean("Poison", false)
+    private val shouldRemoveWaterBreathing by boolean("Water Breathing", false)
 
     override fun onEnable() {}
 

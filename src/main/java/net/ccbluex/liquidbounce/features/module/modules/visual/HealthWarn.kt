@@ -12,11 +12,11 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.int
 
 object HealthWarn: Module("HealthWarn", Category.VISUAL, hideModule = false) {
 
-    private val healthValue by IntegerValue("Health", 7, 1.. 20)
+    private val healthValue by int("Health", 7, 1.. 20)
 
     private var canWarn = true
 

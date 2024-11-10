@@ -10,17 +10,15 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.RenderWings
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 
 object Wings : Module("Wings", Category.CLIENT, hideModule = false) {
-    private val onlyThirdPerson by BoolValue("OnlyThirdPerson", true)
-    val colorType by ListValue("Color Type", arrayOf("Custom", "Chroma", "None"), "Chroma")
-    val customRed by IntegerValue("Red", 255, 0.. 255) { colorType == "Custom" }
-    val customGreen by IntegerValue("Green", 255, 0.. 255) { colorType == "Custom" }
-    val customBlue by IntegerValue("Blue", 255, 0.. 255) { colorType == "Custom" }
-    val wingStyle by ListValue("Wing Style", arrayOf("Dragon", "Simple"), "Dragon")
+    private val onlyThirdPerson by boolean("OnlyThirdPerson", true)
+    val colorType by choices("Color Type", arrayOf("Custom", "Chroma", "None"), "Chroma")
+    val customRed by int("Red", 255, 0.. 255) { colorType == "Custom" }
+    val customGreen by int("Green", 255, 0.. 255) { colorType == "Custom" }
+    val customBlue by int("Blue", 255, 0.. 255) { colorType == "Custom" }
+    val wingStyle by choices("Wing Style", arrayOf("Dragon", "Simple"), "Dragon")
 
     @EventTarget
     fun onRenderPlayer(event: Render3DEvent) {

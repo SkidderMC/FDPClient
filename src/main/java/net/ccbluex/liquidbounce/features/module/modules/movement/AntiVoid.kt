@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.event.*
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Tower
@@ -24,10 +24,10 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawFilledBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.renderNameTag
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.float
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.block.BlockAir
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.item.ItemBlock
@@ -45,16 +45,17 @@ import kotlin.math.max
 
 object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
 
-    private val mode by ListValue("Mode",
+    private val mode by choices(
+        "Mode",
         arrayOf("Blink", "TeleportBack", "FlyFlag", "OnGroundSpoof", "MotionTeleport-Flag", "GhostBlock"),
         "FlyFlag"
     )
-    private val maxFallDistance by IntegerValue("MaxFallDistance", 10, 2..255)
-    private val maxDistanceWithoutGround by FloatValue("MaxDistanceToSetback", 2.5f, 1f..30f) { mode != "Blink" }
-    private val blinkDelay by IntegerValue("BlinkDelay", 10, 1..20) { mode == "Blink" }
-    private val onScaffold by BoolValue("OnScaffold", false) { mode == "Blink" }
-    private val ticksToDelay by IntegerValue("TicksDelay", 5, 1..20) { mode == "Blink" && !onScaffold }
-    private val indicator by BoolValue("Indicator", true, subjective = true)
+    private val maxFallDistance by int("MaxFallDistance", 10, 2..255)
+    private val maxDistanceWithoutGround by float("MaxDistanceToSetback", 2.5f, 1f..30f) { mode != "Blink" }
+    private val blinkDelay by int("BlinkDelay", 10, 1..20) { mode == "Blink" }
+    private val onScaffold by boolean("OnScaffold", false) { mode == "Blink" }
+    private val ticksToDelay by int("TicksDelay", 5, 1..20) { mode == "Blink" && !onScaffold }
+    private val indicator by boolean("Indicator", true, subjective = true)
 
     private var detectedLocation: BlockPos? = null
     private var lastFound = 0F
@@ -96,7 +97,8 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
             detectedLocation = fallingPlayer.findCollision(60)?.pos
 
             if (detectedLocation != null && abs(thePlayer.posY - detectedLocation!!.y) +
-                thePlayer.fallDistance <= maxFallDistance) {
+                thePlayer.fallDistance <= maxFallDistance
+            ) {
                 lastFound = thePlayer.fallDistance
             }
 
@@ -156,7 +158,8 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
     fun onBlockBB(event: BlockBBEvent) {
         if (mode == "GhostBlock" && shouldSimulateBlock) {
             if (event.y < mc.thePlayer.posY.toInt()) {
-                event.boundingBox = AxisAlignedBB(event.x.toDouble(),
+                event.boundingBox = AxisAlignedBB(
+                    event.x.toDouble(),
                     event.y.toDouble(),
                     event.z.toDouble(),
                     event.x + 1.0,
@@ -194,7 +197,6 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
 
             // Check for scaffold
             if ((Scaffold.handleEvents() || Tower.handleEvents()) && Scaffold.placeRotation != null) {
-
                 if (BlinkUtils.isBlinking && player.fallDistance < 1.5f) BlinkUtils.unblink()
                 if (pauseTicks < ticksToDelay) pauseTicks = ticksToDelay
             }
@@ -220,7 +222,8 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
         val thePlayer = mc.thePlayer ?: return
 
         if (detectedLocation == null || !indicator ||
-            thePlayer.fallDistance + (thePlayer.posY - (detectedLocation!!.y + 1)) < 3)
+            thePlayer.fallDistance + (thePlayer.posY - (detectedLocation!!.y + 1)) < 3
+        )
             return
 
         val (x, y, z) = detectedLocation ?: return

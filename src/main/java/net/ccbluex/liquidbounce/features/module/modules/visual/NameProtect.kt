@@ -12,9 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.file.FileManager.friendsConfig
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.translateAlternateColorCodes
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.TextValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.network.play.server.S01PacketJoinGame
 import net.minecraft.network.play.server.S40PacketDisconnect
 import kotlin.random.Random
@@ -22,15 +20,15 @@ import java.util.*
 
 object NameProtect : Module("NameProtect", Category.VISUAL, subjective = true, gameDetecting = false, hideModule = false) {
 
-    val allPlayers by BoolValue("AllPlayers", false)
+    val allPlayers by boolean("AllPlayers", false)
 
-    val skinProtect by BoolValue("SkinProtect", true)
-    private val fakeName by TextValue("FakeName", "&cMe")
+    val skinProtect by boolean("SkinProtect", true)
+    private val fakeName by text("FakeName", "&cMe")
 
-    private val randomNames by BoolValue("RandomNames", false) { allPlayers }
-    private val randomNameLength by BoolValue("RandomNameLength", false) { allPlayers && randomNames }
+    private val randomNames by boolean("RandomNames", false) { allPlayers }
+    private val randomNameLength by boolean("RandomNameLength", false) { allPlayers && randomNames }
 
-    private var nameLength by IntegerValue("NameLength", 6, 6..16) {
+    private var nameLength by int("NameLength", 6, 6..16) {
         randomNames && allPlayers && !randomNameLength
     }
 

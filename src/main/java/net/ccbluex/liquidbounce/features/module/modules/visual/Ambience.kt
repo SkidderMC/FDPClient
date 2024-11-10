@@ -10,29 +10,26 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.network.play.server.S03PacketTimeUpdate
 import net.minecraft.network.play.server.S2BPacketChangeGameState
 
 object Ambience : Module("Ambience", Category.VISUAL, gameDetecting = false, hideModule = false) {
 
-    private val timeMode by ListValue("Mode", arrayOf("None", "Normal", "Custom", "Day", "Dusk", "Night", "Dynamic"), "Custom")
-        private val customWorldTime by IntegerValue("Time", 6, 0..24) { timeMode == "Custom" }
-        private val changeWorldTimeSpeed by IntegerValue("TimeSpeed", 150, 10..500) { timeMode == "Normal" }
-        private val dynamicSpeed by IntegerValue("DynamicSpeed", 20, 1.. 50) { timeMode =="Dynamic" }
+    private val timeMode by choices("Mode", arrayOf("None", "Normal", "Custom", "Day", "Dusk", "Night", "Dynamic"), "Custom")
+        private val customWorldTime by int("Time", 6, 0..24) { timeMode == "Custom" }
+        private val changeWorldTimeSpeed by int("TimeSpeed", 150, 10..500) { timeMode == "Normal" }
+        private val dynamicSpeed by int("DynamicSpeed", 20, 1.. 50) { timeMode =="Dynamic" }
 
-    private val weatherMode by ListValue("WeatherMode", arrayOf("None", "Sun", "Rain", "Thunder"), "None")
+    private val weatherMode by choices("WeatherMode", arrayOf("None", "Sun", "Rain", "Thunder"), "None")
         private val weatherStrength by FloatValue("WeatherStrength", 1f, 0f..1f)
             { weatherMode == "Rain" || weatherMode == "Thunder" }
 
     // world color
-    val worldColor by BoolValue("WorldColor", false)
-    val worldColorRed by IntegerValue("WorldRed", 255, 0..255) { worldColor }
-    val worldColorGreen by IntegerValue("WorldGreen", 255, 0..255) { worldColor }
-    val worldColorBlue by IntegerValue("WorldBlue", 255, 0.. 255) { worldColor }
+    val worldColor by boolean("WorldColor", false)
+    val worldColorRed by int("WorldRed", 255, 0..255) { worldColor }
+    val worldColorGreen by int("WorldGreen", 255, 0..255) { worldColor }
+    val worldColorBlue by int("WorldBlue", 255, 0.. 255) { worldColor }
 
     private var i = 0L
 

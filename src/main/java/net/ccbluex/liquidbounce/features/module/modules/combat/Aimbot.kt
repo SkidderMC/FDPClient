@@ -22,29 +22,32 @@ import net.ccbluex.liquidbounce.utils.RotationUtils.toRotation
 import net.ccbluex.liquidbounce.utils.SimulatedPlayer
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.float
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.entity.Entity
 import java.util.*
 import kotlin.math.atan
 
 object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
 
-    private val range by FloatValue("Range", 4.4F, 1F..8F)
-    private val horizontalAim by BoolValue("HorizontalAim", true)
-    private val verticalAim by BoolValue("VerticalAim", true)
-    private val startRotatingSlow by BoolValue("StartRotatingSlow", true) { horizontalAim || verticalAim }
-    private val slowDownOnDirectionChange by BoolValue("SlowDownOnDirectionChange",
+    private val range by float("Range", 4.4F, 1F..8F)
+    private val horizontalAim by boolean("HorizontalAim", true)
+    private val verticalAim by boolean("VerticalAim", true)
+    private val startRotatingSlow by boolean("StartRotatingSlow", true) { horizontalAim || verticalAim }
+    private val slowDownOnDirectionChange by boolean(
+        "SlowDownOnDirectionChange",
         false
     ) { horizontalAim || verticalAim }
-    private val useStraightLinePath by BoolValue("UseStraightLinePath", true) { horizontalAim || verticalAim }
-    private val maxAngleChange by FloatValue("MaxAngleChange", 10f, 1F..180F) { horizontalAim || verticalAim }
-    private val inViewMaxAngleChange by FloatValue("InViewMaxAngleChange", 35f, 1f..180f) { horizontalAim || verticalAim }
-    private val predictClientMovement by IntegerValue("PredictClientMovement", 2, 0..5)
-    private val predictEnemyPosition by FloatValue("PredictEnemyPosition", 1.5f, -1f..2f)
-    private val highestBodyPointToTargetValue: ListValue = object : ListValue("HighestBodyPointToTarget",
+    private val useStraightLinePath by boolean("UseStraightLinePath", true) { horizontalAim || verticalAim }
+    private val maxAngleChange by float("MaxAngleChange", 10f, 1F..180F) { horizontalAim || verticalAim }
+    private val inViewMaxAngleChange by float("InViewMaxAngleChange", 35f, 1f..180f) { horizontalAim || verticalAim }
+    private val predictClientMovement by int("PredictClientMovement", 2, 0..5)
+    private val predictEnemyPosition by float("PredictEnemyPosition", 1.5f, -1f..2f)
+    private val highestBodyPointToTargetValue: ListValue = object : ListValue(
+        "HighestBodyPointToTarget",
         arrayOf("Head", "Body", "Feet"),
         "Head"
     ) {
@@ -59,7 +62,8 @@ object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
     }
     private val highestBodyPointToTarget by highestBodyPointToTargetValue
 
-    private val lowestBodyPointToTargetValue: ListValue = object : ListValue("LowestBodyPointToTarget",
+    private val lowestBodyPointToTargetValue: ListValue = object : ListValue(
+        "LowestBodyPointToTarget",
         arrayOf("Head", "Body", "Feet"),
         "Feet"
     ) {
@@ -87,21 +91,22 @@ object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(maxHorizontalBodySearch.get())
     }
 
-    private val minRotationDifference by FloatValue("MinRotationDifference",
+    private val minRotationDifference by float(
+        "MinRotationDifference",
         0f,
         0f..2f
     ) { verticalAim || horizontalAim }
 
-    private val fov by FloatValue("FOV", 180F, 1F..180F)
-    private val lock by BoolValue("Lock", true) { horizontalAim || verticalAim }
-    private val onClick by BoolValue("OnClick", false) { horizontalAim || verticalAim }
-    private val jitter by BoolValue("Jitter", false)
-    private val yawJitterMultiplier by FloatValue("JitterYawMultiplier", 1f, 0.1f..2.5f)
-    private val pitchJitterMultiplier by FloatValue("JitterPitchMultiplier", 1f, 0.1f..2.5f)
-    private val center by BoolValue("Center", false)
-    private val headLock by BoolValue("Headlock", false) { center && lock }
-    private val headLockBlockHeight by FloatValue("HeadBlockHeight", -1f, -2f..0f) { headLock && center && lock }
-    private val breakBlocks by BoolValue("BreakBlocks", true)
+    private val fov by float("FOV", 180F, 1F..180F)
+    private val lock by boolean("Lock", true) { horizontalAim || verticalAim }
+    private val onClick by boolean("OnClick", false) { horizontalAim || verticalAim }
+    private val jitter by boolean("Jitter", false)
+    private val yawJitterMultiplier by float("JitterYawMultiplier", 1f, 0.1f..2.5f)
+    private val pitchJitterMultiplier by float("JitterPitchMultiplier", 1f, 0.1f..2.5f)
+    private val center by boolean("Center", false)
+    private val headLock by boolean("Headlock", false) { center && lock }
+    private val headLockBlockHeight by float("HeadBlockHeight", -1f, -2f..0f) { headLock && center && lock }
+    private val breakBlocks by boolean("BreakBlocks", true)
 
     private val clickTimer = MSTimer()
 
@@ -229,7 +234,8 @@ object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
         val realisticTurnSpeed = rotationDiff * ((supposedTurnSpeed + (gaussian - 0.5)) / 180)
 
         // Directly access performAngleChange since this module does not use RotationSettings
-        val rotation = performAngleChange(player.rotation,
+        val rotation = performAngleChange(
+            player.rotation,
             destinationRotation,
             realisticTurnSpeed.toFloat(),
             startFirstSlow = startRotatingSlow,

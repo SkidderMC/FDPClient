@@ -12,9 +12,7 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlockIntersects
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
 import net.minecraft.block.BlockAir
 import net.minecraft.block.BlockLadder
@@ -27,9 +25,9 @@ import kotlin.math.sin
 
 object Spider : Module("Spider", Category.MOVEMENT, hideModule = false) {
 
-    private val modeValue by ListValue("Mode", arrayOf("Collide", "Motion", "AAC3.3.12", "AAC4", "Checker", "Vulcan"), "Collide")
-    private val motionValue by FloatValue("Motion", 0.42F, 0.1F.. 1F) { modeValue == "Motion" }
-    private val avoidLadderValue by BoolValue("AvoidLadder", false)
+    private val modeValue by choices("Mode", arrayOf("Collide", "Motion", "AAC3.3.12", "AAC4", "Checker", "Vulcan"), "Collide")
+    private val motionValue by float("Motion", 0.42F, 0.1F.. 1F) { modeValue == "Motion" }
+    private val avoidLadderValue by boolean("AvoidLadder", false)
 
     private var groundHeight = 0.0
     private var glitch = false

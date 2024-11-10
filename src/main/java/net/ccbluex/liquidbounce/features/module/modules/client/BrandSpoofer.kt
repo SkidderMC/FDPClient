@@ -10,6 +10,8 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.button.*
 import net.ccbluex.liquidbounce.value.ListValue
 import net.ccbluex.liquidbounce.value.TextValue
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.text
 import net.minecraft.client.gui.GuiButton
 import java.util.*
 
@@ -20,7 +22,7 @@ object BrandSpoofer : Module("BrandSpoofer", Category.CLIENT, hideModule = false
     /**
      * The Mode value.
      */
-    val possibleBrands = ListValue(
+    val possibleBrands = choices(
         "Mode", arrayOf(
             "Vanilla",
             "OptiFine",
@@ -38,7 +40,7 @@ object BrandSpoofer : Module("BrandSpoofer", Category.CLIENT, hideModule = false
         ), "FDP"
     )
 
-    val customValue = TextValue("Custom-Brand", "WTF") { possibleBrands.get().equals("Custom", true) }
+    val customValue = text("Custom-Brand", "WTF") { possibleBrands.get().equals("Custom", true) }
 
     private val buttonValue = ListValue(
         "Button",

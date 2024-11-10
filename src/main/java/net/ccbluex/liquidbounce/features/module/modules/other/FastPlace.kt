@@ -7,11 +7,11 @@ package net.ccbluex.liquidbounce.features.module.modules.other
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.int
 
 object FastPlace : Module("FastPlace", Category.OTHER, hideModule = false) {
-    val speed by IntegerValue("Speed", 0, 0..4)
-    val onlyBlocks by BoolValue("OnlyBlocks", true)
-    val facingBlocks by BoolValue("OnlyWhenFacingBlocks", true)
+    val speed by int("Speed", 0, 0..4)
+    val onlyBlocks by boolean("OnlyBlocks", true)
+    val facingBlocks by boolean("OnlyWhenFacingBlocks", true)
 }

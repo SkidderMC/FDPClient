@@ -15,10 +15,7 @@ import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C03PacketPlayer
@@ -31,17 +28,17 @@ import java.util.*
 
 object Gapple : Module("Gapple", Category.PLAYER, hideModule = false) {
 
-    private val modeValue by ListValue("Mode", arrayOf("Auto", "LegitAuto", "Legit", "Head"), "Auto")
-    private val percent by FloatValue("HealthPercent", 75.0f, 1.0f..100.0f)
-    private val min by IntegerValue("MinDelay", 75, 1.. 5000)
-    private val max by IntegerValue("MaxDelay", 125, 1.. 5000)
-    private val regenSec by FloatValue("MinRegenSec", 4.6f, 0.0f.. 10.0f)
-    private val groundCheck by BoolValue("OnlyOnGround", false)
-    private val waitRegen by BoolValue("WaitRegen", true)
-    private val invCheck by BoolValue("InvCheck", false)
-    private val absorpCheck by BoolValue("NoAbsorption", true)
-    private val fastEatValue by BoolValue("FastEat", false) { modeValue == ("LegitAuto") || modeValue == ("Legit") }
-    private val eatDelayValue by IntegerValue("FastEatDelay", 14, 0.. 35) { fastEatValue }
+    private val modeValue by choices("Mode", arrayOf("Auto", "LegitAuto", "Legit", "Head"), "Auto")
+    private val percent by float("HealthPercent", 75.0f, 1.0f..100.0f)
+    private val min by int("MinDelay", 75, 1.. 5000)
+    private val max by int("MaxDelay", 125, 1.. 5000)
+    private val regenSec by float("MinRegenSec", 4.6f, 0.0f.. 10.0f)
+    private val groundCheck by boolean("OnlyOnGround", false)
+    private val waitRegen by boolean("WaitRegen", true)
+    private val invCheck by boolean("InvCheck", false)
+    private val absorpCheck by boolean("NoAbsorption", true)
+    private val fastEatValue by boolean("FastEat", false) { modeValue == ("LegitAuto") || modeValue == ("Legit") }
+    private val eatDelayValue by int("FastEatDelay", 14, 0.. 35) { fastEatValue }
     val timer = MSTimer()
     private var eating = -1
     var delay = 0

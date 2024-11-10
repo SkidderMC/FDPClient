@@ -5,6 +5,10 @@
  */
 package net.ccbluex.liquidbounce.utils.extensions
 
+import net.ccbluex.liquidbounce.value.FloatRangeValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerRangeValue
+import net.ccbluex.liquidbounce.value.IntegerValue
 import net.minecraft.block.Block
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.Entity
@@ -15,6 +19,7 @@ import net.minecraft.util.Vec3i
 import java.math.BigDecimal
 import kotlin.math.ceil
 import kotlin.math.floor
+import kotlin.math.roundToInt
 
 /**
  * Provides:
@@ -149,6 +154,12 @@ fun Vec3.lerpWith(other: Vec3, tickDelta: Double) = Vec3(
     zCoord + (other.zCoord - zCoord) * tickDelta
 )
 fun Vec3.lerpWith(other: Vec3, tickDelta: Float) = lerpWith(other, tickDelta.toDouble())
+
+fun ClosedFloatingPointRange<Float>.lerpWith(t: Float) = start + (endInclusive - start) * t
+fun IntegerRangeValue.lerpWith(t: Float) = ceil(minimum + (maximum - minimum) * t).toInt()
+fun FloatRangeValue.lerpWith(t: Float) = minimum + (maximum - minimum) * t
+fun IntegerValue.lerpWith(t: Float) = (minimum + (maximum - minimum) * t).roundToInt()
+fun FloatValue.lerpWith(t: Float) = minimum + (maximum - minimum) * t
 
 fun interpolate(oldValue: Double, newValue: Double, interpolationValue: Double): Double {
     return oldValue + (newValue - oldValue) * interpolationValue

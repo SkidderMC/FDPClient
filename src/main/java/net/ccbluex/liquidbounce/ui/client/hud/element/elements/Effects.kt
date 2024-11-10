@@ -14,9 +14,9 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexturedModalRect
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FontValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.font
+import net.ccbluex.liquidbounce.value.choices
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
@@ -44,13 +44,13 @@ class Effects(
     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
 ) : Element(x, y, scale, side) {
 
-    private val modeValue by ListValue("Mode", arrayOf("Classic", "FDP"), "Classic")
-    private val font by FontValue("Font", Fonts.font35)
-    private val shadow by BoolValue("Shadow", true)
+    private val modeValue by choices("Mode", arrayOf("Classic", "FDP"), "Classic")
+    private val font by font("Font", Fonts.font35)
+    private val shadow by boolean("Shadow", true)
 
-    private val iconValue by BoolValue("Icon", true)
-    private val nameValue by BoolValue("Name", true)
-    private val colorValue by BoolValue("Color", false)
+    private val iconValue by boolean("Icon", true)
+    private val nameValue by boolean("Name", true)
+    private val colorValue by boolean("Color", false)
 
     private val potionMap: MutableMap<Potion, PotionData> = HashMap()
 

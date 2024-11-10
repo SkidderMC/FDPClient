@@ -23,10 +23,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawLies
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatformESP
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawZavz
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EntityLivingBase
@@ -35,7 +32,6 @@ import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
 import net.minecraft.potion.Potion
 import net.minecraft.util.EnumParticleTypes
-import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
 
@@ -46,39 +42,39 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
     }
 
     // Mark - TargetESP
-    private val markValue by ListValue("MarkMode", arrayOf("None", "Zavz", "Jello", "Lies", "FDP", "Sims", "Box", "RoundBox", "Head", "Mark"), "Zavz")
+    private val markValue by choices("MarkMode", arrayOf("None", "Zavz", "Jello", "Lies", "FDP", "Sims", "Box", "RoundBox", "Head", "Mark"), "Zavz")
     private val isMarkMode: Boolean
         get() = markValue != "None" && markValue != "Sims" && markValue != "FDP"  && markValue != "Lies" && markValue != "Jello"
 
-    val colorRedValue by IntegerValue("Mark-Red", 0, 0.. 255) { isMarkMode }
-    val colorGreenValue by IntegerValue("Mark-Green", 160, 0..255) { isMarkMode }
-    val colorBlueValue by IntegerValue("Mark-Blue", 255, 0.. 255) { isMarkMode }
+    val colorRedValue by int("Mark-Red", 0, 0.. 255) { isMarkMode }
+    val colorGreenValue by int("Mark-Green", 160, 0..255) { isMarkMode }
+    val colorBlueValue by int("Mark-Blue", 255, 0.. 255) { isMarkMode }
 
-    private val alphaValue by IntegerValue("Alpha", 255, 0.. 255) { isMarkMode && markValue == "Zavz" && markValue == "Jello"}
+    private val alphaValue by int("Alpha", 255, 0.. 255) { isMarkMode && markValue == "Zavz" && markValue == "Jello"}
 
-    val colorRedTwoValue by IntegerValue("Mark-Red 2", 0, 0.. 255) { isMarkMode && markValue == "Zavz" }
-    val colorGreenTwoValue by IntegerValue("Mark-Green 2", 160, 0..255) { isMarkMode && markValue == "Zavz" }
-    val colorBlueTwoValue by IntegerValue("Mark-Blue 2", 255, 0.. 255) { isMarkMode && markValue == "Zavz" }
+    val colorRedTwoValue by int("Mark-Red 2", 0, 0.. 255) { isMarkMode && markValue == "Zavz" }
+    val colorGreenTwoValue by int("Mark-Green 2", 160, 0..255) { isMarkMode && markValue == "Zavz" }
+    val colorBlueTwoValue by int("Mark-Blue 2", 255, 0.. 255) { isMarkMode && markValue == "Zavz" }
 
-    private val rainbow by BoolValue("Mark-RainBow", false) { isMarkMode }
-    private val hurt by BoolValue("Mark-HurtTime", true) { isMarkMode }
-    private val boxOutline by BoolValue("Mark-Outline", true, subjective = true) { isMarkMode && markValue == "RoundBox" }
+    private val rainbow by boolean("Mark-RainBow", false) { isMarkMode }
+    private val hurt by boolean("Mark-HurtTime", true) { isMarkMode }
+    private val boxOutline by boolean("Mark-Outline", true, subjective = true) { isMarkMode && markValue == "RoundBox" }
 
     // fake sharp
-    private val fakeSharp by BoolValue("FakeSharp", true, subjective = true)
+    private val fakeSharp by boolean("FakeSharp", true, subjective = true)
 
     // Sound
 
-    private val particle by ListValue("Particle",
+    private val particle by choices("Particle",
         arrayOf("None", "Blood", "Lighting", "Fire", "Heart", "Water", "Smoke", "Magic", "Crits"), "Blood")
 
-    private val amount by IntegerValue("ParticleAmount", 5, 1..20) { particle != "None" }
+    private val amount by int("ParticleAmount", 5, 1..20) { particle != "None" }
 
     //Sound
-    private val sound by ListValue("Sound", arrayOf("None", "Hit", "Explode", "Orb", "Pop", "Splash", "Lightning"), "Pop")
+    private val sound by choices("Sound", arrayOf("None", "Hit", "Explode", "Orb", "Pop", "Splash", "Lightning"), "Pop")
 
-    private val volume by FloatValue("Volume", 1f, 0.1f.. 5f) { sound != "None" }
-    private val pitch by FloatValue("Pitch", 1f, 0.1f..5f) { sound != "None" }
+    private val volume by float("Volume", 1f, 0.1f.. 5f) { sound != "None" }
+    private val pitch by float("Pitch", 1f, 0.1f..5f) { sound != "None" }
 
     // variables
     private val targetList = HashMap<EntityLivingBase, Long>()

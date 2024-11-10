@@ -20,9 +20,9 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.block.BlockBush
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.init.Blocks
@@ -39,23 +39,24 @@ import java.awt.Color
 
 object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
 
-    private val autoBlock by ListValue("AutoBlock", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof")
-    private val swing by BoolValue("Swing", true)
-    private val placeDelay by IntegerValue("PlaceDelay", 500, 0..1000)
-    private val raycastMode by ListValue("Raycast",
+    private val autoBlock by choices("AutoBlock", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof")
+    private val swing by boolean("Swing", true)
+    private val placeDelay by int("PlaceDelay", 500, 0..1000)
+    private val raycastMode by choices(
+        "Raycast",
         arrayOf("None", "Normal", "Around"),
         "Normal"
     ) { options.rotationsActive }
-    private val scannerMode by ListValue("Scanner", arrayOf("Nearest", "Random"), "Nearest")
+    private val scannerMode by choices("Scanner", arrayOf("Nearest", "Random"), "Nearest")
 
     private val options = RotationSettings(this).apply {
         resetTicksValue.setSupport { { it && keepRotationValue.isActive() } }
     }
 
-    private val onSneakOnly by BoolValue("OnSneakOnly", true)
-    private val autoSneak by ListValue("AutoSneak", arrayOf("Off", "Normal", "Packet"), "Off") { !onSneakOnly }
-    private val trackCPS by BoolValue("TrackCPS", false)
-    private val mark by BoolValue("Mark", false)
+    private val onSneakOnly by boolean("OnSneakOnly", true)
+    private val autoSneak by choices("AutoSneak", arrayOf("Off", "Normal", "Packet"), "Off") { !onSneakOnly }
+    private val trackCPS by boolean("TrackCPS", false)
+    private val mark by boolean("Mark", false)
 
     private val defenceBlocks = mutableListOf<BlockPos>()
     private val bedTopPositions = mutableListOf<BlockPos>()
@@ -121,7 +122,8 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
 
         if (defenceBlocks.isNotEmpty()) {
             val playerPos = player.position ?: return
-            val pos = if (scannerMode == "Nearest") defenceBlocks.minByOrNull { it.distanceSq(playerPos) } ?: return else defenceBlocks.random()
+            val pos = if (scannerMode == "Nearest") defenceBlocks.minByOrNull { it.distanceSq(playerPos) }
+                ?: return else defenceBlocks.random()
             val blockPos = BlockPos(pos.x.toDouble(), pos.y - player.eyeHeight + 1.5, pos.z.toDouble())
             val rotation = RotationUtils.toRotation(blockPos.getVec(), false, player)
             val raytrace = performBlockRaytrace(rotation, mc.playerController.blockReachDistance) ?: return
@@ -184,11 +186,18 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
         var stack = player.inventorySlot(SilentHotbar.currentSlot + 36).stack
 
         if (stack == null || stack.item !is ItemBlock || (stack.item as ItemBlock).block is BlockBush
-            || InventoryUtils.BLOCK_BLACKLIST.contains((stack.item as ItemBlock).block) || stack.stackSize <= 0) {
+            || InventoryUtils.BLOCK_BLACKLIST.contains((stack.item as ItemBlock).block) || stack.stackSize <= 0
+        ) {
             val blockSlot = InventoryUtils.findBlockInHotbar() ?: return
 
             if (autoBlock != "Off") {
-                SilentHotbar.selectSlotSilently(this, blockSlot, immediate = true, render = autoBlock == "Pick", resetManually = true)
+                SilentHotbar.selectSlotSilently(
+                    this,
+                    blockSlot,
+                    immediate = true,
+                    render = autoBlock == "Pick",
+                    resetManually = true
+                )
             }
 
             stack = player.inventorySlot(blockSlot).stack
@@ -263,7 +272,13 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
 
         TickScheduler += {
             if (autoBlock != "Off") {
-                SilentHotbar.selectSlotSilently(this, switchSlot, immediate = true, render = autoBlock == "Pick", resetManually = true)
+                SilentHotbar.selectSlotSilently(
+                    this,
+                    switchSlot,
+                    immediate = true,
+                    render = autoBlock == "Pick",
+                    resetManually = true
+                )
             }
         }
     }

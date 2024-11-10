@@ -10,9 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlock
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.BlockLiquid
 import net.minecraft.block.material.Material
 import net.minecraft.init.Blocks
@@ -23,10 +21,10 @@ import org.lwjgl.input.Keyboard
 
 object Jesus : Module("Jesus", Category.MOVEMENT, Keyboard.KEY_J) {
 
-    val mode by ListValue("Mode", arrayOf("Vanilla", "NCP", "AAC", "AAC3.3.11", "AACFly", "Spartan", "Dolphin"), "NCP")
-        private val aacFly by FloatValue("AACFlyMotion", 0.5f, 0.1f..1f) { mode == "AACFly" }
+    val mode by choices("Mode", arrayOf("Vanilla", "NCP", "AAC", "AAC3.3.11", "AACFly", "Spartan", "Dolphin"), "NCP")
+        private val aacFly by float("AACFlyMotion", 0.5f, 0.1f..1f) { mode == "AACFly" }
 
-    private val noJump by BoolValue("NoJump", false)
+    private val noJump by boolean("NoJump", false)
 
     private var nextTick = false
 

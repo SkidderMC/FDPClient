@@ -26,10 +26,11 @@ import net.ccbluex.liquidbounce.utils.realMotionX
 import net.ccbluex.liquidbounce.utils.realMotionY
 import net.ccbluex.liquidbounce.utils.realMotionZ
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.float
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.block.BlockAir
 import net.minecraft.entity.Entity
 import net.minecraft.network.Packet
@@ -52,7 +53,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
     /**
      * OPTIONS
      */
-    private val mode by ListValue(
+    private val mode by choices(
         "Mode", arrayOf(
             "Simple", "AAC", "AACPush", "AACZero", "AACv4",
             "Reverse", "SmoothReverse", "Jump", "Glitch", "Legit",
@@ -61,40 +62,40 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
         ), "Simple"
     )
 
-    private val horizontal by FloatValue("Horizontal", 0F, 0F..1F) { mode in arrayOf("Simple", "AAC", "Legit") }
-    private val vertical by FloatValue("Vertical", 0F, 0F..1F) { mode in arrayOf("Simple", "Legit") }
+    private val horizontal by float("Horizontal", 0F, 0F..1F) { mode in arrayOf("Simple", "AAC", "Legit") }
+    private val vertical by float("Vertical", 0F, 0F..1F) { mode in arrayOf("Simple", "Legit") }
 
     // Reverse
-    private val reverseStrength by FloatValue("ReverseStrength", 1F, 0.1F..1F) { mode == "Reverse" }
-    private val reverse2Strength by FloatValue("SmoothReverseStrength", 0.05F, 0.02F..0.1F) { mode == "SmoothReverse" }
+    private val reverseStrength by float("ReverseStrength", 1F, 0.1F..1F) { mode == "Reverse" }
+    private val reverse2Strength by float("SmoothReverseStrength", 0.05F, 0.02F..0.1F) { mode == "SmoothReverse" }
 
-    private val onLook by BoolValue("onLook", false) { mode in arrayOf("Reverse", "SmoothReverse") }
-    private val range by FloatValue("Range", 3.0F, 1F..5.0F) {
+    private val onLook by boolean("onLook", false) { mode in arrayOf("Reverse", "SmoothReverse") }
+    private val range by float("Range", 3.0F, 1F..5.0F) {
         onLook && mode in arrayOf("Reverse", "SmoothReverse")
     }
-    private val maxAngleDifference by FloatValue("MaxAngleDifference", 45.0f, 5.0f..90f) {
+    private val maxAngleDifference by float("MaxAngleDifference", 45.0f, 5.0f..90f) {
         onLook && mode in arrayOf("Reverse", "SmoothReverse")
     }
 
     // AAC Push
-    private val aacPushXZReducer by FloatValue("AACPushXZReducer", 2F, 1F..3F) { mode == "AACPush" }
-    private val aacPushYReducer by BoolValue("AACPushYReducer", true) { mode == "AACPush" }
+    private val aacPushXZReducer by float("AACPushXZReducer", 2F, 1F..3F) { mode == "AACPush" }
+    private val aacPushYReducer by boolean("AACPushYReducer", true) { mode == "AACPush" }
 
     // AAC v4
-    private val aacv4MotionReducer by FloatValue("AACv4MotionReducer", 0.62F, 0F..1F) { mode == "AACv4" }
+    private val aacv4MotionReducer by float("AACv4MotionReducer", 0.62F, 0F..1F) { mode == "AACv4" }
 
     // Legit
-    private val legitDisableInAir by BoolValue("DisableInAir", true) { mode == "Legit" }
+    private val legitDisableInAir by boolean("DisableInAir", true) { mode == "Legit" }
 
     // Chance
-    private val chance by IntegerValue("Chance", 100, 0..100) { mode == "Jump" || mode == "Legit" }
+    private val chance by int("Chance", 100, 0..100) { mode == "Jump" || mode == "Legit" }
 
     // Jump
-    private val jumpCooldownMode by ListValue("JumpCooldownMode", arrayOf("Ticks", "ReceivedHits"), "Ticks")
+    private val jumpCooldownMode by choices("JumpCooldownMode", arrayOf("Ticks", "ReceivedHits"), "Ticks")
     { mode == "Jump" }
-    private val ticksUntilJump by IntegerValue("TicksUntilJump", 4, 0..20)
+    private val ticksUntilJump by int("TicksUntilJump", 4, 0..20)
     { jumpCooldownMode == "Ticks" && mode == "Jump" }
-    private val hitsUntilJump by IntegerValue("ReceivedHitsUntilJump", 2, 0..5)
+    private val hitsUntilJump by int("ReceivedHitsUntilJump", 2, 0..5)
     { jumpCooldownMode == "ReceivedHits" && mode == "Jump" }
 
     // Ghost Block
@@ -109,21 +110,21 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
     }
 
     // Delay
-    private val spoofDelay by IntegerValue("SpoofDelay", 500, 0..5000) { mode == "Delay" }
+    private val spoofDelay by int("SpoofDelay", 500, 0..5000) { mode == "Delay" }
     var delayMode = false
 
     // IntaveReduce
-    private val reduceFactor by FloatValue("Factor", 0.6f, 0.6f..1f) { mode == "IntaveReduce" }
-    private val hurtTime by IntegerValue("HurtTime", 9, 1..10) { mode == "IntaveReduce" }
+    private val reduceFactor by float("Factor", 0.6f, 0.6f..1f) { mode == "IntaveReduce" }
+    private val hurtTime by int("HurtTime", 9, 1..10) { mode == "IntaveReduce" }
 
-    private val pauseOnExplosion by BoolValue("PauseOnExplosion", true)
-    private val ticksToPause by IntegerValue("TicksToPause", 20, 1..50) { pauseOnExplosion }
+    private val pauseOnExplosion by boolean("PauseOnExplosion", true)
+    private val ticksToPause by int("TicksToPause", 20, 1..50) { pauseOnExplosion }
 
     // TODO: Could this be useful in other modes? (Jump?)
     // Limits
-    private val limitMaxMotionValue = BoolValue("LimitMaxMotion", false) { mode == "Simple" }
-    private val maxXZMotion by FloatValue("MaxXZMotion", 0.4f, 0f..1.9f) { limitMaxMotionValue.isActive() }
-    private val maxYMotion by FloatValue("MaxYMotion", 0.36f, 0f..0.46f) { limitMaxMotionValue.isActive() }
+    private val limitMaxMotionValue = boolean("LimitMaxMotion", false) { mode == "Simple" }
+    private val maxXZMotion by float("MaxXZMotion", 0.4f, 0f..1.9f) { limitMaxMotionValue.isActive() }
+    private val maxYMotion by float("MaxYMotion", 0.36f, 0f..0.46f) { limitMaxMotionValue.isActive() }
     //0.00075 is added silently
 
     // Vanilla XZ limits
@@ -409,11 +410,13 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
 
         if ((packet is S12PacketEntityVelocity && thePlayer.entityId == packet.entityID && packet.motionY > 0 && (packet.motionX != 0 || packet.motionZ != 0))
             || (packet is S27PacketExplosion && (thePlayer.motionY + packet.field_149153_g) > 0.0
-                    && ((thePlayer.motionX + packet.field_149152_f) != 0.0 || (thePlayer.motionZ + packet.field_149159_h) != 0.0))) {
+                    && ((thePlayer.motionX + packet.field_149152_f) != 0.0 || (thePlayer.motionZ + packet.field_149159_h) != 0.0))
+        ) {
             velocityTimer.reset()
 
-            if (pauseOnExplosion && packet is S27PacketExplosion  && (thePlayer.motionY + packet.field_149153_g) > 0.0
-                && ((thePlayer.motionX + packet.field_149152_f) != 0.0 || (thePlayer.motionZ + packet.field_149159_h) != 0.0)) {
+            if (pauseOnExplosion && packet is S27PacketExplosion && (thePlayer.motionY + packet.field_149153_g) > 0.0
+                && ((thePlayer.motionX + packet.field_149152_f) != 0.0 || (thePlayer.motionZ + packet.field_149159_h) != 0.0)
+            ) {
                 pauseTicks = ticksToPause
             }
 
@@ -517,7 +520,13 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
 
             if (packet is S32PacketConfirmTransaction) {
                 event.cancelEvent()
-                sendPacket(C0FPacketConfirmTransaction(if (transaction) 1 else -1, if (transaction) -1 else 1, transaction), false)
+                sendPacket(
+                    C0FPacketConfirmTransaction(
+                        if (transaction) 1 else -1,
+                        if (transaction) -1 else 1,
+                        transaction
+                    ), false
+                )
                 transaction = !transaction
             }
         }
@@ -566,7 +575,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
     fun onDelayPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if (event.isCancelled )
+        if (event.isCancelled)
             return
 
         if (mode == "Delay") {
@@ -665,7 +674,8 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
                 if (player.hurtTime in minHurtTime.get()..maxHurtTime.get()) {
                     // Check if there is air exactly 1 level above the player's Y position
                     if (event.block is BlockAir && event.y == mc.thePlayer.posY.toInt() + 1) {
-                        event.boundingBox = AxisAlignedBB(event.x.toDouble(),
+                        event.boundingBox = AxisAlignedBB(
+                            event.x.toDouble(),
                             event.y.toDouble(),
                             event.z.toDouble(),
                             event.x + 1.0,
@@ -742,7 +752,8 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
             packet.field_149159_h *= horizontal // motionZ
 
             if (limitMaxMotionValue.get()) {
-                val distXZ = sqrt(packet.field_149152_f * packet.field_149152_f + packet.field_149159_h * packet.field_149159_h)
+                val distXZ =
+                    sqrt(packet.field_149152_f * packet.field_149152_f + packet.field_149159_h * packet.field_149159_h)
                 val distY = packet.field_149153_g
                 val maxYMotion = maxYMotion + 0.00075f
 

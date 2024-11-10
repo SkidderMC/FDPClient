@@ -32,28 +32,28 @@ import java.awt.Color
 class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
                         side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)) : Element(x, y, scale, side) {
 
-    private val textRed by IntegerValue("Text-R", 255, 0..255)
-    private val textGreen by IntegerValue("Text-G", 255, 0..255)
-    private val textBlue by IntegerValue("Text-B", 255, 0..255)
+    private val textRed by int("Text-R", 255, 0..255)
+    private val textGreen by int("Text-G", 255, 0..255)
+    private val textBlue by int("Text-B", 255, 0..255)
 
-    private val backgroundColorRed by IntegerValue("Background-R", 0, 0..255)
-    private val backgroundColorGreen by IntegerValue("Background-G", 0, 0..255)
-    private val backgroundColorBlue by IntegerValue("Background-B", 0, 0..255)
-    private val backgroundColorAlpha by IntegerValue("Background-Alpha", 95, 0..255)
+    private val backgroundColorRed by int("Background-R", 0, 0..255)
+    private val backgroundColorGreen by int("Background-G", 0, 0..255)
+    private val backgroundColorBlue by int("Background-B", 0, 0..255)
+    private val backgroundColorAlpha by int("Background-Alpha", 95, 0..255)
 
-    private val roundedRectRadius by FloatValue("Rounded-Radius", 3F, 0F..5F)
+    private val roundedRectRadius by float("Rounded-Radius", 3F, 0F..5F)
 
-    private val rect by BoolValue("Rect", false)
-    private val rectColorMode by ListValue("Rect-Color", arrayOf("Custom", "Rainbow"), "Custom") { rect }
-    private val rectColorRed by IntegerValue("Rect-R", 0, 0..255) { rect && rectColorMode == "Custom"}
-    private val rectColorGreen by IntegerValue("Rect-G", 111, 0..255) { rect && rectColorMode == "Custom"}
-    private val rectColorBlue by IntegerValue("Rect-B", 255, 0..255) { rect && rectColorMode == "Custom"}
-    private val rectColorAlpha by IntegerValue("Rect-Alpha", 255, 0..255) { rect && rectColorMode == "Custom"}
+    private val rect by boolean("Rect", false)
+    private val rectColorMode by choices("Rect-Color", arrayOf("Custom", "Rainbow"), "Custom") { rect }
+    private val rectColorRed by int("Rect-R", 0, 0..255) { rect && rectColorMode == "Custom"}
+    private val rectColorGreen by int("Rect-G", 111, 0..255) { rect && rectColorMode == "Custom"}
+    private val rectColorBlue by int("Rect-B", 255, 0..255) { rect && rectColorMode == "Custom"}
+    private val rectColorAlpha by int("Rect-Alpha", 255, 0..255) { rect && rectColorMode == "Custom"}
 
-    private val serverIp by ListValue("ServerIP", arrayOf("Normal", "None", "Client", "Website"), "Normal")
-    private val showNumber by BoolValue("ShowNumber", true)
-    private val shadow by BoolValue("Shadow", false)
-    private val font by FontValue("Font", Fonts.minecraftFont)
+    private val serverIp by choices("ServerIP", arrayOf("Normal", "None", "Client", "Website"), "Normal")
+    private val showNumber by boolean("ShowNumber", true)
+    private val shadow by boolean("Shadow", false)
+    private val font by font("Font", Fonts.minecraftFont)
 
     /**
      * Draw element

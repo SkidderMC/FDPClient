@@ -21,10 +21,12 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBacktrackBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
@@ -43,7 +45,7 @@ import java.util.concurrent.ConcurrentHashMap
 
 object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
-    private val nextBacktrackDelay by IntegerValue("NextBacktrackDelay", 0, 0..2000) { mode == "Modern" }
+    private val nextBacktrackDelay by int("NextBacktrackDelay", 0, 0..2000) { mode == "Modern" }
     private val delay by object : IntegerValue("Delay", 80, 0..700) {
         override fun onChange(oldValue: Int, newValue: Int): Int {
             if (mode == "Modern") {
@@ -63,14 +65,14 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
     }
 
     // Legacy
-    private val legacyPos by ListValue(
+    private val legacyPos by choices(
         "Caching mode",
         arrayOf("ClientPos", "ServerPos"),
         "ClientPos"
     ) { mode == "Legacy" }
 
     // Modern
-    private val style by ListValue("Style", arrayOf("Pulse", "Smooth"), "Smooth") { mode == "Modern" }
+    private val style by choices("Style", arrayOf("Pulse", "Smooth"), "Smooth") { mode == "Modern" }
 
     private val maxDistanceValue: FloatValue = object : FloatValue("MaxDistance", 3.0f, 0.0f..3.5f) {
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtLeast(minDistance)
@@ -81,29 +83,29 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceIn(minimum, maxDistance)
         override fun isSupported() = mode == "Modern"
     }
-    private val smart by BoolValue("Smart", true) { mode == "Modern" }
+    private val smart by boolean("Smart", true) { mode == "Modern" }
 
     // ESP
-    val espMode by ListValue(
+    val espMode by choices(
         "ESP-Mode",
         arrayOf("None", "Box", "Model"),
         "Box",
         subjective = true
     ) { mode == "Modern" }
-    private val rainbow by BoolValue("Rainbow", true, subjective = true) { mode == "Modern" && espMode == "Box" }
-    private val red by IntegerValue(
+    private val rainbow by boolean("Rainbow", true, subjective = true) { mode == "Modern" && espMode == "Box" }
+    private val red by int(
         "R",
         0,
         0..255,
         subjective = true
     ) { !rainbow && mode == "Modern" && espMode == "Box" }
-    private val green by IntegerValue(
+    private val green by int(
         "G",
         255,
         0..255,
         subjective = true
     ) { !rainbow && mode == "Modern" && espMode == "Box" }
-    private val blue by IntegerValue(
+    private val blue by int(
         "B",
         0,
         0..255,
@@ -124,7 +126,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
     private var delayForNextBacktrack = 0L
 
     // Legacy
-    private val maximumCachedPositions by IntegerValue("MaxCachedPositions", 10, 1..20) { mode == "Legacy" }
+    private val maximumCachedPositions by int("MaxCachedPositions", 10, 1..20) { mode == "Legacy" }
 
     private val backtrackedPlayer = ConcurrentHashMap<UUID, MutableList<BacktrackData>>()
 

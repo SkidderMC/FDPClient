@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
-import net.ccbluex.liquidbounce.features.module.modules.player.AutoTool
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientThemesUtils.getColorWithAlpha
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
@@ -54,40 +53,40 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
      * SETTINGS
      */
 
-    private val hypixel by BoolValue("Hypixel", false)
+    private val hypixel by boolean("Hypixel", false)
 
-    private val block by BlockValue("Block", 26)
-    private val throughWalls by ListValue("ThroughWalls", arrayOf("None", "Raycast", "Around"), "None") { !hypixel }
-    private val range by FloatValue("Range", 5F, 1F..7F)
+    private val block by block("Block", 26)
+    private val throughWalls by choices("ThroughWalls", arrayOf("None", "Raycast", "Around"), "None") { !hypixel }
+    private val range by float("Range", 5F, 1F..7F)
 
-    private val action by ListValue("Action", arrayOf("Destroy", "Use"), "Destroy")
-    private val surroundings by BoolValue("Surroundings", true) { !hypixel }
-    private val instant by BoolValue("Instant", false) { (action == "Destroy" || surroundings) && !hypixel }
+    private val action by choices("Action", arrayOf("Destroy", "Use"), "Destroy")
+    private val surroundings by boolean("Surroundings", true) { !hypixel }
+    private val instant by boolean("Instant", false) { (action == "Destroy" || surroundings) && !hypixel }
 
-    private val switch by IntegerValue("SwitchDelay", 250, 0..1000)
-    private val swing by BoolValue("Swing", true)
-    val noHit by BoolValue("NoHit", false)
+    private val switch by int("SwitchDelay", 250, 0..1000)
+    private val swing by boolean("Swing", true)
+    val noHit by boolean("NoHit", false)
 
     private val options = RotationSettings(this).withoutKeepRotation()
 
-    private val blockProgress by BoolValue("BlockProgress", true)
+    private val blockProgress by boolean("BlockProgress", true)
 
-    private val scale by FloatValue("Scale", 2F, 1F..6F) { blockProgress }
-    private val font by FontValue("Font", Fonts.font40) { blockProgress }
-    private val fontShadow by BoolValue("Shadow", true) { blockProgress }
+    private val scale by float("Scale", 2F, 1F..6F) { blockProgress }
+    private val font by font("Font", Fonts.font40) { blockProgress }
+    private val fontShadow by boolean("Shadow", true) { blockProgress }
 
-    private val colorRed by IntegerValue("R", 200, 0..255) { blockProgress }
-    private val colorGreen by IntegerValue("G", 100, 0..255) { blockProgress }
-    private val colorBlue by IntegerValue("B", 0, 0..255) { blockProgress }
+    private val colorRed by int("R", 200, 0..255) { blockProgress }
+    private val colorGreen by int("G", 100, 0..255) { blockProgress }
+    private val colorBlue by int("B", 0, 0..255) { blockProgress }
 
-    private val ignoreOwnBed by BoolValue("IgnoreOwnBed", true)
-    private val ownBedDist by IntegerValue("MaxBedDistance", 16, 1..32) { ignoreOwnBed }
+    private val ignoreOwnBed by boolean("IgnoreOwnBed", true)
+    private val ownBedDist by int("MaxBedDistance", 16, 1..32) { ignoreOwnBed }
 
-    private val renderPos by BoolValue("Render-Pos", false)
-    private val clientTheme by BoolValue("RenderPos Color", true) { renderPos }
-    private val posProcess by BoolValue("PosProcess", false) { renderPos }
+    private val renderPos by boolean("Render-Pos", false)
+    private val clientTheme by boolean("RenderPos Color", true) { renderPos }
+    private val posProcess by boolean("PosProcess", false) { renderPos }
 
-    private val posOutline by BoolValue("PosOutline", false)
+    private val posOutline by boolean("PosOutline", false)
 
     /**
      * VALUES

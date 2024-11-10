@@ -16,8 +16,8 @@ import net.ccbluex.liquidbounce.utils.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.float
 import net.minecraft.init.Blocks.air
 import net.minecraft.init.Blocks.bedrock
 import net.minecraft.network.play.client.C07PacketPlayerDigging
@@ -30,8 +30,8 @@ import java.awt.Color
 
 object CivBreak : Module("CivBreak", Category.OTHER) {
 
-    private val range by FloatValue("Range", 5F, 1F..6F)
-    private val visualSwing by BoolValue("VisualSwing", true, subjective = false)
+    private val range by float("Range", 5F, 1F..6F)
+    private val visualSwing by boolean("VisualSwing", true, subjective = false)
 
     private val options = RotationSettings(this).withoutKeepRotation()
 

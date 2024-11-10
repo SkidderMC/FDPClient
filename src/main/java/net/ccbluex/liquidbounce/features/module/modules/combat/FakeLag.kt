@@ -16,9 +16,9 @@ import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.Packet
@@ -36,8 +36,8 @@ import java.awt.Color
 
 object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideModule = false) {
 
-    private val delay by IntegerValue("Delay", 550, 0..1000)
-    private val recoilTime by IntegerValue("RecoilTime", 750, 0..2000)
+    private val delay by int("Delay", 550, 0..1000)
+    private val recoilTime by int("RecoilTime", 750, 0..2000)
 
     private val maxAllowedDistToEnemy: FloatValue = object : FloatValue("MaxAllowedDistToEnemy", 3.5f, 0f..6f) {
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtLeast(minAllowedDistToEnemy.get())
@@ -47,24 +47,27 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
         override fun isSupported(): Boolean = !maxAllowedDistToEnemy.isMinimal()
     }
 
-    private val blinkOnAction by BoolValue("BlinkOnAction", true)
+    private val blinkOnAction by boolean("BlinkOnAction", true)
 
-    private val pauseOnNoMove by BoolValue("PauseOnNoMove", true)
-    private val pauseOnChest by BoolValue("PauseOnChest", false)
+    private val pauseOnNoMove by boolean("PauseOnNoMove", true)
+    private val pauseOnChest by boolean("PauseOnChest", false)
 
-    private val line by BoolValue("Line", true, subjective = true)
-    private val rainbow by BoolValue("Rainbow", false, subjective = true) { line }
-    private val red by IntegerValue("R",
+    private val line by boolean("Line", true, subjective = true)
+    private val rainbow by boolean("Rainbow", false, subjective = true) { line }
+    private val red by int(
+        "R",
         0,
         0..255,
         subjective = true
     ) { !rainbow && line }
-    private val green by IntegerValue("G",
+    private val green by int(
+        "G",
         255,
         0..255,
         subjective = true
     ) { !rainbow && line }
-    private val blue by IntegerValue("B",
+    private val blue by int(
+        "B",
         0,
         0..255,
         subjective = true
@@ -212,7 +215,13 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
                 val entityMixin = otherPlayer as? IMixinEntity
                 if (entityMixin != null) {
                     val eyes = getTruePositionEyes(otherPlayer)
-                    if (eyes.distanceTo(getNearestPointBB(eyes, playerBox)) in minAllowedDistToEnemy.get()..maxAllowedDistToEnemy.get()) {
+                    if (eyes.distanceTo(
+                            getNearestPointBB(
+                                eyes,
+                                playerBox
+                            )
+                        ) in minAllowedDistToEnemy.get()..maxAllowedDistToEnemy.get()
+                    ) {
                         blink()
                         wasNearEnemy = true
                         return

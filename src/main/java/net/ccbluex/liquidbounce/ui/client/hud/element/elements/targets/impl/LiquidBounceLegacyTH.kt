@@ -31,41 +31,41 @@ import kotlin.math.roundToInt
 
 class LiquidBounceLegacyTH(inst: Targets) : TargetStyle("LiquidBounce", inst, true) {
 
-    private val roundedRectRadius by FloatValue("Rounded-Radius", 3F, 0F..5F)
+    private val roundedRectRadius by float("Rounded-Radius", 3F, 0F..5F)
 
-    private val borderStrength by FloatValue("Border-Strength", 3F, 1F..5F)
+    private val borderStrength by float("Border-Strength", 3F, 1F..5F)
 
-    private val backgroundMode by ListValue("Background-Color", arrayOf("Custom", "Rainbow"), "Custom")
-    private val backgroundRed by IntegerValue("Background-R", 0, 0..255) { backgroundMode == "Custom" }
-    private val backgroundGreen by IntegerValue("Background-G", 0, 0..255) { backgroundMode == "Custom" }
-    private val backgroundBlue by IntegerValue("Background-B", 0, 0..255) { backgroundMode == "Custom" }
-    private val backgroundAlpha by IntegerValue("Background-Alpha", 255, 0..255) { backgroundMode == "Custom" }
+    private val backgroundMode by choices("Background-Color", arrayOf("Custom", "Rainbow"), "Custom")
+    private val backgroundRed by int("Background-R", 0, 0..255) { backgroundMode == "Custom" }
+    private val backgroundGreen by int("Background-G", 0, 0..255) { backgroundMode == "Custom" }
+    private val backgroundBlue by int("Background-B", 0, 0..255) { backgroundMode == "Custom" }
+    private val backgroundAlpha by int("Background-Alpha", 255, 0..255) { backgroundMode == "Custom" }
 
-    private val borderMode by ListValue("Border-Color", arrayOf("Custom", "Rainbow"), "Custom")
-    private val borderRed by IntegerValue("Border-R", 0, 0..255) { borderMode == "Custom" }
-    private val borderGreen by IntegerValue("Border-G", 0, 0..255) { borderMode == "Custom" }
-    private val borderBlue by IntegerValue("Border-B", 0, 0..255) { borderMode == "Custom" }
-    private val borderAlpha by IntegerValue("Border-Alpha", 255, 0..255) { borderMode == "Custom" }
+    private val borderMode by choices("Border-Color", arrayOf("Custom", "Rainbow"), "Custom")
+    private val borderRed by int("Border-R", 0, 0..255) { borderMode == "Custom" }
+    private val borderGreen by int("Border-G", 0, 0..255) { borderMode == "Custom" }
+    private val borderBlue by int("Border-B", 0, 0..255) { borderMode == "Custom" }
+    private val borderAlpha by int("Border-Alpha", 255, 0..255) { borderMode == "Custom" }
 
-    private val textRed by IntegerValue("Text-R", 255, 0..255)
-    private val textGreen by IntegerValue("Text-G", 255, 0..255)
-    private val textBlue by IntegerValue("Text-B", 255, 0..255)
-    private val textAlpha by IntegerValue("Text-Alpha", 255, 0..255)
+    private val textRed by int("Text-R", 255, 0..255)
+    private val textGreen by int("Text-G", 255, 0..255)
+    private val textBlue by int("Text-B", 255, 0..255)
+    private val textAlpha by int("Text-Alpha", 255, 0..255)
 
-    private val rainbowX by FloatValue("Rainbow-X", -1000F, -2000F..2000F) { backgroundMode == "Rainbow" }
-    private val rainbowY by FloatValue("Rainbow-Y", -1000F, -2000F..2000F) { backgroundMode == "Rainbow" }
+    private val rainbowX by float("Rainbow-X", -1000F, -2000F..2000F) { backgroundMode == "Rainbow" }
+    private val rainbowY by float("Rainbow-Y", -1000F, -2000F..2000F) { backgroundMode == "Rainbow" }
 
-    private val titleFont by FontValue("TitleFont", Fonts.font40)
-    private val bodyFont by FontValue("BodyFont", Fonts.font35)
-    private val textShadow by BoolValue("TextShadow", false)
+    private val titleFont by font("TitleFont", Fonts.font40)
+    private val bodyFont by font("BodyFont", Fonts.font35)
+    private val textShadow by boolean("TextShadow", false)
 
-    private val fadeSpeed by FloatValue("FadeSpeed", 2F, 1F..9F)
-    private val absorption by BoolValue("Absorption", true)
-    private val healthFromScoreboard by BoolValue("HealthFromScoreboard", true)
+    private val fadeSpeed by float("FadeSpeed", 2F, 1F..9F)
+    private val absorption by boolean("Absorption", true)
+    private val healthFromScoreboard by boolean("HealthFromScoreboard", true)
 
-    private val animation by ListValue("Animation", arrayOf("Smooth", "Fade"), "Fade")
-    private val animationSpeed by FloatValue("AnimationSpeed", 0.2F, 0.05F..1F)
-    private val vanishDelay by IntegerValue("VanishDelay", 300, 0..500)
+    private val animation by choices("Animation", arrayOf("Smooth", "Fade"), "Fade")
+    private val animationSpeed by float("AnimationSpeed", 0.2F, 0.05F..1F)
+    private val vanishDelay by int("VanishDelay", 300, 0..500)
 
     private var lastTarget: EntityLivingBase? = null
 

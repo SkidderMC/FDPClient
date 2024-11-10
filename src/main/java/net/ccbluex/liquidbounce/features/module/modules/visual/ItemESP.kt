@@ -31,20 +31,20 @@ import java.awt.Color
 import kotlin.math.pow
 
 object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
-    private val mode by ListValue("Mode", arrayOf("Box", "OtherBox", "Glow"), "Box")
+    private val mode by choices("Mode", arrayOf("Box", "OtherBox", "Glow"), "Box")
 
-    private val itemText by BoolValue("ItemText", false)
-    private val itemTextTag by ListValue("ItemTextTag", arrayOf("()", "x", "[]"), "()")
+    private val itemText by boolean("ItemText", false)
+    private val itemTextTag by choices("ItemTextTag", arrayOf("()", "x", "[]"), "()")
 
-    private val glowRenderScale by FloatValue("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
-    private val glowRadius by IntegerValue("Glow-Radius", 4, 1..5) { mode == "Glow" }
-    private val glowFade by IntegerValue("Glow-Fade", 10, 0..30) { mode == "Glow" }
-    private val glowTargetAlpha by FloatValue("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
+    private val glowRenderScale by float("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
+    private val glowRadius by int("Glow-Radius", 4, 1..5) { mode == "Glow" }
+    private val glowFade by int("Glow-Fade", 10, 0..30) { mode == "Glow" }
+    private val glowTargetAlpha by float("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
 
-    private val colorRainbow by BoolValue("Rainbow", true)
-    private val colorRed by IntegerValue("R", 0, 0..255) { !colorRainbow }
-    private val colorGreen by IntegerValue("G", 255, 0..255) { !colorRainbow }
-    private val colorBlue by IntegerValue("B", 0, 0..255) { !colorRainbow }
+    private val colorRainbow by boolean("Rainbow", true)
+    private val colorRed by int("R", 0, 0..255) { !colorRainbow }
+    private val colorGreen by int("G", 255, 0..255) { !colorRainbow }
+    private val colorBlue by int("B", 0, 0..255) { !colorRainbow }
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 50, 1..100) {
         override fun onUpdate(value: Int) {
@@ -52,20 +52,20 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
         }
     }
 
-    private val scale by FloatValue("Scale", 3F, 1F..5F) { itemText }
-    private val itemCounts by BoolValue("ItemCounts", true) { itemText }
-    private val font by FontValue("Font", Fonts.font40) { itemText }
-    private val fontShadow by BoolValue("Shadow", true) { itemText }
+    private val scale by float("Scale", 3F, 1F..5F) { itemText }
+    private val itemCounts by boolean("ItemCounts", true) { itemText }
+    private val font by font("Font", Fonts.font40) { itemText }
+    private val fontShadow by boolean("Shadow", true) { itemText }
 
     private var maxRenderDistanceSq = 0.0
         set(value) {
             field = if (value <= 0.0) maxRenderDistance.toDouble().pow(2.0) else value
         }
 
-    private val onLook by BoolValue("OnLook", false)
-    private val maxAngleDifference by FloatValue("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
+    private val onLook by boolean("OnLook", false)
+    private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
 
-    private val thruBlocks by BoolValue("ThruBlocks", true)
+    private val thruBlocks by boolean("ThruBlocks", true)
 
     val color
         get() = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)

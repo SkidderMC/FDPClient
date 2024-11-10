@@ -7,13 +7,13 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
 
 object CustomModel : Module("CustomModel", Category.VISUAL, hideModule = false) {
-    val mode by ListValue("Mode", arrayOf("Imposter", "Rabbit", "Freddy", "None"), "Imposter")
+    val mode by choices("Mode", arrayOf("Imposter", "Rabbit", "Freddy", "None"), "Imposter")
 
-    val rotatePlayer by  BoolValue("RotatePlayer", false)
+    val rotatePlayer by  boolean("RotatePlayer", false)
 
     override val tag: String
         get() = mode

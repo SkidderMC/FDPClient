@@ -18,10 +18,7 @@ import net.ccbluex.liquidbounce.utils.extensions.isClientFriend
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
@@ -32,12 +29,12 @@ import kotlin.math.pow
 
 object Tracers : Module("Tracers", Category.VISUAL, hideModule = false) {
 
-    private val colorMode by ListValue("Color", arrayOf("Custom", "DistanceColor", "Rainbow"), "Custom")
-    private val colorRed by IntegerValue("R", 0, 0..255) { colorMode == "Custom" }
-    private val colorGreen by IntegerValue("G", 160, 0..255) { colorMode == "Custom" }
-    private val colorBlue by IntegerValue("B", 255, 0..255) { colorMode == "Custom" }
+    private val colorMode by choices("Color", arrayOf("Custom", "DistanceColor", "Rainbow"), "Custom")
+    private val colorRed by int("R", 0, 0..255) { colorMode == "Custom" }
+    private val colorGreen by int("G", 160, 0..255) { colorMode == "Custom" }
+    private val colorBlue by int("B", 255, 0..255) { colorMode == "Custom" }
 
-    private val thickness by FloatValue("Thickness", 2F, 1F..5F)
+    private val thickness by float("Thickness", 2F, 1F..5F)
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
         override fun onUpdate(value: Int) {
@@ -50,13 +47,13 @@ object Tracers : Module("Tracers", Category.VISUAL, hideModule = false) {
             field = if (value <= 0.0) maxRenderDistance.toDouble().pow(2.0) else value
         }
 
-    private val bot by BoolValue("Bots", true)
-    private val teams by BoolValue("Teams", false)
+    private val bot by boolean("Bots", true)
+    private val teams by boolean("Teams", false)
 
-    private val onLook by BoolValue("OnLook", false)
-    private val maxAngleDifference by FloatValue("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
+    private val onLook by boolean("OnLook", false)
+    private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
 
-    private val thruBlocks by BoolValue("ThruBlocks", true)
+    private val thruBlocks by boolean("ThruBlocks", true)
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {

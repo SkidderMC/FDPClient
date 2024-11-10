@@ -15,19 +15,20 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
 import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.float
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.init.Items.egg
 import net.minecraft.init.Items.snowball
 
 object AutoProjectile : Module("AutoProjectile", Category.COMBAT, hideModule = false) {
-    private val facingEnemy by BoolValue("FacingEnemy", true)
+    private val facingEnemy by boolean("FacingEnemy", true)
 
-    private val mode by ListValue("Mode", arrayOf("Normal", "Smart"), "Normal")
-    private val range by FloatValue("Range", 8F, 1F..20F)
-    private val throwDelay by IntegerValue("ThrowDelay", 1000, 50..2000) { mode != "Smart" }
+    private val mode by choices("Mode", arrayOf("Normal", "Smart"), "Normal")
+    private val range by float("Range", 8F, 1F..20F)
+    private val throwDelay by int("ThrowDelay", 1000, 50..2000) { mode != "Smart" }
 
     private val minThrowDelay: IntegerValue = object : IntegerValue("MinThrowDelay", 1000, 50..2000) {
         override fun isSupported() = mode == "Smart"
@@ -39,7 +40,7 @@ object AutoProjectile : Module("AutoProjectile", Category.COMBAT, hideModule = f
         override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(minThrowDelay.get())
     }
 
-    private val switchBackDelay by IntegerValue("SwitchBackDelay", 500, 50..2000)
+    private val switchBackDelay by int("SwitchBackDelay", 500, 50..2000)
 
     private val throwTimer = MSTimer()
     private val projectilePullTimer = MSTimer()
@@ -50,7 +51,8 @@ object AutoProjectile : Module("AutoProjectile", Category.COMBAT, hideModule = f
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
         val player = mc.thePlayer ?: return
-        val usingProjectile = (player.isUsingItem && (player.heldItem?.item == snowball || player.heldItem?.item == egg)) || projectileInUse
+        val usingProjectile =
+            (player.isUsingItem && (player.heldItem?.item == snowball || player.heldItem?.item == egg)) || projectileInUse
 
         if (usingProjectile) {
             if (projectilePullTimer.hasTimePassed(switchBackDelay)) {

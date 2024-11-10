@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorder
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect2
@@ -27,22 +26,22 @@ import java.awt.Color
 @ElementInfo(name = "Inventory")
 class Inventory : Element(300.0, 50.0) {
 
-    private val font by FontValue("Font", Fonts.font35)
-    private val title by ListValue("Title", arrayOf("Center", "Left", "Right", "None"), "Left")
-    private val titleRainbow by BoolValue("TitleRainbow", false) { title != "None" }
-    private val titleRed by IntegerValue("TitleRed", 255, 0..255) { title != "None" && !titleRainbow }
-    private val titleGreen by IntegerValue("TitleGreen", 255, 0..255) { title != "None" && !titleRainbow }
-    private val titleBlue by IntegerValue("TitleBlue", 255, 0..255) { title != "None" && !titleRainbow }
+    private val font by font("Font", Fonts.font35)
+    private val title by choices("Title", arrayOf("Center", "Left", "Right", "None"), "Left")
+    private val titleRainbow by boolean("TitleRainbow", false) { title != "None" }
+    private val titleRed by int("TitleRed", 255, 0..255) { title != "None" && !titleRainbow }
+    private val titleGreen by int("TitleGreen", 255, 0..255) { title != "None" && !titleRainbow }
+    private val titleBlue by int("TitleBlue", 255, 0..255) { title != "None" && !titleRainbow }
 
-    private val roundedRectRadius by FloatValue("Rounded-Radius", 3F, 0F..5F)
+    private val roundedRectRadius by float("Rounded-Radius", 3F, 0F..5F)
 
-    private val borderValue by BoolValue("Border", true)
-    private val borderRainbow by BoolValue("BorderRainbow", false) { borderValue }
-    private val borderRed by IntegerValue("Border-R", 255, 0..255) { borderValue && !borderRainbow }
-    private val borderGreen by IntegerValue("Border-G", 255, 0..255) { borderValue && !borderRainbow }
-    private val borderBlue by IntegerValue("Border-B", 255, 0..255) { borderValue && !borderRainbow }
+    private val borderValue by boolean("Border", true)
+    private val borderRainbow by boolean("BorderRainbow", false) { borderValue }
+    private val borderRed by int("Border-R", 255, 0..255) { borderValue && !borderRainbow }
+    private val borderGreen by int("Border-G", 255, 0..255) { borderValue && !borderRainbow }
+    private val borderBlue by int("Border-B", 255, 0..255) { borderValue && !borderRainbow }
 
-    private val backgroundAlpha by IntegerValue("Background-Alpha", 150, 0..255)
+    private val backgroundAlpha by int("Background-Alpha", 150, 0..255)
 
     private val width = 174F
     private val height = 66F

@@ -8,16 +8,16 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.int
 import java.awt.Color
 
 object Glint: Module("Glint", Category.VISUAL, hideModule = false) {
 
-    private val modeValue by ListValue("Mode", arrayOf("Rainbow", "Custom"), "Custom")
-    private val redValue by IntegerValue("Red", 255, 0.. 255) { modeValue == "Custom" }
-    private val greenValue by IntegerValue("Green", 0, 0.. 255) { modeValue == "Custom" }
-    private val blueValue by IntegerValue("Blue", 0, 0.. 255) { modeValue == "Custom" }
+    private val modeValue by choices("Mode", arrayOf("Rainbow", "Custom"), "Custom")
+    private val redValue by int("Red", 255, 0.. 255) { modeValue == "Custom" }
+    private val greenValue by int("Green", 0, 0.. 255) { modeValue == "Custom" }
+    private val blueValue by int("Blue", 0, 0.. 255) { modeValue == "Custom" }
 
     fun getColor(): Color {
         return when (modeValue.lowercase()) {

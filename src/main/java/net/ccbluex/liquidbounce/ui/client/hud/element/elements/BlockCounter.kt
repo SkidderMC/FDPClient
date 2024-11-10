@@ -27,37 +27,37 @@ import org.lwjgl.opengl.GL11
 @ElementInfo(name = "BlockCounter")
 class BlockCounter(x: Double = 520.0, y: Double = 245.0) : Element(x = x, y = y) {
 
-    private val onScaffold by BoolValue("ScaffoldOnly", true)
+    private val onScaffold by boolean("ScaffoldOnly", true)
 
-    private val textColorMode by ListValue("Text-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
+    private val textColorMode by choices("Text-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
     private val textColors = ColorSettingsInteger(this, "Text", withAlpha = false, applyMax = true) { textColorMode == "Custom" }
 
-    private val gradientTextSpeed by FloatValue("Text-Gradient-Speed", 1f, 0.5f..10f) { textColorMode == "Gradient" }
+    private val gradientTextSpeed by float("Text-Gradient-Speed", 1f, 0.5f..10f) { textColorMode == "Gradient" }
 
-    private val maxTextGradientColors by IntegerValue("Max-Text-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS) { textColorMode == "Gradient" }
+    private val maxTextGradientColors by int("Max-Text-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS) { textColorMode == "Gradient" }
     private val textGradColors = ColorSettingsFloat.create(this, "Text-Gradient") { textColorMode == "Gradient" && it <= maxTextGradientColors }
 
-    private val roundedRectRadius by FloatValue("Rounded-Radius", 2F, 0F..5F)
+    private val roundedRectRadius by float("Rounded-Radius", 2F, 0F..5F)
 
-    private val backgroundMode by ListValue("Background-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
+    private val backgroundMode by choices("Background-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
 
     private val bgColors = ColorSettingsInteger(this, "Background") { backgroundMode == "Custom" }
 
-    private val gradientBackgroundSpeed by FloatValue("Background-Gradient-Speed", 1f, 0.5f..10f) { backgroundMode == "Gradient" }
+    private val gradientBackgroundSpeed by float("Background-Gradient-Speed", 1f, 0.5f..10f) { backgroundMode == "Gradient" }
 
-    private val maxBackgroundGradientColors by IntegerValue("Max-Background-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS) { backgroundMode == "Gradient" }
+    private val maxBackgroundGradientColors by int("Max-Background-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS) { backgroundMode == "Gradient" }
     private val bgGradColors = ColorSettingsFloat.create(this, "Background-Gradient") { backgroundMode == "Gradient" && it <= maxBackgroundGradientColors }
 
     private val borderColors = ColorSettingsInteger(this, "Border")
 
-    private val font by FontValue("Font", Fonts.font40)
-    private val textShadow by BoolValue("ShadowText", true)
+    private val font by font("Font", Fonts.font40)
+    private val textShadow by boolean("ShadowText", true)
 
-    private val rainbowX by FloatValue("Rainbow-X", -1000F, -2000F..2000F) { backgroundMode == "Rainbow" }
-    private val rainbowY by FloatValue("Rainbow-Y", -1000F, -2000F..2000F) { backgroundMode == "Rainbow" }
+    private val rainbowX by float("Rainbow-X", -1000F, -2000F..2000F) { backgroundMode == "Rainbow" }
+    private val rainbowY by float("Rainbow-Y", -1000F, -2000F..2000F) { backgroundMode == "Rainbow" }
 
-    private val gradientX by FloatValue("Gradient-X", -1000F, -2000F..2000F) { textColorMode == "Gradient" || backgroundMode == "Gradient" }
-    private val gradientY by FloatValue("Gradient-Y", -1000F, -2000F..2000F) { textColorMode == "Gradient" || backgroundMode == "Gradient" }
+    private val gradientX by float("Gradient-X", -1000F, -2000F..2000F) { textColorMode == "Gradient" || backgroundMode == "Gradient" }
+    private val gradientY by float("Gradient-Y", -1000F, -2000F..2000F) { textColorMode == "Gradient" || backgroundMode == "Gradient" }
 
     override fun drawElement(): Border {
         if (Scaffold.handleEvents() && onScaffold || !onScaffold) {

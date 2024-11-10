@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.utils.ClientUtils.runTimeTicks
 import net.ccbluex.liquidbounce.utils.chat
-import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.boolean
 import org.knowm.xchart.BitmapEncoder
 import org.knowm.xchart.XYChart
 import org.knowm.xchart.XYSeries
@@ -24,8 +24,8 @@ import java.time.format.DateTimeFormatter
 
 object ClickRecorder : Module("ClickRecorder", Category.OTHER) {
 
-    private val recordRightClick by BoolValue("RecordRightClick", false)
-    private val recordMiddleClick by BoolValue("RecordMiddleClick", false)
+    private val recordRightClick by boolean("RecordRightClick", false)
+    private val recordMiddleClick by boolean("RecordMiddleClick", false)
 
     private val ticks = mutableListOf<Int>()
     private val leftClicks = mutableListOf<Int>()

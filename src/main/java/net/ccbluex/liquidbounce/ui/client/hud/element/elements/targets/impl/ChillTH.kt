@@ -13,8 +13,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.Cha
 import net.ccbluex.liquidbounce.utils.extensions.darker
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.Stencil
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.float
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
@@ -22,9 +22,9 @@ import org.lwjgl.opengl.GL11
 class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
 
     private val chillFontSpeed by
-        FloatValue("Chill-FontSpeed", 0.5F, 0.01F.. 1F) { targetInstance.styleValue.equals("Chill") }
+        float("Chill-FontSpeed", 0.5F, 0.01F.. 1F) { targetInstance.styleValue.equals("Chill") }
     private val chillRoundValue by
-        BoolValue("Chill-RoundedBar", true) { targetInstance.styleValue.equals("Chill") }
+        boolean("Chill-RoundedBar", true) { targetInstance.styleValue.equals("Chill") }
 
     private val numberRenderer = CharRenderer(false)
 

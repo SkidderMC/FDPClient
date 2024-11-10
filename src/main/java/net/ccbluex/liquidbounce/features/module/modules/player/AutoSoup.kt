@@ -16,10 +16,10 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.isFirstInventoryClick
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.float
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C07PacketPlayerDigging
@@ -29,17 +29,17 @@ import net.minecraft.util.EnumFacing
 
 object AutoSoup : Module("AutoSoup", Category.PLAYER, hideModule = false) {
 
-    private val health by FloatValue("Health", 15f, 0f..20f)
-    private val delay by IntegerValue("Delay", 150, 0..500)
+    private val health by float("Health", 15f, 0f..20f)
+    private val delay by int("Delay", 150, 0..500)
 
-    private val openInventory by BoolValue("OpenInv", true)
-    private val startDelay by IntegerValue("StartDelay", 100, 0..1000) { openInventory }
-    private val autoClose by BoolValue("AutoClose", false) { openInventory }
-    private val autoCloseDelay by IntegerValue("CloseDelay", 500, 0..1000) { openInventory && autoClose }
+    private val openInventory by boolean("OpenInv", true)
+    private val startDelay by int("StartDelay", 100, 0..1000) { openInventory }
+    private val autoClose by boolean("AutoClose", false) { openInventory }
+    private val autoCloseDelay by int("CloseDelay", 500, 0..1000) { openInventory && autoClose }
 
-    private val simulateInventory by BoolValue("SimulateInventory", false) { !openInventory }
+    private val simulateInventory by boolean("SimulateInventory", false) { !openInventory }
 
-    private val bowl by ListValue("Bowl", arrayOf("Drop", "Move", "Stay"), "Drop")
+    private val bowl by choices("Bowl", arrayOf("Drop", "Move", "Stay"), "Drop")
 
     private val timer = MSTimer()
     private val startTimer = MSTimer()

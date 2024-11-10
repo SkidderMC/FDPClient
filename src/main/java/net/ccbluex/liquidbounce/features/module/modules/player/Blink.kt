@@ -6,27 +6,27 @@
 package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.event.*
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.visual.Breadcrumbs
 import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.int
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
 object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModule = false) {
 
-    private val mode by ListValue("Mode", arrayOf("Sent", "Received", "Both"), "Sent")
+    private val mode by choices("Mode", arrayOf("Sent", "Received", "Both"), "Sent")
 
-    private val pulse by BoolValue("Pulse", false)
-    private val pulseDelay by IntegerValue("PulseDelay", 1000, 500..5000) { pulse }
+    private val pulse by boolean("Pulse", false)
+    private val pulseDelay by int("PulseDelay", 1000, 500..5000) { pulse }
 
-    private val fakePlayerMenu by BoolValue("FakePlayer", true)
+    private val fakePlayerMenu by boolean("FakePlayer", true)
 
     private val pulseTimer = MSTimer()
 
@@ -55,9 +55,11 @@ object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModul
             "sent" -> {
                 BlinkUtils.blink(packet, event, sent = true, receive = false)
             }
+
             "received" -> {
                 BlinkUtils.blink(packet, event, sent = false, receive = true)
             }
+
             "both" -> {
                 BlinkUtils.blink(packet, event)
             }

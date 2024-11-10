@@ -18,7 +18,7 @@ import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.boolean
 import net.minecraft.block.BlockAir
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBucket
@@ -33,8 +33,8 @@ import kotlin.math.sqrt
 // TODO: This desperately needs a recode
 object Ignite : Module("Ignite", Category.COMBAT, hideModule = false) {
 
-    private val lighter by BoolValue("Lighter", true)
-    private val lavaBucket by BoolValue("Lava", true)
+    private val lighter by boolean("Lighter", true)
+    private val lavaBucket by boolean("Lava", true)
 
     private val msTimer = MSTimer()
 
@@ -72,12 +72,14 @@ object Ignite : Module("Ignite", Category.COMBAT, hideModule = false) {
                     val yaw = (atan2(diffZ, diffX)).toDegreesF() - 90F
                     val pitch = -(atan2(diffY, sqrt)).toDegreesF()
 
-                    sendPacket(C05PacketPlayerLook(
+                    sendPacket(
+                        C05PacketPlayerLook(
                             player.rotationYaw +
                                     MathHelper.wrapAngleTo180_float(yaw - player.rotationYaw),
                             player.rotationPitch +
                                     MathHelper.wrapAngleTo180_float(pitch - player.rotationPitch),
-                            player.onGround)
+                            player.onGround
+                        )
                     )
 
                     player.sendUseItem(itemStack)
@@ -95,12 +97,14 @@ object Ignite : Module("Ignite", Category.COMBAT, hideModule = false) {
                         val yaw = (atan2(diffZ, diffX)).toDegreesF() - 90F
                         val pitch = -(atan2(diffY, sqrt)).toDegreesF()
 
-                        sendPacket(C05PacketPlayerLook(
+                        sendPacket(
+                            C05PacketPlayerLook(
                                 player.rotationYaw +
                                         MathHelper.wrapAngleTo180_float(yaw - player.rotationYaw),
                                 player.rotationPitch +
                                         MathHelper.wrapAngleTo180_float(pitch - player.rotationPitch),
-                                player.onGround)
+                                player.onGround
+                            )
                         )
 
                         if (player.onPlayerRightClick(neighbor, side.opposite, Vec3(side.directionVec), itemStack)) {

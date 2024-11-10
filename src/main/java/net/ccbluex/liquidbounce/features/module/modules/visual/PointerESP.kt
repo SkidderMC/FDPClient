@@ -15,10 +15,7 @@ import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.EntityLivingBase
@@ -29,24 +26,24 @@ import kotlin.math.*
 object PointerESP : Module("PointerESP", Category.VISUAL, gameDetecting = false, hideModule = false) {
 
     // Display settings
-    private val dimensionValue by ListValue("Dimension", arrayOf("2d", "3d"), "2d")
-    private val modeValue by ListValue("Mode", arrayOf("Solid", "Line", "LoopLine"), "Solid")
-    private val lineWidthValue by FloatValue("LineWidth", 4f, 1f..10f) { modeValue.contains("Line") }
+    private val dimensionValue by choices("Dimension", arrayOf("2d", "3d"), "2d")
+    private val modeValue by choices("Mode", arrayOf("Solid", "Line", "LoopLine"), "Solid")
+    private val lineWidthValue by float("LineWidth", 4f, 1f..10f) { modeValue.contains("Line") }
 
     // Color settings
-    private val colorMode by ListValue("Color Mode", arrayOf("Custom", "Theme Client", "Rainbow", "Fade"), "Custom")
-    private val colorRedValue by IntegerValue("Red", 255, 0..255) { colorMode == "Custom" }
-    private val colorGreenValue by IntegerValue("Green", 179, 0..255) { colorMode == "Custom" }
-    private val colorBlueValue by IntegerValue("Blue", 72, 0..255) { colorMode == "Custom" }
-    private val rainbowSpeed by FloatValue("Rainbow Speed", 1.0f, 0.5f..5.0f) { colorMode == "Rainbow" }
-    private val fadeDistanceValue by IntegerValue("Fade-Distance", 50, 0..100) { colorMode == "Fade" }
+    private val colorMode by choices("Color Mode", arrayOf("Custom", "Theme Client", "Rainbow", "Fade"), "Custom")
+    private val colorRedValue by int("Red", 255, 0..255) { colorMode == "Custom" }
+    private val colorGreenValue by int("Green", 179, 0..255) { colorMode == "Custom" }
+    private val colorBlueValue by int("Blue", 72, 0..255) { colorMode == "Custom" }
+    private val rainbowSpeed by float("Rainbow Speed", 1.0f, 0.5f..5.0f) { colorMode == "Rainbow" }
+    private val fadeDistanceValue by int("Fade-Distance", 50, 0..100) { colorMode == "Fade" }
 
     // Damage color settings
-    private val damageColorValue by BoolValue("DamageColor", true)
-    private val smoothDamageColorValue by BoolValue("SmoothDamageColor", false)
-    private val dmgRedValue by IntegerValue("DamageRed", 255, 0..255) {  damageColorValue }
-    private val dmgGreenValue by IntegerValue("DamageGreen", 0, 0..255) {  damageColorValue }
-    private val dmgBlueValue by IntegerValue("DamageBlue", 0, 0..255) { damageColorValue }
+    private val damageColorValue by boolean("DamageColor", true)
+    private val smoothDamageColorValue by boolean("SmoothDamageColor", false)
+    private val dmgRedValue by int("DamageRed", 255, 0..255) {  damageColorValue }
+    private val dmgGreenValue by int("DamageGreen", 0, 0..255) {  damageColorValue }
+    private val dmgBlueValue by int("DamageBlue", 0, 0..255) { damageColorValue }
 
     // Opacity and distance settings
     private val alphaValue: IntegerValue = object : IntegerValue("Alpha", 255, 0..255) {
@@ -56,14 +53,14 @@ object PointerESP : Module("PointerESP", Category.VISUAL, gameDetecting = false,
             }
         }
     }
-    private val distanceAlphaValue by BoolValue("DistanceAlpha", true)
-    private val distanceValue by IntegerValue("Distance", 70, 0..128) { distanceAlphaValue }
-    private val alphaMinValue by IntegerValue("AlphaMin", 100, 0..255) { distanceAlphaValue }
+    private val distanceAlphaValue by boolean("DistanceAlpha", true)
+    private val distanceValue by int("Distance", 70, 0..128) { distanceAlphaValue }
+    private val alphaMinValue by int("AlphaMin", 100, 0..255) { distanceAlphaValue }
 
     // Indicator size settings
-    private val sizeValue by IntegerValue("ArrowSize", 10, 1..30)
-    private val angleValue by IntegerValue("AngleSize", 50, 10..90)
-    private val radiusValue by IntegerValue("Radius", 70, 10..100)
+    private val sizeValue by int("ArrowSize", 10, 1..30)
+    private val angleValue by int("AngleSize", 50, 10..90)
+    private val radiusValue by int("Radius", 70, 10..100)
 
     // Method to render 2D pointer on screen
     @EventTarget

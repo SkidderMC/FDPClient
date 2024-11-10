@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
@@ -9,8 +9,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.float
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
@@ -27,11 +27,11 @@ import kotlin.math.atan
 @ElementInfo(name = "Model")
 class Model(x: Double = 40.0, y: Double = 100.0) : Element(x, y) {
 
-    private val yawMode by ListValue("Yaw", arrayOf("Player", "Animation", "Custom"), "Animation")
-        private val customYaw by FloatValue("CustomYaw", 0F, -180F..180F) { yawMode == "Custom" }
+    private val yawMode by choices("Yaw", arrayOf("Player", "Animation", "Custom"), "Animation")
+        private val customYaw by float("CustomYaw", 0F, -180F..180F) { yawMode == "Custom" }
 
-    private val pitchMode by ListValue("Pitch", arrayOf("Player", "Custom"), "Player")
-        private val customPitch by FloatValue("CustomPitch", 0F, -90F..90F) { pitchMode == "Custom" }
+    private val pitchMode by choices("Pitch", arrayOf("Player", "Custom"), "Player")
+        private val customPitch by float("CustomPitch", 0F, -90F..90F) { pitchMode == "Custom" }
 
     private var rotate = 0F
     private var rotateDirection = false

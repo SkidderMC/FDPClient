@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
@@ -32,24 +32,24 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private val styleList = mutableListOf<TargetStyle>()
 
     val styleValue: ListValue
-    private val onlyPlayer by BoolValue("Only player", false)
-    private val showinchat by BoolValue("Show When Chat", true)
-    private val resetBar by BoolValue("ResetBarWhenHiding", false)
+    private val onlyPlayer by boolean("Only player", false)
+    private val showinchat by boolean("Show When Chat", true)
+    private val resetBar by boolean("ResetBarWhenHiding", false)
 
-    private val fadeValue by BoolValue("Fade", false)
+    private val fadeValue by boolean("Fade", false)
 
-    private val animationValue by BoolValue("Animation", false)
-    private val animationSpeed by FloatValue("Animation Speed", 1F, 0.1F.. 2F) { fadeValue || animationValue }
-    val globalAnimSpeed by FloatValue("Health Speed", 3F, 0.1F..5F)
+    private val animationValue by boolean("Animation", false)
+    private val animationSpeed by float("Animation Speed", 1F, 0.1F.. 2F) { fadeValue || animationValue }
+    val globalAnimSpeed by float("Health Speed", 3F, 0.1F..5F)
 
-    private val colorModeValue by ListValue("Color", arrayOf("Health", "Client"), "Client")
+    private val colorModeValue by choices("Color", arrayOf("Health", "Client"), "Client")
 
-    private val shadowValue by BoolValue("Shadow", false)
+    private val shadowValue by boolean("Shadow", false)
 
-    private val bgRedValue by IntegerValue("Background-Red", 0, 0.. 255)
-    private val bgGreenValue by IntegerValue("Background-Green", 0, 0..255)
-    private val bgBlueValue by IntegerValue("Background-Blue", 0, 0.. 255)
-    private val bgAlphaValue by IntegerValue("Background-Alpha", 120, 0.. 255)
+    private val bgRedValue by int("Background-Red", 0, 0.. 255)
+    private val bgGreenValue by int("Background-Green", 0, 0..255)
+    private val bgBlueValue by int("Background-Blue", 0, 0.. 255)
+    private val bgAlphaValue by int("Background-Alpha", 120, 0.. 255)
 
     var target = FDPClient.combatManager.target
     override val values: Set<Value<*>>
@@ -59,7 +59,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
             return super.values + valueSet
         }
     init {
-        styleValue = ListValue("Style", addStyles(
+        styleValue = choices("Style", addStyles(
             NormalTH(this),
             CrossSineTH(this),
             ExhibitionTH(this),

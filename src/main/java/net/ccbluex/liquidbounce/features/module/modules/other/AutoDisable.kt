@@ -19,18 +19,18 @@ import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.*
 import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
 object AutoDisable : Module("AutoDisable", Category.OTHER, gameDetecting = false, hideModule = false) {
     val modulesList = arrayListOf(KillAura, Scaffold, Flight, Speed)
 
-    private val onFlagged by BoolValue("onFlag", true)
-    private val onWorldChange by BoolValue("onWorldChange", false)
-    private val onDeath by BoolValue("onDeath", false)
+    private val onFlagged by boolean("onFlag", true)
+    private val onWorldChange by boolean("onWorldChange", false)
+    private val onDeath by boolean("onDeath", false)
 
-    private val warn by ListValue("Warn", arrayOf("Chat", "Notification"), "Chat")
+    private val warn by choices("Warn", arrayOf("Chat", "Notification"), "Chat")
 
     @EventTarget
     fun onPacket(event: PacketEvent) {

@@ -15,9 +15,9 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.randomString
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
-import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.IntegerValue
 import net.ccbluex.liquidbounce.value.TextValue
+import net.ccbluex.liquidbounce.value.boolean
 
 object Spammer : Module("Spammer", Category.OTHER, subjective = true, hideModule = false) {
     private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 1000, 0..5000) {
@@ -40,9 +40,9 @@ object Spammer : Module("Spammer", Category.OTHER, subjective = true, hideModule
     }
 
     private val message by
-        TextValue("Message", "$CLIENT_NAME Client | liquidbounce(.net) | CCBlueX on yt")
+        TextValue("Message", "$CLIENT_NAME Client | fdpinfo.github(.io) | opZywl on GitHub")
 
-    private val custom by BoolValue("Custom", false)
+    private val custom by boolean("Custom", false)
 
     private val msTimer = MSTimer()
     private var delay = randomDelay(minDelay, maxDelay)

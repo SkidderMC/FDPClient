@@ -21,8 +21,8 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.client.renderer.Tessellator
@@ -48,12 +48,12 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = false, hideModule = false) {
-    private val maxTrailSize by IntegerValue("MaxTrailSize", 20, 1..100)
+    private val maxTrailSize by int("MaxTrailSize", 20, 1..100)
 
-    private val colorMode by ListValue("Color", arrayOf("Custom", "BowPower", "Rainbow"), "Custom")
-    private val colorRed by IntegerValue("R", 0, 0..255) { colorMode == "Custom" }
-    private val colorGreen by IntegerValue("G", 160, 0..255) { colorMode == "Custom" }
-    private val colorBlue by IntegerValue("B", 255, 0..255) { colorMode == "Custom" }
+    private val colorMode by choices("Color", arrayOf("Custom", "BowPower", "Rainbow"), "Custom")
+    private val colorRed by int("R", 0, 0..255) { colorMode == "Custom" }
+    private val colorGreen by int("G", 160, 0..255) { colorMode == "Custom" }
+    private val colorBlue by int("B", 255, 0..255) { colorMode == "Custom" }
 
     private val trailPositions = mutableMapOf<Entity, MutableList<Triple<Long, Vec3, Float>>>()
 

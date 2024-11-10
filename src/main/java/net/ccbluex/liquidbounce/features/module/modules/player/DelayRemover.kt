@@ -10,22 +10,22 @@ import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.MovementUtils.updateControls
-import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.boolean
 
 object DelayRemover : Module("DelayRemover", Category.PLAYER, hideModule = false) {
 
-   // val jumpDelay by BoolValue("NoJumpDelay", false)
+   // val jumpDelay by boolean("NoJumpDelay", false)
   //  val jumpDelayTicks by IntegerValue("JumpDelayTicks", 0, 0.. 4) { jumpDelay }
 
-    val noClickDelay by BoolValue("NoClickDelay", true)
+    val noClickDelay by boolean("NoClickDelay", true)
 
-    val blockBreakDelay by BoolValue("NoBlockHitDelay", false)
+    val blockBreakDelay by boolean("NoBlockHitDelay", false)
 
-    val noSlowBreak by BoolValue("NoSlowBreak", false)
-    val air by BoolValue("Air", true) { noSlowBreak }
-    val water by BoolValue("Water", false) { noSlowBreak }
+    val noSlowBreak by boolean("NoSlowBreak", false)
+    val air by boolean("Air", true) { noSlowBreak }
+    val water by boolean("Water", false) { noSlowBreak }
 
-    val exitGuiValue by BoolValue("NoExitGuiDelay", true)
+    val exitGuiValue by boolean("NoExitGuiDelay", true)
 
     private var prevGui = false
 

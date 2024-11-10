@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.ui.font.Fonts.minecraftFont
-import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.boolean
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.Item
@@ -21,9 +21,9 @@ import java.awt.Color
 
 object MurderDetector : Module("MurderDetector", Category.OTHER, gameDetecting = false, hideModule = false) {
 
-    private val showText by BoolValue("ShowText", true)
-    private val chatValue by BoolValue("Chat", true)
-    private val notifyValue by BoolValue("Notification", true)
+    private val showText by boolean("ShowText", true)
+    private val chatValue by boolean("Chat", true)
+    private val notifyValue by boolean("Notification", true)
 
     private var murder1: EntityPlayer? = null
     private var murder2: EntityPlayer? = null

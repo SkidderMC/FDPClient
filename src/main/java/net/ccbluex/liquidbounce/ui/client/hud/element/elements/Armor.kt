@@ -13,9 +13,9 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSmall
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawExhiEnchants
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.int
+import net.ccbluex.liquidbounce.value.choices
 import net.minecraft.block.material.Material
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager.*
@@ -37,18 +37,18 @@ class Armor(
     side: Side = Side(Side.Horizontal.MIDDLE, Side.Vertical.DOWN)
 ) : Element(x, y, scale, side) {
 
-    private val modeValue by ListValue("Alignment", arrayOf("Horizontal", "Vertical"), "Vertical")
-    private val showAttributes by ListValue("Attributes", arrayOf("None", "Value", "Percentage", "All"), "Percentage")
-    private val enchantValue by BoolValue("Enchant", true)
-    private val minimalMode by BoolValue("Minimal Mode", false)
-    private val percentageY by IntegerValue("Attributes - PositionY", -19, -50..50)
-    private val percentageX by IntegerValue("Attributes - PositionX", 21, -50..50)
-    private val red by IntegerValue("Red", 255, 0..255)
-    private val green by IntegerValue("Green", 255, 0..255)
-    private val blue by IntegerValue("Blue", 255, 0..255)
-    private val alpha by IntegerValue("Alpha", 255, 0..255)
-    private val repairReminderThreshold by IntegerValue("Alert Repair Reminder Threshold", 0, 0..100)
-    private val durabilityThreshold by IntegerValue("Alert Durability Threshold", 0, 0..100)
+    private val modeValue by choices("Alignment", arrayOf("Horizontal", "Vertical"), "Vertical")
+    private val showAttributes by choices("Attributes", arrayOf("None", "Value", "Percentage", "All"), "Percentage")
+    private val enchantValue by boolean("Enchant", true)
+    private val minimalMode by boolean("Minimal Mode", false)
+    private val percentageY by int("Attributes - PositionY", -19, -50..50)
+    private val percentageX by int("Attributes - PositionX", 21, -50..50)
+    private val red by int("Red", 255, 0..255)
+    private val green by int("Green", 255, 0..255)
+    private val blue by int("Blue", 255, 0..255)
+    private val alpha by int("Alpha", 255, 0..255)
+    private val repairReminderThreshold by int("Alert Repair Reminder Threshold", 0, 0..100)
+    private val durabilityThreshold by int("Alert Durability Threshold", 0, 0..100)
     private val mc = MinecraftInstance.mc
 
     private var blinkTimer = 0L

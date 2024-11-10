@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.canBeClicked
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
@@ -20,10 +20,10 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorderedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawFilledBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawSelectionBoundingBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.float
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.block.Block
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager.*
@@ -32,16 +32,16 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
 object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = false, hideModule = false) {
-    private val mode by ListValue("Mode", arrayOf("Box", "OtherBox", "Outline"), "Box")
-    private val depth3D by BoolValue("Depth3D", false)
-    private val thickness by FloatValue("Thickness", 2F, 1F..5F)
+    private val mode by choices("Mode", arrayOf("Box", "OtherBox", "Outline"), "Box")
+    private val depth3D by boolean("Depth3D", false)
+    private val thickness by float("Thickness", 2F, 1F..5F)
 
-    val info by BoolValue("Info", false)
+    val info by boolean("Info", false)
 
-    private val colorRainbow by BoolValue("Rainbow", false)
-    private val colorRed by IntegerValue("R", 68, 0..255) { !colorRainbow }
-    private val colorGreen by IntegerValue("G", 117, 0..255) { !colorRainbow }
-    private val colorBlue by IntegerValue("B", 255, 0..255) { !colorRainbow }
+    private val colorRainbow by boolean("Rainbow", false)
+    private val colorRed by int("R", 68, 0..255) { !colorRainbow }
+    private val colorGreen by int("G", 117, 0..255) { !colorRainbow }
+    private val colorBlue by int("B", 255, 0..255) { !colorRainbow }
 
     val currentBlock: BlockPos?
         get() {
@@ -60,8 +60,10 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
         val block = getBlock(blockPos) ?: return
         val partialTicks = event.partialTicks
 
-        val color = if (colorRainbow) rainbow(alpha = 0.4F) else Color(colorRed,
-            colorGreen, colorBlue, (0.4F * 255).toInt())
+        val color = if (colorRainbow) rainbow(alpha = 0.4F) else Color(
+            colorRed,
+            colorGreen, colorBlue, (0.4F * 255).toInt()
+        )
 
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -90,6 +92,7 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
                 drawFilledBox(axisAlignedBB)
                 drawSelectionBoundingBox(axisAlignedBB)
             }
+
             "otherbox" -> drawFilledBox(axisAlignedBB)
             "outline" -> drawSelectionBoundingBox(axisAlignedBB)
         }

@@ -20,9 +20,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Teams
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.ClientThemesUtils.getColor
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.boss.EntityWither
 import net.minecraft.util.MathHelper
@@ -36,13 +34,13 @@ import kotlin.math.sqrt
 
 object FightBot : Module("FightBot", Category.COMBAT, hideModule = false) {
 
-    private val pathRenderValue by BoolValue("PathRender", true)
-    private val jumpResetValue by BoolValue("JumpReset", true)
-    private val autoJumpValue by BoolValue("AutoJump", false)
-    private val silentValue by BoolValue("Silent", false)
-    private val blockMode by ListValue("blockMode", arrayOf("Skill", "Always", "Manual"), "Manual")
-    private val findWay by ListValue("findWay", arrayOf("None", "Point", "Entity"), "Point")
-    private val workReach by FloatValue("workReach", 10f, 1f..50f)
+    private val pathRenderValue by boolean("PathRender", true)
+    private val jumpResetValue by boolean("JumpReset", true)
+    private val autoJumpValue by boolean("AutoJump", false)
+    private val silentValue by boolean("Silent", false)
+    private val blockMode by choices("blockMode", arrayOf("Skill", "Always", "Manual"), "Manual")
+    private val findWay by choices("findWay", arrayOf("None", "Point", "Entity"), "Point")
+    private val workReach by float("workReach", 10f, 1f..50f)
 
     private var mainPos: FloatArray = floatArrayOf(0f, 0f, 0f)
     private var entity: EntityLivingBase? = null

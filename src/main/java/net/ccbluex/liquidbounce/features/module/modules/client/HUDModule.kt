@@ -16,10 +16,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorSettingsFloat
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRectWithBorder
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.GuiChat
@@ -29,59 +26,59 @@ import java.awt.Color
 
 object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDetecting = false, hideModule = true) {
 
-    val customHotbar by BoolValue("CustomHotbar", true)
+    val customHotbar by boolean("CustomHotbar", true)
 
-    val smoothHotbarSlot by BoolValue("SmoothHotbarSlot", true) { customHotbar }
+    val smoothHotbarSlot by boolean("SmoothHotbarSlot", true) { customHotbar }
 
-    val roundedHotbarRadius by FloatValue("RoundedHotbar-Radius", 3F, 0F..5F) { customHotbar }
+    val roundedHotbarRadius by float("RoundedHotbar-Radius", 3F, 0F..5F) { customHotbar }
 
-    val hotbarMode by ListValue("Hotbar-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom") { customHotbar }
+    val hotbarMode by choices("Hotbar-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom") { customHotbar }
     val hbHighlightColors = ColorSettingsInteger(this, "Hotbar-Highlight-Colors", applyMax = true)
     { customHotbar }.with(a = 0)
     val hbBackgroundColors = ColorSettingsInteger(this, "Hotbar-Background-Colors")
     { customHotbar && hotbarMode == "Custom" }.with(a = 190)
-    val gradientHotbarSpeed by FloatValue("Hotbar-Gradient-Speed", 1f, 0.5f..10f)
+    val gradientHotbarSpeed by float("Hotbar-Gradient-Speed", 1f, 0.5f..10f)
     { customHotbar && hotbarMode == "Gradient" }
     val maxHotbarGradientColors by IntegerValue("Max-Hotbar-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS)
     { customHotbar && hotbarMode == "Gradient" }
     val bgGradColors = ColorSettingsFloat.create(this, "Hotbar-Gradient")
     { customHotbar && hotbarMode == "Gradient" && it <= maxHotbarGradientColors }
-    val hbHighlightBorder by FloatValue("HotbarBorder-Highlight-Width", 2F, 0.5F..5F) { customHotbar }
+    val hbHighlightBorder by float("HotbarBorder-Highlight-Width", 2F, 0.5F..5F) { customHotbar }
     val hbHighlightBorderColors = ColorSettingsInteger(this, "HotbarBorder-Highlight-Colors", zeroAlphaCheck = true)
     { customHotbar }.with(a = 255, g = 111, b = 255)
-    val hbBackgroundBorder by FloatValue("HotbarBorder-Background-Width", 0.5F, 0.5F..5F) { customHotbar }
+    val hbBackgroundBorder by float("HotbarBorder-Background-Width", 0.5F, 0.5F..5F) { customHotbar }
     val hbBackgroundBorderColors = ColorSettingsInteger(this, "HotbarBorder-Background-Colors", zeroAlphaCheck = true)
     { customHotbar }.with(a = 0)
 
-    val rainbowX by FloatValue("Rainbow-X", -1000F, -2000F..2000F) { customHotbar && hotbarMode == "Rainbow" }
-    val rainbowY by FloatValue("Rainbow-Y", -1000F, -2000F..2000F) { customHotbar && hotbarMode == "Rainbow" }
-    val gradientX by FloatValue("Gradient-X", -1000F, -2000F..2000F) { customHotbar && hotbarMode == "Gradient" }
-    val gradientY by FloatValue("Gradient-Y", -1000F, -2000F..2000F) { customHotbar && hotbarMode == "Gradient" }
+    val rainbowX by float("Rainbow-X", -1000F, -2000F..2000F) { customHotbar && hotbarMode == "Rainbow" }
+    val rainbowY by float("Rainbow-Y", -1000F, -2000F..2000F) { customHotbar && hotbarMode == "Rainbow" }
+    val gradientX by float("Gradient-X", -1000F, -2000F..2000F) { customHotbar && hotbarMode == "Gradient" }
+    val gradientY by float("Gradient-Y", -1000F, -2000F..2000F) { customHotbar && hotbarMode == "Gradient" }
 
     // InventoryPlus
-    val inventoryOnHotbar = BoolValue("InventoryOnHotbar", false)
+    val inventoryOnHotbar = boolean("InventoryOnHotbar", false)
 
     // CROSSHAIR
-    val csgoCrosshairValue by BoolValue("CSGO-Crosshair", false)
+    val csgoCrosshairValue by boolean("CSGO-Crosshair", false)
 
     // UI EFFECT
-    val uiEffectValue by BoolValue("UIEffect", true)
-    val buttonShadowValue by BoolValue("ShadowButton", true){ uiEffectValue }
-    val UiShadowValue by ListValue("UIEffectMode", arrayOf("Shadow", "Glow", "None"), "Shadow") { uiEffectValue }
+    val uiEffectValue by boolean("UIEffect", true)
+    val buttonShadowValue by boolean("ShadowButton", true){ uiEffectValue }
+    val UiShadowValue by choices("UIEffectMode", arrayOf("Shadow", "Glow", "None"), "Shadow") { uiEffectValue }
 
-    private val blur by BoolValue("Blur", false)
+    private val blur by boolean("Blur", false)
 
-    val inventoryParticle by BoolValue("InventoryParticle", false)
+    val inventoryParticle by boolean("InventoryParticle", false)
 
     // UI
-    private val intefaceColor by BoolValue("Interface Color", false)
-    val colorRed by IntegerValue("R", 0, 0..255) { intefaceColor }
-    val colorGreen by IntegerValue("G", 160, 0..255) { intefaceColor }
-    val colorBlue by IntegerValue("B", 255, 0..255) { intefaceColor }
-    private val colorRainbowValue = BoolValue("Rainbow", true) { intefaceColor }
+    private val intefaceColor by boolean("Interface Color", false)
+    val colorRed by int("R", 0, 0..255) { intefaceColor }
+    val colorGreen by int("G", 160, 0..255) { intefaceColor }
+    val colorBlue by int("B", 255, 0..255) { intefaceColor }
+    private val colorRainbowValue by boolean("Rainbow", true) { intefaceColor }
 
     val guiColor
-        get() = if (colorRainbowValue.get()) ColorUtils.rainbow().rgb
+        get() = if (colorRainbowValue) ColorUtils.rainbow().rgb
         else Color(colorRed, colorGreen, colorBlue).rgb
 
 

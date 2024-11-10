@@ -30,8 +30,8 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.Stencil
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInBackNotify
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeOutBackNotify
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import org.lwjgl.opengl.GL11
@@ -57,15 +57,15 @@ class Notifications(
     private val exampleNotification = Notification("Notification", "This is an example notification.", Type.INFO)
 
     companion object {
-        val styleValue by ListValue("Mode", arrayOf("ZAVZ", "CLASSIC", "IDE"), "ZAVZ")
-        val redValue by IntegerValue("Red", 255, 0..255) { styleValue == "ZAVZ" }
-        val greenValue by IntegerValue("Green", 0, 0..255) { styleValue == "ZAVZ" }
-        val blueValue by IntegerValue("Blue", 84, 0..255) { styleValue == "ZAVZ" }
-        val red2Value by IntegerValue("Red2", 0, 0..255) { styleValue == "ZAVZ" }
-        val green2Value by IntegerValue("Green2", 19, 0..255) { styleValue == "ZAVZ" }
-        val blue2Value by IntegerValue("Blue2", 0, 0..255) { styleValue == "ZAVZ" }
+        val styleValue by choices("Mode", arrayOf("ZAVZ", "CLASSIC", "IDE"), "ZAVZ")
+        val redValue by int("Red", 255, 0..255) { styleValue == "ZAVZ" }
+        val greenValue by int("Green", 0, 0..255) { styleValue == "ZAVZ" }
+        val blueValue by int("Blue", 84, 0..255) { styleValue == "ZAVZ" }
+        val red2Value by int("Red2", 0, 0..255) { styleValue == "ZAVZ" }
+        val green2Value by int("Green2", 19, 0..255) { styleValue == "ZAVZ" }
+        val blue2Value by int("Blue2", 0, 0..255) { styleValue == "ZAVZ" }
 
-        val alphaValue by IntegerValue("Alpha", 0, 0..255) { styleValue == "CLASSIC" }
+        val alphaValue by int("Alpha", 0, 0..255) { styleValue == "CLASSIC" }
     }
 
     /**

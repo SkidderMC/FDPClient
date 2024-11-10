@@ -45,44 +45,44 @@ import kotlin.math.roundToInt
 
 object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
 
-    private val typeValue = ListValue("Mode", arrayOf("3DTag", "2DTag"), "2DTag")
+    private val typeValue = choices("Mode", arrayOf("3DTag", "2DTag"), "2DTag")
 
-    private val health by BoolValue("Health", true)
-    private val healthFromScoreboard by BoolValue("HealthFromScoreboard", false) { health }
-    private val absorption by BoolValue("Absorption", false) { health || healthBar }
-    private val roundedHealth by BoolValue("RoundedHealth", true) { health }
+    private val health by boolean("Health", true)
+    private val healthFromScoreboard by boolean("HealthFromScoreboard", false) { health }
+    private val absorption by boolean("Absorption", false) { health || healthBar }
+    private val roundedHealth by boolean("RoundedHealth", true) { health }
 
-    private val healthPrefix by BoolValue("HealthPrefix", false) { health }
-    private val healthPrefixText by TextValue("HealthPrefixText", "") { health && healthPrefix }
+    private val healthPrefix by boolean("HealthPrefix", false) { health }
+    private val healthPrefixText by text("HealthPrefixText", "") { health && healthPrefix }
 
-    private val healthSuffix by BoolValue("HealthSuffix", true) { health }
-    private val healthSuffixText by TextValue("HealthSuffixText", " ❤") { health && healthSuffix }
+    private val healthSuffix by boolean("HealthSuffix", true) { health }
+    private val healthSuffixText by text("HealthSuffixText", " ❤") { health && healthSuffix }
 
-    private val indicator by BoolValue("Indicator", false)
-    private val ping by BoolValue("Ping", false)
-    private val healthBar by BoolValue("Bar", false)
-    private val distance by BoolValue("Distance", false)
-    private val armor by BoolValue("Armor", true)
-    private val showArmorDurability by ListValue("Armor Durability", arrayOf("None", "Value", "Percentage"), "None") { armor }
-    private val enchant by BoolValue("Enchant", true) { armor }
-    private val bot by BoolValue("Bots", true)
-    private val potion by BoolValue("Potions", true)
-    private val clearNames by BoolValue("ClearNames", false)
-    private val font by FontValue("Font", Fonts.font40)
-    private val scale by FloatValue("Scale", 1F, 1F..4F)
-    private val fontShadow by BoolValue("Shadow", true)
+    private val indicator by boolean("Indicator", false)
+    private val ping by boolean("Ping", false)
+    private val healthBar by boolean("Bar", false)
+    private val distance by boolean("Distance", false)
+    private val armor by boolean("Armor", true)
+    private val showArmorDurability by choices("Armor Durability", arrayOf("None", "Value", "Percentage"), "None") { armor }
+    private val enchant by boolean("Enchant", true) { armor }
+    private val bot by boolean("Bots", true)
+    private val potion by boolean("Potions", true)
+    private val clearNames by boolean("ClearNames", false)
+    private val font by font("Font", Fonts.font40)
+    private val scale by float("Scale", 1F, 1F..4F)
+    private val fontShadow by boolean("Shadow", true)
 
-    private val background by BoolValue("Background", true)
-    private val backgroundColorRed by IntegerValue("Background-R", 0, 0..255) { background }
-    private val backgroundColorGreen by IntegerValue("Background-G", 0, 0..255) { background }
-    private val backgroundColorBlue by IntegerValue("Background-B", 0, 0..255) { background }
-    private val backgroundColorAlpha by IntegerValue("Background-Alpha", 70, 0..255) { background }
+    private val background by boolean("Background", true)
+    private val backgroundColorRed by int("Background-R", 0, 0..255) { background }
+    private val backgroundColorGreen by int("Background-G", 0, 0..255) { background }
+    private val backgroundColorBlue by int("Background-B", 0, 0..255) { background }
+    private val backgroundColorAlpha by int("Background-Alpha", 70, 0..255) { background }
 
-    private val border by BoolValue("Border", false)
-    private val borderColorRed by IntegerValue("Border-R", 0, 0..255) { border }
-    private val borderColorGreen by IntegerValue("Border-G", 0, 0..255) { border }
-    private val borderColorBlue by IntegerValue("Border-B", 0, 0..255) { border }
-    private val borderColorAlpha by IntegerValue("Border-Alpha", 100, 0..255) { border }
+    private val border by boolean("Border", false)
+    private val borderColorRed by int("Border-R", 0, 0..255) { border }
+    private val borderColorGreen by int("Border-G", 0, 0..255) { border }
+    private val borderColorBlue by int("Border-B", 0, 0..255) { border }
+    private val borderColorAlpha by int("Border-Alpha", 100, 0..255) { border }
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
         override fun onUpdate(value: Int) {
@@ -90,10 +90,10 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
         }
     }
 
-    private val onLook by BoolValue("OnLook", false)
-    private val maxAngleDifference by FloatValue("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
+    private val onLook by boolean("OnLook", false)
+    private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
 
-    private val thruBlocks by BoolValue("ThruBlocks", true)
+    private val thruBlocks by boolean("ThruBlocks", true)
 
     private var maxRenderDistanceSq = 0.0
         set(value) {

@@ -28,10 +28,10 @@ import net.ccbluex.liquidbounce.utils.realX
 import net.ccbluex.liquidbounce.utils.realY
 import net.ccbluex.liquidbounce.utils.realZ
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
 import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.block.BlockChest
 import net.minecraft.block.BlockEnderChest
 import net.minecraft.entity.player.EntityPlayer
@@ -53,8 +53,8 @@ import kotlin.math.sqrt
 
 object ChestAura : Module("ChestAura", Category.OTHER) {
 
-    private val chest by BoolValue("Chest", true)
-    private val enderChest by BoolValue("EnderChest", false)
+    private val chest by boolean("Chest", true)
+    private val enderChest by boolean("EnderChest", false)
 
     private val range: Float by object : FloatValue("Range", 5F, 1F..5F) {
         override fun onUpdate(value: Float) {
@@ -62,9 +62,9 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
             searchRadiusSq = (value + 1).pow(2)
         }
     }
-    private val delay by IntegerValue("Delay", 200, 50..500)
+    private val delay by int("Delay", 200, 50..500)
 
-    private val throughWalls by BoolValue("ThroughWalls", true)
+    private val throughWalls by boolean("ThroughWalls", true)
     private val wallsRange: Float by object : FloatValue("ThroughWallsRange", 3F, 1F..5F) {
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(this@ChestAura.range)
 
@@ -81,14 +81,14 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
         }
     }
 
-    private val visualSwing by BoolValue("VisualSwing", true, subjective = true)
+    private val visualSwing by boolean("VisualSwing", true, subjective = true)
 
-    private val ignoreLooted by BoolValue("IgnoreLootedChests", true)
-    private val detectRefill by BoolValue("DetectChestRefill", true)
+    private val ignoreLooted by boolean("IgnoreLootedChests", true)
+    private val detectRefill by boolean("DetectChestRefill", true)
 
     private val options = RotationSettings(this).withoutKeepRotation()
 
-    private val openInfo by ListValue("OpenInfo", arrayOf("Off", "Self", "Other", "Everyone"), "Off")
+    private val openInfo by choices("OpenInfo", arrayOf("Off", "Self", "Other", "Everyone"), "Off")
 
     var tileTarget: Triple<Vec3, TileEntity, Double>? = null
     private val timer = MSTimer()
@@ -129,7 +129,8 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
         val pointsInRange = mc.theWorld.tickableTileEntities
             // Check if tile entity is correct type, not already clicked, not blocked by a block and in range
             .filter {
-                shouldClickTileEntity(it) && it.getDistanceSq(thePlayer.posX,
+                shouldClickTileEntity(it) && it.getDistanceSq(
+                    thePlayer.posX,
                     thePlayer.posY,
                     thePlayer.posZ
                 ) <= searchRadiusSq
@@ -255,7 +256,8 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
                     val timeTakenMsg = if (packet.data2 == 0 && prevTime != null)
                         ", took §b${decimalFormat.format((System.currentTimeMillis() - prevTime) / 1000.0)} s§3"
                     else ""
-                    val playerMsg = if (player == mc.thePlayer) actionMsg else "§b${player.name} §3${actionMsg.lowercase()}"
+                    val playerMsg =
+                        if (player == mc.thePlayer) actionMsg else "§b${player.name} §3${actionMsg.lowercase()}"
 
                     chat("§8[§9§lChestAura§8] $playerMsg chest from §b$distance m§3$timeTakenMsg.")
 

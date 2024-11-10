@@ -8,17 +8,15 @@ package net.ccbluex.liquidbounce.features.module.modules.player
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.SilentHotbar
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
@@ -27,33 +25,33 @@ import net.minecraft.potion.Potion
 
 object AutoPlay : Module("AutoPlay", Category.PLAYER, gameDetecting = false, hideModule = false) {
 
-    private val mode by ListValue("Mode", arrayOf("Paper", "Hypixel"), "Paper")
+    private val mode by choices("Mode", arrayOf("Paper", "Hypixel"), "Paper")
 
     // Hypixel Settings
-    private val hypixelMode by ListValue("HypixelMode", arrayOf("Skywars", "Bedwars"), "Skywars") {
+    private val hypixelMode by choices("HypixelMode", arrayOf("Skywars", "Bedwars"), "Skywars") {
         mode == "Hypixel"
     }
-    private val skywarsMode by ListValue("SkywarsMode", arrayOf("SoloNormal", "SoloInsane"), "SoloNormal") {
+    private val skywarsMode by choices("SkywarsMode", arrayOf("SoloNormal", "SoloInsane"), "SoloNormal") {
         hypixelMode == "Skywars"
     }
-    private val bedwarsMode by ListValue("BedwarsMode", arrayOf("Solo", "Double", "Trio", "Quad"), "Solo") {
+    private val bedwarsMode by choices("BedwarsMode", arrayOf("Solo", "Double", "Trio", "Quad"), "Solo") {
         hypixelMode == "Bedwars"
     }
 
-    private val delay by IntegerValue("Delay", 50, 0..200)
+    private val delay by int("Delay", 50, 0..200)
 
-    private val bedWarsHelp by BoolValue("BedWarsHelp", true)
+    private val bedWarsHelp by boolean("BedWarsHelp", true)
 
-    private val itemChecker by BoolValue("Item-Checker", true) { bedWarsHelp }
-    private val stoneSword by BoolValue("Stone-Sword", false) { itemChecker }
-    private val ironSword by BoolValue("Iron-Sword", true) { itemChecker }
-    private val diamondSword by BoolValue("Diamond-Sword", true) { itemChecker }
-    private val fireBallSword by BoolValue("FireBall", true) { itemChecker }
-    private val enderPearl by BoolValue("EnderPearl", true) { itemChecker }
-    private val tnt by BoolValue("TNT", true) { itemChecker }
-    private val obsidian by BoolValue("Obsidian", true) { itemChecker }
-    private val invisibilityPotion by BoolValue("InvisibilityPotion", true) { itemChecker }
-    private val diamondArmor by BoolValue("DiamondArmor", true) { bedWarsHelp }
+    private val itemChecker by boolean("Item-Checker", true) { bedWarsHelp }
+    private val stoneSword by boolean("Stone-Sword", false) { itemChecker }
+    private val ironSword by boolean("Iron-Sword", true) { itemChecker }
+    private val diamondSword by boolean("Diamond-Sword", true) { itemChecker }
+    private val fireBallSword by boolean("FireBall", true) { itemChecker }
+    private val enderPearl by boolean("EnderPearl", true) { itemChecker }
+    private val tnt by boolean("TNT", true) { itemChecker }
+    private val obsidian by boolean("Obsidian", true) { itemChecker }
+    private val invisibilityPotion by boolean("InvisibilityPotion", true) { itemChecker }
+    private val diamondArmor by boolean("DiamondArmor", true) { bedWarsHelp }
 
     private val stoneSwordList = ArrayList<String>()
     private val ironSwordList = ArrayList<String>()
@@ -102,6 +100,7 @@ object AutoPlay : Module("AutoPlay", Category.PLAYER, gameDetecting = false, hid
                             "SoloNormal" -> player.sendChatMessage("/play solo_normal")
                             "SoloInsane" -> player.sendChatMessage("/play solo_insane")
                         }
+
                         "bedwars" -> when (bedwarsMode) {
                             "Solo" -> player.sendChatMessage("/play bedwars_eight_one")
                             "Double" -> player.sendChatMessage("/play bedwars_eight_two")

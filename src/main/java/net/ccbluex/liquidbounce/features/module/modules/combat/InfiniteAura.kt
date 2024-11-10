@@ -17,10 +17,7 @@ import net.ccbluex.liquidbounce.utils.PathUtils
 import net.ccbluex.liquidbounce.utils.RaycastUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.PlayerCapabilities
 import net.minecraft.network.play.client.C03PacketPlayer
@@ -34,17 +31,17 @@ import org.lwjgl.opengl.GL11
 import kotlin.math.sqrt
 
 object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, spacedName = "Infinite Aura", hideModule = false) {
-    private val packetValue by ListValue("PacketMode", arrayOf("PacketPosition", "PacketPosLook"), "PacketPosition")
-    private val packetBack by BoolValue("DoTeleportBackPacket", false)
-    private val modeValue by ListValue("Mode", arrayOf("Aura", "Click"), "Aura")
-    private val targetsValue by IntegerValue("Targets", 3, 1..10) { modeValue == "Aura" }
-    private val cpsValue by IntegerValue("CPS", 1, 1..10)
-    private val distValue by IntegerValue("Distance", 30, 20..100)
-    private val moveDistanceValue by FloatValue("MoveDistance", 5f, 2f..15f)
-    private val noRegenValue by BoolValue("NoRegen", true)
-    private val noLagBackValue by BoolValue("NoLagback", true)
-    private val swingValue by BoolValue("Swing", true) { modeValue == "Aura" }
-    private val pathRenderValue by BoolValue("PathRender", true)
+    private val packetValue by choices("PacketMode", arrayOf("PacketPosition", "PacketPosLook"), "PacketPosition")
+    private val packetBack by boolean("DoTeleportBackPacket", false)
+    private val modeValue by choices("Mode", arrayOf("Aura", "Click"), "Aura")
+    private val targetsValue by int("Targets", 3, 1..10) { modeValue == "Aura" }
+    private val cpsValue by int("CPS", 1, 1..10)
+    private val distValue by int("Distance", 30, 20..100)
+    private val moveDistanceValue by float("MoveDistance", 5f, 2f..15f)
+    private val noRegenValue by boolean("NoRegen", true)
+    private val noLagBackValue by boolean("NoLagback", true)
+    private val swingValue by boolean("Swing", true) { modeValue == "Aura" }
+    private val pathRenderValue by boolean("PathRender", true)
 
     var lastTarget: EntityLivingBase? = null
     val timer = MSTimer()

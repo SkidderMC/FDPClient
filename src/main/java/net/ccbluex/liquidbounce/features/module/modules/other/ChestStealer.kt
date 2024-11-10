@@ -32,9 +32,7 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.countSpaceInInven
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.hasSpaceInInventory
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.entity.EntityLiving.getArmorPosition
@@ -50,11 +48,11 @@ import kotlin.math.sqrt
 
 object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false) {
 
-    private val smartDelay by BoolValue("SmartDelay", false)
+    private val smartDelay by boolean("SmartDelay", false)
     private val multiplier by IntegerValue("DelayMultiplier", 120, 0..500) { smartDelay }
-    private val smartOrder by BoolValue("SmartOrder", true) { smartDelay }
+    private val smartOrder by boolean("SmartOrder", true) { smartDelay }
 
-    private val simulateShortStop by BoolValue("SimulateShortStop", false)
+    private val simulateShortStop by boolean("SimulateShortStop", false)
 
     private val maxDelay: Int by object : IntegerValue("MaxDelay", 50, 0..500) {
         override fun isSupported() = !smartDelay
@@ -65,40 +63,40 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
         override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtMost(maxDelay)
     }
 
-    private val startDelay by IntegerValue("StartDelay", 50, 0..500)
-    private val closeDelay by IntegerValue("CloseDelay", 50, 0..500)
+    private val startDelay by int("StartDelay", 50, 0..500)
+    private val closeDelay by int("CloseDelay", 50, 0..500)
 
     private val noMove by InventoryManager.noMoveValue
     private val noMoveAir by InventoryManager.noMoveAirValue
     private val noMoveGround by InventoryManager.noMoveGroundValue
 
-    private val chestTitle by BoolValue("ChestTitle", true)
+    private val chestTitle by boolean("ChestTitle", true)
 
-    private val randomSlot by BoolValue("RandomSlot", true)
+    private val randomSlot by boolean("RandomSlot", true)
 
-    private val progressBar by BoolValue("ProgressBar", true, subjective = true)
+    private val progressBar by boolean("ProgressBar", true, subjective = true)
 
-    val silentGUI by BoolValue("SilentGUI", false, subjective = true)
+    val silentGUI by boolean("SilentGUI", false, subjective = true)
 
-    val highlightSlot by BoolValue("Highlight-Slot", false, subjective = true) { !silentGUI }
+    val highlightSlot by boolean("Highlight-Slot", false, subjective = true) { !silentGUI }
 
-    val backgroundRed by IntegerValue("Background-R", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
-    val backgroundGreen by IntegerValue("Background-G", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
-    val backgroundBlue by IntegerValue("Background-B", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
-    val backgroundAlpha by IntegerValue("Background-Alpha",
+    val backgroundRed by int("Background-R", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
+    val backgroundGreen by int("Background-G", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
+    val backgroundBlue by int("Background-B", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
+    val backgroundAlpha by int("Background-Alpha",
         255,
         0..255,
         subjective = true
     ) { highlightSlot && !silentGUI }
 
-    val borderStrength by IntegerValue("Border-Strength", 3, 1..5, subjective = true) { highlightSlot && !silentGUI }
-    val borderRed by IntegerValue("Border-R", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
-    val borderGreen by IntegerValue("Border-G", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
-    val borderBlue by IntegerValue("Border-B", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
-    val borderAlpha by IntegerValue("Border-Alpha", 255, 0..255, subjective = true) { highlightSlot && !silentGUI }
+    val borderStrength by int("Border-Strength", 3, 1..5, subjective = true) { highlightSlot && !silentGUI }
+    val borderRed by int("Border-R", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
+    val borderGreen by int("Border-G", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
+    val borderBlue by int("Border-B", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
+    val borderAlpha by int("Border-Alpha", 255, 0..255, subjective = true) { highlightSlot && !silentGUI }
 
-    private val chestDebug by ListValue("Chest-Debug", arrayOf("Off", "Text", "Notification"), "Off", subjective = true)
-    private val itemStolenDebug by BoolValue("ItemStolen-Debug", false, subjective = true) { chestDebug != "Off" }
+    private val chestDebug by choices("Chest-Debug", arrayOf("Off", "Text", "Notification"), "Off", subjective = true)
+    private val itemStolenDebug by boolean("ItemStolen-Debug", false, subjective = true) { chestDebug != "Off" }
 
     private var progress: Float? = null
         set(value) {

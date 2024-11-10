@@ -14,9 +14,7 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.isAnimal
 import net.ccbluex.liquidbounce.utils.extensions.isMob
-import net.ccbluex.liquidbounce.value.BlockValue
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.Entity
@@ -37,20 +35,20 @@ import net.minecraft.util.BlockPos
  */
 object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hideModule = false) {
 
-	private val allEntitiesValue by BoolValue("AllEntities", true)
-	private val itemsValue by BoolValue("Items", true) { !allEntitiesValue }
-	private val playersValue by BoolValue("Players", true)
-	private val mobsValue by BoolValue("Mobs", true)
-	private val animalsValue by BoolValue("Animals", true) { !allEntitiesValue }
-	private val armorStandValue by BoolValue("ArmorStand", true) { !allEntitiesValue }
-	private val autoResetValue by BoolValue("AutoReset", true)
-	private val maxRenderRange by FloatValue("MaxRenderRange", 4F, 0F..16F)
+	private val allEntitiesValue by boolean("AllEntities", true)
+	private val itemsValue by boolean("Items", true) { !allEntitiesValue }
+	private val playersValue by boolean("Players", true)
+	private val mobsValue by boolean("Mobs", true)
+	private val animalsValue by boolean("Animals", true) { !allEntitiesValue }
+	private val armorStandValue by boolean("ArmorStand", true) { !allEntitiesValue }
+	private val autoResetValue by boolean("AutoReset", true)
+	private val maxRenderRange by float("MaxRenderRange", 4F, 0F..16F)
 
 	// Option to enable or disable specific block rendering
-	private val useSpecificBlock by BoolValue("Block", true)
+	private val useSpecificBlock by boolean("Block", true)
 
 	// The specific block selected by its ID
-	private val specificBlockValue by BlockValue("SpecificBlock", 1)
+	private val specificBlockValue by block("SpecificBlock", 1)
 
 	// Stores hidden blocks and their original states
 	private val hiddenBlocks: MutableMap<BlockPos, IBlockState> = mutableMapOf()

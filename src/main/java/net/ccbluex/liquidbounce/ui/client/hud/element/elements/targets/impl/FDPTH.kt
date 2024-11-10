@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedCornerRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawShadow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.quickDrawHead
-import net.ccbluex.liquidbounce.value.FontValue
+import net.ccbluex.liquidbounce.value.font
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
@@ -23,7 +23,7 @@ import kotlin.math.roundToInt
 
 class FDPTH(inst: Targets) : TargetStyle("FDP", inst, true) {
 
-    private val fontValue by FontValue("Font", Fonts.font40) { targetInstance.styleValue.equals("FDP") }
+    private val fontValue by font("Font", Fonts.font40) { targetInstance.styleValue.equals("FDP") }
 
     override fun drawTarget(entity: EntityLivingBase) {
         val font = fontValue

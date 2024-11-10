@@ -17,10 +17,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.*
 import net.minecraft.entity.item.EntityFallingBlock
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
@@ -30,16 +27,16 @@ import kotlin.math.pow
 object ProphuntESP : Module("ProphuntESP", Category.VISUAL, gameDetecting = false) {
     val blocks = mutableMapOf<BlockPos, Long>()
 
-    private val mode by ListValue("Mode", arrayOf("Box", "OtherBox", "Glow"), "OtherBox")
-        private val glowRenderScale by FloatValue("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
-        private val glowRadius by IntegerValue("Glow-Radius", 4, 1..5) { mode == "Glow" }
-        private val glowFade by IntegerValue("Glow-Fade", 10, 0..30) { mode == "Glow" }
-        private val glowTargetAlpha by FloatValue("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
+    private val mode by choices("Mode", arrayOf("Box", "OtherBox", "Glow"), "OtherBox")
+        private val glowRenderScale by float("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
+        private val glowRadius by int("Glow-Radius", 4, 1..5) { mode == "Glow" }
+        private val glowFade by int("Glow-Fade", 10, 0..30) { mode == "Glow" }
+        private val glowTargetAlpha by float("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
 
-    private val colorRainbow by BoolValue("Rainbow", false)
-        private val colorRed by IntegerValue("R", 0, 0..255) { !colorRainbow }
-        private val colorGreen by IntegerValue("G", 90, 0..255) { !colorRainbow }
-        private val colorBlue by IntegerValue("B", 255, 0..255) { !colorRainbow }
+    private val colorRainbow by boolean("Rainbow", false)
+        private val colorRed by int("R", 0, 0..255) { !colorRainbow }
+        private val colorGreen by int("G", 90, 0..255) { !colorRainbow }
+        private val colorBlue by int("B", 255, 0..255) { !colorRainbow }
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 50, 1..200) {
         override fun onInit(value: Int) {
@@ -52,10 +49,10 @@ object ProphuntESP : Module("ProphuntESP", Category.VISUAL, gameDetecting = fals
 
     private var maxRenderDistanceSq = 0.0
 
-    private val onLook by BoolValue("OnLook", false)
-    private val maxAngleDifference by FloatValue("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
+    private val onLook by boolean("OnLook", false)
+    private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
 
-    private val thruBlocks by BoolValue("ThruBlocks", true)
+    private val thruBlocks by boolean("ThruBlocks", true)
 
     private val color
         get() = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)

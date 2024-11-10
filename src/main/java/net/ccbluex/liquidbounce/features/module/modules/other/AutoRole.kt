@@ -12,10 +12,10 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.file.FileManager.friendsConfig
 import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
-import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.boolean
 
 object AutoRole : Module("AutoRole", Category.OTHER, gameDetecting = false, hideModule = false) {
-    private val formattingValue = BoolValue("Formatting", true)
+    private val formattingValue by boolean("Formatting", true)
 
         private val STAFF_PREFIXES = arrayOf(
             "[Moderador] ",
@@ -68,7 +68,7 @@ object AutoRole : Module("AutoRole", Category.OTHER, gameDetecting = false, hide
                         friendManager.addFriend(member)
 
                         var colorPrefix = team.colorPrefix
-                        if (formattingValue.get() && currentFormatIndex < formatCodes.size) {
+                        if (formattingValue && currentFormatIndex < formatCodes.size) {
                             colorPrefix = formatCodes[currentFormatIndex] + colorPrefix
                             currentFormatIndex++
                             if (currentFormatIndex >= formatCodes.size) {

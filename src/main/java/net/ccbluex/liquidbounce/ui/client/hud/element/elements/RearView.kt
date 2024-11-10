@@ -9,8 +9,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
-import net.ccbluex.liquidbounce.value.BoolValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
@@ -22,10 +22,10 @@ import net.minecraft.util.Vec3
 @ElementInfo(name = "RearView")
 class RearView : Element() {
 
-    private var Fov by IntegerValue("Fov", 110, 30..170)
-    private var framebufferWidth by IntegerValue("Framebuffer Width", 800, 800..1920)
-    private var framebufferHeight by IntegerValue("Framebuffer Height", 600, 600..1080)
-    private var thirdPersonView by BoolValue("Third Person View", false)
+    private var Fov by int("Fov", 110, 30..170)
+    private var framebufferWidth by int("Framebuffer Width", 800, 800..1920)
+    private var framebufferHeight by int("Framebuffer Height", 600, 600..1080)
+    private var thirdPersonView by boolean("Third Person View", false)
 
     var pos: Vec3
 
