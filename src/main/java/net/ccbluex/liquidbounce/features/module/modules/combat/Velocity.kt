@@ -418,7 +418,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
 
             swingHand()
 
-            (mc.thePlayer as? Entity)?.isSprinting = true
+            (thePlayer as Entity).isSprinting = true
 
             sendPacket(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
 
@@ -426,7 +426,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
                 thePlayer.attackTargetEntityWithCurrentItem(entity)
             }
 
-            (mc.thePlayer as? Entity)?.isSprinting = wasSprinting
+            (thePlayer as Entity).isSprinting = wasSprinting
 
             CPSCounter.registerClick(CPSCounter.MouseButton.LEFT)
         }
@@ -507,8 +507,6 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
             ) {
                 pauseTicks = ticksToPause
             }
-
-            onUpdate(UpdateEvent())
 
             when (mode.lowercase()) {
                 "simple" -> handleVelocity(event)
