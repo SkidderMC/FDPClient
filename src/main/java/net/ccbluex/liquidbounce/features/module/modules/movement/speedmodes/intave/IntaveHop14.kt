@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.intave
 
+import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
@@ -12,6 +13,8 @@ import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 
 object IntaveHop14 : SpeedMode("IntaveHop14") {
+
+    private const val BOOST_CONSTANT = 0.003
 
     override fun onUpdate() {
         val player = mc.thePlayer ?: return
@@ -29,8 +32,14 @@ object IntaveHop14 : SpeedMode("IntaveHop14") {
         }
 
         if (Speed.boost && player.motionY > 0.003 && player.isSprinting) {
-            player.motionX *= 1.0015
-            player.motionZ *= 1.0015
+            player.motionX *= 1f + (BOOST_CONSTANT * Speed.initialBoostMultiplier)
+            player.motionZ *= 1f + (BOOST_CONSTANT * Speed.initialBoostMultiplier)
+        }
+    }
+
+    override fun onJump(event: JumpEvent) {
+        if (Speed.intaveLowHop) {
+            event.motion = 0.42f - 1.7E-14f
         }
     }
 }
