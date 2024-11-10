@@ -120,7 +120,7 @@ object Tracers : Module("Tracers", Category.VISUAL, hideModule = false) {
     private fun drawTraces(entity: Entity, color: Color) {
         val player = mc.thePlayer ?: return
 
-        val (x, y, z) = player.interpolatedPosition(player.lastTickPos) - Vec3(
+        val (x, y, z) = entity.interpolatedPosition(entity.lastTickPos) - Vec3(
             mc.renderManager.renderPosX,
             mc.renderManager.renderPosY,
             mc.renderManager.renderPosZ

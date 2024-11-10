@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
+import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.MovementUtils.isOnGround
@@ -17,8 +18,11 @@ import net.ccbluex.liquidbounce.utils.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.PacketUtils.queuedPackets
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
+import net.ccbluex.liquidbounce.utils.RaycastUtils.runWithModifiedRaycastResult
+import net.ccbluex.liquidbounce.utils.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
+import net.ccbluex.liquidbounce.utils.extensions.rotation
 import net.ccbluex.liquidbounce.utils.extensions.toDegrees
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
@@ -31,12 +35,15 @@ import net.ccbluex.liquidbounce.value.boolean
 import net.ccbluex.liquidbounce.value.choices
 import net.ccbluex.liquidbounce.value.float
 import net.ccbluex.liquidbounce.value.int
+import net.ccbluex.liquidbounce.value.intRange
 import net.minecraft.block.BlockAir
 import net.minecraft.entity.Entity
 import net.minecraft.network.Packet
+import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK
+import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.client.C0FPacketConfirmTransaction
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
@@ -44,6 +51,7 @@ import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing.DOWN
+import net.minecraft.world.WorldSettings
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.sqrt
@@ -58,7 +66,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
             "Simple", "AAC", "AACPush", "AACZero", "AACv4",
             "Reverse", "SmoothReverse", "Jump", "Glitch", "Legit",
             "GhostBlock", "Vulcan", "S32Packet", "MatrixReduce",
-            "IntaveReduce", "Delay", "GrimC03", "Hypixel", "HypixelAir"
+            "IntaveReduce", "Delay", "GrimC03", "Hypixel", "HypixelAir", "Click"
         ), "Simple"
     )
 
@@ -133,6 +141,13 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
     // KB 2: 1.4 (no sprint), 1.9 (sprint)
     // Vanilla Y limits
     // 0.36075 (no sprint), 0.46075 (sprint)
+
+    private val clicks by intRange("Clicks", 3..5, 1..20) { mode == "Click" }
+    private val hurtTimeToClick by int("HurtTimeToClick", 10, 0..10) { mode == "Click" }
+    private val whenFacingEnemyOnly by boolean("WhenFacingEnemyOnly", true) { mode == "Click" }
+    private val ignoreBlocking by boolean("IgnoreBlocking", false) { mode == "Click" }
+    private val clickRange by float("ClickRange", 3f, 1f..6f) { mode == "Click" }
+    private val swingMode by choices("SwingMode", arrayOf("Off", "Normal", "Packet"), "Normal") { mode == "Click" }
 
     /**
      * VALUES
@@ -344,6 +359,79 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
         }
     }
 
+    /**
+     * @see net.minecraft.entity.player.EntityPlayer.attackTargetEntityWithCurrentItem
+     * Lines 1035 and 1058
+     *
+     * Minecraft only applies motion slow-down when you are sprinting and attacking, once per tick.
+     * An example scenario: If you perform a mouse double-click on an entity, the game will only accept the first attack.
+     *
+     * This is where we come in clutch by making the player always sprint before dropping
+     *
+     * [clicks] amount of hits on the target [entity]
+     *
+     * We also explicitly-cast the player as an [Entity] to avoid triggering any other things caused from setting new sprint status.
+     *
+     * @see net.minecraft.client.entity.EntityPlayerSP.setSprinting
+     * @see net.minecraft.entity.EntityLivingBase.setSprinting
+     */
+    @EventTarget
+    fun onGameTick(event: GameTickEvent) {
+        val thePlayer = mc.thePlayer ?: return
+
+        mc.theWorld ?: return
+
+        if (mode != "Click" || thePlayer.hurtTime != hurtTimeToClick || ignoreBlocking && (thePlayer.isBlocking || KillAura.blockStatus))
+            return
+
+        var entity = mc.objectMouseOver?.entityHit
+
+        if (entity == null) {
+            if (whenFacingEnemyOnly) {
+                var result: Entity? = null
+
+                runWithModifiedRaycastResult(
+                    currentRotation ?: thePlayer.rotation,
+                    clickRange.toDouble(),
+                    0.0
+                ) {
+                    result = it.entityHit?.takeIf { isSelected(it, true) }
+                }
+
+                entity = result
+            } else getNearestEntityInRange(clickRange)?.takeIf { isSelected(it, true) }
+        }
+
+        entity ?: return
+
+        val swingHand = {
+            when (swingMode.lowercase()) {
+                "normal" -> thePlayer.swingItem()
+                "packet" -> sendPacket(C0APacketAnimation())
+            }
+        }
+
+        val wasSprinting = (thePlayer as Entity).isSprinting
+
+        repeat(clicks.random()) {
+            EventManager.callEvent(AttackEvent(entity))
+
+            swingHand()
+
+            (mc.thePlayer as? Entity)?.isSprinting = true
+
+            sendPacket(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
+
+            if (mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR) {
+                thePlayer.attackTargetEntityWithCurrentItem(entity)
+            }
+
+            (mc.thePlayer as? Entity)?.isSprinting = wasSprinting
+
+            CPSCounter.registerClick(CPSCounter.MouseButton.LEFT)
+        }
+    }
+
     @EventTarget
     fun onAttack(event: AttackEvent) {
         val player = mc.thePlayer ?: return
@@ -419,6 +507,8 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
             ) {
                 pauseTicks = ticksToPause
             }
+
+            onUpdate(UpdateEvent())
 
             when (mode.lowercase()) {
                 "simple" -> handleVelocity(event)
@@ -771,21 +861,11 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
         }
     }
 
-    private fun getAllEntities(): List<Entity> {
-        return mc.theWorld.loadedEntityList
-            .filter { isSelected(it, true) }
-            .toList()
-    }
+    private fun getNearestEntityInRange(range: Float = this.range): Entity? {
+        val player = mc.thePlayer ?: return null
 
-    private fun getNearestEntityInRange(): Entity? {
-        val player = mc.thePlayer
-
-        val entitiesInRange = getAllEntities()
-            .filter {
-                val distance = player.getDistanceToEntityBox(it)
-                (distance <= range)
-            }
-
-        return entitiesInRange.minByOrNull { player.getDistanceToEntityBox(it) }
+        return mc.theWorld.loadedEntityList.asSequence().filter {
+            isSelected(it, true) && player.getDistanceToEntityBox(it) <= range
+        }.minByOrNull { player.getDistanceToEntityBox(it) }
     }
 }
