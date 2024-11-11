@@ -259,14 +259,14 @@ public abstract class MixinEntity implements IMixinEntity {
 
     @Inject(method = "isInWater", at = @At("HEAD"), cancellable = true)
     private void isInWater(final CallbackInfoReturnable<Boolean> cir) {
-        if (NoFluid.INSTANCE.handleEvents() && NoFluid.INSTANCE.getWater()) {
+        if (NoFluid.INSTANCE.handleEvents() && NoFluid.INSTANCE.getWaterValue()) {
             cir.setReturnValue(false);
         }
     }
 
     @Inject(method = "isInLava", at = @At("HEAD"), cancellable = true)
     private void isInLava(final CallbackInfoReturnable<Boolean> cir) {
-        if (NoFluid.INSTANCE.handleEvents() && NoFluid.INSTANCE.getLava()) {
+        if (NoFluid.INSTANCE.handleEvents() && NoFluid.INSTANCE.getLavaValue()) {
             cir.setReturnValue(false);
         }
     }
