@@ -5,12 +5,8 @@
  */
 package net.ccbluex.liquidbounce.utils.login
 
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import org.apache.http.HttpHeaders
 import org.apache.http.client.methods.HttpGet
-import org.apache.http.client.methods.HttpPost
-import org.apache.http.entity.StringEntity
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager
@@ -21,7 +17,6 @@ import javax.net.ssl.HttpsURLConnection
 
 object UserUtils {
 
-    private val tokenCache = mutableMapOf<String, Boolean>()
     private val uuidCache = mutableMapOf<String, String?>()
     private val usernameCache = mutableMapOf<String, String?>()
 
@@ -41,25 +36,6 @@ object UserUtils {
      * 89371141db4f4ec485d68d1f63d01eec
      */
     fun isValidTokenOffline(token: String) = token.length >= 32
-
-    fun isValidToken(token: String): Boolean {
-        tokenCache[token]?.let { return it }
-
-        val request = HttpPost("https://authserver.mojang.com/validate").apply {
-            setHeader(HttpHeaders.CONTENT_TYPE, "application/json")
-            val body = JsonObject().apply {
-                addProperty("accessToken", token)
-            }
-            entity = StringEntity(body.toString())
-        }
-
-        client.execute(request).use { response ->
-            EntityUtils.consumeQuietly(response.entity)
-            val isValid = response.statusLine.statusCode == 204
-            tokenCache[token] = isValid
-            return isValid
-        }
-    }
 
     fun getUsername(uuid: String): String? {
         uuidCache[uuid]?.let { return it }
