@@ -39,7 +39,7 @@ import kotlin.math.sin
 
 object AntiFireball : Module("AntiFireball", Category.PLAYER, hideModule = false) {
 
-    private val indicators by boolean("indicators-FireBall", true)
+    private val indicators by boolean("Indicator", true)
 
     private val range by float("Range", 4.5f, 3f..8f)
     private val swing by choices("Swing", arrayOf("Normal", "Packet", "None"), "Normal")

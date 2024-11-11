@@ -36,19 +36,20 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.pow
 
+
 object StorageESP : Module("StorageESP", Category.VISUAL) {
     private val mode by
-        ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "Glow", "2D", "WireFrame"), "Outline")
+    ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "Glow", "2D", "WireFrame"), "Outline")
 
-        private val glowRenderScale by float("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
-        private val glowRadius by int("Glow-Radius", 4, 1..5) { mode == "Glow" }
-        private val glowFade by int("Glow-Fade", 10, 0..30) { mode == "Glow" }
-        private val glowTargetAlpha by float("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
+    private val glowRenderScale by float("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
+    private val glowRadius by int("Glow-Radius", 4, 1..5) { mode == "Glow" }
+    private val glowFade by int("Glow-Fade", 10, 0..30) { mode == "Glow" }
+    private val glowTargetAlpha by float("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
 
     private val customColor by boolean("CustomColor", false)
-        private val colorRed by int("R", 255, 0..255) { customColor }
-        private val colorGreen by int("G", 179, 0..255) { customColor }
-        private val colorBlue by int("B", 72, 0..255) { customColor }
+    private val colorRed by int("R", 255, 0..255) { customColor }
+    private val colorGreen by int("G", 179, 0..255) { customColor }
+    private val colorBlue by int("B", 72, 0..255) { customColor }
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..500) {
         override fun onUpdate(value: Int) {
@@ -78,8 +79,18 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
     private fun getColor(tileEntity: TileEntity): Color? {
         return if (customColor) {
             when {
-                chest && tileEntity is TileEntityChest && tileEntity !in clickedTileEntities -> Color(colorRed, colorGreen, colorBlue)
-                enderChest && tileEntity is TileEntityEnderChest && tileEntity !in clickedTileEntities -> Color(colorRed, colorGreen, colorBlue)
+                chest && tileEntity is TileEntityChest && tileEntity !in clickedTileEntities -> Color(
+                    colorRed,
+                    colorGreen,
+                    colorBlue
+                )
+
+                enderChest && tileEntity is TileEntityEnderChest && tileEntity !in clickedTileEntities -> Color(
+                    colorRed,
+                    colorGreen,
+                    colorBlue
+                )
+
                 furnace && tileEntity is TileEntityFurnace -> Color(colorRed, colorGreen, colorBlue)
                 dispenser && tileEntity is TileEntityDispenser -> Color(colorRed, colorGreen, colorBlue)
                 hopper && tileEntity is TileEntityHopper -> Color(colorRed, colorGreen, colorBlue)
@@ -137,7 +148,14 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
                     if (onLook && !isLookingOnEntities(tileEntity, maxAngleDifference.toDouble()))
                         continue
 
-                    if (!thruBlocks && !RotationUtils.isVisible(Vec3(tileEntityPos.x.toDouble(), tileEntityPos.y.toDouble(), tileEntityPos.z.toDouble())))
+                    if (!thruBlocks && !RotationUtils.isVisible(
+                            Vec3(
+                                tileEntityPos.x.toDouble(),
+                                tileEntityPos.y.toDouble(),
+                                tileEntityPos.z.toDouble()
+                            )
+                        )
+                    )
                         continue
 
                     when (mode) {
@@ -177,7 +195,7 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
                                 event.partialTicks,
                                 -1
                             )
-
+                            glColor(color)
                             TileEntityRendererDispatcher.instance.renderTileEntity(
                                 tileEntity,
                                 event.partialTicks,
@@ -256,7 +274,7 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
 
             glColor(Color(255, 255, 255, 255))
             mc.gameSettings.gammaSetting = gamma
-            } catch (ignored: Exception) {
+        } catch (ignored: Exception) {
         }
     }
 
@@ -266,7 +284,6 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
             return
 
         val renderManager = mc.renderManager
-        GlowShader.startDraw(event.partialTicks, glowRenderScale)
 
         try {
             mc.theWorld.loadedTileEntityList
@@ -288,7 +305,14 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
                             if (onLook && !isLookingOnEntities(entity, maxAngleDifference.toDouble()))
                                 continue
 
-                            if (!thruBlocks && !RotationUtils.isVisible(Vec3(entityPos.x.toDouble(), entityPos.y.toDouble(), entityPos.z.toDouble())))
+                            if (!thruBlocks && !RotationUtils.isVisible(
+                                    Vec3(
+                                        entityPos.x.toDouble(),
+                                        entityPos.y.toDouble(),
+                                        entityPos.z.toDouble()
+                                    )
+                                )
+                            )
                                 continue
 
                             TileEntityRendererDispatcher.instance.renderTileEntityAt(
@@ -306,7 +330,5 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
         } catch (ex: Exception) {
             LOGGER.error("An error occurred while rendering all storages for shader esp", ex)
         }
-
-       GlowShader.stopDraw(Color(0, 66, 255), glowRadius, glowFade, glowTargetAlpha)
     }
 }

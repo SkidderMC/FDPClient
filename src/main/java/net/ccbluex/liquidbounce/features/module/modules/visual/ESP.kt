@@ -39,22 +39,24 @@ import kotlin.math.pow
 
 object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
 
-    val mode by ListValue("Mode",
-        arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "Outline", "Glow"), "Box")
+    val mode by choices(
+        "Mode",
+        arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "Outline", "Glow"), "Box"
+    )
 
-        val outlineWidth by float("Outline-Width", 3f, 0.5f..5f) { mode == "Outline" }
+    val outlineWidth by float("Outline-Width", 3f, 0.5f..5f) { mode == "Outline" }
 
-        val wireframeWidth by float("WireFrame-Width", 2f, 0.5f..5f) { mode == "WireFrame" }
+    val wireframeWidth by float("WireFrame-Width", 2f, 0.5f..5f) { mode == "WireFrame" }
 
-        private val glowRenderScale by float("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
-        private val glowRadius by int("Glow-Radius", 4, 1..5) { mode == "Glow" }
-        private val glowFade by int("Glow-Fade", 10, 0..30) { mode == "Glow" }
-        private val glowTargetAlpha by float("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
+    private val glowRenderScale by float("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
+    private val glowRadius by int("Glow-Radius", 4, 1..5) { mode == "Glow" }
+    private val glowFade by int("Glow-Fade", 10, 0..30) { mode == "Glow" }
+    private val glowTargetAlpha by float("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
 
     private val colorRainbow by boolean("Rainbow", false)
-        private val colorRed by int("R", 255, 0..255) { !colorRainbow }
-        private val colorGreen by int("G", 255, 0..255) { !colorRainbow }
-        private val colorBlue by int("B", 255, 0..255) { !colorRainbow }
+    private val colorRed by int("R", 255, 0..255) { !colorRainbow }
+    private val colorGreen by int("G", 255, 0..255) { !colorRainbow }
+    private val colorBlue by int("B", 255, 0..255) { !colorRainbow }
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
         override fun onUpdate(value: Int) {
@@ -201,8 +203,6 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
         if (mc.theWorld == null || mode != "Glow")
             return
 
-        GlowShader.startDraw(event.partialTicks, glowRenderScale)
-
         renderNameTags = false
 
         try {
@@ -222,8 +222,6 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
         }
 
         renderNameTags = true
-
-        GlowShader.stopDraw(getColor(), glowRadius, glowFade, glowTargetAlpha)
     }
 
     override val tag
@@ -276,6 +274,7 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
 
         return if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
     }
+
     fun shouldRender(entity: EntityLivingBase): Boolean {
         return (bot || !isBot(entity))
     }

@@ -24,6 +24,7 @@ import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.setColour
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInOutQuadX
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.*
@@ -4035,5 +4036,18 @@ object RenderUtils : MinecraftInstance() {
         glDisable(2848)
         glDisable(3042)
         glEnable(2929)
+    }
+
+    fun startDrawing() {
+        glEnable(3042)
+        glEnable(3042)
+        glBlendFunc(770, 771)
+        glEnable(2848)
+        glDisable(3553)
+        glDisable(2929)
+        Minecraft.getMinecraft().entityRenderer.setupCameraTransform(
+            Minecraft.getMinecraft().timer.renderPartialTicks,
+            0
+        )
     }
 }

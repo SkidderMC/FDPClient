@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils.login
 
@@ -16,28 +16,38 @@ fun me.liuli.elixir.compat.Session.intoMinecraftSession() = Session(username, uu
 
 object LoginUtils : MinecraftInstance() {
 
-    fun loginSessionId(sessionId: String): LoginResult {
-        val decodedSessionData = try {
-            String(Base64.getDecoder().decode(sessionId.split(".")[1]), Charsets.UTF_8)
+    fun loginSessionId(sessionToken: String): LoginResult {
+        val payload = try {
+            val base64Payload = sessionToken.split(".")[1]
+            String(Base64.getDecoder().decode(base64Payload), Charsets.UTF_8)
         } catch (e: Exception) {
             return LoginResult.FAILED_PARSE_TOKEN
         }
 
         val sessionObject = try {
-            JsonParser().parse(decodedSessionData).asJsonObject
-        } catch (e: java.lang.Exception) {
+            JsonParser().parse(payload).asJsonObject
+        } catch (e: Exception) {
             return LoginResult.FAILED_PARSE_TOKEN
         }
-        val uuid = sessionObject["spr"].asString
-        val accessToken = sessionObject["yggt"].asString
 
-        if (!UserUtils.isValidToken(accessToken)) {
-            return LoginResult.INVALID_ACCOUNT_DATA
+        val uuid = sessionObject["profiles"]?.asJsonObject?.get("mc")?.asString ?: return LoginResult.FAILED_PARSE_TOKEN
+
+//        Note: This is replaced with simple check for now.
+//        if (!UserUtils.isValidToken(ACCESS_TOKEN)) {
+//            return LoginResult.INVALID_ACCOUNT_DATA
+//        }
+        if (sessionToken.contains(":")) {
+            return LoginResult.FAILED_PARSE_TOKEN
         }
 
         val username = UserUtils.getUsername(uuid) ?: return LoginResult.INVALID_ACCOUNT_DATA
 
-        mc.session = Session(username, uuid, accessToken, "mojang")
+        try {
+            mc.session = Session(username, uuid, sessionToken, "microsoft")
+        } catch (e: Exception) {
+            return LoginResult.INVALID_ACCOUNT_DATA
+        }
+
         callEvent(SessionEvent())
 
         return LoginResult.LOGGED

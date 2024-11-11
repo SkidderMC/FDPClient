@@ -150,7 +150,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                     randomNameButton.enabled = false
 
                     login(it, {
-                        status = "§aLogged into ${mc.session.username}."
+                        status = "§aLogged into §f§l${mc.session.username}§a."
                     }, { exception ->
                         status = "§cLogin failed due to '${exception.message}'."
                     }, {
@@ -170,7 +170,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                     randomNameButton.enabled = false
 
                     login(it, {
-                        status = "§aLogged into ${mc.session.username}."
+                        status = "§aLogged into §f§l${mc.session.username}§a."
                     }, { exception ->
                         status = "§cLogin failed due to '${exception.message}'."
                     }, {
@@ -184,7 +184,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             }
 
             5 -> { // Random name button
-                status = "§aLogged into ${randomAccount().name}."
+                status = "§aLogged into §f§l${randomAccount().name}§a."
             }
 
             6 -> { // Direct login button
@@ -366,7 +366,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                     randomNameButton.enabled = false
 
                     login(it, {
-                        status = "§aLogged into ${mc.session.username}."
+                        status = "§aLogged into §f§l${mc.session.username}§a."
                     }, { exception ->
                         status = "§cLogin failed due to '${exception.message}'."
                     }, {
@@ -433,7 +433,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                     minecraftAccount.session.username,
                     minecraftAccount.session.uuid,
                     minecraftAccount.session.token,
-                    "mojang"
+                    "microsoft"
                 )
                 callEvent(SessionEvent())
 

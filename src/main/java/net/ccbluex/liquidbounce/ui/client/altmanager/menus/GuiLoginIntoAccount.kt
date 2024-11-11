@@ -166,7 +166,7 @@ class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: B
                 crackedAccount.session.token, crackedAccount.session.type
             )
             callEvent(SessionEvent())
-            status = "§aLogged into ${mc.session.username}."
+            status = "§aLogged into §f§l${mc.session.username}§a."
         } else {
             accountsConfig.addAccount(crackedAccount)
             saveConfig(accountsConfig)

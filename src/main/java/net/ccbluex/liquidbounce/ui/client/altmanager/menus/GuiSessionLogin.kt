@@ -94,11 +94,10 @@ class GuiSessionLogin(private val prevGui: GuiAltManager) : GuiScreen() {
 
                     status = when (loginResult) {
                         LoginUtils.LoginResult.LOGGED -> {
-                            "§cYour name is now §f§l${mc.session.username}§c"
+                            "§aLogged into §f§l${mc.session.username}§a."
                         }
                         LoginUtils.LoginResult.FAILED_PARSE_TOKEN -> "§cFailed to parse Session ID!"
                         LoginUtils.LoginResult.INVALID_ACCOUNT_DATA -> "§cInvalid Session ID!"
-                        else -> ""
                     }
 
                     loginButton.enabled = true
