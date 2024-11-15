@@ -15,7 +15,8 @@ object WaitTickUtils : MinecraftInstance(), Listenable {
 
     private val scheduledActions = mutableListOf<ScheduledAction>()
 
-    fun schedule(ticks: Int, requester: Any? = null, action: () -> Unit) = conditionalSchedule(requester, ticks) { action(); true }
+    fun schedule(ticks: Int, requester: Any? = null, action: () -> Unit = { }) =
+        conditionalSchedule(requester, ticks) { action(); true }
 
     fun conditionalSchedule(requester: Any? = null, ticks: Int? = null, action: () -> Boolean) {
         if (ticks != null && ticks == 0) {

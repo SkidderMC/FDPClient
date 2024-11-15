@@ -11,9 +11,9 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Rotations
 import net.ccbluex.liquidbounce.utils.RaycastUtils.raycastEntity
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
+import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextBoolean
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextDouble
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextBoolean
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.entity.Entity
@@ -349,6 +349,9 @@ object RotationUtils : MinecraftInstance(), Listenable {
 
         val rotationDifference = hypot(yawDiff, pitchDiff)
 
+        if (rotationDifference <= getFixedAngleDelta() + minRotationDiff)
+            return currentRotation.plusDiff(targetRotation)
+
         val shortStopChance = activeSettings?.shortStopChance ?: 0
         val isShortStopActive = WaitTickUtils.hasScheduled(this)
 
@@ -357,7 +360,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
         ) {
             // Use the tick scheduling to our advantage as we can check if short stop is still active.
             if (!isShortStopActive) {
-                WaitTickUtils.schedule(activeSettings?.shortStopDuration?.random()?.plus(1) ?: 0, this) {}
+                WaitTickUtils.schedule(activeSettings?.shortStopDuration?.random()?.plus(1) ?: 0, this)
             }
 
             yawDiff = 0f
@@ -392,7 +395,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
             }
         }
 
-        return Rotation(currentRotation.yaw + straightLineYaw, currentRotation.pitch + straightLinePitch)
+        return currentRotation.plus(Rotation(straightLineYaw, straightLinePitch))
     }
 
     private fun applySlowDown(diff: Float, yaw: Boolean, action: (Float) -> Unit) {
@@ -451,9 +454,11 @@ object RotationUtils : MinecraftInstance(), Listenable {
         val horizontalDivision = if (isRelativeChosen) nextFloat(120f, 150f) else rotationDifference
         val verticalDivision = if (isRelativeChosen) nextFloat(120f, 150f) else rotationDifference
 
+        val min = getFixedAngleDelta()..1.5f + getFixedAngleDelta()
+
         return Rotation(
-            (rotationDifference / horizontalDivision * axis.first).coerceAtMost(180f),
-            (rotationDifference / verticalDivision * axis.second).coerceIn(-90f, 90f)
+            (rotationDifference / horizontalDivision * axis.first).coerceIn(min.random(), 180f),
+            (rotationDifference / verticalDivision * axis.second).coerceAtLeast(min.random())
         )
     }
 
@@ -637,7 +642,8 @@ object RotationUtils : MinecraftInstance(), Listenable {
         }
 
         if (resetTicks == 0) {
-            val distanceToPlayerRotation = rotationDifference(currentRotation ?: serverRotation, playerRotation)
+            val distanceToPlayerRotation =
+                rotationDifference(currentRotation ?: serverRotation, playerRotation).withGCD()
 
             if (distanceToPlayerRotation <= settings.angleResetDifference || !settings.applyServerSide) {
                 resetRotation()
@@ -688,10 +694,7 @@ object RotationUtils : MinecraftInstance(), Listenable {
 
         val smallestAnglePossible = getFixedAngleDelta()
 
-        val gcdRoundedTarget =
-            (rotationDifference(target, current) / smallestAnglePossible).roundToInt() * smallestAnglePossible
-
-        return gcdRoundedTarget > smallestAnglePossible * multiplier
+        return rotationDifference(target, current).withGCD() > smallestAnglePossible * multiplier
     }
 
     /**

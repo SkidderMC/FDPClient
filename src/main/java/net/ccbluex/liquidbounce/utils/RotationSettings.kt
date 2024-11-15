@@ -6,7 +6,14 @@
 package net.ccbluex.liquidbounce.utils
 
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.value.*
+import net.ccbluex.liquidbounce.utils.extensions.withGCD
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.int
+import net.ccbluex.liquidbounce.value.intRange
 
 @Suppress("MemberVisibilityCanBePrivate")
 open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true }) {
@@ -55,9 +62,10 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
         override fun isSupported() = !maxVerticalAngleChangeValue.isMinimal() && rotationsActive && generalApply()
     }
 
-    open val angleResetDifferenceValue = FloatValue(
-        "AngleResetDifference", 5f, 0.1f..180f
-    ) { rotationsActive && applyServerSide && generalApply() }
+    open val angleResetDifferenceValue: FloatValue = object : FloatValue("AngleResetDifference", 5f.withGCD(), 0.0f..180f) {
+        override fun onChange(oldValue: Float, newValue: Float) = newValue.withGCD().coerceIn(range)
+        override fun isSupported() = rotationsActive && applyServerSide && generalApply()
+    }
 
     open val minRotationDifferenceValue = FloatValue(
         "MinRotationDifference", 0f, 0f..1f

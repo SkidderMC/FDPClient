@@ -450,7 +450,9 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         synchronized(packetQueue) {
             packetQueue.entries.removeAll { (packet, timestamp) ->
                 if (timestamp <= System.currentTimeMillis() - delay) {
-                    PacketUtils.queuedPackets.add(packet)
+                    synchronized(PacketUtils.queuedPackets) {
+                        PacketUtils.queuedPackets.add(packet)
+                    }
                     true
                 } else false
             }
@@ -469,7 +471,9 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         synchronized(packetQueue) {
             packetQueue.entries.removeAll { (packet, timestamp) ->
                 if (timestamp <= time) {
-                    PacketUtils.queuedPackets.add(packet)
+                    synchronized(PacketUtils.queuedPackets) {
+                        PacketUtils.queuedPackets.add(packet)
+                    }
                     true
                 } else false
             }
@@ -504,9 +508,11 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         }
 
         synchronized(packetQueue) {
-            if (handlePackets)
-                PacketUtils.queuedPackets.addAll(packetQueue.keys)
-
+            if (handlePackets) {
+                synchronized(PacketUtils.queuedPackets) {
+                    PacketUtils.queuedPackets.addAll(packetQueue.keys)
+                }
+            }
             packetQueue.clear()
         }
 
@@ -630,7 +636,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         get() = if (rainbow) rainbow() else Color(red, green, blue)
 
     fun shouldBacktrack() =
-        mc.thePlayer != null && target != null && mc.thePlayer.health > 0 && (target!!.health > 0 || target!!.health.isNaN()) && mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR && System.currentTimeMillis() >= delayForNextBacktrack && target?.let {
+        mc.thePlayer != null && mc.theWorld != null && target != null && mc.thePlayer.health > 0 && (target!!.health > 0 || target!!.health.isNaN()) && mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR && System.currentTimeMillis() >= delayForNextBacktrack && target?.let {
             isSelected(it, true) && (mc.thePlayer?.ticksExisted ?: 0) > 20 && !ignoreWholeTick
         } == true
 

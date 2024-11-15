@@ -12,6 +12,7 @@ import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.fml.client.config.GuiButtonExt;
+import net.minecraftforge.fml.client.config.GuiSlider;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import org.spongepowered.asm.mixin.Mixin;
@@ -26,7 +27,13 @@ import static net.minecraft.client.renderer.GlStateManager.resetColor;
 @SideOnly(Side.CLIENT)
 public abstract class MixinGuiButtonExt extends GuiButton {
     @Unique
-    private float progress;
+    private long startTime = -1L;
+
+    @Unique
+    private boolean lastHover = false;
+
+    @Unique
+    private float progress = xPosition;
 
     public MixinGuiButtonExt(int p_i1020_1_, int p_i1020_2_, int p_i1020_3_, String p_i1020_4_) {
         super(p_i1020_1_, p_i1020_2_, p_i1020_3_, p_i1020_4_);
@@ -45,19 +52,35 @@ public abstract class MixinGuiButtonExt extends GuiButton {
 
         hovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
 
-        final float deltaTime = RenderUtils.INSTANCE.getDeltaTime();
+        float supposedWidth = width;
 
-        progress += (enabled && hovered ? 0.85f : -0.85f) * deltaTime;
-        progress = MathHelper.clamp_float(progress, 0f, width);
+        if ((Object) this instanceof GuiSlider) {
+            supposedWidth *= (float) ((GuiSlider) (Object) this).sliderValue;
+            hovered = true;
+        }
+
+        if (hovered != lastHover) {
+            if (System.currentTimeMillis() - startTime > 200L) {
+                startTime = System.currentTimeMillis();
+            }
+            lastHover = hovered;
+        }
+
+        long elapsed = System.currentTimeMillis() - startTime;
+
+        float startingPos = enabled && hovered ? xPosition : progress;
+        float endingPos = enabled && hovered ? xPosition + supposedWidth : xPosition;
+
+        progress = (int) (startingPos + (endingPos - startingPos) * MathHelper.clamp_float(elapsed / 200f, 0f, 1f));
 
         float radius = 2.5F;
 
         // Draw original
         RenderUtils.INSTANCE.drawRoundedRect(xPosition, yPosition, xPosition + width, yPosition + height, enabled ? new Color(0F, 0F, 0F, 120 / 255f).getRGB() : new Color(0.5F, 0.5F, 0.5F, 0.5F).getRGB(), radius);
 
-        if (enabled && progress != 0f) {
+        if (enabled && progress != xPosition) {
             // Draw blue overlay
-            RenderUtils.INSTANCE.drawRoundedRect(xPosition, yPosition, xPosition + (int) progress, yPosition + height, new Color(0F, 0F, 1F, 1F).getRGB(), radius);
+            RenderUtils.INSTANCE.drawRoundedRect(xPosition, yPosition, progress, yPosition + height, new Color(0F, 0F, 1F, 1F).getRGB(), radius);
         }
 
         mc.getTextureManager().bindTexture(buttonTextures);
