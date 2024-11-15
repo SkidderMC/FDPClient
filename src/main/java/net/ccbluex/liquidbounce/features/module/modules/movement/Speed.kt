@@ -180,6 +180,13 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
     val lowHop by boolean("LowHop", true) { mode.get() == "UNCPHopNew" }
     val airStrafe by boolean("AirStrafe", true) { mode.get() == "UNCPHopNew" }
 
+    // MatrixHop Speed
+    val timerSpeed by boolean("TimerSpeed", true) { mode.get() == "MatrixHop" }
+    val matrixLowHop by boolean("LowHop", true)
+    { mode.get() == "MatrixHop" || mode.get() == "MatrixSlowHop" }
+    val extraGroundBoost by float("ExtraGroundBoost", 0.2f, 0f..0.5f)
+    { mode.get() == "MatrixHop" || mode.get() == "MatrixSlowHop" }
+
     // HypixelLowHop Speed
     val glide by boolean("Glide", true) { mode.get() == "HypixelLowHop" }
 

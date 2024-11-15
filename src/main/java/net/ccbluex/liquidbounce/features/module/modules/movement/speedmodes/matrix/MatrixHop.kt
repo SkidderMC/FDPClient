@@ -5,10 +5,11 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.matrix
 
+import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
+import net.ccbluex.liquidbounce.utils.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
-import net.ccbluex.liquidbounce.utils.extensions.tryJump
 
 object MatrixHop : SpeedMode("MatrixHop") {
 
@@ -17,24 +18,24 @@ object MatrixHop : SpeedMode("MatrixHop") {
         if (player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
 
         if (player.isMoving) {
-            if (player.isAirBorne && player.fallDistance > 1.215f) {
+            if (!player.onGround && player.fallDistance > 1.215f) {
                 mc.timer.timerSpeed = 1f
                 return
             }
 
             if (player.onGround) {
-                strafe()
-                player.tryJump()
+                strafe(speed + Speed.extraGroundBoost)
+                player.motionY = 0.42 - if (Speed.matrixLowHop) 3E-3 else 0.0
                 if (player.motionY > 0) {
-                    mc.timer.timerSpeed = 1.0953f
+                    if (Speed.timerSpeed) mc.timer.timerSpeed = 1.0853f
                 }
             } else {
                 if (player.motionY < 0) {
-                    mc.timer.timerSpeed = 0.9185f
+                    if (Speed.timerSpeed) mc.timer.timerSpeed = 0.9185f
                 }
             }
         } else {
-            mc.timer.timerSpeed = 1f
+            if (Speed.timerSpeed) mc.timer.timerSpeed = 1f
         }
     }
 }

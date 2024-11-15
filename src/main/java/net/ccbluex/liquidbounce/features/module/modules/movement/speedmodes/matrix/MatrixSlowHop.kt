@@ -5,13 +5,14 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.matrix
 
+import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
+import net.ccbluex.liquidbounce.utils.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
-import net.ccbluex.liquidbounce.utils.extensions.tryJump
 
 object MatrixSlowHop : SpeedMode("MatrixSlowHop") {
-    
+
     override fun onUpdate() {
         val player = mc.thePlayer ?: return
         if (player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
@@ -24,9 +25,9 @@ object MatrixSlowHop : SpeedMode("MatrixSlowHop") {
             }
 
             if (player.onGround) {
-                player.tryJump()
+                player.motionY = 0.42 - if (Speed.matrixLowHop) 3E-3 else 0.0
                 mc.timer.timerSpeed = 0.5195f
-                strafe()
+                strafe(speed + Speed.extraGroundBoost)
             } else {
                 mc.timer.timerSpeed = 1.0973f
             }
