@@ -12,12 +12,12 @@ import net.ccbluex.liquidbounce.value.boolean
 
 object DiscordRPCModule : Module("DiscordRPC", Category.CLIENT, hideModule = false) {
 
-    val showServerValue = boolean("ShowServer", false)
-    val showNameValue = boolean("ShowName", true)
-    val showHealthValue = boolean("ShowHealth", false)
-    val showOtherValue = boolean("ShowOther", false)
-    val showModuleValue = boolean("ShowModule", false)
-    val animated = boolean("ShouldAnimate", true)
+    val showServerValue by boolean("ShowServer", false)
+    val showNameValue by boolean("ShowName", true)
+    val showHealthValue by boolean("ShowHealth", false)
+    val showOtherValue by boolean("ShowOther", false)
+    val showModuleValue by boolean("ShowModule", false)
+    val animated by boolean("ShouldAnimate", true)
 
     override fun onEnable() {
         discordRPC.run()

@@ -100,7 +100,7 @@ object DiscordRPC : MinecraftInstance() {
             discordRPCModule = DiscordRPCModule
 
             discordRPCModule?.let { module ->
-                val logoUrl = if (module.animated.get()) {
+                val logoUrl = if (module.animated) {
                     "https://skiddermc.github.io/fdp/rpc/fdp.gif"
                 } else {
                     "https://skiddermc.github.io/fdp/rpc/fdp.png"
@@ -113,21 +113,21 @@ object DiscordRPC : MinecraftInstance() {
 
                 val serverInfo = buildString {
                     val serverIP = ServerUtils.remoteIp?.let {
-                        if (module.showServerValue.get()) ServerUtils.hideSensitiveInformation(it) else null
+                        if (module.showServerValue) ServerUtils.hideSensitiveInformation(it) else null
                     }
 
                     if (serverIP != null) append("Server: $serverIP\n")
 
-                    if (module.showNameValue.get()) append("IGN: ${mc.thePlayer?.name ?: mc.session?.username ?: "Unknown"}\n")
+                    if (module.showNameValue) append("IGN: ${mc.thePlayer?.name ?: mc.session?.username ?: "Unknown"}\n")
 
-                    if (module.showHealthValue.get()) append("HP: ${mc.thePlayer?.health ?: "N/A"}\n")
+                    if (module.showHealthValue) append("HP: ${mc.thePlayer?.health ?: "N/A"}\n")
 
-                    if (module.showModuleValue.get()) {
+                    if (module.showModuleValue) {
                         val enabledModules = modules.count { it.state }
                         append("Enable: $enabledModules of ${modules.size} Modules\n")
                     }
 
-                    if (module.showOtherValue.get()) {
+                    if (module.showOtherValue) {
                         val sessionTime = if (mc.isSingleplayer) "SinglePlayer\n" else formatSessionTime()
                         append("Time: $sessionTime")
                     }

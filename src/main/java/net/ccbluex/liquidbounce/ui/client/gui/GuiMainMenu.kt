@@ -115,7 +115,7 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
                 btnLanguage.hoverFade > 0 -> mc.displayGuiScreen(GuiLanguage(this, mc.gameSettings, mc.languageManager))
                 btnCommitInfo.hoverFade > 0 -> mc.displayGuiScreen(GuiCommitInfo())
                 btnForgeModList.hoverFade > 0 -> mc.displayGuiScreen(GuiModList(mc.currentScreen))
-                btnCosmetics.hoverFade > 0 -> mc.displayGuiScreen(GuiTheme())
+                btnCosmetics.hoverFade > 0 -> mc.displayGuiScreen(GuiCommitInfo())
                 btnClickGUI.hoverFade > 0 -> mc.displayGuiScreen(ClickGui)
                 btnAddAccount.hoverFade > 0 -> mc.displayGuiScreen(GuiAltManager(this))
             }

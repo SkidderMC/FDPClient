@@ -42,8 +42,6 @@ object ClientThemesUtils {
         "Soniga"
     ) { false }
 
-    var textValue by boolean("TextStaticColor", false)
-
     var ThemeFadeSpeed by int("Fade-speed", 7, 1..10)
     var updown by boolean("Fade-Type", false)
 
