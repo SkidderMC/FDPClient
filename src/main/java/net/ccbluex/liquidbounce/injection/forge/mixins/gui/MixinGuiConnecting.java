@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
@@ -33,20 +33,6 @@ public abstract class MixinGuiConnecting extends GuiScreen {
     }
 
     /**
-     * Hides sensitive information from LiquidProxy addresses.
-     */
-    @Unique
-    private static String hideSensitiveInformation(String address) {
-        if (address.contains(".liquidbounce.net")) {
-            return "<redacted>.liquidbounce.net";
-        } else if (address.contains(".liquidproxy.net")) {
-            return "<redacted>.liquidproxy.net";
-        } else {
-            return address;
-        }
-    }
-
-    /**
      * @author CCBlueX
      */
     @Overwrite
@@ -61,7 +47,7 @@ public abstract class MixinGuiConnecting extends GuiScreen {
 
         final ServerData serverData = mc.getCurrentServerData();
         if (serverData != null) {
-            ip = hideSensitiveInformation(serverData.serverIP);
+            ip = ServerUtils.INSTANCE.hideSensitiveInformation(serverData.serverIP);
         }
 
         Fonts.font35.drawCenteredString("Connecting to", scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 4f + 110, 0xFFFFFF, true);

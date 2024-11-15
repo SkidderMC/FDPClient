@@ -162,6 +162,12 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             serverSneakState = sneaking;
         }
 
+        if (motionEvent.getOnGround()) {
+            MovementUtils.INSTANCE.setAirTicks(0);
+        } else {
+            MovementUtils.INSTANCE.setAirTicks(MovementUtils.INSTANCE.getAirTicks() + 1);
+        }
+
         if (isCurrentViewEntity()) {
             float yaw = rotationYaw;
             float pitch = rotationPitch;

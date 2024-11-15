@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils
 
@@ -57,6 +57,19 @@ object ServerUtils : MinecraftInstance() {
                 )
             }.start()
         } else mc.displayGuiScreen(GuiConnecting(GuiMultiplayer(GuiMainMenu()), mc, serverData))
+    }
+
+    /**
+     * Hides sensitive information from LiquidProxy addresses.
+     */
+    fun hideSensitiveInformation(address: String): String {
+        return if (address.contains(".liquidbounce.net")) {
+            "<redacted>.liquidbounce.net"
+        } else if (address.contains(".liquidproxy.net")) {
+            "<redacted>.liquidproxy.net"
+        } else {
+            address.split(":")[0]
+        }
     }
 
     val remoteIp: String

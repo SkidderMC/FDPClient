@@ -112,15 +112,34 @@ object DiscordRPC : MinecraftInstance() {
                 builder.setDetails("$fdpwebsite$CLIENT_VERSION")
 
                 // Set display info based on module settings
-                val serverInfo = ServerUtils.remoteIp.let { ip ->
-                    buildString {
-                        if (module.showServerValue.get()) append("Server: $ip\n")
-                        if (module.showNameValue.get()) append("IGN: ${mc.thePlayer?.name ?: mc.session?.username}\n")
-                        if (module.showHealthValue.get()) append("HP: ${mc.thePlayer?.health}\n")
-                        if (module.showModuleValue.get()) append("Enable: ${modules.count { it.state }} of ${modules.size} Modules\n")
-                        if (module.showOtherValue.get()) append("Time: ${if (mc.isSingleplayer) "SinglePlayer\n" else formatSessionTime()}\n")
+                val serverInfo = buildString {
+                    // Obter o IP remoto de forma segura usando ServerUtils
+                    val serverIP = ServerUtils.remoteIp?.let {
+                        if (module.showServerValue.get()) ServerUtils.hideSensitiveInformation(it) else null
+                    }
+
+                    // Adicionar informações do servidor
+                    if (serverIP != null) append("Server: $serverIP\n")
+
+                    // Adicionar o nome do jogador
+                    if (module.showNameValue.get()) append("IGN: ${mc.thePlayer?.name ?: mc.session?.username ?: "Unknown"}\n")
+
+                    // Adicionar informações de saúde
+                    if (module.showHealthValue.get()) append("HP: ${mc.thePlayer?.health ?: "N/A"}\n")
+
+                    // Adicionar informações sobre módulos ativos
+                    if (module.showModuleValue.get()) {
+                        val enabledModules = modules.count { it.state }
+                        append("Enable: $enabledModules of ${modules.size} Modules\n")
+                    }
+
+                    // Adicionar tempo de sessão ou informação sobre Singleplayer
+                    if (module.showOtherValue.get()) {
+                        val sessionTime = if (mc.isSingleplayer) "SinglePlayer\n" else formatSessionTime()
+                        append("Time: $sessionTime")
                     }
                 }
+
 
                 builder.setState(if (serverInfo.equals("Loading", true)) "Loading" else serverInfo)
             }
