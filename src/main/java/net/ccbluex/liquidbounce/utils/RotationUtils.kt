@@ -420,31 +420,36 @@ object RotationUtils : MinecraftInstance(), Listenable {
             lastTick1 == 0f -> {
                 if ((diff <= smallestAngleGCD || diff > 50f) && nextBoolean())
                     action((lastTick1..diff).lerpWith(nextFloat(0.55f, 0.65f)))
-                else action((lastTick1..diff).lerpWith(nextFloat(0f, 0.2f)))
+                else action((lastTick1..diff).lerpWith(nextFloat(0.2f, 0.5f)))
             }
 
             // Second stage of slow start
             lastTick2 == 0f && abs(lastTick1) <= abs(diff) -> {
-                action((lastTick1..diff).lerpWith(nextFloat(0f, 0.4f)))
+                action((lastTick1..diff).lerpWith(nextFloat(0.2f, 0.5f)))
             }
 
             // Slow down before direction change
             abs(lastTick2) <= abs(lastTick1) && diff.sign != lastTick1.sign -> {
-                val beforeZero = nextFloat(0f, (0f - lastTick1) safeDiv (diff - lastTick1))
+                var transition = nextFloat(0f, (0f - lastTick1) safeDiv (diff - lastTick1))
 
-                action((lastTick1..diff).lerpWith(beforeZero))
+                if (nextBoolean())
+                    transition = nextFloat(0.3f, 0.7f)
+
+                action((lastTick1..diff).lerpWith(transition))
             }
 
             // Start slow after changing direction
             abs(lastTick2) >= abs(lastTick1) && diff.sign != lastTick1.sign -> {
-                action((lastTick1..diff).lerpWith(nextFloat(0f, 0.4f)))
+                val transition = if (nextBoolean()) nextFloat(0.3f, 0.7f) else nextFloat(0.2f, 0.5f)
+
+                action((lastTick1..diff).lerpWith(transition))
             }
         }
     }
 
     fun computeFactor(rotationDifference: Float, axis: Pair<Float, Float>, isRelativeChosen: Boolean): Rotation {
-        val horizontalDivision = if (isRelativeChosen) nextFloat(120f, 150f) else axis.first
-        val verticalDivision = if (isRelativeChosen) nextFloat(120f, 150f) else axis.second
+        val horizontalDivision = if (isRelativeChosen) nextFloat(120f, 150f) else rotationDifference
+        val verticalDivision = if (isRelativeChosen) nextFloat(120f, 150f) else rotationDifference
 
         return Rotation(
             (rotationDifference / horizontalDivision * axis.first).coerceAtMost(180f),
