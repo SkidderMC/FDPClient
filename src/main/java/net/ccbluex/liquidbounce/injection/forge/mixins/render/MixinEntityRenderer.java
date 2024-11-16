@@ -107,7 +107,7 @@ public abstract class MixinEntityRenderer {
     @ModifyConstant(method = "orientCamera", constant = @Constant(intValue = 8))
     private int injectCameraClip(int eight) {
         final CameraView cameraView = CameraView.INSTANCE;
-        return cameraView.getClipValue() && cameraView.handleEvents() ? 0 : eight;
+        return cameraView.getClip() ? 0 : eight;
     }
 
     @Inject(at = @At("HEAD"), method = "updateCameraAndRender")
