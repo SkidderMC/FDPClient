@@ -418,16 +418,18 @@ object RotationUtils : MinecraftInstance(), Listenable {
 
         val smallestAngleGCD = getFixedAngleDelta() + 2.5F
 
+        val diffAbs = abs(diff)
+
         when {
             // Slow start
             lastTick1 == 0f -> {
-                if ((diff <= smallestAngleGCD || diff > 50f) && nextBoolean())
+                if ((diffAbs <= smallestAngleGCD || diffAbs > 50f) && nextBoolean())
                     action((lastTick1..diff).lerpWith(nextFloat(0.55f, 0.65f)))
                 else action((lastTick1..diff).lerpWith(nextFloat(0.2f, 0.5f)))
             }
 
             // Second stage of slow start
-            lastTick2 == 0f && abs(lastTick1) <= abs(diff) -> {
+            lastTick2 == 0f && abs(lastTick1) <= diffAbs -> {
                 action((lastTick1..diff).lerpWith(nextFloat(0.2f, 0.5f)))
             }
 
