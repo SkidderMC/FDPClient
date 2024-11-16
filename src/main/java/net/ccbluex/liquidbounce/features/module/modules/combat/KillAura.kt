@@ -626,9 +626,23 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
                     }
 
                     if (isLastClick) {
-                        // We return false because when you click once then immediately release, the attack key's [pressed] status is false.
-                        // Since we simulate clicks, we are supposed to respect that behavior.
-                        mc.sendClickBlockToController(false)
+                        /**
+                         * This is used to update the block breaking progress, resulting in sending an animation packet.
+                         *
+                         * Setting this function's parameter to [false] would still obey vanilla clicking logic,
+                         * but only if you were releasing the click button immediately after pressing. Does not seem legit
+                         * in the long term, right? This is why we are going to set it to [true], so it can send the animation packet.
+                         */
+                        mc.sendClickBlockToController(true)
+                        /**
+                         * Since we want to simulate proper clicking behavior, we schedule the block break progress stop
+                         * in the next tick, since that is doable by the average player.
+                         */
+                        TickScheduler += {
+                            mc.sendClickBlockToController(false)
+                            // Swings are sent a tick after stopping the block break progress.
+                            clicks = 0
+                        }
                     }
                 }
             }
