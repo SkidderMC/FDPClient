@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel;
 
+import lombok.Setter;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule;
@@ -22,6 +23,7 @@ import net.minecraft.util.ResourceLocation;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public final class Panel {
 
@@ -38,14 +40,11 @@ public final class Panel {
     private int dragged;
     private int lastX, lastY;
 
-    public void setOpen(boolean open) {
-        this.open = open;
-    }
-
     public boolean getOpen() {
         return this.open;
     }
 
+    @Setter
     private boolean open;
 
     private float elementsHeight;
@@ -77,7 +76,7 @@ public final class Panel {
 
             elements.add(element);
 
-            moduleY += element.getHeight() + element.getExtendedHeight();
+            moduleY += (int) (element.getHeight() + element.getExtendedHeight());
         }
     }
 
@@ -86,7 +85,7 @@ public final class Panel {
     }
 
     public boolean handleScroll(int mouseX, int mouseY, int wheel) {
-        final int maxElements = FDPClient.INSTANCE.getModuleManager().getModule(ClickGUIModule.class).getMaxElements();
+        final int maxElements = Objects.requireNonNull(FDPClient.INSTANCE.getModuleManager().getModule(ClickGUIModule.class)).getMaxElements();
 
         if(mouseX >= getX() && mouseX <= getX() + 100 && mouseY >= getY() && mouseY <= getY() + 19 + elementsHeight) {
             if(wheel < 0 && scroll < elements.size() - maxElements) {
@@ -191,7 +190,7 @@ public final class Panel {
                 addition += element.getHeight();
 
                 if (element.isExtended()) {
-                    addition += element.getExtendedHeight();
+                    addition += (int) element.getExtendedHeight();
                 }
             }
         }

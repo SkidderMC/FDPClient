@@ -110,7 +110,6 @@ public class FDPDropdownClickGUI extends GuiScreen {
             sideGui.drawScreen(mouseX, mouseY, partialTicks, alphaAnimation);
         });
 
-
     }
 
     @Override

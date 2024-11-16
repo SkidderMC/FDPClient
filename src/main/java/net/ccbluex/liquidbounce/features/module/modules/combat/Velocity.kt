@@ -437,6 +437,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
         val player = mc.thePlayer ?: return
 
         if (mode != "IntaveReduce") return
+        if (!hasReceivedVelocity) return
 
         if (player.hurtTime == hurtTime && System.currentTimeMillis() - lastAttackTime <= 8000) {
             player.motionX *= reduceFactor

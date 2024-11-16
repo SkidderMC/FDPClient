@@ -39,25 +39,10 @@ public class Drag {
         }
     }
 
-    public final void onDrawNegX(int mouseX, int mouseY) {
-        if (dragging) {
-            xPos = -(mouseX - startX);
-            yPos = (mouseY - startY);
-        }
-    }
-
     public final void onClick(int mouseX, int mouseY, int button, boolean canDrag) {
         if (button == 0 && canDrag) {
             dragging = true;
             startX = (int) (mouseX - xPos);
-            startY = (int) (mouseY - yPos);
-        }
-    }
-
-    public final void onClickAddX(int mouseX, int mouseY, int button, boolean canDrag) {
-        if (button == 0 && canDrag) {
-            dragging = true;
-            startX = (int) (mouseX + xPos);
             startY = (int) (mouseY - yPos);
         }
     }

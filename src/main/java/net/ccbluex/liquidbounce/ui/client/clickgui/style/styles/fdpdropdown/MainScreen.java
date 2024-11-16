@@ -106,7 +106,7 @@ public class MainScreen implements Screen {
         }
 
         if (ClickGUIModule.INSTANCE.getScrollMode().equals("Value")) {
-            Main.allowedClickGuiHeight =  ClickGUIModule.INSTANCE.getClickHeight(); //    correto:         Main.allowedClickGuiHeight =  ClickGUIModule.INSTANCE.getClickHeight().floatValue();
+            Main.allowedClickGuiHeight =  ClickGUIModule.INSTANCE.getClickHeight();
         } else {
             ScaledResolution sr = new ScaledResolution(mc);
             Main.allowedClickGuiHeight = 2 * sr.getScaledHeight() / 3f;
@@ -116,10 +116,6 @@ public class MainScreen implements Screen {
 
 
         boolean hoveringMods = DrRenderUtils.isHovering(x, y + categoryRectHeight, rectWidth, allowedHeight, mouseX, mouseY);
-
-
-        float scaleAnim = Math.max(1, (float) openingAnimation.getOutput() + .7f);
-        float width = rectWidth;
 
         StencilUtil.initStencilToWrite();
         DrRenderUtils.drawRect2(x - 100, y + categoryRectHeight, rectWidth + 150, allowedHeight, -1);
