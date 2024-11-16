@@ -3,125 +3,100 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.manager;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.manager
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import net.ccbluex.liquidbounce.file.FileManager;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.utils.FileUtils;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.utils.JsonUtils;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.utils.Pair;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
+import net.ccbluex.liquidbounce.file.FileManager.deleteFile
+import net.ccbluex.liquidbounce.file.FileManager.settingsDir
+import net.ccbluex.liquidbounce.file.FileManager.writeFile
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
+import net.ccbluex.liquidbounce.utils.render.Pair
+import java.io.File
+import java.io.FileReader
+import java.io.IOException
+import java.util.*
 
 /**
  * @author opZywl - yzyGUI Manager
  */
-public final class GUIManager {
+class GUIManager {
 
-    private final Map<yzyCategory, Pair<Integer, Integer>> positions = new HashMap<>();
-    private final Map<yzyCategory, Boolean> extendeds = new HashMap<>();
+    val positions = mutableMapOf<yzyCategory, Pair<Int, Int?>>()
+    val extendeds = mutableMapOf<yzyCategory, Boolean>()
 
-    private final File guiDir = new File(FileManager.INSTANCE.getDir(), "zywlgui");
+    private fun getCategoryFile(category: yzyCategory): File =
+        File(settingsDir, "${category.name.lowercase(Locale.getDefault())}.yzygui")
 
-    public File getCategoryFile(final yzyCategory category) {
-        return new File(guiDir, category.name().toLowerCase() + ".zywl");
-    }
-
-    public void register() {
-        Arrays.asList(yzyCategory.values()).forEach(category -> {
-            final File categoryFile = this.getCategoryFile(category);
-
+    fun register() {
+        yzyCategory.values().forEach { category ->
+            val categoryFile = getCategoryFile(category)
             if (categoryFile.exists()) {
-                try (final Reader reader = new FileReader(categoryFile)) {
-                    final JsonElement element = new JsonParser().parse(reader);
+                try {
+                    FileReader(categoryFile).use { reader ->
+                        val element = JsonParser().parse(reader)
+                        if (element.isJsonObject) {
+                            val `object` = element.asJsonObject
 
-                    if (element.isJsonObject()) {
-                        final JsonObject object = element.getAsJsonObject();
+                            for ((key, value) in `object`.entrySet()) {
+                                when (key) {
+                                    "x" -> {
+                                        val positionX = value.asInt
 
-                        for (final Map.Entry<String, JsonElement> entry : object.entrySet()) {
-                            switch (entry.getKey()) {
-                                case "x": {
-                                    final int positionX = entry.getValue().getAsInt();
+                                        positions[category] =
+                                            Pair(positionX, null)
+                                    }
 
-                                    positions.put(category, new Pair<>(positionX, null));
+                                    "y" -> {
+                                        val positionY = value.asInt
 
-                                    break;
-                                }
+                                        val positions =
+                                            positions[category]!!
 
-                                case "y": {
-                                    final int positionY = entry.getValue().getAsInt();
+                                        positions.value = positionY
+                                    }
 
-                                    final Pair<Integer, Integer> positions = this.positions.get(category);
+                                    "extended" -> {
+                                        val extended = value.asBoolean
 
-                                    positions.setValue(positionY);
-
-                                    break;
-                                }
-
-                                case "extended": {
-                                    final boolean extended = entry.getValue().getAsBoolean();
-
-                                    extendeds.put(category, extended);
-
-                                    break;
+                                        extendeds[category] = extended
+                                    }
                                 }
                             }
                         }
                     }
-                } catch (final IOException exception) {
-                    this.save(category);
+                } catch (exception: IOException) {
+                    this.save(category)
                 }
             }
-        });
-    }
-
-    public void save(final yzyCategory category) {
-        final File categoryFile = this.getCategoryFile(category);
-
-        FileUtils.delete(categoryFile);
-
-        try {
-            if (categoryFile.createNewFile()) {
-                final JsonObject object = new JsonObject();
-
-                object.addProperty("x", positions.get(category).getKey());
-                object.addProperty("y", positions.get(category).getValue());
-                object.addProperty("extended", extendeds.get(category));
-
-                FileUtils.write(categoryFile, JsonUtils.PRETTY_GSON.toJson(object));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
-    public void save() {
-        Arrays.stream(yzyCategory.values()).forEach(this::save);
+    fun save(category: yzyCategory) {
+        val categoryFile = getCategoryFile(category)
+        deleteFile(categoryFile)
+        try {
+            if (categoryFile.createNewFile()) {
+                val jsonObject = JsonObject().apply {
+                    addProperty("x", positions[category]?.key ?: 0)
+                    addProperty("y", positions[category]?.value)
+                    addProperty("extended", extendeds[category] ?: false)
+                }
+                writeFile(categoryFile, PRETTY_GSON.toJson(jsonObject), true)
+            }
+        } catch (e: IOException) {
+            throw RuntimeException(e)
+        }
     }
 
-    public boolean isExtended(final yzyCategory category) {
-        return extendeds.getOrDefault(category, false);
+    fun save() {
+        yzyCategory.values().forEach { save(it) }
     }
 
-    public Pair<Integer, Integer> getPositions(final yzyCategory category) {
-        return positions.get(category);
-    }
+    fun isExtended(category: yzyCategory): Boolean =
+        extendeds[category] ?: false
 
-    public Map<yzyCategory, Pair<Integer, Integer>> getPositions() {
-        return positions;
-    }
-
-    public Map<yzyCategory, Boolean> getExtendeds() {
-        return extendeds;
-    }
-
+    fun getPositions(category: yzyCategory): Pair<Int, Int?> =
+        positions[category] ?: Pair(0, null)
 }

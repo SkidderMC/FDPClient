@@ -3,74 +3,47 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element
 
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel;
-import net.ccbluex.liquidbounce.utils.CPSCounter;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
+import net.ccbluex.liquidbounce.utils.CPSCounter
 
 /**
- * @author opZywl - Panel Element
+ * Panel Element - Abstract class
+ * @author opZywl
  */
-public abstract class PanelElement {
+abstract class PanelElement(
+    val parent: Panel,
+    var x: Int,
+    var y: Int,
+    var width: Int,
+    var height: Int
+) {
 
-    protected final Panel parent;
-    protected int x, y;
-    protected int width, height;
-
-    public PanelElement(final Panel panel, final int x, final int y, final int width, final int height) {
-        this.parent = panel;
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+    /**
+     * Check if the mouse is hovering over the element.
+     */
+    fun isHovering(mouseX: Int, mouseY: Int): Boolean {
+        return CPSCounter.isHovering(mouseX, mouseY, x, y, x + width, y + height)
     }
 
-    public Panel getParent() {
-        return parent;
-    }
+    /**
+     * Draw the panel element on the screen.
+     */
+    abstract fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float)
 
-    public void setX(int x) {
-        this.x = x;
-    }
+    /**
+     * Handle mouse click events.
+     */
+    abstract fun mouseClicked(mouseX: Int, mouseY: Int, button: Int)
 
-    public int getX() {
-        return x;
-    }
+    /**
+     * Handle mouse release events.
+     */
+    abstract fun mouseReleased(mouseX: Int, mouseY: Int, state: Int)
 
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public boolean isHovering(final int mouseX, final int mouseY) {
-        return CPSCounter.INSTANCE.isHovering(mouseX, mouseY, x, y, x + width, y + height);
-    }
-
-    public abstract void drawScreen(final int mouseX, final int mouseY, final float partialTicks);
-
-    public abstract void mouseClicked(final int mouseX, final int mouseY, final int button);
-
-    public abstract void mouseReleased(final int mouseX, final int mouseY, final int state);
-
-    public abstract void keyTyped(final char character, int code);
-
+    /**
+     * Handle keyboard input events.
+     */
+    abstract fun keyTyped(character: Char, code: Int)
 }

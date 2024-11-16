@@ -3,328 +3,170 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel
 
-import lombok.Setter;
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.yzyGUI;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.manager.GUIManager;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl.ModuleElement;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.utils.Pair;
-import net.ccbluex.liquidbounce.utils.CPSCounter;
-import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
+import net.ccbluex.liquidbounce.FDPClient.customFontManager
+import net.ccbluex.liquidbounce.FDPClient.guiManager
+import net.ccbluex.liquidbounce.FDPClient.moduleManager
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl.ModuleElement
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.yzyGUI
+import net.ccbluex.liquidbounce.utils.CPSCounter.isHovering
+import net.ccbluex.liquidbounce.utils.render.Pair
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.yzyRectangle
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.yzyTexture
+import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager.*
+import net.minecraft.util.ResourceLocation
+import java.awt.Color
+import java.util.*
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+/**
+ * @author opZywl - YZY GUI
+ */
+class Panel(
+    val parent: yzyGUI,
+    val category: yzyCategory,
+    var x: Int,
+    var y: Int
+) {
+    private val elements: MutableList<ModuleElement> = moduleManager.getModuleInCategory(category.parent).mapIndexed { index, module ->
+        ModuleElement(module, this, x + 1, PANEL_HEIGHT + 1 + index * ModuleElement.MODULE_HEIGHT, PANEL_WIDTH - 2, ModuleElement.MODULE_HEIGHT)
+    }.toMutableList()
 
-public final class Panel {
+    var width: Int = PANEL_WIDTH
+    var height: Int = PANEL_HEIGHT
 
-    public static final int PANEL_WIDTH = 100, PANEL_HEIGHT = 15;
+    private var dragged: Int = 0
+    private var lastX: Int = 0
+    private var lastY: Int = 0
 
-    private final List<ModuleElement> elements = new ArrayList<>();
-    private final yzyGUI parent;
-    private final yzyCategory category;
-    private int x, y;
-    private int width, height;
+    var open: Boolean = false
 
-    private static int scroll;
+    private var fade: Float = 0f
+    private var isDragging: Boolean = false
+    var isExtended: Boolean = false
 
-    private int dragged;
-    private int lastX, lastY;
+    private val elementsHeight = 0f
 
-    public boolean getOpen() {
-        return this.open;
+    fun isHovering(mouseX: Int, mouseY: Int): Boolean {
+        return isHovering(mouseX, mouseY, x, y, x + width, y + height)
     }
 
-    @Setter
-    private boolean open;
+    fun handleScroll(mouseX: Int, mouseY: Int, wheel: Int): Boolean {
+        val maxElements = moduleManager.getModule(ClickGUIModule::class.java)?.maxElements ?: 0
 
-    private float elementsHeight;
-
-    public int getFade() {
-        return (int) fade;
-    }
-
-    private float fade;
-    private boolean dragging, extended;
-
-    public Panel(final yzyGUI parent, final yzyCategory category,
-                 final int x, final int y) {
-        this.parent = parent;
-        this.category = category;
-        this.x = x;
-        this.y = y;
-        this.width = PANEL_WIDTH;
-        this.height = PANEL_HEIGHT;
-
-        int moduleY = height + 1;
-
-        for (final Module module : FDPClient.INSTANCE.getModuleManager().getModuleInCategory(category.getParent())) {
-            final ModuleElement element = new ModuleElement(
-                    module, this,
-                    x + 1, moduleY,
-                    width - 2, ModuleElement.MODULE_HEIGHT
-            );
-
-            elements.add(element);
-
-            moduleY += (int) (element.getHeight() + element.getExtendedHeight());
+        if (mouseX in x..(x + 100) && mouseY in y..(y + 19 + elementsHeight.toInt())) {
+            when {
+                wheel < 0 && dragged < elements.size - maxElements -> dragged++
+                wheel > 0 && dragged > 0 -> dragged--
+            }
+            return true
         }
+        return false
     }
 
-    public boolean isHovering(final int mouseX, final int mouseY) {
-        return CPSCounter.INSTANCE.isHovering(mouseX, mouseY, x, y, x + width, y + height);
-    }
+    fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        if (isDragging) {
+            x = mouseX + lastX
+            y = mouseY + lastY
+        }
 
-    public boolean handleScroll(int mouseX, int mouseY, int wheel) {
-        final int maxElements = Objects.requireNonNull(FDPClient.INSTANCE.getModuleManager().getModule(ClickGUIModule.class)).getMaxElements();
 
-        if(mouseX >= getX() && mouseX <= getX() + 100 && mouseY >= getY() && mouseY <= getY() + 19 + elementsHeight) {
-            if(wheel < 0 && scroll < elements.size() - maxElements) {
-                ++scroll;
-                if(scroll < 0)
-                    scroll = 0;
-            }else if(wheel > 0) {
-                --scroll;
-                if(scroll < 0)
-                    scroll = 0;
+        var panelHeight = height.toFloat()
+
+        for (element in elements) {
+            if (isExtended) {
+                panelHeight += element.height.toFloat()
             }
 
-            if(wheel < 0) {
-                if(dragged < elements.size() - maxElements)
-                    ++dragged;
-            }else if(wheel > 0 && dragged >= 1) {
-                --dragged;
-            }
-
-            return true;
+            panelHeight += element.getExtendedHeight()
         }
-        return false;
+
+        yzyRectangle(x - 0.5f, y - 0.5f, width + 1.0f, panelHeight + 3.0f, category.color)
+        yzyRectangle(x.toFloat(), y.toFloat(), width.toFloat(), panelHeight + 2.0f, Color(26, 26, 26))
+
+        customFontManager["lato-bold-15"].drawStringWithShadow(
+            category.name.lowercase(Locale.getDefault()),
+            (x + 3).toDouble(),
+            (y + (height / 4.0f) + 0.5f).toDouble(),
+            -1
+        )
+
+        pushMatrix()
+        enableAlpha()
+        enableBlend()
+
+        Minecraft.getMinecraft().textureManager.bindTexture(ResourceLocation("fdpclient/clickgui/zywl/icons/eye.png"))
+        val size = height - 7
+        yzyTexture(
+            (x + width - size * 2 - 7).toDouble(),
+            (y + (height / 4.0f)).toDouble(),
+            0.0f, 0.0f, size.toDouble(), size.toDouble(), size.toFloat(), size.toFloat(), category.color
+        )
+
+        Minecraft.getMinecraft().textureManager.bindTexture(category.getIcon())
+        yzyTexture(
+            (x + width - size - 3).toDouble(),
+            (y + (height / 4.0f)).toDouble(),
+            0.0f, 0.0f, size.toDouble(), size.toDouble(), size.toFloat(), size.toFloat(), category.color
+        )
+
+        disableBlend()
+        disableAlpha()
+        popMatrix()
+
+        if (isExtended) {
+            var addition = height
+            elements.forEach { element ->
+                element.x = x + 1
+                element.y = y + addition
+                element.drawScreen(mouseX, mouseY, partialTicks)
+                addition += element.height + if (element.isExtended) element.getExtendedHeight().toInt() else 0
+            }
+        }
     }
 
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        if (dragging) {
-            this.x = mouseX + lastX;
-            this.y = mouseY + lastY;
-        }
-
-        float panelHeight = height;
-
-        for (final ModuleElement element : elements) {
-            if (extended) {
-                panelHeight += element.getHeight();
-            }
-
-            panelHeight += element.getExtendedHeight();
-        }
-
-        RenderUtils.INSTANCE.yzyRectangle(
-                x - 0.5f, y - 0.5f,
-                width + 1.0f, panelHeight + 3.0f,
-                category.getColor()
-        );
-
-        RenderUtils.INSTANCE.yzyRectangle(
-                x, y,
-                width,
-                panelHeight + 2.0f,
-                new Color(26, 26, 26)
-        );
-
-        FDPClient.INSTANCE.getCustomFontManager().get("lato-bold-15")
-                .drawStringWithShadow(
-                        category.name().toLowerCase(),
-                        x + 3,
-                        y + (height / 4.0f) + 0.5f,
-                        -1
-                );
-
-        GlStateManager.pushMatrix();
-        GlStateManager.enableAlpha();
-        GlStateManager.enableBlend();
-
-        Minecraft.getMinecraft().getTextureManager().bindTexture(new ResourceLocation("fdpclient/clickgui/zywl/icons/eye.png"));
-
-        final int size = height - 7;
-
-        RenderUtils.INSTANCE.yzyTexture(
-                x + width - size - size - 7,
-                y + (height / 4.0f),
-                0.0f,
-                0.0f,
-                size, size, size, size,
-                category.getColor()
-        );
-
-        Minecraft.getMinecraft().getTextureManager().bindTexture(category.getIcon());
-
-        RenderUtils.INSTANCE.yzyTexture(
-                x + width - size - 3,
-                y + (height / 4.0f),
-                0.0f,
-                0.0f,
-                size, size, size, size,
-                category.getColor()
-        );
-
-        GlStateManager.disableBlend();
-        GlStateManager.disableAlpha();
-        GlStateManager.popMatrix();
-
-        if (extended) {
-            int addition = height;
-
-            for (final ModuleElement element : elements) {
-                element.setX(x + 1);
-                element.setY(y + addition);
-                element.drawScreen(mouseX, mouseY, partialTicks);
-
-                addition += element.getHeight();
-
-                if (element.isExtended()) {
-                    addition += (int) element.getExtendedHeight();
+    fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+        if (isHovering(mouseX, mouseY)) {
+            when (button) {
+                0 -> {
+                    isDragging = true
+                    lastX = x - mouseX
+                    lastY = y - mouseY
                 }
-            }
-        }
-    }
-
-    public void mouseClicked(final int mouseX, final int mouseY, final int button) {
-        final boolean last = extended;
-
-        if (this.isHovering(mouseX, mouseY)) {
-            if (button == 0) {
-                this.dragging = true;
-                this.lastX = x - mouseX;
-                this.lastY = y - mouseY;
-            } else if (button == 1) {
-                this.extended = !extended;
+                1 -> isExtended = !isExtended
             }
         }
 
-        if (extended) {
-            elements.forEach(element -> {
-                element.mouseClicked(mouseX, mouseY, button);
-
-                if (!last && extended) {
-                    element.setExtended(false);
-                }
-            });
-        }
+        if (isExtended) elements.forEach { it.mouseClicked(mouseX, mouseY, button) }
     }
 
-    public void mouseReleased(final int mouseX, final int mouseY, final int state) {
-        this.dragging = false;
-
-        if (extended) {
-            elements.forEach(element -> element.mouseReleased(mouseX, mouseY, state));
-        }
+    fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
+        isDragging = false
+        if (isExtended) elements.forEach { it.mouseReleased(mouseX, mouseY, state) }
     }
 
-    public void keyTyped(final char character, final int code) {
-        if (extended) {
-            elements.forEach(element -> element.keyTyped(character, code));
-        }
+    fun keyTyped(character: Char, code: Int) {
+        if (isExtended) elements.forEach { it.keyTyped(character, code) }
     }
 
-    void updateFade(final int delta) {
-        if(open) {
-            if(fade < elementsHeight) fade += 0.4F * delta;
-            if(fade > elementsHeight) fade = (int) elementsHeight;
-        }else{
-            if(fade > 0) fade -= 0.4F * delta;
-            if(fade < 0) fade = 0;
-        }
+    fun updateFade(delta: Int) {
+        fade = when {
+            open && fade < elementsHeight -> fade + 0.4f * delta
+            !open && fade > 0 -> fade - 0.4f * delta
+            else -> fade
+        }.coerceIn(0f, elementsHeight)
     }
 
-    public void onGuiClosed() {
-        final GUIManager guiManager = FDPClient.INSTANCE.getGuiManager();
-        final Pair<Integer, Integer> positions = new Pair<>(0, 0);
-
-        positions.setKey(x);
-        positions.setValue(y);
-
-        guiManager.getPositions().put(category, positions);
-        guiManager.getExtendeds().put(category, extended);
+    fun onGuiClosed() {
+        guiManager.positions[category] = Pair(x, y)
+        guiManager.extendeds[category] = isExtended
     }
 
-    public yzyGUI getParent() {
-        return parent;
+    companion object {
+        const val PANEL_WIDTH: Int = 100
+        const val PANEL_HEIGHT: Int = 15
     }
-
-    public yzyCategory getCategory() {
-        return category;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setLastX(int lastX) {
-        this.lastX = lastX;
-    }
-
-    public int getLastX() {
-        return lastX;
-    }
-
-    public void setLastY(int lastY) {
-        this.lastY = lastY;
-    }
-
-    public int getLastY() {
-        return lastY;
-    }
-
-    public void setDragging(boolean dragging) {
-        this.dragging = dragging;
-    }
-
-    public boolean isDragging() {
-        return dragging;
-    }
-
-    public void setExtended(boolean extended) {
-        this.extended = extended;
-    }
-
-    public boolean isExtended() {
-        return extended;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public void setWidth(int width) {
-        this.width = width;
-    }
-
-    public void setHeight(int height) {
-        this.height = height;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
 }

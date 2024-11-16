@@ -3,68 +3,68 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl
 
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.font.renderer.FontRenderer;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel;
-import net.ccbluex.liquidbounce.value.ListValue;
-import net.ccbluex.liquidbounce.value.Value;
-
-import java.awt.*;
-import java.util.Arrays;
-import java.util.List;
+import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.font.renderer.FontRenderer
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement
+import net.ccbluex.liquidbounce.value.ListValue
+import java.awt.Color
 
 /**
- * @author opZywl - Elements
+ * List Element - YZY GUI
+ * @author opZywl
  */
-public final class ListElement extends PanelElement {
+class ListElement(
+    private val element: ModuleElement,
+    private val setting: ListValue,
+    parent: Panel,
+    x: Int,
+    y: Int,
+    width: Int,
+    height: Int
+) : PanelElement(parent, x, y, width, height) {
 
-    private final ModuleElement element;
-    private final ListValue setting;
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        val font: FontRenderer? = FDPClient.customFontManager["lato-bold-15"]
+        val value = setting.get()
 
-    public ListElement(final ModuleElement element, final Value<?> setting, final Panel parent, final int x, final int y, final int width, final int height) {
-        super(parent, x, y, width, height);
+        font?.drawString(
+            setting.name,
+            (x + 1).toFloat(),
+            y + (height / 4.0f) + 0.5f,
+            -1
+        )
 
-        this.element = element;
-        this.setting = (ListValue) setting;
+        font?.drawString(
+            value,
+            (x + width - font.getWidth(value) - 1).toFloat(),
+            y + (height / 4.0f) + 0.5f,
+            Color(0xD2D2D2).rgb
+        )
     }
 
-    @Override
-    public void drawScreen(final int mouseX, final int mouseY, float partialTicks) {
-        final FontRenderer font = FDPClient.INSTANCE.getCustomFontManager().get("lato-bold-15");
-        final String value = setting.get();
-
-        font.drawString(setting.getName(), x + 1, y + (height / 4.0f) + 0.5f, -1);
-
-        font.drawString(value, x + width - font.getWidth(value) - 1, y + (height / 4.0f) + 0.5f, new Color(0xD2D2D2).getRGB());
-    }
-
-    @Override
-    public void mouseClicked(final int mouseX, final int mouseY, final int button) {
-        if (this.isHovering(mouseX, mouseY)) {
-            this.cycle(button == 0);
+    override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+        if (isHovering(mouseX, mouseY)) {
+            cycle(button == 0)
         }
     }
 
-    @Override
-    public void mouseReleased(final int mouseX, final int mouseY, final int state) {
-    }
+    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {}
 
-    @Override
-    public void keyTyped(final char character, final int code) {
-    }
+    override fun keyTyped(character: Char, code: Int) {}
 
-    public void cycle(final boolean next) {
-        final List<String> values = Arrays.asList(setting.getValues());
-        int index = values.indexOf(setting.get());
+    private fun cycle(next: Boolean) {
+        val values = setting.values.toList()
+        var index = values.indexOf(setting.get())
 
-        if (++index >= values.size()) {
-            index = 0;
+        index = if (next) {
+            (index + 1) % values.size
+        } else {
+            (index - 1 + values.size) % values.size
         }
 
-        setting.changeValue(values.get(index));
+        setting.changeValue(values[index])
     }
-
 }

@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.io.File
+import java.io.IOException
 
 @SideOnly(Side.CLIENT)
 object FileManager : MinecraftInstance() {
@@ -64,6 +65,29 @@ object FileManager : MinecraftInstance() {
         if (!themesDir.exists()) themesDir.mkdir()
     }
 
+    /**
+     * Delete a file
+     */
+    fun deleteFile(file: File): Boolean {
+        return file.delete()
+    }
+
+    /**
+     * Write text to a file
+     */
+    fun writeFile(file: File, text: String, append: Boolean = false) {
+        try {
+            file.writer(Charsets.UTF_8).use { writer ->
+                if (append) {
+                    writer.appendLine(text)
+                } else {
+                    writer.write(text)
+                }
+            }
+        } catch (e: IOException) {
+            throw RuntimeException("Failed to write to file: ${file.name}", e)
+        }
+    }
     /**
      * Load all configs in file manager
      */

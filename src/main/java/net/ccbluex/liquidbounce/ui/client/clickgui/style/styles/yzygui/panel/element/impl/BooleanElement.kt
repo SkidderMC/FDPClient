@@ -3,72 +3,58 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl
 
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel;
-import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.value.BoolValue;
-import net.ccbluex.liquidbounce.value.Value;
-
-import java.awt.*;
+import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import java.awt.Color
 
 /**
- * Author: opZywl - Elements
+ * Boolean Element - YZY GUI
+ * @author opZywl
  */
-public final class BooleanElement extends PanelElement {
+class BooleanElement(
+    private val element: ModuleElement,
+    private val setting: BoolValue,
+    parent: Panel,
+    x: Int,
+    y: Int,
+    width: Int,
+    height: Int
+) : PanelElement(parent, x, y, width, height) {
 
-    private final ModuleElement element;
-    private final BoolValue setting;
-
-    public BooleanElement(final ModuleElement element, final Value<?> setting,
-                          final Panel parent,
-                          final int x, final int y,
-                          final int width, final int height) {
-        super(parent, x, y, width, height);
-
-        this.element = element;
-        this.setting = (BoolValue) setting;
-    }
-
-    @Override
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        Color color = new Color(26, 26, 26);
-        yzyCategory category = yzyCategory.Companion.of(element.getModule().getCategory());
-        if (setting.get() && category != null) {
-            color = category.getColor();
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        val color = if (setting.get()) {
+            yzyCategory.of(element.module.category)?.color ?: Color(26, 26, 26)
+        } else {
+            Color(26, 26, 26)
         }
 
-        RenderUtils.INSTANCE.yzyRectangle(
-                x, y,
-                width, height,
-                color
-        );
+        RenderUtils.yzyRectangle(
+            x.toFloat(), y.toFloat(),
+            width.toFloat(), height.toFloat(),
+            color
+        )
 
-        FDPClient.INSTANCE.getCustomFontManager().get("lato-bold-15")
-                .drawString(
-                        setting.getName(),
-                        x + 1,
-                        y + (height / 4.0f) + 0.5f,
-                        -1
-                );
+        FDPClient.customFontManager["lato-bold-15"]?.drawString(
+            setting.name,
+            (x + 1).toFloat(),
+            y + (height / 4.0f) + 0.5f,
+            -1
+        )
     }
 
-    @Override
-    public void mouseClicked(final int mouseX, final int mouseY, final int button) {
-        if (this.isHovering(mouseX, mouseY)) {
-            setting.toggle();
+    override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+        if (isHovering(mouseX, mouseY)) {
+            setting.toggle()
         }
     }
 
-    @Override
-    public void mouseReleased(final int mouseX, final int mouseY, final int state) {
-    }
+    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {}
 
-    @Override
-    public void keyTyped(final char character, final int code) {
-    }
-
+    override fun keyTyped(character: Char, code: Int) {}
 }

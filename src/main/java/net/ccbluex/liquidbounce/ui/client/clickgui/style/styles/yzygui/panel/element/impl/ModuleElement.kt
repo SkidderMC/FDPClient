@@ -3,206 +3,151 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl
 
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.font.renderer.FontRenderer;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel;
-import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.value.BoolValue;
-import net.ccbluex.liquidbounce.value.FloatValue;
-import net.ccbluex.liquidbounce.value.IntegerValue;
-import net.ccbluex.liquidbounce.value.ListValue;
-import org.lwjgl.input.Keyboard;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.font.renderer.FontRenderer
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
+import org.lwjgl.input.Keyboard
+import java.awt.Color
 
 /**
- * Author: opZywl - Elements
+ * Module Element - YZY GUI
+ * @author opZywl
  */
-public final class ModuleElement extends PanelElement {
+class ModuleElement(
+    val module: Module,
+    parent: Panel,
+    x: Int,
+    y: Int,
+    width: Int,
+    height: Int
+) : PanelElement(parent, x, y, width, height) {
 
-    public static final int MODULE_HEIGHT = 14;
-
-    private final List<PanelElement> elements = new ArrayList<>();
-    private final Module module;
-    private boolean extended, binding;
-
-    public ModuleElement(final Module module, final Panel parent,
-                         final int x, final int y,
-                         final int width, final int height) {
-        super(parent, x, y, width, height);
-
-        this.module = module;
-
-        module.getValues().forEach(value -> {
-            PanelElement element = null;
-
-            if (value instanceof BoolValue) {
-                element = new BooleanElement(this, value, parent, x + 4, y, width - 8, 12);
-            } else if (value instanceof FloatValue) {
-                element = new FloatElement(this, value, parent, x + 4, y, width - 4, 12);
-            } else if (value instanceof IntegerValue) {
-                element = new IntegerElement(this, value, parent, x + 4, y, width - 4, 12);
-            } else if (value instanceof ListValue) {
-                element = new ListElement(this, value, parent, x + 4, y, width - 8, 12);
-            }
-
-            if (element != null) {
-                elements.add(element);
-            }
-        });
-
-        this.update();
+    companion object {
+        const val MODULE_HEIGHT = 14
     }
 
-    private void update() {
-        int elementY = y + height;
+    private val elements = mutableListOf<PanelElement>()
+    var isExtended = false
+    private var isBinding = false
 
-        for (final PanelElement element : elements) {
-            element.setX(x + 4);
-            element.setY(elementY);
+    init {
+        module.values.forEach { value ->
+            val element = when (value) {
+                is BoolValue -> BooleanElement(this, value, parent, x + 4, y, width - 8, 12)
+                is FloatValue -> FloatElement(this, value, parent, x + 4, y, width - 4, 12)
+                is IntegerValue -> IntegerElement(this, value, parent, x + 4, y, width - 4, 12)
+                is ListValue -> ListElement(this, value, parent, x + 4, y, width - 8, 12)
+                else -> null
+            }
+            element?.let { elements.add(it) }
+        }
+        update()
+    }
 
-            elementY += element.getHeight();
+    private fun update() {
+        var elementY = y + height
+        elements.forEach { element ->
+            element.x = x + 4
+            element.y = elementY
+            elementY += element.height
         }
     }
 
-    public float getExtendedHeight() {
-        float height = 0.0f;
-
-        if (extended) {
-            for (final PanelElement element : elements) {
-                height += element.getHeight();
-            }
-
-            height += 2;
+    fun getExtendedHeight(): Float {
+        return if (isExtended) {
+            elements.sumOf { it.height.toDouble() }.toFloat() + 2
+        } else {
+            0.0f
         }
-
-        return height;
     }
 
-    @Override
-    public void drawScreen(final int mouseX, final int mouseY, final float partialTicks) {
-        this.update();
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        update()
+        val font: FontRenderer = FDPClient.customFontManager["lato-bold-15"] ?: return
+        var moduleHeight = height
 
-        final FontRenderer font = FDPClient.INSTANCE.getCustomFontManager().get("lato-bold-15");
-        int moduleHeight = height;
-
-        if (extended) {
-            for (final PanelElement element : elements) {
-                moduleHeight += element.getHeight();
-            }
-
-            moduleHeight += 2;
+        if (isExtended) {
+            moduleHeight += elements.sumOf { it.height } + 2
         }
 
-        Color moduleColor = new Color(37, 37, 37);
-        if (module.getState()) {
-            yzyCategory category = yzyCategory.Companion.of(module.getCategory());
-            if (category != null) {
-                moduleColor = category.getColor();
-            }
+        val moduleColor = if (module.state) {
+            yzyCategory.of(module.category)?.color ?: Color(37, 37, 37)
+        } else {
+            Color(37, 37, 37)
         }
 
-        RenderUtils.INSTANCE.yzyRectangle(
-                x + 0.5f, y,
-                width - 1.0f, moduleHeight,
-                extended ? new Color(26, 26, 26) : moduleColor
-        );
+        RenderUtils.yzyRectangle(
+            x + 0.5f, y.toFloat(),
+            (width - 1).toFloat(), moduleHeight.toFloat(),
+            if (isExtended) Color(26, 26, 26) else moduleColor
+        )
 
-        String text = module.getName().toLowerCase();
+        var text = module.name.lowercase()
 
-        if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && module.getKeyBind() != Keyboard.KEY_GRAVE) {
-            text += " [" + Keyboard.getKeyName(module.getKeyBind()).toUpperCase() + "]";
-        } else if (binding) {
-            text = "binding...";
+        if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && module.keyBind != Keyboard.KEY_GRAVE) {
+            text += " [${Keyboard.getKeyName(module.keyBind).uppercase()}]"
+        } else if (isBinding) {
+            text = "binding..."
         }
 
         font.drawString(
-                text,
-                x + width - font.getWidth(text) - 3,
-                y + (height / 4.0f) + 0.5f,
-                extended && module.getState() ? moduleColor.getRGB() : new Color(0xD2D2D2).getRGB()
-        );
+            text,
+            (x + width - font.getWidth(text) - 3).toFloat(),
+            y + (height / 4.0f) + 0.5f,
+            if (isExtended && module.state) moduleColor.rgb else Color(0xD2D2D2).rgb
+        )
 
-        if (extended) {
-            elements.forEach(element -> element.drawScreen(mouseX, mouseY, partialTicks));
+        if (isExtended) {
+            elements.forEach { it.drawScreen(mouseX, mouseY, partialTicks) }
         }
     }
 
-    @Override
-    public void mouseClicked(final int mouseX, final int mouseY, final int button) {
-        if (this.isHovering(mouseX, mouseY)) {
-            if (button == 0) {
-                if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
-                    this.binding = !binding;
-                } else {
-                    module.toggle();
+    override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+        if (isHovering(mouseX, mouseY)) {
+            when (button) {
+                0 -> {
+                    if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                        isBinding = !isBinding
+                    } else {
+                        module.toggle()
+                    }
                 }
-            } else if (button == 1) {
-                if (!module.getValues().isEmpty()) {
-                    this.extended = !extended;
+                1 -> if (module.values.isNotEmpty()) {
+                    isExtended = !isExtended
                 }
             }
         }
 
-        if (extended) {
-            elements.forEach(element -> element.mouseClicked(mouseX, mouseY, button));
+        if (isExtended) {
+            elements.forEach { it.mouseClicked(mouseX, mouseY, button) }
         }
     }
 
-    @Override
-    public void mouseReleased(final int mouseX, final int mouseY, final int state) {
-        if (extended) {
-            elements.forEach(element -> element.mouseReleased(mouseX, mouseY, state));
+    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
+        if (isExtended) {
+            elements.forEach { it.mouseReleased(mouseX, mouseY, state) }
         }
     }
 
-    @Override
-    public void keyTyped(final char character, int code) {
-        if (binding) {
-            if (code == Keyboard.KEY_BACK) {
-                code = Keyboard.KEY_NONE;
-            }
-
-            module.setKeyBind(code);
-
-            this.binding = false;
+    override fun keyTyped(character: Char, code: Int) {
+        if (isBinding) {
+            val keyCode = if (code == Keyboard.KEY_BACK) Keyboard.KEY_NONE else code
+            module.keyBind = keyCode
+            isBinding = false
         }
 
-        if (extended) {
-            int finalCode = code;
-
-            elements.forEach(element -> element.keyTyped(character, finalCode));
+        if (isExtended) {
+            elements.forEach { it.keyTyped(character, code) }
         }
-    }
-
-    public List<PanelElement> getElements() {
-        return elements;
-    }
-
-    public Module getModule() {
-        return module;
-    }
-
-    public boolean isExtended() {
-        return extended;
-    }
-
-    public void setExtended(boolean extended) {
-        this.extended = extended;
-    }
-
-    public boolean isBinding() {
-        return binding;
-    }
-
-    public void setBinding(boolean binding) {
-        this.binding = binding;
     }
 }

@@ -12,8 +12,8 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.Side
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.manager.GUIManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.utils.Pair
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.utils.render.Pair
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
@@ -21,37 +21,33 @@ import org.lwjgl.input.Mouse
 import java.io.IOException
 
 /**
- * @author opZywl
+ * @author opZywl - YZY GUI
  */
 class yzyGUI(private val clickGui: ClickGUIModule) : GuiScreen() {
 
-    private val panels: MutableList<Panel> = ArrayList()
+    private val panels: MutableList<Panel> = mutableListOf()
     private val guiManager: GUIManager = FDPClient.guiManager
     private val sideGui = SideGui()
     private val hudIcon = ResourceLocation("${CLIENT_NAME.lowercase()}/custom_hud_icon.png")
-    val alpha = 255
+    private var lastMS: Long = System.currentTimeMillis()
     private var yShift = 0
-    var slide: Double = 0.0
-    var progress: Double = 0.0
-    var lastMS: Long = System.currentTimeMillis()
+    private var slide: Double = 0.0
+    private var progress: Double = 0.0
+    val alpha = 255
 
     init {
         var panelX = 5
-        for (category in yzyCategory.values()) {
+        yzyCategory.values().forEach { category ->
             val positions = guiManager.getPositions(category)
-            val panel: Panel
-
-            if (!guiManager.positions.containsKey(category)) {
-                panel = Panel(this, category, panelX, 5)
-                panelX += panel.width + 5
+            val panel = if (!guiManager.positions.containsKey(category)) {
+                Panel(this, category, panelX, 5).also { panelX += it.width + 5 }
             } else {
-                panel = Panel(this, category, positions.key, positions.value)
-                panel.isExtended = guiManager.extendeds[category] == true
+                Panel(this, category, positions.key, positions.value ?: 5).apply {
+                    isExtended = guiManager.extendeds[category] == true
+                }
             }
-
             guiManager.positions[category] = Pair(panel.x, panel.y)
             guiManager.extendeds[category] = panel.isExtended
-
             panels.add(panel)
             panel.isExtended = guiManager.isExtended(category)
         }
@@ -73,31 +69,26 @@ class yzyGUI(private val clickGui: ClickGUIModule) : GuiScreen() {
     }
 
     private fun handleScroll(wheel: Int) {
-        if (wheel == 0) return
-        panels.forEach { it.y += wheel }
+        if (wheel != 0) panels.forEach { it.y += wheel }
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         if (Mouse.hasWheel()) {
             val wheel = Mouse.getDWheel()
-            var handledScroll = false
-
-            drawImage(hudIcon, 9, height - 41, 32, 32)
-
-            for (i in panels.size - 1 downTo 0) {
-                if (panels[i].handleScroll(mouseX, mouseY, wheel)) {
-                    handledScroll = true
-                    break
-                }
-            }
-
-            if (!handledScroll) {
-                handleScroll(wheel)
-            }
+            val handledScroll = panels.asReversed().any { it.handleScroll(mouseX, mouseY, wheel) }
+            if (!handledScroll) handleScroll(wheel)
         }
-        panels.forEach { it.drawScreen(mouseX, mouseY, partialTicks) }
+
+        drawImage(hudIcon, 9, height - 41, 32, 32)
+
+        val delta = (System.currentTimeMillis() - lastMS).toInt()
+        panels.forEach {
+            it.updateFade(delta)
+            it.drawScreen(mouseX, mouseY, partialTicks)
+        }
 
         sideGui.drawScreen(mouseX, mouseY, partialTicks, alpha)
+        lastMS = System.currentTimeMillis()
     }
 
     @Throws(IOException::class)
@@ -106,13 +97,7 @@ class yzyGUI(private val clickGui: ClickGUIModule) : GuiScreen() {
         panels.forEach { it.mouseClicked(mouseX, adjustedMouseY, mouseButton) }
         sideGui.mouseClicked(mouseX, mouseY, mouseButton)
 
-        val hudIconX = 9
-        val hudIconY = height - 41
-        val hudIconWidth = 32
-        val hudIconHeight = 32
-
-        if (mouseX in hudIconX until hudIconX + hudIconWidth && mouseY in hudIconY until hudIconY + hudIconHeight) {
-
+        if (mouseX in 9 until 41 && mouseY in (height - 41) until height) {
             mc.displayGuiScreen(GuiHudDesigner())
         }
     }
@@ -130,7 +115,5 @@ class yzyGUI(private val clickGui: ClickGUIModule) : GuiScreen() {
         sideGui.keyTyped(typedChar, keyCode)
     }
 
-    override fun doesGuiPauseGame(): Boolean {
-        return false
-    }
+    override fun doesGuiPauseGame(): Boolean = false
 }
