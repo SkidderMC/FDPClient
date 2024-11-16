@@ -18,14 +18,13 @@ object MatrixSlowHop : SpeedMode("MatrixSlowHop") {
         if (player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
 
         if (player.isMoving) {
-            if (player.isAirBorne && player.fallDistance > 2) {
+            if (!player.onGround && player.fallDistance > 2) {
                 mc.timer.timerSpeed = 1f
-                player.speedInAir = 0.02f
                 return
             }
 
             if (player.onGround) {
-                player.motionY = 0.42 - if (Speed.matrixLowHop) 3E-3 else 0.0
+                player.motionY = 0.42 - if (Speed.matrixLowHop) 3.48E-3 else 0.0
                 mc.timer.timerSpeed = 0.5195f
                 strafe(speed + Speed.extraGroundBoost)
             } else {

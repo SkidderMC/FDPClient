@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.mat
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
+import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
 import net.ccbluex.liquidbounce.utils.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
@@ -17,17 +18,15 @@ object MatrixHop : SpeedMode("MatrixHop") {
     override fun onUpdate()  {
         val player = mc.thePlayer ?: return
         if (player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
-        if (Speed.matrixLowHop) {
-            player.motionY -= 0.00348
-            player.jumpMovementFactor = 0.026f
-        }
+
+        if (Speed.matrixLowHop) player.jumpMovementFactor = 0.026f
 
         if (player.isMoving) {
             if (player.onGround) {
-                strafe()
-                player.tryJump()
+                strafe(if (!Scaffold.handleEvents()) speed + Speed.extraGroundBoost else speed)
+                player.motionY = 0.42 - if (Speed.matrixLowHop) 3.48E-3 else 0.0
             } else {
-                if (speed < 0.19) {
+                if (!Scaffold.handleEvents() && speed < 0.19) {
                     strafe()
                 }
             }
