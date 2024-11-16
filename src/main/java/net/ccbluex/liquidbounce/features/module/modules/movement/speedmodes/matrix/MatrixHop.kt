@@ -10,32 +10,33 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.Spee
 import net.ccbluex.liquidbounce.utils.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
+import net.ccbluex.liquidbounce.utils.extensions.tryJump
 
 object MatrixHop : SpeedMode("MatrixHop") {
 
     override fun onUpdate()  {
         val player = mc.thePlayer ?: return
         if (player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
+        if (Speed.matrixLowHop) {
+            player.motionY -= 0.00348
+            player.jumpMovementFactor = 0.026f
+        }
 
         if (player.isMoving) {
-            if (!player.onGround && player.fallDistance > 1.215f) {
-                mc.timer.timerSpeed = 1f
-                return
+            if (player.onGround) {
+                strafe()
+                player.tryJump()
+            } else {
+                if (speed < 0.19) {
+                    strafe()
+                }
             }
 
-            if (player.onGround) {
-                strafe(speed + Speed.extraGroundBoost)
-                player.motionY = 0.42 - if (Speed.matrixLowHop) 3E-3 else 0.0
-                if (player.motionY > 0) {
-                    if (Speed.timerSpeed) mc.timer.timerSpeed = 1.0853f
-                }
+            if (player.fallDistance <= 0.4 && player.moveStrafing == 0f) {
+                player.speedInAir = 0.02035f
             } else {
-                if (player.motionY < 0) {
-                    if (Speed.timerSpeed) mc.timer.timerSpeed = 0.9185f
-                }
+                player.speedInAir = 0.02f
             }
-        } else {
-            if (Speed.timerSpeed) mc.timer.timerSpeed = 1f
         }
     }
 }
