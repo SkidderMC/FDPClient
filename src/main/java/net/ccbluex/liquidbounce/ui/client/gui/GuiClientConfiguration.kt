@@ -76,7 +76,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : GuiScreen() {
                 4, width / 2 - 100, height / 4 + 25, "Client title (${if (enabledClientTitle) "On" else "Off"})"
             ).also { titleButton = it })
             add(GuiButton(
-                10,
+                7,
                 width / 2 - 100,
                 height / 4 + 50,
                 "Language (${LanguageManager.overrideLanguage.ifBlank { "Game" }})"
@@ -99,7 +99,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : GuiScreen() {
             // AltManager configuration buttons
             // Location > 3rd row
             add(GuiButton(
-                9,
+                6,
                 width / 2 - 100,
                 height / 4 + 25 + 185,
                 "Random alts mode (${if (stylisedAlts) "Stylised" else "Legacy"})"
@@ -121,7 +121,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : GuiScreen() {
                 altsLength = it.valueInt
             }.also { altsSlider = it })
             add(GuiButton(
-                6,
+                5,
                 width / 2 - 100,
                 height / 4 + 235 + 25,
                 "Unformatted alt names (${if (unformattedAlts) "On" else "Off"})"
@@ -160,7 +160,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : GuiScreen() {
                 altsSlider.updateSlider()
             }
 
-            9 -> {
+            6 -> {
                 stylisedAlts = !stylisedAlts
                 altsModeButton.displayString = "Random alts mode (${if (stylisedAlts) "Stylised" else "Legacy"})"
                 altsSlider.dispString =
@@ -197,7 +197,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : GuiScreen() {
                     // Load new background
                     try {
                         background = Background.createBackground(destFile)
-                    } catch (e: IllegalArgumentException) {
+                    } catch (_: IllegalArgumentException) {
                         background = null
                         if (backgroundImageFile.exists()) backgroundImageFile.deleteRecursively()
                         if (backgroundShaderFile.exists()) backgroundShaderFile.deleteRecursively()
@@ -222,7 +222,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : GuiScreen() {
                 if (backgroundShaderFile.exists()) backgroundShaderFile.deleteRecursively()
             }
 
-            10 -> {
+            7 -> {
                 val languageIndex = LanguageManager.knownLanguages.indexOf(LanguageManager.overrideLanguage)
 
                 // If the language is not found, set it to the first language
