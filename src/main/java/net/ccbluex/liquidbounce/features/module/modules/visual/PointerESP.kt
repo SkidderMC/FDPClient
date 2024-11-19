@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
 import net.ccbluex.liquidbounce.features.module.modules.client.Teams
+import net.ccbluex.liquidbounce.ui.font.GameFontRenderer.Companion.getColorIndex
 import net.ccbluex.liquidbounce.utils.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.EntityUtils.getHealth
@@ -149,7 +150,18 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
                 val targetHealth = getHealth(entity, healthFromScoreboard, absorption)
                 val arrowsColor = when {
                     targetHealth <= 0 -> Color(255, 0, 0, alpha)
-                    colorTeam -> ESP.getColor(entity)
+                    colorTeam -> {
+                        val chars = (entity.displayName ?: return).formattedText.toCharArray()
+                        var color = Int.MAX_VALUE
+                        for (i in chars.indices) {
+                            if (chars[i] != '§' || i + 1 >= chars.size) continue
+                            val index = getColorIndex(chars[i + 1])
+                            if (index < 0 || index > 15) continue
+                            color = ColorUtils.hexColors[index]
+                            break
+                        }
+                        Color(color)
+                    }
                     healthMode == "Custom" -> {
                         ColorUtils.interpolateHealthColor(
                             entity,
