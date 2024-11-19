@@ -145,7 +145,6 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private val noFly by boolean("NoFly", false)
     private val noEat by boolean("NoEat", false)
     private val noBlocking by boolean("NoBlocking", false)
-    private val noBedAura by boolean("BedAuraCheck", true)
     private val blinkCheck by boolean("BlinkCheck", false)
 
     // AutoBlock
@@ -1197,7 +1196,6 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         return (blinkCheck && FDPClient.moduleManager[Blink::class.java]?.state == true)
                 || (noScaffold && FDPClient.moduleManager[Scaffold::class.java]?.state == true)
                 || (noFly && FDPClient.moduleManager[Flight::class.java]?.state == true)
-                || (noBedAura && FDPClient.moduleManager[Fucker::class.java]?.state == true)
                 || (onSwording && mc.thePlayer.heldItem?.item !is ItemSword)
     }
 
