@@ -155,7 +155,6 @@ object FDPClient {
             APIConnecter.checkChangelogs()
             APIConnecter.checkBugs()
             APIConnecter.loadPictures()
-            APIConnecter.loadDonors()
 
             runCatching {
                 // Remapper

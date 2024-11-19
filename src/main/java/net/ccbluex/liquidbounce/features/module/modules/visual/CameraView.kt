@@ -15,25 +15,31 @@ import net.ccbluex.liquidbounce.value.float
 object CameraView : Module("CameraView", Category.VISUAL, hideModule = false) {
 
     val clip by boolean("Clip", true)
-    private val customY by float("CustomY", 0f, -10f..10f)
-    private val saveLastGroundY by boolean("SaveLastGroundY", true)
-    private val onScaffold by boolean("OnScaffold", true)
-    private val onF5 by boolean("OnF5", true)
+
+    private val view by boolean("View", true)
+    private val customY by float("CustomY", 0f, -10f..10f) { view }
+    private val saveLastGroundY by boolean("SaveLastGroundY", true)  { view }
+    private val onScaffold by boolean("OnScaffold", true)  { view }
+    private val onF5 by boolean("OnF5", true)  { view }
 
   //  val fovValue by float("FOV", 1f, 0f.. 30f)
 
     private var launchY: Double ?= null
     override fun onEnable() {
-        mc.thePlayer?.run {
-            launchY = posY
+        if (view) {
+            mc.thePlayer?.run {
+                launchY = posY
+            }
         }
     }
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (event.eventState != EventState.POST) return
-        mc.thePlayer?.run {
-            if (!saveLastGroundY || (onGround || ticksExisted == 1)) {
-                launchY = posY
+        if (view) {
+            if (event.eventState != EventState.POST) return
+            mc.thePlayer?.run {
+                if (!saveLastGroundY || (onGround || ticksExisted == 1)) {
+                    launchY = posY
+                }
             }
         }
     }

@@ -136,6 +136,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     private void injectFreeLookPitchPreMovePrevention(CallbackInfo ci) {
         FreeLook.INSTANCE.restoreOriginalRotation();
     }
+
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RendererLivingEntity;renderLivingAt(Lnet/minecraft/entity/EntityLivingBase;DDD)V"))
     private void injectFreeLookPitchPostMovePrevention(CallbackInfo ci) {
         FreeLook.INSTANCE.useModifiedRotation();

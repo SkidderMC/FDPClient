@@ -22,9 +22,11 @@ import net.ccbluex.liquidbounce.value.int
 import net.minecraft.item.*
 import net.minecraft.network.handshake.client.C00Handshake
 import net.minecraft.network.play.client.*
+import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.DROP_ITEM
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.RELEASE_USE_ITEM
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
+import net.minecraft.network.play.server.S2FPacketSetSlot
 import net.minecraft.network.status.client.C00PacketServerQuery
 import net.minecraft.network.status.client.C01PacketPing
 import net.minecraft.network.status.server.S01PacketPong
@@ -44,20 +46,20 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
     private val blockForwardMultiplier by float("BlockForwardMultiplier", 1f, 0.2F..1f)
     private val blockStrafeMultiplier by float("BlockStrafeMultiplier", 1f, 0.2F..1f)
 
-    private val consumePacket by choices(
+    private val consumeMode by choices(
         "ConsumeMode",
-        arrayOf("None", "UpdatedNCP", "AAC5", "SwitchItem", "InvalidC08", "Intave"),
+        arrayOf("None", "UpdatedNCP", "AAC5", "SwitchItem", "InvalidC08", "Intave", "Drop"),
         "None"
     )
 
     private val consumeForwardMultiplier by float("ConsumeForwardMultiplier", 1f, 0.2F..1f)
     private val consumeStrafeMultiplier by float("ConsumeStrafeMultiplier", 1f, 0.2F..1f)
     private val consumeFoodOnly by boolean(
-        "ConsumeFoodOnly",
+        "ConsumeFood",
         true
     ) { consumeForwardMultiplier > 0.2F || consumeStrafeMultiplier > 0.2F }
     private val consumeDrinkOnly by boolean(
-        "ConsumeDrinkOnly",
+        "ConsumeDrink",
         true
     ) { consumeForwardMultiplier > 0.2F || consumeStrafeMultiplier > 0.2F }
 
@@ -75,8 +77,10 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
     val liquidPush by boolean("LiquidPush", true)
 
     private var shouldSwap = false
-
     private var shouldBlink = true
+    private var shouldNoSlow = false
+
+    private var hasDropped = false
 
     private val BlinkTimer = TickTimer()
 
@@ -99,8 +103,8 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
         if (!consumeFoodOnly && heldItem.item is ItemFood || !consumeDrinkOnly && (heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk))
             return
 
-        if ((heldItem.item is ItemFood || heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk) && (isUsingItem || shouldSwap)) {
-            when (consumePacket.lowercase()) {
+        if (isUsingItem || shouldSwap) {
+            when (consumeMode.lowercase()) {
                 "aac5" ->
                     sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, heldItem, 0f, 0f, 0f))
 
@@ -221,6 +225,34 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
         if (event.isCancelled || shouldSwap)
             return
 
+        // Credit: @ManInMyVan
+        // TODO: Not sure how to fix random grim simulation flag.
+        if (consumeMode == "Drop") {
+            if (player.heldItem?.item !is ItemFood) return
+
+            val isUsingItem = packet is C08PacketPlayerBlockPlacement && packet.placedBlockDirection == 255
+
+            if (!player.isUsingItem) {
+                shouldNoSlow = false
+                hasDropped = false
+            }
+
+            if (isUsingItem && !hasDropped) {
+                sendPacket(C07PacketPlayerDigging(DROP_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
+                shouldNoSlow = false
+                hasDropped = true
+            } else if (packet is S2FPacketSetSlot && player.isUsingItem) {
+                if (packet.func_149175_c() != 0 || packet.func_149173_d() != SilentHotbar.currentSlot + 36) return
+
+                event.cancelEvent()
+                shouldNoSlow = true
+
+                player.itemInUse = packet.func_149174_e()
+                if (!player.isUsingItem) player.itemInUseCount = 0
+                player.inventory.mainInventory[SilentHotbar.currentSlot] = packet.func_149174_e()
+            }
+        }
+
         if (swordMode == "Blink") {
             when (packet) {
                 is C00Handshake, is C00PacketServerQuery, is C01PacketPing, is C01PacketChatMessage, is S01PacketPong -> return
@@ -272,7 +304,12 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
         when (packet) {
             is C08PacketPlayerBlockPlacement -> {
                 if (packet.stack?.item != null && player.heldItem?.item != null && packet.stack.item == mc.thePlayer.heldItem?.item) {
-                    if ((consumePacket == "UpdatedNCP" && (packet.stack.item is ItemFood || packet.stack.item is ItemPotion || packet.stack.item is ItemBucketMilk)) || (bowPacket == "UpdatedNCP" && packet.stack.item is ItemBow)) {
+                    if ((consumeMode == "UpdatedNCP" && (
+                                packet.stack.item is ItemFood ||
+                                        packet.stack.item is ItemPotion ||
+                                        packet.stack.item is ItemBucketMilk)) ||
+                        (bowPacket == "UpdatedNCP" && packet.stack.item is ItemBow))
+                    {
                         shouldSwap = true
                     }
                 }
@@ -287,8 +324,10 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
         if (!consumeFoodOnly && heldItem is ItemFood || !consumeDrinkOnly && (heldItem is ItemPotion || heldItem is ItemBucketMilk))
             return
 
-        event.forward = getMultiplier(heldItem, true)
-        event.strafe = getMultiplier(heldItem, false)
+        if (consumeMode != "Drop" || shouldNoSlow) {
+            event.forward = getMultiplier(heldItem, true)
+            event.strafe = getMultiplier(heldItem, false)
+        }
     }
 
     private fun getMultiplier(item: Item?, isForward: Boolean) = when (item) {
@@ -304,7 +343,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
     fun isUNCPBlocking() =
         swordMode == "UpdatedNCP" && mc.gameSettings.keyBindUseItem.isKeyDown && (mc.thePlayer.heldItem?.item is ItemSword)
 
-    private fun usingItemFunc() =
+    fun usingItemFunc() =
         mc.thePlayer?.heldItem != null && (mc.thePlayer.isUsingItem || (mc.thePlayer.heldItem?.item is ItemSword && KillAura.blockStatus) || isUNCPBlocking())
 
     private fun updateSlot() {
@@ -312,4 +351,3 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
         SilentHotbar.resetSlot(this, true)
     }
 }
-

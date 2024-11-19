@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.APIConnecter.checkBugs
 import net.ccbluex.liquidbounce.utils.APIConnecter.checkChangelogs
 import net.ccbluex.liquidbounce.utils.APIConnecter.checkStatus
-import net.ccbluex.liquidbounce.utils.APIConnecter.loadDonors
 import net.ccbluex.liquidbounce.utils.APIConnecter.loadPictures
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
@@ -134,7 +133,6 @@ class GuiUpdate : GuiScreen() {
                         checkChangelogs()
                         checkBugs()
                         loadPictures()
-                        loadDonors()
                     } catch (e: Exception) {
                         errorMessage = "Failed to reload API: ${e.message}"
                     } finally {

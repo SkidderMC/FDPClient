@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils.render
 
@@ -254,6 +254,57 @@ object ColorUtils {
         range[0] = startPoint - 1
         range[1] = startPoint
         return range
+    }
+
+    fun applyOpacity(color: Int, opacity: Float): Int {
+        val old = Color(color)
+        return applyOpacity(old, opacity).rgb
+    }
+
+    fun applyOpacity(color: Color, opacity: Float): Color {
+        var opacity = opacity
+        opacity = min(1.0, max(0.0, opacity.toDouble())).toFloat()
+        return Color(color.red, color.green, color.blue, (color.alpha * opacity).toInt())
+    }
+
+    fun darker(color: Int, factor: Float): Int {
+        val r = ((color shr 16 and 0xFF) * factor).toInt()
+        val g = ((color shr 8 and 0xFF) * factor).toInt()
+        val b = ((color and 0xFF) * factor).toInt()
+        val a = color shr 24 and 0xFF
+        return (r and 0xFF) shl 16 or ((g and 0xFF) shl 8) or (b and 0xFF) or ((a and 0xFF) shl 24)
+    }
+
+    fun getAlphaFromColor(color: Int): Int {
+        return color shr 24 and 0xFF
+    }
+
+    fun interpolateColor(color1: Int, color2: Int, amount: Float): Int {
+        var amount = amount
+        amount = min(1.0, max(0.0, amount.toDouble())).toFloat()
+        val cColor1 = Color(color1)
+        val cColor2 = Color(color2)
+        return interpolateColorC(cColor1, cColor2, amount).getRGB()
+    }
+
+    fun interpolateColorC(color1: Color, color2: Color, amount: Float): Color {
+        var amount = amount
+        amount = min(1.0, max(0.0, amount.toDouble())).toFloat()
+        return Color(
+            interpolateInt(color1.red, color2.red, amount.toDouble()),
+            interpolateInt(color1.green, color2.green, amount.toDouble()),
+            interpolateInt(color1.blue, color2.blue, amount.toDouble()),
+            interpolateInt(color1.alpha, color2.alpha, amount.toDouble())
+        )
+    }
+
+    fun interpolateInt(oldValue: Int, newValue: Int, interpolationValue: Double): Int {
+        return interpolate(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toFloat().toDouble())
+            .toInt()
+    }
+
+    fun interpolate(oldValue: Double, newValue: Double, interpolationValue: Double): Double {
+        return (oldValue + (newValue - oldValue) * interpolationValue)
     }
 
     fun blend(color1: Color, color2: Color, ratio: Double): Color {

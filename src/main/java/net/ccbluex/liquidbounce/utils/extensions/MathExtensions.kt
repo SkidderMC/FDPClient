@@ -17,8 +17,8 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
-import javax.vecmath.Vector2f
 import java.math.BigDecimal
+import javax.vecmath.Vector2f
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -209,4 +209,12 @@ fun roundX(value: Double, inc: Double): Double {
                 .toDouble()
         }
     }
+}
+
+fun randomizeDouble(min: Double, max: Double): Double {
+    return Math.random() * (max - min) + min
+}
+
+fun lerp(min: Float, max: Float, delta: Float): Float {
+    return min + (max - min) * delta
 }
