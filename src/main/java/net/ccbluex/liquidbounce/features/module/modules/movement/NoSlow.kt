@@ -324,10 +324,10 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
         if (!consumeFoodOnly && heldItem is ItemFood || !consumeDrinkOnly && (heldItem is ItemPotion || heldItem is ItemBucketMilk))
             return
 
-        if (consumeMode != "Drop" || shouldNoSlow) {
-            event.forward = getMultiplier(heldItem, true)
-            event.strafe = getMultiplier(heldItem, false)
-        }
+        if (consumeMode == "Drop" && !shouldNoSlow && heldItem is ItemFood)
+            return
+        event.forward = getMultiplier(heldItem, true)
+        event.strafe = getMultiplier(heldItem, false)
     }
 
     private fun getMultiplier(item: Item?, isForward: Boolean) = when (item) {
