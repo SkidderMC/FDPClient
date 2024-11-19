@@ -183,9 +183,9 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
     private fun placeBlock(blockPos: BlockPos, side: EnumFacing, hitVec: Vec3) {
         val player = mc.thePlayer ?: return
 
-        var stack = player.inventorySlot(SilentHotbar.currentSlot + 36).stack
+        var stack = player.inventorySlot(SilentHotbar.currentSlot + 36).stack ?: return
 
-        if (stack == null || stack.item !is ItemBlock || (stack.item as ItemBlock).block is BlockBush
+        if (stack.item !is ItemBlock || (stack.item as ItemBlock).block is BlockBush
             || InventoryUtils.BLOCK_BLACKLIST.contains((stack.item as ItemBlock).block) || stack.stackSize <= 0
         ) {
             val blockSlot = InventoryUtils.findBlockInHotbar() ?: return

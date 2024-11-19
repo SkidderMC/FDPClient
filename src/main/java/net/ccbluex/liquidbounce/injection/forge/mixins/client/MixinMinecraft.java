@@ -36,6 +36,7 @@ import net.minecraft.client.settings.GameSettings;
 import net.minecraft.crash.CrashReport;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Util;
@@ -269,7 +270,12 @@ public abstract class MixinMinecraft {
 
     @Redirect(method = "sendClickBlockToController", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isUsingItem()Z"))
     private boolean injectMultiActions(EntityPlayerSP instance) {
-        return instance.isUsingItem() || MultiActions.INSTANCE.handleEvents();
+        ItemStack itemStack = instance.itemInUse;
+
+        if (MultiActions.INSTANCE.handleEvents())
+            itemStack = null;
+
+        return itemStack != null;
     }
 
     @Redirect(method = "sendClickBlockToController", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/PlayerControllerMP;resetBlockRemoving()V"))
