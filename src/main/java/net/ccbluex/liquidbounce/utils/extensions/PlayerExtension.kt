@@ -7,6 +7,9 @@ package net.ccbluex.liquidbounce.utils.extensions
 
 import net.ccbluex.liquidbounce.file.FileManager.friendsConfig
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
+import net.ccbluex.liquidbounce.event.AttackEvent
+import net.ccbluex.liquidbounce.event.EventManager
+import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.Rotation
@@ -16,6 +19,7 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.getState
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.resources.DefaultPlayerSkin
+import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.boss.EntityDragon
@@ -31,6 +35,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
+import net.minecraft.world.WorldSettings
 import net.minecraft.util.*
 import net.minecraftforge.event.ForgeEventFactory
 
@@ -203,8 +208,8 @@ fun EntityPlayerSP.onPlayerRightClick(
     clickPos: BlockPos, side: EnumFacing, clickVec: Vec3,
     stack: ItemStack? = inventory.mainInventory[SilentHotbar.currentSlot],
 ): Boolean {
-
     val controller = mc.playerController ?: return false
+
     controller.syncCurrentPlayItem()
 
     if (clickPos !in worldObj.worldBorder)
@@ -290,4 +295,24 @@ fun EntityPlayerSP.tryJump() {
     if (!mc.gameSettings.keyBindJump.isKeyDown) {
         jump()
     }
+}
+
+fun EntityPlayerSP.attackEntityWithModifiedSprint(entity: Entity, new: Boolean, swing: () -> Unit) {
+    EventManager.callEvent(AttackEvent(entity))
+
+    val wasSprinting = this.isSprinting
+
+    (this as Entity).isSprinting = new
+
+    swing()
+
+    sendPacket(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
+
+    if (mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR) {
+        this.attackTargetEntityWithCurrentItem(entity)
+    }
+
+    (this as Entity).isSprinting = wasSprinting
+
+    CPSCounter.registerClick(CPSCounter.MouseButton.LEFT)
 }

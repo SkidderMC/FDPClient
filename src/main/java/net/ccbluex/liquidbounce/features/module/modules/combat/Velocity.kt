@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
-import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.MovementUtils.isOnGround
@@ -20,6 +19,7 @@ import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.RaycastUtils.runWithModifiedRaycastResult
 import net.ccbluex.liquidbounce.utils.RotationUtils.currentRotation
+import net.ccbluex.liquidbounce.utils.extensions.attackEntityWithModifiedSprint
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.rotation
@@ -39,7 +39,6 @@ import net.ccbluex.liquidbounce.value.intRange
 import net.minecraft.block.BlockAir
 import net.minecraft.entity.Entity
 import net.minecraft.network.Packet
-import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK
@@ -51,7 +50,6 @@ import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing.DOWN
-import net.minecraft.world.WorldSettings
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.sqrt
@@ -411,24 +409,8 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
             }
         }
 
-        val wasSprinting = (thePlayer as Entity).isSprinting
-
         repeat(clicks.random()) {
-            EventManager.callEvent(AttackEvent(entity))
-
-            swingHand()
-
-            (thePlayer as Entity).isSprinting = true
-
-            sendPacket(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
-
-            if (mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR) {
-                thePlayer.attackTargetEntityWithCurrentItem(entity)
-            }
-
-            (thePlayer as Entity).isSprinting = wasSprinting
-
-            CPSCounter.registerClick(CPSCounter.MouseButton.LEFT)
+            thePlayer.attackEntityWithModifiedSprint(entity, true) { swingHand() }
         }
     }
 
