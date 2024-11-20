@@ -219,9 +219,11 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         ListValue("Eagle", arrayOf("Normal", "Silent", "Off"), "Normal") { scaffoldMode != "GodBridge" }
     val eagle by eagleValue
     private val adjustedSneakSpeed by boolean("AdjustedSneakSpeed", true) { eagle == "Silent" }
-    private val eagleSpeed by float("EagleSpeed", 0.3f, 0.3f..1.0f) { eagleValue.isSupported() && eagle != "Off" }
+    private val eagleSpeed by float("EagleSpeed", 0.3f, 0.3f..1.0f)
+    { eagleValue.isSupported() && eagle != "Off" }
     val eagleSprint by boolean("EagleSprint", false) { eagleValue.isSupported() && eagle == "Normal" }
-    private val blocksToEagle by int("BlocksToEagle", 0, 0..10) { eagleValue.isSupported() && eagle != "Off" }
+    private val blocksToEagle by int("BlocksToEagle", 0, 0..10)
+    { eagleValue.isSupported() && eagle != "Off" }
     private val edgeDistance by float(
         "EagleEdgeDistance",
         0f,
@@ -229,7 +231,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     ) { eagleValue.isSupported() && eagle != "Off" }
 
     // Rotation Options
-    private val modeList = choices("Rotations", arrayOf("Off", "Normal", "Stabilized", "GodBridge"), "Normal")
+    private val modeList = choices("Rotations", arrayOf("Off", "Normal", "Stabilized", "ReverseYaw", "GodBridge"), "Normal")
 
     private val options = RotationSettingsWithRotationModes(this, modeList).apply {
         strictValue.excludeWithState()
@@ -361,13 +363,16 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         get() {
             val player = mc.thePlayer ?: return false
 
-            // Round the rotation to the nearest multiple of 45 degrees so that way we check if the player faces diagonally
-            val yaw = round(abs(MathHelper.wrapAngleTo180_float(player.rotationYaw)).roundToInt() / 45f) * 45f
+            val directionDegree = MovementUtils.direction.toDegreesF()
 
-            return floatArrayOf(
-                45f,
-                135f
-            ).any { yaw == it } && player.movementInput.moveForward != 0f && player.movementInput.moveStrafe == 0f
+            // Round the direction rotation to the nearest multiple of 45 degrees so that way we check if the player faces diagonally
+            val yaw = round(abs(MathHelper.wrapAngleTo180_float(directionDegree)) / 45f) * 45f
+
+            val isYawDiagonal = yaw % 90 != 0f
+            val isMovingDiagonal = player.movementInput.moveForward != 0f && player.movementInput.moveStrafe == 0f
+            val isStrafing = mc.gameSettings.keyBindRight.isKeyDown || mc.gameSettings.keyBindLeft.isKeyDown
+
+            return isYawDiagonal && (isMovingDiagonal || isStrafing)
         }
 
     // Telly
@@ -402,7 +407,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         mc.timer.timerSpeed = timer
 
         // Telly
-        if (mc.thePlayer.onGround) {
+        if (player.onGround) {
             offGroundTicks = 0
             ticksUntilJump++
         } else {
@@ -414,7 +419,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         }
 
         if (slow) {
-            if (!slowGround || slowGround && mc.thePlayer.onGround) {
+            if (!slowGround || slowGround && player.onGround) {
                 player.motionX *= slowSpeed
                 player.motionZ *= slowSpeed
             }
@@ -498,8 +503,10 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
     @EventTarget
     fun onRotationUpdate(event: RotationUpdateEvent) {
-        if (mc.thePlayer.ticksExisted == 1)
-            launchY = mc.thePlayer.posY.roundToInt()
+        val player = mc.thePlayer ?: return
+
+        if (player.ticksExisted == 1)
+            launchY = player.posY.roundToInt()
 
         val rotation = RotationUtils.currentRotation
 
@@ -1021,8 +1028,12 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
         var rotation = toRotation(vec, false)
 
+        val roundYaw90 = round(rotation.yaw / 90f) * 90f
+        val roundYaw45 = round(rotation.yaw / 45f) * 45f
+
         rotation = when (options.rotationMode) {
-            "Stabilized" -> Rotation(round(rotation.yaw / 45f) * 45f, rotation.pitch)
+            "Stabilized" -> Rotation(roundYaw45, rotation.pitch)
+            "ReverseYaw" -> Rotation(if (!isLookingDiagonally) roundYaw90 else roundYaw45, rotation.pitch)
             else -> rotation
         }.fixedSensitivity()
 
