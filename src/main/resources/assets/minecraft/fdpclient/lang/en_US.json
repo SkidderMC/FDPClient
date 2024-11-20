@@ -213,6 +213,7 @@
     "module.freeLook.description": "Allows you to freely look around without changing your character's actual direction.",
     "module.silentHotbarModule.description": "UNTRANSLATED: Controls in which scenarios the silently selected item should be rendered.",
     "module.pointerESP.description": "Allows you to see pointed entity positions.",
-    "module.cameraView.description": "Allows you to modify your camera-Y position."
+    "module.cameraView.description": "Allows you to modify your camera-Y position.",
+    "module.notifier.description": "Notifies you about all events."
   }
 }

@@ -53,7 +53,6 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 import kotlin.math.*
 
-
 object RenderUtils : MinecraftInstance() {
     private val glCapMap = mutableMapOf<Int, Boolean>()
     private val shadowCache: HashMap<Int, Int> = HashMap()
@@ -2098,7 +2097,7 @@ object RenderUtils : MinecraftInstance() {
         glEnable(GL_BLEND)
         glDepthMask(false)
         GL14.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
-        resetColor()
+        glColor4f(1f, 1f, 1f, 1f)
         mc.textureManager.bindTexture(image)
         drawModalRectWithCustomSizedTexture(
             x.toFloat(),
