@@ -8,16 +8,20 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.SideGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.manager.GUIManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.utils.render.Pair
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
+import java.awt.Color
 import java.io.IOException
 
 /**
@@ -73,6 +77,9 @@ class yzyGUI(private val clickGui: ClickGUIModule) : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+
+        assumeNonVolatile = true
+
         if (Mouse.hasWheel()) {
             val wheel = Mouse.getDWheel()
             val handledScroll = panels.asReversed().any { it.handleScroll(mouseX, mouseY, wheel) }
@@ -89,6 +96,10 @@ class yzyGUI(private val clickGui: ClickGUIModule) : GuiScreen() {
 
         sideGui.drawScreen(mouseX, mouseY, partialTicks, alpha)
         lastMS = System.currentTimeMillis()
+
+        drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+
+        assumeNonVolatile = false
     }
 
     @Throws(IOException::class)

@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown;
 
 import net.ccbluex.liquidbounce.features.module.Category;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.SideGui;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl.SettingComponents;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation;
@@ -15,6 +16,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.util
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils;
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
@@ -22,6 +24,7 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.input.Mouse;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -77,6 +80,9 @@ public class FDPDropdownClickGUI extends GuiScreen {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+
+        AWTFontRenderer.Companion.setAssumeNonVolatile(true);
+
         if (Mouse.isButtonDown(0) && mouseX >= 5 && mouseX <= 50 && mouseY <= height - 5 && mouseY >= height - 50)
             mc.displayGuiScreen(new GuiHudDesigner());
         RenderUtils.INSTANCE.drawImage(hudIcon, 9, height - 41, 32, 32);
@@ -110,6 +116,9 @@ public class FDPDropdownClickGUI extends GuiScreen {
             sideGui.drawScreen(mouseX, mouseY, partialTicks, alphaAnimation);
         });
 
+        RenderUtils.INSTANCE.drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, new Color(HUDModule.INSTANCE.getGuiColor()));
+
+        AWTFontRenderer.Companion.setAssumeNonVolatile(false);
     }
 
     @Override
