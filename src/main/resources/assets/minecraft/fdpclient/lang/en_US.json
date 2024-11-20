@@ -214,6 +214,7 @@
     "module.silentHotbarModule.description": "UNTRANSLATED: Controls in which scenarios the silently selected item should be rendered.",
     "module.pointerESP.description": "Allows you to see pointed entity positions.",
     "module.cameraView.description": "Allows you to modify your camera-Y position.",
-    "module.notifier.description": "Notifies you about all events."
+    "module.notifier.description": "Notifies you about all events.",
+    "module.fireFlies.description": "Displays firefly visual effects around the player."
   }
 }
