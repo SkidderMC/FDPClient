@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.Sid
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.handler.api.AutoSettings;
 import net.ccbluex.liquidbounce.handler.api.ClientApi;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation;
@@ -15,6 +16,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.util
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.TimerUtil;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.objects.Drag;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils;
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
 import net.ccbluex.liquidbounce.utils.ClientThemesUtils;
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils;
@@ -83,6 +85,8 @@ public class SideGui extends GuiPanel {
 
     @Override
     public void drawScreen(int mouseX, int mouseY, float partialTicks, int alpha) {
+
+        AWTFontRenderer.Companion.setAssumeNonVolatile(true);
 
         int wheel = Mouse.getDWheel();
         if (wheel != 0) {
@@ -245,7 +249,7 @@ public class SideGui extends GuiPanel {
 
                 DrRenderUtils.drawRect2(buttonX, buttonY, buttonWidth, buttonHeight,
                         ClientThemesUtils.INSTANCE.getUpdown() ? new Color(0, 150, 0).getRGB() : new Color(150, 0, 0).getRGB());
-                Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString("Side", buttonX + 5, buttonY + 5, Color.WHITE.getRGB());
+                Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString("Side", buttonX + 2, buttonY + 2, Color.WHITE.getRGB());
             }
         }
 
@@ -388,6 +392,9 @@ public class SideGui extends GuiPanel {
 
         DrRenderUtils.setAlphaLimit(1);
 
+        RenderUtils.INSTANCE.drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, new Color(HUDModule.INSTANCE.getGuiColor()));
+
+        AWTFontRenderer.Companion.setAssumeNonVolatile(false);
     }
 
     @Override
