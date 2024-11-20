@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.ClientThemesUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.customRotatedObject2D
 import net.ccbluex.liquidbounce.value.boolean
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.Tessellator
@@ -146,7 +146,7 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL, hideModule = false) {
         val radius = 50.0f * bubble.deltaTime * (1.0f - bubble.deltaTime)
         val rotationAngle = if (dynamicRotation) calculateDynamicRotation(bubble) else 0.0
 
-        RenderUtils.customRotatedObject2D(-radius / 2, -radius / 2, radius, radius, rotationAngle)
+        customRotatedObject2D(-radius / 2, -radius / 2, radius, radius, rotationAngle)
         buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR)
 
         val red = (bubbleColor shr 16 and 0xFF) / 255.0f

@@ -45,6 +45,54 @@ object AnimationUtil {
         return if (x < 0.5) { 2 * x * x } else { 1 - (-2 * x + 2).pow(2) / 2 }
     }
 
+    fun easeOutBounce(value: Double): Double {
+        val value = value
+        val n1 = 7.5625
+        val d1 = 2.75
+        return when {
+            value < 1 / d1 -> n1 * value * value
+            value < 2 / d1 -> n1 * (value - 1.5 / d1).let { it * it } + 0.75
+            value < 2.5 / d1 -> n1 * (value - 2.25 / d1).let { it * it } + 0.9375
+            else -> n1 * (value - 2.625 / d1).let { it * it } + 0.984375
+        }
+    }
+
+    fun easeInOutElasticx(value: Double): Double {
+        val c5 = (2 * Math.PI) / 4.5
+        return when {
+            value < 0 -> 0.0
+            value > 1 -> 1.0
+            value < 0.5 -> -(2.0.pow(20 * value - 10) * sin((20 * value - 11.125) * c5)) / 2
+            else -> (2.0.pow(-20 * value + 10) * sin((20 * value - 11.125) * c5)) / 2 + 1
+        }
+    }
+
+    fun easeOutElasticX(value: Double): Double {
+        val c4 = (2 * Math.PI) / 3
+        return when {
+            value < 0 -> 0.0
+            value > 1 -> 1.0
+            else -> 2.0.pow(-10 * value) * sin((value * 10 - 0.75) * c4) + 1
+        }
+    }
+
+    fun easeWave(value: Float): Float {
+        return (if (value > .5) 1 - value else value) * 2f
+    }
+
+    fun easeOutCirc(value: Double): Double {
+        return sqrt(1 - (value - 1).pow(2.0))
+    }
+
+    fun easeInOutExpo(value: Double): Double {
+        return when {
+            value < 0 -> 0.0
+            value > 1 -> 1.0
+            value < 0.5 -> 2.0.pow(20 * value - 10) / 2
+            else -> (2 - 2.0.pow(-20 * value + 10)) / 2
+        }
+    }
+
     fun easeInElastic(t: Double, b: Double, c: Double, d: Double): Double {
         var t = t
         var s = 1.70158

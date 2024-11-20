@@ -46,7 +46,6 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL14
 import org.lwjgl.util.glu.Cylinder
@@ -4055,5 +4054,34 @@ object RenderUtils : MinecraftInstance() {
         translate((oXpos + oWidth / 2).toDouble(), (oYpos + oHeight / 2).toDouble(), 0.0)
         glRotated(rotate, 0.0, 0.0, 1.0)
         translate(-(oXpos + oWidth / 2).toDouble(), -(oYpos + oHeight / 2).toDouble(), 0.0)
+    }
+
+    fun setupOrientationMatrix(x: Double, y: Double, z: Double) {
+        translate(x - mc.renderManager.viewerPosX, y - mc.renderManager.viewerPosY, z - mc.renderManager.viewerPosZ)
+    }
+
+    fun setupDrawCircles(render: Runnable) {
+        val lightingEnabled = glIsEnabled(GL_LIGHTING)
+        pushMatrix()
+        enableBlend()
+        enableAlpha()
+        alphaFunc(GL_GREATER, 0f)
+        depthMask(false)
+        disableCull()
+        if (lightingEnabled) disableLighting()
+        shadeModel(GL_SMOOTH)
+
+        blendFunc(770, 1)
+        setupOrientationMatrix(0.0, 0.0, 0.0)
+        render.run()
+        blendFunc(770, 771)
+        color(1f, 1f, 1f)
+        shadeModel(GL_FLAT)
+        if (lightingEnabled) enableLighting()
+        enableCull()
+        depthMask(true)
+        alphaFunc(GL_GREATER, .1f)
+        enableAlpha()
+        popMatrix()
     }
 }
