@@ -8,6 +8,8 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 import com.mojang.authlib.GameProfile;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KeepSprint;
 import net.ccbluex.liquidbounce.utils.CooldownHelper;
+import net.ccbluex.liquidbounce.utils.MovementUtils;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.entity.player.PlayerCapabilities;
@@ -17,6 +19,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
 
@@ -75,14 +78,35 @@ public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
 
     @ModifyConstant(method = "attackTargetEntityWithCurrentItem", constant = @Constant(doubleValue = 0.6))
     private double injectKeepSprintA(double constant) {
-        return KeepSprint.INSTANCE.getState() ? KeepSprint.INSTANCE.getMotionAfterAttack() : constant;
+        return KeepSprint.INSTANCE.handleEvents() && isSprinting() ? KeepSprint.INSTANCE.getMotionAfterAttack() : constant;
     }
 
     @Redirect(method = "attackTargetEntityWithCurrentItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/EntityPlayer;setSprinting(Z)V"))
     private void injectKeepSprintB(EntityPlayer instance, boolean sprint) {
-        if (!KeepSprint.INSTANCE.getState()) {
+        boolean keepSprint = Boolean.FALSE.equals(MovementUtils.INSTANCE.getAffectSprintOnAttack());
+
+        if (!KeepSprint.INSTANCE.handleEvents() && !keepSprint) {
             instance.setSprinting(sprint);
         }
+
+        // Only affect motion when sprinting. Knock-back modifier factor is ignored.
+        if (keepSprint && !KeepSprint.INSTANCE.handleEvents() && isSprinting()) {
+            // Reverse the motion effects done by sprinting
+            motionX /= 0.6;
+            motionZ /= 0.6;
+        }
+    }
+
+    @Inject(method = "attackTargetEntityWithCurrentItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/Entity;attackEntityFrom(Lnet/minecraft/util/DamageSource;F)Z"), locals = LocalCapture.CAPTURE_FAILHARD)
+    private void injectSprintState(Entity entity, CallbackInfo ci, float f, int i, float f1, boolean flag, boolean flag1, int j, double d0, double d1, double d2) {
+        Boolean sprint = MovementUtils.INSTANCE.getAffectSprintOnAttack();
+
+        if (sprint == null || !sprint || isSprinting())
+            return;
+
+        // This will be used later in line 1058
+        //noinspection UnusedAssignment
+        i++;
     }
 
 }

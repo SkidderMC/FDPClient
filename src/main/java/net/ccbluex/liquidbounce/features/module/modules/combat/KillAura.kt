@@ -740,9 +740,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
             if (switchMode && !isLookingOnEntities(entity, maxSwitchFOV.toDouble()))
                 continue
 
-            var currentValue: Double? = null
-
-            currentValue = when (priority.lowercase()) {
+            var currentValue = when (priority.lowercase()) {
                 "distance" -> distance
                 "direction" -> entityFov.toDouble()
                 "health" -> entity.health.toDouble()
@@ -819,9 +817,9 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         }
 
         if (!blinkAutoBlock || !BlinkUtils.isBlinking) {
-            val sprint = !(KeepSprint.isActive || keepSprint) && thePlayer.isSprinting
+            val affectSprint = false.takeIf { KeepSprint.handleEvents() || keepSprint }
 
-            thePlayer.attackEntityWithModifiedSprint(entity, sprint) { if (swing) thePlayer.swingItem() }
+            thePlayer.attackEntityWithModifiedSprint(entity, affectSprint) { if (swing) thePlayer.swingItem() }
         }
 
         // Start blocking after attack

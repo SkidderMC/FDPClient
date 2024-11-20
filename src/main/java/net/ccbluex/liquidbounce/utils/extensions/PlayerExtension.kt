@@ -7,10 +7,9 @@ package net.ccbluex.liquidbounce.utils.extensions
 
 import net.ccbluex.liquidbounce.file.FileManager.friendsConfig
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
-import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.utils.CPSCounter
 import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
+import net.ccbluex.liquidbounce.utils.MovementUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils.getFixedSensitivityAngle
@@ -19,7 +18,6 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.getState
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.resources.DefaultPlayerSkin
-import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.boss.EntityDragon
@@ -235,7 +233,8 @@ fun EntityPlayerSP.onPlayerRightClick(
 
     // If click had activated a block, send click and return true
     if ((!isSneaking || item == null || item.doesSneakBypassUse(worldObj, clickPos, this))
-        && blockState?.block?.onBlockActivated(worldObj,
+        && blockState?.block?.onBlockActivated(
+            worldObj,
             clickPos,
             blockState,
             this,
@@ -243,7 +242,8 @@ fun EntityPlayerSP.onPlayerRightClick(
             facingX,
             facingY,
             facingZ
-        ) == true)
+        ) == true
+    )
         return sendClick()
 
     if (item is ItemBlock && !item.canPlaceBlockOnSide(worldObj, clickPos, side, this, stack))
@@ -297,22 +297,21 @@ fun EntityPlayerSP.tryJump() {
     }
 }
 
-fun EntityPlayerSP.attackEntityWithModifiedSprint(entity: Entity, new: Boolean, swing: () -> Unit) {
-    EventManager.callEvent(AttackEvent(entity))
-
-    val wasSprinting = this.isSprinting
-
-    (this as Entity).isSprinting = new
-
+fun EntityPlayerSP.attackEntityWithModifiedSprint(
+    entity: Entity, affectMovementBySprint: Boolean? = null, swing: () -> Unit
+) {
     swing()
 
-    sendPacket(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
+    MovementUtils.affectSprintOnAttack = affectMovementBySprint
 
-    if (mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR) {
-        this.attackTargetEntityWithCurrentItem(entity)
+    try {
+        mc.playerController?.attackEntity(this, entity)
+    } catch (any: Exception) {
+        // Unlikely to happen, but if it does, we just want to make sure affectSprintOnAttack is null.
+        any.printStackTrace()
     }
 
-    (this as Entity).isSprinting = wasSprinting
+    MovementUtils.affectSprintOnAttack = null
 
     CPSCounter.registerClick(CPSCounter.MouseButton.LEFT)
 }
