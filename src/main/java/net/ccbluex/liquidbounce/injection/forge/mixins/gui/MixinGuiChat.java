@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.features.command.CommandManager;
 import net.ccbluex.liquidbounce.features.module.modules.client.ChatControl;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.file.FileManager;
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiChat;
@@ -164,6 +165,8 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
      */
     @Overwrite
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+        AWTFontRenderer.Companion.setAssumeNonVolatile(true);
+
         Gui.drawRect(2, height - (int) fade, width - 2, height, Integer.MIN_VALUE);
         inputField.drawTextBox();
 
@@ -174,6 +177,8 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
 
             mc.fontRendererObj.drawStringWithShadow(trimmedString, inputField.xPosition + mc.fontRendererObj.getStringWidth(inputField.getText()), inputField.yPosition, new Color(165, 165, 165).getRGB());
         }
+
+        AWTFontRenderer.Companion.setAssumeNonVolatile(false);
 
         IChatComponent ichatcomponent =
                 mc.ingameGUI.getChatGUI().getChatComponent(Mouse.getX(), Mouse.getY());

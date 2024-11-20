@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.injection.implementations.IMixinGuiSlot;
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
@@ -96,6 +97,8 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
     @Overwrite
     public void drawScreen(int mouseXIn, int mouseYIn, float p_148128_3_) {
         if (field_178041_q) {
+            AWTFontRenderer.Companion.setAssumeNonVolatile(true);
+
             mouseX = mouseXIn;
             mouseY = mouseYIn;
             drawBackground();
@@ -179,6 +182,7 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
             shadeModel(7424);
             enableAlpha();
             disableBlend();
+            AWTFontRenderer.Companion.setAssumeNonVolatile(false);
         }
     }
 

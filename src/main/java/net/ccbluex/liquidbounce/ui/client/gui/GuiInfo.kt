@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.gui
 
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.utils.APIConnecter
 import net.ccbluex.liquidbounce.utils.APIConnecter.donate
 import net.ccbluex.liquidbounce.utils.URLComponent
@@ -39,9 +40,14 @@ class GuiInfo(private val prevGui: GuiScreen) : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+
+        assumeNonVolatile = true
+
         drawDefaultBackground()
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+
+        assumeNonVolatile = false
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.file.FileManager.accountsConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiLoginIntoAccount
 import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiSessionLogin
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
@@ -89,6 +90,9 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+
+        assumeNonVolatile = true
+
         drawBackground(0)
         altsList.drawScreen(mouseX, mouseY, partialTicks)
         this.drawCenteredString(mc.fontRendererObj, "Alt Manager", width / 2, 6, 0xffffff)
@@ -121,6 +125,8 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
             )
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+
+        assumeNonVolatile = false
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

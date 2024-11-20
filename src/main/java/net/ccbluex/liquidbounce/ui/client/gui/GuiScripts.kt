@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.gui
 
 import net.ccbluex.liquidbounce.FDPClient.scriptManager
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.file.FileManager.clickGuiConfig
 import net.ccbluex.liquidbounce.file.FileManager.hudConfig
 import net.ccbluex.liquidbounce.file.FileManager.loadConfig
@@ -13,9 +14,11 @@ import net.ccbluex.liquidbounce.file.FileManager.loadConfigs
 import net.ccbluex.liquidbounce.script.ScriptManager.reloadScripts
 import net.ccbluex.liquidbounce.script.ScriptManager.scripts
 import net.ccbluex.liquidbounce.script.ScriptManager.scriptsFolder
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiSlot
@@ -49,11 +52,17 @@ class GuiScripts(private val prevGui: GuiScreen) : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        assumeNonVolatile = true
+
         drawBackground(0)
 
         list.drawScreen(mouseX, mouseY, partialTicks)
 
         Fonts.font40.drawCenteredStringWithShadow("§9§lScripts", width / 2f, 28f, 0xffffff)
+
+        drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+
+        assumeNonVolatile = false
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

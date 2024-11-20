@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColo
 import net.ccbluex.liquidbounce.file.FileManager.accountsConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.randomUsername
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
@@ -54,6 +55,9 @@ class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: B
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+
+        assumeNonVolatile = true
+
         drawBackground(0)
 
         drawRect(30, 30, width - 30, height - 30, Int.MIN_VALUE)
@@ -67,6 +71,8 @@ class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: B
             Fonts.font40.drawCenteredStringWithShadow("§7Username", width / 2 - 72f, height / 2 - 84f, 0xffffff)
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+
+        assumeNonVolatile = false
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

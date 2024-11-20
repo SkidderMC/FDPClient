@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.gui
 
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.APIConnecter
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -14,10 +15,12 @@ import net.ccbluex.liquidbounce.value.choices
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import java.util.*
 
@@ -101,33 +104,36 @@ object GuiCapeManager : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+
+        assumeNonVolatile = false
+
         this.drawDefaultBackground()
 
-        GL11.glPushMatrix()
+        glPushMatrix()
         Fonts.font35.drawCenteredStringWithShadow(
             if (nowCape == null) "§cNONE" else "§a${nowCape!!.name}",
             width * 0.50f,
             height * 0.23f,
             -1
         )
-        GL11.glScalef(2f, 2f, 2f)
+        glScalef(2f, 2f, 2f)
         Fonts.font35.drawCenteredStringWithoutShadow("Cape Manager", width * 0.25f, height * 0.03f, -1)
-        GL11.glPopMatrix()
+        glPopMatrix()
 
         super.drawScreen(mouseX, mouseY, partialTicks)
 
         mc.thePlayer ?: return
-        GL11.glEnable(GL11.GL_CULL_FACE)
-        GlStateManager.resetColor()
-        GL11.glColor4f(1F, 1F, 1F, 1F)
-        GlStateManager.enableColorMaterial()
-        GlStateManager.pushMatrix()
-        GL11.glTranslatef(width * 0.5f - 60, height * 0.3f, 0f)
-        GL11.glScalef(2f, 2f, 2f)
-        GL11.glTranslatef(30f, 100f, 0f)
-        GlStateManager.translate(0F, 0F, 50F)
-        GlStateManager.scale(-50F, 50F, 50F)
-        GlStateManager.rotate(180F, 0F, 0F, 1F)
+        glEnable(GL_CULL_FACE)
+        resetColor()
+        glColor4f(1F, 1F, 1F, 1F)
+        enableColorMaterial()
+        pushMatrix()
+        glTranslatef(width * 0.5f - 60, height * 0.3f, 0f)
+        glScalef(2f, 2f, 2f)
+        glTranslatef(30f, 100f, 0f)
+        translate(0F, 0F, 50F)
+        scale(-50F, 50F, 50F)
+        rotate(180F, 0F, 0F, 1F)
 
         val renderYawOffset = mc.thePlayer.renderYawOffset
         val rotationYaw = mc.thePlayer.rotationYaw
@@ -140,10 +146,10 @@ object GuiCapeManager : GuiScreen() {
         val armor3 = mc.thePlayer.inventory.armorInventory[3]
         val current = mc.thePlayer.inventory.mainInventory[mc.thePlayer.inventory.currentItem]
 
-        GlStateManager.rotate(135F, 0F, 1F, 0F)
+        rotate(135F, 0F, 1F, 0F)
         RenderHelper.enableStandardItemLighting()
-        GlStateManager.rotate(-135F, 0F, 1F, 0F)
-        GlStateManager.rotate(0f, 1F, 0F, 0F)
+        rotate(-135F, 0F, 1F, 0F)
+        rotate(0f, 1F, 0F, 0F)
 
         mc.thePlayer.renderYawOffset = 180f
         mc.thePlayer.rotationYaw = 180f
@@ -156,7 +162,7 @@ object GuiCapeManager : GuiScreen() {
         mc.thePlayer.inventory.armorInventory[3] = null
         mc.thePlayer.inventory.mainInventory[mc.thePlayer.inventory.currentItem] = null
 
-        GlStateManager.translate(0F, 0F, 0F)
+        translate(0F, 0F, 0F)
 
         val renderManager = mc.renderManager
         renderManager.setPlayerViewY(180F)
@@ -175,15 +181,17 @@ object GuiCapeManager : GuiScreen() {
         mc.thePlayer.inventory.armorInventory[3] = armor3
         mc.thePlayer.inventory.mainInventory[mc.thePlayer.inventory.currentItem] = current
 
-        GlStateManager.popMatrix()
+        popMatrix()
         RenderHelper.disableStandardItemLighting()
-        GlStateManager.disableRescaleNormal()
-        GlStateManager.setActiveTexture(OpenGlHelper.lightmapTexUnit)
-        GlStateManager.disableTexture2D()
-        GlStateManager.setActiveTexture(OpenGlHelper.defaultTexUnit)
-        GlStateManager.resetColor()
+        disableRescaleNormal()
+        setActiveTexture(OpenGlHelper.lightmapTexUnit)
+        disableTexture2D()
+        setActiveTexture(OpenGlHelper.defaultTexUnit)
+        resetColor()
 
         RenderUtils.drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+
+        assumeNonVolatile = false
     }
 
     override fun doesGuiPauseGame() = false

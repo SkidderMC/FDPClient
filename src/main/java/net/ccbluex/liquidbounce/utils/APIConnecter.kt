@@ -8,11 +8,9 @@ package net.ccbluex.liquidbounce.utils
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.minecraft.client.renderer.texture.DynamicTexture
-import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.util.ResourceLocation
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import java.awt.image.BufferedImage
 import java.net.URL
 import javax.imageio.ImageIO
 import javax.net.ssl.SSLContext
@@ -25,14 +23,13 @@ object APIConnecter {
     var isLatest = false
     var discord = ""
     var discordApp = ""
-    var appClientID = ""
-    var appClientSecret = ""
+    private var appClientID = ""
+    private var appClientSecret = ""
     var donate = ""
     var changelogs = ""
     var bugs = ""
 
     private var pictures = mutableListOf<Triple<String, String, ResourceLocation>>()
-    private var donorCapeLocations = mutableListOf<Pair<String, ResourceLocation>>()
 
     private val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
         override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
@@ -71,85 +68,36 @@ object APIConnecter {
             }
             val details = gotNames.split("---")
             for (i in details) {
-                var gotImage: BufferedImage
-                val fileName = i.split(":")[0]
-                val picType = i.split(":")[1]
-                tlsAuthConnectionFixes()
-                val imageUrl = URL(URLComponent.PICTURES + picType + "/" + fileName + ".png")
-                val imageRequest = Request.Builder().url(imageUrl).build()
-                val imageBytes = nameClient.newCall(imageRequest).execute().use { response ->
-                    response.body!!.byteStream().readBytes()
-                }
-                gotImage = ImageIO.read(imageBytes.inputStream())
-                pictures.add(
-                    Triple(
-                        fileName,
-                        picType,
-                        MinecraftInstance.mc.textureManager.getDynamicTextureLocation(
-                            FDPClient.clientTitle,
-                            DynamicTexture(gotImage)
+                try {
+                    val fileName = i.split(":")[0]
+                    val picType = i.split(":")[1]
+                    tlsAuthConnectionFixes()
+                    val imageUrl = URL(URLComponent.PICTURES + picType + "/" + fileName + ".png")
+                    val imageRequest = Request.Builder().url(imageUrl).build()
+                    val imageBytes = nameClient.newCall(imageRequest).execute().use { response ->
+                        response.body!!.byteStream().readBytes()
+                    }
+                    val gotImage = ImageIO.read(imageBytes.inputStream())
+                    pictures.add(
+                        Triple(
+                            fileName,
+                            picType,
+                            MinecraftInstance.mc.textureManager.getDynamicTextureLocation(
+                                FDPClient.clientTitle,
+                                DynamicTexture(gotImage)
+                            )
                         )
                     )
-                )
-                LOGGER.info("Load Picture $fileName, $picType")
-            }
-            canConnect = true
-            LOGGER.info("Loaded Pictures")
-        } catch (e: Exception) {
-            canConnect = false
-            LOGGER.info("Failed to load Pictures")
-        }
-    }
-
-    fun loadCape(player: EntityPlayer): ResourceLocation? {
-        for ((i, l) in donorCapeLocations) {
-            if (i == player.uniqueID.toString())
-                return l
-        }
-        return null
-    }
-
-    fun loadDonors() {
-        try {
-            if (donorCapeLocations.isNotEmpty())
-                donorCapeLocations.clear()
-            var gotNames: String
-            tlsAuthConnectionFixes()
-            val nameClient = OkHttpClient.Builder()
-                .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
-                .build()
-            val nameBuilder = Request.Builder().url(URLComponent.DONORS + "users.txt")
-            val nameRequest: Request = nameBuilder.build()
-            nameClient.newCall(nameRequest).execute().use { response ->
-                gotNames = response.body!!.string()
-            }
-            val details = gotNames.split("///")
-            for (i in details) {
-                var gotCapes: BufferedImage
-                val uuid = i.split(":")[0]
-                val cape = i.split(":")[1]
-                tlsAuthConnectionFixes()
-                val imageUrl = URL(URLComponent.DONORS + cape)
-                val imageRequest = Request.Builder().url(imageUrl).build()
-                val imageBytes = nameClient.newCall(imageRequest).execute().use { response ->
-                    response.body!!.byteStream().readBytes()
+                    LOGGER.info("Successfully loaded picture $fileName, $picType")
+                } catch (innerException: Exception) {
+                    LOGGER.error("Failed to load picture for $i", innerException)
                 }
-                gotCapes = ImageIO.read(imageBytes.inputStream())
-                donorCapeLocations.add(
-                    Pair(
-                        uuid,
-                        MinecraftInstance.mc.textureManager.getDynamicTextureLocation(
-                            FDPClient.CLIENT_NAME,
-                            DynamicTexture(gotCapes)
-                        )
-                    )
-                )
             }
             canConnect = true
-            LOGGER.info("Loaded Donor Capes")
+            LOGGER.info("Loaded all pictures successfully")
         } catch (e: Exception) {
             canConnect = false
-            LOGGER.info("Failed to load Donor Capes")
+            LOGGER.error("Failed to load pictures", e)
         }
     }
 
@@ -168,7 +116,6 @@ object APIConnecter {
             val details = gotData.split("///")
             isLatest = details[5] == FDPClient.clientVersionText
             discord = details[4]
-            donate = details[3]
             discordApp = details[2]
             appClientSecret = details[1]
             appClientID = details[0]

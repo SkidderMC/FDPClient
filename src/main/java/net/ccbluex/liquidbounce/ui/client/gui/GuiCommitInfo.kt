@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.gui
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.GitUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
@@ -34,6 +35,9 @@ class GuiCommitInfo : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+
+        assumeNonVolatile = true
+
         drawDefaultBackground()
         drawImage(gitImage, 30, 30, 30, 30)
 
@@ -58,6 +62,8 @@ class GuiCommitInfo : GuiScreen() {
         }
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+
+        assumeNonVolatile = false
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.ui.client.gui.button.ImageButton
 import net.ccbluex.liquidbounce.ui.client.gui.button.QuitButton
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.Fonts.minecraftFont
 import net.ccbluex.liquidbounce.utils.APIConnecter.bugs
@@ -132,6 +133,8 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        assumeNonVolatile = true
+
         drawBackground(0)
 
         if (Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
@@ -240,6 +243,8 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
 
         GlStateManager.popMatrix()
+
+        assumeNonVolatile = false
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

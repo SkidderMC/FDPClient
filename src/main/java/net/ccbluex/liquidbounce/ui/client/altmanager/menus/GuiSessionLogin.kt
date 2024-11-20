@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.altmanager.menus
 
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.login.LoginUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
@@ -57,6 +58,9 @@ class GuiSessionLogin(private val prevGui: GuiAltManager) : GuiScreen() {
      * Draw screen
      */
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+
+        assumeNonVolatile = true
+
         // Draw background to screen
         drawBackground(0)
         drawRect(30f, 30f, width - 30f, height - 30f, Integer.MIN_VALUE)
@@ -73,6 +77,7 @@ class GuiSessionLogin(private val prevGui: GuiAltManager) : GuiScreen() {
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
 
+        assumeNonVolatile = false
         // Call sub method
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

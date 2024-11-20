@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.gui
 import net.ccbluex.liquidbounce.FDPClient.IN_DEV
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.handler.api.ClientUpdate
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.APIConnecter.checkBugs
 import net.ccbluex.liquidbounce.utils.APIConnecter.checkChangelogs
@@ -38,6 +39,8 @@ class GuiUpdate : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        assumeNonVolatile = true
+
         drawBackground(0)
 
         val messageYPosition = (height / 8f + 60).toInt()
@@ -88,6 +91,8 @@ class GuiUpdate : GuiScreen() {
         }
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+
+        assumeNonVolatile = false
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

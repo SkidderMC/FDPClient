@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetStyle
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl.*
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.utils.ClientThemesUtils.getColor
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
@@ -81,6 +82,9 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     var barColor = Color(-1)
 
     override fun drawElement(): Border? {
+
+        assumeNonVolatile = true
+
         val mainStyle = getCurrentStyle(styleValue.get()) ?: return null
         val actualTarget = if (FDPClient.combatManager.target != null && (!onlyPlayer || FDPClient.combatManager.target is EntityPlayer)) FDPClient.combatManager.target
         else if (FDPClient.combatManager.target != null && (!onlyPlayer || FDPClient.combatManager.target is EntityPlayer)) FDPClient.combatManager.target
@@ -142,6 +146,9 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         mainStyle.drawTarget(convertTarget)
 
         GlStateManager.resetColor()
+
+        assumeNonVolatile = false
+
         return returnBorder
     }
 

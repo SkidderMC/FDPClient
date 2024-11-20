@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
 import net.ccbluex.liquidbounce.handler.lang.LanguageManager
 import net.ccbluex.liquidbounce.handler.lang.translationMenu
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.Background
 import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
@@ -246,6 +247,9 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+
+        assumeNonVolatile = true
+
         drawBackground(0)
         Fonts.fontBold180.drawCenteredString(
             translationMenu("configuration"), width / 2F, height / 8F + 5F, 4673984, true
@@ -271,6 +275,8 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : GuiScreen() {
         )
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+
+        assumeNonVolatile = false
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

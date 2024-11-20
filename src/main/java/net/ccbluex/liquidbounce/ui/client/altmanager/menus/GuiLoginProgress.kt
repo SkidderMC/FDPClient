@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.altmanager.menus
 import me.liuli.elixir.account.MinecraftAccount
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager.Companion.login
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawLoadingCircle
 import net.minecraft.client.gui.GuiScreen
@@ -20,11 +21,16 @@ class GuiLoginProgress(minecraftAccount: MinecraftAccount, success: () -> Unit, 
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+
+        assumeNonVolatile = true
+
         drawDefaultBackground()
         drawLoadingCircle(width / 2f, height / 4f + 70)
         drawCenteredString(fontRendererObj, "Logging into account...", width / 2, height / 2 - 60, 16777215)
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+
+        assumeNonVolatile = false
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.file.FileManager.hudConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard
@@ -30,6 +31,9 @@ class GuiHudDesigner : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+
+        assumeNonVolatile = true
+
         HUD.render(true)
         HUD.handleMouseMove(mouseX, mouseY)
 
@@ -50,6 +54,8 @@ class GuiHudDesigner : GuiScreen() {
         }
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+
+        assumeNonVolatile = false
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {

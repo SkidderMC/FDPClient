@@ -7,14 +7,18 @@ package net.ccbluex.liquidbounce.ui.client.altmanager.menus
 
 import me.liuli.elixir.account.MicrosoftAccount
 import me.liuli.elixir.compat.OAuthServer
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.file.FileManager.accountsConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.misc.MiscUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawLoadingCircle
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
+import java.awt.Color
 import java.net.BindException
 
 class GuiMicrosoftLoginProgress(val updateStatus: (String) -> Unit, val done: () -> Unit) : GuiScreen() {
@@ -80,9 +84,17 @@ class GuiMicrosoftLoginProgress(val updateStatus: (String) -> Unit, val done: ()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+
+        assumeNonVolatile = true
+
         drawDefaultBackground()
         drawLoadingCircle(width / 2f, height / 4f + 70)
         Fonts.font40.drawCenteredStringWithShadow("Logging into account...", width / 2f, height / 2 - 60f, 0xffffff)
+
+        drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+
+        assumeNonVolatile = false
+
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
