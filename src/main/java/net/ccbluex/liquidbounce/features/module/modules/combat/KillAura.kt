@@ -723,10 +723,10 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
             if (entity !is EntityLivingBase || !isEnemy(entity) || switchMode && entity.entityId in prevTargetEntities)
                 continue
 
-            var distance = thePlayer.getDistanceToEntityBox(entity)
+            var distance = 0.0
 
-            if (Backtrack.handleEvents()) {
-                distance = distance.coerceAtMost(Backtrack.getNearestTrackedDistance(entity))
+            Backtrack.runWithNearestTrackedDistance(entity) {
+                distance = thePlayer.getDistanceToEntityBox(entity)
             }
 
             if (switchMode && distance > range && prevTargetEntities.isNotEmpty())
