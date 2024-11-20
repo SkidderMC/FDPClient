@@ -145,7 +145,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     // Basic stuff
     val sprint by boolean("Sprint", false)
     private val swing by boolean("Swing", true, subjective = true)
-    private val down by boolean("Down", true) { scaffoldMode !in arrayOf("GodBridge", "Telly") }
+    private val down by boolean("Down", true) { !sameY && scaffoldMode !in arrayOf("GodBridge", "Telly") }
 
     private val ticksUntilRotation: IntegerValue = object : IntegerValue("TicksUntilRotation", 3, 1..5) {
         override fun isSupported() = scaffoldMode == "Telly"
