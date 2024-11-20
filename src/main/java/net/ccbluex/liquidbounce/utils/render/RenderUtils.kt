@@ -46,6 +46,7 @@ import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
+import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL14
 import org.lwjgl.util.glu.Cylinder
@@ -3438,7 +3439,7 @@ object RenderUtils : MinecraftInstance() {
         val tessellator = Tessellator.getInstance()
         val renderer = tessellator.worldRenderer
 
-        GlStateManager.color(
+        color(
             color.red / 255.0f,
             color.green / 255.0f,
             color.blue / 255.0f,
@@ -3459,7 +3460,7 @@ object RenderUtils : MinecraftInstance() {
 
         tessellator.draw()
 
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+        color(1.0f, 1.0f, 1.0f, 1.0f)
     }
 
     fun yzyRectangle(
@@ -3469,13 +3470,13 @@ object RenderUtils : MinecraftInstance() {
         height: Float,
         color: Color
     ) {
-        GlStateManager.enableBlend()
-        GlStateManager.disableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        enableBlend()
+        disableTexture2D()
+        tryBlendFuncSeparate(770, 771, 1, 0)
 
         val renderer = Tessellator.getInstance().worldRenderer
 
-        GlStateManager.color(
+        color(
             color.red / 255.0f,
             color.green / 255.0f,
             color.blue / 255.0f,
@@ -3490,10 +3491,10 @@ object RenderUtils : MinecraftInstance() {
 
         Tessellator.getInstance().draw()
 
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
-        GlStateManager.bindTexture(0)
-        GlStateManager.color(1f, 1f, 1f, 1f)
+        enableTexture2D()
+        disableBlend()
+        bindTexture(0)
+        color(1f, 1f, 1f, 1f)
     }
 
 
@@ -4048,5 +4049,11 @@ object RenderUtils : MinecraftInstance() {
             Minecraft.getMinecraft().timer.renderPartialTicks,
             0
         )
+    }
+
+    fun customRotatedObject2D(oXpos: Float, oYpos: Float, oWidth: Float, oHeight: Float, rotate: Double) {
+        translate((oXpos + oWidth / 2).toDouble(), (oYpos + oHeight / 2).toDouble(), 0.0)
+        glRotated(rotate, 0.0, 0.0, 1.0)
+        translate(-(oXpos + oWidth / 2).toDouble(), -(oYpos + oHeight / 2).toDouble(), 0.0)
     }
 }
