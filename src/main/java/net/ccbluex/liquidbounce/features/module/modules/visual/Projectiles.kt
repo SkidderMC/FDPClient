@@ -8,9 +8,11 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getState
+import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
+import net.ccbluex.liquidbounce.utils.extensions.prevPos
 import net.ccbluex.liquidbounce.utils.extensions.rotation
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.ccbluex.liquidbounce.utils.extensions.toRadiansD
@@ -94,21 +96,25 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
                         motionFactor = 3F
                     }
                 }
+
                 is ItemFishingRod -> {
                     gravity = 0.04F
                     size = 0.25F
                     motionSlowdown = 0.92F
                 }
+
                 is ItemPotion -> {
                     if (!heldStack.isSplashPotion()) continue
                     gravity = 0.05F
                     size = 0.25F
                     motionFactor = 0.5F
                 }
+
                 is ItemSnowball, is ItemEnderPearl, is ItemEgg -> {
                     gravity = 0.03F
                     size = 0.25F
                 }
+
                 else -> continue
             }
 
@@ -118,10 +124,12 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
             val yawRadians = yaw.toRadiansD()
             val pitchRadians = pitch.toRadiansD()
 
+            val pos = theEntity.interpolatedPosition(theEntity.prevPos)
+
             // Positions
-            var posX = theEntity.posX - cos(yawRadians) * 0.16F
-            var posY = theEntity.posY + theEntity.eyeHeight - 0.10000000149011612
-            var posZ = theEntity.posZ - sin(yawRadians) * 0.16F
+            var posX = pos.xCoord - cos(yawRadians) * 0.16F
+            var posY = pos.yCoord + theEntity.eyeHeight - 0.10000000149011612
+            var posZ = pos.zCoord - sin(yawRadians) * 0.16F
 
             // Motions
             var motionX = -sin(yawRadians) * cos(pitchRadians) * if (isBow) 1.0 else 0.4
@@ -182,7 +190,11 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
                 if (landingPosition != null) {
                     hasLanded = true
                     posAfter =
-                        Vec3(landingPosition.hitVec.xCoord, landingPosition.hitVec.yCoord, landingPosition.hitVec.zCoord)
+                        Vec3(
+                            landingPosition.hitVec.xCoord,
+                            landingPosition.hitVec.yCoord,
+                            landingPosition.hitVec.zCoord
+                        )
                 }
 
                 // Set arrow box
@@ -263,7 +275,8 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
             glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
 
             glTranslated(
-                posX - renderManager.renderPosX, posY - renderManager.renderPosY,
+                posX - renderManager.renderPosX,
+                posY - renderManager.renderPosY,
                 posZ - renderManager.renderPosZ
             )
 
