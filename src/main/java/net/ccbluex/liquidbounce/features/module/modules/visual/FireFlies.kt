@@ -175,8 +175,9 @@ object FireFlies : Module("FireFlies", Category.VISUAL, hideModule = false) {
             partList.forEach { it.setToRemove() }
         }
 
+        val currentTime = System.currentTimeMillis()
         partList.forEach { it.updatePart() }
-        partList.removeIf { it.toRemove }
+        partList.removeIf { it.toRemove || (currentTime - it.startTime) >= maxPartAliveTime }
 
         if (mc.thePlayer.ticksExisted % (spawnDelay.toInt() + 1) == 0) {
             partList.add(

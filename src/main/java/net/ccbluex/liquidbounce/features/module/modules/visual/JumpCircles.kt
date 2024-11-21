@@ -41,8 +41,8 @@ object JumpCircles : Module("JumpCircles", Category.VISUAL, hideModule = false) 
     private val maxTime by int("Max Time", 3000, 2000..8000)
     private val radius by float("Radius", 2f, 1f..3f)
 
-    private val texture by choices("Texture", arrayOf("Supernatural", "Aurora", "Leeches", "Circle"), "Supernatural")
-    private val deepestLight by boolean("Deepest Light", false)
+    private val texture by choices("Texture", arrayOf("Supernatural", "Aurora", "Leeches", "Circle"), "Leeches")
+    private val deepestLight by boolean("Deepest Light", true)
 
     private val staticLoc = ResourceLocation("${CLIENT_NAME.lowercase()}/zywl/jumpcircles/default")
     private val animatedLoc = ResourceLocation("${CLIENT_NAME.lowercase()}/zywl/jumpcircles/animated")
