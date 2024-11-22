@@ -149,12 +149,12 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
 
     // AutoBlock
     val autoBlock by choices("AutoBlock", arrayOf("Off", "Packet", "Fake"), "Packet")
-    private val blockMaxRange by float("BlockMaxRange", 3f, 0f..8f) { autoBlock != "Off" }
+    private val blockMaxRange by float("BlockMaxRange", 3f, 0f..8f) { autoBlock == "Packet" }
     private val unblockMode by choices(
         "UnblockMode",
         arrayOf("Stop", "Switch", "Empty"),
         "Stop"
-    ) { autoBlock != "Off" }
+    ) { autoBlock == "Packet" }
     private val releaseAutoBlock by boolean("ReleaseAutoBlock", true)
     { autoBlock !in arrayOf("Off", "Fake") }
     val forceBlockRender by boolean("ForceBlockRender", true)
@@ -180,7 +180,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     { autoBlock !in arrayOf("Off", "Fake") && blinkAutoBlock }
 
     // AutoBlock conditions
-    private val smartAutoBlock by boolean("SmartAutoBlock", false) { autoBlock != "Off" }
+    private val smartAutoBlock by boolean("SmartAutoBlock", false) { autoBlock == "Packet" }
 
     // Ignore all blocking conditions, except for block rate, when standing still
     private val forceBlock by boolean("ForceBlockWhenStill", true)
@@ -225,7 +225,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private val useHitDelay by boolean("UseHitDelay", false)
     private val hitDelayTicks by int("HitDelayTicks", 1, 1..5) { useHitDelay }
 
-    private val randomizeRotations by boolean("RandomizeRotations", true) { options.rotationsActive }
+    private val randomization = RandomizationSettings(this) { options.rotationsActive }
     private val outborder by boolean("Outborder", false) { options.rotationsActive }
 
     private val highestBodyPointToTargetValue: ListValue = object : ListValue(
@@ -613,19 +613,19 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
                     }
 
                     if (!shouldDelayClick(it.typeOfHit)) {
+                        attackTickTimes += it to runTimeTicks
+
                         if (it.typeOfHit.isEntity) {
                             val entity = it.entityHit
 
                             // Use own function instead of clickMouse() to maintain keep sprint, auto block, etc
-                            if (entity is EntityLivingBase) {
+                            if (entity is EntityLivingBase && isSelected(entity, true)) {
                                 attackEntity(entity, isLastClick)
-                            }
+                            } else attackTickTimes -= it to runTimeTicks
                         } else {
                             // Imitate game click
                             mc.clickMouse()
                         }
-
-                        attackTickTimes += it to runTimeTicks
                     }
 
                     if (shouldEnterBlockBreakProgress && isLastClick) {
@@ -702,10 +702,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
      * Update current target
      */
     private fun updateTarget() {
-        if (!onScaffold && Scaffold.handleEvents() && (Scaffold.placeRotation != null))
-            return
-
-        if (!onDestroyBlock && ((Fucker.handleEvents() && !Fucker.noHit && Fucker.pos != null) || Nuker.handleEvents()))
+        if (shouldPrioritize())
             return
 
         // Reset fixed target to null
@@ -797,10 +794,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private fun attackEntity(entity: EntityLivingBase, isLastClick: Boolean) {
         val thePlayer = mc.thePlayer
 
-        if (!onScaffold && Scaffold.handleEvents() && Scaffold.placeRotation != null)
-            return
-
-        if (!onDestroyBlock && (Fucker.handleEvents() && !Fucker.noHit && Fucker.pos != null || Nuker.handleEvents()))
+        if (shouldPrioritize())
             return
 
         if (thePlayer.isBlocking && (autoBlock == "Off" && blockStatus || autoBlock == "Packet" && releaseAutoBlock)) {
@@ -836,10 +830,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private fun updateRotations(entity: Entity): Boolean {
         val player = mc.thePlayer ?: return false
 
-        if (!onScaffold && Scaffold.handleEvents() && Scaffold.placeRotation != null)
-            return false
-
-        if (!onDestroyBlock && (Fucker.handleEvents() && !Fucker.noHit && Fucker.pos != null || Nuker.handleEvents()))
+        if (shouldPrioritize())
             return false
 
         if (!options.rotationsActive) {
@@ -886,7 +877,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         val rotation = searchCenter(
             boundingBox,
             outborder && !attackTimer.hasTimePassed(attackDelay / 2),
-            randomizeRotations,
+            randomization,
             predict = false,
             lookRange = range + scanRange,
             attackRange = range,
@@ -919,10 +910,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         val currentRotation = currentRotation ?: mc.thePlayer.rotation
         val target = this.target ?: return
 
-        if (!onScaffold && Scaffold.handleEvents() && (Scaffold.placeRotation != null))
-            return
-
-        if (!onDestroyBlock && ((Fucker.handleEvents() && !Fucker.noHit && Fucker.pos != null) || Nuker.handleEvents()))
+        if (shouldPrioritize())
             return
 
         if (!options.rotationsActive) {
@@ -1019,13 +1007,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private fun startBlocking(interactEntity: Entity, interact: Boolean, fake: Boolean = false) {
         val player = mc.thePlayer ?: return
 
-        if (blockStatus && (!uncpAutoBlock || !blinkAutoBlock))
+        if (blockStatus && (!uncpAutoBlock || !blinkAutoBlock) || shouldPrioritize())
             return
-
-        if (!onScaffold && Scaffold.handleEvents() && Scaffold.placeRotation != null)
-            return
-
-        if (!onDestroyBlock && ((Fucker.handleEvents() && !Fucker.noHit && Fucker.pos != null) || Nuker.handleEvents()))
 
         if (mc.thePlayer.isBlocking) {
             blockStatus = true
@@ -1175,6 +1158,12 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private fun switchToSlot(slot: Int) {
         SilentHotbar.selectSlotSilently(this, slot, immediate = true)
         SilentHotbar.resetSlot(this, true)
+    }
+
+    private fun shouldPrioritize(): Boolean = when {
+        !onScaffold && Scaffold.handleEvents() && Scaffold.placeRotation != null -> true
+        !onDestroyBlock && (Fucker.handleEvents() && !Fucker.noHit && Fucker.pos != null || Nuker.handleEvents()) -> true
+        else -> false
     }
 
     /**

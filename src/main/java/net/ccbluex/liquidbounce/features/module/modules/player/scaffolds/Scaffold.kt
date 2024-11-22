@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.RotationUtils.canUpdateRotation
-import net.ccbluex.liquidbounce.utils.RotationUtils.computeFactor
 import net.ccbluex.liquidbounce.utils.RotationUtils.getVectorForRotation
 import net.ccbluex.liquidbounce.utils.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.RotationUtils.setTargetRotation
@@ -963,14 +962,13 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         if (options.rotationsActive && !isGodBridgeEnabled) {
             val rotationDifference = rotationDifference(placeRotation.rotation, currRotation)
             val (hSpeed, vSpeed) = options.horizontalSpeed.random() to options.verticalSpeed.random()
-            val (factorH, factorV) = computeFactor(rotationDifference, hSpeed to vSpeed, options.smootherMode == "Relative")
 
             val simPlayer = SimulatedPlayer.fromClientPlayer(player.movementInput)
             simPlayer.tick()
 
             // We don't want to use block safe all the time, so we check if it's not needed.
             options.instant =
-                blockSafe && simPlayer.fallDistance > player.fallDistance + 0.05 && rotationDifference > (factorH + factorV) / 2f
+                blockSafe && simPlayer.fallDistance > player.fallDistance + 0.05 && rotationDifference > (hSpeed + vSpeed) / 2f
 
             setRotation(placeRotation.rotation, if (scaffoldMode == "Telly") 1 else options.resetTicks)
         }

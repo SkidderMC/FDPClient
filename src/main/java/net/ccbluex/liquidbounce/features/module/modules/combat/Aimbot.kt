@@ -188,7 +188,6 @@ object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
             searchCenter(
                 boundingBox,
                 outborder = false,
-                random = false,
                 predict = true,
                 lookRange = range,
                 attackRange = if (Reach.handleEvents()) Reach.combatReach else 3f,
@@ -235,7 +234,6 @@ object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
             realisticTurnSpeed.toFloat(),
             legitimize = legitimize,
             minRotationDiff = minRotationDifference,
-            smootherMode = "Linear"
         )
 
         rotation.toPlayer(player, horizontalAim, verticalAim)

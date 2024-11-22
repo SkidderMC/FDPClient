@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.RotationUpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
+import net.ccbluex.liquidbounce.utils.RandomizationSettings
 import net.ccbluex.liquidbounce.utils.RotationSettings
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.RotationUtils.faceTrajectory
@@ -57,7 +58,7 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, hideModule
 
     private val options = RotationSettings(this).withoutKeepRotation()
 
-    private val randomizeRotations by boolean("RandomizeRotations", false) { options.rotationsActive }
+    private val randomization = RandomizationSettings(this) { options.rotationsActive }
 
     private val highestBodyPointToTargetValue: ListValue = object : ListValue(
         "HighestBodyPointToTarget",
@@ -146,7 +147,6 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, hideModule
             searchCenter(
                 it,
                 outborder = false,
-                randomizeRotations,
                 predict = true,
                 lookRange = range,
                 attackRange = range,
