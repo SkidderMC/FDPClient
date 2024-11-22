@@ -184,30 +184,30 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
 
     // Ignore all blocking conditions, except for block rate, when standing still
     private val forceBlock by boolean("ForceBlockWhenStill", true)
-    { autoBlock != "Off" && smartAutoBlock }
+    { smartAutoBlock }
 
     // Don't block if target isn't holding a sword or an axe
     private val checkWeapon by boolean("CheckEnemyWeapon", true)
-    { autoBlock != "Off" && smartAutoBlock }
+    { smartAutoBlock }
 
     // TODO: Make block range independent from attack range
     private var blockRange by object : FloatValue("BlockRange", range, 1f..8f) {
-        override fun isSupported() = autoBlock != "Off" && smartAutoBlock
+        override fun isSupported() = smartAutoBlock
 
         override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(this@KillAura.range)
     }
 
     // Don't block when you can't get damaged
     private val maxOwnHurtTime by int("MaxOwnHurtTime", 3, 0..10)
-    { autoBlock != "Off" && smartAutoBlock }
+    { smartAutoBlock }
 
     // Don't block if target isn't looking at you
     private val maxDirectionDiff by float("MaxOpponentDirectionDiff", 60f, 30f..180f)
-    { autoBlock != "Off" && smartAutoBlock }
+    { smartAutoBlock }
 
     // Don't block if target is swinging an item and therefore cannot attack
     private val maxSwingProgress by int("MaxOpponentSwingProgress", 1, 0..5)
-    { autoBlock != "Off" && smartAutoBlock }
+    { smartAutoBlock }
 
     // Rotations
     private val options = RotationSettings(this).withoutKeepRotation()
