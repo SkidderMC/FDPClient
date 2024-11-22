@@ -96,14 +96,12 @@ object FriendCommand : Command("friend", "friends") {
                 when (args[0].lowercase()) {
                     "add" -> {
                         return mc.theWorld.playerEntities
-                            .filter { (it.name?.startsWith(args[1], true) ?: false) }
-                            .map { it.name }
+                            .mapNotNull { it.name?.takeIf { name -> name.startsWith(args[1], true) } }
                     }
 
                     "remove" -> {
                         return friendsConfig.friends
-                            .map { it.playerName }
-                            .filter { it.startsWith(args[1], true) }
+                            .mapNotNull { it.playerName.takeIf { name -> name.startsWith(args[1], true) } }
                     }
                 }
                 return emptyList()

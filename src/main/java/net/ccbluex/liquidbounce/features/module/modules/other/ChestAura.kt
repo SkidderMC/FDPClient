@@ -126,7 +126,8 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
 
         val eyes = thePlayer.eyes
 
-        val pointsInRange = mc.theWorld.tickableTileEntities
+        mc.theWorld.tickableTileEntities
+            .asSequence()
             // Check if tile entity is correct type, not already clicked, not blocked by a block and in range
             .filter {
                 shouldClickTileEntity(it) && it.getDistanceSq(
@@ -151,14 +152,14 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
                     }
                 }
 
-                points
-                    .map { Triple(it, entity, it.squareDistanceTo(eyes)) }
-                    .filter { it.third <= rangeSq }
+                points.mapNotNull { point ->
+                    val distanceSq = point.squareDistanceTo(eyes)
+
+                    Triple(point, entity, distanceSq).takeIf { distanceSq <= rangeSq}
+                }
 
             }.sortedBy { it.third }
-
-        // Vecs are already sorted by distance
-        val closestClickable = pointsInRange
+            // Vecs are already sorted by distance
             .firstOrNull { (vec, entity) ->
                 // If through walls is enabled and its range is same as normal, just return the first one
                 if (throughWalls && wallsRange >= range)
@@ -168,15 +169,16 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
                 val distanceSq = result.hitVec.squareDistanceTo(eyes)
 
                 // If chest is behind a wall, check if through walls is enabled and its range
-                if (result.blockPos != entity.pos) throughWalls && distanceSq <= wallsRangeSq
-                else distanceSq <= rangeSq
-            } ?: return
+                if (result.blockPos != entity.pos) {
+                    throughWalls && distanceSq <= wallsRangeSq
+                } else distanceSq <= rangeSq
+            }?.let {
+                tileTarget = it
 
-        tileTarget = closestClickable
-
-        if (options.rotationsActive) {
-            setTargetRotation(toRotation(closestClickable.first), options = options)
-        }
+                if (options.rotationsActive) {
+                    setTargetRotation(toRotation(it.first), options = options)
+                }
+            }
     }
 
     @EventTarget
@@ -223,15 +225,16 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
 
                     // If chest is not last clicked chest, find a player that might have opened it
                     if (packet.blockPosition != tileTarget?.second?.pos) {
-                        val nearPlayers = mc.theWorld.playerEntities
-                            .mapNotNull {
+                        val nearPlayers = mc.theWorld?.playerEntities
+                            ?.asSequence()
+                            ?.mapNotNull {
                                 val distanceSq = it.getDistanceSqToCenter(packet.blockPosition)
 
                                 if (distanceSq <= 36) it to distanceSq
                                 else null
-                            }.sortedBy { it.second }
+                            }?.sortedBy { it.second }
 
-                        if (nearPlayers.isEmpty())
+                        if (nearPlayers == null)
                             return
 
                         // Find the closest player that is looking at the chest or else just the closest

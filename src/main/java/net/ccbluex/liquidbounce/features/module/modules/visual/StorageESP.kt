@@ -287,6 +287,7 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
 
         try {
             mc.theWorld.loadedTileEntityList
+                .asSequence()
                 .groupBy { getColor(it) }
                 .forEach { (color, tileEntities) ->
                     color ?: return@forEach

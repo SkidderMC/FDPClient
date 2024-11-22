@@ -22,8 +22,8 @@ object HideCommand : Command("hide") {
         when (args[1].lowercase()) {
             "list" -> {
                 chat("§c§lHidden")
-                moduleManager.modules.filter { !it.inArray }.forEach {
-                    chat("§6> §c${it.getName()}")
+                moduleManager.modules.forEach {
+                    if (!it.inArray) chat("§6> §c${it.getName()}")
                 }
             }
 
@@ -71,10 +71,7 @@ object HideCommand : Command("hide") {
         val moduleName = args[0]
 
         return when (args.size) {
-            1 -> moduleManager.modules
-                    .map { it.name }
-                    .filter { it.startsWith(moduleName, true) }
-                    .toList()
+            1 -> moduleManager.modules.mapNotNull { it.name.takeIf { it.startsWith(moduleName, true) == true } }
             else -> emptyList()
         }
     }

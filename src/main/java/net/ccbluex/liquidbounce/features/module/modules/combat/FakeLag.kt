@@ -204,23 +204,22 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
             val playerPos = player.positionVector
             val serverPos = positions.keys.firstOrNull() ?: playerPos
 
-            val otherPlayers = mc.theWorld.playerEntities.filter { it != player }
-
             val (dx, dy, dz) = serverPos - playerPos
             val playerBox = player.hitBox.offset(dx, dy, dz)
 
             wasNearEnemy = false
 
-            for (otherPlayer in otherPlayers) {
+            mc.theWorld.playerEntities.forEach { otherPlayer ->
+                if (otherPlayer == player)
+                    return@forEach
+
                 val entityMixin = otherPlayer as? IMixinEntity
+
                 if (entityMixin != null) {
                     val eyes = getTruePositionEyes(otherPlayer)
-                    if (eyes.distanceTo(
-                            getNearestPointBB(
-                                eyes,
-                                playerBox
-                            )
-                        ) in minAllowedDistToEnemy.get()..maxAllowedDistToEnemy.get()
+
+                    if (eyes.distanceTo(getNearestPointBB(eyes, playerBox))
+                        in minAllowedDistToEnemy.get()..maxAllowedDistToEnemy.get()
                     ) {
                         blink()
                         wasNearEnemy = true

@@ -261,7 +261,7 @@ object TickBase : Module("TickBase", Category.COMBAT) {
     private fun getNearestEntityInRange(): EntityLivingBase? {
         val player = mc.thePlayer ?: return null
 
-        return mc.theWorld?.loadedEntityList
+        return mc.theWorld?.loadedEntityList?.asSequence()
             ?.filterIsInstance<EntityLivingBase>()
             ?.filter { EntityUtils.isSelected(it, true) }
             ?.minByOrNull { player.getDistanceToEntity(it) }

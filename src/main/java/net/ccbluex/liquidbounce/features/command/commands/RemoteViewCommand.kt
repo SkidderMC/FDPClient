@@ -35,12 +35,13 @@ object RemoteViewCommand : Command("remoteview", "rv") {
     }
 
     override fun tabComplete(args: Array<String>): List<String> {
-        if (args.isEmpty()) return emptyList()
+        if (args.isEmpty())
+            return emptyList()
 
         return when (args.size) {
-            1 -> return mc.theWorld.playerEntities
-                    .filter { it.name != null && it.name.startsWith(args[0], true) }
-                    .map { it.name }
+            1 -> return mc.theWorld.playerEntities.mapNotNull {
+                it.name?.takeIf { name -> name.startsWith(args[0], true) }
+            }
             else -> emptyList()
         }
     }

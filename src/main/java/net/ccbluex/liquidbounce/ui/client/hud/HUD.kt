@@ -22,7 +22,6 @@ object HUD : MinecraftInstance() {
 
   val elements = mutableListOf<Element>()
   val notifications = mutableListOf<Notification>()
-  val prints = mutableListOf<Prints.Print>()
 
     val ELEMENTS = ClassUtils.resolvePackage("${HUD::class.java.`package`.name}.element.elements", Element::class.java)
         .toTypedArray()
@@ -41,24 +40,24 @@ object HUD : MinecraftInstance() {
   /** Render all elements */
   fun render(designer: Boolean) {
     elements
-        .sortedBy { -it.info.priority }
-        .forEach {
-          glPushMatrix()
+      .sortedBy { -it.info.priority }
+      .forEach {
+        glPushMatrix()
 
-          if (!it.info.disableScale) glScalef(it.scale, it.scale, it.scale)
+        if (!it.info.disableScale) glScalef(it.scale, it.scale, it.scale)
 
-          glTranslated(it.renderX, it.renderY, 0.0)
+        glTranslated(it.renderX, it.renderY, 0.0)
 
-          try {
-            it.border = it.drawElement()
+        try {
+          it.border = it.drawElement()
 
-            if (designer) it.border?.draw()
-          } catch (ex: Exception) {
-            LOGGER.error("Something went wrong while drawing ${it.name} element in HUD.", ex)
-          }
-
-          glPopMatrix()
+          if (designer) it.border?.draw()
+        } catch (ex: Exception) {
+          LOGGER.error("Something went wrong while drawing ${it.name} element in HUD.", ex)
         }
+
+        glPopMatrix()
+      }
   }
 
   /** Update all elements */
@@ -66,22 +65,21 @@ object HUD : MinecraftInstance() {
     for (element in elements) element.updateElement()
   }
 
-  fun livingupdate() {
-    for (element in elements) element.livingupdateElement()
-  }
-
   /** Handle mouse click */
   fun handleMouseClick(mouseX: Int, mouseY: Int, button: Int) {
     for (element in elements) element.handleMouseClick(
-        (mouseX / element.scale) - element.renderX,
-        (mouseY / element.scale) - element.renderY,
-        button)
+      (mouseX / element.scale) - element.renderX,
+      (mouseY / element.scale) - element.renderY,
+      button
+    )
 
     if (button == 0) {
       for (element in elements.reversed()) {
         if (!element.isInBorder(
-            (mouseX / element.scale) - element.renderX, (mouseY / element.scale) - element.renderY))
-            continue
+            (mouseX / element.scale) - element.renderX, (mouseY / element.scale) - element.renderY
+          )
+        )
+          continue
 
         element.drag = true
         elements -= element
@@ -129,11 +127,13 @@ object HUD : MinecraftInstance() {
         val height = scaledHeight / element.scale
 
         if ((element.renderX + minX + moveX >= 0.0 || moveX > 0) &&
-            (element.renderX + maxX + moveX <= width || moveX < 0))
-            element.renderX = moveX.toDouble()
+          (element.renderX + maxX + moveX <= width || moveX < 0)
+        )
+          element.renderX = moveX.toDouble()
         if ((element.renderY + minY + moveY >= 0.0 || moveY > 0) &&
-            (element.renderY + maxY + moveY <= height || moveY < 0))
-            element.renderY = moveY.toDouble()
+          (element.renderY + maxY + moveY <= height || moveY < 0)
+        )
+          element.renderY = moveY.toDouble()
       }
     }
   }
@@ -146,7 +146,9 @@ object HUD : MinecraftInstance() {
   /** Add [element] to HUD */
   fun addElement(element: Element): HUD {
     elements += element
-      elements.sortBy { -it.info.priority }
+
+    elements.sortBy { -it.info.priority }
+
     element.updateElement()
     return this
   }
@@ -155,7 +157,6 @@ object HUD : MinecraftInstance() {
   fun removeElement(element: Element): HUD {
     element.destroyElement()
     elements.remove(element)
-      elements.sortBy { -it.info.priority }
     return this
   }
 
@@ -168,15 +169,8 @@ object HUD : MinecraftInstance() {
 
   /** Add [notification] */
   fun addNotification(notification: Notification) =
-      elements.any { it is Notifications } && notifications.add(notification)
+    elements.any { it is Notifications } && notifications.add(notification)
 
   /** Remove [notification] */
   fun removeNotification(notification: Notification) = notifications.remove(notification)
-
-  /** Add [print] */
-  fun addPrint(print: Prints.Print) =
-    elements.any { it is Prints } && prints.add(print)
-
-  /** Remove [print] */
-  fun removePrint(print: Prints.Print) = prints.remove(print)
 }

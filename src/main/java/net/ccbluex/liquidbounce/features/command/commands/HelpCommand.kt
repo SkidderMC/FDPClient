@@ -38,7 +38,7 @@ object HelpCommand : Command("help") {
             maxPageDouble.toInt()
 
         if (page > maxPage) {
-            chat("The number you have entered is too big, it must be under $maxPage.")
+            chat("The number you have entered is too big, it must be under ${maxPage - 1}.")
             return
         }
 

@@ -25,8 +25,9 @@ object BindsCommand : Command("binds") {
         }
 
         chat("§c§lBinds")
-        moduleManager.modules.filter { it.keyBind != Keyboard.KEY_NONE }.forEach {
-            chat("§6> §c${it.getName()}: §a§l${Keyboard.getKeyName(it.keyBind)}")
+        moduleManager.modules.forEach {
+            if (it.keyBind != Keyboard.KEY_NONE)
+                chat("§6> §c${it.getName()}: §a§l${Keyboard.getKeyName(it.keyBind)}")
         }
         chatSyntax("binds clear")
     }

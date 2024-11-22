@@ -47,7 +47,7 @@ object EventManager {
 
         for (invokableEventTarget in targets) {
             try {
-                if (!invokableEventTarget.eventClass.handleEvents() && !invokableEventTarget.isIgnoreCondition)
+                if (!invokableEventTarget.eventClass.handleEvents() && !invokableEventTarget.ignoreCondition)
                     continue
 
                 invokableEventTarget.method.invoke(invokableEventTarget.eventClass, event)

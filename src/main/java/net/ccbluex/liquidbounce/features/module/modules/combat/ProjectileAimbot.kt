@@ -147,6 +147,7 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, hideModule
             searchCenter(
                 it,
                 outborder = false,
+                randomization,
                 predict = true,
                 lookRange = range,
                 attackRange = range,
@@ -167,18 +168,24 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, hideModule
     }
 
     private fun getTarget(throughWalls: Boolean, priorityMode: String): Entity? {
-        val targets = mc.theWorld.loadedEntityList.filter {
-            it is EntityLivingBase && isSelected(it, true) &&
-                    mc.thePlayer.getDistanceToEntityBox(it) <= range &&
-                    (throughWalls || mc.thePlayer.canEntityBeSeen(it) && mc.thePlayer.getDistanceToEntityBox(it) <= throughWallsRange)
-        }
+        val player = mc.thePlayer ?: return null
 
-        return when (priorityMode.uppercase()) {
-            "DISTANCE" -> targets.minByOrNull { mc.thePlayer.getDistanceToEntityBox(it) }
-            "DIRECTION" -> targets.minByOrNull { rotationDifference(it) }
-            "HEALTH" -> targets.minByOrNull { (it as EntityLivingBase).health }
-            else -> null
-        }
+        return mc.theWorld.loadedEntityList
+            .asSequence()
+            .filterIsInstance<EntityLivingBase>()
+            .filter {
+                val distance = player.getDistanceToEntityBox(it)
+
+                isSelected(it, true) && distance <= range && (throughWalls ||
+                        player.canEntityBeSeen(it) && distance <= throughWallsRange)
+            }.minByOrNull { entity ->
+                return@minByOrNull when (priorityMode.uppercase()) {
+                    "DISTANCE" -> player.getDistanceToEntityBox(entity)
+                    "DIRECTION" -> rotationDifference(entity).toDouble()
+                    "HEALTH" -> entity.health.toDouble()
+                    else -> 0.0 // Edge case
+                }
+            }
     }
 
     fun hasTarget() = target != null && mc.thePlayer.canEntityBeSeen(target)

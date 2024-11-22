@@ -127,8 +127,8 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) 
     private fun getNearestEntityInRange(): Entity? {
         val player = mc.thePlayer ?: return null
 
-        return mc.theWorld?.loadedEntityList?.filter { isSelected(it, true) }
-            ?.filter { player.getDistanceToEntityBox(it) <= range }
+        return mc.theWorld?.loadedEntityList?.asSequence()
+            ?.filter { isSelected(it, true) && player.getDistanceToEntityBox(it) <= range }
             ?.minByOrNull { player.getDistanceToEntityBox(it) }
     }
 

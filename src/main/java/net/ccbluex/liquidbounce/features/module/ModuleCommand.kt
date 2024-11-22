@@ -28,9 +28,7 @@ class ModuleCommand(val module: Module, val values: Set<Value<*>> = module.value
      * Execute commands with provided [args]
      */
     override fun execute(args: Array<String>) {
-        val valueNames = values
-            .filter { it !is FontValue }
-            .joinToString(separator = "/") { it.name.lowercase() }
+        val valueNames = values.filter { it !is FontValue }.joinToString(separator = "/") { it.name.lowercase() }
 
         val moduleName = module.name.lowercase()
 
@@ -209,16 +207,18 @@ class ModuleCommand(val module: Module, val values: Set<Value<*>> = module.value
         if (args.isEmpty()) return emptyList()
 
         return when (args.size) {
-            1 -> values
-                .filter { it !is FontValue && it.shouldRender() && it.name.startsWith(args[0], true) }
-                .map { it.name.lowercase() }
+            1 -> values.mapNotNull {
+                it.takeIf {
+                    it !is FontValue && it.shouldRender() && it.name.startsWith(args[0], true)
+                }?.name?.lowercase()
+            }
 
             2 -> {
                 when (module[args[0]]) {
                     is BlockValue -> {
-                        return Item.itemRegistry.keys
-                            .map { it.resourcePath.lowercase() }
-                            .filter { it.startsWith(args[1], true) }
+                        return Item.itemRegistry.keys.mapNotNull {
+                            it.resourcePath.lowercase().takeIf { it.startsWith(args[1], true) }
+                        }
                     }
 
                     is ListValue -> {

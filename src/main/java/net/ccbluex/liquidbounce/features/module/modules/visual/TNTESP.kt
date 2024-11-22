@@ -16,7 +16,11 @@ import java.awt.Color
 object TNTESP : Module("TNTESP", Category.VISUAL, spacedName = "TNT ESP", hideModule = false) {
 
     @EventTarget
-    fun onRender3D(event : Render3DEvent) {
-        mc.theWorld.loadedEntityList.filterIsInstance<EntityTNTPrimed>().forEach { drawEntityBox(it, Color.RED, false) }
+    fun onRender3D(event: Render3DEvent) {
+        mc.theWorld.loadedEntityList.forEach {
+            if (it !is EntityTNTPrimed)
+                return@forEach
+            drawEntityBox(it, Color.RED, false)
+        }
     }
 }

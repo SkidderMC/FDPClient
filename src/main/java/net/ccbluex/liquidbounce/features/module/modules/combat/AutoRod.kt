@@ -181,9 +181,9 @@ object AutoRod : Module("AutoRod", Category.COMBAT, hideModule = false) {
     private fun getAllNearbyEnemies(): List<Entity>? {
         val player = mc.thePlayer ?: return null
 
-        return mc.theWorld.loadedEntityList.toList()
-            .filter { isSelected(it, true) }
-            .filter { player.getDistanceToEntityBox(it) < activationDistance }
+        return mc.theWorld.loadedEntityList.filter {
+            isSelected(it, true) && player.getDistanceToEntityBox(it) < activationDistance
+        }
     }
 
 }

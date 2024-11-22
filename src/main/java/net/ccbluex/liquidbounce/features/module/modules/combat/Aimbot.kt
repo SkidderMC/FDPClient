@@ -107,32 +107,36 @@ object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
 
     @EventTarget
     fun onMotion(event: MotionEvent) {
-        if (event.eventState != EventState.POST) return
+        if (event.eventState != EventState.POST)
+            return
 
         val thePlayer = mc.thePlayer ?: return
         val theWorld = mc.theWorld ?: return
 
         // Clicking delay
-        if (mc.gameSettings.keyBindAttack.isKeyDown) clickTimer.reset()
+        if (mc.gameSettings.keyBindAttack.isKeyDown)
+            clickTimer.reset()
 
-        if (onClick && (clickTimer.hasTimePassed(150) || (!mc.gameSettings.keyBindAttack.isKeyDown && AutoClicker.handleEvents()))) return
+        if (onClick && (clickTimer.hasTimePassed(150) || !mc.gameSettings.keyBindAttack.isKeyDown && AutoClicker.handleEvents()))
+            return
 
         // Search for the best enemy to target
-        val entity = theWorld.loadedEntityList.filter {
-            var result = false
+        val entity = theWorld.loadedEntityList.asSequence().mapNotNull { entity ->
+            var isValid = false
 
-            Backtrack.runWithNearestTrackedDistance(it) {
-                result = isSelected(it, true)
-                        && thePlayer.canEntityBeSeen(it)
-                        && thePlayer.getDistanceToEntityBox(it) <= range
-                        && rotationDifference(it) <= fov
+            Backtrack.runWithNearestTrackedDistance(entity) {
+                isValid = isSelected(entity, true) &&
+                        thePlayer.canEntityBeSeen(entity) &&
+                        thePlayer.getDistanceToEntityBox(entity) <= range &&
+                        rotationDifference(entity) <= fov
             }
 
-            result
+            entity.takeIf { isValid }
         }.minByOrNull { thePlayer.getDistanceToEntityBox(it) } ?: return
 
         // Should it always keep trying to lock on the enemy or just try to assist you?
-        if (!lock && isFaced(entity, range.toDouble())) return
+        if (!lock && isFaced(entity, range.toDouble()))
+            return
 
         val random = Random()
 
@@ -142,9 +146,8 @@ object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
             shouldReturn = !findRotation(entity, random)
         }
 
-        if (shouldReturn) {
+        if (shouldReturn)
             return
-        }
 
         // Jitter
         // Some players do jitter on their mouses causing them to shake around. This is trying to simulate this behavior.

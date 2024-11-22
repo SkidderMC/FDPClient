@@ -166,9 +166,6 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
     fun onUpdate(event: UpdateEvent) = hud.update()
 
     @EventTarget
-    fun onLivingUpdate(event: LivingUpdateEvent) = hud.livingupdate()
-
-    @EventTarget
     fun onKey(event: KeyEvent) = hud.handleKey('a', event.key)
 
     @EventTarget(ignoreCondition = true)

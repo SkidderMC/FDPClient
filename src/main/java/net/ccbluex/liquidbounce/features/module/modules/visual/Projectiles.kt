@@ -11,11 +11,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getState
-import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
-import net.ccbluex.liquidbounce.utils.extensions.prevPos
-import net.ccbluex.liquidbounce.utils.extensions.rotation
-import net.ccbluex.liquidbounce.utils.extensions.toRadians
-import net.ccbluex.liquidbounce.utils.extensions.toRadiansD
+import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.inventory.isSplashPotion
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.interpolateHSB
@@ -124,7 +120,7 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
             val yawRadians = yaw.toRadiansD()
             val pitchRadians = pitch.toRadiansD()
 
-            val pos = theEntity.interpolatedPosition(theEntity.prevPos)
+            val pos = theEntity.interpolatedPosition(theEntity.lastTickPos)
 
             // Positions
             var posX = pos.xCoord - cos(yawRadians) * 0.16F

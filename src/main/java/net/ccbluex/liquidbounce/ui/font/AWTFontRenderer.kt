@@ -44,13 +44,18 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255, p
     private fun collectGarbage() {
         val currentTime = System.currentTimeMillis()
 
-        cachedStrings.filter { currentTime - it.value.lastUsage > CACHED_FONT_REMOVAL_TIME }.forEach {
-            glDeleteLists(it.value.displayList, 1)
+        val keysToRemove = mutableListOf<String>()
 
-            it.value.deleted = true
+        cachedStrings.forEach { (key, value) ->
+            if (currentTime - value.lastUsage > CACHED_FONT_REMOVAL_TIME) {
+                glDeleteLists(value.displayList, 1)
+                value.deleted = true
 
-            cachedStrings.remove(it.key)
+                keysToRemove += key
+            }
         }
+
+        keysToRemove.forEach { cachedStrings -= it }
     }
 
     private var fontHeight = -1
