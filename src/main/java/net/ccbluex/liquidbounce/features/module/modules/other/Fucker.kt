@@ -29,6 +29,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.GlStateManager
@@ -258,7 +259,11 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
                 val block = currentPos.getBlock() ?: return
 
                 if (currentDamage == 0F) {
-                    sendPacket(C07PacketPlayerDigging(START_DESTROY_BLOCK, currentPos, raytrace.sideHit))
+                    // Prevent from flagging FastBreak
+                    sendPacket(C07PacketPlayerDigging(STOP_DESTROY_BLOCK, currentPos, raytrace.sideHit))
+                    WaitTickUtils.schedule(1) {
+                        sendPacket(C07PacketPlayerDigging(START_DESTROY_BLOCK, currentPos, raytrace.sideHit))
+                    }
 
                     if (player.capabilities.isCreativeMode || block.getPlayerRelativeBlockHardness(
                             player,
