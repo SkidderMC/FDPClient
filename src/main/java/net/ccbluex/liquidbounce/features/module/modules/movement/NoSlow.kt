@@ -10,8 +10,10 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.utils.BlinkUtils
+import net.ccbluex.liquidbounce.utils.MovementUtils.hasMotion
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.SilentHotbar
+import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
@@ -97,13 +99,15 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
         val heldItem = player.heldItem ?: return
         val isUsingItem = usingItemFunc()
 
-        if (mc.thePlayer.motionX == 0.0 && mc.thePlayer.motionZ == 0.0 && !shouldSwap)
-            return
-
-        if (!consumeFoodOnly && heldItem.item is ItemFood || !consumeDrinkOnly && (heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk))
+        if (!hasMotion && !shouldSwap)
             return
 
         if (isUsingItem || shouldSwap) {
+            if (heldItem.item !is ItemSword && !consumeFoodOnly && heldItem.item is ItemFood ||
+                !consumeDrinkOnly && (heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk)) {
+                return
+            }
+
             when (consumeMode.lowercase()) {
                 "aac5" ->
                     sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, heldItem, 0f, 0f, 0f))
@@ -134,8 +138,6 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
                         sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP))
                     }
                 }
-
-                else -> return
             }
         }
 
@@ -164,15 +166,11 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
                         }
                     }
                 }
-
-                else -> return
             }
         }
 
         if (heldItem.item is ItemSword && isUsingItem) {
             when (swordMode.lowercase()) {
-                "none" -> return
-
                 "ncp" ->
                     when (event.eventState) {
                         EventState.PRE -> sendPacket(
@@ -203,6 +201,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
                 "switchitem" ->
                     if (event.eventState == EventState.PRE) {
                         updateSlot()
+                        chat("work")
                     }
 
                 "invalidc08" -> {
@@ -226,9 +225,12 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
             return
 
         // Credit: @ManInMyVan
-        // TODO: Not sure how to fix random grim simulation flag.
+        // TODO: Not sure how to fix random grim simulation flag. (Seem to only happen in Loyisa).
         if (consumeMode == "Drop") {
-            if (player.heldItem?.item !is ItemFood) return
+            if (player.heldItem?.item !is ItemFood) {
+                shouldNoSlow = false
+                return
+            }
 
             val isUsingItem = packet is C08PacketPlayerBlockPlacement && packet.placedBlockDirection == 255
 
@@ -321,11 +323,17 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
     fun onSlowDown(event: SlowDownEvent) {
         val heldItem = mc.thePlayer.heldItem?.item
 
-        if (!consumeFoodOnly && heldItem is ItemFood || !consumeDrinkOnly && (heldItem is ItemPotion || heldItem is ItemBucketMilk))
-            return
+        if (heldItem !is ItemSword) {
+            if (!consumeFoodOnly && heldItem is ItemFood ||
+                !consumeDrinkOnly && (heldItem is ItemPotion || heldItem is ItemBucketMilk)
+            ) {
+                return
+            }
 
-        if (consumeMode == "Drop" && !shouldNoSlow && heldItem is ItemFood)
-            return
+            if (consumeMode == "Drop" && !shouldNoSlow)
+                return
+        }
+
         event.forward = getMultiplier(heldItem, true)
         event.strafe = getMultiplier(heldItem, false)
     }

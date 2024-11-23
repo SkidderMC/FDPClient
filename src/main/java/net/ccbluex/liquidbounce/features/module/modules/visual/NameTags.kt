@@ -354,13 +354,11 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
 
         if (armor && entity is EntityPlayer) {
             for (index in 0..4) {
-                if (entity.getEquipmentInSlot(index) == null) {
-                    continue
-                }
+                val itemStack = entity.getEquipmentInSlot(index) ?: continue
 
                 mc.renderItem.zLevel = -147F
                 mc.renderItem.renderItemAndEffectIntoGUI(
-                    entity.getEquipmentInSlot(index), -50 + index * 20, if (potion && foundPotion) -42 else -22
+                    itemStack, -50 + index * 20, if (potion && foundPotion) -42 else -22
                 )
             }
 

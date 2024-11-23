@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.MovementUtils.speed
@@ -260,6 +261,8 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
         val shouldRender = showBlock && stack != null && stack.item is ItemBlock
         val showBlockScale = if (shouldRender) 1.2F else 1F
 
+        assumeNonVolatile = true
+
         if ((Scaffold.handleEvents() && onScaffold) || !onScaffold) {
             val rainbow = textColorMode == "Rainbow"
             val gradient = textColorMode == "Gradient"
@@ -360,6 +363,8 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
             editMode = false
             updateElement()
         }
+
+        assumeNonVolatile = false
 
         return Border(
             ((-2F - if (shouldRender) 6F else 0F) * (1F + backgroundScale)) * (showBlockScale * 1.15F),
