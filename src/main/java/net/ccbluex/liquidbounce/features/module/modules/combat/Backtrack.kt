@@ -17,16 +17,13 @@ import net.ccbluex.liquidbounce.utils.misc.StringUtils.contains
 import net.ccbluex.liquidbounce.utils.realX
 import net.ccbluex.liquidbounce.utils.realY
 import net.ccbluex.liquidbounce.utils.realZ
+import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBacktrackBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerValue
-import net.ccbluex.liquidbounce.value.ListValue
-import net.ccbluex.liquidbounce.value.boolean
-import net.ccbluex.liquidbounce.value.choices
-import net.ccbluex.liquidbounce.value.int
+import net.ccbluex.liquidbounce.value.*
+import net.minecraft.client.renderer.GlStateManager.color
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
@@ -86,31 +83,18 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
     private val smart by boolean("Smart", true) { mode == "Modern" }
 
     // ESP
-    val espMode by choices(
+    private val espMode by choices(
         "ESP-Mode",
-        arrayOf("None", "Box", "Model"),
+        arrayOf("None", "Box", "Model", "Wireframe"),
         "Box",
         subjective = true
     ) { mode == "Modern" }
-    private val rainbow by boolean("Rainbow", true, subjective = true) { mode == "Modern" && espMode == "Box" }
-    private val red by int(
-        "R",
-        0,
-        0..255,
-        subjective = true
-    ) { !rainbow && mode == "Modern" && espMode == "Box" }
-    private val green by int(
-        "G",
-        255,
-        0..255,
-        subjective = true
-    ) { !rainbow && mode == "Modern" && espMode == "Box" }
-    private val blue by int(
-        "B",
-        0,
-        0..255,
-        subjective = true
-    ) { !rainbow && mode == "Modern" && espMode == "Box" }
+    private val wireframeWidth by float("WireFrame-Width", 1f, 0.5f..5f) { espMode == "WireFrame" }
+
+    private val espColorMode by choices("ESP-Color", arrayOf("Custom", "Rainbow"), "Custom")
+    { espMode != "Model" && mode == "Modern" }
+    private val espColor = ColorSettingsInteger(this, "ESP", withAlpha = false)
+    { espColorMode == "Custom" && espMode != "Model" && mode == "Modern" }.with(0, 255, 0)
 
     private val packetQueue = LinkedHashMap<Packet<*>, Long>()
     private val positions = mutableListOf<Pair<Vec3, Long>>()
@@ -382,32 +366,104 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                 if (!shouldBacktrack() || packetQueue.isEmpty() || !shouldRender)
                     return
 
-                if (espMode != "Box") return
-
                 val renderManager = mc.renderManager
 
-                target?.run {
-                    val targetEntity = target as IMixinEntity
+                when (espMode.lowercase()) {
+                    "box" -> target?.run {
+                        val targetEntity = target as IMixinEntity
 
-                    if (targetEntity.truePos) {
-                        val (x, y, z) = targetEntity.interpolatedPosition - Vec3(
-                            renderManager.renderPosX,
-                            renderManager.renderPosY,
-                            renderManager.renderPosZ
-                        )
+                        if (targetEntity.truePos) {
+                            val (x, y, z) = targetEntity.interpolatedPosition - Vec3(
+                                renderManager.renderPosX,
+                                renderManager.renderPosY,
+                                renderManager.renderPosZ
+                            )
 
-                        val axisAlignedBB = entityBoundingBox.offset(-posX, -posY, -posZ).offset(x, y, z)
+                            val axisAlignedBB = entityBoundingBox.offset(-posX, -posY, -posZ).offset(x, y, z)
 
-                        drawBacktrackBox(
-                            AxisAlignedBB.fromBounds(
-                                axisAlignedBB.minX,
-                                axisAlignedBB.minY,
-                                axisAlignedBB.minZ,
-                                axisAlignedBB.maxX,
-                                axisAlignedBB.maxY,
-                                axisAlignedBB.maxZ
-                            ), color
-                        )
+                            drawBacktrackBox(
+                                AxisAlignedBB.fromBounds(
+                                    axisAlignedBB.minX,
+                                    axisAlignedBB.minY,
+                                    axisAlignedBB.minZ,
+                                    axisAlignedBB.maxX,
+                                    axisAlignedBB.maxY,
+                                    axisAlignedBB.maxZ
+                                ), color
+                            )
+                        }
+                    }
+                    "model" -> target?.run {
+                        val targetEntity = target as IMixinEntity
+
+                        if (targetEntity.truePos) {
+                            val (x, y, z) = targetEntity.interpolatedPosition - Vec3(
+                                renderManager.renderPosX,
+                                renderManager.renderPosY,
+                                renderManager.renderPosZ
+                            )
+
+                            glPushMatrix()
+                            glPushAttrib(GL_ALL_ATTRIB_BITS)
+                            color(0.6f, 0.6f, 0.6f, 1f)
+                            renderManager.doRenderEntity(
+                                this,
+                                x, y, z,
+                                prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
+                                event.partialTicks,
+                                true
+                            )
+
+                            glPopAttrib()
+                            glPopMatrix()
+                        }
+                    }
+                    "wireframe" -> target?.run {
+                        val color = if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
+
+                        val targetEntity = target as IMixinEntity
+
+                        if (targetEntity.truePos) {
+                            val (x, y, z) = targetEntity.interpolatedPosition - Vec3(
+                                renderManager.renderPosX,
+                                renderManager.renderPosY,
+                                renderManager.renderPosZ
+                            )
+
+                            glPushMatrix()
+                            glPushAttrib(GL_ALL_ATTRIB_BITS)
+
+                            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+                            glDisable(GL_TEXTURE_2D)
+                            glDisable(GL_LIGHTING)
+                            glDisable(GL_DEPTH_TEST)
+                            glEnable(GL_LINE_SMOOTH)
+
+                            glEnable(GL_BLEND)
+                            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+                            glLineWidth(wireframeWidth)
+
+                            glColor(color)
+                            renderManager.doRenderEntity(
+                                this,
+                                x, y, z,
+                                prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
+                                event.partialTicks,
+                                true
+                            )
+                            glColor(color)
+                            renderManager.doRenderEntity(
+                                this,
+                                x, y, z,
+                                prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
+                                event.partialTicks,
+                                true
+                            )
+
+                            glPopAttrib()
+                            glPopMatrix()
+                        }
                     }
                 }
             }
@@ -633,10 +689,11 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
     }
 
     val color
-        get() = if (rainbow) rainbow() else Color(red, green, blue)
+        get() = if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
 
-    fun shouldBacktrack() =
-        mc.thePlayer != null && mc.theWorld != null && target != null && mc.thePlayer.health > 0 && (target!!.health > 0 || target!!.health.isNaN()) && mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR && System.currentTimeMillis() >= delayForNextBacktrack && target?.let {
+    private fun shouldBacktrack() =
+        mc.thePlayer != null && mc.theWorld != null && target != null && mc.thePlayer.health > 0 && (target!!.health > 0 || target!!.health.isNaN())
+                && mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR && System.currentTimeMillis() >= delayForNextBacktrack && target?.let {
             isSelected(it, true) && (mc.thePlayer?.ticksExisted ?: 0) > 20 && !ignoreWholeTick
         } == true
 

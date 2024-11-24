@@ -10,29 +10,33 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
-import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
+import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBacktrackBox
-import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.value.choices
-import net.ccbluex.liquidbounce.value.int
+import net.ccbluex.liquidbounce.value.float
 import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.renderer.GlStateManager.color
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
+import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
 object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
-    val espMode by choices("ESP-Mode", arrayOf("Box", "Model"), "Model", subjective = true)
+    private val espMode by choices("ESP-Mode", arrayOf("Box", "Model", "Wireframe"), "Model", subjective = true)
+    private val wireframeWidth by float("WireFrame-Width", 1f, 0.5f..5f) { espMode == "WireFrame" }
 
-    private val rainbow by boolean("Rainbow", true, subjective = true) { espMode == "Box" }
-    private val red by int("R", 0, 0..255, subjective = true) { !rainbow && espMode == "Box" }
-    private val green by int("G", 255, 0..255, subjective = true) { !rainbow && espMode == "Box" }
-    private val blue by int("B", 0, 0..255, subjective = true) { !rainbow && espMode == "Box" }
+    private val espColorMode by choices("ESP-Color", arrayOf("Custom", "Rainbow"), "Custom") { espMode != "Model" }
+    private val espColor = ColorSettingsInteger(this, "ESP", withAlpha = false)
+    { espColorMode == "Custom" && espMode != "Model" }.with(0, 255, 0)
 
     val color
-        get() = if (rainbow) ColorUtils.rainbow() else Color(red, green, blue)
+        get() = if (espColorMode == "Rainbow") ColorUtils.rainbow() else Color(espColor.color().rgb)
 
     /**
      * Any good anti-cheat will easily detect this module.
@@ -49,7 +53,7 @@ object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
         }
     }
 
-    fun usePosition(entity: Entity): Vec3 {
+    private fun usePosition(entity: Entity): Vec3 {
         entity.run {
             return if (!mc.isSingleplayer) {
                 val iEntity = entity as IMixinEntity
@@ -63,34 +67,100 @@ object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        if (espMode != "Box")
-            return
+        val world = mc.theWorld ?: return
 
         val renderManager = mc.renderManager
 
-        for (target in mc.theWorld.loadedEntityList) {
+        for (target in world.loadedEntityList) {
             if (target is EntityPlayerSP)
                 continue
 
-            target.run {
-                val vec = usePosition(this)
+            when (espMode.lowercase()) {
+                "box" -> target?.run {
+                    val vec = usePosition(this)
 
-                val x = vec.xCoord - renderManager.renderPosX
-                val y = vec.yCoord - renderManager.renderPosY
-                val z = vec.zCoord - renderManager.renderPosZ
+                    val x = vec.xCoord - renderManager.renderPosX
+                    val y = vec.yCoord - renderManager.renderPosY
+                    val z = vec.zCoord - renderManager.renderPosZ
 
-                val axisAlignedBB = entityBoundingBox.offset(-posX, -posY, -posZ).offset(x, y, z)
+                    val axisAlignedBB = entityBoundingBox.offset(-posX, -posY, -posZ).offset(x, y, z)
 
-                drawBacktrackBox(
-                    AxisAlignedBB.fromBounds(
-                        axisAlignedBB.minX,
-                        axisAlignedBB.minY,
-                        axisAlignedBB.minZ,
-                        axisAlignedBB.maxX,
-                        axisAlignedBB.maxY,
-                        axisAlignedBB.maxZ
-                    ), color
-                )
+                    drawBacktrackBox(
+                        AxisAlignedBB.fromBounds(
+                            axisAlignedBB.minX,
+                            axisAlignedBB.minY,
+                            axisAlignedBB.minZ,
+                            axisAlignedBB.maxX,
+                            axisAlignedBB.maxY,
+                            axisAlignedBB.maxZ
+                        ), color
+                    )
+                }
+                "model" -> target?.run {
+                    val vec = usePosition(this)
+
+                    val x = vec.xCoord - renderManager.renderPosX
+                    val y = vec.yCoord - renderManager.renderPosY
+                    val z = vec.zCoord - renderManager.renderPosZ
+
+                    glPushMatrix()
+                    glPushAttrib(GL_ALL_ATTRIB_BITS)
+
+                    color(0.6f, 0.6f, 0.6f, 1f)
+                    renderManager.doRenderEntity(
+                        this,
+                        x, y, z,
+                        prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
+                        event.partialTicks,
+                        true
+                    )
+
+                    glPopAttrib()
+                    glPopMatrix()
+                }
+                "wireframe" -> target?.run {
+                    val color = if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
+
+                    val vec = usePosition(this)
+
+                    val x = vec.xCoord - renderManager.renderPosX
+                    val y = vec.yCoord - renderManager.renderPosY
+                    val z = vec.zCoord - renderManager.renderPosZ
+
+                    glPushMatrix()
+                    glPushAttrib(GL_ALL_ATTRIB_BITS)
+
+                    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+                    glDisable(GL_TEXTURE_2D)
+                    glDisable(GL_LIGHTING)
+                    glDisable(GL_DEPTH_TEST)
+                    glEnable(GL_LINE_SMOOTH)
+
+                    glEnable(GL_BLEND)
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+                    glLineWidth(wireframeWidth)
+
+                    glColor(color)
+                    renderManager.doRenderEntity(
+                        this,
+                        x, y, z,
+                        prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
+                        event.partialTicks,
+                        true
+                    )
+                    glColor(color)
+                    renderManager.doRenderEntity(
+                        this,
+                        x, y, z,
+                        prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
+                        event.partialTicks,
+                        true
+                    )
+
+                    glPopAttrib()
+                    glPopMatrix()
+                }
             }
         }
     }
