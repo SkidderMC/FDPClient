@@ -5,10 +5,12 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui
 
+import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.handler.lang.translationMenu
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils.responseCode
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
@@ -17,7 +19,6 @@ import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.io.IOException
-import kotlin.concurrent.thread
 
 class GuiServerStatus(private val prevGui: GuiScreen) : GuiScreen() {
     private val status = hashMapOf<String, String?>(
@@ -85,7 +86,7 @@ class GuiServerStatus(private val prevGui: GuiScreen) : GuiScreen() {
         status.replaceAll { _, _ -> null }
 
         for (url in status.keys) {
-            thread {
+            SharedScopes.IO.launch {
                 try {
                     val responseCode = responseCode(url, "GET")
                     status[url] = if (responseCode in 200..499) "green" else "red"

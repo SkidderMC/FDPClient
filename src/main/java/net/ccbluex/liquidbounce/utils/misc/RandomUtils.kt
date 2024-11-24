@@ -32,14 +32,12 @@ object RandomUtils {
 
     fun random(length: Int, chars: String) = random(length, chars.toCharArray())
 
-    fun random(length: Int, chars: CharArray): String {
-        val stringBuilder = StringBuilder()
+    fun random(length: Int, chars: CharArray): String = buildString(length) {
 
         repeat(length) {
-            stringBuilder.append(chars[Random.nextInt(chars.size)])
+            append(chars[Random.nextInt(chars.size)])
         }
 
-        return stringBuilder.toString()
     }
 
     @JvmOverloads
