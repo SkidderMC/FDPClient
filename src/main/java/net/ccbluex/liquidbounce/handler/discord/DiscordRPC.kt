@@ -9,6 +9,8 @@ import com.jagrosh.discordipc.IPCClient
 import com.jagrosh.discordipc.IPCListener
 import com.jagrosh.discordipc.entities.RichPresence
 import com.jagrosh.discordipc.entities.pipe.PipeStatus
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_VERSION
 import net.ccbluex.liquidbounce.features.module.ModuleManager.modules
 import net.ccbluex.liquidbounce.features.module.modules.client.DiscordRPCModule
@@ -17,10 +19,10 @@ import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.ServerUtils
 import net.ccbluex.liquidbounce.utils.ServerUtils.formatSessionTime
+import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 
 import org.json.JSONObject
 import java.time.OffsetDateTime
-import kotlin.concurrent.thread
 
 object DiscordRPC : MinecraftInstance() {
 
@@ -55,12 +57,12 @@ object DiscordRPC : MinecraftInstance() {
                  * @param client The now ready IPCClient.
                  */
                 override fun onReady(client: IPCClient?) {
-                    thread {
+                    SharedScopes.IO.launch {
                         while (running) {
                             update()
 
                             try {
-                                Thread.sleep(1000L)
+                                delay(1000L)
                             } catch (ignored: InterruptedException) {
                             }
                         }

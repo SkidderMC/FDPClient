@@ -25,7 +25,6 @@ import java.awt.Color
 import kotlin.math.pow
 
 object ProphuntESP : Module("ProphuntESP", Category.VISUAL, gameDetecting = false) {
-    val blocks = mutableMapOf<BlockPos, Long>()
 
     private val mode by choices("Mode", arrayOf("Box", "OtherBox", "Glow"), "OtherBox")
         private val glowRenderScale by float("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
@@ -56,6 +55,13 @@ object ProphuntESP : Module("ProphuntESP", Category.VISUAL, gameDetecting = fals
 
     private val color
         get() = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
+
+    private val blocks = mutableMapOf<BlockPos, Long>()
+    fun recordBlock(blockPos: BlockPos) {
+        synchronized(blocks) {
+            blocks[blockPos] = System.currentTimeMillis()
+        }
+    }
 
     override fun onDisable() {
         synchronized(blocks) { blocks.clear() }

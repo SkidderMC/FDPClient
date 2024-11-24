@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -12,6 +14,8 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
+import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
+import net.ccbluex.liquidbounce.utils.extensions.getBlock
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
@@ -24,6 +28,7 @@ import net.minecraft.block.Block
 import net.minecraft.init.Blocks.air
 import net.minecraft.util.BlockPos
 import java.awt.Color
+import java.util.concurrent.ConcurrentHashMap
 
 object BlockESP : Module("BlockESP", Category.VISUAL, hideModule = false) {
     private val mode by choices("Mode", arrayOf("Box", "2D"), "Box")
@@ -37,12 +42,17 @@ object BlockESP : Module("BlockESP", Category.VISUAL, hideModule = false) {
     private val colorBlue by int("B", 72, 0..255) { !colorRainbow }
 
     private val searchTimer = MSTimer()
-    private val posList = mutableListOf<BlockPos>()
-    private var thread: Thread? = null
+    private val posList = ConcurrentHashMap.newKeySet<BlockPos>()
+    private var searchJob: Job? = null
+
+    override fun onDisable() {
+        searchJob?.cancel()
+        posList.clear()
+    }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (searchTimer.hasTimePassed(1000) && (thread?.isAlive != true)) {
+        if (searchTimer.hasTimePassed(1000) && (searchJob?.isActive != true)) {
             val radius = radius
             val selectedBlock = Block.getBlockById(block)
             val blockLimit = blockLimit
@@ -50,30 +60,24 @@ object BlockESP : Module("BlockESP", Category.VISUAL, hideModule = false) {
             if (selectedBlock == null || selectedBlock == air)
                 return
 
-            thread = Thread({
-                val blocks = searchBlocks(radius, setOf(selectedBlock), blockLimit)
-                searchTimer.reset()
-
-                synchronized(posList) {
-                    posList.clear()
-                    posList += blocks.keys
+            searchJob = SharedScopes.Default.launch {
+                posList.removeIf {
+                    it.getBlock() != selectedBlock
                 }
-            }, "BlockESP-BlockFinder")
 
-            thread!!.start()
+                posList += searchBlocks(radius, setOf(selectedBlock), blockLimit).keys
+
+                searchTimer.reset()
+            }
         }
     }
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
-        synchronized(posList) {
-            val color = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
-            for (blockPos in posList) {
-                when (mode.lowercase()) {
-                    "box" -> drawBlockBox(blockPos, color, true)
-                    "2d" -> draw2D(blockPos, color.rgb, Color.BLACK.rgb)
-                }
-            }
+        val color = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
+        when (mode) {
+            "Box" -> posList.forEach { drawBlockBox(it, color, true) }
+            "2D" -> posList.forEach { draw2D(it, color.rgb, Color.BLACK.rgb) }
         }
     }
 

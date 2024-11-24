@@ -47,6 +47,7 @@ import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.ClassUtils.hasForge
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.ClientUtils.disableFastRender
+import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.render.MiniMapRegister
 import net.ccbluex.liquidbounce.utils.timing.TickedActions
@@ -237,6 +238,9 @@ object FDPClient {
     fun stopClient() {
         // Call client shutdown
         callEvent(ClientShutdownEvent())
+
+        // Stop all CoroutineScopes
+        SharedScopes.stop()
 
         // Save all available configs
         saveAllConfigs()
