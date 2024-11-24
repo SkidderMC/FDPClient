@@ -103,11 +103,8 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
     }
 
     private fun checkedStaffRemoved() {
-        val onlinePlayers = mc.netHandler?.playerInfoMap?.mapNotNull { it?.gameProfile?.name }
+        mc.netHandler?.playerInfoMap?.mapNotNullTo(hashSetOf()) { it?.gameProfile?.name }?.let(checkedStaff::retainAll)
 
-        synchronized(checkedStaff) {
-            onlinePlayers?.toSet()?.let { checkedStaff.retainAll(it) }
-        }
     }
 
     @EventTarget
@@ -258,19 +255,17 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
 
             val warnings = "§c[STAFF] §d${player} §3is a staff §b(TAB) $condition"
 
-            synchronized(checkedStaff) {
-                if (isStaff && player !in checkedStaff) {
-                    if (warn == "Chat") {
-                        chat(warnings)
-                    } else {
-                        hud.addNotification(Notification(warnings, "!!!", Type.WARNING, 60))
-                    }
-
-                    attemptLeave = false
-                    checkedStaff.add(player)
-
-                    autoLeave()
+            if (isStaff && player !in checkedStaff) {
+                if (warn == "Chat") {
+                    chat(warnings)
+                } else {
+                    hud.addNotification(Notification(warnings, "!!!", Type.WARNING, 60))
                 }
+
+                attemptLeave = false
+                checkedStaff.add(player)
+
+                autoLeave()
             }
         }
     }
@@ -312,19 +307,17 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
 
         val warnings = "§c[STAFF] §d${playerName} §3is a staff §b(Packet) $condition"
 
-        synchronized(checkedStaff) {
-            if (isStaff && playerName !in checkedStaff) {
-                if (warn == "Chat") {
-                    chat(warnings)
-                } else {
-                    hud.addNotification(Notification(warnings, "!!!", Type.WARNING, 60))
-                }
-
-                attemptLeave = false
-                checkedStaff.add(playerName)
-
-                autoLeave()
+        if (isStaff && playerName !in checkedStaff) {
+            if (warn == "Chat") {
+                chat(warnings)
+            } else {
+                hud.addNotification(Notification(warnings, "!!!", Type.WARNING, 60))
             }
+
+            attemptLeave = false
+            checkedStaff.add(playerName)
+
+            autoLeave()
         }
     }
 

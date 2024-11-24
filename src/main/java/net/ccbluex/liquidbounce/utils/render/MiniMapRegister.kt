@@ -83,9 +83,10 @@ object MiniMapRegister : MinecraftInstance(), Listenable {
         fun updateChunkData(chunk: Chunk) {
             val rgbValues = texture.textureData
 
+            val pos = BlockPos.MutableBlockPos()
             for (x in 0..15) {
                 for (z in 0..15) {
-                    val bp = BlockPos(x, chunk.getHeightValue(x, z) - 1, z)
+                    val bp = pos.set(x, chunk.getHeightValue(x, z) - 1, z)
                     val blockState = chunk.getBlockState(bp)
 
                     rgbValues[rgbValues.size - (z * 16 + x + 1)] = blockState.block.getMapColor(blockState).colorValue or (0xFF shl 24)

@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -12,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
+import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
@@ -23,7 +26,6 @@ import net.minecraft.block.Block.getIdFromBlock
 import net.minecraft.init.Blocks.*
 import net.minecraft.util.BlockPos
 import java.awt.Color
-import java.util.LinkedList
 
 object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule = false) {
     private val targetBlock by choices("TargetBlock", arrayOf("Bed", "DragonEgg"), "Bed")
@@ -42,7 +44,7 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
     private val searchTimer = MSTimer()
     private val targetBlockList = mutableListOf<BlockPos>()
     private val blocksToRender = mutableSetOf<BlockPos>()
-    private var thread: Thread? = null
+    private var searchJob: Job? = null
 
     private val breakableBlockIDs =
         arrayOf(35, 24, 159, 121, 20, 5, 49) // wool, sandstone, stained_clay, end_stone, glass, wood, obsidian
@@ -59,9 +61,8 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
         val nextLayerAirBlocks = mutableSetOf<BlockPos>()
         val nextLayerBlocks = mutableSetOf<BlockPos>()
         val cachedBlocks = mutableSetOf<BlockPos>()
-        val currentLayerBlocks = LinkedList<BlockPos>()
+        val currentLayerBlocks = ArrayDeque<BlockPos>()
         var currentLayer = 1
-
 
         // get blocks around each target block
         for (block in targetBlockList) {
@@ -85,16 +86,13 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
                         blocksAround.add(currBlock.down())
                     }
 
-                    nextLayerAirBlocks.addAll(
-                        blocksAround.filter { blockPos -> getBlock(blockPos) == air }
-                    )
-                    nextLayerBlocks.addAll(
-                        blocksAround.filter { blockPos ->
-                            (allLayers || getBlock(blockPos) != air) && !cachedBlocks.contains(
-                                blockPos
-                            )
-                        }
-                    )
+                    blocksAround.filterTo(nextLayerAirBlocks) { blockPos -> getBlock(blockPos) == air }
+
+                    blocksAround.filterTo(nextLayerBlocks) { blockPos ->
+                        (allLayers || getBlock(blockPos) != air) && !cachedBlocks.contains(
+                            blockPos
+                        )
+                    }
                 }
 
                 // move to the next layer
@@ -123,7 +121,7 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if (searchTimer.hasTimePassed(1000) && (thread?.isAlive != true)) {
+        if (searchTimer.hasTimePassed(1000) && (searchJob?.isActive != true)) {
             val radius = radius
             val targetBlock = if (targetBlock == "Bed") bed else dragon_egg
             val maxLayers = maxLayers
@@ -131,7 +129,7 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
             val allLayers = renderMode == "All"
             val blockLimit = blockLimit
 
-            thread = Thread({
+            searchJob = SharedScopes.Default.launch {
                 val blocks = searchBlocks(radius, setOf(targetBlock), 32)
                 searchTimer.reset()
 
@@ -143,9 +141,7 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
                     blocksToRender.clear()
                     getBlocksToRender(targetBlock, maxLayers, down, allLayers, blockLimit)
                 }
-            }, "BedProtectionESP-BlockFinder")
-
-            thread!!.start()
+            }
         }
     }
 

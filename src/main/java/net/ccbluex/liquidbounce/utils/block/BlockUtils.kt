@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils.block
 
@@ -96,11 +96,12 @@ object BlockUtils : MinecraftInstance() {
      * Search a limited amount [maxBlocksLimit] of specific blocks [targetBlocks] around the player in a specific [radius].
      * If [targetBlocks] is null it searches every block
      **/
-    fun searchBlocks(radius: Int, targetBlocks: Set<Block>?, maxBlocksLimit: Int = 256): Map<BlockPos, Block> {
-        val blocks = mutableMapOf<BlockPos, Block>()
+    fun searchBlocks(radius: Int, targetBlocks: Set<Block>? = null, maxBlocksLimit: Int = 256): Map<BlockPos, Block> {
+        val thePlayer = mc.thePlayer ?: return emptyMap()
 
-        val thePlayer = mc.thePlayer ?: return blocks
+        val blocks = hashMapOf<BlockPos, Block>()
 
+        val mutable = BlockPos.MutableBlockPos(0, 0, 0)
         for (x in radius downTo -radius + 1) {
             for (y in radius downTo -radius + 1) {
                 for (z in radius downTo -radius + 1) {
@@ -108,12 +109,12 @@ object BlockUtils : MinecraftInstance() {
                         return blocks
                     }
 
-                    val blockPos =
-                        BlockPos(thePlayer.posX.toInt() + x, thePlayer.posY.toInt() + y, thePlayer.posZ.toInt() + z)
-                    val block = getBlock(blockPos) ?: continue
+                    mutable.set(thePlayer.posX.toInt() + x, thePlayer.posY.toInt() + y, thePlayer.posZ.toInt() + z)
+
+                    val block = getBlock(mutable) ?: continue
 
                     if (targetBlocks == null || targetBlocks.contains(block)) {
-                        blocks[blockPos] = block
+                        blocks[mutable.immutable] = block
                     }
                 }
             }
@@ -128,9 +129,12 @@ object BlockUtils : MinecraftInstance() {
     fun collideBlock(axisAlignedBB: AxisAlignedBB, collide: Collidable): Boolean {
         val thePlayer = mc.thePlayer
 
+        val y = axisAlignedBB.minY.toInt()
+        val mutable = BlockPos.MutableBlockPos(0, 0, 0)
         for (x in thePlayer.entityBoundingBox.minX.toInt() until thePlayer.entityBoundingBox.maxX.toInt() + 1) {
             for (z in thePlayer.entityBoundingBox.minZ.toInt() until thePlayer.entityBoundingBox.maxZ.toInt() + 1) {
-                val block = getBlock(BlockPos(x.toDouble(), axisAlignedBB.minY, z.toDouble()))
+                val blockPos = mutable.set(x, y, z)
+                val block = getBlock(blockPos)
 
                 if (!collide(block))
                     return false
@@ -147,9 +151,11 @@ object BlockUtils : MinecraftInstance() {
         val thePlayer = mc.thePlayer
         val world = mc.theWorld
 
+        val y = axisAlignedBB.minY.toInt()
+        val mutable = BlockPos.MutableBlockPos(0, 0, 0)
         for (x in thePlayer.entityBoundingBox.minX.toInt() until thePlayer.entityBoundingBox.maxX.toInt() + 1) {
             for (z in thePlayer.entityBoundingBox.minZ.toInt() until thePlayer.entityBoundingBox.maxZ.toInt() + 1) {
-                val blockPos = BlockPos(x.toDouble(), axisAlignedBB.minY, z.toDouble())
+                val blockPos = mutable.set(x, y, z)
                 val block = getBlock(blockPos)
 
                 if (collide(block)) {

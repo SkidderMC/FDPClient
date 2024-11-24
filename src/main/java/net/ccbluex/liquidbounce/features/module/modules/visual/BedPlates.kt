@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.event.EventTarget
@@ -20,6 +18,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.BEDWARS_BLOCKS
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockTexture
+import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsFloat
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
@@ -94,11 +93,8 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
     private val bedBlocks: MutableList<MutableList<Block>> = mutableListOf()
     private var searchJob: Job? = null
 
-    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default)
-
     override fun onDisable() {
-        if (searchJob?.isActive == true)
-            searchJob?.cancel()
+        searchJob?.cancel()
     }
 
     @EventTarget
@@ -108,20 +104,21 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
 
         try {
             if (searchJob?.isActive != true) {
-                searchJob = coroutineScope.launch {
+                searchJob = SharedScopes.Default.launch {
                     val blockList = mutableListOf<BlockPos>()
                     val bedBlockLists = mutableListOf<MutableList<Block>>()
                     val bedSet = mutableSetOf<BlockPos>()
 
                     val radius = maxRenderDistance
+                    val mutable = BlockPos.MutableBlockPos(0, 0, 0)
                     for (i in -radius..radius) {
                         for (j in -radius..radius) {
                             for (k in -radius..radius) {
-                                val blockPos = BlockPos(player.posX + j, player.posY + i, player.posZ + k)
-                                val blockState: IBlockState = world.getBlockState(blockPos)
+                                mutable.set(player.posX.toInt() + j, player.posY.toInt() + i, player.posZ.toInt() + k)
+                                val blockState: IBlockState = world.getBlockState(mutable)
 
                                 if (blockState.block == Blocks.bed && blockState.getValue(BlockBed.PART) == BlockBed.EnumPartType.FOOT) {
-                                    bedBlocks(blockPos, blockList, bedBlockLists, bedSet)
+                                    bedBlocks(mutable.immutable, blockList, bedBlockLists, bedSet)
                                 }
                             }
                         }
@@ -311,7 +308,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
             bedBlocks.add(mutableListOf())
         }
         while (beds.size <= index) {
-            beds.add(BlockPos(0, 0, 0))
+            beds.add(BlockPos.ORIGIN)
         }
 
         bedBlocks[index].clear()
