@@ -250,16 +250,20 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                     return
                 }
 
-                // Format data for other tools
-                val formattedData = when (currentAccount) {
-                    is MojangAccount -> "${currentAccount.email}:${currentAccount.password}" // EMAIL:PASSWORD
-                    is MicrosoftAccount -> "${currentAccount.name}:${currentAccount.session.token}" // NAME:SESSION
-                    else -> currentAccount.name
-                }
+                try {
+                    // Format data for other tools
+                    val formattedData = when (currentAccount) {
+                        is MojangAccount -> "${currentAccount.email}:${currentAccount.password}" // EMAIL:PASSWORD
+                        is MicrosoftAccount -> "${currentAccount.name}:${currentAccount.session.token}" // NAME:SESSION
+                        else -> currentAccount.name
+                    }
 
-                // Copy to clipboard
-                Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(formattedData), null)
-                status = "§aCopied account into your clipboard."
+                    // Copy to clipboard
+                    Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(formattedData), null)
+                    status = "§aCopied account into your clipboard."
+                } catch (any: Exception) {
+                    any.printStackTrace()
+                }
             }
 
             10 -> { // Session Login Button

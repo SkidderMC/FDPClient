@@ -80,6 +80,7 @@
     "render.MixinRenderGlobal",
     "render.MixinItemRenderer",
     "gui.MixinGuiContainer",
+    "gui.MixinGuiTextField",
     "tweaks.MixinEntityFX"
   ]
 }

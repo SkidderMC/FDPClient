@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
@@ -23,6 +23,12 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
+
+import java.awt.Color;
 
 import static net.minecraft.client.renderer.GlStateManager.*;
 import static org.lwjgl.opengl.GL11.*;
@@ -90,6 +96,25 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
 
     @Shadow
     protected abstract void func_148142_b(int p_148142_1_, int p_148142_2_);
+
+    @Shadow
+    protected boolean showSelectionBox;
+
+    @Shadow
+    protected abstract boolean isSelected(int i);
+
+    @Shadow
+    protected abstract void drawSlot(int i, int i1, int i2, int i3, int i4, int i5);
+
+    @Shadow
+    protected abstract void func_178040_a(int p_178040_1_, int p_178040_2_, int p_178040_3_);
+
+    @Shadow
+    @Final
+    public int slotHeight;
+
+    @Shadow
+    public int headerPadding;
 
     /**
      * @author CCBlueX
@@ -182,6 +207,7 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
             shadeModel(7424);
             enableAlpha();
             disableBlend();
+
             AWTFontRenderer.Companion.setAssumeNonVolatile(false);
         }
     }
@@ -217,4 +243,27 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
         this.listWidth = listWidth;
     }
 
+    @Inject(method = "drawSelectionBox", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/Tessellator;getWorldRenderer()Lnet/minecraft/client/renderer/WorldRenderer;"), locals = LocalCapture.CAPTURE_FAILSOFT, cancellable = true)
+    private void injectClientDraw(int p_drawSelectionBox_1_, int p_drawSelectionBox_2_, int p_drawSelectionBox_3_, int p_drawSelectionBox_4_, CallbackInfo ci, int i, Tessellator tessellator) {
+        for (int j = 0; j < i; ++j) {
+            int k = p_drawSelectionBox_2_ + j * this.slotHeight + this.headerPadding;
+            int l = this.slotHeight - 4;
+            if (k > this.bottom || k + l < this.top) {
+                this.func_178040_a(j, p_drawSelectionBox_1_, k);
+            }
+
+            if (this.showSelectionBox && this.isSelected(j)) {
+                int i1 = this.left + (this.width / 2 - this.getListWidth() / 2);
+                int j1 = this.left + this.width / 2 + this.getListWidth() / 2;
+
+                RenderUtils.INSTANCE.drawRoundedRect(i1 + 2, k, j1 - 1, k + l + 1, new Color(0, 0, 0, 100).getRGB(), 2F);
+
+                RenderUtils.INSTANCE.drawRoundedBorder(i1 + 2, k + l + 1, j1 - 1, k + l + 1, 3F, Color.BLUE.getRGB(), 0F);
+            }
+
+            this.drawSlot(j, p_drawSelectionBox_1_, k, l, p_drawSelectionBox_3_, p_drawSelectionBox_4_);
+        }
+
+        ci.cancel();
+    }
 }
