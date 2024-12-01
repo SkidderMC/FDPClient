@@ -241,9 +241,9 @@ object RotationUtils : MinecraftInstance(), Listenable {
         var lookRotation: Pair<Rotation, Float>? = null
 
         randomization?.takeIf { it.randomize }?.run {
-            val yawMovement = angleDifference(currRotation.yaw, serverRotation.yaw).sign.takeIf { it != 0f }
+            val yawMovement = angleDifference(currRotation.yaw, lastRotations[1].yaw).sign.takeIf { it != 0f }
                 ?: arrayOf(-1f, 1f).random()
-            val pitchMovement = angleDifference(currRotation.pitch, serverRotation.pitch).sign.takeIf { it != 0f }
+            val pitchMovement = angleDifference(currRotation.pitch, lastRotations[1].pitch).sign.takeIf { it != 0f }
                 ?: arrayOf(-1f, 1f).random()
 
             currRotation.yaw += if (Math.random() > yawRandomizationChance.random()) {
@@ -414,15 +414,11 @@ object RotationUtils : MinecraftInstance(), Listenable {
         val diffAbs = abs(diff)
 
         val range = when {
-            diffAbs <= 3f -> 0.4f..0.8f + (0.2f * (1 - diffAbs / 3f)).coerceIn(0f, 1f)
-            diffAbs > 50f -> 0.2f..0.55f
-            // This modifies how fast the rotations will slow down to switch direction.
-            // The less/higher the progression, the slower/faster the slow-down.
-            // This when applied with pitch automatically performs a curve, but we are not looking for too much slow-down.
-            // Have a curve applied while still trying to focus on target. (0.4f - 0.5f) seems to work fine.
-            // Could be an option if needed.
-            diff.sign != lastTick1.sign && lastTick1.sign != 0f && diff.sign != 0f -> 0.4f..0.5f
-            else -> 0.1f..0.4f
+            lastTick1 == 0f -> {
+                val inc = 0.2f * (diffAbs / 50f).coerceIn(0f, 1f)
+                0.1F + inc..0.5F + inc
+            }
+            else -> 0.3f..0.7f
         }
 
         action((lastTick1..diff).lerpWith(range.random()))
