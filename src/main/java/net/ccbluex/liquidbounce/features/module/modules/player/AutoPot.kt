@@ -33,7 +33,7 @@ import net.minecraft.item.ItemPotion
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.potion.Potion
 
-object AutoPot : Module("AutoPot", Category.PLAYER, hideModule = false) {
+object AutoPot : Module("AutoPot", Category.COMBAT, hideModule = false) {
 
     private val health by float("Health", 15F, 1F..20F) { healPotion || regenerationPotion }
     private val delay by int("Delay", 500, 500..1000)
@@ -98,12 +98,12 @@ object AutoPot : Module("AutoPot", Category.PLAYER, hideModule = false) {
                     potion - 36,
                     ticksUntilReset = 1,
                     immediate = true,
-                    render = false
+                    render = false,
+                    resetManually = true
                 )
 
                 if (potion >= 0 && RotationUtils.serverRotation.pitch >= 75F) {
-                    sendPacket(C08PacketPlayerBlockPlacement(player.heldItem))
-                    SilentHotbar.resetSlot(this)
+                    player.sendUseItem(player.heldItem)
 
                     msTimer.reset()
                     potion = -1

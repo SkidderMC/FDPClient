@@ -185,6 +185,11 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
             }
 
             "modern" -> {
+                if (mc.isSingleplayer || mc.currentServerData == null) {
+                    clearPackets()
+                    return
+                }
+
                 // Prevent cancelling packets when not needed
                 if (isPacketQueueEmpty && areQueuedPacketsEmpty && !shouldBacktrack())
                     return

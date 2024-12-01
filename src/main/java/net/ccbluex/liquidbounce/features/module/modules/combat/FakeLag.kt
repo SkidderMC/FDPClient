@@ -163,6 +163,11 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
         if (!resetTimer.hasTimePassed(recoilTime))
             return
 
+        if (mc.isSingleplayer || mc.currentServerData == null) {
+            blink()
+            return
+        }
+
         if (event.eventType == EventState.SEND) {
             event.cancelEvent()
 

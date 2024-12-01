@@ -54,7 +54,7 @@ object AutoWeapon : Module("AutoWeapon", Category.COMBAT, subjective = true, hid
                 return
 
             // Switch to best weapon
-            SilentHotbar.selectSlotSilently(this, slot, spoofTicks, true, spoof, spoof)
+            SilentHotbar.selectSlotSilently(this, slot, spoofTicks, true, !spoof, spoof)
 
             if (!spoof) {
                 player.inventory.currentItem = slot
