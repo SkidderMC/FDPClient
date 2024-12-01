@@ -355,7 +355,6 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
 
     // text
     private val textElement = Text()
-
     /**
      * Disable kill aura module
      */
@@ -417,6 +416,14 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
      */
     @EventTarget
     fun onTick(event: GameTickEvent) {
+        val player = mc.thePlayer ?: return
+
+        if (shouldPrioritize()) {
+            target = null
+            renderBlocking = false
+            return
+        }
+
         if (clickOnly && !mc.gameSettings.keyBindAttack.isKeyDown)
             return
 
@@ -451,7 +458,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         }
 
         if (blinkAutoBlock) {
-            when (mc.thePlayer.ticksExisted % (blinkBlockTicks + 1)) {
+            when (player.ticksExisted % (blinkBlockTicks + 1)) {
                 0 -> {
                     if (blockStatus && !blinked && !BlinkUtils.isBlinking) {
                         blinked = true
@@ -476,7 +483,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         }
 
         if (target != null) {
-            if (mc.thePlayer.getDistanceToEntityBox(target!!) > blockMaxRange && blockStatus) {
+            if (player.getDistanceToEntityBox(target!!) > blockMaxRange && blockStatus) {
                 stopBlocking(true)
                 return
             } else {
@@ -1193,7 +1200,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     }
 
     private fun shouldPrioritize(): Boolean = when {
-        !onScaffold && Scaffold.handleEvents() && Scaffold.placeRotation != null -> true
+        !onScaffold && (Scaffold.handleEvents() && (Scaffold.placeRotation != null || currentRotation != null) ||
+                Tower.handleEvents() && Tower.isTowering) -> true
         !onDestroyBlock && (Fucker.handleEvents() && !Fucker.noHit && Fucker.pos != null || Nuker.handleEvents()) -> true
         else -> false
     }
@@ -1253,7 +1261,6 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private fun isBlockingDisallowed(): Boolean {
         return noBlocking && mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item is ItemBlock
     }
-
     /**
      * Check if [entity] is alive
      */
@@ -1264,26 +1271,28 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
      */
     private val canBlock: Boolean
         get() {
-            if (target != null && mc.thePlayer?.heldItem?.item is ItemSword) {
+            val player = mc.thePlayer ?: return false
+
+            if (target != null && player.heldItem?.item is ItemSword) {
                 if (smartAutoBlock) {
-                    if (!mc.thePlayer.isMoving && forceBlock) return true
+                    if (!player.isMoving && forceBlock) return true
 
                     if (checkWeapon && (target!!.heldItem?.item !is ItemSword && target!!.heldItem?.item !is ItemAxe))
                         return false
 
-                    if (mc.thePlayer.hurtTime > maxOwnHurtTime) return false
+                    if (player.hurtTime > maxOwnHurtTime) return false
 
-                    val rotationToPlayer = toRotation(mc.thePlayer.hitBox.center, true, target!!)
+                    val rotationToPlayer = toRotation(player.hitBox.center, true, target!!)
 
                     if (rotationDifference(rotationToPlayer, target!!.rotation) > maxDirectionDiff)
                         return false
 
                     if (target!!.swingProgressInt > maxSwingProgress) return false
 
-                    if (target!!.getDistanceToEntityBox(mc.thePlayer) > blockRange) return false
+                    if (target!!.getDistanceToEntityBox(player) > blockRange) return false
                 }
 
-                if (mc.thePlayer.getDistanceToEntityBox(target!!) > blockMaxRange) return false
+                if (player.getDistanceToEntityBox(target!!) > blockMaxRange) return false
 
                 return true
             }
