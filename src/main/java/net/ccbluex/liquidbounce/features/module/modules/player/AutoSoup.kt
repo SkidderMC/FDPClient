@@ -35,6 +35,7 @@ object AutoSoup : Module("AutoSoup", Category.PLAYER, hideModule = false) {
     private val openInventory by boolean("OpenInv", true)
     private val startDelay by int("StartDelay", 100, 0..1000) { openInventory }
     private val autoClose by boolean("AutoClose", false) { openInventory }
+    private val autoCloseNoSoup by boolean("AutoCloseNoSoup", true) { autoClose }
     private val autoCloseDelay by int("CloseDelay", 500, 0..1000) { openInventory && autoClose }
 
     private val simulateInventory by boolean("SimulateInventory", false) { !openInventory }
@@ -141,6 +142,7 @@ object AutoSoup : Module("AutoSoup", Category.PLAYER, hideModule = false) {
         }
 
         if (autoClose && canCloseInventory && closeTimer.hasTimePassed(autoCloseDelay)) {
+            if (!autoCloseNoSoup && soupInInventory == null) return
             if (mc.currentScreen is GuiInventory) {
                 mc.thePlayer?.closeScreen()
             }
