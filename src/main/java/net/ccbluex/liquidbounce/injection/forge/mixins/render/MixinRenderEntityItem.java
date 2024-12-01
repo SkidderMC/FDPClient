@@ -83,7 +83,7 @@ public abstract class MixinRenderEntityItem extends Render<EntityItem> {
 
         float age = (float) itemIn.getAge() + p_177077_8_;
         float hoverStart = itemIn.hoverStart;
-        boolean isPhysicsState = itemPhysics.getState();
+        boolean isPhysicsState = itemPhysics.handleEvents();
         boolean isRealistic = itemPhysics.getRealistic();
         float weight = isPhysicsState ? itemPhysics.getWeight() : 0.0f;
 
