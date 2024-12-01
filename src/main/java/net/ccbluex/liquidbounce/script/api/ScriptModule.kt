@@ -74,6 +74,9 @@ class ScriptModule(name: String, category: Category, description: String, privat
     fun onPacket(packetEvent: PacketEvent) = callEvent("packet", packetEvent)
 
     @EventTarget
+    fun onBlockPush(blockPushEvent: BlockPushEvent) = callEvent("blockPush", blockPushEvent)
+
+    @EventTarget
     fun onJump(jumpEvent: JumpEvent) = callEvent("jump", jumpEvent)
 
     @EventTarget

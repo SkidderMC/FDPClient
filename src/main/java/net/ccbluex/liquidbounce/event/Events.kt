@@ -153,7 +153,7 @@ class PacketEvent(val packet: Packet<*>, val eventType: EventState) : Cancellabl
 /**
  * Called when a block tries to push you
  */
-class PushOutEvent : CancellableEvent()
+class BlockPushEvent : CancellableEvent()
 
 /**
  * Called when screen is going to be rendered

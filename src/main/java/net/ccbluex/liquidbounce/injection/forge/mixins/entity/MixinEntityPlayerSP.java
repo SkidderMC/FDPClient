@@ -254,7 +254,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     @Inject(method = "pushOutOfBlocks", at = @At("HEAD"), cancellable = true)
     private void onPushOutOfBlocks(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        PushOutEvent event = new PushOutEvent();
+        BlockPushEvent event = new BlockPushEvent();
         if (noClip) {
             event.cancelEvent();
         }
