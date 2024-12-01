@@ -16,8 +16,10 @@ import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.RotationUtils
-import net.ccbluex.liquidbounce.utils.extensions.hitBox
+import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.extensions.currPos
 import net.ccbluex.liquidbounce.utils.extensions.isClientFriend
+import net.ccbluex.liquidbounce.utils.extensions.lastTickPos
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
@@ -126,28 +128,22 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
                     when (mode) {
                         "Box", "OtherBox" -> drawEntityBox(entity, color, mode != "OtherBox")
                         "2D" -> {
-                            val renderManager = mc.renderManager
-                            val timer = mc.timer
-                            val posX =
-                                entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX
-                            val posY =
-                                entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY
-                            val posZ =
-                                entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
+                            val (posX, posY, posZ) = entity.lastTickPos.lerpWith(
+                                entity.currPos,
+                                mc.timer.renderPartialTicks
+                            ) - mc.renderManager.renderPos
+
                             draw2D(entity, posX, posY, posZ, color.rgb, Color.BLACK.rgb)
                         }
 
                         "Real2D" -> {
-                            val renderManager = mc.renderManager
-                            val timer = mc.timer
-                            val bb = entity.hitBox
-                                .offset(-entity.posX, -entity.posY, -entity.posZ)
-                                .offset(
-                                    entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks,
-                                    entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks,
-                                    entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks
-                                )
-                                .offset(-renderManager.renderPosX, -renderManager.renderPosY, -renderManager.renderPosZ)
+                            val (posX, posY, posZ) = entity.lastTickPos.lerpWith(
+                                entity.currPos,
+                                mc.timer.renderPartialTicks
+                            ) - mc.renderManager.renderPos
+
+                            val bb =
+                                entity.hitBox.offset(-entity.posX, -entity.posY, -entity.posZ).offset(posX, posY, posZ)
                             val boxVertices = arrayOf(
                                 doubleArrayOf(bb.minX, bb.minY, bb.minZ),
                                 doubleArrayOf(bb.minX, bb.maxY, bb.minZ),

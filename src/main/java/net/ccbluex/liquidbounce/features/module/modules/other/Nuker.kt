@@ -18,7 +18,13 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
+import net.ccbluex.liquidbounce.utils.extensions.component1
+import net.ccbluex.liquidbounce.utils.extensions.component2
+import net.ccbluex.liquidbounce.utils.extensions.component3
 import net.ccbluex.liquidbounce.utils.extensions.eyes
+import net.ccbluex.liquidbounce.utils.extensions.getVec
+import net.ccbluex.liquidbounce.utils.extensions.minus
+import net.ccbluex.liquidbounce.utils.extensions.renderPos
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
@@ -266,18 +272,16 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
             if (blockProgress) {
                 if (getBlockName(blocks) == "Air") return
 
-                val progress = ((currentDamage * 100).coerceIn(0f, 100f)).toInt()
+                val progress = (currentDamage * 100).coerceIn(0f, 100f).toInt()
                 val progressText = "%d%%".format(progress)
 
                 glPushAttrib(GL_ENABLE_BIT)
                 glPushMatrix()
 
+                val (x, y, z) = pos.getVec() - renderManager.renderPos
+
                 // Translate to block position
-                glTranslated(
-                    pos.x + 0.5 - renderManager.renderPosX,
-                    pos.y + 0.5 - renderManager.renderPosY,
-                    pos.z + 0.5 - renderManager.renderPosZ
-                )
+                glTranslated(x, y, z)
 
                 glRotatef(-renderManager.playerViewY, 0F, 1F, 0F)
                 glRotatef(renderManager.playerViewX, 1F, 0F, 0F)

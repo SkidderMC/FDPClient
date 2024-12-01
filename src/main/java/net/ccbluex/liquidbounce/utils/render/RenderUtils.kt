@@ -20,7 +20,11 @@ import net.ccbluex.liquidbounce.utils.ClientThemesUtils.getColor
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.UIEffectRenderer.drawTexturedRect
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
+import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
+import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
+import net.ccbluex.liquidbounce.utils.extensions.lastTickPos
+import net.ccbluex.liquidbounce.utils.extensions.renderPos
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.setColour
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInOutQuadX
@@ -40,10 +44,7 @@ import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemBow
 import net.minecraft.item.ItemStack
 import net.minecraft.item.ItemSword
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.BlockPos
-import net.minecraft.util.ResourceLocation
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
 import org.lwjgl.opengl.GL11.*
@@ -96,26 +97,23 @@ object RenderUtils : MinecraftInstance() {
         glEndList()
     }
 
-
     fun drawBlockBox(blockPos: BlockPos, color: Color, outline: Boolean) {
         val renderManager = mc.renderManager
-        val timer = mc.timer
 
-        val x = blockPos.x - renderManager.renderPosX
-        val y = blockPos.y - renderManager.renderPosY
-        val z = blockPos.z - renderManager.renderPosZ
+        val (x, y, z) = blockPos.toVec() - renderManager.renderPos
 
         var axisAlignedBB = AxisAlignedBB.fromBounds(x, y, z, x + 1.0, y + 1.0, z + 1.0)
-        val block = getBlock(blockPos)
-        if (block != null) {
+
+        getBlock(blockPos)?.let { block ->
             val player = mc.thePlayer
-            val posX = player.lastTickPosX + (player.posX - player.lastTickPosX) * timer.renderPartialTicks.toDouble()
-            val posY = player.lastTickPosY + (player.posY - player.lastTickPosY) * timer.renderPartialTicks.toDouble()
-            val posZ = player.lastTickPosZ + (player.posZ - player.lastTickPosZ) * timer.renderPartialTicks.toDouble()
+
+            val (x, y, z) = player.interpolatedPosition(player.lastTickPos) - renderManager.renderPos
+
+            val f = 0.002F.toDouble()
+
             block.setBlockBoundsBasedOnState(mc.theWorld, blockPos)
-            axisAlignedBB = block.getSelectedBoundingBox(mc.theWorld, blockPos)
-                .expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
-                .offset(-posX, -posY, -posZ)
+
+            axisAlignedBB = block.getSelectedBoundingBox(mc.theWorld, blockPos).expand(f, f, f).offset(-x, -y, -z)
         }
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -166,20 +164,16 @@ object RenderUtils : MinecraftInstance() {
         tessellator.draw()
     }
 
+
     fun drawEntityBox(entity: Entity, color: Color, outline: Boolean) {
-        val renderManager = mc.renderManager
-        val timer = mc.timer
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         enableGlCap(GL_BLEND)
         disableGlCap(GL_TEXTURE_2D, GL_DEPTH_TEST)
         glDepthMask(false)
-        val x = (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks
-                - renderManager.renderPosX)
-        val y = (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks
-                - renderManager.renderPosY)
-        val z = (entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks
-                - renderManager.renderPosZ)
+
+        val (x, y, z) = entity.interpolatedPosition(entity.lastTickPos) - mc.renderManager.renderPos
         val entityBox = entity.hitBox
+
         val axisAlignedBB = AxisAlignedBB.fromBounds(
             entityBox.minX - entity.posX + x - 0.05,
             entityBox.minY - entity.posY + y,
@@ -188,12 +182,14 @@ object RenderUtils : MinecraftInstance() {
             entityBox.maxY - entity.posY + y + 0.15,
             entityBox.maxZ - entity.posZ + z + 0.05
         )
+
         if (outline) {
             glLineWidth(1f)
             enableGlCap(GL_LINE_SMOOTH)
             glColor(color.red, color.green, color.blue, 95)
             drawSelectionBoundingBox(axisAlignedBB)
         }
+
         glColor(color.red, color.green, color.blue, if (outline) 26 else 35)
         drawFilledBox(axisAlignedBB)
         resetColor()
@@ -202,26 +198,29 @@ object RenderUtils : MinecraftInstance() {
     }
 
     fun drawPosBox(x: Double, y: Double, z: Double, width: Float, height: Float, color: Color, outline: Boolean) {
-        val renderManager = mc.renderManager
-        val adjustedX = x - renderManager.renderPosX
-        val adjustedY = y - renderManager.renderPosY
-        val adjustedZ = z - renderManager.renderPosZ
+        val (adjustedX, adjustedY, adjustedZ) = Vec3(x, y, z) - mc.renderManager.renderPos
+
         val axisAlignedBB = AxisAlignedBB.fromBounds(
             adjustedX - width / 2, adjustedY, adjustedZ - width / 2,
             adjustedX + width / 2, adjustedY + height, adjustedZ + width / 2
         )
+
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         enableGlCap(GL_BLEND)
         disableGlCap(GL_TEXTURE_2D, GL_DEPTH_TEST)
+
         glDepthMask(false)
+
         if (outline) {
             glLineWidth(1f)
             enableGlCap(GL_LINE_SMOOTH)
             glColor(color.red, color.green, color.blue, 95)
             drawSelectionBoundingBox(axisAlignedBB)
         }
+
         glColor(color.red, color.green, color.blue, if (outline) 26 else 35)
         drawFilledBox(axisAlignedBB)
+
         resetColor()
         glDepthMask(true)
         resetCaps()
@@ -260,11 +259,9 @@ object RenderUtils : MinecraftInstance() {
     }
 
     fun drawPlatform(y: Double, color: Color, size: Double) {
-        val renderManager = mc.renderManager
-        val renderY = y - renderManager.renderPosY
+        val renderY = y - mc.renderManager.renderPosY
         drawAxisAlignedBB(AxisAlignedBB.fromBounds(size, renderY + 0.02, size, -size, renderY, -size), color)
     }
-    
 
     fun drawPlatformESP(entity: Entity, color: Color) {
         val renderManager = mc.renderManager
@@ -288,14 +285,9 @@ object RenderUtils : MinecraftInstance() {
     }
 
     fun drawPlatform(entity: Entity, color: Color) {
-        val renderManager = mc.renderManager
-        val timer = mc.timer
-        val x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * timer.renderPartialTicks - renderManager.renderPosX
-        val y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * timer.renderPartialTicks - renderManager.renderPosY
-        val z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * timer.renderPartialTicks - renderManager.renderPosZ
-        val axisAlignedBB = entity.entityBoundingBox
-            .offset(-entity.posX, -entity.posY, -entity.posZ)
-            .offset(x, y, z)
+        val (x, y, z) = entity.interpolatedPosition(entity.lastTickPos) - mc.renderManager.renderPos
+        val axisAlignedBB = entity.entityBoundingBox.offset(-entity.posX, -entity.posY, -entity.posZ).offset(x, y, z)
+
         drawAxisAlignedBB(
             AxisAlignedBB.fromBounds(
                 axisAlignedBB.minX,
@@ -835,9 +827,32 @@ object RenderUtils : MinecraftInstance() {
         glDisable(GL_LINE_SMOOTH)
     }
 
-    fun drawRoundedBorderRect(x: Float, y: Float, x2: Float, y2: Float, width: Float, color1: Int, color2: Int, radius: Float) {
+    fun drawRoundedBorderRect(
+        x: Float,
+        y: Float,
+        x2: Float,
+        y2: Float,
+        width: Float,
+        color1: Int,
+        color2: Int,
+        radius: Float
+    ) {
         drawRoundedRect(x, y, x2, y2, color1, radius)
         drawRoundedBorder(x, y, x2, y2, width, color2, radius)
+    }
+
+    fun drawRoundedBorderRectInt(
+        x: Int,
+        y: Int,
+        x2: Int,
+        y2: Int,
+        width: Int,
+        color1: Int,
+        color2: Int,
+        radius: Float
+    ) {
+        drawRoundedRectInt(x, y, x2, y2, color1, radius)
+        drawRoundedBorderInt(x, y, x2, y2, width.toFloat(), color2, radius)
     }
 
     fun drawRectBasedBorder(x: Float, y: Float, x2: Float, y2: Float, width: Float, color1: Int) {
@@ -958,7 +973,15 @@ object RenderUtils : MinecraftInstance() {
         color(1.0f, 1.0f, 1.0f, 1.0f)
     }
 
-    private fun drawRoundedBordered(x1: Float, y1: Float, x2: Float, y2: Float, color: Int, width: Float, radius: Float) {
+    private fun drawRoundedBordered(
+        x1: Float,
+        y1: Float,
+        x2: Float,
+        y2: Float,
+        color: Int,
+        width: Float,
+        radius: Float
+    ) {
         val alpha = (color ushr 24 and 0xFF) / 255.0f
         val red = (color ushr 16 and 0xFF) / 255.0f
         val green = (color ushr 8 and 0xFF) / 255.0f
@@ -995,7 +1018,7 @@ object RenderUtils : MinecraftInstance() {
 
         glEnd()
 
-        glColor4f(0f, 0f, 0f, 1f)
+        resetColor()
 
         glEnable(GL_TEXTURE_2D)
         glDisable(GL_LINE_SMOOTH)
@@ -1996,7 +2019,17 @@ object RenderUtils : MinecraftInstance() {
         drawRoundedRectangle(newX1, newY1, newX2, newY2, red, green, blue, alpha, radius)
     }
 
-    private fun drawRoundedRectangle(x1: Float, y1: Float, x2: Float, y2: Float, red: Float, green: Float, blue: Float, alpha: Float, radius: Float) {
+    private fun drawRoundedRectangle(
+        x1: Float,
+        y1: Float,
+        x2: Float,
+        y2: Float,
+        red: Float,
+        green: Float,
+        blue: Float,
+        alpha: Float,
+        radius: Float
+    ) {
         val (newX1, newY1, newX2, newY2) = orderPoints(x1, y1, x2, y2)
 
         glPushMatrix()
@@ -2029,7 +2062,7 @@ object RenderUtils : MinecraftInstance() {
 
         glEnd()
 
-        glColor4f(0f, 0f, 0f, 1f)
+        resetColor()
 
         glEnable(GL_TEXTURE_2D)
         glDisable(GL_LINE_SMOOTH)
@@ -2237,12 +2270,10 @@ object RenderUtils : MinecraftInstance() {
 
     fun draw2D(blockPos: BlockPos, color: Int, backgroundColor: Int) {
         val renderManager = mc.renderManager
-        val posX = blockPos.x + 0.5 - renderManager.renderPosX
-        val posY = blockPos.y - renderManager.renderPosY
-        val posZ = blockPos.z + 0.5 - renderManager.renderPosZ
+        val (x, y, z) = blockPos.getVec().offset(EnumFacing.DOWN, 0.5) - renderManager.renderPos
         glPushMatrix()
-        glTranslated(posX, posY, posZ)
-        glRotated(-mc.renderManager.playerViewY.toDouble(), 0.0, 1.0, 0.0)
+        glTranslated(x, y, z)
+        glRotated(-renderManager.playerViewY.toDouble(), 0.0, 1.0, 0.0)
         glScaled(-0.1, -0.1, 0.1)
         glDisable(GL_DEPTH_TEST)
         glEnable(GL_BLEND)

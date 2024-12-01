@@ -40,7 +40,6 @@ import net.minecraft.network.handshake.client.C00Handshake
 import net.minecraft.network.play.server.*
 import net.minecraft.network.status.client.C00PacketServerQuery
 import net.minecraft.network.status.server.S01PacketPong
-import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import net.minecraft.world.WorldSettings
 import org.lwjgl.opengl.GL11.*
@@ -339,6 +338,8 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
+        val manager = mc.renderManager ?: return
+
         when (mode.lowercase()) {
             "legacy" -> {
                 val color = Color.RED
@@ -357,12 +358,8 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                         glBegin(GL_LINE_STRIP)
                         glColor(color)
 
-                        val renderPosX = mc.renderManager.viewerPosX
-                        val renderPosY = mc.renderManager.viewerPosY
-                        val renderPosZ = mc.renderManager.viewerPosZ
-
                         loopThroughBacktrackData(entity) {
-                            glVertex3d(entity.posX - renderPosX, entity.posY - renderPosY, entity.posZ - renderPosZ)
+                            (entity.currPos - manager.renderPos).let { glVertex3d(it.xCoord, it.yCoord, it.zCoord) }
                             false
                         }
 
@@ -381,105 +378,72 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                 if (!shouldBacktrack() || !shouldRender)
                     return
 
-                val renderManager = mc.renderManager
+                target?.run {
+                    val targetEntity = target as IMixinEntity
 
-                when (espMode.lowercase()) {
-                    "box" -> target?.run {
-                        val targetEntity = target as IMixinEntity
+                    val (x, y, z) = targetEntity.interpolatedPosition - manager.renderPos
 
-                        if (targetEntity.truePos) {
-                            val (x, y, z) = targetEntity.interpolatedPosition - Vec3(
-                                renderManager.renderPosX,
-                                renderManager.renderPosY,
-                                renderManager.renderPosZ
-                            )
+                    if (targetEntity.truePos) {
+                        when (espMode.lowercase()) {
+                            "box" -> {
+                                val axisAlignedBB = entityBoundingBox.offset(-posX, -posY, -posZ).offset(x, y, z)
 
-                            val axisAlignedBB = entityBoundingBox.offset(-posX, -posY, -posZ).offset(x, y, z)
+                                drawBacktrackBox(axisAlignedBB, color)
+                            }
 
-                            drawBacktrackBox(
-                                AxisAlignedBB.fromBounds(
-                                    axisAlignedBB.minX,
-                                    axisAlignedBB.minY,
-                                    axisAlignedBB.minZ,
-                                    axisAlignedBB.maxX,
-                                    axisAlignedBB.maxY,
-                                    axisAlignedBB.maxZ
-                                ), color
-                            )
-                        }
-                    }
+                            "model" -> {
+                                glPushMatrix()
+                                glPushAttrib(GL_ALL_ATTRIB_BITS)
+                                color(0.6f, 0.6f, 0.6f, 1f)
+                                manager.doRenderEntity(
+                                    this,
+                                    x, y, z,
+                                    prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
+                                    event.partialTicks,
+                                    true
+                                )
 
-                    "model" -> target?.run {
-                        val targetEntity = target as IMixinEntity
+                                glPopAttrib()
+                                glPopMatrix()
+                            }
 
-                        if (targetEntity.truePos) {
-                            val (x, y, z) = targetEntity.interpolatedPosition - Vec3(
-                                renderManager.renderPosX,
-                                renderManager.renderPosY,
-                                renderManager.renderPosZ
-                            )
+                            "wireframe" -> {
+                                val color = if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
 
-                            glPushMatrix()
-                            glPushAttrib(GL_ALL_ATTRIB_BITS)
-                            color(0.6f, 0.6f, 0.6f, 1f)
-                            renderManager.doRenderEntity(
-                                this,
-                                x, y, z,
-                                prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
-                                event.partialTicks,
-                                true
-                            )
+                                glPushMatrix()
+                                glPushAttrib(GL_ALL_ATTRIB_BITS)
 
-                            glPopAttrib()
-                            glPopMatrix()
-                        }
-                    }
+                                glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+                                glDisable(GL_TEXTURE_2D)
+                                glDisable(GL_LIGHTING)
+                                glDisable(GL_DEPTH_TEST)
+                                glEnable(GL_LINE_SMOOTH)
 
-                    "wireframe" -> target?.run {
-                        val color = if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
+                                glEnable(GL_BLEND)
+                                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-                        val targetEntity = target as IMixinEntity
+                                glLineWidth(wireframeWidth)
 
-                        if (targetEntity.truePos) {
-                            val (x, y, z) = targetEntity.interpolatedPosition - Vec3(
-                                renderManager.renderPosX,
-                                renderManager.renderPosY,
-                                renderManager.renderPosZ
-                            )
+                                glColor(color)
+                                manager.doRenderEntity(
+                                    this,
+                                    x, y, z,
+                                    prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
+                                    event.partialTicks,
+                                    true
+                                )
+                                glColor(color)
+                                manager.doRenderEntity(
+                                    this,
+                                    x, y, z,
+                                    prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
+                                    event.partialTicks,
+                                    true
+                                )
 
-                            glPushMatrix()
-                            glPushAttrib(GL_ALL_ATTRIB_BITS)
-
-                            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-                            glDisable(GL_TEXTURE_2D)
-                            glDisable(GL_LIGHTING)
-                            glDisable(GL_DEPTH_TEST)
-                            glEnable(GL_LINE_SMOOTH)
-
-                            glEnable(GL_BLEND)
-                            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-                            glLineWidth(wireframeWidth)
-
-                            glColor(color)
-                            renderManager.doRenderEntity(
-                                this,
-                                x, y, z,
-                                prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
-                                event.partialTicks,
-                                true
-                            )
-                            glColor(color)
-                            renderManager.doRenderEntity(
-                                this,
-                                x, y, z,
-                                prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
-                                event.partialTicks,
-                                true
-                            )
-
-                            glPopAttrib()
-                            glPopMatrix()
+                                glPopAttrib()
+                                glPopMatrix()
+                            }
                         }
                     }
                 }

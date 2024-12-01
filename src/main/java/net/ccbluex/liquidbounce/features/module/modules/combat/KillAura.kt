@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
+import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
 import net.ccbluex.liquidbounce.features.module.modules.other.Fucker
 import net.ccbluex.liquidbounce.features.module.modules.other.Nuker
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.*
@@ -38,11 +39,16 @@ import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.utils.inventory.ItemUtils.isConsumingItem
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
+import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomClickDelay
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiContainer
+import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityArmorStand
@@ -54,6 +60,7 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.RELEASE_USE_ITEM
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.potion.Potion
+import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.MovingObjectPosition
@@ -61,6 +68,7 @@ import net.minecraft.util.Vec3
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.max
+import kotlin.math.roundToInt
 
 object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule = false) {
     /**
@@ -139,8 +147,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     // Settings
     private val autoF5 by boolean("AutoF5", false, subjective = true)
     private val onSwording by boolean("OnSwording", true)
-    private val onDestroyBlock by boolean("OnDestroyBlock", false)
     private val onScaffold by boolean("OnScaffold", false)
+    private val onDestroyBlock by boolean("OnDestroyBlock", false)
     private val noScaffold by boolean("NoScaffold", false)
     private val noFly by boolean("NoFly", false)
     private val noEat by boolean("NoEat", false)
@@ -285,10 +293,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
 
     // Extra swing
     private val failSwing by boolean("FailSwing", true) { swing && options.rotationsActive }
-    private val respectMissCooldown by boolean(
-        "RespectMissCooldown",
-        false
-    ) { swing && failSwing && options.rotationsActive }
+    private val respectMissCooldown by boolean("RespectMissCooldown", false)
+    { swing && failSwing && options.rotationsActive }
     private val swingOnlyInAir by boolean("SwingOnlyInAir", true) { swing && failSwing && options.rotationsActive }
     private val maxRotationDifferenceToSwing by float("MaxRotationDifferenceToSwing", 180f, 0f..180f)
     { swing && failSwing && options.rotationsActive }
@@ -298,6 +304,9 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     }
     private val ticksLateToSwing by int("TicksLateToSwing", 4, 0..20)
     { swing && failSwing && swingWhenTicksLate.isActive() && options.rotationsActive }
+    private val renderBoxOnSwingFail by boolean("RenderBoxOnSwingFail", false) { failSwing }
+    private val renderBoxColor = ColorSettingsInteger(this, "RenderBoxColor") { renderBoxOnSwingFail }.with(0, 255, 255)
+    private val renderBoxFadeSeconds by float("RenderBoxFadeSeconds", 1f, 0f..5f) { renderBoxOnSwingFail }
 
     // Inventory
     private val simulateClosingInventory by boolean("SimulateClosingInventory", false) { !noInventoryAttack }
@@ -341,8 +350,12 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     // Blink AutoBlock
     private var blinked = false
 
+    // Swing fails
+    private val swingFails = mutableListOf<SwingFailData>()
+
     // text
     private val textElement = Text()
+
     /**
      * Disable kill aura module
      */
@@ -363,6 +376,10 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
             mc.gameSettings.thirdPersonView = 0
 
         stopBlocking(true)
+
+        synchronized(swingFails) {
+            swingFails.clear()
+        }
     }
 
     @EventTarget
@@ -389,6 +406,10 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
 
         if (blinkAutoBlock && BlinkUtils.isBlinking)
             BlinkUtils.unblink()
+
+        synchronized(swingFails) {
+            swingFails.clear()
+        }
     }
 
     /**
@@ -490,6 +511,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
      */
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
+        handleFailedSwings()
+
         if (cancelRun) {
             target = null
             hittable = false
@@ -551,8 +574,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private fun runAttack(isFirstClick: Boolean, isLastClick: Boolean) {
         var currentTarget = this.target ?: return
 
-        val thePlayer = mc.thePlayer ?: return
-        val theWorld = mc.theWorld ?: return
+        val player = mc.thePlayer ?: return
+        val world = mc.theWorld ?: return
 
         if (noConsumeAttack == "NoHits" && isConsumingItem()) {
             return
@@ -573,7 +596,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         // Check if enemy is not hittable
         if (!hittable && options.rotationsActive) {
             if (swing && failSwing) {
-                val rotation = currentRotation ?: thePlayer.rotation
+                val rotation = currentRotation ?: player.rotation
 
                 // Can humans keep click consistency when performing massive rotation changes?
                 // (10-30 rotation difference/doing large mouse movements for example)
@@ -625,6 +648,15 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
                         } else {
                             // Imitate game click
                             mc.clickMouse()
+
+                            if (renderBoxOnSwingFail) {
+                                synchronized(swingFails) {
+                                    val centerDistance = (currentTarget.hitBox.center - player.eyes).lengthVector()
+                                    val spot = player.eyes + getVectorForRotation(rotation) * centerDistance
+
+                                    swingFails += SwingFailData(spot, System.currentTimeMillis())
+                                }
+                            }
                         }
                     }
 
@@ -668,8 +700,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         } else {
             var targets = 0
 
-            for (entity in theWorld.loadedEntityList) {
-                val distance = thePlayer.getDistanceToEntityBox(entity)
+            for (entity in world.loadedEntityList) {
+                val distance = player.getDistanceToEntityBox(entity)
 
                 if (entity is EntityLivingBase && isEnemy(entity) && distance <= getRange(entity)) {
                     attackEntity(entity, isLastClick)
@@ -1166,6 +1198,34 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         else -> false
     }
 
+    private fun handleFailedSwings() {
+        if (!renderBoxOnSwingFail)
+            return
+
+        val box = AxisAlignedBB(0.0, 0.0, 0.0, 0.05, 0.05, 0.05)
+
+        synchronized(swingFails) {
+            val fadeSeconds = renderBoxFadeSeconds * 1000L
+            val colorSettings = renderBoxColor
+
+            val renderManager = mc.renderManager
+
+            swingFails.removeAll {
+                val timestamp = System.currentTimeMillis() - it.startTime
+                val transparency = (0f..255f).lerpWith(1 - (timestamp / fadeSeconds).coerceAtMost(1.0F))
+
+                val (posX, posY, posZ) = it.vec3
+                val (x, y, z) = it.vec3 - renderManager.renderPos
+
+                val offsetBox = box.offset(posX, posY, posZ).offset(-posX, -posY, -posZ).offset(x, y, z)
+
+                RenderUtils.drawAxisAlignedBB(offsetBox, colorSettings.color(a = transparency.roundToInt()))
+
+                timestamp > fadeSeconds
+            }
+        }
+    }
+
     /**
      * Check if run should be cancelled
      */
@@ -1193,6 +1253,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private fun isBlockingDisallowed(): Boolean {
         return noBlocking && mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item is ItemBlock
     }
+
     /**
      * Check if [entity] is alive
      */
@@ -1248,3 +1309,5 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     val isBlockingChestAura
         get() = handleEvents() && target != null
 }
+
+data class SwingFailData(val vec3: Vec3, val startTime: Long)

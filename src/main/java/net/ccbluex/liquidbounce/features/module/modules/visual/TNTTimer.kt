@@ -7,14 +7,21 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
+import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
+import net.ccbluex.liquidbounce.utils.extensions.lastTickPos
+import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
-import net.ccbluex.liquidbounce.value.*
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.float
+import net.ccbluex.liquidbounce.value.font
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.entity.item.EntityTNTPrimed
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.pow
@@ -48,7 +55,7 @@ object TNTTimer : Module("TNTTimer", Category.VISUAL, spacedName = "TNT Timer", 
         val player = mc.thePlayer ?: return
         val world = mc.theWorld ?: return
 
-        for (entity in world.loadedEntityList.filterNotNull()) {
+        for (entity in world.loadedEntityList) {
             if (entity is EntityTNTPrimed && player.getDistanceSqToEntity(entity) <= maxRenderDistanceSq) {
                 val explosionTime = entity.fuse / 5
 
@@ -61,18 +68,17 @@ object TNTTimer : Module("TNTTimer", Category.VISUAL, spacedName = "TNT Timer", 
 
     private fun renderTNTTimer(tnt: EntityTNTPrimed, timeRemaining: Int) {
         val thePlayer = mc.thePlayer ?: return
+
         val renderManager = mc.renderManager
         val rotateX = if (mc.gameSettings.thirdPersonView == 2) -1.0f else 1.0f
 
         glPushAttrib(GL_ENABLE_BIT)
         glPushMatrix()
 
+        val (x, y, z) = tnt.interpolatedPosition(tnt.lastTickPos) - renderManager.renderPos
+
         // Translate to TNT position
-        glTranslated(
-            tnt.lastTickPosX + (tnt.posX - tnt.lastTickPosX) - renderManager.renderPosX,
-            tnt.lastTickPosY + (tnt.posY - tnt.lastTickPosY) - renderManager.renderPosY + 1.5,
-            tnt.lastTickPosZ + (tnt.posZ - tnt.lastTickPosZ) - renderManager.renderPosZ
-        )
+        glTranslated(x, y + 1.5f, z)
 
         glRotatef(-renderManager.playerViewY, 0F, 1F, 0F)
         glRotatef(renderManager.playerViewX * rotateX, 1F, 0F, 0F)

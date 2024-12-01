@@ -15,6 +15,10 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
+import net.ccbluex.liquidbounce.utils.extensions.lastTickPos
+import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.extensions.renderPos
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
@@ -137,16 +141,8 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
         glPushAttrib(GL_ENABLE_BIT)
         glPushMatrix()
 
-        val partialTicks = mc.timer.renderPartialTicks
-        val interpolatedPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTicks
-        val interpolatedPosY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTicks + 1F
-        val interpolatedPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTicks
-
-        glTranslated(
-            interpolatedPosX - renderManager.renderPosX,
-            interpolatedPosY - renderManager.renderPosY,
-            interpolatedPosZ - renderManager.renderPosZ
-        )
+        val (x, y, z) = entity.interpolatedPosition(entity.lastTickPos) - renderManager.renderPos
+        glTranslated(x, y, z)
 
         glRotatef(-renderManager.playerViewY, 0F, 1F, 0F)
         glRotatef(renderManager.playerViewX * rotateX, 1F, 0F, 0F)

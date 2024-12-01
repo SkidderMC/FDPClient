@@ -356,12 +356,9 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
             glPushAttrib(GL_ENABLE_BIT)
             glPushMatrix()
 
+            val (x, y, z) = pos.getVec() - renderManager.renderPos
             // Translate to block position
-            glTranslated(
-                pos.x + 0.5 - renderManager.renderPosX,
-                pos.y + 0.5 - renderManager.renderPosY,
-                pos.z + 0.5 - renderManager.renderPosZ
-            )
+            glTranslated(x, y, z)
 
             glRotatef(-renderManager.playerViewY, 0F, 1F, 0F)
             glRotatef(renderManager.playerViewX, 1F, 0F, 0F)

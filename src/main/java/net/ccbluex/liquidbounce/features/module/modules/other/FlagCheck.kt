@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPosBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
+import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.GuiGameOver
 import net.minecraft.init.Blocks
@@ -280,12 +281,10 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
         glPushAttrib(GL_ENABLE_BIT)
         glPushMatrix()
 
+        val (x, y, z) = pos - renderManager.renderPos
+
         // Translate to block position
-        glTranslated(
-            pos.xCoord - renderManager.renderPosX,
-            pos.yCoord + 2.5 - renderManager.renderPosY,
-            pos.zCoord - renderManager.renderPosZ
-        )
+        glTranslated(x, y + 2.5, z)
 
         glRotatef(-renderManager.playerViewY, 0F, 1F, 0F)
         glRotatef(renderManager.playerViewX, 1F, 0F, 0F)

@@ -19,6 +19,8 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
+import net.ccbluex.liquidbounce.utils.extensions.minus
+import net.ccbluex.liquidbounce.utils.extensions.renderPos
 import net.ccbluex.liquidbounce.value.choices
 import net.ccbluex.liquidbounce.value.int
 import net.minecraft.block.material.Material
@@ -326,11 +328,7 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
             worldRenderer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION)
 
             for ((_, pos, alpha) in positions) {
-                val interpolatePos = Vec3(
-                    pos.xCoord - renderManager.renderPosX,
-                    pos.yCoord - renderManager.renderPosY,
-                    pos.zCoord - renderManager.renderPosZ
-                )
+                val interpolatePos = pos - renderManager.renderPos
 
                 val color = when (entity) {
                     is EntityArrow -> Color(255, 0, 0)

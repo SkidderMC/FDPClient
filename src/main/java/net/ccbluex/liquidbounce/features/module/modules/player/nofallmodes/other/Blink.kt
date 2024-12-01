@@ -20,6 +20,8 @@ import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
 import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.ccbluex.liquidbounce.utils.SimulatedPlayer
 import net.ccbluex.liquidbounce.utils.chat
+import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.extensions.renderPos
 import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBacktrackBox
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
@@ -135,26 +137,11 @@ object Blink : NoFallMode("Blink") {
             val targetEntity = thePlayer as IMixinEntity
 
             if (targetEntity.truePos) {
-
-                val x =
-                    simPlayer.posX - mc.renderManager.renderPosX
-                val y =
-                    simPlayer.posY - mc.renderManager.renderPosY
-                val z =
-                    simPlayer.posZ - mc.renderManager.renderPosZ
+                val (x, y, z) = simPlayer.pos.minus(mc.renderManager.renderPos)
 
                 val axisAlignedBB = entityBoundingBox.offset(-posX, -posY, -posZ).offset(x, y, z)
 
-                drawBacktrackBox(
-                    AxisAlignedBB.fromBounds(
-                        axisAlignedBB.minX,
-                        axisAlignedBB.minY,
-                        axisAlignedBB.minZ,
-                        axisAlignedBB.maxX,
-                        axisAlignedBB.maxY,
-                        axisAlignedBB.maxZ
-                    ), Color.BLUE
-                )
+                drawBacktrackBox(axisAlignedBB, Color.BLUE)
             }
         }
     }

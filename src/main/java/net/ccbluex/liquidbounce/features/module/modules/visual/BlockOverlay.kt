@@ -13,8 +13,10 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.canBeClicked
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
+import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
+import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorderedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawFilledBox
@@ -58,7 +60,6 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
         val blockPos = currentBlock ?: return
 
         val block = getBlock(blockPos) ?: return
-        val partialTicks = event.partialTicks
 
         val color = if (colorRainbow) rainbow(alpha = 0.4F) else Color(
             colorRed,
@@ -79,13 +80,11 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
 
         val thePlayer = mc.thePlayer ?: return
 
-        val x = thePlayer.lastTickPosX + (thePlayer.posX - thePlayer.lastTickPosX) * partialTicks
-        val y = thePlayer.lastTickPosY + (thePlayer.posY - thePlayer.lastTickPosY) * partialTicks
-        val z = thePlayer.lastTickPosZ + (thePlayer.posZ - thePlayer.lastTickPosZ) * partialTicks
+        val (x, y, z) = thePlayer.interpolatedPosition(thePlayer.lastTickPos)
 
-        val axisAlignedBB = block.getSelectedBoundingBox(mc.theWorld, blockPos)
-            .expand(0.0020000000949949026, 0.0020000000949949026, 0.0020000000949949026)
-            .offset(-x, -y, -z)
+        val f = 0.002F.toDouble()
+
+        val axisAlignedBB = block.getSelectedBoundingBox(mc.theWorld, blockPos).expand(f, f, f).offset(-x, -y, -z)
 
         when (mode.lowercase()) {
             "box" -> {
