@@ -98,19 +98,18 @@ object Step : Module("Step", Category.MOVEMENT, gameDetecting = false, hideModul
                     }
 
                     fakeJump()
-                    thePlayer.tryJump()
+                    thePlayer.motionY = 0.4
 
                     // TODO: Improve Timer Balancing
-                    mc.timer.timerSpeed = 6f
+                    mc.timer.timerSpeed = 5f
                     WaitTickUtils.schedule(1) {
-                        mc.timer.timerSpeed = 0.18f
+                        mc.timer.timerSpeed = 0.2f
                     }
                     WaitTickUtils.schedule(2) {
-                        strafe(0.27F)
-                        mc.timer.timerSpeed = 5f
+                        mc.timer.timerSpeed = 4f
                     }
                     WaitTickUtils.schedule(3) {
-                        thePlayer.motionY = -thePlayer.motionY
+                        strafe(0.27F)
                         mc.timer.timerSpeed = 1f
                     }
                 }

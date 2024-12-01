@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.canClickInvento
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.hasScheduledInLastLoop
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.float
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.GuiIngameMenu
 import net.minecraft.client.gui.inventory.GuiChest
@@ -54,6 +55,8 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
     private val reopenOnClick by boolean("ReopenOnClick", false)
     { silentlyCloseAndReopen && noMove && (noMoveAir || noMoveGround) }
 
+    private val inventoryMotion by float("InventoryMotion", 1F, 0F..2F)
+
     private val affectedBindings = arrayOf(
         mc.gameSettings.keyBindForward,
         mc.gameSettings.keyBindBack,
@@ -65,6 +68,7 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
+        val player = mc.thePlayer ?: return
         val screen = mc.currentScreen
 
         // Don't make player move when chat or ESC menu are open
@@ -77,6 +81,11 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
         if (notInChests && screen is GuiChest)
             return
 
+        if (screen is GuiInventory || screen is GuiChest) {
+            player.motionX *= inventoryMotion
+            player.motionZ *= inventoryMotion
+        }
+
         if (!fullMovements && (screen is GuiChat || screen is GuiIngameMenu)) return
 
         if (silentlyCloseAndReopen && screen is GuiInventory) {
@@ -86,7 +95,7 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
 
         for (affectedBinding in affectedBindings)
             affectedBinding.pressed = isButtonPressed(affectedBinding)
-                    || (affectedBinding == mc.gameSettings.keyBindSprint && Sprint.handleEvents() && Sprint.mode == "Legit" && (!Sprint.onlyOnSprintPress || mc.thePlayer.isSprinting))
+                    || (affectedBinding == mc.gameSettings.keyBindSprint && handleEvents() && Sprint.mode == "Legit" && (!Sprint.onlyOnSprintPress || mc.thePlayer.isSprinting))
     }
 
     private fun updateKeyState() {
@@ -163,5 +172,9 @@ object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = fals
     }
 
     override val tag
-        get() = if (aacAdditionPro) "AACAdditionPro" else null
+        get() = when {
+            aacAdditionPro -> "AACAdditionPro"
+            inventoryMotion != 1F -> inventoryMotion.toString()
+            else -> null
+        }
 }
