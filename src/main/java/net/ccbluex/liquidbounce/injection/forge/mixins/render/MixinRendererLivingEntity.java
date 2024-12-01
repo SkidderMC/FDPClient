@@ -303,7 +303,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
 
             if (semiVisible) {
                 pushMatrix();
-                color(1f, 1f, 1f, 0.15F);
+                color(1f, 1f, 1f, 0.3F);
                 depthMask(false);
                 glEnable(GL_BLEND);
                 blendFunc(770, 771);
