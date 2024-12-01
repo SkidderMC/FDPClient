@@ -98,7 +98,7 @@ object Step : Module("Step", Category.MOVEMENT, gameDetecting = false, hideModul
                     }
 
                     fakeJump()
-                    thePlayer.motionY = 0.4
+                    thePlayer.tryJump()
 
                     // TODO: Improve Timer Balancing
                     mc.timer.timerSpeed = 5f
