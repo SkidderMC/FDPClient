@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.SessionEvent
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.login.UserUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils.get
 import org.apache.http.HttpHeaders
@@ -74,8 +75,6 @@ object CapeService : Listenable, MinecraftInstance() {
     private val lastUpdate = AtomicLong(0L)
     private var refreshJob: Job? = null
 
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-
     /**
      * Refresh cape carriers, capture from the API.
      * It will take a list of (uuid, cape_name) tuples.
@@ -84,7 +83,7 @@ object CapeService : Listenable, MinecraftInstance() {
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastUpdate.get() > REFRESH_DELAY || force) {
             if (refreshJob?.isActive != true) {
-                refreshJob = scope.launch {
+                refreshJob = SharedScopes.IO.launch {
                     runCatching {
                         // Capture data from API and parse JSON
                         val (json, code) = get(CAPE_CARRIERS_URL)
@@ -144,7 +143,7 @@ object CapeService : Listenable, MinecraftInstance() {
             BasicHeader(HttpHeaders.AUTHORIZATION, token)
         )
 
-        scope.launch {
+        SharedScopes.IO.launch {
             runCatching {
                 val request = HttpGet(SELF_CAPE_URL)
                 request.setHeaders(headers)
@@ -181,7 +180,7 @@ object CapeService : Listenable, MinecraftInstance() {
     fun toggleCapeState(done: (Boolean, Boolean, Int) -> Unit) {
         val capeUser = clientCapeUser ?: return
 
-        scope.launch {
+        SharedScopes.IO.launch {
             runCatching {
                 val httpClient = HttpClients.createDefault()
                 val headers = arrayOf(
@@ -222,7 +221,7 @@ object CapeService : Listenable, MinecraftInstance() {
         if (!UserUtils.isValidTokenOffline(mc.session.token))
             return
 
-        scope.launch {
+        SharedScopes.IO.launch {
             runCatching {
                 // Apply cape to new account
                 val uuid = mc.session.playerID
@@ -259,6 +258,8 @@ object CapeService : Listenable, MinecraftInstance() {
             }
         }
     }
+
+
 
 }
 

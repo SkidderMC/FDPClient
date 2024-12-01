@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils.misc
 
@@ -15,13 +15,6 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 
-/**
- * LiquidBounce Hacked Client
- * A minecraft forge injection client using Mixin
- *
- * @game Minecraft
- * @author CCBlueX
- */
 object HttpUtils {
 
     private const val DEFAULT_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:25.0) Gecko/20100101 Firefox/25.0"
@@ -51,7 +44,7 @@ object HttpUtils {
 
     @Throws(IOException::class)
     fun request(url: String, method: String, agent: String = DEFAULT_AGENT, headers: Array<Pair<String, String>> = emptyArray()) =
-        requestStream(url, method, agent, headers).let { (stream, code) -> stream.reader().readText() to code }
+        requestStream(url, method, agent, headers).let { (stream, code) -> stream.bufferedReader().readText() to code }
 
     fun post(url: String, agent: String = DEFAULT_AGENT, headers: Array<Pair<String, String>> = emptyArray(), entity: () -> HttpEntity): String {
         val httpClient = HttpClientBuilder
@@ -67,7 +60,7 @@ object HttpUtils {
         }
 
         val response = httpClient.execute(httpPost)
-        return response.entity.content.reader().readText()
+        return response.entity.content.bufferedReader().readText()
     }
 
     @Throws(IOException::class)

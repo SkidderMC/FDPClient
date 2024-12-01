@@ -29,6 +29,7 @@ import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolat
 import net.ccbluex.liquidbounce.utils.ClientUtils
 import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.utils.SettingsUtils
+import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
@@ -71,7 +72,7 @@ object ClickGui : GuiScreen() {
         for (category in Category.values()) {
             panels += object : Panel(category.displayName, 100, yPos, width, height, false) {
                 override val elements = moduleManager.modules.mapNotNull {
-                    it.takeIf { module -> module.category == category }?.let { ModuleElement(it) }
+                    it.takeIf { module -> module.category == category }?.let(::ModuleElement)
                 }
             }
 
@@ -92,10 +93,10 @@ object ClickGui : GuiScreen() {
              * Auto settings list
              */
             override val elements = runBlocking {
-                async(Dispatchers.IO) {
+                SharedScopes.IO.async {
                     autoSettingsList?.map { setting ->
                         ButtonElement(setting.name, { Integer.MAX_VALUE }) {
-                            GlobalScope.launch {
+                            launch {
                                 try {
                                     chat("Loading settings...")
 

@@ -9,6 +9,7 @@ import com.google.gson.JsonParser
 import kotlinx.coroutines.*
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.inventory.ItemUtils
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils.get
 import net.minecraft.creativetab.CreativeTabs
@@ -28,7 +29,7 @@ class HeadsTab : CreativeTabs("Heads") {
         backgroundImageName = "item_search.png"
 
         // Launch the coroutine to load heads asynchronously
-        GlobalScope.launch { loadHeads() }
+        SharedScopes.IO.launch { loadHeads() }
     }
 
     private suspend fun loadHeads() {

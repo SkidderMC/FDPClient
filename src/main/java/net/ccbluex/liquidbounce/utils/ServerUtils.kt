@@ -5,7 +5,9 @@
  */
 package net.ccbluex.liquidbounce.utils
 
+import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.ui.client.gui.GuiMainMenu
+import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.client.gui.GuiMultiplayer
 import net.minecraft.client.multiplayer.GuiConnecting
@@ -30,7 +32,7 @@ object ServerUtils : MinecraftInstance() {
         if (serverData == null) return
 
         if (noGLContext) {
-            Thread {
+            SharedScopes.IO.launch {
                 // Code ported from GuiConnecting.connect
                 // Used in AutoAccount's ReconnectDelay.
                 // You cannot do this in the normal way because of required OpenGL context in current thread.
@@ -55,7 +57,7 @@ object ServerUtils : MinecraftInstance() {
                 networkManager.sendPacket(
                     C00PacketLoginStart(mc.session.profile)
                 )
-            }.start()
+            }
         } else mc.displayGuiScreen(GuiConnecting(GuiMultiplayer(GuiMainMenu()), mc, serverData))
     }
 
