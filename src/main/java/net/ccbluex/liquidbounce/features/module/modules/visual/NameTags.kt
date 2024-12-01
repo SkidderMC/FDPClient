@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.EntityUtils.getHealth
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
-import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.RotationUtils.isEntityHeightVisible
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.extensions.getPing
 import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
@@ -30,6 +30,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.quickDrawBorderedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.quickDrawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
 import net.ccbluex.liquidbounce.value.*
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.entity.Entity
@@ -50,6 +51,7 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
 
     private val typeValue = choices("Mode", arrayOf("3DTag", "2DTag"), "2DTag")
 
+    private val renderSelf by boolean("RenderSelf", false)
     private val health by boolean("Health", true)
     private val healthFromScoreboard by boolean("HealthFromScoreboard", false) { health }
     private val absorption by boolean("Absorption", false) { health || healthBar }
@@ -130,19 +132,34 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
 
         for (entity in mc.theWorld.loadedEntityList) {
             if (entity !is EntityLivingBase) continue
-            if (!isSelected(entity, false)) continue
+            val isRenderingSelf =
+                entity is EntityPlayerSP && (mc.gameSettings.thirdPersonView != 0 || FreeCam.handleEvents())
+            if (!isRenderingSelf || !renderSelf) {
+                if (!isSelected(entity, false)) continue
+            }
+
             if (isBot(entity) && !bot) continue
             if (onLook && !isLookingOnEntities(entity, maxAngleDifference.toDouble())) continue
-            if (!thruBlocks && !RotationUtils.isVisible(Vec3(entity.posX, entity.posY, entity.posZ))) continue
+
+            if (!thruBlocks && !isEntityHeightVisible(entity)) continue
 
             val name = entity.displayName.unformattedText ?: continue
 
             val distanceSquared = mc.thePlayer.getDistanceSqToEntity(entity)
 
+            // In case user has FreeCam enabled, we restore the position back to normal,
+            // so it renders the name-tag at the player's body position instead of the FreeCam position.
+            if (isRenderingSelf) {
+                FreeCam.restoreOriginalPosition()
+            }
+
             if (distanceSquared <= maxRenderDistanceSq) {
                 when (typeValue.get().lowercase(Locale.getDefault())) {
-                    "2dtag" -> renderNameTag2D(entity, if (clearNames) ColorUtils.stripColor(name) else name)
-                    "3dtag" -> renderNameTag3D(entity, if (clearNames) ColorUtils.stripColor(name) else name)
+                    "2dtag" -> renderNameTag2D(entity, isRenderingSelf, if (clearNames) ColorUtils.stripColor(name) else name)
+                    "3dtag" -> renderNameTag3D(entity, isRenderingSelf, if (clearNames) ColorUtils.stripColor(name) else name)
+                }
+                if (isRenderingSelf) {
+                    FreeCam.useModifiedPosition()
                 }
             }
         }
@@ -157,7 +174,7 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
         glColor4f(1F, 1F, 1F, 1F)
     }
 
-    private fun renderNameTag2D(entity: EntityLivingBase, name: String) {
+    private fun renderNameTag2D(entity: EntityLivingBase, isRenderingSelf: Boolean, name: String) {
         var tag = name
         val fontRenderer = mc.fontRendererObj
         var scale = (mc.thePlayer.getDistanceToEntity(entity) / 2.5f).coerceAtLeast(4.0f)
@@ -208,7 +225,7 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
         glPopMatrix()
     }
 
-    private fun renderNameTag3D(entity: EntityLivingBase, name: String) {
+    private fun renderNameTag3D(entity: EntityLivingBase, isRenderingSelf: Boolean, name: String) {
         val thePlayer = mc.thePlayer ?: return
 
         // Set local fontRenderer
@@ -251,7 +268,7 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
         val playerPing = if (entity is EntityPlayer) entity.getPing() else 0
         val playerDistance = thePlayer.getDistanceToEntity(entity)
 
-        val distanceText = if (distance) "§7${playerDistance.roundToInt()} m " else ""
+        val distanceText = if (distance && !isRenderingSelf) "§7${playerDistance.roundToInt()} m " else ""
         val pingText = if (ping && entity is EntityPlayer) "§7[" + (if (playerPing > 200) "§c" else if (playerPing > 100) "§e" else "§a") + playerPing + "ms§7] " else ""
         val healthText = if (health) " " + getHealthString(entity) else ""
         val botText = if (bot) " §c§lBot" else ""

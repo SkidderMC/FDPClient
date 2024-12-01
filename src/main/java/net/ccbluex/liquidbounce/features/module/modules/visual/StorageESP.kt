@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.other.ChestAura.clickedT
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.ClientUtils.disableFastRender
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
-import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.RotationUtils.isEntityHeightVisible
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.extensions.toVec
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
@@ -34,7 +34,6 @@ import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher
 import net.minecraft.entity.item.EntityMinecartChest
 import net.minecraft.tileentity.*
-import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.pow
@@ -143,8 +142,7 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
                     if (onLook && !isLookingOnEntities(tileEntity, maxAngleDifference.toDouble()))
                         continue
 
-                    if (!thruBlocks && !RotationUtils.isVisible(tileEntityPos.toVec()))
-                        continue
+                    if (!thruBlocks && !isEntityHeightVisible(tileEntity)) continue
 
                     when (mode) {
                         "OtherBox", "Box" -> drawBlockBox(tileEntity.pos, color, mode != "OtherBox")
@@ -198,8 +196,7 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
                         if (onLook && !isLookingOnEntities(entity, maxAngleDifference.toDouble()))
                             continue
 
-                        if (!thruBlocks && !RotationUtils.isVisible(Vec3(entity.posX, entity.posY, entity.posZ)))
-                            continue
+                        if (!thruBlocks && !isEntityHeightVisible(entity)) continue
 
                         when (mode) {
                             "OtherBox", "Box" -> drawEntityBox(entity, Color(0, 66, 255), mode != "OtherBox")
@@ -280,7 +277,7 @@ object StorageESP : Module("StorageESP", Category.VISUAL) {
                         if (onLook && !isLookingOnEntities(entity, maxAngleDifference.toDouble()))
                             continue
 
-                        if (!thruBlocks && !RotationUtils.isVisible(pos))
+                        if (!thruBlocks && !isEntityHeightVisible(entity))
                             continue
 
                         val (x, y, z) = pos - renderManager.renderPos

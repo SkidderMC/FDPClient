@@ -14,7 +14,8 @@ import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
-import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.RotationUtils.isEntityHeightVisible
+import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
 import net.ccbluex.liquidbounce.utils.extensions.lastTickPos
 import net.ccbluex.liquidbounce.utils.extensions.*
@@ -84,7 +85,7 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
                 .filterIsInstance<EntityItem>()
                 .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistanceSq }
                 .filter { !onLook || isLookingOnEntities(it, maxAngleDifference.toDouble()) }
-                .filter { thruBlocks || RotationUtils.isVisible(Vec3(it.posX, it.posY, it.posZ)) }
+                .filter { thruBlocks || isEntityHeightVisible(it) }
                 .forEach { entityItem ->
                     val isUseful = InventoryCleaner.handleEvents() && InventoryCleaner.highlightUseful && InventoryCleaner.isStackUseful(
                         entityItem.entityItem,
@@ -114,12 +115,12 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
                 .filterIsInstance<EntityItem>()
                 .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistanceSq }
                 .filter { !onLook || isLookingOnEntities(it, maxAngleDifference.toDouble()) }
-                .filter { thruBlocks || RotationUtils.isVisible(Vec3(it.posX, it.posY, it.posZ)) }
+                .filter { thruBlocks || isEntityHeightVisible(it) }
                 .forEach { entityItem ->
                     val isUseful = InventoryCleaner.handleEvents() && InventoryCleaner.highlightUseful && InventoryCleaner.isStackUseful(
                         entityItem.entityItem,
                         mc.thePlayer.openContainer.inventory,
-                        mc.theWorld.loadedEntityList.filterIsInstance<EntityItem>().associateBy { it.entityItem }
+                        mapOf(entityItem.entityItem to entityItem)
                     )
 
                     GlowShader.startDraw(event.partialTicks, glowRenderScale)

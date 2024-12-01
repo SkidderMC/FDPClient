@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
 import net.ccbluex.liquidbounce.features.module.modules.client.Teams
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
-import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.RotationUtils.isEntityHeightVisible
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
 import net.ccbluex.liquidbounce.utils.extensions.isClientFriend
@@ -85,7 +85,7 @@ object Tracers : Module("Tracers", Category.VISUAL, hideModule = false) {
             if (distanceSquared <= maxRenderDistanceSq) {
                 if (onLook && !isLookingOnEntities(entity, maxAngleDifference.toDouble())) continue
                 if (entity !is EntityLivingBase || !bot && isBot(entity)) continue
-                if (!thruBlocks && !RotationUtils.isVisible(Vec3(entity.posX, entity.posY, entity.posZ))) continue
+                if (!thruBlocks && !isEntityHeightVisible(entity)) continue
 
                 if (entity != thePlayer && isSelected(entity, false)) {
                     val dist = (thePlayer.getDistanceToEntity(entity) * 2).toInt().coerceAtMost(255)

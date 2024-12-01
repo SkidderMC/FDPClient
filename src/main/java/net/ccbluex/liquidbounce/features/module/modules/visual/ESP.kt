@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.ui.font.GameFontRenderer.Companion.getColorIndex
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
-import net.ccbluex.liquidbounce.utils.RotationUtils
+import net.ccbluex.liquidbounce.utils.RotationUtils.isEntityHeightVisible
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.extensions.currPos
 import net.ccbluex.liquidbounce.utils.extensions.isClientFriend
@@ -36,7 +36,6 @@ import net.minecraft.client.renderer.GlStateManager.enableTexture2D
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.util.vector.Vector3f
 import java.awt.Color
@@ -119,8 +118,7 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
                 if (onLook && !isLookingOnEntities(entity, maxAngleDifference.toDouble()))
                     continue
 
-                if (!thruBlocks && !RotationUtils.isVisible(Vec3(entity.posX, entity.posY, entity.posZ)))
-                    continue
+                if (!thruBlocks && !isEntityHeightVisible(entity)) continue
 
                 if (distanceSquared <= maxRenderDistanceSq) {
                     val color = getColor(entity)
@@ -240,7 +238,7 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
             .filterNot { isBot(it) && !bot }
             .filter { isSelected(it, false) }
             .filter { player.getDistanceSqToEntity(it) <= maxDistanceSquared }
-            .filter { thruBlocks || RotationUtils.isVisible(Vec3(it.posX, it.posY, it.posZ)) }
+            .filter { thruBlocks || isEntityHeightVisible(it) }
             .toList()
     }
 

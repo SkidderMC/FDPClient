@@ -107,7 +107,7 @@ object RenderUtils : MinecraftInstance() {
         getBlock(blockPos)?.let { block ->
             val player = mc.thePlayer
 
-            val (x, y, z) = player.interpolatedPosition(player.lastTickPos) - renderManager.renderPos
+            val (x, y, z) = player.interpolatedPosition(player.lastTickPos)
 
             val f = 0.002F.toDouble()
 

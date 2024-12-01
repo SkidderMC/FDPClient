@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.entity.Entity
 import net.minecraft.network.play.client.C03PacketPlayer
+import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.*
 import javax.vecmath.Vector2f
 import kotlin.math.*
@@ -499,6 +500,15 @@ object RotationUtils : MinecraftInstance(), Listenable {
      * Allows you to check if your enemy is behind a wall
      */
     fun isVisible(vec3: Vec3) = mc.theWorld.rayTraceBlocks(mc.thePlayer.eyes, vec3) == null
+
+    fun isEntityHeightVisible(entity: Entity) = arrayOf(
+        entity.hitBox.center.withY(entity.hitBox.maxY),
+        entity.hitBox.center.withY(entity.hitBox.minY)
+    ).any { isVisible(it) }
+    fun isEntityHeightVisible(entity: TileEntity) = arrayOf(
+        entity.renderBoundingBox.center.withY(entity.renderBoundingBox.maxY),
+        entity.renderBoundingBox.center.withY(entity.renderBoundingBox.minY)
+    ).any { isVisible(it) }
 
     /**
      * Set your target rotation
