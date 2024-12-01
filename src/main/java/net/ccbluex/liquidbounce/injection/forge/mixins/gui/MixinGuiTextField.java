@@ -36,7 +36,10 @@ public class MixinGuiTextField {
             float width = 2.5F;
 
             if (instance.isFocused()) {
-                width += 1.5F;
+                // Some cool breathing effects
+                float progress = (System.currentTimeMillis() % 1500L) / (float) 1500L;
+                float breathingValue = 0.5f * (float) (Math.sin(2 * Math.PI * progress) + 1);
+                width = 1f + (4f - 1f) * breathingValue;
             }
 
             RenderUtils.INSTANCE.drawRoundedBorder(this.xPosition, this.yPosition + height, this.xPosition + this.width, this.yPosition + height, width - 0.5F, Color.BLUE.getRGB(), radius - 1F);
