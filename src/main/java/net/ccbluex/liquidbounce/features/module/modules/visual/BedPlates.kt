@@ -175,6 +175,8 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
     }
 
     private fun findAndRenderBed(blockPos: BlockPos, index: Int) {
+        if (index < 0 || index >= bedBlocks.size) return
+
         findBed(blockPos.x.toDouble(), blockPos.y.toDouble(), blockPos.z.toDouble(), index)
         drawPlate(blockPos, index)
     }

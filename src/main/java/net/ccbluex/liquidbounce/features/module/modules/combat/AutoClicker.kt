@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -22,6 +23,7 @@ import net.ccbluex.liquidbounce.value.float
 import net.ccbluex.liquidbounce.value.int
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.EnumAction
 import net.minecraft.item.ItemBlock
 import kotlin.random.Random.Default.nextBoolean
@@ -40,6 +42,8 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) 
 
         override fun isSupported() = !maxCPSValue.isMinimal()
     }
+
+    private val hurtTime by int("HurtTime", 10, 0..10) { left }
 
     private val right by boolean("Right", true)
     private val left by boolean("Left", true)
@@ -65,10 +69,21 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) 
 
     private var shouldJitter = false
 
+    private var target: EntityLivingBase? = null
+
     override fun onDisable() {
         rightLastSwing = 0L
         leftLastSwing = 0L
         lastBlocking = 0L
+        target = null
+    }
+
+    @EventTarget
+    fun onAttack(event: AttackEvent) {
+        if (!left) return
+        val targetEntity = event.targetEntity as EntityLivingBase
+
+        target = targetEntity
     }
 
     @EventTarget
@@ -135,6 +150,8 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) 
     private fun shouldAutoRightClick() = mc.thePlayer.heldItem?.itemUseAction in arrayOf(EnumAction.BLOCK)
 
     private fun handleLeftClick(time: Long, doubleClick: Int) {
+        if (target != null && target!!.hurtTime > hurtTime) return
+
         repeat(1 + doubleClick) {
             KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode)
 
