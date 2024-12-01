@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.utils.ClientUtils.runTimeTicks
 import net.ccbluex.liquidbounce.utils.RotationUtils.angleDifference
 import net.ccbluex.liquidbounce.utils.RotationUtils.lastRotations
@@ -91,7 +92,7 @@ object RotationRecorder : Module("RotationRecorder", Category.OTHER) {
             val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss")
             val formattedDateTime = currentDateTime.format(formatter)
 
-            saveChart("rotations_$formattedDateTime.png", mc.mcDataDir)
+            saveChart("rotations_$formattedDateTime.png", FileManager.dir)
         }
 
         failed = false

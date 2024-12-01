@@ -66,7 +66,7 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
     }
 
     open val minRotationDifferenceValue = FloatValue(
-        "MinRotationDifference", 0f, 0f..1f
+        "MinRotationDifference", 0f, 0f..2f
     ) { rotationsActive && generalApply() }
 
     // Variables for easier access
