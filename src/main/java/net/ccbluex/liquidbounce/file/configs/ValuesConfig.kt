@@ -33,7 +33,6 @@ import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.e
 import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.particles
 import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.stylisedAlts
 import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.unformattedAlts
-import net.ccbluex.liquidbounce.utils.render.shader.shaders.BackgroundShader
 import java.io.*
 
 class ValuesConfig(file: File) : FileConfig(file) {

@@ -21,8 +21,16 @@ import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBacktrackBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.schedulePacketProcess
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.*
+import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
+import net.ccbluex.liquidbounce.value.FloatValue
+import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.value.float
+import net.ccbluex.liquidbounce.value.int
 import net.minecraft.client.renderer.GlStateManager.color
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -39,19 +47,17 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedQueue
 
 object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
     private val nextBacktrackDelay by int("NextBacktrackDelay", 0, 0..2000) { mode == "Modern" }
-    private val delay by object : IntegerValue("Delay", 80, 0..700) {
-        override fun onChange(oldValue: Int, newValue: Int): Int {
-            if (mode == "Modern") {
-                clearPackets()
-                reset()
-            }
-
-            return newValue
-        }
+    private val maxDelay: IntegerValue = object : IntegerValue("MaxDelay", 80, 0..700) {
+        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(minDelay.get())
+    }
+    private val minDelay: IntegerValue = object : IntegerValue("MinDelay", 80, 0..700) {
+        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtMost(maxDelay.get())
+        override fun isSupported() = mode == "Modern"
     }
 
     val mode by object : ListValue("Mode", arrayOf("Legacy", "Modern"), "Modern") {
@@ -96,7 +102,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
     private val espColor = ColorSettingsInteger(this, "ESP", withAlpha = false)
     { espColorMode == "Custom" && espMode != "Model" && mode == "Modern" }.with(0, 255, 0)
 
-    private val packetQueue = LinkedHashMap<Packet<*>, Long>()
+    private val packetQueue = ConcurrentLinkedQueue<QueueData>()
     private val positions = mutableListOf<Pair<Vec3, Long>>()
 
     var target: EntityLivingBase? = null
@@ -109,6 +115,11 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
     private var delayForNextBacktrack = 0L
 
+    private var modernDelay = randomDelay(minDelay.get(), maxDelay.get()) to false
+
+    private val supposedDelay
+        get() = if (mode == "Modern") modernDelay.first else maxDelay.get()
+
     // Legacy
     private val maximumCachedPositions by int("MaxCachedPositions", 10, 1..20) { mode == "Legacy" }
 
@@ -116,14 +127,17 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
     private val nonDelayedSoundSubstrings = arrayOf("game.player.hurt", "game.player.die")
 
+    val isPacketQueueEmpty
+        get() = synchronized(packetQueue) { packetQueue.isEmpty() }
+
+    val areQueuedPacketsEmpty
+        get() = PacketUtils.queuedPackets?.run { synchronized(this) { isEmpty() } } == true
+
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
-        if (Blink.blinkingReceive())
-            return
-
-        if (event.isCancelled)
+        if (Blink.blinkingReceive() || event.isCancelled)
             return
 
         when (mode.lowercase()) {
@@ -141,35 +155,31 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                         )
                     }
 
-                    is S14PacketEntity -> {
-                        if (legacyPos == "ServerPos") {
-                            val entity = mc.theWorld?.getEntityByID(packet.entityId)
-                            val entityMixin = entity as? IMixinEntity
-                            if (entityMixin != null) {
-                                addBacktrackData(
-                                    entity.uniqueID,
-                                    entityMixin.trueX,
-                                    entityMixin.trueY,
-                                    entityMixin.trueZ,
-                                    System.currentTimeMillis()
-                                )
-                            }
+                    is S14PacketEntity -> if (legacyPos == "ServerPos") {
+                        val entity = mc.theWorld?.getEntityByID(packet.entityId)
+                        val entityMixin = entity as? IMixinEntity
+                        if (entityMixin != null) {
+                            addBacktrackData(
+                                entity.uniqueID,
+                                entityMixin.trueX,
+                                entityMixin.trueY,
+                                entityMixin.trueZ,
+                                System.currentTimeMillis()
+                            )
                         }
                     }
 
-                    is S18PacketEntityTeleport -> {
-                        if (legacyPos == "ServerPos") {
-                            val entity = mc.theWorld?.getEntityByID(packet.entityId)
-                            val entityMixin = entity as? IMixinEntity
-                            if (entityMixin != null) {
-                                addBacktrackData(
-                                    entity.uniqueID,
-                                    entityMixin.trueX,
-                                    entityMixin.trueY,
-                                    entityMixin.trueZ,
-                                    System.currentTimeMillis()
-                                )
-                            }
+                    is S18PacketEntityTeleport -> if (legacyPos == "ServerPos") {
+                        val entity = mc.theWorld?.getEntityByID(packet.entityId)
+                        val entityMixin = entity as? IMixinEntity
+                        if (entityMixin != null) {
+                            addBacktrackData(
+                                entity.uniqueID,
+                                entityMixin.trueX,
+                                entityMixin.trueY,
+                                entityMixin.trueZ,
+                                System.currentTimeMillis()
+                            )
                         }
                     }
                 }
@@ -177,84 +187,70 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
             "modern" -> {
                 // Prevent cancelling packets when not needed
-                if (packetQueue.isEmpty() && PacketUtils.queuedPackets.isEmpty() && !shouldBacktrack())
+                if (isPacketQueueEmpty && areQueuedPacketsEmpty && !shouldBacktrack())
                     return
 
                 when (packet) {
                     // Ignore server related packets
-                    is C00Handshake, is C00PacketServerQuery, is S02PacketChat, is S01PacketPong ->
-                        return
+                    is C00Handshake, is C00PacketServerQuery, is S02PacketChat, is S01PacketPong -> return
 
-                    // Flush on teleport or disconnect
-                    is S08PacketPlayerPosLook, is S40PacketDisconnect -> {
+                    is S29PacketSoundEffect -> if (nonDelayedSoundSubstrings in packet.soundName) return
+
+                    // Flush on own death
+                    is S06PacketUpdateHealth -> if (packet.health <= 0) {
                         clearPackets()
                         return
                     }
 
-                    is S29PacketSoundEffect ->
-                        if (nonDelayedSoundSubstrings in packet.soundName)
-                            return
+                    is S13PacketDestroyEntities -> if (target != null && target!!.entityId in packet.entityIDs) {
+                        clearPackets()
+                        reset()
+                        return
+                    }
 
-                    // Flush on own death
-                    is S06PacketUpdateHealth ->
-                        if (packet.health <= 0) {
-                            clearPackets()
-                            return
-                        }
+                    is S1CPacketEntityMetadata -> if (target?.entityId == packet.entityId) {
+                        val metadata = packet.func_149376_c() ?: return
 
-                    is S13PacketDestroyEntities ->
-                        if (target != null && target!!.entityId in packet.entityIDs) {
-                            clearPackets()
-                            reset()
-                            return
-                        }
-
-                    is S1CPacketEntityMetadata ->
-                        if (target?.entityId == packet.entityId) {
-                            val metadata = packet.func_149376_c() ?: return
-
-                            metadata.forEach {
-                                if (it.dataValueId == 6) {
-                                    val objectValue = it.getObject().toString().toDoubleOrNull()
-                                    if (objectValue != null && !objectValue.isNaN() && objectValue <= 0.0) {
-                                        clearPackets()
-                                        reset()
-                                        return
-                                    }
+                        metadata.forEach {
+                            if (it.dataValueId == 6) {
+                                val objectValue = it.getObject().toString().toDoubleOrNull()
+                                if (objectValue != null && !objectValue.isNaN() && objectValue <= 0.0) {
+                                    clearPackets()
+                                    reset()
+                                    return
                                 }
                             }
-
-                            return
                         }
 
-                    is S19PacketEntityStatus ->
-                        if (packet.entityId == target?.entityId)
-                            return
+                        return
+                    }
+
+                    is S19PacketEntityStatus -> if (packet.entityId == target?.entityId) return
                 }
 
                 // Cancel every received packet to avoid possible server synchronization issues from random causes.
                 if (event.eventType == EventState.RECEIVE) {
                     when (packet) {
-                        is S14PacketEntity ->
-                            if (packet.entityId == target?.entityId)
-                                (target as? IMixinEntity)?.run {
-                                    synchronized(positions) {
-                                        positions += Pair(Vec3(trueX, trueY, trueZ), System.currentTimeMillis())
-                                    }
+                        is S14PacketEntity -> if (packet.entityId == target?.entityId) {
+                            (target as? IMixinEntity)?.run {
+                                synchronized(positions) {
+                                    positions += Pair(Vec3(trueX, trueY, trueZ), System.currentTimeMillis())
                                 }
+                            }
+                        }
 
-                        is S18PacketEntityTeleport ->
-                            if (packet.entityId == target?.entityId)
-                                (target as? IMixinEntity)?.run {
-                                    synchronized(positions) {
-                                        positions += Pair(Vec3(trueX, trueY, trueZ), System.currentTimeMillis())
-                                    }
+                        is S18PacketEntityTeleport -> if (packet.entityId == target?.entityId) {
+                            (target as? IMixinEntity)?.run {
+                                synchronized(positions) {
+                                    positions += Pair(Vec3(trueX, trueY, trueZ), System.currentTimeMillis())
                                 }
+                            }
+                        }
                     }
 
                     event.cancelEvent()
                     synchronized(packetQueue) {
-                        packetQueue[packet] = System.currentTimeMillis()
+                        packetQueue += QueueData(packet, System.currentTimeMillis())
                     }
                 }
             }
@@ -266,7 +262,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         if (mode == "Legacy") {
             backtrackedPlayer.forEach { (key, backtrackData) ->
                 // Remove old data
-                backtrackData.removeAll { it.time + delay < System.currentTimeMillis() }
+                backtrackData.removeAll { it.time + supposedDelay < System.currentTimeMillis() }
 
                 // Remove player if there is no data left. This prevents memory leaks.
                 if (backtrackData.isEmpty())
@@ -276,6 +272,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
         val target = target
         val targetMixin = target as? IMixinEntity
+
         if (mode == "Modern") {
             if (targetMixin != null) {
                 if (!Blink.blinkingReceive() && shouldBacktrack() && targetMixin.truePos) {
@@ -283,15 +280,16 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                     val dist = mc.thePlayer.getDistance(target.posX, target.posY, target.posZ)
 
                     if (trueDist <= 6f && (!smart || trueDist >= dist) && (style == "Smooth" || !globalTimer.hasTimePassed(
-                            delay
+                            supposedDelay
                         ))
                     ) {
                         shouldRender = true
 
-                        if (mc.thePlayer.getDistanceToEntityBox(target) in minDistance..maxDistance)
+                        if (mc.thePlayer.getDistanceToEntityBox(target) in minDistance..maxDistance) {
                             handlePackets()
-                        else
+                        } else {
                             handlePacketsRange()
+                        }
                     } else {
                         clearPackets()
                         globalTimer.reset()
@@ -304,6 +302,23 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         }
 
         ignoreWholeTick = false
+    }
+
+    /**
+     * Priority lower than [PacketUtils] GameLoopEvent function's priority.
+     */
+    @EventTarget(priority = -6)
+    fun onQueuePacketClear(event: GameLoopEvent) {
+        val shouldChangeDelay = isPacketQueueEmpty && areQueuedPacketsEmpty
+
+        if (!shouldChangeDelay) {
+            modernDelay = modernDelay.first to false
+        }
+
+        if (shouldChangeDelay && !modernDelay.second && !shouldBacktrack()) {
+            delayForNextBacktrack = System.currentTimeMillis() + nextBacktrackDelay
+            modernDelay = randomDelay(minDelay.get(), maxDelay.get()) to true
+        }
     }
 
     @EventTarget
@@ -363,7 +378,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
             }
 
             "modern" -> {
-                if (!shouldBacktrack() || packetQueue.isEmpty() || !shouldRender)
+                if (!shouldBacktrack() || !shouldRender)
                     return
 
                 val renderManager = mc.renderManager
@@ -393,6 +408,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                             )
                         }
                     }
+
                     "model" -> target?.run {
                         val targetEntity = target as IMixinEntity
 
@@ -418,6 +434,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                             glPopMatrix()
                         }
                     }
+
                     "wireframe" -> target?.run {
                         val color = if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
 
@@ -494,8 +511,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         }
     }
 
-    override fun onEnable() =
-        reset()
+    override fun onEnable() = reset()
 
     override fun onDisable() {
         clearPackets()
@@ -504,72 +520,75 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
     private fun handlePackets() {
         synchronized(packetQueue) {
-            packetQueue.entries.removeAll { (packet, timestamp) ->
-                if (timestamp <= System.currentTimeMillis() - delay) {
-                    synchronized(PacketUtils.queuedPackets) {
-                        PacketUtils.queuedPackets.add(packet)
-                    }
+            packetQueue.removeAll { (packet, timestamp) ->
+                if (timestamp <= System.currentTimeMillis() - supposedDelay) {
+                    schedulePacketProcess(packet)
                     true
                 } else false
             }
         }
+
         synchronized(positions) {
-            positions.removeAll { (_, timestamp) -> timestamp < System.currentTimeMillis() - delay }
+            positions.removeAll { (_, timestamp) -> timestamp < System.currentTimeMillis() - supposedDelay }
         }
     }
 
     private fun handlePacketsRange() {
         val time = getRangeTime()
+
         if (time == -1L) {
             clearPackets()
             return
         }
+
         synchronized(packetQueue) {
-            packetQueue.entries.removeAll { (packet, timestamp) ->
+            packetQueue.removeAll { (packet, timestamp) ->
                 if (timestamp <= time) {
-                    synchronized(PacketUtils.queuedPackets) {
-                        PacketUtils.queuedPackets.add(packet)
-                    }
+                    schedulePacketProcess(packet)
                     true
                 } else false
             }
         }
+
         synchronized(positions) {
             positions.removeAll { (_, timestamp) -> timestamp < time }
         }
     }
 
     private fun getRangeTime(): Long {
-        if (target == null) return 0L
+        val target = this.target ?: return 0L
+
         var time = 0L
         var found = false
+
         synchronized(positions) {
             for (data in positions) {
                 time = data.second
-                val targetPos = Vec3(target!!.posX, target!!.posY, target!!.posZ)
+
+                val targetPos = target.currPos
+
                 val (dx, dy, dz) = data.first - targetPos
-                val targetBox = target!!.hitBox.offset(dx, dy, dz)
+                val targetBox = target.hitBox.offset(dx, dy, dz)
+
                 if (mc.thePlayer.getDistanceToBox(targetBox) in minDistance..maxDistance) {
                     found = true
                     break
                 }
             }
         }
+
         return if (found) time else -1L
     }
 
     private fun clearPackets(handlePackets: Boolean = true) {
-        if (packetQueue.isNotEmpty()) {
-            delayForNextBacktrack = System.currentTimeMillis() + nextBacktrackDelay
-        }
-
         synchronized(packetQueue) {
-            if (handlePackets) {
-                synchronized(PacketUtils.queuedPackets) {
-                    PacketUtils.queuedPackets.addAll(packetQueue.keys)
+            packetQueue.removeAll {
+                if (handlePackets) {
+                    schedulePacketProcess(it.packet)
                 }
+
+                true
             }
-            packetQueue.clear()
         }
 
         positions.clear()
@@ -701,6 +720,10 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         target = null
         globalTimer.reset()
     }
+
+    override val tag: String?
+        get() = supposedDelay.toString()
 }
 
+data class QueueData(val packet: Packet<*>, val time: Long)
 data class BacktrackData(val x: Double, val y: Double, val z: Double, val time: Long)

@@ -12,13 +12,10 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.Reach
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
-import net.ccbluex.liquidbounce.utils.BlinkUtils
-import net.ccbluex.liquidbounce.utils.EntityUtils
+import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.PacketUtils.queuedPackets
 import net.ccbluex.liquidbounce.utils.RotationUtils.searchCenter
-import net.ccbluex.liquidbounce.utils.SimulatedPlayer
-import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
@@ -297,7 +294,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
     fun onMotion(event: MotionEvent) {
         if (blink && event.eventState == EventState.POST) {
             synchronized(packetsReceived) {
-                queuedPackets.addAll(packetsReceived)
+                schedulePacketProcess(packetsReceived)
             }
             packetsReceived.clear()
         }

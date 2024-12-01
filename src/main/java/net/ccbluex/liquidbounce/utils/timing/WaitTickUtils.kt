@@ -19,7 +19,7 @@ object WaitTickUtils : MinecraftInstance(), Listenable {
         conditionalSchedule(requester, ticks) { action(); true }
 
     fun conditionalSchedule(requester: Any? = null, ticks: Int? = null, action: () -> Boolean) {
-        if (ticks != null && ticks == 0) {
+        if (ticks == 0) {
             action()
 
             return

@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
+import net.ccbluex.liquidbounce.utils.schedulePacketProcess
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.network.handshake.client.C00Handshake
 import net.minecraft.network.Packet
@@ -205,7 +206,7 @@ object BlocksMC2 : FlyMode("BlocksMC2") {
 
     private fun blink() {
         synchronized(packetsReceived) {
-            PacketUtils.queuedPackets.addAll(packetsReceived)
+            schedulePacketProcess(packetsReceived)
         }
         synchronized(packets) {
             sendPackets(*packets.toTypedArray(), triggerEvents = false)

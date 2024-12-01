@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils
 
+import com.google.common.collect.Queues
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
 import net.ccbluex.liquidbounce.features.module.modules.combat.FakeLag
@@ -22,7 +23,7 @@ import kotlin.math.roundToInt
 
 object PacketUtils : MinecraftInstance(), Listenable {
 
-    val queuedPackets = mutableListOf<Packet<*>>()
+    val queuedPackets = Queues.newArrayDeque<Packet<*>>()
 
     @EventTarget(priority = 2)
     fun onTick(event: GameTickEvent) {
@@ -76,14 +77,14 @@ object PacketUtils : MinecraftInstance(), Listenable {
     @EventTarget(priority = -5)
     fun onGameLoop(event: GameLoopEvent) {
         synchronized(queuedPackets) {
-            queuedPackets.forEach {
+            queuedPackets.removeAll {
                 handlePacket(it)
                 val packetEvent = PacketEvent(it, EventState.RECEIVE)
                 FakeLag.onPacket(packetEvent)
                 Velocity.onPacket(packetEvent)
-            }
 
-            queuedPackets.clear()
+                true
+            }
         }
     }
 
@@ -227,3 +228,20 @@ var C03PacketPlayer.rotation
         yaw = value.yaw
         pitch = value.pitch
     }
+var C03PacketPlayer.pos
+    get() = Vec3(x, y, z)
+    set(value) {
+        x = value.xCoord
+        y = value.yCoord
+        z = value.zCoord
+    }
+fun schedulePacketProcess(packet: Packet<*>) {
+    synchronized(PacketUtils.queuedPackets) {
+        PacketUtils.queuedPackets.add(packet)
+    }
+}
+fun schedulePacketProcess(packets: Collection<Packet<*>>) {
+    synchronized(PacketUtils.queuedPackets) {
+        PacketUtils.queuedPackets.addAll(packets)
+    }
+}
