@@ -14,6 +14,7 @@ object EventManager {
      */
     fun registerListener(listener: Listenable) =
         listener.javaClass.declaredMethods.forEach { method ->
+            // e.g. @EventTarget fun handler(event: Event) { ... }
             if (method.isAnnotationPresent(EventTarget::class.java) && method.parameterTypes.size == 1) {
                 if (!method.isAccessible)
                     method.isAccessible = true
@@ -21,9 +22,10 @@ object EventManager {
                 val eventClass = method.parameterTypes[0] as Class<out Event>
                 val eventTarget = method.getAnnotation(EventTarget::class.java)
 
-                val invokableEventTargets = registry.getOrDefault(eventClass, ArrayList())
-                invokableEventTargets += EventHook(listener, method, eventTarget)
-                registry[eventClass] = invokableEventTargets.sortedByDescending { it.priority }.toMutableList()
+                with(registry.getOrPut(eventClass, ::ArrayList)) {
+                    this += EventHook(listener, method, eventTarget)
+                    this.sortByDescending { it.priority }
+                }
             }
         }
 
