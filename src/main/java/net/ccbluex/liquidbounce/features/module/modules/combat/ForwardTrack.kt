@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.value.choices
 import net.ccbluex.liquidbounce.value.float
 import net.minecraft.client.entity.EntityPlayerSP
-import net.minecraft.client.renderer.GlStateManager.color
+import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.AxisAlignedBB
@@ -36,7 +36,7 @@ object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
     { espColorMode == "Custom" && espMode != "Model" }.with(0, 255, 0)
 
     val color
-        get() = if (espColorMode == "Rainbow") ColorUtils.rainbow() else Color(espColor.color().rgb)
+        get() = if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
 
     /**
      * Any good anti-cheat will easily detect this module.
@@ -104,7 +104,6 @@ object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
                     val z = vec.zCoord - renderManager.renderPosZ
 
                     glPushMatrix()
-                    glPushAttrib(GL_ALL_ATTRIB_BITS)
 
                     color(0.6f, 0.6f, 0.6f, 1f)
                     renderManager.doRenderEntity(
@@ -115,7 +114,6 @@ object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
                         true
                     )
 
-                    glPopAttrib()
                     glPopMatrix()
                 }
                 "wireframe" -> target?.run {
