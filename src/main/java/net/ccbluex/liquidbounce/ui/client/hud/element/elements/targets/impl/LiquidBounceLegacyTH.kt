@@ -156,43 +156,44 @@ class LiquidBounceLegacyTH(inst: Targets) : TargetStyle("LiquidBounce", inst, tr
             val rainbowX = if (rainbowX == 0f) 0f else 1f / rainbowX
             val rainbowY = if (rainbowY == 0f) 0f else 1f / rainbowY
 
+            glPushMatrix()
             glPushAttrib(GL_ALL_ATTRIB_BITS)
 
             glEnable(GL_BLEND)
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-            // Draw rect box
-            RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
-                drawRoundedBorderRect(
-                    0F, 0F, width, height, borderStrength,
-                    when (backgroundMode) {
-                        "Rainbow" -> 0
-                        else -> backgroundCustomColor
-                    },
-                    borderCustomColor,
-                    roundedRectRadius
-                )
-            }
-
-            // Health bar
-            val healthBarWidth = (targetHealth / maxHealth).coerceIn(0F, 1F) * (width - 6f)
-            drawRect(3F, 34F, 3f + healthBarWidth, 36F, healthColor.rgb)
-
-            // Easing health update
-            easingHealth += ((targetHealth - easingHealth) / 2f.pow(10f - fadeSpeed)) * deltaTime
-            val easingHealthWidth = (easingHealth / maxHealth) * (width - 6f)
-
-            // Heal animation, only animate from the right side
-            if (easingHealth < targetHealth) {
-                drawRect(3f + easingHealthWidth, 34F, 3f + healthBarWidth, 36F, Color(44, 201, 144).rgb)
-            }
-
-            // Damage animation, only animate from the right side
-            if (easingHealth > targetHealth) {
-                drawRect(3f + healthBarWidth, 34F, 3f + easingHealthWidth, 36F, Color(252, 185, 65).rgb)
-            }
-
             if (fadeMode && shouldRender || (smoothMode && shouldRender && width == width) || delayCounter < vanishDelay) {
+                // Draw rect box
+                RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
+                    drawRoundedBorderRect(
+                        0F, 0F, width, height, borderStrength,
+                        when (backgroundMode) {
+                            "Rainbow" -> 0
+                            else -> backgroundCustomColor
+                        },
+                        borderCustomColor,
+                        roundedRectRadius
+                    )
+                }
+
+                // Health bar
+                val healthBarWidth = (targetHealth / maxHealth).coerceIn(0F, 1F) * (width - 6f)
+                drawRect(3F, 34F, 3f + healthBarWidth, 36F, healthColor.rgb)
+
+                // Easing health update
+                easingHealth += ((targetHealth - easingHealth) / 2f.pow(10f - fadeSpeed)) * deltaTime
+                val easingHealthWidth = (easingHealth / maxHealth) * (width - 6f)
+
+                // Heal animation, only animate from the right side
+                if (easingHealth < targetHealth) {
+                    drawRect(3f + easingHealthWidth, 34F, 3f + healthBarWidth, 36F, Color(44, 201, 144).rgb)
+                }
+
+                // Damage animation, only animate from the right side
+                if (easingHealth > targetHealth) {
+                    drawRect(3f + healthBarWidth, 34F, 3f + easingHealthWidth, 36F, Color(252, 185, 65).rgb)
+                }
+
                 // Draw title text
                 target.name?.let {
                     titleFont.drawString(
@@ -229,6 +230,7 @@ class LiquidBounceLegacyTH(inst: Targets) : TargetStyle("LiquidBounce", inst, tr
             }
 
             glPopAttrib()
+            glPopMatrix()
         }
 
         lastTarget = target
