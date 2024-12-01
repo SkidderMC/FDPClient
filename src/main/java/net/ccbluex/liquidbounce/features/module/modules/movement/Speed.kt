@@ -86,6 +86,7 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         TeleportCubeCraft,
         HypixelHop,
         HypixelLowHop,
+        BlocksMCHop,
 
         // Other
         BlocksMCSpeed,
@@ -113,6 +114,8 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         AACHop3313, AACHop350, AACHop4,
 
         NCPBHop, NCPFHop, SNCPBHop, NCPHop, NCPYPort,
+
+        MiJump, Frame
     )
 
     private val showDeprecatedValue = object : BoolValue("DeprecatedMode", true) {
@@ -188,6 +191,13 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
 
     // HypixelLowHop Speed
     val glide by boolean("Glide", true) { mode.get() == "HypixelLowHop" }
+
+    // BlocksMCHop Speed
+    val fullStrafe by boolean("FullStrafe", true) { mode.get() == "BlocksMCHop" }
+    val bmcLowHop by boolean("LowHop", true) { mode.get() == "BlocksMCHop" }
+    val bmcDamageBoost by boolean("DamageBoost", true) { mode.get() == "BlocksMCHop" }
+    val damageLowHop by boolean("DamageLowHop", false) { mode.get() == "BlocksMCHop" }
+    val safeY by boolean("SafeY", true) { mode.get() == "BlocksMCHop" }
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {

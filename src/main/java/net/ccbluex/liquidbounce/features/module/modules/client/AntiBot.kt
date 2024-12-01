@@ -220,9 +220,9 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
     fun onUpdate(event: UpdateEvent) {
         val world = mc.theWorld ?: return
 
-        for (entity in world.loadedEntityList) {
-            if (entity !is EntityPlayer) continue
-            val profile = entity.gameProfile ?: continue
+        world.loadedEntityList.asSequence().forEach { entity ->
+            if (entity !is EntityPlayer) return@forEach
+            val profile = entity.gameProfile ?: return@forEach
 
             if (isBot(entity)) {
                 if (profile.id !in botList) {
