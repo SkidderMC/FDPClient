@@ -71,7 +71,6 @@ class Armor(
         val x = 1
         val y = if (isInsideWater) -10 else 0
 
-        resetColor()
         glColor4f(1F, 1F, 1F, 1F)
 
         val currentTime = System.currentTimeMillis()
