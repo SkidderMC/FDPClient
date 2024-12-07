@@ -157,6 +157,14 @@ object SettingsUtils {
                 is IntegerValue -> moduleValue.changeValue(value.toInt())
                 is TextValue -> moduleValue.changeValue(StringUtils.toCompleteString(args, 2))
                 is ListValue -> moduleValue.changeValue(value)
+                is IntegerRangeValue, is FloatRangeValue -> {
+                    value.split("..").takeIf { it.size == 2 }?.let {
+                        val (min, max) = (it[0].toFloatOrNull() ?: return@let) to (it[1].toFloatOrNull() ?: return@let)
+                        if (moduleValue is IntegerRangeValue) {
+                            moduleValue.changeValue(min.toInt()..max.toInt())
+                        } else (moduleValue as FloatRangeValue).changeValue(min..max)
+                    }
+                }
             }
 
             chat("§7[§3§lAutoSettings§7] §a§l${module.getName()}§7 value §8§l${moduleValue.name}§7 set to §c§l$value§7.")
