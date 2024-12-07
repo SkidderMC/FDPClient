@@ -227,7 +227,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
         // Credit: @ManInMyVan
         // TODO: Not sure how to fix random grim simulation flag. (Seem to only happen in Loyisa).
         if (consumeMode == "Drop") {
-            if (player.heldItem?.item !is ItemFood) {
+            if (player.heldItem?.item !is ItemFood || !player.isMoving) {
                 shouldNoSlow = false
                 return
             }

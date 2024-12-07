@@ -96,7 +96,7 @@ object ClickGui : GuiScreen() {
                 SharedScopes.IO.async {
                     autoSettingsList?.map { setting ->
                         ButtonElement(setting.name, { Integer.MAX_VALUE }) {
-                            launch {
+                            SharedScopes.IO.launch {
                                 try {
                                     chat("Loading settings...")
 
