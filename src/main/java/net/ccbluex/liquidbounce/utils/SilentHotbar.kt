@@ -70,6 +70,8 @@ object SilentHotbar : Listenable, MinecraftInstance() {
     fun isSlotModified(requester: Any?) = hotbarState?.requester == requester
 
     fun updateSilentSlot() {
+        pressedAtSlot = false
+
         val hotbarState = hotbarState ?: return
 
         hotbarState.resetTicks?.let { ticksUntilReset ->
