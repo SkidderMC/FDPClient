@@ -32,16 +32,17 @@ val BlockPos.center: Vec3
 fun BlockPos.toVec() = Vec3(this)
 
 fun BlockPos.canBeClicked(): Boolean {
+    val world = mc.theWorld ?: return false
     val state = this.state ?: return false
     val block = state.block ?: return false
 
     return when {
-        this !in mc.theWorld.worldBorder -> false
+        this !in world.worldBorder -> false
         !block.canCollideCheck(state, false) -> false
         block.material.isReplaceable -> false
         block.hasTileEntity(state) -> false
         !isBlockBBValid(this, state, supportSlabs = true, supportPartialBlocks = true) -> false
-        mc.theWorld.loadedEntityList.any { it is EntityFallingBlock && it.position == this } -> false
+        world.loadedEntityList.any { it is EntityFallingBlock && it.position == this } -> false
         block is BlockContainer || block is BlockWorkbench -> false
         else -> true
     }

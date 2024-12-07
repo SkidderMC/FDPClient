@@ -27,6 +27,7 @@ import net.ccbluex.liquidbounce.value.int
 import net.minecraft.block.Block
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager.*
+import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
@@ -45,9 +46,10 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
 
     val currentBlock: BlockPos?
         get() {
+            val world = mc.theWorld ?: return null
             val blockPos = mc.objectMouseOver?.blockPos ?: return null
 
-            if (blockPos.canBeClicked() && mc.theWorld.worldBorder.contains(blockPos))
+            if (blockPos.block !in arrayOf(Blocks.air, Blocks.water, Blocks.lava) && world.worldBorder.contains(blockPos))
                 return blockPos
 
             return null
