@@ -13,7 +13,10 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.EntityUtils.isSelected
-import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.extensions.fixedSensitivityPitch
+import net.ccbluex.liquidbounce.utils.extensions.fixedSensitivityYaw
+import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
+import net.ccbluex.liquidbounce.utils.extensions.isBlock
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomClickDelay
@@ -97,7 +100,7 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) 
             }
 
             if (right && mc.gameSettings.keyBindUseItem.isKeyDown && time - rightLastSwing >= rightDelay) {
-                if (!onlyBlocks || thePlayer.heldItem.item is ItemBlock) {
+                if (!onlyBlocks || thePlayer.heldItem?.item is ItemBlock) {
                     handleRightClick(time, doubleClick)
                 }
             }

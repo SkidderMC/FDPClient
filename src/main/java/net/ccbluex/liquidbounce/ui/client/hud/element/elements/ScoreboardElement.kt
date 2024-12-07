@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
@@ -28,9 +29,11 @@ import java.awt.Color
  *
  * Allows to move and customize minecraft scoreboard
  */
-@ElementInfo(name = "Scoreboard")
-class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
-                        side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)) : Element(x, y, scale, side) {
+@ElementInfo(name = "Scoreboard", force = true)
+class ScoreboardElement(
+    x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
+    side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)
+) : Element(x, y, scale, side) {
 
     private val textRed by int("Text-R", 255, 0..255)
     private val textGreen by int("Text-G", 255, 0..255)
@@ -45,10 +48,10 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
 
     private val rect by boolean("Rect", false)
     private val rectColorMode by choices("Rect-Color", arrayOf("Custom", "Rainbow"), "Custom") { rect }
-    private val rectColorRed by int("Rect-R", 0, 0..255) { rect && rectColorMode == "Custom"}
-    private val rectColorGreen by int("Rect-G", 111, 0..255) { rect && rectColorMode == "Custom"}
-    private val rectColorBlue by int("Rect-B", 255, 0..255) { rect && rectColorMode == "Custom"}
-    private val rectColorAlpha by int("Rect-Alpha", 255, 0..255) { rect && rectColorMode == "Custom"}
+    private val rectColorRed by int("Rect-R", 0, 0..255) { rect && rectColorMode == "Custom" }
+    private val rectColorGreen by int("Rect-G", 111, 0..255) { rect && rectColorMode == "Custom" }
+    private val rectColorBlue by int("Rect-B", 255, 0..255) { rect && rectColorMode == "Custom" }
+    private val rectColorAlpha by int("Rect-Alpha", 255, 0..255) { rect && rectColorMode == "Custom" }
 
     private val serverIp by choices("ServerIP", arrayOf("Normal", "None", "Client", "Website"), "Normal")
     private val showNumber by boolean("ShowNumber", true)
@@ -59,7 +62,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
      * Draw element
      */
     override fun drawElement(): Border? {
-        val fontRenderer = font
+        val (fontRenderer, fontHeight) = font to ((font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT)
         val textColor = textColor().rgb
         val backColor = backgroundColor().rgb
 
@@ -83,10 +86,9 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
         var scoreCollection = scoreboard.getSortedScores(objective)
         val scores = scoreCollection.filter { it.playerName?.startsWith("#") == false }
 
-        scoreCollection = if (scores.size > 15)
+        scoreCollection = if (scores.size > 15) {
             scores.drop(scoreCollection.size - 15)
-        else
-            scores
+        } else scores
 
         var maxWidth = fontRenderer.getStringWidth(objective.displayName)
 
@@ -100,19 +102,19 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
             maxWidth = maxWidth.coerceAtLeast(fontRenderer.getStringWidth(width))
         }
 
-        val maxHeight = scoreCollection.size * fontRenderer.FONT_HEIGHT
+        val maxHeight = scoreCollection.size * fontHeight
         val l1 = -maxWidth - 3 - if (rect) 3 else 0
 
-        drawRoundedRectInt(l1 - 4, -4, 7, (2 + maxHeight + fontRenderer.FONT_HEIGHT), backColor, roundedRectRadius)
+        drawRoundedRectInt(l1 - 4, -4, 7, maxHeight + fontHeight, backColor, roundedRectRadius)
 
         scoreCollection.forEachIndexed { index, score ->
             val team = scoreboard.getPlayersTeam(score.playerName)
 
             var name = ScorePlayerTeam.formatPlayerName(team, score.playerName)
-            val scorePoints = if (showNumber) "${EnumChatFormatting.RED}${score.scorePoints}" else ""
+            val scorePoints =  if (showNumber) "${EnumChatFormatting.RED}${score.scorePoints}" else ""
 
             val width = 5 - if (rect) 4 else 0
-            val height = maxHeight - index * fontRenderer.FONT_HEIGHT.toFloat()
+            val height = maxHeight - index * fontHeight.toFloat()
 
             glColor4f(1f, 1f, 1f, 1f)
 
@@ -122,8 +124,9 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
                         ?.replace(Regex("[\u00a7&][0-9a-fk-or]"), "")?.trim()
                     val trimmedServerIP = mc.currentServerData?.serverIP?.trim()?.lowercase()
 
-                    val domainRegex = Regex("\\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}\\b")
-                    val containsDomain = nameWithoutFormatting?.let { domainRegex.containsMatchIn(it) } ?: false
+                    val domainRegex =
+                        Regex("\\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}\\b")
+                    val containsDomain = nameWithoutFormatting?.let { domainRegex.containsMatchIn(it) } == true
 
                     runCatching {
                         if (nameWithoutFormatting?.lowercase() == trimmedServerIP || containsDomain) {
@@ -145,7 +148,13 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
 
             fontRenderer.drawString(name, l1.toFloat(), height, textColor, shadow)
             if (showNumber) {
-                fontRenderer.drawString(scorePoints, (width - fontRenderer.getStringWidth(scorePoints)).toFloat(), height, textColor, shadow)
+            fontRenderer.drawString(
+                scorePoints,
+                (width - fontRenderer.getStringWidth(scorePoints)).toFloat(),
+                height,
+                textColor,
+                shadow
+             )
             }
 
             if (index == scoreCollection.size - 1) {
@@ -156,7 +165,7 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
                 fontRenderer.drawString(
                     displayName,
                     (l1 + maxWidth / 2 - fontRenderer.getStringWidth(displayName) / 2).toFloat(),
-                    height - fontRenderer.FONT_HEIGHT,
+                    height - fontHeight,
                     textColor,
                     shadow
                 )
@@ -172,17 +181,21 @@ class ScoreboardElement(x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
                     2F,
                     if (index == scoreCollection.size - 1) -2F else height,
                     5F,
-                    if (index == 0) fontRenderer.FONT_HEIGHT.toFloat() else height + fontRenderer.FONT_HEIGHT * 2F,
+                    if (index == 0) fontHeight.toFloat() else height + fontHeight * 2F,
                     rectColor,
                     roundedRectRadius
                 )
             }
         }
 
-        return Border(-maxWidth - 5f - if (rect) 3 else 0, -2F, 5F, maxHeight + fontRenderer.FONT_HEIGHT.toFloat())
+        return Border(l1 - 4F, -4F, 7F, maxHeight + fontHeight.toFloat())
     }
 
-    private fun backgroundColor() = Color(backgroundColorRed, backgroundColorGreen, backgroundColorBlue, backgroundColorAlpha)
+    private fun backgroundColor() = Color(
+        backgroundColorRed, backgroundColorGreen,
+        backgroundColorBlue, backgroundColorAlpha
+    )
 
     private fun textColor() = Color(textRed, textGreen, textBlue)
+
 }
