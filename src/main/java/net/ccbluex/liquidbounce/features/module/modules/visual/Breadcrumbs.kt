@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.value.boolean
 import net.ccbluex.liquidbounce.value.float
 import org.lwjgl.opengl.GL11.*
+import java.awt.Color
 
 object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) {
     val rainbow by boolean("Rainbow", false)
@@ -28,7 +29,6 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) 
 
     private val positions = mutableListOf<PositionData>()
 
-    // TODO: Fix player hand being black when rendering
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         val player = mc.thePlayer ?: return
@@ -40,6 +40,7 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) 
         val currentTime = System.currentTimeMillis()
         val fadeSeconds = lifeTime * 1000L
 
+        glPushAttrib(GL_ALL_ATTRIB_BITS)
         glPushMatrix()
 
         glDisable(GL_TEXTURE_2D)
@@ -93,7 +94,7 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) 
 
         glEnd()
 
-        glColor4d(1.0, 1.0, 1.0, 1.0)
+        glColor(Color.WHITE)
         glEnable(GL_CULL_FACE)
         glEnable(GL_DEPTH_TEST)
         glDisable(GL_ALPHA_TEST)
@@ -101,6 +102,7 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) 
         glDisable(GL_BLEND)
         glEnable(GL_TEXTURE_2D)
         glPopMatrix()
+        glPopAttrib()
     }
 
     @EventTarget
