@@ -3,163 +3,159 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown
 
-import net.ccbluex.liquidbounce.FDPClient;
-import net.ccbluex.liquidbounce.features.module.Category;
-import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl.ModuleRect;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Screen;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.StencilUtil;
-import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
-import net.ccbluex.liquidbounce.utils.extensions.MathExtensionsKt;
-import net.minecraft.client.gui.ScaledResolution;
+import net.ccbluex.liquidbounce.FDPClient.moduleManager
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.clickHeight
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.scrollMode
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl.ModuleRect
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Screen
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Utils
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.StencilUtil
+import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts
+import net.ccbluex.liquidbounce.utils.extensions.roundToHalf
+import net.minecraft.client.gui.ScaledResolution
+import java.awt.Color
+import kotlin.math.max
+import kotlin.math.min
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Collectors;
+class MainScreen(private val category: Category) : Screen {
 
-public class MainScreen implements Screen {
+    private val rectWidth = 110f
+    private val categoryRectHeight = 18f
+    var animation: Animation? = null
+    private var moduleAnimMap = HashMap<ModuleRect, Animation>()
+    var openingAnimation: Animation? = null
+    private var moduleRects: MutableList<ModuleRect>? = null
 
-    private final Category category;
-    private final float rectWidth = 110;
-    private final float categoryRectHeight = 18;
-    public Animation animation;
-    public HashMap<ModuleRect, Animation> moduleAnimMap = new HashMap<>();
-    public Animation openingAnimation;
-    private List<ModuleRect> moduleRects;
-
-    public MainScreen(Category category) {
-        this.category = category;
-    }
-
-    @Override
-    public void initGui() {
+    override fun initGui() {
         if (moduleRects == null) {
-            moduleRects = new ArrayList<>();
-            for (Module module : Main.getModulesInCategory(category, FDPClient.INSTANCE.getModuleManager()).stream().sorted(Comparator.comparing(Module::getName)).collect(Collectors.toList())) {
-                ModuleRect moduleRect = new ModuleRect(module);
-                moduleRects.add(moduleRect);
-                moduleAnimMap.put(moduleRect, new DecelerateAnimation(250, 1));
+            moduleRects = mutableListOf<ModuleRect>().apply {
+                Main.getModulesInCategory(category, moduleManager)
+                    .sortedBy { it.name }
+                    .forEach { module ->
+                        val moduleRect = ModuleRect(module)
+                        add(moduleRect)
+                        moduleAnimMap[moduleRect] = DecelerateAnimation(250, 1.0)
+                    }
             }
         }
-
-        if (moduleRects != null) {
-            moduleRects.forEach(ModuleRect::initGui);
-        }
-
+        moduleRects?.forEach { it.initGui() }
     }
 
-    @Override
-    public void keyTyped(char typedChar, int keyCode) {
-        if (moduleRects != null) {
-            moduleRects.forEach(moduleRect -> moduleRect.keyTyped(typedChar, keyCode));
-        }
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
+        moduleRects?.forEach { it.keyTyped(typedChar, keyCode) }
     }
 
-    @Override
-    public void drawScreen(int mouseX, int mouseY) {
-        float animClamp = (float) Math.max(0, Math.min(255, 255 * animation.getOutput()));
-        int alphaAnimation = (int) animClamp;
-        int categoryRectColor = new Color(29, 29, 29, alphaAnimation).getRGB();
-        int textColor = new Color(255, 255, 255, alphaAnimation).getRGB();
+    override fun drawScreen(mouseX: Int, mouseY: Int) {
+        val animClamp = max(0.0, min(255.0, 255 * (animation?.output ?: 0.0))).toFloat()
+        val alphaAnimation = animClamp.toInt()
+        val categoryRectColor = Color(29, 29, 29, alphaAnimation).rgb
+        val textColor = Color(255, 255, 255, alphaAnimation).rgb
 
-        category.getDrag().onDraw(mouseX, mouseY);
-        float x = category.getDrag().getX(), y = category.getDrag().getY();
-        DrRenderUtils.drawRect2(x, y, rectWidth, categoryRectHeight, categoryRectColor);
-        DrRenderUtils.setAlphaLimit(0);
-        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(category.name(), x + 5, y + Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.getMiddleOfBox(categoryRectHeight), textColor);
+        val x = category.drag.x
+        val y = category.drag.y
 
-        String l = "";
-        if (category.name().equalsIgnoreCase("Combat")) {
-            l = "D";
-        } else if (category.name().equalsIgnoreCase("Movement")) {
-            l = "A";
-        } else if (category.name().equalsIgnoreCase("Player")) {
-            l = "B";
-        } else if (category.name().equalsIgnoreCase("Visual")) {
-            l = "C";
-        } else if (category.name().equalsIgnoreCase("Exploit")) {
-            l = "G";
-        } else if (category.name().equalsIgnoreCase("Other")) {
-            l = "F";
+        category.drag.onDraw(mouseX, mouseY)
+
+        DrRenderUtils.drawRect2(x.toDouble(), y.toDouble(), rectWidth.toDouble(), categoryRectHeight.toDouble(), categoryRectColor)
+        DrRenderUtils.setAlphaLimit(0f)
+        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
+            category.name,
+            x + 5,
+            y + Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.getMiddleOfBox(categoryRectHeight),
+            textColor
+        )
+
+        val icon = when (category.name.lowercase()) {
+            "combat" -> "D"
+            "movement" -> "A"
+            "player" -> "B"
+            "visual" -> "C"
+            "exploit" -> "G"
+            "other" -> "F"
+            else -> ""
         }
 
+        Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.drawString(
+            icon,
+            x + rectWidth - (Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.stringWidth(icon) + 5),
+            y + Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.getMiddleOfBox(categoryRectHeight),
+            textColor
+        )
 
-        DrRenderUtils.setAlphaLimit(0);
-        DrRenderUtils.resetColor();
-        Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.drawString(l, x + rectWidth - (Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.stringWidth(l) + 5),
-                y + Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.getMiddleOfBox(categoryRectHeight), textColor);
-
-        if (category.name().equalsIgnoreCase("Client")){
-            Fonts.CheckFont.CheckFont_20.CheckFont_20.drawString("b", x + rectWidth - (Fonts.CheckFont.CheckFont_20.CheckFont_20.stringWidth("b") + 5),
-                    y + Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.getMiddleOfBox(categoryRectHeight), textColor);
+        if (category.name.equals("Client", ignoreCase = true)) {
+            Fonts.CheckFont.CheckFont_20.CheckFont_20.drawString(
+                "b",
+                x + rectWidth - (Fonts.CheckFont.CheckFont_20.CheckFont_20.stringWidth("b") + 5),
+                y + Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.getMiddleOfBox(categoryRectHeight),
+                textColor
+            )
         }
 
-        if (ClickGUIModule.INSTANCE.getScrollMode().equals("Value")) {
-            Main.allowedClickGuiHeight =  ClickGUIModule.INSTANCE.getClickHeight();
+        val allowedHeight = if (scrollMode == "Value") {
+            clickHeight.toFloat()
         } else {
-            ScaledResolution sr = new ScaledResolution(mc);
-            Main.allowedClickGuiHeight = 2 * sr.getScaledHeight() / 3f;
+            val sr = ScaledResolution(Utils.mc)
+            2 * sr.scaledHeight / 3f
         }
+        Main.allowedClickGuiHeight = allowedHeight
 
-        float allowedHeight = Main.allowedClickGuiHeight;
+        val hoveringMods = DrRenderUtils.isHovering(x, y + categoryRectHeight, rectWidth, allowedHeight, mouseX, mouseY)
 
+        StencilUtil.initStencilToWrite()
+        DrRenderUtils.drawRect2(
+            (x - 100).toDouble(),
+            (y + categoryRectHeight).toDouble(),
+            (rectWidth + 150).toDouble(),
+            allowedHeight.toDouble(),
+            -1
+        )
+        StencilUtil.readStencilBuffer(1)
 
-        boolean hoveringMods = DrRenderUtils.isHovering(x, y + categoryRectHeight, rectWidth, allowedHeight, mouseX, mouseY);
+        val scroll = category.scroll.scroll.toDouble()
+        var count = 0.0
 
-        StencilUtil.initStencilToWrite();
-        DrRenderUtils.drawRect2(x - 100, y + categoryRectHeight, rectWidth + 150, allowedHeight, -1);
-        StencilUtil.readStencilBuffer(1);
+        moduleRects?.forEach { moduleRect ->
+            val animation = moduleAnimMap[moduleRect]
+            animation?.setDirection(if (moduleRect.module.expanded) Direction.FORWARDS else Direction.BACKWARDS)
 
-        double scroll = category.getScroll().getScroll();
-        double count = 0;
-        for (ModuleRect moduleRect : moduleRects) {
-            Animation animation = moduleAnimMap.get(moduleRect);
-            animation.setDirection(moduleRect.module.getExpanded() ? Direction.FORWARDS : Direction.BACKWARDS);
+            moduleRect.settingAnimation = animation
+            moduleRect.alphaAnimation = alphaAnimation
+            moduleRect.x = x
+            moduleRect.height = 17f
+            moduleRect.panelLimitY = y
+            moduleRect.openingAnimation = openingAnimation
+            moduleRect.y = (y + categoryRectHeight + (count * 17) + roundToHalf(scroll)).toFloat()
+            moduleRect.width = rectWidth
+            moduleRect.drawScreen(mouseX, mouseY)
 
-            moduleRect.settingAnimation = animation;
-            moduleRect.alphaAnimation = alphaAnimation;
-            moduleRect.x = x;
-            moduleRect.height = 17;
-            moduleRect.panelLimitY = y;
-            moduleRect.openingAnimation = openingAnimation;
-            moduleRect.y = (float) (y + categoryRectHeight + (count * 17) + MathExtensionsKt.roundToHalf(scroll));
-            moduleRect.width = rectWidth;
-            moduleRect.drawScreen(mouseX, mouseY);
-
-            count += 1 + (moduleRect.getSettingSize());
+            count += 1 + moduleRect.settingSize
         }
 
         if (hoveringMods) {
-            category.getScroll().onScroll(30);
-            float hiddenHeight = (float) ((count * 17) - allowedHeight);
-            category.getScroll().setMaxScroll(Math.max(0, hiddenHeight));
+            category.scroll.onScroll(30)
+            val hiddenHeight = ((count * 17) - allowedHeight).toFloat()
+            category.scroll.maxScroll = max(0.0, hiddenHeight.toDouble()).toFloat()
         }
 
-        StencilUtil.uninitStencilBuffer();
-
+        StencilUtil.uninitStencilBuffer()
     }
 
-    @Override
-    public void mouseClicked(int mouseX, int mouseY, int button) {
-        boolean canDrag = DrRenderUtils.isHovering(category.getDrag().getX(), category.getDrag().getY(), rectWidth, categoryRectHeight, mouseX, mouseY);
-        category.getDrag().onClick(mouseX, mouseY, button, canDrag);
-        moduleRects.forEach(moduleRect -> moduleRect.mouseClicked(mouseX, mouseY, button));
+    override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+        val canDrag = DrRenderUtils.isHovering(category.drag.x, category.drag.y, rectWidth, categoryRectHeight, mouseX, mouseY)
+        category.drag.onClick(mouseX, mouseY, button, canDrag)
+        moduleRects?.forEach { it.mouseClicked(mouseX, mouseY, button) }
     }
 
-    @Override
-    public void mouseReleased(int mouseX, int mouseY, int state) {
-        category.getDrag().onRelease(state);
-        moduleRects.forEach(moduleRect -> moduleRect.mouseReleased(mouseX, mouseY, state));
+    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
+        category.drag.onRelease(state)
+        moduleRects?.forEach { it.mouseReleased(mouseX, mouseY, state) }
     }
 }

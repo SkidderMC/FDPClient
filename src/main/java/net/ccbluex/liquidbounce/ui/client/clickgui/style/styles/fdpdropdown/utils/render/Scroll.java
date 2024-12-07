@@ -16,7 +16,7 @@ public class Scroll {
 
     @Getter
     @Setter
-    private float maxScroll = Float.MAX_VALUE, minScroll = 0, rawScroll;
+    public float maxScroll = Float.MAX_VALUE, minScroll = 0, rawScroll;
     private float scroll;
     private Animation scrollAnimation = new SmoothStepAnimation(0, 0, Direction.BACKWARDS);
 

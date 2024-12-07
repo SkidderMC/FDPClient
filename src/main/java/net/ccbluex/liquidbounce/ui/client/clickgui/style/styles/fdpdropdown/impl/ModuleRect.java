@@ -34,7 +34,7 @@ public class ModuleRect extends Component {
     public int alphaAnimation;
     int clickX, clickY;
     @Getter
-    private double settingSize;
+    public double settingSize;
 
     public ModuleRect(Module module) {
         this.module = module;

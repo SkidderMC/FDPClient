@@ -17,7 +17,6 @@ import net.ccbluex.liquidbounce.value.boolean
 import net.ccbluex.liquidbounce.value.choices
 import net.ccbluex.liquidbounce.value.int
 import org.lwjgl.opengl.GL11.*
-import java.awt.Color
 
 object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModule = false) {
 
@@ -98,8 +97,8 @@ object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModul
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         val color =
-            if (Breadcrumbs.colorRainbow) rainbow()
-            else Color(Breadcrumbs.colorRed, Breadcrumbs.colorGreen, Breadcrumbs.colorBlue)
+            if (Breadcrumbs.rainbow) rainbow()
+            else Breadcrumbs.colors.color()
 
         synchronized(BlinkUtils.positions) {
             glPushMatrix()

@@ -96,6 +96,7 @@ val RenderManager.renderPos
     get() = Vec3(renderPosX, renderPosY, renderPosZ)
 
 fun Vec3.toFloatTriple() = Triple(xCoord.toFloat(), yCoord.toFloat(), zCoord.toFloat())
+fun Vec3.toDoubleArray() = doubleArrayOf(xCoord, yCoord, zCoord)
 
 fun Float.toRadians() = this * 0.017453292f
 fun Float.toRadiansD() = toRadians().toDouble()
