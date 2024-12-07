@@ -87,10 +87,10 @@ class ColorSettingsInteger(
     fun color() = Color(r, g, b, a)
 
     fun with(r: Int? = null, g: Int? = null, b: Int? = null, a: Int? = null): ColorSettingsInteger {
-        r?.let { red.set(it) }
-        g?.let { green.set(it) }
-        b?.let { blue.set(it) }
-        a?.let { alpha.set(it) }
+        r?.let { red.setAndUpdateDefault(it) }
+        g?.let { green.setAndUpdateDefault(it) }
+        b?.let { blue.setAndUpdateDefault(it) }
+        a?.let { alpha.setAndUpdateDefault(it) }
 
         return this
     }

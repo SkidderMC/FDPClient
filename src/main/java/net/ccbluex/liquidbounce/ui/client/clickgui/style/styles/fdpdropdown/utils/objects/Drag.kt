@@ -3,52 +3,29 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.objects;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.objects
 
-public class Drag {
+class Drag(var x: Float, var y: Float) {
+    private var startX = 0f
+    private var startY = 0f
+    private var dragging = false
 
-    private float xPos, yPos;
-    private float startX, startY;
-    private boolean dragging;
-
-    public Drag(float initialXVal, float initialYVal) {
-        this.xPos = initialXVal;
-        this.yPos = initialYVal;
-    }
-
-    public float getX() {
-        return xPos;
-    }
-
-    public void setX(float x) {
-        this.xPos = x;
-    }
-
-    public float getY() {
-        return yPos;
-    }
-
-    public void setY(float y) {
-        this.yPos = y;
-    }
-
-    public final void onDraw(int mouseX, int mouseY) {
+    fun onDraw(mouseX: Int, mouseY: Int) {
         if (dragging) {
-            xPos = (mouseX - startX);
-            yPos = (mouseY - startY);
+            x = (mouseX - startX)
+            y = (mouseY - startY)
         }
     }
 
-    public final void onClick(int mouseX, int mouseY, int button, boolean canDrag) {
+    fun onClick(mouseX: Int, mouseY: Int, button: Int, canDrag: Boolean) {
         if (button == 0 && canDrag) {
-            dragging = true;
-            startX = (int) (mouseX - xPos);
-            startY = (int) (mouseY - yPos);
+            dragging = true
+            startX = (mouseX - x).toInt().toFloat()
+            startY = (mouseY - y).toInt().toFloat()
         }
     }
 
-    public final void onRelease(int button) {
-        if (button == 0) dragging = false;
+    fun onRelease(button: Int) {
+        if (button == 0) dragging = false
     }
-
 }

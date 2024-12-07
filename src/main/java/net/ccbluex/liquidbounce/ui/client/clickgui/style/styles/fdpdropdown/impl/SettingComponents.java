@@ -121,7 +121,8 @@ public class SettingComponents extends Component {
                 return;
             }
             selectedField.textboxKeyTyped(typedChar, keyCode);
-            selectedStringSetting.set(selectedField.getText());
+
+            selectedStringSetting.set(selectedField.getText(), true);
         }
     }
 
@@ -403,7 +404,7 @@ public class SettingComponents extends Component {
                     }
                     if (type == GuiEvents.CLICK && button == 0 && hoveringMode) {
                         modeSettingClick.put(modeSetting, !modeSettingClick.get(modeSetting));
-                        modeSetting.set(mode);
+                        modeSetting.set(mode, true);
                     }
 
                     if (openAnimation.isDone() && openAnimation.getDirection().equals(Direction.FORWARDS) || !openAnimation.isDone()) {
@@ -469,7 +470,7 @@ public class SettingComponents extends Component {
 
                 stringSettingField.drawTextBox();
 
-                stringSetting.set(stringSettingField.getText());
+                stringSetting.set(stringSettingField.getText(), true);
 
                 count++;
             }

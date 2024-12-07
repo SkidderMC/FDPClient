@@ -10,12 +10,14 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.module.modules.client.GameDetector
 import net.ccbluex.liquidbounce.file.FileManager.modulesConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
+import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
 import net.ccbluex.liquidbounce.handler.lang.translation
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
 import net.ccbluex.liquidbounce.utils.ClassUtils
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.utils.extensions.toLowerCamelCase
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.TickScheduler
@@ -78,6 +80,21 @@ open class Module(
     val hideModuleValues: BoolValue = object : BoolValue("HideSync", hideModuleValue.get(), subjective = true) {
         override fun onUpdate(value: Boolean) {
             hideModuleValue.set(value)
+        }
+    }
+
+    private val resetValue: BoolValue = object : BoolValue("Reset", false, subjective = true) {
+        override fun onChange(oldValue: Boolean, newValue: Boolean): Boolean {
+            try {
+                values.forEach { if (it != this) it.reset() else return@forEach }
+            } catch (any: Exception) {
+                LOGGER.error("Failed to reset all values", any)
+                chat("Failed to reset all values: ${any.message}")
+            } finally {
+                addNotification(Notification("Successfully reset all settings from ${this@Module.name}", "Successfully reset all settings from ${this@Module.name}", Type.SUCCESS, 1000))
+                saveConfig(valuesConfig)
+            }
+            return false
         }
     }
 
@@ -193,6 +210,7 @@ open class Module(
 
                 if (gameDetecting) orderedValues += onlyInGameValue
                 if (!hideModule) orderedValues += hideModuleValue
+                orderedValues += resetValue
             } catch (e: Exception) {
                 LOGGER.error(e)
             }

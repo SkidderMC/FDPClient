@@ -20,7 +20,7 @@ import org.lwjgl.opengl.GL11.*
 
 object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) {
     val rainbow by boolean("Rainbow", false)
-    val colors = ColorSettingsInteger(this, "Color", withAlpha = false) { !rainbow }
+    val colors = ColorSettingsInteger(this, "Color", withAlpha = false) { !rainbow }.with(132, 102, 255)
     private val lineHeight by float("LineHeight", 0.25F, 0.25F..2F)
     private val temporary by boolean("Temporary", true)
     private val fade by boolean("Fade", true) { temporary }
@@ -28,6 +28,7 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) 
 
     private val positions = mutableListOf<PositionData>()
 
+    // TODO: Fix player hand being black when rendering
     @EventTarget
     fun onRender3D(event: Render3DEvent) {
         val player = mc.thePlayer ?: return
@@ -42,12 +43,11 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) 
         glPushMatrix()
 
         glDisable(GL_TEXTURE_2D)
+        glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_LINE_SMOOTH)
-        glEnable(GL_BLEND)
         glDisable(GL_DEPTH_TEST)
         glDisable(GL_CULL_FACE)
-
         glEnable(GL_ALPHA_TEST)
         glAlphaFunc(GL_GREATER, 0.0f)
 
@@ -91,9 +91,9 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) 
             temporary && timestamp > fadeSeconds
         }
 
-        glColor4d(1.0, 1.0, 1.0, 1.0)
         glEnd()
 
+        glColor4d(1.0, 1.0, 1.0, 1.0)
         glEnable(GL_CULL_FACE)
         glEnable(GL_DEPTH_TEST)
         glDisable(GL_ALPHA_TEST)

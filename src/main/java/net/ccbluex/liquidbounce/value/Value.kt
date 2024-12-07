@@ -25,6 +25,7 @@ abstract class Value<T>(
     open var value: T,
     val subjective: Boolean = false,
     var isSupported: (() -> Boolean)? = null,
+    protected var default: T = value,
 ) : ReadWriteProperty<Any?, T> {
 
     var excluded: Boolean = false
@@ -33,7 +34,11 @@ abstract class Value<T>(
     var hidden = false
         private set
 
-    fun set(newValue: T): Boolean {
+    fun setAndUpdateDefault(new: T): Boolean {
+        default = new
+        return set(new)
+    }
+    fun set(newValue: T, saveImmediately: Boolean = true): Boolean {
         if (newValue == value || hidden || excluded)
             return false
 
@@ -47,7 +52,9 @@ abstract class Value<T>(
             onChanged(oldValue, handledValue)
             onUpdate(handledValue)
 
-            saveConfig(valuesConfig)
+            if (saveImmediately) {
+                saveConfig(valuesConfig)
+            }
             return true
         } catch (e: Exception) {
             LOGGER.error("[ValueSystem ($name)]: ${e.javaClass.name} (${e.message}) [$oldValue >> $newValue]")
@@ -61,7 +68,7 @@ abstract class Value<T>(
      * [state] the value it will be set to before it is hidden.
      */
     fun hideWithState(state: T = value) {
-        set(state)
+        setAndUpdateDefault(state)
 
         hidden = true
     }
@@ -72,7 +79,7 @@ abstract class Value<T>(
      * [state] the value it will be set to before it is excluded.
      */
     fun excludeWithState(state: T = value) {
-        set(state)
+        setAndUpdateDefault(state)
 
         excluded = true
     }
@@ -113,6 +120,8 @@ abstract class Value<T>(
     }
 
     fun shouldRender() = isSupported() && !hidden
+
+    fun reset() = set(default)
 }
 
 /**
