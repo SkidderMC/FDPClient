@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.Rotation
 import net.ccbluex.liquidbounce.utils.RotationUtils.getFixedSensitivityAngle
 import net.ccbluex.liquidbounce.utils.SilentHotbar
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getState
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.resources.DefaultPlayerSkin
@@ -229,7 +228,7 @@ fun EntityPlayerSP.onPlayerRightClick(
     if (item?.onItemUseFirst(stack, this, worldObj, clickPos, side, facingX, facingY, facingZ) == true)
         return true
 
-    val blockState = getState(clickPos)
+    val blockState = clickPos.state
 
     // If click had activated a block, send click and return true
     if ((!isSneaking || item == null || item.doesSneakBypassUse(worldObj, clickPos, this))

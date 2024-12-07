@@ -5,22 +5,44 @@
  */
 package net.ccbluex.liquidbounce.utils.extensions
 
-import net.ccbluex.liquidbounce.utils.block.BlockUtils
+import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.isBlockBBValid
+import net.minecraft.block.*
+import net.minecraft.block.material.Material
+import net.minecraft.block.state.IBlockState
+import net.minecraft.entity.item.EntityFallingBlock
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 
-/**
- * Get block by position
- */
-fun BlockPos.getBlock() = BlockUtils.getBlock(this)
+val BlockPos.state: IBlockState?
+    get() = mc.theWorld?.getBlockState(this)
 
-/**
- * Get vector of block position
- */
-fun BlockPos.getVec() = Vec3(x + 0.5, y + 0.5, z + 0.5)
+val BlockPos.block: Block?
+    get() = this.state?.block
+
+val BlockPos.material: Material?
+    get() = this.block?.material
+
+val BlockPos.isReplaceable: Boolean
+    get() = this.material?.isReplaceable ?: false
+
+val BlockPos.center: Vec3
+    get() = Vec3(x + 0.5, y + 0.5, z + 0.5)
 
 fun BlockPos.toVec() = Vec3(this)
 
-fun BlockPos.isReplaceable() = BlockUtils.isReplaceable(this)
+fun BlockPos.canBeClicked(): Boolean {
+    val state = this.state ?: return false
+    val block = state.block ?: return false
 
-fun BlockPos.canBeClicked() = BlockUtils.canBeClicked(this)
+    return when {
+        this !in mc.theWorld.worldBorder -> false
+        !block.canCollideCheck(state, false) -> false
+        block.material.isReplaceable -> false
+        block.hasTileEntity(state) -> false
+        !isBlockBBValid(this, state, supportSlabs = true, supportPartialBlocks = true) -> false
+        mc.theWorld.loadedEntityList.any { it is EntityFallingBlock && it.position == this } -> false
+        block is BlockContainer || block is BlockWorkbench -> false
+        else -> true
+    }
+}

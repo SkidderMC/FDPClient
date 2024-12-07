@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
 import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
-import net.ccbluex.liquidbounce.utils.extensions.getBlock
+import net.ccbluex.liquidbounce.utils.extensions.block
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
@@ -62,7 +62,7 @@ object BlockESP : Module("BlockESP", Category.VISUAL, hideModule = false) {
 
             searchJob = SharedScopes.Default.launch {
                 posList.removeIf {
-                    it.getBlock() != selectedBlock
+                    it.block != selectedBlock
                 }
 
                 posList += searchBlocks(radius, setOf(selectedBlock), blockLimit).keys

@@ -13,8 +13,8 @@ import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.RotationSettings
 import net.ccbluex.liquidbounce.utils.RotationUtils.faceBlock
 import net.ccbluex.liquidbounce.utils.RotationUtils.setTargetRotation
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
+import net.ccbluex.liquidbounce.utils.extensions.block
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.value.boolean
 import net.ccbluex.liquidbounce.value.float
@@ -40,7 +40,7 @@ object CivBreak : Module("CivBreak", Category.OTHER) {
 
     @EventTarget
     fun onBlockClick(event: ClickBlockEvent) {
-        if (event.clickedBlock?.let { getBlock(it) } == bedrock) {
+        if (event.clickedBlock?.let { it.block } == bedrock) {
             return
         }
 
@@ -57,7 +57,7 @@ object CivBreak : Module("CivBreak", Category.OTHER) {
     @EventTarget
     fun onRotationUpdate(event: RotationUpdateEvent) {
         val pos = blockPos ?: return
-        val isAirBlock = getBlock(pos) == air
+        val isAirBlock = pos.block == air
 
         if (isAirBlock || getCenterDistance(pos) > range) {
             blockPos = null

@@ -19,7 +19,6 @@ import net.ccbluex.liquidbounce.utils.RotationUtils.performRayTrace
 import net.ccbluex.liquidbounce.utils.RotationUtils.performRaytrace
 import net.ccbluex.liquidbounce.utils.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.RotationUtils.toRotation
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.chat
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenContainer
@@ -341,7 +340,7 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
             is TileEntityChest -> {
                 if (!chest) return false
 
-                val block = getBlock(entity.pos)
+                val block = entity.pos.block
 
                 if (block !is BlockChest) return false
 
@@ -350,7 +349,7 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
             }
 
             is TileEntityEnderChest ->
-                enderChest && getBlock(entity.pos.up())?.isNormalCube != true
+                enderChest && entity.pos.up().block?.isNormalCube != true
 
             else -> return false
         }

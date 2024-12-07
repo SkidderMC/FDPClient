@@ -18,7 +18,6 @@ import net.ccbluex.liquidbounce.utils.RotationUtils.faceBlock
 import net.ccbluex.liquidbounce.utils.RotationUtils.performRaytrace
 import net.ccbluex.liquidbounce.utils.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.RotationUtils.toRotation
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isBlockBBValid
@@ -34,7 +33,6 @@ import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
-import net.minecraft.init.Blocks.air
 import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.*
 import net.minecraft.network.play.client.C0APacketAnimation
@@ -42,11 +40,8 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
-import net.minecraft.util.Vec3i
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
-import kotlin.math.pow
-import kotlin.math.roundToInt
 
 object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
 
@@ -88,12 +83,12 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
     private val posProcess by boolean("PosProcess", false) { renderPos }
 
     private val posOutline by boolean("PosOutline", false)
-
     /**
      * VALUES
      */
 
     var pos: BlockPos? = null
+        private set
     private var spawnLocation: Vec3? = null
     private var oldPos: BlockPos? = null
     private var blockHitDelay = 0
@@ -139,7 +134,7 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
 
         val targetId = block
 
-        if (pos == null || Block.getIdFromBlock(getBlock(pos!!)) != targetId || getCenterDistance(pos!!) > range) {
+        if (pos == null || Block.getIdFromBlock(pos!!.block) != targetId || getCenterDistance(pos!!) > range) {
             pos = find(targetId)
         }
 
@@ -167,7 +162,7 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
                 world.rayTraceBlocks(eyes, spot.vec, false, false, true)?.blockPos
             }
 
-            if (blockPos != null && blockPos.getBlock() != air) {
+            if (blockPos != null && blockPos.block != Blocks.air) {
                 if (currentPos.x != blockPos.x || currentPos.y != blockPos.y || currentPos.z != blockPos.z) {
                     areSurroundings = true
                 }
@@ -206,12 +201,11 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
      * Check if the bed at the given position is near the spawn location
      */
     private fun isBedNearSpawn(currentPos: BlockPos): Boolean {
-        if (getBlock(currentPos) != Block.getBlockById(block) || spawnLocation == null) {
+        if (currentPos.block != Block.getBlockById(block) || spawnLocation == null) {
             return false
         }
 
-        val spawnPos = BlockPos(spawnLocation)
-        return currentPos.distanceSq(Vec3i(spawnPos.x, spawnPos.y, spawnPos.z)) < ownBedDist.toDouble().pow(2).roundToInt()
+        return spawnLocation!!.squareDistanceTo(currentPos.center) < ownBedDist * ownBedDist
     }
 
     @EventTarget
@@ -226,7 +220,7 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
         val targetRotation = if (options.rotationsActive) {
             currentRotation ?: player.rotation
         } else {
-            toRotation(currentPos.getVec(), false).fixedSensitivity()
+            toRotation(currentPos.center, false).fixedSensitivity()
         }
 
         val raytrace = performRaytrace(currentPos, targetRotation, range) ?: return
@@ -256,7 +250,7 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
                 }
 
                 // Minecraft block breaking
-                val block = currentPos.getBlock() ?: return
+                val block = currentPos.block ?: return
 
                 if (currentDamage == 0F) {
                     // Prevent from flagging FastBreak
@@ -329,7 +323,7 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
         val x = pos.x - mc.renderManager.renderPosX
         val y = pos.y - mc.renderManager.renderPosY
         val z = pos.z - mc.renderManager.renderPosZ
-        val c = if (clientTheme) getColorWithAlpha(1, 80) else if (pos.getBlock() != Blocks.bed) Color(
+        val c = if (clientTheme) getColorWithAlpha(1, 80) else if (pos.block != Blocks.bed) Color(
             255,
             0,
             0,
@@ -348,7 +342,7 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
         }
 
         if (blockProgress) {
-            if (getBlockName(block) == "Air") return
+            if (Block.getBlockById(block) == Blocks.air) return
 
             val progress = ((currentDamage * 100).coerceIn(0f, 100f)).toInt()
             val progressText = "%d%%".format(progress)
@@ -356,7 +350,8 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
             glPushAttrib(GL_ENABLE_BIT)
             glPushMatrix()
 
-            val (x, y, z) = pos.getVec() - renderManager.renderPos
+            val (x, y, z) = pos.center - renderManager.renderPos
+
             // Translate to block position
             glTranslated(x, y, z)
 
@@ -404,14 +399,15 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
             for (y in radius downTo -radius + 1) {
                 for (z in radius downTo -radius + 1) {
                     val blockPos = BlockPos(thePlayer).add(x, y, z)
-                    val block = getBlock(blockPos) ?: continue
+                    val block = blockPos.block ?: continue
 
                     val distance = getCenterDistance(blockPos)
 
                     if (Block.getIdFromBlock(block) != targetID
                         || getCenterDistance(blockPos) > range
                         || nearestBlockDistance < distance
-                        || !isHittable(blockPos) && !surroundings && !hypixel) {
+                        || !isHittable(blockPos) && !surroundings && !hypixel
+                    ) {
                         continue
                     }
 
@@ -433,7 +429,7 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
         return when (throughWalls.lowercase()) {
             "raycast" -> {
                 val eyesPos = thePlayer.eyes
-                val movingObjectPosition = mc.theWorld.rayTraceBlocks(eyesPos, blockPos.getVec(), false, true, false)
+                val movingObjectPosition = mc.theWorld.rayTraceBlocks(eyesPos, blockPos.center, false, true, false)
 
                 movingObjectPosition != null && movingObjectPosition.blockPos == blockPos
             }

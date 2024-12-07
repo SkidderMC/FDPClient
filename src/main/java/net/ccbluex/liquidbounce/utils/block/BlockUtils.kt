@@ -6,6 +6,9 @@
 package net.ccbluex.liquidbounce.utils.block
 
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.extensions.block
+import net.ccbluex.liquidbounce.utils.extensions.canBeClicked
+import net.ccbluex.liquidbounce.utils.extensions.state
 import net.minecraft.block.*
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.item.EntityFallingBlock
@@ -17,38 +20,6 @@ import net.minecraft.util.ResourceLocation
 typealias Collidable = (Block?) -> Boolean
 
 object BlockUtils : MinecraftInstance() {
-    /**
-     * Get block from [blockPos]
-     */
-    fun getBlock(blockPos: BlockPos) = getState(blockPos)?.block
-
-    /**
-     * Get material from [blockPos]
-     */
-    fun getMaterial(blockPos: BlockPos) = getState(blockPos)?.block?.material
-
-    /**
-     * Check [blockPos] is replaceable
-     */
-    fun isReplaceable(blockPos: BlockPos) = getMaterial(blockPos)?.isReplaceable ?: false
-
-    /**
-     * Get state from [blockPos]
-     */
-    fun getState(blockPos: BlockPos) = mc.theWorld?.getBlockState(blockPos)
-
-    /**
-     * Check if [blockPos] is clickable
-     */
-    fun canBeClicked(blockPos: BlockPos): Boolean {
-        val state = getState(blockPos) ?: return false
-        val block = state.block ?: return false
-
-        return block.canCollideCheck(state, false) && blockPos in mc.theWorld.worldBorder && !block.material.isReplaceable
-                && !block.hasTileEntity(state) && isBlockBBValid(blockPos, state, supportSlabs = true, supportPartialBlocks = true)
-                && mc.theWorld.loadedEntityList.find { it is EntityFallingBlock && it.position == blockPos } == null
-                && block !is BlockContainer && block !is BlockWorkbench
-    }
 
     /**
      * Get block name by [id]
@@ -58,8 +29,13 @@ object BlockUtils : MinecraftInstance() {
     /**
      * Check if block bounding box is full or partial (non-full)
      */
-    fun isBlockBBValid(blockPos: BlockPos, blockState: IBlockState? = null, supportSlabs: Boolean = false, supportPartialBlocks: Boolean = false): Boolean {
-        val state = blockState ?: getState(blockPos) ?: return false
+    fun isBlockBBValid(
+        blockPos: BlockPos,
+        blockState: IBlockState? = null,
+        supportSlabs: Boolean = false,
+        supportPartialBlocks: Boolean = false
+    ): Boolean {
+        val state = blockState ?: blockPos.state ?: return false
 
         val box = state.block.getCollisionBoundingBox(mc.theWorld, blockPos, state) ?: return false
 
@@ -111,7 +87,7 @@ object BlockUtils : MinecraftInstance() {
 
                     mutable.set(thePlayer.posX.toInt() + x, thePlayer.posY.toInt() + y, thePlayer.posZ.toInt() + z)
 
-                    val block = getBlock(mutable) ?: continue
+                    val block = mutable.block ?: continue
 
                     if (targetBlocks == null || targetBlocks.contains(block)) {
                         blocks[mutable.immutable] = block
@@ -134,7 +110,7 @@ object BlockUtils : MinecraftInstance() {
         for (x in thePlayer.entityBoundingBox.minX.toInt() until thePlayer.entityBoundingBox.maxX.toInt() + 1) {
             for (z in thePlayer.entityBoundingBox.minZ.toInt() until thePlayer.entityBoundingBox.maxZ.toInt() + 1) {
                 val blockPos = mutable.set(x, y, z)
-                val block = getBlock(blockPos)
+                val block = blockPos.block
 
                 if (!collide(block))
                     return false
@@ -156,10 +132,10 @@ object BlockUtils : MinecraftInstance() {
         for (x in thePlayer.entityBoundingBox.minX.toInt() until thePlayer.entityBoundingBox.maxX.toInt() + 1) {
             for (z in thePlayer.entityBoundingBox.minZ.toInt() until thePlayer.entityBoundingBox.maxZ.toInt() + 1) {
                 val blockPos = mutable.set(x, y, z)
-                val block = getBlock(blockPos)
+                val block = blockPos.block
 
                 if (collide(block)) {
-                    val boundingBox = getState(blockPos)?.let { block?.getCollisionBoundingBox(world, blockPos, it) }
+                    val boundingBox = blockPos.state?.let { block?.getCollisionBoundingBox(world, blockPos, it) }
                         ?: continue
 
                     if (thePlayer.entityBoundingBox.intersectsWith(boundingBox))

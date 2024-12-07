@@ -28,7 +28,7 @@ import net.minecraft.client.settings.KeyBinding
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 
-object InvMove : Module("InventoryMove", Category.MOVEMENT, gameDetecting = false, hideModule = false) {
+object InvMove : Module("InvMove", Category.MOVEMENT, gameDetecting = false, hideModule = false) {
 
     private val fullMovements by boolean("FullMovements", false)
     private val notInChests by boolean("NotInChests", false)

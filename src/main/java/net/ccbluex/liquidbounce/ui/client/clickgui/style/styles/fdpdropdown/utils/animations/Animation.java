@@ -18,7 +18,7 @@ public abstract class Animation {
     @Setter
     protected double endPoint;
     @Getter
-    protected Direction direction;
+    public Direction direction;
 
     public Animation(int ms, double endPoint) {
         this.duration = ms;

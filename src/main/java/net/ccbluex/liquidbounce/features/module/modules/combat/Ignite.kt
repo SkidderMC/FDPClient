@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.EntityUtils
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.RotationUtils
 import net.ccbluex.liquidbounce.utils.SilentHotbar
 import net.ccbluex.liquidbounce.utils.extensions.*
@@ -23,7 +22,6 @@ import net.minecraft.block.BlockAir
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBucket
 import net.minecraft.network.play.client.C03PacketPlayer.C05PacketPlayerLook
-import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
@@ -55,7 +53,7 @@ object Ignite : Module("Ignite", Category.COMBAT, hideModule = false) {
             if (EntityUtils.isSelected(entity, true) && !entity.isBurning) {
                 val blockPos = entity.position
 
-                if (player.getDistanceSq(blockPos) >= 22.3 || !blockPos.isReplaceable() || blockPos.getBlock() !is BlockAir)
+                if (player.getDistanceSq(blockPos) >= 22.3 || !blockPos.isReplaceable || blockPos.block !is BlockAir)
                     continue
 
                 RotationUtils.resetTicks += 1

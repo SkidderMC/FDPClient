@@ -12,8 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffol
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold.shouldGoDown
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
-import net.ccbluex.liquidbounce.utils.extensions.getBlock
+import net.ccbluex.liquidbounce.utils.extensions.block
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.blocksAmount
@@ -111,13 +110,13 @@ object Tower : MinecraftInstance(), Listenable {
         if (eventState == EventState.POST) {
             tickTimer.update()
 
-            if (!stopWhenBlockAboveValues.get() || getBlock(BlockPos(player).up(2)) == air) {
+            if (!stopWhenBlockAboveValues.get() || BlockPos(player).up(2).block == air) {
                 move()
             }
 
             val blockPos = BlockPos(player).down()
 
-            if (blockPos.getBlock() == air) {
+            if (blockPos.block == air) {
                 Scaffold.search(blockPos, !shouldGoDown, searchMode == "Area")
             }
         }

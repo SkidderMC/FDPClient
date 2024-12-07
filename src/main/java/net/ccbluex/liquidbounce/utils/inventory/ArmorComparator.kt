@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.utils.inventory
 
@@ -23,49 +23,53 @@ object ArmorComparator: MinecraftInstance() {
 		// Their indices are always null to prevent any accidental impossible interactions when searching through chests
 		val equippedArmorWhenInChest =
 			if (thePlayer.openContainer.windowId != 0)
-				// Filter out any non armor items player could be equipped (skull / pumpkin)
+			// Filter out any non armor items player could be equipped (skull / pumpkin)
 				thePlayer.inventory.armorInventory.toList().indexedArmorStacks { null }
 			else emptyList()
 
 		val inventoryStacks = stacks.indexedArmorStacks()
 
-		val armorMap =
-			(droppedStacks + equippedArmorWhenInChest + inventoryStacks)
-				.asSequence()
-				.sortedBy { (index, stack) ->
-					// Sort items by distance from player, equipped items are always preferred with distance -1
-					if (index == -1)
-						thePlayer.getDistanceSqToEntity(entityStacksMap?.get(stack) ?: return@sortedBy -1.0)
-					else -1.0
-				}
-				// Prioritise sets that are in lower parts of inventory (not in chest) or equipped, prevents stealing multiple armor duplicates.
-				.sortedByDescending {
-					if (it.second in thePlayer.inventory.armorInventory) Int.MAX_VALUE
-					else it.first ?: Int.MAX_VALUE
-				}
-				// Prioritise sets with more durability, enchantments
-				.sortedByDescending { it.second.totalDurability }
-				.sortedByDescending { it.second.enchantmentCount }
-				.sortedByDescending { it.second.enchantmentSum }
-				.groupBy { (it.second.item as ItemArmor).armorType }
+		val comparator = Comparator.comparingDouble<Pair<Int?, ItemStack>> { (index, stack) ->
+			// Sort items by distance from player, equipped items are always preferred with distance -1
+			if (index == -1)
+				thePlayer.getDistanceSqToEntity(entityStacksMap?.get(stack) ?: return@comparingDouble -1.0)
+			else -1.0
+		}.thenComparingInt { (index, stack) ->
+			// Prioritise sets that are in lower parts of inventory (not in chest) or equipped, prevents stealing multiple armor duplicates.
+			if (stack in thePlayer.inventory.armorInventory) Int.MIN_VALUE
+			else index?.inv() ?: Int.MIN_VALUE
+		}.thenComparingInt {
+			if (it.second in thePlayer.inventory.armorInventory) Int.MAX_VALUE
+			else it.first ?: Int.MAX_VALUE
+		}.thenComparingInt {
+			// Prioritise sets with more durability, enchantments
+			-it.second.totalDurability
+		}.thenComparingInt {
+			-it.second.enchantmentCount
+		}.thenComparingInt {
+			-it.second.enchantmentSum
+		}
+
+		val armorMap = (droppedStacks + equippedArmorWhenInChest + inventoryStacks)
+			.sortedWith(comparator)
+			.groupBy { (it.second.item as ItemArmor).armorType }
 
 		val helmets = armorMap[0] ?: NULL_LIST
 		val chestplates = armorMap[1] ?: NULL_LIST
 		val leggings = armorMap[2] ?: NULL_LIST
 		val boots = armorMap[3] ?: NULL_LIST
 
-		val armorCombinations =
-			helmets.flatMap { helmet ->
-				chestplates.flatMap { chestplate ->
-					leggings.flatMap { leggings ->
-						boots.map { boots ->
-							ArmorSet(helmet, chestplate, leggings, boots)
+		return sequence {
+			helmets.forEach { helmet ->
+				chestplates.forEach { chestplate ->
+					leggings.forEach { leggings ->
+						boots.forEach { boots ->
+							yield(ArmorSet(helmet, chestplate, leggings, boots))
 						}
 					}
 				}
 			}
-
-		return armorCombinations.maxByOrNull { it.defenseFactor }
+		}.maxByOrNull { it.defenseFactor }
 	}
 }
 
@@ -81,7 +85,7 @@ object ArmorComparator: MinecraftInstance() {
  *         and an ItemStack. Only ItemStacks where the item is an instance of ItemArmor are included in the list.
  *         If the iterable is null, an empty list is returned.
  */
-private fun Iterable<ItemStack?>?.indexedArmorStacks(indexCallback: (Int) -> Int? = { it }): List<Pair<Int?, ItemStack>> =
+private inline fun Iterable<ItemStack?>?.indexedArmorStacks(indexCallback: (Int) -> Int? = { it }): List<Pair<Int?, ItemStack>> =
 	this?.mapIndexedNotNull { index, stack ->
 		if (stack?.item is ItemArmor) indexCallback(index) to stack
 		else null

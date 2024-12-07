@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlockIntersects
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
+import net.ccbluex.liquidbounce.utils.extensions.block
 import net.ccbluex.liquidbounce.value.choices
 import net.ccbluex.liquidbounce.value.float
 import net.ccbluex.liquidbounce.value.int
@@ -94,7 +94,7 @@ object FastClimb : Module("FastClimb", Category.MOVEMENT) {
                     else -> {}
                 }
 
-                val block = getBlock(BlockPos(thePlayer.posX + x, thePlayer.posY, thePlayer.posZ + z))
+                val block = BlockPos(thePlayer.posX + x, thePlayer.posY, thePlayer.posZ + z).block
 
                 if (block is BlockLadder || block is BlockVine) {
                     event.y = 0.5
@@ -129,7 +129,7 @@ object FastClimb : Module("FastClimb", Category.MOVEMENT) {
 
             mode == "Clip" && thePlayer.isOnLadder && mc.gameSettings.keyBindForward.isKeyDown -> {
                 for (i in thePlayer.posY.toInt()..thePlayer.posY.toInt() + 8) {
-                    val block = getBlock(BlockPos(thePlayer.posX, i.toDouble(), thePlayer.posZ))
+                    val block = BlockPos(thePlayer.posX, i.toDouble(), thePlayer.posZ).block
 
                     if (block !is BlockLadder) {
                         var x = 0.0

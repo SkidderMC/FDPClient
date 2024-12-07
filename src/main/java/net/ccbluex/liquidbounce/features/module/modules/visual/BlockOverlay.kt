@@ -11,8 +11,6 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.canBeClicked
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
@@ -49,7 +47,7 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
         get() {
             val blockPos = mc.objectMouseOver?.blockPos ?: return null
 
-            if (canBeClicked(blockPos) && mc.theWorld.worldBorder.contains(blockPos))
+            if (blockPos.canBeClicked() && mc.theWorld.worldBorder.contains(blockPos))
                 return blockPos
 
             return null
@@ -59,7 +57,7 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
     fun onRender3D(event: Render3DEvent) {
         val blockPos = currentBlock ?: return
 
-        val block = getBlock(blockPos) ?: return
+        val block = blockPos.block ?: return
 
         val color = if (colorRainbow) rainbow(alpha = 0.4F) else Color(
             colorRed,
@@ -108,7 +106,7 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
     fun onRender2D(event: Render2DEvent) {
         if (info) {
             val blockPos = currentBlock ?: return
-            val block = getBlock(blockPos) ?: return
+            val block = blockPos.block ?: return
 
             val info = "${block.localizedName} §7ID: ${Block.getIdFromBlock(block)}"
             val (width, height) = ScaledResolution(mc)

@@ -125,7 +125,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
             val pos = if (scannerMode == "Nearest") defenceBlocks.minByOrNull { it.distanceSq(playerPos) }
                 ?: return else defenceBlocks.random()
             val blockPos = BlockPos(pos.x.toDouble(), pos.y - player.eyeHeight + 1.5, pos.z.toDouble())
-            val rotation = RotationUtils.toRotation(blockPos.getVec(), false, player)
+            val rotation = RotationUtils.toRotation(blockPos.center, false, player)
             val raytrace = performBlockRaytrace(rotation, mc.playerController.blockReachDistance) ?: return
 
             if (options.rotationsActive) {
@@ -253,7 +253,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
         return when (raycastMode.lowercase()) {
             "normal" -> {
                 val eyesPos = player.eyes
-                val movingObjectPosition = world.rayTraceBlocks(eyesPos, pos.getVec(), false, true, false)
+                val movingObjectPosition = world.rayTraceBlocks(eyesPos, pos.center, false, true, false)
 
                 movingObjectPosition != null && movingObjectPosition.blockPos == pos
             }

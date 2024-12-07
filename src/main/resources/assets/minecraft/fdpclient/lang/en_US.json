@@ -198,7 +198,7 @@
     "module.chatControl.description": "Controlling your chat, changing chat limits and stuff like that.",
     "module.discordRPCModule.description": "Shows client activity in your discord profile.",
     "module.hudDesigner.description": "Customising your hud.",
-    "module.ircModule.description": "Separate chat for client users.",
+    "module.IRCModule.description": "Separate chat for client users.",
     "module.noAchievement.description": "Removes the display of in-game achievements.",
     "module.snakeGame.description": "The snake game is right in the client snif snif.",
     "module.target.description": "Targeting players, mobs, animals, etc.",

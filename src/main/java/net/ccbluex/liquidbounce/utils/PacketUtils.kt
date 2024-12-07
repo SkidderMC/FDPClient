@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils
 
-import com.google.common.collect.Queues
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
 import net.ccbluex.liquidbounce.features.module.modules.combat.FakeLag
@@ -23,7 +22,7 @@ import kotlin.math.roundToInt
 
 object PacketUtils : MinecraftInstance(), Listenable {
 
-    val queuedPackets = Queues.newArrayDeque<Packet<*>>()
+    val queuedPackets = ArrayDeque<Packet<*>>()
 
     @EventTarget(priority = 2)
     fun onTick(event: GameTickEvent) {

@@ -8,12 +8,10 @@ package net.ccbluex.liquidbounce.features.module.modules.movement
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlockIntersects
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.value.*
-import net.minecraft.block.Block
 import net.minecraft.block.BlockAir
 import net.minecraft.block.BlockLadder
 import net.minecraft.network.play.client.C03PacketPlayer
@@ -24,9 +22,9 @@ import kotlin.math.floor
 import kotlin.math.sin
 
 object Spider : Module("Spider", Category.MOVEMENT, hideModule = false) {
-
+    
     private val modeValue by choices("Mode", arrayOf("Collide", "Motion", "AAC3.3.12", "AAC4", "Checker", "Vulcan"), "Collide")
-    private val motionValue by float("Motion", 0.42F, 0.1F.. 1F) { modeValue == "Motion" }
+    private val motionValue by float("Motion", 0.42F, 0.1F..1F) { modeValue == "Motion" }
     private val avoidLadderValue by boolean("AvoidLadder", false)
 
     private var groundHeight = 0.0
@@ -36,147 +34,180 @@ object Spider : Module("Spider", Category.MOVEMENT, hideModule = false) {
 
     @EventTarget
     fun onUpdate(event: UpdateEvent) {
-        if(wasTimer) {
-            mc.timer.timerSpeed = 1.0f
-        }
+        resetTimerIfNeeded()
+        if (!canExecuteMovementLogic()) return
 
-        if (!mc.thePlayer.isCollidedHorizontally || !mc.thePlayer.isMoving) {
-            if (!collideBlockIntersects(mc.thePlayer.entityBoundingBox) { block: Block? -> block !is BlockAir } || !mc.thePlayer.isMoving) {
-                ticks = 0
-                return
-            }
-        }
-
-        val block = BlockUtils.getBlock(BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ))
-        if (block is BlockLadder && avoidLadderValue) return
-
-        if(modeValue == "AAC4" && (mc.thePlayer.motionY < 0.0 || mc.thePlayer.onGround)) {
-            glitch = true
-        }
-
-        if (mc.thePlayer.onGround) {
-            groundHeight = mc.thePlayer.posY
-        }
+        if (avoidLadderValue && isBlockAboveLadder()) return
+        updateGroundHeight()
 
         when (modeValue.lowercase()) {
-            "collide"-> {
-                if (mc.thePlayer.onGround) {
-                    mc.thePlayer.jump()
-                }
-            }
-
-            "aac4" -> {
-                if (mc.thePlayer.onGround) {
-                    mc.thePlayer.jump()
-                    wasTimer = true
-                    mc.timer.timerSpeed = 0.4f
-                }
-            }
-
-            "aac3.3.12" -> {
-                if (mc.thePlayer.onGround) {
-                    ticks = 0
-                }
-                ticks++
-                when (ticks) {
-                    1, 12, 23 -> mc.thePlayer.motionY = 0.43
-                    29 -> mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.5, mc.thePlayer.posZ)
-                    else -> if (ticks >= 30) {
-                        ticks = 0
-                    }
-                }
-            }
-
-            "motion" -> {
-                mc.thePlayer.motionY = motionValue.toDouble()
-            }
-
-            "checker" -> {
-                if (mc.thePlayer.isCollidedHorizontally && mc.thePlayer.onGround) {
-                    mc.thePlayer.jump()
-                }
-            }
-
-            "vulcan" -> {
-                if (mc.thePlayer.onGround) {
-                    ticks = 0
-                    mc.thePlayer.jump()
-                }
-                if (ticks >= 3) {
-                    ticks = 0
-                }
-                ticks++
-                when (ticks) {
-                    2, 3 -> {
-                        mc.thePlayer.jump()
-                        MovementUtils.resetMotion(false)
-                    }
-                }
-            }
+            "collide" -> handleCollideMode()
+            "aac4" -> handleAAC4Mode()
+            "aac3.3.12" -> handleAAC3Mode()
+            "motion" -> handleMotionMode()
+            "checker" -> handleCheckerMode()
+            "vulcan" -> handleVulcanMode()
         }
     }
+
     @EventTarget
     fun onMove(event: MoveEvent) {
-        val isInsideBlock = collideBlockIntersects(mc.thePlayer.entityBoundingBox) { block: Block? -> block !is BlockAir }
-        if (isInsideBlock && modeValue == "Checker" && mc.thePlayer.movementInput.moveForward > 0.0) {
+        if (shouldHaltMovementForChecker()) {
             event.x = 0.0
             event.z = 0.0
             event.y = motionValue.toDouble()
         }
     }
-    
+
     @EventTarget
     fun onPacket(event: PacketEvent) {
         val packet = event.packet
-        if (packet is C03PacketPlayer && glitch) {
+
+        if (packet is C03PacketPlayer) {
+            handlePacketForGlitch(packet)
+            handlePacketForVulcan(packet)
+        }
+    }
+
+    @EventTarget
+    fun onBlockBB(event: BlockBBEvent) {
+        if (shouldOverrideBoundingBoxForChecker(event)) {
+            event.boundingBox = AxisAlignedBB.fromBounds(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+        }
+
+        if (shouldOverrideBoundingBoxForModes(event)) {
+            event.boundingBox = AxisAlignedBB.fromBounds(
+                event.x.toDouble(),
+                event.y.toDouble(),
+                event.z.toDouble(),
+                event.x + 1.0,
+                floor(mc.thePlayer.posY),
+                event.z + 1.0
+            )
+        }
+    }
+
+    override fun onDisable() {
+        resetTimer()
+        wasTimer = false
+    }
+
+    private fun resetTimerIfNeeded() {
+        if (wasTimer) {
+            mc.timer.timerSpeed = 1.0f
+        }
+    }
+
+    private fun canExecuteMovementLogic(): Boolean {
+        return mc.thePlayer.isCollidedHorizontally && mc.thePlayer.isMoving &&
+                collideBlockIntersects(mc.thePlayer.entityBoundingBox) { block -> block !is BlockAir }
+    }
+
+    private fun isBlockAboveLadder(): Boolean {
+        val blockAbovePlayer = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY + 1, mc.thePlayer.posZ)
+        return mc.theWorld.getBlockState(blockAbovePlayer).block is BlockLadder
+    }
+
+    private fun updateGroundHeight() {
+        if (mc.thePlayer.onGround) {
+            groundHeight = mc.thePlayer.posY
+        }
+    }
+
+    private fun handleCollideMode() {
+        if (mc.thePlayer.onGround) {
+            mc.thePlayer.jump()
+        }
+    }
+
+    private fun handleAAC4Mode() {
+        if (mc.thePlayer.onGround) {
+            mc.thePlayer.jump()
+            wasTimer = true
+            mc.timer.timerSpeed = 0.4f
+        }
+    }
+
+    private fun handleAAC3Mode() {
+        if (mc.thePlayer.onGround) ticks = 0
+        ticks++
+
+        when (ticks) {
+            1, 12, 23 -> mc.thePlayer.motionY = 0.43
+            29 -> mc.thePlayer.setPosition(mc.thePlayer.posX, mc.thePlayer.posY + 0.5, mc.thePlayer.posZ)
+            else -> if (ticks >= 30) ticks = 0
+        }
+    }
+
+    private fun handleMotionMode() {
+        mc.thePlayer.motionY = motionValue.toDouble()
+    }
+
+    private fun handleCheckerMode() {
+        if (mc.thePlayer.isCollidedHorizontally && mc.thePlayer.onGround) {
+            mc.thePlayer.jump()
+        }
+    }
+
+    private fun handleVulcanMode() {
+        if (mc.thePlayer.onGround) {
+            ticks = 0
+            mc.thePlayer.jump()
+        }
+        ticks++
+
+        if (ticks in 2..3) {
+            mc.thePlayer.jump()
+            MovementUtils.resetMotion(false)
+        }
+    }
+
+    private fun shouldHaltMovementForChecker(): Boolean {
+        return modeValue == "Checker" &&
+                collideBlockIntersects(mc.thePlayer.entityBoundingBox) { block -> block !is BlockAir } &&
+                mc.thePlayer.movementInput.moveForward > 0.0
+    }
+
+    private fun handlePacketForGlitch(packet: C03PacketPlayer) {
+        if (glitch) {
             glitch = false
             val yaw = MovementUtils.direction.toFloat()
             packet.x -= sin(yaw) * 0.00000001
             packet.z += cos(yaw) * 0.00000001
         }
-        if (packet is C03PacketPlayer && modeValue == "Vulcan") {
+    }
+
+    private fun handlePacketForVulcan(packet: C03PacketPlayer) {
+        if (modeValue == "Vulcan") {
             when (ticks) {
                 3 -> {
                     val yaw = MovementUtils.direction.toFloat()
-                    val randomModulo = Math.random() * 0.03 + 0.22
+                    val randomOffset = Math.random() * 0.03 + 0.22
                     packet.y -= 0.1
-                    packet.x += sin(yaw) * randomModulo
-                    packet.z -= cos(yaw) * randomModulo
+                    packet.x += sin(yaw) * randomOffset
+                    packet.z -= cos(yaw) * randomOffset
                 }
-
-                2 -> {
-                    packet.onGround = true
-                }
+                2 -> packet.onGround = true
             }
         }
     }
-    
-    override fun onDisable() {
-        mc.timer.timerSpeed = 1f
-        wasTimer = false
+
+    private fun shouldOverrideBoundingBoxForChecker(event: BlockBBEvent): Boolean {
+        return modeValue == "Checker" &&
+                (collideBlockIntersects(mc.thePlayer.entityBoundingBox) { block -> block !is BlockAir } ||
+                        mc.thePlayer.isCollidedHorizontally)
     }
 
-    @EventTarget
-    fun onBlockBB(event: BlockBBEvent) {
-        if (modeValue == "Checker" && (collideBlockIntersects(mc.thePlayer.entityBoundingBox) { block: Block? -> block !is BlockAir } || mc.thePlayer.isCollidedHorizontally)) {
-            if(event.y > mc.thePlayer.posY)
-                event.boundingBox = AxisAlignedBB.fromBounds(0.0, 0.0, 0.0,
-                    0.0, 0.0, 0.0)
-        }
-
-        if (!mc.thePlayer.isCollidedHorizontally || !mc.thePlayer.isMoving) {
-            return
-        }
-
-        if (mc.thePlayer.motionY > 0.0) return
-
-        when (modeValue.lowercase()) {
-            "collide", "aac4" -> {
-                event.boundingBox = AxisAlignedBB.fromBounds(event.x.toDouble(), event.y.toDouble(), event.z.toDouble(),
-                    event.x + 1.0, floor(mc.thePlayer.posY), event.z + 1.0)
-            }
-        }
+    private fun shouldOverrideBoundingBoxForModes(event: BlockBBEvent): Boolean {
+        return (modeValue == "Collide" || modeValue == "AAC4") &&
+                mc.thePlayer.isCollidedHorizontally &&
+                mc.thePlayer.motionY <= 0.0
     }
+
+    private fun resetTimer() {
+        mc.timer.timerSpeed = 1.0f
+    }
+
     override val tag: String
         get() = modeValue
 }

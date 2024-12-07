@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
+import net.ccbluex.liquidbounce.utils.extensions.block
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.value.boolean
 import net.ccbluex.liquidbounce.value.float
@@ -32,7 +32,7 @@ object Eagle : Module("Eagle", Category.PLAYER, hideModule = false) {
     fun onUpdate(event: UpdateEvent) {
         val thePlayer = mc.thePlayer ?: return
 
-        if (thePlayer.onGround && getBlock(BlockPos(thePlayer).down()) == air) {
+        if (thePlayer.onGround && BlockPos(thePlayer).down().block == air) {
             val shouldSneak = !onlyWhenLookingDown || thePlayer.rotationPitch >= lookDownThreshold
 
             if (shouldSneak && !GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {

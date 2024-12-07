@@ -37,6 +37,10 @@ import kotlin.math.sqrt
 // made by opZywl
 object FireFlies : Module("FireFlies", Category.VISUAL, hideModule = false) {
 
+    init {
+        state = true
+    }
+
     private val darkImprint by boolean("DarkImprint", false)
     private val lighting by boolean("Lighting", false)
     private val spawnDelay by float("SpawnDelay", 3.0f, 1.0f..10.0f)

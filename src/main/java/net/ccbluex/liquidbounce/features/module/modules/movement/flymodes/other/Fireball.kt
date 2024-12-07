@@ -32,7 +32,8 @@ object Fireball : FlyMode("Fireball") {
         val fireballSlot = InventoryUtils.findItem(36, 44, Items.fire_charge) ?: return
 
         if (autoFireball != "Off") {
-            SilentHotbar.selectSlotSilently(this,
+            SilentHotbar.selectSlotSilently(
+                this,
                 fireballSlot,
                 immediate = true,
                 render = autoFireball == "Pick",
@@ -43,7 +44,8 @@ object Fireball : FlyMode("Fireball") {
         if (event.eventState != EventState.POST)
             return
 
-        val customRotation = Rotation(if (Flight.invertYaw) RotationUtils.invertYaw(player.rotationYaw) else player.rotationYaw,
+        val customRotation = Rotation(
+            if (Flight.invertYaw) RotationUtils.invertYaw(player.rotationYaw) else player.rotationYaw,
             Flight.rotationPitch
         )
 
@@ -51,7 +53,7 @@ object Fireball : FlyMode("Fireball") {
             Flight.firePosition = BlockPos(player.posX, player.posY - 1, player.posZ)
         }
 
-        val smartRotation = Flight.firePosition?.getVec()?.let { RotationUtils.toRotation(it, false, player) }
+        val smartRotation = Flight.firePosition?.center?.let { RotationUtils.toRotation(it, false, player) }
         val rotation = if (Flight.pitchMode == "Custom") customRotation else smartRotation
 
         if (options.rotationsActive && rotation != null) {

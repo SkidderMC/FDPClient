@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
+import net.ccbluex.liquidbounce.utils.extensions.block
 import net.ccbluex.liquidbounce.value.boolean
 import net.ccbluex.liquidbounce.value.choices
 import net.ccbluex.liquidbounce.value.float
@@ -29,7 +29,7 @@ object HighJump : Module("HighJump", Category.MOVEMENT) {
     fun onUpdate(event: UpdateEvent) {
         val thePlayer = mc.thePlayer
 
-        if (glass && getBlock(BlockPos(thePlayer)) !is BlockPane)
+        if (glass && BlockPos(thePlayer).block !is BlockPane)
             return
 
         when (mode.lowercase()) {
@@ -44,7 +44,7 @@ object HighJump : Module("HighJump", Category.MOVEMENT) {
     fun onMove(event: MoveEvent) {
         val thePlayer = mc.thePlayer ?: return
 
-        if (glass && getBlock(BlockPos(thePlayer)) !is BlockPane)
+        if (glass && BlockPos(thePlayer).block !is BlockPane)
             return
         if (!thePlayer.onGround) {
             if ("mineplex" == mode.lowercase()) {
@@ -57,7 +57,7 @@ object HighJump : Module("HighJump", Category.MOVEMENT) {
     fun onJump(event: JumpEvent) {
         val thePlayer = mc.thePlayer ?: return
 
-        if (glass && getBlock(BlockPos(thePlayer)) !is BlockPane)
+        if (glass && BlockPos(thePlayer).block !is BlockPane)
             return
         when (mode.lowercase()) {
             "vanilla" -> event.motion *= height

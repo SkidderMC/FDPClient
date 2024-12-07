@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.BlinkUtils
 import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.SimulatedPlayer
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
+import net.ccbluex.liquidbounce.utils.extensions.block
 import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
 import net.ccbluex.liquidbounce.utils.extensions.component3
@@ -84,7 +84,7 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
 
         val thePlayer = mc.thePlayer ?: return
 
-        if (thePlayer.onGround && getBlock(BlockPos(thePlayer).down()) !is BlockAir) {
+        if (thePlayer.onGround && BlockPos(thePlayer).down().block !is BlockAir) {
             prevX = thePlayer.prevPosX
             prevY = thePlayer.prevPosY
             prevZ = thePlayer.prevPosZ

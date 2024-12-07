@@ -3,140 +3,133 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown
 
-import net.ccbluex.liquidbounce.features.module.Category;
-import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.SideGui;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl.SettingComponents;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.EaseBackIn;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils;
-import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner;
-import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
-import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.input.Mouse;
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.SideGui
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl.SettingComponents
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.EaseBackIn
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
+import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager.color
+import net.minecraft.util.ResourceLocation
+import org.lwjgl.input.Mouse
 
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.*
 
-public class FDPDropdownClickGUI extends GuiScreen {
-    private final SideGui sideGui = new SideGui();
-    public static String Name = "FDPClient";
-    public static String version = "";
-    public static String username;
-    private Animation openingAnimation;
-    private EaseBackIn fadeAnimation;
-    private DecelerateAnimation configHover;
-    private final ResourceLocation hudIcon = new ResourceLocation("fdpclient/custom_hud_icon.png");
-    private List<MainScreen> categoryPanels;
+class FDPDropdownClickGUI : GuiScreen() {
+    private val sideGui = SideGui()
 
-    @Override
-    public void initGui() {
+    private lateinit var openingAnimation: Animation
+    private lateinit var fadeAnimation: EaseBackIn
+    private lateinit var configHover: DecelerateAnimation
+    private val hudIcon = ResourceLocation("${CLIENT_NAME.lowercase()}/custom_hud_icon.png")
+    private var categoryPanels: MutableList<MainScreen>? = null
+
+    override fun initGui() {
         if (categoryPanels == null || Main.reloadModules) {
-            categoryPanels = new ArrayList() {{
-                for (Category category : Category.values()) {
-                    //
-                    add(new MainScreen(category));
+            categoryPanels = mutableListOf<MainScreen>().apply {
+                Category.entries.forEach { category ->
+                    add(MainScreen(category))
                 }
-            }};
-            Main.reloadModules = false;
+            }
+            Main.reloadModules = false
         }
-        sideGui.initGui();
-        fadeAnimation = new EaseBackIn(400, 1, 2f);
-        openingAnimation = new EaseBackIn(400, .4f, 2f);
-        configHover = new DecelerateAnimation(250, 1);
+        sideGui.initGui()
+        fadeAnimation = EaseBackIn(400, 1.0, 2.0f)
+        openingAnimation = EaseBackIn(400, 0.4, 2.0f)
+        configHover = DecelerateAnimation(250, 1.0)
 
-        for (MainScreen catPanels : categoryPanels) {
-            catPanels.animation = fadeAnimation;
-            catPanels.openingAnimation = openingAnimation;
-            catPanels.initGui();
+        categoryPanels?.forEach { panel ->
+            panel.animation = fadeAnimation
+            panel.openingAnimation = openingAnimation
+            panel.initGui()
         }
     }
 
-    @Override
-    protected void keyTyped(char typedChar, int keyCode) {
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (keyCode == 1) {
-            openingAnimation.setDirection(Direction.BACKWARDS);
-        //    sideGui.focused = false;
-            fadeAnimation.setDirection(openingAnimation.getDirection());
+            openingAnimation.direction = Direction.BACKWARDS
+            fadeAnimation.direction = openingAnimation.direction
         }
-        sideGui.keyTyped(typedChar, keyCode);
-        categoryPanels.forEach(categoryPanel -> categoryPanel.keyTyped(typedChar, keyCode));
+        sideGui.keyTyped(typedChar, keyCode)
+        categoryPanels?.forEach { it.keyTyped(typedChar, keyCode) }
     }
 
-    @Override
-    public boolean doesGuiPauseGame() {
-        return false;
+    override fun doesGuiPauseGame(): Boolean {
+        return false
     }
 
-    @Override
-    public void drawScreen(int mouseX, int mouseY, float partialTicks) {
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        AWTFontRenderer.assumeNonVolatile
 
-        AWTFontRenderer.Companion.setAssumeNonVolatile(true);
-
-        if (Mouse.isButtonDown(0) && mouseX >= 5 && mouseX <= 50 && mouseY <= height - 5 && mouseY >= height - 50)
-            mc.displayGuiScreen(new GuiHudDesigner());
-        RenderUtils.INSTANCE.drawImage(hudIcon, 9, height - 41, 32, 32);
+        if (Mouse.isButtonDown(0) && mouseX in 5..50 && mouseY in (height - 50)..(height - 5)) {
+            mc.displayGuiScreen(GuiHudDesigner())
+        }
+        RenderUtils.drawImage(hudIcon, 9, (height - 41), 32, 32)
 
         if (Main.reloadModules) {
-            initGui();
+            initGui()
         }
 
-        if (openingAnimation.isDone() && openingAnimation.getDirection().equals(Direction.BACKWARDS)) {
-            mc.displayGuiScreen(null);
-            return;
+        if (openingAnimation.isDone && openingAnimation.direction == Direction.BACKWARDS) {
+            mc.displayGuiScreen(null)
+            return
         }
 
-        boolean focusedConfigGui = sideGui.focused;
-        int fakeMouseX = focusedConfigGui ? 0 : mouseX, fakeMouseY = focusedConfigGui ? 0 : mouseY;
-        ScaledResolution sr = new ScaledResolution(mc);
+        val focusedConfigGui = sideGui.focused
+        val fakeMouseX = if (focusedConfigGui) 0 else mouseX
+        val fakeMouseY = if (focusedConfigGui) 0 else mouseY
+        val sr = ScaledResolution(mc)
 
-        boolean hoveringConfig = DrRenderUtils.isHovering(width - 120, height - 65, 75, 25, fakeMouseX, fakeMouseY);
+        val hoveringConfig = DrRenderUtils.isHovering(
+            (width - 120).toFloat(), (height - 65).toFloat(), 75F, 25F, fakeMouseX, fakeMouseY
+        )
 
-        configHover.setDirection(hoveringConfig ? Direction.FORWARDS : Direction.BACKWARDS);
-        int alphaAnimation = Math.max(0, Math.min(255, (int) (255 * fadeAnimation.getOutput())));
+        configHover.direction = if (hoveringConfig) Direction.FORWARDS else Direction.BACKWARDS
+        val alphaAnimation = (255 * fadeAnimation.output).toInt().coerceIn(0, 255)
 
-        GlStateManager.color(1, 1, 1, 1);
+        color(1f, 1f, 1f, 1f)
 
-        SettingComponents.scale = (float) (openingAnimation.getOutput() + .6f);
-        DrRenderUtils.scale(sr.getScaledWidth() / 2f, sr.getScaledHeight() / 2f, (float) openingAnimation.getOutput() + .6f, () -> {
-            for (MainScreen catPanels : categoryPanels) {
-                catPanels.drawScreen(fakeMouseX, fakeMouseY);
-            }
+        SettingComponents.scale = (openingAnimation.output + 0.6f).toFloat()
+        DrRenderUtils.scale(
+            sr.scaledWidth / 2f, sr.scaledHeight / 2f, (openingAnimation.output + 0.6f).toFloat()
+        ) {
+            categoryPanels?.forEach { it.drawScreen(fakeMouseX, fakeMouseY) }
+            sideGui.drawScreen(mouseX, mouseY, partialTicks, alphaAnimation)
+        }
 
-            sideGui.drawScreen(mouseX, mouseY, partialTicks, alphaAnimation);
-        });
+        drawBloom(
+            mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor, true)
+        )
 
-        RenderUtils.INSTANCE.drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, new Color(HUDModule.INSTANCE.getGuiColor()));
-
-        AWTFontRenderer.Companion.setAssumeNonVolatile(false);
+        AWTFontRenderer.assumeNonVolatile
     }
 
-    @Override
-    protected void mouseClicked(int mouseX, int mouseY, int mouseButton) {
-        boolean focused = sideGui.focused;
-        sideGui.mouseClicked(mouseX, mouseY, mouseButton);
+    override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+        val focused = sideGui.focused
+        sideGui.mouseClicked(mouseX, mouseY, mouseButton)
         if (!focused) {
-            categoryPanels.forEach(cat -> cat.mouseClicked(mouseX, mouseY, mouseButton));
+            categoryPanels?.forEach { it.mouseClicked(mouseX, mouseY, mouseButton) }
         }
     }
 
-    @Override
-    protected void mouseReleased(int mouseX, int mouseY, int state) {
-        boolean focused = sideGui.focused;
-        sideGui.mouseReleased(mouseX, mouseY, state);
+    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
+        val focused = sideGui.focused
+        sideGui.mouseReleased(mouseX, mouseY, state)
         if (!focused) {
-            categoryPanels.forEach(cat -> cat.mouseReleased(mouseX, mouseY, state));
+            categoryPanels?.forEach { it.mouseReleased(mouseX, mouseY, state) }
         }
     }
-
 }

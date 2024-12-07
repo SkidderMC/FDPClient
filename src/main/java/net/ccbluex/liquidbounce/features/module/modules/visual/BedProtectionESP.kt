@@ -12,9 +12,9 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlock
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
 import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
+import net.ccbluex.liquidbounce.utils.extensions.block
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
@@ -70,7 +70,7 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
 
             while (currentLayerBlocks.isNotEmpty()) {
                 val currBlock = currentLayerBlocks.removeFirst()
-                val currBlockID = getIdFromBlock(getBlock(currBlock))
+                val currBlockID = getIdFromBlock(currBlock.block)
 
                 // it's not necessary to make protection layers around unbreakable blocks
                 if (breakableBlockIDs.contains(currBlockID) || (currBlockID == targetBlockID) || (allLayers && currBlockID == 0)) {
@@ -86,10 +86,10 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
                         blocksAround.add(currBlock.down())
                     }
 
-                    blocksAround.filterTo(nextLayerAirBlocks) { blockPos -> getBlock(blockPos) == air }
+                    blocksAround.filterTo(nextLayerAirBlocks) { blockPos -> blockPos.block == air }
 
                     blocksAround.filterTo(nextLayerBlocks) { blockPos ->
-                        (allLayers || getBlock(blockPos) != air) && !cachedBlocks.contains(
+                        (allLayers || blockPos.block != air) && !cachedBlocks.contains(
                             blockPos
                         )
                     }
