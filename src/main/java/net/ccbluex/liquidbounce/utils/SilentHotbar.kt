@@ -7,7 +7,10 @@
 
 package net.ccbluex.liquidbounce.utils
 
-import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.event.ClientSlotChange
+import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.event.PacketEvent
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 
 object SilentHotbar : Listenable, MinecraftInstance() {
@@ -21,6 +24,7 @@ object SilentHotbar : Listenable, MinecraftInstance() {
         get() = hotbarState?.enforcedSlot ?: mc.thePlayer?.inventory?.currentItem ?: 0
 
     var ignoreSlotChange = false
+    var pressedAtSlot = false
 
     /**
      * Silently switches the player's current slot to the given [slot]
@@ -50,10 +54,9 @@ object SilentHotbar : Listenable, MinecraftInstance() {
     fun resetSlot(requester: Any? = null, immediate: Boolean = false) {
         val state = hotbarState ?: return
 
-        originalSlot = null
-
         if (requester == null || state.requester == requester) {
             hotbarState = null
+            originalSlot = null
 
             if (requester != null && immediate) {
                 mc.playerController?.syncCurrentPlayItem()
@@ -89,7 +92,9 @@ object SilentHotbar : Listenable, MinecraftInstance() {
         return if (option || state.render) currentSlot else original
     }
 
-    private fun shouldReset(slot: Int, other: Int? = originalSlot) = slot != other && hotbarState?.resetManually == true
+    private fun shouldReset(slot: Int, other: Int? = originalSlot, keyPressCheck: Boolean = false): Boolean {
+        return (slot != other || keyPressCheck) && hotbarState?.resetManually == true
+    }
 
     @EventTarget
     fun onSlotChange(event: ClientSlotChange) {
@@ -108,7 +113,7 @@ object SilentHotbar : Listenable, MinecraftInstance() {
          * When the user performs a slot switch and [SilentHotbarState.resetManually] is active,
          * it lets the user's slot change override [currentSlot]
          */
-        if (originalSlot != null && shouldReset(event.supposedSlot, originalSlot)) {
+        if (originalSlot != null && shouldReset(event.supposedSlot, originalSlot, pressedAtSlot)) {
             resetSlot()
 
             event.modifiedSlot = event.supposedSlot

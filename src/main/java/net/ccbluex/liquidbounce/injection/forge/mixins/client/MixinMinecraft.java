@@ -306,6 +306,15 @@ public abstract class MixinMinecraft {
         return SilentHotbar.INSTANCE.getCurrentSlot();
     }
 
+    @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;dispatchKeypresses()V"))
+    private void injectSilentHotbarManualPressReset(CallbackInfo ci) {
+        SilentHotbar.INSTANCE.setPressedAtSlot(false);
+    }
+    @Inject(method = "runTick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/entity/EntityPlayerSP;inventory:Lnet/minecraft/entity/player/InventoryPlayer;"))
+    private void injectSilentHotbarManualPressDetection(CallbackInfo ci) {
+        SilentHotbar.INSTANCE.setPressedAtSlot(true);
+    }
+
     /**
      * @author CCBlueX
      */
