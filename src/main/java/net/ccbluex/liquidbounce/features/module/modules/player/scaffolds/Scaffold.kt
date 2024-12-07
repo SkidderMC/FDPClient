@@ -228,6 +228,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         0f,
         0f..0.5f
     ) { eagleValue.isSupported() && eagle != "Off" }
+    private val onlyOnGround by boolean("OnlyOnGround", false)
+    { eagleValue.isSupported() && eagle != "Off" }
 
     // Rotation Options
     private val modeList = choices("Rotations", arrayOf("Off", "Normal", "Stabilized", "ReverseYaw", "GodBridge"), "Normal")
@@ -328,7 +330,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     private var placedBlocksWithoutEagle = 0
     var eagleSneaking = false
     private val isEagleEnabled
-        get() = eagle != "Off" && !shouldGoDown && scaffoldMode != "GodBridge"
+        get() = eagle != "Off" && !shouldGoDown && scaffoldMode != "GodBridge" && (!onlyOnGround || mc.thePlayer?.onGround == true)
 
     // Downwards
     val shouldGoDown
