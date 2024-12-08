@@ -1,20 +1,43 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/SkidderMC/FDPClient/
+ * Repository: https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal;
 
-public interface Screen extends Utils {
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal
 
-    void initGui();
+/**
+ * Interface representing a basic screen structure in the client GUI.
+ * It defines methods for handling initialization, input events, and rendering.
+ */
+interface Screen {
+    /**
+     * Initializes the GUI components and prepares the screen for rendering.
+     *
+     */
+    fun initGui()
 
-    void keyTyped(char typedChar, int keyCode);
+    /**
+     * Handles key input events.
+     *
+     */
+    fun keyTyped(typedChar: Char, keyCode: Int)
 
-    void drawScreen(int mouseX, int mouseY);
+    /**
+     * Renders the screen and its components.
+     *
+     */
+    fun drawScreen(mouseX: Int, mouseY: Int)
 
-    void mouseClicked(int mouseX, int mouseY, int button);
+    /**
+     * Handles mouse click events.
+     *
+     */
+    fun mouseClicked(mouseX: Int, mouseY: Int, button: Int)
 
-    void mouseReleased(int mouseX, int mouseY, int state);
-
+    /**
+     * Handles mouse release events.
+     *
+     */
+    fun mouseReleased(mouseX: Int, mouseY: Int, state: Int)
 }

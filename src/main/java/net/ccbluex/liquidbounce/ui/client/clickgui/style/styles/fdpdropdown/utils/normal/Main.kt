@@ -3,25 +3,22 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal
 
-import net.ccbluex.liquidbounce.features.module.Category;
-import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.features.module.ModuleManager;
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.ModuleManager
 
-import java.util.List;
-import java.util.stream.Collectors;
+object Main {
+    var categoryCount: Int = 0
 
-public class Main{
+    var reloadModules: Boolean = false
 
-    public static int categoryCount;
+    @JvmField
+    var allowedClickGuiHeight: Float = 300f
 
-    public static boolean reloadModules;
-
-    public static float allowedClickGuiHeight = 300;
-
-    public static List<Module> getModulesInCategory(Category c, ModuleManager moduleManager) {
-        return moduleManager.getModules().stream().filter(m -> m.getCategory() == c).collect(Collectors.toList());
+    fun getModulesInCategory(category: Category, moduleManager: ModuleManager): List<Module> {
+        return moduleManager.modules
+            .filter { module -> module.category == category }
     }
-
 }

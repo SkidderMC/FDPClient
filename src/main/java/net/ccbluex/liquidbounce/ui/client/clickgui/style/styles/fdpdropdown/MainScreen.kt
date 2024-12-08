@@ -15,10 +15,10 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.util
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Screen
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Utils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.StencilUtil
 import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts
+import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.extensions.roundToHalf
 import net.minecraft.client.gui.ScaledResolution
 import java.awt.Color
@@ -102,7 +102,7 @@ class MainScreen(private val category: Category) : Screen {
         val allowedHeight = if (scrollMode == "Value") {
             clickHeight.toFloat()
         } else {
-            val sr = ScaledResolution(Utils.mc)
+            val sr = ScaledResolution(mc)
             2 * sr.scaledHeight / 3f
         }
         Main.allowedClickGuiHeight = allowedHeight

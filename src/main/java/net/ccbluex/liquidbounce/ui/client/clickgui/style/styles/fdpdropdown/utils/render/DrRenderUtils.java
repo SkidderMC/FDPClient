@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render;
 
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Utils;
+import net.ccbluex.liquidbounce.utils.MinecraftInstance;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -18,7 +18,7 @@ import java.awt.*;
 
 import static org.lwjgl.opengl.GL11.*;
 
-public class DrRenderUtils implements Utils {
+public class DrRenderUtils extends MinecraftInstance {
     /**
      * Draws a textured rectangle at z = 0. Args: x, y, u, v, width, height, textureWidth, textureHeight
      */
