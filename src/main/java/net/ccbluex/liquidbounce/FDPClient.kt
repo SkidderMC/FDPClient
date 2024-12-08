@@ -137,6 +137,7 @@ object FDPClient {
             registerListener(WaitTickUtils)
             registerListener(SilentHotbar)
             registerListener(WaitMsUtils)
+            registerListener(BlinkUtils)
 
             // Load client fonts
             loadFonts()
