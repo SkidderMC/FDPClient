@@ -155,6 +155,8 @@ object BlackStyle : Style() {
                 for (value in moduleValues) {
                     assumeNonVolatile = value.get() is Number
 
+                    val suffix = value.suffix ?: ""
+
                     when (value) {
                         is BoolValue -> {
                             val text = value.name
@@ -221,7 +223,7 @@ object BlackStyle : Style() {
                         }
 
                         is FloatValue -> {
-                            val text = value.name + "§f: " + round(value.get())
+                            val text = value.name + "§f: " + round(value.get()) + " §7$suffix"
 
                             moduleElement.settingsWidth = font35.getStringWidth(text) + 8
 
@@ -262,8 +264,11 @@ object BlackStyle : Style() {
                         }
 
                         is IntegerValue -> {
-                            val text =
-                                value.name + "§f: " + if (value is BlockValue) getBlockName(value.get()) + " (" + value.get() + ")" else value.get()
+                            val text = value.name + "§f: " + if (value is BlockValue) {
+                                getBlockName(value.get()) + " (" + value.get() + ")"
+                            } else {
+                                value.get()
+                            } + " §7$suffix"
 
                             moduleElement.settingsWidth = font35.getStringWidth(text) + 8
 
@@ -303,7 +308,7 @@ object BlackStyle : Style() {
                             val slider1 = value.get().first
                             val slider2 = value.get().last
 
-                            val text = "${value.name}§f: $slider1 - $slider2 (Beta)"
+                            val text = "${value.name}§f: $slider1 - $slider2 §7$suffix§f (Beta)"
                             moduleElement.settingsWidth = font35.getStringWidth(text) + 8
 
                             val x = minX + 4
@@ -355,7 +360,7 @@ object BlackStyle : Style() {
                             val slider1 = value.get().start
                             val slider2 = value.get().endInclusive
 
-                            val text = "${value.name}§f: ${round(slider1)} - ${round(slider2)} (Beta)"
+                            val text = "${value.name}§f: ${round(slider1)} - ${round(slider2)} §7$suffix§f (Beta)"
                             moduleElement.settingsWidth = font35.getStringWidth(text) + 8
 
                             val x = minX + 4f
@@ -365,9 +370,9 @@ object BlackStyle : Style() {
 
                             if ((mouseButton == 0 || sliderValueHeld == value) && mouseX.toFloat() in x..x + width && mouseY.toFloat() in y - 2..y + 5) {
                                 val slider1Pos =
-                                    minX + ((slider1 - value.minimum).toFloat() / (value.maximum - value.minimum)) * (maxX - minX)
+                                    minX + ((slider1 - value.minimum) / (value.maximum - value.minimum)) * (maxX - minX)
                                 val slider2Pos =
-                                    minX + ((slider2 - value.minimum).toFloat() / (value.maximum - value.minimum)) * (maxX - minX)
+                                    minX + ((slider2 - value.minimum) / (value.maximum - value.minimum)) * (maxX - minX)
 
                                 val distToSlider1 = mouseX - slider1Pos
                                 val distToSlider2 = mouseX - slider2Pos

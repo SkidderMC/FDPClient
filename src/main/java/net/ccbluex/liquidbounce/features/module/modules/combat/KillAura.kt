@@ -10,11 +10,11 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
-import net.ccbluex.liquidbounce.features.module.modules.player.Blink
-import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
 import net.ccbluex.liquidbounce.features.module.modules.other.Fucker
 import net.ccbluex.liquidbounce.features.module.modules.other.Nuker
-import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.*
+import net.ccbluex.liquidbounce.features.module.modules.player.Blink
+import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
+import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Tower
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Text
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.*
@@ -41,14 +41,11 @@ import net.ccbluex.liquidbounce.utils.inventory.ItemUtils.isConsumingItem
 import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomClickDelay
 import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.gui.inventory.GuiContainer
-import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityArmorStand
@@ -60,11 +57,7 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.RELEASE_USE_ITEM
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.potion.Potion
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.BlockPos
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.MovingObjectPosition
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.max
@@ -131,7 +124,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
             "OnLadder",
             "InLiquid",
             "InWeb"
-        ), "Armor"
+        ), "Distance"
     )
     private val targetMode by choices("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch")
     private val limitedMultiTargets by int("LimitedMultiTargets", 0, 0..50) { targetMode == "Multi" }
@@ -159,44 +152,47 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     val autoBlock by choices("AutoBlock", arrayOf("Off", "Packet", "Fake"), "Packet")
     private val blockMaxRange by float("BlockMaxRange", 3f, 0f..8f) { autoBlock == "Packet" }
     private val unblockMode by choices(
-        "UnblockMode",
-        arrayOf("Stop", "Switch", "Empty"),
-        "Stop"
+        "UnblockMode", arrayOf("Stop", "Switch", "Empty"), "Stop"
     ) { autoBlock == "Packet" }
-    private val releaseAutoBlock by boolean("ReleaseAutoBlock", true)
-    { autoBlock !in arrayOf("Off", "Fake") }
-    val forceBlockRender by boolean("ForceBlockRender", true)
-    { autoBlock !in arrayOf("Off", "Fake") && releaseAutoBlock }
-    private val ignoreTickRule by boolean("IgnoreTickRule", false)
-    { autoBlock !in arrayOf("Off", "Fake") && releaseAutoBlock }
-    private val blockRate by int("BlockRate", 100, 1..100)
-    { autoBlock !in arrayOf("Off", "Fake") && releaseAutoBlock }
+    private val releaseAutoBlock by boolean("ReleaseAutoBlock", true) { autoBlock !in arrayOf("Off", "Fake") }
+    val forceBlockRender by boolean("ForceBlockRender", true) {
+        autoBlock !in arrayOf(
+            "Off", "Fake"
+        ) && releaseAutoBlock
+    }
+    private val ignoreTickRule by boolean("IgnoreTickRule", false) {
+        autoBlock !in arrayOf(
+            "Off", "Fake"
+        ) && releaseAutoBlock
+    }
+    private val blockRate by int("BlockRate", 100, 1..100) { autoBlock !in arrayOf("Off", "Fake") && releaseAutoBlock }
 
-    private val uncpAutoBlock by boolean("UpdatedNCPAutoBlock", false)
-    { autoBlock !in arrayOf("Off", "Fake") && !releaseAutoBlock }
+    private val uncpAutoBlock by boolean("UpdatedNCPAutoBlock", false) {
+        autoBlock !in arrayOf(
+            "Off", "Fake"
+        ) && !releaseAutoBlock
+    }
 
-    private val switchStartBlock by boolean("SwitchStartBlock", false)
-    { autoBlock !in arrayOf("Off", "Fake") }
+    private val switchStartBlock by boolean("SwitchStartBlock", false) { autoBlock !in arrayOf("Off", "Fake") }
 
-    private val interactAutoBlock by boolean("InteractAutoBlock", true)
-    { autoBlock !in arrayOf("Off", "Fake") }
+    private val interactAutoBlock by boolean("InteractAutoBlock", true) { autoBlock !in arrayOf("Off", "Fake") }
 
-    val blinkAutoBlock by boolean("BlinkAutoBlock", false)
-    { autoBlock !in arrayOf("Off", "Fake") }
+    val blinkAutoBlock by boolean("BlinkAutoBlock", false) { autoBlock !in arrayOf("Off", "Fake") }
 
-    private val blinkBlockTicks by int("BlinkBlockTicks", 3, 2..5)
-    { autoBlock !in arrayOf("Off", "Fake") && blinkAutoBlock }
+    private val blinkBlockTicks by int("BlinkBlockTicks", 3, 2..5) {
+        autoBlock !in arrayOf(
+            "Off", "Fake"
+        ) && blinkAutoBlock
+    }
 
     // AutoBlock conditions
     private val smartAutoBlock by boolean("SmartAutoBlock", false) { autoBlock == "Packet" }
 
     // Ignore all blocking conditions, except for block rate, when standing still
-    private val forceBlock by boolean("ForceBlockWhenStill", true)
-    { smartAutoBlock }
+    private val forceBlock by boolean("ForceBlockWhenStill", true) { smartAutoBlock }
 
     // Don't block if target isn't holding a sword or an axe
-    private val checkWeapon by boolean("CheckEnemyWeapon", true)
-    { smartAutoBlock }
+    private val checkWeapon by boolean("CheckEnemyWeapon", true) { smartAutoBlock }
 
     // TODO: Make block range independent from attack range
     private var blockRange by object : FloatValue("BlockRange", range, 1f..8f) {
@@ -206,16 +202,13 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     }
 
     // Don't block when you can't get damaged
-    private val maxOwnHurtTime by int("MaxOwnHurtTime", 3, 0..10)
-    { smartAutoBlock }
+    private val maxOwnHurtTime by int("MaxOwnHurtTime", 3, 0..10) { smartAutoBlock }
 
     // Don't block if target isn't looking at you
-    private val maxDirectionDiff by float("MaxOpponentDirectionDiff", 60f, 30f..180f)
-    { smartAutoBlock }
+    private val maxDirectionDiff by float("MaxOpponentDirectionDiff", 60f, 30f..180f) { smartAutoBlock }
 
     // Don't block if target is swinging an item and therefore cannot attack
-    private val maxSwingProgress by int("MaxOpponentSwingProgress", 1, 0..5)
-    { smartAutoBlock }
+    private val maxSwingProgress by int("MaxOpponentSwingProgress", 1, 0..5) { smartAutoBlock }
 
     // Rotations
     private val options = RotationSettings(this).withoutKeepRotation()
@@ -224,8 +217,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private val raycastValue = boolean("RayCast", true) { options.rotationsActive }
     private val raycast by raycastValue
     private val raycastIgnored by boolean(
-        "RayCastIgnored",
-        false
+        "RayCastIgnored", false
     ) { raycastValue.isActive() && options.rotationsActive }
     private val livingRaycast by boolean("LivingRayCast", true) { raycastValue.isActive() && options.rotationsActive }
 
@@ -237,9 +229,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private val outborder by boolean("Outborder", false) { options.rotationsActive }
 
     private val highestBodyPointToTargetValue: ListValue = object : ListValue(
-        "HighestBodyPointToTarget",
-        arrayOf("Head", "Body", "Feet"),
-        "Head"
+        "HighestBodyPointToTarget", arrayOf("Head", "Body", "Feet"), "Head"
     ) {
         override fun isSupported() = options.rotationsActive
 
@@ -253,9 +243,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private val highestBodyPointToTarget by highestBodyPointToTargetValue
 
     private val lowestBodyPointToTargetValue: ListValue = object : ListValue(
-        "LowestBodyPointToTarget",
-        arrayOf("Head", "Body", "Feet"),
-        "Feet"
+        "LowestBodyPointToTarget", arrayOf("Head", "Body", "Feet"), "Feet"
     ) {
         override fun isSupported() = options.rotationsActive
 
@@ -286,24 +274,26 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     // Prediction
     private val predictClientMovement by int("PredictClientMovement", 2, 0..5)
     private val predictOnlyWhenOutOfRange by boolean(
-        "PredictOnlyWhenOutOfRange",
-        false
+        "PredictOnlyWhenOutOfRange", false
     ) { predictClientMovement != 0 }
     private val predictEnemyPosition by float("PredictEnemyPosition", 1.5f, -1f..2f)
 
     // Extra swing
     private val failSwing by boolean("FailSwing", true) { swing && options.rotationsActive }
-    private val respectMissCooldown by boolean("RespectMissCooldown", false)
-    { swing && failSwing && options.rotationsActive }
+    private val respectMissCooldown by boolean(
+        "RespectMissCooldown", false
+    ) { swing && failSwing && options.rotationsActive }
     private val swingOnlyInAir by boolean("SwingOnlyInAir", true) { swing && failSwing && options.rotationsActive }
-    private val maxRotationDifferenceToSwing by float("MaxRotationDifferenceToSwing", 180f, 0f..180f)
-    { swing && failSwing && options.rotationsActive }
+    private val maxRotationDifferenceToSwing by float(
+        "MaxRotationDifferenceToSwing", 180f, 0f..180f
+    ) { swing && failSwing && options.rotationsActive }
     private val swingWhenTicksLate = object : BoolValue("SwingWhenTicksLate", false) {
         override fun isSupported() =
             swing && failSwing && maxRotationDifferenceToSwing != 180f && options.rotationsActive
     }
-    private val ticksLateToSwing by int("TicksLateToSwing", 4, 0..20)
-    { swing && failSwing && swingWhenTicksLate.isActive() && options.rotationsActive }
+    private val ticksLateToSwing by int(
+        "TicksLateToSwing", 4, 0..20
+    ) { swing && failSwing && swingWhenTicksLate.isActive() && options.rotationsActive }
     private val renderBoxOnSwingFail by boolean("RenderBoxOnSwingFail", false) { failSwing }
     private val renderBoxColor = ColorSettingsInteger(this, "RenderBoxColor") { renderBoxOnSwingFail }.with(0, 255, 255)
     private val renderBoxFadeSeconds by float("RenderBoxFadeSeconds", 1f, 0f..5f) { renderBoxOnSwingFail }
@@ -313,14 +303,10 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private val noInventoryAttack by boolean("NoInvAttack", false)
     private val noInventoryDelay by int("NoInvDelay", 200, 0..500) { noInventoryAttack }
     private val noConsumeAttack by choices(
-        "NoConsumeAttack",
-        arrayOf("Off", "NoHits", "NoRotation"),
-        "Off",
-        subjective = true
+        "NoConsumeAttack", arrayOf("Off", "NoHits", "NoRotation"), "Off", subjective = true
     )
 
     private val displayDebug by boolean("Debug", false)
-
     /**
      * MODULE
      */
@@ -371,8 +357,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
             blinked = false
         }
 
-        if (autoF5)
-            mc.gameSettings.thirdPersonView = 0
+        if (autoF5) mc.gameSettings.thirdPersonView = 0
 
         stopBlocking(true)
 
@@ -403,8 +388,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     fun onWorldChange(event: WorldEvent) {
         attackTickTimes.clear()
 
-        if (blinkAutoBlock && BlinkUtils.isBlinking)
-            BlinkUtils.unblink()
+        if (blinkAutoBlock && BlinkUtils.isBlinking) BlinkUtils.unblink()
 
         synchronized(swingFails) {
             swingFails.clear()
@@ -424,8 +408,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
             return
         }
 
-        if (clickOnly && !mc.gameSettings.keyBindAttack.isKeyDown)
-            return
+        if (clickOnly && !mc.gameSettings.keyBindAttack.isKeyDown) return
 
         if (blockStatus && autoBlock == "Packet" && releaseAutoBlock && !ignoreTickRule) {
             clicks = 0
@@ -536,8 +519,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         target ?: return
 
         if (attackTimer.hasTimePassed(attackDelay)) {
-            if (maxCPS > 0)
-                clicks++
+            if (maxCPS > 0) clicks++
             attackTimer.reset()
             attackDelay = randomClickDelay(minCPS, maxCPS)
         }
@@ -634,8 +616,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
                         return@runWithModifiedRaycastResult
                     }
 
-                    val shouldEnterBlockBreakProgress = !shouldDelayClick(it.typeOfHit) ||
-                            attackTickTimes.lastOrNull()?.first?.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
+                    val shouldEnterBlockBreakProgress =
+                        !shouldDelayClick(it.typeOfHit) || attackTickTimes.lastOrNull()?.first?.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK
 
                     if (shouldEnterBlockBreakProgress) {
                         // Close inventory when open
@@ -720,8 +702,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
             }
         }
 
-        if (!isLastClick)
-            return
+        if (!isLastClick) return
 
         val switchMode = targetMode == "Switch"
 
@@ -741,8 +722,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
      * Update current target
      */
     private fun updateTarget() {
-        if (shouldPrioritize())
-            return
+        if (shouldPrioritize()) return
 
         // Reset fixed target to null
         target = null
@@ -756,8 +736,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         var bestValue: Double? = null
 
         for (entity in theWorld.loadedEntityList) {
-            if (entity !is EntityLivingBase || !isEnemy(entity) || switchMode && entity.entityId in prevTargetEntities)
-                continue
+            if (entity !is EntityLivingBase || !isEnemy(entity) || switchMode && entity.entityId in prevTargetEntities) continue
 
             var distance = 0.0
 
@@ -765,16 +744,13 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
                 distance = thePlayer.getDistanceToEntityBox(entity)
             }
 
-            if (switchMode && distance > range && prevTargetEntities.isNotEmpty())
-                continue
+            if (switchMode && distance > range && prevTargetEntities.isNotEmpty()) continue
 
             val entityFov = rotationDifference(entity)
 
-            if (distance > maxRange || fov != 180F && entityFov > fov)
-                continue
+            if (distance > maxRange || fov != 180F && entityFov > fov) continue
 
-            if (switchMode && !isLookingOnEntities(entity, maxSwitchFOV.toDouble()))
-                continue
+            if (switchMode && !isLookingOnEntities(entity, maxSwitchFOV.toDouble())) continue
 
             var currentValue = when (priority.lowercase()) {
                 "distance" -> distance
@@ -833,8 +809,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private fun attackEntity(entity: EntityLivingBase, isLastClick: Boolean) {
         val thePlayer = mc.thePlayer
 
-        if (shouldPrioritize())
-            return
+        if (shouldPrioritize()) return
 
         if (thePlayer.isBlocking && (autoBlock == "Off" && blockStatus || autoBlock == "Packet" && releaseAutoBlock)) {
             stopBlocking()
@@ -869,8 +844,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private fun updateRotations(entity: Entity): Boolean {
         val player = mc.thePlayer ?: return false
 
-        if (shouldPrioritize())
-            return false
+        if (shouldPrioritize()) return false
 
         if (!options.rotationsActive) {
             return player.getDistanceToEntityBox(entity) <= range
@@ -949,8 +923,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         val currentRotation = currentRotation ?: mc.thePlayer.rotation
         val target = this.target ?: return
 
-        if (shouldPrioritize())
-            return
+        if (shouldPrioritize()) return
 
         if (!options.rotationsActive) {
             hittable = mc.thePlayer.getDistanceToEntityBox(target) <= range
@@ -961,9 +934,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
 
         if (raycast) {
             chosenEntity = raycastEntity(
-                range.toDouble(),
-                currentRotation.yaw,
-                currentRotation.pitch
+                range.toDouble(), currentRotation.yaw, currentRotation.pitch
             ) { entity -> !livingRaycast || entity is EntityLivingBase && entity !is EntityArmorStand }
 
             if (chosenEntity != null && chosenEntity is EntityLivingBase && (!(chosenEntity is EntityPlayer && chosenEntity.isClientFriend()))) {
@@ -1031,8 +1002,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
 
         // Recreate raycast logic
         val intercept = targetToCheck.hitBox.calculateIntercept(
-            eyes,
-            eyes + getVectorForRotation(currentRotation) * range.toDouble()
+            eyes, eyes + getVectorForRotation(currentRotation) * range.toDouble()
         )
 
         // Is the entity box raycast vector visible? If not, check through-wall range
@@ -1046,8 +1016,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private fun startBlocking(interactEntity: Entity, interact: Boolean, fake: Boolean = false) {
         val player = mc.thePlayer ?: return
 
-        if (blockStatus && (!uncpAutoBlock || !blinkAutoBlock) || shouldPrioritize())
-            return
+        if (blockStatus && (!uncpAutoBlock || !blinkAutoBlock) || shouldPrioritize()) return
 
         if (mc.thePlayer.isBlocking) {
             blockStatus = true
@@ -1133,8 +1102,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         val player = mc.thePlayer ?: return
         val packet = event.packet
 
-        if (autoBlock == "Off" || !blinkAutoBlock || !blinked)
-            return
+        if (autoBlock == "Off" || !blinkAutoBlock || !blinked) return
 
         if (player.isDead || player.ticksExisted < 20) {
             BlinkUtils.unblink()
@@ -1176,8 +1144,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
 
         // Recreate raycast logic
         val intercept = targetToCheck.hitBox.calculateIntercept(
-            eyes,
-            eyes + getVectorForRotation(currentRotation) * range.toDouble()
+            eyes, eyes + getVectorForRotation(currentRotation) * range.toDouble()
         )
 
         if (intercept != null) {
@@ -1200,15 +1167,14 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     }
 
     private fun shouldPrioritize(): Boolean = when {
-        !onScaffold && (Scaffold.handleEvents() && (Scaffold.placeRotation != null || currentRotation != null) ||
-                Tower.handleEvents() && Tower.isTowering) -> true
+        !onScaffold && (Scaffold.handleEvents() && (Scaffold.placeRotation != null || currentRotation != null) || Tower.handleEvents() && Tower.isTowering) -> true
+
         !onDestroyBlock && (Fucker.handleEvents() && !Fucker.noHit && Fucker.pos != null || Nuker.handleEvents()) -> true
         else -> false
     }
 
     private fun handleFailedSwings() {
-        if (!renderBoxOnSwingFail)
-            return
+        if (!renderBoxOnSwingFail) return
 
         val box = AxisAlignedBB(0.0, 0.0, 0.0, 0.05, 0.05, 0.05)
 
@@ -1261,6 +1227,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private fun isBlockingDisallowed(): Boolean {
         return noBlocking && mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item is ItemBlock
     }
+
     /**
      * Check if [entity] is alive
      */
@@ -1277,15 +1244,13 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
                 if (smartAutoBlock) {
                     if (!player.isMoving && forceBlock) return true
 
-                    if (checkWeapon && (target!!.heldItem?.item !is ItemSword && target!!.heldItem?.item !is ItemAxe))
-                        return false
+                    if (checkWeapon && (target!!.heldItem?.item !is ItemSword && target!!.heldItem?.item !is ItemAxe)) return false
 
                     if (player.hurtTime > maxOwnHurtTime) return false
 
                     val rotationToPlayer = toRotation(player.hitBox.center, true, target!!)
 
-                    if (rotationDifference(rotationToPlayer, target!!.rotation) > maxDirectionDiff)
-                        return false
+                    if (rotationDifference(rotationToPlayer, target!!.rotation) > maxDirectionDiff) return false
 
                     if (target!!.swingProgressInt > maxSwingProgress) return false
 

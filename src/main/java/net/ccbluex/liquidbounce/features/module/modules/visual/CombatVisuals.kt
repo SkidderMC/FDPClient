@@ -13,7 +13,11 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
+import net.ccbluex.liquidbounce.utils.extensions.withAlpha
+import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCircle
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCrystal
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBoxESP
@@ -42,13 +46,26 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
     }
 
     // Mark - TargetESP
-    private val markValue by choices("MarkMode", arrayOf("None", "Zavz", "Jello", "Lies", "FDP", "Sims", "Box", "RoundBox", "Head", "Mark"), "Zavz")
+    private val markValue by choices("MarkMode", arrayOf("None", "Zavz", "Circle", "Jello", "Lies", "FDP", "Sims", "Box", "RoundBox", "Head", "Mark"), "Zavz")
     private val isMarkMode: Boolean
         get() = markValue != "None" && markValue != "Sims" && markValue != "FDP"  && markValue != "Lies" && markValue != "Jello"
 
     val colorRedValue by int("Mark-Red", 0, 0.. 255) { isMarkMode }
     val colorGreenValue by int("Mark-Green", 160, 0..255) { isMarkMode }
     val colorBlueValue by int("Mark-Blue", 255, 0.. 255) { isMarkMode }
+
+    private val circleRainbow by boolean("CircleRainbow", false, subjective = true) { markValue == "Circle" }
+    private val colors = ColorSettingsInteger(this, "Circle", alphaApply = { markValue == "Circle" })
+    { markValue == "Circle" && !circleRainbow }.with(132, 102, 255, 100)
+    private val fillInnerCircle by boolean("FillInnerCircle", false, subjective = true) { markValue == "Circle" }
+    private val withHeight by boolean("WithHeight", true, subjective = true) { markValue == "Circle" }
+    private val animateHeight by boolean("AnimateHeight", false, subjective = true) { withHeight }
+    private val heightRange by floatRange("HeightRange", 0.0f..0.4f, -2f..2f, subjective = true) { withHeight }
+    private val extraWidth by float("ExtraWidth", 0F, 0F..2F, subjective = true) { markValue == "Circle" }
+    private val animateCircleY by boolean("AnimateCircleY", true, subjective = true) { fillInnerCircle || withHeight }
+    private val circleYRange by floatRange("CircleYRange", 0F..0.5F, 0F..2F, subjective = true) { animateCircleY }
+    private val duration by float("Duration", 1.5F, 0.5F..3F, suffix = "Seconds", subjective = true)
+    { animateCircleY || animateHeight }
 
     private val alphaValue by int("Alpha", 255, 0.. 255) { isMarkMode && markValue == "Zavz" && markValue == "Jello"}
 
@@ -153,6 +170,17 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
             "lies" -> drawLies(
                 entityLivingBase,
                 event
+            )
+
+            "circle" -> drawCircle(
+                entityLivingBase,
+                duration * 1000F,
+                heightRange.takeIf { animateHeight } ?: heightRange.endInclusive..heightRange.endInclusive,
+                extraWidth,
+                fillInnerCircle,
+                withHeight,
+                circleYRange.takeIf { animateCircleY },
+                if (circleRainbow) rainbow().withAlpha(colors.color().alpha) else colors.color()
             )
         }
     }

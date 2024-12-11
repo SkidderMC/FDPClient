@@ -110,7 +110,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
     private val colors = ColorSettingsInteger(
         this,
         zeroAlphaCheck = true,
-        alphaApply = textColorMode != "Rainbow",
+        alphaApply = { textColorMode != "Rainbow" },
         applyMax = true
     ) { textColorMode == "Custom" }
 

@@ -16,17 +16,17 @@ class ColorSettingsFloat(owner: Any, name: String, val index: Int? = null, gener
     private val r by float(
         "$name-R${index ?: ""}",
         if ((index ?: 0) % 3 == 1) 255f else 0f,
-        0f..255f
+        0f..255f, subjective = true
     ) { generalApply() }
     private val g by float(
         "$name-G${index ?: ""}",
         if ((index ?: 0) % 3 == 2) 255f else 0f,
-        0f..255f
+        0f..255f, subjective = true
     ) { generalApply() }
     private val b by float(
         "$name-B${index ?: ""}",
         if ((index ?: 0) % 3 == 0) 255f else 0f,
-        0f..255f
+        0f..255f, subjective = true
     ) { generalApply() }
 
     fun color() = Color(r / 255f, g / 255f, b / 255f)
@@ -50,8 +50,8 @@ class ColorSettingsFloat(owner: Any, name: String, val index: Int? = null, gener
 
 class ColorSettingsInteger(
     owner: Any, name: String? = null, val index: Int? = null, withAlpha: Boolean = true,
-    zeroAlphaCheck: Boolean = false,
-    alphaApply: Boolean? = null, applyMax: Boolean = false, generalApply: () -> Boolean = { true },
+    zeroAlphaCheck: Boolean = false, applyMax: Boolean = false,
+    alphaApply: () -> Boolean? = { null }, generalApply: () -> Boolean = { true },
 ) {
     private val string = if (name == null) "" else "$name-"
     private val max = if (applyMax) 255 else 0
@@ -59,23 +59,23 @@ class ColorSettingsInteger(
     private var red = int(
         "${string}R${index ?: ""}",
         max,
-        0..255
+        0..255, subjective = true
     ) { generalApply() && (!zeroAlphaCheck || a > 0) }
     private var green = int(
         "${string}G${index ?: ""}",
         max,
-        0..255
+        0..255, subjective = true
     ) { generalApply() && (!zeroAlphaCheck || a > 0) }
     private var blue = int(
         "${string}B${index ?: ""}",
         max,
-        0..255
+        0..255, subjective = true
     ) { generalApply() && (!zeroAlphaCheck || a > 0) }
     private var alpha = int(
         "${string}Alpha${index ?: ""}",
         255,
-        0..255
-    ) { alphaApply ?: generalApply() && withAlpha }
+        0..255, subjective = true
+    ) { alphaApply() ?: generalApply() && withAlpha }
 
     private var r by red
     private var g by green
@@ -117,7 +117,7 @@ class ColorSettingsInteger(
                     it,
                     withAlpha,
                     zeroAlphaCheck,
-                    applyMax = applyMax
+                    applyMax
                 ) { generalApply(it) }
             }
         }

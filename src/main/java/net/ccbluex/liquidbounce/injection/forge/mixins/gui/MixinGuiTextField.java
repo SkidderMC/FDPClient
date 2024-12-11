@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
+import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil;
 import net.minecraft.client.gui.GuiTextField;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -37,9 +38,7 @@ public class MixinGuiTextField {
 
             if (instance.isFocused()) {
                 // Some cool breathing effects
-                float progress = (System.currentTimeMillis() % 1500L) / (float) 1500L;
-                float breathingValue = 0.5f * (float) (Math.sin(2 * Math.PI * progress) + 1);
-                width = 1f + (4f - 1f) * breathingValue;
+                width = 1f + (4f - 1f) * AnimationUtil.INSTANCE.breathe(1500F);
             }
 
             RenderUtils.INSTANCE.drawRoundedBorder(this.xPosition, this.yPosition + height, this.xPosition + this.width, this.yPosition + height, width - 0.5F, Color.BLUE.getRGB(), radius - 1F);
