@@ -29,6 +29,7 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.opengl.GL11;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -39,8 +40,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.List;
 
 import static net.minecraft.client.renderer.GlStateManager.*;
-import static org.lwjgl.opengl.GL11.GL_BLEND;
-import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.*;
 
 @Mixin(GuiIngame.class)
 @SideOnly(Side.CLIENT)
@@ -105,6 +105,7 @@ public abstract class MixinGuiInGame extends Gui {
 
                 List<float[]> gradientColors = ColorSettingsKt.toColorArray(hud.getBgGradColors(), hud.getMaxHotbarGradientColors());
 
+                GL11.glPushAttrib(GL_ALL_ATTRIB_BITS);
                 resetColor();
 
                 boolean isGradient = hud.getHotbarMode().equals("Gradient");
@@ -182,6 +183,8 @@ public abstract class MixinGuiInGame extends Gui {
                 RenderHelper.disableStandardItemLighting();
                 disableRescaleNormal();
                 disableBlend();
+
+                GL11.glPopAttrib();
 
                 AWTFontRenderer.Companion.setAssumeNonVolatile(false);
 

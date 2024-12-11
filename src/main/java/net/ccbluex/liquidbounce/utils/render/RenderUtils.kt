@@ -67,7 +67,7 @@ object RenderUtils : MinecraftInstance() {
     fun deltaTimeNormalized(ticks: Int = 50) = (deltaTime / ticks.toDouble()).coerceAtMost(1.0)
 
     private const val CIRCLE_STEPS = 40
-    val circlePoints = (0..CIRCLE_STEPS).map {
+    private val circlePoints = (0..CIRCLE_STEPS).map {
         val theta = 2 * PI * it / CIRCLE_STEPS
         Vec3(-sin(theta), 0.0, cos(theta))
     }
@@ -239,6 +239,86 @@ object RenderUtils : MinecraftInstance() {
         glPopAttrib()
     }
 
+    /**
+     * Draws a dome around the specified [pos]
+     *
+     * Only [GL_LINES], [GL_TRIANGLES] and [GL_QUADS] are allowed.
+     */
+    fun drawDome(pos: Vec3, hRadius: Double, vRadius: Double, lineWidth: Float? = null, color: Color, renderMode: Int) {
+        require(renderMode in arrayOf(GL_LINES, GL_TRIANGLES, GL_QUADS))
+        val manager = mc.renderManager ?: return
+        val (renderX, renderY, renderZ) = Triple(manager.viewerPosX, manager.viewerPosY, manager.viewerPosZ)
+        val (posX, posY, posZ) = pos
+        val vStep = Math.PI / (CIRCLE_STEPS / 2)
+        val hStep = 2 * Math.PI / CIRCLE_STEPS
+        glPushAttrib(GL_ALL_ATTRIB_BITS)
+        glPushMatrix()
+        glDisable(GL_TEXTURE_2D)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
+        lineWidth?.let { glLineWidth(it) }
+        glDisable(GL_DEPTH_TEST)
+        glDisable(GL_CULL_FACE)
+        glEnable(GL_ALPHA_TEST)
+        glAlphaFunc(GL_GREATER, 0.0f)
+        glBegin(renderMode)
+        RenderUtils.glColor(color)
+        for (i in -1 until CIRCLE_STEPS / 2) {
+            val vAngle1 = i * vStep
+            val vAngle2 = (i + 1) * vStep
+            for (j in -1 until CIRCLE_STEPS) {
+                val hAngle1 = j * hStep
+                val hAngle2 = (j + 1) * hStep
+                val p1 = calculateDomeVertex(posX, posY, posZ, vAngle1, hAngle1, hRadius, vRadius)
+                val p2 = calculateDomeVertex(posX, posY, posZ, vAngle2, hAngle1, hRadius, vRadius)
+                val p3 = calculateDomeVertex(posX, posY, posZ, vAngle2, hAngle2, hRadius, vRadius)
+                val p4 = calculateDomeVertex(posX, posY, posZ, vAngle1, hAngle2, hRadius, vRadius)
+                when (renderMode) {
+                    GL_QUADS -> {
+                        glVertex3d(p1[0] - renderX, p1[1] - renderY, p1[2] - renderZ)
+                        glVertex3d(p2[0] - renderX, p2[1] - renderY, p2[2] - renderZ)
+                        glVertex3d(p3[0] - renderX, p3[1] - renderY, p3[2] - renderZ)
+                        glVertex3d(p4[0] - renderX, p4[1] - renderY, p4[2] - renderZ)
+                    }
+                    GL_LINES, GL_TRIANGLES -> {
+                        glVertex3d(p1[0] - renderX, p1[1] - renderY, p1[2] - renderZ)
+                        glVertex3d(p2[0] - renderX, p2[1] - renderY, p2[2] - renderZ)
+                        glVertex3d(p2[0] - renderX, p2[1] - renderY, p2[2] - renderZ)
+                        glVertex3d(p3[0] - renderX, p3[1] - renderY, p3[2] - renderZ)
+                        glVertex3d(p3[0] - renderX, p3[1] - renderY, p3[2] - renderZ)
+                        glVertex3d(p4[0] - renderX, p4[1] - renderY, p4[2] - renderZ)
+                        glVertex3d(p4[0] - renderX, p4[1] - renderY, p4[2] - renderZ)
+                        glVertex3d(p1[0] - renderX, p1[1] - renderY, p1[2] - renderZ)
+                    }
+                }
+            }
+        }
+        glEnd()
+        glEnable(GL_CULL_FACE)
+        glEnable(GL_DEPTH_TEST)
+        glDisable(GL_ALPHA_TEST)
+        glDisable(GL_LINE_SMOOTH)
+        glDisable(GL_BLEND)
+        glEnable(GL_TEXTURE_2D)
+        glPopMatrix()
+        glPopAttrib()
+    }
+    private fun calculateDomeVertex(
+        entityX: Double,
+        entityY: Double,
+        entityZ: Double,
+        theta: Double,
+        phi: Double,
+        horizontalRadius: Double,
+        verticalRadius: Double
+    ): DoubleArray {
+        return doubleArrayOf(
+            entityX + horizontalRadius * sin(theta) * cos(phi),
+            entityY + verticalRadius * cos(theta),
+            entityZ + horizontalRadius * sin(theta) * sin(phi)
+        )
+    }
 
     fun drawEntityBox(entity: Entity, color: Color, outline: Boolean) {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
