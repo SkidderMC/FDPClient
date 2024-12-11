@@ -230,7 +230,7 @@ object FDPClient {
             // Set is starting status
             isStarting = false
 
-            callEvent(StartupEvent())
+            callEvent(StartupEvent)
             LOGGER.info("Successfully started client")
         }
     }
@@ -240,7 +240,7 @@ object FDPClient {
      */
     fun stopClient() {
         // Call client shutdown
-        callEvent(ClientShutdownEvent())
+        callEvent(ClientShutdownEvent)
 
         // Stop all CoroutineScopes
         SharedScopes.stop()

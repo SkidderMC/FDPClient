@@ -223,7 +223,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
         EventManager.INSTANCE.callEvent(new MotionEvent(posX, getEntityBoundingBox().minY, posZ, onGround, EventState.POST));
 
-        EventManager.INSTANCE.callEvent(new RotationUpdateEvent());
+        EventManager.INSTANCE.callEvent(RotationUpdateEvent.INSTANCE);
 
         ci.cancel();
     }
@@ -270,7 +270,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
      */
     @Overwrite
     public void onLivingUpdate() {
-        EventManager.INSTANCE.callEvent(new UpdateEvent());
+        EventManager.INSTANCE.callEvent(UpdateEvent.INSTANCE);
 
         if (sprintingTicksLeft > 0) {
             --sprintingTicksLeft;
@@ -404,7 +404,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             setSprinting(false);
         }
 
-        EventManager.INSTANCE.callEvent(new PostSprintUpdateEvent());
+        EventManager.INSTANCE.callEvent(PostSprintUpdateEvent.INSTANCE);
 
         sprint.correctSprintState(modifiedInput, isUsingItem);
 
@@ -661,7 +661,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                     z = d8;
                     setEntityBoundingBox(axisalignedbb3);
                 } else {
-                    EventManager.INSTANCE.callEvent(new StepConfirmEvent());
+                    EventManager.INSTANCE.callEvent(StepConfirmEvent.INSTANCE);
                 }
             }
 
@@ -778,7 +778,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         EventManager.INSTANCE.callEvent(tickEvent);
 
         if (tickEvent.isCancelled()) {
-            EventManager.INSTANCE.callEvent(new RotationUpdateEvent());
+            EventManager.INSTANCE.callEvent(RotationUpdateEvent.INSTANCE);
             ci.cancel();
         }
     }

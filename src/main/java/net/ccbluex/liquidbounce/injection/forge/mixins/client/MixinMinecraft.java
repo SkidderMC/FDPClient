@@ -106,7 +106,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/Profiler;startSection(Ljava/lang/String;)V", ordinal = 1))
     private void hook(CallbackInfo ci) {
-        EventManager.INSTANCE.callEvent(new GameLoopEvent());
+        EventManager.INSTANCE.callEvent(GameLoopEvent.INSTANCE);
     }
 
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
@@ -181,12 +181,12 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "runTick", at = @At("TAIL"))
     private void injectEndTickEvent(CallbackInfo ci) {
-        EventManager.INSTANCE.callEvent(new TickEndEvent());
+        EventManager.INSTANCE.callEvent(TickEndEvent.INSTANCE);
     }
 
     @Inject(method = "runTick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;joinPlayerCounter:I", ordinal = 0))
     private void onTick(final CallbackInfo callbackInfo) {
-        EventManager.INSTANCE.callEvent(new GameTickEvent());
+        EventManager.INSTANCE.callEvent(GameTickEvent.INSTANCE);
     }
 
     @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;dispatchKeypresses()V", shift = At.Shift.AFTER))

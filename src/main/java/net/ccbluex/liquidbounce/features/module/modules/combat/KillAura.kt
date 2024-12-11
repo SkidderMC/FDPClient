@@ -124,7 +124,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
             "OnLadder",
             "InLiquid",
             "InWeb"
-        ), "Distance"
+        ), "Armor"
     )
     private val targetMode by choices("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch")
     private val limitedMultiTargets by int("LimitedMultiTargets", 0, 0..50) { targetMode == "Multi" }

@@ -98,7 +98,7 @@ class ScriptModule(name: String, category: Category, description: String, privat
     fun onWorld(worldEvent: WorldEvent) = callEvent("world", worldEvent)
 
     @EventTarget
-    fun onSession(sessionEvent: SessionEvent) = callEvent("session")
+    fun onSession(sessionEvent: SessionUpdateEvent) = callEvent("session")
 
     @EventTarget
     fun onClickBlock(clickBlockEvent: ClickBlockEvent) = callEvent("clickBlock", clickBlockEvent)

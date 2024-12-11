@@ -13,7 +13,7 @@ import me.liuli.elixir.account.MinecraftAccount
 import me.liuli.elixir.account.MojangAccount
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.event.EventManager.callEvent
-import net.ccbluex.liquidbounce.event.SessionEvent
+import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.file.FileManager.accountsConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
@@ -440,7 +440,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
                     minecraftAccount.session.token,
                     "microsoft"
                 )
-                callEvent(SessionEvent())
+                callEvent(SessionUpdateEvent)
 
                 success()
             } catch (exception: Exception) {

@@ -9,7 +9,7 @@ import com.google.gson.JsonParser
 import kotlinx.coroutines.*
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.event.SessionEvent
+import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
@@ -214,7 +214,7 @@ object CapeService : Listenable, MinecraftInstance() {
      * We want to immediately update the owner of the cape and refresh the cape carriers
      */
     @EventTarget
-    fun handleNewSession(sessionEvent: SessionEvent) {
+    fun handleNewSession(sessionEvent: SessionUpdateEvent) {
         // Check if donator cape is actually enabled and has a transfer code, also make sure the account used is premium.
         val capeUser = clientCapeUser ?: return
 

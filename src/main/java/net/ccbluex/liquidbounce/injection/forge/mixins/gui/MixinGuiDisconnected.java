@@ -9,7 +9,7 @@ import com.google.gson.JsonObject;
 
 import me.liuli.elixir.account.MinecraftAccount;
 import net.ccbluex.liquidbounce.event.EventManager;
-import net.ccbluex.liquidbounce.event.SessionEvent;
+import net.ccbluex.liquidbounce.event.SessionUpdateEvent;
 import net.ccbluex.liquidbounce.handler.other.AutoReconnect;
 import net.ccbluex.liquidbounce.handler.payload.ClientFixes;
 import net.ccbluex.liquidbounce.file.FileManager;
@@ -75,7 +75,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
 
                 mc.displayGuiScreen(new GuiLoginProgress(minecraftAccount, () -> {
                     mc.addScheduledTask(() -> {
-                        EventManager.INSTANCE.callEvent(new SessionEvent());
+                        EventManager.INSTANCE.callEvent(SessionUpdateEvent.INSTANCE);
                         ServerUtils.INSTANCE.connectToLastServer();
                     });
                     return null;

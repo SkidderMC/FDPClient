@@ -52,7 +52,7 @@ class ClickBlockEvent(val clickedBlock: BlockPos?, val enumFacing: EnumFacing?) 
 /**
  * Called when client is shutting down
  */
-class ClientShutdownEvent : Event()
+object ClientShutdownEvent : Event()
 
 /**
  * Called when another entity moves
@@ -109,7 +109,7 @@ class MovementInputEvent(var originalInput: MovementInput) : Event()
 /**
  * Called in "onLivingUpdate" after when the player's sprint states are updated
  */
-class PostSprintUpdateEvent : Event()
+object PostSprintUpdateEvent : Event()
 
 /**
  * Called in "moveFlying"
@@ -163,7 +163,7 @@ class Render2DEvent(val partialTicks: Float) : Event()
 /**
  * Called when packets sent to client are processed
  */
-class GameLoopEvent : Event()
+object GameLoopEvent : Event()
 
 /**
  * Called when world is going to be rendered
@@ -184,7 +184,7 @@ class ScreenEvent(val guiScreen: GuiScreen?) : Event()
 /**
  * Called when the session changes
  */
-class SessionEvent : Event()
+object SessionUpdateEvent : Event()
 
 /**
  * Called when player is going to step
@@ -194,20 +194,20 @@ class StepEvent(var stepHeight: Float) : Event()
 /**
  * Called when player step is confirmed
  */
-class StepConfirmEvent : Event()
+object StepConfirmEvent : Event()
 
 /**
  * tick... tack... tick... tack
  */
-class GameTickEvent : Event()
+object GameTickEvent : Event()
 
-class TickEndEvent : Event()
+object TickEndEvent : Event()
 /**
  * tick tack for player
  */
 class PlayerTickEvent(val state: EventState) : CancellableEvent()
 
-class RotationUpdateEvent : Event()
+object RotationUpdateEvent : Event()
 
 class RotationSetEvent(var yawDiff: Float, var pitchDiff: Float) : CancellableEvent()
 class CameraPositionEvent(
@@ -224,7 +224,7 @@ class ClientSlotChange(var supposedSlot: Int, var modifiedSlot: Int) : Event()
 /**
  * Called when minecraft player will be updated
  */
-class UpdateEvent : Event()
+object UpdateEvent : Event()
 
 /**
  * Called when the world changes
@@ -238,6 +238,6 @@ class ClickWindowEvent(val windowId: Int, val slotId: Int, val mouseButtonClicke
     CancellableEvent()
 
 /**
- * Called when LiquidBounce finishes starting up
+ * Called when FDP finishes starting up
  */
-class StartupEvent : Event()
+object StartupEvent : Event()

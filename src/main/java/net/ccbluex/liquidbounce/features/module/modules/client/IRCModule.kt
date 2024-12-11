@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.handler.irc.Client
 import net.ccbluex.liquidbounce.handler.irc.packet.packets.*
 import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.SessionEvent
+import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
@@ -165,7 +165,7 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
     }
 
     @EventTarget
-    fun onSession(sessionEvent: SessionEvent) {
+    fun onSession(sessionEvent: SessionUpdateEvent) {
         client.disconnect()
         connect()
     }

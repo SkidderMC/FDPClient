@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.utils.misc
 
 import me.liuli.elixir.account.CrackedAccount
 import net.ccbluex.liquidbounce.event.EventManager.callEvent
-import net.ccbluex.liquidbounce.event.SessionEvent
+import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration
 import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
 import net.minecraft.util.Session
@@ -51,7 +51,7 @@ object RandomUtils {
                 crackedAccount.session.token, crackedAccount.session.type
             )
 
-            callEvent(SessionEvent())
+            callEvent(SessionUpdateEvent)
         }
 
         return crackedAccount
