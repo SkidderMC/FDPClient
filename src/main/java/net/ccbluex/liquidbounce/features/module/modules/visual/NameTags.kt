@@ -15,11 +15,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.getHealth
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
-import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.extensions.getPing
-import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
-import net.ccbluex.liquidbounce.utils.extensions.lastTickPos
 import net.ccbluex.liquidbounce.utils.extensions.isClientFriend
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -30,7 +26,9 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.quickDrawBorderedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.quickDrawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.entity.Entity
@@ -368,6 +366,7 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
         }
 
         if (armor && entity is EntityPlayer) {
+            RenderHelper.enableGUIStandardItemLighting()
             for (index in 0..4) {
                 val itemStack = entity.getEquipmentInSlot(index) ?: continue
 
@@ -376,6 +375,7 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
                     itemStack, -50 + index * 20, if (potion && foundPotion) -42 else -22
                 )
             }
+            RenderHelper.disableStandardItemLighting()
 
             enableAlpha()
             disableBlend()

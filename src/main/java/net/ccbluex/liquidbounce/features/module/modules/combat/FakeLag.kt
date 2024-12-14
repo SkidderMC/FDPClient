@@ -255,12 +255,14 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
         get() = packetQueue.size.toString()
 
     private fun blink(handlePackets: Boolean = true) {
-        if (handlePackets) {
-            resetTimer.reset()
-        }
+        mc.addScheduledTask {
+            if (handlePackets) {
+                resetTimer.reset()
+            }
 
-        handlePackets(true)
-        ignoreWholeTick = true
+            handlePackets(true)
+            ignoreWholeTick = true
+        }
     }
 
     private fun handlePackets(clear: Boolean = false) {
