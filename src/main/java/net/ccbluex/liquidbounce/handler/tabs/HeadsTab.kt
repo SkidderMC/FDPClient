@@ -20,7 +20,7 @@ import net.minecraft.item.ItemStack
 class HeadsTab : CreativeTabs("Heads") {
 
     // List of heads
-    private val heads = arrayListOf<ItemStack>()
+    private val heads = ArrayList<ItemStack>(512)
 
     /**
      * Constructor of heads tab
@@ -33,50 +33,44 @@ class HeadsTab : CreativeTabs("Heads") {
     }
 
     private suspend fun loadHeads() {
-        runBlocking {
-            runCatching {
-                LOGGER.info("Loading heads...")
+        runCatching {
+            LOGGER.info("Loading heads...")
 
-                // Asynchronously fetch the heads configuration
-                val responseDeferred = async { get("$CLIENT_CLOUD/heads.json") }
-                val (response, _) = responseDeferred.await()
-                val headsConfiguration = JsonParser().parse(response)
+            // Asynchronously fetch the heads configuration
+            val (response, _) = withContext(Dispatchers.IO) { get("$CLIENT_CLOUD/heads.json") }
+            val headsConfiguration = JsonParser().parse(response)
 
-                // Process the heads configuration
-                if (!headsConfiguration.isJsonObject) return@runBlocking
+            // Process the heads configuration
+            if (!headsConfiguration.isJsonObject) return
 
-                val headsConf = headsConfiguration.asJsonObject
+            val headsConf = headsConfiguration.asJsonObject
 
-                if (headsConf["enabled"].asBoolean) {
-                    val url = headsConf["url"].asString
+            if (headsConf["enabled"].asBoolean) {
+                val url = headsConf["url"].asString
 
-                    LOGGER.info("Loading heads from $url...")
+                LOGGER.info("Loading heads from $url...")
 
-                    // Asynchronously fetch the heads data
-                    val headsResponseDeferred = async { get(url) }
-                    val (headsResponse, _) = headsResponseDeferred.await()
-                    val headsElement = JsonParser().parse(headsResponse)
+                // Asynchronously fetch the heads data
+                val (headsResponse, _) = withContext(Dispatchers.IO) { get(url) }
+                val headsElement = JsonParser().parse(headsResponse)
 
-                    // Process the heads data
-                    if (!headsElement.isJsonObject) {
-                        LOGGER.error("Something is wrong, the heads json is not a JsonObject!")
-                        return@runBlocking
-                    }
+                // Process the heads data
+                if (!headsElement.isJsonObject) {
+                    LOGGER.error("Something is wrong, the heads json is not a JsonObject!")
+                    return
+                }
 
-                    val headsObject = headsElement.asJsonObject
+                headsElement.asJsonObject.entrySet().mapTo(heads) { (_, value) ->
+                    val headElement = value.asJsonObject
 
-                    for ((_, value) in headsObject.entrySet()) {
-                        val headElement = value.asJsonObject
+                    ItemUtils.createItem("skull 1 3 {display:{Name:\"${headElement["name"].asString}\"},SkullOwner:{Id:\"${headElement["uuid"].asString}\",Properties:{textures:[{Value:\"${headElement["value"].asString}\"}]}}}")!!
+                }
 
-                        heads += ItemUtils.createItem("skull 1 3 {display:{Name:\"${headElement["name"].asString}\"},SkullOwner:{Id:\"${headElement["uuid"].asString}\",Properties:{textures:[{Value:\"${headElement["value"].asString}\"}]}}}")!!
-                    }
-
-                    LOGGER.info("Loaded ${heads.size} heads from HeadDB.")
-                } else
-                    LOGGER.info("Heads are disabled.")
-            }.onFailure {
-                LOGGER.error("Error while reading heads.", it)
-            }
+                LOGGER.info("Loaded ${heads.size} heads from HeadDB.")
+            } else
+                LOGGER.info("Heads are disabled.")
+        }.onFailure {
+            LOGGER.error("Error while reading heads.", it)
         }
     }
 

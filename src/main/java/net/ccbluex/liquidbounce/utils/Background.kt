@@ -9,6 +9,7 @@ import kotlinx.coroutines.*
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
+import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.render.shader.Shader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.BackgroundShader
 import net.minecraft.client.gui.Gui
@@ -26,7 +27,7 @@ abstract class Background(val backgroundFile: File) {
     companion object {
 
         fun createBackground(backgroundFile: File): Background = runBlocking {
-            CoroutineScope(Dispatchers.Default).async {
+            SharedScopes.Default.async {
                 val background = when (backgroundFile.extension) {
                     "png" -> ImageBackground(backgroundFile)
                     "frag", "glsl", "shader" -> ShaderBackground(backgroundFile)

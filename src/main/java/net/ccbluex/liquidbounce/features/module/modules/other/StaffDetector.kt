@@ -6,24 +6,28 @@
 package net.ccbluex.liquidbounce.features.module.modules.other
 
 import kotlinx.coroutines.*
-import net.ccbluex.liquidbounce.FDPClient.hud
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
+import net.ccbluex.liquidbounce.FDPClient.hud
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.utils.chat
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
+import net.ccbluex.liquidbounce.utils.chat
+import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.misc.HttpUtils
-import net.ccbluex.liquidbounce.value.*
+import net.ccbluex.liquidbounce.value.ListValue
+import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.value.choices
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
 import net.minecraft.network.Packet
 import net.minecraft.network.play.server.*
 import java.util.concurrent.ConcurrentHashMap
+import net.minecraft.network.play.server.S38PacketPlayerListItem.Action.UPDATE_LATENCY
 
 object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = false, hideModule = false) {
 
@@ -43,6 +47,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
     private val tab by boolean("TAB", true)
     private val packet by boolean("Packet", true)
     private val velocity by boolean("Velocity", true)
+    private val vanish by boolean("Vanish", true)
 
     private val autoLeave by choices("AutoLeave", arrayOf("Off", "Leave", "Lobby", "Quit"), "Off") { tab || packet }
 
@@ -58,19 +63,21 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
 
     private var attemptLeave = false
 
-    private var staffList = mapOf<String, Set<String>?>()
+    private var alertClearVanish = false
+
+    private var staffList: Map<String, Set<String>?> = emptyMap()
     private var serverIp = ""
 
-    private val moduleJob = SupervisorJob()
-    private val moduleScope = CoroutineScope(Dispatchers.IO + moduleJob)
+    private var moduleJob: Job? = null
 
     override fun onDisable() {
         serverIp = ""
-        moduleJob.cancel()
+        moduleJob?.cancel()
         checkedStaff.clear()
         checkedSpectator.clear()
         playersInSpectatorMode.clear()
         attemptLeave = false
+        alertClearVanish = false
     }
 
     /**
@@ -81,32 +88,33 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
         checkedStaff.clear()
         checkedSpectator.clear()
         playersInSpectatorMode.clear()
+        alertClearVanish = false
     }
 
-    private fun loadStaffData() {
-        val serverIpMap = mapOf(
-            "blocksmc" to "blocksmc.com",
-            "cubecraft" to "cubecraft.net",
-            "agerapvp" to "agerapvp.club",
-            "hypemc" to "hypemc.pro",
-            "hypixel" to "hypixel.net",
-            "supercraft" to "supercraft.es",
-            "pikanetwork" to "pika-network.net",
-            "gommehd" to "gommehd.net",
-            "coralmc" to "coralmc.it",
-            "librecraft" to "librecraft.com"
-        )
+    private val serverIpMap = mapOf(
+        "blocksmc" to "blocksmc.com",
+        "cubecraft" to "cubecraft.net",
+        "gamster" to "gamster.org",
+        "agerapvp" to "agerapvp.club",
+        "hypemc" to "hypemc.pro",
+        "hypixel" to "hypixel.net",
+        "supercraft" to "supercraft.es",
+        "pikanetwork" to "pika-network.net",
+        "gommehd" to "gommehd.net",
+        "coralmc" to "coralmc.it",
+        "librecraft" to "librecraft.com"
+    )
 
+    private fun loadStaffData() {
         serverIp = serverIpMap[staffMode.lowercase()] ?: return
 
-        moduleScope.launch {
+        moduleJob = SharedScopes.IO.launch {
             staffList = loadStaffList("$CLIENT_CLOUD/staffs/$serverIp")
         }
     }
 
     private fun checkedStaffRemoved() {
         mc.netHandler?.playerInfoMap?.mapNotNullTo(hashSetOf()) { it?.gameProfile?.name }?.let(checkedStaff::retainAll)
-
     }
 
     @EventTarget
@@ -119,7 +127,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
 
         /**
          * OLD BlocksMC Staff Spectator Check
-         * Credit: By @HU & Modified by Eclipses & Zywk
+         * Credit: By @HU & Modified by Eclipses & Zywl
          *
          * NOTE: Doesn't detect staff spectator all the time.
          */
@@ -180,6 +188,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
                 if (packet.motionX == 0 && packet.motionZ == 0 && packet.motionY / 8000.0 > 0.075) {
                     attemptLeave = false
                     autoLeave()
+
                     if (warn == "Chat") {
                         chat("§3Staff is Watching")
                     } else {
@@ -302,6 +311,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
                     else -> "§c(Ping error)"
                 }
             }
+
             else -> ""
         }
 
@@ -340,6 +350,38 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
         }
     }
 
+    private fun handlePlayerList(packet: S38PacketPlayerListItem) {
+        val action = packet.action
+        val entries = packet.entries
+
+        if (!vanish) return
+
+        if (action == UPDATE_LATENCY) {
+            val playerListSize = mc.netHandler?.playerInfoMap?.size ?: 0
+
+            if (entries.size != playerListSize) {
+                if (warn == "Chat") {
+                    chat("§aA player might be vanished.")
+                } else {
+                    hud.addNotification(Notification("§aA player might be vanished.", "§aA player might be vanished.", Type.WARNING, 3000))
+                }
+
+                alertClearVanish = false
+            } else {
+                if (alertClearVanish)
+                    return
+
+                if (warn == "Chat") {
+                    chat("§cNo players are vanished")
+                } else {
+                    hud.addNotification(Notification("§cNo players are vanished", "§cNo players are vanished",Type.WARNING, 3000))
+                }
+
+                alertClearVanish = true
+            }
+        }
+    }
+
     private fun handleOtherChecks(packet: Packet<*>?) {
         if (mc.thePlayer == null || mc.theWorld == null) {
             return
@@ -357,6 +399,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
             is S49PacketUpdateEntityNBT -> handleStaff(packet.getEntity(mc.theWorld) ?: null)
             is S1BPacketEntityAttach -> handleStaff(mc.theWorld.getEntityByID(packet.entityId) ?: null)
             is S04PacketEntityEquipment -> handleStaff(mc.theWorld.getEntityByID(packet.entityID) ?: null)
+            is S38PacketPlayerListItem -> handlePlayerList(packet)
         }
     }
 
@@ -371,9 +414,9 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
         notifyStaffPacket(staff)
     }
 
-    private suspend fun loadStaffList(url: String): Map<String, Set<String>> {
+    private fun loadStaffList(url: String): Map<String, Set<String>> {
         return try {
-            val (response, code) = fetchDataAsync(url)
+            val (response, code) = HttpUtils.get(url)
 
             when (code) {
                 200 -> {
@@ -385,10 +428,12 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
                     chat("§aSuccessfully loaded §9${staffList.size} §astaff names.")
                     mapOf(url to staffList)
                 }
+
                 404 -> {
                     chat("§cFailed to load staff list. §9(§3Doesn't exist in LiquidCloud§9)")
                     emptyMap()
                 }
+
                 else -> {
                     chat("§cFailed to load staff list. §9(§3ERROR CODE: $code§9)")
                     emptyMap()
@@ -398,12 +443,6 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
             chat("§cFailed to load staff list. §9(${e.message})")
             e.printStackTrace()
             emptyMap()
-        }
-    }
-
-    private suspend fun fetchDataAsync(url: String): Pair<String, Int> {
-        return withContext(Dispatchers.IO) {
-            HttpUtils.request(url, "GET").let { Pair(it.first, it.second) }
         }
     }
 

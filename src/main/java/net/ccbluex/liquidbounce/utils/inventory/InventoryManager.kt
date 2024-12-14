@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.other.ChestStealer
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.MovementUtils.serverOnGround
 import net.ccbluex.liquidbounce.utils.chat
+import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.timeSinceClosedInventory
@@ -61,8 +62,6 @@ object InventoryManager : MinecraftInstance() {
 	// Undetectable
 	val undetectableValue = boolean("Undetectable", false)
 
-	private val inventoryWorker = CoroutineScope(Dispatchers.Default + SupervisorJob())
-
 	var hasScheduledInLastLoop = false
 		set(value) {
 			// If hasScheduled gets set to true any time during the searching loop, inventory can be closed when the loop finishes.
@@ -88,8 +87,8 @@ object InventoryManager : MinecraftInstance() {
 	val passedPostInventoryCloseDelay
 		get() = System.currentTimeMillis() - timeSinceClosedInventory >= postInventoryCloseDelayValue.get()
 
-	private suspend fun manageInventory() {
-		while (inventoryWorker.isActive) {
+	private suspend fun CoroutineScope.manageInventory() {
+		while (isActive) {
 			try {
 				/**
 				 * ChestStealer actions
@@ -184,7 +183,7 @@ object InventoryManager : MinecraftInstance() {
 			false
 		} else true // Simulated inventory will get reopen before a window click, delaying it by start delay
 
-	fun startCoroutine() = inventoryWorker.launch {
+	fun startCoroutine() = SharedScopes.Default.launch {
 		manageInventory()
 	}
 }
