@@ -23,7 +23,6 @@ import net.ccbluex.liquidbounce.utils.CoroutineUtils.waitUntil
 import net.ccbluex.liquidbounce.utils.SilentHotbar
 import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
-import net.ccbluex.liquidbounce.utils.extensions.shuffled
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.canClickInventory
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.chestStealerCurrentSlot
@@ -49,7 +48,7 @@ import kotlin.math.sqrt
 object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false) {
 
     private val smartDelay by boolean("SmartDelay", false)
-    private val multiplier by IntegerValue("DelayMultiplier", 120, 0..500) { smartDelay }
+    private val multiplier by int("DelayMultiplier", 120, 0..500) { smartDelay }
     private val smartOrder by boolean("SmartOrder", true) { smartDelay }
 
     private val simulateShortStop by boolean("SimulateShortStop", false)
@@ -83,7 +82,8 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
     val backgroundRed by int("Background-R", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
     val backgroundGreen by int("Background-G", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
     val backgroundBlue by int("Background-B", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
-    val backgroundAlpha by int("Background-Alpha",
+    val backgroundAlpha by int(
+        "Background-Alpha",
         255,
         0..255,
         subjective = true
@@ -191,7 +191,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
                     chestStealerCurrentSlot = slot
 
                     val stealingDelay = if (smartDelay && index + 1 < itemsToSteal.size) {
-                        val dist = getSquaredDistanceBwSlots(getCords(slot), getCords(itemsToSteal[index + 1].first))
+                        val dist = squaredDistanceOfSlots(slot, itemsToSteal[index + 1].index)
                         val trueDelay = sqrt(dist.toDouble()) * multiplier
                         randomDelay(trueDelay.toInt(), trueDelay.toInt() + 20)
                     } else {
@@ -218,7 +218,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
                             val hotbarStacks = thePlayer.inventory.mainInventory.take(9)
 
                             // Can't get index of stack instance, because it is different even from the one returned from windowClick()
-                            val newIndex = hotbarStacks.indexOfFirst { it?.getIsItemStackEqual(stack) ?: false }
+                            val newIndex = hotbarStacks.indexOfFirst { it?.getIsItemStackEqual(stack) == true }
 
                             if (newIndex != -1)
                                 AutoArmor.equipFromHotbarInChest(newIndex, stack)
@@ -230,7 +230,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
                     if (simulateShortStop && Math.random() > 0.75) {
                         val minDelays = randomDelay(150, 300)
                         val maxDelays = randomDelay(minDelays, 500)
-                        val randomDelay = (Math.random() * (maxDelays - minDelays) + minDelays).toLong()
+                        val randomDelay = randomDelay(minDelays, maxDelays).toLong()
 
                         delay(randomDelay)
                     }
@@ -264,26 +264,34 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
         }
     }
 
-    private fun getCords(slot: Int): Pair<Int, Int> {
-        val x = slot % 9
-        val y = slot / 9
-        return Pair(x, y)
+    private fun squaredDistanceOfSlots(from: Int, to: Int): Int {
+        fun getCoords(slot: Int): IntArray {
+            val x = slot % 9
+            val y = slot / 9
+            return intArrayOf(x, y)
+        }
+
+        val (x1, y1) = getCoords(from)
+        val (x2, y2) = getCoords(to)
+        return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2)
     }
 
-    private fun getSquaredDistanceBwSlots(from: Pair<Int, Int>, to: Pair<Int, Int>): Int {
-        return (from.first - to.first) * (from.first - to.first) + (from.second - to.second) * (from.second - to.second)
-    }
+    private data class ItemTakeRecord(
+        val index: Int,
+        val stack: ItemStack,
+        val sortableToSlot: Int?
+    )
 
-    private fun getItemsToSteal(): MutableList<Triple<Int, ItemStack, Int?>> {
+    private fun getItemsToSteal(): MutableList<ItemTakeRecord> {
         val sortBlacklist = BooleanArray(9)
 
         var spaceInInventory = countSpaceInInventory()
 
         val itemsToSteal = stacks.dropLast(36)
-            .mapIndexedNotNull { index, stack ->
-                stack ?: return@mapIndexedNotNull null
+            .mapIndexedNotNullTo(ArrayList(32)) { index, stack ->
+                stack ?: return@mapIndexedNotNullTo null
 
-                if (index in TickScheduler) return@mapIndexedNotNull null
+                if (index in TickScheduler) return@mapIndexedNotNullTo null
 
                 val mergeableCount = mc.thePlayer.inventory.mainInventory.sumOf { otherStack ->
                     otherStack ?: return@sumOf 0
@@ -297,13 +305,13 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
                 val canFullyMerge = mergeableCount >= stack.stackSize
 
                 // Clicking this item wouldn't take it from chest or merge it
-                if (!canMerge && spaceInInventory <= 0) return@mapIndexedNotNull null
+                if (!canMerge && spaceInInventory <= 0) return@mapIndexedNotNullTo null
 
                 // If stack can be merged without occupying any additional slot, do not take stack limits into account
                 // TODO: player could theoretically already have too many stacks in inventory before opening the chest so no more should even get merged
                 // TODO: if it can get merged but would also need another slot, it could simulate 2 clicks, one which maxes out the stack in inventory and second that puts excess items back
                 if (InventoryCleaner.handleEvents() && !isStackUseful(stack, stacks, noLimits = canFullyMerge))
-                    return@mapIndexedNotNull null
+                    return@mapIndexedNotNullTo null
 
                 var sortableTo: Int? = null
 
@@ -319,10 +327,12 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
                         val hotbarStack = stacks.getOrNull(stacks.size - 9 + hotbarIndex)
 
                         // If occupied hotbar slot isn't already sorted or isn't strictly best, sort to it
-                        if (!canBeSortedTo(hotbarIndex, hotbarStack?.item) || !isStackUseful(hotbarStack,
+                        if (!canBeSortedTo(hotbarIndex, hotbarStack?.item) || !isStackUseful(
+                                hotbarStack,
                                 stacks,
                                 strictlyBest = true
-                            )) {
+                            )
+                        ) {
                             sortableTo = hotbarIndex
                             sortBlacklist[hotbarIndex] = true
                             break
@@ -333,42 +343,43 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
                 // If stack gets fully merged, no slot in inventory gets occupied
                 if (!canFullyMerge) spaceInInventory--
 
-                Triple(index, stack, sortableTo)
-            }.shuffled(randomSlot)
+                ItemTakeRecord(index, stack, sortableTo)
+            }.also { it ->
+                if (randomSlot)
+                    it.shuffle()
 
-            // Prioritise armor pieces with lower priority, so that as many pieces can get equipped from hotbar after chest gets closed
-            .sortedByDescending { it.second.item is ItemArmor }
+                // Prioritise armor pieces with lower priority, so that as many pieces can get equipped from hotbar after chest gets closed
+                it.sortByDescending { it.stack.item is ItemArmor }
 
-            // Prioritize items that can be sorted
-            .sortedByDescending { it.third != null }
+                // Prioritize items that can be sorted
+                it.sortByDescending { it.sortableToSlot != null }
 
-            .toMutableList()
-            .also { it ->
                 // Fully prioritise armor pieces when it is possible to equip armor while in chest
                 if (AutoArmor.canEquipFromChest())
-                    it.sortByDescending { it.second.item is ItemArmor }
+                    it.sortByDescending { it.stack.item is ItemArmor }
+
+                if (smartOrder) {
+                    sortBasedOnOptimumPath(it)
+                }
             }
-        if (smartOrder) {
-            sortBasedOnOptimumPath(itemsToSteal)
-        }
+
         return itemsToSteal
     }
 
-    private fun sortBasedOnOptimumPath(itemsToSteal: MutableList<Triple<Int, ItemStack, Int?>>) {
+    private fun sortBasedOnOptimumPath(itemsToSteal: MutableList<ItemTakeRecord>) {
         for (i in itemsToSteal.indices) {
             var nextIndex = i
-            var minDistance = Double.MAX_VALUE
-            var next: Triple<Int, ItemStack, Int?>? = null
+            var minDistance = Int.MAX_VALUE
+            var next: ItemTakeRecord? = null
             for (j in i + 1 until itemsToSteal.size) {
-                val distance =
-                    getSquaredDistanceBwSlots(getCords(itemsToSteal[i].first), getCords(itemsToSteal[j].first))
+                val distance = squaredDistanceOfSlots(itemsToSteal[i].index, itemsToSteal[j].index)
                 if (distance < minDistance) {
-                    minDistance = distance.toDouble()
+                    minDistance = distance
                     next = itemsToSteal[j]
                     nextIndex = j
                 }
             }
-            next?.let {
+            if (next != null) {
                 itemsToSteal[nextIndex] = itemsToSteal[i + 1]
                 itemsToSteal[i + 1] = next
             }
@@ -394,7 +405,8 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
 
         drawRect(minX - 2, minY - 2, maxX + 2, maxY + 2, Color(200, 200, 200).rgb)
         drawRect(minX, minY, maxX, maxY, Color(50, 50, 50).rgb)
-        drawRect(minX,
+        drawRect(
+            minX,
             minY,
             minX + (maxX - minX) * easingProgress,
             maxY,
@@ -430,7 +442,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
         if (chestDebug == "Off") return
 
         when (chestDebug.lowercase()) {
-            "text" ->  chat(message)
+            "text" -> chat(message)
             "notification" -> hud.addNotification(Notification(message, "debug", Type.INFO, 500))
         }
     }
