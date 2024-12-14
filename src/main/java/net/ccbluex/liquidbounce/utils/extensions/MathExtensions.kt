@@ -14,10 +14,7 @@ import net.minecraft.block.Block
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.entity.RenderManager
 import net.minecraft.entity.Entity
-import net.minecraft.util.AxisAlignedBB
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.Vec3
-import net.minecraft.util.Vec3i
+import net.minecraft.util.*
 import java.math.BigDecimal
 import javax.vecmath.Vector2f
 import kotlin.math.ceil
@@ -69,12 +66,13 @@ operator fun ScaledResolution.component2() = this.scaledHeight
 
 /**
  * Provides:
- * `vec + othervec`, `vec - othervec`, `vec * number`, `vec / number`
+ * `vec + othervec`, `vec - othervec`, `vec * number`, `vec / number`, `-vec`
  * */
 operator fun Vec3.plus(vec: Vec3): Vec3 = add(vec)
 operator fun Vec3.minus(vec: Vec3): Vec3 = subtract(vec)
 operator fun Vec3.times(number: Double) = Vec3(xCoord * number, yCoord * number, zCoord * number)
 operator fun Vec3.div(number: Double) = times(1 / number)
+operator fun Vec3.unaryMinus(): Vec3 = this.times(-1.0)
 
 fun Vec3.offset(direction: EnumFacing, value: Double): Vec3 {
     val vec3i = direction.directionVec
@@ -85,8 +83,8 @@ fun Vec3.offset(direction: EnumFacing, value: Double): Vec3 {
     )
 }
 
-fun Vec3.withY(value: Double): Vec3 {
-    return Vec3(xCoord, value, zCoord)
+fun Vec3.withY(value: Double, useCurrentY: Boolean = false): Vec3 {
+    return Vec3(xCoord, (yCoord.takeIf { useCurrentY } ?: 0.0) + value, zCoord)
 }
 
 val Vec3_ZERO: Vec3
@@ -156,6 +154,8 @@ fun AxisAlignedBB.lerpWith(x: Double, y: Double, z: Double) =
 
 fun AxisAlignedBB.lerpWith(point: Vec3) = lerpWith(point.xCoord, point.yCoord, point.zCoord)
 fun AxisAlignedBB.lerpWith(value: Double) = lerpWith(value, value, value)
+fun AxisAlignedBB.offset(other: Vec3) = offset(other.xCoord, other.yCoord, other.zCoord)
+fun AxisAlignedBB.offset(other: BlockPos) = offset(other.toVec())
 
 val AxisAlignedBB.center
     get() = lerpWith(0.5)

@@ -5,6 +5,10 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.float
+import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
@@ -20,18 +24,12 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
 import net.minecraft.entity.projectile.EntityFireball
-import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.util.ResourceLocation
-import net.minecraft.world.WorldSettings
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.floor
@@ -71,13 +69,7 @@ object AntiFireball : Module("AntiFireball", Category.PLAYER, hideModule = false
 
             val normalDistance = player.getDistanceToBox(entity.hitBox)
 
-            val predictedDistance = player.getDistanceToBox(
-                entity.hitBox.offset(
-                    entityPrediction.xCoord,
-                    entityPrediction.yCoord,
-                    entityPrediction.zCoord
-                )
-            )
+            val predictedDistance = player.getDistanceToBox(entity.hitBox.offset(entityPrediction))
 
             // Skip if the predicted distance is (further than/same as) the normal distance or the predicted distance is out of reach
             if (predictedDistance >= normalDistance || predictedDistance > range) {
@@ -180,15 +172,12 @@ object AntiFireball : Module("AntiFireball", Category.PLAYER, hideModule = false
         if (!options.rotationsActive && player.getDistanceToBox(entity.hitBox) <= range
             || isRotationFaced(entity, range.toDouble(), rotation)
         ) {
-            when (swing) {
-                "Normal" -> mc.thePlayer.swingItem()
-                "Packet" -> sendPacket(C0APacketAnimation())
-            }
+            player.attackEntityWithModifiedSprint(entity) {
+                when (swing) {
+                    "Normal" -> mc.thePlayer.swingItem()
+                    "Packet" -> sendPacket(C0APacketAnimation())
+                }
 
-            sendPacket(C02PacketUseEntity(entity, C02PacketUseEntity.Action.ATTACK))
-
-            if (mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR) {
-                player.attackTargetEntityWithCurrentItem(entity)
             }
 
             target = null

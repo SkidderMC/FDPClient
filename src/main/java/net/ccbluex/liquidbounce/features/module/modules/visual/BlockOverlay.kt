@@ -5,6 +5,10 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.float
+import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
@@ -14,19 +18,14 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
-import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorderedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawFilledBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawSelectionBoundingBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.minecraft.block.Block
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.GlStateManager.*
+import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.init.Blocks
 import net.minecraft.util.BlockPos
 import org.lwjgl.opengl.GL11.*
@@ -61,10 +60,9 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
 
         val block = blockPos.block ?: return
 
-        val color = if (colorRainbow) rainbow(alpha = 0.4F) else Color(
-            colorRed,
-            colorGreen, colorBlue, (0.4F * 255).toInt()
-        )
+        val color = if (colorRainbow) {
+            rainbow(alpha = 0.4F)
+        } else Color(colorRed, colorGreen, colorBlue, (0.4F * 255).toInt())
 
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -80,21 +78,16 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
 
         val thePlayer = mc.thePlayer ?: return
 
-        val (x, y, z) = thePlayer.interpolatedPosition(thePlayer.lastTickPos)
+        val pos = thePlayer.interpolatedPosition(thePlayer.lastTickPos)
 
         val f = 0.002F.toDouble()
 
-        val axisAlignedBB = block.getSelectedBoundingBox(mc.theWorld, blockPos).expand(f, f, f).offset(-x, -y, -z)
+        val axisAlignedBB = block.getSelectedBoundingBox(mc.theWorld, blockPos).expand(f, f, f).offset(-pos)
 
-        when (mode.lowercase()) {
-            "box" -> {
-                drawFilledBox(axisAlignedBB)
-                drawSelectionBoundingBox(axisAlignedBB)
-            }
-
-            "otherbox" -> drawFilledBox(axisAlignedBB)
-            "outline" -> drawSelectionBoundingBox(axisAlignedBB)
-        }
+        if (mode.lowercase() in arrayOf("box", "otherbox"))
+            drawFilledBox(axisAlignedBB)
+        if (mode.lowercase() in arrayOf("box", "outline"))
+            drawSelectionBoundingBox(axisAlignedBB)
 
         if (depth3D) glEnable(GL_DEPTH_TEST)
         glEnable(GL_TEXTURE_2D)

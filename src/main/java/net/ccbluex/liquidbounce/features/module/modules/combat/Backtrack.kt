@@ -5,32 +5,22 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
-import net.ccbluex.liquidbounce.utils.client.PacketUtils
+import net.ccbluex.liquidbounce.utils.client.*
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils.contains
-import net.ccbluex.liquidbounce.utils.client.realX
-import net.ccbluex.liquidbounce.utils.client.realY
-import net.ccbluex.liquidbounce.utils.client.realZ
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBacktrackBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
-import net.ccbluex.liquidbounce.utils.client.schedulePacketProcess
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
-import net.ccbluex.liquidbounce.config.FloatValue
-import net.ccbluex.liquidbounce.config.IntegerValue
-import net.ccbluex.liquidbounce.config.ListValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.minecraft.client.renderer.GlStateManager.color
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -391,7 +381,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                     if (targetEntity.truePos) {
                         when (espMode.lowercase()) {
                             "box" -> {
-                                val axisAlignedBB = entityBoundingBox.offset(-posX, -posY, -posZ).offset(x, y, z)
+                                val axisAlignedBB = entityBoundingBox.offset(-currPos + Vec3(x, y, z))
 
                                 drawBacktrackBox(axisAlignedBB, color)
                             }
@@ -536,8 +526,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
                 val targetPos = target.currPos
 
-                val (dx, dy, dz) = data.first - targetPos
-                val targetBox = target.hitBox.offset(dx, dy, dz)
+                val targetBox = target.hitBox.offset(data.first - targetPos)
 
                 if (mc.thePlayer.getDistanceToBox(targetBox) in minDistance..maxDistance) {
                     found = true

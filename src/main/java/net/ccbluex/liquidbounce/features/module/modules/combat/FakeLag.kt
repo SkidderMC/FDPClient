@@ -6,6 +6,9 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import com.google.common.collect.Queues
+import net.ccbluex.liquidbounce.config.FloatValue
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -13,14 +16,11 @@ import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.client.pos
+import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.config.FloatValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.int
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.handshake.client.C00Handshake
@@ -55,24 +55,9 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
 
     private val line by boolean("Line", true, subjective = true)
     private val rainbow by boolean("Rainbow", false, subjective = true) { line }
-    private val red by int(
-        "R",
-        0,
-        0..255,
-        subjective = true
-    ) { !rainbow && line }
-    private val green by int(
-        "G",
-        255,
-        0..255,
-        subjective = true
-    ) { !rainbow && line }
-    private val blue by int(
-        "B",
-        0,
-        0..255,
-        subjective = true
-    ) { !rainbow && line }
+    private val red by int("R", 0, 0..255, subjective = true) { !rainbow && line }
+    private val green by int("G", 255, 0..255, subjective = true) { !rainbow && line }
+    private val blue by int("B", 0, 0..255, subjective = true) { !rainbow && line }
 
     private val packetQueue = Queues.newArrayDeque<QueueData>()
     private val positions = Queues.newArrayDeque<PositionData>()
@@ -81,8 +66,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
     private var ignoreWholeTick = false
 
     override fun onDisable() {
-        if (mc.thePlayer == null)
-            return
+        if (mc.thePlayer == null) return
 
         blink()
     }
@@ -92,10 +76,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
         val player = mc.thePlayer ?: return
         val packet = event.packet
 
-        if (!handleEvents() || player.isDead || event.isCancelled ||
-            maxAllowedDistToEnemy.get() > 0.0 && wasNearEnemy ||
-            ignoreWholeTick
-        ) {
+        if (!handleEvents() || player.isDead || event.isCancelled || maxAllowedDistToEnemy.get() > 0.0 && wasNearEnemy || ignoreWholeTick) {
             return
         }
 
@@ -160,8 +141,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
             }
         }
 
-        if (!resetTimer.hasTimePassed(recoilTime))
-            return
+        if (!resetTimer.hasTimePassed(recoilTime)) return
 
         if (mc.isSingleplayer || mc.currentServerData == null) {
             blink()
@@ -186,8 +166,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
     @EventTarget
     fun onWorld(event: WorldEvent) {
         // Clear packets on disconnect only
-        if (event.worldClient == null)
-            blink(false)
+        if (event.worldClient == null) blink(false)
     }
 
     private fun getTruePositionEyes(player: EntityPlayer): Vec3 {
@@ -204,22 +183,23 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
             val playerPos = player.currPos
             val serverPos = positions.firstOrNull()?.pos ?: playerPos
 
-            val (dx, dy, dz) = serverPos - playerPos
-            val playerBox = player.hitBox.offset(dx, dy, dz)
+            val playerBox = player.hitBox.offset(serverPos - playerPos)
 
             wasNearEnemy = false
 
             world.playerEntities.forEach { otherPlayer ->
-                if (otherPlayer == player)
-                    return@forEach
+                if (otherPlayer == player) return@forEach
 
                 val entityMixin = otherPlayer as? IMixinEntity
 
                 if (entityMixin != null) {
                     val eyes = getTruePositionEyes(otherPlayer)
 
-                    if (eyes.distanceTo(getNearestPointBB(eyes, playerBox))
-                        in minAllowedDistToEnemy.get()..maxAllowedDistToEnemy.get()
+                    if (eyes.distanceTo(
+                            getNearestPointBB(
+                                eyes, playerBox
+                            )
+                        ) in minAllowedDistToEnemy.get()..maxAllowedDistToEnemy.get()
                     ) {
                         blink()
                         wasNearEnemy = true
@@ -234,8 +214,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
             return
         }
 
-        if (!resetTimer.hasTimePassed(recoilTime))
-            return
+        if (!resetTimer.hasTimePassed(recoilTime)) return
 
         handlePackets()
         ignoreWholeTick = false
@@ -245,8 +224,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
     fun onRender3D(event: Render3DEvent) {
         val color = if (rainbow) rainbow() else Color(red, green, blue)
 
-        if (!line || Blink.blinkingSend() || positions.isEmpty())
-            return
+        if (!line || Blink.blinkingSend() || positions.isEmpty()) return
 
         glPushMatrix()
         glDisable(GL_TEXTURE_2D)
@@ -262,8 +240,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
         val renderPosY = mc.renderManager.viewerPosY
         val renderPosZ = mc.renderManager.viewerPosZ
 
-        for ((pos) in positions)
-            glVertex3d(pos.xCoord - renderPosX, pos.yCoord - renderPosY, pos.zCoord - renderPosZ)
+        for ((pos) in positions) glVertex3d(pos.xCoord - renderPosX, pos.yCoord - renderPosY, pos.zCoord - renderPosZ)
 
         glColor4d(1.0, 1.0, 1.0, 1.0)
         glEnd()
@@ -288,7 +265,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
 
     private fun handlePackets(clear: Boolean = false) {
         synchronized(packetQueue) {
-            packetQueue.removeAll { (packet, timestamp) ->
+            packetQueue.removeEach { (packet, timestamp) ->
                 if (timestamp <= System.currentTimeMillis() - delay || clear) {
                     sendPacket(packet, false)
                     true
@@ -297,7 +274,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
         }
 
         synchronized(positions) {
-            positions.removeAll { (_, timestamp) -> timestamp <= System.currentTimeMillis() - delay || clear }
+            positions.removeEach { (_, timestamp) -> timestamp <= System.currentTimeMillis() - delay || clear }
         }
     }
 

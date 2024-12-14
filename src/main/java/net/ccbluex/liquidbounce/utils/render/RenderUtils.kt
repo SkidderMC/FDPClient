@@ -113,13 +113,13 @@ object RenderUtils : MinecraftInstance() {
         blockPos.block?.let { block ->
             val player = mc.thePlayer
 
-            val (x, y, z) = player.interpolatedPosition(player.lastTickPos)
+            val pos = -player.interpolatedPosition(player.lastTickPos)
 
             val f = 0.002F.toDouble()
 
             block.setBlockBoundsBasedOnState(mc.theWorld, blockPos)
 
-            axisAlignedBB = block.getSelectedBoundingBox(mc.theWorld, blockPos).expand(f, f, f).offset(-x, -y, -z)
+            axisAlignedBB = block.getSelectedBoundingBox(mc.theWorld, blockPos).expand(f, f, f).offset(pos)
         }
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -440,8 +440,8 @@ object RenderUtils : MinecraftInstance() {
     }
 
     fun drawPlatform(entity: Entity, color: Color) {
-        val (x, y, z) = entity.interpolatedPosition(entity.lastTickPos) - mc.renderManager.renderPos
-        val axisAlignedBB = entity.entityBoundingBox.offset(-entity.posX, -entity.posY, -entity.posZ).offset(x, y, z)
+        val deltaPos = entity.interpolatedPosition(entity.lastTickPos) - mc.renderManager.renderPos
+        val axisAlignedBB = entity.entityBoundingBox.offset(-entity.currPos + deltaPos)
 
         drawAxisAlignedBB(
             AxisAlignedBB.fromBounds(

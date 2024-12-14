@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
@@ -14,8 +16,6 @@ import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.float
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
@@ -57,8 +57,7 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) 
 
             val lastData = positions.lastOrNull()?.array
 
-            if (lastData == null || !lastData.contentEquals(data.array))
-                positions += data
+            if (lastData == null || !lastData.contentEquals(data.array)) positions += data
         }
 
         mc.entityRenderer.disableLightmap()
@@ -69,7 +68,7 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) 
         val renderPosY = mc.renderManager.viewerPosY
         val renderPosZ = mc.renderManager.viewerPosZ
 
-        positions.removeAll {
+        positions.removeEach {
             val timestamp = System.currentTimeMillis() - it.time
             val transparency = if (fade) {
                 (0f..150f).lerpWith(1 - (timestamp / fadeSeconds).coerceAtMost(1.0F))
@@ -77,17 +76,16 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) 
 
             val startPos = it.array
             val endPos = positions.getOrNull(positions.indexOf(it) + 1)?.array
+                ?: return@removeEach temporary && timestamp > fadeSeconds
 
-            if (endPos != null) {
-                val color = if (rainbow) rainbow() else colors.color()
+            val color = if (rainbow) rainbow() else colors.color()
 
-                glColor(color.withAlpha(transparency.toInt()))
+            glColor(color.withAlpha(transparency.toInt()))
 
-                glVertex3d(startPos[0] - renderPosX, startPos[1] - renderPosY, startPos[2] - renderPosZ)
-                glVertex3d(startPos[0] - renderPosX, startPos[1] - renderPosY + lineHeight, startPos[2] - renderPosZ)
-                glVertex3d(endPos[0] - renderPosX, endPos[1] - renderPosY + lineHeight, endPos[2] - renderPosZ)
-                glVertex3d(endPos[0] - renderPosX, endPos[1] - renderPosY, endPos[2] - renderPosZ)
-            }
+            glVertex3d(startPos[0] - renderPosX, startPos[1] - renderPosY, startPos[2] - renderPosZ)
+            glVertex3d(startPos[0] - renderPosX, startPos[1] - renderPosY + lineHeight, startPos[2] - renderPosZ)
+            glVertex3d(endPos[0] - renderPosX, endPos[1] - renderPosY + lineHeight, endPos[2] - renderPosZ)
+            glVertex3d(endPos[0] - renderPosX, endPos[1] - renderPosY, endPos[2] - renderPosZ)
 
             temporary && timestamp > fadeSeconds
         }

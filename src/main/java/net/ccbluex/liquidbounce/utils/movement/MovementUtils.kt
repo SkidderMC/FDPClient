@@ -130,7 +130,7 @@ object MovementUtils : MinecraftInstance(), Listenable {
     fun isOnGround(height: Double) =
         mc.theWorld != null && mc.thePlayer != null &&
                 mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer,
-                    mc.thePlayer.entityBoundingBox.offset(0.0, -height, 0.0)
+                    mc.thePlayer.entityBoundingBox.offset(Vec3_ZERO.withY(-height))
                 ).isNotEmpty()
 
     fun updateBlocksPerSecond() {

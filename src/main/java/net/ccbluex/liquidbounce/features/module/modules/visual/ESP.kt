@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
@@ -12,14 +13,10 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer.Companion.getColorIndex
-import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
-import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.extensions.currPos
-import net.ccbluex.liquidbounce.utils.extensions.isClientFriend
-import net.ccbluex.liquidbounce.utils.extensions.lastTickPos
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
@@ -27,11 +24,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.WorldToScreen
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
-import net.ccbluex.liquidbounce.config.IntegerValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.minecraft.client.renderer.GlStateManager.enableTexture2D
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -123,25 +116,16 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
                 if (distanceSquared <= maxRenderDistanceSq) {
                     val color = getColor(entity)
 
+                    val pos = entity.interpolatedPosition(entity.lastTickPos) - mc.renderManager.renderPos
+
                     when (mode) {
                         "Box", "OtherBox" -> drawEntityBox(entity, color, mode != "OtherBox")
                         "2D" -> {
-                            val (posX, posY, posZ) = entity.lastTickPos.lerpWith(
-                                entity.currPos,
-                                mc.timer.renderPartialTicks
-                            ) - mc.renderManager.renderPos
-
-                            draw2D(entity, posX, posY, posZ, color.rgb, Color.BLACK.rgb)
+                            draw2D(entity, pos.xCoord, pos.yCoord, pos.zCoord, color.rgb, Color.BLACK.rgb)
                         }
 
                         "Real2D" -> {
-                            val (posX, posY, posZ) = entity.lastTickPos.lerpWith(
-                                entity.currPos,
-                                mc.timer.renderPartialTicks
-                            ) - mc.renderManager.renderPos
-
-                            val bb =
-                                entity.hitBox.offset(-entity.posX, -entity.posY, -entity.posZ).offset(posX, posY, posZ)
+                            val bb = entity.hitBox.offset(-entity.currPos + pos)
                             val boxVertices = arrayOf(
                                 doubleArrayOf(bb.minX, bb.minY, bb.minZ),
                                 doubleArrayOf(bb.minX, bb.maxY, bb.minZ),
@@ -226,11 +210,10 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
         get() = mode
 
     private fun getEntitiesByColor(maxDistanceSquared: Double): Map<Color, List<EntityLivingBase>> {
-        return getEntitiesInRange(maxDistanceSquared)
-            .groupBy { getColor(it) }
+        return getEntitiesInRange(maxDistanceSquared).groupBy { getColor(it) }
     }
 
-    private fun getEntitiesInRange(maxDistanceSquared: Double): List<EntityLivingBase> {
+    private fun getEntitiesInRange(maxDistanceSquared: Double): Sequence<EntityLivingBase> {
         val player = mc.thePlayer
 
         return mc.theWorld.loadedEntityList.asSequence()
@@ -239,7 +222,6 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
             .filter { isSelected(it, false) }
             .filter { player.getDistanceSqToEntity(it) <= maxDistanceSquared }
             .filter { thruBlocks || isEntityHeightVisible(it) }
-            .toList()
     }
 
     fun getColor(entity: Entity? = null): Color {

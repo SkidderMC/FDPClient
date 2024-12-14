@@ -5,22 +5,18 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
-import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.angleDifference
-import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.angleDifference
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
-import net.ccbluex.liquidbounce.config.IntegerValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C0BPacketEntityAction
@@ -78,6 +74,7 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT, hideModule = f
     private val onlyGround by boolean("OnlyGround", false)
     val onlyMove by boolean("OnlyMove", true)
     val onlyMoveForward by boolean("OnlyMoveForward", true) { onlyMove }
+    private val onlyWhenTargetGoesBack by boolean("OnlyWhenTargetGoesBack", false)
 
     private var ticks = 0
     private var forceSprintState = 0
@@ -119,8 +116,15 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT, hideModule = f
 
         if (onlyMove && (!player.isMoving || onlyMoveForward && player.movementInput.moveStrafe != 0f)) return
 
-        // Is the enemy facing his back on us?
+        // Is the enemy facing their back on us?
         if (angleDifferenceToPlayer > minEnemyRotDiffToIgnore && !target.hitBox.isVecInside(player.eyes)) return
+
+        val pos = target.currPos - target.lastTickPos
+
+        val distanceBasedOnMotion = player.getDistanceToBox(target.hitBox.offset(pos))
+
+        // Is the entity's distance based on motion farther than the normal distance?
+        if (onlyWhenTargetGoesBack && distanceBasedOnMotion >= player.getDistanceToEntityBox(target)) return
 
         when (mode) {
             "Old" -> {
