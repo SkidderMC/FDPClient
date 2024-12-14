@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.event.EventState;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
-import net.ccbluex.liquidbounce.utils.PPSCounter;
+import net.ccbluex.liquidbounce.utils.client.PPSCounter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

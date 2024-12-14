@@ -9,10 +9,10 @@ import com.google.gson.JsonElement
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
-import net.ccbluex.liquidbounce.utils.misc.MiscUtils
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils.randomNumber
+import net.ccbluex.liquidbounce.utils.io.MiscUtils
+import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomNumber
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
-import net.ccbluex.liquidbounce.value.TextValue
+import net.ccbluex.liquidbounce.config.TextValue
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
 import java.io.File

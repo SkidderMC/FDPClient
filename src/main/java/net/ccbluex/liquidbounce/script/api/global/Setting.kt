@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.script.api.global
 import jdk.nashorn.api.scripting.JSObject
 import jdk.nashorn.api.scripting.ScriptObjectMirror
 import jdk.nashorn.api.scripting.ScriptUtils
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.gui.FontRenderer
 
 /**

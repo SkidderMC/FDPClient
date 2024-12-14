@@ -9,8 +9,8 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.value.*
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.config.IntegerValue
+import net.ccbluex.liquidbounce.config.boolean
 import net.minecraft.potion.PotionEffect
 import net.minecraft.potion.Potion.*
 

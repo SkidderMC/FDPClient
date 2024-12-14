@@ -6,9 +6,9 @@
 package net.ccbluex.liquidbounce.features.command
 
 import net.ccbluex.liquidbounce.FDPClient.commandManager
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.asResourceLocation
-import net.ccbluex.liquidbounce.utils.playSound
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.asResourceLocation
+import net.ccbluex.liquidbounce.utils.client.playSound
 
 abstract class Command(val command: String, vararg val alias: String) : MinecraftInstance() {
     /**
@@ -29,7 +29,7 @@ abstract class Command(val command: String, vararg val alias: String) : Minecraf
     /**
      * Print [msg] to chat
      */
-    protected fun chat(msg: String) = net.ccbluex.liquidbounce.utils.chat("§3$msg")
+    protected fun chat(msg: String) = net.ccbluex.liquidbounce.utils.client.chat("§3$msg")
 
     /**
      * Print [alert] to chat as alert

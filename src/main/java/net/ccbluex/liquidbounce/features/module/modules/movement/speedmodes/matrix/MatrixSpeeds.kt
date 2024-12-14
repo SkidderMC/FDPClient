@@ -12,8 +12,8 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.matrixTim
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.matrixUsePreMotion
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.matrixVeloBoostValue
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.speed
-import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.speed
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.server.S12PacketEntityVelocity

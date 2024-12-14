@@ -5,6 +5,10 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.float
+import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations.animations
@@ -13,9 +17,8 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Animations.delay
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations.itemRotate
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations.itemRotateSpeed
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations.itemRotationMode
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.value.*
 import net.minecraft.client.entity.AbstractClientPlayer
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.util.MathHelper

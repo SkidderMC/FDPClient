@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.BoolValue
+import net.ccbluex.liquidbounce.config.BoolValue
 import java.awt.Color
 
 /**

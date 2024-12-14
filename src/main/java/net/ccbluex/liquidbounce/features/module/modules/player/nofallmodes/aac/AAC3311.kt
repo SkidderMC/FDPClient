@@ -1,8 +1,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac
 
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.NoFallMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.serverOnGround
-import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.serverOnGround
+import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.extensions.stopXZ
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition

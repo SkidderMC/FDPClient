@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump.canBoo
 import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump.jumped
 import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump.ncpBoost
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.LongJumpMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.speed
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 
 object NCP : LongJumpMode("NCP") {

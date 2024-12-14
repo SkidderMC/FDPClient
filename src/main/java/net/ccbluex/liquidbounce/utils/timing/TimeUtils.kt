@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils.timing
 
 import net.ccbluex.liquidbounce.utils.extensions.safeDiv
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextInt
+import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import kotlin.math.roundToInt
 
 object TimeUtils {

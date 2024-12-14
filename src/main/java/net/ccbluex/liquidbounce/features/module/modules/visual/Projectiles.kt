@@ -18,8 +18,8 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
-import net.ccbluex.liquidbounce.value.choices
-import net.ccbluex.liquidbounce.value.int
+import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.int
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.client.renderer.Tessellator

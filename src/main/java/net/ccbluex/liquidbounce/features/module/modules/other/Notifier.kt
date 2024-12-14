@@ -13,9 +13,9 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot
 import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
-import net.ccbluex.liquidbounce.utils.chat
-import net.ccbluex.liquidbounce.value.boolean
-import net.ccbluex.liquidbounce.value.int
+import net.ccbluex.liquidbounce.utils.client.chat
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.int
 import net.minecraft.block.BlockTNT
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemFireball

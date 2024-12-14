@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.aac.
 import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.grim.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.intave.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.other.*
-import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.config.choices
 
 object NoWeb : Module("NoWeb", Category.MOVEMENT, hideModule = false) {
 

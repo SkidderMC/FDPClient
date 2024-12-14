@@ -15,13 +15,12 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.stopOnLa
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.stopOnNoMove
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.timerSlowed
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
-import net.ccbluex.liquidbounce.utils.PacketUtils
-import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
-import net.ccbluex.liquidbounce.utils.chat
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
+import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
-import net.ccbluex.liquidbounce.utils.schedulePacketProcess
+import net.ccbluex.liquidbounce.utils.client.schedulePacketProcess
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.network.handshake.client.C00Handshake
 import net.minecraft.network.Packet

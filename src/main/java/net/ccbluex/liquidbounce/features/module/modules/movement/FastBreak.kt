@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.other.Fucker
 import net.ccbluex.liquidbounce.features.module.modules.other.Nuker
-import net.ccbluex.liquidbounce.value.float
+import net.ccbluex.liquidbounce.config.float
 
 object FastBreak : Module("FastBreak", Category.MOVEMENT, hideModule = false) {
 

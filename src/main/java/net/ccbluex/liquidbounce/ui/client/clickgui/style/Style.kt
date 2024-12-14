@@ -8,10 +8,10 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style
 import net.ccbluex.liquidbounce.ui.client.clickgui.Panel
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ButtonElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ModuleElement
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.value.Value
-import net.ccbluex.liquidbounce.utils.asResourceLocation
-import net.ccbluex.liquidbounce.utils.playSound
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
+import net.ccbluex.liquidbounce.config.Value
+import net.ccbluex.liquidbounce.utils.client.asResourceLocation
+import net.ccbluex.liquidbounce.utils.client.playSound
 import org.lwjgl.input.Mouse
 import java.awt.Color
 import java.math.BigDecimal

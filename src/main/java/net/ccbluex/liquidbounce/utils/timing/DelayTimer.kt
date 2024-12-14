@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.utils.timing
 
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.CLICK_TIMER
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.config.IntegerValue
 
 open class DelayTimer(
     private val minDelayValue: IntegerValue, private val maxDelayValue: IntegerValue = minDelayValue,

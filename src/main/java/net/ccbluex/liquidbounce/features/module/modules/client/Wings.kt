@@ -5,12 +5,14 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.RenderWings
-import net.ccbluex.liquidbounce.value.*
+import net.ccbluex.liquidbounce.utils.render.RenderWings
 
 object Wings : Module("Wings", Category.CLIENT, hideModule = false) {
     private val onlyThirdPerson by boolean("OnlyThirdPerson", true)

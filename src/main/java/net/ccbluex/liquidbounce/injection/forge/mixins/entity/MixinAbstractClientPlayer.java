@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.handler.cape.CapeInfo;
 import net.ccbluex.liquidbounce.features.module.modules.visual.NameProtect;
 import net.ccbluex.liquidbounce.features.module.modules.visual.NoFOV;
 import net.ccbluex.liquidbounce.ui.client.gui.GuiCapeManager;
-import net.ccbluex.liquidbounce.utils.MinecraftInstance;
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.init.Items;
@@ -24,7 +24,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.Objects;
 
-import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
+import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
 
 @Mixin(AbstractClientPlayer.class)
 @SideOnly(Side.CLIENT)

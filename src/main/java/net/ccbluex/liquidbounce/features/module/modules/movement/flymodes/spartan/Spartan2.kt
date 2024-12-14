@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.spartan
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
-import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 
 object Spartan2 : FlyMode("Spartan2") {

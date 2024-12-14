@@ -16,12 +16,12 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.notOnCons
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.notOnFalling
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.notOnVoid
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.stopXZ
 import net.ccbluex.liquidbounce.utils.extensions.stopY
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
-import net.ccbluex.liquidbounce.utils.misc.FallingPlayer
+import net.ccbluex.liquidbounce.utils.movement.FallingPlayer
 import net.minecraft.item.ItemBucketMilk
 import net.minecraft.item.ItemFood
 import net.minecraft.item.ItemPotion

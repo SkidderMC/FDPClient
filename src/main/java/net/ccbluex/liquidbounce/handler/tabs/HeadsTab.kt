@@ -8,10 +8,10 @@ package net.ccbluex.liquidbounce.handler.tabs
 import com.google.gson.JsonParser
 import kotlinx.coroutines.*
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
-import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.inventory.ItemUtils
-import net.ccbluex.liquidbounce.utils.misc.HttpUtils.get
+import net.ccbluex.liquidbounce.utils.io.HttpUtils.get
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.Items
 import net.minecraft.item.Item

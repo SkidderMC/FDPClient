@@ -11,8 +11,8 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
-import net.ccbluex.liquidbounce.value.choices
-import net.ccbluex.liquidbounce.value.float
+import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.float
 
 object Timer : Module("Timer", Category.MOVEMENT, gameDetecting = false, hideModule = false) {
 

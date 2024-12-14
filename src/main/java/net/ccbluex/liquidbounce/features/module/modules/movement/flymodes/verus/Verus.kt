@@ -13,8 +13,8 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.damage
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.timerSlow
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.yBoost
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
-import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.extensions.stop
 import net.ccbluex.liquidbounce.utils.extensions.stopXZ
 import net.minecraft.network.play.client.C03PacketPlayer

@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.spartan
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
-import net.ccbluex.liquidbounce.utils.PacketUtils.sendPackets
+import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 

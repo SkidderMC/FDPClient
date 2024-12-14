@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.modules.exploit.PacketDebugger.packetType
 import net.ccbluex.liquidbounce.features.module.modules.exploit.PacketDebugger.selectedPackets
-import net.ccbluex.liquidbounce.utils.ClientUtils
+import net.ccbluex.liquidbounce.utils.client.ClientUtils
 
 object PacketDebuggerCommand : Command("packetdebugger", "debug") {
 

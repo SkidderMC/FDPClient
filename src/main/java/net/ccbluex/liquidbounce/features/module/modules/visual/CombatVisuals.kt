@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
@@ -27,7 +28,6 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawLies
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatformESP
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawZavz
-import net.ccbluex.liquidbounce.value.*
 import net.minecraft.block.Block
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EntityLivingBase

@@ -7,10 +7,10 @@ package net.ccbluex.liquidbounce.ui.client.gui
 
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
-import net.ccbluex.liquidbounce.utils.APIConnecter
-import net.ccbluex.liquidbounce.utils.APIConnecter.donate
-import net.ccbluex.liquidbounce.utils.URLComponent
-import net.ccbluex.liquidbounce.utils.misc.MiscUtils
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.donate
+import net.ccbluex.liquidbounce.utils.io.URLRegistryUtils
+import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
@@ -61,8 +61,8 @@ class GuiInfo(private val prevGui: GuiScreen) : GuiScreen() {
 
     override fun actionPerformed(button: GuiButton) {
         when (button.id) {
-            1 -> MiscUtils.showURL(URLComponent.WEBSITE)
-            2 -> MiscUtils.showURL(APIConnecter.discord)
+            1 -> MiscUtils.showURL(URLRegistryUtils.WEBSITE)
+            2 -> MiscUtils.showURL(APIConnectorUtils.discord)
             3 -> mc.displayGuiScreen(GuiServerStatus(this))
             4 -> mc.displayGuiScreen(GuiScripts(this))
             5 -> mc.displayGuiScreen(GuiClientConfiguration(this))

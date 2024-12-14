@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.features.module.modules.visual.BlockOverlay
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
@@ -21,7 +22,6 @@ import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowFontShader
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader
 import net.ccbluex.liquidbounce.utils.render.toColorArray
-import net.ccbluex.liquidbounce.value.*
 import org.lwjgl.opengl.GL11
 
 // TODO: Should it be removed? Text element does the same thing.

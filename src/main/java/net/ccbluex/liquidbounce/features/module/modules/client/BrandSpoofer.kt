@@ -8,10 +8,9 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.button.*
-import net.ccbluex.liquidbounce.value.ListValue
-import net.ccbluex.liquidbounce.value.TextValue
-import net.ccbluex.liquidbounce.value.choices
-import net.ccbluex.liquidbounce.value.text
+import net.ccbluex.liquidbounce.config.ListValue
+import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.text
 import net.minecraft.client.gui.GuiButton
 import java.util.*
 

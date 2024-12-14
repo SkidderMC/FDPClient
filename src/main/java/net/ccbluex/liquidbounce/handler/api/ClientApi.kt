@@ -8,10 +8,10 @@ package net.ccbluex.liquidbounce.handler.api
 import com.google.gson.annotations.SerializedName
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
-import net.ccbluex.liquidbounce.utils.misc.HttpUtils.post
+import net.ccbluex.liquidbounce.utils.io.HttpUtils.post
 
-import net.ccbluex.liquidbounce.utils.misc.HttpUtils.request
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils
+import net.ccbluex.liquidbounce.utils.io.HttpUtils.request
+import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
 import org.apache.http.HttpEntity
 import org.apache.http.entity.ContentType
 import org.apache.http.entity.mime.MultipartEntityBuilder

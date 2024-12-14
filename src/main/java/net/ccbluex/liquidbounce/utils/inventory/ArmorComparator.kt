@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.inventory
 
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.ItemArmor

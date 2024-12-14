@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.ClientThemesUtils
+import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.extensions.lerp
 import net.ccbluex.liquidbounce.utils.extensions.randomizeDouble
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.applyOpacity
@@ -19,8 +19,8 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.darker
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.getAlphaFromColor
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.interpolateColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.color
-import net.ccbluex.liquidbounce.value.boolean
-import net.ccbluex.liquidbounce.value.float
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.float
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.client.renderer.GlStateManager.tryBlendFuncSeparate
 import net.minecraft.client.renderer.Tessellator

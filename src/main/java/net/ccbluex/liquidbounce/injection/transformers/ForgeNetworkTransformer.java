@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.script.remapper.injection.utils.NodeUtils;
 import net.minecraft.launchwrapper.IClassTransformer;
 import org.objectweb.asm.tree.*;
 
-import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
+import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
 import static org.objectweb.asm.Opcodes.*;
 
 /**

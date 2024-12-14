@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.utils.render.shader
 
-import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import org.apache.commons.io.IOUtils
 import org.lwjgl.opengl.*
 import org.lwjgl.opengl.ARBShaderObjects.*

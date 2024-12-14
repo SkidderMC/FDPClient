@@ -9,8 +9,8 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.aacSpeed
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.startY
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
-import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.minecraft.network.play.client.C03PacketPlayer
 import java.awt.Color

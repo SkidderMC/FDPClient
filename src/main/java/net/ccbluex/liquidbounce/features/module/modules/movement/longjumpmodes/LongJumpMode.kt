@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes
 
 import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.event.MoveEvent
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 
 open class LongJumpMode(val modeName: String) : MinecraftInstance() {
     open fun onUpdate() {}

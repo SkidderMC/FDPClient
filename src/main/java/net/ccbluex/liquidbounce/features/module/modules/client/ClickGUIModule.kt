@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.FDPClient.clickGui
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Category
@@ -14,8 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.FDPDropdownClickGUI
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.yzyGUI
-import net.ccbluex.liquidbounce.utils.ClientThemesUtils
-import net.ccbluex.liquidbounce.value.*
+import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard
 import java.awt.Color

@@ -23,15 +23,15 @@ import net.ccbluex.liquidbounce.ui.font.Fonts.fontIconXD85
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontNovoAngularIcon85
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI35
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI40
-import net.ccbluex.liquidbounce.utils.APIConnecter
-import net.ccbluex.liquidbounce.utils.UIEffectRenderer.drawShadowWithCustomAlpha
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils
+import net.ccbluex.liquidbounce.utils.render.shader.UIEffectRenderer.drawShadowWithCustomAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.Stencil
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInBackNotify
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeOutBackNotify
-import net.ccbluex.liquidbounce.value.choices
-import net.ccbluex.liquidbounce.value.int
+import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.int
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import org.lwjgl.opengl.GL11
@@ -315,11 +315,11 @@ class Notification(
             GlStateManager.disableAlpha()
             resetColor()
             val pn = when (type.name) {
-                "SUCCESS" -> APIConnecter.callImage("checkmarkIDE", "notifications")
-                "ERROR" -> APIConnecter.callImage("errorIDE", "notifications")
-                "WARNING" -> APIConnecter.callImage("warningIDE", "notifications")
-                "INFO" -> APIConnecter.callImage("infoIDE", "notifications")
-                else -> APIConnecter.callImage("errorIDE", "notifications")
+                "SUCCESS" -> APIConnectorUtils.callImage("checkmarkIDE", "notifications")
+                "ERROR" -> APIConnectorUtils.callImage("errorIDE", "notifications")
+                "WARNING" -> APIConnectorUtils.callImage("warningIDE", "notifications")
+                "INFO" -> APIConnectorUtils.callImage("infoIDE", "notifications")
+                else -> APIConnectorUtils.callImage("errorIDE", "notifications")
             }
             RenderUtils.drawImage(pn, -textLength - 11, -y + 2, 7, 7)
             GlStateManager.enableAlpha()

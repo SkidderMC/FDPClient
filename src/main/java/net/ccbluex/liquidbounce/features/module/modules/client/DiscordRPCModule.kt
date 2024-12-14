@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import net.ccbluex.liquidbounce.FDPClient.discordRPC
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.config.boolean
 
 object DiscordRPCModule : Module("DiscordRPC", Category.CLIENT, hideModule = false) {
 

@@ -16,10 +16,10 @@ import net.ccbluex.liquidbounce.file.FileManager;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiLoginProgress;
 import net.ccbluex.liquidbounce.ui.client.gui.GuiInfo;
-import net.ccbluex.liquidbounce.utils.APIConnecter;
-import net.ccbluex.liquidbounce.utils.ServerUtils;
-import net.ccbluex.liquidbounce.utils.misc.MiscUtils;
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils;
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils;
+import net.ccbluex.liquidbounce.utils.client.ServerUtils;
+import net.ccbluex.liquidbounce.utils.io.MiscUtils;
+import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils;
 import net.minecraft.client.gui.*;
 import net.minecraft.util.IChatComponent;
 import net.minecraftforge.fml.client.config.GuiSlider;
@@ -95,7 +95,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
                 ServerUtils.INSTANCE.connectToLastServer();
                 break;
             case 5:
-                MiscUtils.INSTANCE.showURL(APIConnecter.INSTANCE.getDonate());
+                MiscUtils.INSTANCE.showURL(APIConnectorUtils.INSTANCE.getDonate());
                 break;
             case 6:
                 ClientFixes.INSTANCE.setFmlFixesEnabled(!ClientFixes.INSTANCE.getFmlFixesEnabled());

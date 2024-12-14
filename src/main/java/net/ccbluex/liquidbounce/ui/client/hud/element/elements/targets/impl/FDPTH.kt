@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedCornerRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawShadow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.quickDrawHead
-import net.ccbluex.liquidbounce.value.font
+import net.ccbluex.liquidbounce.config.font
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color

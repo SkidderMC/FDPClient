@@ -7,9 +7,9 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.other
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.startY
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.extensions.stopXZ
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils.nextDouble
+import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextDouble
 
 object WatchCat : FlyMode("WatchCat") {
 	override fun onUpdate() {

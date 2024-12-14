@@ -43,13 +43,21 @@ import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.u
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.Fonts.loadFonts
-import net.ccbluex.liquidbounce.utils.*
-import net.ccbluex.liquidbounce.utils.ClassUtils.hasForge
-import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
-import net.ccbluex.liquidbounce.utils.ClientUtils.disableFastRender
+import net.ccbluex.liquidbounce.utils.client.ClassUtils.hasForge
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.disableFastRender
+import net.ccbluex.liquidbounce.utils.client.BlinkUtils
+import net.ccbluex.liquidbounce.utils.client.PacketUtils
 import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
+import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils
+import net.ccbluex.liquidbounce.utils.movement.BPSUtils
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils
+import net.ccbluex.liquidbounce.utils.movement.TimerBalanceUtils
 import net.ccbluex.liquidbounce.utils.render.MiniMapRegister
+import net.ccbluex.liquidbounce.utils.render.shader.Background
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.timing.TickedActions
 import net.ccbluex.liquidbounce.utils.timing.WaitMsUtils
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
@@ -155,10 +163,10 @@ object FDPClient {
             registerModules()
 
             // API Connecter
-            APIConnecter.checkStatus()
-            APIConnecter.checkChangelogs()
-            APIConnecter.checkBugs()
-            APIConnecter.loadPictures()
+            APIConnectorUtils.checkStatus()
+            APIConnectorUtils.checkChangelogs()
+            APIConnectorUtils.checkBugs()
+            APIConnectorUtils.loadPictures()
 
             runCatching {
                 // Remapper

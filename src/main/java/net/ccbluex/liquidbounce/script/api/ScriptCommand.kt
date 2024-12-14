@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.script.api
 import jdk.nashorn.api.scripting.JSObject
 import jdk.nashorn.api.scripting.ScriptUtils
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 
 class ScriptCommand(private val commandObject: JSObject) : Command(commandObject.getMember("name") as String,
         *ScriptUtils.convert(commandObject.getMember("aliases"), Array<String>::class.java) as Array<out String>) {

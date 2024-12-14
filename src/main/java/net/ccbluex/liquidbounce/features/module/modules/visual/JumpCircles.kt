@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.ClientThemesUtils
+import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.customRotatedObject2D
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.setupDrawCircles
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInOutElasticx
@@ -21,10 +21,10 @@ import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeOutBoun
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeOutCirc
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeOutElasticX
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeWave
-import net.ccbluex.liquidbounce.value.boolean
-import net.ccbluex.liquidbounce.value.choices
-import net.ccbluex.liquidbounce.value.float
-import net.ccbluex.liquidbounce.value.int
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.float
+import net.ccbluex.liquidbounce.config.int
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats

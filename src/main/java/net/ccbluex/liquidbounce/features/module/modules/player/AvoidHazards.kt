@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.event.BlockBBEvent
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.config.boolean
 import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB
 

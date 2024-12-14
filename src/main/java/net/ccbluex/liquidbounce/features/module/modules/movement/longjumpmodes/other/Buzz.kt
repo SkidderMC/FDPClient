@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.other
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.LongJumpMode
-import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 
 object Buzz : LongJumpMode("Buzz") {
     override fun onUpdate() {

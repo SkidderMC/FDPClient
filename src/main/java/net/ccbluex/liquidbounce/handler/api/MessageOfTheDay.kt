@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.handler.api
 
 import net.ccbluex.liquidbounce.handler.api.ClientApi.requestMessageOfTheDayEndpoint
-import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 
 val messageOfTheDay by lazy {
     try {

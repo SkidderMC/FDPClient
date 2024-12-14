@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl.ModuleElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.yzyGUI
-import net.ccbluex.liquidbounce.utils.CPSCounter.isHovering
+import net.ccbluex.liquidbounce.utils.attack.CPSCounter.isHovering
 import net.ccbluex.liquidbounce.utils.render.Pair
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.yzyRectangle
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.yzyTexture

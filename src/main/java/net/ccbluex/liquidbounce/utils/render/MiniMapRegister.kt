@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.utils.render
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.Render2DEvent
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.BlockPos
 import net.minecraft.world.chunk.Chunk

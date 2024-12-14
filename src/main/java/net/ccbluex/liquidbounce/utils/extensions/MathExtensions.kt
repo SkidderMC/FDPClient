@@ -5,11 +5,11 @@
  */
 package net.ccbluex.liquidbounce.utils.extensions
 
-import net.ccbluex.liquidbounce.utils.RotationUtils.getFixedAngleDelta
-import net.ccbluex.liquidbounce.value.FloatRangeValue
-import net.ccbluex.liquidbounce.value.FloatValue
-import net.ccbluex.liquidbounce.value.IntegerRangeValue
-import net.ccbluex.liquidbounce.value.IntegerValue
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getFixedAngleDelta
+import net.ccbluex.liquidbounce.config.FloatRangeValue
+import net.ccbluex.liquidbounce.config.FloatValue
+import net.ccbluex.liquidbounce.config.IntegerRangeValue
+import net.ccbluex.liquidbounce.config.IntegerValue
 import net.minecraft.block.Block
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.entity.RenderManager

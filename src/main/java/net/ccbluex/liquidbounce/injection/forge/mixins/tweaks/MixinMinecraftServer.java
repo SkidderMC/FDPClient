@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.tweaks;
 
 import io.netty.buffer.ByteBuf;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
+import net.ccbluex.liquidbounce.utils.client.ClientUtils;
 import net.minecraft.server.MinecraftServer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

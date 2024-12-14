@@ -9,8 +9,8 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.features.module.modules.visual.CustomModel;
 import net.ccbluex.liquidbounce.features.module.modules.visual.SilentHotbarModule;
-import net.ccbluex.liquidbounce.utils.APIConnecter;
-import net.ccbluex.liquidbounce.utils.SilentHotbar;
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils;
+import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.model.ModelPlayer;
@@ -26,8 +26,6 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.Objects;
 
 @Mixin(RenderPlayer.class)
 public abstract class MixinRenderPlayer {
@@ -83,9 +81,9 @@ public abstract class MixinRenderPlayer {
     @Inject(method = {"getEntityTexture"}, at = {@At("HEAD")}, cancellable = true)
     public void getEntityTexture(AbstractClientPlayer entity, CallbackInfoReturnable<ResourceLocation> ci) {
         final CustomModel customModel = CustomModel.INSTANCE;
-        final ResourceLocation rabbit = APIConnecter.INSTANCE.callImage("rabbit", "models");
-        final ResourceLocation fred = APIConnecter.INSTANCE.callImage("freddy", "models");
-        final ResourceLocation imposter = APIConnecter.INSTANCE.callImage("imposter", "models");
+        final ResourceLocation rabbit = APIConnectorUtils.INSTANCE.callImage("rabbit", "models");
+        final ResourceLocation fred = APIConnectorUtils.INSTANCE.callImage("freddy", "models");
+        final ResourceLocation imposter = APIConnectorUtils.INSTANCE.callImage("imposter", "models");
 
         if (customModel.getState()) {
             if (customModel.getMode().contains("Rabbit")) {

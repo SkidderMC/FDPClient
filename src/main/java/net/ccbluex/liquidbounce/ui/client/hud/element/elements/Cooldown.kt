@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
-import net.ccbluex.liquidbounce.utils.CooldownHelper.getAttackCooldownProgress
+import net.ccbluex.liquidbounce.utils.attack.CooldownHelper.getAttackCooldownProgress
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import java.awt.Color
 

@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.verusYPor
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.verusYPortspeedValue
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.verusSpeed
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.minecraft.network.play.client.C03PacketPlayer
 

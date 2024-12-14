@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import net.ccbluex.liquidbounce.event.EventManager.registerListener
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.utils.ServerUtils.serverData
+import net.ccbluex.liquidbounce.utils.client.ServerUtils.serverData
 import net.minecraft.client.multiplayer.ServerAddress
 
 object ServerInfoCommand : Command("serverinfo"), Listenable {

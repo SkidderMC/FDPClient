@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.handler.api
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.FDPClient.clientVersionNumber
 import net.ccbluex.liquidbounce.FDPClient.IN_DEV
-import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import java.text.SimpleDateFormat
 import java.util.*
 import net.ccbluex.liquidbounce.handler.api.ClientApi.requestNewestBuildEndpoint

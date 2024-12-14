@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.handler.macro
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 
 object MacroManager : MinecraftInstance(), Listenable {
     val macros = ArrayList<Macro>()

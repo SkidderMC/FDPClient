@@ -15,9 +15,9 @@ import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexturedModalRect
-import net.ccbluex.liquidbounce.value.boolean
-import net.ccbluex.liquidbounce.value.font
-import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.font
+import net.ccbluex.liquidbounce.config.choices
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper

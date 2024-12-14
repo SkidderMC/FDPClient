@@ -5,12 +5,12 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets
 
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
-import net.ccbluex.liquidbounce.value.Value
+import net.ccbluex.liquidbounce.config.Value
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.entity.EntityLivingBase

@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.utils.timing
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.GameLoopEvent
 import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 
 object WaitMsUtils : MinecraftInstance(), Listenable {
 

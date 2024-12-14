@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.extensions
 
-import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isBlockBBValid
 import net.minecraft.block.*
 import net.minecraft.block.material.Material

@@ -17,9 +17,9 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.speedVal
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.spoofValue
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.vspeedValue
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
-import net.ccbluex.liquidbounce.utils.MovementUtils
-import net.ccbluex.liquidbounce.utils.MovementUtils.resetMotion
-import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.resetMotion
+import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.network.play.client.C03PacketPlayer

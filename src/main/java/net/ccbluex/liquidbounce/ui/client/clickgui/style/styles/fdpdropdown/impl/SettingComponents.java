@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl;
 
+import net.ccbluex.liquidbounce.config.*;
 import net.ccbluex.liquidbounce.features.module.Module;
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule;
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation;
@@ -18,7 +19,6 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.util
 import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
 import net.ccbluex.liquidbounce.utils.extensions.MathExtensionsKt;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.ccbluex.liquidbounce.value.*;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.OpenGlHelper;
 import org.lwjgl.input.Keyboard;
@@ -517,6 +517,7 @@ public class SettingComponents extends Component {
     public void drawScreen(int mouseX, int mouseY) {
         handle(mouseX, mouseY, -1, GuiEvents.DRAW);
     }
+
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {

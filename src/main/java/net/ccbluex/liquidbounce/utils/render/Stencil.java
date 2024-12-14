@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.render;
 
-import net.ccbluex.liquidbounce.utils.MinecraftInstance;
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.shader.Framebuffer;

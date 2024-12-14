@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import com.google.common.collect.Lists;
 import net.ccbluex.liquidbounce.features.module.modules.client.BrandSpoofer;
 import net.ccbluex.liquidbounce.handler.payload.ClientBrandRetriever;
-import net.ccbluex.liquidbounce.utils.misc.RandomUtils;
+import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils;
 import net.minecraft.client.gui.GuiOverlayDebug;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
 
-import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
+import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
 
 @Mixin(GuiOverlayDebug.class)
 public abstract class MixinGuiOverlayDebug {

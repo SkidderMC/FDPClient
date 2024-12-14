@@ -14,11 +14,11 @@ import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_VERSION
 import net.ccbluex.liquidbounce.features.module.ModuleManager.modules
 import net.ccbluex.liquidbounce.features.module.modules.client.DiscordRPCModule
-import net.ccbluex.liquidbounce.utils.APIConnecter.discordApp
-import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.ServerUtils
-import net.ccbluex.liquidbounce.utils.ServerUtils.formatSessionTime
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.discordApp
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.ServerUtils
+import net.ccbluex.liquidbounce.utils.client.ServerUtils.formatSessionTime
 import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 
 import org.json.JSONObject

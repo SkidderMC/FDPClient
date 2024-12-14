@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.handler.api
 
-import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
-import net.ccbluex.liquidbounce.utils.chat
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.client.chat
 import java.text.SimpleDateFormat
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.thread

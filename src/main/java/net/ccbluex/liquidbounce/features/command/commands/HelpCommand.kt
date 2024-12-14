@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.features.command.commands
 import joptsimple.internal.Strings
 import net.ccbluex.liquidbounce.FDPClient.commandManager
 import net.ccbluex.liquidbounce.features.command.Command
-import net.ccbluex.liquidbounce.utils.ClientUtils.displayChatMessage
 
 object HelpCommand : Command("help") {
     /**

@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.FDPClient.commandManager
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.modules.client.IRCModule
 import net.ccbluex.liquidbounce.handler.irc.packet.packets.ServerRequestJWTPacket
-import net.ccbluex.liquidbounce.utils.misc.StringUtils
+import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 

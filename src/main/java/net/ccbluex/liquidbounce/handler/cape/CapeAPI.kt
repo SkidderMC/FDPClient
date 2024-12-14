@@ -6,14 +6,14 @@
 package net.ccbluex.liquidbounce.handler.cape
 
 import net.ccbluex.liquidbounce.file.FileManager.dir
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.client.renderer.IImageBuffer
 import net.minecraft.client.renderer.ThreadDownloadImageData
 import net.minecraft.util.ResourceLocation
 import java.awt.image.BufferedImage
 import java.io.File
 import java.util.*
-import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 
 object CapeAPI : MinecraftInstance() {
 

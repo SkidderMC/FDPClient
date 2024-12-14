@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.config.boolean
 
 object TrueSight : Module("TrueSight", Category.VISUAL) {
     val barriers by boolean("Barriers", true)

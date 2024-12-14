@@ -10,11 +10,11 @@ import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColo
 import net.ccbluex.liquidbounce.handler.api.ClientUpdate
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.APIConnecter.checkBugs
-import net.ccbluex.liquidbounce.utils.APIConnecter.checkChangelogs
-import net.ccbluex.liquidbounce.utils.APIConnecter.checkStatus
-import net.ccbluex.liquidbounce.utils.APIConnecter.loadPictures
-import net.ccbluex.liquidbounce.utils.misc.MiscUtils
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.checkBugs
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.checkChangelogs
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.checkStatus
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.loadPictures
+import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen

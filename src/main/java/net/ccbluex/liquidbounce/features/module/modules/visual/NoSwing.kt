@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.config.boolean
 
 object NoSwing : Module("NoSwing", Category.VISUAL, hideModule = false) {
     val serverSide by boolean("ServerSide", true)

@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.script.remapper
 
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.file.FileManager.dir
-import net.ccbluex.liquidbounce.utils.ClientUtils.LOGGER
-import net.ccbluex.liquidbounce.utils.misc.HttpUtils.download
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.io.HttpUtils.download
 import java.io.File
 import java.security.MessageDigest
 

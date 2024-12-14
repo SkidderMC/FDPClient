@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.handleVanillaKickBypass
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.vanillaSpeed
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
-import net.ccbluex.liquidbounce.utils.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 
 object Vanilla : FlyMode("Vanilla") {
 	override fun onMove(event: MoveEvent) {

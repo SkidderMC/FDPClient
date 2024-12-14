@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Ghost
-import net.ccbluex.liquidbounce.value.boolean
+import net.ccbluex.liquidbounce.config.boolean
 import net.minecraft.client.gui.GuiGameOver
 
 object AutoRespawn : Module("AutoRespawn", Category.PLAYER, gameDetecting = false, hideModule = false) {

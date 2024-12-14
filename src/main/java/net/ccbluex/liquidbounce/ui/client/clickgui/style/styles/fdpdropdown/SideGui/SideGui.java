@@ -18,10 +18,10 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.util
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils;
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
 import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
-import net.ccbluex.liquidbounce.utils.ClientThemesUtils;
+import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils;
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
-import net.ccbluex.liquidbounce.utils.SettingsUtils;
+import net.ccbluex.liquidbounce.utils.client.ClientUtils;
+import net.ccbluex.liquidbounce.config.SettingsUtils;
 import net.ccbluex.liquidbounce.utils.extensions.MathExtensionsKt;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
 import net.minecraft.client.gui.ScaledResolution;

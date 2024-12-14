@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.block
 
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.block
 import net.ccbluex.liquidbounce.utils.extensions.state
 import net.minecraft.block.*

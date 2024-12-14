@@ -15,11 +15,11 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.Fonts.minecraftFont
-import net.ccbluex.liquidbounce.utils.APIConnecter.bugs
-import net.ccbluex.liquidbounce.utils.APIConnecter.canConnect
-import net.ccbluex.liquidbounce.utils.APIConnecter.changelogs
-import net.ccbluex.liquidbounce.utils.APIConnecter.isLatest
-import net.ccbluex.liquidbounce.utils.GitUtils
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.bugs
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.canConnect
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.changelogs
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.isLatest
+import net.ccbluex.liquidbounce.utils.io.GitUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawShadowRect
 import net.minecraft.client.gui.*

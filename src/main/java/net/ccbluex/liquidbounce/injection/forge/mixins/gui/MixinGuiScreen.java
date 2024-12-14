@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.command.CommandManager;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration;
-import net.ccbluex.liquidbounce.utils.Background;
+import net.ccbluex.liquidbounce.utils.render.shader.Background;
 import net.ccbluex.liquidbounce.utils.render.ParticleUtils;
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.BackgroundShader;
 import net.minecraft.client.Minecraft;

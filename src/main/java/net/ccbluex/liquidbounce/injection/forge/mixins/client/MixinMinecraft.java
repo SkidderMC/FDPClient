@@ -17,10 +17,10 @@ import net.ccbluex.liquidbounce.injection.forge.SplashProgressLock;
 import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration;
 import net.ccbluex.liquidbounce.ui.client.gui.GuiMainMenu;
 import net.ccbluex.liquidbounce.ui.client.gui.GuiUpdate;
-import net.ccbluex.liquidbounce.utils.CPSCounter;
-import net.ccbluex.liquidbounce.utils.ClientUtils;
-import net.ccbluex.liquidbounce.utils.SilentHotbar;
-import net.ccbluex.liquidbounce.utils.GitUtils;
+import net.ccbluex.liquidbounce.utils.attack.CPSCounter;
+import net.ccbluex.liquidbounce.utils.client.ClientUtils;
+import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar;
+import net.ccbluex.liquidbounce.utils.io.GitUtils;
 import net.ccbluex.liquidbounce.utils.render.IconUtils;
 import net.ccbluex.liquidbounce.utils.render.MiniMapRegister;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -55,7 +55,7 @@ import javax.swing.*;
 import java.nio.ByteBuffer;
 import java.util.Queue;
 
-import static net.ccbluex.liquidbounce.utils.MinecraftInstance.mc;
+import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
 
 @Mixin(Minecraft.class)
 @SideOnly(Side.CLIENT)

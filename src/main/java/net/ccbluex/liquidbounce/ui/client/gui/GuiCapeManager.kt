@@ -8,18 +8,16 @@ package net.ccbluex.liquidbounce.ui.client.gui
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.APIConnecter
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.value.boolean
-import net.ccbluex.liquidbounce.value.choices
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.choices
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
-import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.util.ResourceLocation
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import java.util.*
@@ -48,22 +46,22 @@ object GuiCapeManager : GuiScreen() {
     }
 
     enum class CapeStyle(val location: ResourceLocation?) {
-        NONE(APIConnecter.callImage("none", "cape")),
+        NONE(APIConnectorUtils.callImage("none", "cape")),
         CLASSIC(ResourceLocation("fdpclient/cape/classic.png")),
         CLASSIC2(ResourceLocation("fdpclient/cape/classic2.png")),
-        AURORA(APIConnecter.callImage("aurora", "cape")),
-        FOREST(APIConnecter.callImage("forest", "cape")),
-        ROSE(APIConnecter.callImage("rose", "cape")),
-        LAVENDER(APIConnecter.callImage("lavender", "cape")),
-        OCEAN(APIConnecter.callImage("ocean", "cape")),
-        MODERN1(APIConnecter.callImage("modern1", "cape")),
-        MODERN2(APIConnecter.callImage("modern2", "cape")),
-        LAVA(APIConnecter.callImage("lava", "cape")),
-        CITRUS(APIConnecter.callImage("citrus", "cape")),
-        FIRE(APIConnecter.callImage("fire", "cape")),
-        BLUE(APIConnecter.callImage("blue", "cape")),
-        ABSTRACT(APIConnecter.callImage("abstract", "cape")),
-        OWNER(APIConnecter.callImage("owner", "cape")),
+        AURORA(APIConnectorUtils.callImage("aurora", "cape")),
+        FOREST(APIConnectorUtils.callImage("forest", "cape")),
+        ROSE(APIConnectorUtils.callImage("rose", "cape")),
+        LAVENDER(APIConnectorUtils.callImage("lavender", "cape")),
+        OCEAN(APIConnectorUtils.callImage("ocean", "cape")),
+        MODERN1(APIConnectorUtils.callImage("modern1", "cape")),
+        MODERN2(APIConnectorUtils.callImage("modern2", "cape")),
+        LAVA(APIConnectorUtils.callImage("lava", "cape")),
+        CITRUS(APIConnectorUtils.callImage("citrus", "cape")),
+        FIRE(APIConnectorUtils.callImage("fire", "cape")),
+        BLUE(APIConnectorUtils.callImage("blue", "cape")),
+        ABSTRACT(APIConnectorUtils.callImage("abstract", "cape")),
+        OWNER(APIConnectorUtils.callImage("owner", "cape")),
     }
 
     override fun onGuiClosed() {

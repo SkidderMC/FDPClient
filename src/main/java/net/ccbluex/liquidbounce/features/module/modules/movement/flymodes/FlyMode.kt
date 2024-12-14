@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flymodes
 
 import net.ccbluex.liquidbounce.event.*
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 
 open class FlyMode(val modeName: String): MinecraftInstance() {
 	open fun onMove(event: MoveEvent) {}

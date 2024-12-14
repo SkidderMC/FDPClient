@@ -16,9 +16,9 @@ import net.ccbluex.liquidbounce.handler.lang.LanguageManager
 import net.ccbluex.liquidbounce.handler.lang.translationMenu
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.Background
-import net.ccbluex.liquidbounce.utils.MinecraftInstance.Companion.mc
-import net.ccbluex.liquidbounce.utils.misc.MiscUtils
+import net.ccbluex.liquidbounce.utils.render.shader.Background
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
+import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.IconUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.minecraft.client.gui.GuiButton

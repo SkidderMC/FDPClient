@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.aac
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.LongJumpMode
-import net.ccbluex.liquidbounce.utils.MovementUtils
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 
 object AACv2 : LongJumpMode("AACv2") {
     override fun onUpdate() {

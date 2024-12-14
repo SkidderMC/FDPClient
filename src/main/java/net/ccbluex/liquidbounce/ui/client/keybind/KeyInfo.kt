@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.handler.macro.Macro
 import net.ccbluex.liquidbounce.ui.font.Fonts.font35
 import net.ccbluex.liquidbounce.ui.font.Fonts.font40
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSmall
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedBindRect
 import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.util.ResourceLocation

@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.utils.timing
 import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.ClientUtils
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 
 object WaitTickUtils : MinecraftInstance(), Listenable {
 
