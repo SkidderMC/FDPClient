@@ -26,14 +26,11 @@ import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
-import net.ccbluex.liquidbounce.utils.ClientUtils
-import net.ccbluex.liquidbounce.utils.chat
-import net.ccbluex.liquidbounce.utils.SettingsUtils
+import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
-import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager.disableLighting
 import net.minecraft.client.renderer.RenderHelper
@@ -108,11 +105,8 @@ object ClickGui : GuiScreen() {
 
                                     chat("§6Settings applied successfully")
                                     HUD.addNotification(Notification("Updated Settings", "!!!", Type.INFO, 60))
-                                    synchronized(mc.soundHandler) {
-                                        mc.soundHandler.playSound(
-                                            PositionedSoundRecord.create(ResourceLocation("random.anvil_use"), 1F)
-                                        )
-                                    }
+                                    mc.playSound("random.anvil_use".asResourceLocation())
+
                                 } catch (e: Exception) {
                                     ClientUtils.LOGGER.error("Failed to load settings", e)
                                     chat("Failed to load settings: ${e.message}")

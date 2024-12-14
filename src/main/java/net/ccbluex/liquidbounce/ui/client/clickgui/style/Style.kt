@@ -10,8 +10,8 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ButtonElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ModuleElement
 import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.value.Value
-import net.minecraft.client.audio.PositionedSoundRecord
-import net.minecraft.util.ResourceLocation
+import net.ccbluex.liquidbounce.utils.asResourceLocation
+import net.ccbluex.liquidbounce.utils.playSound
 import org.lwjgl.input.Mouse
 import java.awt.Color
 import java.math.BigDecimal
@@ -30,19 +30,11 @@ abstract class Style : MinecraftInstance() {
     abstract fun drawModuleElementAndClick(mouseX: Int, mouseY: Int, moduleElement: ModuleElement, mouseButton: Int?): Boolean
 
     fun clickSound() {
-        synchronized(mc.soundHandler) {
-            mc.soundHandler.playSound(
-                PositionedSoundRecord.create(ResourceLocation("gui.button.press"), 1F)
-            )
-        }
+        mc.playSound("gui.button.press".asResourceLocation())
     }
 
     fun showSettingsSound() {
-        synchronized(mc.soundHandler) {
-            mc.soundHandler.playSound(
-                PositionedSoundRecord.create(ResourceLocation("random.bow"), 1F)
-            )
-        }
+        mc.playSound("random.bow".asResourceLocation())
     }
     protected fun round(v: Float): Float {
         var bigDecimal = BigDecimal(v.toString())
