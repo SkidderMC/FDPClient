@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.utils.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.SilentHotbar
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil
+import net.ccbluex.liquidbounce.utils.extensions.lerpWith
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.block.BlockBush
@@ -232,11 +232,9 @@ object InventoryUtils : MinecraftInstance(), Listenable {
     fun onRender3D(event: Render3DEvent) {
         val module = SilentHotbarModule
 
-        val slotToUse = SilentHotbar.renderSlot(module.handleEvents() && module.keepHotbarSlot)
+        val slotToUse = SilentHotbar.renderSlot(module.handleEvents() && module.keepHotbarSlot).toFloat()
 
-        lerpedSlot = AnimationUtil.base(lerpedSlot.toDouble(), slotToUse.toDouble(),
-            RenderUtils.deltaTimeNormalized().coerceAtLeast(0.1)
-        ).toFloat()
+        lerpedSlot = (lerpedSlot..slotToUse).lerpWith(RenderUtils.deltaTimeNormalized())
     }
 
     @EventTarget

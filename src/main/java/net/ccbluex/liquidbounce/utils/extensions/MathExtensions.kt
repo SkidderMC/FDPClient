@@ -173,7 +173,9 @@ fun Vec3.lerpWith(other: Vec3, tickDelta: Double) = Vec3(
 )
 fun Vec3.lerpWith(other: Vec3, tickDelta: Float) = lerpWith(other, tickDelta.toDouble())
 
-fun ClosedFloatingPointRange<Float>.lerpWith(t: Float) = start + (endInclusive - start) * t
+fun ClosedFloatingPointRange<Double>.lerpWith(t: Number) = start + (endInclusive - start) * t.toDouble()
+
+fun ClosedFloatingPointRange<Float>.lerpWith(t: Number) = start + (endInclusive - start) * t.toFloat()
 fun IntegerRangeValue.lerpWith(t: Float) = (minimum + (maximum - minimum) * t).roundToInt()
 fun FloatRangeValue.lerpWith(t: Float) = minimum + (maximum - minimum) * t
 fun IntegerValue.lerpWith(t: Float) = (minimum + (maximum - minimum) * t).roundToInt()
