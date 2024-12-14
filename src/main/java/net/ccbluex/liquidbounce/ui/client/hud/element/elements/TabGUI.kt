@@ -26,7 +26,7 @@ import org.lwjgl.opengl.GL11.glColor4f
 import java.awt.Color
 
 @ElementInfo(name = "TabGUI")
-class TabGUI(x: Double = 5.0, y: Double = 25.0) : Element(x = x, y = y) {
+class TabGUI(x: Double = 2.0, y: Double = 30.0) : Element(x = x, y = y) {
 
     private val rectRainbow by boolean("Rectangle Rainbow", false)
     private val rectRed by int("Rectangle Red", 0, 0..255) { !rectRainbow }

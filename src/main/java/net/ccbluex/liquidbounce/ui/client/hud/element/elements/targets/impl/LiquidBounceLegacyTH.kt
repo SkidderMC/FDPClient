@@ -91,6 +91,8 @@ class LiquidBounceLegacyTH(inst: Targets) : TargetStyle("LiquidBounce", inst, tr
         val smoothMode = animation == "Smooth"
         val fadeMode = animation == "Fade"
 
+        val stringWidth = (40f + (target.name?.let(titleFont::getStringWidth) ?: 0)).coerceAtLeast(118F)
+
         if (shouldRender) {
             delayCounter = 0
         } else if (isRendered || isAlpha) {
@@ -126,8 +128,8 @@ class LiquidBounceLegacyTH(inst: Targets) : TargetStyle("LiquidBounce", inst, tr
             }
 
             if (smoothMode) {
-                val targetWidth = if (shouldRender) (40f + (target.name?.let(titleFont::getStringWidth)
-                    ?: 0)).coerceAtLeast(118F) else if (delayCounter >= vanishDelay) 0f else width
+                val targetWidth = if (shouldRender) stringWidth else if (delayCounter >= vanishDelay) 0f else width
+
                 width = AnimationUtil.base(width.toDouble(), targetWidth.toDouble(), animationSpeed.toDouble()).toFloat()
                     .coerceAtLeast(0f)
 
@@ -135,21 +137,36 @@ class LiquidBounceLegacyTH(inst: Targets) : TargetStyle("LiquidBounce", inst, tr
                 height = AnimationUtil.base(height.toDouble(), targetHeight.toDouble(), animationSpeed.toDouble()).toFloat()
                     .coerceAtLeast(0f)
             } else {
-                width = (40f + (target.name?.let(titleFont::getStringWidth) ?: 0)).coerceAtLeast(118F)
+                width = stringWidth
                 height = 40f
 
                 val targetText = if (shouldRender) textAlpha else if (delayCounter >= vanishDelay) 0f else alphaText
                 alphaText = AnimationUtil.base(alphaText.toDouble(), targetText.toDouble(), animationSpeed.toDouble()).roundToInt()
 
-                val targetBackground = if (shouldRender) backgroundAlpha else if (delayCounter >= vanishDelay) 0f else alphaBackground
+                val targetBackground = if (shouldRender) {
+                    backgroundAlpha
+                } else if (delayCounter >= vanishDelay) {
+                    0f
+                } else alphaBackground
+
                 alphaBackground = AnimationUtil.base(alphaBackground.toDouble(), targetBackground.toDouble(), animationSpeed.toDouble()).roundToInt()
 
-                val targetBorder = if (shouldRender) borderAlpha else if (delayCounter >= vanishDelay) 0f else alphaBorder
+                val targetBorder = if (shouldRender) {
+                    borderAlpha
+                } else if (delayCounter >= vanishDelay) {
+                    0f
+                } else alphaBorder
+
                 alphaBorder = AnimationUtil.base(alphaBorder.toDouble(), targetBorder.toDouble(), animationSpeed.toDouble()).roundToInt()
             }
 
             val backgroundCustomColor = Color(backgroundRed, backgroundGreen, backgroundBlue, if (fadeMode) alphaBackground else backgroundAlpha).rgb
-            val borderCustomColor = Color(borderRed, borderGreen, borderBlue, if (fadeMode) alphaBorder else borderAlpha).rgb
+            val borderCustomColor = Color(
+                borderRed, borderGreen, borderBlue, if (fadeMode) {
+                    alphaBorder
+                } else borderAlpha
+            ).rgb
+
             val textCustomColor = Color(textRed, textGreen, textBlue, if (fadeMode) alphaText else textAlpha).rgb
 
             val rainbowOffset = System.currentTimeMillis() % 10000 / 10000F
@@ -162,15 +179,12 @@ class LiquidBounceLegacyTH(inst: Targets) : TargetStyle("LiquidBounce", inst, tr
             glEnable(GL_BLEND)
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-            if (fadeMode && shouldRender || (smoothMode && shouldRender && width == width) || delayCounter < vanishDelay) {
+            if (fadeMode && shouldRender || smoothMode && shouldRender && width == width || delayCounter < vanishDelay) {
                 // Draw rect box
                 RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
                     drawRoundedBorderRect(
                         0F, 0F, width, height, borderStrength,
-                        when (backgroundMode) {
-                            "Rainbow" -> 0
-                            else -> backgroundCustomColor
-                        },
+                        if (backgroundMode == "Rainbow") 0 else backgroundCustomColor,
                         borderCustomColor,
                         roundedRectRadius
                     )
@@ -195,13 +209,7 @@ class LiquidBounceLegacyTH(inst: Targets) : TargetStyle("LiquidBounce", inst, tr
                 }
 
                 // Draw title text
-                target.name?.let {
-                    titleFont.drawString(
-                        it, 36F, 5F,
-                        textCustomColor,
-                        textShadow
-                    )
-                }
+                target.name?.let { titleFont.drawString(it, 36F, 5F, textCustomColor, textShadow) }
 
                 // Draw body text
                 bodyFont.drawString(
@@ -213,10 +221,9 @@ class LiquidBounceLegacyTH(inst: Targets) : TargetStyle("LiquidBounce", inst, tr
                 )
 
                 // Draw info
-                val playerInfo = mc.netHandler.getPlayerInfo(target.uniqueID)
-                if (playerInfo != null) {
+                mc.netHandler?.getPlayerInfo(target.uniqueID)?.let {
                     bodyFont.drawString(
-                        "Ping: ${playerInfo.responseTime.coerceAtLeast(0)}",
+                        "Ping: ${it.responseTime.coerceAtLeast(0)}",
                         36F,
                         24F,
                         textCustomColor,
@@ -224,7 +231,7 @@ class LiquidBounceLegacyTH(inst: Targets) : TargetStyle("LiquidBounce", inst, tr
                     )
 
                     // Draw head
-                    val locationSkin = playerInfo.locationSkin
+                    val locationSkin = it.locationSkin
                     drawHead(locationSkin, 30, 30)
                 }
             }

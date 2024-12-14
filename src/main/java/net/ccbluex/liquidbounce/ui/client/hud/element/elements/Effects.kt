@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexturedModalRect
@@ -167,6 +168,8 @@ class Effects(
         var y = 0F
         var width = 0F
 
+        val height = ((font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT).toFloat()
+
         assumeNonVolatile = true
 
         val activePotions = mc.thePlayer?.activePotionEffects ?: return Border(2F, font.FONT_HEIGHT.toFloat(), -width - 2F, y + font.FONT_HEIGHT - 2F)
@@ -180,14 +183,14 @@ class Effects(
             if (width < stringWidth) width = stringWidth
 
             font.drawString(name, -stringWidth, y, potion.liquidColor, shadow)
-            y -= font.FONT_HEIGHT
+            y -= height
         }
 
         assumeNonVolatile = false
         if (width == 0F) width = 40F
         if (y == 0F) y = -10F
 
-        return Border(2F, font.FONT_HEIGHT.toFloat(), -width - 2F, y + font.FONT_HEIGHT - 2F)
+        return Border(2F, height, -width - 2F, y + height - 2F)
     }
 
     private fun intToRoman(num: Int): String {

@@ -73,7 +73,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
          * Default Client Title
          */
         fun defaultClientTitle(): Text {
-            val text = Text(x = 2.0, y = 2.0, scale = 2F)
+            val text = Text(x = 2.0, y = 1.0, scale = 2F)
 
             text.displayString = "%clientName% %clientversion%"
             text.shadow = true
@@ -260,11 +260,24 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
     /**
      * Draw element
      */
+    @Suppress("UnclearPrecedenceOfBinaryExpression")
     override fun drawElement(): Border {
         val stack = mc.thePlayer?.inventory?.getStackInSlot(SilentHotbar.currentSlot)
         val shouldRender = showBlock && stack?.item is ItemBlock
         val showBlockScale = if (shouldRender) 1.2F else 1F
-        val fontHeight = ((font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT) + if (shouldRender) 1.5F else 0F
+        val fontHeight = ((font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT) + 2
+        val underscore = if (editMode && mc.currentScreen is GuiHudDesigner && editTicks <= 40) "_" else ""
+        // Calculate width only once
+        val underscoreWidth = font.getStringWidth(underscore).toFloat()
+        val width = font.getStringWidth(displayText) + underscoreWidth
+        val heightPadding = if (font == mc.fontRendererObj) 1F else 0F
+        val bgScale = max(backgroundScale, 1F)
+        val params = floatArrayOf(
+            -(if (shouldRender) 16F else 2F) * bgScale * showBlockScale,
+            -(if (shouldRender) 3F else 2 + heightPadding) * bgScale * showBlockScale,
+            width + bgScale * showBlockScale,
+            (if (shouldRender) 1F else 1 + heightPadding) + fontHeight * bgScale * showBlockScale
+        )
 
         assumeNonVolatile = true
 
@@ -290,10 +303,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
             ).use {
                 RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
                     drawRoundedRect(
-                        ((-2F - if (shouldRender) 6F else 0F) * (1F + backgroundScale)) * (showBlockScale * 1.15F),
-                        (-2F * (1F + backgroundScale)) * showBlockScale,
-                        ((font.getStringWidth(displayText) + 2F) + backgroundScale) + showBlockScale,
-                        fontHeight * max(backgroundScale, 1F) * showBlockScale,
+                        params[0], params[1], params[2], params[3],
                         when (backgroundMode) {
                             "Gradient" -> 0
                             "Rainbow" -> 0
@@ -306,10 +316,10 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
 
             if (bgBorderColors.color().alpha > 0) {
                 drawRoundedBorder(
-                    ((-2F - if (shouldRender) 6F else 0F) * (1F + backgroundScale)) * (showBlockScale * 1.15F),
-                    (-2F * (1F + backgroundScale)) * showBlockScale,
-                    ((font.getStringWidth(displayText) + 2F) + backgroundScale) + showBlockScale,
-                    fontHeight * max(backgroundScale, 1F) * showBlockScale,
+                    params[0],
+                    params[1],
+                    params[2],
+                    params[3],
                     backgroundBorder,
                     bgBorderColors.color().rgb,
                     roundedBackgroundRadius
@@ -325,7 +335,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
                 if (mc.currentScreen is GuiHudDesigner) glDisable(GL_DEPTH_TEST)
 
                 if (shouldRender) {
-                    mc.renderItem.renderItemAndEffectIntoGUI(stack, -2 - 18, -4)
+                    mc.renderItem.renderItemAndEffectIntoGUI(stack, -18, -3)
                 }
 
                 disableStandardItemLighting()
@@ -338,6 +348,8 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
                 glPopMatrix()
             }
 
+            val colorToUse = if (rainbow || gradient) 0 else color.rgb
+
             GradientFontShader.begin(
                 gradient,
                 gradientX,
@@ -346,22 +358,11 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
                 gradientTextSpeed,
                 gradientOffset
             ).use {
-                RainbowFontShader.begin(
-                    rainbow,
-                    if (rainbowX == 0f) 0f else 1f / rainbowX,
-                    if (rainbowY == 0f) 0f else 1f / rainbowY,
-                    rainbowOffset
-                ).use {
-                    font.drawString(displayText, 0F, 0F, if (rainbow) 0 else if (gradient) 0 else color.rgb, shadow)
+                RainbowFontShader.begin(rainbow, rainbowX, rainbowY, rainbowOffset).use {
+                    font.drawString(displayText, 0F, 2 - heightPadding, colorToUse, shadow)
 
                     if (editMode && mc.currentScreen is GuiHudDesigner && editTicks <= 40) {
-                        font.drawString(
-                            "_",
-                            font.getStringWidth(displayText) + 2F,
-                            0F,
-                            if (rainbow) ColorUtils.rainbow(400000000L).rgb else if (gradient) 0 else color.rgb,
-                            shadow
-                        )
+                        font.drawString("_", width - underscoreWidth, 0F, colorToUse, shadow)
                     }
                 }
             }
@@ -374,12 +375,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
 
         assumeNonVolatile = false
 
-        return Border(
-            (-2F - if (shouldRender) 6F else 0F) * (1F + backgroundScale) * (showBlockScale * 1.15F),
-            (-2F * (1F + backgroundScale)) * showBlockScale,
-            ((font.getStringWidth(displayText) + 2F) + backgroundScale) + showBlockScale,
-            fontHeight * max(backgroundScale, 1F) * showBlockScale
-        )
+        return Border(params[0], params[1], params[2], params[3])
     }
 
     override fun updateElement() {
