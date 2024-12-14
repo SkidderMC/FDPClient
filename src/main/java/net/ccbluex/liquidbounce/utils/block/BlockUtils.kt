@@ -8,7 +8,10 @@ package net.ccbluex.liquidbounce.utils.block
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.block
 import net.ccbluex.liquidbounce.utils.extensions.state
-import net.minecraft.block.*
+import net.minecraft.block.Block
+import net.minecraft.block.BlockGlass
+import net.minecraft.block.BlockSoulSand
+import net.minecraft.block.BlockStainedGlass
 import net.minecraft.block.state.IBlockState
 import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB
@@ -70,16 +73,21 @@ object BlockUtils : MinecraftInstance() {
      * Search a limited amount [maxBlocksLimit] of specific blocks [targetBlocks] around the player in a specific [radius].
      * If [targetBlocks] is null it searches every block
      **/
-    fun searchBlocks(radius: Int, targetBlocks: Set<Block>? = null, maxBlocksLimit: Int = 256): Map<BlockPos, Block> {
-        val thePlayer = mc.thePlayer ?: return emptyMap()
+    fun searchBlocks(
+        radius: Int,
+        targetBlocks: Set<Block>? = null,
+        maxBlocksLimit: Int? = null,
+        predicate: (BlockPos, Block) -> Boolean = { _, _ -> true }
+    ): MutableMap<BlockPos, Block> {
+        val thePlayer = mc.thePlayer ?: return mutableMapOf()
 
-        val blocks = hashMapOf<BlockPos, Block>()
+        val blocks = mutableMapOf<BlockPos, Block>()
 
         val mutable = BlockPos.MutableBlockPos(0, 0, 0)
         for (x in radius downTo -radius + 1) {
             for (y in radius downTo -radius + 1) {
                 for (z in radius downTo -radius + 1) {
-                    if (blocks.size >= maxBlocksLimit) {
+                    if (maxBlocksLimit != null && blocks.size >= maxBlocksLimit) {
                         return blocks
                     }
 
@@ -88,7 +96,9 @@ object BlockUtils : MinecraftInstance() {
                     val block = mutable.block ?: continue
 
                     if (targetBlocks == null || targetBlocks.contains(block)) {
-                        blocks[mutable.immutable] = block
+                        if (predicate(mutable.immutable, block)) {
+                            blocks[mutable.immutable] = block
+                        }
                     }
                 }
             }
