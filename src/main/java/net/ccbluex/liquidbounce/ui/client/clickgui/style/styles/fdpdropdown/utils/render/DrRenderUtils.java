@@ -89,6 +89,25 @@ public class DrRenderUtils extends MinecraftInstance {
         drawGradientRectSideways(x, y, x + width, y + height, startColor, endColor);
     }
 
+    public static void drawOutline(double x, double y, double width, double height, int color, float thickness) {
+        double left = x;
+        double top = y;
+        double right = x + width;
+        double bottom = y + height;
+
+        // Borda superior
+        DrRenderUtils.drawRect2(left, top, right, top + thickness, color);
+
+        // Borda inferior
+        DrRenderUtils.drawRect2(left, bottom - thickness, right, bottom, color);
+
+        // Borda esquerda
+        DrRenderUtils.drawRect2(left, top, left + thickness, bottom, color);
+
+        // Borda direita
+        DrRenderUtils.drawRect2(right - thickness, top, right, bottom, color);
+    }
+
     public static void drawGradientRectSideways(double left, double top, double right, double bottom, int startColor, int endColor) {
         float f = (float) (startColor >> 24 & 255) / 255.0F;
         float f1 = (float) (startColor >> 16 & 255) / 255.0F;

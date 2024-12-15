@@ -29,7 +29,7 @@ enum class yzyCategory(val parent: Category, val displayName: String, val color:
 
     companion object {
         fun of(category: Category): yzyCategory? {
-            return values().find { it.parent == category }
+            return entries.find { it.parent == category }
         }
     }
 }

@@ -87,7 +87,7 @@ class Panel(
         yzyRectangle(x - 0.5f, y - 0.5f, width + 1.0f, panelHeight + 3.0f, category.color)
         yzyRectangle(x.toFloat(), y.toFloat(), width.toFloat(), panelHeight + 2.0f, Color(26, 26, 26))
 
-        customFontManager["lato-bold-15"].drawStringWithShadow(
+        customFontManager["lato-bold-15"]?.drawStringWithShadow(
             category.name.lowercase(Locale.getDefault()),
             (x + 3).toDouble(),
             (y + (height / 4.0f) + 0.5f).toDouble(),

@@ -41,7 +41,7 @@ class yzyGUI(private val clickGui: ClickGUIModule) : GuiScreen() {
 
     init {
         var panelX = 5
-        yzyCategory.values().forEach { category ->
+        yzyCategory.entries.forEach { category ->
             val positions = guiManager.getPositions(category)
             val panel = if (!guiManager.positions.containsKey(category)) {
                 Panel(this, category, panelX, 5).also { panelX += it.width + 5 }

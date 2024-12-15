@@ -1201,6 +1201,7 @@ object RenderUtils : MinecraftInstance() {
         glEnd()
     }
 
+    @JvmStatic
     fun drawRect(x: Float, y: Float, x2: Float, y2: Float, color: Int) {
         glPushMatrix()
         glEnable(GL_BLEND)

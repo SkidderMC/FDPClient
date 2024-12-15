@@ -30,7 +30,7 @@ class GUIManager {
         File(settingsDir, "${category.name.lowercase(Locale.getDefault())}.yzygui")
 
     fun register() {
-        yzyCategory.values().forEach { category ->
+        yzyCategory.entries.forEach { category ->
             val categoryFile = getCategoryFile(category)
             if (categoryFile.exists()) {
                 try {
@@ -91,7 +91,7 @@ class GUIManager {
     }
 
     fun save() {
-        yzyCategory.values().forEach { save(it) }
+        yzyCategory.entries.forEach { save(it) }
     }
 
     fun isExtended(category: yzyCategory): Boolean =
