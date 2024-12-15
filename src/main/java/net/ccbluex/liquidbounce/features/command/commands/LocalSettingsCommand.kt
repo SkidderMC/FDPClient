@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.config.SettingsUtils
-import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
+import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
 import java.awt.Desktop
 import java.io.File
@@ -176,7 +176,12 @@ object LocalSettingsCommand : Command("localsettings", "localsetting", "localcon
 
             3 -> {
                 when (args[0].lowercase()) {
-                    "save" -> listOf("all", "default", "values", "binds", "states").filter { it.startsWith(args[2], true) }
+                    "save" -> listOf("all", "default", "values", "binds", "states").filter {
+                        it.startsWith(
+                            args[2],
+                            true
+                        )
+                    }
                     else -> emptyList()
                 }
             }

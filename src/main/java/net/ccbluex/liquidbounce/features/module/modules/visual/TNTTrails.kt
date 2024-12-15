@@ -5,9 +5,9 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.minecraft.entity.item.EntityTNTPrimed
@@ -16,8 +16,8 @@ import org.lwjgl.opengl.GL11
 object TNTTrails : Module("TNTTrails", Category.VISUAL, spacedName = "TNT Trails", hideModule = false) {
     private val tntPositions = mutableMapOf<EntityTNTPrimed, MutableList<Triple<Double, Double, Double>>>()
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+
+    val onRender3D = handler<Render3DEvent> {
         tntPositions.keys.toList().forEach { tnt ->
             val positions = tntPositions[tnt] ?: return@forEach
 
@@ -35,8 +35,7 @@ object TNTTrails : Module("TNTTrails", Category.VISUAL, spacedName = "TNT Trails
         }
     }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    val onUpdate = handler<UpdateEvent> {
         mc.theWorld.loadedEntityList.filterIsInstance<EntityTNTPrimed>().forEach { tnt ->
             val positions = tntPositions.getOrPut(tnt) { mutableListOf() }
             positions.add(Triple(tnt.posX, tnt.posY, tnt.posZ))

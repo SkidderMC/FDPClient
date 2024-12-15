@@ -11,11 +11,10 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
+import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.other.Fucker
 import net.ccbluex.liquidbounce.features.module.modules.other.Nuker
-import net.ccbluex.liquidbounce.features.module.modules.player.Blink
-import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
-import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Tower
+import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.*
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Text
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.*
@@ -315,6 +314,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     )
 
     private val displayDebug by boolean("Debug", false)
+
     /**
      * MODULE
      */
@@ -374,8 +374,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         }
     }
 
-    @EventTarget
-    fun onRotationUpdate(event: RotationUpdateEvent) {
+    val onRotationUpdate = handler<RotationUpdateEvent> {
         update()
     }
 
@@ -392,8 +391,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         }
     }
 
-    @EventTarget
-    fun onWorldChange(event: WorldEvent) {
+    val onWorldChange = handler<WorldEvent> {
         attackTickTimes.clear()
 
         if (blinkAutoBlock && BlinkUtils.isBlinking) BlinkUtils.unblink()
@@ -406,46 +404,45 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     /**
      * Tick event
      */
-    @EventTarget
-    fun onTick(event: GameTickEvent) {
-        val player = mc.thePlayer ?: return
+    val onTick = handler<GameTickEvent> {
+        val player = mc.thePlayer ?: return@handler
 
         if (shouldPrioritize()) {
             target = null
             renderBlocking = false
-            return
+            return@handler
         }
 
-        if (clickOnly && !mc.gameSettings.keyBindAttack.isKeyDown) return
+        if (clickOnly && !mc.gameSettings.keyBindAttack.isKeyDown) return@handler
 
         if (blockStatus && autoBlock == "Packet" && releaseAutoBlock && !ignoreTickRule) {
             clicks = 0
             stopBlocking()
-            return
+            return@handler
         }
 
         if (cancelRun) {
             target = null
             hittable = false
             stopBlocking()
-            return
+            return@handler
         }
 
         if (noInventoryAttack && (mc.currentScreen is GuiContainer || System.currentTimeMillis() - containerOpen < noInventoryDelay)) {
             target = null
             hittable = false
             if (mc.currentScreen is GuiContainer) containerOpen = System.currentTimeMillis()
-            return
+            return@handler
         }
 
         if (simulateCooldown && getAttackCooldownProgress() < 1f) {
-            return
+            return@handler
         }
 
         if (target == null && !blockStopInDead) {
             blockStopInDead = true
             stopBlocking()
-            return
+            return@handler
         }
 
         if (blinkAutoBlock) {
@@ -476,7 +473,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         if (target != null) {
             if (player.getDistanceToEntityBox(target!!) > blockMaxRange && blockStatus) {
                 stopBlocking(true)
-                return
+                return@handler
             } else {
                 if (autoBlock != "Off" && !releaseAutoBlock) {
                     renderBlocking = true
@@ -496,7 +493,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
                 clicks--
 
                 if (wasBlocking && !blockStatus && (releaseAutoBlock && !ignoreTickRule || autoBlock == "Off")) {
-                    return
+                    return@handler
                 }
             }
         } else {
@@ -507,24 +504,23 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     /**
      * Render event
      */
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    val onRender3D = handler<Render3DEvent> {
         handleFailedSwings()
 
         if (cancelRun) {
             target = null
             hittable = false
-            return
+            return@handler
         }
 
         if (noInventoryAttack && (mc.currentScreen is GuiContainer || System.currentTimeMillis() - containerOpen < noInventoryDelay)) {
             target = null
             hittable = false
             if (mc.currentScreen is GuiContainer) containerOpen = System.currentTimeMillis()
-            return
+            return@handler
         }
 
-        target ?: return
+        target ?: return@handler
 
         if (attackTimer.hasTimePassed(attackDelay)) {
             if (maxCPS > 0) clicks++
@@ -536,8 +532,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     /**
      * Render event
      */
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+    val onRender2D = handler<Render2DEvent> {
         if (displayDebug) {
             val sr = ScaledResolution(mc)
             val blockingStatus = blockStatus
@@ -633,10 +628,12 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
                     }
 
                     val prevCooldown = mc.leftClickCounter
+
                     // Is any GUI coming from our client?
                     val isAnyClientGuiActive = mc.currentScreen?.javaClass?.`package`?.name?.contains(
                         FDPClient.CLIENT_NAME, ignoreCase = true
                     ) == true
+
                     if (isAnyClientGuiActive) {
                         mc.leftClickCounter = 0
                     }
@@ -690,6 +687,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
                             if (manipulateInventory) serverOpenInventory = true
                         }
                     }
+
                     if (isAnyClientGuiActive) {
                         mc.leftClickCounter = prevCooldown
                     }
@@ -1116,21 +1114,20 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
         renderBlocking = false
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        val player = mc.thePlayer ?: return
+    val onPacket = handler<PacketEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
         val packet = event.packet
 
-        if (autoBlock == "Off" || !blinkAutoBlock || !blinked) return
+        if (autoBlock == "Off" || !blinkAutoBlock || !blinked) return@handler
 
         if (player.isDead || player.ticksExisted < 20) {
             BlinkUtils.unblink()
-            return
+            return@handler
         }
 
         if (Blink.blinkingSend() || Blink.blinkingReceive()) {
             BlinkUtils.unblink()
-            return
+            return@handler
         }
 
         BlinkUtils.blink(packet, event)

@@ -109,16 +109,15 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
         clearFlags()
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        val player = mc.thePlayer ?: return
+    val onPacket = handler<PacketEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
         val packet = event.packet
 
         if (player.ticksExisted <= 100)
-            return
+            return@handler
 
         if (player.isDead || (player.capabilities.isFlying && player.capabilities.disableDamage && !player.onGround))
-            return
+            return@handler
 
         if (packet is S08PacketPlayerPosLook) {
             val deltaYaw = calculateAngleDelta(packet.yaw, lastYaw)
@@ -172,13 +171,12 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
     /**
      * Rubberband, Invalid Health/Hunger & GhostBlock Checks
      */
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        val player = mc.thePlayer ?: return
-        val world = mc.theWorld ?: return
+    val onUpdate = handler<UpdateEvent> {
+        val player = mc.thePlayer ?: return@handler
+        val world = mc.theWorld ?: return@handler
 
         if (player.isDead || mc.currentScreen is GuiGameOver || player.ticksExisted <= 100) {
-            return
+            return@handler
         }
 
         // LastServerPos Resets | After 5 second
@@ -225,7 +223,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
 
         // Rubberband Checks
         if (!rubberbandCheck || (player.capabilities.isFlying && player.capabilities.disableDamage && !player.onGround))
-            return
+            return@handler
 
         val motionX = player.motionX
         val motionY = player.motionY
@@ -266,13 +264,12 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
         lastMotionZ = motionZ
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        val player = mc.thePlayer ?: return
+    val onRender3D = handler<Render3DEvent> {
+        val player = mc.thePlayer ?: return@handler
         val renderManager = mc.renderManager
-        val pos = lastServerPos ?: return
+        val pos = lastServerPos ?: return@handler
 
-        if (renderServerPos != "Box") return
+        if (renderServerPos != "Box") return@handler
 
         val remainingTime = ((6000 - (System.currentTimeMillis() - serverPosTime)) / 1000).coerceAtLeast(0)
         val text = "Last Position: ${remainingTime}sec"
@@ -320,15 +317,14 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
         )
     }
 
-    @EventTarget
-    fun onTick(event: GameTickEvent) {
+    val onTick = handler<GameTickEvent> {
         if (mc.thePlayer == null || mc.theWorld == null)
-            return
+            return@handler
 
         if (resetTicks >= resetFlagCounterTicks) {
             clearFlags()
             resetTicks = 0
-            return
+            return@handler
         }
 
         if (mc.thePlayer.ticksExisted > 100) {
@@ -336,8 +332,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
         }
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+           val onWorld = handler<WorldEvent> {
         clearFlags()
     }
 }

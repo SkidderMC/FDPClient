@@ -7,20 +7,20 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
-import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
-import net.ccbluex.liquidbounce.utils.extensions.block
+import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
+import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.block.Block
 import net.minecraft.block.Block.getIdFromBlock
 import net.minecraft.init.Blocks.*
@@ -119,8 +119,8 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
         }
     }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+
+    val onUpdate = handler<UpdateEvent> {
         if (searchTimer.hasTimePassed(1000) && (searchJob?.isActive != true)) {
             val radius = radius
             val targetBlock = if (targetBlock == "Bed") bed else dragon_egg
@@ -145,8 +145,8 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
         }
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+
+    val onRender3D = handler<Render3DEvent> {
         if (renderTargetBlocks) {
             synchronized(targetBlockList) {
                 for (blockPos in targetBlockList) {

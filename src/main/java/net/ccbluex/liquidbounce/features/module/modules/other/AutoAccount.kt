@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.features.module.modules.other
 
 import me.liuli.elixir.account.CrackedAccount
 import net.ccbluex.liquidbounce.event.*
-import net.ccbluex.liquidbounce.event.EventManager.callEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.file.FileManager.accountsConfig
@@ -132,22 +131,21 @@ object AutoAccount :
         else -> false
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         when (val packet = event.packet) {
             is S02PacketChat, is S45PacketTitle -> {
                 // Don't respond to register / login prompts when failed once
-                if (!passwordValue.isSupported() || status == Status.STOPPED) return
+                if (!passwordValue.isSupported() || status == Status.STOPPED) return@handler
 
                 val msg = when (packet) {
                     is S02PacketChat -> packet.chatComponent?.unformattedText?.lowercase()
                     is S45PacketTitle -> packet.message?.unformattedText?.lowercase()
-                    else -> return
-                } ?: return
+                    else -> return@handler
+                } ?: return@handler
 
                 if (status == Status.WAITING) {
                     // Try to register / log in, return if invalid message
-                    if (!respond(msg)) return
+                    if (!respond(msg)) return@handler
 
                     event.cancelEvent()
                     status = Status.SENT_COMMAND
@@ -173,7 +171,7 @@ object AutoAccount :
             is S40PacketDisconnect -> {
                 if (relogKickedValue.isActive() && status != Status.SENT_COMMAND) {
                     val reason = packet.reason.unformattedText
-                    if ("ban" in reason) return
+                    if ("ban" in reason) return@handler
 
                     relog(packet.reason.unformattedText)
                 }
@@ -182,14 +180,13 @@ object AutoAccount :
 
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
-        if (!passwordValue.isSupported()) return
+           val onWorld = handler<WorldEvent> { event ->
+        if (!passwordValue.isSupported()) return@handler
 
         // Reset status if player wasn't in a world before
         if (mc.theWorld == null) {
             status = Status.WAITING
-            return
+            return@handler
         }
 
         if (status == Status.SENT_COMMAND) {
@@ -200,8 +197,7 @@ object AutoAccount :
         }
     }
 
-    @EventTarget
-    fun onStartup(startupEvent: StartupEvent) {
+    val onStartup = handler<StartupEvent> {
         // Log in to account with a random name after startup, optionally save it
         if (startupValue.isActive()) changeAccount()
     }
@@ -237,7 +233,7 @@ object AutoAccount :
                 account.session.username, account.session.uuid,
                 account.session.token, account.session.type
             )
-            callEvent(SessionUpdateEvent)
+            EventManager.call(SessionUpdateEvent)
             return
         }
 

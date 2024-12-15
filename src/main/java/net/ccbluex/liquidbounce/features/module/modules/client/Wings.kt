@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.int
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.render.RenderWings
@@ -22,9 +22,8 @@ object Wings : Module("Wings", Category.CLIENT, hideModule = false) {
     val customBlue by int("Blue", 255, 0.. 255) { colorType == "Custom" }
     val wingStyle by choices("Wing Style", arrayOf("Dragon", "Simple"), "Dragon")
 
-    @EventTarget
-    fun onRenderPlayer(event: Render3DEvent) {
-        if (onlyThirdPerson && mc.gameSettings.thirdPersonView == 0) return
+    val onRenderPlayer = handler<Render3DEvent> { event ->
+        if (onlyThirdPerson && mc.gameSettings.thirdPersonView == 0) return@handler
         val renderWings = RenderWings()
         renderWings.renderWings(event.partialTicks)
     }

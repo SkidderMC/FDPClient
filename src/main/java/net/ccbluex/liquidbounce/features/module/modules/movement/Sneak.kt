@@ -5,17 +5,17 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.event.EventState
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.client.C0BPacketEntityAction.Action.START_SNEAKING
@@ -28,19 +28,18 @@ object Sneak : Module("Sneak", Category.MOVEMENT, hideModule = false) {
 
     private var sneaking = false
 
-    @EventTarget
-    fun onMotion(event: MotionEvent) {
+    val onMotion = handler<MotionEvent> { event ->
         if (stopMove && mc.thePlayer.isMoving) {
             if (sneaking)
                 onDisable()
-            return
+            return@handler
         }
 
         when (mode.lowercase()) {
             "legit" -> mc.gameSettings.keyBindSneak.pressed = true
             "vanilla" -> {
                 if (sneaking)
-                    return
+                    return@handler
 
                 sendPacket(C0BPacketEntityAction(mc.thePlayer, START_SNEAKING))
             }
@@ -67,15 +66,14 @@ object Sneak : Module("Sneak", Category.MOVEMENT, hideModule = false) {
 
             "minesecure" -> {
                 if (event.eventState == EventState.PRE)
-                    return
+                    return@handler
 
                 sendPacket(C0BPacketEntityAction(mc.thePlayer, START_SNEAKING))
             }
         }
     }
 
-    @EventTarget
-    fun onWorld(worldEvent: WorldEvent) {
+    val onWorld = handler<WorldEvent> {
         sneaking = false
     }
 

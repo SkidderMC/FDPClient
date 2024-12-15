@@ -8,10 +8,10 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.config.*
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element.Companion.MAX_GRADIENT_COLORS
@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.BEDWARS_BLOCKS
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockTexture
-import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
+import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsFloat
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
@@ -97,10 +97,9 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
         searchJob?.cancel()
     }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        val player = mc.thePlayer ?: return
-        val world = mc.theWorld ?: return
+    val onUpdate = handler<UpdateEvent> {
+        val player = mc.thePlayer ?: return@handler
+        val world = mc.theWorld ?: return@handler
 
         try {
             if (searchJob?.isActive != true) {
@@ -152,18 +151,16 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+           val onWorld = handler<WorldEvent> {
         searchJob?.cancel()
         beds.clear()
         bedBlocks.clear()
         bed = null
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        if (mc.thePlayer == null || mc.theWorld == null) return
-        if (beds.isEmpty()) return
+    val onRender3D = handler <Render3DEvent> {
+        if (mc.thePlayer == null || mc.theWorld == null) return@handler
+        if (beds.isEmpty()) return@handler
 
         val bedsCopy = beds.toList()
 

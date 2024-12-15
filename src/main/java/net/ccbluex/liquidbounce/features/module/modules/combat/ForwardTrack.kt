@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
@@ -63,9 +63,8 @@ object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
         }
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        val world = mc.theWorld ?: return
+    val onRender3D = handler<Render3DEvent> { event ->
+        val world = mc.theWorld ?: return@handler
 
         val renderManager = mc.renderManager
 

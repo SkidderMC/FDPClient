@@ -15,15 +15,15 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.stopOnLa
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.stopOnNoMove
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.timerSlowed
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
-import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.client.chat
+import net.ccbluex.liquidbounce.utils.client.schedulePacketProcess
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
-import net.ccbluex.liquidbounce.utils.client.schedulePacketProcess
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 import net.minecraft.client.entity.EntityPlayerSP
-import net.minecraft.network.handshake.client.C00Handshake
 import net.minecraft.network.Packet
+import net.minecraft.network.handshake.client.C00Handshake
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S40PacketDisconnect
 import net.minecraft.network.status.client.C00PacketServerQuery
@@ -40,7 +40,7 @@ import net.minecraft.world.World
  *
  * @author EclipsesDev
  */
-object BlocksMC2 : FlyMode("BlocksMC2") {
+object BlocksMC2 : FlyMode("BlocksMC2"), Listenable {
 
     private var isFlying = false
     private var isNotUnder = false
@@ -101,8 +101,7 @@ object BlocksMC2 : FlyMode("BlocksMC2") {
         blink()
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+    val onWorld = handler<WorldEvent> { event ->
         Flight.state = false
 
         // Clear packets on disconnect
@@ -129,7 +128,8 @@ object BlocksMC2 : FlyMode("BlocksMC2") {
     }
 
     private fun shouldFly(player: EntityPlayerSP, world: World): Boolean {
-        return world.getCollidingBoundingBoxes(player, player.entityBoundingBox.offset(0.0, 0.5, 0.0)).isEmpty() || isFlying
+        return world.getCollidingBoundingBoxes(player, player.entityBoundingBox.offset(0.0, 0.5, 0.0))
+            .isEmpty() || isFlying
     }
 
     private fun handlePlayerFlying(player: EntityPlayerSP) {
@@ -142,6 +142,7 @@ object BlocksMC2 : FlyMode("BlocksMC2") {
                     isNotUnder = false
                 }
             }
+
             1 -> {
                 if (isFlying) {
                     strafe(boostSpeed)
@@ -150,7 +151,6 @@ object BlocksMC2 : FlyMode("BlocksMC2") {
         }
     }
 
-    @EventTarget
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
 
@@ -189,7 +189,6 @@ object BlocksMC2 : FlyMode("BlocksMC2") {
         }
     }
 
-    @EventTarget
     override fun onMotion(event: MotionEvent) {
         val thePlayer = mc.thePlayer ?: return
 

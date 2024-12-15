@@ -3,7 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.utils.extensions
+package net.ccbluex.liquidbounce.utils.block
 
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isBlockBBValid
@@ -47,3 +47,8 @@ fun BlockPos.canBeClicked(): Boolean {
         else -> true
     }
 }
+
+val Block.id: Int
+    get() = Block.getIdFromBlock(this)
+val Int.blockById: Block
+    get() = Block.getBlockById(this)

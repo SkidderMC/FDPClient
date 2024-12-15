@@ -13,6 +13,8 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.FastBreak
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
+import net.ccbluex.liquidbounce.utils.block.block
+import net.ccbluex.liquidbounce.utils.block.center
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
@@ -85,12 +87,11 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
 
     var currentDamage = 0F
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    val onUpdate = handler<UpdateEvent> {
         // Block hit delay
         if (blockHitDelay > 0 && !FastBreak.handleEvents()) {
             blockHitDelay--
-            return
+            return@handler
         }
 
         // Reset bps
@@ -104,8 +105,8 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
         // Clear blocks
         attackedBlocks.clear()
 
-        val player = mc.thePlayer ?: return
-        val world = mc.theWorld ?: return
+        val player = mc.thePlayer ?: return@handler
+        val world = mc.theWorld ?: return@handler
 
         val eyes = player.eyes
 
@@ -148,7 +149,7 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
                     else opacity
                 }
 
-                else -> return // Handle invalid priority
+                else -> return@handler // Handle invalid priority
             }
 
             for ((blockPos, block) in sortedBlocks) {
@@ -157,7 +158,7 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
 
                 // Change head rotations to next block
                 if (options.rotationsActive) {
-                    val rotation = faceBlock(blockPos) ?: return // In case of a mistake. Prevent flag.
+                    val rotation = faceBlock(blockPos) ?: return@handler // In case of a mistake. Prevent flag.
 
                     setTargetRotation(rotation.rotation, options = options)
                 }
@@ -166,7 +167,7 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
                 currentBlock = blockPos
                 attackedBlocks += blockPos
 
-                EventManager.callEvent(ClickBlockEvent(blockPos, EnumFacing.DOWN))
+                EventManager.call(ClickBlockEvent(blockPos, EnumFacing.DOWN))
 
                 // Start block breaking
                 if (currentDamage == 0F) {
@@ -196,13 +197,13 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
                     blockHitDelay = hitDelay
                     currentDamage = 0F
                 }
-                return // Break out
+                return@handler// Break out
             }
         } else {
             // Fast creative mode nuker (CreativeStorm option)
 
             // Unable to break with swords in creative mode
-            if (player.heldItem?.item is ItemSword) return
+            if (player.heldItem?.item is ItemSword) return@handler
 
             searchBlocks(radius.roundToInt() + 1, null) { pos, block ->
                 if (getCenterDistance(pos) <= radius && validBlock(block)) {
@@ -232,14 +233,13 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
         }
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        val player = mc.thePlayer ?: return
-        val renderManager = mc.renderManager ?: return
+    val onRender3D = handler<Render3DEvent> {
+        val player = mc.thePlayer ?: return@handler
+        val renderManager = mc.renderManager ?: return@handler
 
         for (pos in attackedBlocks) {
             if (blockProgress) {
-                if (Block.getBlockById(blocks) == air) return
+                if (Block.getBlockById(blocks) == air) return@handler
 
                 val progress = (currentDamage * 100).coerceIn(0f, 100f).toInt()
                 val progressText = "%d%%".format(progress)

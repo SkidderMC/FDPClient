@@ -5,21 +5,21 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.GameTickEvent
-import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
-import net.ccbluex.liquidbounce.utils.extensions.sendUseItem
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.isFirstInventoryClick
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
-import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.GameTickEvent
+import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.extensions.sendUseItem
+import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
+import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.isFirstInventoryClick
+import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
+import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C07PacketPlayerDigging
@@ -51,12 +51,11 @@ object AutoSoup : Module("AutoSoup", Category.PLAYER, hideModule = false) {
     override val tag
         get() = health.toString()
 
-    @EventTarget(priority = -1)
-    fun onGameTick(event: GameTickEvent) {
-        val thePlayer = mc.thePlayer ?: return
+    val onGameTick = handler<GameTickEvent>(priority = -1) {
+        val thePlayer = mc.thePlayer ?: return@handler
 
         if (!timer.hasTimePassed(delay))
-            return
+            return@handler
 
         val soupInHotbar = InventoryUtils.findItem(36, 44, Items.mushroom_stew)
 
@@ -79,14 +78,14 @@ object AutoSoup : Module("AutoSoup", Category.PLAYER, hideModule = false) {
             }
 
             timer.reset()
-            return
+            return@handler
         }
 
         val bowlInHotbar = InventoryUtils.findItem(36, 44, Items.bowl)
 
         if (bowl == "Move" && bowlInHotbar != null) {
             if (openInventory && mc.currentScreen !is GuiInventory)
-                return
+                return@handler
 
             var bowlMovable = false
 
@@ -113,7 +112,7 @@ object AutoSoup : Module("AutoSoup", Category.PLAYER, hideModule = false) {
             if (isFirstInventoryClick && !startTimer.hasTimePassed(startDelay)) {
                 // GuiInventory checks, have to be put separately due to problem with reseting timer.
                 if (mc.currentScreen is GuiInventory)
-                    return
+                    return@handler
             } else {
                 // GuiInventory checks, have to be put separately due to problem with reseting timer.
                 if (mc.currentScreen is GuiInventory)
@@ -123,7 +122,7 @@ object AutoSoup : Module("AutoSoup", Category.PLAYER, hideModule = false) {
             }
 
             if (openInventory && mc.currentScreen !is GuiInventory)
-                return
+                return@handler
 
             canCloseInventory = false
 
@@ -142,10 +141,12 @@ object AutoSoup : Module("AutoSoup", Category.PLAYER, hideModule = false) {
         }
 
         if (autoClose && canCloseInventory && closeTimer.hasTimePassed(autoCloseDelay)) {
-            if (!autoCloseNoSoup && soupInInventory == null) return
+            if (!autoCloseNoSoup && soupInInventory == null) return@handler
+
             if (mc.currentScreen is GuiInventory) {
                 mc.thePlayer?.closeScreen()
             }
+
             closeTimer.reset()
             canCloseInventory = false
         }

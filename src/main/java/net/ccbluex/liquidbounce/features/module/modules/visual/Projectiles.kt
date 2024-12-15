@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
@@ -20,6 +19,8 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.utils.block.state
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.client.renderer.Tessellator
@@ -54,9 +55,9 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
 
     private val trailPositions = mutableMapOf<Entity, MutableList<Triple<Long, Vec3, Float>>>()
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        val theWorld = mc.theWorld ?: return
+
+    val onRender3D = handler<Render3DEvent> {
+        val theWorld = mc.theWorld ?: return@handler
         val renderManager = mc.renderManager
 
         for (entity in theWorld.loadedEntityList) {
@@ -354,9 +355,9 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
         glPopAttrib()
     }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        val world = mc.theWorld ?: return
+
+    val onUpdate = handler<UpdateEvent> {
+        val world = mc.theWorld ?: return@handler
 
         val currentTime = System.currentTimeMillis()
 

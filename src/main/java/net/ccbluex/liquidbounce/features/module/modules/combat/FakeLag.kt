@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.client.pos
 import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.kotlin.removeEach
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
@@ -71,81 +72,80 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
         blink()
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        val player = mc.thePlayer ?: return
+    val onPacket = handler<PacketEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
         val packet = event.packet
 
         if (!handleEvents() || player.isDead || event.isCancelled || maxAllowedDistToEnemy.get() > 0.0 && wasNearEnemy || ignoreWholeTick) {
-            return
+            return@handler
         }
 
         if (pauseOnNoMove && !player.isMoving) {
             blink()
-            return
+            return@handler
         }
 
         // Flush on damaged received
         if (player.health < player.maxHealth) {
             if (player.hurtTime != 0) {
                 blink()
-                return
+                return@handler
             }
         }
 
         // Flush on scaffold/tower usage
         if (Scaffold.handleEvents() && Scaffold.placeRotation != null) {
             blink()
-            return
+            return@handler
         }
 
         // Flush on attack/interact
         if (blinkOnAction && packet is C02PacketUseEntity) {
             blink()
-            return
+            return@handler
         }
 
         if (pauseOnChest && mc.currentScreen is GuiContainer) {
             blink()
-            return
+            return@handler
         }
 
         when (packet) {
-            is C00Handshake, is C00PacketServerQuery, is C01PacketPing, is C01PacketChatMessage, is S01PacketPong -> return
+            is C00Handshake, is C00PacketServerQuery, is C01PacketPing, is C01PacketChatMessage, is S01PacketPong -> return@handler
 
             // Flush on window clicked (Inventory)
             is C0EPacketClickWindow, is C0DPacketCloseWindow -> {
                 blink()
-                return
+                return@handler
             }
 
             // Flush on doing action/getting action
             is S08PacketPlayerPosLook, is C08PacketPlayerBlockPlacement, is C07PacketPlayerDigging, is C12PacketUpdateSign, is C19PacketResourcePackStatus -> {
                 blink()
-                return
+                return@handler
             }
 
             // Flush on knockback
             is S12PacketEntityVelocity -> {
                 if (player.entityId == packet.entityID) {
                     blink()
-                    return
+                    return@handler
                 }
             }
 
             is S27PacketExplosion -> {
                 if (packet.field_149153_g != 0f || packet.field_149152_f != 0f || packet.field_149159_h != 0f) {
                     blink()
-                    return
+                    return@handler
                 }
             }
         }
 
-        if (!resetTimer.hasTimePassed(recoilTime)) return
+        if (!resetTimer.hasTimePassed(recoilTime)) return@handler
 
         if (mc.isSingleplayer || mc.currentServerData == null) {
             blink()
-            return
+            return@handler
         }
 
         if (event.eventType == EventState.SEND) {
@@ -163,8 +163,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
         }
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+           val onWorld = handler<WorldEvent> { event ->
         // Clear packets on disconnect only
         if (event.worldClient == null) blink(false)
     }
@@ -174,10 +173,9 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
         return Vec3(mixinPlayer!!.trueX, mixinPlayer.trueY + player.getEyeHeight().toDouble(), mixinPlayer.trueZ)
     }
 
-    @EventTarget
-    fun onGameLoop(event: GameLoopEvent) {
-        val player = mc.thePlayer ?: return
-        val world = mc.theWorld ?: return
+    val onGameLoop = handler<GameLoopEvent> {
+        val player = mc.thePlayer ?: return@handler
+        val world = mc.theWorld ?: return@handler
 
         if (maxAllowedDistToEnemy.get() > 0) {
             val playerPos = player.currPos
@@ -203,7 +201,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
                     ) {
                         blink()
                         wasNearEnemy = true
-                        return
+                        return@handler
                     }
                 }
             }
@@ -211,20 +209,19 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
 
         if (Blink.blinkingSend() || player.isDead || player.isUsingItem) {
             blink()
-            return
+            return@handler
         }
 
-        if (!resetTimer.hasTimePassed(recoilTime)) return
+        if (!resetTimer.hasTimePassed(recoilTime)) return@handler
 
         handlePackets()
         ignoreWholeTick = false
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    val onRender3D = handler<Render3DEvent> {
         val color = if (rainbow) rainbow() else Color(red, green, blue)
 
-        if (!line || Blink.blinkingSend() || positions.isEmpty()) return
+        if (!line || Blink.blinkingSend() || positions.isEmpty()) return@handler
 
         glPushMatrix()
         glDisable(GL_TEXTURE_2D)

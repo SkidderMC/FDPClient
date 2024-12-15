@@ -5,11 +5,11 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.potion.Potion
 
 object RemoveEffect : Module("RemoveEffect", Category.OTHER, hideModule = false) {
@@ -24,8 +24,7 @@ object RemoveEffect : Module("RemoveEffect", Category.OTHER, hideModule = false)
 
     override fun onEnable() {}
 
-    @EventTarget(ignoreCondition = true)
-    fun onUpdate(event: UpdateEvent?) {
+    val onUpdate = handler<UpdateEvent> (always = true) {
 
         if (mc.thePlayer != null) {
 

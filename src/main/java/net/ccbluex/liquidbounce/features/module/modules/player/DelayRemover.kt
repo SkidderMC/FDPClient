@@ -5,12 +5,13 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import net.ccbluex.liquidbounce.event.EventTarget
+
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.updateControls
 import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.event.handler
 
 object DelayRemover : Module("DelayRemover", Category.PLAYER, hideModule = false) {
 
@@ -29,8 +30,8 @@ object DelayRemover : Module("DelayRemover", Category.PLAYER, hideModule = false
 
     private var prevGui = false
 
-    @EventTarget
-    fun onMotion(event: MotionEvent) {
+
+    val onMotion = handler<MotionEvent> {
         if (mc.thePlayer != null && mc.theWorld != null && noClickDelay) {
             mc.leftClickCounter = 0
         }

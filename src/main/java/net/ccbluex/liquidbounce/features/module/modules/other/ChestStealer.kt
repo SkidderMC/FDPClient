@@ -11,9 +11,10 @@ import net.ccbluex.liquidbounce.config.IntegerValue
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.int
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
+import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoArmor
@@ -23,7 +24,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner.
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
-import net.ccbluex.liquidbounce.utils.kotlin.CoroutineUtils.waitUntil
+import net.ccbluex.liquidbounce.utils.kotlin.waitUntil
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
@@ -250,7 +251,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
             }
 
             // Wait till all scheduled clicks were sent
-            waitUntil(TickScheduler::isEmpty)
+            waitUntil { TickScheduler.isEmpty() }
 
             // Before closing the chest, check all items once more, whether server hadn't cancelled some of the actions.
             stacks = thePlayer.openContainer.inventory
@@ -390,12 +391,11 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
     }
 
     // Progress bar
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+    val onRender2D = handler<Render2DEvent> { event ->
         if (!progressBar || mc.currentScreen !is GuiChest)
-            return
+            return@handler
 
-        val progress = progress ?: return
+        val progress = progress ?: return@handler
 
         val (scaledWidth, scaledHeight) = ScaledResolution(mc)
 
@@ -417,8 +417,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
         )
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         when (val packet = event.packet) {
             is C0DPacketCloseWindow, is S2DPacketOpenWindow, is S2EPacketCloseWindow -> {
                 receivedId = null
@@ -427,14 +426,16 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
 
             is S30PacketWindowItems -> {
                 // Chests never have windowId 0
-                if (packet.func_148911_c() == 0)
-                    return
+                val packetWindowId = packet.func_148911_c()
 
-                if (receivedId != packet.func_148911_c()) {
+                if (packetWindowId == 0)
+                    return@handler
+
+                if (receivedId != packetWindowId) {
                     debug("Chest opened with ${stacks.size} items")
                 }
 
-                receivedId = packet.func_148911_c()
+                receivedId = packetWindowId
 
                 stacks = packet.itemStacks.toList()
             }

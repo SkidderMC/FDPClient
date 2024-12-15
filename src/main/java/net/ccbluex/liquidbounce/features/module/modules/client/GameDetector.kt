@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
@@ -13,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils.contains
 import net.ccbluex.liquidbounce.config.IntegerValue
 import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.entity.boss.IBossDisplayData
 import net.minecraft.entity.item.EntityArmorStand
 import net.minecraft.init.Items
@@ -57,51 +57,51 @@ object GameDetector: Module("GameDetector", Category.CLIENT, gameDetecting = fal
 
     fun isInGame() = !state || isPlaying
 
-    @EventTarget(priority = 1)
-    fun onUpdate(updateEvent: UpdateEvent) {
+    val onUpdate = handler<UpdateEvent>(priority = 1) {
         isPlaying = false
 
-        val thePlayer = mc.thePlayer ?: return
-        val theWorld = mc.theWorld ?: return
-        val netHandler = mc.netHandler ?: return
+        val thePlayer = mc.thePlayer ?: return@handler
+        val theWorld = mc.theWorld ?: return@handler
+        val netHandler = mc.netHandler ?: return@handler
         val capabilities = thePlayer.capabilities
 
         val slots = slot - 1
         val itemSlot = mc.thePlayer.inventory.getStackInSlot(slots)
 
         if (gameMode && !mc.playerController.gameIsSurvivalOrAdventure())
-            return
+            return@handler
 
-        if (GameDetector.capabilities &&
-            (!capabilities.allowEdit || capabilities.allowFlying || capabilities.isFlying || capabilities.disableDamage))
-            return
+        if (this@GameDetector.capabilities &&
+            (!capabilities.allowEdit || capabilities.allowFlying || capabilities.isFlying || capabilities.disableDamage)
+        )
+            return@handler
 
         if (tabList && netHandler.playerInfoMap.size <= 1)
-            return
+            return@handler
 
         if (teams && thePlayer.team?.allowFriendlyFire == false && theWorld.scoreboard.teams.size == 1)
-            return
+            return@handler
 
         if (invisibility && thePlayer.getActivePotionEffect(Potion.invisibility)?.isPotionDurationMax == true)
-            return
+            return@handler
 
         if (compass) {
             if (checkAllSlots && mc.thePlayer.inventory.hasItemStack(ItemStack(Items.compass)))
-                return
+                return@handler
 
             if (!checkAllSlots && itemSlot?.item == Items.compass)
-                return
+                return@handler
         }
 
         if (scoreboard) {
             if (LOBBY_SUBSTRINGS in theWorld.scoreboard.getObjectiveInDisplaySlot(1)?.displayName)
-                return
+                return@handler
 
             if (theWorld.scoreboard.objectiveNames.any { LOBBY_SUBSTRINGS in it })
-                return
+                return@handler
 
             if (theWorld.scoreboard.teams.any { LOBBY_SUBSTRINGS in it.colorPrefix })
-                return
+                return@handler
         }
 
         if (entity) {
@@ -113,15 +113,14 @@ object GameDetector: Module("GameDetector", Category.CLIENT, gameDetecting = fal
 
                 // If an unnatural entity has been found, break the loop if its name includes a whitelisted substring
                 if (WHITELISTED_SUBSTRINGS in name) break
-                else return
+                else return@handler
             }
         }
 
         isPlaying = true
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+    val onWorld = handler<WorldEvent> {
         isPlaying = false
     }
 }

@@ -5,10 +5,10 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts.font35
@@ -33,8 +33,7 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
         setupGame()
     }
 
-    @EventTarget
-    fun onKey(event: KeyEvent) {
+    val onKey = handler<KeyEvent> { event ->
         val key = event.key
         if ((key == 205 && lastKey != 203) || (key == 203 && lastKey != 205)
             || (key == 200 && lastKey != 208) || (key == 208 && lastKey != 200)
@@ -43,8 +42,7 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
         }
     }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    val onUpdate = handler<UpdateEvent> { event ->
         if (mc.thePlayer.ticksExisted % 2 == 0) {
             if (snake[0].x == food.x && snake[0].y == food.y) {
                 score += 1
@@ -72,8 +70,7 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
         }
     }
 
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+    val onRender2D = handler<Render2DEvent> { event ->
         val resolution = ScaledResolution(mc)
 
         val width = resolution.scaledWidth

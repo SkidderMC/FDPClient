@@ -75,7 +75,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
 
                 mc.displayGuiScreen(new GuiLoginProgress(minecraftAccount, () -> {
                     mc.addScheduledTask(() -> {
-                        EventManager.INSTANCE.callEvent(SessionUpdateEvent.INSTANCE);
+                        EventManager.INSTANCE.call(SessionUpdateEvent.INSTANCE);
                         ServerUtils.INSTANCE.connectToLastServer();
                     });
                     return null;

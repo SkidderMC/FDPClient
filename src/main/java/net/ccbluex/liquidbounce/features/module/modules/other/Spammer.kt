@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.other
 
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
@@ -18,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
 import net.ccbluex.liquidbounce.config.IntegerValue
 import net.ccbluex.liquidbounce.config.TextValue
 import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.event.handler
 
 object Spammer : Module("Spammer", Category.OTHER, subjective = true, hideModule = false) {
     private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 1000, 0..5000) {
@@ -47,8 +47,7 @@ object Spammer : Module("Spammer", Category.OTHER, subjective = true, hideModule
     private val msTimer = MSTimer()
     private var delay = randomDelay(minDelay, maxDelay)
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    val onUpdate = handler<UpdateEvent> {
         if (msTimer.hasTimePassed(delay)) {
             mc.thePlayer.sendChatMessage(
                 if (custom) replace(message)

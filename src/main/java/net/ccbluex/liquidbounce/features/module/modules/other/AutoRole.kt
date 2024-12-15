@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -13,6 +12,7 @@ import net.ccbluex.liquidbounce.file.FileManager.friendsConfig
 import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.event.handler
 
 object AutoRole : Module("AutoRole", Category.OTHER, gameDetecting = false, hideModule = false) {
     private val formattingValue by boolean("Formatting", true)
@@ -54,8 +54,7 @@ object AutoRole : Module("AutoRole", Category.OTHER, gameDetecting = false, hide
         return STAFF_PREFIXES.toList().contains(stripColor(prefix))
     }
 
-    @EventTarget
-    fun handle(event: UpdateEvent?) {
+    val handle = handler<UpdateEvent> { event ->
         val friendManager = friendsConfig
 
         val formatCodes = arrayOf("§k", "§l", "§m", "§n", "§o")

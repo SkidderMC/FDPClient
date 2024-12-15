@@ -100,10 +100,9 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT, hideModule = f
         sprintTicks = 0
     }
 
-    @EventTarget
-    fun onAttack(event: AttackEvent) {
-        val player = mc.thePlayer ?: return
-        val target = event.targetEntity as? EntityLivingBase ?: return
+    val onAttack = handler<AttackEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
+        val target = event.targetEntity as? EntityLivingBase ?: return@handler
         val distance = player.getDistanceToEntityBox(target)
 
         val rotationToPlayer = toRotation(player.hitBox.center, false, target).fixedSensitivity().yaw
@@ -112,19 +111,19 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT, hideModule = f
         if (event.targetEntity.hurtTime > hurtTime || !timer.hasTimePassed(delay) || onlyGround && !player.onGround || RandomUtils.nextInt(
                 endExclusive = 100
             ) > chance
-        ) return
+        ) return@handler
 
-        if (onlyMove && (!player.isMoving || onlyMoveForward && player.movementInput.moveStrafe != 0f)) return
+        if (onlyMove && (!player.isMoving || onlyMoveForward && player.movementInput.moveStrafe != 0f)) return@handler
 
         // Is the enemy facing their back on us?
-        if (angleDifferenceToPlayer > minEnemyRotDiffToIgnore && !target.hitBox.isVecInside(player.eyes)) return
+        if (angleDifferenceToPlayer > minEnemyRotDiffToIgnore && !target.hitBox.isVecInside(player.eyes)) return@handler
 
         val pos = target.currPos - target.lastTickPos
 
         val distanceBasedOnMotion = player.getDistanceToBox(target.hitBox.offset(pos))
 
         // Is the entity's distance based on motion farther than the normal distance?
-        if (onlyWhenTargetGoesBack && distanceBasedOnMotion >= player.getDistanceToEntityBox(target)) return
+        if (onlyWhenTargetGoesBack && distanceBasedOnMotion >= player.getDistanceToEntityBox(target)) return@handler
 
         when (mode) {
             "Old" -> {
@@ -209,9 +208,8 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT, hideModule = f
         timer.reset()
     }
 
-    @EventTarget
-    fun onPostSprintUpdate(event: PostSprintUpdateEvent) {
-        val player = mc.thePlayer ?: return
+    val onPostSprintUpdate = handler<PostSprintUpdateEvent> {
+        val player = mc.thePlayer ?: return@handler
         if (mode == "SprintTap") {
             when (ticks) {
                 2 -> {
@@ -235,8 +233,7 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT, hideModule = f
         }
     }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    val onUpdate = handler<UpdateEvent> {
         if (mode == "WTap") {
             if (blockInput) {
                 if (ticksElapsed++ >= allowInputTicks) {
@@ -256,9 +253,8 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT, hideModule = f
         }
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        val player = mc.thePlayer ?: return
+    val onPacket = handler<PacketEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
         val packet = event.packet
         if (packet is C03PacketPlayer && mode == "Silent") {
             if (ticks == 2) {

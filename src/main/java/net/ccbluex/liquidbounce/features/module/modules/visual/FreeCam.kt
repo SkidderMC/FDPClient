@@ -47,7 +47,6 @@ object FreeCam : Module("FreeCam", Category.VISUAL, gameDetecting = false, hideM
         originalPos = null
     }
 
-    @EventTarget
     fun onInputEvent(event: MovementInputEvent) {
         val speed = this.speed.toDouble()
 
@@ -83,7 +82,7 @@ object FreeCam : Module("FreeCam", Category.VISUAL, gameDetecting = false, hideM
         originalPos = PositionPair(player.currPos, player.prevPos, player.lastTickPos)
 
         val event = CameraPositionEvent(player.currPos, player.prevPos, player.lastTickPos)
-        EventManager.callEvent(event)
+        EventManager.call(event)
 
         event.result?.run {
             player.setPosAndPrevPos(pos, lastPos, extraPos)
@@ -114,8 +113,8 @@ object FreeCam : Module("FreeCam", Category.VISUAL, gameDetecting = false, hideM
 
     fun shouldDisableRotations() = handleEvents() && !allowRotationChange
 
-    @EventTarget
-    fun onWorldChange(event: WorldEvent) {
+
+    val onWorldChange = handler<WorldEvent> {
         // Disable when world changed
         state = false
     }

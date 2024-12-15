@@ -5,9 +5,9 @@
  */
 package net.ccbluex.liquidbounce.utils.render
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.Render2DEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.BlockPos
@@ -33,8 +33,7 @@ object MiniMapRegister : MinecraftInstance(), Listenable {
 
     fun getChunkTextureAt(x: Int, z: Int) = lock.read { chunkTextureMap[ChunkLocation(x, z)] }
 
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+    val onRender2D = handler<Render2DEvent> {
         updateChunks()
     }
 

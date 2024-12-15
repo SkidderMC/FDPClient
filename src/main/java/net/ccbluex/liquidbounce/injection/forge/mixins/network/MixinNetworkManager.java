@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.network;
 
@@ -23,7 +23,7 @@ public class MixinNetworkManager {
     @Inject(method = "channelRead0", at = @At("HEAD"), cancellable = true)
     private void read(ChannelHandlerContext context, Packet<?> packet, CallbackInfo callback) {
         final PacketEvent event = new PacketEvent(packet, EventState.RECEIVE);
-        EventManager.INSTANCE.callEvent(event);
+        EventManager.INSTANCE.call(event);
 
         if (event.isCancelled()) {
             callback.cancel();
@@ -36,7 +36,7 @@ public class MixinNetworkManager {
     @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("HEAD"), cancellable = true)
     private void send(Packet<?> packet, CallbackInfo callback) {
         final PacketEvent event = new PacketEvent(packet, EventState.SEND);
-        EventManager.INSTANCE.callEvent(event);
+        EventManager.INSTANCE.call(event);
 
         if (event.isCancelled()) {
             callback.cancel();

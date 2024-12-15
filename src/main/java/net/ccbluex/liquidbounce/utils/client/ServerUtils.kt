@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.utils.client
 
 import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.ui.client.gui.GuiMainMenu
-import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
+import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.client.gui.GuiMultiplayer
 import net.minecraft.client.multiplayer.GuiConnecting

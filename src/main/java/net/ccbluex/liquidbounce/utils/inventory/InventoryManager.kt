@@ -11,16 +11,16 @@ import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner
 import net.ccbluex.liquidbounce.features.module.modules.other.ChestStealer
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.serverOnGround
-import net.ccbluex.liquidbounce.utils.client.chat
-import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.timeSinceClosedInventory
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.event.loopHandler
 import net.minecraft.client.gui.inventory.GuiInventory
 
-object InventoryManager : MinecraftInstance() {
+object InventoryManager : MinecraftInstance(), Listenable {
 
 	// Shared no move click values
 	val noMoveValue = boolean("NoMoveClicks", false)
@@ -87,74 +87,64 @@ object InventoryManager : MinecraftInstance() {
 	val passedPostInventoryCloseDelay
 		get() = System.currentTimeMillis() - timeSinceClosedInventory >= postInventoryCloseDelayValue.get()
 
-	private suspend fun CoroutineScope.manageInventory() {
-		while (isActive) {
-			try {
-				/**
-				 * ChestStealer actions
-				 */
+	private val managerLoop = loopHandler(dispatcher = Dispatchers.Default, priority = 100) {
+		/**
+		 * ChestStealer actions
+		 */
+		ChestStealer.stealFromChest()
 
-				ChestStealer.stealFromChest()
+		/**
+		 * AutoArmor actions
+		 */
+		AutoArmor.equipFromHotbar()
 
-				/**
-				 * AutoArmor actions
-				 */
+		// Following actions require inventory / simulated inventory, ...
 
-				AutoArmor.equipFromHotbar()
+		// TODO: This could be at start of each action?
+		// Don't wait for NoMove not to be violated, check if there is anything to equip from hotbar and such by looping again
+		if (!canClickInventory() || (invOpenValue.get() && mc.currentScreen !is GuiInventory)) {
+			delay(50)
+			return@loopHandler
+		}
 
-				// Following actions require inventory / simulated inventory, ...
+		canCloseInventory = false
 
-				// TODO: This could be at start of each action?
-				// Don't wait for NoMove not to be violated, check if there is anything to equip from hotbar and such by looping again
-				if (!canClickInventory() || (invOpenValue.get() && mc.currentScreen !is GuiInventory)) {
-					delay(50)
-					continue
-				}
+		AutoArmor.equipFromInventory()
 
-				canCloseInventory = false
+		/**
+		 * InventoryCleaner actions
+		 */
 
-				AutoArmor.equipFromInventory()
+		// Repair useful equipment by merging in the crafting grid
+		InventoryCleaner.repairEquipment()
 
-				/**
-				 * InventoryCleaner actions
-				 */
+		// Compact multiple small stacks into one to free up inventory space
+		InventoryCleaner.mergeStacks()
 
-				// Repair useful equipment by merging in the crafting grid
-				InventoryCleaner.repairEquipment()
+		// Sort hotbar (with useful items without even dropping bad items first)
+		InventoryCleaner.sortHotbar()
 
-				// Compact multiple small stacks into one to free up inventory space
-				InventoryCleaner.mergeStacks()
+		// Drop bad items to free up inventory space
+		InventoryCleaner.dropGarbage()
 
-				// Sort hotbar (with useful items without even dropping bad items first)
-				InventoryCleaner.sortHotbar()
+		// Stores which action should be executed to close open inventory or simulated inventory
+		// If no clicks were scheduled throughout any iteration (canCloseInventory == false), then it is null, to prevent closing inventory all the time
+		val action = closingAction
+		if (action == null) {
+			delay(50)
+			return@loopHandler
+		}
 
-				// Drop bad items to free up inventory space
-				InventoryCleaner.dropGarbage()
+		// Prepare for closing the inventory
+		delay(closeDelayValue.get().toLong())
 
-				// Stores which action should be executed to close open inventory or simulated inventory
-				// If no clicks were scheduled throughout any iteration (canCloseInventory == false), then it is null, to prevent closing inventory all the time
-				val action = closingAction
-				if (action == null) {
-					delay(50)
-					continue
-				}
-
-				// Prepare for closing the inventory
-				delay(closeDelayValue.get().toLong())
-
-				// Try to search through inventory one more time, only close when no actions were scheduled in current iteration
-				if (!hasScheduledInLastLoop) {
-					action.invoke()
-				}
-			} catch (e: Exception) {
-				// TODO: Remove when stable, probably in b86
-				chat("§cReworked coroutine inventory management ran into an issue! Please report this: ${e.message ?: e.cause}")
-				e.printStackTrace()
-			}
+		// Try to search through inventory one more time, only close when no actions were scheduled in current iteration
+		if (!hasScheduledInLastLoop) {
+			action.invoke()
 		}
 	}
 
-	private val closingAction
+	private val closingAction: (() -> Unit)?
 		get() = when {
 			// Check if any click was scheduled since inventory got open
 			!canCloseInventory -> null
@@ -183,7 +173,4 @@ object InventoryManager : MinecraftInstance() {
 			false
 		} else true // Simulated inventory will get reopen before a window click, delaying it by start delay
 
-	fun startCoroutine() = SharedScopes.Default.launch {
-		manageInventory()
-	}
 }

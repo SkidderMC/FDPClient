@@ -5,22 +5,21 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.float
+import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.utils.client.BlinkUtils
-import net.ccbluex.liquidbounce.utils.movement.MovementUtils.hasMotion
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
-import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
+import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.hasMotion
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.minecraft.item.*
 import net.minecraft.network.handshake.client.C00Handshake
 import net.minecraft.network.play.client.*
@@ -93,19 +92,19 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
         BlinkUtils.unblink()
     }
 
-    @EventTarget
-    fun onMotion(event: MotionEvent) {
-        val player = mc.thePlayer ?: return
-        val heldItem = player.heldItem ?: return
+    val onMotion = handler<MotionEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
+        val heldItem = player.heldItem ?: return@handler
         val isUsingItem = usingItemFunc()
 
         if (!hasMotion && !shouldSwap)
-            return
+            return@handler
 
         if (isUsingItem || shouldSwap) {
             if (heldItem.item !is ItemSword && !consumeFoodOnly && heldItem.item is ItemFood ||
-                !consumeDrinkOnly && (heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk)) {
-                return
+                !consumeDrinkOnly && (heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk)
+            ) {
+                return@handler
             }
 
             when (consumeMode.lowercase()) {
@@ -183,7 +182,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
                             )
                         )
 
-                        else -> return
+                        else -> return@handler
                     }
 
                 "updatedncp" ->
@@ -201,7 +200,6 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
                 "switchitem" ->
                     if (event.eventState == EventState.PRE) {
                         updateSlot()
-                        chat("work")
                     }
 
                 "invalidc08" -> {
@@ -216,20 +214,19 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
         }
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
-        val player = mc.thePlayer ?: return
+        val player = mc.thePlayer ?: return@handler
 
         if (event.isCancelled || shouldSwap)
-            return
+            return@handler
 
         // Credit: @ManInMyVan
         // TODO: Not sure how to fix random grim simulation flag. (Seem to only happen in Loyisa).
         if (consumeMode == "Drop") {
             if (player.heldItem?.item !is ItemFood || !player.isMoving) {
                 shouldNoSlow = false
-                return
+                return@handler
             }
 
             val isUsingItem = packet is C08PacketPlayerBlockPlacement && packet.placedBlockDirection == 255
@@ -244,7 +241,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
                 shouldNoSlow = false
                 hasDropped = true
             } else if (packet is S2FPacketSetSlot && player.isUsingItem) {
-                if (packet.func_149175_c() != 0 || packet.func_149173_d() != SilentHotbar.currentSlot + 36) return
+                if (packet.func_149175_c() != 0 || packet.func_149173_d() != SilentHotbar.currentSlot + 36) return@handler
 
                 event.cancelEvent()
                 shouldNoSlow = true
@@ -257,7 +254,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
 
         if (swordMode == "Blink") {
             when (packet) {
-                is C00Handshake, is C00PacketServerQuery, is C01PacketPing, is C01PacketChatMessage, is S01PacketPong -> return
+                is C00Handshake, is C00PacketServerQuery, is C01PacketPing, is C01PacketChatMessage, is S01PacketPong -> return@handler
 
                 is C07PacketPlayerDigging, is C02PacketUseEntity, is C12PacketUpdateSign, is C19PacketResourcePackStatus -> {
                     BlinkTimer.update()
@@ -268,14 +265,14 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
                     } else if (!BlinkTimer.hasTimePassed(reblinkTicks)) {
                         shouldBlink = true
                     }
-                    return
+                    return@handler
                 }
 
                 // Flush on kb
                 is S12PacketEntityVelocity -> {
                     if (mc.thePlayer.entityId == packet.entityID) {
                         BlinkUtils.unblink()
-                        return
+                        return@handler
                     }
                 }
 
@@ -283,7 +280,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
                 is S27PacketExplosion -> {
                     if (packet.field_149153_g != 0f || packet.field_149152_f != 0f || packet.field_149159_h != 0f) {
                         BlinkUtils.unblink()
-                        return
+                        return@handler
                     }
                 }
 
@@ -310,8 +307,8 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
                                 packet.stack.item is ItemFood ||
                                         packet.stack.item is ItemPotion ||
                                         packet.stack.item is ItemBucketMilk)) ||
-                        (bowPacket == "UpdatedNCP" && packet.stack.item is ItemBow))
-                    {
+                        (bowPacket == "UpdatedNCP" && packet.stack.item is ItemBow)
+                    ) {
                         shouldSwap = true
                     }
                 }
@@ -319,19 +316,18 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
         }
     }
 
-    @EventTarget
-    fun onSlowDown(event: SlowDownEvent) {
+    val onSlowDown = handler<SlowDownEvent> { event ->
         val heldItem = mc.thePlayer.heldItem?.item
 
         if (heldItem !is ItemSword) {
             if (!consumeFoodOnly && heldItem is ItemFood ||
                 !consumeDrinkOnly && (heldItem is ItemPotion || heldItem is ItemBucketMilk)
             ) {
-                return
+                return@handler
             }
 
             if (consumeMode == "Drop" && !shouldNoSlow)
-                return
+                return@handler
         }
 
         event.forward = getMultiplier(heldItem, true)
@@ -359,3 +355,4 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
         SilentHotbar.resetSlot(this, true)
     }
 }
+

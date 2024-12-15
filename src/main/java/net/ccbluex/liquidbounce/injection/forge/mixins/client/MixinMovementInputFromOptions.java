@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
@@ -38,6 +38,6 @@ public class MixinMovementInputFromOptions extends MixinMovementInput {
 
     @Inject(method = "updatePlayerMoveState", at = @At(value = "FIELD", target = "Lnet/minecraft/util/MovementInputFromOptions;sneak:Z", ordinal = 1))
     private void injectMovementInputEvent(CallbackInfo ci) {
-        EventManager.INSTANCE.callEvent(new MovementInputEvent((MovementInput) (Object) this));
+        EventManager.INSTANCE.call(new MovementInputEvent((MovementInput) (Object) this));
     }
 }

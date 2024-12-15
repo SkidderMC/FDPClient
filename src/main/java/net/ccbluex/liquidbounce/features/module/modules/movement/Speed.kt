@@ -146,19 +146,6 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
     val notOnFalling by boolean("NotOnFalling", false) { mode.get() == "Custom" }
     val notOnVoid by boolean("NotOnVoid", true) { mode.get() == "Custom" }
 
-
-    // Matrix
-    val matrixSpeed by choices("Matrix-Mode", arrayOf("MatrixHop2", "Matrix6.6.1", "Matrix6.9.2"), "MatrixHop2") { mode.get() == "MatrixSpeeds" }
-    val matrixGroundStrafe by boolean("GroundStrafe-Hop2", false) { mode.get() == "MatrixSpeeds" }
-    val matrixVeloBoostValue by boolean("VelocBoost-6.6.1", true) { mode.get() == "MatrixSpeeds" }
-    val matrixTimerBoostValue by boolean("TimerBoost-6.6.1", false) { mode.get() == "MatrixSpeeds" }
-    val matrixUsePreMotion by boolean("UsePreMotion6.6.1", false) { mode.get() == "MatrixSpeeds" }
-
-    // VerusSpeed
-    val verusSpeed by choices("Verus-Mode", arrayOf("OldHop", "Float", "Ground", "YPort", "YPort2"), "OldHop")  { mode.get() == "VerusSpeeds" }
-    val verusYPortspeedValue by float("YPort-Speed", 0.61f, 0.1f.. 1f)  { mode.get() == "VerusSpeeds" }
-    val verusYPort2speedValue by float("YPort2-Speed", 0.61f, 0.1f.. 1f)  { mode.get() == "VerusSpeeds" }
-
     // TeleportCubecraft Speed
     val cubecraftPortLength by float("CubeCraft-PortLength", 1f, 0.1f..2f)
     { mode.get() == "TeleportCubeCraft" }
@@ -172,6 +159,18 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
     { mode.get() == "IntaveHop14" }
     val groundTimer by float("GroundTimer", 0.5f, 0.1f..5f) { mode.get() == "IntaveHop14" }
     val airTimer by float("AirTimer", 1.09f, 0.1f..5f) { mode.get() == "IntaveHop14" }
+
+    // Matrix
+    val matrixSpeed by choices("Matrix-Mode", arrayOf("MatrixHop2", "Matrix6.6.1", "Matrix6.9.2"), "MatrixHop2") { mode.get() == "MatrixSpeeds" }
+    val matrixGroundStrafe by boolean("GroundStrafe-Hop2", false) { mode.get() == "MatrixSpeeds" }
+    val matrixVeloBoostValue by boolean("VelocBoost-6.6.1", true) { mode.get() == "MatrixSpeeds" }
+    val matrixTimerBoostValue by boolean("TimerBoost-6.6.1", false) { mode.get() == "MatrixSpeeds" }
+    val matrixUsePreMotion by boolean("UsePreMotion6.6.1", false) { mode.get() == "MatrixSpeeds" }
+
+    // VerusSpeed
+    val verusSpeed by choices("Verus-Mode", arrayOf("OldHop", "Float", "Ground", "YPort", "YPort2"), "OldHop")  { mode.get() == "VerusSpeeds" }
+    val verusYPortspeedValue by float("YPort-Speed", 0.61f, 0.1f.. 1f)  { mode.get() == "VerusSpeeds" }
+    val verusYPort2speedValue by float("YPort2-Speed", 0.61f, 0.1f.. 1f)  { mode.get() == "VerusSpeeds" }
 
     // UNCPHopNew Speed
     private val pullDown by boolean("PullDown", true) { mode.get() == "UNCPHopNew" }
@@ -199,12 +198,11 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
     val damageLowHop by boolean("DamageLowHop", false) { mode.get() == "BlocksMCHop" }
     val safeY by boolean("SafeY", true) { mode.get() == "BlocksMCHop" }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        val thePlayer = mc.thePlayer ?: return
+    val onUpdate = handler<UpdateEvent> {
+        val thePlayer = mc.thePlayer ?: return@handler
 
         if (thePlayer.isSneaking)
-            return
+            return@handler
 
         if (thePlayer.isMoving && !sprintManually)
             thePlayer.isSprinting = true
@@ -212,12 +210,11 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         modeModule.onUpdate()
     }
 
-    @EventTarget
-    fun onMotion(event: MotionEvent) {
-        val thePlayer = mc.thePlayer ?: return
+    val onMotion = handler<MotionEvent> { event ->
+        val thePlayer = mc.thePlayer ?: return@handler
 
         if (thePlayer.isSneaking || event.eventState != EventState.PRE)
-            return
+            return@handler
 
         if (thePlayer.isMoving && !sprintManually)
             thePlayer.isSprinting = true
@@ -225,42 +222,37 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         modeModule.onMotion()
     }
 
-    @EventTarget
-    fun onMove(event: MoveEvent) {
+    val onMove = handler<MoveEvent> { event ->
         if (mc.thePlayer?.isSneaking == true)
-            return
+            return@handler
 
         modeModule.onMove(event)
     }
 
-    @EventTarget
-    fun onTick(event: GameTickEvent) {
+    val tickHandler = handler<GameTickEvent> {
         if (mc.thePlayer?.isSneaking == true)
-            return
+            return@handler
 
         modeModule.onTick()
     }
 
-    @EventTarget
-    fun onStrafe(event: StrafeEvent) {
+    val onStrafe = handler<StrafeEvent> {
         if (mc.thePlayer?.isSneaking == true)
-            return
+            return@handler
 
         modeModule.onStrafe()
     }
 
-    @EventTarget
-    fun onJump(event: JumpEvent) {
+    val onJump = handler<JumpEvent> { event ->
         if (mc.thePlayer?.isSneaking == true)
-            return
+            return@handler
 
         modeModule.onJump(event)
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         if (mc.thePlayer?.isSneaking == true)
-            return
+            return@handler
 
         modeModule.onPacket(event)
     }

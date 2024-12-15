@@ -9,10 +9,10 @@ import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.config.int
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils
@@ -46,10 +46,9 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
     private val swingValue by boolean("Swing", true) { modeValue == "Aura" }
     private val pathRenderValue by boolean("PathRender", true)
 
-    var lastTarget: EntityLivingBase? = null
     val timer = MSTimer()
-    var points = mutableListOf<Vec3>()
-    var thread: Thread? = null
+    private var points = mutableListOf<Vec3>()
+    private var thread: Thread? = null
 
     private fun getDelay(): Int {
         return 1000 / cpsValue
@@ -66,10 +65,9 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
         thread?.interrupt()
     }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        if (!timer.hasTimePassed(getDelay().toLong())) return
-        if (thread?.isAlive == true) return
+    val onUpdate = handler<UpdateEvent> {
+        if (!timer.hasTimePassed(getDelay().toLong())) return@handler
+        if (thread?.isAlive == true) return@handler
         when (modeValue.lowercase()) {
             "aura" -> {
                 thread = thread(name = "InfiniteAura") {
@@ -84,7 +82,7 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
                 if (mc.gameSettings.keyBindAttack.isKeyDown) {
                     thread = thread(name = "InfiniteAura") {
                         // do it async because a* pathfinding need some time
-                        val entity = RaycastUtils.raycastEntity(distValue.toDouble()) { entity -> entity != null && EntityUtils.isSelected(entity, true) } ?: return@thread
+                        val entity = RaycastUtils.raycastEntity(distValue.toDouble()) { entity -> EntityUtils.isSelected(entity, true) } ?: return@thread
                         if (mc.thePlayer.getDistanceToEntity(entity) < 3) {
                             return@thread
                         }
@@ -172,8 +170,7 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
         return true
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         if (event.packet is S08PacketPlayerPosLook) {
             timer.reset()
         }
@@ -204,10 +201,9 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
         }
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    val onRender3D = handler<Render3DEvent> {
         synchronized(points) {
-            if (points.isEmpty() || !pathRenderValue) return
+            if (points.isEmpty() || !pathRenderValue) return@handler
             val renderPosX = mc.renderManager.viewerPosX
             val renderPosY = mc.renderManager.viewerPosY
             val renderPosZ = mc.renderManager.viewerPosZ

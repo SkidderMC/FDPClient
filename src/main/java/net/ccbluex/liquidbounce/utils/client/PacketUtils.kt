@@ -5,13 +5,15 @@
  */
 package net.ccbluex.liquidbounce.utils.client
 
+import kotlinx.coroutines.Dispatchers
 import net.ccbluex.liquidbounce.event.*
-import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
 import net.ccbluex.liquidbounce.features.module.modules.combat.FakeLag
+import net.ccbluex.liquidbounce.features.module.modules.combat.Velocity
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
-import net.ccbluex.liquidbounce.utils.rotation.Rotation
-import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.extensions.currPos
+import net.ccbluex.liquidbounce.utils.kotlin.removeEach
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.NetworkManager
 import net.minecraft.network.Packet
@@ -20,14 +22,14 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.*
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
+import kotlin.concurrent.write
 import kotlin.math.roundToInt
 
 object PacketUtils : MinecraftInstance(), Listenable {
 
     val queuedPackets = ArrayDeque<Packet<*>>()
 
-    @EventTarget(priority = 2)
-    fun onTick(event: GameTickEvent) {
+    val onTick = handler<GameTickEvent>(priority = 2) {
         for (entity in mc.theWorld.loadedEntityList) {
             if (entity is EntityLivingBase) {
                 (entity as? IMixinEntity)?.apply {
@@ -39,58 +41,53 @@ object PacketUtils : MinecraftInstance(), Listenable {
         }
     }
 
-    @EventTarget(priority = 2)
-    fun onPacket(event: PacketEvent) {
-        val world = mc.theWorld ?: return
+    val onPacket = handler<PacketEvent>(dispatcher = Dispatchers.Main, priority = 2) { event ->
+        val world = mc.theWorld ?: return@handler
 
-        mc.addScheduledTask {
-            when (val packet = event.packet) {
-                is S0CPacketSpawnPlayer -> (world.getEntityByID(packet.entityID) as? IMixinEntity)?.apply {
-                    updateSpawnPosition(Vec3(packet.realX, packet.realY, packet.realZ))
-                }
+        when (val packet = event.packet) {
+            is S0CPacketSpawnPlayer -> (world.getEntityByID(packet.entityID) as? IMixinEntity)?.apply {
+                updateSpawnPosition(Vec3(packet.realX, packet.realY, packet.realZ))
+            }
 
-                is S0FPacketSpawnMob -> (world.getEntityByID(packet.entityID) as? IMixinEntity)?.apply {
-                    updateSpawnPosition(Vec3(packet.realX, packet.realY, packet.realZ))
-                }
+            is S0FPacketSpawnMob -> (world.getEntityByID(packet.entityID) as? IMixinEntity)?.apply {
+                updateSpawnPosition(Vec3(packet.realX, packet.realY, packet.realZ))
+            }
 
-                is S14PacketEntity -> {
-                    val entity = packet.getEntity(world)
-                    val mixinEntity = entity as? IMixinEntity
+            is S14PacketEntity -> {
+                val entity = packet.getEntity(world)
+                val mixinEntity = entity as? IMixinEntity
 
-                    mixinEntity?.apply {
-                        if (!truePos) {
-                            updateSpawnPosition(entity.currPos)
-                        }
-
-                        trueX += packet.realMotionX
-                        trueY += packet.realMotionY
-                        trueZ += packet.realMotionZ
+                mixinEntity?.apply {
+                    if (!truePos) {
+                        updateSpawnPosition(entity.currPos)
                     }
-                }
 
-                is S18PacketEntityTeleport -> (world.getEntityByID(packet.entityId) as? IMixinEntity)?.apply {
-                    updateSpawnPosition(Vec3(packet.realX, packet.realY, packet.realZ), true)
+                    trueX += packet.realMotionX
+                    trueY += packet.realMotionY
+                    trueZ += packet.realMotionZ
                 }
+            }
+
+            is S18PacketEntityTeleport -> (world.getEntityByID(packet.entityId) as? IMixinEntity)?.apply {
+                updateSpawnPosition(Vec3(packet.realX, packet.realY, packet.realZ), true)
             }
         }
     }
 
-    @EventTarget(priority = -5)
-    fun onGameLoop(event: GameLoopEvent) {
+    val onGameLoop = handler<GameLoopEvent>(priority = -5) {
         synchronized(queuedPackets) {
             queuedPackets.removeEach { packet ->
                 handlePacket(packet)
                 val packetEvent = PacketEvent(packet, EventState.RECEIVE)
-                FakeLag.onPacket(packetEvent)
-                Velocity.onPacket(packetEvent)
+                EventManager.call(packetEvent, FakeLag)
+                EventManager.call(packetEvent, Velocity)
 
                 true
             }
         }
     }
 
-    @EventTarget(priority = -1)
-    fun onDisconnect(event: WorldEvent) {
+    val onWorld = handler<WorldEvent>(priority = -1) { event ->
         if (event.worldClient == null) {
             synchronized(queuedPackets) {
                 queuedPackets.clear()
@@ -112,11 +109,8 @@ object PacketUtils : MinecraftInstance(), Listenable {
             netManager.flushOutboundQueue()
             netManager.dispatchPacket(packet, null)
         } else {
-            netManager.readWriteLock.writeLock().lock()
-            try {
+            netManager.readWriteLock.write {
                 netManager.outboundPacketsQueue += NetworkManager.InboundHandlerTuplePacketListener(packet, null)
-            } finally {
-                netManager.readWriteLock.writeLock().unlock()
             }
         }
     }
@@ -128,7 +122,7 @@ object PacketUtils : MinecraftInstance(), Listenable {
     fun handlePackets(vararg packets: Packet<*>) =
         packets.forEach { handlePacket(it) }
 
-    fun handlePacket(packet: Packet<*>?) {
+    private fun handlePacket(packet: Packet<*>?) {
         runCatching { (packet as Packet<INetHandlerPlayClient>).processPacket(mc.netHandler) }.onSuccess {
             PPSCounter.registerType(PPSCounter.PacketType.RECEIVED)
         }
@@ -241,6 +235,7 @@ var C03PacketPlayer.pos
         y = value.yCoord
         z = value.zCoord
     }
+
 
 fun schedulePacketProcess(packet: Packet<*>) {
     synchronized(PacketUtils.queuedPackets) {

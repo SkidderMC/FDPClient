@@ -5,21 +5,17 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils
-import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
-import net.ccbluex.liquidbounce.config.FloatValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.Vec3
@@ -82,12 +78,11 @@ object TickBase : Module("TickBase", Category.COMBAT) {
         duringTickModification = false
     }
 
-    @EventTarget
-    fun onPreTick(event: PlayerTickEvent) {
-        val player = mc.thePlayer ?: return
+    val onPreTick = handler<PlayerTickEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
 
         if (player.ridingEntity != null || Blink.handleEvents()) {
-            return
+            return@handler
         }
 
         if (event.state == EventState.PRE && ticksToSkip-- > 0) {
@@ -95,16 +90,15 @@ object TickBase : Module("TickBase", Category.COMBAT) {
         }
     }
 
-    @EventTarget(priority = 1)
-    fun onGameTick(event: GameTickEvent) {
-        val player = mc.thePlayer ?: return
+    val onGameTick = handler<GameTickEvent>(priority = 1) {
+        val player = mc.thePlayer ?: return@handler
 
         if (player.ridingEntity != null || Blink.handleEvents()) {
-            return
+            return@handler
         }
 
         if (!duringTickModification && tickBuffer.isNotEmpty()) {
-            val nearbyEnemy = getNearestEntityInRange() ?: return
+            val nearbyEnemy = getNearestEntityInRange() ?: return@handler
             val currentDistance = player.positionVector.distanceTo(nearbyEnemy.positionVector)
 
             val possibleTicks = tickBuffer
@@ -121,13 +115,13 @@ object TickBase : Module("TickBase", Category.COMBAT) {
                 .filter { (_, tick) -> tick.fallDistance > 0.0f }
                 .minByOrNull { (index, _) -> index }
 
-            val (bestTick, _) = criticalTick ?: possibleTicks.minByOrNull { (index, _) -> index } ?: return
+            val (bestTick, _) = criticalTick ?: possibleTicks.minByOrNull { (index, _) -> index } ?: return@handler
 
-            if (bestTick == 0) return
+            if (bestTick == 0) return@handler
 
             if (RandomUtils.nextInt(endExclusive = 100) > change || (onlyOnKillAura && (!state || KillAura.target == null))) {
                 ticksToSkip = 0
-                return
+                return@handler
             }
 
             duringTickModification = true
@@ -161,10 +155,9 @@ object TickBase : Module("TickBase", Category.COMBAT) {
         }
     }
 
-    @EventTarget
-    fun onMove(event: MoveEvent) {
+    val onMove = handler<MoveEvent> {
         if (mc.thePlayer?.ridingEntity != null || Blink.handleEvents()) {
-            return
+            return@handler
         }
 
         tickBuffer.clear()
@@ -181,7 +174,7 @@ object TickBase : Module("TickBase", Category.COMBAT) {
             tickBalance += balanceRecoveryIncrement
         }
 
-        if (reachedTheLimit) return
+        if (reachedTheLimit) return@handler
 
         repeat(minOf(tickBalance.toInt(), maxTicksAtATime * if (mode == "Past") 2 else 1)) {
             simulatedPlayer.tick()
@@ -197,9 +190,8 @@ object TickBase : Module("TickBase", Category.COMBAT) {
         }
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        if (!line) return
+    val onRender3D = handler<Render3DEvent> {
+        if (!line) return@handler
 
         val color = if (rainbow) rainbow() else Color(
             red,
@@ -240,12 +232,10 @@ object TickBase : Module("TickBase", Category.COMBAT) {
         }
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         if (event.packet is S08PacketPlayerPosLook && pauseOnFlag) {
             tickBalance = 0f
         }
-
     }
 
     private data class TickData(

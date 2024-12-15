@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.event.EventState
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -17,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.serverRotation
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.handler
 
 object Rotations : Module("Rotations", Category.CLIENT, gameDetecting = false, hideModule = false) {
 
@@ -44,12 +44,11 @@ object Rotations : Module("Rotations", Category.CLIENT, gameDetecting = false, h
     private val specialCases
         get() = arrayListOf(FreeCam.shouldDisableRotations()).any { it }
 
-    @EventTarget
-    fun onMotion(event: MotionEvent) {
+    val onMotion = handler<MotionEvent> { event ->
         if (event.eventState != EventState.POST)
-            return
+            return@handler
 
-        val thePlayer = mc.thePlayer ?: return
+        val thePlayer = mc.thePlayer ?: return@handler
         val targetRotation = getRotation() ?: serverRotation
 
         prevHeadPitch = headPitch

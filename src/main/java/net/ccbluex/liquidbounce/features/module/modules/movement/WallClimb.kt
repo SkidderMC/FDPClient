@@ -5,14 +5,14 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.movement.MovementUtils.direction
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlockIntersects
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.direction
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
@@ -27,12 +27,11 @@ object WallClimb : Module("WallClimb", Category.MOVEMENT) {
     private var glitch = false
     private var waited = 0
 
-    @EventTarget
-    fun onMove(event: MoveEvent) {
-        val thePlayer = mc.thePlayer ?: return
+    val onMove = handler<MoveEvent> { event ->
+        val thePlayer = mc.thePlayer ?: return@handler
 
         if (!thePlayer.isCollidedHorizontally || thePlayer.isOnLadder || thePlayer.isInWater || thePlayer.isInLava)
-            return
+            return@handler
 
         if (mode == "Simple") {
             event.y = 0.2
@@ -40,13 +39,11 @@ object WallClimb : Module("WallClimb", Category.MOVEMENT) {
         }
     }
 
-    @EventTarget
-    fun onUpdate(event: MotionEvent) {
+    val onUpdate = handler<MotionEvent> { event ->
         val thePlayer = mc.thePlayer
 
         if (event.eventState != EventState.POST || thePlayer == null)
-            return
-
+            return@handler
 
         when (mode.lowercase()) {
             "clip" -> {
@@ -90,14 +87,13 @@ object WallClimb : Module("WallClimb", Category.MOVEMENT) {
             } else if (thePlayer.onGround) waited = 0
 
             "aacglide" -> {
-                if (!thePlayer.isCollidedHorizontally || thePlayer.isOnLadder) return
+                if (!thePlayer.isCollidedHorizontally || thePlayer.isOnLadder) return@handler
                 thePlayer.motionY = -0.19
             }
         }
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
 
         if (packet is C03PacketPlayer) {
@@ -110,9 +106,8 @@ object WallClimb : Module("WallClimb", Category.MOVEMENT) {
         }
     }
 
-    @EventTarget
-    fun onBlockBB(event: BlockBBEvent) {
-        val thePlayer = mc.thePlayer ?: return
+    val onBlockBB = handler<BlockBBEvent> { event ->
+        val thePlayer = mc.thePlayer ?: return@handler
 
         val mode = mode
 

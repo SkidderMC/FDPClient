@@ -50,7 +50,14 @@ object HelpCommand : Command("help") {
         while (i < 8 * page && i < commands.size) {
             val command = commands[i]
 
-            chat("§6> §7${commandManager.prefix}${command.command}${if (command.alias.isEmpty()) "" else " §7(§8" + Strings.join(command.alias, "§7, §8") + "§7)"}")
+            chat(
+                "§6> §7${commandManager.prefix}${command.command}${
+                    if (command.alias.isEmpty()) "" else " §7(§8" + Strings.join(
+                        command.alias,
+                        "§7, §8"
+                    ) + "§7)"
+                }"
+            )
             i++
         }
 

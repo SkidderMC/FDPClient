@@ -7,16 +7,15 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.utils.extensions.withAlpha
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCircle
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCrystal
@@ -100,21 +99,20 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
     const val DOUBLE_PI = Math.PI * 2
     var start = 0.0
 
-    @EventTarget
-    fun onWorld(event: WorldEvent?) {
+
+    val onWorld = handler<WorldEvent> {
         targetList.clear()
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        val color: Color = if (rainbow) ColorUtils.rainbow() else Color(
+    val onRender3D = handler<Render3DEvent> { event ->
+        val color: Color = if (rainbow) rainbow() else Color(
             colorRedValue,
             colorGreenValue,
             colorBlueValue,
             alphaValue
         )
         val renderManager = mc.renderManager
-        val entityLivingBase = combat.target ?: return
+        val entityLivingBase = combat.target ?: return@handler
         (entityLivingBase.lastTickPosX + (entityLivingBase.posX - entityLivingBase.lastTickPosX) * mc.timer.renderPartialTicks
                 - renderManager.renderPosX)
         (entityLivingBase.lastTickPosY + (entityLivingBase.posY - entityLivingBase.lastTickPosY) * mc.timer.renderPartialTicks
@@ -185,7 +183,7 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
         }
     }
 
-    @EventTarget
+
     fun onAttack(event: AttackEvent) {
         val target = event.targetEntity as? EntityLivingBase ?: return
 
@@ -197,7 +195,7 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
         attackEntity(target)
     }
 
-    @EventTarget
+
     private fun attackEntity(entity: EntityLivingBase) {
         val thePlayer = mc.thePlayer
 

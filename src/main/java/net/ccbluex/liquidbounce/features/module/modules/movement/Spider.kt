@@ -34,12 +34,11 @@ object Spider : Module("Spider", Category.MOVEMENT, hideModule = false) {
     private var wasTimer = false
     private var ticks = 0
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    val onUpdate = handler<UpdateEvent> {
         resetTimerIfNeeded()
-        if (!canExecuteMovementLogic()) return
+        if (!canExecuteMovementLogic()) return@handler
 
-        if (avoidLadderValue && isBlockAboveLadder()) return
+        if (avoidLadderValue && isBlockAboveLadder()) return@handler
         updateGroundHeight()
 
         when (modeValue.lowercase()) {
@@ -52,8 +51,7 @@ object Spider : Module("Spider", Category.MOVEMENT, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onMove(event: MoveEvent) {
+    val onMove = handler<MoveEvent> { event ->
         if (shouldHaltMovementForChecker()) {
             event.x = 0.0
             event.z = 0.0
@@ -61,8 +59,7 @@ object Spider : Module("Spider", Category.MOVEMENT, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
 
         if (packet is C03PacketPlayer) {
@@ -71,8 +68,7 @@ object Spider : Module("Spider", Category.MOVEMENT, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onBlockBB(event: BlockBBEvent) {
+    val onBlockBB = handler<BlockBBEvent> { event ->
         if (shouldOverrideBoundingBoxForChecker(event)) {
             event.boundingBox = AxisAlignedBB.fromBounds(0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
         }

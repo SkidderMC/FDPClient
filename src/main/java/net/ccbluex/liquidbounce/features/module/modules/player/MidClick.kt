@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
@@ -19,7 +18,7 @@ import org.lwjgl.input.Mouse
 object MidClick : Module("MidClick", Category.PLAYER, subjective = true, gameDetecting = false, hideModule = false) {
     private var wasDown = false
 
-    @EventTarget
+
     fun onRender(event: Render2DEvent) {
         if (mc.currentScreen != null)
             return

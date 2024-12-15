@@ -5,29 +5,29 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.float
+import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Tower
+import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.client.BlinkUtils
-import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
-import net.ccbluex.liquidbounce.utils.extensions.block
 import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
 import net.ccbluex.liquidbounce.utils.extensions.component3
 import net.ccbluex.liquidbounce.utils.movement.FallingPlayer
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawFilledBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.renderNameTag
+import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.minecraft.block.BlockAir
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.item.ItemBlock
@@ -78,11 +78,10 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
         BlinkUtils.unblink()
     }
 
-    @EventTarget
-    fun onUpdate(e: UpdateEvent) {
+    val onUpdate = handler<UpdateEvent> {
         detectedLocation = null
 
-        val thePlayer = mc.thePlayer ?: return
+        val thePlayer = mc.thePlayer ?: return@handler
 
         if (thePlayer.onGround && BlockPos(thePlayer).down().block !is BlockAir) {
             prevX = thePlayer.prevPosX
@@ -140,7 +139,7 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
 
             if (simPlayer.isOnLadder() || simPlayer.inWater || simPlayer.isInLava() || simPlayer.isInWeb || simPlayer.isSneaking()) {
                 if (BlinkUtils.isBlinking) BlinkUtils.unblink()
-                return
+                return@handler
             }
 
             if (thePlayer.fallDistance < 1.5f && !simPlayer.onGround && simPlayer.fallDistance >= maxFallDistance) {
@@ -154,8 +153,7 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onBlockBB(event: BlockBBEvent) {
+    val onBlockBB = handler<BlockBBEvent> { event ->
         if (mode == "GhostBlock" && shouldSimulateBlock) {
             if (event.y < mc.thePlayer.posY.toInt()) {
                 event.boundingBox = AxisAlignedBB(
@@ -170,9 +168,8 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        val player = mc.thePlayer ?: return
+    val onPacket = handler<PacketEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
         val packet = event.packet
 
         // Stop considering non colliding blocks as collidable ones on setback.
@@ -182,7 +179,7 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
 
         if (!onScaffold && mode == "Blink" && pauseTicks > 0) {
             pauseTicks--
-            return
+            return@handler
         }
 
         if (!onScaffold && mode == "Blink") {
@@ -202,31 +199,29 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
             }
         }
 
-        if (mode != "Blink" || !shouldBlink) return
+        if (mode != "Blink" || !shouldBlink) return@handler
 
         if (player.isDead || player.ticksExisted < 20) {
             BlinkUtils.unblink()
-            return
+            return@handler
         }
 
         if (Blink.blinkingSend() || Blink.blinkingReceive()) {
             BlinkUtils.unblink()
-            return
+            return@handler
         }
 
         BlinkUtils.blink(packet, event, sent = true, receive = false)
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        val thePlayer = mc.thePlayer ?: return
+    val onRender3D = handler<Render3DEvent> {
+        val thePlayer = mc.thePlayer ?: return@handler
 
         if (detectedLocation == null || !indicator ||
             thePlayer.fallDistance + (thePlayer.posY - (detectedLocation!!.y + 1)) < 3
-        )
-            return
+        ) return@handler
 
-        val (x, y, z) = detectedLocation ?: return
+        val (x, y, z) = detectedLocation ?: return@handler
 
         val renderManager = mc.renderManager
 

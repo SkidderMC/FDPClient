@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -19,6 +18,7 @@ import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C0EPacketClickWindow
@@ -37,16 +37,15 @@ object Refill : Module("Refill", Category.PLAYER, hideModule = false) {
     private val noMoveAir by InventoryManager.noMoveAirValue
     private val noMoveGround by InventoryManager.noMoveGroundValue
 
-    @EventTarget
-    fun onTick(event: GameTickEvent) {
+    val onTick = handler<GameTickEvent> {
         if (!CLICK_TIMER.hasTimePassed(delay))
-            return
+            return@handler
 
         if (invOpen && mc.currentScreen !is GuiInventory)
-            return
+            return@handler
 
         if (!canClickInventory())
-            return
+            return@handler
 
         for (slot in 36..44) {
             val stack = mc.thePlayer.inventorySlot(slot).stack ?: continue

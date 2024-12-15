@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.handler.combat
 
-import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
@@ -24,15 +23,15 @@ object CombatManager : MinecraftInstance(), Listenable {
     private val attackedEntityList = mutableListOf<EntityLivingBase>()
     val focusedPlayerList = mutableListOf<EntityPlayer>()
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        if (mc.thePlayer == null) return
+
+    val onUpdate = handler<UpdateEvent> {
+        if (mc.thePlayer == null) return@handler
         MovementUtils.updateBlocksPerSecond()
 
         // bypass java.util.ConcurrentModificationException
         attackedEntityList.map { it }.forEach {
             if (it.isDead) {
-                FDPClient.eventManager.callEvent(EntityKilledEvent(it))
+                EventManager.call(EntityKilledEvent(it))
                 attackedEntityList.remove(it)
             }
         }
@@ -41,7 +40,7 @@ object CombatManager : MinecraftInstance(), Listenable {
 
         if (!lastAttackTimer.hasTimePassed(500)) {
             inCombat = true
-            return
+            return@handler
         }
 
         if (target != null) {
@@ -53,7 +52,7 @@ object CombatManager : MinecraftInstance(), Listenable {
         }
     }
 
-    @EventTarget
+
     fun onAttack(event: AttackEvent) {
         val target = event.targetEntity
 
@@ -66,8 +65,8 @@ object CombatManager : MinecraftInstance(), Listenable {
         lastAttackTimer.reset()
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+
+       val onWorld = handler<WorldEvent> {
         inCombat = false
         target = null
         attackedEntityList.clear()

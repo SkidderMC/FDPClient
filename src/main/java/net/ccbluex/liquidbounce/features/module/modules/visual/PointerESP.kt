@@ -6,9 +6,9 @@
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.config.*
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
@@ -66,9 +66,9 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
     private val colorTeam by boolean("TeamColor", false)
     private val bot by boolean("Bots", true)
 
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
-        if (dimension != "2d") return
+
+    val onRender2D = handler<Render2DEvent> { event ->
+        if (dimension != "2d") return@handler
 
         val scaledResolution = ScaledResolution(mc)
 
@@ -85,11 +85,11 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
         return Color(color.red, color.green, color.blue, alpha)
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        if (dimension == "2d") return
 
-        val player = mc.thePlayer ?: return
+    val onRender3D = handler<Render3DEvent> { event ->
+        if (dimension == "2d") return@handler
+
+        val player = mc.thePlayer ?: return@handler
 
         glDisable(GL_CULL_FACE)
         glEnable(GL_POLYGON_OFFSET_FILL)

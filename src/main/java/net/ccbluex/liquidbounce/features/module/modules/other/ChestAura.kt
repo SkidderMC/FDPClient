@@ -31,6 +31,7 @@ import net.ccbluex.liquidbounce.config.FloatValue
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.utils.block.block
 import net.minecraft.block.BlockChest
 import net.minecraft.block.BlockEnderChest
 import net.minecraft.entity.player.EntityPlayer
@@ -105,22 +106,21 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
     private val refillSubstrings = arrayOf("refill", "reabastecidos")
     private val decimalFormat = DecimalFormat("##0.00", DecimalFormatSymbols(Locale.ENGLISH))
 
-    @EventTarget
-    fun onRotationUpdate(event: RotationUpdateEvent) {
+    val onRotationUpdate = handler<RotationUpdateEvent> {
         if (Blink.handleEvents() || KillAura.isBlockingChestAura || !timer.hasTimePassed(delay))
-            return
+            return@handler
 
-        val thePlayer = mc.thePlayer ?: return
+        val thePlayer = mc.thePlayer ?: return@handler
 
         // Check if there is an opponent in range
         if (mc.theWorld.loadedEntityList.any {
                 isSelected(it, true) && thePlayer.getDistanceSqToEntity(it) < minDistanceFromOpponentSq
-            }) return
+            }) return@handler
 
         if (serverOpenContainer && tileTarget != null) {
             timer.reset()
 
-            return
+            return@handler
         }
 
         val eyes = thePlayer.eyes
@@ -180,23 +180,22 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
             }
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) = onDisable()
+           val onWorld = handler<WorldEvent> { event -> onDisable()
+    }
 
     override fun onDisable() {
         clickedTileEntities.clear()
         chestOpenMap.clear()
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         when (val packet = event.packet) {
             // Detect chest opening from sound effect
             is S29PacketSoundEffect -> {
                 if (packet.soundName != "random.chestopen")
-                    return
+                    return@handler
 
-                val entity = mc.theWorld.getTileEntity(BlockPos(packet.x, packet.y, packet.z)) ?: return
+                val entity = mc.theWorld.getTileEntity(BlockPos(packet.x, packet.y, packet.z)) ?: return@handler
 
                 clickedTileEntities += entity
             }
@@ -204,7 +203,7 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
             // Detect already looted chests by having their lid open or closed
             is S24PacketBlockAction -> {
                 if (!ignoreLooted || (packet.blockType !is BlockChest && packet.blockType !is BlockEnderChest))
-                    return
+                    return@handler
 
                 clickedTileEntities += mc.theWorld.getTileEntity(packet.blockPosition)
 
@@ -213,11 +212,11 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
 
                     // Prevent repetitive packet spamming
                     if (prevState == packet.data2)
-                        return
+                        return@handler
 
                     // If there is no info about the chest ever being opened, don't print anything
                     if (packet.data2 == 0 && prevState != 1)
-                        return
+                        return@handler
 
                     val player: EntityPlayer
                     val distance: String
@@ -234,7 +233,7 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
                             }?.sortedBy { it.second }
 
                         if (nearPlayers == null)
-                            return
+                            return@handler
 
                         // Find the closest player that is looking at the chest or else just the closest
                         player = (nearPlayers.firstOrNull { (player) ->
@@ -250,8 +249,8 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
                     }
 
                     when (player) {
-                        mc.thePlayer -> if (openInfo == "Other") return
-                        else -> if (openInfo == "Self") return
+                        mc.thePlayer -> if (openInfo == "Other") return@handler
+                        else -> if (openInfo == "Self") return@handler
                     }
 
                     val actionMsg = if (packet.data2 == 1) "§a§lOpened§3" else "§c§lClosed§3"
@@ -270,7 +269,7 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
             // Detect chests getting refilled
             is S45PacketTitle -> {
                 if (!detectRefill)
-                    return
+                    return@handler
 
                 if (refillSubstrings in packet.message?.unformattedText)
                     clickedTileEntities.clear()
@@ -285,7 +284,7 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
                     )
 
                     if (entity !is TileEntityChest && entity !is TileEntityEnderChest)
-                        return
+                        return@handler
 
                     clickedTileEntities += entity
                 }
@@ -293,13 +292,12 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
         }
     }
 
-    @EventTarget
-    fun onTick(event: GameTickEvent) {
-        val player = mc.thePlayer ?: return
-        val target = tileTarget ?: return
+    val onTick = handler<GameTickEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
+        val target = tileTarget ?: return@handler
 
         val rotationToUse = if (options.rotationsActive) {
-            currentRotation ?: return
+            currentRotation ?: return@handler
         } else toRotation(target.first)
 
         val distance = sqrt(target.third)

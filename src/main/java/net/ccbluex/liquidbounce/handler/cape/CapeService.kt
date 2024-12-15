@@ -7,12 +7,12 @@ package net.ccbluex.liquidbounce.handler.cape
 
 import com.google.gson.JsonParser
 import kotlinx.coroutines.*
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.SessionUpdateEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
+import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.login.UserUtils
 import net.ccbluex.liquidbounce.utils.io.HttpUtils.get
 import org.apache.http.HttpHeaders
@@ -213,54 +213,48 @@ object CapeService : Listenable, MinecraftInstance() {
     /**
      * We want to immediately update the owner of the cape and refresh the cape carriers
      */
-    @EventTarget
-    fun handleNewSession(sessionEvent: SessionUpdateEvent) {
+    val onNewSession = handler<SessionUpdateEvent>(dispatcher = Dispatchers.IO) {
         // Check if donator cape is actually enabled and has a transfer code, also make sure the account used is premium.
-        val capeUser = clientCapeUser ?: return
+        val capeUser = clientCapeUser ?: return@handler
 
         if (!UserUtils.isValidTokenOffline(mc.session.token))
-            return
+            return@handler
 
-        SharedScopes.IO.launch {
-            runCatching {
-                // Apply cape to new account
-                val uuid = mc.session.playerID
-                val username = mc.session.username
+        runCatching {
+            // Apply cape to new account
+            val uuid = mc.session.playerID
+            val username = mc.session.username
 
-                val httpClient = HttpClients.createDefault()
-                val headers = arrayOf(
-                    BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"),
-                    BasicHeader(HttpHeaders.AUTHORIZATION, capeUser.token)
-                )
-                val request = HttpPatch(SELF_CAPE_URL)
-                request.setHeaders(headers)
+            val httpClient = HttpClients.createDefault()
+            val headers = arrayOf(
+                BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"),
+                BasicHeader(HttpHeaders.AUTHORIZATION, capeUser.token)
+            )
+            val request = HttpPatch(SELF_CAPE_URL)
+            request.setHeaders(headers)
 
-                val body = JSONObject()
-                body.put("uuid", uuid)
-                request.entity = StringEntity(body.toString())
+            val body = JSONObject()
+            body.put("uuid", uuid)
+            request.entity = StringEntity(body.toString())
 
-                val response = httpClient.execute(request)
-                val statusCode = response.statusLine.statusCode
+            val response = httpClient.execute(request)
+            val statusCode = response.statusLine.statusCode
 
-                if (statusCode == HttpStatus.SC_NO_CONTENT) {
-                    capeUser.uuid = uuid
-                    LOGGER.info("[Donator Cape] Successfully transferred cape to $uuid ($username)")
-                } else {
-                    LOGGER.info("[Donator Cape] Failed to transfer cape ($statusCode)")
-                }
-
-                // Refresh cape carriers
-                refreshCapeCarriers(force = true) {
-                    LOGGER.info("Cape carriers refreshed after session change.")
-                }
-            }.onFailure {
-                LOGGER.error("Failed to handle new session due to error.", it)
+            if (statusCode == HttpStatus.SC_NO_CONTENT) {
+                capeUser.uuid = uuid
+                LOGGER.info("[Donator Cape] Successfully transferred cape to $uuid ($username)")
+            } else {
+                LOGGER.info("[Donator Cape] Failed to transfer cape ($statusCode)")
             }
+
+            // Refresh cape carriers
+            refreshCapeCarriers(force = true) {
+                LOGGER.info("Cape carriers refreshed after session change.")
+            }
+        }.onFailure {
+            LOGGER.error("Failed to handle new session due to error.", it)
         }
     }
-
-
-
 }
 
 data class CapeSelfUser(val token: String, var enabled: Boolean, var uuid: String, val capeName: String)

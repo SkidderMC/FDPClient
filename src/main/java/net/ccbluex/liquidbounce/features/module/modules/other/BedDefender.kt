@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
@@ -22,7 +21,9 @@ import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.attack.CPSCounter
+import net.ccbluex.liquidbounce.utils.block.center
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
@@ -54,7 +55,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
     private val scannerMode by choices("Scanner", arrayOf("Nearest", "Random"), "Nearest")
 
     private val options = RotationSettings(this).apply {
-        resetTicksValue.setSupport { { it && keepRotationValue.isActive() } }
+        resetTicksValue.setSupport { it && keepRotation }
     }
 
     private val onSneakOnly by boolean("OnSneakOnly", true)
@@ -84,13 +85,12 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
     }
 
     // TODO: Proper event to update.
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        val player = mc.thePlayer ?: return
-        val world = mc.theWorld ?: return
+    val onUpdate = handler<UpdateEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
+        val world = mc.theWorld ?: return@handler
 
         if (onSneakOnly && !mc.gameSettings.keyBindSneak.isKeyDown) {
-            return
+            return@handler
         }
 
         val radius = 4
@@ -125,12 +125,12 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
         addDefenceBlocks(bedBottomPositions)
 
         if (defenceBlocks.isNotEmpty()) {
-            val playerPos = player.position ?: return
+            val playerPos = player.position ?: return@handler
             val pos = if (scannerMode == "Nearest") defenceBlocks.minByOrNull { it.distanceSq(playerPos) }
-                ?: return else defenceBlocks.random()
+                ?: return@handler else defenceBlocks.random()
             val blockPos = BlockPos(pos.x.toDouble(), pos.y - player.eyeHeight + 1.5, pos.z.toDouble())
             val rotation = RotationUtils.toRotation(blockPos.center, false, player)
-            val raytrace = performBlockRaytrace(rotation, mc.playerController.blockReachDistance) ?: return
+            val raytrace = performBlockRaytrace(rotation, mc.playerController.blockReachDistance) ?: return@handler
 
             if (options.rotationsActive) {
                 setTargetRotation(rotation, options, if (options.keepRotation) options.resetTicks else 1)
@@ -139,7 +139,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
             blockPosition = blockPos
 
             if (timerCounter.hasTimePassed(placeDelay)) {
-                if (!isPlaceablePos(blockPos)) return
+                if (!isPlaceablePos(blockPos)) return@handler
 
                 when (autoSneak.lowercase()) {
                     "normal" -> mc.gameSettings.keyBindSneak.pressed = false
@@ -157,12 +157,11 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    val onRender3D = handler<Render3DEvent> { event ->
         if (mark && blockPosition != null) {
             val blockPos = BlockPos(blockPosition!!.x, blockPosition!!.y + 1, blockPosition!!.z)
             RenderUtils.drawBlockBox(blockPos, Color(68, 117, 255, 100), false)
-            return
+            return@handler
         }
     }
 
@@ -262,7 +261,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
                 movingObjectPosition != null && movingObjectPosition.blockPos == pos
             }
 
-            "around" -> EnumFacing.values().any { !isBlockBBValid(pos.offset(it)) }
+            "around" -> EnumFacing.entries.any { !isBlockBBValid(pos.offset(it)) }
 
             else -> true
         }

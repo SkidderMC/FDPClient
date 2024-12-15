@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
@@ -25,6 +24,7 @@ import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -121,8 +121,8 @@ object JumpCircles : Module("JumpCircles", Category.VISUAL, hideModule = false) 
         return (alphaInt shl 24) or (baseColor and 0xFFFFFF)
     }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent?) {
+
+    val onUpdate = handler<UpdateEvent> {
         if (!mc.thePlayer.onGround) {
             jump = true
         }
@@ -132,11 +132,11 @@ object JumpCircles : Module("JumpCircles", Category.VISUAL, hideModule = false) 
         }
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        if (circles.isEmpty()) return
+
+    val onRender3D = handler<Render3DEvent> {
+        if (circles.isEmpty()) return@handler
         circles.removeIf { it.progress >= 1.0f }
-        if (circles.isEmpty()) return
+        if (circles.isEmpty()) return@handler
 
         val deepestLightAnimation = if (deepestLight) 1f else 0f
         val immersiveStrength = when {
@@ -243,8 +243,7 @@ object JumpCircles : Module("JumpCircles", Category.VISUAL, hideModule = false) 
         )
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+       val onWorld = handler<WorldEvent> {
         reset()
     }
 

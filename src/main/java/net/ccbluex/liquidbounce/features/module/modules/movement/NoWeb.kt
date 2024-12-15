@@ -5,15 +5,18 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.aac.*
-import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.grim.*
-import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.intave.*
-import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.other.*
-import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.aac.AAC
+import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.aac.LAAC
+import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.grim.OldGrim
+import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.intave.IntaveNew
+import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.intave.IntaveOld
+import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.other.None
+import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.other.Rewi
 
 object NoWeb : Module("NoWeb", Category.MOVEMENT, hideModule = false) {
 
@@ -32,7 +35,7 @@ object NoWeb : Module("NoWeb", Category.MOVEMENT, hideModule = false) {
         OldGrim,
 
         // Other
-        Rewi
+        Rewi,
     )
 
     private val modes = noWebModes.map { it.modeName }.toTypedArray()
@@ -41,8 +44,7 @@ object NoWeb : Module("NoWeb", Category.MOVEMENT, hideModule = false) {
         "Mode", modes, "None"
     )
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    val onUpdate = handler<UpdateEvent> {
         modeModule.onUpdate()
     }
 

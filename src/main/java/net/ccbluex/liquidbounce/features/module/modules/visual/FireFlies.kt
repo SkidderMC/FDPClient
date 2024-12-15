@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
@@ -21,6 +20,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.interpolateColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.color
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.float
+import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.client.renderer.GlStateManager.tryBlendFuncSeparate
 import net.minecraft.client.renderer.Tessellator
@@ -173,8 +173,8 @@ object FireFlies : Module("FireFlies", Category.VISUAL, hideModule = false) {
         glPopMatrix()
     }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+
+    val onUpdate = handler<UpdateEvent> {
         if (mc.thePlayer != null && mc.thePlayer.ticksExisted == 1) {
             partList.forEach { it.setToRemove() }
         }
@@ -201,8 +201,8 @@ object FireFlies : Module("FireFlies", Category.VISUAL, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+
+    val onRender3D = handler<Render3DEvent> { event ->
         if (partList.isNotEmpty()) {
             setupGLDrawsFireParts {
                 bindResource(icon)

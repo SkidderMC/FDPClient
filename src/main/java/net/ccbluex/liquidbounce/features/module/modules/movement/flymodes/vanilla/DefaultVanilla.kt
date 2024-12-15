@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vanilla
 
-import net.ccbluex.liquidbounce.event.EventTarget
+
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.kickBypassModeValue
@@ -84,7 +84,7 @@ object DefaultVanilla : FlyMode("DefaultVanilla") {
         }
     }
 
-    @EventTarget
+
     override fun onPacket(event: PacketEvent) {
         val packet = event.packet
 

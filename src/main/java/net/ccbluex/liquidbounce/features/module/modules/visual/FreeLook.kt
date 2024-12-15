@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.RotationSetEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -30,7 +29,7 @@ object FreeLook : Module("FreeLook", Category.VISUAL) {
         }
     }
 
-    @EventTarget
+
     fun onRotationSet(event: RotationSetEvent) {
         if (mc.gameSettings.thirdPersonView != 0) {
             event.cancelEvent()

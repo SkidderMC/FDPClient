@@ -1,13 +1,13 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import net.ccbluex.liquidbounce.event.AttackEvent;
 import net.ccbluex.liquidbounce.event.ClickWindowEvent;
-import net.ccbluex.liquidbounce.event.ClientSlotChange;
+import net.ccbluex.liquidbounce.event.ClientSlotChangeEvent;
 import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.AbortBreaking;
 import net.ccbluex.liquidbounce.utils.attack.CooldownHelper;
@@ -33,7 +33,7 @@ public class MixinPlayerControllerMP {
 
     @Inject(method = "attackEntity", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/PlayerControllerMP;syncCurrentPlayItem()V"))
     private void attackEntity(EntityPlayer entityPlayer, Entity targetEntity, CallbackInfo callbackInfo) {
-        EventManager.INSTANCE.callEvent(new AttackEvent(targetEntity));
+        EventManager.INSTANCE.call(new AttackEvent(targetEntity));
         CooldownHelper.INSTANCE.resetLastAttackedTicks();
     }
 
@@ -45,7 +45,7 @@ public class MixinPlayerControllerMP {
     @Inject(method = "windowClick", at = @At("HEAD"), cancellable = true)
     private void windowClick(int windowId, int slotId, int mouseButtonClicked, int mode, EntityPlayer playerIn, CallbackInfoReturnable<ItemStack> callbackInfo) {
         final ClickWindowEvent event = new ClickWindowEvent(windowId, slotId, mouseButtonClicked, mode);
-        EventManager.INSTANCE.callEvent(event);
+        EventManager.INSTANCE.call(event);
 
         if (event.isCancelled()) {
             callbackInfo.cancel();
@@ -63,8 +63,8 @@ public class MixinPlayerControllerMP {
         int prevSlot = instance.currentItem;
         int serverSlot = silentHotbar.getCurrentSlot();
 
-        ClientSlotChange event = new ClientSlotChange(prevSlot, serverSlot);
-        EventManager.INSTANCE.callEvent(event);
+        ClientSlotChangeEvent event = new ClientSlotChangeEvent(prevSlot, serverSlot);
+        EventManager.INSTANCE.call(event);
 
         return event.getModifiedSlot();
     }

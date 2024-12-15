@@ -1,7 +1,7 @@
 /*
- * LiquidBounce Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/CCBlueX/LiquidBounce/
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
@@ -79,7 +79,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     @Overwrite
     protected void jump() {
         final JumpEvent prejumpEvent = new JumpEvent(getJumpUpwardsMotion(), EventState.PRE);
-        EventManager.INSTANCE.callEvent(prejumpEvent);
+        EventManager.INSTANCE.call(prejumpEvent);
         if (prejumpEvent.isCancelled()) return;
 
         motionY = prejumpEvent.getMotion();
@@ -110,7 +110,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
         isAirBorne = true;
 
         final JumpEvent postjumpEvent = new JumpEvent((float) motionY, EventState.POST);
-        EventManager.INSTANCE.callEvent(postjumpEvent);
+        EventManager.INSTANCE.call(postjumpEvent);
     }
 
     @Inject(method = "onLivingUpdate", at = @At("HEAD"))
@@ -189,6 +189,6 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     @Inject(method = "onEntityUpdate", at = @At("HEAD"))
     public void onEntityUpdate(CallbackInfo info) {
         LivingUpdateEvent livingUpdateEvent = new LivingUpdateEvent((EntityLivingBase) (Object) this);
-        EventManager.INSTANCE.callEvent(livingUpdateEvent);
+        EventManager.INSTANCE.call(livingUpdateEvent);
     }
 }

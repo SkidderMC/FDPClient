@@ -115,8 +115,7 @@ object BlinkUtils : MinecraftInstance(), Listenable {
             unblink()
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+       val onWorld = handler<WorldEvent> { event ->
         // Clear packets on disconnect only
         if (event.worldClient == null) {
             clear()

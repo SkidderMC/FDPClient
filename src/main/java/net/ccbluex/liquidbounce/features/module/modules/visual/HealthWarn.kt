@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -13,6 +12,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.handler
 
 object HealthWarn: Module("HealthWarn", Category.VISUAL, hideModule = false) {
 
@@ -28,8 +28,8 @@ object HealthWarn: Module("HealthWarn", Category.VISUAL, hideModule = false) {
         canWarn = true
     }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+
+    val onUpdate = handler<UpdateEvent> {
         if (mc.thePlayer.health <= healthValue) {
             if (canWarn) {
                 addNotification(Notification("HP Warning","YOU ARE AT LOW HP!", Type.ERROR, 3000))

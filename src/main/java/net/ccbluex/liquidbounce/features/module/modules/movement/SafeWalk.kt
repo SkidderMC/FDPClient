@@ -5,14 +5,14 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.MoveEvent
-import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.extensions.block
-import net.ccbluex.liquidbounce.utils.movement.FallingPlayer
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.MoveEvent
+import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.block.block
+import net.ccbluex.liquidbounce.utils.movement.FallingPlayer
 import net.minecraft.block.BlockAir
 import net.minecraft.util.BlockPos
 
@@ -24,12 +24,11 @@ object SafeWalk : Module("SafeWalk", Category.MOVEMENT, hideModule = false) {
     private var lastGroundY: Double? = null
     private var lastCollisionY: Int? = null
 
-    @EventTarget
-    fun onMove(event: MoveEvent) {
-        val player = mc.thePlayer ?: return
+    val onMove = handler<MoveEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
         if (player.capabilities.allowFlying || player.capabilities.isFlying
             || !mc.playerController.gameIsSurvivalOrAdventure()
-        ) return
+        ) return@handler
 
         if (!maxFallDistanceValue.isMinimal() && player.onGround && BlockPos(player).down().block !is BlockAir) {
             lastGroundY = player.posY

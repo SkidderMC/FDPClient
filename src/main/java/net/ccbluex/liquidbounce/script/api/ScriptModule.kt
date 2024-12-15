@@ -34,6 +34,15 @@ class ScriptModule(name: String, category: Category, description: String, privat
 
         if (moduleObject.hasMember("tag"))
             _tag = moduleObject.getMember("tag") as String
+
+        ALL_EVENT_CLASSES.forEach { eventClass ->
+            EventManager.registerEventHook(eventClass, EventHook.Blocking(this) {
+                val eventName = StringBuilder(eventClass.simpleName.removeSuffix("Event")).apply {
+                    this[0] = this[0].lowercaseChar()
+                }.toString()
+                callEvent(eventName)
+            })
+        }
     }
 
     override val values
@@ -57,63 +66,6 @@ class ScriptModule(name: String, category: Category, description: String, privat
     override fun onEnable() = callEvent("enable")
 
     override fun onDisable() = callEvent("disable")
-
-    @EventTarget
-    fun onUpdate(updateEvent: UpdateEvent) = callEvent("update")
-
-    @EventTarget
-    fun onMotion(motionEvent: MotionEvent) = callEvent("motion", motionEvent)
-
-    @EventTarget
-    fun onRender2D(render2DEvent: Render2DEvent) = callEvent("render2D", render2DEvent)
-
-    @EventTarget
-    fun onRender3D(render3DEvent: Render3DEvent) = callEvent("render3D", render3DEvent)
-
-    @EventTarget
-    fun onPacket(packetEvent: PacketEvent) = callEvent("packet", packetEvent)
-
-    @EventTarget
-    fun onBlockPush(blockPushEvent: BlockPushEvent) = callEvent("blockPush", blockPushEvent)
-
-    @EventTarget
-    fun onJump(jumpEvent: JumpEvent) = callEvent("jump", jumpEvent)
-
-    @EventTarget
-    fun onAttack(attackEvent: AttackEvent) = callEvent("attack", attackEvent)
-
-    @EventTarget
-    fun onKey(keyEvent: KeyEvent) = callEvent("key", keyEvent)
-
-    @EventTarget
-    fun onMove(moveEvent: MoveEvent) = callEvent("move", moveEvent)
-
-    @EventTarget
-    fun onStep(stepEvent: StepEvent) = callEvent("step", stepEvent)
-
-    @EventTarget
-    fun onStepConfirm(stepConfirmEvent: StepConfirmEvent) = callEvent("stepConfirm")
-
-    @EventTarget
-    fun onWorld(worldEvent: WorldEvent) = callEvent("world", worldEvent)
-
-    @EventTarget
-    fun onSession(sessionEvent: SessionUpdateEvent) = callEvent("session")
-
-    @EventTarget
-    fun onClickBlock(clickBlockEvent: ClickBlockEvent) = callEvent("clickBlock", clickBlockEvent)
-
-    @EventTarget
-    fun onStrafe(strafeEvent: StrafeEvent) = callEvent("strafe", strafeEvent)
-
-    @EventTarget
-    fun onSlowDown(slowDownEvent: SlowDownEvent) = callEvent("slowDown", slowDownEvent)
-
-    @EventTarget
-    fun onShutdown(shutdownEvent: ClientShutdownEvent) = callEvent("shutdown")
-
-    @EventTarget
-    fun onStartup(startupEvent: StartupEvent) = callEvent("startup")
 
     /**
      * Calls the handler of a registered event.

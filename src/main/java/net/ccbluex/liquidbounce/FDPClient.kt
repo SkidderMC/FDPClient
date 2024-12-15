@@ -7,14 +7,11 @@ package net.ccbluex.liquidbounce
 
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
-import net.ccbluex.liquidbounce.event.EventManager.callEvent
-import net.ccbluex.liquidbounce.event.EventManager.registerListener
 import net.ccbluex.liquidbounce.event.StartupEvent
 import net.ccbluex.liquidbounce.features.command.CommandManager
 import net.ccbluex.liquidbounce.features.command.CommandManager.registerCommands
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.module.ModuleManager.registerModules
-import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Tower
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.FileManager.loadAllConfigs
 import net.ccbluex.liquidbounce.file.FileManager.saveAllConfigs
@@ -48,7 +45,8 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.disableFastRender
 import net.ccbluex.liquidbounce.utils.client.BlinkUtils
 import net.ccbluex.liquidbounce.utils.client.PacketUtils
-import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
+import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
+import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils
@@ -128,24 +126,26 @@ object FDPClient {
             // Load languages
             loadLanguages()
 
+            SharedScopes
+
             // Register listeners
-            registerListener(RotationUtils)
-            registerListener(ClientFixes)
-            registerListener(combatManager)
-            registerListener(macroManager)
-            registerListener(CapeService)
-            registerListener(InventoryUtils)
-            registerListener(MiniMapRegister)
-            registerListener(TickedActions)
-            registerListener(MovementUtils)
-            registerListener(PacketUtils)
-            registerListener(TimerBalanceUtils)
-            registerListener(BPSUtils)
-            registerListener(Tower)
-            registerListener(WaitTickUtils)
-            registerListener(SilentHotbar)
-            registerListener(WaitMsUtils)
-            registerListener(BlinkUtils)
+            RotationUtils
+            ClientFixes
+            combatManager
+            macroManager
+            CapeService
+            InventoryUtils
+            InventoryManager
+            MiniMapRegister
+            TickedActions
+            MovementUtils
+            PacketUtils
+            TimerBalanceUtils
+            BPSUtils
+            WaitTickUtils
+            SilentHotbar
+            WaitMsUtils
+            BlinkUtils
 
             // Load client fonts
             loadFonts()
@@ -238,7 +238,7 @@ object FDPClient {
             // Set is starting status
             isStarting = false
 
-            callEvent(StartupEvent)
+            EventManager.call(StartupEvent)
             LOGGER.info("Successfully started client")
         }
     }
@@ -248,7 +248,7 @@ object FDPClient {
      */
     fun stopClient() {
         // Call client shutdown
-        callEvent(ClientShutdownEvent)
+        EventManager.call(ClientShutdownEvent)
 
         // Stop all CoroutineScopes
         SharedScopes.stop()

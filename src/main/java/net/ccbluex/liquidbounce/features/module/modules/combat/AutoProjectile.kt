@@ -5,21 +5,17 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
-import net.ccbluex.liquidbounce.utils.rotation.RaycastUtils.raycastEntity
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
+import net.ccbluex.liquidbounce.utils.rotation.RaycastUtils.raycastEntity
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.config.IntegerValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.minecraft.init.Items.egg
 import net.minecraft.init.Items.snowball
 
@@ -48,9 +44,8 @@ object AutoProjectile : Module("AutoProjectile", Category.COMBAT, hideModule = f
     private var projectileInUse = false
     private var switchBack = -1
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        val player = mc.thePlayer ?: return
+    val onUpdate = handler<UpdateEvent> {
+        val player = mc.thePlayer ?: return@handler
         val usingProjectile =
             (player.isUsingItem && (player.heldItem?.item == snowball || player.heldItem?.item == egg)) || projectileInUse
 
@@ -89,7 +84,7 @@ object AutoProjectile : Module("AutoProjectile", Category.COMBAT, hideModule = f
             if (throwProjectile) {
                 if (mode == "Normal" && throwTimer.hasTimePassed(throwDelay)) {
                     if (player.heldItem?.item != snowball && player.heldItem?.item != egg) {
-                        val projectile = InventoryUtils.findItemArray(36, 44, arrayOf(snowball, egg)) ?: return
+                        val projectile = InventoryUtils.findItemArray(36, 44, arrayOf(snowball, egg)) ?: return@handler
 
                         switchBack = player.inventory.currentItem
 
@@ -103,7 +98,7 @@ object AutoProjectile : Module("AutoProjectile", Category.COMBAT, hideModule = f
                 val randomThrowDelay = RandomUtils.nextInt(minThrowDelay.get(), maxThrowDelay.get())
                 if (mode == "Smart" && throwTimer.hasTimePassed(randomThrowDelay)) {
                     if (player.heldItem?.item != snowball && player.heldItem?.item != egg) {
-                        val projectile = InventoryUtils.findItemArray(36, 44, arrayOf(snowball, egg)) ?: return
+                        val projectile = InventoryUtils.findItemArray(36, 44, arrayOf(snowball, egg)) ?: return@handler
 
                         switchBack = player.inventory.currentItem
 

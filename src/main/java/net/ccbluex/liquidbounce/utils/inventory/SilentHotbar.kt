@@ -7,10 +7,7 @@
 
 package net.ccbluex.liquidbounce.utils.inventory
 
-import net.ccbluex.liquidbounce.event.ClientSlotChange
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 
@@ -99,8 +96,7 @@ object SilentHotbar : Listenable, MinecraftInstance() {
         return (slot != other || keyPressCheck) && hotbarState?.resetManually == true
     }
 
-    @EventTarget
-    fun onSlotChange(event: ClientSlotChange) {
+    val onSlotChange = handler<ClientSlotChangeEvent> { event ->
         /**
          * Is true only when the server sends S09PacketHeldItemChange to the client.
          */
@@ -109,7 +105,7 @@ object SilentHotbar : Listenable, MinecraftInstance() {
 
             originalSlot = null
             ignoreSlotChange = false
-            return
+            return@handler
         }
 
         /**
@@ -123,12 +119,11 @@ object SilentHotbar : Listenable, MinecraftInstance() {
         }
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
 
         if (packet !is C09PacketHeldItemChange)
-            return
+            return@handler
 
         /**
          * When a class (module usually) directly sends this packet and [SilentHotbarState.resetManually]

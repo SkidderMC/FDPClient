@@ -6,9 +6,9 @@
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.config.*
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner
@@ -73,10 +73,10 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
     val color
         get() = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+
+    val onRender3D = handler<Render3DEvent> {
         if (mc.theWorld == null || mc.thePlayer == null || mode == "Glow")
-            return
+            return@handler
 
         runCatching {
             mc.theWorld.loadedEntityList.asSequence()
@@ -103,10 +103,10 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+
+    val onRender2D = handler<Render2DEvent> { event ->
         if (mc.theWorld == null || mc.thePlayer == null || mode != "Glow")
-            return
+            return@handler
 
         runCatching {
             mc.theWorld.loadedEntityList.asSequence()

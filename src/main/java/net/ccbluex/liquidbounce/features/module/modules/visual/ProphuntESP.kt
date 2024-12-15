@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Category
@@ -22,6 +21,7 @@ import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.entity.item.EntityFallingBlock
 import net.minecraft.util.BlockPos
 import java.awt.Color
@@ -69,8 +69,7 @@ object ProphuntESP : Module("ProphuntESP", Category.VISUAL, gameDetecting = fals
         blocks.clear()
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    val onRender3D = handler<Render3DEvent> {
         for (entity in mc.theWorld.loadedEntityList) {
             if (mode != "Box" && mode != "OtherBox") break
             if (entity !is EntityFallingBlock) continue
@@ -99,10 +98,10 @@ object ProphuntESP : Module("ProphuntESP", Category.VISUAL, gameDetecting = fals
         }
     }
 
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+
+    val onRender2D = handler<Render2DEvent> { event ->
         if (mc.theWorld == null || mode != "Glow")
-            return
+            return@handler
 
         GlowShader.startDraw(event.partialTicks, glowRenderScale)
 

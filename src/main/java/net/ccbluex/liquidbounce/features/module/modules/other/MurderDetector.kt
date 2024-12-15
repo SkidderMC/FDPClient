@@ -73,17 +73,15 @@ object MurderDetector : Module("MurderDetector", Category.OTHER, gameDetecting =
         murder2 = null
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+           val onWorld = handler<WorldEvent> {
         murder1 = null
         murder2 = null
     }
 
-    @EventTarget
-    fun onMotion(event: MotionEvent) {
+    val onMotion = handler<MotionEvent> { event ->
         if (event.eventState == EventState.PRE) {
             for (player in mc.theWorld.playerEntities) {
-                if (mc.thePlayer.ticksExisted % 2 == 0) return
+                if (mc.thePlayer.ticksExisted % 2 == 0) return@handler
                 if (player.heldItem != null && (player.heldItem.displayName.contains(
                         "Knife",
                         ignoreCase = true
@@ -101,7 +99,7 @@ object MurderDetector : Module("MurderDetector", Category.OTHER, gameDetecting =
                                 )
                             )
                         murder1 = player
-                        return
+                        return@handler
                     }
                     if (murder2 == null && player != murder1) {
                         if (chatValue)
@@ -121,8 +119,7 @@ object MurderDetector : Module("MurderDetector", Category.OTHER, gameDetecting =
         }
     }
 
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+    val onRender2D = handler<Render2DEvent> {
         val sc = ScaledResolution(mc)
         if (showText) {
             minecraftFont.drawString(

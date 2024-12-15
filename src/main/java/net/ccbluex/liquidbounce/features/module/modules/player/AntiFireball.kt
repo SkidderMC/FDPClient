@@ -9,10 +9,11 @@ import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.config.int
-import net.ccbluex.liquidbounce.event.EventTarget
+
 import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.RotationUpdateEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -54,10 +55,10 @@ object AntiFireball : Module("AntiFireball", Category.PLAYER, hideModule = false
     var distance = 0f
     lateinit var displayName : String
 
-    @EventTarget
-    fun onRotationUpdate(event: RotationUpdateEvent) {
-        val player = mc.thePlayer ?: return
-        val world = mc.theWorld ?: return
+
+     val onRotationUpdate = handler<RotationUpdateEvent> { 
+        val player = mc.thePlayer ?: return@handler
+        val world = mc.theWorld ?: return@handler
 
         target = null
 
@@ -91,8 +92,8 @@ object AntiFireball : Module("AntiFireball", Category.PLAYER, hideModule = false
     }
 
 
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+
+    val onRender2D = handler<Render2DEvent> {
         val t = ScaledResolution(mc)
         for (entity in mc.theWorld.loadedEntityList) {
             val name = entity.name
@@ -162,10 +163,10 @@ object AntiFireball : Module("AntiFireball", Category.PLAYER, hideModule = false
         )
     }
 
-    @EventTarget
-    fun onTick(event: GameTickEvent) {
-        val player = mc.thePlayer ?: return
-        val entity = target ?: return
+
+ val onTick = handler<GameTickEvent> { 
+        val player = mc.thePlayer ?: return@handler
+        val entity = target ?: return@handler
 
         val rotation = currentRotation ?: player.rotation
 

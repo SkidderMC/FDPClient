@@ -9,8 +9,8 @@ import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.config.int
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils
 import net.ccbluex.liquidbounce.features.module.Category
@@ -40,8 +40,8 @@ object Hat : Module("Hat", Category.VISUAL, hideModule = false, subjective = tru
     private val rainbowSpeed by float("Rainbow Speed", 1.0f, 0.5f..5.0f) { colorMode == "Rainbow" }
     private val colorAlphaValue by int("Alpha", 255, 0..255)
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+
+    val onRender3D = handler<Render3DEvent> {
         if (drawThePlayerValue && !(onlyThirdPersonValue && mc.gameSettings.thirdPersonView == 0)) {
             drawChinaHatFor(mc.thePlayer)
         }

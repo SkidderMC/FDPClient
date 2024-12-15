@@ -19,6 +19,6 @@ public abstract class MixinRender {
 
     @Shadow
     protected void doRender(Entity entity, double x, double y, double z, float entityYaw, float partialTicks) {
-        EventManager.INSTANCE.callEvent(new RenderEntityEvent(entity, x, y, z, entityYaw, partialTicks));
+        EventManager.INSTANCE.call(new RenderEntityEvent(entity, x, y, z, entityYaw, partialTicks));
     }
 }

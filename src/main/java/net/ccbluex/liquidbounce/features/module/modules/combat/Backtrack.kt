@@ -122,12 +122,11 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
     val areQueuedPacketsEmpty
         get() = PacketUtils.queuedPackets?.run { synchronized(this) { isEmpty() } } == true
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
 
         if (Blink.blinkingReceive() || event.isCancelled)
-            return
+            return@handler
 
         when (mode.lowercase()) {
             "legacy" -> {
@@ -177,33 +176,33 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
             "modern" -> {
                 if (mc.isSingleplayer || mc.currentServerData == null) {
                     clearPackets()
-                    return
+                    return@handler
                 }
 
                 // Prevent cancelling packets when not needed
                 if (isPacketQueueEmpty && areQueuedPacketsEmpty && !shouldBacktrack())
-                    return
+                    return@handler
 
                 when (packet) {
                     // Ignore server related packets
-                    is C00Handshake, is C00PacketServerQuery, is S02PacketChat, is S01PacketPong -> return
+                    is C00Handshake, is C00PacketServerQuery, is S02PacketChat, is S01PacketPong -> return@handler
 
-                    is S29PacketSoundEffect -> if (nonDelayedSoundSubstrings in packet.soundName) return
+                    is S29PacketSoundEffect -> if (nonDelayedSoundSubstrings in packet.soundName) return@handler
 
                     // Flush on own death
                     is S06PacketUpdateHealth -> if (packet.health <= 0) {
                         clearPackets()
-                        return
+                        return@handler
                     }
 
                     is S13PacketDestroyEntities -> if (target != null && target!!.entityId in packet.entityIDs) {
                         clearPackets()
                         reset()
-                        return
+                        return@handler
                     }
 
                     is S1CPacketEntityMetadata -> if (target?.entityId == packet.entityId) {
-                        val metadata = packet.func_149376_c() ?: return
+                        val metadata = packet.func_149376_c() ?: return@handler
 
                         metadata.forEach {
                             if (it.dataValueId == 6) {
@@ -211,15 +210,15 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                                 if (objectValue != null && !objectValue.isNaN() && objectValue <= 0.0) {
                                     clearPackets()
                                     reset()
-                                    return
+                                    return@handler
                                 }
                             }
                         }
 
-                        return
+                        return@handler
                     }
 
-                    is S19PacketEntityStatus -> if (packet.entityId == target?.entityId) return
+                    is S19PacketEntityStatus -> if (packet.entityId == target?.entityId) return@handler
                 }
 
                 // Cancel every received packet to avoid possible server synchronization issues from random causes.
@@ -251,8 +250,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onGameLoop(event: GameLoopEvent) {
+    val onGameLoop = handler<GameLoopEvent> {
         if (mode == "Legacy") {
             backtrackedPlayer.forEach { (key, backtrackData) ->
                 // Remove old data
@@ -301,8 +299,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
     /**
      * Priority lower than [PacketUtils] GameLoopEvent function's priority.
      */
-    @EventTarget(priority = -6)
-    fun onQueuePacketClear(event: GameLoopEvent) {
+    val onQueuePacketClear = handler<GameLoopEvent>(priority = -6) {
         val shouldChangeDelay = isPacketQueueEmpty && areQueuedPacketsEmpty
 
         if (!shouldChangeDelay) {
@@ -315,10 +312,9 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onAttack(event: AttackEvent) {
+    val onAttack = handler<AttackEvent> { event ->
         if (!isSelected(event.targetEntity, true))
-            return
+            return@handler
 
         // Clear all packets, start again on enemy change
         if (target != event.targetEntity) {
@@ -331,9 +327,8 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        val manager = mc.renderManager ?: return
+    val onRender3D = handler<Render3DEvent> { event ->
+        val manager = mc.renderManager ?: return@handler
 
         when (mode.lowercase()) {
             "legacy" -> {
@@ -371,7 +366,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
             "modern" -> {
                 if (!shouldBacktrack() || !shouldRender)
-                    return
+                    return@handler
 
                 target?.run {
                     val targetEntity = target as IMixinEntity
@@ -446,8 +441,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onEntityMove(event: EntityMovementEvent) {
+    val onEntityMove = handler<EntityMovementEvent> { event ->
         if (mode == "Legacy" && legacyPos == "ClientPos") {
             val entity = event.movedEntity
 
@@ -459,8 +453,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+           val onWorld = handler<WorldEvent> { event ->
         // Clear packets on disconnect only
         // Set target to null on world change
         if (mode == "Modern") {

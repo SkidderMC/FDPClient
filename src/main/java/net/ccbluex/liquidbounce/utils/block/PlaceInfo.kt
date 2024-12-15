@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.utils.block
 
-import net.ccbluex.liquidbounce.utils.extensions.canBeClicked
-import net.ccbluex.liquidbounce.utils.extensions.center
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3

@@ -5,15 +5,13 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
-import net.ccbluex.liquidbounce.event.EventManager.registerListener
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.event.EventManager.unregisterListener
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.command.CommandManager.registerCommand
 import net.ccbluex.liquidbounce.utils.client.ClassUtils
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
-import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
 import java.util.*
 
 object ModuleManager : Listenable {
@@ -21,10 +19,6 @@ object ModuleManager : Listenable {
     val modules = TreeSet<Module> { module1, module2 -> module1.name.compareTo(module2.name) }
     fun getModuleInCategory(category: Category) = modules.filter { it.category == category }
     private val moduleClassMap = hashMapOf<Class<*>, Module>()
-
-    init {
-        registerListener(this)
-    }
 
     /**
      * Register all modules
@@ -41,7 +35,7 @@ object ModuleManager : Listenable {
             //  SplashProgress.setSecondary("Initializing Module " + it.name)
         }
 
-        InventoryManager.startCoroutine()
+       registerModules(*modules.toTypedArray())
 
         LOGGER.info("[ModuleManager] Loaded ${modules.size} modules.")
     }
@@ -54,7 +48,6 @@ object ModuleManager : Listenable {
         moduleClassMap[module.javaClass] = module
 
         generateCommand(module)
-        registerListener(module)
     }
 
     /**
@@ -130,7 +123,7 @@ object ModuleManager : Listenable {
     /**
      * Handle incoming key presses
      */
-    @EventTarget
-    private fun onKey(event: KeyEvent) = modules.forEach { if (it.keyBind == event.key) it.toggle() }
-
+    private val onKey = handler<KeyEvent> { event ->
+        modules.forEach { if (it.keyBind == event.key) it.toggle() }
+    }
 }

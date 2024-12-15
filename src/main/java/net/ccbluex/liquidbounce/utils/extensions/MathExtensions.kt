@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.config.FloatRangeValue
 import net.ccbluex.liquidbounce.config.FloatValue
 import net.ccbluex.liquidbounce.config.IntegerRangeValue
 import net.ccbluex.liquidbounce.config.IntegerValue
+import net.ccbluex.liquidbounce.utils.block.toVec
 import net.minecraft.block.Block
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.entity.RenderManager
@@ -93,7 +94,7 @@ val Vec3_ZERO: Vec3
 val RenderManager.renderPos
     get() = Vec3(renderPosX, renderPosY, renderPosZ)
 
-fun Vec3.toFloatTriple() = Triple(xCoord.toFloat(), yCoord.toFloat(), zCoord.toFloat())
+fun Vec3.toFloatArray() = floatArrayOf(xCoord.toFloat(), yCoord.toFloat(), zCoord.toFloat())
 fun Vec3.toDoubleArray() = doubleArrayOf(xCoord, yCoord, zCoord)
 
 fun Float.toRadians() = this * 0.017453292f

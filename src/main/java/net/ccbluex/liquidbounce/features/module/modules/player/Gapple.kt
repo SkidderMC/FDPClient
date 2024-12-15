@@ -9,10 +9,11 @@ import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.config.int
-import net.ccbluex.liquidbounce.event.EventTarget
+
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.script.api.global.Chat
@@ -59,14 +60,14 @@ object Gapple : Module("Gapple", Category.PLAYER, hideModule = false) {
         delay = MathHelper.getRandomIntegerInRange(Random(), min, max)
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+
+       val onWorld = handler<WorldEvent> {
         isDisable = true
         tryHeal = false
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+
+    val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
         if (eating != -1 && packet is C03PacketPlayer) {
             eating++
@@ -75,8 +76,8 @@ object Gapple : Module("Gapple", Category.PLAYER, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+
+    val onUpdate = handler<UpdateEvent> {
         if (tryHeal) {
             when (modeValue.lowercase()) {
                 "auto" -> {
@@ -103,7 +104,7 @@ object Gapple : Module("Gapple", Category.PLAYER, hideModule = false) {
                         val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
                         if(gappleInHotbar == -1) {
                             tryHeal = false
-                            return
+                            return@handler
                         }
                         if (gappleInHotbar != null) {
                             sendPacket(C09PacketHeldItemChange(gappleInHotbar - 36))
@@ -125,7 +126,7 @@ object Gapple : Module("Gapple", Category.PLAYER, hideModule = false) {
                         val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
                         if(gappleInHotbar == -1) {
                             tryHeal = false
-                            return
+                            return@handler
                         }
                         if (prevSlot == -1)
                             prevSlot = mc.thePlayer.inventory.currentItem
@@ -170,7 +171,7 @@ object Gapple : Module("Gapple", Category.PLAYER, hideModule = false) {
         if (!tryHeal && prevSlot != -1) {
             if (!switchBack) {
                 switchBack = true
-                return
+                return@handler
             }
             mc.thePlayer.inventory.currentItem = prevSlot
 	    eating = -1
@@ -179,12 +180,12 @@ object Gapple : Module("Gapple", Category.PLAYER, hideModule = false) {
         }
 
         if ((groundCheck && !mc.thePlayer.onGround) || (invCheck && mc.currentScreen is GuiContainer) || (absorp > 0 && absorpCheck))
-            return
+            return@handler
         if (waitRegen && mc.thePlayer.isPotionActive(regeneration) && mc.thePlayer.getActivePotionEffect(regeneration).duration > regenSec * 20.0f)
-            return
+            return@handler
         if (!isDisable && (mc.thePlayer.health <= (percent / 100.0f) * mc.thePlayer.maxHealth) && timer.hasTimePassed(delay.toLong())) {
             if (tryHeal)
-                return
+                return@handler
             tryHeal = true
         }
     }

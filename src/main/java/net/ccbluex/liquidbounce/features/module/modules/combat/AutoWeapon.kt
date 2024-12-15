@@ -5,16 +5,16 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.inventory.attackDamage
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.int
 import net.minecraft.item.ItemSword
 import net.minecraft.item.ItemTool
 import net.minecraft.network.play.client.C02PacketUseEntity
@@ -29,14 +29,12 @@ object AutoWeapon : Module("AutoWeapon", Category.COMBAT, subjective = true, hid
 
     private var attackEnemy = false
 
-    @EventTarget
-    fun onAttack(event: AttackEvent) {
+    val onAttack = handler<AttackEvent> {
         attackEnemy = true
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        val player = mc.thePlayer ?: return
+    val onPacket = handler<PacketEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
 
         if (event.packet is C02PacketUseEntity && event.packet.action == ATTACK && attackEnemy) {
             attackEnemy = false
@@ -48,10 +46,10 @@ object AutoWeapon : Module("AutoWeapon", Category.COMBAT, subjective = true, hid
                     it.second != null && ((onlySword && it.second.item is ItemSword)
                             || (!onlySword && (it.second.item is ItemSword || it.second.item is ItemTool)))
                 }
-                .maxByOrNull { it.second.attackDamage } ?: return
+                .maxByOrNull { it.second.attackDamage } ?: return@handler
 
             if (slot == mc.thePlayer.inventory.currentItem) // If in hand no need to swap
-                return
+                return@handler
 
             // Switch to best weapon
             SilentHotbar.selectSlotSilently(this, slot, spoofTicks, true, !spoof, spoof)

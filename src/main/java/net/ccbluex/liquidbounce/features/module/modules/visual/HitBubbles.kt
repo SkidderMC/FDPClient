@@ -7,13 +7,13 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.customRotatedObject2D
 import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
@@ -49,7 +49,7 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL, hideModule = false) {
 
     private val icon = ResourceLocation("${CLIENT_NAME.lowercase()}/bubble.png")
 
-    @EventTarget
+
     fun onAttack(event: AttackEvent) {
         val target = event.targetEntity as? EntityLivingBase ?: return
 
@@ -71,10 +71,10 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL, hideModule = false) {
         addBubble(bubblePosition, hitLocation)
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent?) {
+
+    val onRender3D = handler<Render3DEvent> {
         val alpha = alphaPercentage
-        if (alpha < 0.05 || bubbles.isEmpty()) return
+        if (alpha < 0.05 || bubbles.isEmpty()) return@handler
 
         removeExpiredBubbles()
 

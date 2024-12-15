@@ -43,12 +43,11 @@ object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModul
         BlinkUtils.unblink()
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
 
         if (mc.thePlayer == null || mc.thePlayer.isDead)
-            return
+            return@handler
 
         when (mode.lowercase()) {
             "sent" -> {
@@ -65,10 +64,9 @@ object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModul
         }
     }
 
-    @EventTarget
-    fun onMotion(event: MotionEvent) {
+    val onMotion = handler<MotionEvent> { event ->
         if (event.eventState == EventState.POST) {
-            val thePlayer = mc.thePlayer ?: return
+            val thePlayer = mc.thePlayer ?: return@handler
 
             if (thePlayer.isDead || mc.thePlayer.ticksExisted <= 10) {
                 BlinkUtils.unblink()
@@ -94,8 +92,7 @@ object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModul
         }
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    val onRender3D = handler<Render3DEvent> {
         val color =
             if (Breadcrumbs.rainbow) rainbow()
             else Breadcrumbs.colors.color()

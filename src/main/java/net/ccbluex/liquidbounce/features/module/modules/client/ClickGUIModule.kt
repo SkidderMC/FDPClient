@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.FDPClient.clickGui
 import net.ccbluex.liquidbounce.config.*
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
@@ -76,8 +76,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
         return ClientThemesUtils.getColor(index)
     }
 
-    @EventTarget(ignoreCondition = true)
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent>(always = true) { event ->
         val packet = event.packet
         if (packet is S2EPacketCloseWindow && mc.currentScreen is ClickGui)
             event.cancelEvent()

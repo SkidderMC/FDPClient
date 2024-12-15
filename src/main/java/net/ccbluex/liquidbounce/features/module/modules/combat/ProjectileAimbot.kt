@@ -5,12 +5,16 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.event.EventTarget
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.RotationUpdateEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
+import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
+import net.ccbluex.liquidbounce.utils.inventory.isEmpty
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.ccbluex.liquidbounce.utils.rotation.RandomizationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
@@ -18,14 +22,6 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.faceTrajectory
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.searchCenter
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
-import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
-import net.ccbluex.liquidbounce.utils.inventory.isEmpty
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
-import net.ccbluex.liquidbounce.config.FloatValue
-import net.ccbluex.liquidbounce.config.ListValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.*
@@ -113,34 +109,33 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, hideModule
         target = null
     }
 
-    @EventTarget
-    fun onRotationUpdate(event: RotationUpdateEvent) {
-        val player = mc.thePlayer ?: return
+    val onRotationUpdate = handler<RotationUpdateEvent> {
+        val player = mc.thePlayer ?: return@handler
 
         target = null
 
         val targetRotation = when (val item = player.heldItem?.item) {
             is ItemBow -> {
                 if (!bow || !player.isUsingItem)
-                    return
+                    return@handler
 
                 target = getTarget(throughWalls, priority)
 
-                faceTrajectory(target ?: return, predict, predictSize)
+                faceTrajectory(target ?: return@handler, predict, predictSize)
             }
 
             is Item -> {
                 if (!otherItems && !player.heldItem.isEmpty() ||
                     (!egg && item is ItemEgg || !snowball && item is ItemSnowball || !pearl && item is ItemEnderPearl)
                 )
-                    return
+                    return@handler
 
                 target = getTarget(throughWalls, priority)
 
-                faceTrajectory(target ?: return, predict, predictSize, gravity = 0.03f, velocity = 0.5f)
+                faceTrajectory(target ?: return@handler, predict, predictSize, gravity = 0.03f, velocity = 0.5f)
             }
 
-            else -> return
+            else -> return@handler
         }
 
         val normalRotation = target?.entityBoundingBox?.let {
@@ -155,13 +150,12 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, hideModule
                 bodyPoints = listOf(highestBodyPointToTarget, lowestBodyPointToTarget),
                 horizontalSearch = minHorizontalBodySearch.get()..maxHorizontalBodySearch.get()
             )
-        } ?: return
+        } ?: return@handler
 
         setTargetRotation(if (gravityType == "Projectile") targetRotation else normalRotation, options = options)
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    val onRender3D = handler<Render3DEvent> {
         if (target != null && priority != "Multi" && mark) {
             drawPlatform(target!!, Color(37, 126, 255, 70))
         }

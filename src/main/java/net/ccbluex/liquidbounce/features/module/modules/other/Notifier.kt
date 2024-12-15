@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
@@ -16,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.block.BlockTNT
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemFireball
@@ -38,10 +38,9 @@ object Notifier : Module("Notifier", Category.OTHER, hideModule = false) {
 
     private val recentlyWarned = ConcurrentHashMap<String, Long>()
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        val player = mc.thePlayer ?: return
-        val world = mc.theWorld ?: return
+    val onUpdate = handler<UpdateEvent> {
+        val player = mc.thePlayer ?: return@handler
+        val world = mc.theWorld ?: return@handler
 
         val currentTime = System.currentTimeMillis()
         for (entity in world.playerEntities) {
@@ -72,12 +71,11 @@ object Notifier : Module("Notifier", Category.OTHER, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        val player = mc.thePlayer ?: return
-        val world = mc.theWorld ?: return
+    val onPacket = handler<PacketEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
+        val world = mc.theWorld ?: return@handler
 
-        if (player.ticksExisted < 50) return
+        if (player.ticksExisted < 50) return@handler
 
         when (val packet = event.packet) {
             is S38PacketPlayerListItem -> {
@@ -101,8 +99,7 @@ object Notifier : Module("Notifier", Category.OTHER, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+    val onWorld = handler<WorldEvent> {
         recentlyWarned.clear()
     }
 }

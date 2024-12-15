@@ -8,9 +8,10 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import net.ccbluex.liquidbounce.config.block
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.event.EventTarget
+
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
@@ -59,8 +60,7 @@ object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hid
 	private var currentBlock: Block? = null
 
 	// Event to control entity rendering
-	@EventTarget
-	fun onMotion(event: MotionEvent) {
+    val onMotion = handler<MotionEvent> {
 		for (en in mc.theWorld.loadedEntityList) {
 			val entity = en!!
 			if (shouldStopRender(entity))
@@ -71,13 +71,12 @@ object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hid
 	}
 
 	// Event to control block rendering
-	@EventTarget
-	fun onRender3D(event: Render3DEvent) {
+    val onRender3D = handler<Render3DEvent> {
 		// If the specific block feature is disabled, return without doing anything
 		if (!useSpecificBlock) {
 			// Ensure that all previously hidden blocks are restored if the option is disabled
 			restoreHiddenBlocks()
-			return
+			return@handler
 		}
 
 		mc.thePlayer?.let {
@@ -85,7 +84,7 @@ object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hid
 			val selectedBlock = Block.getBlockById(specificBlockValue)
 
 			// If there is no change in the selected block, do nothing
-			if (currentBlock == selectedBlock) return
+			if (currentBlock == selectedBlock) return@handler
 
 			// Restore previously hidden blocks before hiding new ones
 			restoreHiddenBlocks()

@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.utils.login
 
 import com.google.gson.JsonParser
-import net.ccbluex.liquidbounce.event.EventManager.callEvent
+import net.ccbluex.liquidbounce.event.EventManager.call
 import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.util.Session
@@ -48,7 +48,7 @@ object LoginUtils : MinecraftInstance() {
             return LoginResult.INVALID_ACCOUNT_DATA
         }
 
-        callEvent(SessionUpdateEvent)
+        call(SessionUpdateEvent)
 
         return LoginResult.LOGGED
     }

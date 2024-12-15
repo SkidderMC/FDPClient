@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlock
-import net.ccbluex.liquidbounce.utils.extensions.block
+import net.ccbluex.liquidbounce.utils.block.block
 import net.minecraft.block.BlockLiquid
 import net.minecraft.block.material.Material
 import net.minecraft.init.Blocks
@@ -30,11 +30,10 @@ object Jesus : Module("Jesus", Category.MOVEMENT, Keyboard.KEY_J) {
 
     private var nextTick = false
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    val onUpdate = handler<UpdateEvent> { event ->
         val thePlayer = mc.thePlayer
 
-        if (thePlayer == null || thePlayer.isSneaking) return
+        if (thePlayer == null || thePlayer.isSneaking) return@handler
 
         when (mode.lowercase()) {
             "ncp", "vanilla" -> if (collideBlock(thePlayer.entityBoundingBox) { it is BlockLiquid } && thePlayer.isInsideOfMaterial(
@@ -66,7 +65,7 @@ object Jesus : Module("Jesus", Category.MOVEMENT, Keyboard.KEY_J) {
             "spartan" -> if (thePlayer.isInWater) {
                 if (thePlayer.isCollidedHorizontally) {
                     thePlayer.motionY += 0.15
-                    return
+                    return@handler
                 }
                 val block = BlockPos(thePlayer).up().block
                 val blockUp = BlockPos(thePlayer.posX, thePlayer.posY + 1.1, thePlayer.posZ).block
@@ -95,18 +94,16 @@ object Jesus : Module("Jesus", Category.MOVEMENT, Keyboard.KEY_J) {
         }
     }
 
-    @EventTarget
-    fun onMove(event: MoveEvent) {
+    val onMove = handler<MoveEvent> { event ->
         if ("aacfly" == mode.lowercase() && mc.thePlayer.isInWater) {
             event.y = aacFly.toDouble()
             mc.thePlayer.motionY = aacFly.toDouble()
         }
     }
 
-    @EventTarget
-    fun onBlockBB(event: BlockBBEvent) {
+    val onBlockBB = handler<BlockBBEvent> { event ->
         if (mc.thePlayer == null)
-            return
+            return@handler
 
         if (event.block is BlockLiquid && !collideBlock(mc.thePlayer.entityBoundingBox) { it is BlockLiquid } && !mc.thePlayer.isSneaking) {
             when (mode.lowercase()) {
@@ -122,12 +119,11 @@ object Jesus : Module("Jesus", Category.MOVEMENT, Keyboard.KEY_J) {
         }
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         val thePlayer = mc.thePlayer
 
         if (thePlayer == null || mode != "NCP")
-            return
+            return@handler
 
         if (event.packet is C03PacketPlayer) {
             val packetPlayer = event.packet
@@ -149,9 +145,8 @@ object Jesus : Module("Jesus", Category.MOVEMENT, Keyboard.KEY_J) {
         }
     }
 
-    @EventTarget
-    fun onJump(event: JumpEvent) {
-        val thePlayer = mc.thePlayer ?: return
+    val onJump = handler<JumpEvent> { event ->
+        val thePlayer = mc.thePlayer ?: return@handler
 
         val block = BlockPos(thePlayer.posX, thePlayer.posY - 0.01, thePlayer.posZ).block
 

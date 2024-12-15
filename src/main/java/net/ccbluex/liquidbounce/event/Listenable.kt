@@ -5,16 +5,47 @@
  */
 package net.ccbluex.liquidbounce.event
 
-import java.lang.reflect.Method
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 interface Listenable {
     fun handleEvents() = true
+
+    val subListeners: Array<Listenable>
+        get() = emptyArray()
+
+    val parent: Listenable?
+        get() = null
+
+    fun unregister() {
+        EventManager.unregisterListener(this)
+        subListeners.forEach { it.unregister() }
+    }
 }
 
-@Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
-annotation class EventTarget(val ignoreCondition: Boolean = false, val priority: Int = 0)
+inline fun <reified T : Event> Listenable.handler(
+    always: Boolean = false,
+    priority: Byte = 0,
+    noinline action: (T) -> Unit
+) {
+    EventManager.registerEventHook(T::class.java, EventHook.Blocking(this, always, priority, action))
+}
 
-internal class EventHook(val eventClass: Listenable, val method: Method, eventTarget: EventTarget) {
-    val ignoreCondition = eventTarget.ignoreCondition
-    val priority = eventTarget.priority
+inline fun <reified T : Event> Listenable.handler(
+    dispatcher: CoroutineDispatcher,
+    always: Boolean = false,
+    priority: Byte = 0,
+    noinline action: suspend CoroutineScope.(T) -> Unit
+) {
+    EventManager.registerEventHook(T::class.java, EventHook.Async(this, dispatcher, always, priority, action))
+}
+
+fun Listenable.loopHandler(
+    dispatcher: CoroutineDispatcher = Dispatchers.Unconfined,
+    always: Boolean = false,
+    priority: Byte = 0,
+    action: suspend CoroutineScope.(UpdateEvent) -> Unit
+) {
+    LoopManager += EventHook.Async(this, dispatcher, always, priority, action)
 }

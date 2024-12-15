@@ -5,17 +5,17 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.event.BlockBBEvent
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.MoveEvent
-import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlockIntersects
-import net.ccbluex.liquidbounce.utils.extensions.block
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.BlockBBEvent
+import net.ccbluex.liquidbounce.event.MoveEvent
+import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlockIntersects
+import net.ccbluex.liquidbounce.utils.block.block
+import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.minecraft.block.BlockLadder
 import net.minecraft.block.BlockVine
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
@@ -46,11 +46,10 @@ object FastClimb : Module("FastClimb", Category.MOVEMENT) {
         mc.thePlayer.isInWeb = false
     }
 
-    @EventTarget
-    fun onMove(event: MoveEvent) {
+    val onMove = handler<MoveEvent> { event ->
         val mode = mode
 
-        val thePlayer = mc.thePlayer ?: return
+        val thePlayer = mc.thePlayer ?: return@handler
 
         when {
             mode == "Vanilla" && thePlayer.isCollidedHorizontally && thePlayer.isOnLadder -> {
@@ -153,8 +152,7 @@ object FastClimb : Module("FastClimb", Category.MOVEMENT) {
         }
     }
 
-    @EventTarget
-    fun onBlockBB(event: BlockBBEvent) {
+    val onBlockBB = handler<BlockBBEvent> { event ->
         if (mc.thePlayer != null && (event.block is BlockLadder || event.block is BlockVine) &&
             mode == "AAC3.0.5" && mc.thePlayer.isOnLadder
         )

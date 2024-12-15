@@ -9,12 +9,13 @@ import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.config.int
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
@@ -54,11 +55,11 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
             return null
         }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        val blockPos = currentBlock ?: return
 
-        val block = blockPos.block ?: return
+    val onRender3D = handler<Render3DEvent> {
+        val blockPos = currentBlock ?: return@handler
+
+        val block = blockPos.block ?: return@handler
 
         val color = if (colorRainbow) {
             rainbow(alpha = 0.4F)
@@ -76,7 +77,7 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
 
         block.setBlockBoundsBasedOnState(mc.theWorld, blockPos)
 
-        val thePlayer = mc.thePlayer ?: return
+        val thePlayer = mc.thePlayer ?: return@handler
 
         val pos = thePlayer.interpolatedPosition(thePlayer.lastTickPos)
 
@@ -97,11 +98,11 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = fa
         resetColor()
     }
 
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+
+    val onRender2D = handler<Render2DEvent> {
         if (info) {
-            val blockPos = currentBlock ?: return
-            val block = blockPos.block ?: return
+            val blockPos = currentBlock ?: return@handler
+            val block = blockPos.block ?: return@handler
 
             val info = "${block.localizedName} §7ID: ${Block.getIdFromBlock(block)}"
             val (width, height) = ScaledResolution(mc)

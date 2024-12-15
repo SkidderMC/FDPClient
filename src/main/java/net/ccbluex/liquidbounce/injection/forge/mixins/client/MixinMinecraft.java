@@ -106,7 +106,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/Profiler;startSection(Ljava/lang/String;)V", ordinal = 1))
     private void hook(CallbackInfo ci) {
-        EventManager.INSTANCE.callEvent(GameLoopEvent.INSTANCE);
+        EventManager.INSTANCE.call(GameLoopEvent.INSTANCE);
     }
 
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
@@ -153,7 +153,7 @@ public abstract class MixinMinecraft {
             skipRenderWorld = false;
         }
 
-        EventManager.INSTANCE.callEvent(new ScreenEvent(currentScreen));
+        EventManager.INSTANCE.call(new ScreenEvent(currentScreen));
     }
 
     @Unique
@@ -181,24 +181,24 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "runTick", at = @At("TAIL"))
     private void injectEndTickEvent(CallbackInfo ci) {
-        EventManager.INSTANCE.callEvent(TickEndEvent.INSTANCE);
+        EventManager.INSTANCE.call(TickEndEvent.INSTANCE);
     }
 
     @Inject(method = "runTick", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;joinPlayerCounter:I", ordinal = 0))
     private void onTick(final CallbackInfo callbackInfo) {
-        EventManager.INSTANCE.callEvent(GameTickEvent.INSTANCE);
+        EventManager.INSTANCE.call(GameTickEvent.INSTANCE);
     }
 
     @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;dispatchKeypresses()V", shift = At.Shift.AFTER))
     private void onKey(CallbackInfo callbackInfo) {
         if (Keyboard.getEventKeyState() && currentScreen == null)
-            EventManager.INSTANCE.callEvent(new KeyEvent(Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey()));
+            EventManager.INSTANCE.call(new KeyEvent(Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey()));
     }
 
     @Inject(method = "sendClickBlockToController", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/MovingObjectPosition;getBlockPos()Lnet/minecraft/util/BlockPos;"))
     private void onClickBlock(CallbackInfo callbackInfo) {
         if (leftClickCounter == 0 && theWorld.getBlockState(objectMouseOver.getBlockPos()).getBlock().getMaterial() != Material.air) {
-            EventManager.INSTANCE.callEvent(new ClickBlockEvent(objectMouseOver.getBlockPos(), objectMouseOver.sideHit));
+            EventManager.INSTANCE.call(new ClickBlockEvent(objectMouseOver.getBlockPos(), objectMouseOver.sideHit));
         }
     }
 
@@ -265,7 +265,7 @@ public abstract class MixinMinecraft {
             MiniMapRegister.INSTANCE.unloadAllChunks();
         }
 
-        EventManager.INSTANCE.callEvent(new WorldEvent(p_loadWorld_1_));
+        EventManager.INSTANCE.call(new WorldEvent(p_loadWorld_1_));
     }
 
     @Redirect(method = "sendClickBlockToController", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isUsingItem()Z"))

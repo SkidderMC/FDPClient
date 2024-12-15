@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.config.*
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
@@ -110,9 +110,8 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
     private var cachedHealthPrefix = ""
     private var cachedHealthSuffix = ""
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        if (mc.theWorld == null || mc.thePlayer == null) return
+    val onRender3D = handler<Render3DEvent> {
+        if (mc.theWorld == null || mc.thePlayer == null) return@handler
 
         glPushAttrib(GL_ENABLE_BIT)
         glPushMatrix()

@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.autoOff
@@ -119,8 +118,7 @@ object Blink : NoFallMode("Blink") {
         }
     }
 
-    @EventTarget
-    override fun onRender3D(event: Render3DEvent) {
+   override fun onRender3D(event: Render3DEvent) {
         if (!simulateDebug) return
 
         val thePlayer = mc.thePlayer ?: return

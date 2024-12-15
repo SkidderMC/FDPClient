@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.features.module.modules.other
 import kotlinx.coroutines.*
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.FDPClient.hud
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Category
@@ -16,11 +15,12 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.chat
-import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
+import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.io.HttpUtils
 import net.ccbluex.liquidbounce.config.ListValue
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
@@ -83,8 +83,8 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
     /**
      * Reset on World Change
      */
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+
+    val onWorld = handler<WorldEvent> {
         checkedStaff.clear()
         checkedSpectator.clear()
         playersInSpectatorMode.clear()
@@ -117,10 +117,9 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
         mc.netHandler?.playerInfoMap?.mapNotNullTo(hashSetOf()) { it?.gameProfile?.name }?.let(checkedStaff::retainAll)
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         if (mc.thePlayer == null || mc.theWorld == null) {
-            return
+            return@handler
         }
 
         val packet = event.packet
@@ -136,7 +135,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
                 val teamName = packet.name
 
                 if (teamName.equals("Z_Spectator", true)) {
-                    val players = packet.players ?: return
+                    val players = packet.players ?: return@handler
 
                     val staffSpectateList = players.filter { it in staffList.keys } - checkedSpectator
                     val nonStaffSpectateList = players.filter { it !in staffList.keys } - checkedSpectator

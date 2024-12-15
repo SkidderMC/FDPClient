@@ -419,6 +419,6 @@ public class MixinModelPlayerFix extends ModelBiped {
 
     @Inject(method = "setRotationAngles", at = @At("RETURN"))
     private void revertSwordAnimation(final float p_setRotationAngles_1_, final float p_setRotationAngles_2_, final float p_setRotationAngles_3_, final float p_setRotationAngles_4_, final float p_setRotationAngles_5_, final float p_setRotationAngles_6_, final Entity p_setRotationAngles_7_, final CallbackInfo callbackInfo) {
-        EventManager.INSTANCE.callEvent(new UpdateModelEvent((EntityPlayer) p_setRotationAngles_7_, (ModelPlayer) (Object) this));
+        EventManager.INSTANCE.call(new UpdateModelEvent((EntityPlayer) p_setRotationAngles_7_, (ModelPlayer) (Object) this));
     }
 }

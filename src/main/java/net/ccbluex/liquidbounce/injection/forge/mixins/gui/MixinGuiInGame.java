@@ -218,7 +218,7 @@ public abstract class MixinGuiInGame extends Gui {
     @Unique
     private void liquidBounce$updateGarbageCollection(float delta) {
         if (!ClassUtils.INSTANCE.hasClass("net.labymod.api.LabyModAPI")) {
-            EventManager.INSTANCE.callEvent(new Render2DEvent(delta));
+            EventManager.INSTANCE.call(new Render2DEvent(delta));
             AWTFontRenderer.Companion.garbageCollectionTick();
         }
     }

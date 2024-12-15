@@ -32,10 +32,10 @@ object CameraView : Module("CameraView", Category.VISUAL, hideModule = false) {
             }
         }
     }
-    @EventTarget
-    fun onMotion(event: MotionEvent) {
+
+    val onMotion = handler<MotionEvent> { event ->
         if (view) {
-            if (event.eventState != EventState.POST) return
+            if (event.eventState != EventState.POST) return@handler
             mc.thePlayer?.run {
                 if (!saveLastGroundY || (onGround || ticksExisted == 1)) {
                     launchY = posY
@@ -43,12 +43,11 @@ object CameraView : Module("CameraView", Category.VISUAL, hideModule = false) {
             }
         }
     }
-    @EventTarget
-    fun onCameraUpdate(event: CameraPositionEvent) {
+    val onCameraUpdate = handler<CameraPositionEvent> { event ->
         mc.thePlayer?.run {
-            val currentLaunchY = launchY ?: return
-            if (onScaffold && !Scaffold.handleEvents()) return
-            if (onF5 && mc.gameSettings.thirdPersonView == 0) return
+            val currentLaunchY = launchY ?: return@handler
+            if (onScaffold && !Scaffold.handleEvents()) return@handler
+            if (onF5 && mc.gameSettings.thirdPersonView == 0) return@handler
             event.withY(currentLaunchY + customY)
         }
     }

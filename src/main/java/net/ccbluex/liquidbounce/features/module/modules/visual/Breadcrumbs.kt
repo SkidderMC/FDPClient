@@ -7,12 +7,13 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.kotlin.removeEach
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
@@ -27,14 +28,13 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) 
     private val fade by boolean("Fade", true) { temporary }
     private val lifeTime by float("LifeTime", 1F, 0F..10F) { temporary }
 
-    private val positions = mutableListOf<PositionData>()
+    private val positions = ArrayDeque<PositionData>()
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        val player = mc.thePlayer ?: return
+    val onRender3D = handler<Render3DEvent> {
+        val player = mc.thePlayer ?: return@handler
 
         if (positions.isEmpty() && !player.isMoving) {
-            return
+            return@handler
         }
 
         val currentTime = System.currentTimeMillis()
@@ -103,8 +103,7 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) 
         glPopAttrib()
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+    val onWorld = handler<WorldEvent> {
         positions.clear()
     }
 
@@ -113,4 +112,4 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) 
     }
 }
 
-data class PositionData(val array: DoubleArray, val time: Long)
+private class PositionData(val array: DoubleArray, val time: Long)

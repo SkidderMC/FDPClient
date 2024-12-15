@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import net.ccbluex.liquidbounce.event.EventTarget
+
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.client.settings.GameSettings
 
 object AntiAFK : Module("AntiAFK", Category.PLAYER, gameDetecting = false, hideModule = false) {
@@ -41,9 +42,9 @@ object AntiAFK : Module("AntiAFK", Category.PLAYER, gameDetecting = false, hideM
     private val swingDelayTimer = MSTimer()
     private val delayTimer = MSTimer()
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        val thePlayer = mc.thePlayer ?: return
+
+    val onUpdate = handler<UpdateEvent> {
+        val thePlayer = mc.thePlayer ?: return@handler
 
         when (mode.lowercase()) {
             "old" -> {
@@ -58,7 +59,7 @@ object AntiAFK : Module("AntiAFK", Category.PLAYER, gameDetecting = false, hideM
             "random" -> {
                 getRandomMoveKeyBind().pressed = shouldMove
 
-                if (!delayTimer.hasTimePassed(randomTimerDelay)) return
+                if (!delayTimer.hasTimePassed(randomTimerDelay)) return@handler
                 shouldMove = false
                 randomTimerDelay = 500L
                 when (nextInt(0, 6)) {

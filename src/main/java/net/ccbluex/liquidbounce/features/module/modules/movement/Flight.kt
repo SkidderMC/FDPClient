@@ -182,7 +182,7 @@ object Flight : Module("Fly", Category.MOVEMENT, Keyboard.KEY_F, hideModule = fa
     ) { fireBallThrowMode == "Edge" && mode == "Fireball" }
 
     val options = RotationSettings(this) { mode == "Fireball" }.apply {
-        resetTicksValue.setSupport { { it && keepRotation } }
+        resetTicksValue.setSupport { it && keepRotation }
     }
 
     val autoJump by boolean("AutoJump", true) { mode == "Fireball" }
@@ -231,13 +231,11 @@ object Flight : Module("Fly", Category.MOVEMENT, Keyboard.KEY_F, hideModule = fa
         modeModule.onDisable()
     }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+    val onUpdate = handler<UpdateEvent> {
         modeModule.onUpdate()
     }
 
-    @EventTarget
-    fun onTick(event: GameTickEvent) {
+    val onTick = handler<GameTickEvent> {
         if (mode == "Fireball" && wasFired) {
             WaitTickUtils.schedule(2) {
                 Flight.state = false
@@ -247,10 +245,9 @@ object Flight : Module("Fly", Category.MOVEMENT, Keyboard.KEY_F, hideModule = fa
         modeModule.onTick()
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    val onRender3D = handler<Render3DEvent> { event ->
         if (!mark || mode == "Vanilla" || mode == "SmoothVanilla" || mode == "DefaultVanilla")
-            return
+            return@handler
 
         val y = startY + 2.0 + (if (mode == "BoostHypixel") 0.42 else 0.0)
         drawPlatform(
@@ -262,37 +259,31 @@ object Flight : Module("Fly", Category.MOVEMENT, Keyboard.KEY_F, hideModule = fa
         modeModule.onRender3D(event)
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
-        mc.thePlayer ?: return
+    val onPacket = handler<PacketEvent> { event ->
+        mc.thePlayer ?: return@handler
 
         modeModule.onPacket(event)
     }
 
-    @EventTarget
-    fun onBB(event: BlockBBEvent) {
-        mc.thePlayer ?: return
+    val onBB = handler<BlockBBEvent> { event ->
+        mc.thePlayer ?: return@handler
 
         modeModule.onBB(event)
     }
 
-    @EventTarget
-    fun onJump(event: JumpEvent) {
+    val onJump = handler<JumpEvent> { event ->
         modeModule.onJump(event)
     }
 
-    @EventTarget
-    fun onStep(event: StepEvent) {
+    val onStep = handler<StepEvent> { event ->
         modeModule.onStep(event)
     }
 
-    @EventTarget
-    fun onMotion(event: MotionEvent) {
+    val onMotion = handler<MotionEvent> { event ->
         modeModule.onMotion(event)
     }
 
-    @EventTarget
-    fun onMove(event: MoveEvent) {
+    val onMove = handler<MoveEvent> { event ->
         modeModule.onMove(event)
     }
 

@@ -13,6 +13,7 @@ object TimerBalanceUtils : MinecraftInstance(), Listenable {
 
     var balance = 0L
         private set
+
     private var frametime = -1L
     private var prevframetime = -1L
     private var currframetime = -1L
@@ -20,8 +21,7 @@ object TimerBalanceUtils : MinecraftInstance(), Listenable {
     private val inGame: Boolean
         get() = mc.thePlayer != null && mc.theWorld != null && mc.netHandler != null && mc.playerController != null
 
-    @EventTarget
-    fun onGameLoop(event: GameLoopEvent) {
+    val onGameLoop = handler<GameLoopEvent> {
         if (frametime == -1L) {
             frametime = 0L
             currframetime = System.currentTimeMillis()
@@ -37,8 +37,7 @@ object TimerBalanceUtils : MinecraftInstance(), Listenable {
         }
     }
 
-    @EventTarget
-    fun onPacket(event: PacketEvent) {
+    val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
 
         if (inGame) {
@@ -48,8 +47,8 @@ object TimerBalanceUtils : MinecraftInstance(), Listenable {
         }
     }
 
-    @EventTarget
-    fun onWorld(event: WorldEvent) {
+    val onWorld = handler<WorldEvent> {
         balance = 0
     }
+
 }

@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.features.module.Category
@@ -17,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
@@ -68,22 +68,22 @@ object AutoPlay : Module("AutoPlay", Category.PLAYER, gameDetecting = false, hid
     /**
      * Update Event
      */
-    @EventTarget
-    fun onGameTick(event: GameTickEvent) {
-        val player = mc.thePlayer ?: return
+
+    val onGameTick = handler<GameTickEvent> {
+        val player = mc.thePlayer ?: return@handler
 
         if (!playerInGame() || !player.inventory.hasItemStack(ItemStack(Items.paper))) {
             if (delayTick > 0)
                 delayTick = 0
 
-            return
+            return@handler
         } else {
             delayTick++
         }
 
         when (mode) {
             "Paper" -> {
-                val paper = InventoryUtils.findItem(36, 44, Items.paper) ?: return
+                val paper = InventoryUtils.findItem(36, 44, Items.paper) ?: return@handler
 
                 SilentHotbar.selectSlotSilently(this, paper, immediate = true, resetManually = true)
 
@@ -126,12 +126,12 @@ object AutoPlay : Module("AutoPlay", Category.PLAYER, gameDetecting = false, hid
                 || player.capabilities.disableDamage)
     }
 
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
-        if (!bedWarsHelp) return
 
-        val player = mc.thePlayer ?: return
-        val world = mc.theWorld ?: return
+    val onRender2D = handler<Render2DEvent> { 
+        if (!bedWarsHelp) return@handler
+
+        val player = mc.thePlayer ?: return@handler
+        val world = mc.theWorld ?: return@handler
 
         if (player.ticksExisted < 5) {
             stoneSwordList.clear()

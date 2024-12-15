@@ -81,11 +81,9 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
         get() = if (colorRainbowValue) ColorUtils.rainbow().rgb
         else Color(colorRed, colorGreen, colorBlue).rgb
 
-
-    @EventTarget
-    fun onRender2D(event: Render2DEvent) {
+    val onRender2D = handler<Render2DEvent> {
         if (mc.currentScreen is GuiHudDesigner)
-            return
+            return@handler
 
         hud.render(false)
 
@@ -161,16 +159,16 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
         return ScaledResolution(Minecraft.getMinecraft()).scaledHeight
     }
 
+    val onUpdate = loopHandler {
+        hud.update()
+    }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) = hud.update()
+    val onKey = handler<KeyEvent> { event ->
+        hud.handleKey('a', event.key)
+    }
 
-    @EventTarget
-    fun onKey(event: KeyEvent) = hud.handleKey('a', event.key)
-
-    @EventTarget(ignoreCondition = true)
-    fun onScreen(event: ScreenEvent) {
-        if (mc.theWorld == null || mc.thePlayer == null) return
+    val onScreen = handler<ScreenEvent>(always = true) { event ->
+        if (mc.theWorld == null || mc.thePlayer == null) return@handler
         if (state && blur && !mc.entityRenderer.isShaderActive && event.guiScreen != null &&
                 !(event.guiScreen is GuiChat || event.guiScreen is GuiHudDesigner)) mc.entityRenderer.loadShader(
             ResourceLocation(CLIENT_NAME.lowercase() + "/blur.json")

@@ -5,14 +5,14 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.aac
 
-import net.ccbluex.liquidbounce.event.EventManager.callEvent
+import net.ccbluex.liquidbounce.event.EventManager.call
 import net.ccbluex.liquidbounce.event.EventState
 import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
-import net.ccbluex.liquidbounce.utils.extensions.block
+import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 import net.minecraft.block.BlockCarpet
 import kotlin.math.cos
 import kotlin.math.sin
@@ -22,14 +22,15 @@ object AACHop3313 : SpeedMode("AACHop3.3.13") {
         val thePlayer = mc.thePlayer ?: return
 
         if (!thePlayer.isMoving || thePlayer.isInWater || thePlayer.isInLava ||
-                thePlayer.isOnLadder || thePlayer.isRiding || thePlayer.hurtTime > 0) return
+            thePlayer.isOnLadder || thePlayer.isRiding || thePlayer.hurtTime > 0
+        ) return
         if (thePlayer.onGround && thePlayer.isCollidedVertically) {
             // MotionXYZ
             val yawRad = thePlayer.rotationYaw.toRadians()
             thePlayer.motionX -= sin(yawRad) * 0.202f
             thePlayer.motionZ += cos(yawRad) * 0.202f
             thePlayer.motionY = 0.405
-            callEvent(JumpEvent(0.405f, EventState.PRE))
+            call(JumpEvent(0.405f, EventState.PRE))
             strafe()
         } else if (thePlayer.fallDistance < 0.31f) {
             if (thePlayer.position.block is BlockCarpet) // why?

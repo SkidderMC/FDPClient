@@ -5,10 +5,14 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import net.ccbluex.liquidbounce.config.IntegerValue
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.float
+import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
@@ -20,10 +24,6 @@ import net.ccbluex.liquidbounce.utils.extensions.isBlock
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomClickDelay
-import net.ccbluex.liquidbounce.config.IntegerValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -81,16 +81,14 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) 
         target = null
     }
 
-    @EventTarget
-    fun onAttack(event: AttackEvent) {
-        if (!left) return
+    val onAttack = handler<AttackEvent> { event ->
+        if (!left) return@handler
         val targetEntity = event.targetEntity as EntityLivingBase
 
         target = targetEntity
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    val onRender3D = handler<Render3DEvent> {
         mc.thePlayer?.let { thePlayer ->
             val time = System.currentTimeMillis()
             val doubleClick = if (simulateDoubleClicking) RandomUtils.nextInt(-1, 1) else 0
@@ -106,8 +104,8 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) 
             }
 
             if (requiresNoInput) {
-                val nearbyEntity = getNearestEntityInRange() ?: return
-                if (!isLookingOnEntities(nearbyEntity, maxAngleDifference.toDouble())) return
+                val nearbyEntity = getNearestEntityInRange() ?: return@handler
+                if (!isLookingOnEntities(nearbyEntity, maxAngleDifference.toDouble())) return@handler
 
                 if (left && shouldAutoClick && time - leftLastSwing >= leftDelay) {
                     handleLeftClick(time, doubleClick)
@@ -124,8 +122,7 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) 
         }
     }
 
-    @EventTarget
-    fun onTick(event: UpdateEvent) {
+    val onTick = handler<UpdateEvent> {
         mc.thePlayer?.let { thePlayer ->
 
             shouldJitter = !mc.objectMouseOver.typeOfHit.isBlock &&

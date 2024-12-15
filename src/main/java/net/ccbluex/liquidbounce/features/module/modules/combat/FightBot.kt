@@ -9,10 +9,7 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.event.AttackEvent
-import net.ccbluex.liquidbounce.event.EventTarget
-import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.movement.Step
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
@@ -72,8 +69,7 @@ object FightBot : Module("FightBot", Category.COMBAT, hideModule = false) {
         mc.gameSettings.keyBindForward.pressed = false
     }
 
-    @EventTarget
-    fun onAttack(event: AttackEvent) {
+    val onAttack = handler<AttackEvent> {
         when (blockMode.lowercase()) {
             "skill" -> {
                 if (mc.thePlayer.experienceLevel >= 100 && entity?.getDistanceToEntity(mc.thePlayer)!! < 3.5f)
@@ -103,8 +99,7 @@ object FightBot : Module("FightBot", Category.COMBAT, hideModule = false) {
             null
     }
 
-    @EventTarget
-    fun onUpdate(e: UpdateEvent) {
+    val onUpdate = handler<UpdateEvent> {
         if (jumpResetValue) {
             if (mc.thePlayer.hurtTime > 0 && mc.thePlayer.onGround) {
                 mc.thePlayer.jump()
@@ -124,7 +119,7 @@ object FightBot : Module("FightBot", Category.COMBAT, hideModule = false) {
                         500
                     )
                 )
-                return
+                return@handler
             }
             val teams = FDPClient.moduleManager[Teams::class.java]!!
             for (entity in mc.theWorld.loadedEntityList) {
@@ -331,10 +326,9 @@ object FightBot : Module("FightBot", Category.COMBAT, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+    val onRender3D = handler<Render3DEvent> { event ->
         synchronized(path) {
-            if (path.isEmpty() || !pathRenderValue) return
+            if (path.isEmpty() || !pathRenderValue) return@handler
             val renderPosX = mc.renderManager.viewerPosX
             val renderPosY = mc.renderManager.viewerPosY
             val renderPosZ = mc.renderManager.viewerPosZ
@@ -388,8 +382,8 @@ object FightBot : Module("FightBot", Category.COMBAT, hideModule = false) {
             GL11.glPopMatrix()
             GL11.glColor4f(1F, 1F, 1F, 1F)
         }
-        if (!findWay.lowercase().contains("entity")) return
-        if (findWither() == null) return
+        if (!findWay.lowercase().contains("entity")) return@handler
+        if (findWither() == null) return@handler
         val rad: Double = workReach.toDouble()
         val partialTicks: Float = event.partialTicks
         GL11.glPushMatrix()

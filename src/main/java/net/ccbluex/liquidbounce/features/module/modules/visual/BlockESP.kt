@@ -7,15 +7,15 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import net.ccbluex.liquidbounce.event.EventTarget
+
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
-import net.ccbluex.liquidbounce.utils.extensions.SharedScopes
-import net.ccbluex.liquidbounce.utils.extensions.block
+import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
+import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
@@ -24,6 +24,7 @@ import net.ccbluex.liquidbounce.config.block
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.block.Block
 import net.minecraft.init.Blocks.air
 import net.minecraft.util.BlockPos
@@ -50,15 +51,15 @@ object BlockESP : Module("BlockESP", Category.VISUAL, hideModule = false) {
         posList.clear()
     }
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
+
+    val onUpdate = handler<UpdateEvent> {
         if (searchTimer.hasTimePassed(1000) && (searchJob?.isActive != true)) {
             val radius = radius
             val selectedBlock = Block.getBlockById(block)
             val blockLimit = blockLimit
 
             if (selectedBlock == null || selectedBlock == air)
-                return
+                return@handler
 
             searchJob = SharedScopes.Default.launch {
                 posList.removeIf {
@@ -72,8 +73,8 @@ object BlockESP : Module("BlockESP", Category.VISUAL, hideModule = false) {
         }
     }
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
+
+    val onRender3D = handler<Render3DEvent> {
         val color = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
         when (mode) {
             "Box" -> posList.forEach { drawBlockBox(it, color, true) }

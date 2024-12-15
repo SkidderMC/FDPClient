@@ -6,7 +6,8 @@
 package net.ccbluex.liquidbounce.ui.client.altmanager.menus
 
 import me.liuli.elixir.account.CrackedAccount
-import net.ccbluex.liquidbounce.event.EventManager.callEvent
+import net.ccbluex.liquidbounce.event.EventManager
+import net.ccbluex.liquidbounce.event.EventManager.call
 import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.file.FileManager.accountsConfig
@@ -171,7 +172,7 @@ class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: B
                 crackedAccount.session.username, crackedAccount.session.uuid,
                 crackedAccount.session.token, crackedAccount.session.type
             )
-            callEvent(SessionUpdateEvent)
+            call(SessionUpdateEvent)
             status = "§aLogged into §f§l${mc.session.username}§a."
         } else {
             accountsConfig.addAccount(crackedAccount)

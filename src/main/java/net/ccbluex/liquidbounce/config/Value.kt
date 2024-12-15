@@ -112,8 +112,8 @@ abstract class Value<T>(
     protected open fun onChanged(oldValue: T, newValue: T) {}
     open fun isSupported() = isSupported?.invoke() != false
 
-    open fun setSupport(value: (Boolean) -> () -> Boolean) {
-        isSupported = value(isSupported())
+    open fun setSupport(condition: (Boolean) -> Boolean) {
+        isSupported = { condition(isSupported()) }
     }
 
     // Support for delegating values using the `by` keyword.

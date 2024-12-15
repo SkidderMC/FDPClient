@@ -133,7 +133,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 onGround,
                 EventState.PRE
         );
-        EventManager.INSTANCE.callEvent(motionEvent);
+        EventManager.INSTANCE.call(motionEvent);
 
         final InvMove inventoryMove = InvMove.INSTANCE;
         final Sneak sneak = Sneak.INSTANCE;
@@ -221,9 +221,9 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             }
         }
 
-        EventManager.INSTANCE.callEvent(new MotionEvent(posX, getEntityBoundingBox().minY, posZ, onGround, EventState.POST));
+        EventManager.INSTANCE.call(new MotionEvent(posX, getEntityBoundingBox().minY, posZ, onGround, EventState.POST));
 
-        EventManager.INSTANCE.callEvent(RotationUpdateEvent.INSTANCE);
+        EventManager.INSTANCE.call(RotationUpdateEvent.INSTANCE);
 
         ci.cancel();
     }
@@ -258,7 +258,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         if (noClip) {
             event.cancelEvent();
         }
-        EventManager.INSTANCE.callEvent(event);
+        EventManager.INSTANCE.call(event);
 
         if (event.isCancelled()) {
             callbackInfoReturnable.setReturnValue(false);
@@ -270,7 +270,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
      */
     @Overwrite
     public void onLivingUpdate() {
-        EventManager.INSTANCE.callEvent(UpdateEvent.INSTANCE);
+        EventManager.INSTANCE.call(UpdateEvent.INSTANCE);
 
         if (sprintingTicksLeft > 0) {
             --sprintingTicksLeft;
@@ -352,7 +352,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
         if (movementInput.sneak) {
             final SneakSlowDownEvent sneakSlowDownEvent = new SneakSlowDownEvent(movementInput.moveStrafe, movementInput.moveForward);
-            EventManager.INSTANCE.callEvent(sneakSlowDownEvent);
+            EventManager.INSTANCE.call(sneakSlowDownEvent);
             movementInput.moveStrafe = sneakSlowDownEvent.getStrafe();
             movementInput.moveForward = sneakSlowDownEvent.getForward();
             // Add the sneak effect back
@@ -360,7 +360,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             modifiedInput.moveStrafe *= 0.3f;
             // Call again the event but this time have the modifiedInput
             final SneakSlowDownEvent secondSneakSlowDownEvent = new SneakSlowDownEvent(modifiedInput.moveStrafe, modifiedInput.moveForward);
-            EventManager.INSTANCE.callEvent(secondSneakSlowDownEvent);
+            EventManager.INSTANCE.call(secondSneakSlowDownEvent);
             modifiedInput.moveStrafe = secondSneakSlowDownEvent.getStrafe();
             modifiedInput.moveForward = secondSneakSlowDownEvent.getForward();
         }
@@ -372,7 +372,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
         if (isUsingItem && !isRiding()) {
             final SlowDownEvent slowDownEvent = new SlowDownEvent(0.2F, 0.2F);
-            EventManager.INSTANCE.callEvent(slowDownEvent);
+            EventManager.INSTANCE.call(slowDownEvent);
             movementInput.moveStrafe *= slowDownEvent.getStrafe();
             movementInput.moveForward *= slowDownEvent.getForward();
             sprintToggleTimer = 0;
@@ -404,7 +404,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             setSprinting(false);
         }
 
-        EventManager.INSTANCE.callEvent(PostSprintUpdateEvent.INSTANCE);
+        EventManager.INSTANCE.call(PostSprintUpdateEvent.INSTANCE);
 
         sprint.correctSprintState(modifiedInput, isUsingItem);
 
@@ -474,7 +474,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Override
     public void moveEntity(double x, double y, double z) {
         MoveEvent moveEvent = new MoveEvent(x, y, z);
-        EventManager.INSTANCE.callEvent(moveEvent);
+        EventManager.INSTANCE.call(moveEvent);
 
         if (moveEvent.isCancelled()) return;
 
@@ -580,7 +580,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
             if (stepHeight > 0f && flag1 && (d3 != x || d5 != z)) {
                 StepEvent stepEvent = new StepEvent(stepHeight);
-                EventManager.INSTANCE.callEvent(stepEvent);
+                EventManager.INSTANCE.call(stepEvent);
                 double d11 = x;
                 double d7 = y;
                 double d8 = z;
@@ -661,7 +661,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                     z = d8;
                     setEntityBoundingBox(axisalignedbb3);
                 } else {
-                    EventManager.INSTANCE.callEvent(StepConfirmEvent.INSTANCE);
+                    EventManager.INSTANCE.call(StepConfirmEvent.INSTANCE);
                 }
             }
 
@@ -775,10 +775,10 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Inject(method = "onUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/AbstractClientPlayer;onUpdate()V", shift = At.Shift.BEFORE, ordinal = 0), cancellable = true)
     private void preTickEvent(CallbackInfo ci) {
         final PlayerTickEvent tickEvent = new PlayerTickEvent(EventState.PRE);
-        EventManager.INSTANCE.callEvent(tickEvent);
+        EventManager.INSTANCE.call(tickEvent);
 
         if (tickEvent.isCancelled()) {
-            EventManager.INSTANCE.callEvent(RotationUpdateEvent.INSTANCE);
+            EventManager.INSTANCE.call(RotationUpdateEvent.INSTANCE);
             ci.cancel();
         }
     }
@@ -786,6 +786,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
     @Inject(method = "onUpdate", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/AbstractClientPlayer;onUpdate()V", shift = At.Shift.AFTER, ordinal = 0))
     private void postTickEvent(CallbackInfo ci) {
         final PlayerTickEvent tickEvent = new PlayerTickEvent(EventState.POST);
-        EventManager.INSTANCE.callEvent(tickEvent);
+        EventManager.INSTANCE.call(tickEvent);
     }
 }

@@ -66,27 +66,26 @@ object InvMove : Module("InvMove", Category.MOVEMENT, gameDetecting = false, hid
         mc.gameSettings.keyBindSprint
     )
 
-    @EventTarget
-    fun onUpdate(event: UpdateEvent) {
-        val player = mc.thePlayer ?: return
+    val onUpdate = handler<UpdateEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
         val screen = mc.currentScreen
 
         // Don't make player move when chat or ESC menu are open
         if (screen is GuiChat || screen is GuiIngameMenu)
-            return
+            return@handler
 
         if (undetectable && (screen != null && screen !is GuiHudDesigner && screen !is ClickGui))
-            return
+            return@handler
 
         if (notInChests && screen is GuiChest)
-            return
+            return@handler
 
         if (screen is GuiInventory || screen is GuiChest) {
             player.motionX *= inventoryMotion
             player.motionZ *= inventoryMotion
         }
 
-        if (!fullMovements && (screen is GuiChat || screen is GuiIngameMenu)) return
+        if (!fullMovements && (screen is GuiChat || screen is GuiIngameMenu)) return@handler
 
         if (silentlyCloseAndReopen && screen is GuiInventory) {
             if (canClickInventory(closeWhenViolating = true) && !reopenOnClick)
@@ -123,20 +122,17 @@ object InvMove : Module("InvMove", Category.MOVEMENT, gameDetecting = false, hid
         }
     }
 
-    @EventTarget
-    fun onStrafe(event: StrafeEvent) {
+    val onStrafe = handler<StrafeEvent> { event ->
         if (isIntave) {
             mc.gameSettings.keyBindSneak.pressed = true
         }
     }
 
-    @EventTarget
-    fun onJump(event: JumpEvent) {
+    val onJump = handler<JumpEvent> { event ->
         if (isIntave) event.cancelEvent()
     }
 
-    @EventTarget
-    fun onClick(event: ClickWindowEvent) {
+    val onClick = handler<ClickWindowEvent> { event ->
         if (!canClickInventory()) event.cancelEvent()
         else if (reopenOnClick) {
             hasScheduledInLastLoop = false
@@ -148,13 +144,11 @@ object InvMove : Module("InvMove", Category.MOVEMENT, gameDetecting = false, hid
         }
     }
 
-    @EventTarget
-    fun onMotion(event: MotionEvent) {
+    val onMotion = handler<MotionEvent> { event ->
         updateKeyState()
     }
 
-    @EventTarget
-    fun onScreen(event: ScreenEvent) {
+    val onScreen = handler<ScreenEvent> { event ->
         updateKeyState()
     }
 

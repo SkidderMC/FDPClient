@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.event.EventTarget
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -19,6 +18,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
+import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.entity.item.EntityTNTPrimed
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
@@ -34,9 +34,8 @@ object TNTESP : Module("TNTESP", Category.VISUAL, spacedName = "TNT ESP", hideMo
 
     private val renderModes = mapOf("Lines" to GL_LINES, "Triangles" to GL_TRIANGLES, "Filled" to GL_QUADS)
 
-    @EventTarget
-    fun onRender3D(event: Render3DEvent) {
-        val renderMode = renderModes[mode] ?: return
+    val onRender3D = handler<Render3DEvent> {
+        val renderMode = renderModes[mode] ?: return@handler
         val color = if (rainbow) ColorUtils.rainbow().withAlpha(colors.color().alpha) else colors.color()
 
         val width = lineWidth.takeIf { mode == "Lines" }
