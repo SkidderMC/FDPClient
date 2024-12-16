@@ -181,8 +181,10 @@ public class SideGui extends GuiPanel {
             for (int i = 0; i < themeColors.length; i++) {
                 String colorName = themeColors[i];
 
+                boolean isHovered = DrRenderUtils.isHovering(colorX, colorY, colorWidth, colorHeight, mouseX, mouseY);
+                boolean mousePressed = Mouse.isButtonDown(0);
+
                 if (colorY + colorHeight > drag.getY() + 60 && colorY < maxVisibleHeight) {
-                    boolean isHovered = DrRenderUtils.isHovering(colorX, colorY, colorWidth, colorHeight, mouseX, mouseY);
                     boolean isSelected = ClientThemesUtils.INSTANCE.getClientColorMode().equals(colorName);
 
                     int startColor = ClientThemesUtils.INSTANCE.getColorFromName(colorName, 0).getRGB();
@@ -219,6 +221,12 @@ public class SideGui extends GuiPanel {
                             (int) (colorY + colorHeight / 2 - (float) Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.getHeight() / 2),
                             Color.WHITE.getRGB()
                     );
+                }
+
+                if (isHovered && mousePressed) {
+                    ClientThemesUtils.INSTANCE.setClientColorMode(colorName);
+                    FDPClient.INSTANCE.getFileManager().saveConfig(FDPClient.INSTANCE.getFileManager().getColorThemeConfig(), true);
+                    ClientUtils.INSTANCE.getLOGGER().info("Saved color theme configuration: " + colorName);
                 }
 
                 colorX += colorWidth + 10;
