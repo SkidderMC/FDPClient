@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.file.FileManager.accountsConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
+import net.ccbluex.liquidbounce.handler.lang.translationMenu
 import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiLoginIntoAccount
 import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiSessionLogin
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
@@ -89,41 +90,28 @@ class GuiAltManager(private val prevGui: GuiScreen) : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        assumeNonVolatile = true
+        assumeNonVolatile {
+            drawBackground(0)
+            altsList.drawScreen(mouseX, mouseY, partialTicks)
+            Fonts.font40.drawCenteredStringWithShadow(translationMenu("altManager"), width / 2f, 6f, 0xffffff)
+            Fonts.font35.drawCenteredStringWithShadow(
+                if (searchField.text.isEmpty()) "${accountsConfig.accounts.size} Alts" else altsList.accounts.size.toString() + " Search Results",
+                width / 2f,
+                18f,
+                0xffffff
+            )
+            Fonts.font35.drawCenteredStringWithShadow(status, width / 2f, 32f, 0xffffff)
+            Fonts.font35.drawStringWithShadow(
+                "§7User: §a${mc.getSession().username}", 6f, 6f, 0xffffff
+            )
 
-        drawBackground(0)
-        altsList.drawScreen(mouseX, mouseY, partialTicks)
-        this.drawCenteredString(mc.fontRendererObj, "Alt Manager", width / 2, 6, 0xffffff)
-        this.drawCenteredString(mc.fontRendererObj, "§7Status: §a$status", width / 2, 25, 0xffffff)
-        this.drawString(
-            mc.fontRendererObj,
-            if (searchField.text.isEmpty()) "${accountsConfig.accounts.size} Alts" else altsList.accounts.size.toString() + " Search Results",
-            width / 2,
-            18,
-            0xffffff
-        )
-        this.drawString(
-            mc.fontRendererObj, "§7Ign: §a${mc.getSession().username}",
-            6,
-            6,
-            0xffffff
-        )
-        this.drawString(
-            mc.fontRendererObj, "§7Type: §a${
-                if (isValidTokenOffline(
-                        mc.getSession().token
-                    )
-                ) "Microsoft" else "Cracked"
-            }", 6, 15, 0xffffff
-        )
-        searchField.drawTextBox()
-        if (searchField.text.isEmpty() && !searchField.isFocused) Fonts.font40.drawStringWithShadow(
-            "§7Search...", searchField.xPosition + 4f, 17f, 0xffffff
-        )
+            searchField.drawTextBox()
+            if (searchField.text.isEmpty() && !searchField.isFocused) Fonts.font40.drawStringWithShadow(
+                "§7Search...", searchField.xPosition + 4f, 17f, 0xffffff
+            )
+        }
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
-
-        assumeNonVolatile = false
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

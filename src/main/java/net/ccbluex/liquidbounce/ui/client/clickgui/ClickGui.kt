@@ -132,62 +132,60 @@ object ClickGui : GuiScreen() {
 
     override fun drawScreen(x: Int, y: Int, partialTicks: Float) {
         // Enable DisplayList optimization
-        assumeNonVolatile = true
+        assumeNonVolatile {
+            mouseX = (x / scale).roundToInt()
+            mouseY = (y / scale).roundToInt()
 
-        mouseX = (x / scale).roundToInt()
-        mouseY = (y / scale).roundToInt()
+            drawDefaultBackground()
+            drawImage(hudIcon, 9, height - 41, 32, 32)
 
-        drawDefaultBackground()
-        drawImage(hudIcon, 9, height - 41, 32, 32)
+            val scale = scale.toDouble()
+            glScaled(scale, scale, scale)
 
-        val scale = scale.toDouble()
-        glScaled(scale, scale, scale)
+            for (panel in panels) {
+                panel.updateFade(deltaTime)
+                panel.drawScreenAndClick(mouseX, mouseY)
+            }
 
-        for (panel in panels) {
-            panel.updateFade(deltaTime)
-            panel.drawScreenAndClick(mouseX, mouseY)
-        }
+            descriptions@ for (panel in panels.reversed()) {
+                // Don't draw hover text when hovering over a panel header.
+                if (panel.isHovered(mouseX, mouseY)) break
 
-        descriptions@ for (panel in panels.reversed()) {
-            // Don't draw hover text when hovering over a panel header.
-            if (panel.isHovered(mouseX, mouseY)) break
-
-            for (element in panel.elements) {
-                if (element is ButtonElement) {
-                    if (element.isVisible && element.hoverText.isNotBlank() && element.isHovered(
-                            mouseX, mouseY
-                        ) && element.y <= panel.y + panel.fade
-                    ) {
-                        style.drawHoverText(mouseX, mouseY, element.hoverText)
-                        // Don't draw hover text for any elements below.
-                        break@descriptions
+                for (element in panel.elements) {
+                    if (element is ButtonElement) {
+                        if (element.isVisible && element.hoverText.isNotBlank() && element.isHovered(
+                                mouseX, mouseY
+                            ) && element.y <= panel.y + panel.fade
+                        ) {
+                            style.drawHoverText(mouseX, mouseY, element.hoverText)
+                            // Don't draw hover text for any elements below.
+                            break@descriptions
+                        }
                     }
                 }
             }
-        }
 
-        if (Mouse.hasWheel()) {
-            val wheel = Mouse.getDWheel()
-            if (wheel != 0) {
-                var handledScroll = false
+            if (Mouse.hasWheel()) {
+                val wheel = Mouse.getDWheel()
+                if (wheel != 0) {
+                    var handledScroll = false
 
-                // Handle foremost panel.
-                for (panel in panels.reversed()) {
-                    if (panel.handleScroll(mouseX, mouseY, wheel)) {
-                        handledScroll = true
-                        break
+                    // Handle foremost panel.
+                    for (panel in panels.reversed()) {
+                        if (panel.handleScroll(mouseX, mouseY, wheel)) {
+                            handledScroll = true
+                            break
+                        }
                     }
+
+                    if (!handledScroll) handleScroll(wheel)
                 }
-
-                if (!handledScroll) handleScroll(wheel)
             }
+
+            disableLighting()
+            RenderHelper.disableStandardItemLighting()
+            glScaled(1.0, 1.0, 1.0)
         }
-
-        disableLighting()
-        RenderHelper.disableStandardItemLighting()
-        glScaled(1.0, 1.0, 1.0)
-
-        assumeNonVolatile = false
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
 

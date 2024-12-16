@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Horizontal
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side.Vertical
-import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColor
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsFloat
@@ -24,7 +24,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawArrayRect
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientFontShader
@@ -186,161 +186,291 @@ class Arraylist(
     }
 
     override fun drawElement(): Border? {
-        AWTFontRenderer.assumeNonVolatile = true
+        assumeNonVolatile {
+            // Slide animation - update every render
+            val delta = deltaTime
 
-        // Slide animation - update every render
-        val delta = deltaTime
+            for (module in moduleManager.modules) {
+                val shouldShow = (module.inArray && module.state && (inactiveStyle != "Hide" || module.isActive))
 
-        for (module in moduleManager.modules) {
-            val shouldShow = (module.inArray && module.state && (inactiveStyle != "Hide" || module.isActive))
+                if (!shouldShow && module.slide <= 0f)
+                    continue
 
-            if (!shouldShow && module.slide <= 0f)
-                continue
+                val displayString = getDisplayString(module)
 
-            val displayString = getDisplayString(module)
+                val width = font.getStringWidth(displayString)
 
-            val width = font.getStringWidth(displayString)
-
-            when (animation) {
-                "Slide" -> {
-                    // If modules become inactive because they only work when in game, animate them as if they got disabled
-                    module.slideStep += if (shouldShow) delta / 4F else -delta / 4F
-                    if (shouldShow) {
-                        if (module.slide < width) {
+                when (animation) {
+                    "Slide" -> {
+                        // If modules become inactive because they only work when in game, animate them as if they got disabled
+                        module.slideStep += if (shouldShow) delta / 4F else -delta / 4F
+                        if (shouldShow) {
+                            if (module.slide < width) {
+                                module.slide = AnimationUtils.easeOut(module.slideStep, width.toFloat()) * width
+                            }
+                        } else {
                             module.slide = AnimationUtils.easeOut(module.slideStep, width.toFloat()) * width
                         }
-                    } else {
-                        module.slide = AnimationUtils.easeOut(module.slideStep, width.toFloat()) * width
+
+                        module.slide = module.slide.coerceIn(0F, width.toFloat())
+                        module.slideStep = module.slideStep.coerceIn(0F, width.toFloat())
                     }
 
-                    module.slide = module.slide.coerceIn(0F, width.toFloat())
-                    module.slideStep = module.slideStep.coerceIn(0F, width.toFloat())
-                }
-
-                "Smooth" -> {
-                    val target = if (shouldShow) width.toDouble() else -width / 5.0
-                    module.slide =
-                        AnimationUtil.base(module.slide.toDouble(), target, animationSpeed.toDouble()).toFloat()
-                }
-            }
-        }
-        // Draw arraylist
-        val textCustomColor = textColors.color(1).rgb
-        val rectCustomColor = rectColors.color().rgb
-        val backgroundCustomColor = bgColors.color().rgb
-        val textSpacer = textHeight + space
-
-        val rainbowOffset = System.currentTimeMillis() % 10000 / 10000F
-        val rainbowX = if (rainbowX == 0f) 0f else 1f / rainbowX
-        val rainbowY = if (rainbowY == 0f) 0f else 1f / rainbowY
-
-        val gradientOffset = System.currentTimeMillis() % 10000 / 10000F
-        val gradientX = if (gradientX == 0f) 0f else 1f / gradientX
-        val gradientY = if (gradientY == 0f) 0f else 1f / gradientY
-
-        modules.forEachIndexed { index, module ->
-            var yPos = (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
-                    if (side.vertical == Vertical.DOWN) index + 1 else index
-            if (animation == "Smooth") {
-                module.yAnim = AnimationUtil.base(module.yAnim.toDouble(), yPos.toDouble(), 0.2).toFloat()
-                yPos = module.yAnim
-            }
-            val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
-
-            val markAsInactive = inactiveStyle == "Color" && !module.isActive
-
-            val displayString = getDisplayString(module)
-            val displayStringWidth = font.getStringWidth(displayString)
-
-            val previousDisplayString = getDisplayString(modules[(if (index > 0) index else 1) - 1])
-            val previousDisplayStringWidth = font.getStringWidth(previousDisplayString)
-
-            when (side.horizontal) {
-                Horizontal.RIGHT, Horizontal.MIDDLE -> {
-                    val xPos = -module.slide - 2
-
-                    GradientShader.begin(
-                        !markAsInactive && backgroundMode == "Gradient",
-                        gradientX,
-                        gradientY,
-                        bgGradColors.toColorArray(maxBackgroundGradientColors),
-                        gradientBackgroundSpeed,
-                        gradientOffset
-                    ).use {
-                        RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
-                            val themeColor = getColor(index).rgb
-
-                            val fadeColor = fade(
-                                textColors,
-                                index * fadeDistanceValue,
-                                100
-                            ).rgb
-
-                            drawRoundedRect(
-                                xPos - if (rectMode == "Right") 5 else 2,
-                                yPos,
-                                if (rectMode == "Right") -3F else 0F,
-                                yPos + textSpacer,
-                                when (backgroundMode) {
-                                    "Gradient" -> 0
-                                    "Rainbow" -> 0
-                                    "Random" -> moduleColor
-                                    "Fade" -> fadeColor
-                                    "Theme" -> themeColor
-                                    else -> backgroundCustomColor
-                                },
-                                roundedBackgroundRadius
-                            )
-                        }
+                    "Smooth" -> {
+                        val target = if (shouldShow) width.toDouble() else -width / 5.0
+                        module.slide =
+                            AnimationUtil.base(module.slide.toDouble(), target, animationSpeed.toDouble()).toFloat()
                     }
+                }
+            }
+            // Draw arraylist
+            val textCustomColor = textColors.color(1).rgb
+            val rectCustomColor = rectColors.color().rgb
+            val backgroundCustomColor = bgColors.color().rgb
+            val textSpacer = textHeight + space
 
-                    GradientFontShader.begin(
-                        !markAsInactive && textColorMode == "Gradient",
-                        gradientX,
-                        gradientY,
-                        textGradColors.toColorArray(maxTextGradientColors),
-                        gradientTextSpeed,
-                        gradientOffset
-                    ).use {
-                        RainbowFontShader.begin(!markAsInactive && textColorMode == "Rainbow",
-                            rainbowX,
-                            rainbowY,
-                            rainbowOffset
+            val rainbowOffset = System.currentTimeMillis() % 10000 / 10000F
+            val rainbowX = if (rainbowX == 0f) 0f else 1f / rainbowX
+            val rainbowY = if (rainbowY == 0f) 0f else 1f / rainbowY
+
+            val gradientOffset = System.currentTimeMillis() % 10000 / 10000F
+            val gradientX = if (gradientX == 0f) 0f else 1f / gradientX
+            val gradientY = if (gradientY == 0f) 0f else 1f / gradientY
+
+            modules.forEachIndexed { index, module ->
+                var yPos = (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) *
+                        if (side.vertical == Vertical.DOWN) index + 1 else index
+                if (animation == "Smooth") {
+                    module.yAnim = AnimationUtil.base(module.yAnim.toDouble(), yPos.toDouble(), 0.2).toFloat()
+                    yPos = module.yAnim
+                }
+                val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
+
+                val markAsInactive = inactiveStyle == "Color" && !module.isActive
+
+                val displayString = getDisplayString(module)
+                val displayStringWidth = font.getStringWidth(displayString)
+
+                val previousDisplayString = getDisplayString(modules[(if (index > 0) index else 1) - 1])
+                val previousDisplayStringWidth = font.getStringWidth(previousDisplayString)
+
+                when (side.horizontal) {
+                    Horizontal.RIGHT, Horizontal.MIDDLE -> {
+                        val xPos = -module.slide - 2
+
+                        GradientShader.begin(
+                            !markAsInactive && backgroundMode == "Gradient",
+                            gradientX,
+                            gradientY,
+                            bgGradColors.toColorArray(maxBackgroundGradientColors),
+                            gradientBackgroundSpeed,
+                            gradientOffset
                         ).use {
-                            val themeTextColor = getColor(index).rgb
+                            RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
+                                val themeColor = getColor(index).rgb
 
-                            val fadeColor = fade(
-                                textColors,
-                                index * fadeDistanceValue,
-                                100
-                            ).rgb
+                                val fadeColor = fade(
+                                    textColors,
+                                    index * fadeDistanceValue,
+                                    100
+                                ).rgb
 
-                            font.drawString(
-                                displayString, xPos - if (rectMode == "Right") 3 else 0, yPos + textY,
-                                if (markAsInactive) inactiveColor
-                                else when (textColorMode) {
-                                    "Gradient" -> 0
-                                    "Rainbow" -> 0
-                                    "Random" -> moduleColor
-                                    "Fade" -> fadeColor
-                                    "Theme" -> themeTextColor
-                                    else -> textCustomColor
-                                },
-                                textShadow
-                            )
+                                drawRoundedRect(
+                                    xPos - if (rectMode == "Right") 5 else 2,
+                                    yPos,
+                                    if (rectMode == "Right") -3F else 0F,
+                                    yPos + textSpacer,
+                                    when (backgroundMode) {
+                                        "Gradient" -> 0
+                                        "Rainbow" -> 0
+                                        "Random" -> moduleColor
+                                        "Fade" -> fadeColor
+                                        "Theme" -> themeColor
+                                        else -> backgroundCustomColor
+                                    },
+                                    roundedBackgroundRadius
+                                )
+                            }
+                        }
+
+                        GradientFontShader.begin(
+                            !markAsInactive && textColorMode == "Gradient",
+                            gradientX,
+                            gradientY,
+                            textGradColors.toColorArray(maxTextGradientColors),
+                            gradientTextSpeed,
+                            gradientOffset
+                        ).use {
+                            RainbowFontShader.begin(
+                                !markAsInactive && textColorMode == "Rainbow",
+                                rainbowX,
+                                rainbowY,
+                                rainbowOffset
+                            ).use {
+                                val themeTextColor = getColor(index).rgb
+
+                                val fadeColor = fade(
+                                    textColors,
+                                    index * fadeDistanceValue,
+                                    100
+                                ).rgb
+
+                                font.drawString(
+                                    displayString, xPos - if (rectMode == "Right") 3 else 0, yPos + textY,
+                                    if (markAsInactive) inactiveColor
+                                    else when (textColorMode) {
+                                        "Gradient" -> 0
+                                        "Rainbow" -> 0
+                                        "Random" -> moduleColor
+                                        "Fade" -> fadeColor
+                                        "Theme" -> themeTextColor
+                                        else -> textCustomColor
+                                    },
+                                    textShadow
+                                )
+                            }
+                        }
+
+                        GradientShader.begin(
+                            !markAsInactive && isCustomRectGradientSupported,
+                            gradientX,
+                            gradientY,
+                            rectGradColors.toColorArray(maxRectGradientColors),
+                            gradientRectSpeed,
+                            gradientOffset
+                        ).use {
+                            if (rectMode != "None") {
+                                RainbowShader.begin(
+                                    !markAsInactive && rectColorMode == "Rainbow",
+                                    rainbowX,
+                                    rainbowY,
+                                    rainbowOffset
+                                ).use {
+                                    val fadeColor = fade(
+                                        textColors,
+                                        index * fadeDistanceValue,
+                                        100
+                                    ).rgb
+
+                                    val themeColor = getColor(index).rgb
+
+                                    val rectColor =
+                                        if (markAsInactive) inactiveColor
+                                        else when (rectColorMode) {
+                                            "Gradient" -> 0
+                                            "Rainbow" -> 0
+                                            "Random" -> moduleColor
+                                            "Fade" -> fadeColor
+                                            "Theme" -> themeColor
+                                            else -> rectCustomColor
+                                        }
+
+                                    when (rectMode) {
+                                        "Left" -> drawRoundedRect(
+                                            xPos - 5,
+                                            yPos,
+                                            xPos - 2,
+                                            yPos + textSpacer,
+                                            rectColor,
+                                            roundedRectRadius
+                                        )
+
+                                        "Right" -> drawRoundedRect(
+                                            -3F,
+                                            yPos,
+                                            0F,
+                                            yPos + textSpacer,
+                                            rectColor,
+                                            roundedRectRadius
+                                        )
+
+                                        "Outline" -> {
+                                            drawRect(-1F, yPos - 1F, 0F, yPos + textSpacer, rectColor)
+                                            drawRect(xPos - 3, yPos, xPos - 2, yPos + textSpacer, rectColor)
+
+                                            if (module == modules.first()) {
+                                                drawRect(xPos - 3, yPos - 1F, 0F, yPos, rectColor)
+                                            }
+
+                                            drawRect(
+                                                xPos - 3 - (previousDisplayStringWidth - displayStringWidth),
+                                                yPos,
+                                                xPos - 2,
+                                                yPos + 1,
+                                                rectColor
+                                            )
+
+                                            if (module == modules.last()) {
+                                                drawRect(xPos - 3, yPos + textSpacer, 0F, yPos + textSpacer + 1, rectColor)
+                                            }
+                                        }
+
+                                        "Special" -> {
+                                            if (module == modules[0]) {
+                                                drawRoundedRect(xPos - 2, yPos, 0F, yPos - 1, rectColor, roundedRectRadius)
+                                            }
+                                            if (module == modules[modules.size - 1]) {
+                                                drawRoundedRect(xPos - 2, yPos + textHeight, 0F, yPos + textHeight + 1, rectColor, roundedRectRadius)
+                                            }
+                                        }
+
+                                        "Top" -> {
+                                            if (module == modules[0]) {
+                                                drawRoundedRect(xPos - 2, yPos, 0F, yPos - 1, rectColor, roundedRectRadius)
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
 
-                    GradientShader.begin(
-                        !markAsInactive && isCustomRectGradientSupported,
-                        gradientX,
-                        gradientY,
-                        rectGradColors.toColorArray(maxRectGradientColors),
-                        gradientRectSpeed,
-                        gradientOffset
-                    ).use {
-                        if (rectMode != "None") {
-                            RainbowShader.begin(!markAsInactive && rectColorMode == "Rainbow",
+                    Horizontal.LEFT -> {
+                        val width = font.getStringWidth(displayString)
+                        val xPos = -(width - module.slide) + if (rectMode == "Left") 5 else 2
+
+                        GradientShader.begin(
+                            !markAsInactive && backgroundMode == "Gradient",
+                            gradientX,
+                            gradientY,
+                            bgGradColors.toColorArray(maxBackgroundGradientColors),
+                            gradientBackgroundSpeed,
+                            gradientOffset
+                        ).use {
+                            RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
+                                val fadeColor = fade(
+                                    textColors,
+                                    index * fadeDistanceValue,
+                                    100
+                                ).rgb
+
+                                val themeColor = getColor(index).rgb
+
+                                drawRoundedRect(
+                                    0F, yPos, xPos + width + if (rectMode == "Right") 5 else 2, yPos + textSpacer,
+                                    when (backgroundMode) {
+                                        "Gradient" -> 0
+                                        "Rainbow" -> 0
+                                        "Random" -> moduleColor
+                                        "Fade" -> fadeColor
+                                        "Theme" -> themeColor
+                                        else -> backgroundCustomColor
+                                    },
+                                    roundedBackgroundRadius
+                                )
+                            }
+                        }
+
+                        GradientFontShader.begin(
+                            !markAsInactive && textColorMode == "Gradient",
+                            gradientX,
+                            gradientY,
+                            textGradColors.toColorArray(maxTextGradientColors),
+                            gradientTextSpeed,
+                            gradientOffset
+                        ).use {
+                            RainbowFontShader.begin(
+                                !markAsInactive && textColorMode == "Rainbow",
                                 rainbowX,
                                 rainbowY,
                                 rainbowOffset
@@ -353,267 +483,129 @@ class Arraylist(
 
                                 val themeColor = getColor(index).rgb
 
-                                val rectColor =
+                                font.drawString(
+                                    displayString, xPos, yPos + textY,
                                     if (markAsInactive) inactiveColor
-                                    else when (rectColorMode) {
+                                    else when (textColorMode) {
                                         "Gradient" -> 0
                                         "Rainbow" -> 0
                                         "Random" -> moduleColor
                                         "Fade" -> fadeColor
                                         "Theme" -> themeColor
-                                        else -> rectCustomColor
-                                    }
+                                        else -> textCustomColor
+                                    },
+                                    textShadow
+                                )
+                            }
+                        }
 
-                                when (rectMode) {
-                                    "Left" -> drawRoundedRect(
-                                        xPos - 5,
-                                        yPos,
-                                        xPos - 2,
-                                        yPos + textSpacer,
-                                        rectColor,
-                                        roundedRectRadius
-                                    )
+                        GradientShader.begin(
+                            !markAsInactive && isCustomRectGradientSupported,
+                            gradientX,
+                            gradientY,
+                            rectGradColors.toColorArray(maxRectGradientColors),
+                            gradientRectSpeed,
+                            gradientOffset
+                        ).use {
+                            RainbowShader.begin(
+                                !markAsInactive && rectColorMode == "Rainbow",
+                                rainbowX,
+                                rainbowY,
+                                rainbowOffset
+                            ).use {
+                                if (rectMode != "None") {
+                                    val fadeColor = fade(
+                                        textColors,
+                                        index * fadeDistanceValue,
+                                        100
+                                    ).rgb
 
-                                    "Right" -> drawRoundedRect(
-                                        -3F,
-                                        yPos,
-                                        0F,
-                                        yPos + textSpacer,
-                                        rectColor,
-                                        roundedRectRadius
-                                    )
+                                    val themeColor = getColor(index).rgb
 
-                                    "Outline" -> drawArrayRect(
-                                        -1F, yPos - 1F, 0F,
-                                        yPos + textHeight, rectColor
-                                    ).also {
-                                        drawArrayRect(
-                                            xPos - 3, yPos, xPos - 2, yPos + textHeight,
-                                            rectColor
+                                    val rectColor =
+                                        if (markAsInactive) inactiveColor
+                                        else when (rectColorMode) {
+                                            "Gradient" -> 0
+                                            "Rainbow" -> 0
+                                            "Random" -> moduleColor
+                                            "Fade" -> fadeColor
+                                            "Theme" -> themeColor
+                                            else -> rectCustomColor
+                                        }
+
+                                    when (rectMode) {
+                                        "Left" -> drawRoundedRect(
+                                            0F,
+                                            yPos - 1,
+                                            3F,
+                                            yPos + textSpacer,
+                                            rectColor,
+                                            roundedRectRadius
                                         )
 
-                                        if (module != modules[0]) {
-                                            val displayStrings = getDisplayString(modules[index - 1])
-                                            drawArrayRect(
-                                                xPos - 3 - (font.getStringWidth(displayStrings) - font.getStringWidth(displayString)),
-                                                yPos,
-                                                xPos - 2,
-                                                yPos + 1,
+                                        "Right" -> drawRoundedRect(
+                                            xPos + width + 2,
+                                            yPos,
+                                            xPos + width + 2 + 3,
+                                            yPos + textSpacer,
+                                            rectColor,
+                                            roundedRectRadius
+                                        )
+
+                                        "Outline" -> {
+                                            drawRect(-1F, yPos - 1F, 0F, yPos + textSpacer, rectColor)
+                                            drawRect(
+                                                xPos + width + 2,
+                                                yPos - 1F,
+                                                xPos + width + 3,
+                                                yPos + textSpacer,
                                                 rectColor
                                             )
-                                            if (module == modules[modules.size - 1]) {
-                                                drawArrayRect(
-                                                    xPos - 3, yPos + textHeight, 0.0F,
-                                                    yPos + textHeight + 1,
+
+                                            if (module == modules.first()) {
+                                                drawRect(xPos + width + 2, yPos - 1, xPos + width + 3, yPos, rectColor)
+                                                drawRect(-1F, yPos - 1, xPos + width + 2, yPos, rectColor)
+                                            }
+
+                                            drawRect(
+                                                xPos + width + 2,
+                                                yPos - 1,
+                                                xPos + width + 3 + (previousDisplayStringWidth - displayStringWidth),
+                                                yPos,
+                                                rectColor
+                                            )
+
+                                            if (module == modules.last()) {
+                                                drawRect(
+                                                    xPos + width + 2,
+                                                    yPos + textSpacer,
+                                                    xPos + width + 3,
+                                                    yPos + textSpacer + 1,
+                                                    rectColor
+                                                )
+                                                drawRect(
+                                                    -1F,
+                                                    yPos + textSpacer,
+                                                    xPos + width + 2,
+                                                    yPos + textSpacer + 1,
                                                     rectColor
                                                 )
                                             }
-                                        } else {
-                                            drawArrayRect(
-                                                xPos - 3, yPos, 0F,
-                                                yPos - 1,
-                                                rectColor
-                                            )
-                                        }
-                                    }
-
-                                    "Special" -> {
-                                        if (module == modules[0]) {
-                                            drawRoundedRect(xPos - 2, yPos, 0F, yPos - 1, rectColor, roundedRectRadius)
-                                        }
-                                        if (module == modules[modules.size - 1]) {
-                                            drawRoundedRect(xPos - 2, yPos + textHeight, 0F, yPos + textHeight + 1, rectColor, roundedRectRadius)
-                                        }
-                                    }
-
-                                    "Top" -> {
-                                        if (module == modules[0]) {
-                                            drawRoundedRect(xPos - 2, yPos, 0F, yPos - 1, rectColor, roundedRectRadius)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Horizontal.LEFT -> {
-                    val width = font.getStringWidth(displayString)
-                    val xPos = -(width - module.slide) + if (rectMode == "Left") 5 else 2
-
-                    GradientShader.begin(
-                        !markAsInactive && backgroundMode == "Gradient",
-                        gradientX,
-                        gradientY,
-                        bgGradColors.toColorArray(maxBackgroundGradientColors),
-                        gradientBackgroundSpeed,
-                        gradientOffset
-                    ).use {
-                        RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
-                            val fadeColor = fade(
-                                textColors,
-                                index * fadeDistanceValue,
-                                100
-                            ).rgb
-
-                            val themeColor = getColor(index).rgb
-
-                            drawRoundedRect(
-                                0F, yPos, xPos + width + if (rectMode == "Right") 5 else 2, yPos + textSpacer,
-                                when (backgroundMode) {
-                                    "Gradient" -> 0
-                                    "Rainbow" -> 0
-                                    "Random" -> moduleColor
-                                    "Fade" -> fadeColor
-                                    "Theme" -> themeColor
-                                    else -> backgroundCustomColor
-                                },
-                                roundedBackgroundRadius
-                            )
-                        }
-                    }
-
-                    GradientFontShader.begin(
-                        !markAsInactive && textColorMode == "Gradient",
-                        gradientX,
-                        gradientY,
-                        textGradColors.toColorArray(maxTextGradientColors),
-                        gradientTextSpeed,
-                        gradientOffset
-                    ).use {
-                        RainbowFontShader.begin(
-                            !markAsInactive && textColorMode == "Rainbow",
-                            rainbowX,
-                            rainbowY,
-                            rainbowOffset
-                        ).use {
-                            val fadeColor = fade(
-                                textColors,
-                                index * fadeDistanceValue,
-                                100
-                            ).rgb
-
-                            val themeColor = getColor(index).rgb
-
-                            font.drawString(
-                                displayString, xPos, yPos + textY,
-                                if (markAsInactive) inactiveColor
-                                else when (textColorMode) {
-                                    "Gradient" -> 0
-                                    "Rainbow" -> 0
-                                    "Random" -> moduleColor
-                                    "Fade" -> fadeColor
-                                    "Theme" -> themeColor
-                                    else -> textCustomColor
-                                },
-                                textShadow
-                            )
-                        }
-                    }
-
-                    GradientShader.begin(
-                        !markAsInactive && isCustomRectGradientSupported,
-                        gradientX,
-                        gradientY,
-                        rectGradColors.toColorArray(maxRectGradientColors),
-                        gradientRectSpeed,
-                        gradientOffset
-                    ).use {
-                        RainbowShader.begin(
-                            !markAsInactive && rectColorMode == "Rainbow",
-                            rainbowX,
-                            rainbowY,
-                            rainbowOffset
-                        ).use {
-                            if (rectMode != "None") {
-                                val fadeColor = fade(
-                                    textColors,
-                                    index * fadeDistanceValue,
-                                    100
-                                ).rgb
-
-                                val themeColor = getColor(index).rgb
-
-                                val rectColor =
-                                    if (markAsInactive) inactiveColor
-                                    else when (rectColorMode) {
-                                        "Gradient" -> 0
-                                        "Rainbow" -> 0
-                                        "Random" -> moduleColor
-                                        "Fade" -> fadeColor
-                                        "Theme" -> themeColor
-                                        else -> rectCustomColor
-                                    }
-
-                                when (rectMode) {
-                                    "Left" -> drawRoundedRect(
-                                        0F,
-                                        yPos - 1,
-                                        3F,
-                                        yPos + textSpacer,
-                                        rectColor,
-                                        roundedRectRadius
-                                    )
-
-                                    "Right" -> drawRoundedRect(
-                                        xPos + width + 2,
-                                        yPos,
-                                        xPos + width + 2 + 3,
-                                        yPos + textSpacer,
-                                        rectColor,
-                                        roundedRectRadius
-                                    )
-
-                                    "Outline" -> {
-                                        drawArrayRect(-1F, yPos - 1F, 0F, yPos + textSpacer, rectColor)
-                                        drawArrayRect(xPos + width + 2,
-                                            yPos - 1F,
-                                            xPos + width + 3,
-                                            yPos + textSpacer,
-                                            rectColor
-                                        )
-
-                                        if (module == modules.first()) {
-                                            drawArrayRect(xPos + width + 2, yPos - 1, xPos + width + 3, yPos, rectColor)
-                                            drawArrayRect(-1F, yPos - 1, xPos + width + 2, yPos, rectColor)
                                         }
 
-                                        drawArrayRect(
-                                            xPos + width + 2,
-                                            yPos - 1,
-                                            xPos + width + 3 + (previousDisplayStringWidth - displayStringWidth),
-                                            yPos,
-                                            rectColor
-                                        )
-
-                                        if (module == modules.last()) {
-                                            drawArrayRect(xPos + width + 2,
-                                                yPos + textSpacer,
-                                                xPos + width + 3,
-                                                yPos + textSpacer + 1,
-                                                rectColor
-                                            )
-                                            drawArrayRect(-1F,
-                                                yPos + textSpacer,
-                                                xPos + width + 2,
-                                                yPos + textSpacer + 1,
-                                                rectColor
-                                            )
+                                        "Special" -> {
+                                            if (module == modules.first()) {
+                                                drawRoundedRect(0F, yPos, 3F, yPos - 1, rectColor, roundedRectRadius)
+                                            }
+                                            if (module == modules.last()) {
+                                                drawRoundedRect(0F, yPos + textSpacer, 3F, yPos + textSpacer + 1, rectColor, roundedRectRadius)
+                                            }
                                         }
-                                    }
 
-                                    "Special" -> {
-                                        if (module == modules.first()) {
-                                            drawRoundedRect(0F, yPos, 3F, yPos - 1, rectColor, roundedRectRadius)
-                                        }
-                                        if (module == modules.last()) {
-                                            drawRoundedRect(0F, yPos + textSpacer, 3F, yPos + textSpacer + 1, rectColor, roundedRectRadius)
-                                        }
-                                    }
-
-                                    "Top" -> {
-                                        if (module == modules.first()) {
-                                            drawRoundedRect(0F, yPos, 3F, yPos - 1, rectColor, roundedRectRadius)
+                                        "Top" -> {
+                                            if (module == modules.first()) {
+                                                drawRoundedRect(0F, yPos, 3F, yPos - 1, rectColor, roundedRectRadius)
+                                            }
                                         }
                                     }
                                 }
@@ -622,39 +614,38 @@ class Arraylist(
                     }
                 }
             }
-        }
 
-        // Draw border
-        if (mc.currentScreen is GuiHudDesigner) {
-            x2 = Int.MIN_VALUE
+            // Draw border
+            if (mc.currentScreen is GuiHudDesigner) {
+                x2 = Int.MIN_VALUE
 
-            if (modules.isEmpty()) {
-                return if (side.horizontal == Horizontal.LEFT)
-                    Border(0F, -1F, 20F, 20F)
-                else
-                    Border(0F, -1F, -20F, 20F)
-            }
+                if (modules.isEmpty()) {
+                    return if (side.horizontal == Horizontal.LEFT)
+                        Border(0F, -1F, 20F, 20F)
+                    else
+                        Border(0F, -1F, -20F, 20F)
+                }
 
-            for (module in modules) {
-                when (side.horizontal) {
-                    Horizontal.RIGHT, Horizontal.MIDDLE -> {
-                        val xPos = -module.slide.toInt() - 2
-                        if (x2 == Int.MIN_VALUE || xPos < x2) x2 = xPos
-                    }
+                for (module in modules) {
+                    when (side.horizontal) {
+                        Horizontal.RIGHT, Horizontal.MIDDLE -> {
+                            val xPos = -module.slide.toInt() - 2
+                            if (x2 == Int.MIN_VALUE || xPos < x2) x2 = xPos
+                        }
 
-                    Horizontal.LEFT -> {
-                        val xPos = module.slide.toInt() + 14
-                        if (x2 == Int.MIN_VALUE || xPos > x2) x2 = xPos
+                        Horizontal.LEFT -> {
+                            val xPos = module.slide.toInt() + 14
+                            if (x2 == Int.MIN_VALUE || xPos > x2) x2 = xPos
+                        }
                     }
                 }
+
+                y2 = (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) * modules.size
+
+                return Border(0F, 0F, x2 - 7F, y2 - if (side.vertical == Vertical.DOWN) 1F else 0F)
             }
-
-            y2 = (if (side.vertical == Vertical.DOWN) -textSpacer else textSpacer) * modules.size
-
-            return Border(0F, 0F, x2 - 7F, y2 - if (side.vertical == Vertical.DOWN) 1F else 0F)
         }
 
-        AWTFontRenderer.assumeNonVolatile = false
         resetColor()
         return null
     }

@@ -39,45 +39,42 @@ class GuiServerStatus(private val prevGui: GuiScreen) : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        assumeNonVolatile {
+            drawBackground(0)
 
-        assumeNonVolatile = true
-
-        drawBackground(0)
-
-        var i = height / 4 + 40
-        drawRect(
-            width / 2f - 115,
-            i - 5f,
-            width / 2f + 115,
-            height / 4f + 43 + if (status.keys.isEmpty()) 10 else status.keys.size * Fonts.font40.fontHeight,
-            Integer.MIN_VALUE
-        )
-
-        for (server in status.keys) {
-            val color = status[server] ?: "yellow"
-            Fonts.font40.drawCenteredStringWithShadow(
-                "${server.replaceFirst("^http[s]?://".toRegex(), "")}: ${
-                    if (color.equals(
-                            "red",
-                            ignoreCase = true
-                        )
-                    ) "§c" else if (color.equals("yellow", ignoreCase = true)) "§e" else "§a"
-                }${
-                    if (color.equals("red", ignoreCase = true)) "Offline" else if (color.equals(
-                            "yellow",
-                            ignoreCase = true
-                        )
-                    ) "Loading..." else "Online"
-                }", width / 2f, i.toFloat(), Color.WHITE.rgb
+            var i = height / 4 + 40
+            drawRect(
+                width / 2f - 115,
+                i - 5f,
+                width / 2f + 115,
+                height / 4f + 43 + if (status.keys.isEmpty()) 10 else status.keys.size * Fonts.font40.fontHeight,
+                Integer.MIN_VALUE
             )
-            i += Fonts.font40.fontHeight
+
+            for (server in status.keys) {
+                val color = status[server] ?: "yellow"
+                Fonts.font40.drawCenteredStringWithShadow(
+                    "${server.replaceFirst("^http[s]?://".toRegex(), "")}: ${
+                        if (color.equals(
+                                "red",
+                                ignoreCase = true
+                            )
+                        ) "§c" else if (color.equals("yellow", ignoreCase = true)) "§e" else "§a"
+                    }${
+                        if (color.equals("red", ignoreCase = true)) "Offline" else if (color.equals(
+                                "yellow",
+                                ignoreCase = true
+                            )
+                        ) "Loading..." else "Online"
+                    }", width / 2f, i.toFloat(), Color.WHITE.rgb
+                )
+                i += Fonts.font40.fontHeight
+            }
+
+            Fonts.fontBold180.drawCenteredString(translationMenu("serverStatus"), width / 2F, height / 8f + 5F, 4673984, true)
         }
 
-        Fonts.fontBold180.drawCenteredString(translationMenu("serverStatus"), width / 2F, height / 8f + 5F, 4673984, true)
-
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
-
-        assumeNonVolatile = false
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

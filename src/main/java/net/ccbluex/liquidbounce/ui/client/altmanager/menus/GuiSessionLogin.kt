@@ -59,26 +59,24 @@ class GuiSessionLogin(private val prevGui: GuiAltManager) : GuiScreen() {
      * Draw screen
      */
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        assumeNonVolatile {
+            // Draw background to screen
+            drawBackground(0)
+            drawRect(30f, 30f, width - 30f, height - 30f, Integer.MIN_VALUE)
 
-        assumeNonVolatile = true
+            // Draw title and status
+            Fonts.font40.drawCenteredStringWithShadow("Session Login", width / 2f, height / 2 - 150f, 0xffffff)
+            Fonts.font35.drawCenteredStringWithShadow(status, width / 2f, height / 2f, 0xffffff)
 
-        // Draw background to screen
-        drawBackground(0)
-        drawRect(30f, 30f, width - 30f, height - 30f, Integer.MIN_VALUE)
+            // Draw fields
+            sessionTokenField.drawTextBox()
 
-        // Draw title and status
-        Fonts.font40.drawCenteredStringWithShadow("Session Login", width / 2f, height / 2 - 150f, 0xffffff)
-        Fonts.font35.drawCenteredStringWithShadow(status, width / 2f, height / 2f, 0xffffff)
-
-        // Draw fields
-        sessionTokenField.drawTextBox()
-
-        if (sessionTokenField.text.isEmpty() && !sessionTokenField.isFocused)
-            Fonts.font40.drawCenteredStringWithShadow("§7Session Token", width / 2f - 60f, height / 2 - 84f, 0xffffff)
+            if (sessionTokenField.text.isEmpty() && !sessionTokenField.isFocused)
+                Fonts.font40.drawCenteredStringWithShadow("§7Session Token", width / 2f - 60f, height / 2 - 84f, 0xffffff)
+        }
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
 
-        assumeNonVolatile = false
         // Call sub method
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

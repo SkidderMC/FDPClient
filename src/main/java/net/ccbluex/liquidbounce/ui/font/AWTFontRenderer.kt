@@ -28,6 +28,15 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255, p
         var assumeNonVolatile = false
         val activeFontRenderers = mutableListOf<AWTFontRenderer>()
 
+        inline fun assumeNonVolatile(f: () -> Unit) {
+            assumeNonVolatile = true
+            try {
+                f()
+            } finally {
+                assumeNonVolatile = false
+            }
+        }
+
         private var gcTicks = 0
         private const val GC_TICKS = 600 // Start garbage collection every 600 frames
         private const val CACHED_FONT_REMOVAL_TIME = 30000 // Remove cached texts after 30s of not being used
