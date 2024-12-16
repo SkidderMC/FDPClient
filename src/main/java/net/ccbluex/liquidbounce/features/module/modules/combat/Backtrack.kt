@@ -453,7 +453,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         }
     }
 
-           val onWorld = handler<WorldEvent> { event ->
+    val onWorld = handler<WorldEvent> { event ->
         // Clear packets on disconnect only
         // Set target to null on world change
         if (mode == "Modern") {
@@ -614,20 +614,12 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         entity.setPosAndPrevPos(currPos, prevPos)
     }
 
-    fun runWithNearestTrackedDistance(entity: Entity, f: () -> Unit) {
+    fun <T> runWithNearestTrackedDistance(entity: Entity, f: () -> T): T {
         if (entity !is EntityPlayer || !handleEvents() || mode == "Modern") {
-            f()
-
-            return
+            return f()
         }
 
-        var backtrackDataArray = getBacktrackData(entity.uniqueID)?.toMutableList()
-
-        if (backtrackDataArray == null) {
-            f()
-
-            return
-        }
+        var backtrackDataArray = getBacktrackData(entity.uniqueID)?.toMutableList() ?: return f()
 
         backtrackDataArray = backtrackDataArray.sortedBy { (x, y, z, _) ->
             runWithSimulatedPosition(entity, Vec3(x, y, z)) {
@@ -637,14 +629,10 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
         val (x, y, z, _) = backtrackDataArray.first()
 
-        runWithSimulatedPosition(entity, Vec3(x, y, z)) {
-            f()
-
-            null
-        }
+        return runWithSimulatedPosition(entity, Vec3(x, y, z)) { f() } ?: f() // Edge case
     }
 
-    fun runWithSimulatedPosition(entity: Entity, vec3: Vec3, f: () -> Double?): Double? {
+    fun <T> runWithSimulatedPosition(entity: Entity, vec3: Vec3, f: () -> T?): T? {
         val currPos = entity.currPos
         val prevPos = entity.prevPos
 

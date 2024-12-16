@@ -5,29 +5,29 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotation
-import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.isBlockBBValid
-import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
-import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.event.loopHandler
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.attack.CPSCounter
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.isBlockBBValid
 import net.ccbluex.liquidbounce.utils.block.center
+import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
+import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotation
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.block.BlockBush
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.init.Blocks
@@ -85,12 +85,12 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
     }
 
     // TODO: Proper event to update.
-    val onUpdate = handler<UpdateEvent> { event ->
-        val player = mc.thePlayer ?: return@handler
-        val world = mc.theWorld ?: return@handler
+    val onUpdate = loopHandler {
+        val player = mc.thePlayer ?: return@loopHandler
+        val world = mc.theWorld ?: return@loopHandler
 
         if (onSneakOnly && !mc.gameSettings.keyBindSneak.isKeyDown) {
-            return@handler
+            return@loopHandler
         }
 
         val radius = 4
@@ -125,12 +125,12 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
         addDefenceBlocks(bedBottomPositions)
 
         if (defenceBlocks.isNotEmpty()) {
-            val playerPos = player.position ?: return@handler
+            val playerPos = player.position ?: return@loopHandler
             val pos = if (scannerMode == "Nearest") defenceBlocks.minByOrNull { it.distanceSq(playerPos) }
-                ?: return@handler else defenceBlocks.random()
+                ?: return@loopHandler else defenceBlocks.random()
             val blockPos = BlockPos(pos.x.toDouble(), pos.y - player.eyeHeight + 1.5, pos.z.toDouble())
             val rotation = RotationUtils.toRotation(blockPos.center, false, player)
-            val raytrace = performBlockRaytrace(rotation, mc.playerController.blockReachDistance) ?: return@handler
+            val raytrace = performBlockRaytrace(rotation, mc.playerController.blockReachDistance) ?: return@loopHandler
 
             if (options.rotationsActive) {
                 setTargetRotation(rotation, options, if (options.keepRotation) options.resetTicks else 1)
@@ -139,7 +139,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
             blockPosition = blockPos
 
             if (timerCounter.hasTimePassed(placeDelay)) {
-                if (!isPlaceablePos(blockPos)) return@handler
+                if (!isPlaceablePos(blockPos)) return@loopHandler
 
                 when (autoSneak.lowercase()) {
                     "normal" -> mc.gameSettings.keyBindSneak.pressed = false
@@ -157,7 +157,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
         }
     }
 
-    val onRender3D = handler<Render3DEvent> { event ->
+    val onRender3D = handler<Render3DEvent> {
         if (mark && blockPosition != null) {
             val blockPos = BlockPos(blockPosition!!.x, blockPosition!!.y + 1, blockPosition!!.z)
             RenderUtils.drawBlockBox(blockPos, Color(68, 117, 255, 100), false)
@@ -261,7 +261,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
                 movingObjectPosition != null && movingObjectPosition.blockPos == pos
             }
 
-            "around" -> EnumFacing.entries.any { !isBlockBBValid(pos.offset(it)) }
+            "around" -> EnumFacing.values().any { !isBlockBBValid(pos.offset(it)) }
 
             else -> true
         }

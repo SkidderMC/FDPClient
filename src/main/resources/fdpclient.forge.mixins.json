@@ -43,6 +43,7 @@
     "gui.MixinGuiSlot",
     "gui.MixinGuiSpectator",
     "gui.MixinServerSelectionList",
+    "item.MixinItem",
     "item.MixinItemRenderer",
     "item.MixinMixinItemStack",
     "network.MixinNetHandlerPlayClient",
@@ -77,10 +78,10 @@
   "client": [
     "block.MixinBlockSlime",
     "gui.MixinGuiAchievement",
-    "render.MixinRenderGlobal",
-    "render.MixinItemRenderer",
     "gui.MixinGuiContainer",
     "gui.MixinGuiTextField",
+    "render.MixinItemRenderer",
+    "render.MixinRenderGlobal",
     "tweaks.MixinEntityFX"
   ]
 }

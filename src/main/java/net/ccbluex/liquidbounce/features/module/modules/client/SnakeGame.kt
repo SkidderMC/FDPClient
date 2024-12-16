@@ -42,7 +42,7 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
         }
     }
 
-    val onUpdate = handler<UpdateEvent> { event ->
+    val onUpdate = handler<UpdateEvent> {
         if (mc.thePlayer.ticksExisted % 2 == 0) {
             if (snake[0].x == food.x && snake[0].y == food.y) {
                 score += 1
@@ -70,7 +70,7 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
         }
     }
 
-    val onRender2D = handler<Render2DEvent> { event ->
+    val onRender2D = handler<Render2DEvent> {
         val resolution = ScaledResolution(mc)
 
         val width = resolution.scaledWidth

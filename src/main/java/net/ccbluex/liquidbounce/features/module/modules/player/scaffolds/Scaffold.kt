@@ -55,7 +55,7 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.*
 
-object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_I, hideModule = false) {
+object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule = false) {
 
     /**
      * TOWER MODES & SETTINGS
@@ -1209,7 +1209,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_I, hideModule
     /**
      * God-bridge rotation generation method from Nextgen
      *
-     * Credits to @opZywk
+     * Credits to @opZywl
      */
     private fun generateGodBridgeRotations(ticks: Int) {
         val player = mc.thePlayer ?: return

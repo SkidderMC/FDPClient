@@ -5,150 +5,259 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other
 
-import net.ccbluex.liquidbounce.event.EventState
-import net.ccbluex.liquidbounce.event.MotionEvent
+import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.autoMLG
-import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.bucketUsed
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.currentMlgBlock
-import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.mlgInProgress
-import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.mlgRotation
+import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.maxRetrievalWaitingTime
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.options
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.retrieveDelay
-import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.shouldUse
+import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.retrievingPos
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.swing
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.NoFallMode
-import net.ccbluex.liquidbounce.utils.block.toVec
+import net.ccbluex.liquidbounce.utils.block.block
+import net.ccbluex.liquidbounce.utils.block.center
+import net.ccbluex.liquidbounce.utils.block.state
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.rotation.Rotation
-import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
-import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotation
-import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
 import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
-import net.ccbluex.liquidbounce.utils.movement.FallingPlayer
-import net.ccbluex.liquidbounce.utils.timing.TickedActions
+import net.ccbluex.liquidbounce.utils.rotation.Rotation
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.faceBlock
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotation
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
+import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
-import net.minecraft.block.BlockWeb
 import net.minecraft.init.Blocks
 import net.minecraft.init.Items
 import net.minecraft.item.ItemBlock
-import net.minecraft.item.ItemBucket
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C0APacketAnimation
-import net.minecraft.util.BlockPos
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.MovingObjectPosition
-import net.minecraft.util.Vec3
+import net.minecraft.util.*
 import net.minecraftforge.event.ForgeEventFactory
-import kotlin.math.ceil
+import kotlin.math.min
 
 object MLG : NoFallMode("MLG") {
 
-    override fun onMotion(event: MotionEvent) {
+    private val mlgSlot
+        get() = findMlgSlot()
+
+    private val currRotation
+        get() = RotationUtils.serverRotation
+
+    override fun onRotationUpdate() {
         val player = mc.thePlayer ?: return
-        val mlgSlot = findMlgSlot() ?: return
 
-        if (event.eventState != EventState.POST) return
-
-        val fallingPlayer = FallingPlayer(player)
-        val maxDist = mc.playerController.blockReachDistance + 1.5
-        val collision = fallingPlayer.findCollision(ceil(1.0 / player.motionY * -maxDist).toInt()) ?: return
-
-        // There's gotta be a better way of doing this
-        if (player.motionY < collision.pos.y + 1 - player.posY || player.eyes.distanceTo(Vec3(collision.pos).addVector(
-                0.5,
-                0.5,
-                0.5
-            )
-            ) < mc.playerController.blockReachDistance + 0.866025) {
-            if (player.fallDistance < NoFall.minFallDistance) return
-            currentMlgBlock = collision.pos
-
-            if (autoMLG != "Off") {
-                SilentHotbar.selectSlotSilently(this, mlgSlot, immediate = true, render = autoMLG == "Pick", resetManually = true)
+        retrievingPos?.let {
+            if (player.hotBarSlot(SilentHotbar.currentSlot).stack?.item != Items.bucket) {
+                retrievingPos = null
+                return@let
             }
 
-            currentMlgBlock?.toVec()?.let { RotationUtils.toRotation(it, false, player) }?.run {
-                if (options.rotationsActive) {
-                    RotationUtils.setTargetRotation(this, options, if (options.keepRotation) options.resetTicks else 1)
+            if (options.rotationsActive) {
+                RotationUtils.setTargetRotation(
+                    toRotation(it), options, if (options.keepRotation) options.resetTicks else 1
+                )
+            }
+        }
+
+        mlgSlot ?: return
+
+        currentMlgBlock = null
+
+        val reach = mc.playerController.blockReachDistance
+
+        if (player.fallDistance >= NoFall.minFallDistance) {
+            SimulatedPlayer.fromClientPlayer(RotationUtils.modifiedInput).let { sim ->
+                sim.rotationYaw = currRotation.yaw
+
+                var suitablePos: BlockPos? = null
+
+                for (i in 1..40) {
+                    sim.tick()
+
+                    val pos = BlockPos(sim.pos).down()
+
+                    if (sim.fallDistance == 0F) {
+                        var bestOffset: Vec3i? = null
+                        var minDistance = Double.MAX_VALUE
+
+                        (-1..1).forEach { x ->
+                            (-1..1).forEach { z ->
+                                val offset = Vec3i(x, 0, z)
+                                val neighbor = pos.add(offset)
+                                val center = neighbor.center
+
+                                val raytrace = Backtrack.runWithSimulatedPosition(player, sim.pos) {
+                                    performBlockRaytrace(toRotation(center), reach)
+                                }
+
+                                if (raytrace?.let { it.blockPos == neighbor && it.sideHit == EnumFacing.UP } == true) {
+                                    val distance = BlockPos(sim.pos).distanceSq(neighbor)
+
+                                    if (distance <= minDistance) {
+                                        minDistance = distance
+                                        bestOffset = offset
+                                    }
+                                }
+                            }
+                        }
+
+                        bestOffset?.let {
+                            suitablePos = pos.add(it)
+
+                            if (suitablePos?.state?.block in arrayOf(Blocks.web) ||
+                                suitablePos?.up()?.block == Blocks.water
+                            ) {
+                                return
+                            }
+                        }
+
+                        if (suitablePos != null) {
+                            break
+                        }
+                    }
                 }
 
-                mlgRotation = this
-                shouldUse = true
+                suitablePos
+            }?.also { currentMlgBlock = it }?.let { pos ->
+                // The higher the fall distance, the greater the focus to the center of the block
+                val inc = 0.2 * min(player.fallDistance / 30F, 1F)
+
+                faceBlock(pos, targetUpperFace = true, hRange = 0.3 + inc..0.701 - inc)?.run {
+                    if (options.rotationsActive) {
+                        RotationUtils.setTargetRotation(
+                            rotation, options, if (options.keepRotation) options.resetTicks else 1
+                        )
+                    }
+                }
             }
+
         }
     }
 
     override fun onTick() {
         val player = mc.thePlayer ?: return
-        val mlgSlot = findMlgSlot()
-        val stack = mlgSlot?.let { player.hotBarSlot(it).stack } ?: return
+        val target = currentMlgBlock ?: return
 
-        if (shouldUse && !bucketUsed) {
-            TickedActions.TickScheduler(NoFall) += {
-                when (stack.item) {
-                    Items.water_bucket -> {
-                        player.sendUseItem(stack)
+        val reach = mc.playerController.blockReachDistance
+
+        val stack = mlgSlot?.let {
+            if (retrievingPos != null) return@let null
+
+            SilentHotbar.selectSlotSilently(this, it, render = autoMLG == "Pick", resetManually = true)
+
+            player.hotBarSlot(it).stack
+        } ?: return
+
+        val item = stack.item ?: return
+
+        val wasWaterBucket = item == Items.water_bucket
+
+        if (wasWaterBucket || (item as? ItemBlock)?.block in arrayOf(Blocks.web)) {
+            performBlockRaytrace(currRotation, reach)?.let {
+                if (it.blockPos != target || it.sideHit != EnumFacing.UP) {
+                    return@let
+                }
+
+                placeBlock(it.blockPos, it.sideHit, it.hitVec, stack, !wasWaterBucket) {
+                    if (!wasWaterBucket) {
+                        currentMlgBlock = null
+                        retrievingPos = null
                     }
+                }
 
-                    is ItemBlock -> {
-                        val blocks = (stack.item as ItemBlock).block
-                        if (blocks is BlockWeb) {
-                            val raytrace = performBlockRaytrace(mlgRotation?.fixedSensitivity()!!,
-                                mc.playerController.blockReachDistance
-                            )
+                if (wasWaterBucket) {
+                    val placePos = target.center.withY(0.5, true)
 
-                            if (raytrace != null) {
-                                currentMlgBlock?.let { placeBlock(it, raytrace.sideHit, raytrace.hitVec, stack) }
+                    retrievingPos = placePos
+
+                    WaitTickUtils.conditionalSchedule(this, maxRetrievalWaitingTime) { elapsedTicks ->
+                        val newStack =
+                            player.hotBarSlot(SilentHotbar.currentSlot).stack ?: return@conditionalSchedule null
+
+                        if (newStack.item == Items.bucket) {
+                            findMlgSlot(true)?.let { slot ->
+                                SilentHotbar.selectSlotSilently(
+                                    this, slot, render = autoMLG == "Pick", resetManually = true
+                                )
+                            } ?: run {
+                                reset()
+
+                                return@conditionalSchedule null
                             }
                         }
+
+                        val block = target.state?.block
+
+                        // Are we too far away from the block?
+                        if (block == null || player.getDistanceToBox(
+                                block.getSelectedBoundingBox(mc.theWorld, target)
+                            ) > reach
+                        ) {
+                            reset()
+
+                            return@conditionalSchedule null
+                        }
+
+                        if (player.fallDistance == 0F) {
+                            performBlockRaytrace(currRotation, reach).let { raytrace ->
+                                // Did the user decide to look somewhere else?
+                                if (raytrace == null || raytrace.blockPos != target || raytrace.sideHit != EnumFacing.UP) {
+                                    // Reset the rotation if it took more than the max retrieval waiting time to retrieve
+                                    reset(elapsedTicks >= maxRetrievalWaitingTime)
+                                    return@conditionalSchedule null
+                                }
+
+                                // We are looking at the target block, now make sure the time has passed to retrieve
+                                if (elapsedTicks < retrieveDelay) return@conditionalSchedule false
+
+                                // Time to retrieve
+                                placeBlock(it.blockPos, it.sideHit, it.hitVec, newStack)
+
+                                reset()
+
+                                return@conditionalSchedule true
+                            }
+                        }
+
+                        return@conditionalSchedule false
                     }
                 }
-            }
-
-            mlgInProgress = true
-            bucketUsed = true
-        }
-
-        if (shouldUse) {
-            WaitTickUtils.schedule(retrieveDelay) {
-                if (!shouldUse) return@schedule // Without this, it'll retrieve twice IDK.
-
-                if (stack.item is ItemBucket) {
-                    player.sendUseItem(stack)
-                }
-
-                shouldUse = false
-            }
-        }
-
-        if (mlgInProgress && !shouldUse) {
-            WaitTickUtils.schedule(retrieveDelay + 2) {
-                SilentHotbar.resetSlot(this)
-
-                mlgInProgress = false
-                bucketUsed = false
             }
         }
     }
 
-    private fun placeBlock(blockPos: BlockPos, side: EnumFacing, hitVec: Vec3, stack: ItemStack) {
-        tryToPlaceBlock(stack, blockPos, side, hitVec)
+    private fun reset(complete: Boolean = true) {
+        // Reset target information
+        currentMlgBlock = null
 
-        // Since we violate vanilla slot switch logic if we send the packets now, we arrange them for the next tick
-        if (autoMLG == "Switch")
+        if (complete) {
+            retrievingPos = null
+
             SilentHotbar.resetSlot(this)
+        }
+    }
 
-        switchBlockNextTickIfPossible(stack)
+    private fun placeBlock(
+        blockPos: BlockPos,
+        side: EnumFacing,
+        hitVec: Vec3,
+        stack: ItemStack,
+        finalStage: Boolean = true,
+        onSuccess: () -> Unit = { }
+    ) {
+        tryToPlaceBlock(stack, blockPos, side, hitVec, onSuccess)
+
+        if (finalStage) {
+            switchBlockNextTickIfPossible(stack)
+        }
     }
 
     private fun tryToPlaceBlock(
-        stack: ItemStack,
-        clickPos: BlockPos,
-        side: EnumFacing,
-        hitVec: Vec3,
+        stack: ItemStack, clickPos: BlockPos, side: EnumFacing, hitVec: Vec3, onSuccess: () -> Unit
     ): Boolean {
         val player = mc.thePlayer ?: return false
 
@@ -162,22 +271,24 @@ object MLG : NoFallMode("MLG") {
             if (stack.stackSize <= 0) {
                 player.inventory.mainInventory[SilentHotbar.currentSlot] = null
                 ForgeEventFactory.onPlayerDestroyItem(player, stack)
-            } else if (stack.stackSize != prevSize || mc.playerController.isInCreativeMode)
+            } else if (stack.stackSize != prevSize || mc.playerController.isInCreativeMode) {
                 mc.entityRenderer.itemRenderer.resetEquippedProgress()
+            }
 
-            currentMlgBlock = null
-            mlgRotation = null
+            onSuccess()
         } else {
-            if (player.sendUseItem(stack))
+            if (player.sendUseItem(stack)) {
                 mc.entityRenderer.itemRenderer.resetEquippedProgress2()
+
+                onSuccess()
+            }
         }
 
         return clickedSuccessfully
     }
 
     private fun switchBlockNextTickIfPossible(stack: ItemStack) {
-        if (autoMLG in arrayOf("Off", "Switch") || stack.stackSize > 0)
-            return
+        if (autoMLG == "Off" || stack.stackSize > 0) return
 
         val switchSlot = findMlgSlot() ?: return
 
@@ -196,14 +307,22 @@ object MLG : NoFallMode("MLG") {
         return world.rayTraceBlocks(eyes, reach, false, true, false)
     }
 
-    private fun findMlgSlot(): Int? {
+    private fun findMlgSlot(onlyBucket: Boolean = false): Int? {
         val player = mc.thePlayer ?: return null
 
-        for (i in 36..44) {
-            val itemStack = player.inventorySlot(i).stack ?: continue
+        val bucket = if (onlyBucket) Items.bucket else Items.water_bucket
 
-            if (itemStack.item == Items.water_bucket ||
-                (itemStack.item is ItemBlock && (itemStack.item as ItemBlock).block == Blocks.web)) {
+        player.hotBarSlot(SilentHotbar.currentSlot).stack?.item.let {
+            // Already have required item? Why change slot?
+            if (it == bucket || (it as? ItemBlock)?.block in arrayOf(Blocks.web)) {
+                return SilentHotbar.currentSlot
+            }
+        }
+
+        for (i in 36..44) {
+            val item = player.inventorySlot(i).stack?.item ?: continue
+
+            if (item == bucket || !onlyBucket && (item as? ItemBlock)?.block in arrayOf(Blocks.web)) {
                 return i - 36
             }
         }

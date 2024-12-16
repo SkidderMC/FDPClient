@@ -18,7 +18,7 @@ open class NoFallMode(val modeName: String): MinecraftInstance() {
     open fun onMotion(event: MotionEvent) {}
     open fun onUpdate() {}
     open fun onTick () {}
-
+    open fun onRotationUpdate() {}
     open fun onEnable() {}
     open fun onDisable() {}
 }

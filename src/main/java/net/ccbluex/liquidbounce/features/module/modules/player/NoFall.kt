@@ -16,11 +16,12 @@ import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.L
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other.*
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other.Blink
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlock
-import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.minecraft.block.BlockLiquid
 import net.minecraft.util.AxisAlignedBB.fromBounds
 import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
+import kotlin.math.max
 
 object NoFall : Module("NoFall", Category.PLAYER, hideModule = false) {
     private val noFallModes = arrayOf(
@@ -56,9 +57,25 @@ object NoFall : Module("NoFall", Category.PLAYER, hideModule = false) {
     val mode by choices("Mode", modes, "MLG")
 
     val minFallDistance by float("MinMLGHeight", 5f, 2f..50f, subjective = true) { mode == "MLG" }
-    val retrieveDelay by int("RetrieveDelayTicks", 5, 1..10, subjective = true) { mode == "MLG" }
+    private val retrieveDelayValue: IntegerValue = object : IntegerValue("RetrieveDelayTicks", 5, 1..10, subjective = true) {
+        override fun isSupported() = mode == "MLG"
+        override fun onChange(oldValue: Int, newValue: Int): Int {
+            maxRetrievalWaitingTimeValue.set(max(maxRetrievalWaitingTime, newValue))
 
-    val autoMLG by choices("AutoMLG", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof") { mode == "MLG" }
+            return newValue
+        }
+    }
+
+    val retrieveDelay by retrieveDelayValue
+
+    val maxRetrievalWaitingTimeValue = object : IntegerValue("MaxRetrievalWaitingTime", 10, 1..20) {
+        override fun isSupported() = mode == "MLG"
+        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(retrieveDelay)
+    }
+
+    val maxRetrievalWaitingTime by maxRetrievalWaitingTimeValue
+
+    val autoMLG by choices("AutoMLG", arrayOf("Off", "Pick", "Spoof"), "Spoof") { mode == "MLG" }
     val swing by boolean("Swing", true) { mode == "MLG" }
 
     val options = RotationSettings(this) { mode == "MLG" }.apply {
@@ -83,22 +100,17 @@ object NoFall : Module("NoFall", Category.PLAYER, hideModule = false) {
     val fakePlayer by boolean("FakePlayer", true, subjective = true) { mode == "Blink" }
 
     var currentMlgBlock: BlockPos? = null
-    var mlgInProgress = false
-    var bucketUsed = false
-    var shouldUse = false
-    var mlgRotation: Rotation? = null
+    var retrievingPos: Vec3? = null
 
     override fun onEnable() {
         modeModule.onEnable()
+        retrievingPos = null
     }
 
     override fun onDisable() {
         if (mode == "MLG") {
             currentMlgBlock = null
-            mlgInProgress = false
-            bucketUsed = false
-            shouldUse = false
-            mlgRotation = null
+            retrievingPos = null
         }
 
         modeModule.onDisable()
@@ -172,6 +184,10 @@ object NoFall : Module("NoFall", Category.PLAYER, hideModule = false) {
         ) return@handler
 
         modeModule.onMove(it)
+    }
+
+    val onRotationUpdate = handler<RotationUpdateEvent> {
+        modeModule.onRotationUpdate()
     }
 
     override val tag
