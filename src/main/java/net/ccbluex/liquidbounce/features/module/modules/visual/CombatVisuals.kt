@@ -184,8 +184,8 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
     }
 
 
-    fun onAttack(event: AttackEvent) {
-        val target = event.targetEntity as? EntityLivingBase ?: return
+    val onAttack = handler<AttackEvent> { event ->
+        val target = event.targetEntity as? EntityLivingBase ?: return@handler
 
         repeat(amount) {
             doEffect(target)
