@@ -36,10 +36,11 @@ class ScriptModule(name: String, category: Category, description: String, privat
             _tag = moduleObject.getMember("tag") as String
 
         ALL_EVENT_CLASSES.forEach { eventClass ->
+            val eventName = StringBuilder(eventClass.simpleName.removeSuffix("Event")).apply {
+                this[0] = this[0].lowercaseChar()
+            }.toString()
+
             EventManager.registerEventHook(eventClass, EventHook.Blocking(this) {
-                val eventName = StringBuilder(eventClass.simpleName.removeSuffix("Event")).apply {
-                    this[0] = this[0].lowercaseChar()
-                }.toString()
                 callEvent(eventName)
             })
         }
