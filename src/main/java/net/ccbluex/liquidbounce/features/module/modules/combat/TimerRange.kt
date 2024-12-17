@@ -14,11 +14,13 @@ import net.ccbluex.liquidbounce.features.module.modules.player.Reach
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
+import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.client.BlinkUtils
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.client.schedulePacketProcess
 import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
+import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
+import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.searchCenter
@@ -49,7 +51,6 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
     // Condition to confirm
     private var shouldReset = false
     private var confirmTick = false
-    private var confirmMove = false
     private var confirmStop = false
 
     // Condition to prevent getting timer speed stuck
@@ -126,7 +127,8 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
 
     // Optional
     private val onWeb by boolean("OnWeb", false)
-    private val onWater by boolean("OnWater", false)
+    private val onLiquid by boolean("onLiquid", false)
+    private val onForwardOnly by boolean("OnForwardOnly", true)
     private val resetOnlagBack by boolean("ResetOnLagback", false)
     private val resetOnKnockback by boolean("ResetOnKnockback", false)
     private val chatDebug by boolean("ChatDebug", true) { resetOnlagBack || resetOnKnockback }
@@ -144,7 +146,6 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
         blinked = false
 
         confirmTick = false
-        confirmMove = false
         confirmStop = false
         confirmAttack = false
     }
@@ -153,6 +154,8 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
      * Attack event (Normal & Smart Mode)
      */
     val onAttack = handler<AttackEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
+
         if (event.targetEntity !is EntityLivingBase && playerTicks >= 1) {
             shouldResetTimer()
             return@handler
@@ -161,11 +164,11 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
         }
 
         val targetEntity = event.targetEntity ?: return@handler
-        val entityDistance = targetEntity.let { mc.thePlayer.getDistanceToEntityBox(it) }
-        val randomTickDelay = RandomUtils.nextInt(minTickDelay.get(), maxTickDelay.get() + 1)
+        val entityDistance = targetEntity.let { player.getDistanceToEntityBox(it) }
+        val randomTickDelay = nextInt(minTickDelay.get(), maxTickDelay.get() + 1)
         val shouldReturn = Backtrack.runWithNearestTrackedDistance(targetEntity) { !updateDistance(targetEntity) }
 
-        if (shouldReturn || (mc.thePlayer.isInWeb && !onWeb) || (mc.thePlayer.isInWater && !onWater)) {
+        if (shouldReturn || (player.isInWeb && !onWeb) || (player.isInLiquid && !onLiquid)) {
             return@handler
         }
 
@@ -194,17 +197,17 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
      * Move event (Modern Mode)
      */
     val onMove = handler<MoveEvent> {
-        if (timerBoostMode != "Modern") {
-            return@handler
-        }
+        val player = mc.thePlayer ?: return@handler
+
+        if (timerBoostMode != "Modern") return@handler
 
         val nearbyEntity = getNearestEntityInRange() ?: return@handler
 
-        val randomTickDelay = RandomUtils.nextInt(minTickDelay.get(), maxTickDelay.get())
+        val randomTickDelay = nextInt(minTickDelay.get(), maxTickDelay.get())
 
         val shouldReturn = Backtrack.runWithNearestTrackedDistance(nearbyEntity) { !updateDistance(nearbyEntity) }
 
-        if (shouldReturn || (mc.thePlayer.isInWeb && !onWeb) || (mc.thePlayer.isInWater && !onWater)) {
+        if (shouldReturn || (player.isInWeb && !onWeb) || (player.isInLiquid && !onLiquid)) {
             return@handler
         }
 
@@ -217,17 +220,15 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
             }
         } else {
             smartTick = 0
-            confirmMove = false
         }
 
         if (isPlayerMoving() && !confirmStop) {
             if (isLookingOnEntities(nearbyEntity, maxAngleDifference.toDouble())) {
-                val entityDistance = mc.thePlayer.getDistanceToEntityBox(nearbyEntity)
-                if (confirmTick && entityDistance <= scanRange.get() && entityDistance >= randomRange) {
+                val entityDistance = player.getDistanceToEntityBox(nearbyEntity)
+                if (confirmTick && entityDistance in randomRange..maxRange.get()) {
                     if (updateDistance(nearbyEntity)) {
                         playerTicks = ticksValue
                         confirmTick = false
-                        confirmMove = true
                     }
                 }
             } else {
@@ -301,11 +302,11 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
      */
     val onUpdate = handler<UpdateEvent> {
         // Randomize the timer & charged delay a bit, to bypass some AntiCheat
-        val timerboost = RandomUtils.nextFloat(minBoostDelay.get(), maxBoostDelay.get())
-        val charged = RandomUtils.nextFloat(minChargedDelay.get(), maxChargedDelay.get())
+        val timerboost = nextFloat(minBoostDelay.get(), maxBoostDelay.get())
+        val charged = nextFloat(minChargedDelay.get(), maxChargedDelay.get())
 
         if (mc.thePlayer != null && mc.theWorld != null) {
-            randomRange = RandomUtils.nextFloat(minRange.get(), maxRange.get())
+            randomRange = nextFloat(minRange.get(), maxRange.get())
         }
 
         if (playerTicks <= 0 || confirmStop) {
@@ -338,10 +339,12 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
      * Render event (Mark)
      */
     val onRender3D = handler<Render3DEvent> {
+        val player = mc.thePlayer ?: return@handler
+
         if (timerBoostMode.lowercase() != "modern") return@handler
 
         getNearestEntityInRange()?.let { nearbyEntity ->
-            val entityDistance = mc.thePlayer.getDistanceToEntityBox(nearbyEntity)
+            val entityDistance = player.getDistanceToEntityBox(nearbyEntity)
 
             if (entityDistance > scanRange.get()) return@let
 
@@ -364,7 +367,9 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
      * Check if player is moving
      */
     private fun isPlayerMoving(): Boolean {
-        return !mc.gameSettings.keyBindBack.isKeyDown && (mc.thePlayer?.moveForward != 0f || mc.thePlayer?.moveStrafing != 0f)
+        return if (!onForwardOnly) mc.thePlayer?.isMoving == true else {
+            mc.thePlayer?.moveForward != 0f && mc.thePlayer?.moveStrafing == 0f
+        }
     }
 
     /**
@@ -372,9 +377,11 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
      */
     private fun getNearestEntityInRange(): Entity? {
         val player = mc.thePlayer ?: return null
+        val world = mc.theWorld ?: return null
 
-        return mc.theWorld?.loadedEntityList?.asSequence()?.mapNotNull { entity ->
-            entity.takeIf {
+        return world.loadedEntityList?.asSequence()
+            ?.filter { entity -> isSelected(entity, true) }
+            ?.filter { entity ->
                 Backtrack.runWithNearestTrackedDistance(entity) {
                     val distance = player.getDistanceToEntityBox(entity)
 
@@ -384,8 +391,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
                         else -> false
                     }
                 }
-            }
-        }?.minByOrNull { player.getDistanceToEntityBox(it) }
+            }?.minByOrNull { player.getDistanceToEntityBox(it) }
     }
 
     /**
@@ -400,7 +406,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
                 shouldReset = true
             }
         } else {
-            if (mc.timer.timerSpeed != 1f) {
+            if (!shouldReset && mc.timer.timerSpeed != 1f) {
                 mc.timer.timerSpeed = 1f
                 shouldReset = true
             } else {
@@ -468,7 +474,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
         }
 
         // Check for knockback
-        if (resetOnKnockback && packet is S12PacketEntityVelocity && mc.thePlayer.entityId == packet.entityID) {
+        if (resetOnKnockback && packet is S12PacketEntityVelocity && mc.thePlayer?.entityId == packet.entityID) {
             shouldResetTimer()
 
             if (shouldReset) {
