@@ -125,6 +125,11 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
     val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
 
+        if (TickBase.duringTickModification) {
+            clearPackets()
+            return@handler
+        }
+
         if (Blink.blinkingReceive() || event.isCancelled)
             return@handler
 
@@ -312,12 +317,13 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         }
     }
 
-    val onAttack = handler<AttackEvent> { event ->
+    val onAttack = handler<AttackEvent>(priority = 3) { event ->
         if (!isSelected(event.targetEntity, true))
             return@handler
 
         // Clear all packets, start again on enemy change
         if (target != event.targetEntity) {
+            chat("${TickBase.duringTickModification}")
             clearPackets()
             reset()
         }

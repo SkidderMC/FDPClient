@@ -140,7 +140,13 @@ object MLG : NoFallMode("MLG") {
 
     override fun onTick() {
         val player = mc.thePlayer ?: return
-        val target = currentMlgBlock ?: return
+        val target = currentMlgBlock ?: run {
+            // If the slot was modified but rotations did not reach the target spot in time, reset the slot
+            if (retrievingPos == null) {
+                SilentHotbar.resetSlot(this)
+            }
+            return
+        }
 
         val reach = mc.playerController.blockReachDistance
 
