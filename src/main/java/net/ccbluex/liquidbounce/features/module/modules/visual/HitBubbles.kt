@@ -50,8 +50,8 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL, hideModule = false) {
     private val icon = ResourceLocation("${CLIENT_NAME.lowercase()}/bubble.png")
 
 
-    fun onAttack(event: AttackEvent) {
-        val target = event.targetEntity as? EntityLivingBase ?: return
+    val onAttack = handler<AttackEvent> { event ->
+        val target = event.targetEntity as? EntityLivingBase ?: return@handler
 
         val bubblePosition = target.positionVector
             .addVector(0.0, target.height / 1.6, 0.0)

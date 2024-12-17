@@ -47,7 +47,7 @@ object FreeCam : Module("FreeCam", Category.VISUAL, gameDetecting = false, hideM
         originalPos = null
     }
 
-    fun onInputEvent(event: MovementInputEvent) {
+    val onInputEvent = handler<MovementInputEvent> { event ->
         val speed = this.speed.toDouble()
 
         val yAxisMovement = when {

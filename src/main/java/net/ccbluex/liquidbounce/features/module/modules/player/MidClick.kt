@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.event.Render2DEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.file.FileManager.friendsConfig
@@ -19,9 +20,9 @@ object MidClick : Module("MidClick", Category.PLAYER, subjective = true, gameDet
     private var wasDown = false
 
 
-    fun onRender(event: Render2DEvent) {
+    val onRender = handler<Render2DEvent> {
         if (mc.currentScreen != null)
-            return
+            return@handler
 
         if (!wasDown && Mouse.isButtonDown(2)) {
             val entity = mc.objectMouseOver.entityHit

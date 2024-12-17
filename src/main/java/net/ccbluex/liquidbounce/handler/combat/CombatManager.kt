@@ -52,8 +52,7 @@ object CombatManager : MinecraftInstance(), Listenable {
         }
     }
 
-
-    fun onAttack(event: AttackEvent) {
+    val onAttack = handler<AttackEvent> { event ->
         val target = event.targetEntity
 
         if (target is EntityLivingBase && EntityUtils.isSelected(target, true)) {

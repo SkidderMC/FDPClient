@@ -266,7 +266,7 @@ object RenderUtils : MinecraftInstance() {
         glEnable(GL_ALPHA_TEST)
         glAlphaFunc(GL_GREATER, 0.0f)
         glBegin(renderMode)
-        RenderUtils.glColor(color)
+        glColor(color)
         for (i in -1 until CIRCLE_STEPS / 2) {
             val vAngle1 = i * vStep
             val vAngle2 = (i + 1) * vStep

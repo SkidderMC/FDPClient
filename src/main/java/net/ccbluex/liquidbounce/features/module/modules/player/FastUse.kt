@@ -87,11 +87,11 @@ object FastUse : Module("FastUse", Category.PLAYER) {
     }
 
 
-    fun onMove(event: MoveEvent) {
-        mc.thePlayer ?: return
+    val onMove = handler<MoveEvent> { event ->
+         mc.thePlayer ?: return@handler
 
         if (!isConsumingItem() || !noMove)
-            return
+            return@handler
 
         event.zero()
     }
