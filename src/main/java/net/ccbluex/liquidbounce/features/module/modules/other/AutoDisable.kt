@@ -55,14 +55,11 @@ object AutoDisable : Module("AutoDisable", Category.OTHER, gameDetecting = false
     }
 
     private fun disabled(reason: String) {
-        val anyModuleEnabled = modulesList.any { it.state }
+        val enabledModules = modulesList.filter { it.state }
 
-        if (anyModuleEnabled) {
-            modulesList.forEach { module ->
-                if (module.state) {
-                    module.state = false
-                    module.onDisable()
-                }
+        if (enabledModules.isNotEmpty()) {
+            enabledModules.forEach { module ->
+                module.state = false
             }
 
             if (warn == "Chat") {
@@ -84,6 +81,6 @@ object AutoDisable : Module("AutoDisable", Category.OTHER, gameDetecting = false
     }
 
     fun getModules(): List<Module> {
-        return modulesList.toList()
+        return modulesList
     }
 }
