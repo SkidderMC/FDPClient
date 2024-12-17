@@ -10,6 +10,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.verus
  * https://github.com/SkidderMC/FDPClient/
  */
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
+import net.ccbluex.liquidbounce.utils.extensions.isInLiquid
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 
 /*
@@ -22,7 +23,7 @@ object VerusGlide : FlyMode("VerusGlide") {
 
     override fun onUpdate() {
         val player = mc.thePlayer ?: return
-        if (player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
+        if (player.isInLiquid || player.isInWeb || player.isOnLadder) return
 
         if (!player.onGround && player.fallDistance > 1) {
             // Good job, Verus

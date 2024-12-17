@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.damageLow
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.fullStrafe
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.safeY
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
+import net.ccbluex.liquidbounce.utils.extensions.isInLiquid
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.airTicks
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
@@ -22,7 +23,7 @@ object BlocksMCHop : SpeedMode("BlocksMCHop") {
 
     override fun onUpdate() {
         val player = mc.thePlayer ?: return
-        if (player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) return
+        if (player.isInLiquid || player.isInWeb || player.isOnLadder) return
 
         if (player.isMoving) {
             if (player.onGround) {

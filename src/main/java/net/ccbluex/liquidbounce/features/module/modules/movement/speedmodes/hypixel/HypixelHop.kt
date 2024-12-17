@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.hypixel
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
+import net.ccbluex.liquidbounce.utils.extensions.isInLiquid
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
@@ -13,7 +14,7 @@ import net.ccbluex.liquidbounce.utils.extensions.tryJump
 object HypixelHop : SpeedMode("HypixelHop") {
     override fun onStrafe() {
         val player = mc.thePlayer ?: return
-        if (player.isInWater || player.isInLava)
+        if (player.isInLiquid)
             return
 
         if (player.onGround && player.isMoving) {

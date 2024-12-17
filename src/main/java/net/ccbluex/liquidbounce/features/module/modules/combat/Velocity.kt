@@ -192,7 +192,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
     val onUpdate = handler<UpdateEvent> {
         val thePlayer = mc.thePlayer ?: return@handler
 
-        if (thePlayer.isInWater || thePlayer.isInLava || thePlayer.isInWeb || thePlayer.isDead)
+        if (thePlayer.isInLiquid || thePlayer.isInWeb || thePlayer.isDead)
             return@handler
 
         when (mode.lowercase()) {
@@ -706,7 +706,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
     val onJump = handler<JumpEvent> { event ->
         val thePlayer = mc.thePlayer
 
-        if (thePlayer == null || thePlayer.isInWater || thePlayer.isInLava || thePlayer.isInWeb)
+        if (thePlayer == null || thePlayer.isInLiquid || thePlayer.isInWeb)
             return@handler
 
         when (mode.lowercase()) {

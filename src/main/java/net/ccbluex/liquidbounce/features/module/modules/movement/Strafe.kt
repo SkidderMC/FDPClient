@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.config.boolean
@@ -8,6 +13,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.extensions.isInLiquid
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.toDegreesF
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
@@ -37,7 +43,7 @@ object Strafe : Module("Strafe", Category.MOVEMENT, gameDetecting = false, hideM
     }
 
     val onUpdate = handler<UpdateEvent> {
-        if (mc.thePlayer.onGround && mc.gameSettings.keyBindJump.isKeyDown && allDirectionsJump && mc.thePlayer.isMoving && !(mc.thePlayer.isInWater || mc.thePlayer.isInLava || mc.thePlayer.isOnLadder || mc.thePlayer.isInWeb)) {
+        if (mc.thePlayer.onGround && mc.gameSettings.keyBindJump.isKeyDown && allDirectionsJump && mc.thePlayer.isMoving && !(mc.thePlayer.isInLiquid || mc.thePlayer.isOnLadder || mc.thePlayer.isInWeb)) {
             if (mc.gameSettings.keyBindJump.isKeyDown) {
                 mc.gameSettings.keyBindJump.pressed = false
                 wasDown = true

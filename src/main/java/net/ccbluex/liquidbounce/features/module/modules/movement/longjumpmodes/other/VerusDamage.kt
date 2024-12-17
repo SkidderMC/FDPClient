@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump.autoDi
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.LongJumpMode
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.client.chat
+import net.ccbluex.liquidbounce.utils.extensions.isInLiquid
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.stopXZ
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
@@ -58,7 +59,7 @@ object VerusDamage : LongJumpMode("VerusDamage") {
 
     override fun onUpdate() {
         val player = mc.thePlayer ?: return
-        if (player.isInWater || player.isInLava || player.isInWeb || player.isOnLadder) {
+        if (player.isInLiquid || player.isInWeb || player.isOnLadder) {
             LongJump.state = false
             return
         }

@@ -15,10 +15,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
-import net.ccbluex.liquidbounce.utils.extensions.component1
-import net.ccbluex.liquidbounce.utils.extensions.component2
-import net.ccbluex.liquidbounce.utils.extensions.component3
-import net.ccbluex.liquidbounce.utils.extensions.tryJump
+import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
@@ -60,8 +57,8 @@ object Criticals : Module("Criticals", Category.COMBAT, hideModule = false) {
             val thePlayer = mc.thePlayer ?: return@handler
             val entity = event.targetEntity
 
-            if (!thePlayer.onGround || thePlayer.isOnLadder || thePlayer.isInWeb || thePlayer.isInWater ||
-                thePlayer.isInLava || thePlayer.ridingEntity != null || entity.hurtTime > hurtTime ||
+            if (!thePlayer.onGround || thePlayer.isOnLadder || thePlayer.isInWeb || thePlayer.isInLiquid ||
+                thePlayer.ridingEntity != null || entity.hurtTime > hurtTime ||
                 Flight.handleEvents() || !msTimer.hasTimePassed(delay)
             )
                 return@handler

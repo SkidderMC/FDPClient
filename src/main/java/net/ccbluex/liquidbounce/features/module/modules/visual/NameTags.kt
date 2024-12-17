@@ -502,6 +502,8 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
     }
 
     fun shouldRenderNameTags(entity: Entity) =
-        handleEvents() && entity is EntityLivingBase && (ESP.handleEvents() && ESP.renderNameTags || isSelected(entity, false)
-                && (bot || !isBot(entity)))
+        handleEvents() && entity is EntityLivingBase && (ESP.handleEvents() && ESP.renderNameTags || isSelected(
+            entity,
+            false
+        ) && (bot || !isBot(entity)))
 }

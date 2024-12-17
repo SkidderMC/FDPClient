@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlockIntersects
+import net.ccbluex.liquidbounce.utils.extensions.isInLiquid
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.direction
 import net.minecraft.init.Blocks
@@ -30,7 +31,7 @@ object WallClimb : Module("WallClimb", Category.MOVEMENT) {
     val onMove = handler<MoveEvent> { event ->
         val thePlayer = mc.thePlayer ?: return@handler
 
-        if (!thePlayer.isCollidedHorizontally || thePlayer.isOnLadder || thePlayer.isInWater || thePlayer.isInLava)
+        if (!thePlayer.isCollidedHorizontally || thePlayer.isOnLadder || thePlayer.isInLiquid)
             return@handler
 
         if (mode == "Simple") {
@@ -115,7 +116,7 @@ object WallClimb : Module("WallClimb", Category.MOVEMENT) {
             "checkerclimb" -> if (event.y > thePlayer.posY) event.boundingBox = null
             "clip" ->
                 if (event.block == Blocks.air && event.y < thePlayer.posY && thePlayer.isCollidedHorizontally
-                    && !thePlayer.isOnLadder && !thePlayer.isInWater && !thePlayer.isInLava
+                    && !thePlayer.isOnLadder && !thePlayer.isInLiquid
                 )
                     event.boundingBox = AxisAlignedBB.fromBounds(0.0, 0.0, 0.0, 1.0, 1.0, 1.0)
                         .offset(thePlayer.posX, thePlayer.posY.toInt() - 1.0, thePlayer.posZ)
