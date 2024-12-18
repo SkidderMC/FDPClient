@@ -14,7 +14,7 @@ object WaitMsUtils : MinecraftInstance(), Listenable {
 
     private val scheduledActions = mutableListOf<ScheduledAction>()
 
-    fun schedule(ms: Long, requester: Any? = null, action: () -> Unit = { }) =
+    fun schedule(requester: Any? = null, ms: Long = 1L, action: () -> Unit = { }) =
         conditionalSchedule(requester, ms) { action(); true }
 
     fun conditionalSchedule(requester: Any? = null, ms: Long? = null, action: () -> Boolean) {

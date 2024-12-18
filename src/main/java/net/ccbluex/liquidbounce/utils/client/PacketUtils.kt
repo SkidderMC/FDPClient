@@ -75,6 +75,10 @@ object PacketUtils : MinecraftInstance(), Listenable {
     }
 
     val onGameLoop = handler<GameLoopEvent>(priority = -5) {
+        if (EventManager.call(DelayedPacketProcessEvent()).isCancelled) {
+            return@handler
+        }
+
         synchronized(queuedPackets) {
             queuedPackets.removeEach { packet ->
                 handlePacket(packet)

@@ -58,9 +58,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
     // Legacy
     private val legacyPos by choices(
-        "Caching mode",
-        arrayOf("ClientPos", "ServerPos"),
-        "ClientPos"
+        "Caching mode", arrayOf("ClientPos", "ServerPos"), "ClientPos"
     ) { mode == "Legacy" }
 
     // Modern
@@ -79,17 +77,16 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
     // ESP
     private val espMode by choices(
-        "ESP-Mode",
-        arrayOf("None", "Box", "Model", "Wireframe"),
-        "Box",
-        subjective = true
+        "ESP-Mode", arrayOf("None", "Box", "Model", "Wireframe"), "Box", subjective = true
     ) { mode == "Modern" }
     private val wireframeWidth by float("WireFrame-Width", 1f, 0.5f..5f) { espMode == "WireFrame" }
 
-    private val espColorMode by choices("ESP-Color", arrayOf("Custom", "Rainbow"), "Custom")
-    { espMode != "Model" && mode == "Modern" }
-    private val espColor = ColorSettingsInteger(this, "ESP", withAlpha = false)
-    { espColorMode == "Custom" && espMode != "Model" && mode == "Modern" }.with(0, 255, 0)
+    private val espColorMode by choices(
+        "ESP-Color", arrayOf("Custom", "Rainbow"), "Custom"
+    ) { espMode != "Model" && mode == "Modern" }
+    private val espColor = ColorSettingsInteger(
+        this, "ESP", withAlpha = false
+    ) { espColorMode == "Custom" && espMode != "Model" && mode == "Modern" }.with(0, 255, 0)
 
     private val packetQueue = ConcurrentLinkedQueue<QueueData>()
     private val positions = mutableListOf<Pair<Vec3, Long>>()
@@ -126,12 +123,11 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         val packet = event.packet
 
         if (TickBase.duringTickModification && mode == "Modern") {
-            clearPackets()
+            clearPackets(stopRendering = false)
             return@handler
         }
 
-        if (Blink.blinkingReceive() || event.isCancelled)
-            return@handler
+        if (Blink.blinkingReceive() || event.isCancelled) return@handler
 
         when (mode.lowercase()) {
             "legacy" -> {
@@ -140,11 +136,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                     is S0CPacketSpawnPlayer -> {
                         // Insert first backtrack data
                         addBacktrackData(
-                            packet.player,
-                            packet.realX,
-                            packet.realY,
-                            packet.realZ,
-                            System.currentTimeMillis()
+                            packet.player, packet.realX, packet.realY, packet.realZ, System.currentTimeMillis()
                         )
                     }
 
@@ -185,8 +177,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                 }
 
                 // Prevent cancelling packets when not needed
-                if (isPacketQueueEmpty && areQueuedPacketsEmpty && !shouldBacktrack())
-                    return@handler
+                if (isPacketQueueEmpty && areQueuedPacketsEmpty && !shouldBacktrack()) return@handler
 
                 when (packet) {
                     // Ignore server related packets
@@ -262,8 +253,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                 backtrackData.removeAll { it.time + supposedDelay < System.currentTimeMillis() }
 
                 // Remove player if there is no data left. This prevents memory leaks.
-                if (backtrackData.isEmpty())
-                    removeBacktrackData(key)
+                if (backtrackData.isEmpty()) removeBacktrackData(key)
             }
         }
 
@@ -318,8 +308,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
     }
 
     val onAttack = handler<AttackEvent> { event ->
-        if (!isSelected(event.targetEntity, true))
-            return@handler
+        if (!isSelected(event.targetEntity, true)) return@handler
 
         // Clear all packets, start again on enemy change
         if (target != event.targetEntity) {
@@ -370,8 +359,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
             }
 
             "modern" -> {
-                if (!shouldBacktrack() || !shouldRender)
-                    return@handler
+                if (!shouldBacktrack() || !shouldRender) return@handler
 
                 target?.run {
                     val targetEntity = target as IMixinEntity
@@ -392,7 +380,9 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                                 color(0.6f, 0.6f, 0.6f, 1f)
                                 manager.doRenderEntity(
                                     this,
-                                    x, y, z,
+                                    x,
+                                    y,
+                                    z,
                                     prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
                                     event.partialTicks,
                                     true
@@ -422,7 +412,9 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                                 glColor(color)
                                 manager.doRenderEntity(
                                     this,
-                                    x, y, z,
+                                    x,
+                                    y,
+                                    z,
                                     prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
                                     event.partialTicks,
                                     true
@@ -430,7 +422,9 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                                 glColor(color)
                                 manager.doRenderEntity(
                                     this,
-                                    x, y, z,
+                                    x,
+                                    y,
+                                    z,
                                     prevRotationYaw + (rotationYaw - prevRotationYaw) * event.partialTicks,
                                     event.partialTicks,
                                     true
@@ -462,8 +456,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         // Clear packets on disconnect only
         // Set target to null on world change
         if (mode == "Modern") {
-            if (event.worldClient == null)
-                clearPackets(false)
+            if (event.worldClient == null) clearPackets(false)
             target = null
         }
     }
@@ -536,7 +529,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         return if (found) time else -1L
     }
 
-    private fun clearPackets(handlePackets: Boolean = true) {
+    private fun clearPackets(handlePackets: Boolean = true, stopRendering: Boolean = true) {
         synchronized(packetQueue) {
             packetQueue.removeAll {
                 if (handlePackets) {
@@ -548,8 +541,11 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         }
 
         positions.clear()
-        shouldRender = false
-        ignoreWholeTick = true
+
+        if (stopRendering) {
+            shouldRender = false
+            ignoreWholeTick = true
+        }
     }
 
     private fun addBacktrackData(id: UUID, x: Double, y: Double, z: Double, time: Long) {
@@ -599,8 +595,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
      * This function will loop through the backtrack data of an entity.
      */
     fun loopThroughBacktrackData(entity: Entity, action: () -> Boolean) {
-        if (!state || entity !is EntityPlayer || mode == "Modern")
-            return
+        if (!state || entity !is EntityPlayer || mode == "Modern") return
 
         val backtrackDataArray = getBacktrackData(entity.uniqueID) ?: return
 
@@ -611,8 +606,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         for ((x, y, z, _) in backtrackDataArray.reversed()) {
             entity.setPosAndPrevPos(Vec3(x, y, z))
 
-            if (action())
-                break
+            if (action()) break
         }
 
         // Reset position
@@ -655,8 +649,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         get() = if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
 
     private fun shouldBacktrack() =
-        mc.thePlayer != null && mc.theWorld != null && target != null && mc.thePlayer.health > 0 && (target!!.health > 0 || target!!.health.isNaN())
-                && mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR && System.currentTimeMillis() >= delayForNextBacktrack && target?.let {
+        mc.thePlayer != null && mc.theWorld != null && target != null && mc.thePlayer.health > 0 && (target!!.health > 0 || target!!.health.isNaN()) && mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR && System.currentTimeMillis() >= delayForNextBacktrack && target?.let {
             isSelected(it, true) && (mc.thePlayer?.ticksExisted ?: 0) > 20 && !ignoreWholeTick
         } == true
 
@@ -665,7 +658,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         globalTimer.reset()
     }
 
-    override val tag: String?
+    override val tag: String
         get() = supposedDelay.toString()
 }
 

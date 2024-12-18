@@ -40,6 +40,7 @@ import net.ccbluex.liquidbounce.utils.rotation.PlaceRotation
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettingsWithRotationModes
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getFixedAngleDelta
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
 import net.minecraft.block.BlockBush
 import net.minecraft.client.settings.GameSettings
@@ -569,7 +570,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
         if (waitForRots) {
             godBridgeTargetRotation?.run {
-                event.originalInput.sneak = event.originalInput.sneak || rotationDifference(this, currRotation) != 0f
+                event.originalInput.sneak = event.originalInput.sneak || rotationDifference(this, currRotation) > getFixedAngleDelta()
             }
         }
 

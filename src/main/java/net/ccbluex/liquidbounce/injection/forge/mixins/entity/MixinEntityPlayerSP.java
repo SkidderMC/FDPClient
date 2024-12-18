@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.features.module.modules.visual.NoSwing;
 import net.ccbluex.liquidbounce.utils.attack.CooldownHelper;
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils;
 import net.ccbluex.liquidbounce.utils.rotation.Rotation;
+import net.ccbluex.liquidbounce.utils.rotation.RotationSettings;
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils;
 import net.ccbluex.liquidbounce.utils.extensions.MathExtensionsKt;
 import net.ccbluex.liquidbounce.utils.extensions.PlayerExtensionKt;
@@ -328,7 +329,8 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         boolean flag2 = movementInput.moveForward >= f;
         movementInput.updatePlayerMoveState();
 
-        final Rotation currentRotation = RotationUtils.INSTANCE.getCurrentRotation();
+        RotationUtils utils = RotationUtils.INSTANCE;
+        final Rotation currentRotation = utils.getCurrentRotation();
 
         // A separate movement input for currentRotation
         MovementInput modifiedInput = new MovementInput();
@@ -380,7 +382,8 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             modifiedInput.moveForward *= slowDownEvent.getForward();
         }
 
-        RotationUtils.INSTANCE.setModifiedInput(modifiedInput);
+        RotationSettings settings = utils.getActiveSettings();
+        utils.setModifiedInput(settings != null && !settings.getStrict() ? modifiedInput : movementInput);
 
         pushOutOfBlocks(posX - width * 0.35, getEntityBoundingBox().minY + 0.5, posZ + width * 0.35);
         pushOutOfBlocks(posX - width * 0.35, getEntityBoundingBox().minY + 0.5, posZ - width * 0.35);
