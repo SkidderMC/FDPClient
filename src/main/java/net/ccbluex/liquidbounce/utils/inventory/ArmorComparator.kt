@@ -24,7 +24,7 @@ object ArmorComparator: MinecraftInstance() {
 		val equippedArmorWhenInChest =
 			if (thePlayer.openContainer.windowId != 0)
 			// Filter out any non armor items player could be equipped (skull / pumpkin)
-				thePlayer.inventory.armorInventory.toList().indexedArmorStacks { null }
+				thePlayer.inventory.armorInventory.asIterable().indexedArmorStacks { null }
 			else emptyList()
 
 		val inventoryStacks = stacks.indexedArmorStacks()

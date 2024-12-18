@@ -5,7 +5,9 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import net.ccbluex.liquidbounce.config.IntegerValue
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.int
@@ -91,7 +93,9 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
 
         var hasClickedHotbar = false
 
-        val stacks = thePlayer.openContainer.inventory
+        val stacks = withContext(Dispatchers.Main) {
+            thePlayer.openContainer.inventorySlots.map { it.stack }
+        }
 
         val bestArmorSet = getBestArmorSet(stacks) ?: return
 
@@ -169,7 +173,9 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
                 return
             }
 
-            val stacks = thePlayer.openContainer.inventory
+            val stacks = withContext(Dispatchers.Main) {
+                thePlayer.openContainer.inventorySlots.map { it.stack }
+            }
 
             val armorSet = getBestArmorSet(stacks) ?: continue
 
