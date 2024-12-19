@@ -195,7 +195,6 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
         attackEntity(target)
     }
 
-
     private fun attackEntity(entity: EntityLivingBase) {
         val thePlayer = mc.thePlayer
 

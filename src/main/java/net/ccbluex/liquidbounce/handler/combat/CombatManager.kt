@@ -16,8 +16,7 @@ import net.minecraft.entity.player.EntityPlayer
 object CombatManager : MinecraftInstance(), Listenable {
     private val lastAttackTimer = MSTimer()
 
-    var inCombat = false
-        private set
+    private var inCombat = false
     var target: EntityLivingBase? = null
         private set
     private val attackedEntityList = mutableListOf<EntityLivingBase>()
@@ -29,24 +28,23 @@ object CombatManager : MinecraftInstance(), Listenable {
         MovementUtils.updateBlocksPerSecond()
 
         // bypass java.util.ConcurrentModificationException
-        attackedEntityList.map { it }.forEach {
+        val entitiesToRemove = mutableListOf<EntityLivingBase>()
+
+        attackedEntityList.forEach {
             if (it.isDead) {
                 EventManager.call(EntityKilledEvent(it))
-                attackedEntityList.remove(it)
+                entitiesToRemove.add(it)
             }
         }
+        attackedEntityList.removeAll(entitiesToRemove)
 
-        inCombat = false
 
-        if (!lastAttackTimer.hasTimePassed(500)) {
-            inCombat = true
-            return@handler
-        }
+        inCombat =  lastAttackTimer.hasTimePassed(500).not()
 
-        if (target != null) {
-            if (mc.thePlayer.getDistanceToEntity(target) > 7 || !inCombat || target!!.isDead) {
+        if (target != null && !inCombat) {
+            if (mc.thePlayer.getDistanceToEntity(target) > 7 || target!!.isDead) {
                 target = null
-            } else {
+            }else {
                 inCombat = true
             }
         }
@@ -65,7 +63,7 @@ object CombatManager : MinecraftInstance(), Listenable {
     }
 
 
-       val onWorld = handler<WorldEvent> {
+    val onWorld = handler<WorldEvent> {
         inCombat = false
         target = null
         attackedEntityList.clear()

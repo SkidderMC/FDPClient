@@ -285,5 +285,6 @@ internal val ALL_EVENT_CLASSES = arrayOf(
     LivingUpdateEvent::class.java,
     MotionEvent::class.java,
     WorldEvent::class.java,
-    DelayedPacketProcessEvent::class.java
+    DelayedPacketProcessEvent::class.java,
+    EntityKilledEvent::class.java
 )

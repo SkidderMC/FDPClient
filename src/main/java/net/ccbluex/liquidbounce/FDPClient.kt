@@ -95,7 +95,6 @@ object FDPClient {
     val eventManager = EventManager
     val fileManager = FileManager
     val scriptManager = ScriptManager
-    var combatManager = CombatManager
     var customFontManager = FontManager()
     var guiManager = GUIManager()
     val keyBindManager = KeyBindManager
@@ -131,7 +130,7 @@ object FDPClient {
             // Register listeners
             RotationUtils
             ClientFixes
-            combatManager
+            CombatManager
             macroManager
             CapeService
             InventoryUtils

@@ -34,6 +34,7 @@ private fun List<EventHook<*>>.findIndexByPriority(item: EventHook<*>): Int {
 
     return low.inv()
 }
+
 /**
  * This manager will start a job for each hook.
  *
@@ -41,7 +42,7 @@ private fun List<EventHook<*>>.findIndexByPriority(item: EventHook<*>): Int {
  *
  * This is designed to run **asynchronous** tasks instead of tick loops.
  *
- * @author opZywl
+ * @author MukjepScarlet
  */
 internal object LoopManager : Listenable, CoroutineScope by CoroutineScope(SupervisorJob()) {
     private val registry = IdentityHashMap<EventHook.Async<UpdateEvent>, Job?>()
@@ -78,6 +79,7 @@ internal object LoopManager : Listenable, CoroutineScope by CoroutineScope(Super
         }
     }
 }
+
 /**
  * @author opZywl
  */

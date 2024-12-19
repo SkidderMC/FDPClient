@@ -5,8 +5,8 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
-import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.config.*
+import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
@@ -52,7 +52,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     private val bgBlueValue by int("Background-Blue", 0, 0.. 255)
     private val bgAlphaValue by int("Background-Alpha", 120, 0.. 255)
 
-    var target = FDPClient.combatManager.target
+    var target = CombatManager.target
     override val values: Set<Value<*>>
         get() {
             val valueSet = mutableSetOf<Value<*>>()
@@ -86,8 +86,8 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         assumeNonVolatile = true
 
         val mainStyle = getCurrentStyle(styleValue.get()) ?: return null
-        val actualTarget = if (FDPClient.combatManager.target != null && (!onlyPlayer || FDPClient.combatManager.target is EntityPlayer)) FDPClient.combatManager.target
-        else if (FDPClient.combatManager.target != null && (!onlyPlayer || FDPClient.combatManager.target is EntityPlayer)) FDPClient.combatManager.target
+        val actualTarget = if (target != null && (!onlyPlayer || target is EntityPlayer)) target
+        else if (target != null && (!onlyPlayer || target is EntityPlayer)) target
         else if ((mc.currentScreen is GuiChat && showinchat) || mc.currentScreen is GuiHudDesigner) mc.thePlayer
         else null
         if (fadeValue) {
