@@ -44,7 +44,7 @@ object CombatManager : MinecraftInstance(), Listenable {
         if (target != null && !inCombat) {
             if (mc.thePlayer.getDistanceToEntity(target) > 7 || target!!.isDead) {
                 target = null
-            }else {
+            } else {
                 inCombat = true
             }
         }

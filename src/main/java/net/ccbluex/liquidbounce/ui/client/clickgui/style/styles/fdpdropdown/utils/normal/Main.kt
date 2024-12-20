@@ -5,9 +5,9 @@
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal
 
+import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.ModuleManager
 
 object Main {
     var categoryCount: Int = 0
@@ -17,8 +17,8 @@ object Main {
     @JvmField
     var allowedClickGuiHeight: Float = 300f
 
-    fun getModulesInCategory(category: Category, moduleManager: ModuleManager): List<Module> {
-        return moduleManager.modules
-            .filter { module -> module.category == category }
+    fun getModulesInCategory(category: Category): List<Module> {
+        return moduleManager.modules.filter { module -> module.category == category }
     }
+
 }

@@ -35,6 +35,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 
 import static net.ccbluex.liquidbounce.handler.api.ClientSettingsKt.getAutoSettingsList;
+import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
 
 public class SideGui extends GuiPanel {
 
@@ -58,10 +59,10 @@ public class SideGui extends GuiPanel {
     public void initGui() {
         focused = false;
         timerUtil = new TimerUtil();
-        rectWidth = 550;
-        rectHeight = 350;
+        setRectWidth(550);
+        setRectHeight(350);
         ScaledResolution sr = new ScaledResolution(mc);
-        drag = new Drag(sr.getScaledWidth() - 30, sr.getScaledHeight() / 2f - rectHeight / 2f);
+        drag = new Drag(sr.getScaledWidth() - 30, sr.getScaledHeight() / 2f - getRectHeight() / 2f);
         textAnimation = new DecelerateAnimation(500, 1);
         textAnimation.setDirection(Direction.BACKWARDS);
         clickAnimation = new DecelerateAnimation(325, 1);
@@ -97,7 +98,7 @@ public class SideGui extends GuiPanel {
         animScroll = AnimationUtils.INSTANCE.animate(scroll, animScroll, 0.5F);
 
         clickAnimation.setDirection(focused ? Direction.FORWARDS : Direction.BACKWARDS);
-        boolean hovering = DrRenderUtils.isHovering(drag.getX(), drag.getY(), rectWidth, rectHeight, mouseX, mouseY);
+        boolean hovering = DrRenderUtils.isHovering(drag.getX(), drag.getY(), getRectWidth(), getRectHeight(), mouseX, mouseY);
         hoverAnimation.setDirection(hovering ? Direction.FORWARDS : Direction.BACKWARDS);
         ScaledResolution sr = new ScaledResolution(mc);
 
@@ -111,11 +112,11 @@ public class SideGui extends GuiPanel {
         }
 
         if (!clickAnimation.isDone()) {
-            drag.setX(MathExtensionsKt.interpolateFloat(sr.getScaledWidth() - 30, focused ? sr.getScaledWidth() / 2f - rectWidth / 2f : drag.getX(), (float) clickAnimation.getOutput()));
-            drag.setY(MathExtensionsKt.interpolateFloat(sr.getScaledHeight() / 2f - rectHeight / 2f, drag.getY(), (float) clickAnimation.getOutput()));
+            drag.setX(MathExtensionsKt.interpolateFloat(sr.getScaledWidth() - 30, focused ? sr.getScaledWidth() / 2f - getRectWidth() / 2f : drag.getX(), (float) clickAnimation.getOutput()));
+            drag.setY(MathExtensionsKt.interpolateFloat(sr.getScaledHeight() / 2f - getRectHeight() / 2f, drag.getY(), (float) clickAnimation.getOutput()));
         }
 
-        boolean gradient = drag.getX() + rectWidth > sr.getScaledWidth() && focused && (clickAnimation.isDone() && clickAnimation.getDirection().equals(Direction.FORWARDS));
+        boolean gradient = drag.getX() + getRectWidth() > sr.getScaledWidth() && focused && (clickAnimation.isDone() && clickAnimation.getDirection().equals(Direction.FORWARDS));
         moveOverGradientAnimation.setDirection(gradient ? Direction.FORWARDS : Direction.BACKWARDS);
 
 
@@ -129,12 +130,12 @@ public class SideGui extends GuiPanel {
         }
 
         float x = drag.getX(), y = drag.getY();
-        RenderUtils.drawCustomShapeWithRadius(x, y, rectWidth, rectHeight, 9, mainRectColor);
+        RenderUtils.drawCustomShapeWithRadius(x, y, getRectWidth(), getRectHeight(), 9, mainRectColor);
         if (!focused) return;
         int textColor = DrRenderUtils.applyOpacity(-1, alpha / 255f);
         int seperation = 0;
         for (String category : categories) {
-            float xVal = x + rectWidth / 2f - 50 + seperation;
+            float xVal = x + getRectWidth() / 2f - 50 + seperation;
             float yVal = y + 15;
 
             boolean hovered = DrRenderUtils.isHovering(xVal - 30, yVal - 5, 60, Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.getHeight() + 10, mouseX, mouseY);
@@ -157,7 +158,7 @@ public class SideGui extends GuiPanel {
             seperation += 100;
         }
 
-        DrRenderUtils.drawRect2(x + 20, y + 50, rectWidth - 40, 1, new Color(45, 45, 45, alpha).getRGB());
+        DrRenderUtils.drawRect2(x + 20, y + 50, getRectWidth() - 40, 1, new Color(45, 45, 45, alpha).getRGB());
 
         if (currentCategory.equals("Color")) {
             String[] themeColors = {
@@ -176,7 +177,7 @@ public class SideGui extends GuiPanel {
             float colorX = colorXStart;
             float colorY = colorYStart;
 
-            float maxVisibleHeight = drag.getY() + rectHeight - 60;
+            float maxVisibleHeight = drag.getY() + getRectHeight() - 60;
 
             for (int i = 0; i < themeColors.length; i++) {
                 String colorName = themeColors[i];
@@ -263,7 +264,7 @@ public class SideGui extends GuiPanel {
 
         if (currentCategory.equals("UI")) {
 
-            Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString("Not Finished - SOOOOOOOOON", x + rectWidth / 2, y + rectHeight / 2, DrRenderUtils.applyOpacity(-1, alpha / 255f));
+            Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString("Not Finished - SOOOOOOOOON", x + getRectWidth() / 2, y + getRectHeight() / 2, DrRenderUtils.applyOpacity(-1, alpha / 255f));
         }
 
         if (currentCategory.equals("Configs")) {
@@ -320,7 +321,7 @@ public class SideGui extends GuiPanel {
 
             float configX = x + 25;
             float configY = y + 60;
-            float buttonWidth = (rectWidth - 50) / 4 - 10;
+            float buttonWidth = (getRectWidth() - 50) / 4 - 10;
             float buttonHeight = 20;
             int configsPerRow = 4;
             int configCount = 0;
@@ -390,7 +391,7 @@ public class SideGui extends GuiPanel {
         }
 
         DrRenderUtils.setAlphaLimit(0);
-        DrRenderUtils.drawGradientRect2(x + 20, y + 51, rectWidth - 40, 8, new Color(0, 0, 0, (int) (60 * (alpha / 255f))).getRGB(), new Color(0, 0, 0, 0).getRGB());
+        DrRenderUtils.drawGradientRect2(x + 20, y + 51, getRectWidth() - 40, 8, new Color(0, 0, 0, (int) (60 * (alpha / 255f))).getRGB(), new Color(0, 0, 0, 0).getRGB());
 
         DrRenderUtils.setAlphaLimit(0);
         int index = 0;
@@ -407,21 +408,21 @@ public class SideGui extends GuiPanel {
 
     @Override
     public void mouseClicked(int mouseX, int mouseY, int button) {
-        boolean hovering = DrRenderUtils.isHovering(drag.getX(), drag.getY(), rectWidth, rectHeight, mouseX, mouseY);
+        boolean hovering = DrRenderUtils.isHovering(drag.getX(), drag.getY(), getRectWidth(), getRectHeight(), mouseX, mouseY);
         if (hovering && button == 0 && !focused) {
             focused = true;
             return;
         }
 
         if (focused) {
-            boolean canDrag = DrRenderUtils.isHovering(drag.getX(), drag.getY(), rectWidth, 50, mouseX, mouseY)
-                    || DrRenderUtils.isHovering(drag.getX(), drag.getY(), 20, rectHeight, mouseX, mouseY);
+            boolean canDrag = DrRenderUtils.isHovering(drag.getX(), drag.getY(), getRectWidth(), 50, mouseX, mouseY)
+                    || DrRenderUtils.isHovering(drag.getX(), drag.getY(), 20, getRectHeight(), mouseX, mouseY);
             drag.onClick(mouseX, mouseY, button, canDrag);
 
             float x = drag.getX(), y = drag.getY();
             int seperation = 0;
             for (String category : categories) {
-                float xVal = x + rectWidth / 2f - 50 + seperation;
+                float xVal = x + getRectWidth() / 2f - 50 + seperation;
                 float yVal = y + 15;
 
                 boolean hovered = DrRenderUtils.isHovering(xVal - 30, yVal - 5, 60, Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.getHeight() + 10, mouseX, mouseY);
@@ -492,7 +493,7 @@ public class SideGui extends GuiPanel {
         if (focused) {
             drag.onRelease(button);
             ScaledResolution sr = new ScaledResolution(mc);
-            if (drag.getX() + rectWidth > sr.getScaledWidth() && clickAnimation.isDone()) {
+            if (drag.getX() + getRectWidth() > sr.getScaledWidth() && clickAnimation.isDone()) {
                 focused = false;
             }
         }

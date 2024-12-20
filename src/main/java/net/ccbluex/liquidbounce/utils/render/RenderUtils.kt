@@ -1542,6 +1542,14 @@ object RenderUtils : MinecraftInstance() {
         drawRoundedRectangle(newX1, newY1, newX2, newY2, red, green, blue, alpha, radius)
     }
 
+    fun drawRoundedRectTest(x1: Double, y1: Double, x2: Double, y2: Double, radius: Float, color: Int) {
+        val alpha = (color ushr 24 and 0xFF) / 255.0f
+        val red = (color ushr 16 and 0xFF) / 255.0f
+        val green = (color ushr 8 and 0xFF) / 255.0f
+        val blue = (color and 0xFF) / 255.0f
+
+        drawRoundedRectangle(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), radius, red, green, blue, alpha)
+    }
     fun drawRoundedRect(paramXStart: Float, paramYStart: Float, paramXEnd: Float, paramYEnd: Float, radius: Float, color: Int) {
         drawRoundedRect(paramXStart, paramYStart, paramXEnd, paramYEnd, radius, color, true)
     }

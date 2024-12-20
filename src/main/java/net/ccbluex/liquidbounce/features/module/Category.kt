@@ -5,42 +5,26 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
-import lombok.Getter
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.objects.Drag
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.Scroll
 
-enum class Category(val displayName: String, val configName: String, val htmlIcon: String,  posX: Int, posY: Int, clicked: Boolean, showMods: Boolean) {
-    COMBAT("Combat", "Combat", "&#xe000;", 15, 15, false, true),
-    PLAYER("Player", "Player", "&#xe7fd;", 15, 180, false, true),
-    MOVEMENT("Movement", "Movement", "&#xe566;", 330, 15, false, true),
-    VISUAL("Visual", "Visual", "&#xe417;", 225, 15, false, true),
-    CLIENT("Client", "Client", "&#xe869;", 15, 330, false, true),
-    OTHER("Other", "Other", "&#xe5d3;", 15, 330, false, true),
-    EXPLOIT("Exploit", "Exploit", "&#xe868;", 120, 180, false, true);
+enum class Category(val displayName: String, val configName: String, val htmlIcon: String, initialPosX: Int, initialPosY: Int, val clicked: Boolean = false, val showMods: Boolean = true) {
+    COMBAT("Combat", "Combat", "&#xe000;", 15, 15),
+    PLAYER("Player", "Player", "&#xe7fd;", 15, 180),
+    MOVEMENT("Movement", "Movement", "&#xe566;", 330, 15),
+    VISUAL("Visual", "Visual", "&#xe417;", 225, 15),
+    CLIENT("Client", "Client", "&#xe869;", 15, 330),
+    OTHER("Other", "Other", "&#xe5d3;", 15, 330),
+    EXPLOIT("Exploit", "Exploit", "&#xe868;", 120, 180);
 
-    private var expanded: Boolean
-    private var posXs: Int
-    private var posYs: Int
-    private var clickeds: Boolean
-    private var showModsV: Boolean
+    var posX: Int = 40 + (Main.categoryCount * 120)
+    var posY: Int = initialPosY
 
-    @Getter
     val scroll = Scroll()
-
-    @Getter
-    val drag: Drag
-    var posY: Int = 20
+    val drag = Drag(posX.toFloat(), posY.toFloat())
 
     init {
-        var posX = posX
-        posX = 40 + (Main.categoryCount * 120)
-        drag = Drag(posX.toFloat(), posY.toFloat())
-        expanded = true
-        posXs = posX
-        posYs = posY
-        clickeds = clicked
-        showModsV = showMods
         Main.categoryCount++
     }
 }

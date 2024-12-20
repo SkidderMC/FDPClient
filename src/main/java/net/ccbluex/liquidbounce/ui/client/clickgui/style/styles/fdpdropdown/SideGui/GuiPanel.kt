@@ -3,23 +3,19 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui
 
-import net.minecraft.client.Minecraft;
+abstract class GuiPanel {
+    var rectWidth: Float = 0f
+    var rectHeight: Float = 0f
 
-public abstract class GuiPanel {
+    abstract fun initGui()
 
-    final Minecraft mc = Minecraft.getMinecraft();
-    public float rectWidth, rectHeight;
+    abstract fun keyTyped(typedChar: Char, keyCode: Int)
 
-    abstract public void initGui();
+    abstract fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float, alpha: Int)
 
-    abstract public void keyTyped(char typedChar, int keyCode);
+    abstract fun mouseClicked(mouseX: Int, mouseY: Int, button: Int)
 
-    abstract public void drawScreen(int mouseX, int mouseY, float partialTicks, int alpha);
-
-    abstract public void mouseClicked(int mouseX, int mouseY, int button);
-
-    abstract public void mouseReleased(int mouseX, int mouseY, int button);
-
+    abstract fun mouseReleased(mouseX: Int, mouseY: Int, button: Int)
 }
