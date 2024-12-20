@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce
 
+import com.formdev.flatlaf.themes.FlatMacLightLaf
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.event.StartupEvent
@@ -59,6 +60,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.timing.TickedActions
 import net.ccbluex.liquidbounce.utils.timing.WaitMsUtils
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
+import javax.swing.UIManager
 
 object FDPClient {
 
@@ -122,6 +124,10 @@ object FDPClient {
         LOGGER.info("Launching...")
 
         try {
+            // Change theme of Swing
+            // TODO: make it configurable
+            UIManager.setLookAndFeel(FlatMacLightLaf())
+
             // Load languages
             loadLanguages()
 

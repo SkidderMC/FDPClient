@@ -24,6 +24,11 @@ import javax.imageio.ImageIO
  *
  * Draw custom image
  */
+/**
+ * CustomHUD image element
+ *
+ * Draw custom image
+ */
 @ElementInfo(name = "Image")
 class Image : Element() {
 
@@ -89,35 +94,30 @@ class Image : Element() {
             return false
         }
 
-        setImage(file)
-        return true
+        return try {
+            setImage(file)
+            true
+        } catch (e: Exception) {
+            MiscUtils.showErrorPopup("Error", "Exception occurred while opening the image: ${e.message}")
+            false
+        }
     }
 
-    private fun setImage(image: String): Image {
-        try {
-            this.image.changeValue(image)
+    private fun setImage(b64image: String): Image {
+        this.image.changeValue(b64image)
 
-            val byteArrayInputStream = Base64.getDecoder().decode(image).inputStream()
-            val bufferedImage = ImageIO.read(byteArrayInputStream)
-            byteArrayInputStream.close()
+        val bufferedImage = Base64.getDecoder().decode(b64image).inputStream().use(ImageIO::read)
 
-            width = bufferedImage.width
-            height = bufferedImage.height
+        width = bufferedImage.width
+        height = bufferedImage.height
 
-            mc.textureManager.loadTexture(resourceLocation, DynamicTexture(bufferedImage))
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        mc.textureManager.loadTexture(resourceLocation, DynamicTexture(bufferedImage))
+
         return this
     }
 
-    fun setImage(image: File): Image {
-        try {
-            setImage(Base64.getEncoder().encodeToString(image.readBytes()))
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-
+    private fun setImage(image: File): Image {
+        setImage(Base64.getEncoder().encodeToString(image.readBytes()))
         return this
     }
 

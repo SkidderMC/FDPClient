@@ -13,9 +13,9 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.FDPClient.background
 import net.ccbluex.liquidbounce.FDPClient.isStarting
 import net.ccbluex.liquidbounce.file.configs.*
-import net.ccbluex.liquidbounce.utils.render.shader.Background.Companion.createBackground
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.render.shader.Background
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.io.File
@@ -183,15 +183,14 @@ object FileManager : MinecraftInstance() {
      * Load background for background
      */
     fun loadBackground() {
-        var backgroundFile: File? = null
-        if (backgroundImageFile.exists()) {
-            backgroundFile = backgroundImageFile
-        } else if (backgroundShaderFile.exists()) {
-            backgroundFile = backgroundShaderFile
+        val backgroundFile = when {
+            backgroundImageFile.exists() -> backgroundImageFile
+            backgroundShaderFile.exists() -> backgroundShaderFile
+            else -> null
         }
 
         if (backgroundFile != null) {
-            background = createBackground(backgroundFile)
+            background = Background.fromFile(backgroundFile)
         }
     }
 
