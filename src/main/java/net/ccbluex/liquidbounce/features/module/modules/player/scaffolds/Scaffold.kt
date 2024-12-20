@@ -5,43 +5,37 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player.scaffolds
 
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.attack.CPSCounter
+import net.ccbluex.liquidbounce.utils.block.*
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
+import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.blocksAmount
+import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
+import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
+import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.rotation.PlaceRotation
+import net.ccbluex.liquidbounce.utils.rotation.Rotation
+import net.ccbluex.liquidbounce.utils.rotation.RotationSettingsWithRotationModes
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.canUpdateRotation
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getFixedAngleDelta
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
-import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.blocksAmount
-import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
-import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
 import net.ccbluex.liquidbounce.utils.timing.DelayTimer
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.TickDelayTimer
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
-import net.ccbluex.liquidbounce.config.FloatValue
-import net.ccbluex.liquidbounce.config.IntegerValue
-import net.ccbluex.liquidbounce.config.ListValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
-import net.ccbluex.liquidbounce.utils.attack.CPSCounter
-import net.ccbluex.liquidbounce.utils.block.*
-import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
-import net.ccbluex.liquidbounce.utils.movement.MovementUtils
-import net.ccbluex.liquidbounce.utils.rotation.PlaceRotation
-import net.ccbluex.liquidbounce.utils.rotation.Rotation
-import net.ccbluex.liquidbounce.utils.rotation.RotationSettingsWithRotationModes
-import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
-import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getFixedAngleDelta
-import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
 import net.minecraft.block.BlockBush
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.init.Blocks.air
@@ -522,13 +516,22 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     val onTick = handler<GameTickEvent> {
         val target = placeRotation?.placeInfo
 
+        val raycastProperly = !(scaffoldMode == "Expand" && expandLength > 1 || shouldGoDown) && options.rotationsActive
+
+        /**
+         * Calculate block raytracing process once to simulate proper vanilla ray-cast update logic.
+         *
+         * @see net.minecraft.client.Minecraft.runTick Line 1345
+         */
+        val raycast = performBlockRaytrace(currRotation, mc.playerController.blockReachDistance)
+
         if (extraClicks) {
             val doubleClick = if (simulateDoubleClicking) RandomUtils.nextInt(-1, 1) else 0
 
             repeat(extraClick.clicks + doubleClick) {
                 extraClick.clicks--
 
-                doPlaceAttempt()
+                doPlaceAttempt(raycast)
             }
         }
 
@@ -539,9 +542,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             return@handler
         }
 
-        val raycastProperly = !(scaffoldMode == "Expand" && expandLength > 1 || shouldGoDown) && options.rotationsActive
-
-        performBlockRaytrace(currRotation, mc.playerController.blockReachDistance).let {
+        raycast.let {
             if (!options.rotationsActive || it != null && it.blockPos == target.blockPos && (!raycastProperly || it.sideHit == target.enumFacing)) {
                 val result = if (raycastProperly && it != null) {
                     PlaceInfo(it.blockPos, it.sideHit, it.hitVec)
@@ -721,7 +722,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         }
     }
 
-    private fun doPlaceAttempt() {
+    private fun doPlaceAttempt(raytrace: MovingObjectPosition?) {
         val player = mc.thePlayer ?: return
         val world = mc.theWorld ?: return
 
@@ -731,9 +732,9 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             return
         }
 
-        val block = stack.item as ItemBlock
+        raytrace ?: return
 
-        val raytrace = performBlockRaytrace(currRotation, mc.playerController.blockReachDistance) ?: return
+        val block = stack.item as ItemBlock
 
         val canPlaceOnUpperFace = block.canPlaceBlockOnSide(
             world, raytrace.blockPos, EnumFacing.UP, player, stack

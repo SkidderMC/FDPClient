@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown
 
-import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.clickHeight
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.scrollMode
@@ -37,7 +36,7 @@ class MainScreen(private val category: Category) : Screen {
     override fun initGui() {
         if (moduleRects == null) {
             moduleRects = mutableListOf<ModuleRect>().apply {
-                Main.getModulesInCategory(category, moduleManager)
+                Main.getModulesInCategory(category)
                     .sortedBy { it.name }
                     .forEach { module ->
                         val moduleRect = ModuleRect(module)
