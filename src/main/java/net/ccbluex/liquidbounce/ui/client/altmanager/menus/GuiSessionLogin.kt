@@ -14,13 +14,14 @@ import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.login.LoginUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-class GuiSessionLogin(private val prevGui: GuiAltManager) : GuiScreen() {
+class GuiSessionLogin(private val prevGui: GuiAltManager) : AbstractScreen() {
 
     // Buttons
     private lateinit var loginButton: GuiButton
@@ -40,11 +41,9 @@ class GuiSessionLogin(private val prevGui: GuiAltManager) : GuiScreen() {
 
         // Add buttons to screen
 
-        buttonList.run {
-            add(GuiButton(1, width / 2 - 100, height / 2 - 60, "Login").also { loginButton = it })
+        loginButton = +GuiButton(1, width / 2 - 100, height / 2 - 60, "Login")
 
-            add(GuiButton(0, width / 2 - 100, height / 2 - 30, "Back"))
-        }
+        +GuiButton(0, width / 2 - 100, height / 2 - 30, "Back")
 
         // Add fields to screen
         sessionTokenField = GuiTextField(666, Fonts.font40, width / 2 - 100, height / 2 - 90, 200, 20)

@@ -11,10 +11,16 @@ import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager.Companion.log
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawLoadingCircle
+import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiScreen
 import java.awt.Color
 
-class GuiLoginProgress(minecraftAccount: MinecraftAccount, success: () -> Unit, error: (Exception) -> Unit, done: () -> Unit) : GuiScreen() {
+class GuiLoginProgress(
+    minecraftAccount: MinecraftAccount,
+    success: () -> Unit,
+    error: (Exception) -> Unit,
+    done: () -> Unit
+) : AbstractScreen() {
 
     init {
         login(minecraftAccount, success, error, done)

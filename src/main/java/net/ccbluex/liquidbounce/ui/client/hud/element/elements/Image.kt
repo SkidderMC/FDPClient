@@ -24,11 +24,6 @@ import javax.imageio.ImageIO
  *
  * Draw custom image
  */
-/**
- * CustomHUD image element
- *
- * Draw custom image
- */
 @ElementInfo(name = "Image")
 class Image : Element() {
 

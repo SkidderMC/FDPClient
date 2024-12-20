@@ -16,12 +16,12 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawLoadingCircle
+import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
-import net.minecraft.client.gui.GuiScreen
 import java.awt.Color
 import java.net.BindException
 
-class GuiMicrosoftLoginProgress(val updateStatus: (String) -> Unit, val done: () -> Unit) : GuiScreen() {
+class GuiMicrosoftLoginProgress(val updateStatus: (String) -> Unit, val done: () -> Unit) : AbstractScreen() {
 
     private var oAuthServer: OAuthServer? = null
     private var loginUrl: String? = null
@@ -76,10 +76,9 @@ class GuiMicrosoftLoginProgress(val updateStatus: (String) -> Unit, val done: ()
             LOGGER.error("Failed to start login server.", e)
         }
 
-        buttonList.run {
-            add(GuiButton(0, width / 2 - 100, height / 2 + 60, "Open URL"))
-            add(GuiButton(1, width / 2 - 100, height / 2 + 90, "Cancel"))
-        }
+        +GuiButton(0, width / 2 - 100, height / 2 + 60, "Open URL")
+        +GuiButton(1, width / 2 - 100, height / 2 + 90, "Cancel")
+
         super.initGui()
     }
 

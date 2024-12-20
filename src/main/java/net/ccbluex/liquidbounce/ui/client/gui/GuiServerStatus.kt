@@ -14,13 +14,14 @@ import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.io.HttpUtils.responseCode
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.io.IOException
 
-class GuiServerStatus(private val prevGui: GuiScreen) : GuiScreen() {
+class GuiServerStatus(private val prevGui: GuiScreen) : AbstractScreen() {
     private val status = hashMapOf<String, String?>(
         "https://api.mojang.com" to null,
         "https://authserver.mojang.com" to null,
@@ -33,7 +34,7 @@ class GuiServerStatus(private val prevGui: GuiScreen) : GuiScreen() {
     )
 
     override fun initGui() {
-        buttonList.add(GuiButton(1, width / 2 - 100, height / 4 + 145, "Back"))
+        +GuiButton(1, width / 2 - 100, height / 4 + 145, "Back")
 
         loadInformation()
     }
@@ -71,7 +72,13 @@ class GuiServerStatus(private val prevGui: GuiScreen) : GuiScreen() {
                 i += Fonts.font40.fontHeight
             }
 
-            Fonts.fontBold180.drawCenteredString(translationMenu("serverStatus"), width / 2F, height / 8f + 5F, 4673984, true)
+            Fonts.fontBold180.drawCenteredString(
+                translationMenu("serverStatus"),
+                width / 2F,
+                height / 8f + 5F,
+                4673984,
+                true
+            )
         }
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
@@ -80,9 +87,8 @@ class GuiServerStatus(private val prevGui: GuiScreen) : GuiScreen() {
     }
 
     private fun loadInformation() {
-        status.replaceAll { _, _ -> null }
-
         for (url in status.keys) {
+            status[url] = null
             SharedScopes.IO.launch {
                 try {
                     val responseCode = responseCode(url, "GET")

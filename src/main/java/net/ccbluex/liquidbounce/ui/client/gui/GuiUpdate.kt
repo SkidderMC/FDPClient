@@ -16,13 +16,13 @@ import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.checkStatus
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.loadPictures
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
-import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
-class GuiUpdate : GuiScreen() {
+class GuiUpdate : AbstractScreen() {
 
     private var isLoading = false
     private var loadProgress = 0
@@ -31,11 +31,9 @@ class GuiUpdate : GuiScreen() {
     override fun initGui() {
         val j = height / 4 + 24
 
-        buttonList.run {
-            add(GuiButton(1, width / 2 + 2, j + 24 * 2, 98, 20, "Ignore"))
-            add(GuiButton(2, width / 2 - 100, j + 24 * 2, 98, 20, "Go to Download page"))
-            add(GuiButton(3, width / 2 - 49, j + 24 * 3, 98, 20, "Reload API"))
-        }
+            +GuiButton(1, width / 2 + 2, j + 24 * 2, 98, 20, "Ignore")
+            +GuiButton(2, width / 2 - 100, j + 24 * 2, 98, 20, "Go to download page")
+            +GuiButton(3, width / 2 - 49, j + 24 * 3, 98, 20, "Reload API")
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) = assumeNonVolatile {

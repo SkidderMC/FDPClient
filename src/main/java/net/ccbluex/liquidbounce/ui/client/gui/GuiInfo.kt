@@ -12,12 +12,13 @@ import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.donate
 import net.ccbluex.liquidbounce.utils.io.URLRegistryUtils
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-class GuiInfo(private val prevGui: GuiScreen) : GuiScreen() {
+class GuiInfo(private val prevGui: GuiScreen) : AbstractScreen() {
 
     override fun initGui() {
         val yOffset = height / 4 + 20
@@ -25,13 +26,13 @@ class GuiInfo(private val prevGui: GuiScreen) : GuiScreen() {
         val buttonHeight = 20
 
         val buttons = listOf(
-            GuiButton(1, width / 2 - buttonWidth / 2, yOffset + buttonHeight * 0, "Open Website"),
-            GuiButton(2, width / 2 - buttonWidth / 2, yOffset + buttonHeight * 1 + 10, "Join Discord Server"),
-            GuiButton(3, width / 2 - buttonWidth / 2, yOffset + buttonHeight * 2 + 20, "Server Status"),
-            GuiButton(4, width / 2 - buttonWidth / 2, yOffset + buttonHeight * 3 + 30, "Scripts"),
-            GuiButton(5, width / 2 - buttonWidth / 2, yOffset + buttonHeight * 4 + 40, "Client Configuration"),
-            GuiButton(6, width / 2 - buttonWidth / 2, yOffset + buttonHeight * 5 + 50, "Donate Now"),
-            GuiButton(7, width / 2 - buttonWidth / 2, yOffset + buttonHeight * 6 + 60, "Done")
+            +GuiButton(1, width / 2 - buttonWidth / 2, yOffset + buttonHeight * 0, "Open Website"),
+            +GuiButton(2, width / 2 - buttonWidth / 2, yOffset + buttonHeight * 1 + 10, "Join Discord Server"),
+            +GuiButton(3, width / 2 - buttonWidth / 2, yOffset + buttonHeight * 2 + 20, "Server Status"),
+            +GuiButton(4, width / 2 - buttonWidth / 2, yOffset + buttonHeight * 3 + 30, "Scripts"),
+            +GuiButton(5, width / 2 - buttonWidth / 2, yOffset + buttonHeight * 4 + 40, "Client Configuration"),
+            +GuiButton(6, width / 2 - buttonWidth / 2, yOffset + buttonHeight * 5 + 50, "Donate Now"),
+            +GuiButton(7, width / 2 - buttonWidth / 2, yOffset + buttonHeight * 6 + 60, "Done")
         )
 
         buttonList.addAll(buttons)

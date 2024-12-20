@@ -6,14 +6,15 @@
 package net.ccbluex.liquidbounce.ui.client.gui
 
 import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.io.GitUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
+import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
-import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 import java.io.IOException
@@ -21,7 +22,7 @@ import kotlin.Float
 import kotlin.Int
 import kotlin.Throws
 
-class GuiCommitInfo : GuiScreen() {
+class GuiCommitInfo : AbstractScreen() {
 
     override fun initGui() {
         val buttonWidth = 200
@@ -29,7 +30,7 @@ class GuiCommitInfo : GuiScreen() {
         val buttonX = width / 2 - buttonWidth / 2
         val buttonY = height - buttonHeight - 10
 
-        buttonList.add(GuiButton(0, buttonX, buttonY, buttonWidth, buttonHeight, "Back"))
+        +GuiButton(0, buttonX, buttonY, buttonWidth, buttonHeight, "Back")
 
         super.initGui()
     }
@@ -76,6 +77,6 @@ class GuiCommitInfo : GuiScreen() {
     }
 
     companion object {
-        val gitImage: ResourceLocation = ResourceLocation("fdpclient/mainmenu/github.png")
+        val gitImage: ResourceLocation =ResourceLocation("${CLIENT_NAME.lowercase()}/mainmenu/github.png")
     }
 }

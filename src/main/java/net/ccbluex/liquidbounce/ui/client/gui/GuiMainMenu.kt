@@ -22,6 +22,7 @@ import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.isLatest
 import net.ccbluex.liquidbounce.utils.io.GitUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawShadowRect
+import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.*
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
@@ -30,7 +31,7 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.util.*
 
-class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
+class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
     private var logo: ResourceLocation? = null
     private lateinit var btnSinglePlayer: GuiButton
     private lateinit var btnMultiplayer: GuiButton
@@ -51,10 +52,10 @@ class GuiMainMenu : GuiScreen(), GuiYesNoCallback {
         val buttonWidth = 133
         val buttonHeight = 20
 
-        btnSinglePlayer = GuiButton(0, width / 2 - 66, height / 2 - 80 + 70, buttonWidth, buttonHeight, "SINGLE PLAYER")
-        btnMultiplayer = GuiButton(1, width / 2 - 66, height / 2 - 80 + 95 - 2, buttonWidth, buttonHeight, "MULTI PLAYER")
-        btnClientOptions = GuiButton(2, width / 2 - 66, height / 2 - 80 + 120 - 4, buttonWidth, buttonHeight, "SETTINGS")
-        btnCheckUpdate = GuiButton(3, width / 2 - 66, height / 2 - 80 + 145 - 6, buttonWidth, buttonHeight, "CHECK UPDATE")
+        btnSinglePlayer = +GuiButton(0, width / 2 - 66, height / 2 - 80 + 70, buttonWidth, buttonHeight, "SINGLE PLAYER")
+        btnMultiplayer = +GuiButton(1, width / 2 - 66, height / 2 - 80 + 95 - 2, buttonWidth, buttonHeight, "MULTI PLAYER")
+        btnClientOptions = +GuiButton(2, width / 2 - 66, height / 2 - 80 + 120 - 4, buttonWidth, buttonHeight, "SETTINGS")
+        btnCheckUpdate = +GuiButton(3, width / 2 - 66, height / 2 - 80 + 145 - 6, buttonWidth, buttonHeight, "CHECK UPDATE")
 
         btnClickGUI= ImageButton(
             "CLICKGUI",

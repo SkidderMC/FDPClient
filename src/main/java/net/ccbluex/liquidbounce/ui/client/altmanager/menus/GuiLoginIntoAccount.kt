@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.ui.client.altmanager.menus
 
 import me.liuli.elixir.account.CrackedAccount
-import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.event.EventManager.call
 import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
@@ -17,15 +16,15 @@ import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolat
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomUsername
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
-import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiTextField
 import net.minecraft.util.Session
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.io.IOException
 
-class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: Boolean = false) : GuiScreen() {
+class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: Boolean = false) : AbstractScreen() {
 
     private lateinit var addButton: GuiButton
     private lateinit var username: GuiTextField
@@ -36,19 +35,16 @@ class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: B
         Keyboard.enableRepeatEvents(true)
 
         // Add button
-        buttonList.run {
-            add(GuiButton(1, width / 2 - 100, height / 2 - 60 , if (directLogin) "Login" else "Add")
-                .also { addButton = it })
+        addButton = +GuiButton(1, width / 2 - 100, height / 2 - 60, if (directLogin) "Login" else "Add")
 
-            // Random button
-            add(GuiButton(2, width / 2 + 105, height / 2 - 90, 40, 20, "Random"))
+        // Random button
+        +GuiButton(2, width / 2 + 105, height / 2 - 90, 40, 20, "Random")
 
-            // Login via Microsoft account
-            add(GuiButton(3, width / 2 - 100, height / 2, "${if (directLogin) "Login to" else "Add"} a Microsoft account"))
+        // Login via Microsoft account
+        +GuiButton(3, width / 2 - 100, height / 2, "${if (directLogin) "Login to" else "Add"} a Microsoft account")
 
-            // Back button
-            add(GuiButton(0, width / 2 - 100, height / 2 + 30, "Back"))
-        }
+        // Back button
+        +GuiButton(0, width / 2 - 100, height / 2 + 30, "Back")
 
         username = GuiTextField(2, Fonts.font40, width / 2 - 100, height / 2 - 90, 200, 20)
         username.isFocused = false
@@ -60,8 +56,18 @@ class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: B
             drawBackground(0)
 
             drawRect(30, 30, width - 30, height - 30, Int.MIN_VALUE)
-            Fonts.font40.drawCenteredStringWithShadow(if (directLogin) "Direct Login" else "Add Account", width / 2f, height / 2 - 170f, 0xffffff)
-            Fonts.font40.drawCenteredStringWithShadow("§7${if (directLogin) "Login to" else "Add"} an offline account", width / 2f, height / 2 - 110f, 0xffffff)
+            Fonts.font40.drawCenteredStringWithShadow(
+                if (directLogin) "Direct Login" else "Add Account",
+                width / 2f,
+                height / 2 - 170f,
+                0xffffff
+            )
+            Fonts.font40.drawCenteredStringWithShadow(
+                "§7${if (directLogin) "Login to" else "Add"} an offline account",
+                width / 2f,
+                height / 2 - 110f,
+                0xffffff
+            )
             Fonts.font35.drawCenteredStringWithShadow(status, width / 2f, height / 2f - 30, 0xffffff)
 
             username.drawTextBox()
