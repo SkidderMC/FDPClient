@@ -766,7 +766,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
 
             if (switchMode && !isLookingOnEntities(entity, maxSwitchFOV.toDouble())) continue
 
-            var currentValue = when (priority.lowercase()) {
+            val currentValue = when (priority.lowercase()) {
                 "distance" -> distance
                 "direction" -> entityFov.toDouble()
                 "health" -> entity.health.toDouble()
@@ -1210,7 +1210,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     private val cancelRun inline get(): Boolean {
         return mc.thePlayer.isSpectator
                 || !isAlive(mc.thePlayer)
-                || (noConsumeAttack == "NoRotation" && isConsumingItem())
+                || noConsumeAttack == "NoRotation" && isConsumingItem()
                 || shouldCancelDueToModuleState()
                 || isEatingDisallowed()
                 || isBlockingDisallowed()
@@ -1246,9 +1246,9 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
 
             if (target != null && player.heldItem?.item is ItemSword) {
                 if (smartAutoBlock) {
-                    if (!player.isMoving && forceBlock) return true
+                    if (player.isMoving && forceBlock) return false
 
-                    if (checkWeapon && (target!!.heldItem?.item !is ItemSword && target!!.heldItem?.item !is ItemAxe)) return false
+                    if (checkWeapon && target?.heldItem?.item !is ItemSword && target?.heldItem?.item !is ItemAxe) return false
 
                     if (player.hurtTime > maxOwnHurtTime) return false
 

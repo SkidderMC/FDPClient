@@ -63,8 +63,13 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
     private val extraWidth by float("ExtraWidth", 0F, 0F..2F, subjective = true) { markValue == "Circle" }
     private val animateCircleY by boolean("AnimateCircleY", true, subjective = true) { fillInnerCircle || withHeight }
     private val circleYRange by floatRange("CircleYRange", 0F..0.5F, 0F..2F, subjective = true) { animateCircleY }
-    private val duration by float("Duration", 1.5F, 0.5F..3F, suffix = "Seconds", subjective = true)
-    { animateCircleY || animateHeight }
+    private val duration by float(
+        "Duration",
+        1.5F,
+        0.5F..3F,
+        suffix = "Seconds",
+        subjective = true
+    ) { animateCircleY || animateHeight }
 
     private val alphaValue by int("Alpha", 255, 0.. 255) { isMarkMode && markValue == "Zavz" && markValue == "Jello"}
 
