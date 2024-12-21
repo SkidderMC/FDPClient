@@ -22,9 +22,8 @@ import java.awt.Font
 import java.io.File
 import kotlin.system.measureTimeMillis
 
-data class FontInfo(val name: String, val size: Int = -1, val isCustom: Boolean = false) {
-    constructor(font: Font) : this(font.name, font.size)
-}
+data class FontInfo(val name: String, val size: Int = -1, val isCustom: Boolean = false)
+
 private val FONT_REGISTRY = LinkedHashMap<FontInfo, FontRenderer>()
 object Fonts : MinecraftInstance {
 
