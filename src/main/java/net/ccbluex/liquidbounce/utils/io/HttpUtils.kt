@@ -11,11 +11,17 @@ import okhttp3.RequestBody
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
 import java.util.concurrent.TimeUnit
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.X509TrustManager
 
 /**
  * HttpUtils based on OkHttp3
  *
+ * @author MukjepScarlet
  */
 object HttpUtils {
 
@@ -25,7 +31,24 @@ object HttpUtils {
         .connectTimeout(3, TimeUnit.SECONDS)
         .readTimeout(15, TimeUnit.SECONDS)
         .followRedirects(true)
+        .sslSocketFactory(createTrustAllSslSocketFactory(), createTrustAllTrustManager())
+        .hostnameVerifier { _, _ -> true }
         .build()
+
+    private fun createTrustAllSslSocketFactory(): SSLSocketFactory {
+        val trustAllCerts = arrayOf(createTrustAllTrustManager())
+        val sslContext = SSLContext.getInstance("TLS")
+        sslContext.init(null, trustAllCerts, SecureRandom())
+        return sslContext.socketFactory
+    }
+
+    private fun createTrustAllTrustManager(): X509TrustManager {
+        return object : X509TrustManager {
+            override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}
+            override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {}
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+        }
+    }
 
     private fun makeRequest(
         url: String,
