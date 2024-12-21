@@ -101,7 +101,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
             return@handler
 
         if (isUsingItem || shouldSwap) {
-            if (heldItem.item !is ItemSword && !consumeFoodOnly && heldItem.item is ItemFood ||
+            if (heldItem.item is ItemSword || !consumeFoodOnly && heldItem.item is ItemFood ||
                 !consumeDrinkOnly && (heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk)
             ) {
                 return@handler
