@@ -131,20 +131,47 @@ object Fonts : MinecraftInstance {
     }
 
     private fun downloadFonts() {
-        val outputFile = File(fontsDir, "roboto.zip")
-        if (!outputFile.exists()) {
-            LOGGER.info("Downloading fonts...")
-            download("$CLIENT_CLOUD/fonts/Roboto.zip", outputFile)
-            LOGGER.info("Extract fonts...")
-            outputFile.extractZipTo(fontsDir)
+        val robotoZipFile = File(fontsDir, "roboto.zip")
+        if (!robotoZipFile.exists()) {
+            LOGGER.info("Downloading roboto fonts...")
+            download("$CLIENT_CLOUD/fonts/Roboto.zip", robotoZipFile)
+            LOGGER.info("Extract roboto fonts...")
+            robotoZipFile.extractZipTo(fontsDir)
         }
+
         val fontZipFile = File(fontsDir, "font.zip")
         if (!fontZipFile.exists()) {
             LOGGER.info("Downloading additional fonts...")
             download("${FONTS}/Font.zip", fontZipFile)
-            LOGGER.info("Extracting additional fonts...")
-            fontZipFile.extractZipTo(fontsDir)
         }
+
+        if(fontZipFile.exists()){
+            LOGGER.info("Font zip file exists, trying to extract...")
+            if(!fontsDir.exists()){
+                LOGGER.info("Fonts directory does not exist, trying to create...")
+                fontsDir.mkdirs()
+            }
+            try{
+                fontZipFile.extractZipTo(fontsDir){file ->
+                    LOGGER.info("Extracted: ${file.absolutePath}")
+                }
+                val extractedFiles = fontsDir.listFiles { file -> file.isFile && file.name.endsWith(".ttf") }
+                if (extractedFiles != null && extractedFiles.isNotEmpty()) {
+                    LOGGER.info("Fonts extracted successfully:")
+                    extractedFiles.forEach{file ->
+                        LOGGER.info(" - ${file.absolutePath}")
+                    }
+                }else {
+                    LOGGER.warn("No .ttf files extracted")
+                }
+            }catch (e:Exception){
+                LOGGER.error("Error during extraction", e)
+            }
+
+        }else{
+            LOGGER.warn("font not found")
+        }
+
     }
 
     fun getFontRenderer(name: String, size: Int): FontRenderer {
