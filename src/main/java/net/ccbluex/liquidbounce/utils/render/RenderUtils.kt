@@ -2304,7 +2304,6 @@ object RenderUtils : MinecraftInstance() {
 
     fun drawImage(image: ResourceLocation?, x: Int, y: Int, width: Int, height: Int) {
         glPushMatrix()
-        glPushAttrib(GL_ALL_ATTRIB_BITS)
         glDisable(GL_DEPTH_TEST)
         glEnable(GL_BLEND)
         glDepthMask(false)
@@ -2324,7 +2323,6 @@ object RenderUtils : MinecraftInstance() {
         glDepthMask(true)
         glDisable(GL_BLEND)
         glEnable(GL_DEPTH_TEST)
-        glPopAttrib()
         glPopMatrix()
     }
 

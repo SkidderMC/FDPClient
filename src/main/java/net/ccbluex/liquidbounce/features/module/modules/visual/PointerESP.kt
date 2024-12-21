@@ -111,6 +111,7 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
 
     private fun draw(ticks: Float) {
         val player = mc.thePlayer ?: return
+        val world = mc.theWorld ?: return
 
         val arrowRadius = -arrowRadius
         val halfAngle = arrowAngle / 2
@@ -124,7 +125,7 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
         glEnable(GL_LINE_SMOOTH)
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
 
-        for (entity in mc.theWorld.loadedEntityList) {
+        for (entity in world.loadedEntityList.filterNotNull()) {
             if (entity !is EntityLivingBase || !bot && isBot(entity)) continue
             if (!team && Teams.isInYourTeam(entity)) continue
 

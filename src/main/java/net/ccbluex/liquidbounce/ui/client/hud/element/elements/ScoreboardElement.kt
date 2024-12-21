@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_WEBSITE
-import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
@@ -18,6 +17,8 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRectInt
+import net.ccbluex.liquidbounce.config.*
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.minecraft.scoreboard.ScoreObjective
 import net.minecraft.scoreboard.ScorePlayerTeam
 import net.minecraft.util.EnumChatFormatting
@@ -54,7 +55,7 @@ class ScoreboardElement(
     private val rectColorAlpha by int("Rect-Alpha", 255, 0..255) { rect && rectColorMode == "Custom" }
 
     private val serverIp by choices("ServerIP", arrayOf("Normal", "None", "Client", "Website"), "Normal")
-    private val showNumber by boolean("ShowNumber", true)
+    private val number by boolean("ShowNumber", true)
     private val shadow by boolean("Shadow", false)
     private val font by font("Font", Fonts.minecraftFont)
 
@@ -62,133 +63,138 @@ class ScoreboardElement(
      * Draw element
      */
     override fun drawElement(): Border? {
-        val (fontRenderer, fontHeight) = font to ((font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT)
-        val textColor = textColor().rgb
-        val backColor = backgroundColor().rgb
+        assumeNonVolatile {
 
-        val rectColorMode = rectColorMode
-        val rectCustomColor = Color(rectColorRed, rectColorGreen, rectColorBlue, rectColorAlpha).rgb
+            val (fontRenderer, fontHeight) = font to ((font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT)
+            val textColor = textColor().rgb
+            val backColor = backgroundColor().rgb
 
-        val worldScoreboard = mc.theWorld.scoreboard
-        var currObjective: ScoreObjective? = null
-        val playerTeam = worldScoreboard.getPlayersTeam(mc.thePlayer.name)
+            val rectColorMode = rectColorMode
+            val rectCustomColor = Color(rectColorRed, rectColorGreen, rectColorBlue, rectColorAlpha).rgb
 
-        if (playerTeam != null) {
-            val colorIndex = playerTeam.chatFormat.colorIndex
+            val worldScoreboard = mc.theWorld.scoreboard ?: return null
+            var currObjective: ScoreObjective? = null
+            val playerTeam = worldScoreboard.getPlayersTeam(mc.thePlayer.name)
 
-            if (colorIndex >= 0)
-                currObjective = worldScoreboard.getObjectiveInDisplaySlot(3 + colorIndex)
-        }
+            if (playerTeam != null) {
+                val colorIndex = playerTeam.chatFormat.colorIndex
 
-        val objective = currObjective ?: worldScoreboard.getObjectiveInDisplaySlot(1) ?: return null
-
-        val scoreboard = objective.scoreboard
-        var scoreCollection = scoreboard.getSortedScores(objective)
-        val scores = scoreCollection.filter { it.playerName?.startsWith("#") == false }
-
-        scoreCollection = if (scores.size > 15) {
-            scores.drop(scoreCollection.size - 15)
-        } else scores
-
-        var maxWidth = fontRenderer.getStringWidth(objective.displayName)
-
-        for (score in scoreCollection) {
-            val scorePlayerTeam = scoreboard.getPlayersTeam(score.playerName)
-            val width = if (showNumber) {
-                "${ScorePlayerTeam.formatPlayerName(scorePlayerTeam, score.playerName)}: ${EnumChatFormatting.RED}${score.scorePoints}"
-            } else {
-                ScorePlayerTeam.formatPlayerName(scorePlayerTeam, score.playerName)
+                if (colorIndex >= 0)
+                    currObjective = worldScoreboard.getObjectiveInDisplaySlot(3 + colorIndex)
             }
-            maxWidth = maxWidth.coerceAtLeast(fontRenderer.getStringWidth(width))
-        }
 
-        val maxHeight = scoreCollection.size * fontHeight
-        val l1 = -maxWidth - 3 - if (rect) 3 else 0
+            val objective = currObjective ?: worldScoreboard.getObjectiveInDisplaySlot(1) ?: return null
 
-        drawRoundedRectInt(l1 - 4, -4, 7, maxHeight + fontHeight, backColor, roundedRectRadius)
+            val scoreboard = objective.scoreboard ?: return null
+            var scoreCollection = scoreboard.getSortedScores(objective) ?: return null
+            val scores = scoreCollection.filter { it.playerName?.startsWith("#") == false }
 
-        scoreCollection.forEachIndexed { index, score ->
-            val team = scoreboard.getPlayersTeam(score.playerName)
+            scoreCollection = if (scores.size > 15) {
+                scores.drop(scoreCollection.size - 15)
+            } else scores
 
-            var name = ScorePlayerTeam.formatPlayerName(team, score.playerName)
-            val scorePoints =  if (showNumber) "${EnumChatFormatting.RED}${score.scorePoints}" else ""
+            var maxWidth = fontRenderer.getStringWidth(objective.displayName)
 
-            val width = 5 - if (rect) 4 else 0
-            val height = maxHeight - index * fontHeight.toFloat()
-
-            glColor4f(1f, 1f, 1f, 1f)
-
-            if (serverIp != "Normal") {
-                runCatching {
-                    val nameWithoutFormatting = name?.replace(EnumChatFormatting.RESET.toString(), "")
-                        ?.replace(Regex("[\u00a7&][0-9a-fk-or]"), "")?.trim()
-                    val trimmedServerIP = mc.currentServerData?.serverIP?.trim()?.lowercase()
-
-                    val domainRegex =
-                        Regex("\\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}\\b")
-                    val containsDomain = nameWithoutFormatting?.let { domainRegex.containsMatchIn(it) } == true
-
-                    runCatching {
-                        if (nameWithoutFormatting?.lowercase() == trimmedServerIP || containsDomain) {
-                            val colorCode = name?.substring(0, 2) ?: "§9"
-                            name = when (serverIp.lowercase()) {
-                                "none" -> ""
-                                "client" -> "$colorCode$CLIENT_NAME"
-                                "website" -> "$colorCode$CLIENT_WEBSITE"
-                                else -> return null
-                            }
-                        }
-                    }.onFailure {
-                        LOGGER.error("Error while changing Scoreboard Server IP: ${it.message}")
-                    }
-                }.onFailure {
-                    LOGGER.error("Failed to run: ${it.message}")
+            for (score in scoreCollection) {
+                val scorePlayerTeam = scoreboard.getPlayersTeam(score.playerName)
+                val width = if (number) {
+                    "${ScorePlayerTeam.formatPlayerName(scorePlayerTeam, score.playerName)}: ${EnumChatFormatting.RED}${score.scorePoints}"
+                } else {
+                    ScorePlayerTeam.formatPlayerName(scorePlayerTeam, score.playerName)
                 }
+                maxWidth = maxWidth.coerceAtLeast(fontRenderer.getStringWidth(width))
             }
 
-            fontRenderer.drawString(name, l1.toFloat(), height, textColor, shadow)
-            if (showNumber) {
-            fontRenderer.drawString(
-                scorePoints,
-                (width - fontRenderer.getStringWidth(scorePoints)).toFloat(),
-                height,
-                textColor,
-                shadow
-             )
-            }
+            val maxHeight = scoreCollection.size * fontHeight
+            val l1 = -maxWidth - 3 - if (rect) 3 else 0
 
-            if (index == scoreCollection.size - 1) {
-                val displayName = objective.displayName
+            drawRoundedRectInt(l1 - 4, -4, 7, maxHeight + fontHeight, backColor, roundedRectRadius)
+
+            scoreCollection.filterNotNull().forEachIndexed { index, score ->
+                val team = scoreboard.getPlayersTeam(score.playerName)
+
+                var name = ScorePlayerTeam.formatPlayerName(team, score.playerName)
+                val scorePoints =  if (number) "${EnumChatFormatting.RED}${score.scorePoints}" else ""
+
+                val width = 5 - if (rect) 4 else 0
+                val height = maxHeight - index * fontHeight.toFloat()
 
                 glColor4f(1f, 1f, 1f, 1f)
 
-                fontRenderer.drawString(
-                    displayName,
-                    (l1 + maxWidth / 2 - fontRenderer.getStringWidth(displayName) / 2).toFloat(),
-                    height - fontHeight,
-                    textColor,
-                    shadow
-                )
-            }
+                if (serverIp != "Normal") {
+                    try {
+                        val nameWithoutFormatting = name?.replace(EnumChatFormatting.RESET.toString(), "")
+                            ?.replace(Regex("[\u00a7&][0-9a-fk-or]"), "")?.trim()
+                        val trimmedServerIP = mc.currentServerData?.serverIP?.trim()?.lowercase() ?: ""
 
-            if (rect) {
-                val rectColor = when (rectColorMode) {
-                    "Rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
-                    else -> rectCustomColor
+                        val domainRegex =
+                            Regex("\\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}\\b")
+                        val containsDomain = nameWithoutFormatting?.let { domainRegex.containsMatchIn(it) } == true
+
+                        runCatching {
+                            if (nameWithoutFormatting?.lowercase() == trimmedServerIP || containsDomain) {
+                                val colorCode = name?.substring(0, 2) ?: "§9"
+                                name = when (serverIp.lowercase()) {
+                                    "none" -> ""
+                                    "client" -> "$colorCode$CLIENT_NAME"
+                                    "website" -> "$colorCode$CLIENT_WEBSITE"
+                                    else -> return null
+                                }
+                            }
+                        }.onFailure {
+                            LOGGER.error("Error while changing Scoreboard Server IP: ${it.message}")
+                        }
+                    } catch (e: Exception) {
+                        LOGGER.error("Error while drawing ScoreboardElement", e)
+                    }
                 }
 
-                drawRoundedRect(
-                    2F,
-                    if (index == scoreCollection.size - 1) -2F else height,
-                    5F,
-                    if (index == 0) fontHeight.toFloat() else height + fontHeight * 2F,
-                    rectColor,
-                    roundedRectRadius
-                )
+                fontRenderer.drawString(name, l1.toFloat(), height, textColor, shadow)
+                if (number) {
+                    fontRenderer.drawString(
+                        scorePoints,
+                        (width - fontRenderer.getStringWidth(scorePoints)).toFloat(),
+                        height,
+                        textColor,
+                        shadow
+                    )
+                }
+
+                if (index == scoreCollection.size - 1) {
+                    val displayName = objective.displayName
+
+                    glColor4f(1f, 1f, 1f, 1f)
+
+                    fontRenderer.drawString(
+                        displayName,
+                        (l1 + maxWidth / 2 - fontRenderer.getStringWidth(displayName) / 2).toFloat(),
+                        height - fontHeight,
+                        textColor,
+                        shadow
+                    )
+                }
+
+                if (rect) {
+                    val rectColor = when (rectColorMode) {
+                        "Rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
+                        else -> rectCustomColor
+                    }
+
+                    drawRoundedRect(
+                        2F,
+                        if (index == scoreCollection.size - 1) -2F else height,
+                        5F,
+                        if (index == 0) fontHeight.toFloat() else height + fontHeight * 2F,
+                        rectColor,
+                        roundedRectRadius
+                    )
+                }
             }
+
+            return Border(l1 - 4F, -4F, 7F, maxHeight + fontHeight.toFloat())
         }
 
-        return Border(l1 - 4F, -4F, 7F, maxHeight + fontHeight.toFloat())
+        return null
     }
 
     private fun backgroundColor() = Color(
