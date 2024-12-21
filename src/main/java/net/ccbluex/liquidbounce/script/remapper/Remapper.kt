@@ -9,8 +9,9 @@ import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.file.FileManager.dir
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.io.HttpUtils.download
+import net.ccbluex.liquidbounce.utils.io.isEmpty
+import net.ccbluex.liquidbounce.utils.io.sha256
 import java.io.File
-import java.security.MessageDigest
 
 /**
  * A srg remapper
@@ -31,47 +32,54 @@ object Remapper {
      * Load srg
      */
     fun loadSrg() {
-        // Download sha256 file
-        val sha256File = File(dir, "mcp-$srgName.srg.sha256")
-        if (!sha256File.exists() || !sha256File.isFile || sha256File.readText().isEmpty()) {
-            sha256File.createNewFile()
+        if (mappingsLoaded) return
 
-            download("$CLIENT_CLOUD/srgs/mcp-$srgName.srg.sha256", sha256File)
-            LOGGER.info("[Remapper] Downloaded $srgName sha256.")
+        synchronized(this) {
+            if (mappingsLoaded) return
+
+            mappingsLoaded = false
+
+            // Download sha256 file
+            val sha256File = File(dir, "mcp-$srgName.srg.sha256")
+            if (!sha256File.exists() || !sha256File.isFile || sha256File.isEmpty) {
+                sha256File.createNewFile()
+
+                download("$CLIENT_CLOUD/srgs/mcp-$srgName.srg.sha256", sha256File)
+                LOGGER.info("[Remapper] Downloaded $srgName sha256.")
+            }
+
+            // Check if srg file is already downloaded
+            if (!srgFile.exists() || !hashMatches(srgFile, sha256File)) {
+                // Download srg file
+                srgFile.createNewFile()
+
+                download("$CLIENT_CLOUD/srgs/mcp-$srgName.srg", srgFile)
+                LOGGER.info("[Remapper] Downloaded $srgName.")
+            }
+
+            // Load srg
+            parseSrg()
+
+            mappingsLoaded = true
+
+            LOGGER.info("[Remapper] Successfully loaded SRG mappings.")
         }
-
-        // Check if srg file is already downloaded
-        if (!srgFile.exists() || !hashMatches(srgFile, sha256File)) {
-            // Download srg file
-            srgFile.createNewFile()
-
-            download("$CLIENT_CLOUD/srgs/mcp-$srgName.srg", srgFile)
-            LOGGER.info("[Remapper] Downloaded $srgName.")
-        }
-
-        // Load srg
-        parseSrg()
-        LOGGER.info("[Remapper] Successfully loaded SRG mappings.")
     }
 
     private fun hashMatches(srgFile: File, sha256File: File): Boolean {
-        val fileContent = srgFile.readText()
+        if (!sha256File.exists()) {
+            LOGGER.warn("[Remapper] No sha256 file found.")
+            return false
+        }
 
         // Generate SHA-256 hash of file content
-        val digest = MessageDigest.getInstance("SHA-256")
-        val hash = digest.digest(fileContent.toByteArray()).joinToString("") { "%02x".format(it) }
+        val hash = srgFile.sha256()
 
         // sha265sum mcp-stable_22.srg
         // -> a8486671a5e85153773eaac313f8babd1913b41524b45e92d42e6cf019e658eb  mcp-stable_22.srg
-        if (sha256File.exists()) {
-            val sha256 = sha256File.readText().split(" ")[0]
+        val sha256 = sha256File.readText().substringBefore(' ')
 
-            LOGGER.info("[Remapper] Hash $sha256 compared to $hash")
-            return sha256 == hash
-        }
-
-        LOGGER.warn("[Remapper] No sha256 file found.")
-        return false
+        return sha256 == hash
     }
 
     private fun parseSrg() {
@@ -83,14 +91,11 @@ object Remapper {
                     val name = args[1]
                     val srg = args[2]
 
-                    val className = name.substring(0, name.lastIndexOf('/')).replace('/', '.')
-                    val fieldName = name.substring(name.lastIndexOf('/') + 1)
-                    val fieldSrg = srg.substring(srg.lastIndexOf('/') + 1)
+                    val className = name.substringBeforeLast('/').replace('/', '.')
+                    val fieldName = name.substringAfterLast('/')
+                    val fieldSrg = srg.substringAfterLast('/')
 
-                    if (className !in fields)
-                        fields[className] = hashMapOf()
-
-                    fields[className]!![fieldSrg] = fieldName
+                    fields.getOrPut(className, ::HashMap)[fieldSrg] = fieldName
                 }
 
                 it.startsWith("MD:") -> {
@@ -98,30 +103,25 @@ object Remapper {
                     val desc = args[2]
                     val srg = args[3]
 
-                    val className = name.substring(0, name.lastIndexOf('/')).replace('/', '.')
-                    val methodName = name.substring(name.lastIndexOf('/') + 1)
-                    val methodSrg = srg.substring(srg.lastIndexOf('/') + 1)
+                    val className = name.substringBeforeLast('/').replace('/', '.')
+                    val methodName = name.substringAfterLast('/')
+                    val methodSrg = srg.substringAfterLast('/')
 
-                    if (className !in methods)
-                        methods[className] = hashMapOf()
-
-                    methods[className]!![methodSrg + desc] = methodName
+                    fields.getOrPut(className, ::HashMap)[methodSrg + desc] = methodName
                 }
             }
         }
-
-        mappingsLoaded = true
     }
 
     /**
      * Remap field
      */
     fun remapField(clazz : Class<*>, name : String) =
-        fields[clazz.name]?.getOrDefault(name, name) ?: name
+        fields[clazz.name]?.get(name) ?: name
 
     /**
      * Remap method
      */
     fun remapMethod(clazz : Class<*>, name : String, desc : String) =
-        methods[clazz.name]?.getOrDefault(name + desc, name) ?: name
+        methods[clazz.name]?.get(name + desc) ?: name
 }
