@@ -7,26 +7,26 @@ package net.ccbluex.liquidbounce.file.configs.section
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import net.ccbluex.liquidbounce.FDPClient.macroManager
 import net.ccbluex.liquidbounce.file.ConfigSection
 import net.ccbluex.liquidbounce.handler.macro.Macro
+import net.ccbluex.liquidbounce.handler.macro.MacroManager
 
 class MacrosSection : ConfigSection("macros") {
     override fun load(json: JsonObject) {
-        macroManager.macros.clear()
+        MacroManager.macros.clear()
 
         val jsonArray = json.getAsJsonArray("macros") ?: return
 
         for (jsonElement in jsonArray) {
             val macroJson = jsonElement.asJsonObject
-            macroManager.macros.add(Macro(macroJson.get("key").asInt, macroJson.get("command").asString))
+            MacroManager.macros.add(Macro(macroJson.get("key").asInt, macroJson.get("command").asString))
         }
     }
 
     override fun save(): JsonObject {
         val jsonArray = JsonArray()
 
-        for (macro in macroManager.macros) {
+        for (macro in MacroManager.macros) {
             val macroJson = JsonObject()
             macroJson.addProperty("key", macro.key)
             macroJson.addProperty("command", macro.command)

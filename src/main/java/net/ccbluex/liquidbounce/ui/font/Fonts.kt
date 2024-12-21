@@ -28,12 +28,8 @@ private val FONT_REGISTRY = LinkedHashMap<FontInfo, FontRenderer>()
 object Fonts : MinecraftInstance {
 
     val minecraftFont: FontRenderer = mc.fontRendererObj
-
-    lateinit var font15: GameFontRenderer
-
+    
     lateinit var font20: GameFontRenderer
-
-    lateinit var fontTiny: GameFontRenderer
 
     lateinit var fontSmall: GameFontRenderer
 
@@ -48,8 +44,6 @@ object Fonts : MinecraftInstance {
     lateinit var fontSFUI35: GameFontRenderer
 
     lateinit var fontSFUI40: GameFontRenderer
-
-    lateinit var fontIcons35: GameFontRenderer
 
     lateinit var fontIconXD85: GameFontRenderer
 
@@ -66,36 +60,25 @@ object Fonts : MinecraftInstance {
         val time = measureTimeMillis {
             downloadFonts()
             register(FontInfo(name = "Minecraft Font"), minecraftFont)
-            font35 = register(FontInfo(name = "Roboto Medium", size = 35),
-                getFontFromFile("Roboto-Medium.ttf", 35).asGameFontRenderer())
-            font40 = register(FontInfo(name = "Roboto Medium", size = 40),
-                getFontFromFile("Roboto-Medium.ttf", 40).asGameFontRenderer())
-            fontBold180 = register(FontInfo(name = "Roboto Bold", size = 180),
-                getFontFromFile("Roboto-Bold.ttf", 180).asGameFontRenderer())
+            
+            font20 = register(FontInfo(name = "Roboto Medium", size = 20),
+                getFontFromFile("Roboto-Medium.ttf", 20).asGameFontRenderer())
             fontSmall = register(FontInfo(name = "Roboto Medium", size = 30),
                 getFontFromFile("Roboto-Medium.ttf", 30).asGameFontRenderer())
-            fontTiny = register(FontInfo(name = "Roboto Medium", size = 24),
-                getFontFromFile("Roboto-Medium.ttf", 24).asGameFontRenderer())
-            fontTiny = register(FontInfo(name = "Roboto Medium", size = 24),
-                getFontFromFile("Roboto-Medium.ttf", 24).asGameFontRenderer())
-            font15 = register(FontInfo(name = "Roboto Medium", size = 15),
-                getFontFromFile("Roboto-Medium.ttf", 20).asGameFontRenderer())
-            font20 = register(FontInfo(name = "Roboto Medium", size = 20),
-                getFontFromFile("Roboto-Medium.ttf", 15).asGameFontRenderer())
             font35 = register(FontInfo(name = "Roboto Medium", size = 35),
                 getFontFromFile("Roboto-Medium.ttf", 35).asGameFontRenderer())
             font40 = register(FontInfo(name = "Roboto Medium", size = 40),
                 getFontFromFile("Roboto-Medium.ttf", 40).asGameFontRenderer())
             font72 = register(FontInfo(name = "Roboto Medium", size = 72),
                 getFontFromFile("Roboto-Medium.ttf", 72).asGameFontRenderer())
+            fontBold180 = register(FontInfo(name = "Roboto Bold", size = 180),
+                getFontFromFile("Roboto-Bold.ttf", 180).asGameFontRenderer())
             // SFUI
             fontSFUI35 = register(FontInfo(name = "sfui", size = 35),
                 getFontFromFile("sfui.ttf", 35).asGameFontRenderer())
             fontSFUI40 = register(FontInfo(name = "sfui", size = 40),
                 getFontFromFile("sfui.ttf", 40).asGameFontRenderer())
             // icons
-            fontIcons35 = register(FontInfo(name = "aqua", size = 35),
-                getFontFromFile("aquaIcons.ttf", 35).asGameFontRenderer())
             fontIconXD85 = register(FontInfo(name = "iconxd", size = 85),
                 getFontFromFile("iconxd.ttf", 85).asGameFontRenderer())
             fontNovoAngularIcon85 = register(FontInfo(name = "novoangular", size = 85),

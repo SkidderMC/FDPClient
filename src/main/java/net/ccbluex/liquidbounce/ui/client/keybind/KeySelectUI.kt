@@ -6,10 +6,10 @@
 package net.ccbluex.liquidbounce.ui.client.keybind
 
 import net.ccbluex.liquidbounce.FDPClient.keyBindManager
-import net.ccbluex.liquidbounce.FDPClient.macroManager
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.handler.macro.Macro
+import net.ccbluex.liquidbounce.handler.macro.MacroManager
 import net.ccbluex.liquidbounce.ui.font.Fonts.font35
 import net.ccbluex.liquidbounce.ui.font.Fonts.font40
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
@@ -68,7 +68,7 @@ class KeySelectUI(val info: KeyInfo) : PopUI("Select a module to bind") {
             return
         } else if (keyCode == Keyboard.KEY_RETURN) {
             if (str.startsWith(".")) {
-                macroManager.macros.add(Macro(info.key, str))
+                MacroManager.macros.add(Macro(info.key, str))
                 keyBindManager.updateAllKeys()
                 close()
             } else if (modules.isNotEmpty()) {

@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 object MacroManager : MinecraftInstance, Listenable {
     val macros = ArrayList<Macro>()
 
-
     val onKey = handler<KeyEvent> { event ->
         macros.filter { it.key == event.key }.forEach { it.exec() }
     }

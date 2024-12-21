@@ -5,11 +5,11 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import net.ccbluex.liquidbounce.FDPClient.macroManager
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
 import net.ccbluex.liquidbounce.handler.macro.Macro
+import net.ccbluex.liquidbounce.handler.macro.MacroManager
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
 import org.lwjgl.input.Keyboard
 
@@ -24,7 +24,7 @@ object MacroCommand : Command("macro", "m") {
                         if (key != Keyboard.KEY_NONE) {
                             var comm = StringUtils.toCompleteString(args, 3)
                             if (!comm.startsWith(".")) comm = ".$comm"
-                            macroManager.macros.add(Macro(key, comm))
+                            MacroManager.macros.add(Macro(key, comm))
                             alert("Bound macro $comm to key ${Keyboard.getKeyName(key)}.")
                         } else {
                             alert("Unknown key to bind macro.")
@@ -38,12 +38,12 @@ object MacroCommand : Command("macro", "m") {
                 "remove" -> {
                     if (args.size > 2) {
                         if (args[2].startsWith(".")) {
-                            macroManager.macros.filter { it.command == StringUtils.toCompleteString(args, 2) }
+                            MacroManager.macros.filter { it.command == StringUtils.toCompleteString(args, 2) }
                         } else {
                             val key = Keyboard.getKeyIndex(args[2].uppercase())
-                            macroManager.macros.filter { it.key == key }
+                            MacroManager.macros.filter { it.key == key }
                         }.forEach {
-                            macroManager.macros.remove(it)
+                            MacroManager.macros.remove(it)
                             alert("Remove macro ${it.command}.")
                         }
                         save()
@@ -54,7 +54,7 @@ object MacroCommand : Command("macro", "m") {
 
                 "list" -> {
                     alert("Macros:")
-                    macroManager.macros.forEach {
+                    MacroManager.macros.forEach {
                         alert("key=${Keyboard.getKeyName(it.key)}, command=${it.command}")
                     }
                 }

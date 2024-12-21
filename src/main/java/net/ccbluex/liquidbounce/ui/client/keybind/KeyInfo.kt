@@ -6,10 +6,10 @@
 package net.ccbluex.liquidbounce.ui.client.keybind
 
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.FDPClient.macroManager
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.handler.macro.Macro
+import net.ccbluex.liquidbounce.handler.macro.MacroManager
 import net.ccbluex.liquidbounce.ui.font.Fonts.font35
 import net.ccbluex.liquidbounce.ui.font.Fonts.font40
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSmall
@@ -123,7 +123,7 @@ class KeyInfo(
 
     fun update() {
         modules = moduleManager.getKeyBind(key) as ArrayList<Module>
-        macros = macroManager.macros.filter { it.key == key } as ArrayList<Macro>
+        macros = MacroManager.macros.filter { it.key == key } as ArrayList<Macro>
         hasKeyBind = (modules.size + macros.size)> 0
         stroll = 0
         maxStroll = modules.size * 30 + macros.size * 30
@@ -161,7 +161,7 @@ class KeyInfo(
                     }
                    for (macro in macros) {
                         if (scaledMouseY> (yOffset + 5) && scaledMouseY <(yOffset + 15)) {
-                            macroManager.macros.remove(macro)
+                            MacroManager.macros.remove(macro)
                             update()
                             break
                         }

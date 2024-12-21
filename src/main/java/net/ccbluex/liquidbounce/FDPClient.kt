@@ -100,8 +100,6 @@ object FDPClient {
     var customFontManager = FontManager()
     var guiManager = GUIManager()
     val keyBindManager = KeyBindManager
-    val macroManager = MacroManager
-
 
     // HUD & ClickGUI
     var hud = HUD
@@ -140,7 +138,7 @@ object FDPClient {
             RotationUtils
             ClientFixes
             CombatManager
-            macroManager
+            MacroManager
             CapeService
             InventoryUtils
             InventoryManager
