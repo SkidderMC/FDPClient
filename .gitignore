@@ -5,6 +5,8 @@
 /.settings/
 /bin/
 /.gradle/
+/.kotlin/
+/logs/
 
 # eclipse
 eclipse
