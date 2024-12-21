@@ -25,7 +25,7 @@ import net.minecraft.util.*
 import javax.vecmath.Vector2f
 import kotlin.math.*
 
-object RotationUtils : MinecraftInstance(), Listenable {
+object RotationUtils : MinecraftInstance, Listenable {
 
     /**
      * Our final rotation point, which [currentRotation] follows.

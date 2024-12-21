@@ -18,7 +18,7 @@ object Main {
     var allowedClickGuiHeight: Float = 300f
 
     fun getModulesInCategory(category: Category): List<Module> {
-        return moduleManager.modules.filter { module -> module.category == category }
+        return moduleManager.filter { module -> module.category == category }
     }
 
 }

@@ -14,13 +14,13 @@ import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
 import net.ccbluex.liquidbounce.handler.lang.LanguageManager
 import net.ccbluex.liquidbounce.handler.lang.translationMenu
-import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.render.shader.Background
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
+import net.ccbluex.liquidbounce.utils.io.MiscUtils.showErrorPopup
 import net.ccbluex.liquidbounce.utils.render.IconUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
+import net.ccbluex.liquidbounce.utils.render.shader.Background
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
@@ -28,7 +28,6 @@ import net.minecraftforge.fml.client.config.GuiSlider
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.Display
 import java.awt.Color
-import java.nio.file.Files
 import javax.swing.filechooser.FileNameExtensionFilter
 
 class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
@@ -75,12 +74,14 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
         titleButton = +GuiButton(
             4, width / 2 - 100, height / 4 + 25, "Client title (${if (enabledClientTitle) "On" else "Off"})"
         )
+
         languageButton = +GuiButton(
             7,
             width / 2 - 100,
             height / 4 + 50,
             "Language (${LanguageManager.overrideLanguage.ifBlank { "Game" }})"
         )
+
         // Background configuration buttons
         // Button location > 2nd row
         backgroundButton = +GuiButton(
@@ -89,11 +90,15 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
             height / 4 + 25 + 75,
             "Enabled (${if (enabledCustomBackground) "On" else "Off"})"
         )
+
         particlesButton = +GuiButton(
             1, width / 2 - 100, height / 4 + 25 + 75 + 25, "Particles (${if (particles) "On" else "Off"})"
         )
+
         +GuiButton(2, width / 2 - 100, height / 4 + 25 + 75 + 25 * 2, 98, 20, "Change wallpaper")
+
         +GuiButton(3, width / 2 + 2, height / 4 + 25 + 75 + 25 * 2, 98, 20, "Reset wallpaper")
+
         // AltManager configuration buttons
         // Location > 3rd row
         altsModeButton = +GuiButton(
@@ -102,6 +107,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
             height / 4 + 25 + 185,
             "Random alts mode (${if (stylisedAlts) "Stylised" else "Legacy"})"
         )
+
         altsSlider = +GuiSlider(
             -1,
             width / 2 - 100,
@@ -118,6 +124,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
         ) {
             altsLength = it.valueInt
         }
+
         unformattedAltsButton = +GuiButton(
             5,
             width / 2 - 100,
@@ -126,6 +133,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
         ).also {
             it.enabled = stylisedAlts
         }
+
         // Back button
         +GuiButton(8, width / 2 - 100, height / 4 + 25 + 25 * 11, "Back")
     }
@@ -179,37 +187,25 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
                 // Copy new file
                 val fileExtension = file.extension
 
-                try {
+                background = try {
                     val destFile = when (fileExtension) {
                         "png" -> backgroundImageFile
                         "frag", "glsl", "shader" -> backgroundShaderFile
                         else -> {
-                            MiscUtils.showErrorPopup("Error", "Invalid file extension: $fileExtension")
+                            showErrorPopup("Error", "Invalid file extension: $fileExtension")
                             return
                         }
                     }
 
-                    Files.copy(file.toPath(), destFile.outputStream())
+                    file.copyTo(destFile)
 
                     // Load new background
-                    try {
-                        background = Background.fromFile(destFile)
-                    } catch (_: IllegalArgumentException) {
-                        background = null
-                        if (backgroundImageFile.exists()) backgroundImageFile.deleteRecursively()
-                        if (backgroundShaderFile.exists()) backgroundShaderFile.deleteRecursively()
-
-                        MiscUtils.showErrorPopup("Error", "Invalid file extension: $fileExtension")
-                    }
+                    Background.fromFile(destFile)
                 } catch (e: Exception) {
-                    e.printStackTrace()
-                    MiscUtils.showErrorPopup(
-                        "Error", "Exception class: " + e.javaClass.name + "\nMessage: " + e.message
-                    )
-
-                    background = null
+                    e.showErrorPopup()
                     if (backgroundImageFile.exists()) backgroundImageFile.deleteRecursively()
                     if (backgroundShaderFile.exists()) backgroundShaderFile.deleteRecursively()
+                    null
                 }
             }
 
@@ -243,9 +239,6 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-
-        assumeNonVolatile = true
-
         drawBackground(0)
         Fonts.fontBold180.drawCenteredString(
             translationMenu("configuration"), width / 2F, height / 8F + 5F, 4673984, true
@@ -271,8 +264,6 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
         )
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
-
-        assumeNonVolatile = false
 
         super.drawScreen(mouseX, mouseY, partialTicks)
     }

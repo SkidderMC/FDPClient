@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.network.PacketBuffer
 import net.minecraft.network.play.client.C17PacketCustomPayload
 
-object ClientFixes : MinecraftInstance(), Listenable {
+object ClientFixes : MinecraftInstance, Listenable {
 
     var fmlFixesEnabled = true
     var blockFML = true

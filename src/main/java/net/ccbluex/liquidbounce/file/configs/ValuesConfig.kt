@@ -162,7 +162,7 @@ class ValuesConfig(file: File) : FileConfig(file) {
         }
         jsonObject.add("clientConfiguration", clientObject)
 
-        for (module in moduleManager.modules) {
+        for (module in moduleManager) {
             if (module.values.isEmpty()) continue
 
             val jsonModule = JsonObject()

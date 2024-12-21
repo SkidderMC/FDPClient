@@ -56,7 +56,7 @@ object TickedActions : Listenable {
         actions.clear()
     }
 
-    class TickScheduler(val module: Module) : MinecraftInstance() {
+    class TickScheduler(val module: Module) : MinecraftInstance {
         fun schedule(id: Int, allowDuplicates: Boolean = false, action: () -> Unit) =
             schedule(id, module, allowDuplicates, action)
 

@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 
-object WaitMsUtils : MinecraftInstance(), Listenable {
+object WaitMsUtils : MinecraftInstance, Listenable {
 
     private val scheduledActions = mutableListOf<ScheduledAction>()
 

@@ -22,12 +22,28 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.*
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.collections.ArrayDeque
+import kotlin.concurrent.withLock
 import kotlin.concurrent.write
 import kotlin.math.roundToInt
 
-object PacketUtils : MinecraftInstance(), Listenable {
+object PacketUtils : MinecraftInstance, Listenable {
 
-    val queuedPackets = ArrayDeque<Packet<*>>()
+    private val queuedPackets = ArrayDeque<Packet<*>>()
+    private val queueLock = ReentrantLock()
+
+    fun schedulePacketProcess(elements: Collection<Packet<*>>): Boolean = queueLock.withLock {
+        queuedPackets.addAll(elements)
+    }
+
+    fun schedulePacketProcess(element: Packet<*>): Boolean = queueLock.withLock {
+        queuedPackets.add(element)
+    }
+
+    fun isQueueEmpty(): Boolean = queueLock.withLock {
+        queuedPackets.isEmpty()
+    }
 
     val onTick = handler<GameTickEvent>(priority = 2) {
         for (entity in mc.theWorld.loadedEntityList) {
@@ -79,7 +95,7 @@ object PacketUtils : MinecraftInstance(), Listenable {
             return@handler
         }
 
-        synchronized(queuedPackets) {
+        queueLock.withLock {
             queuedPackets.removeEach { packet ->
                 handlePacket(packet)
                 val packetEvent = PacketEvent(packet, EventState.RECEIVE)
@@ -93,7 +109,7 @@ object PacketUtils : MinecraftInstance(), Listenable {
 
     val onWorld = handler<WorldEvent>(priority = -1) { event ->
         if (event.worldClient == null) {
-            synchronized(queuedPackets) {
+            queueLock.withLock {
                 queuedPackets.clear()
             }
         }
@@ -123,23 +139,16 @@ object PacketUtils : MinecraftInstance(), Listenable {
     fun sendPackets(vararg packets: Packet<*>, triggerEvents: Boolean = true) =
         packets.forEach { sendPacket(it, triggerEvents) }
 
+    @JvmStatic
     fun handlePackets(vararg packets: Packet<*>) =
         packets.forEach { handlePacket(it) }
 
+    @JvmStatic
     private fun handlePacket(packet: Packet<*>?) {
         runCatching { (packet as Packet<INetHandlerPlayClient>).processPacket(mc.netHandler) }.onSuccess {
             PPSCounter.registerType(PPSCounter.PacketType.RECEIVED)
         }
     }
-
-    val Packet<*>.type
-        get() = when (this.javaClass.simpleName[0]) {
-            'C' -> PacketType.CLIENT
-            'S' -> PacketType.SERVER
-            else -> PacketType.UNKNOWN
-        }
-
-    enum class PacketType { CLIENT, SERVER, UNKNOWN }
 }
 
 fun IMixinEntity.updateSpawnPosition(target: Vec3, ignoreInterpolation: Boolean = false) {
@@ -239,16 +248,3 @@ var C03PacketPlayer.pos
         y = value.yCoord
         z = value.zCoord
     }
-
-
-fun schedulePacketProcess(packet: Packet<*>) {
-    synchronized(PacketUtils.queuedPackets) {
-        PacketUtils.queuedPackets.add(packet)
-    }
-}
-
-fun schedulePacketProcess(packets: Collection<Packet<*>>) {
-    synchronized(PacketUtils.queuedPackets) {
-        PacketUtils.queuedPackets.addAll(packets)
-    }
-}

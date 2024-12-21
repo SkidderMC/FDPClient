@@ -21,8 +21,10 @@ import net.minecraftforge.fml.relauncher.SideOnly
 import java.io.File
 import java.io.IOException
 
+private val FILE_CONFIGS = ArrayList<FileConfig>()
+
 @SideOnly(Side.CLIENT)
-object FileManager : MinecraftInstance() {
+object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
 
     private val sections = mutableListOf<ConfigSection>()
 
@@ -30,13 +32,15 @@ object FileManager : MinecraftInstance() {
     val fontsDir = File(dir, "fonts")
     val settingsDir = File(dir, "settings")
     val themesDir = File(dir, "themes")
-    val modulesConfig = ModulesConfig(File(dir, "modules.json"))
-    val valuesConfig = ValuesConfig(File(dir, "values.json"))
-    val clickGuiConfig = ClickGuiConfig(File(dir, "clickgui.json"))
-    val accountsConfig = AccountsConfig(File(dir, "accounts.json"))
-    val friendsConfig = FriendsConfig(File(dir, "friends.json"))
-    val colorThemeConfig = ColorThemeConfig(File(dir, "colorTheme.json"))
-    val hudConfig = HudConfig(File(dir, "hud.json"))
+
+    val modulesConfig = +ModulesConfig(File(dir, "modules.json"))
+    val valuesConfig = +ValuesConfig(File(dir, "values.json"))
+    val clickGuiConfig = +ClickGuiConfig(File(dir, "clickgui.json"))
+    val accountsConfig = +AccountsConfig(File(dir, "accounts.json"))
+    val friendsConfig = +FriendsConfig(File(dir, "friends.json"))
+    val colorThemeConfig = +ColorThemeConfig(File(dir, "colorTheme.json"))
+    val hudConfig = +HudConfig(File(dir, "hud.json"))
+
     val backgroundImageFile = File(dir, "userbackground.png")
     val backgroundShaderFile = File(dir, "userbackground.frag")
     val PRETTY_GSON: Gson = GsonBuilder().setPrettyPrinting().create()
@@ -55,9 +59,18 @@ object FileManager : MinecraftInstance() {
     var nowConfig = "default"
 
     /**
+     * Register a FileConfig to FileManager
+     * @author MukjepScarlet
+     */
+    @Suppress("NOTHING_TO_INLINE")
+    private inline operator fun <T : FileConfig> T.unaryPlus(): T = apply {
+        FILE_CONFIGS.add(this)
+    }
+
+    /**
      * Setup folder
      */
-    fun setupFolder() {
+    private fun setupFolder() {
         if (!dir.exists()) {
             dir.mkdir()
         }
@@ -93,15 +106,11 @@ object FileManager : MinecraftInstance() {
      * Load all configs in file manager
      */
     fun loadAllConfigs() {
-        for (field in javaClass.declaredFields) {
-            if (FileConfig::class.java.isAssignableFrom(field.type)) {
-                try {
-                    if (!field.isAccessible) field.isAccessible = true
-                    val fileConfig = field[this] as FileConfig
-                    loadConfig(fileConfig)
-                } catch (e: IllegalAccessException) {
-                    LOGGER.error("Failed to load config file of field ${field.name}.", e)
-                }
+        FILE_CONFIGS.forEach {
+            try {
+                loadConfig(it)
+            } catch (e: Exception) {
+                LOGGER.error("[FileManager] Failed to load config file of ${it.file.name}.", e)
             }
         }
     }
@@ -139,15 +148,11 @@ object FileManager : MinecraftInstance() {
      * Save all configs in file manager
      */
     fun saveAllConfigs() {
-        for (field in javaClass.declaredFields) {
-            if (FileConfig::class.java.isAssignableFrom(field.type)) {
-                try {
-                    if (!field.isAccessible) field.isAccessible = true
-                    val fileConfig = field[this] as FileConfig
-                    saveConfig(fileConfig)
-                } catch (e: IllegalAccessException) {
-                    LOGGER.error("[FileManager] Failed to save config file of field ${field.name}.", e)
-                }
+        FILE_CONFIGS.forEach {
+            try {
+                saveConfig(it)
+            } catch (e: Exception) {
+                LOGGER.error("[FileManager] Failed to save config file of ${it.file.name}.", e)
             }
         }
     }

@@ -117,7 +117,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         get() = synchronized(packetQueue) { packetQueue.isEmpty() }
 
     val areQueuedPacketsEmpty
-        get() = PacketUtils.queuedPackets?.run { synchronized(this) { isEmpty() } } == true
+        get() = PacketUtils.isQueueEmpty()
 
     val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
@@ -472,7 +472,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         synchronized(packetQueue) {
             packetQueue.removeAll { (packet, timestamp) ->
                 if (timestamp <= System.currentTimeMillis() - supposedDelay) {
-                    schedulePacketProcess(packet)
+                    PacketUtils.schedulePacketProcess(packet)
                     true
                 } else false
             }
@@ -494,7 +494,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         synchronized(packetQueue) {
             packetQueue.removeAll { (packet, timestamp) ->
                 if (timestamp <= time) {
-                    schedulePacketProcess(packet)
+                    PacketUtils.schedulePacketProcess(packet)
                     true
                 } else false
             }
@@ -533,7 +533,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         synchronized(packetQueue) {
             packetQueue.removeAll {
                 if (handlePackets) {
-                    schedulePacketProcess(it.packet)
+                    PacketUtils.schedulePacketProcess(it.packet)
                 }
 
                 true

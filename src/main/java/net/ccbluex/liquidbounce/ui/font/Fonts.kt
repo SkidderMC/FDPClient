@@ -6,241 +6,170 @@
 package net.ccbluex.liquidbounce.ui.font
 
 import com.google.gson.JsonArray
-import com.google.gson.JsonNull
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
-import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
 import net.ccbluex.liquidbounce.file.FileManager.fontsDir
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.io.URLRegistryUtils.FONTS
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.io.HttpUtils.download
+import net.ccbluex.liquidbounce.utils.io.extractZipTo
+import net.ccbluex.liquidbounce.utils.io.jsonArray
+import net.ccbluex.liquidbounce.utils.io.readJson
+import net.ccbluex.liquidbounce.utils.io.writeJson
 import net.minecraft.client.gui.FontRenderer
 import java.awt.Font
 import java.io.File
-import java.io.IOException
-import java.nio.file.Paths
-import java.util.zip.ZipInputStream
-import kotlin.io.path.inputStream
+import kotlin.system.measureTimeMillis
 
-object Fonts : MinecraftInstance() {
+data class FontInfo(val name: String, val size: Int = -1, val isCustom: Boolean = false) {
+    constructor(font: Font) : this(font.name, font.size)
+}
+private val FONT_REGISTRY = LinkedHashMap<FontInfo, FontRenderer>()
+object Fonts : MinecraftInstance {
 
-    @FontDetails(fontName = "Minecraft Font")
     val minecraftFont: FontRenderer = mc.fontRendererObj
 
-    @FontDetails(fontName = "Roboto Medium", fontSize = 15)
     lateinit var font15: GameFontRenderer
 
-    @FontDetails(fontName = "Roboto Medium", fontSize = 20)
     lateinit var font20: GameFontRenderer
 
-    @FontDetails(fontName = "Roboto Medium", fontSize = 24)
     lateinit var fontTiny: GameFontRenderer
 
-    @FontDetails(fontName = "Roboto Medium", fontSize = 30)
     lateinit var fontSmall: GameFontRenderer
 
-    @FontDetails(fontName = "Roboto Medium", fontSize = 35)
     lateinit var font35: GameFontRenderer
 
-    @FontDetails(fontName = "Roboto Medium", fontSize = 40)
     lateinit var font40: GameFontRenderer
 
-    @FontDetails(fontName = "Roboto Medium", fontSize = 72)
     lateinit var font72: GameFontRenderer
 
-    @FontDetails(fontName = "Roboto Bold", fontSize = 180)
     lateinit var fontBold180: GameFontRenderer
 
-    @FontDetails(fontName = "SFUI Medium", fontSize = 35)
     lateinit var fontSFUI35: GameFontRenderer
 
-    @FontDetails(fontName = "SFUI Medium", fontSize = 40)
     lateinit var fontSFUI40: GameFontRenderer
 
-    @FontDetails(fontName = "Aqua Icons", fontSize = 35)
     lateinit var fontIcons35: GameFontRenderer
 
-    @FontDetails(fontName = "XD Icons", fontSize = 85)
     lateinit var fontIconXD85: GameFontRenderer
 
-    @FontDetails(fontName = "Novo Angular Icons", fontSize = 85)
     lateinit var fontNovoAngularIcon85: GameFontRenderer
 
-    private val CUSTOM_FONT_RENDERERS = hashMapOf<FontInfo, FontRenderer>()
+    private fun <T : FontRenderer> register(fontInfo: FontInfo, fontRenderer: T): T {
+        FONT_REGISTRY[fontInfo] = fontRenderer
+        return fontRenderer
+    }
 
     fun loadFonts() {
-        val l = System.currentTimeMillis()
         LOGGER.info("Loading Fonts.")
 
-        downloadFonts()
-        // roboto
-        fontBold180 = GameFontRenderer(getFont("Roboto-Bold.ttf", 180))
-        fontSmall = GameFontRenderer(getFont("Roboto-Medium.ttf", 30))
-        fontTiny = GameFontRenderer(getFont("Roboto-Medium.ttf", 24))
-        font15 = GameFontRenderer(getFont("Roboto-Medium.ttf", 15))
-        font20 = GameFontRenderer(getFont("Roboto-Medium.ttf", 20))
-        font35 = GameFontRenderer(getFont("Roboto-Medium.ttf", 35))
-        font40 = GameFontRenderer(getFont("Roboto-Medium.ttf", 40))
-        font72 = GameFontRenderer(getFont("Roboto-Medium.ttf", 72))
-        // sfui
-        fontSFUI35 = GameFontRenderer(getFont("sfui.ttf", 35))
-        fontSFUI40 = GameFontRenderer(getFont("sfui.ttf", 40))
-        // others
-        fontIcons35 = GameFontRenderer(getFont("aquaIcons.ttf", 35))
-        fontIconXD85 = GameFontRenderer(getFont("iconxd.ttf", 85))
-        fontNovoAngularIcon85 = GameFontRenderer(getFont("novoangular.ttf", 85))
+        val time = measureTimeMillis {
+            downloadFonts()
+            register(FontInfo(name = "Minecraft Font"), minecraftFont)
+            font35 = register(FontInfo(name = "Roboto Medium", size = 35),
+                getFontFromFile("Roboto-Medium.ttf", 35).asGameFontRenderer())
+            font40 = register(FontInfo(name = "Roboto Medium", size = 40),
+                getFontFromFile("Roboto-Medium.ttf", 40).asGameFontRenderer())
+            fontBold180 = register(FontInfo(name = "Roboto Bold", size = 180),
+                getFontFromFile("Roboto-Bold.ttf", 180).asGameFontRenderer())
+            fontSmall = register(FontInfo(name = "Roboto Medium", size = 30),
+                getFontFromFile("Roboto-Medium.ttf", 30).asGameFontRenderer())
+            fontTiny = register(FontInfo(name = "Roboto Medium", size = 24),
+                getFontFromFile("Roboto-Medium.ttf", 24).asGameFontRenderer())
+            fontTiny = register(FontInfo(name = "Roboto Medium", size = 24),
+                getFontFromFile("Roboto-Medium.ttf", 24).asGameFontRenderer())
+            font15 = register(FontInfo(name = "Roboto Medium", size = 15),
+                getFontFromFile("Roboto-Medium.ttf", 20).asGameFontRenderer())
+            font20 = register(FontInfo(name = "Roboto Medium", size = 20),
+                getFontFromFile("Roboto-Medium.ttf", 15).asGameFontRenderer())
+            font35 = register(FontInfo(name = "Roboto Medium", size = 35),
+                getFontFromFile("Roboto-Medium.ttf", 35).asGameFontRenderer())
+            font40 = register(FontInfo(name = "Roboto Medium", size = 40),
+                getFontFromFile("Roboto-Medium.ttf", 40).asGameFontRenderer())
+            font72 = register(FontInfo(name = "Roboto Medium", size = 72),
+                getFontFromFile("Roboto-Medium.ttf", 72).asGameFontRenderer())
+            // SFUI
+            fontSFUI35 = register(FontInfo(name = "sfui", size = 35),
+                getFontFromFile("sfui.ttf", 35).asGameFontRenderer())
+            fontSFUI40 = register(FontInfo(name = "sfui", size = 40),
+                getFontFromFile("sfui.ttf", 40).asGameFontRenderer())
+            // icons
+            fontIcons35 = register(FontInfo(name = "aqua", size = 35),
+                getFontFromFile("aquaIcons.ttf", 35).asGameFontRenderer())
+            fontIconXD85 = register(FontInfo(name = "iconxd", size = 85),
+                getFontFromFile("iconxd.ttf", 85).asGameFontRenderer())
+            fontNovoAngularIcon85 = register(FontInfo(name = "novoangular", size = 85),
+                getFontFromFile("novoangular.ttf", 85).asGameFontRenderer())
 
-        try {
-            CUSTOM_FONT_RENDERERS.clear()
-            val fontsFile = File(fontsDir, "fonts.json")
-            if (fontsFile.exists()) {
-                val jsonElement = JsonParser().parse(fontsFile.bufferedReader())
-                if (jsonElement is JsonNull) return
-                val jsonArray = jsonElement as JsonArray
-                for (element in jsonArray) {
-                    if (element is JsonNull) return
-                    val fontObject = element as JsonObject
-                    val font = getFont(fontObject["fontFile"].asString, fontObject["fontSize"].asInt)
-                    CUSTOM_FONT_RENDERERS[FontInfo(font)] = GameFontRenderer(font)
+            loadCustomFonts()
+        }
+        LOGGER.info("Loaded Fonts. (${time}ms)")
+    }
+
+    private fun loadCustomFonts() {
+        FONT_REGISTRY.keys.removeIf { it.isCustom }
+
+        File(fontsDir, "fonts.json").apply {
+            if (exists()) {
+                val jsonElement = readJson()
+
+                if (jsonElement !is JsonArray) return@apply
+
+                for (element in jsonElement) {
+                    if (element !is JsonObject) return@apply
+
+                    val font = getFontFromFile(element["fontFile"].asString, element["fontSize"].asInt)
+
+                    FONT_REGISTRY[FontInfo(font.name, font.size, isCustom = true)] = GameFontRenderer(font)
                 }
             } else {
-                fontsFile.createNewFile()
-
-                fontsFile.writeText(PRETTY_GSON.toJson(JsonArray()))
+                createNewFile()
+                writeJson(jsonArray())
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
         }
-
-        LOGGER.info("Loaded Fonts. (" + (System.currentTimeMillis() - l) + "ms)")
     }
 
     private fun downloadFonts() {
-        try {
-            val outputFile = File(fontsDir, "roboto.zip")
-            if (!outputFile.exists()) {
-                LOGGER.info("Downloading fonts...")
-                download("$CLIENT_CLOUD/fonts/Roboto.zip", outputFile)
-                LOGGER.info("Extract fonts...")
-                extractZip(outputFile.path, fontsDir.path)
-            }
-            val fontZipFile = File(fontsDir, "font.zip")
-            if (!fontZipFile.exists()) {
-                LOGGER.info("Downloading additional fonts...")
-                download("${FONTS}/Font.zip", fontZipFile)
-                LOGGER.info("Extracting additional fonts...")
-                extractZip(fontZipFile.path, fontsDir.path)
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
+        val outputFile = File(fontsDir, "roboto.zip")
+        if (!outputFile.exists()) {
+            LOGGER.info("Downloading fonts...")
+            download("$CLIENT_CLOUD/fonts/Roboto.zip", outputFile)
+            LOGGER.info("Extract fonts...")
+            outputFile.extractZipTo(fontsDir)
+        }
+        val fontZipFile = File(fontsDir, "font.zip")
+        if (!fontZipFile.exists()) {
+            LOGGER.info("Downloading additional fonts...")
+            download("${FONTS}/Font.zip", fontZipFile)
+            LOGGER.info("Extracting additional fonts...")
+            outputFile.extractZipTo(fontsDir)
         }
     }
 
     fun getFontRenderer(name: String, size: Int): FontRenderer {
-        for (field in Fonts::class.java.declaredFields) {
-            try {
-                field.isAccessible = true
-                val obj = field[null]
-                if (obj is FontRenderer) {
-                    val fontDetails = field.getAnnotation(FontDetails::class.java)
-                    if (fontDetails.fontName == name && fontDetails.fontSize == size) return obj
-                }
-            } catch (e: IllegalAccessException) {
-                e.printStackTrace()
-            }
-        }
-        return CUSTOM_FONT_RENDERERS.getOrDefault(FontInfo(name, size), minecraftFont)
+        return FONT_REGISTRY.entries.firstOrNull { (fontInfo, _) ->
+            fontInfo.size == size && fontInfo.name.equals(name, true)
+        }?.value ?: minecraftFont
     }
 
     fun getFontDetails(fontRenderer: FontRenderer): FontInfo? {
-        for (field in Fonts::class.java.declaredFields) {
-            try {
-                field.isAccessible = true
-                val obj = field[null]
-                if (obj == fontRenderer) {
-                    val fontDetails = field.getAnnotation(FontDetails::class.java)
-                    return FontInfo(fontDetails.fontName, fontDetails.fontSize)
-                }
-            } catch (e: IllegalAccessException) {
-                e.printStackTrace()
-            }
-        }
-        for ((key, value) in CUSTOM_FONT_RENDERERS) {
-            if (value === fontRenderer) return key
-        }
-        return null
+        return FONT_REGISTRY.keys.firstOrNull { FONT_REGISTRY[it] == fontRenderer }
     }
 
     val fonts: List<FontRenderer>
-        get() {
-            val fonts = mutableListOf<FontRenderer>()
-            for (fontField in Fonts::class.java.declaredFields) {
-                try {
-                    fontField.isAccessible = true
-                    val fontObj = fontField[null]
-                    if (fontObj is FontRenderer) fonts += fontObj
-                } catch (e: IllegalAccessException) {
-                    e.printStackTrace()
-                }
-            }
-            fonts += CUSTOM_FONT_RENDERERS.values
-            return fonts
-        }
+        get() = FONT_REGISTRY.values.toList()
 
-    private fun getFont(fontName: String, size: Int) =
-        try {
-            val inputStream = File(fontsDir, fontName).inputStream()
-            var awtClientFont = Font.createFont(Font.TRUETYPE_FONT, inputStream)
-            awtClientFont = awtClientFont.deriveFont(Font.PLAIN, size.toFloat())
-            inputStream.close()
-            awtClientFont
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Font("default", Font.PLAIN, size)
+    private fun getFontFromFile(fontName: String, size: Int): Font = try {
+        File(fontsDir, fontName).inputStream().use { inputStream ->
+            Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(Font.PLAIN, size.toFloat())
         }
-
-    private fun extractZip(zipFile: String, outputFolder: String) {
-        val buffer = ByteArray(1024)
-        try {
-            val folder = File(outputFolder)
-            if (!folder.exists()) folder.mkdir()
-            val zipInputStream = ZipInputStream(Paths.get(zipFile).inputStream())
-            var zipEntry = zipInputStream.nextEntry
-            while (zipEntry != null) {
-                val newFile = File(outputFolder + File.separator + zipEntry.name)
-                File(newFile.parent).mkdirs()
-                val fileOutputStream = newFile.outputStream()
-                var i: Int
-                while (zipInputStream.read(buffer).also { i = it } > 0) fileOutputStream.write(buffer, 0, i)
-                fileOutputStream.close()
-                zipEntry = zipInputStream.nextEntry
-            }
-            zipInputStream.closeEntry()
-            zipInputStream.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
+    } catch (e: Exception) {
+        LOGGER.warn("Exception during loading font[name=${fontName}, size=${size}]", e)
+        Font("default", Font.PLAIN, size)
     }
 
-    class FontInfo(val name: String?, val fontSize: Int) {
-
-        constructor(font: Font) : this(font.name, font.size)
-
-        override fun equals(other: Any?): Boolean {
-            if (this === other) return true
-            if (other == null || javaClass != other.javaClass) return false
-
-            val fontInfo = other as FontInfo
-
-            return fontSize == fontInfo.fontSize && name == fontInfo.name
-        }
-
-        override fun hashCode(): Int {
-            var result = name?.hashCode() ?: 0
-            result = 31 * result + fontSize
-            return result
-        }
+    private fun Font.asGameFontRenderer(): GameFontRenderer {
+        return GameFontRenderer(this@asGameFontRenderer)
     }
 }

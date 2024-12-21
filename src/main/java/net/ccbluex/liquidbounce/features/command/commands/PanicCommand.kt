@@ -14,7 +14,7 @@ object PanicCommand : Command("panic") {
      * Execute commands with provided [args]
      */
     override fun execute(args: Array<String>) {
-        var modules = moduleManager.modules.filter { it.state }
+        var modules = moduleManager.filter { it.state }
         val msg: String
 
         if (args.size > 1 && args[1].isNotEmpty()) {
@@ -56,6 +56,7 @@ object PanicCommand : Command("panic") {
         return when (args.size) {
             1 -> listOf("all", "nonrender", "combat", "player", "movement", "render", "world", "misc", "exploit", "fun")
                 .filter { it.startsWith(args[0], true) }
+
             else -> emptyList()
         }
     }

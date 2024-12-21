@@ -16,7 +16,7 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.math.roundToInt
 
-object ItemUtils : MinecraftInstance() {
+object ItemUtils : MinecraftInstance {
     /**
      * Allows you to create an item using the item json
      *

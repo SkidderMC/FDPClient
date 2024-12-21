@@ -44,7 +44,7 @@ class ModulesConfig(file: File) : FileConfig(file) {
     @Throws(IOException::class)
     override fun saveConfig() {
         val jsonObject = JsonObject()
-        for (module in moduleManager.modules) {
+        for (module in moduleManager) {
             val jsonMod = JsonObject()
             jsonMod.run {
                 addProperty("State", module.state)

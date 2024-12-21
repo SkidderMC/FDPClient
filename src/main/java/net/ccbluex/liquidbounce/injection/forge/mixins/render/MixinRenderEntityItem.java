@@ -65,7 +65,7 @@ public abstract class MixinRenderEntityItem extends Render<EntityItem> {
      */
     @Overwrite
     private int func_177077_a(EntityItem itemIn, double x, double y, double z, float p_177077_8_, IBakedModel ibakedmodel) {
-        final ItemPhysics itemPhysics = (ItemPhysics) FDPClient.INSTANCE.getModuleManager().getModule(ItemPhysics.class);
+        final ItemPhysics itemPhysics = ItemPhysics.INSTANCE;
 
         ItemStack itemStack = itemIn.getEntityItem();
         Item item = itemStack.getItem();

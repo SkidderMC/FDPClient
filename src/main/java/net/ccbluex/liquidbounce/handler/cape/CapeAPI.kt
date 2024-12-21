@@ -15,7 +15,7 @@ import java.io.File
 import java.util.*
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 
-object CapeAPI : MinecraftInstance() {
+object CapeAPI : MinecraftInstance {
 
     private val capesCache = File(dir, "capes").apply {
         mkdir()

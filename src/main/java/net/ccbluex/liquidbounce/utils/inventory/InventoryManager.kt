@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.loopHandler
 import net.minecraft.client.gui.inventory.GuiInventory
 
-object InventoryManager : MinecraftInstance(), Listenable {
+object InventoryManager : MinecraftInstance, Listenable {
 
 	// Shared no move click values
 	val noMoveValue = boolean("NoMoveClicks", false)

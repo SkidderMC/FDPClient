@@ -23,7 +23,7 @@ import net.minecraftforge.fml.relauncher.SideOnly
 import java.net.InetAddress
 
 @SideOnly(Side.CLIENT)
-object ServerUtils : MinecraftInstance() {
+object ServerUtils : MinecraftInstance {
     var serverData: ServerData? = null
     private val sessionTimer: MSTimer = MSTimer()
 

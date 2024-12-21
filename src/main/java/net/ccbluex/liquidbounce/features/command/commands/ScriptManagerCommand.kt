@@ -129,7 +129,7 @@ object ScriptManagerCommand : Command("scriptmanager", "scripts") {
 
                     reloadScripts()
 
-                    for (module in moduleManager.modules) moduleManager.generateCommand(module)
+                    for (module in moduleManager) moduleManager.generateCommand(module)
                     loadConfig(modulesConfig)
 
                     isStarting = false

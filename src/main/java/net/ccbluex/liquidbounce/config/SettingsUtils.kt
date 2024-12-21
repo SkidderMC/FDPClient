@@ -27,7 +27,7 @@ object SettingsUtils {
      * @param script The script to apply.
      */
     fun applyScript(script: String) {
-        script.lines().forEachIndexed { index, s ->
+        script.lineSequence().forEachIndexed { index, s ->
             if (s.isEmpty() || s.startsWith('#')) {
                 return@forEachIndexed
             }
@@ -160,11 +160,14 @@ object SettingsUtils {
                 is IntegerRangeValue, is FloatRangeValue -> {
                     value.split("..").takeIf { it.size == 2 }?.let {
                         val (min, max) = (it[0].toFloatOrNull() ?: return@let) to (it[1].toFloatOrNull() ?: return@let)
+
                         if (moduleValue is IntegerRangeValue) {
                             moduleValue.changeValue(min.toInt()..max.toInt())
                         } else (moduleValue as FloatRangeValue).changeValue(min..max)
                     }
                 }
+
+                else -> {}
             }
 
             chat("§7[§3§lAutoSettings§7] §a§l${module.getName()}§7 value §8§l${moduleValue.name}§7 set to §c§l$value§7.")
@@ -183,15 +186,18 @@ object SettingsUtils {
     fun generateScript(values: Boolean, binds: Boolean, states: Boolean): String {
         val all = values && binds && states
 
-        return moduleManager.modules
-            .filter { module -> all || !module.subjective }
-            .joinToString("\n") { module ->
-                buildString {
+        return buildString {
+            for (module in moduleManager) {
+                if (all || !module.subjective) {
                     if (values) {
-                        val filteredValues = module.values.filter { all || (!it.subjective && it.shouldRender()) }
-                        if (filteredValues.isNotEmpty()) {
-                            filteredValues.joinTo(this, separator = "\n") { "${module.name} ${it.name} ${it.get()}" }
-                            appendLine()
+                        for (value in module.values) {
+                            if (all || !value.subjective && value.shouldRender()) {
+                                val valueString = "${module.name} ${value.name} ${value.get()}"
+
+                                if (valueString.isNotBlank()) {
+                                    appendLine("${module.name} ${value.name} ${value.get()}")
+                                }
+                            }
                         }
                     }
 
@@ -203,7 +209,8 @@ object SettingsUtils {
                         appendLine("${module.name} bind ${Keyboard.getKeyName(module.keyBind)}")
                     }
                 }
-            }.lines().filter { it.isNotBlank() }.joinToString("\n")
+            }
+        }.trimEnd()
     }
 
 }

@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 
-open class SpeedMode(val modeName: String) : MinecraftInstance() {
+open class SpeedMode(val modeName: String) : MinecraftInstance {
     open fun onMotion() {}
     open fun onUpdate() {}
     open fun onMove(event: MoveEvent) {}

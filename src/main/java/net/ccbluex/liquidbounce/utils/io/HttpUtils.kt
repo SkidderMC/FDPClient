@@ -87,7 +87,7 @@ object HttpUtils {
             error("Response code is $code")
         }
 
-        copyInputStreamToFile(stream, file)
+        stream.copyTo(file.outputStream())
     }
 
 }

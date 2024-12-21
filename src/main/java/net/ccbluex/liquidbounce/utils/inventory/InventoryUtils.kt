@@ -28,7 +28,7 @@ import net.minecraft.network.play.server.S09PacketHeldItemChange
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 
-object InventoryUtils : MinecraftInstance(), Listenable {
+object InventoryUtils : MinecraftInstance, Listenable {
     // Is inventory open on server-side?
     var serverOpenInventory
         get() = _serverOpenInventory

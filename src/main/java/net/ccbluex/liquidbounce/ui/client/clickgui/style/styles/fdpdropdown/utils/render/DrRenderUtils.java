@@ -16,9 +16,10 @@ import org.lwjgl.opengl.GL11;
 
 import java.awt.*;
 
+import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
 import static org.lwjgl.opengl.GL11.*;
 
-public class DrRenderUtils extends MinecraftInstance {
+public class DrRenderUtils  {
     /**
      * Draws a textured rectangle at z = 0. Args: x, y, u, v, width, height, textureWidth, textureHeight
      */

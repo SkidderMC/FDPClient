@@ -38,7 +38,7 @@ import java.util.concurrent.atomic.AtomicLong
  * We know this might cause sometimes users to not have their capes shown immediately when account switches, but we can reduce the stress
  * on the API and the connection of the user.
  */
-object CapeService : Listenable, MinecraftInstance() {
+object CapeService : Listenable, MinecraftInstance {
 
     /**
      * The client cape user

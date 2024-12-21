@@ -23,7 +23,7 @@ import kotlin.math.roundToInt
  * Generate new bitmap based font renderer
  */
 @SideOnly(Side.CLIENT)
-class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255, private var loadingScreen: Boolean = false) : MinecraftInstance() {
+class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255, private var loadingScreen: Boolean = false) : MinecraftInstance {
     companion object {
         var assumeNonVolatile = false
         val activeFontRenderers = mutableListOf<AWTFontRenderer>()

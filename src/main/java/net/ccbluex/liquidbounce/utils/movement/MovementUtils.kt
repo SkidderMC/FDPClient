@@ -20,7 +20,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-object MovementUtils : MinecraftInstance(), Listenable {
+object MovementUtils : MinecraftInstance, Listenable {
 
     fun resetMotion(y: Boolean) {
         mc.thePlayer.motionX = 0.0

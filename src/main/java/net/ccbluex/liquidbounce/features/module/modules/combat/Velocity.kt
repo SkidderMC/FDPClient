@@ -13,12 +13,9 @@ import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
+import net.ccbluex.liquidbounce.utils.client.*
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
-import net.ccbluex.liquidbounce.utils.client.realMotionX
-import net.ccbluex.liquidbounce.utils.client.realMotionY
-import net.ccbluex.liquidbounce.utils.client.realMotionZ
-import net.ccbluex.liquidbounce.utils.client.schedulePacketProcess
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.isOnGround
@@ -690,7 +687,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
         synchronized(packets) {
             packets.entries.removeAll { (packet, timestamp) ->
                 if (velocity || timestamp <= System.currentTimeMillis() - spoofDelay) {
-                    schedulePacketProcess(packet)
+                    PacketUtils.schedulePacketProcess(packet)
                     true
                 } else false
             }

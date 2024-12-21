@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.network.play.client.C03PacketPlayer
 
-object TimerBalanceUtils : MinecraftInstance(), Listenable {
+object TimerBalanceUtils : MinecraftInstance, Listenable {
 
     var balance = 0L
         private set

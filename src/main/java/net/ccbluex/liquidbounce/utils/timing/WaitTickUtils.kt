@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.kotlin.removeEach
 
-object WaitTickUtils : MinecraftInstance(), Listenable {
+object WaitTickUtils : MinecraftInstance, Listenable {
 
     private val scheduledActions = ArrayDeque<ScheduledAction>()
 

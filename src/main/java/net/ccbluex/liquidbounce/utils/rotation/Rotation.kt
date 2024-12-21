@@ -22,7 +22,7 @@ import kotlin.math.*
 /**
  * Rotations
  */
-data class Rotation(var yaw: Float, var pitch: Float) : MinecraftInstance() {
+data class Rotation(var yaw: Float, var pitch: Float) : MinecraftInstance {
 
     operator fun minus(other: Rotation): Rotation {
         return Rotation(yaw - other.yaw, pitch - other.pitch)

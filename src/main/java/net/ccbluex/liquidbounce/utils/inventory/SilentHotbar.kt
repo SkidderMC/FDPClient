@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 
-object SilentHotbar : Listenable, MinecraftInstance() {
+object SilentHotbar : Listenable, MinecraftInstance {
 
     var hotbarState: SilentHotbarState? = null
 

@@ -56,14 +56,17 @@ object FightBot : Module("FightBot", Category.COMBAT, hideModule = false) {
     private var thread: Thread? = null
     private var backThread: Thread? = null
     override fun onEnable() {
-        if (!autoJumpValue) FDPClient.moduleManager[Step::class.java]!!.state = true
-        if (!autoJumpValue) FDPClient.moduleManager[Step::class.java]?.mode = "Jump"
+        if (!autoJumpValue) {
+            FDPClient.moduleManager[Step::class.java.simpleName]?.let { stepModule ->
+                stepModule.state = true
+            }
+        }
         if (findWay.contains("Point")) mainPos =
             floatArrayOf(mc.thePlayer.posX.toFloat(), mc.thePlayer.posY.toFloat(), mc.thePlayer.posZ.toFloat())
     }
 
     override fun onDisable() {
-        if (!autoJumpValue) FDPClient.moduleManager[Step::class.java]!!.state = false
+        if (!autoJumpValue) FDPClient.moduleManager[Step::class.java.simpleName]?.let { it.state = false }
         thread?.stop()
         backThread?.stop()
         mc.gameSettings.keyBindForward.pressed = false
@@ -121,42 +124,46 @@ object FightBot : Module("FightBot", Category.COMBAT, hideModule = false) {
                 )
                 return@handler
             }
-            val teams = FDPClient.moduleManager[Teams::class.java]!!
-            for (entity in mc.theWorld.loadedEntityList) {
-                if (entity is EntityLivingBase) {
-                    if (entity != mc.thePlayer) {
-                        if (entity is EntityWither) {
-                            witherTargets.add(entity)
-                        } else {
-                            if (EntityUtils.isSelected(entity,true)) {
-                                when (findWay.lowercase()) {
-                                    "point" -> {
-                                        if (getDistanceToPos(
-                                                mainPos[0],
-                                                mainPos[1],
-                                                mainPos[2],
-                                                entity
-                                            ) < workReach && !teams.isInYourTeam(entity)
-                                        ) {
-                                            discoveredTargets.add(entity)
-                                        }
-                                    }
+            FDPClient.moduleManager[Teams::class.java.simpleName]?.let { teamsModule ->
+                val teams = teamsModule as? Teams
+                if(teams != null) {
+                    for (entity in mc.theWorld.loadedEntityList) {
+                        if (entity is EntityLivingBase) {
+                            if (entity != mc.thePlayer) {
+                                if (entity is EntityWither) {
+                                    witherTargets.add(entity)
+                                } else {
+                                    if (EntityUtils.isSelected(entity,true)) {
+                                        when (findWay.lowercase()) {
+                                            "point" -> {
+                                                if (getDistanceToPos(
+                                                        mainPos[0],
+                                                        mainPos[1],
+                                                        mainPos[2],
+                                                        entity
+                                                    ) < workReach && !teams.isInYourTeam(entity)
+                                                ) {
+                                                    discoveredTargets.add(entity)
+                                                }
+                                            }
 
-                                    "none" -> {
-                                        if (mc.thePlayer.getDistanceToEntity(entity) < workReach && !teams.isInYourTeam(
-                                                entity
-                                            )
-                                        ) {
-                                            discoveredTargets.add(entity)
-                                        }
-                                    }
+                                            "none" -> {
+                                                if (mc.thePlayer.getDistanceToEntity(entity) < workReach && !teams.isInYourTeam(
+                                                        entity
+                                                    )
+                                                ) {
+                                                    discoveredTargets.add(entity)
+                                                }
+                                            }
 
-                                    "entity" -> {
-                                        if (entity.getDistanceToEntity(findWither()) < workReach && !teams.isInYourTeam(
-                                                entity
-                                            )
-                                        ) {
-                                            discoveredTargets.add(entity)
+                                            "entity" -> {
+                                                if (entity.getDistanceToEntity(findWither()) < workReach && !teams.isInYourTeam(
+                                                        entity
+                                                    )
+                                                ) {
+                                                    discoveredTargets.add(entity)
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -164,113 +171,113 @@ object FightBot : Module("FightBot", Category.COMBAT, hideModule = false) {
                         }
                     }
                 }
-            }
-            if (discoveredTargets.size >= 1) {
-                discoveredTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) }
-                witherTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) }
-                val entity = discoveredTargets[0]
+                if (discoveredTargets.size >= 1) {
+                    discoveredTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) }
+                    witherTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) }
+                    val entity = discoveredTargets[0]
 
-                if (thread?.isAlive != true) {
-                    thread = thread(name = "FightBot-Find") {
-                        path = PathUtils.findBlinkPath(
-                            mc.thePlayer.posX,
-                            mc.thePlayer.posY,
-                            mc.thePlayer.posZ,
-                            entity.posX,
-                            entity.posY,
-                            entity.posZ,
-                            2.5
-                        ).toMutableList()
-                        return@thread
+                    if (thread?.isAlive != true) {
+                        thread = thread(name = "FightBot-Find") {
+                            path = PathUtils.findBlinkPath(
+                                mc.thePlayer.posX,
+                                mc.thePlayer.posY,
+                                mc.thePlayer.posZ,
+                                entity.posX,
+                                entity.posY,
+                                entity.posZ,
+                                2.5
+                            ).toMutableList()
+                            return@thread
+                        }
                     }
-                }
-                if (path.size<=1) {
-                    strafeWithYaw(MovementUtils.defaultSpeed(), getRotation(entity))
-                } else {
-                    strafeWithYaw(
-                        MovementUtils.defaultSpeed(), getRotationFromPos(
-                            (path[0].xCoord.toFloat()+path[1].xCoord.toFloat())/2.0f,
-                            (path[0].yCoord.toFloat()+path[1].yCoord.toFloat())/2.0f,
-                            (path[0].zCoord.toFloat()+path[1].zCoord.toFloat())/2.0f
+                    if (path.size <= 1) {
+                        strafeWithYaw(MovementUtils.defaultSpeed(), getRotation(entity))
+                    } else {
+                        strafeWithYaw(
+                            MovementUtils.defaultSpeed(), getRotationFromPos(
+                                (path[0].xCoord.toFloat() + path[1].xCoord.toFloat()) / 2.0f,
+                                (path[0].yCoord.toFloat() + path[1].yCoord.toFloat()) / 2.0f,
+                                (path[0].zCoord.toFloat() + path[1].zCoord.toFloat()) / 2.0f
+                            )
                         )
-                    )
-                }
-                if (MovementUtils.hasTheMotion()) {
-                    if (mc.thePlayer.onGround && autoJumpValue) mc.thePlayer.jump()
-                }
-            } else {
-                when (findWay.lowercase()) {
-                    "point" -> {
-                        if (getDistanceToPos(mainPos[0], mainPos[1], mainPos[2], mc.thePlayer) > 2) {
-                            if (backThread?.isAlive != true) {
-                                backThread = thread(name = "FightBot-Back") {
-                                    backPath = PathUtils.findBlinkPath(
-                                        mc.thePlayer.posX,
-                                        mc.thePlayer.posY,
-                                        mc.thePlayer.posZ,
-                                        mainPos[0].toDouble(), mainPos[1].toDouble(), mainPos[2].toDouble(),
-                                        0.1
-                                    ).toMutableList()
-                                    return@thread
-                                }
-                            }
-                            if (backPath.isEmpty()) {
-                                strafeWithYaw(
-                                    MovementUtils.defaultSpeed(),
-                                    getRotationFromPos(mainPos[0], mainPos[1], mainPos[2])
-                                )
-                            } else {
-                                strafeWithYaw(
-                                    MovementUtils.defaultSpeed(), getRotationFromPos(
-                                        backPath[0].xCoord.toFloat(),
-                                        backPath[0].yCoord.toFloat(),
-                                        backPath[0].zCoord.toFloat()
-                                    )
-                                )
-                            }
-                            if (MovementUtils.hasTheMotion()) {
-                                if (mc.thePlayer.onGround && autoJumpValue) mc.thePlayer.jump()
-                            }
-                        } else if (mc.gameSettings.keyBindForward.isKeyDown) mc.gameSettings.keyBindForward.pressed =
-                            false
                     }
+                    if (MovementUtils.hasTheMotion()) {
+                        if (mc.thePlayer.onGround && autoJumpValue) mc.thePlayer.jump()
+                    }
+                } else {
+                    when (findWay.lowercase()) {
+                        "point" -> {
+                            if (getDistanceToPos(mainPos[0], mainPos[1], mainPos[2], mc.thePlayer) > 2) {
+                                if (backThread?.isAlive != true) {
+                                    backThread = thread(name = "FightBot-Back") {
+                                        backPath = PathUtils.findBlinkPath(
+                                            mc.thePlayer.posX,
+                                            mc.thePlayer.posY,
+                                            mc.thePlayer.posZ,
+                                            mainPos[0].toDouble(), mainPos[1].toDouble(), mainPos[2].toDouble(),
+                                            0.1
+                                        ).toMutableList()
+                                        return@thread
+                                    }
+                                }
+                                if (backPath.isEmpty()) {
+                                    strafeWithYaw(
+                                        MovementUtils.defaultSpeed(),
+                                        getRotationFromPos(mainPos[0], mainPos[1], mainPos[2])
+                                    )
+                                } else {
+                                    strafeWithYaw(
+                                        MovementUtils.defaultSpeed(), getRotationFromPos(
+                                            backPath[0].xCoord.toFloat(),
+                                            backPath[0].yCoord.toFloat(),
+                                            backPath[0].zCoord.toFloat()
+                                        )
+                                    )
+                                }
+                                if (MovementUtils.hasTheMotion()) {
+                                    if (mc.thePlayer.onGround && autoJumpValue) mc.thePlayer.jump()
+                                }
+                            } else if (mc.gameSettings.keyBindForward.isKeyDown) mc.gameSettings.keyBindForward.pressed =
+                                false
+                        }
 
-                    "entity" -> {
-                        val entity: EntityLivingBase = findWither()!!
-                        if (mc.thePlayer.getDistanceToEntity(entity) > 2) {
-                            if (backThread?.isAlive != true) {
-                                backThread = thread(name = "FightBot") {
-                                    backPath = PathUtils.findBlinkPath(
-                                        mc.thePlayer.posX,
-                                        mc.thePlayer.posY,
-                                        mc.thePlayer.posZ,
-                                        entity.posX,
-                                        entity.posY,
-                                        entity.posZ,
-                                        2.5
-                                    ).toMutableList()
-                                    return@thread
+                        "entity" -> {
+                            val entity: EntityLivingBase = findWither()!!
+                            if (mc.thePlayer.getDistanceToEntity(entity) > 2) {
+                                if (backThread?.isAlive != true) {
+                                    backThread = thread(name = "FightBot") {
+                                        backPath = PathUtils.findBlinkPath(
+                                            mc.thePlayer.posX,
+                                            mc.thePlayer.posY,
+                                            mc.thePlayer.posZ,
+                                            entity.posX,
+                                            entity.posY,
+                                            entity.posZ,
+                                            2.5
+                                        ).toMutableList()
+                                        return@thread
+                                    }
                                 }
-                            }
-                            if (backPath.isEmpty()) {
-                                strafeWithYaw(MovementUtils.defaultSpeed(), getRotation(entity))
-                            } else {
-                                strafeWithYaw(
-                                    MovementUtils.defaultSpeed(), getRotationFromPos(
-                                        backPath[0].xCoord.toFloat(),
-                                        backPath[0].yCoord.toFloat(),
-                                        backPath[0].zCoord.toFloat()
+                                if (backPath.isEmpty()) {
+                                    strafeWithYaw(MovementUtils.defaultSpeed(), getRotation(entity))
+                                } else {
+                                    strafeWithYaw(
+                                        MovementUtils.defaultSpeed(), getRotationFromPos(
+                                            backPath[0].xCoord.toFloat(),
+                                            backPath[0].yCoord.toFloat(),
+                                            backPath[0].zCoord.toFloat()
+                                        )
                                     )
-                                )
-                            }
-                            if (MovementUtils.hasTheMotion()) {
-                                if (mc.thePlayer.onGround && autoJumpValue) mc.thePlayer.jump()
-                            }
-                        } else if (mc.gameSettings.keyBindForward.isKeyDown) mc.gameSettings.keyBindForward.pressed =
-                            false
+                                }
+                                if (MovementUtils.hasTheMotion()) {
+                                    if (mc.thePlayer.onGround && autoJumpValue) mc.thePlayer.jump()
+                                }
+                            } else if (mc.gameSettings.keyBindForward.isKeyDown) mc.gameSettings.keyBindForward.pressed =
+                                false
+                        }
                     }
+                    path = backPath
                 }
-                path = backPath
             }
         } catch (e: Exception) {
             e.printStackTrace()

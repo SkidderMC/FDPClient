@@ -122,7 +122,7 @@ fun itemRenderRotate() {
  *
  * @author CCBlueX
  */
-abstract class Animation(val name: String) : MinecraftInstance() {
+abstract class Animation(val name: String) : MinecraftInstance {
     abstract fun transform(f1: Float, f: Float, clientPlayer: AbstractClientPlayer)
 
     /**

@@ -57,7 +57,12 @@ import java.awt.Color
 import java.awt.image.BufferedImage
 import kotlin.math.*
 
-object RenderUtils : MinecraftInstance() {
+object RenderUtils : MinecraftInstance {
+    // ARGB 0xff006fff
+    const val CLIENT_COLOR = -16748545
+    // ARGB 0x7f006fff
+    const val CLIENT_COLOR_HALF_ALPHA = 2130735103
+
     private val glCapMap = mutableMapOf<Int, Boolean>()
     private val shadowCache: HashMap<Int, Int> = HashMap()
     private val DISPLAY_LISTS_2D = IntArray(4)

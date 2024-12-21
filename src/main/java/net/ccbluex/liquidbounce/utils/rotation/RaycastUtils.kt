@@ -26,7 +26,7 @@ import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
 import java.util.*
 
-object RaycastUtils : MinecraftInstance() {
+object RaycastUtils : MinecraftInstance {
     @JvmOverloads
     fun raycastEntity(
         range: Double,

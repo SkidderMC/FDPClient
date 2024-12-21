@@ -14,11 +14,11 @@ import net.ccbluex.liquidbounce.utils.client.ClassUtils
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import java.util.*
 
-object ModuleManager : Listenable {
+val MODULE_REGISTRY = TreeSet(Comparator.comparing(Module::name))
 
-    val modules = TreeSet<Module> { module1, module2 -> module1.name.compareTo(module2.name) }
-    fun getModuleInCategory(category: Category) = modules.filter { it.category == category }
-    private val moduleClassMap = hashMapOf<Class<*>, Module>()
+object ModuleManager : Listenable, Collection<Module> by MODULE_REGISTRY {
+
+    fun getModuleInCategory(category: Category) = MODULE_REGISTRY.filter { it.category == category }
 
     /**
      * Register all modules
@@ -28,48 +28,37 @@ object ModuleManager : Listenable {
 
         // Register modules
         ClassUtils.resolvePackage("${this.javaClass.`package`.name}.modules", Module::class.java)
-            .forEach(this::registerModule)
+            .forEach { moduleClass ->
+                try {
+                    registerModule(moduleClass.newInstance())
+                } catch (e: IllegalAccessException) {
+                    // Handle Kotlin object modules
+                    val instance = ClassUtils.getObjectInstance(moduleClass) as? Module
+                    if (instance != null) {
+                        registerModule(instance)
+                    } else {
+                        LOGGER.error("Failed to instantiate module: ${moduleClass.name}")
+                    }
+                } catch (e: Throwable) {
+                    LOGGER.error("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
+                }
+            }
 
-        modules.forEach {
+        MODULE_REGISTRY.forEach {
             it.onInitialize()
-            //  SplashProgress.setSecondary("Initializing Module " + it.name)
+            // SplashProgress.setSecondary("Initializing Module " + it.name)
         }
 
-       registerModules(*modules.toTypedArray())
-
-        LOGGER.info("[ModuleManager] Loaded ${modules.size} modules.")
+        LOGGER.info("[ModuleManager] Loaded ${MODULE_REGISTRY.size} modules.")
     }
 
     /**
      * Register [module]
      */
     fun registerModule(module: Module) {
-        modules += module
-        moduleClassMap[module.javaClass] = module
-
+        MODULE_REGISTRY += module
         generateCommand(module)
     }
-
-    /**
-     * Register [moduleClass] with new instance
-     */
-    private fun registerModule(moduleClass: Class<out Module>) {
-        try {
-            registerModule(moduleClass.newInstance())
-        } catch (e: IllegalAccessException) {
-            // this module is a kotlin object
-            registerModule(ClassUtils.getObjectInstance(moduleClass) as Module)
-        } catch (e: Throwable) {
-            LOGGER.error("Failed to load module: ${moduleClass.name} (${e.javaClass.name}: ${e.message})")
-        }
-    }
-
-    /**
-     * Register a list of modules
-     */
-    @SafeVarargs
-    fun registerModules(vararg modules: Class<out Module>) = modules.forEach(this::registerModule)
-
 
     /**
      * Register a list of modules
@@ -81,8 +70,7 @@ object ModuleManager : Listenable {
      * Unregister module
      */
     fun unregisterModule(module: Module) {
-        modules.remove(module)
-        moduleClassMap.remove(module::class.java)
+        MODULE_REGISTRY.remove(module)
         unregisterListener(module)
     }
 
@@ -99,31 +87,17 @@ object ModuleManager : Listenable {
     }
 
     /**
-     * Get module by [moduleClass]
-     */
-    fun <T : Module> getModule(moduleClass: Class<T>): T? {
-        return moduleClassMap[moduleClass] as T?
-    }
-
-    operator fun <T : Module> get(clazz: Class<T>) = getModule(clazz)
-
-    /**
      * Get module by [moduleName]
      */
-    fun getModule(moduleName: String?) = modules.find { it.name.equals(moduleName, ignoreCase = true) }
+    operator fun get(moduleName: String) = MODULE_REGISTRY.find { it.name.equals(moduleName, ignoreCase = true) }
 
-    fun getKeyBind(key: Int) = modules.filter { it.keyBind == key }
-
-    operator fun get(name: String) = getModule(name)
-
-    /**
-     * Module related events
-     */
+    fun getKeyBind(key: Int) = MODULE_REGISTRY.filter { it.keyBind == key }
 
     /**
      * Handle incoming key presses
      */
     private val onKey = handler<KeyEvent> { event ->
-        modules.forEach { if (it.keyBind == event.key) it.toggle() }
+        MODULE_REGISTRY.forEach { if (it.keyBind == event.key) it.toggle() }
     }
+
 }

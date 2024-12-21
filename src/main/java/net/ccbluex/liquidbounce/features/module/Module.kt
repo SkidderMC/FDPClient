@@ -27,6 +27,8 @@ import net.ccbluex.liquidbounce.utils.timing.TickedActions.TickScheduler
 import org.lwjgl.input.Keyboard
 import java.util.concurrent.CopyOnWriteArraySet
 
+private val SPLIT_REGEX = "(?<=[a-z])(?=[A-Z])".toRegex()
+
 open class Module(
 
     val name: String,
@@ -38,12 +40,12 @@ open class Module(
     var expanded: Boolean = false,
 
     // Adds spaces between lowercase and uppercase letters (KillAura -> Kill Aura)
-    val spacedName: String = name.split("(?<=[a-z])(?=[A-Z])".toRegex()).joinToString(separator = " "),
+    val spacedName: String = name.splitToSequence(SPLIT_REGEX).joinToString(separator = " "),
     val subjective: Boolean = category == Category.VISUAL,
     val gameDetecting: Boolean = canBeEnabled,
     val hideModule: Boolean = false,
 
-) : MinecraftInstance(), Listenable {
+    ) : MinecraftInstance, Listenable {
 
     // Value that determines whether the module should depend on GameDetector
     private val onlyInGameValue = boolean("OnlyInGame", true, subjective = true) { state }

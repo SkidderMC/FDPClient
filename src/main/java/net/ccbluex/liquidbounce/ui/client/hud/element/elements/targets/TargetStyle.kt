@@ -22,7 +22,7 @@ import java.text.DecimalFormatSymbols
 import java.util.*
 import kotlin.math.pow
 
-abstract class TargetStyle(val name: String, val targetInstance: Targets, val shaderSupport: Boolean): MinecraftInstance() {
+abstract class TargetStyle(val name: String, val targetInstance: Targets, val shaderSupport: Boolean): MinecraftInstance {
 
     var easingHealth = 0F
 

@@ -128,10 +128,13 @@ object FDPClient {
             // TODO: make it configurable
             UIManager.setLookAndFeel(FlatMacLightLaf())
 
+            SharedScopes
+
             // Load languages
             loadLanguages()
 
-            SharedScopes
+            // Load client fonts
+            loadFonts()
 
             // Register listeners
             RotationUtils
@@ -151,9 +154,6 @@ object FDPClient {
             SilentHotbar
             WaitMsUtils
             BlinkUtils
-
-            // Load client fonts
-            loadFonts()
 
             // Load settings
             loadSettings(false) {

@@ -24,7 +24,7 @@ import java.awt.Color
  */
 class KeySelectUI(val info: KeyInfo) : PopUI("Select a module to bind") {
     private var str = ""
-    private var modules = moduleManager.modules.toList()
+    private var modules = moduleManager.toList()
     private val singleHeight = 4F + font35.height
     private var stroll = 0
     private var maxStroll = modules.size * singleHeight
@@ -117,9 +117,9 @@ class KeySelectUI(val info: KeyInfo) : PopUI("Select a module to bind") {
 
     private fun update() {
         modules = if (str.isNotEmpty()) {
-            moduleManager.modules.filter { it.name.startsWith(str, ignoreCase = true) }
+            moduleManager.filter { it.name.startsWith(str, ignoreCase = true) }
         } else {
-            moduleManager.modules.toList()
+            moduleManager.toList()
         }
         maxStroll = modules.size * singleHeight
         stroll = 0

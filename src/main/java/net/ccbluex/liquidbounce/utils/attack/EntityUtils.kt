@@ -24,7 +24,7 @@ import net.minecraft.util.Vec3
 import kotlin.math.cos
 import kotlin.math.sin
 
-object EntityUtils : MinecraftInstance() {
+object EntityUtils : MinecraftInstance {
 
     private val healthSubstrings = arrayOf("hp", "health", "❤", "lives")
 

@@ -33,7 +33,7 @@ class KeyInfo(
     val key: Int,
     private val keyName: String,
     private val keyDisplayName: String
-) : MinecraftInstance() {
+) : MinecraftInstance {
     constructor(posX: Float, posY: Float, width: Float, height: Float, key: Int, keyName: String) :
             this(posX, posY, width, height, key, keyName, keyName)
 

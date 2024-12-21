@@ -1217,9 +1217,9 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G, hideModule
     }
 
     private fun shouldCancelDueToModuleState(): Boolean {
-        return (blinkCheck && FDPClient.moduleManager[Blink::class.java]?.state == true)
-                || (noScaffold && FDPClient.moduleManager[Scaffold::class.java]?.state == true)
-                || (noFly && FDPClient.moduleManager[Flight::class.java]?.state == true)
+        return (blinkCheck && FDPClient.moduleManager[Blink::class.java.simpleName]?.state == true)
+                || (noScaffold && FDPClient.moduleManager[Scaffold::class.java.simpleName]?.state == true)
+                || (noFly && FDPClient.moduleManager[Flight::class.java.simpleName]?.state == true)
                 || (onSwording && mc.thePlayer.heldItem?.item !is ItemSword)
     }
 

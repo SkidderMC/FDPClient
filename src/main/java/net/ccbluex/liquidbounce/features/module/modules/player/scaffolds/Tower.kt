@@ -27,7 +27,7 @@ import net.minecraft.stats.StatList
 import net.minecraft.util.BlockPos
 import kotlin.math.truncate
 
-object Tower : MinecraftInstance(), Listenable {
+object Tower : MinecraftInstance, Listenable {
 
     val towerModeValues = choices(
         "TowerMode",

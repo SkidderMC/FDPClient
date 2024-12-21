@@ -15,7 +15,7 @@ import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-class CharRenderer(private val small: Boolean) : MinecraftInstance() {
+class CharRenderer(private val small: Boolean) : MinecraftInstance {
     private var moveY = FloatArray(20)
     private var moveX = FloatArray(20)
 

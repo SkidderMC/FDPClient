@@ -16,7 +16,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock
 import kotlin.concurrent.read
 import kotlin.concurrent.write
 
-object MiniMapRegister : MinecraftInstance(), Listenable {
+object MiniMapRegister : MinecraftInstance, Listenable {
 
     private val chunkTextureMap = HashMap<ChunkLocation, MiniMapTexture>(256)
     private val queuedChunkUpdates = HashSet<Chunk>(256)

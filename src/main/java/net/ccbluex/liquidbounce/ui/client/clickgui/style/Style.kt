@@ -17,7 +17,7 @@ import java.awt.Color
 import java.math.BigDecimal
 import kotlin.math.max
 
-abstract class Style : MinecraftInstance() {
+abstract class Style : MinecraftInstance {
     protected var sliderValueHeld: Value<*>? = null
         get() {
             if (!Mouse.isButtonDown(0)) field = null

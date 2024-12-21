@@ -18,7 +18,7 @@ import org.lwjgl.opengl.GL11.*
 import kotlin.math.max
 import kotlin.math.min
 
-object HUD : MinecraftInstance() {
+object HUD : MinecraftInstance {
 
   val elements = mutableListOf<Element>()
   val notifications = mutableListOf<Notification>()

@@ -28,7 +28,7 @@ import net.ccbluex.liquidbounce.utils.login.UserUtils
 import java.net.URI
 import java.util.*
 
-abstract class Client : ClientListener, MinecraftInstance() {
+abstract class Client : ClientListener, MinecraftInstance {
 
     internal var channel: Channel? = null
     var username = ""

@@ -49,7 +49,7 @@ object ToggleCommand : Command("toggle", "t") {
         val moduleName = args[0]
 
         return when (args.size) {
-            1 -> moduleManager.modules
+            1 -> moduleManager
                     .map { it.name }
                     .filter { it.startsWith(moduleName, true) }
                     .toList()

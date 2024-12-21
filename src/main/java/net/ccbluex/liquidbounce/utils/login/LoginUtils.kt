@@ -14,7 +14,7 @@ import java.util.*
 
 fun me.liuli.elixir.compat.Session.intoMinecraftSession() = Session(username, uuid, token, type)
 
-object LoginUtils : MinecraftInstance() {
+object LoginUtils : MinecraftInstance {
 
     fun loginSessionId(sessionToken: String): LoginResult {
         val payload = try {

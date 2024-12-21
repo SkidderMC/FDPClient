@@ -12,7 +12,8 @@ import com.jagrosh.discordipc.entities.pipe.PipeStatus
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_VERSION
-import net.ccbluex.liquidbounce.features.module.ModuleManager.modules
+import net.ccbluex.liquidbounce.features.module.MODULE_REGISTRY
+import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.module.modules.client.DiscordRPCModule
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.discordApp
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
@@ -24,7 +25,7 @@ import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import org.json.JSONObject
 import java.time.OffsetDateTime
 
-object DiscordRPC : MinecraftInstance() {
+object DiscordRPC : MinecraftInstance {
 
     // IPC Client
     private var ipcClient: IPCClient? = null
@@ -125,8 +126,8 @@ object DiscordRPC : MinecraftInstance() {
                     if (module.showHealthValue) append("HP: ${mc.thePlayer?.health ?: "N/A"}\n")
 
                     if (module.showModuleValue) {
-                        val enabledModules = modules.count { it.state }
-                        append("Enable: $enabledModules of ${modules.size} Modules\n")
+                        val enabledModules = ModuleManager.count { it.state }
+                        append("Enable: $enabledModules of ${ModuleManager.size} Modules\n")
                     }
 
                     if (module.showOtherValue) {

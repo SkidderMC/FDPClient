@@ -49,7 +49,6 @@ class Armor(
     private val alpha by int("Alpha", 255, 0..255)
     private val repairReminderThreshold by int("Alert Repair Reminder Threshold", 0, 0..100)
     private val durabilityThreshold by int("Alert Durability Threshold", 0, 0..100)
-    private val mc = MinecraftInstance.mc
 
     private var blinkTimer = 0L
     private var blinkState = false

@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.elements
 
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 
-abstract class Element : MinecraftInstance() {
+abstract class Element : MinecraftInstance {
 
     var x = 0
     var y = 0

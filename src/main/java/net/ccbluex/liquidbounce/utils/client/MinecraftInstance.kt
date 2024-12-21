@@ -10,7 +10,9 @@ import net.minecraft.util.ResourceLocation
 
 import net.minecraft.client.Minecraft
 
-open class MinecraftInstance {
+interface MinecraftInstance {
+    val mc: Minecraft
+        get() = Companion.mc
     companion object {
         @JvmField
         val mc: Minecraft = Minecraft.getMinecraft()

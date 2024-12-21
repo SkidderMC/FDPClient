@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 fun translationMenu(key: String, vararg args: Any) = LanguageManager.getTranslation("menu.$key", *args)
 fun translation(key: String, vararg args: Any) = LanguageManager.getTranslation(key, *args)
 
-object LanguageManager : MinecraftInstance() {
+object LanguageManager : MinecraftInstance {
 
     // Current language
     private val language: String

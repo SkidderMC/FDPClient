@@ -19,7 +19,7 @@ import javax.swing.JOptionPane
 import javax.swing.JTextArea
 import javax.swing.filechooser.FileFilter
 
-object MiscUtils : MinecraftInstance() {
+object MiscUtils : MinecraftInstance {
 
     private fun JTextArea.adjustTextAreaSize() {
         val fontMetrics = getFontMetrics(font)

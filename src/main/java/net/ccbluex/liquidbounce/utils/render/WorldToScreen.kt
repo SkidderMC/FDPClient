@@ -15,7 +15,7 @@ import org.lwjgl.util.vector.Vector3f
 import org.lwjgl.util.vector.Vector4f
 import kotlin.math.abs
 
-object WorldToScreen : MinecraftInstance() {
+object WorldToScreen : MinecraftInstance {
     fun getMatrix(matrix: Int): Matrix4f {
         val floatBuffer = BufferUtils.createFloatBuffer(16)
         

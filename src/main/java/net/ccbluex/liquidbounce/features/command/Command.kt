@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.client.asResourceLocation
 import net.ccbluex.liquidbounce.utils.client.playSound
 
-abstract class Command(val command: String, vararg val alias: String) : MinecraftInstance() {
+abstract class Command(val command: String, vararg val alias: String) : MinecraftInstance {
     /**
      * Execute commands with provided [args]
      */

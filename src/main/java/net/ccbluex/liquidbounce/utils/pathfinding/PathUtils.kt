@@ -13,7 +13,7 @@ import net.minecraft.util.Vec3
 import javax.vecmath.Vector3d
 import kotlin.math.*
 
-object PathUtils : MinecraftInstance() {
+object PathUtils : MinecraftInstance {
     fun findBlinkPath(tpX: Double, tpY: Double, tpZ: Double): List<Vector3d> {
         val positions = mutableListOf<Vector3d>()
 

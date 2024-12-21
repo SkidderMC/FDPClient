@@ -72,7 +72,7 @@ object ClickGui : GuiScreen() {
 
         for (category in Category.values()) {
             panels += object : Panel(category.displayName, 100, yPos, width, height, false) {
-                override val elements = moduleManager.modules.mapNotNull {
+                override val elements = moduleManager.mapNotNull {
                     it.takeIf { module -> module.category == category }?.let(::ModuleElement)
                 }
             }

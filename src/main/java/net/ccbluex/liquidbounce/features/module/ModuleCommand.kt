@@ -71,6 +71,8 @@ class ModuleCommand(val module: Module, val values: Set<Value<*>> = module.value
                         is IntegerRangeValue, is FloatRangeValue -> {
                             chatSyntax("$moduleName ${args[1].lowercase()} <min>-<max>")
                         }
+
+                        else -> {}
                     }
 
                     return

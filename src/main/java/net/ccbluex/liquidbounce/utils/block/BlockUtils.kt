@@ -18,7 +18,7 @@ import net.minecraft.util.ResourceLocation
 
 typealias Collidable = (Block?) -> Boolean
 
-object BlockUtils : MinecraftInstance() {
+object BlockUtils : MinecraftInstance {
 
     /**
      * Get block name by [id]

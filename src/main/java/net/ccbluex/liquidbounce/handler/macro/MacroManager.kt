@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 
-object MacroManager : MinecraftInstance(), Listenable {
+object MacroManager : MinecraftInstance, Listenable {
     val macros = ArrayList<Macro>()
 
 

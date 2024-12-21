@@ -286,7 +286,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
         val sortableToSlot: Int?
     )
 
-    private fun getItemsToSteal(): MutableList<ItemTakeRecord> {
+    private fun getItemsToSteal(): List<ItemTakeRecord> {
         val sortBlacklist = BooleanArray(9)
 
         var spaceInInventory = countSpaceInInventory()

@@ -11,7 +11,7 @@ import net.minecraft.entity.item.EntityItem
 import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemStack
 
-object ArmorComparator: MinecraftInstance() {
+object ArmorComparator: MinecraftInstance {
 	fun getBestArmorSet(stacks: List<ItemStack?>, entityStacksMap: Map<ItemStack, EntityItem>? = null): ArmorSet? {
 		val thePlayer = mc.thePlayer ?: return null
 

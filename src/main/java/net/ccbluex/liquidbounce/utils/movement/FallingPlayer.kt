@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils.movement
 
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.extensions.plus
 import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.minecraft.client.entity.EntityPlayerSP
@@ -27,7 +28,7 @@ class FallingPlayer(
     private val yaw: Float = mc.thePlayer.rotationYaw,
     private var strafe: Float = mc.thePlayer.moveStrafing,
     private var forward: Float = mc.thePlayer.moveForward
-) : MinecraftInstance() {
+) : MinecraftInstance {
     constructor(player: EntityPlayerSP, predict: Boolean = false) : this(
         if (predict) player.posX + player.motionX else player.posX,
         if (predict) player.posY + player.motionY else player.posY,

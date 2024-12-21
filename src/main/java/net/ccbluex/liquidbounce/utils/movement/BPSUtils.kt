@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import kotlin.math.sqrt
 
-object BPSUtils : MinecraftInstance(), Listenable {
+object BPSUtils : MinecraftInstance, Listenable {
 
     private var lastPosX: Double = 0.0
     private var lastPosZ: Double = 0.0
