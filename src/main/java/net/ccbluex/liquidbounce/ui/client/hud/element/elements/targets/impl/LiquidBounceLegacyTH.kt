@@ -174,7 +174,6 @@ class LiquidBounceLegacyTH(inst: Targets) : TargetStyle("LiquidBounce", inst, tr
             val rainbowY = if (rainbowY == 0f) 0f else 1f / rainbowY
 
             glPushMatrix()
-            glPushAttrib(GL_ALL_ATTRIB_BITS)
 
             glEnable(GL_BLEND)
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -236,7 +235,6 @@ class LiquidBounceLegacyTH(inst: Targets) : TargetStyle("LiquidBounce", inst, tr
                 }
             }
 
-            glPopAttrib()
             glPopMatrix()
         }
 
