@@ -12,12 +12,12 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
+import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBacktrackBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
-import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager.color
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -40,7 +40,7 @@ object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
      * Any good anti-cheat will easily detect this module.
      */
     fun includeEntityTruePos(entity: Entity, action: () -> Unit) {
-        if (!handleEvents() || entity !is EntityLivingBase || entity is EntityPlayerSP)
+        if (!handleEvents() || !isSelected(entity, true))
             return
 
         // Would be more fun if we simulated instead.
@@ -68,76 +68,77 @@ object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
 
         val renderManager = mc.renderManager
 
-        for (target in world.loadedEntityList) {
-            if (target is EntityPlayerSP)
-                continue
+        world.loadedEntityList.asSequence()
+            .filter { isSelected(it, true) }
+            .forEach { target ->
+                target?.run {
+                    val vec = usePosition(this)
 
-            target?.run {
-                val vec = usePosition(this)
+                    val (x, y, z) = vec - renderManager.renderPos
 
-                val (x, y, z) = vec - renderManager.renderPos
+                    when (espMode.lowercase()) {
+                        "box" -> {
+                            val axisAlignedBB = entityBoundingBox.offset(-currPos + Vec3(x, y, z))
 
-                when (espMode.lowercase()) {
-                    "box" -> {
-                        val axisAlignedBB = entityBoundingBox.offset(-currPos + Vec3(x, y, z))
+                            drawBacktrackBox(axisAlignedBB, color)
+                        }
 
-                        drawBacktrackBox(axisAlignedBB, color)
-                    }
+                        "model" -> {
+                            glPushMatrix()
+                            glPushAttrib(GL_ALL_ATTRIB_BITS)
 
-                    "model" -> {
-                        glPushMatrix()
+                            color(0.6f, 0.6f, 0.6f, 1f)
+                            renderManager.doRenderEntity(
+                                this,
+                                x, y, z,
+                                (prevRotationYaw..rotationYaw).lerpWith(event.partialTicks),
+                                event.partialTicks,
+                                true
+                            )
 
-                        color(0.6f, 0.6f, 0.6f, 1f)
-                        renderManager.doRenderEntity(
-                            this,
-                            x, y, z,
-                            (prevRotationYaw..rotationYaw).lerpWith(event.partialTicks),
-                            event.partialTicks,
-                            true
-                        )
+                            glPopAttrib()
+                            glPopMatrix()
+                        }
 
-                        glPopMatrix()
-                    }
+                        "wireframe" -> {
+                            val color = if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
 
-                    "wireframe" -> {
-                        val color = if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
+                            glPushMatrix()
+                            glPushAttrib(GL_ALL_ATTRIB_BITS)
 
-                        glPushMatrix()
-                        glPushAttrib(GL_ALL_ATTRIB_BITS)
+                            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+                            glDisable(GL_TEXTURE_2D)
+                            glDisable(GL_LIGHTING)
+                            glDisable(GL_DEPTH_TEST)
+                            glEnable(GL_LINE_SMOOTH)
 
-                        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-                        glDisable(GL_TEXTURE_2D)
-                        glDisable(GL_LIGHTING)
-                        glDisable(GL_DEPTH_TEST)
-                        glEnable(GL_LINE_SMOOTH)
+                            glEnable(GL_BLEND)
+                            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-                        glEnable(GL_BLEND)
-                        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+                            glLineWidth(wireframeWidth)
 
-                        glLineWidth(wireframeWidth)
+                            glColor(color)
+                            renderManager.doRenderEntity(
+                                this,
+                                x, y, z,
+                                (prevRotationYaw..rotationYaw).lerpWith(event.partialTicks),
+                                event.partialTicks,
+                                true
+                            )
+                            glColor(color)
+                            renderManager.doRenderEntity(
+                                this,
+                                x, y, z,
+                                (prevRotationYaw..rotationYaw).lerpWith(event.partialTicks),
+                                event.partialTicks,
+                                true
+                            )
 
-                        glColor(color)
-                        renderManager.doRenderEntity(
-                            this,
-                            x, y, z,
-                            (prevRotationYaw..rotationYaw).lerpWith(event.partialTicks),
-                            event.partialTicks,
-                            true
-                        )
-                        glColor(color)
-                        renderManager.doRenderEntity(
-                            this,
-                            x, y, z,
-                            (prevRotationYaw..rotationYaw).lerpWith(event.partialTicks),
-                            event.partialTicks,
-                            true
-                        )
-
-                        glPopAttrib()
-                        glPopMatrix()
+                            glPopAttrib()
+                            glPopMatrix()
+                        }
                     }
                 }
             }
-        }
     }
 }
