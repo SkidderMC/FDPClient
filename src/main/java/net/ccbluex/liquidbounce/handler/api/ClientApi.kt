@@ -5,16 +5,16 @@
  */
 package net.ccbluex.liquidbounce.handler.api
 
-import com.google.gson.annotations.SerializedName
 import net.ccbluex.liquidbounce.FDPClient
+import com.google.gson.annotations.SerializedName
 import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
 import net.ccbluex.liquidbounce.utils.io.HttpUtils.post
-
 import net.ccbluex.liquidbounce.utils.io.HttpUtils.request
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
-import org.apache.http.HttpEntity
-import org.apache.http.entity.ContentType
-import org.apache.http.entity.mime.MultipartEntityBuilder
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 
 /**
  * LiquidBounce Client API
@@ -57,16 +57,19 @@ object ClientApi {
      * Uploads settings to the API
      */
     fun uploadSettings(name: String, contributors: String, script: String, branch: String = HARD_CODED_BRANCH): UploadResponse {
-        val res = textEndpointPost("client/$branch/settings/upload") {
+        val (res, _) = textEndpointPost("client/$branch/settings/upload") {
             // Create http entity with settings_file as file, name as string, contributors as string to form body
 
-            val entity = MultipartEntityBuilder.create()
-                .addTextBody("name", name)
-                .addTextBody("contributors", contributors)
-                .addBinaryBody("settings_file", script.toByteArray(), ContentType.APPLICATION_OCTET_STREAM, "settings_file")
-                .setLaxMode() // strict mode is not supported by the API, so we have to use lax mode
+            MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("name", name)
+                .addFormDataPart("contributors", contributors)
+                .addFormDataPart(
+                    "settings_file",
+                    "settings_file",
+                    script.toByteArray().toRequestBody("application/octet-stream".toMediaTypeOrNull())
+                )
                 .build()
-            entity
         }
 
         return runCatching {
@@ -118,11 +121,11 @@ object ClientApi {
         }
     }
 
-    private fun textEndpointPost(endpoint: String, entity: () -> HttpEntity) = post(
+    private inline fun textEndpointPost(endpoint: String, body: () -> RequestBody) = post(
         "$API_ENDPOINT/$endpoint",
         agent = ENDPOINT_AGENT,
         headers = arrayOf("X-Session-Token" to SESSION_TOKEN),
-        entity = entity
+        body = body()
     )
 
 }

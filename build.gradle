@@ -63,15 +63,11 @@ dependencies {
 
     annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
 
-    include "com.squareup.okhttp3:okhttp:${project.okhttp_version}"
-
     include('com.github.half-cambodian-hacker-man:Koffee:d8cee73') {
         exclude module: 'asm-commons'
         exclude module: 'asm-tree'
         exclude module: 'asm'
     }
-
-    include "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     include "com.jagrosh:DiscordIPC:0.4"
 
@@ -88,13 +84,19 @@ dependencies {
     include 'com.jhlabs:filters:2.0.235'
     include "org.apache.httpcomponents:httpmime:4.5.14"
 
+    include("org.knowm.xchart:xchart:3.8.8")
+
+    // HTTP Client
+    include "com.squareup.okhttp3:okhttp:4.10.0" // for Kotlin 1.6.20
+
+    // Kotlin
+    include "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     include "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3"
     include "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.3"
 
     include "com.formdev:flatlaf:3.5.4"
 
     include fileTree(include: ["*.jar"], dir: "libs")
-    include("org.knowm.xchart:xchart:3.8.8")
 }
 
 shadowJar {
