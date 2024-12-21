@@ -166,7 +166,6 @@ object SettingsUtils {
                         } else (moduleValue as FloatRangeValue).changeValue(min..max)
                     }
                 }
-
                 else -> {}
             }
 

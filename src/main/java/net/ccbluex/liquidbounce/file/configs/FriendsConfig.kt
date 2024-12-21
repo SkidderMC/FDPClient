@@ -6,9 +6,10 @@
 package net.ccbluex.liquidbounce.file.configs
 
 import com.google.gson.*
-import com.google.gson.reflect.TypeToken
 import net.ccbluex.liquidbounce.file.FileConfig
-import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
+import net.ccbluex.liquidbounce.utils.io.decode
+import net.ccbluex.liquidbounce.utils.io.readJson
+import net.ccbluex.liquidbounce.utils.io.writeJson
 import java.io.*
 
 class FriendsConfig(file: File) : FileConfig(file) {
@@ -22,8 +23,7 @@ class FriendsConfig(file: File) : FileConfig(file) {
     @Throws(IOException::class)
     override fun loadConfig() {
         clearFriends()
-
-        friends.addAll(PRETTY_GSON.fromJson(file.bufferedReader(), object : TypeToken<List<Friend>>() {}.type))
+        file.readJson().decode<Array<Friend>>().toCollection(friends)
     }
 
     /**
@@ -32,7 +32,7 @@ class FriendsConfig(file: File) : FileConfig(file) {
      * @throws IOException
      */
     @Throws(IOException::class)
-    override fun saveConfig() = file.writeText(PRETTY_GSON.toJson(friends))
+    override fun saveConfig() = file.writeJson(friends)
 
     /**
      * Add friend to config

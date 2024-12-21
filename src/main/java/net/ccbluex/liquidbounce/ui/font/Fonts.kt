@@ -143,7 +143,7 @@ object Fonts : MinecraftInstance {
             LOGGER.info("Downloading additional fonts...")
             download("${FONTS}/Font.zip", fontZipFile)
             LOGGER.info("Extracting additional fonts...")
-            outputFile.extractZipTo(fontsDir)
+            fontZipFile.extractZipTo(fontsDir)
         }
     }
 
