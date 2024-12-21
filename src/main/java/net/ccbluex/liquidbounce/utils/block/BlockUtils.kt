@@ -94,8 +94,9 @@ object BlockUtils : MinecraftInstance {
                     val block = mutable.block ?: continue
 
                     if (targetBlocks == null || targetBlocks.contains(block)) {
-                        if (predicate(mutable.immutable, block)) {
-                            blocks[mutable.immutable] = block
+                        val pos = mutable.immutable
+                        if (predicate(pos, block)) {
+                            blocks[pos] = block
                         }
                     }
                 }

@@ -5,26 +5,27 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-
-import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
-import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
-import net.ccbluex.liquidbounce.utils.block.block
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
-import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import net.ccbluex.liquidbounce.config.block
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.event.loopHandler
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
+import net.ccbluex.liquidbounce.utils.block.block
+import net.ccbluex.liquidbounce.utils.extensions.component1
+import net.ccbluex.liquidbounce.utils.extensions.component2
+import net.ccbluex.liquidbounce.utils.extensions.component3
+import net.ccbluex.liquidbounce.utils.extensions.eyes
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.minecraft.block.Block
 import net.minecraft.init.Blocks.air
 import net.minecraft.util.BlockPos
@@ -42,37 +43,35 @@ object BlockESP : Module("BlockESP", Category.VISUAL, hideModule = false) {
     private val colorGreen by int("G", 179, 0..255) { !colorRainbow }
     private val colorBlue by int("B", 72, 0..255) { !colorRainbow }
 
-    private val searchTimer = MSTimer()
     private val posList = ConcurrentHashMap.newKeySet<BlockPos>()
-    private var searchJob: Job? = null
 
     override fun onDisable() {
-        searchJob?.cancel()
         posList.clear()
     }
 
+    val onSearch = loopHandler(dispatcher = Dispatchers.Default) {
+        val selectedBlock = Block.getBlockById(block)
 
-    val onUpdate = handler<UpdateEvent> {
-        if (searchTimer.hasTimePassed(1000) && (searchJob?.isActive != true)) {
-            val radius = radius
-            val selectedBlock = Block.getBlockById(block)
-            val blockLimit = blockLimit
-
-            if (selectedBlock == null || selectedBlock == air)
-                return@handler
-
-            searchJob = SharedScopes.Default.launch {
-                posList.removeIf {
-                    it.block != selectedBlock
-                }
-
-                posList += searchBlocks(radius, setOf(selectedBlock), blockLimit).keys
-
-                searchTimer.reset()
-            }
+        if (selectedBlock == null || selectedBlock == air) {
+            delay(1000)
+            return@loopHandler
         }
-    }
 
+        val (x, y, z) = mc.thePlayer.eyes
+        val radiusSq = radius * radius
+
+        posList.removeIf {
+            it.distanceSqToCenter(x, y, z) >= radiusSq || it.block != selectedBlock
+        }
+
+        val listSpace = blockLimit - posList.size
+
+        if (listSpace > 0) {
+            posList += searchBlocks(radius, setOf(selectedBlock), listSpace).keys
+        }
+
+        delay(1000)
+    }
 
     val onRender3D = handler<Render3DEvent> {
         val color = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
