@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.utils.attack.CPSCounter;
 import net.ccbluex.liquidbounce.utils.client.ClientUtils;
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar;
 import net.ccbluex.liquidbounce.utils.io.GitUtils;
+import net.ccbluex.liquidbounce.utils.io.MiscUtils;
 import net.ccbluex.liquidbounce.utils.render.IconUtils;
 import net.ccbluex.liquidbounce.utils.render.MiniMapRegister;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -31,6 +32,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
+import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.crash.CrashReport;
@@ -51,8 +53,8 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import javax.swing.*;
 import java.nio.ByteBuffer;
+import java.time.LocalDateTime;
 import java.util.Queue;
 
 import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
@@ -290,16 +292,30 @@ public abstract class MixinMinecraft {
         return TickBase.INSTANCE.getDuringTickModification() || instance.isEmpty();
     }
 
-    @Inject(method = "displayCrashReport", at = @At(value = "INVOKE", target = "Lnet/minecraft/crash/CrashReport;getFile()Ljava/io/File;"))
-    public void displayCrashReport(CrashReport crashReportIn, CallbackInfo ci) {
-        String message = crashReportIn.getCauseStackTraceOrString();
-        JOptionPane.showMessageDialog(null, "Game crashed!\n" +
-                        "Please create a issue: \n" + GitUtils.gitInfo.get("git.remote.origin.url").toString().split("\\.git")[0] + "/issues/new\n" +
-                        "Please make a screenshot of this screen and send it to developers\n"
-                        + message,
-                "oops, game crashed!", JOptionPane.ERROR_MESSAGE);
+    @Inject(method = "displayCrashReport", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/common/FMLCommonHandler;instance()Lnet/minecraftforge/fml/common/FMLCommonHandler;"))
+    private void injectDisplayCrashReport(CrashReport crashReport, CallbackInfo callbackInfo) {
+        final StringBuilder crashInfo = new StringBuilder(FDPClient.CLIENT_NAME).append(" crash info\n");
+        crashInfo.append("Client version: ").append(FDPClient.INSTANCE.getClientVersionText()).append(' ').append(FDPClient.INSTANCE.getClientCommit()).append('\n');
+        crashInfo.append("Time: ").append(LocalDateTime.now()).append('\n');
+        crashInfo.append("Operating System: ").append(System.getProperty("os.name"))
+                .append(" (Version: ").append(System.getProperty("os.version")).append(", Arch: ")
+                .append(System.getProperty("os.arch")).append(")\n");
+        crashInfo.append("Java Version: ").append(System.getProperty("java.version"))
+                .append(" (Vendor: ").append(System.getProperty("java.vendor")).append(")\n");
+        crashInfo.append("Available Processors: ").append(Runtime.getRuntime().availableProcessors()).append("\n");
+        crashInfo.append("Max Memory: ").append(Runtime.getRuntime().maxMemory() / (1024 * 1024)).append(" MB\n");
+        crashInfo.append("Free Memory: ").append(Runtime.getRuntime().freeMemory() / (1024 * 1024)).append(" MB\n");
+        crashInfo.append("Total Memory: ").append(Runtime.getRuntime().totalMemory() / (1024 * 1024)).append(" MB\n");
+        if (mc.getCurrentServerData() != null) {
+            ServerData serverData = mc.getCurrentServerData();
+            crashInfo.append("\nServer Information:\n");
+            crashInfo.append(" - Server Address: ").append(serverData.serverIP).append("\n");
+            crashInfo.append(" - Server Version: ").append(serverData.gameVersion).append("\n");
+        }
+        crashInfo.append('\n');
+        MiscUtils.showErrorPopup(crashReport.getCrashCause(), "Oops Game crashed! ", crashInfo.toString());
+        MiscUtils.showURL(GitUtils.gitInfo.get("git.remote.origin.url").toString().split("\\.git")[0] + "/issues");
     }
-
 
     @Redirect(method = {"middleClickMouse", "rightClickMouse"}, at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/InventoryPlayer;currentItem:I"))
     private int injectSilentHotbar(InventoryPlayer instance) {
