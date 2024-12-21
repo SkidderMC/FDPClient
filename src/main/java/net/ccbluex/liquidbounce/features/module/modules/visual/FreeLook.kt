@@ -23,6 +23,8 @@ object FreeLook : Module("FreeLook", Category.VISUAL) {
     private var savedCurrRotation = Rotation.ZERO
     private var savedPrevRotation = Rotation.ZERO
 
+    private var modifySavedRotations = true
+
     override fun onEnable() {
         mc.thePlayer?.run {
             currRotation = rotation
@@ -33,6 +35,9 @@ object FreeLook : Module("FreeLook", Category.VISUAL) {
     val onRotationSet = handler<RotationSetEvent> { event ->
         if (mc.gameSettings.thirdPersonView != 0) {
             event.cancelEvent()
+        } else {
+            currRotation = mc.thePlayer.rotation
+            prevRotation = currRotation
         }
 
         prevRotation = currRotation
@@ -44,8 +49,13 @@ object FreeLook : Module("FreeLook", Category.VISUAL) {
     fun useModifiedRotation() {
         val player = mc.thePlayer ?: return
 
-        savedCurrRotation = player.rotation
-        savedPrevRotation = player.prevRotation
+        if (mc.gameSettings.thirdPersonView == 0)
+            return
+
+        if (modifySavedRotations) {
+            savedCurrRotation = player.rotation
+            savedPrevRotation = player.prevRotation
+        }
 
         if (!handleEvents())
             return
@@ -57,16 +67,21 @@ object FreeLook : Module("FreeLook", Category.VISUAL) {
     fun restoreOriginalRotation() {
         val player = mc.thePlayer ?: return
 
-        if (mc.gameSettings.thirdPersonView == 0) {
-            savedCurrRotation = player.rotation
-            savedPrevRotation = player.prevRotation
-            return
-        }
-
-        if (!handleEvents())
+        if (!handleEvents() || mc.gameSettings.thirdPersonView == 0)
             return
 
         player.rotation = savedCurrRotation
         player.prevRotation = savedPrevRotation
+    }
+
+    fun runWithoutSavingRotations(f: () -> Unit) {
+        modifySavedRotations = false
+
+        try {
+            f()
+        } catch (_: Exception) {
+        }
+
+        modifySavedRotations = true
     }
 }
