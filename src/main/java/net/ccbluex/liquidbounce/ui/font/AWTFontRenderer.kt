@@ -3,6 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
+
 package net.ccbluex.liquidbounce.ui.font
 
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
@@ -12,94 +13,131 @@ import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL11.*
-import java.awt.Color
-import java.awt.Font
-import java.awt.Graphics2D
-import java.awt.RenderingHints
+import java.awt.*
 import java.awt.image.BufferedImage
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 /**
- * Generate new bitmap based font renderer
+ * A memory-optimized bitmap-based font renderer using AWT [Font].
+ *
+ * - Generates a single texture containing glyphs for [startChar.stopChar].
+ * - Freed from unlimited memory usage.
+ *
+ * @author opZywl
  */
 @SideOnly(Side.CLIENT)
-class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255, private var loadingScreen: Boolean = false) : MinecraftInstance {
+class AWTFontRenderer(
+    val font: Font,
+    startChar: Int = 0,
+    stopChar: Int = 255,
+    private val loadingScreen: Boolean = false
+) : MinecraftInstance {
+
     companion object {
-        var assumeNonVolatile = false
+        /**
+         * If `true`, we compile strings into display lists on first draw and keep them
+         * in the LRU/time-based cache. If `false`, each string is rendered each time
+         * with no caching.
+         */
+        var assumeNonVolatile: Boolean = false
+
+        /** All active font renderers (for GC tasks). */
         val activeFontRenderers = mutableListOf<AWTFontRenderer>()
 
-        inline fun assumeNonVolatile(f: () -> Unit) {
+        /**
+         * Runs a block with [assumeNonVolatile] = true, then restores it.
+         */
+        inline fun assumeNonVolatile(block: () -> Unit) {
             assumeNonVolatile = true
             try {
-                f()
+                block()
             } finally {
                 assumeNonVolatile = false
             }
         }
 
+        // Garbage collection constants
+        private const val GC_TICKS = 600                    // Do GC every 600 frames
+        private const val CACHED_FONT_REMOVAL_TIME = 30000L // 30s time-based eviction
+        private const val MAX_CACHED_STRINGS = 128          // LRU cache size limit
+
         private var gcTicks = 0
-        private const val GC_TICKS = 600 // Start garbage collection every 600 frames
-        private const val CACHED_FONT_REMOVAL_TIME = 30000 // Remove cached texts after 30s of not being used
 
+        /**
+         * Should be called each frame or so. Every 600 frames, we run garbage collection
+         * on every active font renderer.
+         */
         fun garbageCollectionTick() {
-            if (gcTicks++ > GC_TICKS) {
+            if (++gcTicks > GC_TICKS) {
                 activeFontRenderers.forEach { it.collectGarbage() }
-
                 gcTicks = 0
             }
         }
     }
 
-    private fun collectGarbage() {
-        val currentTime = System.currentTimeMillis()
+    /**
+     * Info about each character's location in the texture.
+     */
+    private data class CharLocation(
+        val x: Int,
+        val y: Int,
+        val width: Int,
+        val height: Int
+    )
 
-        val keysToRemove = mutableListOf<String>()
+    /**
+     * Stores a compiled display list for a specific string, plus a "last usage" timestamp.
+     */
+    private data class CachedFont(
+        val displayList: Int,
+        var lastUsage: Long,
+        var deleted: Boolean = false
+    )
 
-        cachedStrings.forEach { (key, value) ->
-            if (currentTime - value.lastUsage > CACHED_FONT_REMOVAL_TIME) {
-                glDeleteLists(value.displayList, 1)
-                value.deleted = true
-
-                keysToRemove += key
-            }
-        }
-
-        keysToRemove.forEach { cachedStrings -= it }
-    }
-
-    private var fontHeight = -1
     private val charLocations = arrayOfNulls<CharLocation>(stopChar)
 
-    private val cachedStrings = mutableMapOf<String, CachedFont>()
+    /**
+     * We store strings in an LRU-like map with time-based eviction:
+     * - If the size exceeds [MAX_CACHED_STRINGS], we remove the eldest entry.
+     * - If an entry hasn't been used for 30s, we remove it.
+     */
+    private val cachedStrings = object : LinkedHashMap<String, CachedFont>(MAX_CACHED_STRINGS, 0.75f, true) {
+        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, CachedFont>?): Boolean {
+            return size > MAX_CACHED_STRINGS
+        }
+    }
 
-    private var textureID = -1
-    private var textureWidth = 0
-    private var textureHeight = 0
+    private var textureID: Int = -1
+    private var textureWidth: Int = 0
+    private var textureHeight: Int = 0
+    private var fontHeight: Int = -1
 
-    val height
+    /**
+     * Typical "font height" to use in layout, derived from [fontHeight].
+     * Adjust as needed.
+     */
+    val height: Int
         get() = (fontHeight - 8) / 2
 
     init {
+        // Generate the large bitmap with all glyphs
         renderBitmap(startChar, stopChar)
 
+        // Register for GC tasks
         activeFontRenderers += this
     }
 
     /**
-     * Allows you to draw a string with the target font
-     *
-     * @param text  to render
-     * @param x     location for target position
-     * @param y     location for target position
-     * @param color of the text
+     * Draw [text] at ([x], [y]) with [color]. Scales by 0.25 => typical UI text size.
      */
     fun drawString(text: String, x: Double, y: Double, color: Int) {
-        val scale = 0.25
-        val reverse = 1 / scale
-
+        // Scale down => 0.25 => then everything is "2 * x" in real coords
         glPushMatrix()
-        glScaled(scale, scale, scale)
-        glTranslated(x * 2F, y * 2.0 - 2.0, 0.0)
+        glScaled(0.25, 0.25, 0.25)
+
+        // Shift to final position
+        glTranslated(x * 2.0, y * 2.0 - 2.0, 0.0)
 
         if (loadingScreen) {
             glBindTexture(GL_TEXTURE_2D, textureID)
@@ -107,18 +145,15 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255, p
             bindTexture(textureID)
         }
 
-        val red = (color shr 16 and 0xff) / 255F
-        val green = (color shr 8 and 0xff) / 255F
-        val blue = (color and 0xff) / 255F
-        val alpha = (color shr 24 and 0xff) / 255F
-
+        // Extract ARGB
+        val alpha = ((color ushr 24) and 0xFF) / 255f
+        val red   = ((color ushr 16) and 0xFF) / 255f
+        val green = ((color ushr 8)  and 0xFF) / 255f
+        val blue  = ( color          and 0xFF) / 255f
         glColor4f(red, green, blue, alpha)
 
-        var currX = 0.0f
-        var unicodeWidth = 0.0f
-
+        // 1) If we've cached this text, just call the display list
         val cached = cachedStrings[text]
-
         if (cached != null) {
             glCallList(cached.displayList)
             cached.lastUsage = System.currentTimeMillis()
@@ -126,53 +161,56 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255, p
             return
         }
 
-        var list = -1
-
+        // 2) Not cached => build it now
+        var listID = -1
         if (assumeNonVolatile) {
-            list = glGenLists(1)
-
-            glNewList(list, GL_COMPILE_AND_EXECUTE)
+            listID = glGenLists(1)
+            glNewList(listID, GL_COMPILE_AND_EXECUTE)
         }
 
         glBegin(GL_QUADS)
 
-        for (char in text.toCharArray()) {
-            val fontChar = charLocations.getOrNull(char.code)
+        var currX = 0f
+        var fallbackWidth = 0f // fallback for MC glyphs
 
-            if (fontChar == null) {
+        for (char in text) {
+            val loc = charLocations.getOrNull(char.code)
+            if (loc == null) {
+                // Fallback => break quads, draw with MC font
                 glEnd()
-
                 GlStateManager.resetColor()
 
-                GlStateManager.pushMatrix()
-                glScaled(reverse, reverse, reverse)
-                val fontScaling = font.size / 32.0
+                glPushMatrix()
 
-                glScaled(fontScaling, fontScaling, 0.0)
-                mc.fontRendererObj.posY = 1.0f
-                mc.fontRendererObj.posX = (currX / 4) + unicodeWidth
-                val width = mc.fontRendererObj.renderUnicodeChar(char, false)
-                    .coerceAtLeast(0.0f) // A few characters have a negative width due to not being supported by the minecraft font renderer
-                unicodeWidth += width
+                // Because we scaled by 0.25 => revert
+                val rev = 4.0
+                glScaled(rev, rev, rev)
+
+                // Then scale by (font.size / 32.0)
+                val scale = font.size / 32.0
+                glScaled(scale, scale, 1.0)
+
+                val fallbackW = mc.fontRendererObj.renderUnicodeChar(char, false).coerceAtLeast(0f)
+                fallbackWidth += fallbackW
 
                 if (loadingScreen) {
                     glBindTexture(GL_TEXTURE_2D, textureID)
                 } else {
                     bindTexture(textureID)
                 }
-                GlStateManager.popMatrix()
-
+                glPopMatrix()
                 glBegin(GL_QUADS)
             } else {
-                drawChar(fontChar, currX + (unicodeWidth * 4), 0f)
-                currX += fontChar.width - 8.0f
+                drawChar(loc, currX + (fallbackWidth * 4f), 0f)
+                currX += (loc.width - 8f)
             }
         }
 
         glEnd()
 
-        if (assumeNonVolatile) {
-            cachedStrings[text] = CachedFont(list, System.currentTimeMillis())
+        if (assumeNonVolatile && listID >= 0) {
+            // Insert into our LRU + time-based map
+            cachedStrings[text] = CachedFont(listID, System.currentTimeMillis())
             glEndList()
         }
 
@@ -180,156 +218,163 @@ class AWTFontRenderer(val font: Font, startChar: Int = 0, stopChar: Int = 255, p
     }
 
     /**
-     * Draw char from texture to display
-     *
-     * @param char target font char to render
-     * @param x        target position x to render
-     * @param y        target position y to render
+     * Returns the pixel-width of [text]. If a character is not in [charLocations],
+     * we fallback to MC's font (approx).
      */
-    private fun drawChar(char: CharLocation, x: Float, y: Float) {
-        val width = char.width.toFloat()
-        val height = char.height.toFloat()
-        val srcX = char.x.toFloat()
-        val srcY = char.y.toFloat()
-        val renderX = srcX / textureWidth
-        val renderY = srcY / textureHeight
-        val renderWidth = width / textureWidth
-        val renderHeight = height / textureHeight
+    fun getStringWidth(text: String): Int {
+        var myWidth = 0
+        var fallbackWidth = 0f
+        val fallbackScale = font.size / 32.0
 
-        glTexCoord2f(renderX, renderY)
-        glVertex2f(x, y)
-        glTexCoord2f(renderX, renderY + renderHeight)
-        glVertex2f(x, y + height)
-        glTexCoord2f(renderX + renderWidth, renderY + renderHeight)
-        glVertex2f(x + width, y + height)
-        glTexCoord2f(renderX + renderWidth, renderY)
-        glVertex2f(x + width, y)
+        for (char in text) {
+            val loc = charLocations.getOrNull(char.code)
+            if (loc == null) {
+                val w = mc.fontRendererObj.getCharWidth(char)
+                fallbackWidth += ((w + 8) * fallbackScale).coerceAtLeast(0.0).toFloat()
+            } else {
+                myWidth += (loc.width - 8)
+            }
+        }
+        return (myWidth / 2) + fallbackWidth.roundToInt()
     }
 
     /**
-     * Render font chars to a bitmap
+     * Disposes of this font, removing it from the list and freeing texture memory.
+     */
+    private fun dispose() {
+        if (textureID != -1) {
+            glDeleteTextures(textureID)
+            textureID = -1
+        }
+        activeFontRenderers.remove(this)
+    }
+
+    /** If the user forgets to call [dispose], still free resources. */
+    protected fun finalize() {
+        dispose()
+    }
+
+    private fun drawChar(loc: CharLocation, x: Float, y: Float) {
+        val w = loc.width.toFloat()
+        val h = loc.height.toFloat()
+
+        val u = loc.x.toFloat() / textureWidth
+        val v = loc.y.toFloat() / textureHeight
+        val uw = w / textureWidth
+        val vh = h / textureHeight
+
+        // 4 corners
+        glTexCoord2f(u, v)
+        glVertex2f(x, y)
+
+        glTexCoord2f(u, v + vh)
+        glVertex2f(x, y + h)
+
+        glTexCoord2f(u + uw, v + vh)
+        glVertex2f(x + w, y + h)
+
+        glTexCoord2f(u + uw, v)
+        glVertex2f(x + w, y)
+    }
+
+    /**
+     * Builds the single large texture with [startChar.stopChar] glyphs.
      */
     private fun renderBitmap(startChar: Int, stopChar: Int) {
         val fontImages = arrayOfNulls<BufferedImage>(stopChar)
+
         var rowHeight = 0
         var charX = 0
         var charY = 0
 
-        for (targetChar in startChar until stopChar) {
-            val fontImage = drawCharToImage(targetChar.toChar())
-            val fontChar = CharLocation(charX, charY, fontImage.width, fontImage.height)
+        for (charCode in startChar until stopChar) {
+            val charImg = drawCharToImage(charCode.toChar())
+            val cw = charImg.width
+            val ch = charImg.height
 
-            if (fontChar.height > fontHeight)
-                fontHeight = fontChar.height
-            if (fontChar.height > rowHeight)
-                rowHeight = fontChar.height
+            if (ch > fontHeight) {
+                fontHeight = ch
+            }
 
-            charLocations[targetChar] = fontChar
-            fontImages[targetChar] = fontImage
+            val loc = CharLocation(charX, charY, cw, ch)
+            charLocations[charCode] = loc
+            fontImages[charCode] = charImg
 
-            charX += fontChar.width
-
+            charX += cw
+            if (cw > 0 && ch > rowHeight) {
+                rowHeight = ch
+            }
+            // If exceeding ~2k width, break line
             if (charX > 2048) {
-                if (charX > textureWidth)
-                    textureWidth = charX
-
+                if (charX > textureWidth) textureWidth = charX
                 charX = 0
                 charY += rowHeight
                 rowHeight = 0
             }
         }
+        // finalize
+        textureWidth = max(textureWidth, charX)
         textureHeight = charY + rowHeight
 
-        val bufferedImage = BufferedImage(textureWidth, textureHeight, BufferedImage.TYPE_INT_ARGB)
-        val graphics2D = bufferedImage.graphics as Graphics2D
-        graphics2D.font = font
-        graphics2D.color = Color(255, 255, 255, 0)
-        graphics2D.fillRect(0, 0, textureWidth, textureHeight)
-        graphics2D.color = Color.white
+        // Big final image
+        val bigImage = BufferedImage(textureWidth, textureHeight, BufferedImage.TYPE_INT_ARGB)
+        val g = bigImage.createGraphics()
+        g.font = font
+        g.color = Color(255, 255, 255, 0) // transparent
+        g.fillRect(0, 0, textureWidth, textureHeight)
+        g.color = Color.WHITE
 
-        for (targetChar in startChar until stopChar)
-            if (fontImages[targetChar] != null && charLocations[targetChar] != null)
-                graphics2D.drawImage(fontImages[targetChar], charLocations[targetChar]!!.x, charLocations[targetChar]!!.y,
-                        null)
+        // Draw each char subimage
+        for (charCode in startChar until stopChar) {
+            val subImg = fontImages[charCode] ?: continue
+            val loc = charLocations[charCode] ?: continue
+            g.drawImage(subImg, loc.x, loc.y, null)
+        }
 
-        textureID = TextureUtil.uploadTextureImageAllocate(TextureUtil.glGenTextures(), bufferedImage, true,
-                true)
+        // Upload to GPU
+        textureID = TextureUtil.uploadTextureImageAllocate(TextureUtil.glGenTextures(), bigImage, true, true)
     }
 
     /**
-     * Draw a char to a buffered image
-     *
-     * @param ch char to render
-     * @return image of the char
+     * Draws a single char [c] into a small [BufferedImage].
      */
-    private fun drawCharToImage(ch: Char): BufferedImage {
-        val graphics2D = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB).graphics as Graphics2D
+    private fun drawCharToImage(c: Char): BufferedImage {
+        // measure to get width/height
+        val measureImg = BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB)
+        val measureG = measureImg.createGraphics()
+        measureG.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+        measureG.font = font
 
-        graphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-        graphics2D.font = font
+        val fm = measureG.fontMetrics
+        var w = fm.charWidth(c) + 8
+        if (w <= 0) w = 7
+        var h = fm.height + 3
+        if (h <= 0) h = font.size
 
-        val fontMetrics = graphics2D.fontMetrics
-
-        var charWidth = fontMetrics.charWidth(ch) + 8
-        if (charWidth <= 0)
-            charWidth = 7
-
-        var charHeight = fontMetrics.height + 3
-        if (charHeight <= 0)
-            charHeight = font.size
-
-        val fontImage = BufferedImage(charWidth, charHeight, BufferedImage.TYPE_INT_ARGB)
-        val graphics = fontImage.graphics as Graphics2D
-        graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
-        graphics.font = font
-        graphics.color = Color.WHITE
-        graphics.drawString(ch.toString(), 3, 1 + fontMetrics.ascent)
-
-        return fontImage
+        // real
+        val charImg = BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB)
+        val g2d = charImg.createGraphics()
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+        g2d.font = font
+        g2d.color = Color.WHITE
+        g2d.drawString(c.toString(), 3, 1 + fm.ascent)
+        return charImg
     }
 
     /**
-     * Calculate the string width of a text
-     *
-     * @param text for width calculation
-     * @return the width of the text
+     * Removes unused / old strings from the cache. Called by global GC every so often.
      */
-    fun getStringWidth(text: String): Int {
-        var width = 0
-        var mcWidth = 0
+    private fun collectGarbage() {
+        val now = System.currentTimeMillis()
+        val toRemove = mutableListOf<String>()
 
-        val fontScaling = font.size / 32.0
-
-        for (c in text.toCharArray()) {
-            val fontChar = charLocations.getOrNull(c.code)
-
-            if (fontChar == null) {
-                mcWidth += ((mc.fontRendererObj.getCharWidth(c) + 8) * fontScaling)
-                    .coerceAtLeast(0.0)
-                    .roundToInt()
-            } else {
-                width += fontChar.width - 8
+        for ((text, cached) in cachedStrings) {
+            if (!cached.deleted && (now - cached.lastUsage) > CACHED_FONT_REMOVAL_TIME) {
+                glDeleteLists(cached.displayList, 1)
+                cached.deleted = true
+                toRemove += text
             }
         }
-
-        return (width / 2) + mcWidth
+        toRemove.forEach { cachedStrings.remove(it) }
     }
-
-    fun delete() {
-        if (textureID != -1) {
-            glDeleteTextures(textureID)
-            textureID = -1
-        }
-
-        activeFontRenderers.remove(this)
-    }
-
-    fun finalize() {
-        delete()
-    }
-
-    /**
-     * Data class for saving char location of the font image
-     */
-    private data class CharLocation(var x: Int, var y: Int, var width: Int, var height: Int)
 }
