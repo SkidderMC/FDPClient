@@ -12,10 +12,11 @@ class Drag(var x: Float, var y: Float) {
 
     fun onDraw(mouseX: Int, mouseY: Int) {
         if (dragging) {
-            x = (mouseX - startX)
-            y = (mouseY - startY)
+            x = mouseX - startX
+            y = mouseY - startY
         }
     }
+
 
     fun onClick(mouseX: Int, mouseY: Int, button: Int, canDrag: Boolean) {
         if (button == 0 && canDrag) {

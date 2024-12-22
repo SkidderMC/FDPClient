@@ -21,16 +21,11 @@ import net.ccbluex.liquidbounce.utils.block.center
 import net.ccbluex.liquidbounce.utils.block.toVec
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColor
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.render.shader.UIEffectRenderer.drawTexturedRect
 import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.extensions.hitBox
-import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
-import net.ccbluex.liquidbounce.utils.extensions.lastTickPos
-import net.ccbluex.liquidbounce.utils.extensions.renderPos
-import net.ccbluex.liquidbounce.utils.extensions.toRadians
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.setColour
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInOutQuadX
+import net.ccbluex.liquidbounce.utils.render.shader.UIEffectRenderer.drawTexturedRect
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
@@ -4295,6 +4290,33 @@ object RenderUtils : MinecraftInstance {
         depthMask(true)
         alphaFunc(GL_GREATER, .1f)
         enableAlpha()
+        popMatrix()
+    }
+
+    @JvmStatic
+    fun renderGLUtil(mode: Int, render: Runnable) {
+        glBegin(mode)
+        render.run()
+        glEnd()
+    }
+
+    @JvmStatic
+    fun setup2DRenderingGLUtil(f: Runnable) {
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glDisable(GL_TEXTURE_2D)
+        f.run()
+        glEnable(GL_TEXTURE_2D)
+        disableBlend()
+    }
+
+    @JvmStatic
+    fun rotateGLUtil(x: Float, y: Float, rotate: Float, f: Runnable) {
+        pushMatrix()
+        translate(x, y, 0f)
+        rotate(rotate, 0f, 0f, -1f)
+        translate(-x, -y, 0f)
+        f.run()
         popMatrix()
     }
 }

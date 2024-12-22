@@ -5,15 +5,14 @@
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.shader.Framebuffer;
 import org.lwjgl.opengl.EXTFramebufferObject;
 import org.lwjgl.opengl.EXTPackedDepthStencil;
 
+import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
 import static org.lwjgl.opengl.GL11.*;
 
 public class StencilUtil {
-    static Minecraft mc = Minecraft.getMinecraft();
 
     public static void checkSetupFBO(Framebuffer framebuffer) {
         if (framebuffer != null) {

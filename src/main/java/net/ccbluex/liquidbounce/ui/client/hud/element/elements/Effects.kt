@@ -32,11 +32,6 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-/**
- * CustomHUD effects element
- *
- * Shows a list of active potion effects
- */
 @ElementInfo(name = "Effects")
 class Effects(
     x: Double = 2.0,
@@ -45,7 +40,7 @@ class Effects(
     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
 ) : Element(x, y, scale, side) {
 
-    private val modeValue by choices("Mode", arrayOf("Classic", "FDP"), "Classic")
+    private val modeValue by choices("Mode", arrayOf("Classic", "FDP", "Default"), "Classic")
     private val font by font("Font", Fonts.font35)
     private val shadow by boolean("Shadow", true)
 
@@ -59,87 +54,164 @@ class Effects(
         return when (modeValue) {
             "Default" -> drawDefaultMode()
             "Classic" -> drawClassicMode()
-            "FDP" -> drawFDPMode()
-            else -> Border(2F, font.FONT_HEIGHT.toFloat(), 0F, 0F)
+            "FDP"     -> drawFDPMode()
+            else      -> Border(2F, font.FONT_HEIGHT.toFloat(), 0F, 0F)
         }
     }
 
     private fun drawDefaultMode(): Border {
-        val xOffset = 0
+        var maxWidth = 0f
         var yOffset = 0
 
         val activePotions = mc.thePlayer?.activePotionEffects ?: return Border(0F, 0F, 0F, 0F)
+        if (activePotions.isEmpty()) return Border(0F, 0F, 0F, 0F)
+
         val sortedPotions = activePotions.sortedByDescending { it.duration }
-
-        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
-        GlStateManager.disableLighting()
-
         val fontRenderer = font
+        val iconSize = 18
 
-        for (potion in sortedPotions) {
-            val effect = Potion.potionTypes[potion.potionID] ?: continue
+        for (potionEffect in sortedPotions) {
+            val potion = Potion.potionTypes[potionEffect.potionID] ?: continue
+            val rowHeight = fontRenderer.FONT_HEIGHT + 2
 
-            if (effect.hasStatusIcon() && iconValue) {
-                drawStatusIcon(xOffset, yOffset, effect.statusIconIndex % 8 * 18, 198 + effect.statusIconIndex / 8 * 18)
+            if (iconValue && potion.hasStatusIcon()) {
+                val tx = potion.statusIconIndex % 8 * iconSize
+                val ty = 198 + potion.statusIconIndex / 8 * iconSize
+                mc.textureManager.bindTexture(ResourceLocation("textures/gui/container/inventory.png"))
+                // Draw icon at (x, y + yOffset)
+                drawTexturedModalRect(
+                    x.toInt(),
+                    (y + yOffset).toInt(),
+                    tx,
+                    ty,
+                    iconSize,
+                    iconSize,
+                    0f
+                )
             }
+
+            val textOffset = if (iconValue && potion.hasStatusIcon()) iconSize + 3 else 0
 
             if (nameValue) {
-                drawPotionName(potion, effect, xOffset, yOffset, fontRenderer)
+                val nameStr = buildString {
+                    append(I18n.format(potion.name))
+                    if (potionEffect.amplifier > 0) {
+                        append(" ")
+                        append(intToRoman(potionEffect.amplifier + 1))
+                    }
+                }
+                val color = if (colorValue) potion.liquidColor else 0xFFFFFF
+                fontRenderer.drawString(
+                    nameStr,
+                    (x + textOffset).toFloat(),
+                    (y + yOffset).toFloat(),
+                    color,
+                    shadow
+                )
+                val usedWidth = textOffset + fontRenderer.getStringWidth(nameStr)
+                if (usedWidth > maxWidth) maxWidth = usedWidth.toFloat()
             }
 
-            drawPotionDuration(potion, xOffset, yOffset, fontRenderer)
+            val durationStr = Potion.getDurationString(potionEffect)
+            fontRenderer.drawString(
+                durationStr,
+                (x + textOffset).toFloat(),
+                (y + yOffset + fontRenderer.FONT_HEIGHT).toFloat(),
+                0x7F7F7F,
+                shadow
+            )
+            val usedWidthDur = textOffset + fontRenderer.getStringWidth(durationStr)
+            if (usedWidthDur > maxWidth) maxWidth = usedWidthDur.toFloat()
 
-            yOffset += fontRenderer.FONT_HEIGHT * 2 + 4
+            yOffset += rowHeight * 2
         }
 
-        val height = (yOffset - 4).toFloat()
-        val width = 100.0f
-        return Border(0F, 0F, width, height)
+        // Return a border that covers the potions drawn
+        return Border(
+            x.toFloat(),
+            y.toFloat(),
+            maxWidth,
+            (yOffset - 2).coerceAtLeast(0).toFloat()
+        )
     }
 
     private fun drawFDPMode(): Border {
         GlStateManager.pushMatrix()
-        var y = 0
+        var yPos = 0
 
         val activePotions = mc.thePlayer?.activePotionEffects ?: return Border(0F, 0F, 120F, 30F)
+        if (activePotions.isEmpty()) {
+            GlStateManager.popMatrix()
+            return Border(0F, 0F, 120F, 30F)
+        }
 
         for (potionEffect in activePotions) {
             val potion = Potion.potionTypes[potionEffect.potionID] ?: continue
             val name = I18n.format(potion.name)
 
-            val potionData: PotionData = potionMap[potion]?.takeIf { it.level == potionEffect.amplifier }
-                ?: PotionData(TranslatePotionData(0F, -40F + y), potionEffect.amplifier).also {
+            val data: PotionData = potionMap[potion]?.takeIf { it.level == potionEffect.amplifier }
+                ?: PotionData(TranslatePotionData(0F, -40F + yPos), potionEffect.amplifier).also {
                     potionMap[potion] = it
                 }
 
-            if (activePotions.none { it.amplifier == potionData.level }) {
+            if (activePotions.none { it.amplifier == data.level }) {
                 potionMap.remove(potion)
             }
 
             val (potionTime, potionMaxTime) = try {
-                val timeSplit = Potion.getDurationString(potionEffect).split(":").map { it.toInt() }
-                timeSplit[0] to timeSplit[1]
+                val (m, s) = Potion.getDurationString(potionEffect).split(":").map { it.toInt() }
+                m to s
             } catch (ignored: Exception) {
                 100 to 1000
             }
 
             val lifeTime = potionTime * 60 + potionMaxTime
-            if (potionData.potionMaxTimer == 0 || lifeTime > potionData.potionMaxTimer) potionData.potionMaxTimer = lifeTime
+            if (data.potionMaxTimer == 0 || lifeTime > data.potionMaxTimer) {
+                data.potionMaxTimer = lifeTime
+            }
 
-            val state = (lifeTime / potionData.potionMaxTimer.toDouble() * 100.0).toFloat().coerceAtLeast(2.0F)
-            potionData.translate.interpolate(0F, y.toFloat(), 0.1)
-            potionData.potionAnimationX = getAnimationState(
-                potionData.potionAnimationX.toDouble(),
+            val state = (lifeTime / data.potionMaxTimer.toDouble() * 100.0).toFloat().coerceAtLeast(2.0F)
+            data.translate.interpolate(0F, yPos.toFloat(), 0.1)
+            data.potionAnimationX = getAnimationState(
+                data.potionAnimationX.toDouble(),
                 (1.2F * state).toDouble(),
-                max(10.0F, abs(potionData.potionAnimationX - 1.2F * state) * 15.0F) * 0.3
+                max(10.0F, abs(data.potionAnimationX - 1.2F * state) * 15.0F) * 0.3
             ).toFloat()
 
-            RenderUtils.drawRected(0F, potionData.translate.y, 120F, potionData.translate.y + 30F, potionlpha(ColorUtils.potionColor.GREY.c, 0.1F))
-            RenderUtils.drawRected(0F, potionData.translate.y, potionData.potionAnimationX, potionData.translate.y + 30F, potionlpha(Color(34, 24, 20).brighter().rgb, 0.3F))
-            RenderUtils.drawShadow(0F, potionData.translate.y.roundToInt().toFloat(), 120F, 30F)
-            val posY = potionData.translate.y + 13F
-            font.drawString("$name ${intToRoman(potionEffect.amplifier + 1)}", 29, (posY - mc.fontRendererObj.FONT_HEIGHT).roundToInt(), potionlpha(ColorUtils.potionColor.WHITE.c, 0.8F))
-            Fonts.font35.drawString(Potion.getDurationString(potionEffect), 29F, posY + 4.0F, potionlpha(Color(200, 200, 200).rgb, 0.5F))
+            RenderUtils.drawRected(
+                0F,
+                data.translate.y,
+                120F,
+                data.translate.y + 30F,
+                potionlpha(ColorUtils.potionColor.GREY.c, 0.1F)
+            )
+            RenderUtils.drawRected(
+                0F,
+                data.translate.y,
+                data.potionAnimationX,
+                data.translate.y + 30F,
+                potionlpha(Color(34, 24, 20).brighter().rgb, 0.3F)
+            )
+            RenderUtils.drawShadow(
+                0F,
+                data.translate.y.roundToInt().toFloat(),
+                120F,
+                30F
+            )
+
+            val pY = data.translate.y + 13F
+            font.drawString(
+                "$name ${intToRoman(potionEffect.amplifier + 1)}",
+                29,
+                (pY - mc.fontRendererObj.FONT_HEIGHT).roundToInt(),
+                potionlpha(ColorUtils.potionColor.WHITE.c, 0.8F)
+            )
+            Fonts.font35.drawString(
+                Potion.getDurationString(potionEffect),
+                29F,
+                pY + 4.0F,
+                potionlpha(Color(200, 200, 200).rgb, 0.5F)
+            )
 
             if (potion.hasStatusIcon()) {
                 GlStateManager.pushMatrix()
@@ -148,16 +220,23 @@ class Effects(
                 GL11.glDepthMask(false)
                 OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0)
                 GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F)
-                val statusIconIndex = potion.statusIconIndex
+                val idx = potion.statusIconIndex
                 mc.textureManager.bindTexture(ResourceLocation("textures/gui/container/inventory.png"))
-                mc.ingameGUI.drawTexturedModalRect(6F, (potionData.translate.y + 1).roundToInt().toFloat(), statusIconIndex % 8 * 18, 198 + statusIconIndex / 8 * 18, 18, 18)
+                mc.ingameGUI.drawTexturedModalRect(
+                    6F,
+                    (data.translate.y + 1).roundToInt().toFloat(),
+                    idx % 8 * 18,
+                    198 + idx / 8 * 18,
+                    18,
+                    18
+                )
                 GL11.glDepthMask(true)
                 GL11.glDisable(GL11.GL_BLEND)
                 GL11.glEnable(GL11.GL_DEPTH_TEST)
                 GlStateManager.popMatrix()
             }
 
-            y -= 35
+            yPos -= 35
         }
 
         GlStateManager.popMatrix()
@@ -165,16 +244,17 @@ class Effects(
     }
 
     private fun drawClassicMode(): Border {
-        var y = 0F
-        var width = 0F
-
-        val height = ((font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT).toFloat()
+        var yPos = 0F
+        var widest = 0F
+        val lineHeight = ((font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT).toFloat()
 
         assumeNonVolatile {
-            for (effect in mc.thePlayer.activePotionEffects) {
-                val potion = Potion.potionTypes[effect.potionID]
+            val activeEffects = mc.thePlayer?.activePotionEffects ?: return@assumeNonVolatile
+            if (activeEffects.isEmpty()) return@assumeNonVolatile
 
-                val number = when {
+            for (effect in activeEffects) {
+                val potion = Potion.potionTypes[effect.potionID] ?: continue
+                val roman = when {
                     effect.amplifier == 1 -> "II"
                     effect.amplifier == 2 -> "III"
                     effect.amplifier == 3 -> "IV"
@@ -188,84 +268,62 @@ class Effects(
                     else -> "I"
                 }
 
-                val name = "${I18n.format(potion.name)} $number§f: §7${Potion.getDurationString(effect)}"
-                val stringWidth = font.getStringWidth(name).toFloat()
+                val fullStr = "${I18n.format(potion.name)} $roman§f: §7${Potion.getDurationString(effect)}"
+                val strWidth = font.getStringWidth(fullStr).toFloat()
+                if (strWidth > widest) {
+                    widest = strWidth
+                }
 
-                if (width < stringWidth)
-                    width = stringWidth
-
-                font.drawString(name, -stringWidth, y, potion.liquidColor, shadow)
-                y -= height
+                font.drawString(
+                    fullStr,
+                    -(strWidth),
+                    yPos,
+                    potion.liquidColor,
+                    shadow
+                )
+                yPos -= lineHeight
             }
         }
 
-        if (width == 0F)
-            width = 40F
+        if (widest == 0F) widest = 40F
+        if (yPos == 0F) yPos = -10F
 
-        if (y == 0F)
-            y = -10F
+        return Border(2F, lineHeight, -widest - 2F, yPos + lineHeight - 2F)
+    }
 
-        return Border(2F, height, -width - 2F, y + height - 2F)
+    private fun potionlpha(colorInt: Int, alpha: Float): Int {
+        val baseColor = Color(colorInt)
+        return Color(
+            baseColor.red / 255f,
+            baseColor.green / 255f,
+            baseColor.blue / 255f,
+            alpha
+        ).rgb
     }
 
     private fun intToRoman(num: Int): String {
         val values = intArrayOf(1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1)
         val symbols = arrayOf("M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I")
-        var number = num
-        val stringBuilder = StringBuilder()
+        var tmp = num
+        val sb = StringBuilder()
         var i = 0
-        while (i < values.size && number >= 0) {
-            while (values[i] <= number) {
-                number -= values[i]
-                stringBuilder.append(symbols[i])
+        while (i < values.size && tmp >= 0) {
+            while (values[i] <= tmp) {
+                tmp -= values[i]
+                sb.append(symbols[i])
             }
             i++
         }
-        return stringBuilder.toString()
+        return sb.toString()
     }
 
-    private fun getAnimationState(animation: Double, finalState: Double, speed: Double): Double {
-        val add = 0.01 * speed
+    private fun getAnimationState(current: Double, target: Double, speed: Double): Double {
+        val inc = 0.01 * speed
         return when {
-            animation < finalState -> min(animation + add, finalState)
-            animation > finalState -> max(animation - add, finalState)
-            else -> finalState
+            current < target -> min(current + inc, target)
+            current > target -> max(current - inc, target)
+            else -> target
         }
-    }
-
-    private fun drawStatusIcon(xOffset: Int, yOffset: Int, textureX: Int, textureY: Int) {
-        mc.textureManager.bindTexture(ResourceLocation("textures/gui/container/inventory.png"))
-        drawTexturedModalRect(x.toInt() + xOffset - 20, y.toInt() + yOffset, textureX, textureY, 18, 18, 0f)
-    }
-
-    private fun drawPotionName(
-        potion: PotionEffect,
-        effect: Potion,
-        xOffset: Int,
-        yOffset: Int,
-        fontRenderer: FontRenderer
-    ) {
-        fontRenderer.drawString(
-            I18n.format(effect.name) + if (potion.amplifier > 0) " " + intToRoman(potion.amplifier + 1) else "",
-            (x.toInt() + xOffset).toFloat(), (y.toInt() + yOffset).toFloat(),
-            if (colorValue) effect.liquidColor else 0xFFFFFF,
-            shadow
-        )
-    }
-
-    private fun drawPotionDuration(
-        potion: PotionEffect,
-        xOffset: Int,
-        yOffset: Int,
-        fontRenderer: FontRenderer
-    ) {
-        fontRenderer.drawString(Potion.getDurationString(potion),
-            (x.toInt() + xOffset).toFloat(), (y.toInt() + yOffset + 10).toFloat(), 0x7F7F7F, shadow)
-    }
-
-    private fun potionlpha(n: Int, n2: Float): Int {
-        val color = Color(n)
-        return Color(0.003921569f * color.red, 0.003921569f * color.green, 0.003921569f * color.blue, n2).rgb
     }
 
     private class PotionData(
@@ -277,9 +335,9 @@ class Effects(
     }
 
     private data class TranslatePotionData(var x: Float, var y: Float) {
-        fun interpolate(targetX: Float, targetY: Float, speed: Double) {
-            x = (x + (targetX - x) * speed).toFloat()
-            y = (y + (targetY - y) * speed).toFloat()
+        fun interpolate(tX: Float, tY: Float, speed: Double) {
+            x = (x + (tX - x) * speed).toFloat()
+            y = (y + (tY - y) * speed).toFloat()
         }
     }
 }

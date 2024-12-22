@@ -145,7 +145,7 @@ jar {
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "TweakOrder": "0",
             "FMLAT": "fdpclient_at.cfg",
-            "Main-Class": "net.ccbluex.setup.FDPInstructions.kt",
+            "Main-Class": "net.ccbluex.setup.FDPInstructionsKt",
     )
 
     enabled = false

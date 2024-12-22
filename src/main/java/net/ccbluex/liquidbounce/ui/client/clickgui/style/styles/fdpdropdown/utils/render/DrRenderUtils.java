@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render;
 
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation;
-import net.ccbluex.liquidbounce.utils.client.MinecraftInstance;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
@@ -17,6 +16,8 @@ import org.lwjgl.opengl.GL11;
 import java.awt.*;
 
 import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
+import static net.ccbluex.liquidbounce.utils.render.RenderUtils.renderGLUtil;
+import static net.ccbluex.liquidbounce.utils.render.RenderUtils.setup2DRenderingGLUtil;
 import static org.lwjgl.opengl.GL11.*;
 
 public class DrRenderUtils  {
@@ -172,7 +173,7 @@ public class DrRenderUtils  {
     // Arrow for clickgui
     public static void drawClickGuiArrow(float x, float y, float size, Animation animation, int color) {
         glTranslatef(x, y, 0);
-        GLUtil.setup2DRendering(() -> GLUtil.render(GL_TRIANGLE_STRIP, () -> {
+        setup2DRenderingGLUtil(() -> renderGLUtil(GL_TRIANGLE_STRIP, () -> {
             color(color);
 
 
@@ -219,11 +220,11 @@ public class DrRenderUtils  {
     // TODO: Replace this with a shader as GL_POINTS is not consistent with gui scales
     public static void drawGoodCircle(double x, double y, float radius, int color) {
         color(color);
-        GLUtil.setup2DRendering(() -> {
+        setup2DRenderingGLUtil(() -> {
             glEnable(GL_POINT_SMOOTH);
             glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
             glPointSize(radius * (2 * mc.gameSettings.guiScale));
-            GLUtil.render(GL_POINTS, () -> glVertex2d(x, y));
+            renderGLUtil(GL_POINTS, () -> glVertex2d(x, y));
         });
     }
     // animation for sliders and stuff
@@ -242,7 +243,7 @@ public class DrRenderUtils  {
     public static void fakeCircleGlow(float posX, float posY, float radius, Color color, float maxAlpha) {
         setAlphaLimit(0);
         glShadeModel(GL_SMOOTH);
-        GLUtil.setup2DRendering(() -> GLUtil.render(GL_TRIANGLE_FAN, () -> {
+        setup2DRenderingGLUtil(() -> renderGLUtil(GL_TRIANGLE_FAN, () -> {
             color(color.getRGB(), maxAlpha);
             glVertex2d(posX, posY);
             color(color.getRGB(), 0);
@@ -298,7 +299,7 @@ public class DrRenderUtils  {
 
     public static void drawRect2(double x, double y, double width, double height, int color) {
         resetColor();
-        GLUtil.setup2DRendering(() -> GLUtil.render(GL11.GL_QUADS, () -> {
+        setup2DRenderingGLUtil(() -> renderGLUtil(GL11.GL_QUADS, () -> {
             color(color);
             GL11.glVertex2d(x, y);
             GL11.glVertex2d(x, y + height);
