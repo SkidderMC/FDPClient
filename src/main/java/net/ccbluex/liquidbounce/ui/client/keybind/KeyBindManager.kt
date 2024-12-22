@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
 import net.ccbluex.liquidbounce.ui.font.Fonts.font40
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedBindRect
-import net.minecraft.client.gui.GuiScreen
+import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11.*
@@ -19,7 +19,7 @@ import java.awt.Color
  * @author liulihaocai
  * FDPClient
  */
-object KeyBindManager : GuiScreen() {
+object KeyBindManager : AbstractScreen() {
     private val baseHeight = 205
     private val baseWidth = 500
 
