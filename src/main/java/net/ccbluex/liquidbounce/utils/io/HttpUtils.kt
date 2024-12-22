@@ -31,10 +31,18 @@ object HttpUtils {
         .connectTimeout(3, TimeUnit.SECONDS)
         .readTimeout(15, TimeUnit.SECONDS)
         .followRedirects(true)
-        .sslSocketFactory(createTrustAllSslSocketFactory(), createTrustAllTrustManager())
-        .hostnameVerifier { _, _ -> true }
+        .applyBypassHttps()
         .build()
 
+    /**
+     * For legacy Java 8 versions like 8u51
+     */
+    @JvmStatic
+    fun OkHttpClient.Builder.applyBypassHttps() = this
+        .sslSocketFactory(createTrustAllSslSocketFactory(), createTrustAllTrustManager())
+        .hostnameVerifier { _, _ -> true }
+
+    @JvmStatic
     private fun createTrustAllSslSocketFactory(): SSLSocketFactory {
         val trustAllCerts = arrayOf(createTrustAllTrustManager())
         val sslContext = SSLContext.getInstance("TLS")
@@ -42,6 +50,7 @@ object HttpUtils {
         return sslContext.socketFactory
     }
 
+    @JvmStatic
     private fun createTrustAllTrustManager(): X509TrustManager {
         return object : X509TrustManager {
             override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {}

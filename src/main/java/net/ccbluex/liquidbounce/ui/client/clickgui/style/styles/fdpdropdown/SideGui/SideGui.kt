@@ -9,7 +9,8 @@ import net.ccbluex.liquidbounce.FDPClient.fileManager
 import net.ccbluex.liquidbounce.config.SettingsUtils.applyScript
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.generateColor
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
-import net.ccbluex.liquidbounce.handler.api.ClientApi.requestSettingsScript
+import net.ccbluex.liquidbounce.handler.api.ClientApi
+import net.ccbluex.liquidbounce.handler.api.ClientApi.getSettingsScript
 import net.ccbluex.liquidbounce.handler.api.autoSettingsList
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction
@@ -66,14 +67,13 @@ class SideGui : GuiPanel() {
     private var showLocalConfigs = false
     private var wasMousePressed = false
 
-    // If we're dragging the fade-speed slider, no scrolling or dragging is allowed
+    // If we're dragging the fade-speed slider, no panel-drag or scrolling is allowed
     private var draggingSlider = false
 
-    // Also block drag if user is clicking on any header button (UI, Configs, Color)
+    // Also block window-drag if the user is clicking on any header button (UI, Configs, Color)
     private var clickingHeader = false
 
     // Outline around the entire side panel
-    // Set to false to disable the outline
     private var showSideOutline = true
 
     override fun initGui() {
@@ -113,7 +113,7 @@ class SideGui : GuiPanel() {
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        // No key events
+        // We don't need key events here
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float, alpha: Int) {
@@ -133,7 +133,7 @@ class SideGui : GuiPanel() {
         // Draw category tabs (centered)
         drawCategoryTabs(mouseX, mouseY, alpha)
 
-        // Separator line
+        // Separator line below the header
         DrRenderUtils.drawRect2(
             drag!!.x + 20.0,
             drag!!.y + 50.0,
@@ -175,10 +175,10 @@ class SideGui : GuiPanel() {
             drag!!.onClick(mouseX, mouseY, button, canDrag)
         }
 
-        // Check if any category was clicked
+        // Check if a category tab was clicked
         checkCategoryClick(mouseX, mouseY)
 
-        // If we're in Color category, check for slider or color interactions
+        // If we're in the "Color" category, check for slider or color interactions
         if (currentCategory == "Color") {
             checkColorCategoryInteractions(mouseX, mouseY)
         }
@@ -188,10 +188,14 @@ class SideGui : GuiPanel() {
         val fadeSpeedSliderY = drag!!.y + 20
         val fadeSpeedSliderWidth = 80f
         val fadeSpeedSliderHeight = 10f
-        if (DrRenderUtils.isHovering(
-                fadeSpeedSliderX, fadeSpeedSliderY,
-                fadeSpeedSliderWidth, fadeSpeedSliderHeight,
-                mouseX, mouseY
+        if (
+            DrRenderUtils.isHovering(
+                fadeSpeedSliderX,
+                fadeSpeedSliderY,
+                fadeSpeedSliderWidth,
+                fadeSpeedSliderHeight,
+                mouseX,
+                mouseY
             ) && button == 0
         ) {
             draggingSlider = true
@@ -211,12 +215,12 @@ class SideGui : GuiPanel() {
         }
         // Stop dragging slider
         draggingSlider = false
-        // Stop blocking for header
+        // Stop blocking the header
         clickingHeader = false
     }
 
     /**
-     * Check if a category tab was clicked and update currentCategory if so.
+     * Check if a category tab was clicked and update [currentCategory] if so.
      */
     private fun checkCategoryClick(mouseX: Int, mouseY: Int) {
         val totalWidth = 3 * 60f + 2 * 10f
@@ -241,7 +245,7 @@ class SideGui : GuiPanel() {
     }
 
     /**
-     * Check if we interacted with "Side" toggle or fadeSpeed slider for the Color category.
+     * Check if user interacted with the "Side" toggle or fadeSpeed slider in the "Color" category.
      */
     private fun checkColorCategoryInteractions(mouseX: Int, mouseY: Int) {
         val buttonX = drag!!.x + 25 + (80f + 10) * 5
@@ -304,7 +308,7 @@ class SideGui : GuiPanel() {
     }
 
     /**
-     * Draws the main panel with optional outline.
+     * Draw the main panel with optional outline.
      */
     private fun drawMainPanel(sr: ScaledResolution, alpha: Int, mouseX: Int, mouseY: Int): Color {
         val hoverOut = hoverAnimation?.output ?: 0.0
@@ -320,28 +324,25 @@ class SideGui : GuiPanel() {
         val mainRectColor = Color(30, 30, 30, rectAlpha.toInt())
 
         if (focused) {
-            // Drag if not blocked
+            // Drag the window if not blocked
             if (!draggingSlider && !clickingHeader) {
                 drag!!.onDraw(mouseX, mouseY)
             }
         }
 
-        // Draw main rectangle
+        // Draw the main rectangle
         drawCustomShapeWithRadius(drag!!.x, drag!!.y, rectWidth, rectHeight, 9f, mainRectColor)
 
-        // Outline around the entire SideGui if showSideOutline == true
+        // Outline around the entire SideGui if showSideOutline is true
         if (showSideOutline) {
-            // Using generateColor(0) for demonstration. Adjust as desired
             val outlineColor = generateColor(0)
-            // Outline thickness
             val thickness = 1f
-            // We'll draw a rectangle outline around (drag.x, drag.y, rectWidth, rectHeight)
             drawRoundedOutline(
                 drag!!.x,
                 drag!!.y,
                 drag!!.x + rectWidth,
                 drag!!.y + rectHeight,
-                9f, // corner radius must match the panel
+                9f,
                 thickness,
                 outlineColor.rgb
             )
@@ -351,13 +352,11 @@ class SideGui : GuiPanel() {
     }
 
     /**
-     * Draws header tabs (UI, Configs, Color) in a centered manner.
+     * Draw the header tabs (UI, Configs, Color) in a centered way.
      */
     private fun drawCategoryTabs(mouseX: Int, mouseY: Int, alpha: Int) {
         val textColor = DrRenderUtils.applyOpacity(-1, alpha / 255f)
-        // We'll define a center region, from which we place the 3 category buttons side-by-side
-        // Let's say each tab is 60 wide + spacing
-        val totalWidth = 3 * 60f + 2 * 10f // e.g. 3 tabs * 60 width + 2 * 10 spacing
+        val totalWidth = 3 * 60f + 2 * 10f
         val startX = drag!!.x + rectWidth / 2f - totalWidth / 2f
         val yVal = drag!!.y + 15
 
@@ -406,7 +405,7 @@ class SideGui : GuiPanel() {
     }
 
     /**
-     * Draws content for "UI" category.
+     * Draw "UI" category content.
      */
     private fun drawUiCategory(alpha: Int) {
         Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
@@ -418,7 +417,7 @@ class SideGui : GuiPanel() {
     }
 
     /**
-     * Draws content for "Configs" category (ONLINE/LOCAL).
+     * Draw the "Configs" category content (ONLINE or LOCAL).
      */
     private fun drawConfigsCategory(mouseX: Int, mouseY: Int, alpha: Int) {
         val buttonToggleWidth = 70f
@@ -426,10 +425,10 @@ class SideGui : GuiPanel() {
         val buttonSpacing = 10f
 
         val xStart = drag!!.x + 25
-        // Place "OPEN FOLDER" above "ONLINE"/"LOCAL"
+        // Place "OPEN FOLDER" above the "ONLINE"/"LOCAL" buttons
         val openFolderButtonWidth = buttonToggleWidth * 2
         val openFolderButtonX = xStart
-        val openFolderButtonY = drag!!.y + 30 // one row above
+        val openFolderButtonY = drag!!.y + 30
         val isOpenFolderHovered = DrRenderUtils.isHovering(
             openFolderButtonX, openFolderButtonY,
             openFolderButtonWidth, buttonToggleHeight,
@@ -499,6 +498,7 @@ class SideGui : GuiPanel() {
             DrRenderUtils.applyOpacity(-1, alpha / 255f)
         )
 
+        // Mouse click detection for the above buttons
         if (!wasMousePressed && Mouse.isButtonDown(0)) {
             when {
                 isOpenFolderHovered -> openFolder()
@@ -509,11 +509,12 @@ class SideGui : GuiPanel() {
         }
         if (!Mouse.isButtonDown(0)) wasMousePressed = false
 
+        // Now draw the actual config list
         drawConfigList(mouseX, mouseY, alpha, localButtonY + buttonToggleHeight + buttonSpacing)
     }
 
     /**
-     * Adjusted drawConfigList to start below the buttons row
+     * Adjusted config list, starting below the toggle buttons.
      */
     private fun drawConfigList(mouseX: Int, mouseY: Int, alpha: Int, startY: Float) {
         var configX = drag!!.x + 25
@@ -535,7 +536,8 @@ class SideGui : GuiPanel() {
                             configY + 5,
                             DrRenderUtils.applyOpacity(-1, alpha / 255f)
                         )
-                        if (DrRenderUtils.isHovering(configX, configY, buttonWidth, buttonHeight, mouseX, mouseY)
+                        if (
+                            DrRenderUtils.isHovering(configX, configY, buttonWidth, buttonHeight, mouseX, mouseY)
                             && Mouse.isButtonDown(0)
                         ) {
                             loadLocalConfig(configName, file)
@@ -557,19 +559,22 @@ class SideGui : GuiPanel() {
                 )
             }
         } else {
+            // Online configs
             if (!autoSettingsList.isNullOrEmpty()) {
-                for ((settingId, name) in autoSettingsList!!) {
+                for (i in autoSettingsList!!.indices) {
+                    val autoSetting = autoSettingsList!![i]
                     drawSingleConfigButton(mouseX, mouseY, alpha, configX, configY, buttonWidth, buttonHeight) {
                         Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
-                            name,
+                            autoSetting.name,
                             configX + 5,
                             configY + 5,
                             DrRenderUtils.applyOpacity(-1, alpha / 255f)
                         )
-                        if (DrRenderUtils.isHovering(configX, configY, buttonWidth, buttonHeight, mouseX, mouseY)
+                        if (
+                            DrRenderUtils.isHovering(configX, configY, buttonWidth, buttonHeight, mouseX, mouseY)
                             && Mouse.isButtonDown(0)
                         ) {
-                            loadOnlineConfig(settingId, name)
+                            loadOnlineConfig(autoSetting.settingId, autoSetting.name)
                         }
                     }
                     configX += buttonWidth + 10
@@ -623,10 +628,13 @@ class SideGui : GuiPanel() {
         }
     }
 
+    /**
+     * FIXED HERE: Now we pass ("legacy", settingId) in the correct order.
+     */
     private fun loadOnlineConfig(settingId: String, configName: String) {
         try {
             displayChatMessage("Loading configuration: $configName...")
-            val configScript = requestSettingsScript(settingId, "legacy")
+            val configScript = ClientApi.getSettingsScript("legacy", settingId)
             applyScript(configScript)
             displayChatMessage("Configuration $configName loaded successfully!")
         } catch (e: Exception) {
@@ -635,7 +643,7 @@ class SideGui : GuiPanel() {
     }
 
     /**
-     * Draws "Color" category content.
+     * Draw "Color" category content.
      */
     private fun drawColorCategory(mouseX: Int, mouseY: Int, alpha: Int) {
         val themeColors = arrayOf(
@@ -710,7 +718,7 @@ class SideGui : GuiPanel() {
     }
 
     /**
-     * Fade speed slider and toggle button for "Color" category, pinned at a fixed Y.
+     * Draw fade-speed slider and toggle button for the "Color" category, pinned at a fixed Y.
      */
     private fun drawColorExtras(
         mouseX: Int,
@@ -729,7 +737,7 @@ class SideGui : GuiPanel() {
         val fadeSpeedSliderWidth = 80f
         val fadeSpeedSliderHeight = 10f
 
-        // Fade speed slider
+        // Fade speed slider background
         DrRenderUtils.drawRect2(
             fadeSpeedSliderX.toDouble(),
             fadeSpeedSliderY.toDouble(),
@@ -738,6 +746,7 @@ class SideGui : GuiPanel() {
             Color(60, 60, 60).rgb
         )
 
+        // Filled portion of the slider
         val sliderValue = (ThemeFadeSpeed / 10f) * fadeSpeedSliderWidth
         DrRenderUtils.drawRect2(
             fadeSpeedSliderX.toDouble(),
@@ -754,7 +763,7 @@ class SideGui : GuiPanel() {
             Color.WHITE.rgb
         )
 
-        // "Side" toggle
+        // "Side" toggle button
         val toggleColor = if (updown) Color(0, 150, 0).rgb else Color(150, 0, 0).rgb
         DrRenderUtils.drawRect2(
             buttonX.toDouble(),
@@ -772,7 +781,7 @@ class SideGui : GuiPanel() {
     }
 
     /**
-     * Checks if the mouse is hovering on any header button (UI, Configs, Color).
+     * Check if the mouse is hovering on any header button (UI, Configs, Color).
      */
     private fun isHoveringHeader(mouseX: Int, mouseY: Int): Boolean {
         val totalWidth = 3 * 60f + 2 * 10f
@@ -806,7 +815,7 @@ class SideGui : GuiPanel() {
     }
 
     /**
-     * Overlays, gradients, bloom.
+     * Overlays, gradients, bloom effect.
      */
     private fun drawOverlays(sr: ScaledResolution, alpha: Int, mouseX: Int, mouseY: Int) {
         // Vertical gradient
@@ -820,7 +829,7 @@ class SideGui : GuiPanel() {
             Color(0, 0, 0, 0).rgb
         )
 
-        // Lateral gradient
+        // Lateral gradient on the screen's right side
         val colorIndex = 0
         val moveAnimOut = moveOverGradientAnimation?.output?.toFloat() ?: 0f
         DrRenderUtils.drawGradientRectSideways2(

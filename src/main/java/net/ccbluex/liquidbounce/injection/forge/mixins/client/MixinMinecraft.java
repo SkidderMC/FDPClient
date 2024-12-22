@@ -56,6 +56,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.nio.ByteBuffer;
 import java.time.LocalDateTime;
 import java.util.Queue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
 
@@ -99,11 +101,16 @@ public abstract class MixinMinecraft {
     @Shadow
     public abstract void displayGuiScreen(GuiScreen guiScreenIn);
 
+    @Unique
+    private Future<?> liquidBounce$preloadFuture;
+
     @Inject(method = "run", at = @At("HEAD"))
     private void init(CallbackInfo callbackInfo) {
         if (displayWidth < 1067) displayWidth = 1067;
 
         if (displayHeight < 622) displayHeight = 622;
+
+        liquidBounce$preloadFuture = FDPClient.INSTANCE.preload();
     }
 
     @Inject(method = "runGameLoop", at = @At(value = "INVOKE", target = "Lnet/minecraft/profiler/Profiler;startSection(Ljava/lang/String;)V", ordinal = 1))
@@ -112,7 +119,8 @@ public abstract class MixinMinecraft {
     }
 
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
-    private void startGame(CallbackInfo callbackInfo) {
+    private void startGame(CallbackInfo callbackInfo) throws ExecutionException, InterruptedException {
+        liquidBounce$preloadFuture.get();
         FDPClient.INSTANCE.startClient();
     }
 

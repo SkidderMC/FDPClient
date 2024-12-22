@@ -102,7 +102,7 @@ object ClickGui : GuiScreen() {
                                     chat("Loading settings...")
 
                                     // Load settings and apply them
-                                    val settings = ClientApi.requestSettingsScript(setting.settingId)
+                                    val settings = ClientApi.getSettingsScript(settingId = setting.settingId)
 
                                     chat("Applying settings...")
                                     SettingsUtils.applyScript(settings)

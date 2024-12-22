@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.config
 
+import kotlinx.coroutines.runBlocking
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.handler.api.ClientApi
 import net.ccbluex.liquidbounce.features.module.Module
@@ -72,7 +73,9 @@ object SettingsUtils {
 
                             text
                         } else {
-                            ClientApi.requestSettingsScript(url)
+                            runBlocking {
+                                ClientApi.getSettingsScript(settingId = url)
+                            }
                         }
 
                         applyScript(settings)

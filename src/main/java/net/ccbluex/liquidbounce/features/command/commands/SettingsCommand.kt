@@ -9,13 +9,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.runBlocking
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.file.FileManager.settingsDir
-import net.ccbluex.liquidbounce.handler.api.ClientApi
-import net.ccbluex.liquidbounce.handler.api.Status
-import net.ccbluex.liquidbounce.handler.api.autoSettingsList
-import net.ccbluex.liquidbounce.handler.api.loadSettings
+import net.ccbluex.liquidbounce.handler.api.*
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
@@ -23,6 +21,9 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.config.SettingsUtils
 import net.ccbluex.liquidbounce.utils.io.HttpUtils.get
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.awt.Desktop
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
@@ -78,7 +79,7 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
 
                     text
                 } else {
-                    ClientApi.requestSettingsScript(args[2])
+                    runBlocking { ClientApi.getSettingsScript(settingId = args[2]) }
                 }
 
                 chat("Applying settings...")
@@ -130,7 +131,7 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
             }
 
             try {
-                val response = ClientApi.reportSettings(args[2])
+                val response = runBlocking { ClientApi.reportSettings(settingId = args[2]) }
                 when (response.status) {
                     Status.SUCCESS -> chat("§6${response.message}")
                     Status.ERROR -> chat("§c${response.message}")
@@ -164,7 +165,17 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                 val serverData = mc.currentServerData ?: error("You need to be on a server to upload settings.")
 
                 val name = "${FDPClient.clientCommit}-${serverData.serverIP.replace(".", "_")}"
-                val response = ClientApi.uploadSettings(name, mc.session.username, settingsScript)
+                val response = runBlocking {
+                    ClientApi.uploadSettings(
+                        name = name.toRequestBody(),
+                        contributors = mc.session.username.toRequestBody(),
+                        settingsFile = MultipartBody.Part.createFormData(
+                            "settings_file",
+                            "settings_file",
+                            settingsScript.toByteArray().toRequestBody("application/octet-stream".toMediaTypeOrNull())
+                        )
+                    )
+                }
 
                 when (response.status) {
                     Status.SUCCESS -> {
@@ -411,7 +422,7 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                 when (args[0].lowercase()) {
                     "load", "loadlocal", "report", "create", "delete", "rename", "copy" -> {
                         if (autoSettingsList == null) {
-                            loadSettings(true, 500) {}
+                            loadSettings(true, 500)
                         }
 
                         val configFiles = FDPClient.fileManager.settingsDir.listFiles { _, name ->

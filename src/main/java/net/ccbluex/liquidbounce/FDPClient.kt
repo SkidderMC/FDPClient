@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf
+import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.event.StartupEvent
@@ -16,9 +17,11 @@ import net.ccbluex.liquidbounce.features.module.ModuleManager.registerModules
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.FileManager.loadAllConfigs
 import net.ccbluex.liquidbounce.file.FileManager.saveAllConfigs
+import net.ccbluex.liquidbounce.handler.api.ClientUpdate
 import net.ccbluex.liquidbounce.handler.api.ClientUpdate.gitInfo
 import net.ccbluex.liquidbounce.handler.api.loadSettings
 import net.ccbluex.liquidbounce.handler.api.messageOfTheDay
+import net.ccbluex.liquidbounce.handler.api.reloadMessageOfTheDay
 import net.ccbluex.liquidbounce.handler.cape.CapeService
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.handler.discord.DiscordRPC
@@ -40,7 +43,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.manager.G
 import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.updateClientWindow
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
-import net.ccbluex.liquidbounce.ui.font.Fonts.loadFonts
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.ClassUtils.hasForge
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.disableFastRender
@@ -61,6 +64,8 @@ import net.ccbluex.liquidbounce.utils.timing.TickedActions
 import net.ccbluex.liquidbounce.utils.timing.WaitMsUtils
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import javax.swing.UIManager
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Future
 
 object FDPClient {
 
@@ -113,6 +118,32 @@ object FDPClient {
     var discordRPC = DiscordRPC
 
     /**
+     * Start IO tasks
+     */
+    fun preload(): Future<*> {
+        // Change theme of Swing
+        // TODO: make it configurable
+        UIManager.setLookAndFeel(FlatMacLightLaf())
+        val future = CompletableFuture<Unit>()
+        SharedScopes.IO.launch {
+            try {
+                LOGGER.info("Starting preload tasks of $CLIENT_NAME")
+                // Download and extract fonts
+                Fonts.downloadFonts()
+                ClientUpdate.reloadNewestVersion()
+                reloadMessageOfTheDay()
+                // Load languages
+                loadLanguages()
+                LOGGER.info("Preload tasks of $CLIENT_NAME are completed!")
+                future.complete(Unit)
+            } catch (e: Exception) {
+                future.completeExceptionally(e)
+            }
+        }
+        return future
+    }
+
+    /**
      * Execute if client will be started
      */
     fun startClient() {
@@ -122,17 +153,10 @@ object FDPClient {
         LOGGER.info("Launching...")
 
         try {
-            // Change theme of Swing
-            // TODO: make it configurable
-            UIManager.setLookAndFeel(FlatMacLightLaf())
-
             SharedScopes
 
-            // Load languages
-            loadLanguages()
-
             // Load client fonts
-            loadFonts()
+            Fonts.loadFonts()
 
             // Register listeners
             RotationUtils

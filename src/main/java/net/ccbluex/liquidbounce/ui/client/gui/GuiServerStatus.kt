@@ -25,12 +25,12 @@ class GuiServerStatus(private val prevGui: GuiScreen) : AbstractScreen() {
     private val status = hashMapOf<String, String?>(
         "https://api.mojang.com" to null,
         "https://authserver.mojang.com" to null,
-        "http://session.minecraft.net" to null,
+        "https://session.minecraft.net" to null,
         "https://textures.minecraft.net" to null,
-        "http://minecraft.net" to null,
+        "https://minecraft.net" to null,
         "https://account.mojang.com" to null,
         "https://sessionserver.mojang.com" to null,
-        "http://mojang.com" to null
+        "https://mojang.com" to null
     )
 
     override fun initGui() {

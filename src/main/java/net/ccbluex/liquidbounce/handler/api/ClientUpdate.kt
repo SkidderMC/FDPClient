@@ -6,12 +6,11 @@
 package net.ccbluex.liquidbounce.handler.api
 
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.FDPClient.clientVersionNumber
 import net.ccbluex.liquidbounce.FDPClient.IN_DEV
+import net.ccbluex.liquidbounce.FDPClient.clientVersionNumber
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import java.text.SimpleDateFormat
 import java.util.*
-import net.ccbluex.liquidbounce.handler.api.ClientApi.requestNewestBuildEndpoint
 
 object ClientUpdate {
 
@@ -25,24 +24,28 @@ object ClientUpdate {
         }
     }
 
-    val newestVersion by lazy {
+    fun reloadNewestVersion() {
         // https://api.liquidbounce.net/api/v1/version/builds/legacy
         try {
-            requestNewestBuildEndpoint(branch = FDPClient.clientBranch, release = !IN_DEV)
+            newestVersion = ClientApi.getNewestBuild(release = !IN_DEV)
         } catch (e: Exception) {
             LOGGER.error("Unable to receive update information", e)
-            return@lazy null
         }
     }
+
+    var newestVersion: Build? = null
+        private set
 
     fun hasUpdate(): Boolean {
         try {
             val newestVersion = newestVersion ?: return false
-            val actualVersionNumber = newestVersion.lbVersion.substring(1).toIntOrNull() ?: 0 // version format: "b<VERSION>" on legacy
+            val actualVersionNumber =
+                newestVersion.lbVersion.removePrefix("b").toIntOrNull() ?: 0 // version format: "b<VERSION>" on legacy
 
             return if (IN_DEV) { // check if new build is newer than current build
                 val newestVersionDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss").parse(newestVersion.date)
-                val currentVersionDate = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(gitInfo["git.commit.time"].toString())
+                val currentVersionDate =
+                    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(gitInfo["git.commit.time"].toString())
 
                 newestVersionDate.after(currentVersionDate)
             } else {
