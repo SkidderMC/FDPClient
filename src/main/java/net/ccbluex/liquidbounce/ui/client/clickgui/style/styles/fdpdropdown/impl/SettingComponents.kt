@@ -3,674 +3,663 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl
 
-import net.ccbluex.liquidbounce.config.BoolValue;
-import net.ccbluex.liquidbounce.config.FloatValue;
-import net.ccbluex.liquidbounce.config.IntegerValue;
-import net.ccbluex.liquidbounce.config.ListValue;
-import net.ccbluex.liquidbounce.config.NumberValue;
-import net.ccbluex.liquidbounce.config.TextValue;
-import net.ccbluex.liquidbounce.config.Value;
-import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.EaseInOutQuad;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.objects.PasswordField;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.GuiEvents;
-import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
-import net.ccbluex.liquidbounce.utils.extensions.MathExtensionsKt;
-import net.ccbluex.liquidbounce.utils.render.RenderUtils;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.client.renderer.OpenGlHelper;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
+import net.ccbluex.liquidbounce.config.*
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.colormode
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.generateColor
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.EaseInOutQuad
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.objects.PasswordField
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.GuiEvents
+import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts
+import net.ccbluex.liquidbounce.utils.extensions.round
+import net.ccbluex.liquidbounce.utils.extensions.roundToHalf
+import net.ccbluex.liquidbounce.utils.extensions.roundX
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.OpenGlHelper
+import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
+import java.awt.Color
+import java.util.stream.Collectors
+import kotlin.math.max
+import kotlin.math.min
 
-import java.awt.*;
-import java.util.HashMap;
-import java.util.stream.Collectors;
+class SettingComponents(private val module: Module) : Component() {
+    var settingHeightScissor: Animation? = null
+    private val keySettingAnimMap = HashMap<Module, Array<Animation>>()
+    private val sliderintMap = HashMap<IntegerValue, Float>()
+    private val sliderintAnimMap = HashMap<IntegerValue, Array<Animation>>()
+    private val sliderfloatMap = HashMap<FloatValue, Float>()
+    private val sliderfloatAnimMap = HashMap<FloatValue, Array<Animation>>()
+    private val sliderMap = HashMap<NumberValue, Float>()
+    private val sliderAnimMap = HashMap<NumberValue, Array<Animation>>()
+    private val toggleAnimation = HashMap<BoolValue, Array<Animation>>()
+    private val modeSettingAnimMap = HashMap<ListValue, Array<Animation>>()
+    private val modeSettingClick = HashMap<ListValue, Boolean>()
+    private val modesHoverAnimation = HashMap<ListValue, HashMap<String, Animation>>()
+    var binding: Module? = null
+    var draggingNumber: Value<*>? = null
+    var x: Float = 0f
+    var y: Float = 0f
+    var width: Float = 0f
+    var rectHeight: Float = 0f
+    var panelLimitY: Float = 0f
+    var alphaAnimation: Int = 0
+    var settingSize: Double = 0.0
+    private var selectedField: PasswordField? = null
+    private var selectedStringSetting: TextValue? = null
+    private val hueFlag = false
 
-import static org.lwjgl.opengl.GL11.*;
+    init {
+        keySettingAnimMap[module] = arrayOf(
+            EaseInOutQuad(250, 1.0, Direction.BACKWARDS),
+            DecelerateAnimation(225, 1.0, Direction.BACKWARDS)
+        )
 
-public class SettingComponents extends Component {
-
-    public static float scale;
-    private final Module module;
-    public Animation settingHeightScissor;
-    private final HashMap<Module, Animation[]> keySettingAnimMap = new HashMap<>();
-    private final HashMap<IntegerValue, Float> sliderintMap = new HashMap<>();
-    private final HashMap<IntegerValue, Animation[]> sliderintAnimMap = new HashMap<>();
-    private final HashMap<FloatValue, Float> sliderfloatMap = new HashMap<>();
-    private final HashMap<FloatValue, Animation[]> sliderfloatAnimMap = new HashMap<>();
-    private final HashMap<NumberValue, Float> sliderMap = new HashMap<>();
-    private final HashMap<NumberValue, Animation[]> sliderAnimMap = new HashMap<>();
-    private final HashMap<BoolValue, Animation[]> toggleAnimation = new HashMap<>();
-    private final HashMap<ListValue, Animation[]> modeSettingAnimMap = new HashMap<>();
-    private final HashMap<ListValue, Boolean> modeSettingClick = new HashMap<>();
-    private final HashMap<ListValue, HashMap<String, Animation>> modesHoverAnimation = new HashMap<>();
-    public Module binding;
-    public Value draggingNumber;
-    public float x, y, width, rectHeight, panelLimitY;
-    public int alphaAnimation;
-    public double settingSize;
-    private PasswordField selectedField;
-    private TextValue selectedStringSetting;
-    private boolean hueFlag;
-
-    public SettingComponents(Module module) {
-        this.module = module;
-        keySettingAnimMap.put(module, new Animation[]{
-                new EaseInOutQuad(250, 1, Direction.BACKWARDS),
-                new DecelerateAnimation(225, 1, Direction.BACKWARDS)
-        });
-
-        for (Value setting : module.getValues()) {
-
-            if (setting instanceof NumberValue) {
-                sliderMap.put((NumberValue) setting, 0f);
-                sliderAnimMap.put((NumberValue) setting, new Animation[]{
-                        new DecelerateAnimation(250, 1, Direction.BACKWARDS),
-                        new DecelerateAnimation(200, 1, Direction.BACKWARDS)
-                });
+        for (setting in module.values) {
+            if (setting is NumberValue) {
+                sliderMap[setting] = 0f
+                sliderAnimMap[setting] = arrayOf(
+                    DecelerateAnimation(250, 1.0, Direction.BACKWARDS),
+                    DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
+                )
             }
-            if (setting instanceof FloatValue) {
-                sliderfloatMap.put((FloatValue) setting, 0f);
-                sliderfloatAnimMap.put((FloatValue) setting, new Animation[]{
-                        new DecelerateAnimation(250, 1, Direction.BACKWARDS),
-                        new DecelerateAnimation(200, 1, Direction.BACKWARDS)
-                });
+            if (setting is FloatValue) {
+                sliderfloatMap[setting] = 0f
+                sliderfloatAnimMap[setting] = arrayOf(
+                    DecelerateAnimation(250, 1.0, Direction.BACKWARDS),
+                    DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
+                )
             }
-            if (setting instanceof IntegerValue) {
-                sliderintMap.put((IntegerValue) setting, 0f);
-                sliderintAnimMap.put((IntegerValue) setting, new Animation[]{
-                        new DecelerateAnimation(250, 1, Direction.BACKWARDS),
-                        new DecelerateAnimation(200, 1, Direction.BACKWARDS)
-                });
+            if (setting is IntegerValue) {
+                sliderintMap[setting] = 0f
+                sliderintAnimMap[setting] = arrayOf(
+                    DecelerateAnimation(250, 1.0, Direction.BACKWARDS),
+                    DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
+                )
             }
-            if (setting instanceof BoolValue) {
-                toggleAnimation.put((BoolValue) setting, new Animation[]{
-                        new DecelerateAnimation(225, 1, Direction.BACKWARDS),
-                        new DecelerateAnimation(200, 1, Direction.BACKWARDS)
-                });
+            if (setting is BoolValue) {
+                toggleAnimation[setting] = arrayOf(
+                    DecelerateAnimation(225, 1.0, Direction.BACKWARDS),
+                    DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
+                )
             }
-            if (setting instanceof ListValue) {
-                ListValue modeSetting = (ListValue) setting;
-                modeSettingClick.put(modeSetting, false);
-                modeSettingAnimMap.put(modeSetting, new Animation[]{
-                        new DecelerateAnimation(225, 1, Direction.BACKWARDS),
-                        new EaseInOutQuad(250, 1, Direction.BACKWARDS)
-                });
+            if (setting is ListValue) {
+                val modeSetting = setting
+                modeSettingClick[modeSetting] = false
+                modeSettingAnimMap[modeSetting] = arrayOf(
+                    DecelerateAnimation(225, 1.0, Direction.BACKWARDS),
+                    EaseInOutQuad(250, 1.0, Direction.BACKWARDS)
+                )
 
-                HashMap<String, Animation> modeMap = new HashMap<>();
-                for (String mode : modeSetting.getValues()) {
-                    modeMap.put(mode, new DecelerateAnimation(225, 1, Direction.BACKWARDS));
+                val modeMap = HashMap<String, Animation>()
+                for (mode in modeSetting.values) {
+                    modeMap[mode] = DecelerateAnimation(225, 1.0, Direction.BACKWARDS)
                 }
-                modesHoverAnimation.put(modeSetting, modeMap);
+                modesHoverAnimation[modeSetting] = modeMap
             }
         }
     }
 
-    @Override
-    public void initGui() {
+    override fun initGui() {
         // No additional init code here
     }
 
-    @Override
-    public void keyTyped(char typedChar, int keyCode) {
+    override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (binding != null) {
-            selectedField = null;
-            selectedStringSetting = null;
+            selectedField = null
+            selectedStringSetting = null
             if (keyCode == Keyboard.KEY_SPACE || keyCode == Keyboard.KEY_ESCAPE || keyCode == Keyboard.KEY_DELETE) {
-                binding.setKeyBind(Keyboard.KEY_NONE);
+                binding!!.keyBind = Keyboard.KEY_NONE
             }
-            binding.setKeyBind(keyCode);
-            binding = null;
-            return;
+            binding!!.keyBind = keyCode
+            binding = null
+            return
         }
 
         if (selectedField != null) {
             // ESC key => stop focusing
             if (keyCode == 1) {
-                selectedField = null;
-                selectedStringSetting = null;
-                return;
+                selectedField = null
+                selectedStringSetting = null
+                return
             }
-            selectedField.textboxKeyTyped(typedChar, keyCode);
-            selectedStringSetting.set(selectedField.getTextValue(), true);
+            selectedField!!.textboxKeyTyped(typedChar, keyCode)
+            selectedStringSetting!!.set(selectedField!!.textValue, true)
         }
     }
 
-    public void handle(int mouseX, int mouseY, int button, GuiEvents type) {
+    fun handle(mouseX: Int, mouseY: Int, button: Int, type: GuiEvents) {
         // Setting up the colors
-        Color textColor = new Color(255, 255, 255, alphaAnimation);
-        Color darkRectColor = new Color(48, 50, 55, alphaAnimation);
-        Color darkRectColorDisabled = new Color(52, 52, 52, alphaAnimation);
-        Color darkRectHover = DrRenderUtils.brighter(darkRectColor, .8f);
+        val textColor = Color(255, 255, 255, alphaAnimation)
+        val darkRectColor = Color(48, 50, 55, alphaAnimation)
+        val darkRectColorDisabled = Color(52, 52, 52, alphaAnimation)
+        val darkRectHover = DrRenderUtils.brighter(darkRectColor, .8f)
 
-        boolean accent = ClickGUIModule.INSTANCE.getColormode().equalsIgnoreCase("Color");
-        int index = 0;
-        Color color2 = new Color(ClickGUIModule.generateColor(index).getRGB());
-        Color[] colors = new Color[]{color2, color2};
+        val accent = colormode.equals("Color", ignoreCase = true)
+        val index = 0
+        val color2 = Color(generateColor(index).rgb)
+        val colors = arrayOf(color2, color2)
 
-        Color accentedColor = DrRenderUtils.applyOpacity(colors[0], alphaAnimation / 255f);
-        Color accentedColor2 = DrRenderUtils.applyOpacity(colors[1], alphaAnimation / 255f);
+        val accentedColor = DrRenderUtils.applyOpacity(colors[0], alphaAnimation / 255f)
+        val accentedColor2 = DrRenderUtils.applyOpacity(colors[1], alphaAnimation / 255f)
 
-        double count = 0;
+        var count = 0.0
 
-        for (Value setting : module.getValues().stream().filter(Value::shouldRender).collect(Collectors.toList())) {
-
-            float settingY = (float) MathExtensionsKt.roundToHalf(y + (count * rectHeight));
+        for (setting in module.values.stream().filter { obj: Value<*> -> obj.shouldRender() }
+            .collect(Collectors.toList<Value<*>>())) {
+            val settingY = roundToHalf(y + (count * rectHeight)).toFloat()
 
             // ----- FloatValue -----
-            if (setting instanceof FloatValue) {
-                FloatValue numberSetting = (FloatValue) setting;
+            if (setting is FloatValue) {
+                val numberSetting = setting
 
-                String value = Float.toString((float) MathExtensionsKt.round(numberSetting.getValue(), 0.01));
-                float regularFontWidth = (float) Fonts.SF.SF_18.SF_18.stringWidth(numberSetting.getName() + ": ");
-                float valueFontWidth = (float) Fonts.SF.SF_18.SF_18.stringWidth(value);
+                val value = round(numberSetting.value.toDouble(), 0.01).toFloat().toString()
+                val regularFontWidth = Fonts.SF.SF_18.SF_18.stringWidth(numberSetting.name + ": ").toFloat()
+                val valueFontWidth = Fonts.SF.SF_18.SF_18.stringWidth(value).toFloat()
 
-                float titleX = x + width / 2f - (regularFontWidth + valueFontWidth) / 2f;
-                float titleY = settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight)
-                        - Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) / 2f + 1;
+                val titleX = x + width / 2f - (regularFontWidth + valueFontWidth) / 2f
+                val titleY = (settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight)
+                        - Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) / 2f + 1)
 
-                GlStateManager.color(1, 1, 1, 1);
-                Fonts.SF.SF_18.SF_18.drawString(numberSetting.getName() + ": ", titleX, titleY, textColor.getRGB());
-                Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.getRGB());
+                GlStateManager.color(1f, 1f, 1f, 1f)
+                Fonts.SF.SF_18.SF_18.drawString(numberSetting.name + ": ", titleX, titleY, textColor.rgb)
+                Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.rgb)
 
-                Animation hoverAnimation = sliderfloatAnimMap.get(numberSetting)[0];
-                Animation selectAnimtion = sliderfloatAnimMap.get(numberSetting)[1];
+                val hoverAnimation = sliderfloatAnimMap[numberSetting]!![0]
+                val selectAnimtion = sliderfloatAnimMap[numberSetting]!![1]
 
-                float totalSliderWidth = width - 10;
-                boolean hoveringSlider = isClickable(settingY + 17)
-                        && DrRenderUtils.isHovering(x + 5, settingY + 17, totalSliderWidth, 6, mouseX, mouseY);
+                val totalSliderWidth = width - 10
+                val hoveringSlider = isClickable(settingY + 17)
+                        && DrRenderUtils.isHovering(x + 5, settingY + 17, totalSliderWidth, 6f, mouseX, mouseY)
 
                 if (type == GuiEvents.RELEASE) {
-                    draggingNumber = null;
+                    draggingNumber = null
                 }
                 hoverAnimation.setDirection(
-                        hoveringSlider || draggingNumber == numberSetting ? Direction.FORWARDS : Direction.BACKWARDS
-                );
+                    if (hoveringSlider || draggingNumber === numberSetting) Direction.FORWARDS else Direction.BACKWARDS
+                )
                 selectAnimtion.setDirection(
-                        draggingNumber == numberSetting ? Direction.FORWARDS : Direction.BACKWARDS
-                );
+                    if (draggingNumber === numberSetting) Direction.FORWARDS else Direction.BACKWARDS
+                )
 
                 if (type == GuiEvents.CLICK && hoveringSlider && button == 0) {
-                    draggingNumber = numberSetting;
+                    draggingNumber = numberSetting
                 }
 
-                double currentValue = numberSetting.getValue();
-                if (draggingNumber != null && draggingNumber == setting) {
-                    float percent = Math.min(1, Math.max(0, (mouseX - (x + 5)) / totalSliderWidth));
-                    double newValue = (percent * (numberSetting.getMaximum() - numberSetting.getMinimum()))
-                            + numberSetting.getMinimum();
-                    numberSetting.set(newValue);
+                val currentValue = numberSetting.value.toDouble()
+                if (draggingNumber != null && draggingNumber === setting) {
+                    val percent = min(1.0, max(0.0, ((mouseX - (x + 5)) / totalSliderWidth).toDouble())).toFloat()
+                    val newValue = ((percent * (numberSetting.maximum - numberSetting.minimum))
+                            + numberSetting.minimum).toDouble()
+                    numberSetting.set(newValue)
                 }
 
-                float sliderMath = (float) ((currentValue - numberSetting.getMinimum())
-                        / (numberSetting.getMaximum() - numberSetting.getMinimum()));
+                val sliderMath = ((currentValue - numberSetting.minimum)
+                        / (numberSetting.maximum - numberSetting.minimum)).toFloat()
 
                 // Animate the slider position
-                float oldSlider = sliderfloatMap.get(numberSetting);
-                float targetSlider = totalSliderWidth * sliderMath;
-                sliderfloatMap.put(
-                        numberSetting,
-                        (float) DrRenderUtils.animate(targetSlider, oldSlider, .1)
-                );
+                val oldSlider = sliderfloatMap[numberSetting]!!
+                val targetSlider = totalSliderWidth * sliderMath
+                sliderfloatMap[numberSetting] =
+                    DrRenderUtils.animate(targetSlider.toDouble(), oldSlider.toDouble(), .1).toFloat()
 
-                float sliderY = (settingY + 18);
-                RenderUtils.drawCustomShapeWithRadius(
-                        x + 5, sliderY, totalSliderWidth, 3, 1.5f,
-                        DrRenderUtils.applyOpacity(darkRectHover, (float) (.4f + (.2 * hoverAnimation.getOutput())))
-                );
-                RenderUtils.drawCustomShapeWithRadius(
-                        x + 5, sliderY, Math.max(4, sliderfloatMap.get(numberSetting)), 3, 1.5f,
-                        accent ? accentedColor2 : textColor
-                );
+                val sliderY = (settingY + 18)
+                drawCustomShapeWithRadius(
+                    x + 5, sliderY, totalSliderWidth, 3f, 1.5f,
+                    DrRenderUtils.applyOpacity(darkRectHover, (.4f + (.2 * hoverAnimation.output)).toFloat())
+                )
+                drawCustomShapeWithRadius(
+                    x + 5, sliderY, max(4.0, sliderfloatMap[numberSetting]!!.toDouble()).toFloat(), 3f, 1.5f,
+                    if (accent) accentedColor2 else textColor
+                )
 
-                DrRenderUtils.setAlphaLimit(0);
+                DrRenderUtils.setAlphaLimit(0f)
                 DrRenderUtils.fakeCircleGlow(
-                        x + 4 + Math.max(4, sliderfloatMap.get(numberSetting)),
-                        sliderY + 1.5f, 6, Color.BLACK, .3f
-                );
+                    (x + 4 + max(4.0, sliderfloatMap[numberSetting]!!.toDouble())).toFloat(),
+                    sliderY + 1.5f, 6f, Color.BLACK, .3f
+                )
                 DrRenderUtils.drawGoodCircle(
-                        x + 4 + Math.max(4, sliderfloatMap.get(numberSetting)),
-                        sliderY + 1.5f, 3.75f,
-                        accent ? accentedColor2.getRGB() : textColor.getRGB()
-                );
+                    (x + 4 + max(4.0, sliderfloatMap[numberSetting]!!.toDouble())).toDouble(),
+                    (sliderY + 1.5f).toDouble(), 3.75f,
+                    if (accent) accentedColor2.rgb else textColor.rgb
+                )
 
-                count += .5f;
+                count += .5
             }
 
             // ----- IntegerValue -----
-            if (setting instanceof IntegerValue) {
-                IntegerValue numberSetting = (IntegerValue) setting;
-                String value = Float.toString((float) MathExtensionsKt.roundX(numberSetting.getValue(), 1));
+            if (setting is IntegerValue) {
+                val numberSetting = setting
+                val value = roundX(numberSetting.value.toDouble(), 1.0).toFloat().toString()
 
-                float regularFontWidth = (float) Fonts.SF.SF_18.SF_18.stringWidth(numberSetting.getName() + ": ");
-                float valueFontWidth = (float) Fonts.SF.SF_18.SF_18.stringWidth(value);
+                val regularFontWidth = Fonts.SF.SF_18.SF_18.stringWidth(numberSetting.name + ": ").toFloat()
+                val valueFontWidth = Fonts.SF.SF_18.SF_18.stringWidth(value).toFloat()
 
-                float titleX = x + width / 2f - (regularFontWidth + valueFontWidth) / 2f;
-                float titleY = settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight)
-                        - Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) / 2f + 1;
+                val titleX = x + width / 2f - (regularFontWidth + valueFontWidth) / 2f
+                val titleY = (settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight)
+                        - Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) / 2f + 1)
 
-                GlStateManager.color(1, 1, 1, 1);
-                Fonts.SF.SF_18.SF_18.drawString(numberSetting.getName() + ": ", titleX, titleY, textColor.getRGB());
-                Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.getRGB());
+                GlStateManager.color(1f, 1f, 1f, 1f)
+                Fonts.SF.SF_18.SF_18.drawString(numberSetting.name + ": ", titleX, titleY, textColor.rgb)
+                Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.rgb)
 
-                Animation hoverAnimation = sliderintAnimMap.get(numberSetting)[0];
-                Animation selectAnimtion = sliderintAnimMap.get(numberSetting)[1];
+                val hoverAnimation = sliderintAnimMap[numberSetting]!![0]
+                val selectAnimtion = sliderintAnimMap[numberSetting]!![1]
 
-                float totalSliderWidth = width - 10;
-                boolean hoveringSlider = isClickable(settingY + 17)
-                        && DrRenderUtils.isHovering(x + 5, settingY + 17, totalSliderWidth, 6, mouseX, mouseY);
+                val totalSliderWidth = width - 10
+                val hoveringSlider = isClickable(settingY + 17)
+                        && DrRenderUtils.isHovering(x + 5, settingY + 17, totalSliderWidth, 6f, mouseX, mouseY)
 
                 if (type == GuiEvents.RELEASE) {
-                    draggingNumber = null;
+                    draggingNumber = null
                 }
                 hoverAnimation.setDirection(
-                        hoveringSlider || draggingNumber == numberSetting ? Direction.FORWARDS : Direction.BACKWARDS
-                );
+                    if (hoveringSlider || draggingNumber === numberSetting) Direction.FORWARDS else Direction.BACKWARDS
+                )
                 selectAnimtion.setDirection(
-                        draggingNumber == numberSetting ? Direction.FORWARDS : Direction.BACKWARDS
-                );
+                    if (draggingNumber === numberSetting) Direction.FORWARDS else Direction.BACKWARDS
+                )
 
                 if (type == GuiEvents.CLICK && hoveringSlider && button == 0) {
-                    draggingNumber = numberSetting;
+                    draggingNumber = numberSetting
                 }
 
-                double currentValue = numberSetting.getValue();
-                if (draggingNumber != null && draggingNumber == setting) {
-                    float percent = Math.min(1, Math.max(0, (mouseX - (x + 5)) / totalSliderWidth));
-                    double newValue = (percent * (numberSetting.getMaximum() - numberSetting.getMinimum()))
-                            + numberSetting.getMinimum();
-                    numberSetting.set(newValue);
+                val currentValue = numberSetting.value.toDouble()
+                if (draggingNumber != null && draggingNumber === setting) {
+                    val percent = min(1.0, max(0.0, ((mouseX - (x + 5)) / totalSliderWidth).toDouble())).toFloat()
+                    val newValue = ((percent * (numberSetting.maximum - numberSetting.minimum))
+                            + numberSetting.minimum).toDouble()
+                    numberSetting.set(newValue)
                 }
 
-                float sliderMath = (float) ((currentValue - numberSetting.getMinimum())
-                        / (numberSetting.getMaximum() - numberSetting.getMinimum()));
+                val sliderMath = ((currentValue - numberSetting.minimum)
+                        / (numberSetting.maximum - numberSetting.minimum)).toFloat()
 
                 // Animate the slider position
-                float oldSlider = sliderintMap.get(numberSetting);
-                float targetSlider = totalSliderWidth * sliderMath;
-                sliderintMap.put(
-                        numberSetting,
-                        (float) DrRenderUtils.animate(targetSlider, oldSlider, .1)
-                );
+                val oldSlider = sliderintMap[numberSetting]!!
+                val targetSlider = totalSliderWidth * sliderMath
+                sliderintMap[numberSetting] =
+                    DrRenderUtils.animate(targetSlider.toDouble(), oldSlider.toDouble(), .1).toFloat()
 
-                float sliderY = (settingY + 18);
-                RenderUtils.drawCustomShapeWithRadius(
-                        x + 5, sliderY, totalSliderWidth, 3, 1.5f,
-                        DrRenderUtils.applyOpacity(darkRectHover, (float) (.4f + (.2 * hoverAnimation.getOutput())))
-                );
-                RenderUtils.drawCustomShapeWithRadius(
-                        x + 5, sliderY, Math.max(4, sliderintMap.get(numberSetting)), 3, 1.5f,
-                        accent ? accentedColor2 : textColor
-                );
+                val sliderY = (settingY + 18)
+                drawCustomShapeWithRadius(
+                    x + 5, sliderY, totalSliderWidth, 3f, 1.5f,
+                    DrRenderUtils.applyOpacity(darkRectHover, (.4f + (.2 * hoverAnimation.output)).toFloat())
+                )
+                drawCustomShapeWithRadius(
+                    x + 5, sliderY, max(4.0, sliderintMap[numberSetting]!!.toDouble()).toFloat(), 3f, 1.5f,
+                    if (accent) accentedColor2 else textColor
+                )
 
-                DrRenderUtils.setAlphaLimit(0);
+                DrRenderUtils.setAlphaLimit(0f)
                 DrRenderUtils.fakeCircleGlow(
-                        x + 4 + Math.max(4, sliderintMap.get(numberSetting)),
-                        sliderY + 1.5f, 6, Color.BLACK, .3f
-                );
+                    (x + 4 + max(4.0, sliderintMap[numberSetting]!!.toDouble())).toFloat(),
+                    sliderY + 1.5f, 6f, Color.BLACK, .3f
+                )
                 DrRenderUtils.drawGoodCircle(
-                        x + 4 + Math.max(4, sliderintMap.get(numberSetting)),
-                        sliderY + 1.5f, 3.75f,
-                        accent ? accentedColor2.getRGB() : textColor.getRGB()
-                );
+                    (x + 4 + max(4.0, sliderintMap[numberSetting]!!.toDouble())).toDouble(),
+                    (sliderY + 1.5f).toDouble(), 3.75f,
+                    if (accent) accentedColor2.rgb else textColor.rgb
+                )
 
-                count += .5f;
+                count += .5
             }
 
             // ----- NumberValue -----
-            if (setting instanceof NumberValue) {
-                NumberValue numberSetting = (NumberValue) setting;
-                String value = Float.toString(
-                        (float) MathExtensionsKt.round(numberSetting.getValue(), numberSetting.getInc())
-                );
+            if (setting is NumberValue) {
+                val numberSetting = setting
+                val value = round(numberSetting.value, numberSetting.getInc()).toFloat().toString()
 
-                float regularFontWidth = (float) Fonts.SF.SF_18.SF_18.stringWidth(numberSetting.getName() + ": ");
-                float valueFontWidth = (float) Fonts.SF.SF_18.SF_18.stringWidth(value);
+                val regularFontWidth = Fonts.SF.SF_18.SF_18.stringWidth(numberSetting.name + ": ").toFloat()
+                val valueFontWidth = Fonts.SF.SF_18.SF_18.stringWidth(value).toFloat()
 
-                float titleX = x + width / 2f - (regularFontWidth + valueFontWidth) / 2f;
-                float titleY = settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight)
-                        - Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) / 2f + 1;
+                val titleX = x + width / 2f - (regularFontWidth + valueFontWidth) / 2f
+                val titleY = (settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight)
+                        - Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) / 2f + 1)
 
-                GlStateManager.color(1, 1, 1, 1);
-                Fonts.SF.SF_18.SF_18.drawString(numberSetting.getName() + ": ", titleX, titleY, textColor.getRGB());
-                Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.getRGB());
+                GlStateManager.color(1f, 1f, 1f, 1f)
+                Fonts.SF.SF_18.SF_18.drawString(numberSetting.name + ": ", titleX, titleY, textColor.rgb)
+                Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.rgb)
 
-                Animation hoverAnimation = sliderAnimMap.get(numberSetting)[0];
-                Animation selectAnimtion = sliderAnimMap.get(numberSetting)[1];
+                val hoverAnimation = sliderAnimMap[numberSetting]!![0]
+                val selectAnimtion = sliderAnimMap[numberSetting]!![1]
 
-                float totalSliderWidth = width - 10;
-                boolean hoveringSlider = isClickable(settingY + 17)
-                        && DrRenderUtils.isHovering(x + 5, settingY + 17, totalSliderWidth, 6, mouseX, mouseY);
+                val totalSliderWidth = width - 10
+                val hoveringSlider = isClickable(settingY + 17)
+                        && DrRenderUtils.isHovering(x + 5, settingY + 17, totalSliderWidth, 6f, mouseX, mouseY)
 
                 if (type == GuiEvents.RELEASE) {
-                    draggingNumber = null;
+                    draggingNumber = null
                 }
                 hoverAnimation.setDirection(
-                        hoveringSlider || draggingNumber == numberSetting ? Direction.FORWARDS : Direction.BACKWARDS
-                );
+                    if (hoveringSlider || draggingNumber === numberSetting) Direction.FORWARDS else Direction.BACKWARDS
+                )
                 selectAnimtion.setDirection(
-                        draggingNumber == numberSetting ? Direction.FORWARDS : Direction.BACKWARDS
-                );
+                    if (draggingNumber === numberSetting) Direction.FORWARDS else Direction.BACKWARDS
+                )
 
                 if (type == GuiEvents.CLICK && hoveringSlider && button == 0) {
-                    draggingNumber = numberSetting;
+                    draggingNumber = numberSetting
                 }
 
-                double currentValue = numberSetting.getValue();
-                if (draggingNumber != null && draggingNumber == setting) {
-                    float percent = Math.min(1, Math.max(0, (mouseX - (x + 5)) / totalSliderWidth));
-                    double newValue = (percent * (numberSetting.getMaximum() - numberSetting.getMinimum()))
-                            + numberSetting.getMinimum();
-                    numberSetting.setValue(newValue);
+                val currentValue = numberSetting.value
+                if (draggingNumber != null && draggingNumber === setting) {
+                    val percent = min(1.0, max(0.0, ((mouseX - (x + 5)) / totalSliderWidth).toDouble())).toFloat()
+                    val newValue = ((percent * (numberSetting.maximum - numberSetting.minimum))
+                            + numberSetting.minimum)
+                    numberSetting.value = newValue
                 }
 
-                float sliderMath = (float) ((currentValue - numberSetting.getMinimum())
-                        / (numberSetting.getMaximum() - numberSetting.getMinimum()));
+                val sliderMath = ((currentValue - numberSetting.minimum)
+                        / (numberSetting.maximum - numberSetting.minimum)).toFloat()
 
-                float oldSlider = sliderMap.get(numberSetting);
-                float targetSlider = totalSliderWidth * sliderMath;
-                sliderMap.put(
-                        numberSetting,
-                        (float) DrRenderUtils.animate(targetSlider, oldSlider, .1)
-                );
+                val oldSlider = sliderMap[numberSetting]!!
+                val targetSlider = totalSliderWidth * sliderMath
+                sliderMap[numberSetting] =
+                    DrRenderUtils.animate(targetSlider.toDouble(), oldSlider.toDouble(), .1).toFloat()
 
-                float sliderY = (settingY + 18);
-                RenderUtils.drawCustomShapeWithRadius(
-                        x + 5, sliderY, totalSliderWidth, 3, 1.5f,
-                        DrRenderUtils.applyOpacity(darkRectHover, (float) (.4f + (.2 * hoverAnimation.getOutput())))
-                );
-                RenderUtils.drawCustomShapeWithRadius(
-                        x + 5, sliderY, Math.max(4, sliderMap.get(numberSetting)), 3, 1.5f,
-                        accent ? accentedColor2 : textColor
-                );
+                val sliderY = (settingY + 18)
+                drawCustomShapeWithRadius(
+                    x + 5, sliderY, totalSliderWidth, 3f, 1.5f,
+                    DrRenderUtils.applyOpacity(darkRectHover, (.4f + (.2 * hoverAnimation.output)).toFloat())
+                )
+                drawCustomShapeWithRadius(
+                    x + 5, sliderY, max(4.0, sliderMap[numberSetting]!!.toDouble()).toFloat(), 3f, 1.5f,
+                    if (accent) accentedColor2 else textColor
+                )
 
-                DrRenderUtils.setAlphaLimit(0);
+                DrRenderUtils.setAlphaLimit(0f)
                 DrRenderUtils.fakeCircleGlow(
-                        x + 4 + Math.max(4, sliderMap.get(numberSetting)),
-                        sliderY + 1.5f, 6, Color.BLACK, .3f
-                );
+                    (x + 4 + max(4.0, sliderMap[numberSetting]!!.toDouble())).toFloat(),
+                    sliderY + 1.5f, 6f, Color.BLACK, .3f
+                )
                 DrRenderUtils.drawGoodCircle(
-                        x + 4 + Math.max(4, sliderMap.get(numberSetting)),
-                        sliderY + 1.5f, 3.75f,
-                        accent ? accentedColor2.getRGB() : textColor.getRGB()
-                );
+                    (x + 4 + max(4.0, sliderMap[numberSetting]!!.toDouble())).toDouble(),
+                    (sliderY + 1.5f).toDouble(), 3.75f,
+                    if (accent) accentedColor2.rgb else textColor.rgb
+                )
 
-                count += .5f;
+                count += .5
             }
 
             // ----- BoolValue -----
-            if (setting instanceof BoolValue) {
-                BoolValue booleanSetting = (BoolValue) setting;
-                Animation toggleAnim = this.toggleAnimation.get(booleanSetting)[0];
-                Animation hoverAnim = this.toggleAnimation.get(booleanSetting)[1];
+            if (setting is BoolValue) {
+                val booleanSetting = setting
+                val toggleAnim =
+                    toggleAnimation[booleanSetting]!![0]
+                val hoverAnim =
+                    toggleAnimation[booleanSetting]!![1]
 
-                DrRenderUtils.resetColor();
-                OpenGlHelper.glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO);
-                GlStateManager.enableBlend();
+                DrRenderUtils.resetColor()
+                OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
+                GlStateManager.enableBlend()
 
                 Fonts.SF.SF_18.SF_18.drawString(
-                        booleanSetting.getName(),
-                        (int) MathExtensionsKt.roundToHalf(x + 4),
-                        settingY + 5,
-                        textColor.getRGB()
-                );
+                    booleanSetting.name,
+                    roundToHalf((x + 4).toDouble()).toInt().toFloat(),
+                    settingY + 5,
+                    textColor.rgb
+                )
 
-                float switchWidth = 16;
-                boolean hoveringSwitch = isClickable(settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) - 1)
+                val switchWidth = 16f
+                val hoveringSwitch = isClickable(settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) - 1)
                         && DrRenderUtils.isHovering(
-                        x + width - (switchWidth + 6),
-                        settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) - 1,
-                        switchWidth, 8, mouseX, mouseY
-                );
+                    x + width - (switchWidth + 6),
+                    settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) - 1,
+                    switchWidth, 8f, mouseX, mouseY
+                )
 
-                hoverAnim.setDirection(hoveringSwitch ? Direction.FORWARDS : Direction.BACKWARDS);
+                hoverAnim.setDirection(if (hoveringSwitch) Direction.FORWARDS else Direction.BACKWARDS)
 
                 if (type == GuiEvents.CLICK && hoveringSwitch && button == 0) {
-                    booleanSetting.toggle();
+                    booleanSetting.toggle()
                 }
 
-                toggleAnim.setDirection(booleanSetting.get() ? Direction.FORWARDS : Direction.BACKWARDS);
-                DrRenderUtils.resetColor();
+                toggleAnim.setDirection(if (booleanSetting.get()) Direction.FORWARDS else Direction.BACKWARDS)
+                DrRenderUtils.resetColor()
 
-                Color accentCircle = accent
-                        ? DrRenderUtils.applyOpacity(accentedColor, .8f)
-                        : DrRenderUtils.darker(textColor, .8f);
+                val accentCircle = if (accent)
+                    DrRenderUtils.applyOpacity(accentedColor, .8f)
+                else
+                    DrRenderUtils.darker(textColor, .8f)
 
-                RenderUtils.drawCustomShapeWithRadius(
-                        x + width - (switchWidth + 5.5f),
-                        settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) + 2,
-                        switchWidth, 4.5f, 2,
-                        DrRenderUtils.interpolateColorC(
-                                DrRenderUtils.applyOpacity(darkRectHover, .5f),
-                                accentCircle, (float) toggleAnim.getOutput()
-                        )
-                );
+                drawCustomShapeWithRadius(
+                    x + width - (switchWidth + 5.5f),
+                    settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) + 2,
+                    switchWidth, 4.5f, 2f,
+                    DrRenderUtils.interpolateColorC(
+                        DrRenderUtils.applyOpacity(darkRectHover, .5f),
+                        accentCircle, toggleAnim.output.toFloat()
+                    )
+                )
 
                 DrRenderUtils.fakeCircleGlow(
-                        (float) ((x + width - (switchWidth + 3))
-                                + ((switchWidth - 5) * toggleAnim.getOutput())),
-                        settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) + 4,
-                        6, Color.BLACK, .3f
-                );
+                    ((x + width - (switchWidth + 3))
+                            + ((switchWidth - 5) * toggleAnim.output)).toFloat(),
+                    settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) + 4,
+                    6f, Color.BLACK, .3f
+                )
 
-                DrRenderUtils.resetColor();
-                RenderUtils.drawCustomShapeWithRadius(
-                        (float) (x + width - (switchWidth + 6) + ((switchWidth - 5) * toggleAnim.getOutput())),
-                        settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) + 1,
-                        6.5f, 6.5f, 3, textColor
-                );
+                DrRenderUtils.resetColor()
+                drawCustomShapeWithRadius(
+                    (x + width - (switchWidth + 6) + ((switchWidth - 5) * toggleAnim.output)).toFloat(),
+                    settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) + 1,
+                    6.5f, 6.5f, 3f, textColor
+                )
             }
 
             // ----- ListValue -----
-            if (setting instanceof ListValue) {
-                ListValue modeSetting = (ListValue) setting;
-                Animation hoverAnim = modeSettingAnimMap.get(modeSetting)[0];
-                Animation openAnim = modeSettingAnimMap.get(modeSetting)[1];
+            if (setting is ListValue) {
+                val modeSetting = setting
+                val hoverAnim = modeSettingAnimMap[modeSetting]!![0]
+                val openAnim = modeSettingAnimMap[modeSetting]!![1]
 
-                boolean hoveringModeRect = isClickable(settingY + 5)
-                        && DrRenderUtils.isHovering(x + 5, settingY + 5, width - 10, rectHeight + 7, mouseX, mouseY);
+                val hoveringModeRect = isClickable(settingY + 5)
+                        && DrRenderUtils.isHovering(x + 5, settingY + 5, width - 10, rectHeight + 7, mouseX, mouseY)
 
                 if (type == GuiEvents.CLICK && hoveringModeRect && button == 1) {
-                    modeSettingClick.put(modeSetting, !modeSettingClick.get(modeSetting));
+                    modeSettingClick[modeSetting] = !modeSettingClick[modeSetting]!!
                 }
-                hoverAnim.setDirection(hoveringModeRect ? Direction.FORWARDS : Direction.BACKWARDS);
-                openAnim.setDirection(modeSettingClick.get(modeSetting) ? Direction.FORWARDS : Direction.BACKWARDS);
+                hoverAnim.setDirection(if (hoveringModeRect) Direction.FORWARDS else Direction.BACKWARDS)
+                openAnim.setDirection(if (modeSettingClick[modeSetting]!!) Direction.FORWARDS else Direction.BACKWARDS)
 
-                float math = (modeSetting.getValues().length - 1) * rectHeight;
-                RenderUtils.drawCustomShapeWithRadius(
-                        x + 5,
-                        (float) (settingY + rectHeight + 2 + (12 * openAnim.getOutput())),
-                        width - 10,
-                        (float) (math * openAnim.getOutput()),
-                        3,
-                        DrRenderUtils.applyOpacity(darkRectHover, (float) (.35f * openAnim.getOutput()))
-                );
+                val math = (modeSetting.values.size - 1) * rectHeight
+                drawCustomShapeWithRadius(
+                    x + 5,
+                    (settingY + rectHeight + 2 + (12 * openAnim.output)).toFloat(),
+                    width - 10,
+                    (math * openAnim.output).toFloat(),
+                    3f,
+                    DrRenderUtils.applyOpacity(darkRectHover, (.35f * openAnim.output).toFloat())
+                )
 
-                if (!openAnim.isDone() && type == GuiEvents.DRAW) {
-                    GL11.glEnable(GL11.GL_SCISSOR_TEST);
+                if (!openAnim.isDone && type == GuiEvents.DRAW) {
+                    GL11.glEnable(GL11.GL_SCISSOR_TEST)
                     DrRenderUtils.scissor(
-                            x + 5,
-                            (float) (settingY + 7 + rectHeight + (3 * openAnim.getOutput())),
-                            width - 10,
-                            (float) (math * openAnim.getOutput())
-                    );
+                        (x + 5).toDouble(),
+                        (settingY + 7 + rectHeight + (3 * openAnim.output)).toFloat().toDouble(),
+                        (width - 10).toDouble(),
+                        (math * openAnim.output).toFloat().toDouble()
+                    )
                 }
 
-                float modeCount = 0;
-                for (String mode : modeSetting.getValues()) {
-                    if (mode.equalsIgnoreCase(modeSetting.get())) continue;
+                var modeCount = 0f
+                for (mode in modeSetting.values) {
+                    if (mode.equals(modeSetting.get(), ignoreCase = true)) continue
 
-                    float modeY = (float) (
-                            settingY + rectHeight + 11
-                                    + ((8 + (modeCount * rectHeight)) * openAnim.getOutput())
-                    );
-                    DrRenderUtils.resetColor();
+                    val modeY = ((settingY + rectHeight + 11
+                            + ((8 + (modeCount * rectHeight)) * openAnim.output))
+                            ).toFloat()
+                    DrRenderUtils.resetColor()
 
-                    boolean hoveringMode = isClickable(modeY - 5)
-                            && openAnim.getDirection().equals(Direction.FORWARDS)
-                            && DrRenderUtils.isHovering(x + 5, modeY - 5, width - 10, rectHeight, mouseX, mouseY);
+                    val hoveringMode = isClickable(modeY - 5)
+                            && openAnim.direction == Direction.FORWARDS
+                            && DrRenderUtils.isHovering(x + 5, modeY - 5, width - 10, rectHeight, mouseX, mouseY)
 
-                    Animation modeHover = modesHoverAnimation.get(modeSetting).get(mode);
-                    modeHover.setDirection(hoveringMode ? Direction.FORWARDS : Direction.BACKWARDS);
+                    val modeHover = modesHoverAnimation[modeSetting]!![mode]
+                    modeHover!!.setDirection(if (hoveringMode) Direction.FORWARDS else Direction.BACKWARDS)
 
-                    if (modeHover.finished(Direction.FORWARDS) || !modeHover.isDone()) {
-                        RenderUtils.drawCustomShapeWithRadius(
-                                x + 5, modeY - 5, width - 10, rectHeight, 3,
-                                DrRenderUtils.applyOpacity(textColor, (float) (.2f * modeHover.getOutput()))
-                        );
+                    if (modeHover.finished(Direction.FORWARDS) || !modeHover.isDone) {
+                        drawCustomShapeWithRadius(
+                            x + 5, modeY - 5, width - 10, rectHeight, 3f,
+                            DrRenderUtils.applyOpacity(textColor, (.2f * modeHover.output).toFloat())
+                        )
                     }
 
                     if (type == GuiEvents.CLICK && button == 0 && hoveringMode) {
-                        modeSettingClick.put(modeSetting, !modeSettingClick.get(modeSetting));
-                        modeSetting.set(mode, true);
+                        modeSettingClick[modeSetting] = !modeSettingClick[modeSetting]!!
+                        modeSetting.set(mode, true)
                     }
-                    if (openAnim.isDone() && openAnim.getDirection().equals(Direction.FORWARDS) || !openAnim.isDone()) {
+                    if (openAnim.isDone && openAnim.direction == Direction.FORWARDS || !openAnim.isDone) {
                         Fonts.SF.SF_18.SF_18.drawString(
-                                mode,
-                                x + 13,
-                                modeY,
-                                DrRenderUtils.applyOpacity(textColor, (float) openAnim.getOutput()).getRGB()
-                        );
+                            mode,
+                            x + 13,
+                            modeY,
+                            DrRenderUtils.applyOpacity(textColor, openAnim.output.toFloat()).rgb
+                        )
                     }
-                    modeCount++;
+                    modeCount++
                 }
 
-                if (!openAnim.isDone() && type == GuiEvents.DRAW) {
-                    GL11.glDisable(GL11.GL_SCISSOR_TEST);
+                if (!openAnim.isDone && type == GuiEvents.DRAW) {
+                    GL11.glDisable(GL11.GL_SCISSOR_TEST)
                 }
-                if (settingHeightScissor.isDone()
-                        && openAnim.isDone()
-                        && GL11.glIsEnabled(GL11.GL_SCISSOR_TEST)) {
-                    GL11.glDisable(GL11.GL_SCISSOR_TEST);
-                }
-
-                RenderUtils.drawCustomShapeWithRadius(
-                        x + 5, settingY + 5, width - 10, rectHeight + 7, 3,
-                        DrRenderUtils.applyOpacity(darkRectHover, .45f)
-                );
-
-                if (!hoverAnim.isDone() || hoverAnim.finished(Direction.FORWARDS)) {
-                    RenderUtils.drawCustomShapeWithRadius(
-                            x + 5, settingY + 5, width - 10, rectHeight + 7, 3,
-                            DrRenderUtils.applyOpacity(textColor, (float) (.2f * hoverAnim.getOutput()))
-                    );
+                if (settingHeightScissor!!.isDone
+                    && openAnim.isDone
+                    && GL11.glIsEnabled(GL11.GL_SCISSOR_TEST)
+                ) {
+                    GL11.glDisable(GL11.GL_SCISSOR_TEST)
                 }
 
-                float selectRectWidth = (float) ((width - 10) * openAnim.getOutput());
-                if (openAnim.isDone() && openAnim.getDirection().equals(Direction.FORWARDS)
-                        || !openAnim.isDone()) {
-                    RenderUtils.drawCustomShapeWithRadius(
-                            x + 5 + ((width - 10) / 2f - selectRectWidth / 2f),
-                            settingY + rectHeight + 10.5f,
-                            Math.max(2, selectRectWidth), 1.5f, .5f,
-                            accent ? accentedColor2 : textColor
-                    );
+                drawCustomShapeWithRadius(
+                    x + 5, settingY + 5, width - 10, rectHeight + 7, 3f,
+                    DrRenderUtils.applyOpacity(darkRectHover, .45f)
+                )
+
+                if (!hoverAnim.isDone || hoverAnim.finished(Direction.FORWARDS)) {
+                    drawCustomShapeWithRadius(
+                        x + 5, settingY + 5, width - 10, rectHeight + 7, 3f,
+                        DrRenderUtils.applyOpacity(textColor, (.2f * hoverAnim.output).toFloat())
+                    )
+                }
+
+                val selectRectWidth = ((width - 10) * openAnim.output).toFloat()
+                if (openAnim.isDone && openAnim.direction == Direction.FORWARDS
+                    || !openAnim.isDone
+                ) {
+                    drawCustomShapeWithRadius(
+                        x + 5 + ((width - 10) / 2f - selectRectWidth / 2f),
+                        settingY + rectHeight + 10.5f,
+                        max(2.0, selectRectWidth.toDouble()).toFloat(), 1.5f, .5f,
+                        if (accent) accentedColor2 else textColor
+                    )
                 }
 
                 Fonts.SF.SF_14.SF_14.drawString(
-                        modeSetting.getName(),
-                        x + 13,
-                        settingY + 9,
-                        textColor.getRGB()
-                );
+                    modeSetting.name,
+                    x + 13,
+                    settingY + 9,
+                    textColor.rgb
+                )
 
-                DrRenderUtils.resetColor();
+                DrRenderUtils.resetColor()
                 Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(
-                        modeSetting.get(),
-                        x + 13,
-                        (float) (settingY + 17.5),
-                        textColor.getRGB()
-                );
+                    modeSetting.get(),
+                    x + 13,
+                    (settingY + 17.5).toFloat(),
+                    textColor.rgb
+                )
 
-                DrRenderUtils.resetColor();
+                DrRenderUtils.resetColor()
                 DrRenderUtils.drawClickGuiArrow(
-                        x + width - 15,
-                        settingY + 17,
-                        5,
-                        openAnim,
-                        textColor.getRGB()
-                );
+                    x + width - 15,
+                    settingY + 17,
+                    5f,
+                    openAnim,
+                    textColor.rgb
+                )
 
-                count += 1 + ((math / rectHeight) * openAnim.getOutput());
+                count += 1 + ((math / rectHeight) * openAnim.output)
             }
 
             // ----- TextValue -----
-            if (setting instanceof TextValue) {
-                TextValue stringSetting = (TextValue) setting;
+            if (setting is TextValue) {
+                val stringSetting = setting
 
-                DrRenderUtils.resetColor();
+                DrRenderUtils.resetColor()
                 Fonts.SF.SF_16.SF_16.drawString(
-                        stringSetting.getName(),
-                        x + 5,
-                        settingY + 2,
-                        textColor.getRGB()
-                );
+                    stringSetting.name,
+                    x + 5,
+                    settingY + 2,
+                    textColor.rgb
+                )
 
                 // Create the PasswordField (which might just be a text box in your code)
-                PasswordField stringSettingField = new PasswordField(
-                        "Type Here...",
-                        0,
-                        (int) (x + 5),
-                        (int) (settingY + 15),
-                        (int) (width - 10),
-                        10,
-                        Fonts.SF.SF_18.SF_18
-                );
+                val stringSettingField = PasswordField(
+                    "Type Here...",
+                    0,
+                    (x + 5).toInt(),
+                    (settingY + 15).toInt(),
+                    (width - 10).toInt(),
+                    10,
+                    Fonts.SF.SF_18.SF_18
+                )
 
                 // Use renamed methods to avoid ambiguous calls:
                 // (Assuming PasswordField was updated to have updateText(...) and updateTextColor(...))
-                stringSettingField.updateText(stringSetting.get());
-                stringSettingField.setFocused(selectedStringSetting == stringSetting);
-                stringSettingField.setBottomBarColor(textColor.getRGB());
-                stringSettingField.updateTextColor(textColor.getRGB());
-                stringSettingField.setPlaceHolderTextX(x + 30);
+                stringSettingField.updateText(stringSetting.get())
+                stringSettingField.setFocused(selectedStringSetting === stringSetting)
+                stringSettingField.bottomBarColor = textColor.rgb
+                stringSettingField.updateTextColor(textColor.rgb)
+                stringSettingField.placeHolderTextX = (x + 30).toDouble()
 
                 if (type == GuiEvents.CLICK) {
-                    stringSettingField.mouseClicked(mouseX, mouseY, button);
+                    stringSettingField.mouseClicked(mouseX, mouseY, button)
                 }
                 if (stringSettingField.isFocused()) {
-                    selectedField = stringSettingField;
-                    selectedStringSetting = stringSetting;
-                } else if (selectedStringSetting == stringSetting) {
-                    selectedStringSetting = null;
-                    selectedField = null;
+                    selectedField = stringSettingField
+                    selectedStringSetting = stringSetting
+                } else if (selectedStringSetting === stringSetting) {
+                    selectedStringSetting = null
+                    selectedField = null
                 }
 
-                stringSettingField.drawTextBox();
+                stringSettingField.drawTextBox()
                 // Reflect any changes back to the actual setting
-                stringSetting.set(stringSettingField.getTextValue(), true);
+                stringSetting.set(stringSettingField.textValue, true)
 
-                count++;
+                count++
             }
 
             // Render the key bind
-            String bind = Keyboard.getKeyName(module.getKeyBind());
-            boolean hoveringBindRect = isClickable(
-                    y + Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getMiddleOfBox(rectHeight) - 1
+            val bind = Keyboard.getKeyName(module.keyBind)
+            val hoveringBindRect = isClickable(
+                y + Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getMiddleOfBox(rectHeight) - 1
             ) && DrRenderUtils.isHovering(
-                    x + width - (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 10),
-                    y + Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getMiddleOfBox(rectHeight) - 1,
-                    (float) (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 8),
-                    Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getHeight() + 6,
-                    mouseX, mouseY
-            );
+                x + width - (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 10),
+                y + Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getMiddleOfBox(rectHeight) - 1,
+                (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 8).toFloat(),
+                (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.height + 6).toFloat(),
+                mouseX, mouseY
+            )
 
             if (type == GuiEvents.CLICK && hoveringBindRect && button == 0) {
-                binding = module;
-                return;
+                binding = module
+                return
             }
 
-            Animation[] animations = keySettingAnimMap.get(module);
-            animations[1].setDirection(binding == module ? Direction.FORWARDS : Direction.BACKWARDS);
-            animations[0].setDirection(hoveringBindRect ? Direction.FORWARDS : Direction.BACKWARDS);
+            val animations =
+                keySettingAnimMap[module]!!
+            animations[1].setDirection(if (binding === module) Direction.FORWARDS else Direction.BACKWARDS)
+            animations[0].setDirection(if (hoveringBindRect) Direction.FORWARDS else Direction.BACKWARDS)
 
             // (Any extra code for rendering the bind rectangle is commented out below)
             /*
@@ -697,31 +686,32 @@ public class SettingComponents extends Component {
                  )
              );
             */
-            count++;
+            count++
         }
-        settingSize = count;
+        settingSize = count
     }
 
-    @Override
-    public void drawScreen(int mouseX, int mouseY) {
-        handle(mouseX, mouseY, -1, GuiEvents.DRAW);
+    override fun drawScreen(mouseX: Int, mouseY: Int) {
+        handle(mouseX, mouseY, -1, GuiEvents.DRAW)
     }
 
-    @Override
-    public void mouseClicked(int mouseX, int mouseY, int button) {
-        handle(mouseX, mouseY, button, GuiEvents.CLICK);
+    override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+        handle(mouseX, mouseY, button, GuiEvents.CLICK)
     }
 
-    @Override
-    public void mouseReleased(int mouseX, int mouseY, int state) {
-        handle(mouseX, mouseY, state, GuiEvents.RELEASE);
+    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
+        handle(mouseX, mouseY, state, GuiEvents.RELEASE)
     }
 
     /**
      * Returns whether we can safely interact with a setting at the given y-position,
      * preventing clicks from “spilling over” the visible region.
      */
-    public boolean isClickable(float y) {
-        return y > panelLimitY && y < panelLimitY + 17 + Main.allowedClickGuiHeight;
+    fun isClickable(y: Float): Boolean {
+        return y > panelLimitY && y < panelLimitY + 17 + Main.allowedClickGuiHeight
+    }
+
+    companion object {
+        var scale: Float = 0f
     }
 }

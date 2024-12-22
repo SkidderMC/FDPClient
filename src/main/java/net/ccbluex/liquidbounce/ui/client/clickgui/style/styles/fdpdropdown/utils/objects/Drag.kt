@@ -17,7 +17,6 @@ class Drag(var x: Float, var y: Float) {
         }
     }
 
-
     fun onClick(mouseX: Int, mouseY: Int, button: Int, canDrag: Boolean) {
         if (button == 0 && canDrag) {
             dragging = true

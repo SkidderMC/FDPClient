@@ -87,14 +87,9 @@ object ModuleManager : Listenable, Collection<Module> by MODULE_REGISTRY {
     }
 
     /**
-     * Get module by [moduleClass]
-     */
-    operator fun get(moduleClass: Class<out Module>) = MODULE_REGISTRY.find { it.javaClass === moduleClass } ?: error("Module ${moduleClass.simpleName} is not registered")
-
-    /**
      * Get module by [moduleName]
      */
-    operator fun get(moduleName: String) = MODULE_REGISTRY.find { it.name.equals(moduleName, ignoreCase = true) } ?: error("No Module found with name [$moduleName]")
+    operator fun get(moduleName: String) = MODULE_REGISTRY.find { it.name.equals(moduleName, ignoreCase = true) }
 
     fun getKeyBind(key: Int) = MODULE_REGISTRY.filter { it.keyBind == key }
 

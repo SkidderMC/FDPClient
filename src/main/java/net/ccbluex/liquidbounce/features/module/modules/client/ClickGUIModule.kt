@@ -29,15 +29,15 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
     var scale by float("Scale", 0.8f, 0.5f..1.5f)
     val maxElements by int("MaxElements", 15, 1..30)
     val fadeSpeed by float("FadeSpeed", 1f, 0.5f..4f)
-    val scrolls by boolean("Scrolls", true)
-    val spacedModules by boolean("SpacedModules", false)
+    val scrolls by boolean("Scrolls", true) { style == "FDP" }
+    val spacedModules by boolean("SpacedModules", false) { style == "FDP" }
     val panelsForcedInBoundaries by boolean("PanelsForcedInBoundaries", false)
+    val categoryOutline by boolean("Header Outline", true) { style == "FDP" }
 
-
-    val backback by boolean("Background Accent", true)
-    val scrollMode by choices("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")
-    val colormode by choices("Setting Accent", arrayOf("White", "Color"), "Color")
-    val clickHeight by int("Tab Height", 250, 100.. 500)
+    val backback by boolean("Background Accent", true) { style == "FDP" }
+    val scrollMode by choices("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")  { style == "FDP" }
+    val colormode by choices("Setting Accent", arrayOf("White", "Color"), "Color") { style == "FDP" }
+    val clickHeight by int("Tab Height", 250, 100.. 500) { style == "FDP" }
 
     override fun onEnable() {
         lastScale = mc.gameSettings.guiScale

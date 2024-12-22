@@ -3,154 +3,222 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl
 
-import lombok.Getter;
-import net.ccbluex.liquidbounce.features.module.Module;
-import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.EaseInOutQuad;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils;
-import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.opengl.GL11;
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.backback
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.generateColor
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.EaseInOutQuad
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
+import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts
+import org.lwjgl.input.Keyboard
+import org.lwjgl.opengl.GL11
+import java.awt.Color
+import java.awt.Component
 
-import java.awt.Component;
-import java.awt.*;
+class ModuleRect(val module: Module) : Component() {
 
-public class ModuleRect extends Component {
+    private val settingComponents = SettingComponents(module)
 
-    public final Module module;
-    private final SettingComponents settingComponents;
-    private final Animation animation = new EaseInOutQuad(300, 1, Direction.BACKWARDS);
-    private final Animation arrowAnimation = new EaseInOutQuad(250, 1, Direction.BACKWARDS);
-    private final Animation hoverAnimation = new DecelerateAnimation(250, 1, Direction.BACKWARDS);
-    public Animation settingAnimation;
-    public Animation openingAnimation;
-    public float x, y, width, height, panelLimitY;
-    public int alphaAnimation;
-    int clickX, clickY;
-    @Getter
-    public double settingSize;
+    private val toggleAnimation = EaseInOutQuad(300, 1.0, Direction.BACKWARDS)
+    private val arrowAnimation = EaseInOutQuad(250, 1.0, Direction.BACKWARDS)
+    private val hoverAnimation = DecelerateAnimation(250, 1.0, Direction.BACKWARDS)
 
-    public ModuleRect(Module module) {
-        this.module = module;
-        settingComponents = new SettingComponents(module);
+    var settingAnimation: Animation? = null
+    var openingAnimation: Animation? = null
+
+    var x: Float = 0f
+    var y: Float = 0f
+    var width: Float = 0f
+    var height: Float = 0f
+    var panelLimitY: Float = 0f
+    var alphaAnimation: Int = 0
+
+    var clickX: Int = 0
+    var clickY: Int = 0
+
+    var settingSize: Double = 0.0
+        private set
+
+    fun initGui() {
+        toggleAnimation.direction = if (module.state) Direction.FORWARDS else Direction.BACKWARDS
     }
 
-    public void initGui() {
-        animation.setDirection(module.getState() ? Direction.FORWARDS : Direction.BACKWARDS);
-    }
-
-    public void keyTyped(char typedChar, int keyCode) {
-        if (module.getExpanded()) {
-            settingComponents.keyTyped(typedChar, keyCode);
+    fun keyTyped(typedChar: Char, keyCode: Int) {
+        if (module.expanded) {
+            settingComponents.keyTyped(typedChar, keyCode)
         }
     }
 
-    public void drawScreen(int mouseX, int mouseY) {
-        Color rectColor = new Color(43, 45, 50, alphaAnimation);
-        Color textColor = new Color(255, 255, 255, alphaAnimation);
-        int index = 0;
-        Color debcolor = new Color(ClickGUIModule.generateColor(index).getRGB());
+    fun drawScreen(mouseX: Int, mouseY: Int) {
+        val baseRectColor = Color(43, 45, 50, alphaAnimation)
+        val textColor = Color(255, 255, 255, alphaAnimation)
 
-        Color clickModColor = DrRenderUtils.applyOpacity(debcolor, alphaAnimation / 255f);
+        val accentIndex = 0
+        val accent = Color(generateColor(accentIndex).rgb)
+        val accentWithAlpha = DrRenderUtils.applyOpacity(accent, alphaAnimation / 255f)
 
-        float alpha = alphaAnimation / 255f;
+        val hoveringModule = DrRenderUtils.isHovering(x, y, width, height, mouseX, mouseY)
+        hoverAnimation.direction = if (hoveringModule) Direction.FORWARDS else Direction.BACKWARDS
 
-        boolean hoveringModule = DrRenderUtils.isHovering(x, y, width, height, mouseX, mouseY);
-        hoverAnimation.setDirection(hoveringModule ? Direction.FORWARDS : Direction.BACKWARDS);
+        val hoveredRectColor = DrRenderUtils.interpolateColor(
+            baseRectColor.rgb,
+            DrRenderUtils.brighter(baseRectColor, 0.8f).rgb,
+            hoverAnimation.output.toFloat()
+        )
+        DrRenderUtils.drawRect2(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble(), hoveredRectColor)
 
-        DrRenderUtils.drawRect2(x, y, width, height, DrRenderUtils.interpolateColor(rectColor.getRGB(), DrRenderUtils.brighter(rectColor, .8f).getRGB(), (float) hoverAnimation.getOutput()));
+        DrRenderUtils.drawRect2(
+            x.toDouble(),
+            y.toDouble(),
+            width.toDouble(),
+            height.toDouble(),
+            DrRenderUtils.applyOpacity(accentWithAlpha, toggleAnimation.output.toFloat()).rgb
+        )
 
-        DrRenderUtils.drawRect2(x, y, width, height, DrRenderUtils.applyOpacity(clickModColor, (float) animation.getOutput()).getRGB());
+        Fonts.SF.SF_20.SF_20.drawString(
+            module.name,
+            x + 5,
+            y + Fonts.SF.SF_20.SF_20.getMiddleOfBox(height),
+            textColor.rgb
+        )
 
-        Fonts.SF.SF_20.SF_20.drawString(module.getName(), x + 5, y + Fonts.SF.SF_20.SF_20.getMiddleOfBox(height), textColor.getRGB());
-
-        if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && module.getKeyBind() != 0) {
-            String keyName = Keyboard.getKeyName(module.getKeyBind());
-            Fonts.SF.SF_20.SF_20.drawString(keyName, x + width - Fonts.SF.SF_20.SF_20.stringWidth(keyName) - 5, y + Fonts.SF.SF_20.SF_20.getMiddleOfBox(height), textColor.getRGB());
+        if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && module.keyBind != 0) {
+            val keyName = Keyboard.getKeyName(module.keyBind)
+            Fonts.SF.SF_20.SF_20.drawString(
+                keyName,
+                x + width - Fonts.SF.SF_20.SF_20.stringWidth(keyName) - 5,
+                y + Fonts.SF.SF_20.SF_20.getMiddleOfBox(height),
+                textColor.rgb
+            )
         } else {
-            float arrowSize = 6;
-            arrowAnimation.setDirection(module.getExpanded() ? Direction.FORWARDS : Direction.BACKWARDS);
-            DrRenderUtils.setAlphaLimit(0);
-            DrRenderUtils.resetColor();
-            DrRenderUtils.drawClickGuiArrow(x + width - (arrowSize + 5), y + height / 2f - 2, arrowSize, arrowAnimation, textColor.getRGB());
+            val arrowSize = 6f
+            arrowAnimation.direction = if (module.expanded) Direction.FORWARDS else Direction.BACKWARDS
+            DrRenderUtils.setAlphaLimit(0f)
+            DrRenderUtils.resetColor()
+            DrRenderUtils.drawClickGuiArrow(
+                x + width - (arrowSize + 5),
+                y + (height / 2f) - 2f,
+                arrowSize,
+                arrowAnimation,
+                textColor.rgb
+            )
         }
 
-        Color settingRectColor = new Color(32, 32, 32, alphaAnimation);
+        val settingRectColor = Color(32, 32, 32, alphaAnimation)
+        val expandedHeight = settingComponents.settingSize * (settingAnimation?.output ?: 0.0)
 
+        if (module.expanded || (settingAnimation?.isDone == false)) {
+            DrRenderUtils.drawRect2(
+                x.toDouble(),
+                (y + height).toDouble(),
+                width.toDouble(),
+                expandedHeight * height,
+                settingRectColor.rgb
+            )
 
-        double settingHeight = (settingComponents.settingSize) * settingAnimation.getOutput();
-        if (module.getExpanded() || !settingAnimation.isDone()) {
-            DrRenderUtils.drawRect2(x, y + height, width, settingHeight * height, settingRectColor.getRGB());
-
-            if (ClickGUIModule.INSTANCE.getBackback()) {
-
-                DrRenderUtils.resetColor();
-
-                float accentAlpha = (float) (.85 * animation.getOutput()) * alpha;
-
-                DrRenderUtils.drawRect2(x, y + height, width, (float) (settingHeight * height), DrRenderUtils.applyOpacity(clickModColor, accentAlpha).getRGB());
+            if (backback) {
+                DrRenderUtils.resetColor()
+                val accentAlpha = (0.85 * toggleAnimation.output).toFloat() * (alphaAnimation / 255f)
+                DrRenderUtils.drawRect2(
+                    x.toDouble(),
+                    (y + height).toDouble(),
+                    width.toDouble(),
+                    (expandedHeight * height),
+                    DrRenderUtils.applyOpacity(accentWithAlpha, accentAlpha).rgb
+                )
             }
 
+            settingComponents.x = x
+            settingComponents.y = y + height
+            settingComponents.width = width
+            settingComponents.rectHeight = height
+            settingComponents.panelLimitY = panelLimitY
+            settingComponents.alphaAnimation = alphaAnimation
+            settingComponents.settingHeightScissor = settingAnimation
 
-            settingComponents.x = x;
-            settingComponents.y = y + height;
-            settingComponents.width = width;
-            settingComponents.rectHeight = height;
-            settingComponents.panelLimitY = panelLimitY;
-            settingComponents.alphaAnimation = alphaAnimation;
-            settingComponents.settingHeightScissor = settingAnimation;
-            if (!settingAnimation.isDone()) {
-                GL11.glEnable(GL11.GL_SCISSOR_TEST);
-                DrRenderUtils.scissor(x, y + height, width, settingHeight * height);
+            if (settingAnimation?.isDone == false) {
+                GL11.glEnable(GL11.GL_SCISSOR_TEST)
+                DrRenderUtils.scissor(
+                    x.toDouble(),
+                    (y + height).toDouble(),
+                    width.toDouble(),
+                    expandedHeight * height
+                )
+                settingComponents.drawScreen(mouseX, mouseY)
 
-                settingComponents.drawScreen(mouseX, mouseY);
-                DrRenderUtils.drawGradientRect2(x, y + height, width, 6, new Color(0, 0, 0, 60).getRGB(), new Color(0, 0, 0, 0).getRGB());
-                DrRenderUtils.drawGradientRect2(x, y + 11 + (settingHeight * height), width, 6, new Color(0, 0, 0, 0).getRGB(), new Color(0, 0, 0, 60).getRGB());
-                GL11.glDisable(GL11.GL_SCISSOR_TEST);
+                DrRenderUtils.drawGradientRect2(
+                    x.toDouble(),
+                    (y + height).toDouble(),
+                    width.toDouble(),
+                    6.0,
+                    Color(0, 0, 0, 60).rgb,
+                    Color(0, 0, 0, 0).rgb
+                )
+                DrRenderUtils.drawGradientRect2(
+                    x.toDouble(),
+                    y + 11 + (expandedHeight * height),
+                    width.toDouble(),
+                    6.0,
+                    Color(0, 0, 0, 0).rgb,
+                    Color(0, 0, 0, 60).rgb
+                )
+                GL11.glDisable(GL11.GL_SCISSOR_TEST)
             } else {
-                settingComponents.drawScreen(mouseX, mouseY);
-                DrRenderUtils.drawGradientRect2(x, y + height, width, 6, new Color(0, 0, 0, 60).getRGB(), new Color(0, 0, 0, 0).getRGB());
-                DrRenderUtils.drawGradientRect2(x, y + 11 + (settingHeight * height), width, 6, new Color(0, 0, 0, 0).getRGB(), new Color(0, 0, 0, 60).getRGB());
+                settingComponents.drawScreen(mouseX, mouseY)
+                DrRenderUtils.drawGradientRect2(
+                    x.toDouble(),
+                    (y + height).toDouble(),
+                    width.toDouble(),
+                    6.0,
+                    Color(0, 0, 0, 60).rgb,
+                    Color(0, 0, 0, 0).rgb
+                )
+                DrRenderUtils.drawGradientRect2(
+                    x.toDouble(),
+                    y + 11 + (expandedHeight * height),
+                    width.toDouble(),
+                    6.0,
+                    Color(0, 0, 0, 0).rgb,
+                    Color(0, 0, 0, 60).rgb
+                )
             }
-
         }
-        settingSize = settingHeight;
-
+        settingSize = expandedHeight
     }
 
-    public void mouseClicked(int mouseX, int mouseY, int button) {
-        boolean hoveringModule = isClickable(y, panelLimitY) && DrRenderUtils.isHovering(x, y, width, height, mouseX, mouseY);
+    fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+        val hoveringModule = isClickable(y, panelLimitY) &&
+                DrRenderUtils.isHovering(x, y, width, height, mouseX, mouseY)
         if (hoveringModule) {
-            switch (button) {
-                case 0:
-                    clickX = mouseX;
-                    clickY = mouseY;
-                    animation.setDirection(!module.getState() ? Direction.FORWARDS : Direction.BACKWARDS);
-                    module.toggle();
-                    break;
-                case 1:
-                    module.setExpanded(!module.getExpanded());
-                    break;
+            when (button) {
+                0 -> {
+                    clickX = mouseX
+                    clickY = mouseY
+                    toggleAnimation.direction = if (!module.state) Direction.FORWARDS else Direction.BACKWARDS
+                    module.toggle()
+                }
+                1 -> {
+                    module.expanded = !module.expanded
+                }
             }
         }
-        if (module.getExpanded()) {
-            settingComponents.mouseClicked(mouseX, mouseY, button);
+        if (module.expanded) {
+            settingComponents.mouseClicked(mouseX, mouseY, button)
         }
     }
 
-    public void mouseReleased(int mouseX, int mouseY, int state) {
-        if (module.getExpanded()) {
-            settingComponents.mouseReleased(mouseX, mouseY, state);
+    fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
+        if (module.expanded) {
+            settingComponents.mouseReleased(mouseX, mouseY, state)
         }
     }
 
-    public boolean isClickable(float y, float panelLimitY) {
-        return y > panelLimitY && y < panelLimitY + Main.allowedClickGuiHeight + 17;
+    fun isClickable(currentY: Float, limitY: Float): Boolean {
+        return currentY > limitY && currentY < limitY + Main.allowedClickGuiHeight + 17
     }
 }
