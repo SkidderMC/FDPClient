@@ -206,6 +206,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     private val eagleValue =
         ListValue("Eagle", arrayOf("Normal", "Silent", "Off"), "Normal") { scaffoldMode != "GodBridge" }
     val eagle by eagleValue
+    private val eagleMode by choices("EagleMode", arrayOf("Both", "OnGround", "OnAir"), "Both")
+    { eagleValue.isSupported() && eagle != "Off" }
     private val adjustedSneakSpeed by boolean("AdjustedSneakSpeed", true) { eagle == "Silent" }
     private val eagleSpeed by float("EagleSpeed", 0.3f, 0.3f..1.0f) { eagleValue.isSupported() && eagle != "Off" }
     val eagleSprint by boolean("EagleSprint", false) { eagleValue.isSupported() && eagle == "Normal" }
@@ -213,7 +215,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     private val edgeDistance by float(
         "EagleEdgeDistance", 0f, 0f..0.5f
     ) { eagleValue.isSupported() && eagle != "Off" }
-    private val onlyOnGround by boolean("OnlyOnGround", false) { eagleValue.isSupported() && eagle != "Off" }
 
     // Rotation Options
     private val modeList =
@@ -315,7 +316,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     private var placedBlocksWithoutEagle = 0
     var eagleSneaking = false
     private val isEagleEnabled
-        get() = eagle != "Off" && !shouldGoDown && scaffoldMode != "GodBridge" && (!onlyOnGround || mc.thePlayer?.onGround == true)
+        get() = eagle != "Off" && !shouldGoDown && scaffoldMode != "GodBridge"
 
     // Downwards
     val shouldGoDown
@@ -432,7 +433,14 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             }
 
             if (placedBlocksWithoutEagle >= blocksToEagle) {
-                val shouldEagle = blockPos.isReplaceable || dif < edgeDistance
+                val eagleCondition = when (eagleMode) {
+                    "OnGround" -> player.onGround
+                    "OnAir" -> !player.onGround
+                    else -> true
+                }
+
+                val shouldEagle = eagleCondition && (blockPos.isReplaceable || dif < edgeDistance)
+
                 if (eagle == "Silent") {
                     if (eagleSneaking != shouldEagle) {
                         sendPacket(
