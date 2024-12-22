@@ -108,7 +108,7 @@ class ScoreboardElement(
             val maxHeight = scoreCollection.size * fontHeight
             val l1 = -maxWidth - 3 - if (rect) 3 else 0
 
-            drawRoundedRectInt(l1 - 4, -4, 7, maxHeight + fontHeight, backColor, roundedRectRadius)
+            drawRoundedRectInt(l1 - 4, -4, 7, maxHeight + fontHeight + 2, backColor, roundedRectRadius)
 
             scoreCollection.filterNotNull().forEachIndexed { index, score ->
                 val team = scoreboard.getPlayersTeam(score.playerName)
@@ -191,7 +191,7 @@ class ScoreboardElement(
                 }
             }
 
-            return Border(l1 - 4F, -4F, 7F, maxHeight + fontHeight.toFloat())
+            return Border(l1 - 4F, -4F, 7F, maxHeight + fontHeight + 2F)
         }
 
         return null
