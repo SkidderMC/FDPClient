@@ -5,13 +5,12 @@
  */
 package net.ccbluex.liquidbounce.utils.client
 
-import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.network.NetworkManager
 import net.minecraft.network.login.client.C01PacketEncryptionResponse
 import net.minecraft.network.login.server.S01PacketEncryptionRequest
-import net.minecraft.util.IChatComponent
+import net.minecraft.util.ChatComponentText
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.apache.logging.log4j.LogManager
@@ -55,15 +54,8 @@ object ClientUtils : MinecraftInstance {
     }
 
     fun displayChatMessage(message: String) {
-        if (mc.thePlayer == null) {
-            LOGGER.info("(MCChat) $message")
-            return
-        }
-
-        val prefixMessage = "§7[§b§l$CLIENT_NAME§7] §f§l» §r $message"
-        val jsonObject = JsonObject()
-        jsonObject.addProperty("text", prefixMessage)
-        mc.thePlayer.addChatMessage(IChatComponent.Serializer.jsonToComponent(jsonObject.toString()))
+        mc.thePlayer?.addChatMessage(ChatComponentText("§8[§9§l$CLIENT_NAME§8]§r $message"))
+            ?: LOGGER.info("(MCChat) $message")
     }
 }
 
