@@ -44,7 +44,7 @@ class GuiUpdate : AbstractScreen() {
         val titleYPosition = (height / 16f + 10).toInt()
 
         val mainMessage = if (!IN_DEV) {
-            "${ClientUpdate.newestVersion?.lbVersion} got released!"
+            "Got released!"
         } else {
             "New build available!"
         }
