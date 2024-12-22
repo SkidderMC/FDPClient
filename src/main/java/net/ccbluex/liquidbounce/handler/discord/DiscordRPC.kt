@@ -12,7 +12,6 @@ import com.jagrosh.discordipc.entities.pipe.PipeStatus
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_VERSION
-import net.ccbluex.liquidbounce.features.module.MODULE_REGISTRY
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.module.modules.client.DiscordRPCModule
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.discordApp

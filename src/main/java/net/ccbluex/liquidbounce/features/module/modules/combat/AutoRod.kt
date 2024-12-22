@@ -102,7 +102,7 @@ object AutoRod : Module("AutoRod", Category.COMBAT, hideModule = false) {
 
                 if (isSelected(facingEntity, true)) {
                     // Checks how many enemy is nearby, if <= then should rod.
-                    if (nearbyEnemies?.size!! <= enemiesNearby) {
+                    if (nearbyEnemies.size <= enemiesNearby) {
 
                         // Check if the enemy's health is below the threshold.
                         if (ignoreOnEnemyLowHealth) {
@@ -177,8 +177,8 @@ object AutoRod : Module("AutoRod", Category.COMBAT, hideModule = false) {
         return -1
     }
 
-    private fun getAllNearbyEnemies(): List<Entity>? {
-        val player = mc.thePlayer ?: return null
+    private fun getAllNearbyEnemies(): List<Entity> {
+        val player = mc.thePlayer ?: return emptyList()
 
         return mc.theWorld.loadedEntityList.filter {
             isSelected(it, true) && player.getDistanceToEntityBox(it) < activationDistance

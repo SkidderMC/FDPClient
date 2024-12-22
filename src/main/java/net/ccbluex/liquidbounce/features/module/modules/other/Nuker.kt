@@ -14,13 +14,13 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
 import net.ccbluex.liquidbounce.utils.block.block
+import net.ccbluex.liquidbounce.utils.block.blockById
 import net.ccbluex.liquidbounce.utils.block.center
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockDamageText
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.faceBlock
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
@@ -35,7 +35,6 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.START_DES
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
-import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.roundToInt
 
@@ -78,7 +77,7 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
      * VALUES
      */
 
-    private val attackedBlocks = arrayListOf<BlockPos>()
+    private val attackedBlocks = hashSetOf<BlockPos>()
     private var currentBlock: BlockPos? = null
     private var blockHitDelay = 0
 
@@ -197,7 +196,8 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
                     blockHitDelay = hitDelay
                     currentDamage = 0F
                 }
-                return@handler// Break out
+
+                return@handler // Break out
             }
         } else {
             // Fast creative mode nuker (CreativeStorm option)
@@ -235,46 +235,18 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
 
     val onRender3D = handler<Render3DEvent> {
         val player = mc.thePlayer ?: return@handler
-        val renderManager = mc.renderManager ?: return@handler
+
+        if (blocks.blockById == air) return@handler
 
         for (pos in attackedBlocks) {
             if (blockProgress) {
-                if (Block.getBlockById(blocks) == air) return@handler
-
-                val progress = (currentDamage * 100).coerceIn(0f, 100f).toInt()
-                val progressText = "%d%%".format(progress)
-
-                glPushAttrib(GL_ENABLE_BIT)
-                glPushMatrix()
-
-                val (x, y, z) = pos.center - renderManager.renderPos
-
-                // Translate to block position
-                glTranslated(x, y, z)
-
-                glRotatef(-renderManager.playerViewY, 0F, 1F, 0F)
-                glRotatef(renderManager.playerViewX, 1F, 0F, 0F)
-
-                disableGlCap(GL_LIGHTING, GL_DEPTH_TEST)
-                enableGlCap(GL_BLEND)
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-                val fontRenderer = font
-                val color = ((colorRed and 0xFF) shl 16) or ((colorGreen and 0xFF) shl 8) or (colorBlue and 0xFF)
-
-                // Scale
-                val scale = ((player.getDistanceSq(pos) / 8F).coerceAtLeast(1.5) / 150F) * scale
-                glScaled(-scale, -scale, scale)
-
-                // Draw text
-                val width = fontRenderer.getStringWidth(progressText) * 0.5f
-                fontRenderer.drawString(
-                    progressText, -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, color, fontShadow
+                pos.drawBlockDamageText(
+                    currentDamage,
+                    font,
+                    fontShadow,
+                    ColorUtils.packARGBValue(colorRed, colorGreen, colorBlue),
+                    scale,
                 )
-
-                resetCaps()
-                glPopMatrix()
-                glPopAttrib()
             }
 
             // Just draw all blocks

@@ -8,10 +8,10 @@ package net.ccbluex.liquidbounce.utils.render.shader
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
+import net.ccbluex.liquidbounce.utils.render.drawWithTessellatorWorldRenderer
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.BackgroundShader
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager.color
-import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
@@ -88,14 +88,13 @@ private class ShaderBackground(backgroundFile: File) : Background(backgroundFile
         if (shaderInitialized) {
             shader.startShader()
 
-            val instance = Tessellator.getInstance()
-            val worldRenderer = instance.worldRenderer
-            worldRenderer.begin(7, DefaultVertexFormats.POSITION)
-            worldRenderer.pos(0.0, height.toDouble(), 0.0).endVertex()
-            worldRenderer.pos(width.toDouble(), height.toDouble(), 0.0).endVertex()
-            worldRenderer.pos(width.toDouble(), 0.0, 0.0).endVertex()
-            worldRenderer.pos(0.0, 0.0, 0.0).endVertex()
-            instance.draw()
+            drawWithTessellatorWorldRenderer {
+                begin(7, DefaultVertexFormats.POSITION)
+                pos(0.0, height.toDouble(), 0.0).endVertex()
+                pos(width.toDouble(), height.toDouble(), 0.0).endVertex()
+                pos(width.toDouble(), 0.0, 0.0).endVertex()
+                pos(0.0, 0.0, 0.0).endVertex()
+            }
 
             shader.stopShader()
         }

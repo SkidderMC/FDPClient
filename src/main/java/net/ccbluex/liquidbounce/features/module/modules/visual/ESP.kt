@@ -12,13 +12,12 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
-import net.ccbluex.liquidbounce.ui.font.GameFontRenderer.Companion.getColorIndex
+import net.ccbluex.liquidbounce.utils.attack.EntityUtils.colorFromDisplayName
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
@@ -77,7 +76,6 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
 
     var renderNameTags = true
 
-
     val onRender3D = handler<Render3DEvent> {
         val mvMatrix = WorldToScreen.getMatrix(GL_MODELVIEW_MATRIX)
         val projectionMatrix = WorldToScreen.getMatrix(GL_PROJECTION_MATRIX)
@@ -120,6 +118,7 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
 
                     when (mode) {
                         "Box", "OtherBox" -> drawEntityBox(entity, color, mode != "OtherBox")
+
                         "2D" -> {
                             draw2D(entity, pos.xCoord, pos.yCoord, pos.zCoord, color.rgb, Color.BLACK.rgb)
                         }
@@ -180,7 +179,6 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
         }
     }
 
-
     val onRender2D = handler<Render2DEvent> { event ->
         if (mc.theWorld == null || mode != "Glow")
             return@handler
@@ -234,20 +232,9 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
                     return Color.BLUE
 
                 if (colorTeam) {
-                    val chars = (entity.displayName ?: return@run).formattedText.toCharArray()
-                    var color = Int.MAX_VALUE
-
-                    for (i in chars.indices) {
-                        if (chars[i] != '§' || i + 1 >= chars.size) continue
-
-                        val index = getColorIndex(chars[i + 1])
-                        if (index < 0 || index > 15) continue
-
-                        color = ColorUtils.hexColors[index]
-                        break
+                    entity.colorFromDisplayName()?.let {
+                        return it
                     }
-
-                    return Color(color)
                 }
             }
         }

@@ -11,6 +11,7 @@ import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
 import org.apache.commons.codec.digest.DigestUtils
 import java.io.File
+import java.io.Reader
 
 private val parser = JsonParser()
 
@@ -19,6 +20,10 @@ fun File.writeJson(content: JsonElement, gson: Gson = PRETTY_GSON) = bufferedWri
 fun File.writeJson(content: Any?, gson: Gson = PRETTY_GSON) = bufferedWriter().use { gson.toJson(content, it) }
 
 fun File.readJson(): JsonElement = bufferedReader().use { parser.parse(it) }
+
+fun String.parseJson(): JsonElement = parser.parse(this)
+
+fun Reader.readJson(): JsonElement = parser.parse(this)
 
 fun File.sha256(): String = inputStream().use { DigestUtils.sha256Hex(it) }
 

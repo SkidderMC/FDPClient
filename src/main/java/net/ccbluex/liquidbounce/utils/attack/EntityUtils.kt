@@ -13,14 +13,17 @@ import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.mobV
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.playerValue
 import net.ccbluex.liquidbounce.features.module.modules.client.Teams
 import net.ccbluex.liquidbounce.handler.combat.CombatManager.isFocusEntity
+import net.ccbluex.liquidbounce.ui.font.GameFontRenderer.Companion.getColorIndex
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils.contains
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.Vec3
+import java.awt.Color
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -107,6 +110,19 @@ object EntityUtils : MinecraftInstance {
             health += entity.absorptionAmount
 
         return if (health > 0) health else 20f
+    }
+
+    fun Entity.colorFromDisplayName(): Color? {
+        val chars = (this.displayName ?: return null).formattedText.toCharArray()
+        var color = Int.MAX_VALUE
+        for (i in 0 until chars.lastIndex) {
+            if (chars[i] != '§') continue
+            val index = getColorIndex(chars[i + 1])
+            if (index < 0 || index > 15) continue
+            color = ColorUtils.hexColors[index]
+            break
+        }
+        return Color(color)
     }
 
 }

@@ -23,13 +23,13 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isBlockBBValid
 import net.ccbluex.liquidbounce.utils.block.block
+import net.ccbluex.liquidbounce.utils.block.blockById
 import net.ccbluex.liquidbounce.utils.block.center
 import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockDamageText
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.block.Block
@@ -42,7 +42,6 @@ import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
-import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
 object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
@@ -309,13 +308,24 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
 
     val onRender3D = handler<Render3DEvent> {
         val pos = pos ?: return@handler
-        val player = mc.thePlayer ?: return@handler
-        val renderManager = mc.renderManager
 
         // Check if it is the player's own bed
-        if (ignoreOwnBed && isBedNearSpawn(pos)) {
+        if (mc.thePlayer == null || ignoreOwnBed && isBedNearSpawn(pos)) {
             return@handler
         }
+
+        if (block.blockById == Blocks.air) return@handler
+
+        if (blockProgress) {
+            pos.drawBlockDamageText(
+                currentDamage,
+                font,
+                fontShadow,
+                ColorUtils.packARGBValue(colorRed, colorGreen, colorBlue),
+                scale,
+            )
+        }
+
         val x = pos.x - mc.renderManager.renderPosX
         val y = pos.y - mc.renderManager.renderPosY
         val z = pos.z - mc.renderManager.renderPosZ
@@ -335,45 +345,6 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
                 RenderUtils.renderBox(x + 0.5, y - 0.5, z + 0.5, if (posProcess) currentDamage else 1.0f, if (posProcess) currentDamage else 1.0f, c)
                 GlStateManager.resetColor()
             }
-        }
-
-        if (blockProgress) {
-            if (Block.getBlockById(block) == Blocks.air) return@handler
-
-            val progress = ((currentDamage * 100).coerceIn(0f, 100f)).toInt()
-            val progressText = "%d%%".format(progress)
-
-            glPushAttrib(GL_ENABLE_BIT)
-            glPushMatrix()
-
-            val (x, y, z) = pos.center - renderManager.renderPos
-
-            // Translate to block position
-            glTranslated(x, y, z)
-
-            glRotatef(-renderManager.playerViewY, 0F, 1F, 0F)
-            glRotatef(renderManager.playerViewX, 1F, 0F, 0F)
-
-            disableGlCap(GL_LIGHTING, GL_DEPTH_TEST)
-            enableGlCap(GL_BLEND)
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-
-            val fontRenderer = font
-            val color = ((colorRed and 0xFF) shl 16) or ((colorGreen and 0xFF) shl 8) or (colorBlue and 0xFF)
-
-            // Scale
-            val scale = ((player.getDistanceSq(pos) / 8F).coerceAtLeast(1.5) / 150F) * scale
-            glScaled(-scale, -scale, scale)
-
-            // Draw text
-            val width = fontRenderer.getStringWidth(progressText) * 0.5f
-            fontRenderer.drawString(
-                progressText, -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, color, fontShadow
-            )
-
-            resetCaps()
-            glPopMatrix()
-            glPopAttrib()
         }
 
         // Render block box
