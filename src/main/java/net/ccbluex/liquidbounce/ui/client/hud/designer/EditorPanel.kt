@@ -124,8 +124,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         realHeight = 15
         width = 90
 
-        for (element in ELEMENTS) {
-            val info = element.getAnnotation(ElementInfo::class.java) ?: continue
+        for ((element, info) in ELEMENTS) {
 
             if (info.single && HUD.elements.any { it.javaClass == element })
                 continue

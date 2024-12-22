@@ -73,7 +73,6 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
 
                 if (fileName.endsWith(".js")) {
                     scriptManager.importScript(file)
-
                     loadConfig(clickGuiConfig)
                     return
                 } else if (fileName.endsWith(".zip")) {
@@ -103,7 +102,6 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
                     }
 
                     scriptFiles.forEach { scriptFile -> scriptManager.loadScript(scriptFile) }
-
                     loadConfigs(clickGuiConfig, hudConfig)
                     return
                 }
@@ -117,9 +115,7 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
             2 -> try {
                 if (list.getSelectedSlot() != -1) {
                     val script = scripts[list.getSelectedSlot()]
-
                     scriptManager.deleteScript(script)
-
                     loadConfigs(clickGuiConfig, hudConfig)
                 }
             } catch (t: Throwable) {
@@ -166,7 +162,6 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
             mc.displayGuiScreen(prevGui)
             return
         }
-
         super.keyTyped(typedChar, keyCode)
     }
 
@@ -204,7 +199,8 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
                 width / 2f,
                 y + 15f,
                 Color.LIGHT_GRAY.rgb
-            ).coerceAtLeast(x)
+            )
+
         }
 
         override fun drawBackground() {}

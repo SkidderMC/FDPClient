@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.hud
 
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
+import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.*
 import net.ccbluex.liquidbounce.utils.client.ClassUtils
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
@@ -15,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11.*
+import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
@@ -23,18 +25,22 @@ object HUD : MinecraftInstance {
   val elements = mutableListOf<Element>()
   val notifications = mutableListOf<Notification>()
 
-    val ELEMENTS = ClassUtils.resolvePackage("${HUD::class.java.`package`.name}.element.elements", Element::class.java)
-        .toTypedArray()
+  val ELEMENTS_CLASSES = ClassUtils.resolvePackage("${HUD::class.java.`package`.name}.element.elements", Element::class.java)
+    .toTypedArray()
+
+  val ELEMENTS = ELEMENTS_CLASSES.associateWithTo(IdentityHashMap(ELEMENTS_CLASSES.size)){
+    it.getAnnotation(ElementInfo::class.java)
+  }
 
 
   /** Create default HUD */
   fun setDefault() {
-      elements.clear()
+    elements.clear()
 
-      addElement(Arraylist())
-      addElement(ScoreboardElement())
-      addElement(Notifications())
-      addElement(BlockCounter())
+    addElement(Arraylist())
+    addElement(ScoreboardElement())
+    addElement(Notifications())
+    addElement(BlockCounter())
   }
 
   /** Render all elements */

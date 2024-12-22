@@ -36,6 +36,21 @@ class JsonObjectBuilder {
         backend.addProperty(this, value)
     }
 
+    /**
+     * Fallback
+     */
+    infix fun String.to(value: Any?) {
+        when (value) {
+            null -> backend.add(this, JsonNull.INSTANCE)
+            is String -> backend.addProperty(this, value)
+            is Number -> backend.addProperty(this, value)
+            is Boolean -> backend.addProperty(this, value)
+            is JsonElement -> backend.add(this, value)
+            is JsonObjectBuilder -> backend.add(this, value.build())
+            else -> throw IllegalArgumentException("Unsupported type: ${value::class.java}")
+        }
+    }
+
     fun build() = backend
 }
 

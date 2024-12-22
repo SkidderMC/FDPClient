@@ -8,12 +8,14 @@ package net.ccbluex.liquidbounce.file.configs
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.file.FileConfig
-import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
-import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import net.ccbluex.liquidbounce.config.FontValue
+import net.ccbluex.liquidbounce.utils.io.json
+import net.ccbluex.liquidbounce.utils.io.jsonArray
+import net.ccbluex.liquidbounce.utils.io.readJson
+import net.ccbluex.liquidbounce.utils.io.writeJson
 import java.io.File
 import java.io.IOException
 
@@ -28,57 +30,56 @@ class HudConfig(file: File) : FileConfig(file) {
      */
     @Throws(IOException::class)
     override fun loadConfig() {
-        val jsonArray = PRETTY_GSON.fromJson(file.bufferedReader(), JsonArray::class.java)
+        val jsonArray = file.readJson().takeIf { it is JsonArray } as? JsonArray ?: return
 
         HUD.clearElements()
 
         try {
             for (jsonObject in jsonArray) {
+                if (jsonObject !is JsonObject)
+                    continue
+
+                if (!jsonObject.has("Type"))
+                    continue
+
+                val type = jsonObject["Type"].asString
+
                 try {
-                    if (jsonObject !is JsonObject)
+                    val elementClass = HUD.ELEMENTS.entries.find { it.value.name == type }?.key
+
+                    if (elementClass == null) {
+                        ClientUtils.LOGGER.warn("Unrecognized HUD element: '$type'")
                         continue
-
-                    if (!jsonObject.has("Type"))
-                        continue
-
-                    val type = jsonObject["Type"].asString
-
-                    for (elementClass in HUD.ELEMENTS) {
-                        val classType = elementClass.getAnnotation(ElementInfo::class.java).name
-
-                        if (classType == type) {
-                            val element = elementClass.newInstance()
-
-                            element.x = jsonObject["X"].asDouble
-                            element.y = jsonObject["Y"].asDouble
-                            element.scale = jsonObject["Scale"].asFloat
-                            element.side = Side(
-                                Side.Horizontal.getByName(jsonObject["HorizontalFacing"].asString) ?: Side.Horizontal.RIGHT,
-                                Side.Vertical.getByName(jsonObject["VerticalFacing"].asString) ?: Side.Vertical.UP
-                            )
-
-                            for (value in element.values) {
-                                if (jsonObject.has(value.name))
-                                    value.fromJson(jsonObject[value.name])
-                            }
-
-                            // Support for old HUD files
-                            if (jsonObject.has("font"))
-                                element.values.find { it is FontValue }?.fromJson(jsonObject["font"])
-
-                            HUD.addElement(element)
-                            break
-                        }
                     }
+
+                    val element = elementClass.newInstance()
+
+                    element.x = jsonObject["X"].asDouble
+                    element.y = jsonObject["Y"].asDouble
+                    element.scale = jsonObject["Scale"].asFloat
+                    element.side = Side(
+                        Side.Horizontal.getByName(jsonObject["HorizontalFacing"].asString) ?: Side.Horizontal.RIGHT,
+                        Side.Vertical.getByName(jsonObject["VerticalFacing"].asString) ?: Side.Vertical.UP
+                    )
+
+                    for (value in element.values) {
+                        if (jsonObject.has(value.name))
+                            value.fromJson(jsonObject[value.name])
+                    }
+
+                    // Support for old HUD files
+                    if (jsonObject.has("font"))
+                        element.values.find { it is FontValue }?.fromJson(jsonObject["font"])
+
+                    HUD.addElement(element)
                 } catch (e: Exception) {
-                    ClientUtils.LOGGER.error("Error while loading custom hud element from config.", e)
+                    ClientUtils.LOGGER.error("Error while loading custom HUD element '$type' from config.", e)
                 }
             }
 
             // Add forced elements when missing
-            for (elementClass in HUD.ELEMENTS) {
-                if (elementClass.getAnnotation(ElementInfo::class.java).force
-                    && HUD.elements.none { it.javaClass == elementClass }) {
+            for ((elementClass, info) in HUD.ELEMENTS) {
+                if (info.force && HUD.elements.none { it.javaClass == elementClass }) {
                     HUD.addElement(elementClass.newInstance())
                 }
             }
@@ -95,25 +96,23 @@ class HudConfig(file: File) : FileConfig(file) {
      */
     @Throws(IOException::class)
     override fun saveConfig() {
-        val jsonArray = JsonArray()
+        val jsonArray = jsonArray {
+            for (element in HUD.elements) {
+                +json {
+                    "Type" to element.name
+                    "X" to element.x
+                    "Y" to element.y
+                    "Scale" to element.scale
+                    "HorizontalFacing" to element.side.horizontal.sideName
+                    "VerticalFacing" to element.side.vertical.sideName
 
-        for (element in HUD.elements) {
-            val elementObject = JsonObject()
-            elementObject.run {
-                addProperty("Type", element.name)
-                addProperty("X", element.x)
-                addProperty("Y", element.y)
-                addProperty("Scale", element.scale)
-                addProperty("HorizontalFacing", element.side.horizontal.sideName)
-                addProperty("VerticalFacing", element.side.vertical.sideName)
+                    element.values.forEach {
+                        it.name to it.toJson()
+                    }
+                }
             }
-
-            for (value in element.values)
-                elementObject.add(value.name, value.toJson())
-
-            jsonArray.add(elementObject)
         }
 
-        file.writeText(PRETTY_GSON.toJson(jsonArray))
+        file.writeJson(jsonArray)
     }
 }

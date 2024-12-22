@@ -14,12 +14,12 @@ import java.io.File
 
 private val parser = JsonParser()
 
-fun File.writeJson(content: JsonElement, gson: Gson = PRETTY_GSON) = gson.toJson(content, bufferedWriter())
+fun File.writeJson(content: JsonElement, gson: Gson = PRETTY_GSON) = bufferedWriter().use { gson.toJson(content, it) }
 
-fun File.writeJson(content: Any?, gson: Gson = PRETTY_GSON) = gson.toJson(content, bufferedWriter())
+fun File.writeJson(content: Any?, gson: Gson = PRETTY_GSON) = bufferedWriter().use { gson.toJson(content, it) }
 
-fun File.readJson(): JsonElement = parser.parse(bufferedReader())
+fun File.readJson(): JsonElement = bufferedReader().use { parser.parse(it) }
 
-fun File.sha256(): String = DigestUtils.sha256Hex(inputStream())
+fun File.sha256(): String = inputStream().use { DigestUtils.sha256Hex(it) }
 
 val File.isEmpty: Boolean get() = length() == 0L
