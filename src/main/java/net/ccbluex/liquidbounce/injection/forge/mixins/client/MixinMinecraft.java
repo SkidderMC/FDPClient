@@ -207,10 +207,12 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "sendClickBlockToController", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/MovingObjectPosition;getBlockPos()Lnet/minecraft/util/BlockPos;"))
     private void onClickBlock(CallbackInfo callbackInfo) {
-        if (leftClickCounter == 0 && theWorld.getBlockState(objectMouseOver.getBlockPos()).getBlock().getMaterial() != Material.air) {
-            EventManager.INSTANCE.call(new ClickBlockEvent(objectMouseOver.getBlockPos(), objectMouseOver.sideHit));
+        final BlockPos blockPos = objectMouseOver.getBlockPos();
+        if (leftClickCounter == 0 && theWorld.getBlockState(blockPos).getBlock().getMaterial() != Material.air) {
+            EventManager.INSTANCE.call(new ClickBlockEvent(blockPos, objectMouseOver.sideHit));
         }
     }
+
 
     @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
     private void setWindowIcon(CallbackInfo callbackInfo) {
@@ -302,27 +304,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "displayCrashReport", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/common/FMLCommonHandler;instance()Lnet/minecraftforge/fml/common/FMLCommonHandler;"))
     private void injectDisplayCrashReport(CrashReport crashReport, CallbackInfo callbackInfo) {
-        final StringBuilder crashInfo = new StringBuilder(FDPClient.CLIENT_NAME).append(" crash info\n");
-        crashInfo.append("Client version: ").append(FDPClient.INSTANCE.getClientVersionText()).append(' ').append(FDPClient.INSTANCE.getClientCommit()).append('\n');
-        crashInfo.append("Time: ").append(LocalDateTime.now()).append('\n');
-        crashInfo.append("Operating System: ").append(System.getProperty("os.name"))
-                .append(" (Version: ").append(System.getProperty("os.version")).append(", Arch: ")
-                .append(System.getProperty("os.arch")).append(")\n");
-        crashInfo.append("Java Version: ").append(System.getProperty("java.version"))
-                .append(" (Vendor: ").append(System.getProperty("java.vendor")).append(")\n");
-        crashInfo.append("Available Processors: ").append(Runtime.getRuntime().availableProcessors()).append("\n");
-        crashInfo.append("Max Memory: ").append(Runtime.getRuntime().maxMemory() / (1024 * 1024)).append(" MB\n");
-        crashInfo.append("Free Memory: ").append(Runtime.getRuntime().freeMemory() / (1024 * 1024)).append(" MB\n");
-        crashInfo.append("Total Memory: ").append(Runtime.getRuntime().totalMemory() / (1024 * 1024)).append(" MB\n");
-        if (mc.getCurrentServerData() != null) {
-            ServerData serverData = mc.getCurrentServerData();
-            crashInfo.append("\nServer Information:\n");
-            crashInfo.append(" - Server Address: ").append(serverData.serverIP).append("\n");
-            crashInfo.append(" - Server Version: ").append(serverData.gameVersion).append("\n");
-        }
-        crashInfo.append('\n');
-        MiscUtils.showErrorPopup(crashReport.getCrashCause(), "Oops Game crashed! ", crashInfo.toString());
-        MiscUtils.showURL(GitUtils.gitInfo.get("git.remote.origin.url").toString().split("\\.git")[0] + "/issues");
+        MiscUtils.showErrorPopup(crashReport.getCrashCause(), "Game crashed! ", MiscUtils.generateCrashInfo());
     }
 
     @Redirect(method = {"middleClickMouse", "rightClickMouse"}, at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/InventoryPlayer;currentItem:I"))
