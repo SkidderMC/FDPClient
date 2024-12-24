@@ -533,13 +533,17 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
          */
         val raycast = performBlockRaytrace(currRotation, mc.playerController.blockReachDistance)
 
+        var alreadyPlaced = false
+
         if (extraClicks) {
             val doubleClick = if (simulateDoubleClicking) RandomUtils.nextInt(-1, 1) else 0
 
-            repeat(extraClick.clicks + doubleClick) {
+            val clicks = extraClick.clicks + doubleClick
+
+            repeat(clicks) {
                 extraClick.clicks--
 
-                doPlaceAttempt(raycast)
+                doPlaceAttempt(raycast, it + 1 == clicks) { alreadyPlaced = true }
             }
         }
 
@@ -547,6 +551,12 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             if (placeDelayValue.isActive()) {
                 delayTimer.reset()
             }
+            return@handler
+        }
+
+
+        // Change/Schedule slot once per tick according to vanilla-logic
+        if (alreadyPlaced || SilentHotbar.modifiedThisTick) {
             return@handler
         }
 
@@ -579,7 +589,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
         if (waitForRots) {
             godBridgeTargetRotation?.run {
-                event.originalInput.sneak = event.originalInput.sneak || rotationDifference(this, currRotation) > getFixedAngleDelta()
+                event.originalInput.sneak =
+                    event.originalInput.sneak || rotationDifference(this, currRotation) > getFixedAngleDelta()
             }
         }
 
@@ -702,20 +713,19 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
                 InventoryUtils.findBlockInHotbar() ?: return
             }
 
-            if (autoBlock != "Off") {
-                SilentHotbar.selectSlotSilently(
-                    this, blockSlot, immediate = true, render = autoBlock == "Pick", resetManually = true
-                )
+            stack = player.hotBarSlot(blockSlot).stack
+
+            // Check if block is placeable on target side before switching slots
+            if ((stack.item as? ItemBlock)?.canPlaceBlockOnSide(
+                    world, placeInfo.blockPos, placeInfo.enumFacing, player, stack
+                ) == false
+            ) {
+                return
             }
 
-            stack = player.hotBarSlot(blockSlot).stack
-        }
-
-        if ((stack.item as? ItemBlock)?.canPlaceBlockOnSide(
-                world, placeInfo.blockPos, placeInfo.enumFacing, player, stack
-            ) == false
-        ) {
-            return
+            if (autoBlock != "Off") {
+                SilentHotbar.selectSlotSilently(this, blockSlot, render = autoBlock == "Pick", resetManually = true)
+            }
         }
 
         tryToPlaceBlock(stack, placeInfo.blockPos, placeInfo.enumFacing, placeInfo.vec3)
@@ -723,14 +733,14 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         if (autoBlock == "Switch") SilentHotbar.resetSlot(this, true)
 
         // Since we violate vanilla slot switch logic if we send the packets now, we arrange them for the next tick
-        switchBlockNextTickIfPossible(stack)
+        findBlockToSwitchNextTick(stack)
 
         if (trackCPS) {
             CPSCounter.registerClick(CPSCounter.MouseButton.RIGHT)
         }
     }
 
-    private fun doPlaceAttempt(raytrace: MovingObjectPosition?) {
+    private fun doPlaceAttempt(raytrace: MovingObjectPosition?, lastClick: Boolean, onSuccess: () -> Unit = { }) {
         val player = mc.thePlayer ?: return
         val world = mc.theWorld ?: return
 
@@ -764,10 +774,12 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             return
         }
 
-        tryToPlaceBlock(stack, raytrace.blockPos, raytrace.sideHit, raytrace.hitVec, attempt = true)
+        tryToPlaceBlock(stack, raytrace.blockPos, raytrace.sideHit, raytrace.hitVec, attempt = true) { onSuccess() }
 
         // Since we violate vanilla slot switch logic if we send the packets now, we arrange them for the next tick
-        switchBlockNextTickIfPossible(stack)
+        if (lastClick) {
+            findBlockToSwitchNextTick(stack)
+        }
 
         if (trackCPS) {
             CPSCounter.registerClick(CPSCounter.MouseButton.RIGHT)
@@ -1066,7 +1078,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         return old
     }
 
-    private fun switchBlockNextTickIfPossible(stack: ItemStack) {
+    private fun findBlockToSwitchNextTick(stack: ItemStack) {
         if (autoBlock in arrayOf("Off", "Switch")) return
 
         val switchAmount = if (earlySwitch) amountBeforeSwitch else 0
@@ -1101,6 +1113,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         side: EnumFacing,
         hitVec: Vec3,
         attempt: Boolean = false,
+        onSuccess: () -> Unit = { }
     ): Boolean {
         val thePlayer = mc.thePlayer ?: return false
 
@@ -1131,6 +1144,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             } else if (stack.stackSize != prevSize || mc.playerController.isInCreativeMode) mc.entityRenderer.itemRenderer.resetEquippedProgress()
 
             placeRotation = null
+
+            onSuccess()
         } else {
             if (thePlayer.sendUseItem(stack)) mc.entityRenderer.itemRenderer.resetEquippedProgress2()
         }

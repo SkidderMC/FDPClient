@@ -21,6 +21,9 @@ object SilentHotbar : Listenable, MinecraftInstance {
     val currentSlot: Int
         get() = hotbarState?.enforcedSlot ?: mc.thePlayer?.inventory?.currentItem ?: 0
 
+    val modifiedThisTick
+        get() = ticksSinceLastUpdate == 0 && hotbarState != null
+
     var ignoreSlotChange = false
     var pressedAtSlot = false
 
