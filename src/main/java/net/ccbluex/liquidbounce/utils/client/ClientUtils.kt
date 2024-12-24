@@ -54,7 +54,7 @@ object ClientUtils : MinecraftInstance {
     }
 
     fun displayChatMessage(message: String) {
-        mc.thePlayer?.addChatMessage(ChatComponentText("§8[§9§l$CLIENT_NAME§8]§r $message"))
+        mc.thePlayer?.addChatMessage(ChatComponentText("§7[§b§l$CLIENT_NAME§7] §f§l» §r $message"))
             ?: LOGGER.info("(MCChat) $message")
     }
 }
