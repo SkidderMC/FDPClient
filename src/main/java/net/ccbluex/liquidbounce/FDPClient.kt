@@ -123,24 +123,37 @@ object FDPClient {
      */
     fun preload(): Future<*> {
         // Change theme of Swing
-        // TODO: make it configurable
         UIManager.setLookAndFeel(FlatMacLightLaf())
+
         val future = CompletableFuture<Unit>()
+
         SharedScopes.IO.launch {
             try {
                 LOGGER.info("Starting preload tasks of $CLIENT_NAME")
+
                 // Download and extract fonts
                 Fonts.downloadFonts()
+
+                // Check update
                 ClientUpdate.reloadNewestVersion()
+
+                // Get MOTD
                 reloadMessageOfTheDay()
+
                 // Load languages
                 loadLanguages()
+
+                // Load alt generators
+                loadActiveGenerators()
+
                 LOGGER.info("Preload tasks of $CLIENT_NAME are completed!")
+
                 future.complete(Unit)
             } catch (e: Exception) {
                 future.completeExceptionally(e)
             }
         }
+
         return future
     }
 
@@ -154,8 +167,6 @@ object FDPClient {
         LOGGER.info("Launching...")
 
         try {
-            SharedScopes
-
             // Load client fonts
             Fonts.loadFonts()
 
@@ -177,6 +188,7 @@ object FDPClient {
             SilentHotbar
             WaitMsUtils
             BlinkUtils
+            KeyBindManager
 
             // Load settings
             loadSettings(false) {
@@ -185,7 +197,6 @@ object FDPClient {
 
             // Register commands
             registerCommands()
-            KeyBindManager
 
             // Setup module manager and register modules
             registerModules()
@@ -226,9 +237,6 @@ object FDPClient {
 
             // Disable optifine fastrender
             disableFastRender()
-
-            // Load alt generators
-            loadActiveGenerators()
 
             // Load message of the day
             messageOfTheDay?.message?.let { LOGGER.info("Message of the day: $it") }
