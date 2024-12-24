@@ -31,10 +31,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
-import net.ccbluex.liquidbounce.utils.timing.DelayTimer
-import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.utils.timing.TickDelayTimer
-import net.ccbluex.liquidbounce.utils.timing.TimeUtils
+import net.ccbluex.liquidbounce.utils.timing.*
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
 import net.minecraft.block.BlockBush
 import net.minecraft.client.settings.GameSettings
@@ -206,15 +203,17 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     private val eagleValue =
         ListValue("Eagle", arrayOf("Normal", "Silent", "Off"), "Normal") { scaffoldMode != "GodBridge" }
     val eagle by eagleValue
-    private val eagleMode by choices("EagleMode", arrayOf("Both", "OnGround", "OnAir"), "Both")
-    { eagleValue.isSupported() && eagle != "Off" }
+    private val eagleMode by choices("EagleMode", arrayOf("Both", "OnGround", "InAir"), "Both") { eagle != "Off" }
     private val adjustedSneakSpeed by boolean("AdjustedSneakSpeed", true) { eagle == "Silent" }
-    private val eagleSpeed by float("EagleSpeed", 0.3f, 0.3f..1.0f) { eagleValue.isSupported() && eagle != "Off" }
-    val eagleSprint by boolean("EagleSprint", false) { eagleValue.isSupported() && eagle == "Normal" }
-    private val blocksToEagle by int("BlocksToEagle", 0, 0..10) { eagleValue.isSupported() && eagle != "Off" }
-    private val edgeDistance by float(
-        "EagleEdgeDistance", 0f, 0f..0.5f
-    ) { eagleValue.isSupported() && eagle != "Off" }
+    private val eagleSpeed by float("EagleSpeed", 0.3f, 0.3f..1.0f) { eagle != "Off" }
+    val eagleSprint by boolean("EagleSprint", false) { eagle == "Normal" }
+    private val blocksToEagle by int("BlocksToEagle", 0, 0..10) { eagle != "Off" }
+    private val edgeDistance by float("EagleEdgeDistance", 0f, 0f..0.5f) { eagle != "Off" }
+    private val useMaxSneakTime by boolean("UseMaxSneakTime", true) { eagle != "Off" }
+    private val maxSneakTicks by int("MaxSneakTicks", 3, 0..10) { useMaxSneakTime }
+    private val blockSneakingAgainUntilOnGround by boolean(
+        "BlockSneakingAgainUntilOnGround", true
+    ) { useMaxSneakTime && eagleMode != "OnGround" }
 
     // Rotation Options
     private val modeList =
@@ -314,7 +313,9 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
     // Eagle
     private var placedBlocksWithoutEagle = 0
+
     var eagleSneaking = false
+
     private val isEagleEnabled
         get() = eagle != "Off" && !shouldGoDown && scaffoldMode != "GodBridge"
 
@@ -432,39 +433,66 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
                 }
             }
 
-            if (placedBlocksWithoutEagle >= blocksToEagle) {
-                val eagleCondition = when (eagleMode) {
-                    "OnGround" -> player.onGround
-                    "OnAir" -> !player.onGround
-                    else -> true
-                }
+            val blockSneaking = WaitTickUtils.hasScheduled("block")
+            val alreadySneaking = WaitTickUtils.hasScheduled("sneak")
 
-                val shouldEagle = eagleCondition && (blockPos.isReplaceable || dif < edgeDistance)
+            run {
+                val options = mc.gameSettings
 
-                if (eagle == "Silent") {
-                    if (eagleSneaking != shouldEagle) {
-                        sendPacket(
-                            C0BPacketEntityAction(
-                                player,
-                                if (shouldEagle) C0BPacketEntityAction.Action.START_SNEAKING else C0BPacketEntityAction.Action.STOP_SNEAKING
+                if (placedBlocksWithoutEagle >= blocksToEagle || alreadySneaking || blockSneaking) {
+                    val eagleCondition = when (eagleMode) {
+                        "OnGround" -> player.onGround
+                        "InAir" -> !player.onGround
+                        else -> true
+                    }
+
+                    // For better sneak support we could move this to MovementInputEvent
+                    val pressedOnKeyboard = Keyboard.isKeyDown(options.keyBindSneak.keyCode)
+
+                    var shouldEagle =
+                        eagleCondition && (blockPos.isReplaceable || dif < edgeDistance) || pressedOnKeyboard
+
+                    if (blockSneaking && !alreadySneaking && useMaxSneakTime) {
+                        shouldEagle = pressedOnKeyboard
+                    } else if (blockSneaking || alreadySneaking) return@run
+
+                    if (eagle == "Silent") {
+                        if (eagleSneaking != shouldEagle) {
+                            sendPacket(
+                                C0BPacketEntityAction(
+                                    player, if (shouldEagle) {
+                                        C0BPacketEntityAction.Action.START_SNEAKING
+                                    } else {
+                                        C0BPacketEntityAction.Action.STOP_SNEAKING
+                                    }
+                                )
                             )
-                        )
 
-                        // Adjust speed when silent sneaking
-                        if (adjustedSneakSpeed && shouldEagle) {
-                            player.motionX *= eagleSpeed
-                            player.motionZ *= eagleSpeed
+                            // Adjust speed when silent sneaking
+                            if (adjustedSneakSpeed && shouldEagle) {
+                                player.motionX *= eagleSpeed
+                                player.motionZ *= eagleSpeed
+                            }
+                        }
+
+                        eagleSneaking = shouldEagle
+                    } else {
+                        options.keyBindSneak.pressed = shouldEagle
+                        eagleSneaking = shouldEagle
+                    }
+
+                    if (eagleSneaking) {
+                        if (useMaxSneakTime) {
+                            WaitTickUtils.schedule(maxSneakTicks + 1, "sneak")
+                        }
+
+                        if (blockSneakingAgainUntilOnGround && !player.onGround) {
+                            WaitTickUtils.conditionalSchedule("block") { player.onGround }
                         }
                     }
 
-                    eagleSneaking = shouldEagle
-                } else {
-                    mc.gameSettings.keyBindSneak.pressed = shouldEagle
-                    eagleSneaking = shouldEagle
+                    placedBlocksWithoutEagle = 0
                 }
-                placedBlocksWithoutEagle = 0
-            } else {
-                placedBlocksWithoutEagle++
             }
         }
 
@@ -858,7 +886,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
                     if (raytrace.typeOfHit.isBlock && timePassed) {
                         extraClick = ExtraClickInfo(
-                            TimeUtils.randomClickDelay(extraClickMinCPS, extraClickMaxCPS), System.currentTimeMillis(),
+                            TimeUtils.randomClickDelay(extraClickMinCPS, extraClickMaxCPS),
+                            System.currentTimeMillis(),
                             extraClick.clicks + 1
                         )
                     }
@@ -1108,11 +1137,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     }
 
     private fun tryToPlaceBlock(
-        stack: ItemStack,
-        clickPos: BlockPos,
-        side: EnumFacing,
-        hitVec: Vec3,
-        attempt: Boolean = false,
+        stack: ItemStack, clickPos: BlockPos, side: EnumFacing, hitVec: Vec3, attempt: Boolean = false,
         onSuccess: () -> Unit = { }
     ): Boolean {
         val thePlayer = mc.thePlayer ?: return false
@@ -1144,6 +1169,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             } else if (stack.stackSize != prevSize || mc.playerController.isInCreativeMode) mc.entityRenderer.itemRenderer.resetEquippedProgress()
 
             placeRotation = null
+
+            placedBlocksWithoutEagle++
 
             onSuccess()
         } else {
