@@ -6,30 +6,26 @@
 package net.ccbluex.liquidbounce.ui.client.gui
 
 import net.ccbluex.liquidbounce.FDPClient.scriptManager
-import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.file.FileManager.clickGuiConfig
 import net.ccbluex.liquidbounce.file.FileManager.hudConfig
 import net.ccbluex.liquidbounce.file.FileManager.loadConfig
 import net.ccbluex.liquidbounce.file.FileManager.loadConfigs
+import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.ScriptManager.reloadScripts
-import net.ccbluex.liquidbounce.script.ScriptManager.scripts
 import net.ccbluex.liquidbounce.script.ScriptManager.scriptsFolder
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.io.FileFilters
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
+import net.ccbluex.liquidbounce.utils.io.extractZipTo
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.GuiSlot
-import org.apache.commons.io.IOUtils
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.awt.Desktop
-import java.io.File
-import java.net.URL
-import java.util.zip.ZipFile
 
 class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
 
@@ -59,8 +55,6 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
             Fonts.font40.drawCenteredStringWithShadow("§9§lScripts", width / 2f, 28f, 0xffffff)
         }
 
-        drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
-
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
@@ -68,45 +62,29 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
         when (button.id) {
             0 -> mc.displayGuiScreen(prevGui)
             1 -> try {
-                val file = MiscUtils.openFileChooser() ?: return
-                val fileName = file.name
+                val file = MiscUtils.openFileChooser(FileFilters.JAVASCRIPT, FileFilters.ARCHIVE) ?: return
 
-                if (fileName.endsWith(".js")) {
-                    scriptManager.importScript(file)
-                    loadConfig(clickGuiConfig)
-                    return
-                } else if (fileName.endsWith(".zip")) {
-                    val zipFile = ZipFile(file)
-                    val entries = zipFile.entries()
-                    val scriptFiles = arrayListOf<File>()
+                when (file.extension.lowercase()) {
+                    "js" -> {
+                        scriptManager.importScript(file)
 
-                    while (entries.hasMoreElements()) {
-                        val entry = entries.nextElement()
-                        val entryName = entry.name
-                        val entryFile = File(scriptsFolder, entryName)
-
-                        if (entry.isDirectory) {
-                            entryFile.mkdir()
-                            continue
-                        }
-
-                        val fileStream = zipFile.getInputStream(entry)
-                        val fileOutputStream = entryFile.outputStream()
-
-                        IOUtils.copy(fileStream, fileOutputStream)
-                        fileOutputStream.close()
-                        fileStream.close()
-
-                        if ("/" !in entryName)
-                            scriptFiles += entryFile
+                        loadConfig(clickGuiConfig)
                     }
 
-                    scriptFiles.forEach { scriptFile -> scriptManager.loadScript(scriptFile) }
-                    loadConfigs(clickGuiConfig, hudConfig)
-                    return
-                }
+                    "zip" -> {
+                        val existingFiles = ScriptManager.availableScriptFiles.toSet()
 
-                MiscUtils.showErrorPopup("Wrong file extension.", "The file extension has to be .js or .zip")
+                        file.extractZipTo(scriptsFolder)
+
+                        ScriptManager.availableScriptFiles.filterNot {
+                            it in existingFiles
+                        }.forEach(scriptManager::loadScript)
+
+                        loadConfigs(clickGuiConfig, hudConfig)
+                    }
+
+                    else -> MiscUtils.showErrorPopup("Wrong file extension", "The file extension has to be .js or .zip")
+                }
             } catch (t: Throwable) {
                 LOGGER.error("Something went wrong while importing a script.", t)
                 MiscUtils.showErrorPopup(t.javaClass.name, t.message!!)
@@ -114,8 +92,10 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
 
             2 -> try {
                 if (list.getSelectedSlot() != -1) {
-                    val script = scripts[list.getSelectedSlot()]
+                    val script = ScriptManager[list.getSelectedSlot()]
+
                     scriptManager.deleteScript(script)
+
                     loadConfigs(clickGuiConfig, hudConfig)
                 }
             } catch (t: Throwable) {
@@ -138,8 +118,7 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
             }
 
             5 -> try {
-                Desktop.getDesktop()
-                    .browse(URL("https://github.com/CCBlueX/Documentation/blob/master/md/scriptapi_v2/getting_started.md").toURI())
+                MiscUtils.showURL("https://github.com/CCBlueX/Documentation/blob/master/md/scriptapi_v2/getting_started.md")
             } catch (e: Exception) {
                 LOGGER.error("Something went wrong while trying to open the web scripts docs.", e)
                 MiscUtils.showErrorPopup(
@@ -149,7 +128,7 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
             }
 
             6 -> try {
-                Desktop.getDesktop().browse(URL("https://forums.ccbluex.net/category/9/scripts").toURI())
+                MiscUtils.showURL("https://forums.ccbluex.net/category/9/scripts")
             } catch (e: Exception) {
                 LOGGER.error("Something went wrong while trying to open web scripts forums", e)
                 MiscUtils.showErrorPopup("Scripts Error | Manual Link", "forums.ccbluex.net/category/9/scripts")
@@ -162,6 +141,7 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
             mc.displayGuiScreen(prevGui)
             return
         }
+
         super.keyTyped(typedChar, keyCode)
     }
 
@@ -177,16 +157,16 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
 
         override fun isSelected(id: Int) = selectedSlot == id
 
-        fun getSelectedSlot() = if (selectedSlot > scripts.size) -1 else selectedSlot
+        fun getSelectedSlot() = if (selectedSlot > ScriptManager.size) -1 else selectedSlot
 
-        override fun getSize() = scripts.size
+        override fun getSize() = ScriptManager.size
 
         public override fun elementClicked(id: Int, doubleClick: Boolean, var3: Int, var4: Int) {
             selectedSlot = id
         }
 
         override fun drawSlot(id: Int, x: Int, y: Int, var4: Int, var5: Int, var6: Int) {
-            val script = scripts[id]
+            val script = ScriptManager[id]
 
             Fonts.font40.drawCenteredStringWithShadow(
                 "§9" + script.scriptName + " §7v" + script.scriptVersion,
@@ -194,13 +174,13 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
                 y + 2f,
                 Color.LIGHT_GRAY.rgb
             )
+
             Fonts.font40.drawCenteredStringWithShadow(
                 "by §c" + script.scriptAuthors.joinToString(", "),
                 width / 2f,
                 y + 15f,
                 Color.LIGHT_GRAY.rgb
             )
-
         }
 
         override fun drawBackground() {}

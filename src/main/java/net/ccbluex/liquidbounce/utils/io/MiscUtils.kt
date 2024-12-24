@@ -16,8 +16,10 @@ import java.io.IOException
 import java.net.URI
 import java.net.URISyntaxException
 import java.time.LocalDateTime
+import javax.imageio.ImageIO
 import javax.swing.*
 import javax.swing.filechooser.FileFilter
+import javax.swing.filechooser.FileNameExtensionFilter
 
 object MiscUtils : MinecraftInstance {
 
@@ -127,40 +129,66 @@ object MiscUtils : MinecraftInstance {
         }
 
     @JvmStatic
-    fun openFileChooser(fileFiler: FileFilter? = null): File? {
+    private inline fun fileChooserAction(
+        fileFilers: Array<out FileFilter>,
+        isAcceptAllFileFilterUsed: Boolean,
+        action: JFileChooser.(JFrame) -> Int
+    ): File? {
         if (mc.isFullScreen) mc.toggleFullscreen()
 
         val fileChooser = JFileChooser()
         fileChooser.fileSelectionMode = JFileChooser.FILES_ONLY
-        fileFiler?.let { fileChooser.fileFilter = it }
+        fileChooser.isAcceptAllFileFilterUsed = isAcceptAllFileFilterUsed || fileFilers.isEmpty()
+        fileFilers.forEach(fileChooser::addChoosableFileFilter)
 
         val frame = JFrame()
         frame.isVisible = true
         frame.toFront()
         frame.isVisible = false
 
-        val action = fileChooser.showOpenDialog(frame)
+        val actionResult = fileChooser.action(frame)
         frame.dispose()
 
-        return if (action == JFileChooser.APPROVE_OPTION) fileChooser.selectedFile else null
+        return if (actionResult == JFileChooser.APPROVE_OPTION)
+            fileChooser.selectedFile.takeIf { f -> fileFilers.all { it.accept(f) } }
+        else null
     }
 
     @JvmStatic
-    fun saveFileChooser(fileFiler: FileFilter? = null): File? {
-        if (mc.isFullScreen) mc.toggleFullscreen()
+    fun openFileChooser(
+        vararg fileFilers: FileFilter,
+        acceptAll: Boolean = true,
+    ): File? = fileChooserAction(fileFilers, acceptAll, action = JFileChooser::showOpenDialog)
 
-        val fileChooser = JFileChooser()
-        fileChooser.fileSelectionMode = JFileChooser.FILES_ONLY
-        fileFiler?.let { fileChooser.fileFilter = it }
+    @JvmStatic
+    fun saveFileChooser(
+        vararg fileFilers: FileFilter,
+        acceptAll: Boolean = true,
+    ): File? = fileChooserAction(fileFilers, acceptAll, action = JFileChooser::showSaveDialog)
 
-        val frame = JFrame()
-        frame.isVisible = true
-        frame.toFront()
-        frame.isVisible = false
+}
 
-        val action = fileChooser.showSaveDialog(frame)
-        frame.dispose()
+object FileFilters {
+    @JvmField
+    val JAVASCRIPT = FileNameExtensionFilter("JavaScript Files", "js")
 
-        return if (action == JFileChooser.APPROVE_OPTION) fileChooser.selectedFile else null
+    @JvmField
+    val TEXT = FileNameExtensionFilter("Text Files", "txt")
+
+    @JvmField
+    val IMAGE = FileNameExtensionFilter("Image Files (png)", "png")
+
+    /**
+     * Based on runtime ImageIO
+     */
+    @JvmField
+    val ALL_IMAGES = ImageIO.getReaderFormatNames().mapTo(sortedSetOf(), String::lowercase).let {
+        FileNameExtensionFilter("Image Files (${it.joinToString()}", *it.toTypedArray())
     }
+
+    @JvmField
+    val SHADER = FileNameExtensionFilter("Shader Files (frag, glsl, shader)", "frag", "glsl", "shader")
+
+    @JvmField
+    val ARCHIVE = FileNameExtensionFilter("Archive Files (zip)", "zip")
 }

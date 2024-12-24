@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomNumber
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
 import net.ccbluex.liquidbounce.config.TextValue
+import net.ccbluex.liquidbounce.utils.io.FileFilters
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
 import java.io.File
@@ -77,7 +78,7 @@ class Image : Element() {
     }
 
     override fun createElement(): Boolean {
-        val file = MiscUtils.openFileChooser() ?: return false
+        val file = MiscUtils.openFileChooser(FileFilters.ALL_IMAGES, acceptAll = false) ?: return false
 
         if (!file.exists()) {
             MiscUtils.showErrorPopup("Error", "The file does not exist.")

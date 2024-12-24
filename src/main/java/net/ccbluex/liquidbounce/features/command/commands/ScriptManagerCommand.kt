@@ -16,15 +16,14 @@ import net.ccbluex.liquidbounce.file.FileManager.loadConfig
 import net.ccbluex.liquidbounce.file.FileManager.loadConfigs
 import net.ccbluex.liquidbounce.file.FileManager.modulesConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
+import net.ccbluex.liquidbounce.script.ScriptManager
 import net.ccbluex.liquidbounce.script.ScriptManager.reloadScripts
-import net.ccbluex.liquidbounce.script.ScriptManager.scripts
 import net.ccbluex.liquidbounce.script.ScriptManager.scriptsFolder
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.io.FileFilters
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
-import org.apache.commons.io.IOUtils
+import net.ccbluex.liquidbounce.utils.io.extractZipTo
 import java.awt.Desktop
-import java.io.File
-import java.util.zip.ZipFile
 
 object ScriptManagerCommand : Command("scriptmanager", "scripts") {
     /**
@@ -41,51 +40,33 @@ object ScriptManagerCommand : Command("scriptmanager", "scripts") {
         when (args[1].lowercase()) {
             "import" -> {
                 try {
-                    val file = MiscUtils.openFileChooser() ?: return
-                    val fileName = file.name
+                    val file = MiscUtils.openFileChooser(FileFilters.JAVASCRIPT, FileFilters.ARCHIVE) ?: return
 
-                    if (fileName.endsWith(".js")) {
-                        scriptManager.importScript(file)
+                    when (file.extension.lowercase()) {
+                        "js" -> {
+                            scriptManager.importScript(file)
 
-                        loadConfig(clickGuiConfig)
+                            loadConfig(clickGuiConfig)
 
-                        chat("Successfully imported script.")
-                        return
-                    } else if (fileName.endsWith(".zip")) {
-                        val zipFile = ZipFile(file)
-                        val entries = zipFile.entries()
-                        val scriptFiles = arrayListOf<File>()
-
-                        while (entries.hasMoreElements()) {
-                            val entry = entries.nextElement()
-                            val entryName = entry.name
-                            val entryFile = File(scriptsFolder, entryName)
-
-                            if (entry.isDirectory) {
-                                entryFile.mkdir()
-                                continue
-                            }
-
-                            val fileStream = zipFile.getInputStream(entry)
-                            val fileOutputStream = entryFile.outputStream()
-
-                            IOUtils.copy(fileStream, fileOutputStream)
-                            fileOutputStream.close()
-                            fileStream.close()
-
-                            if ("/" in entryName)
-                                scriptFiles += entryFile
+                            chat("Successfully imported script.")
                         }
 
-                        scriptFiles.forEach { scriptFile -> scriptManager.loadScript(scriptFile) }
+                        "zip" -> {
+                            val existingFiles = ScriptManager.availableScriptFiles.toSet()
 
-                        loadConfigs(clickGuiConfig, hudConfig)
+                            file.extractZipTo(scriptsFolder)
 
-                        chat("Successfully imported script.")
-                        return
+                            ScriptManager.availableScriptFiles.filterNot {
+                                it in existingFiles
+                            }.forEach(scriptManager::loadScript)
+
+                            loadConfigs(clickGuiConfig, hudConfig)
+
+                            chat("Successfully imported script.")
+                        }
+
+                        else -> chat("The file extension has to be .js or .zip")
                     }
-
-                    chat("The file extension has to be .js or .zip")
                 } catch (t: Throwable) {
                     LOGGER.error("Something went wrong while importing a script.", t)
                     chat("${t.javaClass.name}: ${t.message}")
@@ -101,14 +82,14 @@ object ScriptManagerCommand : Command("scriptmanager", "scripts") {
 
                     val scriptIndex = args[2].toInt()
 
-                    if (scriptIndex >= scripts.size) {
+                    if (scriptIndex >= ScriptManager.size) {
                         chat("Index $scriptIndex is too high.")
                         return
                     }
 
-                    val script = scripts[scriptIndex]
+                    val script = ScriptManager[scriptIndex]
 
-                     scriptManager.deleteScript(script)
+                    scriptManager.deleteScript(script)
 
                     loadConfigs(clickGuiConfig, hudConfig)
 
@@ -157,9 +138,9 @@ object ScriptManagerCommand : Command("scriptmanager", "scripts") {
 
         val scriptManager = scriptManager
 
-        if (scriptManager.scripts.isNotEmpty()) {
+        if (scriptManager.isNotEmpty()) {
             chat("§c§lScripts")
-            scriptManager.scripts.forEachIndexed { index, script ->
+            scriptManager.forEachIndexed { index, script ->
                 chat(
                     "$index: §a§l${script.scriptName} §a§lv${script.scriptVersion} §3by §a§l${
                         script.scriptAuthors.joinToString(
@@ -179,6 +160,7 @@ object ScriptManagerCommand : Command("scriptmanager", "scripts") {
         return when (args.size) {
             1 -> listOf("delete", "import", "folder", "reload")
                 .filter { it.startsWith(args[0], true) }
+
             else -> emptyList()
         }
     }

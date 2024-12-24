@@ -24,6 +24,7 @@ import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolat
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
+import net.ccbluex.liquidbounce.utils.io.FileFilters
 import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.io.HttpUtils.get
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
@@ -180,10 +181,10 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
             }
 
             7 -> { // Import button
-                val file = MiscUtils.openFileChooser() ?: return
+                val file = MiscUtils.openFileChooser(FileFilters.TEXT) ?: return
 
                 file.forEachLine {
-                    val accountData = it.split(":", limit = 2)
+                    val accountData = it.split(':', limit = 2)
                     if (accountData.size > 1) {
                         // Most likely a mojang account
                         accountsConfig.addMojangAccount(accountData[0], accountData[1])

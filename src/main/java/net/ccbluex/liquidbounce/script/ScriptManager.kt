@@ -11,12 +11,21 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import java.io.File
 import java.io.FileFilter
 
-object ScriptManager {
+private val scripts = mutableListOf<Script>()
 
-    val scripts = mutableListOf<Script>()
+object ScriptManager : List<Script> by scripts {
 
     val scriptsFolder = File(dir, "scripts")
-    private const val scriptFileExtension = ".js"
+
+    private val SCRIPT_FILE_FILTER = FileFilter {
+        it.extension.lowercase() == "js"
+    }
+
+    /**
+     * Only includes files in the root directory ([scriptsFolder])
+     */
+    val availableScriptFiles: Array<File>
+        get() = scriptsFolder.listFiles(SCRIPT_FILE_FILTER) ?: emptyArray()
 
     /**
      * Loads all scripts inside the scripts folder.
@@ -25,7 +34,7 @@ object ScriptManager {
         if (!scriptsFolder.exists())
             scriptsFolder.mkdir()
 
-        scriptsFolder.listFiles(FileFilter { it.name.endsWith(scriptFileExtension) })?.forEach(this@ScriptManager::loadScript)
+        availableScriptFiles.forEach(::loadScript)
     }
 
     /**
@@ -81,7 +90,7 @@ object ScriptManager {
         scripts.remove(script)
         script.scriptFile.delete()
 
-        LOGGER.info("[ScriptAPI]  Successfully deleted script '${script.scriptFile.name}'.")
+        LOGGER.info("[ScriptAPI] Successfully deleted script '${script.scriptFile.name}'.")
     }
 
     /**
@@ -93,6 +102,6 @@ object ScriptManager {
         loadScripts()
         enableScripts()
 
-        LOGGER.info("[ScriptAPI]  Successfully reloaded scripts.")
+        LOGGER.info("[ScriptAPI] Successfully reloaded scripts.")
     }
 }

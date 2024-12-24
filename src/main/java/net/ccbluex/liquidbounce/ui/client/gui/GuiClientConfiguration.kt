@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.handler.lang.LanguageManager
 import net.ccbluex.liquidbounce.handler.lang.translationMenu
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
+import net.ccbluex.liquidbounce.utils.io.FileFilters
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.io.MiscUtils.showErrorPopup
 import net.ccbluex.liquidbounce.utils.render.IconUtils
@@ -173,9 +174,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
             }
 
             2 -> {
-                val file = MiscUtils.openFileChooser(
-                    FileNameExtensionFilter("Image and Shader (*.png, *.frag *.glsl *.shader)", "png", "frag", "glsl", "shader")
-                ) ?: return
+                val file = MiscUtils.openFileChooser(FileFilters.IMAGE, FileFilters.SHADER) ?: return
 
                 if (file.isDirectory) return
 
@@ -188,7 +187,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
                 val fileExtension = file.extension
 
                 background = try {
-                    val destFile = when (fileExtension) {
+                    val destFile = when (fileExtension.lowercase()) {
                         "png" -> backgroundImageFile
                         "frag", "glsl", "shader" -> backgroundShaderFile
                         else -> {
