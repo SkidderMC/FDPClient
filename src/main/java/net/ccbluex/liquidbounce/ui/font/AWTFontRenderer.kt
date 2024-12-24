@@ -3,10 +3,14 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-
 package net.ccbluex.liquidbounce.ui.font
 
+import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.event.Render2DEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.kotlin.LruCache
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager.bindTexture
 import net.minecraft.client.renderer.texture.TextureUtil
@@ -21,9 +25,6 @@ import kotlin.math.roundToInt
 /**
  * A memory-optimized bitmap-based font renderer using AWT [Font].
  *
- * - Generates a single texture containing glyphs for [startChar.stopChar].
- * - Freed from unlimited memory usage.
- *
  * @author opZywl
  */
 @SideOnly(Side.CLIENT)
@@ -34,16 +35,11 @@ class AWTFontRenderer(
     private val loadingScreen: Boolean = false
 ) : MinecraftInstance {
 
-    companion object {
-        /**
-         * If `true`, we compile strings into display lists on first draw and keep them
-         * in the LRU/time-based cache. If `false`, each string is rendered each time
-         * with no caching.
-         */
+    companion object : Listenable {
         var assumeNonVolatile: Boolean = false
 
         /** All active font renderers (for GC tasks). */
-        val activeFontRenderers = mutableListOf<AWTFontRenderer>()
+        private val activeFontRenderers = mutableListOf<AWTFontRenderer>()
 
         /**
          * Runs a block with [assumeNonVolatile] = true, then restores it.
@@ -60,7 +56,7 @@ class AWTFontRenderer(
         // Garbage collection constants
         private const val GC_TICKS = 600                    // Do GC every 600 frames
         private const val CACHED_FONT_REMOVAL_TIME = 30000L // 30s time-based eviction
-        private const val MAX_CACHED_STRINGS = 128          // LRU cache size limit
+        private const val MAX_CACHED_STRINGS = 256          // LRU cache size limit
 
         private var gcTicks = 0
 
@@ -68,7 +64,7 @@ class AWTFontRenderer(
          * Should be called each frame or so. Every 600 frames, we run garbage collection
          * on every active font renderer.
          */
-        fun garbageCollectionTick() {
+        private val onRender2D = handler<Render2DEvent>(priority = Byte.MIN_VALUE) {
             if (++gcTicks > GC_TICKS) {
                 activeFontRenderers.forEach { it.collectGarbage() }
                 gcTicks = 0
@@ -102,11 +98,12 @@ class AWTFontRenderer(
      * - If the size exceeds [MAX_CACHED_STRINGS], we remove the eldest entry.
      * - If an entry hasn't been used for 30s, we remove it.
      */
-    private val cachedStrings = object : LinkedHashMap<String, CachedFont>(MAX_CACHED_STRINGS, 0.75f, true) {
-        override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, CachedFont>?): Boolean {
-            return size > MAX_CACHED_STRINGS
-        }
-    }
+    private val cachedStringFonts = LruCache<String, CachedFont>(MAX_CACHED_STRINGS)
+
+    /**
+     * We don't do GC for the cached widths because they are constant for each string
+     */
+    private val cachedStringWidths = LruCache<String, Int>(MAX_CACHED_STRINGS)
 
     private var textureID: Int = -1
     private var textureWidth: Int = 0
@@ -146,14 +143,11 @@ class AWTFontRenderer(
         }
 
         // Extract ARGB
-        val alpha = ((color ushr 24) and 0xFF) / 255f
-        val red   = ((color ushr 16) and 0xFF) / 255f
-        val green = ((color ushr 8)  and 0xFF) / 255f
-        val blue  = ( color          and 0xFF) / 255f
+        val (alpha, red, green, blue) = ColorUtils.unpackARGBFloatValue(color)
         glColor4f(red, green, blue, alpha)
 
         // 1) If we've cached this text, just call the display list
-        val cached = cachedStrings[text]
+        val cached = cachedStringFonts[text]
         if (cached != null) {
             glCallList(cached.displayList)
             cached.lastUsage = System.currentTimeMillis()
@@ -183,12 +177,15 @@ class AWTFontRenderer(
                 glPushMatrix()
 
                 // Because we scaled by 0.25 => revert
-                val rev = 4.0
-                glScaled(rev, rev, rev)
+                val rev = 4.0f
+                glScalef(rev, rev, rev)
 
                 // Then scale by (font.size / 32.0)
-                val scale = font.size / 32.0
-                glScaled(scale, scale, 1.0)
+                val scale = font.size / 32.0f
+                glScalef(scale, scale, 1.0f)
+
+                mc.fontRendererObj.posY = 1.0f
+                mc.fontRendererObj.posX = (currX / rev) + fallbackWidth
 
                 val fallbackW = mc.fontRendererObj.renderUnicodeChar(char, false).coerceAtLeast(0f)
                 fallbackWidth += fallbackW
@@ -210,7 +207,7 @@ class AWTFontRenderer(
 
         if (assumeNonVolatile && listID >= 0) {
             // Insert into our LRU + time-based map
-            cachedStrings[text] = CachedFont(listID, System.currentTimeMillis())
+            cachedStringFonts[text] = CachedFont(listID, System.currentTimeMillis())
             glEndList()
         }
 
@@ -221,27 +218,28 @@ class AWTFontRenderer(
      * Returns the pixel-width of [text]. If a character is not in [charLocations],
      * we fallback to MC's font (approx).
      */
-    fun getStringWidth(text: String): Int {
+    fun getStringWidth(text: String): Int = cachedStringWidths.getOrPut(text) {
         var myWidth = 0
         var fallbackWidth = 0f
-        val fallbackScale = font.size / 32.0
+        val fallbackScale = font.size / 32f
 
         for (char in text) {
             val loc = charLocations.getOrNull(char.code)
             if (loc == null) {
                 val w = mc.fontRendererObj.getCharWidth(char)
-                fallbackWidth += ((w + 8) * fallbackScale).coerceAtLeast(0.0).toFloat()
+                fallbackWidth += ((w + 8) * fallbackScale).coerceAtLeast(0f)
             } else {
                 myWidth += (loc.width - 8)
             }
         }
-        return (myWidth / 2) + fallbackWidth.roundToInt()
+
+        (myWidth / 2) + fallbackWidth.roundToInt()
     }
 
     /**
      * Disposes of this font, removing it from the list and freeing texture memory.
      */
-    private fun dispose() {
+    fun dispose() {
         if (textureID != -1) {
             glDeleteTextures(textureID)
             textureID = -1
@@ -278,7 +276,7 @@ class AWTFontRenderer(
     }
 
     /**
-     * Builds the single large texture with [startChar.stopChar] glyphs.
+     * Builds the single large texture with [startChar] to [stopChar] glyphs.
      */
     private fun renderBitmap(startChar: Int, stopChar: Int) {
         val fontImages = arrayOfNulls<BufferedImage>(stopChar)
@@ -306,7 +304,8 @@ class AWTFontRenderer(
             }
             // If exceeding ~2k width, break line
             if (charX > 2048) {
-                if (charX > textureWidth) textureWidth = charX
+                if (charX > textureWidth)
+                    textureWidth = charX
                 charX = 0
                 charY += rowHeight
                 rowHeight = 0
@@ -366,15 +365,16 @@ class AWTFontRenderer(
      */
     private fun collectGarbage() {
         val now = System.currentTimeMillis()
-        val toRemove = mutableListOf<String>()
 
-        for ((text, cached) in cachedStrings) {
-            if (!cached.deleted && (now - cached.lastUsage) > CACHED_FONT_REMOVAL_TIME) {
-                glDeleteLists(cached.displayList, 1)
-                cached.deleted = true
-                toRemove += text
+        with(cachedStringFonts.entries.iterator()) {
+            while (hasNext()) {
+                val cached = next().value
+                if (!cached.deleted && (now - cached.lastUsage) > CACHED_FONT_REMOVAL_TIME) {
+                    glDeleteLists(cached.displayList, 1)
+                    cached.deleted = true
+                    remove()
+                }
             }
         }
-        toRemove.forEach { cachedStrings.remove(it) }
     }
 }

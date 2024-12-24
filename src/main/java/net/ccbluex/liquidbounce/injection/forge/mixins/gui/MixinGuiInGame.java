@@ -191,12 +191,12 @@ public abstract class MixinGuiInGame extends Gui {
                 ci.cancel();
             }
         }
-        liquidBounce$updateGarbageCollection(delta);
+        liquidBounce$injectRender2DEvent(delta);
     }
 
     @Inject(method = "renderTooltip", at = @At("RETURN"))
     private void renderTooltipPost(ScaledResolution sr, float delta, CallbackInfo callbackInfo) {
-        liquidBounce$updateGarbageCollection(delta);
+        liquidBounce$injectRender2DEvent(delta);
     }
 
     @Inject(method = "renderPumpkinOverlay", at = @At("HEAD"), cancellable = true)
@@ -216,10 +216,9 @@ public abstract class MixinGuiInGame extends Gui {
     }
 
     @Unique
-    private void liquidBounce$updateGarbageCollection(float delta) {
+    private void liquidBounce$injectRender2DEvent(float delta) {
         if (!ClassUtils.INSTANCE.hasClass("net.labymod.api.LabyModAPI")) {
             EventManager.INSTANCE.call(new Render2DEvent(delta));
-            AWTFontRenderer.Companion.garbageCollectionTick();
         }
     }
 
