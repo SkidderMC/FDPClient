@@ -11,25 +11,24 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.block.*
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.isBlockBBValid
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColorWithAlpha
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockDamageText
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.faceBlock
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.performRaytrace
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.isBlockBBValid
-import net.ccbluex.liquidbounce.utils.block.block
-import net.ccbluex.liquidbounce.utils.block.blockById
-import net.ccbluex.liquidbounce.utils.block.center
-import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockDamageText
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.block.Block
@@ -131,7 +130,7 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
 
         val targetId = block
 
-        if (pos == null || Block.getIdFromBlock(pos!!.block) != targetId || getCenterDistance(pos!!) > range) {
+        if (pos == null || pos!!.block!!.id != targetId || getCenterDistance(pos!!) > range) {
             pos = find(targetId)
         }
 
@@ -355,36 +354,26 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
      * Find new target block by [targetID]
      */
     private fun find(targetID: Int): BlockPos? {
-        val thePlayer = mc.thePlayer ?: return null
+        val eyes = mc.thePlayer?.eyes ?: return null
 
-        val radius = range.toInt() + 1
+        var nearestBlockDistanceSq = Double.MAX_VALUE
+        val nearestBlock = BlockPos.MutableBlockPos()
 
-        var nearestBlockDistance = Double.MAX_VALUE
-        var nearestBlock: BlockPos? = null
+        val rangeSq = range * range
 
-        for (x in radius downTo -radius + 1) {
-            for (y in radius downTo -radius + 1) {
-                for (z in radius downTo -radius + 1) {
-                    val blockPos = BlockPos(thePlayer).add(x, y, z)
-                    val block = blockPos.block ?: continue
+        eyes.getAllInBoxMutable(range + 1.0).forEach {
+            val distSq = it.distanceSqToCenter(eyes.xCoord, eyes.yCoord, eyes.zCoord)
 
-                    val distance = getCenterDistance(blockPos)
+            if (it.block?.id != targetID
+                || distSq > rangeSq || distSq > nearestBlockDistanceSq
+                || !isHittable(it) && !surroundings && !hypixel
+            ) return@forEach
 
-                    if (Block.getIdFromBlock(block) != targetID
-                        || getCenterDistance(blockPos) > range
-                        || nearestBlockDistance < distance
-                        || !isHittable(blockPos) && !surroundings && !hypixel
-                    ) {
-                        continue
-                    }
-
-                    nearestBlockDistance = distance
-                    nearestBlock = blockPos
-                }
-            }
+            nearestBlockDistanceSq = distSq
+            nearestBlock.set(it)
         }
 
-        return nearestBlock
+        return nearestBlock.takeIf { nearestBlockDistanceSq != Double.MAX_VALUE }
     }
 
     /**

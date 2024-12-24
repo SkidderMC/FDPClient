@@ -702,19 +702,13 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             1 to 1
         }
 
-        (-horizontal..horizontal).flatMap { x ->
-            (0 downTo -vertical).flatMap { y ->
-                (-horizontal..horizontal).map { z ->
-                    Vec3i(x, y, z)
-                }
-            }
-        }.sortedBy {
-            BlockUtils.getCenterDistance(blockPosition.add(it))
+        BlockPos.getAllInBox(
+            blockPosition.add(-horizontal, 0, -horizontal),
+            blockPosition.add(horizontal, -vertical, horizontal)
+        ).sortedBy {
+            BlockUtils.getCenterDistance(it)
         }.forEach {
-            if (blockPosition.add(it).canBeClicked() || search(
-                    blockPosition.add(it), !shouldGoDown, area, shouldPlaceHorizontally
-                )
-            ) {
+            if (it.canBeClicked() || search(it, !shouldGoDown, area, shouldPlaceHorizontally)) {
                 return
             }
         }
@@ -950,7 +944,10 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
         var currPlaceRotation: PlaceRotation?
 
-        for (side in EnumFacing.values().filter { !horizontalOnly || it.axis != EnumFacing.Axis.Y }) {
+        for (side in EnumFacing.values()) {
+            if (horizontalOnly && side.axis == EnumFacing.Axis.Y) {
+                continue
+            }
             val neighbor = blockPosition.offset(side)
 
             if (!neighbor.canBeClicked()) {

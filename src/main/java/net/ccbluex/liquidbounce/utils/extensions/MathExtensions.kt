@@ -165,6 +165,25 @@ fun AxisAlignedBB.offset(other: BlockPos) = offset(other.toVec())
 val AxisAlignedBB.center
     get() = lerpWith(0.5)
 
+fun AxisAlignedBB.getPointSequence(step: Double): Sequence<Vec3> {
+    require(step in 0.0..1.0)
+    return sequence {
+        var x = 0.0
+        while (x <= 1.0) {
+            var y = 0.0
+            while (y <= 1.0) {
+                var z = 0.0
+                while (z <= 1.0) {
+                    yield(lerpWith(x, y, z))
+                    z += step
+                }
+                y += step
+            }
+            x += step
+        }
+    }
+}
+
 fun Block.lerpWith(x: Double, y: Double, z: Double) = Vec3(
     blockBoundsMinX + (blockBoundsMaxX - blockBoundsMinX) * x,
     blockBoundsMinY + (blockBoundsMaxY - blockBoundsMinY) * y,

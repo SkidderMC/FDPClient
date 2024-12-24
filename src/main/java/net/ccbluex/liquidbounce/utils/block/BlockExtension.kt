@@ -7,12 +7,15 @@ package net.ccbluex.liquidbounce.utils.block
 
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isBlockBBValid
+import net.ccbluex.liquidbounce.utils.extensions.ceilInt
+import net.ccbluex.liquidbounce.utils.extensions.floorInt
 import net.minecraft.block.*
 import net.minecraft.block.material.Material
 import net.minecraft.block.state.IBlockState
 import net.minecraft.entity.item.EntityFallingBlock
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
+import net.minecraft.util.Vec3i
 
 val BlockPos.state: IBlockState?
     get() = mc.theWorld?.getBlockState(this)
@@ -55,3 +58,37 @@ val Int.blockById: Block
 
 val String.blockByName: Block?
     get() = Block.getBlockFromName(this)
+
+fun BlockPos.MutableBlockPos.set(vec3i: Vec3i): BlockPos.MutableBlockPos = set(vec3i.x, vec3i.y, vec3i.z)
+fun BlockPos.getAllInBoxMutable(radius: Int): Iterable<BlockPos> {
+    return BlockPos.getAllInBoxMutable(add(-radius, -radius, -radius), add(radius, radius, radius))
+}
+fun BlockPos.getAllInBox(radius: Int): Iterable<BlockPos> {
+    return BlockPos.getAllInBox(add(-radius, -radius, -radius), add(radius, radius, radius))
+}
+fun Vec3.getAllInBoxMutable(radius: Double): Iterable<BlockPos> {
+    val from = BlockPos(
+        (xCoord - radius).floorInt(),
+        (yCoord - radius).floorInt(),
+        (zCoord - radius).floorInt()
+    )
+    val to = BlockPos(
+        (xCoord + radius).ceilInt(),
+        (yCoord + radius).ceilInt(),
+        (zCoord + radius).ceilInt()
+    )
+    return BlockPos.getAllInBoxMutable(from, to)
+}
+fun Vec3.getAllInBox(radius: Double): Iterable<BlockPos> {
+    val from = BlockPos(
+        (xCoord - radius).floorInt(),
+        (yCoord - radius).floorInt(),
+        (zCoord - radius).floorInt()
+    )
+    val to = BlockPos(
+        (xCoord + radius).ceilInt(),
+        (yCoord + radius).ceilInt(),
+        (zCoord + radius).ceilInt()
+    )
+    return BlockPos.getAllInBox(from, to)
+}
