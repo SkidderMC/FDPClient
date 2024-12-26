@@ -222,7 +222,7 @@ object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
     val onUpdate = handler<UpdateEvent>(always = true) {
         val world = mc.theWorld ?: return@handler
 
-        world.loadedEntityList.asSequence().forEach { entity ->
+        world.loadedEntityList.forEach { entity ->
             if (entity !is EntityPlayer) return@forEach
             val profile = entity.gameProfile ?: return@forEach
 

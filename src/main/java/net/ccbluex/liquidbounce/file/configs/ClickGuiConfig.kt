@@ -5,15 +5,14 @@
  */
 package net.ccbluex.liquidbounce.file.configs
 
-import com.google.gson.JsonNull
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.FDPClient.clickGui
 import net.ccbluex.liquidbounce.file.FileConfig
 import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ModuleElement
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.io.readJson
 import java.io.*
 
 class ClickGuiConfig(file: File) : FileConfig(file) {
@@ -30,14 +29,10 @@ class ClickGuiConfig(file: File) : FileConfig(file) {
         // Regenerate panels and elements in case a script got loaded or removed.
         loadDefault()
 
-        val jsonElement = JsonParser().parse(file.bufferedReader())
-        if (jsonElement is JsonNull) return
-
-        val jsonObject = jsonElement as JsonObject
+        val json = file.readJson() as? JsonObject ?: return
         for (panel in clickGui.panels) {
-            if (!jsonObject.has(panel.name)) continue
             try {
-                val panelObject = jsonObject.getAsJsonObject(panel.name)
+                val panelObject = json.getAsJsonObject(panel.name)
                 panel.open = panelObject["open"].asBoolean
                 panel.isVisible = panelObject["visible"].asBoolean
                 panel.x = panelObject["posX"].asInt
@@ -51,7 +46,8 @@ class ClickGuiConfig(file: File) : FileConfig(file) {
                         element.showSettings = elementObject["Settings"].asBoolean
                     } catch (e: Exception) {
                         LOGGER.error(
-                            "Error while loading clickgui module element with the name '" + element.module.getName() + "' (Panel Name: " + panel.name + ").", e
+                            "Error while loading clickgui module element with the name '" + element.module.getName() + "' (Panel Name: " + panel.name + ").",
+                            e
                         )
                     }
                 }

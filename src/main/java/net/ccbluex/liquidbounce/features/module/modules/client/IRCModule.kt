@@ -5,23 +5,20 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import net.ccbluex.liquidbounce.handler.irc.Client
 import net.ccbluex.liquidbounce.handler.irc.packet.packets.*
-import net.ccbluex.liquidbounce.event.SessionUpdateEvent
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
-import net.ccbluex.liquidbounce.utils.client.chat
-import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
-import net.ccbluex.liquidbounce.utils.login.UserUtils
-import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.config.BoolValue
+import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.event.loopHandler
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.client.chat
+import net.ccbluex.liquidbounce.utils.login.UserUtils
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.EnumChatFormatting
@@ -100,7 +97,7 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
                     val message = when (packet.message) {
                         "NotSupported" -> "This method is not supported!"
                         "LoginFailed" -> "Login Failed!"
-                        "NotLoggedIn" -> "You must be logged in to use the chat! Enable LiquidChat."
+                        "NotLoggedIn" -> "You must be logged in to use the chat! Enable IRC."
                         "AlreadyLoggedIn" -> "You are already logged in!"
                         "MojangRequestMissing" -> "Mojang request missing!"
                         "NotPermitted" -> "You are missing the required permissions!"
@@ -157,21 +154,19 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
 
     private var loggedIn = false
 
-    private var loginJob: Job? = null
-
-    private val connectTimer = MSTimer()
-
     override fun onDisable() {
         loggedIn = false
         client.disconnect()
     }
+
+    private val loginMutex = Mutex()
 
     val onSession = handler<SessionUpdateEvent>(dispatcher = Dispatchers.IO) {
         client.disconnect()
         connect()
     }
 
-    val onUpdate = loopHandler {
+    val onUpdate = loopHandler(dispatcher = Dispatchers.IO) {
         if (client.isConnected()) return@loopHandler
 
         connect()
@@ -179,8 +174,8 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
         delay(5000L)
     }
 
-    private fun connect() {
-        if (client.isConnected() || (loginJob?.isActive == true)) return
+    private suspend fun connect() {
+        if (client.isConnected()) return
 
         if (jwt && jwtToken.isEmpty()) {
             chat("§7[§a§lChat§7] §cError: §7No token provided!")
@@ -190,21 +185,21 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
 
         loggedIn = false
 
-        loginJob = SharedScopes.IO.launch {
-            try {
+        try {
+            loginMutex.withLock {
+                if (client.isConnected())
+                    return@withLock
+
                 client.connect()
 
-                if (jwt)
-                    client.loginJWT(jwtToken)
-                else if (UserUtils.isValidTokenOffline(mc.session.token)) {
-                    client.loginMojang()
+                when {
+                    jwt -> client.loginJWT(jwtToken)
+                    UserUtils.isValidTokenOffline(mc.session.token) -> client.loginMojang()
                 }
-            } catch (cause: Exception) {
-                LOGGER.error("IRC error", cause)
-                chat("§7[§a§lChat§7] §cError: §7${cause.javaClass.name}: ${cause.message}")
             }
-
-            loginJob = null
+        } catch (cause: Exception) {
+            LOGGER.error("IRC error", cause)
+            chat("§7[§a§lChat§7] §cError: §7${cause.javaClass.name}: ${cause.message}")
         }
     }
 

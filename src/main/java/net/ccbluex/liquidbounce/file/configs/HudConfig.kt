@@ -30,7 +30,7 @@ class HudConfig(file: File) : FileConfig(file) {
      */
     @Throws(IOException::class)
     override fun loadConfig() {
-        val jsonArray = file.readJson().takeIf { it is JsonArray } as? JsonArray ?: return
+        val jsonArray = file.readJson() as? JsonArray ?: return
 
         HUD.clearElements()
 

@@ -5,9 +5,7 @@
  */
 package net.ccbluex.liquidbounce.file.configs
 
-import com.google.gson.JsonNull
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.FDPClient.commandManager
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.handler.cape.CapeService
@@ -18,6 +16,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.dead
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.invisibleValue
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.mobValue
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.playerValue
+import net.ccbluex.liquidbounce.utils.io.readJson
 import net.ccbluex.liquidbounce.handler.other.AutoReconnect.delay
 import net.ccbluex.liquidbounce.handler.payload.ClientFixes.blockFML
 import net.ccbluex.liquidbounce.handler.payload.ClientFixes.blockPayloadPackets
@@ -44,11 +43,9 @@ class ValuesConfig(file: File) : FileConfig(file) {
      */
     @Throws(IOException::class)
     override fun loadConfig() {
-        val jsonElement = JsonParser().parse(file.bufferedReader())
-        if (jsonElement is JsonNull) return
+        val json = file.readJson() as? JsonObject ?: return
 
-        val jsonObject = jsonElement as JsonObject
-        for ((key, value) in jsonObject.entrySet()) {
+        for ((key, value) in json.entrySet()) {
             when {
                 key.equals("commandprefix", true) ->
                     commandManager.prefix = value.asCharacter
@@ -65,8 +62,10 @@ class ValuesConfig(file: File) : FileConfig(file) {
                     if (jsonValue.has("AntiForge")) fmlFixesEnabled = jsonValue["AntiForge"].asBoolean
                     if (jsonValue.has("AntiForgeFML")) blockFML = jsonValue["AntiForgeFML"].asBoolean
                     if (jsonValue.has("AntiForgeProxy")) blockProxyPacket = jsonValue["AntiForgeProxy"].asBoolean
-                    if (jsonValue.has("AntiForgePayloads")) blockPayloadPackets = jsonValue["AntiForgePayloads"].asBoolean
-                    if (jsonValue.has("FixResourcePackExploit")) blockResourcePackExploit = jsonValue["FixResourcePackExploit"].asBoolean
+                    if (jsonValue.has("AntiForgePayloads")) blockPayloadPackets =
+                        jsonValue["AntiForgePayloads"].asBoolean
+                    if (jsonValue.has("FixResourcePackExploit")) blockResourcePackExploit =
+                        jsonValue["FixResourcePackExploit"].asBoolean
                     if (jsonValue.has("ClientBrand")) possibleBrands.set(jsonValue["ClientBrand"].asString)
                     if (jsonValue.has("AutoReconnectDelay")) delay = jsonValue["AutoReconnectDelay"].asInt
                 }
@@ -82,8 +81,10 @@ class ValuesConfig(file: File) : FileConfig(file) {
                 }
                 key.equals("clientConfiguration", true) -> {
                     val jsonValue = value as JsonObject
-                    if (jsonValue.has("EnabledClientTitle")) enabledClientTitle = jsonValue["EnabledClientTitle"].asBoolean
-                    if (jsonValue.has("EnabledBackground")) enabledCustomBackground = jsonValue["EnabledBackground"].asBoolean
+                    if (jsonValue.has("EnabledClientTitle")) enabledClientTitle =
+                        jsonValue["EnabledClientTitle"].asBoolean
+                    if (jsonValue.has("EnabledBackground")) enabledCustomBackground =
+                        jsonValue["EnabledBackground"].asBoolean
                     if (jsonValue.has("Particles")) particles = jsonValue["Particles"].asBoolean
                     if (jsonValue.has("StylisedAlts")) stylisedAlts = jsonValue["StylisedAlts"].asBoolean
                     if (jsonValue.has("AltsLength")) altsLength = jsonValue["AltsLength"].asInt

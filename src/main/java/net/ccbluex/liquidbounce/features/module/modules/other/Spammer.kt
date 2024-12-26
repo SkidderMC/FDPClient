@@ -62,14 +62,28 @@ object Spammer : Module("Spammer", Category.OTHER, subjective = true, hideModule
         var replacedStr = text
 
         replaceMap.forEach { (key, valueFunc) ->
-            while (key in replacedStr) {
-                // You have to replace them one by one, otherwise all parameters like %s would be set to the same random string.
-                replacedStr = replacedStr.replaceFirst(key, valueFunc())
-            }
+            replacedStr = replacedStr.replace(key, valueFunc)
         }
 
         return replacedStr
     }
+
+    private inline fun String.replace(oldValue: String, newValueProvider: () -> Any): String {
+        var index = 0
+        val newString = StringBuilder(this)
+        while (true) {
+            index = newString.indexOf(oldValue, startIndex = index)
+            if (index == -1) {
+                break
+            }
+            // You have to replace them one by one, otherwise all parameters like %s would be set to the same random string.
+            val newValue = newValueProvider().toString()
+            newString.replace(index, index + oldValue.length, newValue)
+            index += newValue.length
+        }
+        return newString.toString()
+    }
+
 
     private fun randomPlayer() =
         mc.netHandler.playerInfoMap

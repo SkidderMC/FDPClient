@@ -5,8 +5,17 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import me.liuli.elixir.account.CrackedAccount
+import net.ccbluex.liquidbounce.config.ListValue
+import net.ccbluex.liquidbounce.config.TextValue
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.event.EventManager.call
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.file.FileManager.accountsConfig
@@ -16,20 +25,15 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.ServerUtils
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomAccount
-import net.ccbluex.liquidbounce.config.ListValue
-import net.ccbluex.liquidbounce.config.TextValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.minecraft.network.play.server.S02PacketChat
 import net.minecraft.network.play.server.S40PacketDisconnect
 import net.minecraft.network.play.server.S45PacketTitle
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.Session
-import java.util.*
-import kotlin.concurrent.schedule
 
 object AutoAccount :
-    Module("AutoAccount", Category.OTHER, subjective = true, gameDetecting = false, hideModule = false) {
+    Module("AutoAccount", Category.CLIENT, subjective = true, gameDetecting = false, hideModule = false) {
 
     private val register by boolean("AutoRegister", true)
     private val login by boolean("AutoLogin", true)
@@ -38,7 +42,7 @@ object AutoAccount :
     private val passwordValue = object : TextValue("Password", "zywl1337#") {
         override fun onChange(oldValue: String, newValue: String) =
             when {
-                " " in newValue -> {
+                ' ' in newValue -> {
                     chat("§7[§a§lAutoAccount§7] §cPassword cannot contain a space!")
                     oldValue
                 }
@@ -102,19 +106,20 @@ object AutoAccount :
         // Log in to account with a random name, optionally save it
         changeAccount()
 
-        // Reconnect normally with OpenGL context
-        if (reconnectDelayValue.isMinimal()) return ServerUtils.connectToLastServer()
-
-        // Delay the reconnect, connectToLastServer gets called from a TimerThread with no OpenGL context
-        Timer().schedule(reconnectDelay.toLong()) {
-            ServerUtils.connectToLastServer(true)
+        SharedScopes.IO.launch {
+            delay(sendDelay.toLong())
+            withContext(Dispatchers.Main) {
+                // connectToLastServer needs thread with OpenGL context
+                ServerUtils.connectToLastServer()
+            }
         }
     }
 
     private fun respond(msg: String) = when {
         register && "/reg" in msg -> {
             addNotification(Notification("Trying to register.", "Trying to Register", Type.INFO))
-            Timer().schedule(sendDelay.toLong()) {
+            SharedScopes.IO.launch {
+                delay(sendDelay.toLong())
                 mc.thePlayer.sendChatMessage("/register $password $password")
             }
             true
@@ -122,7 +127,8 @@ object AutoAccount :
 
         login && "/log" in msg -> {
             addNotification(Notification("Trying to log in.", "Trying to log in.", Type.INFO))
-            Timer().schedule(sendDelay.toLong()) {
+            SharedScopes.IO.launch {
+                delay(sendDelay.toLong())
                 mc.thePlayer.sendChatMessage("/login $password")
             }
             true
@@ -145,7 +151,8 @@ object AutoAccount :
 
                 if (status == Status.WAITING) {
                     // Try to register / log in, return if invalid message
-                    if (!respond(msg)) return@handler
+                    if (!respond(msg))
+                        return@handler
 
                     event.cancelEvent()
                     status = Status.SENT_COMMAND
@@ -180,7 +187,7 @@ object AutoAccount :
 
     }
 
-           val onWorld = handler<WorldEvent> { event ->
+    val onWorld = handler<WorldEvent> { event ->
         if (!passwordValue.isSupported()) return@handler
 
         // Reset status if player wasn't in a world before
@@ -206,7 +213,6 @@ object AutoAccount :
     private fun success() {
         if (status == Status.SENT_COMMAND) {
             addNotification(Notification("Logged in as ${mc.session.username}", "Logged", Type.SUCCESS))
-
             // Stop waiting for response
             status = Status.STOPPED
         }
@@ -233,7 +239,7 @@ object AutoAccount :
                 account.session.username, account.session.uuid,
                 account.session.token, account.session.type
             )
-            EventManager.call(SessionUpdateEvent)
+            call(SessionUpdateEvent)
             return
         }
 

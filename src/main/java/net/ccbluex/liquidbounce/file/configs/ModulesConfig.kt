@@ -5,13 +5,12 @@
  */
 package net.ccbluex.liquidbounce.file.configs
 
-import com.google.gson.JsonNull
 import com.google.gson.JsonObject
-import com.google.gson.JsonParser
 import me.liuli.elixir.utils.set
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.file.FileConfig
 import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
+import net.ccbluex.liquidbounce.utils.io.readJson
 import java.io.*
 
 class ModulesConfig(file: File) : FileConfig(file) {
@@ -23,10 +22,9 @@ class ModulesConfig(file: File) : FileConfig(file) {
      */
     @Throws(IOException::class)
     override fun loadConfig() {
-        val jsonElement = JsonParser().parse(file.bufferedReader())
-        if (jsonElement is JsonNull) return
+        val json = file.readJson() as? JsonObject ?: return
 
-        for ((key, value) in jsonElement.asJsonObject.entrySet().iterator()) {
+        for ((key, value) in json.entrySet()) {
             val module = moduleManager[key] ?: continue
 
             val jsonModule = value as JsonObject

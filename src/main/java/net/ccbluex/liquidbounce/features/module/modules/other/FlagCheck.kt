@@ -194,7 +194,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
                 blockPlacementAttempts.entries.removeIf { (blockPos, timestamp) ->
                     if (currentTime - timestamp > ghostBlockDelay) {
                         // Returns if blockpos is < 0
-                        if (blockPos < BlockPos(0, 0, 0)) return@removeIf false
+                        if (blockPos < BlockPos.ORIGIN) return@removeIf false
                         val block = world.getBlockState(blockPos).block
 
                         if (block == Blocks.air && successfulPlacements.contains(blockPos)) {

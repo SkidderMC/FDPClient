@@ -5,24 +5,22 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
-import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
-import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
-import net.ccbluex.liquidbounce.utils.block.block
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
-import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.event.loopHandler
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
+import net.ccbluex.liquidbounce.utils.block.block
+import net.ccbluex.liquidbounce.utils.block.id
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.minecraft.block.Block
-import net.minecraft.block.Block.getIdFromBlock
 import net.minecraft.init.Blocks.*
 import net.minecraft.util.BlockPos
 import java.awt.Color
@@ -41,10 +39,10 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
     private val colorGreen by int("G", 96, 0..255) { !colorRainbow }
     private val colorBlue by int("B", 96, 0..255) { !colorRainbow }
 
-    private val searchTimer = MSTimer()
-    private val targetBlockList = mutableListOf<BlockPos>()
-    private val blocksToRender = mutableSetOf<BlockPos>()
-    private var searchJob: Job? = null
+    @Volatile
+    private var targetBlocks = emptySet<BlockPos>()
+    @Volatile
+    private var blocksToRender = emptySet<BlockPos>()
 
     private val breakableBlockIDs =
         arrayOf(35, 24, 159, 121, 20, 5, 49) // wool, sandstone, stained_clay, end_stone, glass, wood, obsidian
@@ -55,8 +53,9 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
         down: Boolean,
         allLayers: Boolean,
         blockLimit: Int
-    ) {
-        val targetBlockID = getIdFromBlock(targetBlock)
+    ): Set<BlockPos> {
+        val result = hashSetOf<BlockPos>()
+        val targetBlockID = targetBlock.id
 
         val nextLayerAirBlocks = mutableSetOf<BlockPos>()
         val nextLayerBlocks = mutableSetOf<BlockPos>()
@@ -65,12 +64,12 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
         var currentLayer = 1
 
         // get blocks around each target block
-        for (block in targetBlockList) {
+        for (block in targetBlocks) {
             currentLayerBlocks.add(block)
 
             while (currentLayerBlocks.isNotEmpty()) {
                 val currBlock = currentLayerBlocks.removeFirst()
-                val currBlockID = getIdFromBlock(currBlock.block)
+                val currBlockID = currBlock.block?.id ?: 0
 
                 // it's not necessary to make protection layers around unbreakable blocks
                 if (breakableBlockIDs.contains(currBlockID) || (currBlockID == targetBlockID) || (allLayers && currBlockID == 0)) {
@@ -109,62 +108,49 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
             currentLayer = 1
 
             for (newBlock in nextLayerAirBlocks) {
-                if (blocksToRender.size >= blockLimit) {
-                    return
+                if (result.size >= blockLimit) {
+                    return result
                 }
-                blocksToRender += newBlock
+
+                result += newBlock
             }
 
             nextLayerAirBlocks.clear()
         }
+
+        return result
     }
 
+    val onSearch = loopHandler(dispatcher = Dispatchers.Default) {
+        val radius = radius
+        val targetBlock = if (targetBlock == "Bed") bed else dragon_egg
+        val maxLayers = maxLayers
+        val down = down
+        val allLayers = renderMode == "All"
+        val blockLimit = blockLimit
 
-    val onUpdate = handler<UpdateEvent> {
-        if (searchTimer.hasTimePassed(1000) && (searchJob?.isActive != true)) {
-            val radius = radius
-            val targetBlock = if (targetBlock == "Bed") bed else dragon_egg
-            val maxLayers = maxLayers
-            val down = down
-            val allLayers = renderMode == "All"
-            val blockLimit = blockLimit
+        targetBlocks = searchBlocks(radius, setOf(targetBlock), 32).keys
+        blocksToRender = getBlocksToRender(targetBlock, maxLayers, down, allLayers, blockLimit)
 
-            searchJob = SharedScopes.Default.launch {
-                val blocks = searchBlocks(radius, setOf(targetBlock), 32)
-                searchTimer.reset()
-
-                synchronized(targetBlockList) {
-                    targetBlockList.clear()
-                    targetBlockList += blocks.keys
-                }
-                synchronized(blocksToRender) {
-                    blocksToRender.clear()
-                    getBlocksToRender(targetBlock, maxLayers, down, allLayers, blockLimit)
-                }
-            }
-        }
+        delay(1000)
     }
-
 
     val onRender3D = handler<Render3DEvent> {
         if (renderTargetBlocks) {
-            synchronized(targetBlockList) {
-                for (blockPos in targetBlockList) {
-                    drawBlockBox(blockPos, Color.RED, true)
-                }
+            for (blockPos in targetBlocks) {
+                drawBlockBox(blockPos, Color.RED, true)
             }
         }
-        synchronized(blocksToRender) {
-            val color = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
-            for (blockPos in blocksToRender) {
-                drawBlockBox(blockPos, color, true)
-            }
+
+        val color = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
+        for (blockPos in blocksToRender) {
+            drawBlockBox(blockPos, color, true)
         }
     }
 
-    override fun onToggle(state: Boolean) {
-        targetBlockList.clear()
-        blocksToRender.clear()
+    override fun onDisable() {
+        targetBlocks = emptySet()
+        blocksToRender = emptySet()
     }
 
     override val tag: String
