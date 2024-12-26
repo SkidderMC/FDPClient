@@ -5,12 +5,12 @@
  */
 package net.ccbluex.liquidbounce.utils.extensions
 
-import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getFixedAngleDelta
 import net.ccbluex.liquidbounce.config.FloatRangeValue
 import net.ccbluex.liquidbounce.config.FloatValue
 import net.ccbluex.liquidbounce.config.IntegerRangeValue
 import net.ccbluex.liquidbounce.config.IntegerValue
 import net.ccbluex.liquidbounce.utils.block.toVec
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getFixedAngleDelta
 import net.minecraft.block.Block
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.entity.RenderManager
@@ -18,6 +18,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.util.*
 import java.math.BigDecimal
 import javax.vecmath.Vector2f
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -34,19 +35,19 @@ operator fun Vec3i.component3() = z
 /**
  * Provides:
  * ```
- * val (x, y) = vec
- */
-operator fun Vector2f.component1() = x
-operator fun Vector2f.component2() = y
-
-/**
- * Provides:
- * ```
  * val (x, y, z) = vec
  */
 operator fun Vec3.component1() = xCoord
 operator fun Vec3.component2() = yCoord
 operator fun Vec3.component3() = zCoord
+
+/**
+ * Provides:
+ * ```
+ * val (x, y) = vec
+ */
+operator fun Vector2f.component1() = x
+operator fun Vector2f.component2() = y
 
 /**
  * Provides:
@@ -77,6 +78,7 @@ operator fun Vec3.unaryMinus(): Vec3 = this.times(-1.0)
 
 fun Vec3.offset(direction: EnumFacing, value: Double): Vec3 {
     val vec3i = direction.directionVec
+
     return Vec3(
         this.xCoord + value * vec3i.x.toDouble(),
         this.yCoord + value * vec3i.y.toDouble(),
@@ -118,6 +120,9 @@ fun Double.toRadiansF() = toRadians().toFloat()
 fun Double.toDegrees() = this * 57.295779513
 fun Double.toDegreesF() = toDegrees().toFloat()
 fun Double.withGCD() = (this / getFixedAngleDelta()).roundToInt() * getFixedAngleDelta().toDouble()
+
+val Vector2f.abs
+    get() = Vector2f(abs(x), abs(y))
 
 /**
  * Provides: (step is 0.1 by default)
@@ -167,6 +172,7 @@ val AxisAlignedBB.center
 
 fun AxisAlignedBB.getPointSequence(step: Double): Sequence<Vec3> {
     require(step in 0.0..1.0)
+
     return sequence {
         var x = 0.0
         while (x <= 1.0) {
@@ -195,14 +201,19 @@ fun Vec3.lerpWith(other: Vec3, tickDelta: Double) = Vec3(
     yCoord + (other.yCoord - yCoord) * tickDelta,
     zCoord + (other.zCoord - zCoord) * tickDelta
 )
+
 fun Vec3.lerpWith(other: Vec3, tickDelta: Float) = lerpWith(other, tickDelta.toDouble())
 
 fun ClosedFloatingPointRange<Double>.lerpWith(t: Number) = start + (endInclusive - start) * t.toDouble()
 
 fun ClosedFloatingPointRange<Float>.lerpWith(t: Number) = start + (endInclusive - start) * t.toFloat()
+
 fun IntegerRangeValue.lerpWith(t: Float) = (minimum + (maximum - minimum) * t).roundToInt()
+
 fun FloatRangeValue.lerpWith(t: Float) = minimum + (maximum - minimum) * t
+
 fun IntegerValue.lerpWith(t: Float) = (minimum + (maximum - minimum) * t).roundToInt()
+
 fun FloatValue.lerpWith(t: Float) = minimum + (maximum - minimum) * t
 
 fun interpolate(oldValue: Double, newValue: Double, interpolationValue: Double): Double {

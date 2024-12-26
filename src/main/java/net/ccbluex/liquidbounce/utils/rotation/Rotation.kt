@@ -24,6 +24,9 @@ import kotlin.math.*
  */
 data class Rotation(var yaw: Float, var pitch: Float) : MinecraftInstance {
 
+    val abs
+        get() = Rotation(abs(yaw), abs(pitch))
+
     operator fun minus(other: Rotation): Rotation {
         return Rotation(yaw - other.yaw, pitch - other.pitch)
     }

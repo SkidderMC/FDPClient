@@ -41,7 +41,7 @@ object NoRotateSet : Module("NoRotateSet", Category.OTHER, gameDetecting = false
         currentRotation = player.rotation
 
         // This connects with the SimulateShortStop code, [performAngleChange] function.
-        WaitTickUtils.schedule(ticksUntilStart.random, RotationUtils)
+        WaitTickUtils.schedule(ticksUntilStart.random, this)
 
         setTargetRotation(savedRotation, options = options)
     }
