@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.attack.EntityUtils.colorFromDisplayName
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
@@ -76,7 +77,17 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
 
     var renderNameTags = true
 
+    private val entities by EntityLookup<EntityLivingBase>()
+        .filter { bot || !isBot(it) }
+        .filter { isSelected(it, false) }
+        .filter { !onLook || isLookingOnEntities(it, maxAngleDifference.toDouble()) }
+        .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistanceSq }
+        .filter { thruBlocks || isEntityHeightVisible(it) }
+
     val onRender3D = handler<Render3DEvent> {
+        if (entities.isEmpty())
+            return@handler
+
         val mvMatrix = WorldToScreen.getMatrix(GL_MODELVIEW_MATRIX)
         val projectionMatrix = WorldToScreen.getMatrix(GL_PROJECTION_MATRIX)
         val real2d = mode == "Real2D"
@@ -100,69 +111,56 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
             glLineWidth(1f)
         }
 
-        for (entity in mc.theWorld.loadedEntityList) {
-            if (entity !is EntityLivingBase || !bot && isBot(entity)) continue
-            if (isSelected(entity, false)) {
+        for (entity in entities) {
+            val color = getColor(entity)
 
-                val distanceSquared = mc.thePlayer.getDistanceSqToEntity(entity)
+            val pos = entity.interpolatedPosition(entity.lastTickPos) - mc.renderManager.renderPos
 
-                if (onLook && !isLookingOnEntities(entity, maxAngleDifference.toDouble()))
-                    continue
+            when (mode) {
+                "Box", "OtherBox" -> drawEntityBox(entity, color, mode != "OtherBox")
 
-                if (!thruBlocks && !isEntityHeightVisible(entity)) continue
+                "2D" -> {
+                    draw2D(entity, pos.xCoord, pos.yCoord, pos.zCoord, color.rgb, Color.BLACK.rgb)
+                }
 
-                if (distanceSquared <= maxRenderDistanceSq) {
-                    val color = getColor(entity)
-
-                    val pos = entity.interpolatedPosition(entity.lastTickPos) - mc.renderManager.renderPos
-
-                    when (mode) {
-                        "Box", "OtherBox" -> drawEntityBox(entity, color, mode != "OtherBox")
-
-                        "2D" -> {
-                            draw2D(entity, pos.xCoord, pos.yCoord, pos.zCoord, color.rgb, Color.BLACK.rgb)
-                        }
-
-                        "Real2D" -> {
-                            val bb = entity.hitBox.offset(-entity.currPos + pos)
-                            val boxVertices = arrayOf(
-                                doubleArrayOf(bb.minX, bb.minY, bb.minZ),
-                                doubleArrayOf(bb.minX, bb.maxY, bb.minZ),
-                                doubleArrayOf(bb.maxX, bb.maxY, bb.minZ),
-                                doubleArrayOf(bb.maxX, bb.minY, bb.minZ),
-                                doubleArrayOf(bb.minX, bb.minY, bb.maxZ),
-                                doubleArrayOf(bb.minX, bb.maxY, bb.maxZ),
-                                doubleArrayOf(bb.maxX, bb.maxY, bb.maxZ),
-                                doubleArrayOf(bb.maxX, bb.minY, bb.maxZ)
-                            )
-                            var minX = Float.MAX_VALUE
-                            var minY = Float.MAX_VALUE
-                            var maxX = -1f
-                            var maxY = -1f
-                            for (boxVertex in boxVertices) {
-                                val screenPos = WorldToScreen.worldToScreen(
-                                    Vector3f(
-                                        boxVertex[0].toFloat(),
-                                        boxVertex[1].toFloat(),
-                                        boxVertex[2].toFloat()
-                                    ), mvMatrix, projectionMatrix, mc.displayWidth, mc.displayHeight
-                                )
-                                    ?: continue
-                                minX = min(screenPos.x, minX)
-                                minY = min(screenPos.y, minY)
-                                maxX = max(screenPos.x, maxX)
-                                maxY = max(screenPos.y, maxY)
-                            }
-                            if (minX > 0 || minY > 0 || maxX <= mc.displayWidth || maxY <= mc.displayWidth) {
-                                glColor4f(color.red / 255f, color.green / 255f, color.blue / 255f, 1f)
-                                glBegin(GL_LINE_LOOP)
-                                glVertex2f(minX, minY)
-                                glVertex2f(minX, maxY)
-                                glVertex2f(maxX, maxY)
-                                glVertex2f(maxX, minY)
-                                glEnd()
-                            }
-                        }
+                "Real2D" -> {
+                    val bb = entity.hitBox.offset(-entity.currPos + pos)
+                    val boxVertices = arrayOf(
+                        doubleArrayOf(bb.minX, bb.minY, bb.minZ),
+                        doubleArrayOf(bb.minX, bb.maxY, bb.minZ),
+                        doubleArrayOf(bb.maxX, bb.maxY, bb.minZ),
+                        doubleArrayOf(bb.maxX, bb.minY, bb.minZ),
+                        doubleArrayOf(bb.minX, bb.minY, bb.maxZ),
+                        doubleArrayOf(bb.minX, bb.maxY, bb.maxZ),
+                        doubleArrayOf(bb.maxX, bb.maxY, bb.maxZ),
+                        doubleArrayOf(bb.maxX, bb.minY, bb.maxZ)
+                    )
+                    var minX = Float.MAX_VALUE
+                    var minY = Float.MAX_VALUE
+                    var maxX = -1f
+                    var maxY = -1f
+                    for (boxVertex in boxVertices) {
+                        val screenPos = WorldToScreen.worldToScreen(
+                            Vector3f(
+                                boxVertex[0].toFloat(),
+                                boxVertex[1].toFloat(),
+                                boxVertex[2].toFloat()
+                            ), mvMatrix, projectionMatrix, mc.displayWidth, mc.displayHeight
+                        )
+                            ?: continue
+                        minX = min(screenPos.x, minX)
+                        minY = min(screenPos.y, minY)
+                        maxX = max(screenPos.x, maxX)
+                        maxY = max(screenPos.y, maxY)
+                    }
+                    if (minX > 0 || minY > 0 || maxX <= mc.displayWidth || maxY <= mc.displayWidth) {
+                        glColor4f(color.red / 255f, color.green / 255f, color.blue / 255f, 1f)
+                        glBegin(GL_LINE_LOOP)
+                        glVertex2f(minX, minY)
+                        glVertex2f(minX, maxY)
+                        glVertex2f(maxX, maxY)
+                        glVertex2f(maxX, minY)
+                        glEnd()
                     }
                 }
             }
@@ -180,15 +178,13 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
     }
 
     val onRender2D = handler<Render2DEvent> { event ->
-        if (mc.theWorld == null || mode != "Glow")
+        if (mc.theWorld == null || mode != "Glow" || entities.isEmpty())
             return@handler
 
         renderNameTags = false
 
         try {
-            val entitiesGrouped = getEntitiesByColor(maxRenderDistanceSq)
-
-            entitiesGrouped.forEach { (color, entities) ->
+            entities.groupBy(::getColor).forEach { (color, entities) ->
                 GlowShader.startDraw(event.partialTicks, glowRenderScale)
 
                 for (entity in entities) {
@@ -207,34 +203,17 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
     override val tag
         get() = mode
 
-    private fun getEntitiesByColor(maxDistanceSquared: Double): Map<Color, List<EntityLivingBase>> {
-        return getEntitiesInRange(maxDistanceSquared).groupBy { getColor(it) }
-    }
-
-    private fun getEntitiesInRange(maxDistanceSquared: Double): Sequence<EntityLivingBase> {
-        val player = mc.thePlayer
-
-        return mc.theWorld.loadedEntityList.asSequence()
-            .filterIsInstance<EntityLivingBase>()
-            .filterNot { isBot(it) && !bot }
-            .filter { isSelected(it, false) }
-            .filter { player.getDistanceSqToEntity(it) <= maxDistanceSquared }
-            .filter { thruBlocks || isEntityHeightVisible(it) }
-    }
-
     fun getColor(entity: Entity? = null): Color {
-        run {
-            if (entity != null && entity is EntityLivingBase) {
-                if (entity.hurtTime > 0)
-                    return Color.RED
+        if (entity != null && entity is EntityLivingBase) {
+            if (entity.hurtTime > 0)
+                return Color.RED
 
-                if (entity is EntityPlayer && entity.isClientFriend())
-                    return Color.BLUE
+            if (entity is EntityPlayer && entity.isClientFriend())
+                return Color.BLUE
 
-                if (colorTeam) {
-                    entity.colorFromDisplayName()?.let {
-                        return it
-                    }
+            if (colorTeam) {
+                entity.colorFromDisplayName()?.let {
+                    return it
                 }
             }
         }

@@ -8,13 +8,13 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
+import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
@@ -70,24 +70,10 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
     val color
         get() = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
 
-    private var itemEntities: Iterable<EntityItem> = emptyList()
-
-    override fun onDisable() {
-        itemEntities = emptyList()
-    }
-
-    // Entity lookup
-    val onUpdate = handler<UpdateEvent> {
-        if (mc.theWorld == null || mc.thePlayer == null)
-            return@handler
-
-        itemEntities = mc.theWorld.loadedEntityList.asSequence()
-            .filterIsInstance<EntityItem>()
-            .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistanceSq }
-            .filter { !onLook || isLookingOnEntities(it, maxAngleDifference.toDouble()) }
-            .filter { thruBlocks || isEntityHeightVisible(it) }
-            .toList()
-    }
+    private val itemEntities by EntityLookup<EntityItem>()
+        .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistanceSq }
+        .filter { !onLook || isLookingOnEntities(it, maxAngleDifference.toDouble()) }
+        .filter { thruBlocks || isEntityHeightVisible(it) }
 
     val onRender3D = handler<Render3DEvent> {
         if (mc.theWorld == null || mc.thePlayer == null)

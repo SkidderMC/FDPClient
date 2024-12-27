@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Teams
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.colorFromDisplayName
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.getHealth
+import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -67,6 +68,12 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
     private val colorTeam by boolean("TeamColor", false)
     private val bot by boolean("Bots", true)
 
+    private val entities by EntityLookup<EntityLivingBase>()
+        .filter { bot || !isBot(it) }
+        .filter { team || !Teams.isInYourTeam(it) }
+        .filter { EntityUtils.isSelected(it, false) }
+
+
     val onRender2D = handler<Render2DEvent> { event ->
         if (dimension != "2d") return@handler
 
@@ -109,8 +116,11 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
     }
 
     private fun draw(ticks: Float) {
+        if (entities.isEmpty()) {
+            return
+        }
+
         val player = mc.thePlayer ?: return
-        val world = mc.theWorld ?: return
 
         val arrowRadius = -arrowRadius
         val halfAngle = arrowAngle / 2
@@ -124,11 +134,7 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
         glEnable(GL_LINE_SMOOTH)
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
 
-        for (entity in world.loadedEntityList) {
-            if (entity !is EntityLivingBase || !bot && isBot(entity)) continue
-            if (!team && Teams.isInYourTeam(entity)) continue
-
-            if (!EntityUtils.isSelected(entity, false)) continue
+        for (entity in entities) {
 
             val interpolatedPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * ticks
             val interpolatedPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * ticks

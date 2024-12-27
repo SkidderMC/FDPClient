@@ -5,23 +5,18 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
-import net.ccbluex.liquidbounce.utils.extensions.interpolatedPosition
-import net.ccbluex.liquidbounce.utils.extensions.lastTickPos
+import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
-import net.ccbluex.liquidbounce.config.IntegerValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.font
-import net.ccbluex.liquidbounce.config.int
-import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.entity.item.EntityTNTPrimed
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.pow
@@ -50,19 +45,14 @@ object TNTTimer : Module("TNTTimer", Category.VISUAL, spacedName = "TNT Timer", 
             field = if (value <= 0.0) maxRenderDistance.toDouble().pow(2.0) else value
         }
 
+    private val tntEntities by EntityLookup<EntityTNTPrimed>()
+        .filter { it.fuse > 0 }
+        .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistanceSq }
+        .filter { !onLook || isLookingOnEntities(it, maxAngleDifference.toDouble()) }
 
     val onRender3D = handler<Render3DEvent> {
-        val player = mc.thePlayer ?: return@handler
-        val world = mc.theWorld ?: return@handler
-
-        for (entity in world.loadedEntityList) {
-            if (entity is EntityTNTPrimed && player.getDistanceSqToEntity(entity) <= maxRenderDistanceSq) {
-                val explosionTime = entity.fuse / 5
-
-                if (explosionTime > 0 && (isLookingOnEntities(entity, maxAngleDifference.toDouble()) || !onLook)) {
-                    renderTNTTimer(entity, explosionTime)
-                }
-            }
+        for (entity in tntEntities) {
+            renderTNTTimer(entity, entity.fuse / 5)
         }
     }
 
