@@ -59,7 +59,9 @@ object Tracers : Module("Tracers", Category.VISUAL, hideModule = false) {
 
     private val thruBlocks by boolean("ThruBlocks", true)
 
-    val onRender3D = handler<Render3DEvent> {
+    // Priority must be set lower than every other Listenable class that also listens to this event.
+    // We re-apply camera transformation, which would affect NameTags if the priority was normal.
+    val onRender3D = handler<Render3DEvent>(priority = -5) {
         val thePlayer = mc.thePlayer ?: return@handler
 
         val originalViewBobbing = mc.gameSettings.viewBobbing
