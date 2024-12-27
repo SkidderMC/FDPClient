@@ -79,12 +79,14 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
 
         val scaledResolution = ScaledResolution(mc)
 
+        glPushAttrib(GL_ALL_ATTRIB_BITS)
         glPushMatrix()
         glTranslatef(scaledResolution.scaledWidth / 2f, scaledResolution.scaledHeight / 2f, 0f)
 
         draw(event.partialTicks)
 
         glPopMatrix()
+        glPopAttrib()
     }
 
     private fun fade(color: Color, distance: Int, maxDistance: Int): Color {

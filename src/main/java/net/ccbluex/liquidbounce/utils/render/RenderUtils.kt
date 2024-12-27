@@ -1234,6 +1234,7 @@ object RenderUtils : MinecraftInstance {
         glPushMatrix()
         glEnable(GL_BLEND)
         glDisable(GL_TEXTURE_2D)
+        glDisable(GL_DEPTH_TEST)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_LINE_SMOOTH)
         glColor(color)
@@ -2262,6 +2263,7 @@ object RenderUtils : MinecraftInstance {
         glEnable(GL_TEXTURE_2D)
         glDisable(GL_LINE_SMOOTH)
         glDisable(GL_BLEND)
+        glEnable(GL_DEPTH_TEST)
         glPopMatrix()
     }
 

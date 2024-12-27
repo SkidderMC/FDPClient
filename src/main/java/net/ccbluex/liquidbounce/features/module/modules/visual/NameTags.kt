@@ -334,6 +334,8 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
 
         var foundPotion = false
 
+        glEnable(GL_DEPTH_TEST)
+
         if (potion && entity is EntityPlayer) {
             val potions =
                 entity.activePotionEffects.map { Potion.potionTypes[it.potionID] }
@@ -433,6 +435,8 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
                 0xFFFFFF, fontShadow
             )
         }
+
+        glDisable(GL_DEPTH_TEST)
 
         // Reset OpenGL caps
         resetCaps()
