@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils.block
 
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.extensions.immutableCopy
 import net.minecraft.block.Block
 import net.minecraft.block.BlockGlass
 import net.minecraft.block.BlockSoulSand
@@ -94,7 +95,7 @@ object BlockUtils : MinecraftInstance {
                     val block = mutable.block ?: continue
 
                     if (targetBlocks == null || targetBlocks.contains(block)) {
-                        val pos = mutable.immutable
+                        val pos = mutable.immutableCopy()
                         if (predicate(pos, block)) {
                             blocks[pos] = block
                         }

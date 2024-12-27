@@ -377,11 +377,11 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
      */
     private fun getNearestEntityInRange(): Entity? {
         val player = mc.thePlayer ?: return null
-        val world = mc.theWorld ?: return null
+        val entities = mc.theWorld?.loadedEntityList ?: return null
 
-        return world.loadedEntityList?.asSequence()
-            ?.filter { entity -> isSelected(entity, true) }
-            ?.filter { entity ->
+        return entities.asSequence()
+            .filter { entity -> isSelected(entity, true) }
+            .filter { entity ->
                 Backtrack.runWithNearestTrackedDistance(entity) {
                     val distance = player.getDistanceToEntityBox(entity)
 
@@ -391,7 +391,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
                         else -> false
                     }
                 }
-            }?.minByOrNull { player.getDistanceToEntityBox(it) }
+            }.minByOrNull { player.getDistanceToEntityBox(it) }
     }
 
     /**

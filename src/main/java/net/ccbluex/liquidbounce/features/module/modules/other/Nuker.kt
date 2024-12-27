@@ -36,13 +36,6 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.STOP_DEST
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import java.awt.Color
-import kotlin.collections.component1
-import kotlin.collections.component2
-import kotlin.collections.hashSetOf
-import kotlin.collections.minusAssign
-import kotlin.collections.plusAssign
-import kotlin.collections.sortedBy
-import kotlin.collections.sortedByDescending
 import kotlin.math.roundToInt
 
 object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule = false) {

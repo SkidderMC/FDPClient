@@ -5,10 +5,15 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.event.loopHandler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.block.material
+import net.ccbluex.liquidbounce.utils.block.state
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.inventory.isSplashPotion
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -17,10 +22,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.int
-import net.ccbluex.liquidbounce.event.handler
-import net.ccbluex.liquidbounce.utils.block.state
+import net.ccbluex.liquidbounce.utils.render.drawWithTessellatorWorldRenderer
 import net.minecraft.block.material.Material
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.client.renderer.Tessellator
@@ -30,11 +32,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityEnderPearl
 import net.minecraft.entity.item.EntityExpBottle
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.entity.projectile.EntityArrow
-import net.minecraft.entity.projectile.EntityEgg
-import net.minecraft.entity.projectile.EntityFireball
-import net.minecraft.entity.projectile.EntityPotion
-import net.minecraft.entity.projectile.EntitySnowball
+import net.minecraft.entity.projectile.*
 import net.minecraft.item.*
 import net.minecraft.util.*
 import org.lwjgl.opengl.GL11.*
@@ -53,8 +51,7 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
     private val colorGreen by int("G", 160, 0..255) { colorMode == "Custom" }
     private val colorBlue by int("B", 255, 0..255) { colorMode == "Custom" }
 
-    private val trailPositions = mutableMapOf<Entity, MutableList<Triple<Long, Vec3, Float>>>()
-
+    private val trailPositions = mutableMapOf<Entity, ArrayDeque<ProjectilePos>>()
 
     val onRender3D = handler<Render3DEvent> {
         val theWorld = mc.theWorld ?: return@handler
@@ -185,12 +182,7 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
                 // Check if arrow is landing
                 if (landingPosition != null) {
                     hasLanded = true
-                    posAfter =
-                        Vec3(
-                            landingPosition.hitVec.xCoord,
-                            landingPosition.hitVec.yCoord,
-                            landingPosition.hitVec.zCoord
-                        )
+                    posAfter = landingPosition.hitVec.copy()
                 }
 
                 // Set arrow box
@@ -233,7 +225,7 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
                 posZ += motionZ
 
                 // Check is next position water
-                if (BlockPos(posX, posY, posZ).state!!.block.material === Material.water) {
+                if (BlockPos(posX, posY, posZ).material === Material.water) {
                     // Update motion
                     motionX *= 0.6
                     motionY *= 0.6
@@ -321,28 +313,26 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
         for ((entity, positions) in trailPositions) {
             if (positions.isEmpty()) continue
 
-            val tessellator = Tessellator.getInstance()
-            val worldRenderer = tessellator.worldRenderer
-            worldRenderer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            drawWithTessellatorWorldRenderer {
+                begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION)
 
-            for ((_, pos, alpha) in positions) {
-                val interpolatePos = pos - renderManager.renderPos
+                for ((_, pos, alpha) in positions) {
+                    val interpolatePos = pos - renderManager.renderPos
 
-                val color = when (entity) {
-                    is EntityArrow -> Color(255, 0, 0)
-                    is EntityPotion -> Color(200, 150, 0)
-                    is EntityEnderPearl -> Color(200, 0, 200)
-                    is EntityFireball -> Color(255, 255, 0)
-                    is EntityEgg, is EntitySnowball -> Color(200, 255, 200)
-                    else -> Color(255, 255, 255)
+                    val color = when (entity) {
+                        is EntityArrow -> Color(255, 0, 0)
+                        is EntityPotion -> Color(200, 150, 0)
+                        is EntityEnderPearl -> Color(200, 0, 200)
+                        is EntityFireball -> Color(255, 255, 0)
+                        is EntityEgg, is EntitySnowball -> Color(200, 255, 200)
+                        else -> Color(255, 255, 255)
+                    }
+
+                    glColor4f(color.red / 255f, color.green / 255f, color.blue / 255f, alpha)
+
+                    pos(interpolatePos.xCoord, interpolatePos.yCoord, interpolatePos.zCoord).endVertex()
                 }
-
-                glColor4f(color.red / 255f, color.green / 255f, color.blue / 255f, alpha)
-
-                worldRenderer.pos(interpolatePos.xCoord, interpolatePos.yCoord, interpolatePos.zCoord).endVertex()
             }
-
-            tessellator.draw()
         }
 
         glEnable(GL_TEXTURE_2D)
@@ -355,9 +345,8 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
         glPopAttrib()
     }
 
-
-    val onUpdate = handler<UpdateEvent> {
-        val world = mc.theWorld ?: return@handler
+    val onUpdate = loopHandler {
+        val world = mc.theWorld ?: return@loopHandler
 
         val currentTime = System.currentTimeMillis()
 
@@ -370,7 +359,7 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
             when (entity) {
                 is EntitySnowball, is EntityEnderPearl, is EntityEgg,
                 is EntityArrow, is EntityPotion, is EntityExpBottle, is EntityFireball -> {
-                    val positions = trailPositions.getOrPut(entity) { mutableListOf() }
+                    val positions = trailPositions.getOrPut(entity, ::ArrayDeque)
 
                     positions.removeIf { (timestamp, _, alpha) ->
                         currentTime - timestamp > 10000 || alpha <= 0
@@ -380,7 +369,7 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
                         positions.removeAt(0)
                     }
 
-                    positions.add(Triple(currentTime, Vec3(entity.posX, entity.posY, entity.posZ), 1.0f))
+                    positions.add(ProjectilePos(currentTime, Vec3(entity.posX, entity.posY, entity.posZ), 1.0f))
                 }
             }
         }
@@ -389,11 +378,13 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
         for (positions in trailPositions.values) {
             for (i in positions.indices) {
                 val (timestamp, pos, alpha) = positions[i]
-                positions[i] = Triple(timestamp, pos, alpha - 0.04f)
+                positions[i] = ProjectilePos(timestamp, pos, alpha - 0.04f)
             }
         }
 
         // Remove entities that are no longer in the world
         trailPositions.keys.removeIf { it !in world.loadedEntityList && trailPositions[it]?.all { (_, _, alpha) -> alpha <= 0 } == true }
     }
+
+    private data class ProjectilePos(val timestamp: Long, val pos: Vec3, val alpha: Float)
 }

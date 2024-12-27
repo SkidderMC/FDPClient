@@ -68,75 +68,73 @@ object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
 
         val renderManager = mc.renderManager
 
-        world.loadedEntityList.asSequence()
-            .filter { isSelected(it, true) }
+        world.loadedEntityList
+            .filter { it != null && isSelected(it, true) }
             .forEach { target ->
-                target?.run {
-                    val vec = usePosition(this)
+                val vec = usePosition(target)
 
-                    val (x, y, z) = vec - renderManager.renderPos
+                val (x, y, z) = vec - renderManager.renderPos
 
-                    when (espMode.lowercase()) {
-                        "box" -> {
-                            val axisAlignedBB = entityBoundingBox.offset(-currPos + Vec3(x, y, z))
+                when (espMode.lowercase()) {
+                    "box" -> {
+                        val axisAlignedBB = target.entityBoundingBox.offset(Vec3(x, y, z) - target.currPos)
 
-                            drawBacktrackBox(axisAlignedBB, color)
-                        }
+                        drawBacktrackBox(axisAlignedBB, color)
+                    }
 
-                        "model" -> {
-                            glPushMatrix()
-                            glPushAttrib(GL_ALL_ATTRIB_BITS)
+                    "model" -> {
+                        glPushMatrix()
+                        glPushAttrib(GL_ALL_ATTRIB_BITS)
 
-                            color(0.6f, 0.6f, 0.6f, 1f)
-                            renderManager.doRenderEntity(
-                                this,
-                                x, y, z,
-                                (prevRotationYaw..rotationYaw).lerpWith(event.partialTicks),
-                                event.partialTicks,
-                                true
-                            )
+                        color(0.6f, 0.6f, 0.6f, 1f)
+                        renderManager.doRenderEntity(
+                            target,
+                            x, y, z,
+                            (target.prevRotationYaw..target.rotationYaw).lerpWith(event.partialTicks),
+                            event.partialTicks,
+                            true
+                        )
 
-                            glPopAttrib()
-                            glPopMatrix()
-                        }
+                        glPopAttrib()
+                        glPopMatrix()
+                    }
 
-                        "wireframe" -> {
-                            val color = if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
+                    "wireframe" -> {
+                        val color = if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
 
-                            glPushMatrix()
-                            glPushAttrib(GL_ALL_ATTRIB_BITS)
+                        glPushMatrix()
+                        glPushAttrib(GL_ALL_ATTRIB_BITS)
 
-                            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
-                            glDisable(GL_TEXTURE_2D)
-                            glDisable(GL_LIGHTING)
-                            glDisable(GL_DEPTH_TEST)
-                            glEnable(GL_LINE_SMOOTH)
+                        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE)
+                        glDisable(GL_TEXTURE_2D)
+                        glDisable(GL_LIGHTING)
+                        glDisable(GL_DEPTH_TEST)
+                        glEnable(GL_LINE_SMOOTH)
 
-                            glEnable(GL_BLEND)
-                            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+                        glEnable(GL_BLEND)
+                        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-                            glLineWidth(wireframeWidth)
+                        glLineWidth(wireframeWidth)
 
-                            glColor(color)
-                            renderManager.doRenderEntity(
-                                this,
-                                x, y, z,
-                                (prevRotationYaw..rotationYaw).lerpWith(event.partialTicks),
-                                event.partialTicks,
-                                true
-                            )
-                            glColor(color)
-                            renderManager.doRenderEntity(
-                                this,
-                                x, y, z,
-                                (prevRotationYaw..rotationYaw).lerpWith(event.partialTicks),
-                                event.partialTicks,
-                                true
-                            )
+                        glColor(color)
+                        renderManager.doRenderEntity(
+                            target,
+                            x, y, z,
+                            (target.prevRotationYaw..target.rotationYaw).lerpWith(event.partialTicks),
+                            event.partialTicks,
+                            true
+                        )
+                        glColor(color)
+                        renderManager.doRenderEntity(
+                            target,
+                            x, y, z,
+                            (target.prevRotationYaw..target.rotationYaw).lerpWith(event.partialTicks),
+                            event.partialTicks,
+                            true
+                        )
 
-                            glPopAttrib()
-                            glPopMatrix()
-                        }
+                        glPopAttrib()
+                        glPopMatrix()
                     }
                 }
             }

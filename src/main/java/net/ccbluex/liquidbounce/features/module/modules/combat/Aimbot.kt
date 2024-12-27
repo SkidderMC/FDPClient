@@ -107,13 +107,10 @@ object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
         }
 
         // Search for the best enemy to target
-        val entity = world.loadedEntityList.asSequence().mapNotNull { entity ->
-            entity.takeIf {
-                Backtrack.runWithNearestTrackedDistance(it) {
-                    isSelected(it, true) && player.canEntityBeSeen(it) && player.getDistanceToEntityBox(
-                        it
-                    ) <= range && rotationDifference(it) <= fov
-                }
+        val entity = world.loadedEntityList.filter {
+            Backtrack.runWithNearestTrackedDistance(it) {
+                isSelected(it, true) && player.canEntityBeSeen(it)
+                        && player.getDistanceToEntityBox(it) <= range && rotationDifference(it) <= fov
             }
         }.minByOrNull { player.getDistanceToEntityBox(it) } ?: return@handler
 
