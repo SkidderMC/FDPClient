@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
+import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.extensions.fixedSensitivityPitch
 import net.ccbluex.liquidbounce.utils.extensions.fixedSensitivityYaw
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
@@ -139,12 +140,14 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) 
         }
     }
 
+    private val entities by EntityLookup<EntityLivingBase> {
+        isSelected(it, true) && mc.thePlayer.getDistanceToEntityBox(it) <= range
+    }
+
     private fun getNearestEntityInRange(): Entity? {
         val player = mc.thePlayer ?: return null
 
-        return mc.theWorld?.loadedEntityList?.asSequence()
-            ?.filter { isSelected(it, true) && player.getDistanceToEntityBox(it) <= range }
-            ?.minByOrNull { player.getDistanceToEntityBox(it) }
+        return entities.minByOrNull { player.getDistanceToEntityBox(it) }
     }
 
     private fun shouldAutoRightClick() = mc.thePlayer.heldItem?.itemUseAction in arrayOf(EnumAction.BLOCK)

@@ -846,7 +846,7 @@ object Velocity : Module("Velocity", Category.COMBAT, hideModule = false) {
     private fun getNearestEntityInRange(range: Float = this.range): Entity? {
         val player = mc.thePlayer ?: return null
 
-        return mc.theWorld.loadedEntityList.asSequence().filter {
+        return mc.theWorld.loadedEntityList.filter {
             isSelected(it, true) && player.getDistanceToEntityBox(it) <= range
         }.minByOrNull { player.getDistanceToEntityBox(it) }
     }

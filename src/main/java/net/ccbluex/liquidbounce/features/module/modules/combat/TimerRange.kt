@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.client.BlinkUtils
+import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.client.PacketUtils
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.extensions.*
@@ -133,6 +134,20 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
     private val resetOnKnockback by boolean("ResetOnKnockback", false)
     private val chatDebug by boolean("ChatDebug", true) { resetOnlagBack || resetOnKnockback }
     private val notificationDebug by boolean("NotificationDebug", false) { resetOnlagBack || resetOnKnockback }
+
+    private val entities by EntityLookup<EntityLivingBase>()
+        .filter { isSelected(it, true) }
+        .filter { entity ->
+            Backtrack.runWithNearestTrackedDistance(entity) {
+                val distance = mc.thePlayer.getDistanceToEntityBox(entity)
+
+                when (timerBoostMode.lowercase()) {
+                    "normal" -> distance <= rangeValue
+                    "smart", "modern" -> distance <= scanRange.get() + randomRange
+                    else -> false
+                }
+            }
+        }
 
     override fun onDisable() {
         shouldResetTimer()
@@ -377,21 +392,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT, hideModule = false) {
      */
     private fun getNearestEntityInRange(): Entity? {
         val player = mc.thePlayer ?: return null
-        val entities = mc.theWorld?.loadedEntityList ?: return null
-
-        return entities.asSequence()
-            .filter { entity -> isSelected(entity, true) }
-            .filter { entity ->
-                Backtrack.runWithNearestTrackedDistance(entity) {
-                    val distance = player.getDistanceToEntityBox(entity)
-
-                    when (timerBoostMode.lowercase()) {
-                        "normal" -> distance <= rangeValue
-                        "smart", "modern" -> distance <= scanRange.get() + randomRange
-                        else -> false
-                    }
-                }
-            }.minByOrNull { player.getDistanceToEntityBox(it) }
+        return entities.minByOrNull { player.getDistanceToEntityBox(it) }
     }
 
     /**

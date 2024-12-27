@@ -15,19 +15,30 @@ import kotlin.reflect.KProperty
 class EntityLookup<T : Entity>(
     private val owner: Listenable,
     private val entityClass: Class<in T> = Entity::class.java,
-    private var predicates: Array<Predicate<in T>> = emptyArray()
+    private val updateCycle: Int = 1,
+    private var predicates: Array<Predicate<in T>> = emptyArray(),
 ): Listenable, MinecraftInstance {
+
+    private var ticks = 0
 
     private var entities: Collection<T> = emptyList()
 
     private fun clear() {
         if (entities.isNotEmpty())
             entities = emptyList()
+
+        ticks = 0
     }
 
     operator fun getValue(thisRef: Any?, property: KProperty<*>): Collection<T> = entities
 
     private val onUpdate = handler<UpdateEvent> {
+        ticks++
+        ticks %= updateCycle
+
+        if (ticks != 0)
+            return@handler
+
         @Suppress("UNCHECKED_CAST")
         entities = mc.theWorld?.loadedEntityList
             ?.filter { entity ->
@@ -56,10 +67,10 @@ class EntityLookup<T : Entity>(
 
 }
 
-inline fun <reified T : Entity> Listenable.EntityLookup(): EntityLookup<T> {
-    return EntityLookup(owner = this, T::class.java)
+inline fun <reified T : Entity> Listenable.EntityLookup(updateCycle: Int = 1): EntityLookup<T> {
+    return EntityLookup(owner = this, T::class.java, updateCycle)
 }
 
-inline fun <reified T : Entity> Listenable.EntityLookup(predicate: Predicate<in T>): EntityLookup<T> {
-    return EntityLookup(owner = this, T::class.java, arrayOf(predicate))
+inline fun <reified T : Entity> Listenable.EntityLookup(updateCycle: Int = 1, predicate: Predicate<in T>): EntityLookup<T> {
+    return EntityLookup(owner = this, T::class.java, updateCycle, arrayOf(predicate))
 }

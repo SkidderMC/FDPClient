@@ -383,7 +383,8 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
         }
 
         // Remove entities that are no longer in the world
-        trailPositions.keys.removeIf { it !in world.loadedEntityList && trailPositions[it]?.all { (_, _, alpha) -> alpha <= 0 } == true }
+        val worldEntities = world.loadedEntityList.toHashSet()
+        trailPositions.keys.removeIf { it !in worldEntities && trailPositions[it]?.all { (_, _, alpha) -> alpha <= 0 } == true }
     }
 
     private data class ProjectilePos(val timestamp: Long, val pos: Vec3, val alpha: Float)
