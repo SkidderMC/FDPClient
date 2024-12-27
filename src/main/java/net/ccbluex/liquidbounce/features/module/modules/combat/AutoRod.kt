@@ -141,7 +141,7 @@ object AutoRod : Module("AutoRod", Category.COMBAT, hideModule = false) {
                     // Switch to rod
                     switchBack = mc.thePlayer.inventory.currentItem
 
-                    mc.thePlayer.inventory.currentItem = rod - 36
+                    mc.thePlayer.inventory.currentItem = rod
                     mc.playerController.syncCurrentPlayItem()
                 }
 
