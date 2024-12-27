@@ -203,17 +203,19 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     private val eagleValue =
         ListValue("Eagle", arrayOf("Normal", "Silent", "Off"), "Normal") { scaffoldMode != "GodBridge" }
     val eagle by eagleValue
-    private val eagleMode by choices("EagleMode", arrayOf("Both", "OnGround", "InAir"), "Both") { eagle != "Off" }
-    private val adjustedSneakSpeed by boolean("AdjustedSneakSpeed", true) { eagle == "Silent" }
-    private val eagleSpeed by float("EagleSpeed", 0.3f, 0.3f..1.0f) { eagle != "Off" }
-    val eagleSprint by boolean("EagleSprint", false) { eagle == "Normal" }
-    private val blocksToEagle by int("BlocksToEagle", 0, 0..10) { eagle != "Off" }
-    private val edgeDistance by float("EagleEdgeDistance", 0f, 0f..0.5f) { eagle != "Off" }
-    private val useMaxSneakTime by boolean("UseMaxSneakTime", true) { eagle != "Off" }
+    private val eagleMode by choices("EagleMode", arrayOf("Both", "OnGround", "InAir"), "Both")
+    { eagle != "Off" && scaffoldMode != "GodBridge" }
+    private val adjustedSneakSpeed by boolean("AdjustedSneakSpeed", true)
+    { eagle == "Silent" && scaffoldMode != "GodBridge" }
+    private val eagleSpeed by float("EagleSpeed", 0.3f, 0.3f..1.0f) { eagle != "Off" && scaffoldMode != "GodBridge" }
+    val eagleSprint by boolean("EagleSprint", false) { eagle == "Normal" && scaffoldMode != "GodBridge" }
+    private val blocksToEagle by int("BlocksToEagle", 0, 0..10) { eagle != "Off" && scaffoldMode != "GodBridge" }
+    private val edgeDistance by float("EagleEdgeDistance", 0f, 0f..0.5f)
+    { eagle != "Off" && scaffoldMode != "GodBridge" }
+    private val useMaxSneakTime by boolean("UseMaxSneakTime", true) { eagle != "Off" && scaffoldMode != "GodBridge" }
     private val maxSneakTicks by int("MaxSneakTicks", 3, 0..10) { useMaxSneakTime }
-    private val blockSneakingAgainUntilOnGround by boolean(
-        "BlockSneakingAgainUntilOnGround", true
-    ) { useMaxSneakTime && eagleMode != "OnGround" }
+    private val blockSneakingAgainUntilOnGround by boolean("BlockSneakingAgainUntilOnGround", true)
+    { useMaxSneakTime && eagleMode != "OnGround" }
 
     // Rotation Options
     private val modeList =
@@ -315,6 +317,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
     private var placedBlocksWithoutEagle = 0
 
     var eagleSneaking = false
+
+    private var requestedStopSneak = false
 
     private val isEagleEnabled
         get() = eagle != "Off" && !shouldGoDown && scaffoldMode != "GodBridge"
@@ -439,7 +443,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             run {
                 val options = mc.gameSettings
 
-                if (placedBlocksWithoutEagle >= blocksToEagle || alreadySneaking || blockSneaking) {
+                if (placedBlocksWithoutEagle >= blocksToEagle || alreadySneaking || blockSneaking || eagleSneaking || requestedStopSneak) {
                     val eagleCondition = when (eagleMode) {
                         "OnGround" -> player.onGround
                         "InAir" -> !player.onGround
@@ -452,9 +456,17 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
                     var shouldEagle =
                         eagleCondition && (blockPos.isReplaceable || dif < edgeDistance) || pressedOnKeyboard
 
-                    if (blockSneaking && !alreadySneaking && useMaxSneakTime) {
-                        shouldEagle = pressedOnKeyboard
-                    } else if (blockSneaking || alreadySneaking) return@run
+                    val shouldSchedule = !requestedStopSneak
+
+                    if (requestedStopSneak) {
+                        requestedStopSneak = false
+
+                        if (!player.onGround) {
+                            shouldEagle = pressedOnKeyboard
+                        }
+                    } else if (blockSneaking || alreadySneaking) {
+                        return@run
+                    }
 
                     if (eagle == "Silent") {
                         if (eagleSneaking != shouldEagle) {
@@ -481,13 +493,17 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
                         eagleSneaking = shouldEagle
                     }
 
-                    if (eagleSneaking) {
+                    if (eagleSneaking && shouldSchedule) {
                         if (useMaxSneakTime) {
-                            WaitTickUtils.schedule(maxSneakTicks + 1, "sneak")
+                            WaitTickUtils.conditionalSchedule("sneak") { elapsed ->
+                                (elapsed >= maxSneakTicks + 1).also { requestedStopSneak = it }
+                            }
                         }
 
                         if (blockSneakingAgainUntilOnGround && !player.onGround) {
-                            WaitTickUtils.conditionalSchedule("block") { player.onGround }
+                            WaitTickUtils.conditionalSchedule("block") {
+                                player.onGround.also { if (it) requestedStopSneak = true }
+                            }
                         }
                     }
 
@@ -581,7 +597,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             }
             return@handler
         }
-
 
         // Change/Schedule slot once per tick according to vanilla-logic
         if (alreadyPlaced || SilentHotbar.modifiedThisTick) {
@@ -703,8 +718,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
         }
 
         BlockPos.getAllInBox(
-            blockPosition.add(-horizontal, 0, -horizontal),
-            blockPosition.add(horizontal, -vertical, horizontal)
+            blockPosition.add(-horizontal, 0, -horizontal), blockPosition.add(horizontal, -vertical, horizontal)
         ).sortedBy {
             BlockUtils.getCenterDistance(it)
         }.forEach {
@@ -948,6 +962,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             if (horizontalOnly && side.axis == EnumFacing.Axis.Y) {
                 continue
             }
+
             val neighbor = blockPosition.offset(side)
 
             if (!neighbor.canBeClicked()) {
