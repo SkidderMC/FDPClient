@@ -10,7 +10,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
 interface Listenable {
-    fun handleEvents() = true
+    fun handleEvents(): Boolean = parent?.handleEvents() ?: true
 
     val subListeners: Array<Listenable>
         get() = emptyArray()
