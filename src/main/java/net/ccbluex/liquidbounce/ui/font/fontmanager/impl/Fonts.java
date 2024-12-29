@@ -53,9 +53,10 @@ public interface Fonts {
 	interface NursultanMedium {
 
 		FontFamily NursultanMedium = FONT_MANAGER.fontFamily(FontType.NursultanMedium);
+		final class NursultanMedium15 { public static final FontRenderer NursultanMedium15 = NursultanMedium.ofSize(15); private NursultanMedium15() {} }
+		final class NursultanMedium16 { public static final FontRenderer NursultanMedium16 = NursultanMedium.ofSize(16); private NursultanMedium16() {} }
 		final class NursultanMedium18 { public static final FontRenderer NursultanMedium18 = NursultanMedium.ofSize(18); private NursultanMedium18() {} }
 		final class NursultanMedium20 { public static final FontRenderer NursultanMedium20 = NursultanMedium.ofSize(20); private NursultanMedium20() {} }
-		final class NursultanMedium15 { public static final FontRenderer NursultanMedium15 = NursultanMedium.ofSize(20); private NursultanMedium15() {} }
 	}
 
 	interface InterMedium {
