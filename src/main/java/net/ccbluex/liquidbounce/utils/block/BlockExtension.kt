@@ -59,7 +59,8 @@ val Int.blockById: Block
 val String.blockByName: Block?
     get() = Block.getBlockFromName(this)
 
-fun BlockPos.MutableBlockPos.set(vec3i: Vec3i): BlockPos.MutableBlockPos = set(vec3i.x, vec3i.y, vec3i.z)
+fun BlockPos.MutableBlockPos.set(vec3i: Vec3i, xOffset: Int = 0, yOffset: Int = 0, zOffset: Int = 0): BlockPos.MutableBlockPos =
+    set(vec3i.x + xOffset, vec3i.y + yOffset, vec3i.z + zOffset)
 fun BlockPos.getAllInBoxMutable(radius: Int): Iterable<BlockPos> {
     return BlockPos.getAllInBoxMutable(add(-radius, -radius, -radius), add(radius, radius, radius))
 }

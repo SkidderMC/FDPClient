@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
 import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
@@ -19,8 +18,13 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element.Companion.MAX_GRAD
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.BEDWARS_BLOCKS
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockTexture
+import net.ccbluex.liquidbounce.utils.block.block
+import net.ccbluex.liquidbounce.utils.block.center
 import net.ccbluex.liquidbounce.utils.block.getAllInBoxMutable
+import net.ccbluex.liquidbounce.utils.block.set
 import net.ccbluex.liquidbounce.utils.extensions.immutableCopy
+import net.ccbluex.liquidbounce.utils.extensions.manhattanDistance
+import net.ccbluex.liquidbounce.utils.extensions.offset
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsFloat
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
@@ -32,16 +36,20 @@ import net.ccbluex.liquidbounce.utils.render.toColorArray
 import net.minecraft.block.Block
 import net.minecraft.block.BlockBed
 import net.minecraft.client.gui.Gui
-import net.minecraft.client.renderer.GlStateManager.resetColor
+import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.init.Blocks
+import net.minecraft.item.ItemStack
 import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
+import java.util.IdentityHashMap
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
 object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
-    private val renderYOffset by int("RenderYOffset", 1, 0..5)
+    private val renderYOffset by float("RenderYOffset", 1f, -5f..5f)
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
         override fun onUpdate(value: Int) {
@@ -88,75 +96,101 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
     private val gradientX by float("Gradient-X", -1000F, -2000F..2000F) { backgroundMode == "Gradient" }
     private val gradientY by float("Gradient-Y", -1000F, -2000F..2000F) { backgroundMode == "Gradient" }
 
-    private var bed: Array<BlockPos>? = null
-    private val beds: MutableList<BlockPos?> = mutableListOf()
-    private val bedBlocks: MutableList<MutableList<Block>> = mutableListOf()
+    private val bedStates = ConcurrentHashMap<BlockPos, BedState>()
+
+    private data class SurroundingBlock(
+        val block: Block,
+        val count: Int,
+        val layer: Int,
+    ) : Comparable<SurroundingBlock> {
+        val itemStack = ItemStack(block, count)
+
+        override fun compareTo(other: SurroundingBlock): Int = compareValuesBy(this, other,
+            { it.layer }, { -it.count }, { it.block.unlocalizedName })
+    }
+
+    private data class BedState(
+        val pos: Vec3,
+        val surrounding: Collection<SurroundingBlock>,
+    )
 
     val onUpdate = loopHandler(dispatcher = Dispatchers.Default) {
-        val player = mc.thePlayer ?: return@loopHandler
         val world = mc.theWorld ?: return@loopHandler
 
-        val blockList = mutableListOf<BlockPos>()
-        val bedBlockLists = mutableListOf<MutableList<Block>>()
-        val bedSet = mutableSetOf<BlockPos>()
+        val searchCenter = mc.thePlayer?.position ?: return@loopHandler
 
         val radius = maxRenderDistance
-        player.position.getAllInBoxMutable(radius).forEach {
-            val blockState = world.getBlockState(it)
-            if (blockState.block == Blocks.bed && blockState.getValue(BlockBed.PART) == BlockBed.EnumPartType.FOOT) {
-                bedBlocks(it.immutableCopy(), blockList, bedBlockLists, bedSet)
-            }
+        val radiusSq = radius * radius
+
+        // Invalidate blocks
+        bedStates.keys.removeIf {
+            it.block != Blocks.bed || searchCenter.distanceSq(it) > radiusSq
         }
 
-        withContext(Dispatchers.Main) {
-            if (beds.size != blockList.size || !beds.containsAll(blockList)) {
-                beds.clear()
-                beds.addAll(blockList)
-                bedBlocks.clear()
-                bedBlocks.addAll(bedBlockLists)
+        val maxLayers = maxLayers
+
+        val from = BlockPos.MutableBlockPos()
+        val to = BlockPos.MutableBlockPos()
+
+        searchCenter.getAllInBoxMutable(radius).forEach {
+            if (searchCenter.distanceSq(it) > radiusSq)
+                return@forEach
+
+            val blockState = world.getBlockState(it)
+            if (blockState.block != Blocks.bed || blockState.getValue(BlockBed.PART) != BlockBed.EnumPartType.FOOT)
+                return@forEach
+
+            val facing = blockState.getValue(BlockBed.FACING)
+            val headPos = it.offset(facing)
+
+            // Invalid Bed
+            if (world.getBlockState(headPos).block != Blocks.bed) {
+                return@forEach
             }
+
+            val layers = Array(maxLayers) { IdentityHashMap<Block, Int>() }
+
+            from.set(it, -maxLayers - 1, 0, -maxLayers - 1)
+            to.set(it, maxLayers + 1, maxLayers + 1, maxLayers + 1)
+
+            for (pos in BlockPos.getAllInBoxMutable(from, to)) {
+                val layer = minOf(pos.manhattanDistance(it), pos.manhattanDistance(headPos))
+                if (layer > maxLayers) continue
+
+                val block = world.getBlockState(pos).block
+
+                if (block !in BEDWARS_BLOCKS) continue
+
+                val blockCount = layers[layer - 1]
+                blockCount[block] = blockCount.getOrDefault(block, 0) + 1
+            }
+
+            val surrounding = ArrayList<SurroundingBlock>()
+            surrounding += SurroundingBlock(Blocks.bed, layer = 0, count = 1)
+            layers.forEachIndexed { index, blockCount ->
+                blockCount.forEach { (block, count) ->
+                    surrounding += SurroundingBlock(block, layer = index + 1, count = count)
+                }
+            }
+            surrounding.sort()
+
+            bedStates[it.immutableCopy()] = BedState(it.center.offset(facing, 0.5), surrounding)
         }
 
         delay(1000L)
     }
 
-    private fun bedBlocks(
-        blockPos: BlockPos,
-        blockList: MutableList<BlockPos>,
-        bedBlockLists: MutableList<MutableList<Block>>,
-        bedSet: MutableSet<BlockPos>,
-    ) {
-        if (!bedSet.contains(blockPos)) {
-            blockList.add(blockPos)
-            bedSet.add(blockPos)
-            bedBlockLists.add(mutableListOf())
-        }
-    }
-
     val onWorld = handler<WorldEvent> {
-        beds.clear()
-        bedBlocks.clear()
-        bed = null
+        bedStates.clear()
     }
 
     val onRender3D = handler<Render3DEvent> {
-        if (mc.thePlayer == null || mc.theWorld == null || beds.isEmpty()) return@handler
+        if (mc.thePlayer == null || mc.theWorld == null || bedStates.isEmpty()) return@handler
 
-        beds.forEachIndexed { index, blockPos ->
-            if (blockPos != null && mc.theWorld.getBlockState(blockPos).block is BlockBed) {
-                findAndRenderBed(blockPos, index)
-            }
-        }
+        bedStates.values.forEach(::drawPlate)
     }
 
-    private fun findAndRenderBed(blockPos: BlockPos, index: Int) {
-        if (index < 0 || index >= bedBlocks.size) return
-
-        findBed(blockPos.x.toDouble(), blockPos.y.toDouble(), blockPos.z.toDouble(), index)
-        drawPlate(blockPos, index)
-    }
-
-    private fun drawPlate(blockPos: BlockPos, index: Int) {
+    private fun drawPlate(bedState: BedState) {
         val player = mc.thePlayer ?: return
         val renderManager = mc.renderManager ?: return
         val rotateX = if (mc.gameSettings.thirdPersonView == 2) -1.0f else 1.0f
@@ -169,7 +203,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
         val gradientX = if (gradientX == 0f) 0f else 1f / gradientX
         val gradientY = if (gradientY == 0f) 0f else 1f / gradientY
 
-        val distance = player.getDistance(blockPos.x.toDouble(), blockPos.y.toDouble(), blockPos.z.toDouble())
+        val distance = bedState.pos.distanceTo(player.positionVector)
         val scale = ((distance / 4F).coerceAtLeast(1.0) / 150F) * scale
 
         glPushMatrix()
@@ -181,16 +215,18 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
         glDisable(GL_DEPTH_TEST)
         glDepthMask(false)
 
-        glTranslatef(
-            (blockPos.x - renderManager.viewerPosX + 0.5).toFloat(),
-            (blockPos.y - renderManager.viewerPosY + renderYOffset + 1).toFloat(),
-            (blockPos.z - renderManager.viewerPosZ + 0.5).toFloat()
+        glTranslated(
+            bedState.pos.xCoord - renderManager.viewerPosX,
+            bedState.pos.yCoord - renderManager.viewerPosY + renderYOffset + 1,
+            bedState.pos.zCoord - renderManager.viewerPosZ
         )
+
         glRotatef(-renderManager.playerViewY, 0F, 1F, 0F)
         glRotatef(renderManager.playerViewX * rotateX, 1F, 0F, 0F)
         glScalef(-scale.toFloat(), -scale.toFloat(), scale.toFloat())
 
-        val blocks = bedBlocks[index]
+        // TODO: replace with layer blocks
+        val blocks = bedState.surrounding.mapTo(linkedSetOf()) { it.block }
         val text = "Bed (${distance.roundToInt()}m)"
 
         var offset = (blocks.size * -13) / 2
@@ -250,6 +286,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
             }
         }
 
+        // TODO: replace with item stack rendering
         blocks.forEach { block ->
             val texture = getBlockTexture(block)
             mc.textureManager.bindTexture(texture)
@@ -272,57 +309,5 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
         resetColor()
 
         glPopMatrix()
-    }
-
-    private fun findBed(x: Double, y: Double, z: Double, index: Int): Boolean {
-        val bedPos = BlockPos(x, y, z)
-        val world = mc.theWorld ?: return false
-        val bedBlock: Block = world.getBlockState(bedPos).block
-
-        if (index < 0) return false
-
-        while (bedBlocks.size <= index) {
-            bedBlocks.add(mutableListOf())
-        }
-        while (beds.size <= index) {
-            beds.add(BlockPos.ORIGIN)
-        }
-
-        bedBlocks[index].clear()
-        beds[index] = bedPos
-
-        if (bedBlock != Blocks.bed) {
-            return false
-        }
-
-        bedBlocks[index].add(Blocks.bed)
-        addSurroundingBlocks(bedPos, index)
-
-        return true
-    }
-
-    private fun addSurroundingBlocks(bedPos: BlockPos, index: Int) {
-        val world = mc.theWorld ?: return
-
-        val directions = arrayOf(
-            BlockPos(0, 1, 0),
-            BlockPos(1, 0, 0),
-            BlockPos(-1, 0, 0),
-            BlockPos(0, 0, 1),
-            BlockPos(0, 0, -1)
-        )
-
-        for (dir in directions) {
-            for (layer in 1..maxLayers) {
-                val currentPos = bedPos.add(dir.x * layer, dir.y * layer, dir.z * layer)
-                val currentBlock = world.getBlockState(currentPos).block
-
-                if (currentBlock == Blocks.air) break
-
-                if (currentBlock in BEDWARS_BLOCKS && currentBlock !in bedBlocks[index]) {
-                    bedBlocks[index].add(currentBlock)
-                }
-            }
-        }
     }
 }

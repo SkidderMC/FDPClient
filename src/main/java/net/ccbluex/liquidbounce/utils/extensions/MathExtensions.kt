@@ -76,6 +76,10 @@ operator fun Vec3.times(number: Double) = Vec3(xCoord * number, yCoord * number,
 operator fun Vec3.div(number: Double) = times(1 / number)
 operator fun Vec3.unaryMinus(): Vec3 = this.times(-1.0)
 
+fun Vec3i.manhattanDistance(another: Vec3i): Int {
+    return abs(x - another.x) + abs(y - another.y) + abs(z - another.z)
+}
+
 fun Vec3i.copy(x: Int = this.x, y: Int = this.y, z: Int = this.z) = Vec3i(x, y, z)
 fun BlockPos.copy(x: Int = this.x, y: Int = this.y, z: Int = this.z) = BlockPos(x, y, z)
 fun BlockPos.MutableBlockPos.copy(x: Int = this.x, y: Int = this.y, z: Int = this.z) = BlockPos.MutableBlockPos(x, y, z)
