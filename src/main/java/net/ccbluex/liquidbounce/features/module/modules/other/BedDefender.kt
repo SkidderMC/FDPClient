@@ -28,6 +28,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
 import net.minecraft.block.BlockBush
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.init.Blocks
@@ -273,7 +274,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
 
         val switchSlot = InventoryUtils.findBlockInHotbar() ?: return
 
-        TickScheduler += {
+        nextTick {
             if (autoBlock != "Off") {
                 SilentHotbar.selectSlotSilently(
                     this,

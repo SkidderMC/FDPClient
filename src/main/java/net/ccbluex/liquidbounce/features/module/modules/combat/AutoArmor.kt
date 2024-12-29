@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner.canBeRepairedWithOther
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.kotlin.waitUntil
 import net.ccbluex.liquidbounce.utils.inventory.ArmorComparator.getBestArmorSet
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.autoArmorCurrentSlot
@@ -28,6 +27,10 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInvento
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.toHotbarIndex
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.inventory.hasItemAgePassed
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.awaitTicked
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.clickNextTick
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.isTicked
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.entity.EntityLiving.getArmorPosition
@@ -105,7 +108,7 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
             // Check if the armor piece is in the hotbar
             val hotbarIndex = index?.toHotbarIndex(stacks.size) ?: continue
 
-            if (index in TickScheduler || armorType + 5 in TickScheduler)
+            if (isTicked(index) || isTicked(armorType + 5))
                 continue
 
             if (!stack.hasItemAgePassed(minItemAge))
@@ -140,7 +143,7 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
             }
 
             // Schedule hotbar click
-            TickScheduler += equippingAction
+            nextTick(action = equippingAction)
 
             if (delayedSlotSwitch) {
                 delay(randomDelay(minDelay, maxDelay).toLong())
@@ -150,11 +153,11 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
         // Not really needed to bypass
         delay(randomDelay(minDelay, maxDelay).toLong())
 
-        waitUntil { TickScheduler.isEmpty() }
+        awaitTicked()
 
         // Sync selected slot next tick
         if (hasClickedHotbar)
-            TickScheduler += { SilentHotbar.resetSlot(this) }
+            nextTick { SilentHotbar.resetSlot(this) }
     }
 
     suspend fun equipFromInventory() {
@@ -186,7 +189,7 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
             index ?: continue
 
             // Check if best item is already scheduled to be equipped next tick
-            if (index in TickScheduler || (armorType + 5) in TickScheduler)
+            if (isTicked(index) || isTicked(armorType + 5))
                 continue
 
             if (!stack.hasItemAgePassed(minItemAge))
@@ -240,7 +243,7 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
         }
 
         // Wait till all scheduled clicks were sent
-        waitUntil { TickScheduler.isEmpty() }
+        awaitTicked()
     }
 
     fun equipFromHotbarInChest(hotbarIndex: Int?, stack: ItemStack) {
@@ -308,7 +311,7 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
             delay(startDelay.toLong())
         }
 
-        TickScheduler.scheduleClick(slot, button, mode, allowDuplicates)
+        clickNextTick(slot, button, mode, allowDuplicates)
 
         hasScheduledInLastLoop = true
 

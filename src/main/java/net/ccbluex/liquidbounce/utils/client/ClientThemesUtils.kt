@@ -3,6 +3,7 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
+
 package net.ccbluex.liquidbounce.utils.client
 
 import net.ccbluex.liquidbounce.utils.extensions.setAlpha
@@ -12,14 +13,14 @@ import java.awt.Color
 
 /**
  *  by @opZywl
- * A utility object for managing client theme colors,
+ * A utility object for managing client theme colors and background,
  * supporting multiple color modes, animations, etc.,
  * now without custom delegated properties.
  */
 object ClientThemesUtils {
+
     /**
      * The selected color mode (e.g., "Zywl", "Water", "Magic", etc.).
-     * Previously delegated with `by choices(...)`.
      * Now a normal var with a default value "Soniga".
      */
     var ClientColorMode: String = "Soniga"
@@ -29,31 +30,96 @@ object ClientThemesUtils {
 
     /**
      * Speed controlling fade or animation in certain color transitions.
-     * Previously `by int(...) range = 1..10`.
      * Now a normal var with default=7.
      */
     var ThemeFadeSpeed: Int = 7
         set(value) {
-            // If you want to clamp it to 1..10, do so here:
+            // If you want to clamp it to [1..10], do so here:
             field = value.coerceIn(1, 10)
         }
 
     /**
      * Up/down boolean toggling fade direction or type.
-     * Previously `by boolean(...)`.
      * Now a normal var (default = false).
      */
     var updown: Boolean = false
 
     // ------------------------------------------------------------------------
+    //                      BACKGROUND MODE (NEW)
+    // ------------------------------------------------------------------------
+
+    /**
+     * The selected background mode (e.g., "Dark", "Synced", "Custom", "NeverLose", "None").
+     * Just like ClientColorMode, but for backgrounds.
+     */
+    var BackgroundMode: String = "Synced"
+        set(value) {
+            field = value.lowercase()
+        }
+
+    /**
+     * A custom background color if the user chooses "Custom" mode.
+     * You might want to store or expose this in other ways, e.g. a ColorValue.
+     */
+    var customBgColor: Color = Color(32, 32, 64)
+
+    /**
+     * A "NeverLose" background color if the user chooses "NeverLose" mode.
+     * Replace with whatever color logic you actually use for "NeverLose".
+     */
+    var neverLoseBgColor: Color = Color(60, 60, 60)
+
+    /**
+     * Returns the background color based on [BackgroundMode].
+     *
+     * @param index Usually used if "Synced" mode has an animation offset
+     * @param alpha The transparency channel [0..255]
+     */
+    fun getBackgroundColor(index: Int = 0, alpha: Int = 255): Color {
+        return when (BackgroundMode) {
+            "dark" -> {
+                // Dark mode: a fixed dark color
+                Color(21, 21, 21, alpha)
+            }
+
+            "synced" -> {
+                // "Synced" means we use the same color fade logic as the main color,
+                // possibly darker/darker to match your snippet
+                getColorWithAlpha(index, alpha).darker().darker()
+            }
+
+            "custom" -> {
+                // "Custom" => use customBgColor but override the alpha
+                customBgColor.setAlpha(alpha)
+            }
+
+            "neverlose" -> {
+                // "NeverLose" => use neverLoseBgColor but override the alpha
+                neverLoseBgColor.setAlpha(alpha)
+            }
+
+            "none" -> {
+                // "None" => fully transparent
+                Color(0, 0, 0, 0)
+            }
+
+            else -> {
+                // Default fallback (Dark)
+                Color(21, 21, 21, alpha)
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------------
     //                           PUBLIC COLOR METHODS
+    //   (The same logic you had before for your main color system)
     // ------------------------------------------------------------------------
 
     /**
      * Returns a color depending on the [ClientColorMode], used for
      * "start" or "end" of a gradient (or similar).
      *
-     * @param type  "START" or anything else => get second color
+     * @param type "START" or anything else => get second color
      * @param alpha transparency [0..255]
      */
     fun setColor(type: String, alpha: Int): Color {

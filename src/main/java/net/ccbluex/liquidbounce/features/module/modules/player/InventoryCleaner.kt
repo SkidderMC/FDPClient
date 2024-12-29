@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.features.module.modules.combat.AutoArmor
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isFullBlock
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.extensions.shuffled
-import net.ccbluex.liquidbounce.utils.kotlin.waitUntil
 import net.ccbluex.liquidbounce.utils.inventory.*
 import net.ccbluex.liquidbounce.utils.inventory.ArmorComparator.getBestArmorSet
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.canClickInventory
@@ -27,6 +26,9 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.passedPostInven
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.isFirstInventoryClick
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.toHotbarIndex
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.awaitTicked
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.clickNextTick
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.isTicked
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
 import net.minecraft.block.BlockContainer
 import net.minecraft.block.BlockFalling
@@ -192,7 +194,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
             for (index in indicesToDoubleClick) {
                 if (!shouldOperate()) return
 
-                if (index in TickScheduler) continue
+                if (isTicked(index)) continue
 
                 // TODO: Perhaps add a slider for merge delay?
 
@@ -208,7 +210,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
 
             // This part isn't fully instant because of the complex vanilla merging behaviour, stack size changes and so on
             // Waits a tick to see how the stacks got merged
-            waitUntil { TickScheduler.isEmpty() }
+            awaitTicked()
         }
     }
 
@@ -262,7 +264,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
             repair@ for ((index1, index2) in pairsToRepair) {
                 if (!shouldOperate()) return
 
-                if (index1 in TickScheduler || index2 in TickScheduler)
+                if (isTicked(index1) || isTicked(index2))
                     continue
 
                 // Drag and drop stack1 to crafting grid
@@ -343,7 +345,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
                 break
 
             // Waits a tick to see how the stacks got repaired
-            waitUntil { TickScheduler.isEmpty() }
+            awaitTicked()
         }
     }
 
@@ -374,7 +376,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
                     return true
 
                 for ((otherIndex, otherStack) in stacks.withIndex()) {
-                    if (otherIndex in TickScheduler)
+                    if (isTicked(otherIndex))
                         continue
 
                     val otherItem = otherStack?.item
@@ -402,7 +404,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
                 searchAndSort()
         }
 
-        waitUntil { TickScheduler.isEmpty() }
+        awaitTicked()
     }
 
     // Drop bad items to free up inventory space
@@ -415,7 +417,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
             // Stop if player violates invopen or nomove checks
             if (!shouldOperate()) return
 
-            if (index in TickScheduler)
+            if (isTicked(index))
                 continue
 
             val stacks = thePlayer.openContainer.inventory
@@ -429,7 +431,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
                 click(index, 1, 4)
         }
 
-        waitUntil { TickScheduler.isEmpty() }
+        awaitTicked()
     }
 
     private suspend fun click(
@@ -456,7 +458,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
             delay(startDelay.toLong())
         }
 
-        TickScheduler.scheduleClick(slot, button, mode, allowDuplicates)
+        clickNextTick(slot, button, mode, allowDuplicates)
 
         hasScheduledInLastLoop = true
 

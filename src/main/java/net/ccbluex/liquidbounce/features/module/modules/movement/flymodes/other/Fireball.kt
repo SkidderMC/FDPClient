@@ -13,13 +13,16 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.options
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
 import net.ccbluex.liquidbounce.utils.block.center
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.extensions.isMoving
+import net.ccbluex.liquidbounce.utils.extensions.isNearEdge
+import net.ccbluex.liquidbounce.utils.extensions.sendUseItem
+import net.ccbluex.liquidbounce.utils.extensions.tryJump
+import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
+import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
+import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
-import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
-import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
-import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
-import net.ccbluex.liquidbounce.utils.timing.TickedActions
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C0APacketAnimation
@@ -84,7 +87,7 @@ object Fireball : FlyMode("Fireball") {
         }
 
         if (player.isMoving) {
-            TickedActions.TickScheduler(Flight) += {
+            Flight.nextTick {
                 if (Flight.swing) player.swingItem() else sendPacket(C0APacketAnimation())
 
                 // NOTE: You may increase max try to `2` if fireball doesn't work. (Ex: BlocksMC)
@@ -95,7 +98,8 @@ object Fireball : FlyMode("Fireball") {
 
             WaitTickUtils.schedule(2) {
                 if (autoFireball != "Off") {
-                    SilentHotbar.selectSlotSilently(this,
+                    SilentHotbar.selectSlotSilently(
+                        this,
                         fireballSlot,
                         immediate = true,
                         render = autoFireball == "Pick",

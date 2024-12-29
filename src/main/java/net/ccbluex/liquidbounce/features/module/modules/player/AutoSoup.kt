@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.isFirstInventoryC
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C07PacketPlayerDigging
@@ -65,7 +66,7 @@ object AutoSoup : Module("AutoSoup", Category.PLAYER, hideModule = false) {
             thePlayer.sendUseItem(thePlayer.inventory.mainInventory[SilentHotbar.currentSlot])
 
             // Schedule slot switch the next tick as we violate vanilla logic if we do it now.
-            TickScheduler += {
+            nextTick {
                 if (bowl == "Drop") {
                     if (!SilentHotbar.isSlotModified(this)) {
                         SilentHotbar.selectSlotSilently(this, soupInHotbar, 0, true)

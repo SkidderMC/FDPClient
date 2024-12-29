@@ -23,7 +23,7 @@ import net.ccbluex.liquidbounce.utils.client.*
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.extensions.toLowerCamelCase
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
-import net.ccbluex.liquidbounce.utils.timing.TickedActions.TickScheduler
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.clearTicked
 import org.lwjgl.input.Keyboard
 import java.util.concurrent.CopyOnWriteArraySet
 
@@ -49,8 +49,6 @@ open class Module(
 
     // Value that determines whether the module should depend on GameDetector
     private val onlyInGameValue = boolean("OnlyInGame", true, subjective = true) { state }
-
-    protected val TickScheduler = TickScheduler(this)
 
     // List to register additional options from classes
     private val configurables = mutableListOf<Class<*>>()
@@ -119,7 +117,8 @@ open class Module(
             // Call toggle
             onToggle(value)
 
-            TickScheduler.clear()
+            // Clear ticked actions
+            clearTicked()
 
             // Play sound and add notification
             if (!isStarting) {
