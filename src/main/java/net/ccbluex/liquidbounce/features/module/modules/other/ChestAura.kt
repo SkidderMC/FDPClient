@@ -90,7 +90,7 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
 
     private val openInfo by choices("OpenInfo", arrayOf("Off", "Self", "Other", "Everyone"), "Off")
 
-    var tileTarget: Triple<Vec3, TileEntity, Double>? = null
+    var tileTarget: TileTarget? = null
     private val timer = MSTimer()
 
     // Squared distances, they get updated when values initiate or get changed
@@ -105,6 +105,12 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
     // Substrings that indicate that chests have been refilled, broadcasted via title packet
     private val refillSubstrings = arrayOf("refill", "reabastecidos")
     private val decimalFormat = DecimalFormat("##0.00", DecimalFormatSymbols(Locale.ENGLISH))
+
+    data class TileTarget(
+        val clickPoint: Vec3,
+        val entity: TileEntity,
+        val distanceSq: Double
+    )
 
     val onRotationUpdate = handler<RotationUpdateEvent> {
         if (Blink.handleEvents() || KillAura.isBlockingChestAura || !timer.hasTimePassed(delay))
@@ -137,9 +143,9 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
                 (sequenceOf(getNearestPointBB(eyes, box)) + box.getPointSequence(step = 0.1)).mapNotNull { point ->
                     val distanceSq = point.squareDistanceTo(eyes)
 
-                    if (distanceSq <= rangeSq) Triple(point, entity, distanceSq) else null
+                    if (distanceSq <= rangeSq) TileTarget(point, entity, distanceSq) else null
                 }
-            }.sortedBy { it.third }
+            }.sortedBy { it.distanceSq }
             // Vecs are already sorted by distance
             .firstOrNull { (vec, entity) ->
                 // If through walls is enabled and its range is same as normal, just return the first one
@@ -157,7 +163,7 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
                 tileTarget = it
 
                 if (options.rotationsActive) {
-                    setTargetRotation(toRotation(it.first), options = options)
+                    setTargetRotation(toRotation(it.clickPoint), options = options)
                 }
             }
     }
@@ -207,7 +213,7 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
                     val distance: String
 
                     // If chest is not last clicked chest, find a player that might have opened it
-                    if (packetBlockPos != tileTarget?.second?.pos) {
+                    if (packetBlockPos != tileTarget?.entity?.pos) {
                         val nearPlayers = (mc.theWorld.playerEntities ?: return@handler)
                             .mapNotNull {
                                 val distanceSq = it.getDistanceSqToCenter(packetBlockPos)
@@ -226,7 +232,7 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
                         distance = decimalFormat.format(player.getDistanceToBox(box))
                     } else {
                         player = mc.thePlayer
-                        distance = decimalFormat.format(sqrt(tileTarget!!.third))
+                        distance = decimalFormat.format(sqrt(tileTarget!!.distanceSq))
                     }
 
                     when (player) {
@@ -279,12 +285,12 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
 
         val rotationToUse = if (options.rotationsActive) {
             currentRotation ?: return@handler
-        } else toRotation(target.first)
+        } else toRotation(target.clickPoint)
 
-        val distance = sqrt(target.third)
+        val distance = sqrt(target.distanceSq)
 
         if (distance <= range) {
-            val pos = target.second.pos
+            val pos = target.entity.pos
 
             val rotationVec = getVectorForRotation(rotationToUse) * mc.playerController.blockReachDistance.toDouble()
 

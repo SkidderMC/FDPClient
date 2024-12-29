@@ -214,6 +214,8 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
         }
     }
 
+    private data class RepairTriple(val index1: Int, val index2: Int, val durability: Int)
+
     // Repair tools by merging them in the crafting grid
     suspend fun repairEquipment() {
         if (!repairEquipment || !shouldOperate())
@@ -232,34 +234,29 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
                     // Check if stack is damageable and either has no enchantments or just unbreaking.
                     stack.hasItemAgePassed(minItemAge) && shouldBeRepaired(stack)
                 }
-                .groupBy { it.value.item }
-                .filter { (_, stackGroup) ->
+                .groupBy { it.value.item }.values
+                .filter { stackGroup ->
                     // Only try to repair groups of items when they contain a useful item that can be repaired
                     // Prevents repairing of items that would get thrown out
                     stackGroup.any { isStackUseful(it.value, stacks, noLimits = true) && it.value.isItemDamaged }
                 }
-                .mapValues { (_, groupStacks) ->
+                .mapNotNull { groupStacks ->
                     // Get all pairs of stacks that can be merged
-                    val bestCombination = groupStacks.withIndex()
-                        .flatMap { (index, indexedStack) ->
-                            groupStacks.drop(index + 1).map { indexedStack to it }
+                    groupStacks.withIndex().flatMap { (index, indexedStack) ->
+                        groupStacks.drop(index + 1).map { indexedStack to it }
+                    }.mapNotNull {
+                        val (index1, stack1) = it.first
+                        val (index2, stack2) = it.second
+
+                        // Get combined durability of both stacks (with vanilla repair bonus) coerced to max durability
+                        getCombinedDurabilityIfBeneficial(stack1, stack2)?.let { durability ->
+                            RepairTriple(index1, index2, durability)
                         }
-                        .mapNotNull {
-                            val (index1, stack1) = it.first
-                            val (index2, stack2) = it.second
-
-                            // Get combined durability of both stacks (with vanilla repair bonus) coerced to max durability
-                            val durability = getCombinedDurabilityIfBeneficial(stack1, stack2) ?: return@mapNotNull null
-
-                            Triple(index1, index2, durability)
-                        }
-                        .maxByOrNull { it.third } ?: return@mapValues null
-
-                    // If there is a stack with higher or equal durability than the best combination, don't repair
-                    if (bestCombination.third <= groupStacks.maxOf { it.value.totalDurability }) return@mapValues null
-                    else bestCombination
+                    }.maxByOrNull { it.durability }?.takeIf { bestCombination ->
+                        // If there is a stack with higher or equal durability than the best combination, don't repair
+                        bestCombination.durability >= groupStacks.maxOf { it.value.totalDurability }
+                    }
                 }
-                .mapNotNull { it.value }
 
             repair@ for ((index1, index2) in pairsToRepair) {
                 if (!shouldOperate()) return

@@ -13,9 +13,9 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
-import net.ccbluex.liquidbounce.utils.extensions.withAlpha
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import java.awt.Color
 
@@ -32,13 +32,22 @@ class Keystrokes : Element(2.0, 123.0) {
     private var shadow by boolean("Text-Shadow", true)
     private val font by font("Font", Fonts.font40)
 
+    private data class GridKey(
+        val row: Int,
+        val column: Int,
+        val text: String
+    )
+
+    private val GridKey.textWidth: Int
+        get() = font.getStringWidth(this.text)
+
     // row -> column -> key
-    private val gridLayout = listOf(
-        Triple(1, 1, "W"),
-        Triple(2, 0, "A"),
-        Triple(2, 1, "S"),
-        Triple(2, 2, "D"),
-        Triple(3, 1, "Space")
+    private val gridLayout = arrayOf(
+        GridKey(1, 1, "W"),
+        GridKey(2, 0, "A"),
+        GridKey(2, 1, "S"),
+        GridKey(2, 2, "D"),
+        GridKey(3, 1, "Space")
     )
 
     private val textColor
@@ -64,7 +73,7 @@ class Keystrokes : Element(2.0, 123.0) {
         val padding = 3F
 
         val fontHeight = (font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT
-        val maxCharWidth = gridLayout.maxOf { (_, _, key) -> font.getStringWidth(key) }
+        val maxCharWidth = gridLayout.maxOf { it.textWidth }
 
         val boxSize = maxOf(fontHeight, maxCharWidth)
 
@@ -89,5 +98,4 @@ class Keystrokes : Element(2.0, 123.0) {
 
         return Border(0F, boxSize + padding, boxSize * 3 + padding * 2, boxSize * 4 + padding * 3)
     }
-
 }
