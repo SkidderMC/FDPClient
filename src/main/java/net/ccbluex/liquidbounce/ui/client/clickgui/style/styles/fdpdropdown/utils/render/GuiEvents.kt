@@ -3,12 +3,10 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render
 
-public enum GuiEvents {
-
+enum class GuiEvents {
     DRAW,
     CLICK,
     RELEASE
-
 }

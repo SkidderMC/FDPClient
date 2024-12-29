@@ -1,22 +1,25 @@
 /*
  * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * A free open-source hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.font
 
+import net.ccbluex.liquidbounce.file.FileManager
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.*
 import java.awt.image.BufferedImage
+import java.io.File
 import java.io.IOException
 
 /**
- * @author opZywl - Custom Font
+ * Author: opZywl - Custom Font
  */
 open class CustomFont(resourceLocation: ResourceLocation?, size: Float) {
+
     private val imgSize = 1048f
     protected var charData: Array<CharData> = Array(256) { CharData() }
     protected var tex: DynamicTexture?
@@ -27,23 +30,47 @@ open class CustomFont(resourceLocation: ResourceLocation?, size: Float) {
     protected var charOffset: Int = 0
 
     init {
-        var tmp: Font
-        try {
-            val `is` = Minecraft.getMinecraft().resourceManager.getResource(resourceLocation)
+        // Attempt the MC ResourceLocation load, then fallback on exception.
+        val loadedFont = try {
+            val inputStream = Minecraft.getMinecraft().resourceManager
+                .getResource(resourceLocation)
                 .inputStream
-            tmp = Font.createFont(Font.TRUETYPE_FONT, `is`).deriveFont(size)
+            Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(size)
         } catch (e: IOException) {
-            tmp = Font("lato", Font.PLAIN, size.toInt())
-            e.printStackTrace()
+            // Resource system can't find it => fallback to local
+            fallbackLoadFont(resourceLocation, size)
         } catch (e: FontFormatException) {
-            tmp = Font("lato", Font.PLAIN, size.toInt())
-            e.printStackTrace()
+            // Resource data invalid => fallback to local
+            fallbackLoadFont(resourceLocation, size)
         }
 
-        this.font = tmp
+        this.font = loadedFont
         this.antiAlias = true
         this.fractionalMetrics = true
-        this.tex = this.setupTexture(this.font, antiAlias = true, fractionalMetrics = true, chars = this.charData)
+        this.tex = setupTexture(
+            this.font,
+            antiAlias = true,
+            fractionalMetrics = true,
+            chars = this.charData
+        )
+    }
+
+    private fun fallbackLoadFont(resourceLocation: ResourceLocation?, size: Float): Font {
+        // In 1.8 MC, it's .resourcePath, not .path:
+        val resourcePath = resourceLocation?.resourcePath ?: "fallback.ttf"
+        // The last part after '/', e.g. "lato-bold.ttf"
+        val fontFileName = resourcePath.substringAfterLast('/')
+        val localFile = File(FileManager.fontsDir, fontFileName)
+
+        return try {
+            localFile.inputStream().use { fis ->
+                Font.createFont(Font.TRUETYPE_FONT, fis).deriveFont(size)
+            }
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            // Final fallback => system "lato"
+            Font("lato", Font.PLAIN, size.toInt())
+        }
     }
 
     protected fun setupTexture(
@@ -53,14 +80,12 @@ open class CustomFont(resourceLocation: ResourceLocation?, size: Float) {
         chars: Array<CharData>
     ): DynamicTexture? {
         val img = generateFontImage(font, antiAlias, fractionalMetrics, chars)
-
-        try {
-            return DynamicTexture(img)
+        return try {
+            DynamicTexture(img)
         } catch (e: Exception) {
             e.printStackTrace()
+            null
         }
-
-        return null
     }
 
     private fun generateFontImage(
@@ -80,15 +105,18 @@ open class CustomFont(resourceLocation: ResourceLocation?, size: Float) {
 
         g.setRenderingHint(
             RenderingHints.KEY_FRACTIONALMETRICS,
-            if (fractionalMetrics) RenderingHints.VALUE_FRACTIONALMETRICS_ON else RenderingHints.VALUE_FRACTIONALMETRICS_OFF
+            if (fractionalMetrics) RenderingHints.VALUE_FRACTIONALMETRICS_ON
+            else RenderingHints.VALUE_FRACTIONALMETRICS_OFF
         )
         g.setRenderingHint(
             RenderingHints.KEY_TEXT_ANTIALIASING,
-            if (antiAlias) RenderingHints.VALUE_TEXT_ANTIALIAS_ON else RenderingHints.VALUE_TEXT_ANTIALIAS_OFF
+            if (antiAlias) RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+            else RenderingHints.VALUE_TEXT_ANTIALIAS_OFF
         )
         g.setRenderingHint(
             RenderingHints.KEY_ANTIALIASING,
-            if (antiAlias) RenderingHints.VALUE_ANTIALIAS_ON else RenderingHints.VALUE_ANTIALIAS_OFF
+            if (antiAlias) RenderingHints.VALUE_ANTIALIAS_ON
+            else RenderingHints.VALUE_ANTIALIAS_OFF
         )
 
         val fontMetrics = g.fontMetrics
@@ -109,36 +137,33 @@ open class CustomFont(resourceLocation: ResourceLocation?, size: Float) {
                 positionY += charHeight
                 charHeight = 0
             }
-
             if (charData.height > charHeight) {
                 charHeight = charData.height
             }
-
             charData.storedX = positionX
             charData.storedY = positionY
 
-            if (charData.height > this.fontHeight) {
-                this.fontHeight = charData.height
+            if (charData.height > fontHeight) {
+                fontHeight = charData.height
             }
 
             chars[i] = charData
             g.drawString(ch.toString(), positionX + 2, positionY + fontMetrics.ascent)
             positionX += charData.width
         }
-
         return bufferedImage
     }
 
     protected fun drawChar(chars: Array<CharData>, c: Char, x: Float, y: Float) {
+        val data = chars[c.code]
         drawQuad(
-            x,
-            y,
-            chars[c.code].width.toFloat(),
-            chars[c.code].height.toFloat(),
-            chars[c.code].storedX.toFloat(),
-            chars[c.code].storedY.toFloat(),
-            chars[c.code].width.toFloat(),
-            chars[c.code].height.toFloat()
+            x, y,
+            data.width.toFloat(),
+            data.height.toFloat(),
+            data.storedX.toFloat(),
+            data.storedY.toFloat(),
+            data.width.toFloat(),
+            data.height.toFloat()
         )
     }
 
@@ -173,7 +198,7 @@ open class CustomFont(resourceLocation: ResourceLocation?, size: Float) {
     }
 
     val height: Int
-        get() = (this.fontHeight - 8) / 2
+        get() = (fontHeight - 8) / 2
 
     protected class CharData {
         var width: Int = 0
