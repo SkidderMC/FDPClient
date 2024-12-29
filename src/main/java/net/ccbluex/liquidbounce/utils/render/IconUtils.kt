@@ -14,11 +14,9 @@ import java.io.InputStream
 import java.nio.ByteBuffer
 import java.util.*
 import javax.imageio.ImageIO
-
 @SideOnly(Side.CLIENT)
 object IconUtils {
-
-    val favicon by lazy {
+    fun getFavicon() =
         IconUtils::class.java.runCatching {
             val name = CLIENT_NAME.lowercase()
             arrayOf(
@@ -29,17 +27,13 @@ object IconUtils {
         }.onFailure {
             ClientUtils.LOGGER.warn("Failed to load icons", it)
         }.getOrNull()
-    }
-
     @Throws(IOException::class)
     private fun readImageToBuffer(imageStream: InputStream?): ByteBuffer? {
-        val bufferedImage = imageStream?.let(ImageIO::read) ?: return null
+        val bufferedImage = ImageIO.read(imageStream ?: return null)
         val rgb = bufferedImage.getRGB(0, 0, bufferedImage.width, bufferedImage.height, null, 0, bufferedImage.width)
         val byteBuffer = ByteBuffer.allocate(4 * rgb.size)
-
         for (i in rgb)
-            byteBuffer.putInt(i shl 8 or (i ushr 24 and 255))
-
+            byteBuffer.putInt(i shl 8 or (i shr 24 and 255))
         byteBuffer.flip()
         return byteBuffer
     }

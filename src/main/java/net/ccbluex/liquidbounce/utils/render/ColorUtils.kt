@@ -21,7 +21,7 @@ object ColorUtils {
     fun isAllowedCharacter(character: Char) =
         character.code != 167 && character.code >= 32 && character.code != 127
 
-    private val COLOR_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]")
+    val COLOR_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]")
 
     val hexColors = IntArray(16) { i ->
         val baseColor = (i shr 3 and 1) * 85

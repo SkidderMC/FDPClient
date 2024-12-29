@@ -46,7 +46,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
                 // Set LiquidBounce title
                 Display.setTitle(clientTitle)
                 // Update favicon
-                IconUtils.favicon?.let { icons ->
+                IconUtils.getFavicon()?.let { icons ->
                     Display.setIcon(icons)
                 }
             } else {
