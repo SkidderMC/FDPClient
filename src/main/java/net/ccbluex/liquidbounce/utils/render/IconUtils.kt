@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils.render
 
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
+import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import java.io.IOException
@@ -17,25 +18,27 @@ import javax.imageio.ImageIO
 @SideOnly(Side.CLIENT)
 object IconUtils {
 
-    fun getFavicon() =
+    val favicon by lazy {
         IconUtils::class.java.runCatching {
+            val name = CLIENT_NAME.lowercase()
             arrayOf(
-                readImageToBuffer(getResourceAsStream("/assets/minecraft/${CLIENT_NAME.lowercase()}/32.png")),
-                readImageToBuffer(getResourceAsStream("/assets/minecraft/${CLIENT_NAME.lowercase()}/32.png")),
-                readImageToBuffer(getResourceAsStream("/assets/minecraft/${CLIENT_NAME.lowercase()}/64.png"))
+                readImageToBuffer(getResourceAsStream("/assets/minecraft/$name/icon_16x16.png")),
+                readImageToBuffer(getResourceAsStream("/assets/minecraft/$name/icon_32x32.png")),
+                readImageToBuffer(getResourceAsStream("/assets/minecraft/$name/icon_64x64.png"))
             )
         }.onFailure {
-            it.printStackTrace()
+            ClientUtils.LOGGER.warn("Failed to load icons", it)
         }.getOrNull()
+    }
 
     @Throws(IOException::class)
     private fun readImageToBuffer(imageStream: InputStream?): ByteBuffer? {
-        val bufferedImage = ImageIO.read(imageStream ?: return null)
+        val bufferedImage = imageStream?.let(ImageIO::read) ?: return null
         val rgb = bufferedImage.getRGB(0, 0, bufferedImage.width, bufferedImage.height, null, 0, bufferedImage.width)
         val byteBuffer = ByteBuffer.allocate(4 * rgb.size)
 
         for (i in rgb)
-            byteBuffer.putInt(i shl 8 or (i shr 24 and 255))
+            byteBuffer.putInt(i shl 8 or (i ushr 24 and 255))
 
         byteBuffer.flip()
         return byteBuffer

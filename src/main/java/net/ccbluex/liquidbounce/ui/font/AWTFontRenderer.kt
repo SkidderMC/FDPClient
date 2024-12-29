@@ -56,7 +56,7 @@ class AWTFontRenderer(
         // Garbage collection constants
         private const val GC_TICKS = 600                    // Do GC every 600 frames
         private const val CACHED_FONT_REMOVAL_TIME = 30000L // 30s time-based eviction
-        private const val MAX_CACHED_STRINGS = 256          // LRU cache size limit
+        private const val MAX_CACHED_STRINGS = 255          // LRU cache size limit
 
         private var gcTicks = 0
 

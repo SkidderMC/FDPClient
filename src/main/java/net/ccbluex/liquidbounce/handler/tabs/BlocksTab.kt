@@ -11,8 +11,21 @@ import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.item.ItemStack
 
-
 class BlocksTab : CreativeTabs("Special blocks") {
+
+    private val itemStacks by lazy(LazyThreadSafetyMode.NONE) {
+        arrayOf(
+            ItemStack(Blocks.command_block),
+            ItemStack(Items.command_block_minecart),
+            ItemStack(Blocks.barrier),
+            ItemStack(Blocks.dragon_egg),
+            ItemStack(Blocks.brown_mushroom_block),
+            ItemStack(Blocks.red_mushroom_block),
+            ItemStack(Blocks.farmland),
+            ItemStack(Blocks.mob_spawner),
+            ItemStack(Blocks.lit_furnace)
+        )
+    }
 
     /**
      * Initialize of special blocks tab
@@ -27,15 +40,7 @@ class BlocksTab : CreativeTabs("Special blocks") {
      * @param itemList list of tab items
      */
     override fun displayAllReleventItems(itemList: MutableList<ItemStack>) {
-        itemList += ItemStack(Blocks.command_block)
-        itemList += ItemStack(Items.command_block_minecart)
-        itemList += ItemStack(Blocks.barrier)
-        itemList += ItemStack(Blocks.dragon_egg)
-        itemList += ItemStack(Blocks.brown_mushroom_block)
-        itemList += ItemStack(Blocks.red_mushroom_block)
-        itemList += ItemStack(Blocks.farmland)
-        itemList += ItemStack(Blocks.mob_spawner)
-        itemList += ItemStack(Blocks.lit_furnace)
+        itemList += itemStacks
     }
 
     /**
