@@ -50,4 +50,18 @@ public interface Fonts {
 		final class SFBOLD_18 { public static final FontRenderer SFBOLD_18 = SFBOLD.ofSize(18); private SFBOLD_18() {} }
 	}
 
+	interface NursultanMedium {
+
+		FontFamily NursultanMedium = FONT_MANAGER.fontFamily(FontType.NursultanMedium);
+		final class NursultanMedium18 { public static final FontRenderer NursultanMedium18 = NursultanMedium.ofSize(18); private NursultanMedium18() {} }
+		final class NursultanMedium20 { public static final FontRenderer NursultanMedium20 = NursultanMedium.ofSize(20); private NursultanMedium20() {} }
+		final class NursultanMedium15 { public static final FontRenderer NursultanMedium15 = NursultanMedium.ofSize(20); private NursultanMedium15() {} }
+	}
+
+	interface InterMedium {
+
+		FontFamily InterMedium = FONT_MANAGER.fontFamily(FontType.InterMedium);
+		final class InterMedium15 { public static final FontRenderer InterMedium15 = InterMedium.ofSize(15); private InterMedium15() {} }
+	}
+
 }

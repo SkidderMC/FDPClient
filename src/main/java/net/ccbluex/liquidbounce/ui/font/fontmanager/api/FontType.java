@@ -12,7 +12,9 @@ public enum FontType {
 	SFBOLD("sfbold.ttf"),
 	SFTHIN("SFREGULAR.ttf"),
 	Check("check.ttf"),
-	ICONFONT("stylesicons.ttf");
+	ICONFONT("stylesicons.ttf"),
+	NursultanMedium("Nursultan.ttf"),
+	InterMedium("Inter_Medium.ttf");
 
 	private final String fileName;
 
