@@ -416,7 +416,7 @@ object RotationUtils : MinecraftInstance, Listenable {
 
         val diffAbs = abs(diff)
 
-        if (diffAbs.withGCD() <= min) {
+        if (lastTick1 == 0f && diffAbs.withGCD() <= min) {
             action(0f)
             return
         }
@@ -436,7 +436,13 @@ object RotationUtils : MinecraftInstance, Listenable {
             else -> 0.3f..0.7f
         }
 
-        action((lastTick1..diff).lerpWith(range.random()))
+        val new = (lastTick1..diff).lerpWith(range.random())
+
+        if (abs(new.withGCD()) <= min && diffAbs <= abs(lastTick1)) {
+            action(diff)
+        } else {
+            action(new)
+        }
     }
 
     /**

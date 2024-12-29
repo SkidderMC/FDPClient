@@ -5,15 +5,9 @@
  */
 package net.ccbluex.liquidbounce.utils.rotation
 
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.extensions.withGCD
-import net.ccbluex.liquidbounce.config.FloatValue
-import net.ccbluex.liquidbounce.config.IntegerValue
-import net.ccbluex.liquidbounce.config.ListValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
-import net.ccbluex.liquidbounce.config.intRange
 import kotlin.math.abs
 
 @Suppress("MemberVisibilityCanBePrivate")
@@ -66,7 +60,7 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
     }
 
     open val minRotationDifferenceValue = FloatValue(
-        "MinRotationDifference", 0f, 0f..2f
+        "MinRotationDifference", 2f, 0f..4f
     ) { rotationsActive && generalApply() }
 
     // Variables for easier access

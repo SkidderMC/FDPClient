@@ -140,22 +140,14 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                         )
                     }
 
-                    is S14PacketEntity -> if (legacyPos == "ServerPos") {
-                        val entity = mc.theWorld?.getEntityByID(packet.entityId)
-                        val entityMixin = entity as? IMixinEntity
-                        if (entityMixin != null) {
-                            addBacktrackData(
-                                entity.uniqueID,
-                                entityMixin.trueX,
-                                entityMixin.trueY,
-                                entityMixin.trueZ,
-                                System.currentTimeMillis()
-                            )
+                    is S14PacketEntity, is S18PacketEntityTeleport -> if (legacyPos == "ServerPos") {
+                        val id = if (packet is S14PacketEntity) {
+                            packet.entityId
+                        } else {
+                            (packet as S18PacketEntityTeleport).entityId
                         }
-                    }
 
-                    is S18PacketEntityTeleport -> if (legacyPos == "ServerPos") {
-                        val entity = mc.theWorld?.getEntityByID(packet.entityId)
+                        val entity = mc.theWorld?.getEntityByID(id)
                         val entityMixin = entity as? IMixinEntity
                         if (entityMixin != null) {
                             addBacktrackData(
@@ -377,6 +369,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                             "model" -> {
                                 glPushMatrix()
                                 glPushAttrib(GL_ALL_ATTRIB_BITS)
+
                                 color(0.6f, 0.6f, 0.6f, 1f)
                                 manager.doRenderEntity(
                                     this,
