@@ -106,6 +106,7 @@ public abstract class MixinGuiInGame extends Gui {
                 List<float[]> gradientColors = ColorSettingsKt.toColorArray(hud.getBgGradColors(), hud.getMaxHotbarGradientColors());
 
                 GL11.glPushMatrix();
+                GL11.glDisable(GL11.GL_DEPTH_TEST);
 
                 boolean isGradient = hud.getHotbarMode().equals("Gradient");
                 boolean isRainbow = hud.getHotbarMode().equals("Rainbow");
@@ -168,6 +169,7 @@ public abstract class MixinGuiInGame extends Gui {
                         hud.getRoundedHotbarRadius()
                 );
 
+                GL11.glEnable(GL11.GL_DEPTH_TEST);
                 GL11.glPopMatrix();
 
                 enableRescaleNormal();

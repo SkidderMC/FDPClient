@@ -334,12 +334,9 @@ object NameTags : Module("NameTags", Category.VISUAL, hideModule = false) {
 
         var foundPotion = false
 
-        glEnable(GL_DEPTH_TEST)
-
         if (potion && entity is EntityPlayer) {
             val potions =
-                entity.activePotionEffects.map { Potion.potionTypes[it.potionID] }
-                    .filter { it.hasStatusIcon() }
+                entity.activePotionEffects.map { Potion.potionTypes[it.potionID] }.filter { it.hasStatusIcon() }
             if (potions.isNotEmpty()) {
                 foundPotion = true
 
