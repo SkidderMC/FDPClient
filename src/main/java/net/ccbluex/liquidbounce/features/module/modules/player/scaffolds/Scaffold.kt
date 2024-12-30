@@ -502,7 +502,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
 
                         if (blockSneakingAgainUntilOnGround && !player.onGround) {
                             WaitTickUtils.conditionalSchedule("block") {
-                                player.onGround.also { if (it) requestedStopSneak = true }
+                                mc.thePlayer?.onGround.also { if (it != false) requestedStopSneak = true } ?: true
                             }
                         }
                     }

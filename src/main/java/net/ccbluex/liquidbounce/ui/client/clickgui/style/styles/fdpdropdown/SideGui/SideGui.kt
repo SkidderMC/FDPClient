@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.util
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts
+import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.ClientColorMode
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.ThemeFadeSpeed
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColorFromName
@@ -27,6 +28,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.interpolateFloat
+import net.ccbluex.liquidbounce.utils.extensions.setAlpha
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils.animate
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
@@ -46,7 +48,7 @@ import kotlin.math.min
 
 class SideGui : GuiPanel() {
 
-    private val categories = arrayOf("UI", "Configs", "Color")
+    private val categories = arrayOf("UI", "Configs", "Color", "Background")
 
     var focused = false
     private var clickAnimation: Animation? = null
@@ -66,14 +68,14 @@ class SideGui : GuiPanel() {
     private var showLocalConfigs = false
     private var wasMousePressed = false
 
-    // If we're dragging the fade-speed slider, no panel-drag or scrolling is allowed
+    // If we're dragging the slider, no panel-drag or scrolling is allowed
     private var draggingSlider = false
-
-    // Also block window-drag if the user is clicking on any header button (UI, Configs, Color)
+    // Also block window-drag if the user is clicking on any header button
     private var clickingHeader = false
-
     // Outline around the entire side panel
     private var showSideOutline = true
+
+    private var bgAlpha: Float = 100f
 
     override fun initGui() {
         focused = false
@@ -118,12 +120,12 @@ class SideGui : GuiPanel() {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float, alpha: Int) {
         assumeNonVolatile = true
 
-        // If not dragging the slider or clicking header, allow scroll
+        // If not dragging a slider or clicking header, allow scroll
         if (!draggingSlider && !clickingHeader) {
             handleMouseWheel()
         }
-
         animScroll = animate(animScroll, scroll, 0.5f)
+
         updateAnimations(mouseX, mouseY)
 
         val sr = ScaledResolution(MinecraftInstance.mc)
@@ -146,6 +148,7 @@ class SideGui : GuiPanel() {
             "UI" -> drawUiCategory(alpha)
             "Configs" -> drawConfigsCategory(mouseX, mouseY, alpha)
             "Color" -> drawColorCategory(mouseX, mouseY, alpha)
+            "Background" -> drawBackgroundCategory(mouseX, mouseY, alpha)
         }
 
         // Overlays, gradients, bloom, etc.
@@ -163,12 +166,11 @@ class SideGui : GuiPanel() {
 
         if (!focused) return
 
-        // If user clicked on any header button, block drag
+        // If user clicked on any header button, block panel-drag
         clickingHeader = isHoveringHeader(mouseX, mouseY)
 
         // Only drag if not dragging slider or clicking header
         if (!draggingSlider && !clickingHeader) {
-            // Window dragging
             val canDrag = DrRenderUtils.isHovering(drag!!.x, drag!!.y, rectWidth, 50f, mouseX, mouseY) ||
                     DrRenderUtils.isHovering(drag!!.x, drag!!.y, 20f, rectHeight, mouseX, mouseY)
             drag!!.onClick(mouseX, mouseY, button, canDrag)
@@ -177,12 +179,12 @@ class SideGui : GuiPanel() {
         // Check if a category tab was clicked
         checkCategoryClick(mouseX, mouseY)
 
-        // If we're in the "Color" category, check for slider or color interactions
+        // If we're in the "Color" category, check for interactions
         if (currentCategory == "Color") {
             checkColorCategoryInteractions(mouseX, mouseY)
         }
 
-        // If user clicked on fade-speed slider
+        // If user clicked on fade-speed slider (for color)
         val fadeSpeedSliderX = drag!!.x + 25
         val fadeSpeedSliderY = drag!!.y + 20
         val fadeSpeedSliderWidth = 80f
@@ -218,11 +220,196 @@ class SideGui : GuiPanel() {
         clickingHeader = false
     }
 
+    private fun drawBackgroundCategory(mouseX: Int, mouseY: Int, alpha: Int) {
+        val backgroundModes = arrayOf("Dark", "Synced", "Custom", "NeverLose", "None")
+
+        // We'll draw cards for each background mode, similar to how we draw color cards.
+        val bgXStart = drag!!.x + 25
+        val bgYStart = drag!!.y + 60 + animScroll
+        val cardWidth = 80f
+        val cardHeight = 40f
+        val cardsPerRow = 4
+
+        var xPos = bgXStart
+        var yPos = bgYStart
+        var index = 0
+
+        // We'll also limit scrolling
+        val maxVisibleY = drag!!.y + rectHeight - 60
+
+        for (mode in backgroundModes) {
+            // If it doesn't overflow the panel
+            if (yPos + cardHeight <= maxVisibleY) {
+                // Check hovering
+                val hovered = DrRenderUtils.isHovering(xPos, yPos, cardWidth, cardHeight, mouseX, mouseY)
+                if (hovered && Mouse.isButtonDown(0)) {
+                    // On click, set the chosen background mode
+                    ClientThemesUtils.BackgroundMode = mode
+                }
+
+                // Get the preview color from the utility, e.g.:
+                val previewColor = ClientThemesUtils.getBackgroundColor(0, bgAlpha.toInt()).rgb
+                // But we want the color for THIS mode, not necessarily the currently selected:
+                // so let's do something akin to "fake" the mode. For simplicity, we can do:
+                val cardColor = getPreviewColorForMode(mode, bgAlpha.toInt())
+
+                // Draw the card
+                DrRenderUtils.drawRect2(
+                    xPos.toDouble(),
+                    yPos.toDouble(),
+                    cardWidth.toDouble(),
+                    cardHeight.toDouble(),
+                    cardColor
+                )
+
+                // If it's the currently selected mode, show an outline
+                if (ClientThemesUtils.BackgroundMode.equals(mode, ignoreCase = true)) {
+                    drawRoundedOutline(
+                        xPos,
+                        yPos,
+                        xPos + cardWidth,
+                        yPos + cardHeight,
+                        6f,
+                        2f,
+                        Color.WHITE.rgb
+                    )
+                }
+
+                // Draw the mode name (centered)
+                Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawCenteredString(
+                    mode,
+                    xPos + cardWidth / 2f,
+                    yPos + cardHeight / 2f - Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.height / 2,
+                    DrRenderUtils.applyOpacity(-1, alpha / 255f)
+                )
+            }
+
+            xPos += cardWidth + 10
+            index++
+            // Break row
+            if (index % cardsPerRow == 0) {
+                xPos = bgXStart
+                yPos += cardHeight + 10
+            }
+        }
+
+        // Now draw a slider for BG alpha, pinned somewhere near the top
+        drawBackgroundAlphaSlider(mouseX, mouseY, alpha)
+
+        // If the background mode is "Custom", let's show a color preview or something
+        if (ClientThemesUtils.BackgroundMode.equals("custom", ignoreCase = true)) {
+            drawCustomBgPreview(mouseX, mouseY, alpha)
+        }
+    }
+
     /**
-     * Check if a category tab was clicked and update [currentCategory] if so.
+     * Example function to get a "preview" color for a given mode
+     * without messing with the globally selected mode.
      */
+    private fun getPreviewColorForMode(mode: String, alpha: Int): Int {
+        // We'll do a little manual logic. You might have a helper in ClientThemesUtils
+        return when (mode.lowercase()) {
+            "dark" -> Color(21, 21, 21, alpha).rgb
+            "synced" -> {
+                // Like "Synced" => your main color darker, but let's just fetch the color from
+                // ClientThemesUtils, ignoring the mode actually selected
+                // For example, we do getColorWithAlpha(...) then .darker().darker()
+                ClientThemesUtils.getColorWithAlpha(0, alpha).darker().darker().rgb
+            }
+            "custom" -> ClientThemesUtils.customBgColor.setAlpha(alpha).rgb
+            "neverlose" -> ClientThemesUtils.neverLoseBgColor.setAlpha(alpha).rgb
+            "none" -> Color(0, 0, 0, 0).rgb
+            else -> Color(21, 21, 21, alpha).rgb
+        }
+    }
+
+    /**
+     * Draw a slider controlling [bgAlpha]. Range 1..255
+     */
+    private fun drawBackgroundAlphaSlider(mouseX: Int, mouseY: Int, alpha: Int) {
+        val sliderX = drag!!.x + 25
+        val sliderY = drag!!.y + 20
+        val sliderW = 80f
+        val sliderH = 10f
+
+        // background
+        DrRenderUtils.drawRect2(
+            sliderX.toDouble(),
+            sliderY.toDouble(),
+            sliderW.toDouble(),
+            sliderH.toDouble(),
+            Color(60, 60, 60, alpha).rgb
+        )
+
+        // fraction of fill
+        val fraction = (bgAlpha - 1f) / (255f - 1f)  // if we clamp 1..255
+        val fill = sliderW * fraction
+        DrRenderUtils.drawRect2(
+            sliderX.toDouble(),
+            sliderY.toDouble(),
+            fill.toDouble(),
+            sliderH.toDouble(),
+            Color(100, 150, 100, alpha).rgb
+        )
+
+        // label
+        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
+            "BG Alpha: ${bgAlpha.toInt()}",
+            sliderX + 2,
+            sliderY - 12,
+            DrRenderUtils.applyOpacity(-1, alpha / 255f)
+        )
+
+        // check if user is dragging
+        val hovered = DrRenderUtils.isHovering(sliderX, sliderY, sliderW, sliderH, mouseX, mouseY)
+        if (hovered && Mouse.isButtonDown(0)) {
+            draggingSlider = true
+            val newAlpha = ((mouseX - sliderX) / sliderW) * (255f - 1f) + 1f
+            bgAlpha = max(1f, min(255f, newAlpha))
+        }
+    }
+
+    /**
+     * If the user selects "Custom" background, let's show a small color preview box
+     * so they can see which color they have, or click it to open a color picker, etc.
+     */
+    private fun drawCustomBgPreview(mouseX: Int, mouseY: Int, alpha: Int) {
+        val boxX = drag!!.x + 120
+        val boxY = drag!!.y + 20
+        val boxW = 40f
+        val boxH = 40f
+
+        val customCol = ClientThemesUtils.customBgColor.setAlpha(bgAlpha.toInt()).rgb
+        DrRenderUtils.drawRect2(
+            boxX.toDouble(),
+            boxY.toDouble(),
+            boxW.toDouble(),
+            boxH.toDouble(),
+            customCol
+        )
+        drawRoundedOutline(boxX, boxY, boxX + boxW, boxY + boxH, 4f, 2f, Color.WHITE.rgb)
+
+        // label
+        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
+            "Custom BG",
+            boxX,
+            boxY - 12,
+            DrRenderUtils.applyOpacity(-1, alpha / 255f)
+        )
+
+        val hovered = DrRenderUtils.isHovering(boxX, boxY, boxW, boxH, mouseX, mouseY)
+        if (hovered && Mouse.isButtonDown(0)) {
+            // e.g., open some color picker
+            // openColorPicker(ClientThemesUtils::customBgColor)
+        }
+    }
+
+    // ---------------------------------------------------------------
+    //  The rest of your existing code remains unchanged
+    // ---------------------------------------------------------------
+
     private fun checkCategoryClick(mouseX: Int, mouseY: Int) {
-        val totalWidth = 3 * 60f + 2 * 10f
+        val totalWidth = 4 * 60f + 3 * 10f // since we have 4 categories now
         val startX = drag!!.x + rectWidth / 2f - totalWidth / 2f
         val yVal = drag!!.y + 15
 
@@ -329,7 +516,6 @@ class SideGui : GuiPanel() {
             }
         }
 
-        // Draw the main rectangle
         drawCustomShapeWithRadius(drag!!.x, drag!!.y, rectWidth, rectHeight, 9f, mainRectColor)
 
         // Outline around the entire SideGui if showSideOutline is true
@@ -346,7 +532,6 @@ class SideGui : GuiPanel() {
                 outlineColor.rgb
             )
         }
-
         return mainRectColor
     }
 
@@ -355,7 +540,7 @@ class SideGui : GuiPanel() {
      */
     private fun drawCategoryTabs(mouseX: Int, mouseY: Int, alpha: Int) {
         val textColor = DrRenderUtils.applyOpacity(-1, alpha / 255f)
-        val totalWidth = 3 * 60f + 2 * 10f
+        val totalWidth = 4 * 60f + 3 * 10f // 4 categories
         val startX = drag!!.x + rectWidth / 2f - totalWidth / 2f
         val yVal = drag!!.y + 15
 
@@ -627,9 +812,6 @@ class SideGui : GuiPanel() {
         }
     }
 
-    /**
-     * FIXED HERE: Now we pass ("legacy", settingId) in the correct order.
-     */
     private fun loadOnlineConfig(settingId: String, configName: String) {
         try {
             displayChatMessage("Loading configuration: $configName...")
@@ -783,7 +965,7 @@ class SideGui : GuiPanel() {
      * Check if the mouse is hovering on any header button (UI, Configs, Color).
      */
     private fun isHoveringHeader(mouseX: Int, mouseY: Int): Boolean {
-        val totalWidth = 3 * 60f + 2 * 10f
+        val totalWidth = 4 * 60f + 3 * 10f
         val startX = drag!!.x + rectWidth / 2f - totalWidth / 2f
         val yVal = drag!!.y + 15
 
@@ -817,7 +999,6 @@ class SideGui : GuiPanel() {
      * Overlays, gradients, bloom effect.
      */
     private fun drawOverlays(sr: ScaledResolution, alpha: Int, mouseX: Int, mouseY: Int) {
-        // Vertical gradient
         DrRenderUtils.setAlphaLimit(0f)
         DrRenderUtils.drawGradientRect2(
             drag!!.x + 20.0,
@@ -828,7 +1009,6 @@ class SideGui : GuiPanel() {
             Color(0, 0, 0, 0).rgb
         )
 
-        // Lateral gradient on the screen's right side
         val colorIndex = 0
         val moveAnimOut = moveOverGradientAnimation?.output?.toFloat() ?: 0f
         DrRenderUtils.drawGradientRectSideways2(
@@ -841,7 +1021,6 @@ class SideGui : GuiPanel() {
         )
         DrRenderUtils.setAlphaLimit(1f)
 
-        // Bloom effect near mouse
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
     }
 }

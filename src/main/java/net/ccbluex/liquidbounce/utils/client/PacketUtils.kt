@@ -164,7 +164,7 @@ fun IMixinEntity.updateSpawnPosition(target: Vec3, ignoreInterpolation: Boolean 
 }
 
 fun interpolatePosition(entity: IMixinEntity) = entity.run {
-    val delta = RenderUtils.deltaTimeNormalized(150)
+    val delta = RenderUtils.deltaTimeNormalized(3)
 
     lerpX += (trueX - lerpX) * delta
     lerpY += (trueY - lerpY) * delta

@@ -70,7 +70,7 @@ object RenderUtils : MinecraftInstance {
     var startTime: Long = 0
     var animationDuration: Int = 500
 
-    fun deltaTimeNormalized(ticks: Int = 50) = (deltaTime / ticks.toDouble()).coerceAtMost(1.0)
+    fun deltaTimeNormalized(ticks: Int = 1) = (deltaTime / (ticks.toDouble() * 50)).coerceAtMost(1.0)
 
     private const val CIRCLE_STEPS = 40
     private val circlePoints = Array(CIRCLE_STEPS + 1) {

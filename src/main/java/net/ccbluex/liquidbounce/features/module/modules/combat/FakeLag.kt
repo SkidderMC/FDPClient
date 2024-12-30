@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack.runWithModifiedRotation
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
@@ -20,8 +21,12 @@ import net.ccbluex.liquidbounce.utils.client.pos
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.kotlin.removeEach
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.rotation.Rotation
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.network.handshake.client.C00Handshake
@@ -35,6 +40,8 @@ import net.minecraft.network.status.server.S01PacketPong
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
+import java.util.*
+import kotlin.math.min
 
 object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideModule = false) {
 
@@ -59,12 +66,15 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
     private val red by int("R", 0, 0..255, subjective = true) { !rainbow && line }
     private val green by int("G", 255, 0..255, subjective = true) { !rainbow && line }
     private val blue by int("B", 0, 0..255, subjective = true) { !rainbow && line }
+    private val renderModel by boolean("RenderModel", false, subjective = true)
 
     private val packetQueue = Queues.newArrayDeque<QueueData>()
     private val positions = Queues.newArrayDeque<PositionData>()
     private val resetTimer = MSTimer()
     private var wasNearEnemy = false
     private var ignoreWholeTick = false
+
+    private var renderData = ModelRenderData(Vec3_ZERO, Rotation.ZERO)
 
     override fun onDisable() {
         if (mc.thePlayer == null) return
@@ -153,7 +163,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
 
             if (packet is C03PacketPlayer && packet.isMoving) {
                 synchronized(positions) {
-                    positions += PositionData(packet.pos, System.currentTimeMillis())
+                    positions += PositionData(packet.pos, System.currentTimeMillis(), player.renderYawOffset, RotationUtils.serverRotation)
                 }
             }
 
@@ -163,7 +173,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
         }
     }
 
-           val onWorld = handler<WorldEvent> { event ->
+    val onWorld = handler<WorldEvent> { event ->
         // Clear packets on disconnect only
         if (event.worldClient == null) blink(false)
     }
@@ -218,33 +228,67 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
         ignoreWholeTick = false
     }
 
-    val onRender3D = handler<Render3DEvent> {
+    val onRender3D = handler<Render3DEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
         val color = if (rainbow) rainbow() else Color(red, green, blue)
 
-        if (!line || Blink.blinkingSend() || positions.isEmpty()) return@handler
+        if (Blink.blinkingSend() || positions.isEmpty()) {
+            renderData.reset(player)
+            return@handler
+        }
+
+        renderData.update(positions)
+
+        if (line) {
+            glPushMatrix()
+            glDisable(GL_TEXTURE_2D)
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+            glEnable(GL_LINE_SMOOTH)
+            glEnable(GL_BLEND)
+            glDisable(GL_DEPTH_TEST)
+            mc.entityRenderer.disableLightmap()
+            glBegin(GL_LINE_STRIP)
+            glColor(color)
+
+            val renderPosX = mc.renderManager.viewerPosX
+            val renderPosY = mc.renderManager.viewerPosY
+            val renderPosZ = mc.renderManager.viewerPosZ
+
+            for ((pos) in positions) glVertex3d(
+                pos.xCoord - renderPosX, pos.yCoord - renderPosY, pos.zCoord - renderPosZ
+            )
+
+            glColor4d(1.0, 1.0, 1.0, 1.0)
+            glEnd()
+            glEnable(GL_DEPTH_TEST)
+            glDisable(GL_LINE_SMOOTH)
+            glDisable(GL_BLEND)
+            glEnable(GL_TEXTURE_2D)
+            glPopMatrix()
+        }
+
+        // A pretty basic model render process. Position and rotation interpolation is applied to look visually appealing to the user.
+        // This can be smarter by adding sneak checks, more timed hand swing/body movement, etc.
+        if (mc.gameSettings.thirdPersonView == 0 || renderModel) return@handler
+
+        val manager = mc.renderManager
 
         glPushMatrix()
-        glDisable(GL_TEXTURE_2D)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_LINE_SMOOTH)
-        glEnable(GL_BLEND)
-        glDisable(GL_DEPTH_TEST)
-        mc.entityRenderer.disableLightmap()
-        glBegin(GL_LINE_STRIP)
-        glColor(color)
+        glPushAttrib(GL_ALL_ATTRIB_BITS)
 
-        val renderPosX = mc.renderManager.viewerPosX
-        val renderPosY = mc.renderManager.viewerPosY
-        val renderPosZ = mc.renderManager.viewerPosZ
+        RenderUtils.glColor(Color.BLACK)
 
-        for ((pos) in positions) glVertex3d(pos.xCoord - renderPosX, pos.yCoord - renderPosY, pos.zCoord - renderPosZ)
+        val (old, new) = positions.first() to positions.elementAt(min(1, positions.size - 1))
 
-        glColor4d(1.0, 1.0, 1.0, 1.0)
-        glEnd()
-        glEnable(GL_DEPTH_TEST)
-        glDisable(GL_LINE_SMOOTH)
-        glDisable(GL_BLEND)
-        glEnable(GL_TEXTURE_2D)
+        val pos = renderData.pos - manager.renderPos
+
+        runWithModifiedRotation(player, renderData.rotation, old.body to new.body) {
+            manager.doRenderEntity(
+                player, pos.xCoord, pos.yCoord, pos.zCoord, it.yaw, event.partialTicks, true
+            )
+        }
+
+        glPopAttrib()
         glPopMatrix()
     }
 
@@ -279,4 +323,18 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
 
 }
 
-data class PositionData(val pos: Vec3, val time: Long)
+data class ModelRenderData(var pos: Vec3, var rotation: Rotation) {
+    fun reset(player: EntityPlayerSP) {
+        pos = player.currPos
+        rotation = RotationUtils.serverRotation
+    }
+
+    fun update(positions: ArrayDeque<PositionData>) {
+        val data = positions.first()
+
+        pos = pos.lerpWith(data.pos, RenderUtils.deltaTimeNormalized(3))
+        rotation = rotation.lerpWith(data.rotation, RenderUtils.deltaTimeNormalized(1))
+    }
+}
+
+data class PositionData(val pos: Vec3, val time: Long, val body: Float, val rotation: Rotation)

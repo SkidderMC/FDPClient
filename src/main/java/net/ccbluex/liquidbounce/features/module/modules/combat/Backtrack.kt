@@ -12,13 +12,17 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
-import net.ccbluex.liquidbounce.utils.client.*
+import net.ccbluex.liquidbounce.utils.client.PacketUtils
+import net.ccbluex.liquidbounce.utils.client.realX
+import net.ccbluex.liquidbounce.utils.client.realY
+import net.ccbluex.liquidbounce.utils.client.realZ
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils.contains
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBacktrackBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
 import net.minecraft.client.renderer.GlStateManager.color
@@ -634,6 +638,40 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
         // Reset position
         entity.setPosAndPrevPos(currPos, prevPos)
+
+        return result
+    }
+
+    fun <T> runWithModifiedRotation(
+        entity: EntityPlayer, rotation: Rotation, body: Pair<Float, Float>? = null,
+        f: (Rotation) -> T?
+    ): T? {
+        val currRotation = entity.rotation
+        val prevRotation = entity.prevRotation
+        val bodyYaw = entity.prevRenderYawOffset to entity.renderYawOffset
+        val headRotation = entity.prevRotationYawHead to entity.rotationYawHead
+
+        entity.prevRotation = rotation
+        entity.rotation = rotation
+        entity.prevRotationYawHead = rotation.yaw
+        entity.rotationYawHead = rotation.yaw
+
+        body?.let {
+            entity.prevRenderYawOffset = it.first
+            entity.renderYawOffset = it.second
+        }
+
+        val result = f(rotation)
+
+        entity.rotation = currRotation
+        entity.prevRotation = prevRotation
+        entity.rotationYawHead = headRotation.second
+        entity.prevRotationYawHead = headRotation.first
+
+        body?.let {
+            entity.prevRenderYawOffset = bodyYaw.first
+            entity.renderYawOffset = bodyYaw.second
+        }
 
         return result
     }
