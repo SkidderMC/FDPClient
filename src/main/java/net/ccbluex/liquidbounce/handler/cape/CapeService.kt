@@ -5,27 +5,21 @@
  */
 package net.ccbluex.liquidbounce.handler.cape
 
-import com.google.gson.JsonParser
 import kotlinx.coroutines.*
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.io.HttpUtils
 import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.login.UserUtils
 import net.ccbluex.liquidbounce.utils.io.HttpUtils.get
-import org.apache.http.HttpHeaders
-import org.apache.http.HttpStatus
-import org.apache.http.client.methods.HttpDelete
-import org.apache.http.client.methods.HttpGet
-import org.apache.http.client.methods.HttpPatch
-import org.apache.http.client.methods.HttpPut
-import org.apache.http.entity.StringEntity
-import org.apache.http.impl.client.HttpClients
-import org.apache.http.message.BasicHeader
-import org.apache.http.util.EntityUtils
-import org.json.JSONObject
+import net.ccbluex.liquidbounce.utils.io.decodeJson
+import net.ccbluex.liquidbounce.utils.io.parseJson
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.*
 import java.util.concurrent.atomic.AtomicLong
 
@@ -46,7 +40,9 @@ object CapeService : Listenable, MinecraftInstance {
     var knownToken = ""
         get() = clientCapeUser?.token ?: field
 
+    @Volatile
     var clientCapeUser: CapeSelfUser? = null
+        private set
 
     /**
      * I would prefer to use CLIENT_API but due to Cloudflare causing issues with SSL and their browser integrity check,
@@ -62,24 +58,26 @@ object CapeService : Listenable, MinecraftInstance {
 
     private const val SELF_CAPE_URL = "$CAPE_API/self"
 
-    @Deprecated("Use CAPE_CARRIERS_URL instead.")
-    private const val CAPE_UUID_DL_BASE_URL = "$CAPE_API/uuid/%s"
     private const val CAPE_NAME_DL_BASE_URL = "$CAPE_API/name/%s"
     private const val REFRESH_DELAY = 300000L // Every 5 minutes should update
 
     /**
      * Collection of all cape carriers on the API.
      * We start with an empty list, which will be updated by the refreshCapeCarriers function frequently based on the REFRESH_DELAY.
+     * A CapeCarrier is a pair of (uuid, cape_name)
      */
-    internal var capeCarriers = emptyList<CapeCarrier>()
+    @Volatile
+    private var capeCarriers = emptyMap<UUID, String>()
     private val lastUpdate = AtomicLong(0L)
     private var refreshJob: Job? = null
+
+    private val client = HttpUtils.httpClient
 
     /**
      * Refresh cape carriers, capture from the API.
      * It will take a list of (uuid, cape_name) tuples.
      */
-    fun refreshCapeCarriers(force: Boolean = false, done: () -> Unit) {
+    fun refreshCapeCarriers(force: Boolean = false, done: (capeCarriers: Map<UUID, String>) -> Unit) {
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastUpdate.get() > REFRESH_DELAY || force) {
             if (refreshJob?.isActive != true) {
@@ -89,24 +87,20 @@ object CapeService : Listenable, MinecraftInstance {
                         val (json, code) = get(CAPE_CARRIERS_URL)
                         if (code != 200) throw RuntimeException("Failed to get cape carriers. Status code: $code")
 
-                        val parsedJson = JsonParser().parse(json)
-
                         // Should be a JSON Array. It will fail if not.
-                        // Format: [["8f617b6abea04af58e4bd026d8fa9de8", "marco"], ...]
-                        val jsonCapeCarriers = parsedJson.asJsonArray.map { objInArray ->
+                        // Format: [["8f617b6a-bea0-4af5-8e4b-d026d8fa9de8", "marco"], ...]
+                        capeCarriers = json.parseJson().asJsonArray.associate { objInArray ->
                             // Should be a JSON Array. It will fail if not.
                             val arrayInArray = objInArray.asJsonArray
                             // 1. is UUID 2. is name of cape
-                            val (uuid, name) = arrayInArray[0].asString to arrayInArray[1].asString
+                            val uuid = arrayInArray[0].asString
+                            val name = arrayInArray[1].asString
 
-                            val dashedUuid = Regex("(\\p{XDigit}{8})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}{4})(\\p{XDigit}+)")
-                                .replace(uuid, "$1-$2-$3-$4-$5")
-                            CapeCarrier(UUID.fromString(dashedUuid), name)
+                            UUID.fromString(uuid) to name
                         }
 
-                        capeCarriers = jsonCapeCarriers
                         lastUpdate.set(currentTime)
-                        done()
+                        done(capeCarriers)
                     }.onFailure {
                         LOGGER.error("Failed to refresh cape carriers due to error.", it)
                     }
@@ -114,7 +108,7 @@ object CapeService : Listenable, MinecraftInstance {
             }
         } else {
             // Call out done immediate because there is no refresh required at the moment
-            done()
+            done(capeCarriers)
         }
     }
 
@@ -131,39 +125,27 @@ object CapeService : Listenable, MinecraftInstance {
         }
 
         // Lookup cape carrier by UUID, if UUID is matching
-        val capeCarrier = capeCarriers.find { it.uuid == uuid } ?: return null
+        val capeName = capeCarriers[uuid] ?: return null
 
-        return capeCarrier.capeName to String.format(CAPE_NAME_DL_BASE_URL, capeCarrier.capeName)
+        return capeName to String.format(CAPE_NAME_DL_BASE_URL, capeName)
     }
 
-    fun login(token: String) {
-        val httpClient = HttpClients.createDefault()
-        val headers = arrayOf(
-            BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"),
-            BasicHeader(HttpHeaders.AUTHORIZATION, token)
-        )
+    suspend fun login(token: String) = withContext(Dispatchers.IO) {
+        val request = Request.Builder()
+            .url(SELF_CAPE_URL)
+            .addHeader("Content-Type", "application/json")
+            .addHeader("Authorization", token)
+            .build()
 
-        SharedScopes.IO.launch {
-            runCatching {
-                val request = HttpGet(SELF_CAPE_URL)
-                request.setHeaders(headers)
+        client.newCall(request).execute().use { response ->
+            if (response.isSuccessful) {
+                val json = response.body?.charStream()?.decodeJson<LoginResponse>()
+                    ?: throw RuntimeException("Failed to decode JSON of self cape. Response: ${response.body?.string()}")
 
-                val response = httpClient.execute(request)
-                val statusCode = response.statusLine.statusCode
-
-                if (statusCode == HttpStatus.SC_OK) {
-                    val json = JSONObject(EntityUtils.toString(response.entity))
-                    val capeName = json.getString("cape")
-                    val enabled = json.getBoolean("enabled")
-                    val uuid = json.getString("uuid")
-
-                    clientCapeUser = CapeSelfUser(token, enabled, uuid, capeName)
-                    LOGGER.info("Logged in successfully. Cape: $capeName")
-                } else {
-                    throw RuntimeException("Failed to get self cape. Status code: $statusCode")
-                }
-            }.onFailure {
-                LOGGER.error("Failed to login due to error.", it)
+                clientCapeUser = CapeSelfUser(token, json.enabled, json.uuid, json.cape)
+                LOGGER.info("Logged in successfully. Cape: ${json.cape}")
+            } else {
+                throw RuntimeException("Failed to get self cape. Status code: ${response.code}")
             }
         }
     }
@@ -177,25 +159,24 @@ object CapeService : Listenable, MinecraftInstance {
     /**
      * Update the cape state of the user
      */
-    fun toggleCapeState(done: (Boolean, Boolean, Int) -> Unit) {
+    fun toggleCapeState(done: (enabled: Boolean, success: Boolean, statusCode: Int) -> Unit) {
         val capeUser = clientCapeUser ?: return
 
         SharedScopes.IO.launch {
-            runCatching {
-                val httpClient = HttpClients.createDefault()
-                val headers = arrayOf(
-                    BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"),
-                    BasicHeader(HttpHeaders.AUTHORIZATION, capeUser.token)
-                )
-
-                val request = if (!capeUser.enabled) {
-                    HttpPut(SELF_CAPE_URL)
-                } else {
-                    HttpDelete(SELF_CAPE_URL)
+            val request = Request.Builder()
+                .url(SELF_CAPE_URL)
+                .apply {
+                    if (capeUser.enabled) delete()
+                    else put("".toRequestBody(null))
                 }
-                request.setHeaders(headers)
-                val response = httpClient.execute(request)
-                val statusCode = response.statusLine.statusCode
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", capeUser.token)
+                .build()
+
+            try {
+                val statusCode = client.newCall(request).execute().use { response ->
+                    response.code
+                }
 
                 // Refresh cape carriers
                 refreshCapeCarriers(force = true) {
@@ -203,9 +184,10 @@ object CapeService : Listenable, MinecraftInstance {
                 }
 
                 capeUser.enabled = !capeUser.enabled
-                done(capeUser.enabled, statusCode == HttpStatus.SC_NO_CONTENT, statusCode)
-            }.onFailure {
-                LOGGER.error("Failed to toggle cape state due to error.", it)
+
+                done(capeUser.enabled, statusCode == 204, statusCode) // HTTP 204 No Content
+            } catch (e: Throwable) {
+                LOGGER.error("Failed to toggle cape state due to error.", e)
             }
         }
     }
@@ -213,50 +195,46 @@ object CapeService : Listenable, MinecraftInstance {
     /**
      * We want to immediately update the owner of the cape and refresh the cape carriers
      */
-    val onNewSession = handler<SessionUpdateEvent>(dispatcher = Dispatchers.IO) {
+    private val onNewSession = handler<SessionUpdateEvent>(dispatcher = Dispatchers.IO) {
         // Check if donator cape is actually enabled and has a transfer code, also make sure the account used is premium.
         val capeUser = clientCapeUser ?: return@handler
 
         if (!UserUtils.isValidTokenOffline(mc.session.token))
             return@handler
 
-        runCatching {
+        try {
             // Apply cape to new account
             val uuid = mc.session.playerID
             val username = mc.session.username
 
-            val httpClient = HttpClients.createDefault()
-            val headers = arrayOf(
-                BasicHeader(HttpHeaders.CONTENT_TYPE, "application/json"),
-                BasicHeader(HttpHeaders.AUTHORIZATION, capeUser.token)
-            )
-            val request = HttpPatch(SELF_CAPE_URL)
-            request.setHeaders(headers)
+            val requestBody = "{\"uuid\":${uuid}}".toRequestBody("application/json".toMediaType())
 
-            val body = JSONObject()
-            body.put("uuid", uuid)
-            request.entity = StringEntity(body.toString())
+            val request = Request.Builder()
+                .url(SELF_CAPE_URL)
+                .patch(requestBody)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", capeUser.token)
+                .build()
 
-            val response = httpClient.execute(request)
-            val statusCode = response.statusLine.statusCode
-
-            if (statusCode == HttpStatus.SC_NO_CONTENT) {
-                capeUser.uuid = uuid
-                LOGGER.info("[Donator Cape] Successfully transferred cape to $uuid ($username)")
-            } else {
-                LOGGER.info("[Donator Cape] Failed to transfer cape ($statusCode)")
+            client.newCall(request).execute().use { response ->
+                if (response.code == 204) { // HTTP 204 No Content
+                    capeUser.uuid = uuid
+                    LOGGER.info("[Donator Cape] Successfully transferred cape to $uuid ($username)")
+                } else {
+                    LOGGER.info("[Donator Cape] Failed to transfer cape (${response.code})")
+                }
             }
 
             // Refresh cape carriers
             refreshCapeCarriers(force = true) {
                 LOGGER.info("Cape carriers refreshed after session change.")
             }
-        }.onFailure {
-            LOGGER.error("Failed to handle new session due to error.", it)
+        } catch (e: Throwable) {
+            LOGGER.error("Failed to handle new session due to error.", e)
         }
     }
 }
 
-data class CapeSelfUser(val token: String, var enabled: Boolean, var uuid: String, val capeName: String)
+private data class LoginResponse(val cape: String, val enabled: Boolean, val uuid: String)
 
-data class CapeCarrier(val uuid: UUID, val capeName: String)
+data class CapeSelfUser(val token: String, var enabled: Boolean, var uuid: String, val capeName: String)

@@ -77,7 +77,8 @@ inline fun jsonArray(builderAction: JsonArrayBuilder.() -> Unit): JsonArray {
     return JsonArrayBuilder().apply(builderAction).build()
 }
 
-inline fun <reified T> JsonElement.decode(gson: Gson = PRETTY_GSON): T = gson.fromJson<T>(this, object : TypeToken<T>() {}.type)
+inline fun <reified T> JsonElement.decode(gson: Gson = PRETTY_GSON): T = gson.fromJson(this, object : TypeToken<T>() {}.type)
 
-inline fun <reified T> Reader.decodeJson(gson: Gson = PRETTY_GSON): T = gson.fromJson<T>(this, object : TypeToken<T>() {}.type)
-inline fun <reified T> String.decodeJson(gson: Gson = PRETTY_GSON): T = gson.fromJson<T>(this, object : TypeToken<T>() {}.type)
+inline fun <reified T> Reader.decodeJson(gson: Gson = PRETTY_GSON): T = gson.fromJson(this, object : TypeToken<T>() {}.type)
+
+inline fun <reified T> String.decodeJson(gson: Gson = PRETTY_GSON): T = gson.fromJson(this, object : TypeToken<T>() {}.type)
