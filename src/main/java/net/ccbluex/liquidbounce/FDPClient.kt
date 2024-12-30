@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.event.StartupEvent
@@ -53,7 +54,7 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
 import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
-import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.performAllChecksAsync
 import net.ccbluex.liquidbounce.utils.movement.BPSUtils
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.movement.TimerBalanceUtils
@@ -202,11 +203,9 @@ object FDPClient {
             registerModules()
 
             // API Connecter
-            APIConnectorUtils.checkStatus()
-            APIConnectorUtils.checkChangelogs()
-            APIConnectorUtils.checkBugs()
-            APIConnectorUtils.loadPictures()
-
+            runBlocking {
+                performAllChecksAsync()
+            }
             runCatching {
                 // Remapper
                 loadSrg()

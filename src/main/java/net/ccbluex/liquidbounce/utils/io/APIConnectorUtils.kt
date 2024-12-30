@@ -5,164 +5,191 @@
  */
 package net.ccbluex.liquidbounce.utils.io
 
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.net.URL
+import java.awt.image.BufferedImage
+import java.io.IOException
 import javax.imageio.ImageIO
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
-import javax.net.ssl.X509TrustManager
 
 object APIConnectorUtils {
 
-    var canConnect = false
-    var isLatest = false
-    var discord = ""
-    var discordApp = ""
-    private var appClientID = ""
-    private var appClientSecret = ""
-    var donate = ""
-    var changelogs = ""
-    var bugs = ""
+    var canConnect: Boolean = false
+        private set
+    var isLatest: Boolean = false
+        private set
+    var discord: String = ""
+        private set
+    var discordApp: String = ""
+        private set
+    var donate: String = ""
+        private set
+    var changelogs: String = ""
+        private set
+    var bugs: String = ""
+        private set
 
-    private var pictures = mutableListOf<Triple<String, String, ResourceLocation>>()
+    private var appClientID: String = ""
+    private var appClientSecret: String = ""
 
-    private val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {
-        override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
-        override fun checkServerTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
-        override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> {
-            return arrayOf()
+    private val picturesCache = mutableMapOf<Pair<String, String>, ResourceLocation>()
+    private val cacheMutex = Mutex()
+
+    /**
+     * Data class representing an image with its metadata.
+     */
+    data class Picture(
+        val fileName: String,
+        val picType: String,
+        val resourceLocation: ResourceLocation
+    )
+
+    /**
+     * Asynchronously loads images and stores them in the cache.
+     */
+    suspend fun loadPicturesAsync() = withContext(Dispatchers.IO) {
+        cacheMutex.withLock {
+            picturesCache.clear()
+            LOGGER.info("Image cache cleared.")
         }
-    })
-    private val sslContext = SSLContext.getInstance("TLS")
 
-    private fun tlsAuthConnectionFixes() {
-        sslContext.init(null, trustAllCerts, java.security.SecureRandom())
-    }
-
-    fun callImage(image: String, location: String): ResourceLocation {
-        for ((i, l, s) in pictures) {
-            if (i == image && l == location)
-                return s
-        }
-        return ResourceLocation("fdpclient/temp.png")
-    }
-
-    fun loadPictures() {
         try {
-            if (pictures.isNotEmpty())
-                pictures.clear()
-            var gotNames: String
-            tlsAuthConnectionFixes()
-            val nameClient = OkHttpClient.Builder()
-                .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
-                .build()
-            val nameBuilder = Request.Builder().url(URLRegistryUtils.PICTURES + "locations.txt")
-            val nameRequest: Request = nameBuilder.build()
-            nameClient.newCall(nameRequest).execute().use { response ->
-                gotNames = response.body!!.string()
+            val locationsUrl = "${URLRegistryUtils.PICTURES}locations.txt"
+            val (locationsResponse, statusCode) = HttpUtils.get(locationsUrl)
+
+            if (statusCode != 200) {
+                throw IOException("Failed to fetch locations: HTTP $statusCode")
             }
-            val details = gotNames.split("---")
-            for (i in details) {
-                try {
-                    val fileName = i.split(":")[0]
-                    val picType = i.split(":")[1]
-                    tlsAuthConnectionFixes()
-                    val imageUrl = URL(URLRegistryUtils.PICTURES + picType + "/" + fileName + ".png")
-                    val imageRequest = Request.Builder().url(imageUrl).build()
-                    val imageBytes = nameClient.newCall(imageRequest).execute().use { response ->
-                        response.body!!.byteStream().readBytes()
+
+            val details = locationsResponse.split("---")
+            LOGGER.info("Image locations fetched: ${details.size} entries.")
+
+            coroutineScope {
+                details.forEach { detail ->
+                    launch {
+                        runCatching {
+                            val (fileName, picType) = detail.split(":")
+                            val imageUrl = "${URLRegistryUtils.PICTURES}$picType/$fileName.png"
+
+                            val (imageBytes, imageStatusCode) = HttpUtils.requestStream(imageUrl, "GET")
+                            if (imageStatusCode != 200) throw IOException("Failed to download image: HTTP $imageStatusCode")
+
+                            val bufferedImage: BufferedImage = ImageIO.read(imageBytes)
+                                ?: throw IOException("Failed to decode image: $imageUrl")
+
+                            Minecraft.getMinecraft().addScheduledTask {
+                                try {
+                                    val dynamicTexture = DynamicTexture(bufferedImage)
+                                    val resourceLocation = MinecraftInstance.mc.textureManager.getDynamicTextureLocation(
+                                        FDPClient.clientTitle,
+                                        dynamicTexture
+                                    )
+
+                                    runBlocking {
+                                        cacheMutex.withLock {
+                                            picturesCache[Pair(fileName, picType)] = resourceLocation
+                                        }
+                                    }
+                                    LOGGER.info("Image loaded successfully: $fileName, Type: $picType")
+                                } catch (e: Exception) {
+                                    LOGGER.error("Failed to create texture for image: $fileName, Type: $picType", e)
+                                }
+                            }
+                        }.onFailure { exception ->
+                            LOGGER.error("Failed to load image for detail: $detail", exception)
+                        }
                     }
-                    val gotImage = ImageIO.read(imageBytes.inputStream())
-                    pictures.add(
-                        Triple(
-                            fileName,
-                            picType,
-                            MinecraftInstance.mc.textureManager.getDynamicTextureLocation(
-                                FDPClient.clientTitle,
-                                DynamicTexture(gotImage)
-                            )
-                        )
-                    )
-                    LOGGER.info("Successfully loaded picture $fileName, $picType")
-                } catch (innerException: Exception) {
-                    LOGGER.error("Failed to load picture for $i", innerException)
                 }
             }
+
             canConnect = true
-            LOGGER.info("Loaded all pictures successfully")
+            LOGGER.info("All image load tasks scheduled successfully.")
         } catch (e: Exception) {
             canConnect = false
-            LOGGER.error("Failed to load pictures", e)
+            LOGGER.error("Failed to load images from server.", e)
         }
     }
 
-    fun checkStatus() {
+    /**
+     * Retrieves the [ResourceLocation] for a specific image and location.
+     *
+     * @param image The name of the image.
+     * @param location The category/location of the image.
+     * @return The corresponding [ResourceLocation], or a default one if not found.
+     */
+    fun callImage(image: String, location: String): ResourceLocation {
+        return picturesCache[Pair(image, location)] ?: ResourceLocation("fdpclient/temp.png")
+    }
+
+    /**
+     * Asynchronously checks the API status and updates relevant properties.
+     */
+    suspend fun checkStatusAsync() = withContext(Dispatchers.IO) {
         try {
-            var gotData: String
-            tlsAuthConnectionFixes()
-            val client = OkHttpClient.Builder()
-                .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
-                .build()
-            val builder = Request.Builder().url(URLRegistryUtils.STATUS)
-            val request: Request = builder.build()
-            client.newCall(request).execute().use { response ->
-                gotData = response.body!!.string()
-            }
-            val details = gotData.split("///")
-            isLatest = details[5] == FDPClient.clientVersionText
-            discord = details[4]
-            discordApp = details[2]
-            appClientSecret = details[1]
+            val (statusResponse, statusCode) = HttpUtils.get(URLRegistryUtils.STATUS)
+            if (statusCode != 200) throw IOException("Failed to fetch status: HTTP $statusCode")
+
+            val details = statusResponse.split("///")
+            require(details.size >= 6) { "Incomplete status data received." }
+
             appClientID = details[0]
+            appClientSecret = details[1]
+            discordApp = details[2]
+            discord = details[4]
+            isLatest = details[5] == FDPClient.clientVersionText
+
             canConnect = true
-            LOGGER.info("Loaded API")
+            LOGGER.info("API status checked successfully. Is Latest: $isLatest")
         } catch (e: Exception) {
             canConnect = false
-            LOGGER.info("Failed to load API")
+            LOGGER.error("Failed to verify API status.", e)
         }
     }
 
-    fun checkChangelogs() {
+    /**
+     * Asynchronously fetches the latest changelogs from the server.
+     */
+    suspend fun checkChangelogsAsync() = withContext(Dispatchers.IO) {
         try {
-            var gotData: String
-            tlsAuthConnectionFixes()
-            val client = OkHttpClient.Builder()
-                .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
-                .build()
-            val builder = Request.Builder().url(URLRegistryUtils.CHANGELOGS)
-            val request: Request = builder.build()
-            client.newCall(request).execute().use { response ->
-                gotData = response.body!!.string()
-            }
-            changelogs = gotData
-            LOGGER.info("Loaded Changelogs")
+            val (changelogsResponse, statusCode) = HttpUtils.get(URLRegistryUtils.CHANGELOGS)
+            if (statusCode != 200) throw IOException("Failed to fetch changelogs: HTTP $statusCode")
+
+            changelogs = changelogsResponse
+            LOGGER.info("Changelogs loaded successfully.")
         } catch (e: Exception) {
-            LOGGER.info("Failed to load Changelogs")
+            LOGGER.error("Failed to load changelogs.", e)
         }
     }
 
-    fun checkBugs() {
+    /**
+     * Asynchronously fetches the latest bugs from the server.
+     */
+    suspend fun checkBugsAsync() = withContext(Dispatchers.IO) {
         try {
-            var gotData: String
-            tlsAuthConnectionFixes()
-            val client = OkHttpClient.Builder()
-                .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as X509TrustManager)
-                .build()
-            val builder = Request.Builder().url(URLRegistryUtils.BUGS)
-            val request: Request = builder.build()
-            client.newCall(request).execute().use { response ->
-                gotData = response.body!!.string()
-            }
-            bugs = gotData
-            LOGGER.info("Loaded Bugs")
+            val (bugsResponse, statusCode) = HttpUtils.get(URLRegistryUtils.BUGS)
+            if (statusCode != 200) throw IOException("Failed to fetch bugs: HTTP $statusCode")
+
+            bugs = bugsResponse
+            LOGGER.info("Bugs loaded successfully.")
         } catch (e: Exception) {
-            LOGGER.info("Failed to load Bugs")
+            LOGGER.error("Failed to load bugs.", e)
         }
+    }
+
+
+    /**
+     * Executes all API checks asynchronously.
+     */
+    suspend fun performAllChecksAsync() = coroutineScope {
+        launch { checkStatusAsync() }
+        launch { checkChangelogsAsync() }
+        launch { checkBugsAsync() }
+        launch { loadPicturesAsync() }
     }
 }

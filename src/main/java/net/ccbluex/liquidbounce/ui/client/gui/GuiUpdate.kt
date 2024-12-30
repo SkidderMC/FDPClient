@@ -5,16 +5,14 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui
 
+import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.FDPClient.IN_DEV
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
-import net.ccbluex.liquidbounce.handler.api.ClientUpdate
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.checkBugs
-import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.checkChangelogs
-import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.checkStatus
-import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.loadPictures
+import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.performAllChecksAsync
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
+import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
@@ -128,17 +126,16 @@ class GuiUpdate : AbstractScreen() {
                 loadProgress = 0
                 errorMessage = null
 
+                SharedScopes.IO.launch {
                     try {
-                        checkStatus()
-                        checkChangelogs()
-                        checkBugs()
-                        loadPictures()
+                        performAllChecksAsync()
                     } catch (e: Exception) {
                         errorMessage = "Failed to reload API: ${e.message}"
                     } finally {
                         isLoading = false
                         loadProgress = 100
                     }
+                }
             }
         }
     }

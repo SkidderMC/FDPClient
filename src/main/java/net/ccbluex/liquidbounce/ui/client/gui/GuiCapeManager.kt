@@ -65,7 +65,7 @@ object GuiCapeManager : AbstractScreen() {
     }
 
     override fun onGuiClosed() {
-
+        // Implement any necessary cleanup when the GUI is closed
     }
 
     override fun initGui() {
@@ -76,7 +76,7 @@ object GuiCapeManager : AbstractScreen() {
     }
 
     private fun updateCapeStyle() {
-      nowCape = CapeStyle.valueOf(styleValue.value.uppercase(Locale.getDefault()))
+        nowCape = CapeStyle.valueOf(styleValue.value.uppercase(Locale.getDefault()))
     }
 
     override fun actionPerformed(button: GuiButton) {
@@ -90,7 +90,7 @@ object GuiCapeManager : AbstractScreen() {
                 chooseIndex = styleValue.values.size - 1
             }
 
-           styleValue.value = styleValue.values[chooseIndex]
+            styleValue.value = styleValue.values[chooseIndex]
             updateCapeStyle()
         }
 
