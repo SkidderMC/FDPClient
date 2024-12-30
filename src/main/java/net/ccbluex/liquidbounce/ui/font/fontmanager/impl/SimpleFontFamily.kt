@@ -1,33 +1,26 @@
 /*
  * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
- * https://github.com/UnlegitMC/FDPClient/
+ * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.font.fontmanager.impl;
+package net.ccbluex.liquidbounce.ui.font.fontmanager.impl
 
-import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontFamily;
-import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer;
-import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontType;
+import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontFamily
+import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer
+import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontType
+import java.awt.Font
 
-final class SimpleFontFamily implements FontFamily {
+class SimpleFontFamily private constructor(
+    override val font: FontType,
+    private val awtFont: Font
+) : FontFamily {
 
-	private final FontType fontType;
-	private final java.awt.Font awtFont;
+    override fun ofSize(size: Int): FontRenderer {
+        return SimpleFontRenderer.create(awtFont.deriveFont(Font.PLAIN, size.toFloat()))
+    }
 
-	private SimpleFontFamily(FontType fontType, java.awt.Font awtFont) {
-		this.fontType = fontType;
-		this.awtFont = awtFont;
-	}
-
-	static FontFamily create(FontType fontType, java.awt.Font awtFont) {
-		return new SimpleFontFamily(fontType, awtFont);
-	}
-
-	@Override
-	public FontRenderer ofSize(int size) {
-			return SimpleFontRenderer.create(awtFont.deriveFont(java.awt.Font.PLAIN, size));
-	}
-
-	@Override
-	public FontType font() { return fontType; }
+    companion object {
+        fun create(fontType: FontType, awtFont: Font): FontFamily =
+            SimpleFontFamily(fontType, awtFont)
+    }
 }

@@ -80,19 +80,19 @@ class ModuleRect(val module: Module) : Component() {
             DrRenderUtils.applyOpacity(accentWithAlpha, toggleAnimation.output.toFloat()).rgb
         )
 
-        Fonts.SF.SF_20.SF_20.drawString(
+        Fonts.SF.SF_20.drawString(
             module.name,
             x + 5,
-            y + Fonts.SF.SF_20.SF_20.getMiddleOfBox(height),
+            y + Fonts.SF.SF_20.getMiddleOfBox(height),
             textColor.rgb
         )
 
         if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && module.keyBind != 0) {
             val keyName = Keyboard.getKeyName(module.keyBind)
-            Fonts.SF.SF_20.SF_20.drawString(
+            Fonts.SF.SF_20.drawString(
                 keyName,
-                x + width - Fonts.SF.SF_20.SF_20.stringWidth(keyName) - 5,
-                y + Fonts.SF.SF_20.SF_20.getMiddleOfBox(height),
+                x + width - Fonts.SF.SF_20.stringWidth(keyName) - 5,
+                y + Fonts.SF.SF_20.getMiddleOfBox(height),
                 textColor.rgb
             )
         } else {

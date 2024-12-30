@@ -40,10 +40,6 @@ object ClientThemesUtils {
      */
     var updown: Boolean = false
 
-    /**
-     * O modo de background selecionado. Pode ser "dark", "synced", "none", etc.
-     * Ou diretamente "#RRGGBB" ou "#AARRGGBB".
-     */
     var BackgroundMode: String = "Synced"
         set(value) {
             field = value.lowercase()
@@ -251,12 +247,8 @@ object ClientThemesUtils {
     }
 
     /**
-     * Returns a color for the given [name], ignoring the global [ClientColorMode].
-     * If [name] starts with "#", we parse it as a hex color. Otherwise, we use
-     * the same color mapping used in [getColor].
-     *
-     * @param name e.g. "water", "rainbow", or "#FF00FF"
-     * @param index typically used for color animations or color mixing
+     * Retrieve a color from [name] rather than the current mode,
+     * typically used for e.g. theme previews or external calls.
      */
     fun getColorFromName(name: String, index: Int): Color {
         if (name.startsWith("#")) {

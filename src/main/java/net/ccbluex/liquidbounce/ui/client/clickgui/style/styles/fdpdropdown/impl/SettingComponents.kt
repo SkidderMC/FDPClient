@@ -160,16 +160,16 @@ class SettingComponents(private val module: Module) : Component() {
             if (setting is FloatValue) {
 
                 val value = round(setting.value.toDouble(), 0.01).toFloat().toString()
-                val regularFontWidth = Fonts.SF.SF_18.SF_18.stringWidth(setting.name + ": ").toFloat()
-                val valueFontWidth = Fonts.SF.SF_18.SF_18.stringWidth(value).toFloat()
+                val regularFontWidth = Fonts.SF.SF_18.stringWidth(setting.name + ": ").toFloat()
+                val valueFontWidth = Fonts.SF.SF_18.stringWidth(value).toFloat()
 
                 val titleX = x + width / 2f - (regularFontWidth + valueFontWidth) / 2f
-                val titleY = (settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight)
-                        - Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) / 2f + 1)
+                val titleY = (settingY + Fonts.SF.SF_18.getMiddleOfBox(rectHeight)
+                        - Fonts.SF.SF_18.getMiddleOfBox(rectHeight) / 2f + 1)
 
                 GlStateManager.color(1f, 1f, 1f, 1f)
-                Fonts.SF.SF_18.SF_18.drawString(setting.name + ": ", titleX, titleY, textColor.rgb)
-                Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.rgb)
+                Fonts.SF.SF_18.drawString(setting.name + ": ", titleX, titleY, textColor.rgb)
+                Fonts.SFBOLD.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.rgb)
 
                 val hoverAnimation = sliderfloatAnimMap[setting]!![0]
                 val selectAnimtion = sliderfloatAnimMap[setting]!![1]
@@ -237,16 +237,16 @@ class SettingComponents(private val module: Module) : Component() {
             if (setting is IntegerValue) {
                 val value = roundX(setting.value.toDouble(), 1.0).toFloat().toString()
 
-                val regularFontWidth = Fonts.SF.SF_18.SF_18.stringWidth(setting.name + ": ").toFloat()
-                val valueFontWidth = Fonts.SF.SF_18.SF_18.stringWidth(value).toFloat()
+                val regularFontWidth = Fonts.SF.SF_18.stringWidth(setting.name + ": ").toFloat()
+                val valueFontWidth = Fonts.SF.SF_18.stringWidth(value).toFloat()
 
                 val titleX = x + width / 2f - (regularFontWidth + valueFontWidth) / 2f
-                val titleY = (settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight)
-                        - Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) / 2f + 1)
+                val titleY = (settingY + Fonts.SF.SF_18.getMiddleOfBox(rectHeight)
+                        - Fonts.SF.SF_18.getMiddleOfBox(rectHeight) / 2f + 1)
 
                 GlStateManager.color(1f, 1f, 1f, 1f)
-                Fonts.SF.SF_18.SF_18.drawString(setting.name + ": ", titleX, titleY, textColor.rgb)
-                Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.rgb)
+                Fonts.SF.SF_18.drawString(setting.name + ": ", titleX, titleY, textColor.rgb)
+                Fonts.SFBOLD.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.rgb)
 
                 val hoverAnimation = sliderintAnimMap[setting]!![0]
                 val selectAnimtion = sliderintAnimMap[setting]!![1]
@@ -314,16 +314,16 @@ class SettingComponents(private val module: Module) : Component() {
             if (setting is NumberValue) {
                 val value = round(setting.value, setting.getInc()).toFloat().toString()
 
-                val regularFontWidth = Fonts.SF.SF_18.SF_18.stringWidth(setting.name + ": ").toFloat()
-                val valueFontWidth = Fonts.SF.SF_18.SF_18.stringWidth(value).toFloat()
+                val regularFontWidth = Fonts.SF.SF_18.stringWidth(setting.name + ": ").toFloat()
+                val valueFontWidth = Fonts.SF.SF_18.stringWidth(value).toFloat()
 
                 val titleX = x + width / 2f - (regularFontWidth + valueFontWidth) / 2f
-                val titleY = (settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight)
-                        - Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) / 2f + 1)
+                val titleY = (settingY + Fonts.SF.SF_18.getMiddleOfBox(rectHeight)
+                        - Fonts.SF.SF_18.getMiddleOfBox(rectHeight) / 2f + 1)
 
                 GlStateManager.color(1f, 1f, 1f, 1f)
-                Fonts.SF.SF_18.SF_18.drawString(setting.name + ": ", titleX, titleY, textColor.rgb)
-                Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.rgb)
+                Fonts.SF.SF_18.drawString(setting.name + ": ", titleX, titleY, textColor.rgb)
+                Fonts.SFBOLD.SFBOLD_18.drawString(value, titleX + regularFontWidth, titleY, textColor.rgb)
 
                 val hoverAnimation = sliderAnimMap[setting]!![0]
                 val selectAnimtion = sliderAnimMap[setting]!![1]
@@ -397,7 +397,7 @@ class SettingComponents(private val module: Module) : Component() {
                 OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
                 GlStateManager.enableBlend()
 
-                Fonts.SF.SF_18.SF_18.drawString(
+                Fonts.SF.SF_18.drawString(
                     setting.name,
                     roundToHalf((x + 4).toDouble()).toInt().toFloat(),
                     settingY + 5,
@@ -405,10 +405,10 @@ class SettingComponents(private val module: Module) : Component() {
                 )
 
                 val switchWidth = 16f
-                val hoveringSwitch = isClickable(settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) - 1)
+                val hoveringSwitch = isClickable(settingY + Fonts.SF.SF_18.getMiddleOfBox(rectHeight) - 1)
                         && DrRenderUtils.isHovering(
                     x + width - (switchWidth + 6),
-                    settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) - 1,
+                    settingY + Fonts.SF.SF_18.getMiddleOfBox(rectHeight) - 1,
                     switchWidth, 8f, mouseX, mouseY
                 )
 
@@ -428,7 +428,7 @@ class SettingComponents(private val module: Module) : Component() {
 
                 drawCustomShapeWithRadius(
                     x + width - (switchWidth + 5.5f),
-                    settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) + 2,
+                    settingY + Fonts.SF.SF_18.getMiddleOfBox(rectHeight) + 2,
                     switchWidth, 4.5f, 2f,
                     DrRenderUtils.interpolateColorC(
                         DrRenderUtils.applyOpacity(darkRectHover, .5f),
@@ -439,14 +439,14 @@ class SettingComponents(private val module: Module) : Component() {
                 DrRenderUtils.fakeCircleGlow(
                     ((x + width - (switchWidth + 3))
                             + ((switchWidth - 5) * toggleAnim.output)).toFloat(),
-                    settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) + 4,
+                    settingY + Fonts.SF.SF_18.getMiddleOfBox(rectHeight) + 4,
                     6f, Color.BLACK, .3f
                 )
 
                 DrRenderUtils.resetColor()
                 drawCustomShapeWithRadius(
                     (x + width - (switchWidth + 6) + ((switchWidth - 5) * toggleAnim.output)).toFloat(),
-                    settingY + Fonts.SF.SF_18.SF_18.getMiddleOfBox(rectHeight) + 1,
+                    settingY + Fonts.SF.SF_18.getMiddleOfBox(rectHeight) + 1,
                     6.5f, 6.5f, 3f, textColor
                 )
             }
@@ -513,7 +513,7 @@ class SettingComponents(private val module: Module) : Component() {
                         setting.set(mode, true)
                     }
                     if (openAnim.isDone && openAnim.direction == Direction.FORWARDS || !openAnim.isDone) {
-                        Fonts.SF.SF_18.SF_18.drawString(
+                        Fonts.SF.SF_18.drawString(
                             mode,
                             x + 13,
                             modeY,
@@ -557,7 +557,7 @@ class SettingComponents(private val module: Module) : Component() {
                     )
                 }
 
-                Fonts.SF.SF_14.SF_14.drawString(
+                Fonts.SF.SF_14.drawString(
                     setting.name,
                     x + 13,
                     settingY + 9,
@@ -565,7 +565,7 @@ class SettingComponents(private val module: Module) : Component() {
                 )
 
                 DrRenderUtils.resetColor()
-                Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(
+                Fonts.SFBOLD.SFBOLD_18.drawString(
                     setting.get(),
                     x + 13,
                     (settingY + 17.5).toFloat(),
@@ -588,7 +588,7 @@ class SettingComponents(private val module: Module) : Component() {
             if (setting is TextValue) {
 
                 DrRenderUtils.resetColor()
-                Fonts.SF.SF_16.SF_16.drawString(
+                Fonts.SF.SF_16.drawString(
                     setting.name,
                     x + 5,
                     settingY + 2,
@@ -603,7 +603,7 @@ class SettingComponents(private val module: Module) : Component() {
                     (settingY + 15).toInt(),
                     (width - 10).toInt(),
                     10,
-                    Fonts.SF.SF_18.SF_18
+                    Fonts.SF.SF_18
                 )
 
                 // Use renamed methods to avoid ambiguous calls:
@@ -635,12 +635,12 @@ class SettingComponents(private val module: Module) : Component() {
             // Render the key bind
             val bind = Keyboard.getKeyName(module.keyBind)
             val hoveringBindRect = isClickable(
-                y + Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getMiddleOfBox(rectHeight) - 1
+                y + Fonts.SFBOLD.SFBOLD_18.getMiddleOfBox(rectHeight) - 1
             ) && DrRenderUtils.isHovering(
-                x + width - (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 10),
-                y + Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getMiddleOfBox(rectHeight) - 1,
-                (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 8).toFloat(),
-                (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.height + 6).toFloat(),
+                x + width - (Fonts.SFBOLD.SFBOLD_18.stringWidth(bind) + 10),
+                y + Fonts.SFBOLD.SFBOLD_18.getMiddleOfBox(rectHeight) - 1,
+                (Fonts.SFBOLD.SFBOLD_18.stringWidth(bind) + 8).toFloat(),
+                (Fonts.SFBOLD.SFBOLD_18.height + 6).toFloat(),
                 mouseX, mouseY
             )
 

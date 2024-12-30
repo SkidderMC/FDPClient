@@ -1,22 +1,14 @@
 /*
  * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * A free open source mixin-based injection hacked client para Minecraft usando Minecraft Forge por LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.font.fontmanager.util;
+package net.ccbluex.liquidbounce.ui.font.fontmanager.util
 
-public final class SneakyThrowing {
+object SneakyThrowing {
 
-	public static RuntimeException sneakyThrow(Throwable throwable) {
-		return sneakyThrow0(throwable);
-	}
+    fun sneakyThrow(throwable: Throwable): Nothing = sneakyThrow0(throwable)
 
-	@SuppressWarnings("unchecked")
-	private static <T extends Throwable> T sneakyThrow0(Throwable throwable) throws T {
-		throw (T) throwable;
-	}
-
-	private SneakyThrowing() {
-		throw new UnsupportedOperationException("This is a utility class and cannot be instantiated");
-	}
+    @Suppress("UNCHECKED_CAST")
+    private fun <T : Throwable> sneakyThrow0(throwable: Throwable): T = throw throwable as T
 }

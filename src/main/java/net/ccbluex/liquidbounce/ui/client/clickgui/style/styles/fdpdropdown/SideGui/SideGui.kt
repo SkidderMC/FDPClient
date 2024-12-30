@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.Sid
 
 import net.ccbluex.liquidbounce.FDPClient.fileManager
 import net.ccbluex.liquidbounce.config.SettingsUtils.applyScript
+import net.ccbluex.liquidbounce.config.customBgColorValue
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.generateColor
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.handler.api.ClientApi
@@ -35,7 +36,9 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawGradientRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedOutline
+import net.minecraft.client.gui.GuiScreen.getClipboardString
 import net.minecraft.client.gui.ScaledResolution
+import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import java.awt.Color
 import java.awt.Desktop
@@ -43,6 +46,8 @@ import java.io.File
 import java.io.IOException
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
+import java.util.*
+import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
 
@@ -68,14 +73,17 @@ class SideGui : GuiPanel() {
     private var showLocalConfigs = false
     private var wasMousePressed = false
 
-    // If we're dragging the slider, no panel-drag or scrolling is allowed
     private var draggingSlider = false
-    // Also block window-drag if the user is clicking on any header button
     private var clickingHeader = false
-    // Outline around the entire side panel
     private var showSideOutline = true
 
     private var bgAlpha: Float = 100f
+
+    private var colorHexInput = "#"
+    private var colorHexFocused = false
+
+    private var bgHexInput = "#"
+    private var bgHexFocused = false
 
     override fun initGui() {
         focused = false
@@ -114,13 +122,64 @@ class SideGui : GuiPanel() {
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        // We don't need key events here
+        if (colorHexFocused) {
+            if (keyCode == Keyboard.KEY_RETURN) {
+                ClientColorMode = colorHexInput
+                colorHexFocused = false
+                return
+            }
+            if (keyCode == Keyboard.KEY_BACK) {
+                if (colorHexInput.length > 1) {
+                    colorHexInput = colorHexInput.dropLast(1)
+                }
+                return
+            }
+            val ctrlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)
+            val shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)
+            if ((keyCode == Keyboard.KEY_V && ctrlDown) || (keyCode == Keyboard.KEY_INSERT && shiftDown)) {
+                val clipboardStr = getClipboardString() ?: ""
+                val filtered = clipboardStr.filter { it.toString().matches(Regex("[0-9A-Fa-f]")) }
+                colorHexInput = "#${filtered.take(8)}"
+                return
+            }
+            if (typedChar.toString().matches(Regex("[0-9A-Fa-f]"))) {
+                if (colorHexInput.length < 9) {
+                    colorHexInput += typedChar
+                }
+            }
+        }
+
+        if (bgHexFocused) {
+            if (keyCode == Keyboard.KEY_RETURN) {
+                ClientThemesUtils.BackgroundMode = bgHexInput
+                bgHexFocused = false
+                return
+            }
+            if (keyCode == Keyboard.KEY_BACK) {
+                if (bgHexInput.length > 1) {
+                    bgHexInput = bgHexInput.dropLast(1)
+                }
+                return
+            }
+            val ctrlDown = Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) || Keyboard.isKeyDown(Keyboard.KEY_RCONTROL)
+            val shiftDown = Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)
+            if ((keyCode == Keyboard.KEY_V && ctrlDown) || (keyCode == Keyboard.KEY_INSERT && shiftDown)) {
+                val clipboardStr = getClipboardString() ?: ""
+                val filtered = clipboardStr.filter { it.toString().matches(Regex("[0-9A-Fa-f]")) }
+                bgHexInput = "#${filtered.take(8)}"
+                return
+            }
+            if (typedChar.toString().matches(Regex("[0-9A-Fa-f]"))) {
+                if (bgHexInput.length < 9) {
+                    bgHexInput += typedChar
+                }
+            }
+        }
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float, alpha: Int) {
         assumeNonVolatile = true
 
-        // If not dragging a slider or clicking header, allow scroll
         if (!draggingSlider && !clickingHeader) {
             handleMouseWheel()
         }
@@ -134,7 +193,7 @@ class SideGui : GuiPanel() {
         // Draw category tabs (centered)
         drawCategoryTabs(mouseX, mouseY, alpha)
 
-        // Separator line below the header
+        // Separator line
         DrRenderUtils.drawRect2(
             drag!!.x + 20.0,
             drag!!.y + 50.0,
@@ -151,10 +210,26 @@ class SideGui : GuiPanel() {
             "Background" -> drawBackgroundCategory(mouseX, mouseY, alpha)
         }
 
-        // Overlays, gradients, bloom, etc.
         drawOverlays(sr, alpha, mouseX, mouseY)
 
         assumeNonVolatile = false
+    }
+
+    /**
+     * Returns the (x, y, width, height) for the background hex text box.
+     * We'll center it near the bottom, for example.
+     */
+    private fun getBgHexFieldArea(): Quad {
+        val sideBgX = drag!!.x + 25 + (80f + 10) * 5
+        val sideBgY = drag!!.y + 60 + 45
+        val sideBgW = 50f
+        val sideBgH = 15f
+
+        val textW = 80f
+        val textH = 14f
+        val x = sideBgX + (sideBgW - textW) / 2f
+        val y = sideBgY - textH - 20
+        return Quad(x, y, textW, textH)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
@@ -166,25 +241,39 @@ class SideGui : GuiPanel() {
 
         if (!focused) return
 
-        // If user clicked on any header button, block panel-drag
         clickingHeader = isHoveringHeader(mouseX, mouseY)
 
-        // Only drag if not dragging slider or clicking header
         if (!draggingSlider && !clickingHeader) {
             val canDrag = DrRenderUtils.isHovering(drag!!.x, drag!!.y, rectWidth, 50f, mouseX, mouseY) ||
                     DrRenderUtils.isHovering(drag!!.x, drag!!.y, 20f, rectHeight, mouseX, mouseY)
             drag!!.onClick(mouseX, mouseY, button, canDrag)
         }
 
-        // Check if a category tab was clicked
         checkCategoryClick(mouseX, mouseY)
 
-        // If we're in the "Color" category, check for interactions
+        // Reset text field focus unless we click them
+        colorHexFocused = false
+        bgHexFocused = false
+
+        // Color
         if (currentCategory == "Color") {
             checkColorCategoryInteractions(mouseX, mouseY)
+            val (hexX, hexY, hexW, hexH) = getColorHexFieldArea()
+            if (DrRenderUtils.isHovering(hexX, hexY, hexW, hexH, mouseX, mouseY)) {
+                colorHexFocused = true
+            }
         }
 
-        // If user clicked on fade-speed slider (for color)
+        // Background
+        if (currentCategory == "Background") {
+            checkBackgroundInteractions(mouseX, mouseY)
+            val (hexX, hexY, hexW, hexH) = getBgHexFieldArea()
+            if (DrRenderUtils.isHovering(hexX, hexY, hexW, hexH, mouseX, mouseY)) {
+                bgHexFocused = true
+            }
+        }
+
+        // Fade-speed slider
         val fadeSpeedSliderX = drag!!.x + 25
         val fadeSpeedSliderY = drag!!.y + 20
         val fadeSpeedSliderWidth = 80f
@@ -205,25 +294,19 @@ class SideGui : GuiPanel() {
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, button: Int) {
         if (focused) {
-            // Stop dragging
             drag!!.onRelease(button)
-
-            // If dragged outside the right edge, close the SideGui
             val sr = ScaledResolution(MinecraftInstance.mc)
             if (drag!!.x + rectWidth > sr.scaledWidth && clickAnimation!!.isDone) {
                 focused = false
             }
         }
-        // Stop dragging slider
         draggingSlider = false
-        // Stop blocking the header
         clickingHeader = false
     }
 
-    private fun drawBackgroundCategory(mouseX: Int, mouseY: Int, alpha: Int) {
-        val backgroundModes = arrayOf("Dark", "Synced", "Custom", "NeverLose", "None")
+    private val backgroundModes = arrayOf("none", "dark", "synced", "neverlose", "custom")
 
-        // We'll draw cards for each background mode, similar to how we draw color cards.
+    private fun drawBackgroundCategory(mouseX: Int, mouseY: Int, alpha: Int) {
         val bgXStart = drag!!.x + 25
         val bgYStart = drag!!.y + 60 + animScroll
         val cardWidth = 80f
@@ -233,27 +316,20 @@ class SideGui : GuiPanel() {
         var xPos = bgXStart
         var yPos = bgYStart
         var index = 0
-
-        // We'll also limit scrolling
         val maxVisibleY = drag!!.y + rectHeight - 60
 
         for (mode in backgroundModes) {
-            // If it doesn't overflow the panel
             if (yPos + cardHeight <= maxVisibleY) {
-                // Check hovering
                 val hovered = DrRenderUtils.isHovering(xPos, yPos, cardWidth, cardHeight, mouseX, mouseY)
                 if (hovered && Mouse.isButtonDown(0)) {
-                    // On click, set the chosen background mode
-                    ClientThemesUtils.BackgroundMode = mode
+                    // If "custom", we open color palette:
+                    if (mode == "custom") {
+                        openBgColorPalette()
+                    } else {
+                        ClientThemesUtils.BackgroundMode = mode
+                    }
                 }
-
-                // Get the preview color from the utility, e.g.:
-                val previewColor = ClientThemesUtils.getBackgroundColor(0, bgAlpha.toInt()).rgb
-                // But we want the color for THIS mode, not necessarily the currently selected:
-                // so let's do something akin to "fake" the mode. For simplicity, we can do:
-                val cardColor = getPreviewColorForMode(mode, bgAlpha.toInt())
-
-                // Draw the card
+                val cardColor = getBgPreviewColor(mode, bgAlpha.toInt())
                 DrRenderUtils.drawRect2(
                     xPos.toDouble(),
                     yPos.toDouble(),
@@ -261,8 +337,6 @@ class SideGui : GuiPanel() {
                     cardHeight.toDouble(),
                     cardColor
                 )
-
-                // If it's the currently selected mode, show an outline
                 if (ClientThemesUtils.BackgroundMode.equals(mode, ignoreCase = true)) {
                     drawRoundedOutline(
                         xPos,
@@ -274,65 +348,47 @@ class SideGui : GuiPanel() {
                         Color.WHITE.rgb
                     )
                 }
-
-                // Draw the mode name (centered)
-                Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawCenteredString(
-                    mode,
+                Fonts.InterBold.InterBold26.drawCenteredStringShadow(
+                    mode.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
                     xPos + cardWidth / 2f,
-                    yPos + cardHeight / 2f - Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.height / 2,
+                    yPos + cardHeight / 2f - Fonts.InterBold.InterBold26.height / 2,
                     DrRenderUtils.applyOpacity(-1, alpha / 255f)
                 )
             }
-
             xPos += cardWidth + 10
             index++
-            // Break row
             if (index % cardsPerRow == 0) {
                 xPos = bgXStart
                 yPos += cardHeight + 10
             }
         }
 
-        // Now draw a slider for BG alpha, pinned somewhere near the top
         drawBackgroundAlphaSlider(mouseX, mouseY, alpha)
-
-        // If the background mode is "Custom", let's show a color preview or something
-        if (ClientThemesUtils.BackgroundMode.equals("custom", ignoreCase = true)) {
-            drawCustomBgPreview(mouseX, mouseY, alpha)
-        }
+        drawBackgroundHexField(alpha)
     }
 
-    /**
-     * Example function to get a "preview" color for a given mode
-     * without messing with the globally selected mode.
-     */
-    private fun getPreviewColorForMode(mode: String, alpha: Int): Int {
-        // We'll do a little manual logic. You might have a helper in ClientThemesUtils
+    private fun getBgPreviewColor(mode: String, alpha: Int): Int {
         return when (mode.lowercase()) {
-            "dark" -> Color(21, 21, 21, alpha).rgb
-            "synced" -> {
-                // Like "Synced" => your main color darker, but let's just fetch the color from
-                // ClientThemesUtils, ignoring the mode actually selected
-                // For example, we do getColorWithAlpha(...) then .darker().darker()
-                ClientThemesUtils.getColorWithAlpha(0, alpha).darker().darker().rgb
-            }
-            "custom" -> ClientThemesUtils.customBgColor.setAlpha(alpha).rgb
-            "neverlose" -> ClientThemesUtils.neverLoseBgColor.setAlpha(alpha).rgb
             "none" -> Color(0, 0, 0, 0).rgb
+            "dark" -> Color(21, 21, 21, alpha).rgb
+            "synced" -> ClientThemesUtils.getColorWithAlpha(0, alpha).darker().darker().rgb
+            "neverlose" -> ClientThemesUtils.neverLoseBgColor.setAlpha(alpha).rgb
+            "custom" -> customBgColorValue.get().setAlpha(alpha).rgb
             else -> Color(21, 21, 21, alpha).rgb
         }
     }
 
-    /**
-     * Draw a slider controlling [bgAlpha]. Range 1..255
-     */
+    private fun openBgColorPalette() {
+        ClientThemesUtils.BackgroundMode = "custom"
+        displayChatMessage("Opening BG color palette for 'Custom' mode...")
+    }
+
     private fun drawBackgroundAlphaSlider(mouseX: Int, mouseY: Int, alpha: Int) {
         val sliderX = drag!!.x + 25
         val sliderY = drag!!.y + 20
         val sliderW = 80f
         val sliderH = 10f
 
-        // background
         DrRenderUtils.drawRect2(
             sliderX.toDouble(),
             sliderY.toDouble(),
@@ -340,9 +396,7 @@ class SideGui : GuiPanel() {
             sliderH.toDouble(),
             Color(60, 60, 60, alpha).rgb
         )
-
-        // fraction of fill
-        val fraction = (bgAlpha - 1f) / (255f - 1f)  // if we clamp 1..255
+        val fraction = (bgAlpha - 1f) / (255f - 1f)
         val fill = sliderW * fraction
         DrRenderUtils.drawRect2(
             sliderX.toDouble(),
@@ -352,15 +406,13 @@ class SideGui : GuiPanel() {
             Color(100, 150, 100, alpha).rgb
         )
 
-        // label
-        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
+        Fonts.InterBold.InterBold26.drawString(
             "BG Alpha: ${bgAlpha.toInt()}",
             sliderX + 2,
             sliderY - 12,
             DrRenderUtils.applyOpacity(-1, alpha / 255f)
         )
 
-        // check if user is dragging
         val hovered = DrRenderUtils.isHovering(sliderX, sliderY, sliderW, sliderH, mouseX, mouseY)
         if (hovered && Mouse.isButtonDown(0)) {
             draggingSlider = true
@@ -370,79 +422,219 @@ class SideGui : GuiPanel() {
     }
 
     /**
-     * If the user selects "Custom" background, let's show a small color preview box
-     * so they can see which color they have, or click it to open a color picker, etc.
+     * Additional interactions for BG category if needed.
      */
-    private fun drawCustomBgPreview(mouseX: Int, mouseY: Int, alpha: Int) {
-        val boxX = drag!!.x + 120
-        val boxY = drag!!.y + 20
-        val boxW = 40f
-        val boxH = 40f
-
-        val customCol = ClientThemesUtils.customBgColor.setAlpha(bgAlpha.toInt()).rgb
-        DrRenderUtils.drawRect2(
-            boxX.toDouble(),
-            boxY.toDouble(),
-            boxW.toDouble(),
-            boxH.toDouble(),
-            customCol
-        )
-        drawRoundedOutline(boxX, boxY, boxX + boxW, boxY + boxH, 4f, 2f, Color.WHITE.rgb)
-
-        // label
-        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
-            "Custom BG",
-            boxX,
-            boxY - 12,
-            DrRenderUtils.applyOpacity(-1, alpha / 255f)
-        )
-
-        val hovered = DrRenderUtils.isHovering(boxX, boxY, boxW, boxH, mouseX, mouseY)
-        if (hovered && Mouse.isButtonDown(0)) {
-            // e.g., open some color picker
-            // openColorPicker(ClientThemesUtils::customBgColor)
-        }
+    private fun checkBackgroundInteractions(mouseX: Int, mouseY: Int) {
+        // If you want other clickable items in background category, do it here
     }
 
-    // ---------------------------------------------------------------
-    //  The rest of your existing code remains unchanged
-    // ---------------------------------------------------------------
+    private fun drawBackgroundHexField(alpha: Int) {
+        val (x, y, width, height) = getBgHexFieldArea()
 
-    private fun checkCategoryClick(mouseX: Int, mouseY: Int) {
-        val totalWidth = 4 * 60f + 3 * 10f // since we have 4 categories now
-        val startX = drag!!.x + rectWidth / 2f - totalWidth / 2f
-        val yVal = drag!!.y + 15
+        DrRenderUtils.drawRect2(
+            x.toDouble(),
+            y.toDouble(),
+            width.toDouble(),
+            height.toDouble(),
+            Color(40, 40, 40, alpha).rgb
+        )
 
-        var xOffset = 0f
-        categories.forEach { cat ->
-            val xVal = startX + xOffset
-            val hovered = DrRenderUtils.isHovering(
-                xVal - 30, yVal - 5,
-                60f,
-                (Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.height + 10).toFloat(),
-                mouseX, mouseY
+        if (bgHexFocused) {
+            drawRoundedOutline(
+                x,
+                y,
+                x + width,
+                y + height,
+                2f,
+                1.5f,
+                Color.WHITE.rgb
             )
-            if (hovered) {
-                currentCategory = cat
-                return
-            }
-            xOffset += 60f + 10f
         }
+
+        Fonts.InterBold.InterBold26.drawString(
+            bgHexInput,
+            x + 2,
+            y + 3,
+            Color.WHITE.rgb
+        )
+
+        Fonts.InterBold.InterBold26.drawString(
+            "Hex:",
+            x,
+            y - 12,
+            DrRenderUtils.applyOpacity(-1, alpha / 255f)
+        )
+    }
+
+    private fun drawColorCategory(mouseX: Int, mouseY: Int, alpha: Int) {
+        val themeColors = arrayOf(
+            "Zywl", "Water", "Magic", "DarkNight", "Sun",
+            "Tree", "Flower", "Loyoi", "Cero", "FDP",
+            "May", "Mint", "Azure", "Rainbow", "Astolfo",
+            "Pumpkin", "Polarized", "Sundae", "Terminal", "Coral",
+            "Fire", "Aqua", "Peony"
+        )
+
+        val colorXStart = drag!!.x + 25
+        val colorYStart = drag!!.y + 60 + animScroll
+        val colorWidth = 80f
+        val colorHeight = 60f
+        val colorsPerRow = 5
+        var colorX = colorXStart
+        var colorY = colorYStart
+        val maxVisibleHeight = drag!!.y + rectHeight - 60
+
+        themeColors.forEachIndexed { i, colorName ->
+            if (colorY + colorHeight > drag!!.y + 60 && colorY < maxVisibleHeight) {
+                val isHovered = DrRenderUtils.isHovering(colorX, colorY, colorWidth, colorHeight, mouseX, mouseY)
+                if (isHovered && Mouse.isButtonDown(0)) {
+                    ClientColorMode = colorName
+                    fileManager.saveConfig(fileManager.colorThemeConfig, true)
+                    LOGGER.info("Saved color theme configuration: $colorName")
+                }
+
+                val startColor = getColorFromName(colorName, 0).rgb
+                val endColor = getColorFromName(colorName, 180).rgb
+                drawGradientRect(
+                    colorX.toInt(),
+                    colorY.toInt(),
+                    (colorX + colorWidth).toInt(),
+                    (colorY + colorHeight).toInt(),
+                    startColor, endColor
+                )
+
+                val isSelected = (ClientColorMode == colorName)
+                if (isSelected) {
+                    smooth[0] = animate(smooth[0], colorX, 0.02f * deltaTime)
+                    smooth[1] = animate(smooth[1], colorY, 0.02f * deltaTime)
+                    smooth[2] = animate(smooth[2], colorX + colorWidth, 0.02f * deltaTime)
+                    smooth[3] = animate(smooth[3], colorY + colorHeight, 0.02f * deltaTime)
+                    drawRoundedOutline(
+                        smooth[0],
+                        smooth[1],
+                        smooth[2],
+                        smooth[3],
+                        10f,
+                        3f,
+                        Color(startColor).brighter().rgb
+                    )
+                }
+
+                Fonts.InterBold.InterBold26.drawCenteredStringShadow(
+                    colorName,
+                    colorX + colorWidth / 2f,
+                    colorY + colorHeight / 2f - Fonts.InterBold.InterBold26.height / 2,
+                    Color.WHITE.rgb
+                )
+            }
+            colorX += colorWidth + 10
+            if ((i + 1) % colorsPerRow == 0) {
+                colorX = colorXStart
+                colorY += colorHeight + 10
+            }
+        }
+
+        drawColorExtras(mouseX, mouseY, alpha, colorXStart, drag!!.y + 60, colorWidth)
     }
 
     /**
-     * Check if user interacted with the "Side" toggle or fadeSpeed slider in the "Color" category.
+     * The color hex text field is placed further below the "Side" button
+     * and is centered horizontally. We'll give it a ~20 px gap below the "Side" button.
      */
+    private fun getColorHexFieldArea(): Quad {
+        val sideBtnX = drag!!.x + 25 + (80f + 10) * 5
+        val sideBtnY = drag!!.y + 60
+        val sideBtnW = 50f
+        val sideBtnH = 15f
+
+        val textW = 80f
+        val textH = 14f
+
+        val x = sideBtnX + (sideBtnW - textW) / 2f
+        val y = sideBtnY - textH - 20
+        return Quad(x, y, textW, textH)
+    }
+
+    data class Quad(val x: Float, val y: Float, val w: Float, val h: Float)
+
+    /**
+     * Draw fade-speed slider and toggle button for the "Color" category, pinned at a fixed Y.
+     */
+    private fun drawColorExtras(
+        mouseX: Int,
+        mouseY: Int,
+        alpha: Int,
+        colorXStart: Float,
+        buttonBaseY: Float,
+        colorWidth: Float
+    ) {
+        val buttonX = colorXStart + (colorWidth + 10) * 5
+        val buttonY = buttonBaseY
+        val buttonWidth = 50f
+        val buttonHeight = 15f
+        val fadeSpeedSliderX = drag!!.x + 25
+        val fadeSpeedSliderY = drag!!.y + 20
+        val fadeSpeedSliderWidth = 80f
+        val fadeSpeedSliderHeight = 10f
+
+        // Fade speed slider
+        DrRenderUtils.drawRect2(
+            fadeSpeedSliderX.toDouble(),
+            fadeSpeedSliderY.toDouble(),
+            fadeSpeedSliderWidth.toDouble(),
+            fadeSpeedSliderHeight.toDouble(),
+            Color(60, 60, 60).rgb
+        )
+        val sliderValue = (ThemeFadeSpeed / 10f) * fadeSpeedSliderWidth
+        DrRenderUtils.drawRect2(
+            fadeSpeedSliderX.toDouble(),
+            fadeSpeedSliderY.toDouble(),
+            sliderValue.toDouble(),
+            fadeSpeedSliderHeight.toDouble(),
+            Color(100, 150, 100).rgb
+        )
+        Fonts.InterBold.InterBold26.drawString(
+            "Speed: $ThemeFadeSpeed",
+            fadeSpeedSliderX + 5,
+            fadeSpeedSliderY - 15,
+            Color.WHITE.rgb
+        )
+
+        val toggleColor = if (updown) Color(0, 150, 0).rgb else Color(150, 0, 0).rgb
+        DrRenderUtils.drawRect2(
+            buttonX.toDouble(),
+            buttonY.toDouble(),
+            buttonWidth.toDouble(),
+            buttonHeight.toDouble(),
+            toggleColor
+        )
+        Fonts.InterBold.InterBold26.drawString(
+            "Side",
+            buttonX + 2,
+            buttonY + 2,
+            Color.WHITE.rgb
+        )
+
+        val (hexX, hexY, hexW, hexH) = getColorHexFieldArea()
+        DrRenderUtils.drawRect2(hexX.toDouble(), hexY.toDouble(), hexW.toDouble(), hexH.toDouble(), Color(40, 40, 40, alpha).rgb)
+        if (colorHexFocused) {
+            drawRoundedOutline(hexX, hexY, hexX + hexW, hexY + hexH, 2f, 1.5f, Color.WHITE.rgb)
+        }
+        Fonts.InterBold.InterBold26.drawString(colorHexInput, hexX + 2, hexY + 2, Color.WHITE.rgb)
+        Fonts.InterBold.InterBold26.drawString("Hex:", hexX, hexY - 12, DrRenderUtils.applyOpacity(-1, alpha / 255f))
+    }
+
     private fun checkColorCategoryInteractions(mouseX: Int, mouseY: Int) {
         val buttonX = drag!!.x + 25 + (80f + 10) * 5
         val buttonY = drag!!.y + 60
-        val buttonW = 80f
-        val buttonH = 20f
+        val buttonW = 50f
+        val buttonH = 15f
         val hoveredToggle = DrRenderUtils.isHovering(buttonX, buttonY, buttonW, buttonH, mouseX, mouseY)
         if (hoveredToggle) {
             updown = !updown
         }
 
+        // Fade speed slider
         val sliderX = drag!!.x + 25
         val sliderY = drag!!.y + 20
         val sliderW = 80f
@@ -455,161 +647,12 @@ class SideGui : GuiPanel() {
         }
     }
 
-    private fun handleMouseWheel() {
-        val wheel = Mouse.getDWheel()
-        if (wheel != 0) {
-            scroll += if (wheel > 0) -30f else 30f
-            scroll = max(-200f, min(0f, scroll))
-        }
-    }
-
-    private fun updateAnimations(mouseX: Int, mouseY: Int) {
-        clickAnimation?.setDirection(if (focused) Direction.FORWARDS else Direction.BACKWARDS)
-
-        val hovering = DrRenderUtils.isHovering(drag!!.x, drag!!.y, rectWidth, rectHeight, mouseX, mouseY)
-        hoverAnimation?.setDirection(if (hovering) Direction.FORWARDS else Direction.BACKWARDS)
-
-        val sr = ScaledResolution(MinecraftInstance.mc)
-        val stillAnimating = !timerUtil!!.hasTimeElapsed(6000) ||
-                (!hoverAnimation!!.isDone || (hoverAnimation!!.isDone && hoverAnimation!!.direction == Direction.FORWARDS))
-
-        textAnimation?.setDirection(if (!focused && stillAnimating) Direction.FORWARDS else Direction.BACKWARDS)
-
-        if (!clickAnimation!!.isDone) {
-            drag!!.x = interpolateFloat(
-                sr.scaledWidth - 30f,
-                if (focused) sr.scaledWidth / 2f - rectWidth / 2f else drag!!.x,
-                clickAnimation!!.output.toFloat().toDouble()
-            )
-            drag!!.y = interpolateFloat(
-                sr.scaledHeight / 2f - rectHeight / 2f,
-                drag!!.y,
-                clickAnimation!!.output.toFloat().toDouble()
-            )
-        }
-
-        val exceedingRightEdge = drag!!.x + rectWidth > sr.scaledWidth &&
-                (focused && clickAnimation!!.isDone && clickAnimation!!.direction == Direction.FORWARDS)
-        moveOverGradientAnimation?.setDirection(if (exceedingRightEdge) Direction.FORWARDS else Direction.BACKWARDS)
-    }
-
-    /**
-     * Draw the main panel with optional outline.
-     */
-    private fun drawMainPanel(sr: ScaledResolution, alpha: Int, mouseX: Int, mouseY: Int): Color {
-        val hoverOut = hoverAnimation?.output ?: 0.0
-        val clickOut = clickAnimation?.output ?: 0.0
-        val moveOut = moveOverGradientAnimation?.output ?: 0.0
-
-        var rectAlpha = min(
-            (185 + 30 * hoverOut + 70 * clickOut).toFloat() - (70 * moveOut).toFloat(),
-            255f
-        )
-        rectAlpha *= alpha / 255f
-
-        val mainRectColor = Color(30, 30, 30, rectAlpha.toInt())
-
-        if (focused) {
-            // Drag the window if not blocked
-            if (!draggingSlider && !clickingHeader) {
-                drag!!.onDraw(mouseX, mouseY)
-            }
-        }
-
-        drawCustomShapeWithRadius(drag!!.x, drag!!.y, rectWidth, rectHeight, 9f, mainRectColor)
-
-        // Outline around the entire SideGui if showSideOutline is true
-        if (showSideOutline) {
-            val outlineColor = generateColor(0)
-            val thickness = 1f
-            drawRoundedOutline(
-                drag!!.x,
-                drag!!.y,
-                drag!!.x + rectWidth,
-                drag!!.y + rectHeight,
-                9f,
-                thickness,
-                outlineColor.rgb
-            )
-        }
-        return mainRectColor
-    }
-
-    /**
-     * Draw the header tabs (UI, Configs, Color) in a centered way.
-     */
-    private fun drawCategoryTabs(mouseX: Int, mouseY: Int, alpha: Int) {
-        val textColor = DrRenderUtils.applyOpacity(-1, alpha / 255f)
-        val totalWidth = 4 * 60f + 3 * 10f // 4 categories
-        val startX = drag!!.x + rectWidth / 2f - totalWidth / 2f
-        val yVal = drag!!.y + 15
-
-        var xOffset = 0f
-        categories.forEachIndexed { index, cat ->
-            val xVal = startX + xOffset
-            val hovered = DrRenderUtils.isHovering(
-                xVal - 30, yVal - 5,
-                60f,
-                (Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.height + 10).toFloat(),
-                mouseX, mouseY
-            )
-
-            val catHoverAnim = categoryAnimation[cat]?.get(0)
-            val catEnableAnim = categoryAnimation[cat]?.get(1)
-
-            catHoverAnim?.setDirection(if (hovered) Direction.FORWARDS else Direction.BACKWARDS)
-            catEnableAnim?.setDirection(if (currentCategory == cat) Direction.FORWARDS else Direction.BACKWARDS)
-
-            val baseColor = Color(45, 45, 45, alpha)
-            val colorToInterpolate = DrRenderUtils.applyOpacity(generateColor(index).rgb, alpha / 255f)
-
-            val hoverOut = catHoverAnim?.output?.toFloat() ?: 0f
-            val enableOut = catEnableAnim?.output?.toFloat() ?: 0f
-
-            val colorToInterpolateAsColor = Color(colorToInterpolate, true)
-
-            val hoverColor: Color = DrRenderUtils.interpolateColorC(
-                baseColor,
-                DrRenderUtils.brighter(baseColor, 0.8f),
-                hoverOut
-            )
-            val finalColor: Color = DrRenderUtils.interpolateColorC(hoverColor, colorToInterpolateAsColor, enableOut)
-
-            drawCustomShapeWithRadius(
-                xVal - 30, yVal - 5,
-                60f,
-                (Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.height + 10).toFloat(),
-                6f,
-                finalColor
-            )
-
-            Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawCenteredString(cat, xVal, yVal, textColor)
-            xOffset += 60f + 10f
-        }
-    }
-
-    /**
-     * Draw "UI" category content.
-     */
-    private fun drawUiCategory(alpha: Int) {
-        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
-            "Not Finished - Coming Soon",
-            drag!!.x + rectWidth / 2,
-            drag!!.y + rectHeight / 2,
-            DrRenderUtils.applyOpacity(-1, alpha / 255f)
-        )
-    }
-
-    /**
-     * Draw the "Configs" category content (ONLINE or LOCAL).
-     */
     private fun drawConfigsCategory(mouseX: Int, mouseY: Int, alpha: Int) {
         val buttonToggleWidth = 70f
         val buttonToggleHeight = 20f
         val buttonSpacing = 10f
 
         val xStart = drag!!.x + 25
-        // Place "OPEN FOLDER" above the "ONLINE"/"LOCAL" buttons
         val openFolderButtonWidth = buttonToggleWidth * 2
         val openFolderButtonX = xStart
         val openFolderButtonY = drag!!.y + 30
@@ -626,14 +669,13 @@ class SideGui : GuiPanel() {
             buttonToggleHeight.toDouble(),
             openFolderButtonColor
         )
-        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
+        Fonts.InterBold.InterBold26.drawString(
             "OPEN FOLDER",
             openFolderButtonX + 10,
             openFolderButtonY + 5,
             DrRenderUtils.applyOpacity(-1, alpha / 255f)
         )
 
-        // "ONLINE" and "LOCAL" below
         val onlineButtonX = xStart
         val onlineButtonY = openFolderButtonY + buttonToggleHeight + buttonSpacing
         val isOnlineHovered = DrRenderUtils.isHovering(
@@ -651,7 +693,7 @@ class SideGui : GuiPanel() {
             buttonToggleWidth.toDouble(), buttonToggleHeight.toDouble(),
             onlineButtonColor
         )
-        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
+        Fonts.InterBold.InterBold26.drawString(
             "ONLINE",
             onlineButtonX + 10,
             onlineButtonY + 5,
@@ -675,14 +717,13 @@ class SideGui : GuiPanel() {
             buttonToggleWidth.toDouble(), buttonToggleHeight.toDouble(),
             localButtonColor
         )
-        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
+        Fonts.InterBold.InterBold26.drawString(
             "LOCAL",
             localButtonX + 10,
             localButtonY + 5,
             DrRenderUtils.applyOpacity(-1, alpha / 255f)
         )
 
-        // Mouse click detection for the above buttons
         if (!wasMousePressed && Mouse.isButtonDown(0)) {
             when {
                 isOpenFolderHovered -> openFolder()
@@ -693,13 +734,9 @@ class SideGui : GuiPanel() {
         }
         if (!Mouse.isButtonDown(0)) wasMousePressed = false
 
-        // Now draw the actual config list
         drawConfigList(mouseX, mouseY, alpha, localButtonY + buttonToggleHeight + buttonSpacing)
     }
 
-    /**
-     * Adjusted config list, starting below the toggle buttons.
-     */
     private fun drawConfigList(mouseX: Int, mouseY: Int, alpha: Int, startY: Float) {
         var configX = drag!!.x + 25
         var configY = startY
@@ -714,7 +751,7 @@ class SideGui : GuiPanel() {
                 for (file in localConfigs) {
                     drawSingleConfigButton(mouseX, mouseY, alpha, configX, configY, buttonWidth, buttonHeight) {
                         val configName = file.name.removeSuffix(".txt")
-                        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
+                        Fonts.InterBold.InterBold26.drawString(
                             configName,
                             configX + 5,
                             configY + 5,
@@ -735,7 +772,7 @@ class SideGui : GuiPanel() {
                     }
                 }
             } else {
-                Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
+                Fonts.InterBold.InterBold26.drawString(
                     "No local configurations available.",
                     configX,
                     configY,
@@ -743,12 +780,11 @@ class SideGui : GuiPanel() {
                 )
             }
         } else {
-            // Online configs
             if (!autoSettingsList.isNullOrEmpty()) {
                 for (i in autoSettingsList!!.indices) {
                     val autoSetting = autoSettingsList!![i]
                     drawSingleConfigButton(mouseX, mouseY, alpha, configX, configY, buttonWidth, buttonHeight) {
-                        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
+                        Fonts.InterBold.InterBold26.drawString(
                             autoSetting.name,
                             configX + 5,
                             configY + 5,
@@ -769,7 +805,7 @@ class SideGui : GuiPanel() {
                     }
                 }
             } else {
-                Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
+                Fonts.InterBold.InterBold26.drawString(
                     "No online configurations available.",
                     configX,
                     configY,
@@ -823,142 +859,160 @@ class SideGui : GuiPanel() {
         }
     }
 
-    /**
-     * Draw "Color" category content.
-     */
-    private fun drawColorCategory(mouseX: Int, mouseY: Int, alpha: Int) {
-        val themeColors = arrayOf(
-            "Zywl", "Water", "Magic", "DarkNight", "Sun",
-            "Tree", "Flower", "Loyoi", "Cero", "Soniga",
-            "May", "Mint", "Azure", "Rainbow", "Astolfo",
-            "Pumpkin", "Polarized", "Sundae", "Terminal", "Coral",
-            "Fire", "Aqua", "Peony"
+    private fun drawUiCategory(alpha: Int) {
+        Fonts.InterBold.InterBold26.drawString(
+            "Not Finished - Coming Soon",
+            drag!!.x + rectWidth / 2,
+            drag!!.y + rectHeight / 2,
+            DrRenderUtils.applyOpacity(-1, alpha / 255f)
         )
+    }
 
-        val colorXStart = drag!!.x + 25
-        val colorYStart = drag!!.y + 60 + animScroll
-        val colorWidth = 80f
-        val colorHeight = 60f
-        val colorsPerRow = 5
-        var colorX = colorXStart
-        var colorY = colorYStart
+    private fun handleMouseWheel() {
+        val wheel = Mouse.getDWheel()
+        if (wheel != 0) {
+            scroll += if (wheel > 0) -30f else 30f
+            scroll = max(-200f, min(0f, scroll))
+        }
+    }
 
-        val maxVisibleHeight = drag!!.y + rectHeight - 60
+    private fun updateAnimations(mouseX: Int, mouseY: Int) {
+        clickAnimation?.setDirection(if (focused) Direction.FORWARDS else Direction.BACKWARDS)
 
-        themeColors.forEachIndexed { i, colorName ->
-            if (colorY + colorHeight > drag!!.y + 60 && colorY < maxVisibleHeight) {
-                val isHovered = DrRenderUtils.isHovering(colorX, colorY, colorWidth, colorHeight, mouseX, mouseY)
-                if (isHovered && Mouse.isButtonDown(0)) {
-                    ClientColorMode = colorName
-                    fileManager.saveConfig(fileManager.colorThemeConfig, true)
-                    LOGGER.info("Saved color theme configuration: $colorName")
-                }
+        val hovering = DrRenderUtils.isHovering(drag!!.x, drag!!.y, rectWidth, rectHeight, mouseX, mouseY)
+        hoverAnimation?.setDirection(if (hovering) Direction.FORWARDS else Direction.BACKWARDS)
 
-                val startColor = getColorFromName(colorName, 0).rgb
-                val endColor = getColorFromName(colorName, 180).rgb
-                drawGradientRect(
-                    colorX.toInt(),
-                    colorY.toInt(),
-                    (colorX + colorWidth).toInt(),
-                    (colorY + colorHeight).toInt(),
-                    startColor, endColor
-                )
+        val sr = ScaledResolution(MinecraftInstance.mc)
+        val stillAnimating = !timerUtil!!.hasTimeElapsed(6000) ||
+                (!hoverAnimation!!.isDone || (hoverAnimation!!.isDone && hoverAnimation!!.direction == Direction.FORWARDS))
 
-                val isSelected = (ClientColorMode == colorName)
-                if (isSelected) {
-                    smooth[0] = animate(smooth[0], colorX, 0.02f * deltaTime)
-                    smooth[1] = animate(smooth[1], colorY, 0.02f * deltaTime)
-                    smooth[2] = animate(smooth[2], colorX + colorWidth, 0.02f * deltaTime)
-                    smooth[3] = animate(smooth[3], colorY + colorHeight, 0.02f * deltaTime)
-                    drawRoundedOutline(
-                        smooth[0],
-                        smooth[1],
-                        smooth[2],
-                        smooth[3],
-                        10f,
-                        3f,
-                        Color(startColor).brighter().rgb
-                    )
-                }
+        textAnimation?.setDirection(if (!focused && stillAnimating) Direction.FORWARDS else Direction.BACKWARDS)
 
-                Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawCenteredString(
-                    colorName,
-                    colorX + colorWidth / 2f,
-                    colorY + colorHeight / 2f - Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.height / 2,
-                    Color.WHITE.rgb
-                )
-            }
-            colorX += colorWidth + 10
-            if ((i + 1) % colorsPerRow == 0) {
-                colorX = colorXStart
-                colorY += colorHeight + 10
+        if (!clickAnimation!!.isDone) {
+            drag!!.x = interpolateFloat(
+                sr.scaledWidth - 30f,
+                if (focused) sr.scaledWidth / 2f - rectWidth / 2f else drag!!.x,
+                clickAnimation!!.output.toFloat().toDouble()
+            )
+            drag!!.y = interpolateFloat(
+                sr.scaledHeight / 2f - rectHeight / 2f,
+                drag!!.y,
+                clickAnimation!!.output.toFloat().toDouble()
+            )
+        }
+
+        val exceedingRightEdge = drag!!.x + rectWidth > sr.scaledWidth &&
+                (focused && clickAnimation!!.isDone && clickAnimation!!.direction == Direction.FORWARDS)
+        moveOverGradientAnimation?.setDirection(if (exceedingRightEdge) Direction.FORWARDS else Direction.BACKWARDS)
+    }
+
+    private fun drawMainPanel(sr: ScaledResolution, alpha: Int, mouseX: Int, mouseY: Int): Color {
+        val hoverOut = hoverAnimation?.output ?: 0.0
+        val clickOut = clickAnimation?.output ?: 0.0
+        val moveOut = moveOverGradientAnimation?.output ?: 0.0
+
+        var rectAlpha = min(
+            (185 + 30 * hoverOut + 70 * clickOut).toFloat() - (70 * moveOut).toFloat(),
+            255f
+        )
+        rectAlpha *= alpha / 255f
+
+        val mainRectColor = Color(30, 30, 30, rectAlpha.toInt())
+
+        if (focused) {
+            if (!draggingSlider && !clickingHeader) {
+                drag!!.onDraw(mouseX, mouseY)
             }
         }
 
-        drawColorExtras(mouseX, mouseY, alpha, colorXStart, drag!!.y + 60, colorWidth)
+        drawCustomShapeWithRadius(drag!!.x, drag!!.y, rectWidth, rectHeight, 9f, mainRectColor)
+
+        if (showSideOutline) {
+            val outlineColor = generateColor(0)
+            val thickness = 1f
+            drawRoundedOutline(
+                drag!!.x,
+                drag!!.y,
+                drag!!.x + rectWidth,
+                drag!!.y + rectHeight,
+                9f,
+                thickness,
+                outlineColor.rgb
+            )
+        }
+        return mainRectColor
     }
 
-    /**
-     * Draw fade-speed slider and toggle button for the "Color" category, pinned at a fixed Y.
-     */
-    private fun drawColorExtras(
-        mouseX: Int,
-        mouseY: Int,
-        alpha: Int,
-        colorXStart: Float,
-        buttonBaseY: Float,
-        colorWidth: Float
-    ) {
-        val buttonX = colorXStart + (colorWidth + 10) * 5
-        val buttonY = buttonBaseY
-        val buttonWidth = 50f
-        val buttonHeight = 15f
-        val fadeSpeedSliderX = drag!!.x + 25
-        val fadeSpeedSliderY = drag!!.y + 20
-        val fadeSpeedSliderWidth = 80f
-        val fadeSpeedSliderHeight = 10f
+    private fun drawCategoryTabs(mouseX: Int, mouseY: Int, alpha: Int) {
+        val textColor = DrRenderUtils.applyOpacity(-1, alpha / 255f)
+        val totalWidth = 4 * 60f + 3 * 10f
+        val startX = drag!!.x + rectWidth / 2f - totalWidth / 2f
+        val yVal = drag!!.y + 15
 
-        // Fade speed slider background
-        DrRenderUtils.drawRect2(
-            fadeSpeedSliderX.toDouble(),
-            fadeSpeedSliderY.toDouble(),
-            fadeSpeedSliderWidth.toDouble(),
-            fadeSpeedSliderHeight.toDouble(),
-            Color(60, 60, 60).rgb
-        )
+        var xOffset = 0f
+        categories.forEachIndexed { index, cat ->
+            val xVal = startX + xOffset
+            val hovered = DrRenderUtils.isHovering(
+                xVal - 30, yVal - 5,
+                60f,
+                (Fonts.InterBold.InterBold26.height + 10).toFloat(),
+                mouseX, mouseY
+            )
 
-        // Filled portion of the slider
-        val sliderValue = (ThemeFadeSpeed / 10f) * fadeSpeedSliderWidth
-        DrRenderUtils.drawRect2(
-            fadeSpeedSliderX.toDouble(),
-            fadeSpeedSliderY.toDouble(),
-            sliderValue.toDouble(),
-            fadeSpeedSliderHeight.toDouble(),
-            Color(100, 150, 100).rgb
-        )
+            val catHoverAnim = categoryAnimation[cat]?.get(0)
+            val catEnableAnim = categoryAnimation[cat]?.get(1)
 
-        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
-            "Speed: $ThemeFadeSpeed",
-            fadeSpeedSliderX + 5,
-            fadeSpeedSliderY - 15,
-            Color.WHITE.rgb
-        )
+            catHoverAnim?.setDirection(if (hovered) Direction.FORWARDS else Direction.BACKWARDS)
+            catEnableAnim?.setDirection(if (currentCategory == cat) Direction.FORWARDS else Direction.BACKWARDS)
 
-        // "Side" toggle button
-        val toggleColor = if (updown) Color(0, 150, 0).rgb else Color(150, 0, 0).rgb
-        DrRenderUtils.drawRect2(
-            buttonX.toDouble(),
-            buttonY.toDouble(),
-            buttonWidth.toDouble(),
-            buttonHeight.toDouble(),
-            toggleColor
-        )
-        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
-            "Side",
-            buttonX + 2,
-            buttonY + 2,
-            Color.WHITE.rgb
-        )
+            val baseColor = Color(45, 45, 45, alpha)
+            val colorToInterpolate = DrRenderUtils.applyOpacity(generateColor(index).rgb, alpha / 255f)
+
+            val hoverOut = catHoverAnim?.output?.toFloat() ?: 0f
+            val enableOut = catEnableAnim?.output?.toFloat() ?: 0f
+
+            val colorToInterpolateAsColor = Color(colorToInterpolate, true)
+
+            val hoverColor: Color = DrRenderUtils.interpolateColorC(
+                baseColor,
+                DrRenderUtils.brighter(baseColor, 0.8f),
+                hoverOut
+            )
+            val finalColor: Color = DrRenderUtils.interpolateColorC(hoverColor, colorToInterpolateAsColor, enableOut)
+
+            drawCustomShapeWithRadius(
+                xVal - 30, yVal - 5,
+                60f,
+                (Fonts.InterBold.InterBold26.height + 10).toFloat(),
+                6f,
+                finalColor
+            )
+
+            Fonts.InterBold.InterBold26.drawCenteredString(cat, xVal, yVal, textColor)
+            xOffset += 60f + 10f
+        }
+    }
+
+    private fun checkCategoryClick(mouseX: Int, mouseY: Int) {
+        val totalWidth = 4 * 60f + 3 * 10f
+        val startX = drag!!.x + rectWidth / 2f - totalWidth / 2f
+        val yVal = drag!!.y + 15
+
+        var xOffset = 0f
+        categories.forEach { cat ->
+            val xVal = startX + xOffset
+            val hovered = DrRenderUtils.isHovering(
+                xVal - 30, yVal - 5,
+                60f,
+                (Fonts.InterBold.InterBold26.height + 10).toFloat(),
+                mouseX, mouseY
+            )
+            if (hovered) {
+                currentCategory = cat
+                return
+            }
+            xOffset += 60f + 10f
+        }
     }
 
     /**
@@ -975,7 +1029,7 @@ class SideGui : GuiPanel() {
             val hovered = DrRenderUtils.isHovering(
                 xVal - 30, yVal - 5,
                 60f,
-                (Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.height + 10).toFloat(),
+                (Fonts.InterBold.InterBold26.height + 10).toFloat(),
                 mouseX, mouseY
             )
             if (hovered) {

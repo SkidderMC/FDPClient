@@ -64,7 +64,7 @@ class SimpleFontManager private constructor() : FontManager {
          */
         @Throws(IOException::class)
         private fun readFontFromLocal(fontType: FontType): Font {
-            val fontFile = File(FileManager.fontsDir, fontType.fileName())
+            val fontFile = File(FileManager.fontsDir, fontType.fileName)
             if (!fontFile.exists()) {
                 throw IOException("Couldn't find local font file: ${fontFile.absolutePath}")
             }

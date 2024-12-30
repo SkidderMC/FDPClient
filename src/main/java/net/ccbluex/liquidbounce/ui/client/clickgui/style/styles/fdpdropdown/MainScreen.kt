@@ -118,10 +118,10 @@ class MainScreen(private val category: Category) : Screen {
         }
 
         // 3) Draw the category's name
-        Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.drawString(
+        Fonts.SFBOLD.SFBOLD_26.drawString(
             category.name,
             x + 5,
-            y + Fonts.SFBOLD.SFBOLD_26.SFBOLD_26.getMiddleOfBox(categoryRectHeight),
+            y + Fonts.SFBOLD.SFBOLD_26.getMiddleOfBox(categoryRectHeight),
             textColor
         )
 
@@ -135,19 +135,19 @@ class MainScreen(private val category: Category) : Screen {
             "other"    -> "F"
             else       -> ""
         }
-        Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.drawString(
+        Fonts.ICONFONT.ICONFONT_20.drawString(
             icon,
-            x + rectWidth - (Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.stringWidth(icon) + 5),
-            y + Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.getMiddleOfBox(categoryRectHeight),
+            x + rectWidth - (Fonts.ICONFONT.ICONFONT_20.stringWidth(icon) + 5),
+            y + Fonts.ICONFONT.ICONFONT_20.getMiddleOfBox(categoryRectHeight),
             textColor
         )
 
         // If category name is "Client", draw something else (example from your code):
         if (category.name.equals("Client", ignoreCase = true)) {
-            Fonts.CheckFont.CheckFont_20.CheckFont_20.drawString(
+            Fonts.CheckFont.CheckFont_20.drawString(
                 "b",
-                x + rectWidth - (Fonts.CheckFont.CheckFont_20.CheckFont_20.stringWidth("b") + 5),
-                y + Fonts.ICONFONT.ICONFONT_20.ICONFONT_20.getMiddleOfBox(categoryRectHeight),
+                x + rectWidth - (Fonts.CheckFont.CheckFont_20.stringWidth("b") + 5),
+                y + Fonts.ICONFONT.ICONFONT_20.getMiddleOfBox(categoryRectHeight),
                 textColor
             )
         }

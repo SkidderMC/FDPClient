@@ -459,7 +459,9 @@ class PasswordField : Gui {
 
         // Placeholder if empty and not focused
         if (!isFocused && placeholder != null && displayText.isEmpty()) {
-            fontRenderer?.drawCenteredString(placeholder, placeHolderTextX.toFloat(), drawY.toFloat(), textCol)
+            placeholder?.let { currentPlaceholder ->
+                fontRenderer?.drawCenteredString(currentPlaceholder, placeHolderTextX.toFloat(), drawY.toFloat(), textCol)
+            }
         }
 
         if (k > trimmed.length) {
