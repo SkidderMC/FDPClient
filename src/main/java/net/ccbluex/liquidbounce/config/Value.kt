@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.config
 
-import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
@@ -17,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.minecraft.client.gui.FontRenderer
+import java.awt.Color
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -418,6 +418,42 @@ open class NumberValue(
         set(value - increment)
     }
 }
+
+class ColorValue(
+    val nameVal: String,
+    initialColor: Color,
+    val module: Any?
+) {
+    var hue = 0f
+    var saturation = 1f
+    var brightness = 1f
+    var alpha = 1f
+    var rainbow = false
+
+    init {
+        set(initialColor)
+    }
+
+    fun get(): Color {
+        val base = Color.getHSBColor(hue, saturation, brightness)
+        val finalAlpha = (alpha * 255).toInt().coerceIn(0, 255)
+        return Color(base.red, base.green, base.blue, finalAlpha)
+    }
+
+    fun set(color: Color) {
+        val hsb = Color.RGBtoHSB(color.red, color.green, color.blue, null)
+        hue = hsb[0]
+        saturation = hsb[1]
+        brightness = hsb[2]
+        alpha = color.alpha / 255f
+    }
+}
+
+val customBgColorValue = ColorValue(
+    "CustomBG",
+    Color(32, 32, 64),
+    null
+)
 
 
 fun int(
