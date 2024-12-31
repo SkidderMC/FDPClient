@@ -99,6 +99,8 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("HEAD"), cancellable = true)
     private <T extends EntityLivingBase> void injectChamsPre(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
         final Chams chams = Chams.INSTANCE;
+        final ESP esp = ESP.INSTANCE;
+        boolean shouldRender = chams.handleEvents() && chams.getTargets() && EntityUtils.INSTANCE.isSelected(entity, false) || esp.handleEvents() && esp.shouldRender(entity) && esp.getMode().equals("Gaussian");
         final NoRender noRender = NoRender.INSTANCE;
 
         if (noRender.handleEvents() && noRender.shouldStopRender(entity)) {
@@ -106,21 +108,23 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             return;
         }
 
-        if (chams.getState() && chams.getTargets() && chams.getLegacyMode() && ((chams.getLocalPlayerValue() && entity == mc.thePlayer) || EntityUtils.INSTANCE.isSelected(entity, false))) {
+        if (shouldRender) {
             glEnable(GL_POLYGON_OFFSET_FILL);
-            glPolygonOffset(1.0F, -1000000F);
+            glPolygonOffset(1f, -1000000F);
         }
     }
 
     @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At("RETURN"))
     private <T extends EntityLivingBase> void injectChamsPost(T entity, double x, double y, double z, float entityYaw, float partialTicks, CallbackInfo callbackInfo) {
         final Chams chams = Chams.INSTANCE;
+        final ESP esp = ESP.INSTANCE;
+        boolean shouldRender = chams.handleEvents() && chams.getTargets() && EntityUtils.INSTANCE.isSelected(entity, false) || esp.handleEvents() && esp.shouldRender(entity) && esp.getMode().equals("Gaussian");
         final NoRender noRender = NoRender.INSTANCE;
 
-        if (chams.getState() && chams.getTargets() && chams.getLegacyMode() && ((chams.getLocalPlayerValue() && entity == mc.thePlayer) || EntityUtils.INSTANCE.isSelected(entity, false))) {
+        if (shouldRender) {
             if (!(noRender.getState() && noRender.shouldStopRender(entity))) {
-                glPolygonOffset(1.0F, 1000000F);
-                glDisable(GL_POLYGON_OFFSET_FILL);
+            glPolygonOffset(1f, 1000000F);
+            glDisable(GL_POLYGON_OFFSET_FILL);
             }
         }
     }
@@ -298,8 +302,16 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         boolean chamsFlag = (chams.handleEvents() && chams.getTargets() && !chams.getLegacyMode() && ((chams.getLocalPlayerValue() && entitylivingbaseIn == mc.thePlayer) || EntityUtils.INSTANCE.isSelected(entitylivingbaseIn, false)));
         boolean semiVisible = !visible && (!entitylivingbaseIn.isInvisibleToPlayer(mc.thePlayer) || (trueSight.handleEvents() && trueSight.getEntities()));
         if(visible || semiVisible) {
-            if(!this.bindEntityTexture(entitylivingbaseIn))
-                return;
+            final ESP esp = ESP.INSTANCE;
+            boolean shouldRenderGaussianESP = esp.handleEvents() && esp.shouldRender(entitylivingbaseIn) && esp.getMode().equals("Gaussian");
+            if (!shouldRenderGaussianESP) {
+                if (!bindEntityTexture(entitylivingbaseIn)) {
+                    return;
+                }
+            } else {
+                bindTexture(0);
+                RenderUtils.INSTANCE.glColor(esp.getColor(entitylivingbaseIn));
+            }
 
             if (semiVisible) {
                 pushMatrix();
@@ -310,8 +322,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                 alphaFunc(516, 0.003921569F);
             }
 
-            final ESP esp = ESP.INSTANCE;
-            if (esp.handleEvents() && esp.shouldRender(entitylivingbaseIn) && EntityUtils.INSTANCE.isSelected(entitylivingbaseIn, false)) {
+            if (esp.handleEvents() && esp.shouldRender(entitylivingbaseIn)) {
                 boolean fancyGraphics = mc.gameSettings.fancyGraphics;
                 mc.gameSettings.fancyGraphics = false;
 
@@ -439,6 +450,10 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                 glPolygonOffset(1.0f, -1000000.0f);
                 glDisable(polygonOffsetLine);
                 glPopMatrix();
+            }
+
+            if (shouldRenderGaussianESP) {
+                resetColor();
             }
 
             if (semiVisible) {

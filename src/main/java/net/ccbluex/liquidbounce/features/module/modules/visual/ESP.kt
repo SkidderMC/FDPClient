@@ -40,7 +40,7 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
 
     val mode by choices(
         "Mode",
-        arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "Outline", "Glow"), "Box"
+        arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "Gaussian", "Outline", "Glow"), "Box"
     )
 
     val outlineWidth by float("Outline-Width", 3f, 0.5f..5f) { mode == "Outline" }
@@ -54,7 +54,7 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
 
     private val espColorMode by choices("ESP-Color", arrayOf("Custom", "Rainbow"), "Custom")
     private val espColor = ColorSettingsInteger(this, "ESP", withAlpha = false)
-    { espColorMode == "Custom" }.with(255, 255, 255)
+    { espColorMode in arrayOf("Custom", "Gaussian") }.with(255, 255, 255)
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
         override fun onUpdate(value: Int) {
@@ -72,17 +72,12 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
             field = if (value <= 0.0) maxRenderDistance.toDouble().pow(2.0) else value
         }
 
-    private val colorTeam by boolean("Team", false)
+    private val colorTeam by boolean("TeamColor", false)
     private val bot by boolean("Bots", true)
 
     var renderNameTags = true
 
-    private val entities by EntityLookup<EntityLivingBase>()
-        .filter { bot || !isBot(it) }
-        .filter { isSelected(it, false) }
-        .filter { !onLook || isLookingOnEntities(it, maxAngleDifference.toDouble()) }
-        .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistanceSq }
-        .filter { thruBlocks || isEntityHeightVisible(it) }
+    private val entities by EntityLookup<EntityLivingBase>().filter { shouldRender(it) }
 
     val onRender3D = handler<Render3DEvent> {
         if (entities.isEmpty())
@@ -222,7 +217,13 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
     }
 
     fun shouldRender(entity: EntityLivingBase): Boolean {
-        return (bot || !isBot(entity))
+        val player = mc.thePlayer ?: return false
+
+        return (player.getDistanceSqToEntity(entity) <= maxRenderDistanceSq
+                && (thruBlocks || isEntityHeightVisible(entity))
+                && (!onLook || isLookingOnEntities(entity, maxAngleDifference.toDouble()))
+                && isSelected(entity, false)
+                && (bot || !isBot(entity)))
     }
 
 }
