@@ -11,7 +11,6 @@ import kotlinx.coroutines.sync.withLock
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
 import java.awt.image.BufferedImage
@@ -83,7 +82,7 @@ object APIConnectorUtils {
                             val bufferedImage: BufferedImage = ImageIO.read(imageBytes)
                                 ?: throw IOException("Failed to decode image: $imageUrl")
 
-                            Minecraft.getMinecraft().addScheduledTask {
+                            withContext(Dispatchers.Main) {
                                 try {
                                     val dynamicTexture = DynamicTexture(bufferedImage)
                                     val resourceLocation = MinecraftInstance.mc.textureManager.getDynamicTextureLocation(
@@ -91,10 +90,8 @@ object APIConnectorUtils {
                                         dynamicTexture
                                     )
 
-                                    runBlocking {
-                                        cacheMutex.withLock {
-                                            picturesCache[Pair(fileName, picType)] = resourceLocation
-                                        }
+                                    cacheMutex.withLock {
+                                        picturesCache[Pair(fileName, picType)] = resourceLocation
                                     }
                                     LOGGER.info("Image loaded successfully: $fileName, Type: $picType")
                                 } catch (e: Exception) {

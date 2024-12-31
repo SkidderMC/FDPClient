@@ -203,9 +203,10 @@ object FDPClient {
             registerModules()
 
             // API Connecter
-            runBlocking {
+            SharedScopes.IO.launch {
                 performAllChecksAsync()
             }
+
             runCatching {
                 // Remapper
                 loadSrg()
