@@ -7,12 +7,12 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.combat.TickBase;
+import net.ccbluex.liquidbounce.features.module.modules.other.FastPlace;
 import net.ccbluex.liquidbounce.handler.api.ClientUpdate;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.AbortBreaking;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
-import net.ccbluex.liquidbounce.features.module.modules.other.FastPlace;
 import net.ccbluex.liquidbounce.injection.forge.SplashProgressLock;
 import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration;
 import net.ccbluex.liquidbounce.ui.client.gui.GuiMainMenu;
@@ -52,7 +52,6 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.nio.ByteBuffer;
-import java.time.LocalDateTime;
 import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -70,7 +69,7 @@ public abstract class MixinMinecraft {
     public boolean skipRenderWorld;
 
     @Shadow
-    public int leftClickCounter;
+    private int leftClickCounter;
 
     @Shadow
     public MovingObjectPosition objectMouseOver;
@@ -119,6 +118,7 @@ public abstract class MixinMinecraft {
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
     private void startGame(CallbackInfo callbackInfo) throws ExecutionException, InterruptedException {
         liquidBounce$preloadFuture.get();
+
         FDPClient.INSTANCE.startClient();
     }
 
@@ -211,7 +211,6 @@ public abstract class MixinMinecraft {
         }
     }
 
-
     @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
     private void setWindowIcon(CallbackInfo callbackInfo) {
         if (Util.getOSType() != Util.EnumOS.OSX) {
@@ -228,6 +227,11 @@ public abstract class MixinMinecraft {
     @Inject(method = "shutdown", at = @At("HEAD"))
     private void shutdown(CallbackInfo callbackInfo) {
         FDPClient.INSTANCE.stopClient();
+    }
+
+    @Inject(method = "displayCrashReport", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/common/FMLCommonHandler;instance()Lnet/minecraftforge/fml/common/FMLCommonHandler;"))
+    private void injectDisplayCrashReport(CrashReport crashReport, CallbackInfo callbackInfo) {
+        MiscUtils.showErrorPopup(crashReport.getCrashCause(), "Game crashed! ", MiscUtils.generateCrashInfo());
     }
 
     @Inject(method = "clickMouse", at = @At("HEAD"))
@@ -278,6 +282,7 @@ public abstract class MixinMinecraft {
         EventManager.INSTANCE.call(new WorldEvent(p_loadWorld_1_));
     }
 
+
     @Redirect(method = "sendClickBlockToController", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isUsingItem()Z"))
     private boolean injectMultiActions(EntityPlayerSP instance) {
         ItemStack itemStack = instance.itemInUse;
@@ -297,11 +302,6 @@ public abstract class MixinMinecraft {
     @Redirect(method = "runGameLoop", at = @At(value = "INVOKE", target = "Ljava/util/Queue;isEmpty()Z"))
     private boolean injectTickBase(Queue instance) {
         return TickBase.INSTANCE.getDuringTickModification() || instance.isEmpty();
-    }
-
-    @Inject(method = "displayCrashReport", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/common/FMLCommonHandler;instance()Lnet/minecraftforge/fml/common/FMLCommonHandler;"))
-    private void injectDisplayCrashReport(CrashReport crashReport, CallbackInfo callbackInfo) {
-        MiscUtils.showErrorPopup(crashReport.getCrashCause(), "Game crashed! ", MiscUtils.generateCrashInfo());
     }
 
     @Redirect(method = {"middleClickMouse", "rightClickMouse"}, at = @At(value = "FIELD", target = "Lnet/minecraft/entity/player/InventoryPlayer;currentItem:I"))

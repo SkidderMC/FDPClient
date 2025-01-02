@@ -17,7 +17,7 @@ object LanguageManager : MinecraftInstance {
     // Current language
     private val language: String
         get() = overrideLanguage.ifBlank { mc.gameSettings.language }
-    
+
     // The game language can be overridden by the user
     var overrideLanguage = ""
 
@@ -45,7 +45,7 @@ object LanguageManager : MinecraftInstance {
     fun loadLanguages() {
         for (language in knownLanguages) {
             runCatching {
-                languageMap[language] = javaClass.getResourceAsStream("/assets/minecraft/liquidbounce/lang/$language.json")!!
+                languageMap[language] = javaClass.getResourceAsStream("/assets/minecraft/fdpclient/lang/$language.json")!!
                     .bufferedReader().use { it.decodeJson() }
             }.onSuccess {
                 LOGGER.info("Loaded language $language")
@@ -59,10 +59,10 @@ object LanguageManager : MinecraftInstance {
      * Get translation from language
      */
     fun getTranslation(key: String, vararg args: Any)
-        = languageMap[language]?.getTranslation(key, *args)
+            = languageMap[language]?.getTranslation(key, *args)
         ?: languageMap[COMMON_UNDERSTOOD_LANGUAGE]?.getTranslation(key, *args)
         ?: key
-    
+
 }
 
 class Language(val locale: String, val contributors: List<String>, val translations: Map<String, String>) {
