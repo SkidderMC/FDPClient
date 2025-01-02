@@ -29,9 +29,10 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
     var scale by float("Scale", 0.8f, 0.5f..1.5f)
     val maxElements by int("MaxElements", 15, 1..30)
     val fadeSpeed by float("FadeSpeed", 1f, 0.5f..4f)
-    val scrolls by boolean("Scrolls", true) { style == "FDP" }
-    val spacedModules by boolean("SpacedModules", false) { style == "FDP" }
+    val scrolls by boolean("Scrolls", true)
+    val spacedModules by boolean("SpacedModules", false)
     val panelsForcedInBoundaries by boolean("PanelsForcedInBoundaries", false)
+
     val categoryOutline by boolean("Header Outline", true) { style == "FDP" }
 
     val backback by boolean("Background Accent", true) { style == "FDP" }
