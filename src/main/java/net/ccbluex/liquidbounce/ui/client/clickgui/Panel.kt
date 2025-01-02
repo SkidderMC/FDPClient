@@ -155,14 +155,14 @@ abstract class Panel(val name: String, var x: Int, var y: Int, val width: Int, v
         return drawScreenAndClick(mouseX, mouseY, mouseButton)
     }
 
-    fun mouseReleased(mouseX: Int, mouseY: Int, state: Int): Boolean {
+    fun mouseReleased(mouseX: Int, mouseY: Int, button: Int): Boolean {
         if (!isVisible) return false
 
         drag = false
 
         if (!open) return false
 
-        return elements.any { it.y <= y + fade && it.mouseReleased(mouseX, mouseY, state) }
+        return elements.any { it.y <= y + fade && it.mouseReleased(mouseX, mouseY, button) }
     }
 
     fun handleScroll(mouseX: Int, mouseY: Int, wheel: Int): Boolean {
