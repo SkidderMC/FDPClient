@@ -62,7 +62,7 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
     val csgoCrosshairValue by boolean("CSGO-Crosshair", true)
 
     // WATERMAKER
-    val waterMark by choices("Watemark", arrayOf("Default", "Normal", "None"), "Default")
+    private val waterMark by choices("Watemark", arrayOf("Default", "Normal", "None"), "Default")
 
     // UI EFFECT
     val uiEffectValue by boolean("UIEffect", true)
@@ -74,15 +74,35 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
     val inventoryParticle by boolean("InventoryParticle", false)
 
     // UI
-    private val intefaceColor by boolean("Interface Color", false)
-    val colorRed by int("R", 0, 0..255) { intefaceColor }
-    val colorGreen by int("G", 160, 0..255) { intefaceColor }
-    val colorBlue by int("B", 255, 0..255) { intefaceColor }
-    private val colorRainbowValue by boolean("Rainbow", true) { intefaceColor }
+    private val interfaceColor by boolean("Interface Color", false)
+    val colorRed by int("R", 0, 0..255) { interfaceColor }
+    val colorGreen by int("G", 160, 0..255) { interfaceColor }
+    val colorBlue by int("B", 255, 0..255) { interfaceColor }
+    private val colorRainbowValue by boolean("Rainbow", true) { interfaceColor }
 
     val guiColor
         get() = if (colorRainbowValue) ColorUtils.rainbow().rgb
         else Color(colorRed, colorGreen, colorBlue).rgb
+
+    private var tickCount = 0
+    private var lastSecond = System.currentTimeMillis()
+    private val tpsSamples = ArrayDeque<Int>(5)
+    var tps: Float = 20.0f
+
+    val onTick = handler<GameTickEvent> {
+        tickCount++
+
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastSecond >= 1000) {
+            tpsSamples.add(tickCount)
+            if (tpsSamples.size > 5) {
+                tpsSamples.removeFirst()
+            }
+            tps = tpsSamples.average().toFloat().coerceIn(0.0f, 20.0f)
+            tickCount = 0
+            lastSecond = currentTime
+        }
+    }
 
     val onRender2D = handler<Render2DEvent> {
         if (mc.currentScreen is GuiHudDesigner)
@@ -141,11 +161,9 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                         posY + rectWidth / 2.0f + 1.5f + 2f,
                         ClientThemesUtils.getColor().rgb
                     )
-
                     val playerName = mc.thePlayer.name
                     val playerNameWidth = Fonts.InterMedium.InterMedium15.stringWidth(playerName)
                     val playerNameX = posX + rectWidth + iconSize * 2.5f + titleWidth + iconSize
-
                     RenderUtils.drawCustomShapeWithRadius(
                         playerNameX,
                         posY,
@@ -154,7 +172,6 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                         4.0f,
                         Color(bgColorRGB, true)
                     )
-
                     Fonts.NursultanMedium.NursultanMedium15.drawString(
                         "W",
                         playerNameX + iconSize,
@@ -168,10 +185,9 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                         -1
                     )
                     val fps = Minecraft.getDebugFPS()
-                    val fpsText = "$fps Fps"
+                    val fpsText = "$fps FPS"
                     val fpsTextWidth = Fonts.InterMedium.InterMedium15.stringWidth(fpsText)
                     val fpsX = playerNameX + rectWidth + iconSize * 2.5f + playerNameWidth + iconSize
-
                     RenderUtils.drawCustomShapeWithRadius(
                         fpsX,
                         posY,
@@ -180,7 +196,6 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                         4.0f,
                         Color(bgColorRGB, true)
                     )
-
                     Fonts.NursultanMedium.NursultanMedium18.drawString(
                         "X",
                         fpsX + iconSize,
@@ -193,11 +208,9 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                         posY + rectWidth / 2.0f + 1.5f + 2f,
                         -1
                     )
-
                     val playerPosition = "${mc.thePlayer.posX.toInt()} ${mc.thePlayer.posY.toInt()} ${mc.thePlayer.posZ.toInt()}"
                     val positionTextWidth = Fonts.InterMedium.InterMedium15.stringWidth(playerPosition)
                     val positionY = posY + rectWidth + iconSize * 2.0f + iconSize
-
                     RenderUtils.drawCustomShapeWithRadius(
                         posX,
                         positionY,
@@ -213,18 +226,21 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                         positionY + 1.5f + iconSize + 2f,
                         ClientThemesUtils.getColor().rgb
                     )
+
                     Fonts.InterMedium.InterMedium15.drawString(
                         playerPosition,
                         posX + iconSize * 1.5f + rectWidth,
                         positionY + rectWidth / 2.0f + 1.5f + 2f,
                         -1
                     )
-
-                    val ping = mc.netHandler.getPlayerInfo(mc.thePlayer.uniqueID).responseTime
+                    val ping = try {
+                        mc.netHandler.getPlayerInfo(mc.thePlayer.uniqueID).responseTime
+                    } catch (e: Exception) {
+                        0
+                    }
                     val pingText = "$ping Ping"
                     val pingTextWidth = Fonts.InterMedium.InterMedium15.stringWidth(pingText)
                     val pingX = posX + rectWidth + iconSize * 2.5f + positionTextWidth + iconSize
-
                     RenderUtils.drawCustomShapeWithRadius(
                         pingX,
                         positionY,
@@ -244,6 +260,31 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                         pingText,
                         pingX + iconSize * 1.5f + rectWidth,
                         positionY + rectWidth / 2.0f + 1.5f + 2f,
+                        -1
+                    )
+
+                    val tpsText = "TPS: %.2f".format(tps)
+                    val tpsIcon = "C"
+                    val tpsX = posX
+                    val tpsY = positionY + rectWidth + iconSize * 2.0f + 5f
+                    RenderUtils.drawCustomShapeWithRadius(
+                        tpsX,
+                        tpsY,
+                        rectWidth + iconSize * 2.5f + Fonts.InterMedium.InterMedium15.stringWidth(tpsText),
+                        rectWidth + iconSize * 2.0f,
+                        4.0f,
+                        Color(bgColorRGB, true)
+                    )
+                    Fonts.NursultanMedium.NursultanMedium18.drawString(
+                        tpsIcon,
+                        tpsX + iconSize,
+                        tpsY + 1.5f + iconSize + 2f,
+                        ClientThemesUtils.getColor().rgb
+                    )
+                    Fonts.InterMedium.InterMedium15.drawString(
+                        tpsText,
+                        tpsX + iconSize * 1.5f + rectWidth,
+                        tpsY + rectWidth / 2.0f + 1.5f + 2f,
                         -1
                     )
                 }
