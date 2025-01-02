@@ -468,11 +468,17 @@ class SideGui : GuiPanel() {
 
     private fun drawColorCategory(mouseX: Int, mouseY: Int, alpha: Int) {
         val themeColors = arrayOf(
-            "Zywl", "Water", "Magic", "DarkNight", "Sun",
-            "Tree", "Flower", "Loyoi", "Cero", "FDP",
+            "FDP", "Zywl", "Water", "Magic", "DarkNight", "Sun",
+            "Tree", "Flower", "Loyoi", "Cero",
             "May", "Mint", "Azure", "Rainbow", "Astolfo",
             "Pumpkin", "Polarized", "Sundae", "Terminal", "Coral",
-            "Fire", "Aqua", "Peony"
+            "Fire", "Aqua", "Peony", "Magics", "EveningSunshine", "LightOrange",
+            "Reef", "Amin", "MangoPulp", "MoonPurple", "Aqualicious",
+            "Stripe", "Shifter", "Quepal", "Orca", "SublimeVivid",
+            "MoonAsteroid", "SummerDog", "PinkFlavour", "SinCityRed",
+            "Timber", "PinotNoir", "DirtyFog", "Piglet", "LittleLeaf",
+            "Nelson", "TurquoiseFlow", "Purplin", "Martini", "SoundCloud",
+            "Inbox", "Amethyst", "Blush", "MochaRose"
         )
 
         val colorXStart = drag!!.x + 25
@@ -872,7 +878,7 @@ class SideGui : GuiPanel() {
         val wheel = Mouse.getDWheel()
         if (wheel != 0) {
             scroll += if (wheel > 0) -30f else 30f
-            scroll = max(-200f, min(0f, scroll))
+            scroll = max(-600f, min(0f, scroll))
         }
     }
 

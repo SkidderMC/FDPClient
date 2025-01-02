@@ -5,9 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.login
 
-import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import net.ccbluex.liquidbounce.utils.io.HttpUtils
-import net.ccbluex.liquidbounce.utils.io.parseJson
 
 object UserUtils {
 
@@ -26,44 +24,25 @@ object UserUtils {
     fun getUsername(uuid: String): String? {
         uuidCache[uuid]?.let { return it }
 
-        return try {
-            val (text, code) = HttpUtils.get("https://api.minecraftservices.com/minecraft/profile/lookup/$uuid")
-
-            if (code != 200) {
-                ClientUtils.LOGGER.warn("Failed to get username of UUID $uuid, response code=$code")
-                return null
-            }
-
-            val jsonObject = text.parseJson().asJsonObject
-            val name = jsonObject["name"].asString
-            uuidCache[uuid] = name
-            name
-        } catch (e: Exception) {
-            ClientUtils.LOGGER.warn("Failed to get username of UUID $uuid", e)
-            null
+        return HttpUtils.getJson<Profile>(
+            "https://api.minecraftservices.com/minecraft/profile/lookup/$uuid"
+        )?.name?.also {
+            usernameCache[uuid] = it
         }
     }
 
     /**
      * Get UUID of username
      */
-    fun getUUID(username: String): String {
+    fun getUUID(username: String): String? {
         usernameCache[username]?.let { return it }
 
-        return try {
-            val (text, code) = HttpUtils.get("https://api.minecraftservices.com/minecraft/profile/lookup/name/$username")
-
-            if (code != 200) {
-                ClientUtils.LOGGER.warn("Failed to get UUID of username $username, response code=$code")
-                return ""
-            }
-
-            val id = text.parseJson().asJsonObject["id"].asString
-            usernameCache[username] = id
-            id
-        } catch (e: Exception) {
-            ClientUtils.LOGGER.warn("Failed to get UUID of username $username", e)
-            ""
+        return HttpUtils.getJson<Profile>(
+            "https://api.minecraftservices.com/minecraft/profile/lookup/name/$username"
+        )?.id?.also {
+            usernameCache[username] = it
         }
     }
 }
+
+private class Profile(val id: String, val name: String)

@@ -5,14 +5,12 @@
  */
 package net.ccbluex.liquidbounce.handler.tabs
 
-import com.google.gson.JsonObject
 import kotlinx.coroutines.*
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.inventory.ItemUtils
-import net.ccbluex.liquidbounce.utils.io.HttpUtils.get
-import net.ccbluex.liquidbounce.utils.io.parseJson
+import net.ccbluex.liquidbounce.utils.io.HttpUtils
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.Items
 import net.minecraft.item.Item
@@ -38,24 +36,17 @@ class HeadsTab : CreativeTabs("Heads") {
             LOGGER.info("Loading heads...")
 
             // Asynchronously fetch the heads configuration
-            val (response, _) = get("$CLIENT_CLOUD/heads.json")
-            val headsConf = response.parseJson() as? JsonObject ?: return
+            val headsConf = HttpUtils.getJson<HeadsConfiguration>("$CLIENT_CLOUD/heads.json") ?: return
 
-            if (headsConf["enabled"].asBoolean) {
-                val url = headsConf["url"].asString
+            if (headsConf.enabled) {
+                val url = headsConf.url
 
                 LOGGER.info("Loading heads from $url...")
 
-                val (headsResponse, _) = get(url)
-                val headsElement = headsResponse.parseJson() as? JsonObject ?: run {
-                    LOGGER.error("Something is wrong, the heads json is not a JsonObject!")
-                    return
-                }
+                val headsMap = HttpUtils.getJson<Map<String, HeadInfo>>(url) ?: return
 
-                heads = headsElement.entrySet().map { (_, value) ->
-                    val headElement = value.asJsonObject
-
-                    ItemUtils.createItem("skull 1 3 {display:{Name:\"${headElement["name"].asString}\"},SkullOwner:{Id:\"${headElement["uuid"].asString}\",Properties:{textures:[{Value:\"${headElement["value"].asString}\"}]}}}")!!
+                heads = headsMap.values.map { head ->
+                    ItemUtils.createItem("skull 1 3 {display:{Name:\"${head.name}\"},SkullOwner:{Id:\"${head.uuid}\",Properties:{textures:[{Value:\"${head.value}\"}]}}}")!!
                 }
 
                 LOGGER.info("Loaded ${heads.size} heads from HeadDB.")
@@ -95,3 +86,8 @@ class HeadsTab : CreativeTabs("Heads") {
      */
     override fun hasSearchBar() = true
 }
+
+private class HeadsConfiguration(val enabled: Boolean, val url: String)
+
+// Only includes needed fields
+private class HeadInfo(val name: String, val uuid: String, val value: String)

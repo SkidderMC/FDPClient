@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.utils.io
 
+import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import okhttp3.ConnectionSpec
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -110,7 +111,7 @@ object HttpUtils {
      */
     fun requestStream(
         url: String,
-        method: String,
+        method: String = "GET",
         agent: String = DEFAULT_AGENT,
         headers: Array<Pair<String, String>> = emptyArray(),
         body: RequestBody? = null
@@ -122,13 +123,13 @@ object HttpUtils {
             throw IOException("Unexpected code ${response.code}")
         }
 
-        return response.body?.byteStream()!! to response.code
+        return response.body!!.byteStream() to response.code
     }
 
     /**
      * Performs a request and returns the response body as a String and the HTTP status code.
      */
-    fun request(
+    private fun request(
         url: String,
         method: String,
         agent: String = DEFAULT_AGENT,
@@ -151,6 +152,16 @@ object HttpUtils {
         headers: Array<Pair<String, String>> = emptyArray()
     ): Pair<String, Int> {
         return request(url, "GET", agent, headers)
+    }
+
+    inline fun <reified T> getJson(url: String): T? {
+        return runCatching {
+            httpClient.newCall(Request.Builder().url(url).build()).execute().use {
+                it.body?.charStream()?.decodeJson<T>()
+            }
+        }.onFailure {
+            ClientUtils.LOGGER.error("[HTTP] Failed to GET JSON from $url", it)
+        }.getOrNull()
     }
 
     /**
