@@ -20,7 +20,6 @@ import net.ccbluex.liquidbounce.ui.client.gui.GuiUpdate;
 import net.ccbluex.liquidbounce.utils.attack.CPSCounter;
 import net.ccbluex.liquidbounce.utils.client.ClientUtils;
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar;
-import net.ccbluex.liquidbounce.utils.io.GitUtils;
 import net.ccbluex.liquidbounce.utils.io.MiscUtils;
 import net.ccbluex.liquidbounce.utils.render.IconUtils;
 import net.ccbluex.liquidbounce.utils.render.MiniMapRegister;
@@ -32,7 +31,6 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.multiplayer.PlayerControllerMP;
-import net.minecraft.client.multiplayer.ServerData;
 import net.minecraft.client.multiplayer.WorldClient;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.crash.CrashReport;
@@ -284,8 +282,7 @@ public abstract class MixinMinecraft {
     private boolean injectMultiActions(EntityPlayerSP instance) {
         ItemStack itemStack = instance.itemInUse;
 
-        if (MultiActions.INSTANCE.handleEvents())
-            itemStack = null;
+        if (MultiActions.INSTANCE.handleEvents()) itemStack = null;
 
         return itemStack != null;
     }

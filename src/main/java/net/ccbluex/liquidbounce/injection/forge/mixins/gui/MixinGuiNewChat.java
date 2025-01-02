@@ -20,11 +20,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Constant;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyConstant;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
-import java.util.Objects;
 
 import static net.minecraft.client.renderer.GlStateManager.*;
 import static org.lwjgl.opengl.GL11.glColor4f;
@@ -43,10 +43,6 @@ public abstract class MixinGuiNewChat {
     @Shadow
     private boolean isScrolled;
     @Shadow
-    @Final
-    private List<ChatLine> chatLines;
-
-    @Shadow
     public abstract int getLineCount();
 
     @Shadow
@@ -58,61 +54,75 @@ public abstract class MixinGuiNewChat {
     @Shadow
     public abstract int getChatWidth();
 
-    @Shadow
-    public abstract void deleteChatLine(int p_deleteChatLine_1_);
+    /**
+     * Redirects access to the FONT_HEIGHT field to allow customization of the font renderer.
+     */
+    @Redirect(method = {"getChatComponent", "drawChat"}, at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/FontRenderer;FONT_HEIGHT:I"))
+    private int injectFontChat(FontRenderer instance) {
+        return ChatControl.INSTANCE.shouldModifyChatFont() ? Fonts.font40.getHeight() : instance.FONT_HEIGHT;
+    }
 
-    @Shadow
-    public abstract void scroll(int p_scroll_1_);
+    /**
+     * Redirects the drawStringWithShadow method to use a custom font if necessary.
+     */
+    @Redirect(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I"))
+    private int injectFontChatB(FontRenderer instance, String text, float x, float y, int color) {
+        return ChatControl.INSTANCE.shouldModifyChatFont() ? Fonts.font40.drawStringWithShadow(text, x, y, color) : instance.drawStringWithShadow(text, x, y, color);
+    }
 
+    /**
+     * Redirects the getStringWidth method to use the custom font's string width if necessary.
+     */
+    @Redirect(method = "getChatComponent", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;getStringWidth(Ljava/lang/String;)I"))
+    private int injectFontChatC(FontRenderer instance, String text) {
+        return ChatControl.INSTANCE.shouldModifyChatFont() ? Fonts.font40.getStringWidth(text) : instance.getStringWidth(text);
+    }
+
+    /**
+     * Injection to customize chat rendering, maintaining all functionalities from the old code.
+     */
     @Inject(method = "drawChat", at = @At("HEAD"), cancellable = true)
-    private void drawChat(int p_drawChat_1_, final CallbackInfo callbackInfo) {
+    private void drawChat(int renderPartialTicks, final CallbackInfo callbackInfo) {
         final ChatControl chatControl = ChatControl.INSTANCE;
 
-        if (chatControl.handleEvents() && chatControl.getFontChatValue()) {
+        if (chatControl.shouldModifyChatFont()) { 
             callbackInfo.cancel();
             if (mc.gameSettings.chatVisibility != EntityPlayer.EnumChatVisibility.HIDDEN) {
-                int lvt_2_1_ = getLineCount();
-                boolean lvt_3_1_ = false;
-                int lvt_4_1_ = 0;
-                int lvt_5_1_ = drawnChatLines.size();
-                float lvt_6_1_ = mc.gameSettings.chatOpacity * 0.9F + 0.1F;
-                if (lvt_5_1_ > 0) {
-                    if (getChatOpen()) {
-                        lvt_3_1_ = true;
-                    }
-
-                    float lvt_7_1_ = getChatScale();
-                    int lvt_8_1_ = MathHelper.ceiling_float_int((float) getChatWidth() / lvt_7_1_);
+                int lineCount = getLineCount();
+                boolean isChatOpen = getChatOpen();
+                int renderedLines = 0;
+                int totalDrawn = drawnChatLines.size();
+                float chatOpacity = mc.gameSettings.chatOpacity * 0.9F + 0.1F;
+                if (totalDrawn > 0) {
+                    float chatScale = getChatScale();
+                    int chatWidth = MathHelper.ceiling_float_int((float) getChatWidth() / chatScale);
                     pushMatrix();
                     translate(2f, 20f, 0f);
-                    scale(lvt_7_1_, lvt_7_1_, 1f);
+                    scale(chatScale, chatScale, 1f);
 
-                    int lvt_9_1_;
-                    int lvt_11_1_;
-                    int lvt_14_1_;
-                    for (lvt_9_1_ = 0; lvt_9_1_ + scrollPos < drawnChatLines.size() && lvt_9_1_ < lvt_2_1_; ++lvt_9_1_) {
-                        ChatLine lvt_10_1_ = drawnChatLines.get(lvt_9_1_ + scrollPos);
-                        if (lvt_10_1_ != null) {
-                            lvt_11_1_ = p_drawChat_1_ - lvt_10_1_.getUpdatedCounter();
-                            if (lvt_11_1_ < 200 || lvt_3_1_) {
-                                double lvt_12_1_ = (double) lvt_11_1_ / 200;
-                                lvt_12_1_ = 1 - lvt_12_1_;
-                                lvt_12_1_ *= 10;
-                                lvt_12_1_ = MathHelper.clamp_double(lvt_12_1_, 0, 1);
-                                lvt_12_1_ *= lvt_12_1_;
-                                lvt_14_1_ = (int) (255 * lvt_12_1_);
-                                if (lvt_3_1_) {
-                                    lvt_14_1_ = 255;
+                    for (int i = 0; i + scrollPos < drawnChatLines.size() && i < lineCount; ++i) {
+                        ChatLine chatLine = drawnChatLines.get(i + scrollPos);
+                        if (chatLine != null) {
+                            int time = renderPartialTicks - chatLine.getUpdatedCounter();
+                            if (time < 200 || isChatOpen) {
+                                double opacityFactor = (double) time / 200;
+                                opacityFactor = 1 - opacityFactor;
+                                opacityFactor *= 10;
+                                opacityFactor = MathHelper.clamp_double(opacityFactor, 0, 1);
+                                opacityFactor *= opacityFactor;
+                                int alpha = (int) (255 * opacityFactor);
+                                if (isChatOpen) {
+                                    alpha = 255;
                                 }
 
-                                lvt_14_1_ = (int) ((float) lvt_14_1_ * lvt_6_1_);
-                                ++lvt_4_1_;
-                                if (lvt_14_1_ > 3) {
-                                    int lvt_15_1_ = 0;
-                                    int lvt_16_1_ = -lvt_9_1_ * 9;
-                                    Gui.drawRect(lvt_15_1_, lvt_16_1_ - 9, lvt_15_1_ + lvt_8_1_ + 4, lvt_16_1_, lvt_14_1_ / 2 << 24);
-                                    String lvt_17_1_ = lvt_10_1_.getChatComponent().getFormattedText();
-                                    Fonts.font40.drawStringWithShadow(lvt_17_1_, lvt_15_1_ + 2, (lvt_16_1_ - 8), 16777215 + (lvt_14_1_ << 24));
+                                alpha = (int) ((float) alpha * chatOpacity);
+                                renderedLines++;
+                                if (alpha > 3) {
+                                    int x = 0;
+                                    int y = -i * 9;
+                                    Gui.drawRect(x, y - 9, x + chatWidth + 4, y, (alpha / 2) << 24);
+                                    String text = chatLine.getChatComponent().getFormattedText();
+                                    Fonts.font40.drawStringWithShadow(text, x + 2, y - 8, 0xFFFFFF + (alpha << 24));
                                     glColor4f(1, 1, 1, 1);
                                     resetColor();
                                 }
@@ -120,18 +130,18 @@ public abstract class MixinGuiNewChat {
                         }
                     }
 
-                    if (lvt_3_1_) {
-                        lvt_9_1_ = Fonts.font40.getFontHeight();
+                    if (isChatOpen) {
+                        int fontHeight = Fonts.font40.getFontHeight();
                         translate(-3f, 0f, 0f);
-                        int lvt_10_2_ = lvt_5_1_ * lvt_9_1_ + lvt_5_1_;
-                        lvt_11_1_ = lvt_4_1_ * lvt_9_1_ + lvt_4_1_;
-                        int lvt_12_2_ = scrollPos * lvt_11_1_ / lvt_5_1_;
-                        int lvt_13_1_ = lvt_11_1_ * lvt_11_1_ / lvt_10_2_;
-                        if (lvt_10_2_ != lvt_11_1_) {
-                            lvt_14_1_ = lvt_12_2_ > 0 ? 170 : 96;
-                            int lvt_15_2_ = isScrolled ? 13382451 : 3355562;
-                            Gui.drawRect(0, -lvt_12_2_, 2, -lvt_12_2_ - lvt_13_1_, lvt_15_2_ + (lvt_14_1_ << 24));
-                            Gui.drawRect(2, -lvt_12_2_, 1, -lvt_12_2_ - lvt_13_1_, 13421772 + (lvt_14_1_ << 24));
+                        int totalHeight = totalDrawn * fontHeight + totalDrawn;
+                        int renderedHeight = renderedLines * fontHeight + renderedLines;
+                        int scrollHeight = scrollPos * renderedHeight / totalDrawn;
+                        int scrollbarHeight = renderedHeight * renderedHeight / totalHeight;
+                        if (totalHeight != renderedHeight) {
+                            int scrollbarAlpha = scrollHeight > 0 ? 170 : 96;
+                            int scrollbarColor = isScrolled ? 13382451 : 3355562;
+                            Gui.drawRect(0, -scrollHeight, 2, -scrollHeight - scrollbarHeight, scrollbarColor + (scrollbarAlpha << 24));
+                            Gui.drawRect(2, -scrollHeight, 1, -scrollHeight - scrollbarHeight, 13421772 + (scrollbarAlpha << 24));
                         }
                     }
 
@@ -141,43 +151,49 @@ public abstract class MixinGuiNewChat {
         }
     }
 
+    /**
+     * Modifies the message limit constant in the setChatLine method based on ChatControl.
+     */
     @ModifyConstant(method = "setChatLine", constant = @Constant(intValue = 100))
     private int fixMsgLimit(int constant) {
         final ChatControl chatControl = ChatControl.INSTANCE;
 
-        if(chatControl.handleEvents() && chatControl.getChatClearValue()) {
-            return 114514;
+        if (chatControl.handleEvents() && chatControl.getChatClearValue()) {
+            return 114514; // Adjust this value as needed
         } else {
             return 100;
         }
     }
 
+    /**
+     * Injection to handle chat component interactions, maintaining all functionalities from the old code.
+     */
     @Inject(method = "getChatComponent", at = @At("HEAD"), cancellable = true)
-    private void getChatComponent(int p_getChatComponent_1_, int p_getChatComponent_2_, final CallbackInfoReturnable<IChatComponent> callbackInfo) {
+    private void getChatComponent(int mouseX, int mouseY, final CallbackInfoReturnable<IChatComponent> callbackInfo) {
         final ChatControl chatControl = ChatControl.INSTANCE;
 
-        if (chatControl.handleEvents() && chatControl.getFontChatValue()) {
+        if (chatControl.shouldModifyChatFont()) {
             if (getChatOpen()) {
-                ScaledResolution lvt_3_1_ = new ScaledResolution(mc);
-                int lvt_4_1_ = lvt_3_1_.getScaleFactor();
-                float lvt_5_1_ = getChatScale();
-                int lvt_6_1_ = p_getChatComponent_1_ / lvt_4_1_ - 3;
-                int lvt_7_1_ = p_getChatComponent_2_ / lvt_4_1_ - 27;
-                lvt_6_1_ = MathHelper.floor_float((float) lvt_6_1_ / lvt_5_1_);
-                lvt_7_1_ = MathHelper.floor_float((float) lvt_7_1_ / lvt_5_1_);
-                if (lvt_6_1_ >= 0 && lvt_7_1_ >= 0) {
-                    int lvt_8_1_ = Math.min(getLineCount(), drawnChatLines.size());
-                    if (lvt_6_1_ <= MathHelper.floor_float((float) getChatWidth() / getChatScale()) && lvt_7_1_ < Fonts.font40.getFontHeight() * lvt_8_1_ + lvt_8_1_) {
-                        int lvt_9_1_ = lvt_7_1_ / Fonts.font40.getFontHeight() + scrollPos;
-                        if (lvt_9_1_ >= 0 && lvt_9_1_ < drawnChatLines.size()) {
-                            ChatLine lvt_10_1_ = drawnChatLines.get(lvt_9_1_);
-                            int lvt_11_1_ = 0;
+                ScaledResolution scaledResolution = new ScaledResolution(mc);
+                int scaleFactor = scaledResolution.getScaleFactor();
+                float chatScale = getChatScale();
+                int adjustedMouseX = mouseX / scaleFactor - 3;
+                int adjustedMouseY = mouseY / scaleFactor - 27;
+                adjustedMouseX = MathHelper.floor_float((float) adjustedMouseX / chatScale);
+                adjustedMouseY = MathHelper.floor_float((float) adjustedMouseY / chatScale);
+                if (adjustedMouseX >= 0 && adjustedMouseY >= 0) {
+                    int maxLines = Math.min(getLineCount(), drawnChatLines.size());
+                    if (adjustedMouseX <= MathHelper.floor_float((float) getChatWidth() / chatScale) && adjustedMouseY < Fonts.font40.getFontHeight() * maxLines + maxLines) {
+                        int lineIndex = adjustedMouseY / Fonts.font40.getFontHeight() + scrollPos;
+                        if (lineIndex >= 0 && lineIndex < drawnChatLines.size()) {
+                            ChatLine chatLine = drawnChatLines.get(lineIndex);
+                            int currentWidth = 0;
 
-                            for (IChatComponent lvt_13_1_ : lvt_10_1_.getChatComponent()) {
-                                if (lvt_13_1_ instanceof ChatComponentText) {
-                                    lvt_11_1_ += Fonts.font40.getStringWidth(GuiUtilRenderComponents.func_178909_a(((ChatComponentText) lvt_13_1_).getChatComponentText_TextValue(), false));
-                                    if (lvt_11_1_ > lvt_6_1_) {
-                                        callbackInfo.setReturnValue(lvt_13_1_);
+                            for (IChatComponent chatComponent : chatLine.getChatComponent()) {
+                                if (chatComponent instanceof ChatComponentText) {
+                                    currentWidth += Fonts.font40.getStringWidth(GuiUtilRenderComponents.func_178909_a(((ChatComponentText) chatComponent).getChatComponentText_TextValue(), false));
+                                    if (currentWidth > adjustedMouseX) {
+                                        callbackInfo.setReturnValue(chatComponent);
                                         return;
                                     }
                                 }

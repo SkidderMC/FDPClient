@@ -9,7 +9,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiKeyBindingList;
 import net.minecraft.client.gui.GuiSlot;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Overwrite;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(GuiKeyBindingList.class)
 public abstract class MixinGuiKeyBindingList extends GuiSlot {
@@ -18,11 +20,8 @@ public abstract class MixinGuiKeyBindingList extends GuiSlot {
         super(mcIn, width, height, topIn, bottomIn, slotHeightIn);
     }
 
-    /**
-     * @author CCBlueX
-     */
-    @Overwrite
-    protected int getScrollBarX() {
-        return width - 5;
+    @Inject(method = "getScrollBarX", at = @At("HEAD"), cancellable = true)
+    private void scrollBarX(CallbackInfoReturnable<Integer> cir) {
+        cir.setReturnValue(width - 5);
     }
 }

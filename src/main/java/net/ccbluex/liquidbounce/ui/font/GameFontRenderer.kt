@@ -322,6 +322,7 @@ class GameFontRenderer(
         disableBlend()
         glTranslated(-(x - 1.5), -(y + 0.5), 0.0)
         glColor4f(1f, 1f, 1f, 1f)
+        resetColor()
         return (x + getStringWidth(text)).toInt()
     }
 

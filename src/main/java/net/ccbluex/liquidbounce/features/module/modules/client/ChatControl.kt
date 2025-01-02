@@ -17,5 +17,7 @@ object ChatControl : Module("ChatControl", Category.CLIENT, gameDetecting = fals
 
     val chatLimitValue by boolean("NoChatLimit", true)
     val chatClearValue by boolean("NoChatClear", true)
-    val fontChatValue by boolean("FontChat", false)
+    private val fontChat by boolean("FontChat", false)
+
+    fun shouldModifyChatFont() = handleEvents() && fontChat
 }
