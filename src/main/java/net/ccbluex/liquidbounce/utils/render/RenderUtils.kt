@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.col
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorRedTwoValue
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorRedValue
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.start
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.block.center
@@ -4298,15 +4299,5 @@ object RenderUtils : MinecraftInstance {
         f.run()
         glEnable(GL_TEXTURE_2D)
         disableBlend()
-    }
-
-    @JvmStatic
-    fun rotateGLUtil(x: Float, y: Float, rotate: Float, f: Runnable) {
-        pushMatrix()
-        translate(x, y, 0f)
-        rotate(rotate, 0f, 0f, -1f)
-        translate(-x, -y, 0f)
-        f.run()
-        popMatrix()
     }
 }

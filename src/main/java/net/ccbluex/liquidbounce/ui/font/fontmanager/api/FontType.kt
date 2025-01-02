@@ -8,10 +8,10 @@ package net.ccbluex.liquidbounce.ui.font.fontmanager.api
 enum class FontType(val fileName: String) {
     SF("sf.ttf"),
     SFBOLD("sfbold.ttf"),
-    SFTHIN("SFREGULAR.ttf"),
     Check("check.ttf"),
     ICONFONT("stylesicons.ttf"),
     NursultanMedium("Nursultan.ttf"),
     InterMedium("Inter_Medium.ttf"),
-    InterBold("Inter_Bold.ttf");
+    InterBold("Inter_Bold.ttf"),
+    InterRegular("Inter_Regular.ttf");
 }

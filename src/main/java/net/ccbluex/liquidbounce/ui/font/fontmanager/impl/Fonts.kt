@@ -60,4 +60,9 @@ object Fonts {
         val InterBold26: FontRenderer = fontFamily.ofSize(26)
         val InterBold30: FontRenderer = fontFamily.ofSize(30)
     }
+
+    object InterRegular {
+        private val fontFamily = FONT_MANAGER.fontFamily(FontType.InterRegular)
+        val InterRegular15: FontRenderer = fontFamily.ofSize(15)
+    }
 }

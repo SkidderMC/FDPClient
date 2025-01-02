@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.event.StartupEvent
