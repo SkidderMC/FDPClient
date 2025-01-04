@@ -85,12 +85,12 @@ object Tracers : Module("Tracers", Category.VISUAL, hideModule = false) {
             glBegin(GL_LINES)
 
             for (entity in entities) {
-                val dist = (thePlayer.getDistanceToEntity(entity) * 2).toInt().coerceAtMost(255)
+                val dist = mc.thePlayer.getDistanceSqToEntity(entity).coerceAtMost(255.0).toInt()
 
                 val colorMode = colorMode.lowercase()
                 val color = when {
                     entity is EntityPlayer && entity.isClientFriend() -> Color(0, 0, 255, 150)
-                    teams && state && Teams.isInYourTeam(entity) -> Color(0, 162, 232)
+                    teams && Teams.handleEvents() && Teams.isInYourTeam(entity) -> Color(0, 162, 232)
                     colorMode == "custom" -> Color(colorRed, colorGreen, colorBlue, 150)
                     colorMode == "distancecolor" -> Color(255 - dist, dist, 0, 150)
                     colorMode == "rainbow" -> ColorUtils.rainbow()

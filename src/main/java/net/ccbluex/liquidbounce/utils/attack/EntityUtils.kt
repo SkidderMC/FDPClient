@@ -61,6 +61,9 @@ object EntityUtils : MinecraftInstance {
 
     fun isLookingOnEntities(entity: Any, maxAngleDifference: Double): Boolean {
         val player = mc.thePlayer ?: return false
+
+        if (entity == player) return true
+
         val playerYaw = player.rotationYawHead
         val playerPitch = player.rotationPitch
 

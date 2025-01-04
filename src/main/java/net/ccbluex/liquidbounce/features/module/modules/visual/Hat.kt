@@ -11,93 +11,110 @@ import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
-import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.attack.EntityUtils
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
+import net.ccbluex.liquidbounce.features.module.modules.client.Teams
+import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
+import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
+import net.ccbluex.liquidbounce.utils.client.EntityLookup
+import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCone
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawConesForEntities
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
-import org.lwjgl.opengl.GL11.*
+import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
-import kotlin.math.cos
-import kotlin.math.sin
 
-object Hat : Module("Hat", Category.VISUAL, hideModule = false, subjective = true) {
+object Hat : Module("ChineseHat", Category.VISUAL) {
 
-    private val heightValue by float("Height", 0.3f, 0.1f.. 0.7f)
-    private val radiusValue by float("Radius", 0.7f, 0.3f.. 1.5f)
-    private val yPosValue by float("YPos", 0f, -1f.. 1f)
-    private val rotateSpeedValue by float("RotateSpeed", 2f, 0f.. 5f)
-    private val drawThePlayerValue by boolean("DrawThePlayer", true)
-    private val onlyThirdPersonValue by boolean("OnlyThirdPerson", true) { drawThePlayerValue }
-    private val drawTargetsValue by boolean("DrawTargets", true)
+    private val colorMode by choices("Color", arrayOf("Custom", "DistanceColor", "Rainbow"), "Custom")
+    private val colors =
+        ColorSettingsInteger(this, zeroAlphaCheck = true, alphaApply = { true }) { colorMode == "Custom" }.with(
+            0, 160, 255, 150
+        )
 
-    private val colorMode by choices("Color Mode", arrayOf("Custom", "Theme", "Rainbow"), "Theme")
-    private val colorRedValue by int("Red", 255, 0..255) { colorMode == "Custom" }
-    private val colorGreenValue by int("Green", 179, 0..255) { colorMode == "Custom" }
-    private val colorBlueValue by int("Blue", 72, 0..255) { colorMode == "Custom" }
-    private val rainbowSpeed by float("Rainbow Speed", 1.0f, 0.5f..5.0f) { colorMode == "Rainbow" }
-    private val colorAlphaValue by int("Alpha", 255, 0..255)
+    private val playerHeight by float("PlayerHeight", 0.5f, 0.25f..2f)
 
+    private val coneWidth by float("ConeWidth", 0.5f, 0f..2f)
+    private val coneHeight by float("ConeHeight", 0.5f, 0.1f..2f)
 
-    val onRender3D = handler<Render3DEvent> {
-        if (drawThePlayerValue && !(onlyThirdPersonValue && mc.gameSettings.thirdPersonView == 0)) {
-            drawChinaHatFor(mc.thePlayer)
-        }
-        if (drawTargetsValue) {
-            mc.theWorld.loadedEntityList.forEach {
-                if (EntityUtils.isSelected(it, true)) {
-                    drawChinaHatFor(it as EntityLivingBase)
+    private val renderSelf by boolean("RenderSelf", true)
+
+    private val maxRenderDistance by int("MaxRenderDistance", 100, 1..200)
+
+    private val onLook by boolean("OnLook", false)
+    private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
+
+    private val bots by boolean("Bots", true)
+    private val teams by boolean("Teams", false)
+    private val thruBlocks by boolean("ThruBlocks", true)
+
+    private val entityLookup by EntityLookup<EntityLivingBase>()
+        .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistance * maxRenderDistance }
+        .filter { bots || !isBot(it) }
+        .filter { !onLook || isLookingOnEntities(it, maxAngleDifference.toDouble()) }
+        .filter { thruBlocks || isEntityHeightVisible(it) }
+
+    val render = handler<Render3DEvent> {
+        drawConesForEntities {
+            var lastColor: Color? = null
+
+            for (entity in entityLookup) {
+                val isRenderingSelf =
+                    entity == mc.thePlayer && (mc.gameSettings.thirdPersonView != 0 || FreeCam.handleEvents())
+
+                if (!isRenderingSelf || !renderSelf) {
+                    if (!isSelected(entity, false)) continue
+                }
+
+                if (isRenderingSelf) {
+                    FreeCam.restoreOriginalPosition()
+                }
+
+                val (x, y, z) = entity.interpolatedPosition(
+                    entity.lastTickPos, entity.eyeHeight + playerHeight
+                ) - mc.renderManager.renderPos
+
+                val coneWidth = (mc.renderManager.getEntityRenderObject<Entity>(entity)?.shadowSize ?: 0.5F) + coneWidth
+
+                GlStateManager.pushMatrix()
+                GlStateManager.translate(x, y, z)
+
+                figureOutColor(entity).let {
+                    if (it != lastColor) {
+                        RenderUtils.glColor(it)
+                        lastColor = it
+                    }
+                }
+
+                drawCone(coneWidth, coneHeight)
+
+                GlStateManager.popMatrix()
+
+                if (isRenderingSelf) {
+                    FreeCam.useModifiedPosition()
                 }
             }
         }
     }
 
-    private fun drawChinaHatFor(entity: EntityLivingBase) {
-        glPushMatrix()
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_BLEND)
-        glDisable(GL_TEXTURE_2D)
-        glDisable(GL_DEPTH_TEST)
-        glDepthMask(false)
-        glDisable(GL_CULL_FACE)
+    private fun figureOutColor(entity: EntityLivingBase): Color {
+        val dist = mc.thePlayer.getDistanceSqToEntity(entity).coerceAtMost(255.0).toInt()
 
-        val color = when (colorMode) {
-            "Custom" -> Color(colorRedValue, colorGreenValue, colorBlueValue, colorAlphaValue)
-            "Theme" -> ClientThemesUtils.getColorWithAlpha(1, colorAlphaValue)
-            "Rainbow" -> ColorUtils.rainbow(rainbowSpeed)
-            else -> Color(255, 255, 255, colorAlphaValue)
-        }
-
-        glColor4f(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f)
-
-        glTranslated(
-            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks - mc.renderManager.renderPosX,
-            entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.timer.renderPartialTicks - mc.renderManager.renderPosY + entity.height + yPosValue,
-            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks - mc.renderManager.renderPosZ
-        )
-        glRotatef((entity.ticksExisted + mc.timer.renderPartialTicks) * rotateSpeedValue, 0f, 1f, 0f)
-
-        glBegin(GL_TRIANGLE_FAN)
-        glVertex3d(0.0, heightValue.toDouble(), 0.0)
-        val radius = radiusValue.toDouble()
-        for (i in 0..360 step 5) {
-            glVertex3d(
-                cos(i.toDouble() * Math.PI / 180.0) * radius,
-                0.0,
-                sin(i.toDouble() * Math.PI / 180.0) * radius
-            )
-        }
-        glVertex3d(0.0, heightValue.toDouble(), 0.0)
-        glEnd()
-
-        glEnable(GL_CULL_FACE)
-        GlStateManager.resetColor()
-        glEnable(GL_TEXTURE_2D)
-        glEnable(GL_DEPTH_TEST)
-        glDepthMask(true)
-        glDisable(GL_BLEND)
-        glPopMatrix()
+        return when {
+            entity is EntityPlayer && entity.isClientFriend() -> Color(0, 0, 255)
+            teams && Teams.isInYourTeam(entity) -> Color(0, 162, 232)
+            colorMode == "Custom" -> colors.color()
+            colorMode == "DistanceColor" -> Color(255 - dist, dist, 0)
+            colorMode == "Rainbow" -> ColorUtils.rainbow()
+            else -> Color.WHITE
+        }.withAlpha(colors.color().alpha)
     }
 }

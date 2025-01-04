@@ -295,12 +295,14 @@ object RenderUtils : MinecraftInstance {
         glDisable(GL_CULL_FACE)
         glEnable(GL_ALPHA_TEST)
         glAlphaFunc(GL_GREATER, 0.0f)
+        glTranslated(-renderX, -renderY, -renderZ)
         glBegin(renderMode)
         glColor(color)
-        for (i in -1 until CIRCLE_STEPS / 2) {
+        val min = if (renderMode != GL_TRIANGLES) 0 to 0 else -1 to 1
+        for (i in min.first until CIRCLE_STEPS / 2) {
             val vAngle1 = i * vStep
             val vAngle2 = (i + 1) * vStep
-            for (j in -1 until CIRCLE_STEPS) {
+            for (j in min.second until CIRCLE_STEPS) {
                 val hAngle1 = j * hStep
                 val hAngle2 = (j + 1) * hStep
                 val p1 = calculateDomeVertex(posX, posY, posZ, vAngle1, hAngle1, hRadius, vRadius)
@@ -309,20 +311,23 @@ object RenderUtils : MinecraftInstance {
                 val p4 = calculateDomeVertex(posX, posY, posZ, vAngle1, hAngle2, hRadius, vRadius)
                 when (renderMode) {
                     GL_QUADS -> {
-                        glVertex3d(p1[0] - renderX, p1[1] - renderY, p1[2] - renderZ)
-                        glVertex3d(p2[0] - renderX, p2[1] - renderY, p2[2] - renderZ)
-                        glVertex3d(p3[0] - renderX, p3[1] - renderY, p3[2] - renderZ)
-                        glVertex3d(p4[0] - renderX, p4[1] - renderY, p4[2] - renderZ)
+                        glVertex3d(p1[0], p1[1], p1[2])
+                        glVertex3d(p2[0], p2[1], p2[2])
+                        glVertex3d(p3[0], p3[1], p3[2])
+                        glVertex3d(p4[0], p4[1], p4[2])
                     }
-                    GL_LINES, GL_TRIANGLES -> {
-                        glVertex3d(p1[0] - renderX, p1[1] - renderY, p1[2] - renderZ)
-                        glVertex3d(p2[0] - renderX, p2[1] - renderY, p2[2] - renderZ)
-                        glVertex3d(p2[0] - renderX, p2[1] - renderY, p2[2] - renderZ)
-                        glVertex3d(p3[0] - renderX, p3[1] - renderY, p3[2] - renderZ)
-                        glVertex3d(p3[0] - renderX, p3[1] - renderY, p3[2] - renderZ)
-                        glVertex3d(p4[0] - renderX, p4[1] - renderY, p4[2] - renderZ)
-                        glVertex3d(p4[0] - renderX, p4[1] - renderY, p4[2] - renderZ)
-                        glVertex3d(p1[0] - renderX, p1[1] - renderY, p1[2] - renderZ)
+                    GL_TRIANGLES, GL_LINES -> {
+                        glVertex3d(p1[0], p1[1], p1[2])
+                        glVertex3d(p2[0], p2[1], p2[2])
+
+                        glVertex3d(p2[0], p2[1], p2[2])
+                        glVertex3d(p3[0], p3[1], p3[2])
+
+                        glVertex3d(p3[0], p3[1], p3[2])
+                        glVertex3d(p4[0], p4[1], p4[2])
+
+                        glVertex3d(p4[0], p4[1], p4[2])
+                        glVertex3d(p1[0], p1[1], p1[2])
                     }
                 }
             }
@@ -346,6 +351,35 @@ object RenderUtils : MinecraftInstance {
             entityY + verticalRadius * cos(theta),
             entityZ + horizontalRadius * sin(theta) * sin(phi)
         )
+    }
+
+    fun drawConesForEntities(f: () -> Unit) {
+        pushAttrib()
+        pushMatrix()
+        disableTexture2D()
+        disableCull()
+        enableBlend()
+        enableDepth()
+        glDepthMask(false)
+        blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        f()
+        glColor(Color.WHITE)
+        enableTexture2D()
+        glDepthMask(true)
+        disableBlend()
+        disableDepth()
+        enableCull()
+        popMatrix()
+        popAttrib()
+    }
+    fun drawCone(width: Float, height: Float) {
+        glBegin(GL_TRIANGLE_FAN)
+        // The tip of the cone
+        glVertex3d(0.0, height.toDouble(), 0.0)
+        for (point in circlePoints) {
+            glVertex3d(point.xCoord * width, 0.0, point.zCoord * width)
+        }
+        glEnd()
     }
 
     fun drawEntityBox(entity: Entity, color: Color, outline: Boolean) {
