@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.util
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.EaseInOutQuad
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
-import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -80,19 +80,19 @@ class ModuleRect(val module: Module) : Component() {
             DrRenderUtils.applyOpacity(accentWithAlpha, toggleAnimation.output.toFloat()).rgb
         )
 
-        Fonts.SF.SF_20.drawString(
+        Fonts.InterMedium_20.drawString(
             module.name,
             x + 5,
-            y + Fonts.SF.SF_20.getMiddleOfBox(height),
+            y + Fonts.InterMedium_20.getMiddleOfBox(height),
             textColor.rgb
         )
 
         if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && module.keyBind != 0) {
             val keyName = Keyboard.getKeyName(module.keyBind)
-            Fonts.SF.SF_20.drawString(
+            Fonts.InterMedium_20.drawString(
                 keyName,
-                x + width - Fonts.SF.SF_20.stringWidth(keyName) - 5,
-                y + Fonts.SF.SF_20.getMiddleOfBox(height),
+                x + width - Fonts.InterMedium_20.stringWidth(keyName) - 5,
+                y + Fonts.InterMedium_20.getMiddleOfBox(height),
                 textColor.rgb
             )
         } else {

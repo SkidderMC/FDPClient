@@ -18,7 +18,7 @@ import java.awt.image.BufferedImage
 import kotlin.math.max
 
 @Suppress("MagicNumber")
-class SimpleFontRenderer private constructor(
+class SimpleFontRenderer(
     private val awtFont: Font,
     private val antiAlias: Boolean,
     private val fractionalMetrics: Boolean
@@ -53,7 +53,7 @@ class SimpleFontRenderer private constructor(
          * @param font The AWT font to be used.
          * @param antiAlias Indicates if anti-aliasing should be applied.
          * @param fractionalMetrics Indicates if fractional metrics should be used.
-         * @return A new instance of [FontRenderer].
+         * @return A new instance of [SimpleFontRenderer].
          */
         fun create(font: Font, antiAlias: Boolean, fractionalMetrics: Boolean): FontRenderer =
             SimpleFontRenderer(font, antiAlias, fractionalMetrics)
@@ -62,7 +62,7 @@ class SimpleFontRenderer private constructor(
          * Creates an instance of [SimpleFontRenderer] with anti-aliasing and fractional metrics enabled by default.
          *
          * @param font The AWT font to be used.
-         * @return A new instance of [FontRenderer].
+         * @return A new instance of [SimpleFontRenderer].
          */
         fun create(font: Font): FontRenderer =
             create(font, true, true)

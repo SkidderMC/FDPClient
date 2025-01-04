@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element.Companion.MAX_GRADIENT_COLORS
-import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.render.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRectWithBorder
@@ -139,7 +139,7 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                     val iconSize = 5.0f
                     val rectWidth = 10.0f
                     val title = "FDP"
-                    val titleWidth = Fonts.InterMedium.InterMedium15.stringWidth(title)
+                    val titleWidth = Fonts.InterMedium_15.stringWidth(title)
                     val bgColorRGB = ClientThemesUtils.getBackgroundColor(0, 120).rgb
                     RenderUtils.drawCustomShapeWithRadius(
                         posX,
@@ -149,20 +149,20 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                         4.0f,
                         Color(bgColorRGB, true)
                     )
-                    Fonts.NursultanMedium.NursultanMedium18.drawString(
+                    Fonts.Nursultan18.drawString(
                         "S",
                         posX + iconSize,
                         posY + 2 + iconSize - 1.0f + 2f,
                         ClientThemesUtils.getColor().rgb
                     )
-                    Fonts.InterMedium.InterMedium15.drawString(
+                    Fonts.InterMedium_15.drawString(
                         title,
                         posX + rectWidth + iconSize * 1.5f,
                         posY + rectWidth / 2.0f + 1.5f + 2f,
                         ClientThemesUtils.getColor().rgb
                     )
                     val playerName = mc.thePlayer.name
-                    val playerNameWidth = Fonts.InterMedium.InterMedium15.stringWidth(playerName)
+                    val playerNameWidth = Fonts.InterMedium_15.stringWidth(playerName)
                     val playerNameX = posX + rectWidth + iconSize * 2.5f + titleWidth + iconSize
                     RenderUtils.drawCustomShapeWithRadius(
                         playerNameX,
@@ -172,13 +172,13 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                         4.0f,
                         Color(bgColorRGB, true)
                     )
-                    Fonts.NursultanMedium.NursultanMedium15.drawString(
+                    Fonts.InterMedium_15.drawString(
                         "W",
                         playerNameX + iconSize,
                         posY + 1 + iconSize + 2f,
                         ClientThemesUtils.getColor().rgb
                     )
-                    Fonts.InterMedium.InterMedium15.drawString(
+                    Fonts.InterMedium_15.drawString(
                         playerName,
                         playerNameX + iconSize * 1.5f + rectWidth,
                         posY + rectWidth / 2.0f + 1.5f + 2f,
@@ -186,7 +186,7 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                     )
                     val fps = Minecraft.getDebugFPS()
                     val fpsText = "$fps FPS"
-                    val fpsTextWidth = Fonts.InterMedium.InterMedium15.stringWidth(fpsText)
+                    val fpsTextWidth = Fonts.InterMedium_15.stringWidth(fpsText)
                     val fpsX = playerNameX + rectWidth + iconSize * 2.5f + playerNameWidth + iconSize
                     RenderUtils.drawCustomShapeWithRadius(
                         fpsX,
@@ -196,20 +196,20 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                         4.0f,
                         Color(bgColorRGB, true)
                     )
-                    Fonts.NursultanMedium.NursultanMedium18.drawString(
+                    Fonts.Nursultan18.drawString(
                         "X",
                         fpsX + iconSize,
                         posY + 1 + iconSize + 2f,
                         ClientThemesUtils.getColor().rgb
                     )
-                    Fonts.InterMedium.InterMedium15.drawString(
+                    Fonts.InterMedium_15.drawString(
                         fpsText,
                         fpsX + iconSize * 1.5f + rectWidth,
                         posY + rectWidth / 2.0f + 1.5f + 2f,
                         -1
                     )
                     val playerPosition = "${mc.thePlayer.posX.toInt()} ${mc.thePlayer.posY.toInt()} ${mc.thePlayer.posZ.toInt()}"
-                    val positionTextWidth = Fonts.InterMedium.InterMedium15.stringWidth(playerPosition)
+                    val positionTextWidth = Fonts.InterMedium_15.stringWidth(playerPosition)
                     val positionY = posY + rectWidth + iconSize * 2.0f + iconSize
                     RenderUtils.drawCustomShapeWithRadius(
                         posX,
@@ -220,14 +220,14 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                         Color(bgColorRGB, true)
                     )
 
-                    Fonts.NursultanMedium.NursultanMedium18.drawString(
+                    Fonts.Nursultan18.drawString(
                         "F",
                         posX + iconSize,
                         positionY + 1.5f + iconSize + 2f,
                         ClientThemesUtils.getColor().rgb
                     )
 
-                    Fonts.InterMedium.InterMedium15.drawString(
+                    Fonts.InterMedium_15.drawString(
                         playerPosition,
                         posX + iconSize * 1.5f + rectWidth,
                         positionY + rectWidth / 2.0f + 1.5f + 2f,
@@ -239,7 +239,7 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                         0
                     }
                     val pingText = "$ping Ping"
-                    val pingTextWidth = Fonts.InterMedium.InterMedium15.stringWidth(pingText)
+                    val pingTextWidth = Fonts.InterMedium_15.stringWidth(pingText)
                     val pingX = posX + rectWidth + iconSize * 2.5f + positionTextWidth + iconSize
                     RenderUtils.drawCustomShapeWithRadius(
                         pingX,
@@ -250,13 +250,13 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                         Color(bgColorRGB, true)
                     )
 
-                    Fonts.NursultanMedium.NursultanMedium18.drawString(
+                    Fonts.Nursultan18.drawString(
                         "Q",
                         pingX + iconSize,
                         positionY + 1 + iconSize + 2f,
                         ClientThemesUtils.getColor().rgb
                     )
-                    Fonts.InterMedium.InterMedium15.drawString(
+                    Fonts.InterMedium_15.drawString(
                         pingText,
                         pingX + iconSize * 1.5f + rectWidth,
                         positionY + rectWidth / 2.0f + 1.5f + 2f,
@@ -270,18 +270,18 @@ object HUDModule : Module("HUD", Category.CLIENT, defaultInArray = false, gameDe
                     RenderUtils.drawCustomShapeWithRadius(
                         tpsX,
                         tpsY,
-                        rectWidth + iconSize * 2.5f + Fonts.InterMedium.InterMedium15.stringWidth(tpsText),
+                        rectWidth + iconSize * 2.5f + Fonts.InterMedium_15.stringWidth(tpsText),
                         rectWidth + iconSize * 2.0f,
                         4.0f,
                         Color(bgColorRGB, true)
                     )
-                    Fonts.NursultanMedium.NursultanMedium18.drawString(
+                    Fonts.Nursultan18.drawString(
                         tpsIcon,
                         tpsX + iconSize,
                         tpsY + 1.5f + iconSize + 2f,
                         ClientThemesUtils.getColor().rgb
                     )
-                    Fonts.InterMedium.InterMedium15.drawString(
+                    Fonts.InterMedium_15.drawString(
                         tpsText,
                         tpsX + iconSize * 1.5f + rectWidth,
                         tpsY + rectWidth / 2.0f + 1.5f + 2f,

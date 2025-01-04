@@ -243,8 +243,8 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
             bugsY += 11
         }
 
-        Fonts.fontSmall.drawCenteredStringWithoutShadow(
-            "by SkidderMC with love ",
+        Fonts.InterMedium_15.drawCenteredStringShadow(
+            "by Zywl <3 ",
             width / 2f,
             height / 2f - 19,
             Color(255, 255, 255, 100).rgb

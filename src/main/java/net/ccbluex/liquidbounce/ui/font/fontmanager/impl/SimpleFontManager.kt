@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.ui.font.fontmanager.impl
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontFamily
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontManager
-import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontType
 import net.ccbluex.liquidbounce.ui.font.fontmanager.util.SneakyThrowing
 import java.awt.Font
 import java.awt.FontFormatException
@@ -16,7 +15,7 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
-import java.util.EnumMap
+import java.util.*
 
 /**
  * A simple FontManager implementation in Kotlin that reads `.ttf` fonts
@@ -26,8 +25,8 @@ class SimpleFontManager private constructor() : FontManager {
 
     private val fonts = FontRegistry()
 
-    override fun fontFamily(fontType: FontType): FontFamily {
-        return fonts.fontFamily(fontType)
+    override fun fontFamily(name: String): FontFamily {
+        return fonts.fontFamily(name)
     }
 
     companion object {
@@ -43,16 +42,16 @@ class SimpleFontManager private constructor() : FontManager {
     /**
      * Internal [EnumMap] that associates each [FontType] with its [FontFamily].
      */
-    private class FontRegistry : EnumMap<FontType, FontFamily>(FontType::class.java) {
+    private class FontRegistry : HashMap<String, FontFamily>() {
 
         /**
          * Retrieves a [FontFamily] for the specified [fontType], loading
          * the TTF file locally if it's not already cached.
          */
-        fun fontFamily(fontType: FontType): FontFamily {
-            return computeIfAbsent(fontType) {
+        fun fontFamily(name: String): FontFamily {
+            return computeIfAbsent(name) {
                 try {
-                    SimpleFontFamily.create(fontType, readFontFromLocal(fontType))
+                    SimpleFontFamily.create(name, readFontFromLocal(name))
                 } catch (e: IOException) {
                     throw SneakyThrowing.sneakyThrow(e)
                 }
@@ -63,8 +62,8 @@ class SimpleFontManager private constructor() : FontManager {
          * Reads a `.ttf` file from [FileManager.fontsDir] corresponding to the given [fontType].
          */
         @Throws(IOException::class)
-        private fun readFontFromLocal(fontType: FontType): Font {
-            val fontFile = File(FileManager.fontsDir, fontType.fileName)
+        private fun readFontFromLocal(name: String): Font {
+            val fontFile = File(FileManager.fontsDir, name)
             if (!fontFile.exists()) {
                 throw IOException("Couldn't find local font file: ${fontFile.absolutePath}")
             }
@@ -82,7 +81,7 @@ class SimpleFontManager private constructor() : FontManager {
             } catch (e: FontFormatException) {
                 throw RuntimeException(
                     "Resource does not contain the required font tables " +
-                    "for the specified format.", e
+                            "for the specified format.", e
                 )
             } catch (e: IOException) {
                 throw RuntimeException(

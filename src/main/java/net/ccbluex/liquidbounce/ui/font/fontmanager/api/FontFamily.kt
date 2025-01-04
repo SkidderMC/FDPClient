@@ -7,5 +7,5 @@ package net.ccbluex.liquidbounce.ui.font.fontmanager.api
 
 interface FontFamily {
     fun ofSize(size: Int): FontRenderer
-    val font: FontType
+    val name: String
 }

@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.ui.font.fontmanager.api
 
 fun interface FontManager {
-    fun fontFamily(fontType: FontType): FontFamily
+    fun fontFamily(name: String): FontFamily
 
-    fun font(fontType: FontType, size: Int): FontRenderer =
-        fontFamily(fontType).ofSize(size)
+    fun font(name: String, size: Int): FontRenderer =
+        fontFamily(name).ofSize(size)
 }

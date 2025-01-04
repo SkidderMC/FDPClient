@@ -9,6 +9,8 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.file.FileManager.fontsDir
+import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.SimpleFontRenderer
+import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer as CustomFontRenderer
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.io.URLRegistryUtils.FONTS
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
@@ -24,8 +26,11 @@ import kotlin.system.measureTimeMillis
 
 data class FontInfo(val name: String, val size: Int = -1, val isCustom: Boolean = false)
 
-private val FONT_REGISTRY = LinkedHashMap<FontInfo, FontRenderer>()
 object Fonts : MinecraftInstance {
+
+    private val CUSTOM_FONT_REGISTRY = LinkedHashMap<FontInfo, CustomFontRenderer>()
+
+    private val FONT_REGISTRY = LinkedHashMap<FontInfo, FontRenderer>()
 
     val minecraftFont: FontRenderer by lazy {
         mc.fontRendererObj
@@ -51,8 +56,42 @@ object Fonts : MinecraftInstance {
 
     lateinit var fontNovoAngularIcon85: GameFontRenderer
 
+    lateinit var ICONFONT_20: SimpleFontRenderer
+    lateinit var CheckFont_20: SimpleFontRenderer
+
+    // NURSULTAN
+    lateinit var Nursultan15: SimpleFontRenderer
+    lateinit var Nursultan16: SimpleFontRenderer
+    lateinit var Nursultan18: SimpleFontRenderer
+    lateinit var Nursultan20: SimpleFontRenderer
+    lateinit var Nursultan30: SimpleFontRenderer
+
+    //INTER
+    lateinit var InterMedium_14: SimpleFontRenderer
+    lateinit var InterMedium_15: SimpleFontRenderer
+    lateinit var InterMedium_16: SimpleFontRenderer
+    lateinit var InterMedium_18: SimpleFontRenderer
+    lateinit var InterMedium_20: SimpleFontRenderer
+
+    lateinit var InterBold_15: SimpleFontRenderer
+    lateinit var InterBold_18: SimpleFontRenderer
+    lateinit var InterBold_20: SimpleFontRenderer
+    lateinit var InterBold_26: SimpleFontRenderer
+    lateinit var InterBold_30: SimpleFontRenderer
+
+    lateinit var InterRegular_15: SimpleFontRenderer
+    lateinit var InterRegular_35: SimpleFontRenderer
+    lateinit var InterRegular_40: SimpleFontRenderer
+
+    lateinit var fontTahomaSmall: GameFontRenderer
+
     private fun <T : FontRenderer> register(fontInfo: FontInfo, fontRenderer: T): T {
         FONT_REGISTRY[fontInfo] = fontRenderer
+        return fontRenderer
+    }
+
+    private fun <T : CustomFontRenderer> registerCustomFont(fontInfo: FontInfo, fontRenderer: T): T {
+        CUSTOM_FONT_REGISTRY[fontInfo] = fontRenderer
         return fontRenderer
     }
 
@@ -75,6 +114,7 @@ object Fonts : MinecraftInstance {
                 getFontFromFile("Roboto-Medium.ttf", 72).asGameFontRenderer())
             fontBold180 = register(FontInfo(name = "Roboto Bold", size = 180),
                 getFontFromFile("Roboto-Bold.ttf", 180).asGameFontRenderer())
+
             // SFUI
             fontSFUI35 = register(FontInfo(name = "sfui", size = 35),
                 getFontFromFile("sfui.ttf", 35).asGameFontRenderer())
@@ -85,6 +125,56 @@ object Fonts : MinecraftInstance {
                 getFontFromFile("iconxd.ttf", 85).asGameFontRenderer())
             fontNovoAngularIcon85 = register(FontInfo(name = "novoangular", size = 85),
                 getFontFromFile("novoangular.ttf", 85).asGameFontRenderer())
+
+            ICONFONT_20 = registerCustomFont(FontInfo(name = "ICONFONT", size = 20),
+                getFontFromFile("stylesicons.ttf", 20).asSimpleFontRenderer())
+
+            CheckFont_20 = registerCustomFont(FontInfo(name = "Check Font", size = 20),
+                getFontFromFile("check.ttf", 20).asSimpleFontRenderer())
+
+            Nursultan15 = registerCustomFont(FontInfo(name = "Nursultan", size = 15),
+                getFontFromFile("Nursultan.ttf", 15).asSimpleFontRenderer())
+            Nursultan16 = registerCustomFont(FontInfo(name = "Nursultan", size = 16),
+                getFontFromFile("Nursultan.ttf", 16).asSimpleFontRenderer())
+            Nursultan18 = registerCustomFont(FontInfo(name = "Nursultan", size = 18),
+                getFontFromFile("Nursultan.ttf", 18).asSimpleFontRenderer())
+            Nursultan20 = registerCustomFont(FontInfo(name = "Nursultan", size = 20),
+                getFontFromFile("Nursultan.ttf", 20).asSimpleFontRenderer())
+            Nursultan30 = registerCustomFont(FontInfo(name = "Nursultan", size = 30),
+                getFontFromFile("Nursultan.ttf", 30).asSimpleFontRenderer())
+
+            InterMedium_14 = registerCustomFont(FontInfo(name = "InterMedium", size = 14),
+                getFontFromFile("Inter_Medium.ttf", 14).asSimpleFontRenderer())
+            InterMedium_15 = registerCustomFont(FontInfo(name = "InterMedium", size = 15),
+                getFontFromFile("Inter_Medium.ttf", 15).asSimpleFontRenderer())
+            InterMedium_16 = registerCustomFont(FontInfo(name = "InterMedium", size = 16),
+                getFontFromFile("Inter_Medium.ttf", 16).asSimpleFontRenderer())
+            InterMedium_18 = registerCustomFont(FontInfo(name = "InterMedium", size = 18),
+                getFontFromFile("Inter_Medium.ttf", 18).asSimpleFontRenderer())
+            InterMedium_20 = registerCustomFont(FontInfo(name = "InterMedium", size = 20),
+                getFontFromFile("Inter_Medium.ttf", 20).asSimpleFontRenderer())
+
+            InterBold_15 = registerCustomFont(FontInfo(name = "InterBold", size = 15),
+                getFontFromFile("Inter_Bold.ttf", 15).asSimpleFontRenderer())
+            InterBold_18 = registerCustomFont(FontInfo(name = "InterBold", size = 18),
+                getFontFromFile("Inter_Bold.ttf", 18).asSimpleFontRenderer())
+            InterBold_20 = registerCustomFont(FontInfo(name = "InterBold", size = 20),
+                getFontFromFile("Inter_Bold.ttf", 20).asSimpleFontRenderer())
+            InterBold_26 = registerCustomFont(FontInfo(name = "InterBold", size = 26),
+                getFontFromFile("Inter_Bold.ttf", 26).asSimpleFontRenderer())
+            InterBold_30 = registerCustomFont(FontInfo(name = "InterBold", size = 30),
+                getFontFromFile("Inter_Bold.ttf", 30).asSimpleFontRenderer())
+
+            InterRegular_15 = registerCustomFont(FontInfo(name = "InterRegular", size = 15),
+                getFontFromFile("Inter_Regular.ttf", 15).asSimpleFontRenderer())
+            InterRegular_35 = registerCustomFont(FontInfo(name = "InterRegular", size = 35),
+                getFontFromFile("Inter_Regular.ttf", 35).asSimpleFontRenderer())
+            InterRegular_40 = registerCustomFont(FontInfo(name = "InterRegular", size = 40),
+                getFontFromFile("Inter_Regular.ttf", 40).asSimpleFontRenderer())
+
+            fontTahomaSmall = register(FontInfo(name = "Tahoma", size = 18),
+                getFontFromFile("Tahoma.ttf", 18).asGameFontRenderer())
+
 
             loadCustomFonts()
         }
@@ -182,5 +272,9 @@ object Fonts : MinecraftInstance {
 
     private fun Font.asGameFontRenderer(): GameFontRenderer {
         return GameFontRenderer(this@asGameFontRenderer)
+    }
+
+    private fun Font.asSimpleFontRenderer(): SimpleFontRenderer {
+        return SimpleFontRenderer.create(this) as SimpleFontRenderer
     }
 }

@@ -21,8 +21,6 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.Fonts.font35
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontIconXD85
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontNovoAngularIcon85
-import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI35
-import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI40
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils
 import net.ccbluex.liquidbounce.utils.render.shader.UIEffectRenderer.drawShadowWithCustomAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -32,6 +30,8 @@ import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInBackN
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeOutBackNotify
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI35
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI40
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import org.lwjgl.opengl.GL11

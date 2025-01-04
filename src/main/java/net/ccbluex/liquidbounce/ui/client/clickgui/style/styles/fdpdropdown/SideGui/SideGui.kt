@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.util
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.objects.Drag
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
-import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.Fonts
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.ClientColorMode
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.ThemeFadeSpeed
@@ -348,10 +348,10 @@ class SideGui : GuiPanel() {
                         Color.WHITE.rgb
                     )
                 }
-                Fonts.InterBold.InterBold26.drawCenteredStringShadow(
+                Fonts.InterBold_26.drawCenteredStringShadow(
                     mode.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
                     xPos + cardWidth / 2f,
-                    yPos + cardHeight / 2f - Fonts.InterBold.InterBold26.height / 2,
+                    yPos + cardHeight / 2f - Fonts.InterBold_26.height / 2,
                     DrRenderUtils.applyOpacity(-1, alpha / 255f)
                 )
             }
@@ -406,7 +406,7 @@ class SideGui : GuiPanel() {
             Color(100, 150, 100, alpha).rgb
         )
 
-        Fonts.InterBold.InterBold26.drawString(
+        Fonts.InterBold_26.drawString(
             "BG Alpha: ${bgAlpha.toInt()}",
             sliderX + 2,
             sliderY - 12,
@@ -451,14 +451,14 @@ class SideGui : GuiPanel() {
             )
         }
 
-        Fonts.InterBold.InterBold26.drawString(
+        Fonts.InterBold_26.drawString(
             bgHexInput,
             x + 2,
             y + 3,
             Color.WHITE.rgb
         )
 
-        Fonts.InterBold.InterBold26.drawString(
+        Fonts.InterBold_26.drawString(
             "Hex:",
             x,
             y - 12,
@@ -526,10 +526,10 @@ class SideGui : GuiPanel() {
                     )
                 }
 
-                Fonts.InterBold.InterBold26.drawCenteredStringShadow(
+                Fonts.InterBold_26.drawCenteredStringShadow(
                     colorName,
                     colorX + colorWidth / 2f,
-                    colorY + colorHeight / 2f - Fonts.InterBold.InterBold26.height / 2,
+                    colorY + colorHeight / 2f - Fonts.InterBold_26.height / 2,
                     Color.WHITE.rgb
                 )
             }
@@ -599,7 +599,7 @@ class SideGui : GuiPanel() {
             fadeSpeedSliderHeight.toDouble(),
             Color(100, 150, 100).rgb
         )
-        Fonts.InterBold.InterBold26.drawString(
+        Fonts.InterBold_26.drawString(
             "Speed: $ThemeFadeSpeed",
             fadeSpeedSliderX + 5,
             fadeSpeedSliderY - 15,
@@ -614,7 +614,7 @@ class SideGui : GuiPanel() {
             buttonHeight.toDouble(),
             toggleColor
         )
-        Fonts.InterBold.InterBold26.drawString(
+        Fonts.InterBold_26.drawString(
             "Side",
             buttonX + 2,
             buttonY + 2,
@@ -626,8 +626,8 @@ class SideGui : GuiPanel() {
         if (colorHexFocused) {
             drawRoundedOutline(hexX, hexY, hexX + hexW, hexY + hexH, 2f, 1.5f, Color.WHITE.rgb)
         }
-        Fonts.InterBold.InterBold26.drawString(colorHexInput, hexX + 2, hexY + 2, Color.WHITE.rgb)
-        Fonts.InterBold.InterBold26.drawString("Hex:", hexX, hexY - 12, DrRenderUtils.applyOpacity(-1, alpha / 255f))
+        Fonts.InterBold_26.drawString(colorHexInput, hexX + 2, hexY + 2, Color.WHITE.rgb)
+        Fonts.InterBold_26.drawString("Hex:", hexX, hexY - 12, DrRenderUtils.applyOpacity(-1, alpha / 255f))
     }
 
     private fun checkColorCategoryInteractions(mouseX: Int, mouseY: Int) {
@@ -675,7 +675,7 @@ class SideGui : GuiPanel() {
             buttonToggleHeight.toDouble(),
             openFolderButtonColor
         )
-        Fonts.InterBold.InterBold26.drawString(
+        Fonts.InterBold_26.drawString(
             "OPEN FOLDER",
             openFolderButtonX + 10,
             openFolderButtonY + 5,
@@ -699,7 +699,7 @@ class SideGui : GuiPanel() {
             buttonToggleWidth.toDouble(), buttonToggleHeight.toDouble(),
             onlineButtonColor
         )
-        Fonts.InterBold.InterBold26.drawString(
+        Fonts.InterBold_26.drawString(
             "ONLINE",
             onlineButtonX + 10,
             onlineButtonY + 5,
@@ -723,7 +723,7 @@ class SideGui : GuiPanel() {
             buttonToggleWidth.toDouble(), buttonToggleHeight.toDouble(),
             localButtonColor
         )
-        Fonts.InterBold.InterBold26.drawString(
+        Fonts.InterBold_26.drawString(
             "LOCAL",
             localButtonX + 10,
             localButtonY + 5,
@@ -757,7 +757,7 @@ class SideGui : GuiPanel() {
                 for (file in localConfigs) {
                     drawSingleConfigButton(mouseX, mouseY, alpha, configX, configY, buttonWidth, buttonHeight) {
                         val configName = file.name.removeSuffix(".txt")
-                        Fonts.InterBold.InterBold26.drawString(
+                        Fonts.InterBold_26.drawString(
                             configName,
                             configX + 5,
                             configY + 5,
@@ -778,7 +778,7 @@ class SideGui : GuiPanel() {
                     }
                 }
             } else {
-                Fonts.InterBold.InterBold26.drawString(
+                Fonts.InterBold_26.drawString(
                     "No local configurations available.",
                     configX,
                     configY,
@@ -790,7 +790,7 @@ class SideGui : GuiPanel() {
                 for (i in autoSettingsList!!.indices) {
                     val autoSetting = autoSettingsList!![i]
                     drawSingleConfigButton(mouseX, mouseY, alpha, configX, configY, buttonWidth, buttonHeight) {
-                        Fonts.InterBold.InterBold26.drawString(
+                        Fonts.InterBold_26.drawString(
                             autoSetting.name,
                             configX + 5,
                             configY + 5,
@@ -811,7 +811,7 @@ class SideGui : GuiPanel() {
                     }
                 }
             } else {
-                Fonts.InterBold.InterBold26.drawString(
+                Fonts.InterBold_26.drawString(
                     "No online configurations available.",
                     configX,
                     configY,
@@ -866,7 +866,7 @@ class SideGui : GuiPanel() {
     }
 
     private fun drawUiCategory(alpha: Int) {
-        Fonts.InterBold.InterBold26.drawString(
+        Fonts.InterBold_26.drawString(
             "Not Finished - Coming Soon",
             drag!!.x + rectWidth / 2,
             drag!!.y + rectHeight / 2,
@@ -961,7 +961,7 @@ class SideGui : GuiPanel() {
             val hovered = DrRenderUtils.isHovering(
                 xVal - 30, yVal - 5,
                 60f,
-                (Fonts.InterBold.InterBold26.height + 10).toFloat(),
+                (Fonts.InterBold_26.height + 10).toFloat(),
                 mouseX, mouseY
             )
 
@@ -989,12 +989,12 @@ class SideGui : GuiPanel() {
             drawCustomShapeWithRadius(
                 xVal - 30, yVal - 5,
                 60f,
-                (Fonts.InterBold.InterBold26.height + 10).toFloat(),
+                (Fonts.InterBold_26.height + 10).toFloat(),
                 6f,
                 finalColor
             )
 
-            Fonts.InterBold.InterBold26.drawCenteredString(cat, xVal, yVal, textColor)
+            Fonts.InterBold_26.drawCenteredString(cat, xVal, yVal, textColor)
             xOffset += 60f + 10f
         }
     }
@@ -1010,7 +1010,7 @@ class SideGui : GuiPanel() {
             val hovered = DrRenderUtils.isHovering(
                 xVal - 30, yVal - 5,
                 60f,
-                (Fonts.InterBold.InterBold26.height + 10).toFloat(),
+                (Fonts.InterBold_26.height + 10).toFloat(),
                 mouseX, mouseY
             )
             if (hovered) {
@@ -1035,7 +1035,7 @@ class SideGui : GuiPanel() {
             val hovered = DrRenderUtils.isHovering(
                 xVal - 30, yVal - 5,
                 60f,
-                (Fonts.InterBold.InterBold26.height + 10).toFloat(),
+                (Fonts.InterBold_26.height + 10).toFloat(),
                 mouseX, mouseY
             )
             if (hovered) {

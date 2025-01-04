@@ -18,12 +18,10 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexturedModalRect
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.font
 import net.ccbluex.liquidbounce.config.choices
-import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.resources.I18n
 import net.minecraft.potion.Potion
-import net.minecraft.potion.PotionEffect
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
