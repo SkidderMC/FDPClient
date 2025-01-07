@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils.render
 
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.getHealth
+import net.ccbluex.liquidbounce.utils.extensions.lerp
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
@@ -179,6 +180,30 @@ object ColorUtils {
 
     fun clearColor() {
         GlStateManager.color(1f, 1f, 1f, 1f)
+    }
+
+    fun getOverallColorFrom(color1: Int, color2: Int, percentTo2: Float): Int {
+        return Color(
+            lerp((color1 shr 16 and 0xFF).toFloat(), (color2 shr 16 and 0xFF).toFloat(), percentTo2),
+            lerp((color1 shr 8 and 0xFF).toFloat(), (color2 shr 8 and 0xFF).toFloat(), percentTo2),
+            lerp((color1 and 0xFF).toFloat(), (color2 and 0xFF).toFloat(), percentTo2),
+            lerp((color1 shr 24 and 0xFF).toFloat(), (color2 shr 24 and 0xFF).toFloat(), percentTo2)
+        ).rgb
+    }
+
+    fun getCustomColor(red: Int, green: Int, blue: Int, alpha: Int): Int {
+        var color = 0
+        color = color or (alpha shl 24)
+        color = color or (red shl 16)
+        color = color or (green shl 8)
+        return blue.let { color = color or it; color }
+    }
+
+    fun swapAlpha(color: Int, alpha: Float): Int {
+        val f = color shr 16 and 0xFF
+        val f1 = color shr 8 and 0xFF
+        val f2 = color and 0xFF
+        return getCustomColor(f, f1, f2, alpha.toInt())
     }
 
     fun reAlpha(color: Int, alpha: Float): Color {

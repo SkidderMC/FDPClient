@@ -420,41 +420,76 @@ open class NumberValue(
 }
 
 class ColorValue(
-    val nameVal: String,
-    initialColor: Color,
-    val module: Any?
-) {
+    name: String,
+    defaultColor: Color,
+    var rainbow: Boolean = false,
+    var showPicker: Boolean = false
+) : Value<Color>(name, defaultColor) {
+
     var hue = 0f
     var saturation = 1f
     var brightness = 1f
     var alpha = 1f
-    var rainbow = false
 
     init {
-        set(initialColor)
+        changeValue(defaultColor)
     }
 
-    fun get(): Color {
+    fun getColor(): Color {
         val base = Color.getHSBColor(hue, saturation, brightness)
         val finalAlpha = (alpha * 255).toInt().coerceIn(0, 255)
         return Color(base.red, base.green, base.blue, finalAlpha)
     }
 
-    fun set(color: Color) {
-        val hsb = Color.RGBtoHSB(color.red, color.green, color.blue, null)
+    fun setColor(color: Color) {
+        set(color)
+    }
+
+    override fun onInit(value: Color) {
+        val r = value.red
+        val g = value.green
+        val b = value.blue
+        val a = value.alpha
+        val hsb = Color.RGBtoHSB(r, g, b, null)
         hue = hsb[0]
         saturation = hsb[1]
         brightness = hsb[2]
-        alpha = color.alpha / 255f
+        alpha = a / 255f
+    }
+
+    override fun onChange(oldValue: Color, newValue: Color): Color {
+        val r = newValue.red
+        val g = newValue.green
+        val b = newValue.blue
+        val a = newValue.alpha
+        val hsb = Color.RGBtoHSB(r, g, b, null)
+        hue = hsb[0]
+        saturation = hsb[1]
+        brightness = hsb[2]
+        alpha = a / 255f
+        return newValue
+    }
+
+    override fun toJsonF(): JsonElement? {
+        val argbHex = "#%08X".format(value.rgb)
+        return JsonPrimitive(argbHex)
+    }
+
+    override fun fromJsonF(element: JsonElement): Color? {
+        if (element.isJsonPrimitive) {
+            val raw = element.asString.removePrefix("#")
+            val argb = raw.toLongOrNull(16)?.toInt()
+            if (argb != null) return Color(argb, true)
+        }
+        return null
     }
 }
 
 val customBgColorValue = ColorValue(
     "CustomBG",
     Color(32, 32, 64),
-    null
+    false
 )
-
 
 fun int(
     name: String,
