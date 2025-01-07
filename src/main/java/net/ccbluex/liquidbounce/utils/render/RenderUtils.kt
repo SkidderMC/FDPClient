@@ -15,7 +15,6 @@ import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.col
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorRedTwoValue
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorRedValue
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.start
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.block.center
@@ -47,12 +46,14 @@ import net.minecraft.item.ItemSword
 import net.minecraft.util.*
 import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
+import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL14
 import org.lwjgl.util.glu.Cylinder
 import java.awt.Color
 import java.awt.image.BufferedImage
 import kotlin.math.*
+
 
 object RenderUtils : MinecraftInstance {
     // ARGB 0xff006fff
@@ -356,31 +357,61 @@ object RenderUtils : MinecraftInstance {
     fun drawConesForEntities(f: () -> Unit) {
         pushAttrib()
         pushMatrix()
+
         disableTexture2D()
         disableCull()
+
         enableBlend()
         enableDepth()
-        glDepthMask(false)
+        depthMask(false)
         blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
         f()
-        glColor(Color.WHITE)
+
+        resetColor()
+
         enableTexture2D()
-        glDepthMask(true)
+        depthMask(true)
+        enableCull()
+
         disableBlend()
         disableDepth()
-        enableCull()
+
         popMatrix()
         popAttrib()
     }
-    fun drawCone(width: Float, height: Float) {
+
+    fun drawCone(width: Float, height: Float, useTexture: Boolean = false) {
+        if (useTexture) {
+            // TODO: Maybe image option support to allow many different type of hats.
+            mc.textureManager.bindTexture(ResourceLocation("fdpclient/hat.png"))
+            enableTexture2D()
+            depthMask(true)
+        }
+
         glBegin(GL_TRIANGLE_FAN)
+
+        if (useTexture) {
+            // Place texture in the middle, on the tip
+            glTexCoord2d(0.5, 0.5)
+        }
+
         // The tip of the cone
         glVertex3d(0.0, height.toDouble(), 0.0)
+
         for (point in circlePoints) {
+            if (useTexture) {
+                val u = 0.5 + 0.5 * point.xCoord
+                val v = 0.5 + 0.5 * point.zCoord
+                glTexCoord2d(u, v)
+            }
+
             glVertex3d(point.xCoord * width, 0.0, point.zCoord * width)
         }
+
         glEnd()
     }
+
 
     fun drawEntityBox(entity: Entity, color: Color, outline: Boolean) {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -1008,6 +1039,31 @@ object RenderUtils : MinecraftInstance {
     fun drawBorderedRect(x: Float, y: Float, x2: Float, y2: Float, width: Float, borderColor: Int, rectColor: Int) {
         drawRect(x, y, x2, y2, rectColor)
         drawBorder(x, y, x2, y2, width, borderColor)
+    }
+
+    fun drawBorderedRectRGB(x: Int, y: Int, x2: Int, y2: Int, width: Float, color1: Int, color2: Int) {
+        drawRect(x, y, x2, y2, color2)
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
+
+        glColor(color1)
+        glLineWidth(width)
+        glBegin(1)
+        glVertex2d(x.toDouble(), y.toDouble())
+        glVertex2d(x.toDouble(), y2.toDouble())
+        glVertex2d(x2.toDouble(), y2.toDouble())
+        glVertex2d(x2.toDouble(), y.toDouble())
+        glVertex2d(x.toDouble(), y.toDouble())
+        glVertex2d(x2.toDouble(), y.toDouble())
+        glVertex2d(x.toDouble(), y2.toDouble())
+        glVertex2d(x2.toDouble(), y2.toDouble())
+        glEnd()
+
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
+        glDisable(GL_LINE_SMOOTH)
     }
 
     fun drawBorderedRect(x: Int, y: Int, x2: Int, y2: Int, width: Int, borderColor: Int, rectColor: Int) {
@@ -2445,6 +2501,10 @@ object RenderUtils : MinecraftInstance {
     }
 
     fun glColor(color: Color) = glColor(color.red, color.green, color.blue, color.alpha)
+
+    fun glStateManagerColor(color: Color) =
+        color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f)
+
 
     fun glColor(hex: Int) =
         glColor(hex shr 16 and 0xFF, hex shr 8 and 0xFF, hex and 0xFF, hex shr 24 and 0xFF)

@@ -22,9 +22,9 @@ import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCone
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawConesForEntities
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.glStateManagerColor
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.Entity
@@ -32,20 +32,19 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
 
-object Hat : Module("ChineseHat", Category.VISUAL) {
+object ChineseHat : Module("ChineseHat", Category.VISUAL) {
+
+    private val useChineseHatTexture by boolean("UseChineseHatTexture", false)
 
     private val colorMode by choices("Color", arrayOf("Custom", "DistanceColor", "Rainbow"), "Custom")
-    private val colors =
-        ColorSettingsInteger(this, zeroAlphaCheck = true, alphaApply = { true }) { colorMode == "Custom" }.with(
-            0, 160, 255, 150
-        )
+    private val colors = ColorSettingsInteger(this, zeroAlphaCheck = true, alphaApply = { true }) { colorMode == "Custom" }.with(0, 160, 255, 150)
 
     private val playerHeight by float("PlayerHeight", 0.5f, 0.25f..2f)
 
     private val coneWidth by float("ConeWidth", 0.5f, 0f..2f)
     private val coneHeight by float("ConeHeight", 0.5f, 0.1f..2f)
 
-    private val renderSelf by boolean("RenderSelf", true)
+    private val renderSelf by boolean("RenderSelf", false)
 
     private val maxRenderDistance by int("MaxRenderDistance", 100, 1..200)
 
@@ -64,8 +63,6 @@ object Hat : Module("ChineseHat", Category.VISUAL) {
 
     val render = handler<Render3DEvent> {
         drawConesForEntities {
-            var lastColor: Color? = null
-
             for (entity in entityLookup) {
                 val isRenderingSelf =
                     entity == mc.thePlayer && (mc.gameSettings.thirdPersonView != 0 || FreeCam.handleEvents())
@@ -87,14 +84,9 @@ object Hat : Module("ChineseHat", Category.VISUAL) {
                 GlStateManager.pushMatrix()
                 GlStateManager.translate(x, y, z)
 
-                figureOutColor(entity).let {
-                    if (it != lastColor) {
-                        RenderUtils.glColor(it)
-                        lastColor = it
-                    }
-                }
+                glStateManagerColor(figureOutColor(entity))
 
-                drawCone(coneWidth, coneHeight)
+                drawCone(coneWidth, coneHeight, useChineseHatTexture)
 
                 GlStateManager.popMatrix()
 
