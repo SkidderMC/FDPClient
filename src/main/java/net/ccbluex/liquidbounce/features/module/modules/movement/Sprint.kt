@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.combat.SuperKnockback
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
+import net.ccbluex.liquidbounce.utils.extensions.setSprintSafely
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.activeSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
@@ -56,7 +57,7 @@ object Sprint : Module("Sprint", Category.MOVEMENT, gameDetecting = false, hideM
         val player = mc.thePlayer ?: return
 
         if (SuperKnockback.breakSprint()) {
-            player.isSprinting = false
+            player setSprintSafely false
             return
         }
 
@@ -65,19 +66,20 @@ object Sprint : Module("Sprint", Category.MOVEMENT, gameDetecting = false, hideM
 
         if (Scaffold.handleEvents()) {
             if (!Scaffold.sprint) {
-                player.isSprinting = false
+                player setSprintSafely false
                 isSprinting = false
                 return
             } else if (Scaffold.sprint && Scaffold.eagle == "Normal" && player.isMoving && player.onGround && Scaffold.eagleSneaking && Scaffold.eagleSprint) {
-                player.isSprinting = true
+                player setSprintSafely true
                 isSprinting = true
                 return
             }
         }
 
         if (handleEvents() || alwaysCorrect) {
-            player.isSprinting = !shouldStopSprinting(movementInput, isUsingItem)
+            player setSprintSafely !shouldStopSprinting(movementInput, isUsingItem)
             isSprinting = player.isSprinting
+
             if (player.isSprinting && allDirections && mode != "Legit") {
                 if (!allDirectionsLimitSpeedGround || player.onGround) {
                     player.motionX *= allDirectionsLimitSpeed

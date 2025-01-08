@@ -637,7 +637,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V, hideModule
             }
         }
 
-        val simPlayer = SimulatedPlayer.fromClientPlayer(event.originalInput)
+        val simPlayer = SimulatedPlayer.fromClientPlayer(RotationUtils.modifiedInput)
+        simPlayer.rotationYaw = currRotation.yaw
 
         simPlayer.tick()
 

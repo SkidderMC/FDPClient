@@ -204,6 +204,16 @@ fun EntityPlayerSP.stop() {
     stopY()
 }
 
+/**
+ * Its sole purpose is to prevent duplicate sprint state updates.
+ */
+infix fun EntityLivingBase.setSprintSafely(new: Boolean) {
+    if (new == isSprinting) {
+        return
+    }
+    isSprinting = new
+}
+
 // Modified mc.playerController.onPlayerRightClick() that sends correct stack in its C08
 fun EntityPlayerSP.onPlayerRightClick(
     clickPos: BlockPos, side: EnumFacing, clickVec: Vec3,
