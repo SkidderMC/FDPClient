@@ -83,6 +83,11 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
     private val posProcess by boolean("PosProcess", false) { renderPos }
 
     private val posOutline by boolean("PosOutline", false)
+
+    private val testsuperwow by ColorValue("xxx", Color.CYAN, false, false)
+
+    private val testsuperwx by ColorValue("SuperWow", Color.CYAN, false, false)
+
     /**
      * VALUES
      */

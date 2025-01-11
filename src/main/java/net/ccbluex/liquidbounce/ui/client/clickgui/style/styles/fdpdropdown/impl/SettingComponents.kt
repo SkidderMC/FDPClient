@@ -120,7 +120,7 @@ class SettingComponents(private val module: Module) : Component() {
                 colorPickerAnimationMap[setting] = DecelerateAnimation(300, 1.0, Direction.FORWARDS)
 
                 setting.showPicker = false
-                setting.hueSliderColor = setting.get()
+                setting.hueSliderY
             }
         }
     }
@@ -922,7 +922,7 @@ class SettingComponents(private val module: Module) : Component() {
                 }
             }
 
-                // Render the key bind
+            // Render the key bind
             val bind = Keyboard.getKeyName(module.keyBind)
             val hoveringBindRect = isClickable(
                 y + Fonts.InterBold_18.getMiddleOfBox(rectHeight) - 1

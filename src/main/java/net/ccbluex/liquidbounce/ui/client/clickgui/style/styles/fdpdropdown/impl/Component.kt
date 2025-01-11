@@ -145,4 +145,16 @@ abstract class Component {
             }
         }
     }
+
+    fun withDelayedSave(f: () -> Unit) {
+        f()
+
+        with(WaitTickUtils) {
+            if (!hasScheduled(this)) {
+                conditionalSchedule(this, 10) {
+                    (sliderValueHeld == null).also { if (it) saveConfig(valuesConfig) }
+                }
+            }
+        }
+    }
 }

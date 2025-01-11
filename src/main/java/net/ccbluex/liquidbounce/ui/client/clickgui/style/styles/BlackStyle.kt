@@ -241,7 +241,7 @@ object BlackStyle : Style() {
 
                             if (mouseButton == 0 && mouseX in minX..maxX && mouseY in y - 2..y + 5 || sliderValueHeld == value) {
                                 val percentage = (mouseX - x) / width.toFloat()
-                                value.set(
+                                value.setAndSaveValueOnButtonRelease(
                                     round(value.minimum + (value.maximum - value.minimum) * percentage).coerceIn(
                                         value.range
                                     )
@@ -281,7 +281,7 @@ object BlackStyle : Style() {
 
                             if (mouseButton == 0 && mouseX in minX..maxX && mouseY in y - 2..y + 5 || sliderValueHeld == value) {
                                 val percentage = (mouseX - x) / width.toFloat()
-                                value.set(value.lerpWith(percentage).coerceIn(value.range))
+                                value.setAndSaveValueOnButtonRelease(value.lerpWith(percentage).coerceIn(value.range))
 
                                 sliderValueHeld = value
 
@@ -321,8 +321,14 @@ object BlackStyle : Style() {
                                 val percentage = (mouseX - minX - 4F) / (maxX - minX - 8F)
 
                                 if (abs(distToSlider1) <= abs(distToSlider2) && distToSlider2 <= 0) {
-                                    value.setFirst(value.lerpWith(percentage).coerceIn(value.minimum, slider2))
-                                } else value.setLast(value.lerpWith(percentage).coerceIn(slider1, value.maximum))
+                                    withDelayedSave {
+                                        value.setFirst(value.lerpWith(percentage).coerceIn(value.minimum, slider2), false)
+                                    }
+                                } else {
+                                    withDelayedSave {
+                                        value.setLast(value.lerpWith(percentage).coerceIn(slider1, value.maximum), false)
+                                    }
+                                }
 
                                 sliderValueHeld = value
 
@@ -371,8 +377,14 @@ object BlackStyle : Style() {
                                 val percentage = (mouseX - minX - 4F) / (maxX - minX - 8F)
 
                                 if (abs(distToSlider1) <= abs(distToSlider2) && distToSlider2 <= 0) {
-                                    value.setFirst(value.lerpWith(percentage).coerceIn(value.minimum, slider2))
-                                } else value.setLast(value.lerpWith(percentage).coerceIn(slider1, value.maximum))
+                                    withDelayedSave {
+                                        value.setFirst(value.lerpWith(percentage).coerceIn(value.minimum, slider2), false)
+                                    }
+                                } else {
+                                    withDelayedSave {
+                                        value.setLast(value.lerpWith(percentage).coerceIn(slider1, value.maximum), false)
+                                    }
+                                }
 
                                 sliderValueHeld = value
 
@@ -415,13 +427,13 @@ object BlackStyle : Style() {
                         is ColorValue -> {
                             val currentColor = value.selectedColor()
 
-                            val spacing = 10
+                            val spacing = 12
 
                             val startX = moduleElement.x + moduleElement.width + 4
                             val startY = yPos - 1
 
                             // Color preview
-                            val colorPreviewSize = 10
+                            val colorPreviewSize = 9
                             val colorPreviewX2 = maxX - colorPreviewSize
                             val colorPreviewX1 = colorPreviewX2 - colorPreviewSize
                             val colorPreviewY1 = startY + 1
@@ -448,35 +460,38 @@ object BlackStyle : Style() {
                             val hueSliderStartY = colorPickerStartY
                             val hueSliderEndY = colorPickerStartY + hueSliderHeight
 
+                            val rainbow = value.rainbow
 
-                            if (mouseButton == 0 && mouseX in colorPreviewX1..colorPreviewX2 && mouseY in colorPreviewY1..colorPreviewY2) {
-                                if (value.rainbow) {
-                                    value.rainbow = false
-                                } else {
-                                    value.showPicker = !value.showPicker
+                            if (mouseButton in arrayOf(0, 1)) {
+                                val isColorPreview = mouseX in colorPreviewX1..colorPreviewX2 && mouseY in colorPreviewY1..colorPreviewY2
+                                val isRainbowPreview = mouseX in rainbowPreviewX1..rainbowPreviewX2 && mouseY in colorPreviewY1..colorPreviewY2
+
+                                when {
+                                    isColorPreview -> {
+                                        if (mouseButton == 0 && rainbow) value.rainbow = false
+                                        if (mouseButton == 1) value.showPicker = !value.showPicker
+                                        clickSound()
+                                        return true
+                                    }
+                                    isRainbowPreview -> {
+                                        if (mouseButton == 0) value.rainbow = true
+                                        if (mouseButton == 1) value.showPicker = !value.showPicker
+                                        clickSound()
+                                        return true
+                                    }
                                 }
-
-                                clickSound()
-                                return true
-                            }
-
-                            if (mouseButton == 0 && mouseX in rainbowPreviewX1..rainbowPreviewX2 && mouseY in colorPreviewY1..colorPreviewY2) {
-                                value.rainbow = true
-
-                                clickSound()
-                                return true
                             }
 
                             val display = "${value.name}: ${"#%08X".format(currentColor.rgb)}"
 
-                            moduleElement.settingsWidth = font35.getStringWidth(display) + 8
+                            moduleElement.settingsWidth = (font35.getStringWidth(display) * 1.5F).roundToInt()
 
                             font35.drawString(display, textX, textY, Color.WHITE.rgb)
 
-                            val normalBorderColor = if (value.rainbow) 0 else Color.BLUE.rgb
-                            val rainbowBorderColor = if (value.rainbow) Color.BLUE.rgb else 0
+                            val normalBorderColor = if (rainbow) 0 else Color.BLUE.rgb
+                            val rainbowBorderColor = if (rainbow) Color.BLUE.rgb else 0
 
-                            val hue = if (value.rainbow) {
+                            val hue = if (rainbow) {
                                 Color.RGBtoHSB(currentColor.red, currentColor.green, currentColor.blue, null)[0]
                             } else {
                                 value.hueSliderY
@@ -512,9 +527,11 @@ object BlackStyle : Style() {
                                 val markerX = (colorPickerStartX..colorPickerEndX).lerpWith(value.colorPickerPos.x)
                                 val markerY = (colorPickerStartY..colorPickerEndY).lerpWith(value.colorPickerPos.y)
 
-                                RenderUtils.drawBorder(
-                                    markerX - 2f, markerY - 2f, markerX + 3f, markerY + 3f, 1.5f, Color.WHITE.rgb
-                                )
+                                if (!rainbow) {
+                                    RenderUtils.drawBorder(
+                                        markerX - 2f, markerY - 2f, markerX + 3f, markerY + 3f, 1.5f, Color.WHITE.rgb
+                                    )
+                                }
 
                                 val hueSliderX = colorPickerEndX + 5
 
@@ -596,7 +613,7 @@ object BlackStyle : Style() {
                                     hueSliderX.toFloat() - 1,
                                     hueMarkerY - 1f,
                                     hueSliderX + hueSliderWidth + 1f,
-                                    (hueMarkerY + 1).coerceAtMost((hueSliderEndY).toFloat()) + 1,
+                                    hueMarkerY + 1f,
                                     1.5f,
                                     Color.WHITE.rgb,
                                 )
@@ -605,15 +622,15 @@ object BlackStyle : Style() {
                                     opacityStartX.toFloat() - 1,
                                     opacityMarkerY - 1f,
                                     opacityEndX + 1f,
-                                    (opacityMarkerY + 1).coerceAtMost((hueSliderEndY).toFloat()) + 1,
+                                    opacityMarkerY + 1f,
                                     1.5f,
                                     Color.WHITE.rgb,
                                 )
 
                                 val inColorPicker =
-                                    mouseX in colorPickerStartX until colorPickerEndX && mouseY in colorPickerStartY until colorPickerEndY
+                                    mouseX in colorPickerStartX until colorPickerEndX && mouseY in colorPickerStartY until colorPickerEndY && !rainbow
                                 val inHueSlider =
-                                    mouseX in hueSliderX - 1..hueSliderX + hueSliderWidth + 1 && mouseY in hueSliderStartY until hueSliderEndY
+                                    mouseX in hueSliderX - 1..hueSliderX + hueSliderWidth + 1 && mouseY in hueSliderStartY until hueSliderEndY && !rainbow
                                 val inOpacitySlider =
                                     mouseX in opacityStartX - 1..opacityEndX + 1 && mouseY in hueSliderStartY until hueSliderEndY
 
@@ -676,30 +693,26 @@ object BlackStyle : Style() {
 
                                     sliderValueHeld = value
 
-                                    if (inHueSlider) {
-                                        value.hueSliderColor = finalColor
-                                    }
-
                                     value.setAndSaveValueOnButtonRelease(finalColor)
 
                                     if (mouseButton == 0) {
                                         value.lastChosenSlider = when {
-                                            inColorPicker -> ColorValue.SliderType.COLOR
-                                            inHueSlider -> ColorValue.SliderType.HUE
+                                            inColorPicker && !rainbow -> ColorValue.SliderType.COLOR
+                                            inHueSlider && !rainbow -> ColorValue.SliderType.HUE
                                             inOpacitySlider -> ColorValue.SliderType.OPACITY
                                             else -> null
                                         }
                                         return true
                                     }
                                 }
-                                yPos += colorPickerHeight - colorPreviewSize + spacing + 6
+                                yPos += colorPickerHeight + colorPreviewSize - 6
                             }
                             drawBorderedRect(
                                 colorPreviewX1,
                                 colorPreviewY1,
                                 colorPreviewX2,
                                 colorPreviewY2,
-                                2.5f,
+                                1.5,
                                 normalBorderColor,
                                 value.get().rgb
                             )
@@ -709,7 +722,7 @@ object BlackStyle : Style() {
                                 colorPreviewY1,
                                 rainbowPreviewX2,
                                 colorPreviewY2,
-                                2.5f,
+                                1.5f,
                                 rainbowBorderColor,
                                 ColorUtils.rainbow(alpha = value.opacitySliderY).rgb
                             )

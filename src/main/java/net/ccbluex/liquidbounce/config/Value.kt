@@ -44,9 +44,8 @@ sealed class Value<T>(
         return set(new)
     }
 
-    open fun set(newValue: T, saveImmediately: Boolean = true): Boolean {
-        if (newValue == value || hidden || excluded)
-            return false
+    fun set(newValue: T, saveImmediately: Boolean = true): Boolean {
+        if (newValue == value || hidden || excluded) return false
 
         val oldValue = value
 
@@ -192,8 +191,8 @@ open class IntegerRangeValue(
     isSupported: (() -> Boolean)? = null,
 ) : Value<IntRange>(name, value, subjective, isSupported, suffix) {
 
-    fun setFirst(newValue: Int) = set(newValue..value.last)
-    fun setLast(newValue: Int) = set(value.first..newValue)
+    fun setFirst(newValue: Int, immediate: Boolean = true) = set(newValue..value.last, immediate)
+    fun setLast(newValue: Int, immediate: Boolean = true) = set(value.first..newValue, immediate)
 
     override fun toJsonF(): JsonElement {
         return JsonPrimitive("${value.first}-${value.last}")
@@ -231,8 +230,8 @@ open class FloatRangeValue(
     isSupported: (() -> Boolean)? = null,
 ) : Value<ClosedFloatingPointRange<Float>>(name, value, subjective, isSupported, suffix) {
 
-    fun setFirst(newValue: Float) = set(newValue..value.endInclusive)
-    fun setLast(newValue: Float) = set(value.start..newValue)
+    fun setFirst(newValue: Float, immediate: Boolean = true) = set(newValue..value.endInclusive, immediate)
+    fun setLast(newValue: Float, immediate: Boolean = true) = set(value.start..newValue, immediate)
 
     override fun toJsonF(): JsonElement {
         return JsonPrimitive("${value.start}-${value.endInclusive}")
@@ -320,11 +319,10 @@ open class FontValue(
         return valueObject
     }
 
-    override fun fromJsonF(element: JsonElement) =
-        if (element.isJsonObject) {
-            val valueObject = element.asJsonObject
-            Fonts.getFontRenderer(valueObject["fontName"].asString, valueObject["fontSize"].asInt)
-        } else null
+    override fun fromJsonF(element: JsonElement) = if (element.isJsonObject) {
+        val valueObject = element.asJsonObject
+        Fonts.getFontRenderer(valueObject["fontName"].asString, valueObject["fontSize"].asInt)
+    } else null
 
     val displayName
         get() = when (value) {
@@ -424,14 +422,10 @@ open class NumberValue(
     }
 }
 
-class ColorValue(
-    name: String,
-    defaultColor: Color,
-    var rainbow: Boolean = false,
-    var showPicker: Boolean = false
-) : Value<Color>(name, defaultColor) {
-    var hueSliderColor = value
-
+open class ColorValue(
+    name: String, defaultColor: Color, var rainbow: Boolean = false, var showPicker: Boolean = false,
+    isSupported: (() -> Boolean)? = null
+) : Value<Color>(name, defaultColor, isSupported = isSupported) {
     // Sliders
     var hueSliderY = 0F
     var opacitySliderY = 0F
@@ -451,129 +445,104 @@ class ColorValue(
 
     fun selectedColor() = if (rainbow) {
         ColorUtils.rainbow(alpha = opacitySliderY)
-    }  else {
+    } else {
         get()
     }
 
-    fun setColor(color: Color) = set(color)
-
     override fun toJsonF(): JsonElement {
-        val argbHex = "#%08X".format(value.rgb)
-
-        return JsonPrimitive("hex: $argbHex, rainbow: $rainbow")
+        val pos = colorPickerPos
+        return JsonPrimitive("colorpicker: [${pos.x}, ${pos.y}], hueslider: ${hueSliderY}, opacity:${opacitySliderY}, rainbow: $rainbow")
     }
 
     override fun fromJsonF(element: JsonElement): Color? {
         if (element.isJsonPrimitive) {
             val raw = element.asString
 
-            val regex = """hex:\s*#([A-Fa-f0-9]{6,8}),\s*rainbow:\s*(true|false)""".toRegex()
+            val regex =
+                """colorpicker:\s*\[\s*(-?\d*\.?\d+),\s*(-?\d*\.?\d+)\s*],\s*hueslider:\s*(-?\d*\.?\d+),\s*opacity:\s*(-?\d*\.?\d+),\s*rainbow:\s*(true|false)""".toRegex()
             val matchResult = regex.find(raw)
 
             if (matchResult != null) {
-                val hexString = matchResult.groupValues[1]
-                val rainbowString = matchResult.groupValues[2].toBoolean()
+                val colorPickerX = matchResult.groupValues[1].toFloatOrNull()
+                val colorPickerY = matchResult.groupValues[2].toFloatOrNull()
+                val hueSliderY = matchResult.groupValues[3].toFloatOrNull()
+                val opacitySliderY = matchResult.groupValues[4].toFloatOrNull()
+                val rainbowString = matchResult.groupValues[5].toBoolean()
 
-                val argb = hexString.toLongOrNull(16)?.toInt()
-                if (argb != null) {
-                    return Color(argb, true).also { rainbow = rainbowString }
+                if (colorPickerX != null && colorPickerY != null && hueSliderY != null && opacitySliderY != null) {
+                    colorPickerPos = Vector2f(colorPickerX, colorPickerY)
+                    this.hueSliderY = hueSliderY
+                    this.opacitySliderY = opacitySliderY
+                    this.rainbow = rainbowString
+
+                    return value
                 }
             }
         }
         return null
     }
 
-    // Any value set that is not coming from the ClickGUI styles should have the hue slider color changed too
-    override fun set(newValue: Color, saveImmediately: Boolean) = super.set(newValue, saveImmediately).also {
-        if (it && saveImmediately) {
-            hueSliderColor = newValue
+    override fun getString() =
+        "Color[picker=[${colorPickerPos.x},${colorPickerPos.y}],hueslider=${hueSliderY},opacity=${(opacitySliderY)},rainbow=$rainbow]"
+
+    fun readColorFromConfig(str: String): List<String>? {
+        val regex =
+            """Color\[picker=\[\s*(-?\d*\.?\d+),\s*(-?\d*\.?\d+)],\s*hueslider=\s*(-?\d*\.?\d+),\s*opacity=\s*(-?\d*\.?\d+),\s*rainbow=(true|false)]""".toRegex()
+        val matchResult = regex.find(str)
+
+        return matchResult?.let {
+            listOf(
+                it.groupValues[1],
+                it.groupValues[2],
+                it.groupValues[3],
+                it.groupValues[4],
+                it.groupValues[5]
+            )
         }
     }
 
-    override fun getString() = "Color[hex=${"#%06X".format(value.rgb)},rainbow=${rainbow}]"
-
-    fun readColorFromConfig(str: String): List<String>? {
-        val regex = """Color\[hex=#([0-9A-Fa-f]{6,8}),\s*rainbow=(true|false)]""".toRegex()
-        val matchResult = regex.find(str)
-
-        return matchResult?.let { listOf(it.groupValues[1], it.groupValues[2]) }
-    }
-
     enum class SliderType {
-        COLOR,
-        HUE,
-        OPACITY
+        COLOR, HUE, OPACITY
     }
 }
 
 fun int(
-    name: String,
-    value: Int,
-    range: IntRange = 0..Int.MAX_VALUE,
-    suffix: String? = null,
-    subjective: Boolean = false,
+    name: String, value: Int, range: IntRange = 0..Int.MAX_VALUE, suffix: String? = null, subjective: Boolean = false,
     isSupported: (() -> Boolean)? = null
 ) = IntegerValue(name, value, range, suffix, subjective, isSupported)
 
 fun float(
-    name: String,
-    value: Float,
-    range: ClosedFloatingPointRange<Float> = 0f..Float.MAX_VALUE,
-    suffix: String? = null,
-    subjective: Boolean = false,
-    isSupported: (() -> Boolean)? = null
+    name: String, value: Float, range: ClosedFloatingPointRange<Float> = 0f..Float.MAX_VALUE, suffix: String? = null,
+    subjective: Boolean = false, isSupported: (() -> Boolean)? = null
 ) = FloatValue(name, value, range, suffix, subjective, isSupported)
 
 fun choices(
-    name: String,
-    values: Array<String>,
-    value: String,
-    subjective: Boolean = false,
+    name: String, values: Array<String>, value: String, subjective: Boolean = false,
     isSupported: (() -> Boolean)? = null
 ) = ListValue(name, values, value, subjective, isSupported)
 
 fun block(
-    name: String,
-    value: Int,
-    subjective: Boolean = false,
-    isSupported: (() -> Boolean)? = null
+    name: String, value: Int, subjective: Boolean = false, isSupported: (() -> Boolean)? = null
 ) = BlockValue(name, value, subjective, isSupported)
 
 fun font(
-    name: String,
-    value: FontRenderer,
-    subjective: Boolean = false,
-    isSupported: (() -> Boolean)? = null
+    name: String, value: FontRenderer, subjective: Boolean = false, isSupported: (() -> Boolean)? = null
 ) = FontValue(name, value, subjective, isSupported)
 
 fun text(
-    name: String,
-    value: String,
-    subjective: Boolean = false,
-    isSupported: (() -> Boolean)? = null
+    name: String, value: String, subjective: Boolean = false, isSupported: (() -> Boolean)? = null
 ) = TextValue(name, value, subjective, isSupported)
 
 fun boolean(
-    name: String,
-    value: Boolean,
-    subjective: Boolean = false,
-    isSupported: (() -> Boolean)? = null
+    name: String, value: Boolean, subjective: Boolean = false, isSupported: (() -> Boolean)? = null
 ) = BoolValue(name, value, subjective, isSupported)
 
 fun intRange(
-    name: String,
-    value: IntRange,
-    range: IntRange = 0..Int.MAX_VALUE,
-    suffix: String? = null,
-    subjective: Boolean = false,
-    isSupported: (() -> Boolean)? = null
+    name: String, value: IntRange, range: IntRange = 0..Int.MAX_VALUE, suffix: String? = null,
+    subjective: Boolean = false, isSupported: (() -> Boolean)? = null
 ) = IntegerRangeValue(name, value, range, suffix, subjective, isSupported)
 
 fun floatRange(
-    name: String,
-    value: ClosedFloatingPointRange<Float>,
-    range: ClosedFloatingPointRange<Float> = 0f..Float.MAX_VALUE,
-    suffix: String? = null,
-    subjective: Boolean = false,
-    isSupported: (() -> Boolean)? = null
+    name: String, value: ClosedFloatingPointRange<Float>, range: ClosedFloatingPointRange<Float> = 0f..Float.MAX_VALUE,
+    suffix: String? = null, subjective: Boolean = false, isSupported: (() -> Boolean)? = null
 ) = FloatRangeValue(name, value, range, suffix, subjective, isSupported)

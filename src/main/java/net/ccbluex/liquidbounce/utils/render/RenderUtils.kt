@@ -1040,6 +1040,11 @@ object RenderUtils : MinecraftInstance {
         drawBorder(x, y, x2, y2, width, borderColor)
     }
 
+    fun drawBorderedRect(x: Int, y: Int, x2: Int, y2: Int, width: Number, borderColor: Int, rectColor: Int) {
+        drawRect(x, y, x2, y2, rectColor)
+        drawBorder(x, y, x2, y2, width, borderColor)
+    }
+
     fun drawBorderedRectRGB(x: Int, y: Int, x2: Int, y2: Int, width: Float, color1: Int, color2: Int) {
         drawRect(x, y, x2, y2, color2)
         glEnable(GL_BLEND)
@@ -1063,11 +1068,6 @@ object RenderUtils : MinecraftInstance {
         glEnable(GL_TEXTURE_2D)
         glDisable(GL_BLEND)
         glDisable(GL_LINE_SMOOTH)
-    }
-
-    fun drawBorderedRect(x: Int, y: Int, x2: Int, y2: Int, width: Number, borderColor: Int, rectColor: Int) {
-        drawRect(x, y, x2, y2, rectColor)
-        drawBorder(x, y, x2, y2, width, borderColor)
     }
 
     @JvmStatic

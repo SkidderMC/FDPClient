@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.config
 
 import kotlinx.coroutines.runBlocking
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
-import net.ccbluex.liquidbounce.handler.api.ClientApi
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.handler.api.ClientApi
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.utils.client.chat
@@ -17,6 +17,8 @@ import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.translateAlternateColorCodes
 import org.lwjgl.input.Keyboard
 import java.awt.Color
+import javax.vecmath.Vector2f
+import kotlin.math.roundToInt
 import kotlin.reflect.KMutableProperty0
 
 /**
@@ -130,7 +132,7 @@ object SettingsUtils {
     // Utility functions for setting toggles
     private fun setToggle(module: Module, value: String) {
         module.state = value.equals("true", ignoreCase = true)
-        chat("§7[§3§lAutoSettings§7] §a§l${module.getName()} §7was toggled §c§l${if (module.state) "on" else "off"}§7.")
+        //chat("§7[§3§lAutoSettings§7] §a§l${module.getName()} §7was toggled §c§l${if (module.state) "on" else "off"}§7.")
     }
 
     // Utility functions for setting binds
@@ -172,22 +174,34 @@ object SettingsUtils {
                 }
                 is ColorValue -> {
                     moduleValue.readColorFromConfig(value)?.let { list ->
-                        val hexColor = list[0]
-                        val rainbowFlag = list[1].toBoolean()
+                        val pos = list[0].toFloatOrNull() to list[1].toFloatOrNull()
+                        val hue = list[2].toFloatOrNull()
+                        val alpha = list[3].toFloatOrNull()
+                        val rainbow = list[4].toBooleanStrictOrNull()
 
-                        val argb = hexColor.toLongOrNull(16)?.toInt()
+                        rainbow?.let { moduleValue.rainbow = it }
 
-                        if (argb != null) {
-                            moduleValue.setColor(Color(argb, true))
+                        if (pos.first != null && pos.second != null && hue != null && alpha != null) {
+                            moduleValue.colorPickerPos = Vector2f(pos.first!!, pos.second!!)
+                            moduleValue.hueSliderY = hue
+                            moduleValue.opacitySliderY = alpha
+
+                            val rgb = Color.HSBtoRGB(hue, pos.first!!, 1 - pos.second!!)
+
+                            val a = (alpha * 255).roundToInt()
+
+                            val r = (rgb shr 16) and 0xFF
+                            val g = (rgb shr 8) and 0xFF
+                            val b = rgb and 0xFF
+
+                            moduleValue.set(Color(a shl 24 or (r shl 16) or (g shl 8) or b, true))
                         }
-
-                        moduleValue.rainbow = rainbowFlag
                     }
                 }
                 else -> {}
             }
 
-            chat("§7[§3§lAutoSettings§7] §a§l${module.getName()}§7 value §8§l${moduleValue.name}§7 set to §c§l$value§7.")
+            // chat("§7[§3§lAutoSettings§7] §a§l${module.getName()}§7 value §8§l${moduleValue.name}§7 set to §c§l$value§7.")
         } catch (e: Exception) {
             chat("§7[§3§lAutoSettings§7] §a§l${e.javaClass.name}§7(${e.message}) §cAn Exception occurred while setting §a§l$value§c to §a§l${moduleValue.name}§c in §a§l${module.getName()}§c.")
         }

@@ -137,7 +137,6 @@ abstract class Style : MinecraftInstance {
         glPopAttrib()
     }
 
-
     fun clickSound() {
         mc.playSound("gui.button.press".asResourceLocation())
     }
@@ -163,6 +162,18 @@ abstract class Style : MinecraftInstance {
 
     fun <T> Value<T>.setAndSaveValueOnButtonRelease(new: T) {
         set(new, false)
+
+        with(WaitTickUtils) {
+            if (!hasScheduled(this)) {
+                conditionalSchedule(this, 10) {
+                    (sliderValueHeld == null).also { if (it) saveConfig(valuesConfig) }
+                }
+            }
+        }
+    }
+
+    fun withDelayedSave(f: () -> Unit) {
+        f()
 
         with(WaitTickUtils) {
             if (!hasScheduled(this)) {
