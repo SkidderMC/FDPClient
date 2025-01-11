@@ -41,13 +41,13 @@ class FDPDropdownClickGUI : GuiScreen() {
 
     private val hudIcon = ResourceLocation("${CLIENT_NAME.lowercase()}/custom_hud_icon.png")
 
-    private var categoryPanels: MutableList<MainScreen>? = null
+    private var categoryPanels: MutableList<DropdownCategory>? = null
 
     override fun initGui() {
         if (categoryPanels == null || Main.reloadModules) {
-            categoryPanels = mutableListOf<MainScreen>().apply {
+            categoryPanels = mutableListOf<DropdownCategory>().apply {
                 Category.entries.forEach { category ->
-                    add(MainScreen(category))
+                    add(DropdownCategory(category))
                 }
             }
             Main.reloadModules = false

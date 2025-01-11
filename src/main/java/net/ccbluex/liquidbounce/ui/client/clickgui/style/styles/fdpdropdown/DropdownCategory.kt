@@ -31,7 +31,7 @@ import kotlin.math.min
  * Each panel can be dragged and displays modules. Now includes a small outline
  * around the category's top bar if enabled in [ClickGUIModule].
  */
-class MainScreen(private val category: Category) : Screen {
+class DropdownCategory(private val category: Category) : Screen {
 
     private val rectWidth = 110f
     private val categoryRectHeight = 18f
