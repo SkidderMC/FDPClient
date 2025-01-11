@@ -18,9 +18,10 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.util
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.GuiEvents
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.extensions.round
-import net.ccbluex.liquidbounce.utils.extensions.roundToHalf
-import net.ccbluex.liquidbounce.utils.extensions.roundX
+import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.blendColors
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
@@ -30,6 +31,7 @@ import java.awt.Color
 import java.util.stream.Collectors
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 class SettingComponents(private val module: Module) : Component() {
     var settingHeightScissor: Animation? = null
@@ -56,6 +58,12 @@ class SettingComponents(private val module: Module) : Component() {
     private var selectedField: PasswordField? = null
     private var selectedStringSetting: TextValue? = null
     private val hueFlag = false
+
+    private val colorSettingAnimMap = HashMap<ColorValue, Array<Animation>>()
+    private val colorPickerAnimationMap = HashMap<ColorValue, Animation>()
+
+    private var colorPickerVisible: Boolean = false
+    private var currentColorValue: ColorValue? = null
 
     init {
         keySettingAnimMap[module] = arrayOf(
@@ -105,6 +113,12 @@ class SettingComponents(private val module: Module) : Component() {
                 modesHoverAnimation[setting] = modeMap
             }
             if (setting is ColorValue) {
+                colorSettingAnimMap[setting] = arrayOf(
+                    DecelerateAnimation(250, 1.0, Direction.BACKWARDS),
+                    DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
+                )
+                colorPickerAnimationMap[setting] = DecelerateAnimation(300, 1.0, Direction.FORWARDS)
+
                 setting.showPicker = false
                 setting.hueSliderColor = setting.get()
             }
@@ -635,173 +649,280 @@ class SettingComponents(private val module: Module) : Component() {
 
             // ----- ColorValue -----
             if (setting is ColorValue) {
-
-                val currentColor = if (setting.rainbow) {
-                    setting.get()
-                } else {
-                    setting.get()
-                }
+                val currentColor = setting.selectedColor()
 
                 val spacing = 10
 
-                val startX = module.keyBind.toDouble()
-                val startY = settingY.toDouble()
+                val startX = x + 5
+                val startY = settingY - 1
 
                 val colorPreviewSize = 10
-                val colorPreviewX2 = (x + width - colorPreviewSize)
+                val colorPreviewX2 = x + width - colorPreviewSize
                 val colorPreviewX1 = colorPreviewX2 - colorPreviewSize
-                val colorPreviewY1 = (settingY + 1)
+                val colorPreviewY1 = startY + 1
                 val colorPreviewY2 = colorPreviewY1 + colorPreviewSize
 
-                val textX = (x + 12)
-                val textY = (settingY + 3)
+                val rainbowPreviewX2 = colorPreviewX1 - colorPreviewSize
+                val rainbowPreviewX1 = rainbowPreviewX2 - colorPreviewSize
+
+                val textX = startX + 2F
+                val textY = startY + 3F
 
                 val hueSliderWidth = 7
                 val hueSliderHeight = 50
                 val colorPickerWidth = 75
                 val colorPickerHeight = 50
 
-                val colorPickerStartX = textX.toInt()
+                val colorPickerStartX = startX.toInt()
                 val colorPickerEndX = colorPickerStartX + colorPickerWidth
-                val colorPickerStartY = colorPreviewY2.toInt() + spacing / 3
+                val colorPickerStartY = colorPreviewY2 + spacing / 3
                 val colorPickerEndY = colorPickerStartY + colorPickerHeight
 
                 val hueSliderStartY = colorPickerStartY
                 val hueSliderEndY = colorPickerStartY + hueSliderHeight
 
-                val hoveringColorPreview = DrRenderUtils.isHovering(colorPreviewX1, colorPreviewY1,
-                    colorPreviewSize.toFloat(), colorPreviewSize.toFloat(), mouseX, mouseY)
-                if (type == GuiEvents.CLICK && hoveringColorPreview && button == 0) {
-                    setting.showPicker = !setting.showPicker
+                if (type == GuiEvents.CLICK && mouseX.toFloat() in colorPreviewX1..colorPreviewX2 && mouseY.toFloat() in colorPreviewY1..colorPreviewY2 && button == 0) {
+                    if (setting.rainbow) {
+                        setting.rainbow = false
+                    } else {
+                        setting.showPicker = !setting.showPicker
+                        currentColorValue = if (setting.showPicker) setting else null
+                    }
+
+                    return
                 }
 
-                val display = "Color: ${"#%08X".format(currentColor.rgb)}"
+                if (type == GuiEvents.CLICK && mouseX.toFloat() in rainbowPreviewX1..rainbowPreviewX2 && mouseY.toFloat() in colorPreviewY1..colorPreviewY2 && button == 0) {
+                    setting.rainbow = true
+                    setting.showPicker = false
+                    currentColorValue = null
 
-                Fonts.InterMedium_18.drawString(display, textX, textY, textColor.rgb)
+                    return
+                }
 
-                drawCustomShapeWithRadius(colorPreviewX1, colorPreviewY1,
-                    colorPreviewSize.toFloat(), 3f, 1.5f, currentColor)
+                val display = "${setting.name}: ${"#%08X".format(currentColor.rgb)}"
+
+                Fonts.InterMedium_18.drawString(display, textX, textY, Color.WHITE.rgb)
+
+                val normalBorderColor = if (setting.rainbow) Color(0, 0, 0, 0) else Color.BLUE
+                val rainbowBorderColor = if (setting.rainbow) Color.BLUE.rgb else 0
+
+                val hue = if (setting.rainbow) {
+                    Color.RGBtoHSB(currentColor.red, currentColor.green, currentColor.blue, null)[0]
+                } else {
+                    setting.hueSliderY
+                }
 
                 if (setting.showPicker) {
-                    if (!setting.rainbow) {
-                        val hueSliderColor = setting.hueSliderColor
 
-                        var (hue, saturation, brightness) = Color.RGBtoHSB(
-                            hueSliderColor.red, hueSliderColor.green, hueSliderColor.blue, null
-                        )
-                        var (currHue, currSaturation, currBrightness) = Color.RGBtoHSB(
-                            currentColor.red, currentColor.green, currentColor.blue, null
-                        )
-
-                        setting.updateTextureCache(
-                            id = 0,
-                            hue = hue,
-                            width = colorPickerWidth,
-                            height = colorPickerHeight,
-                            generateImage = { image, _ ->
-                                for (px in 0 until colorPickerWidth) {
-                                    for (py in 0 until colorPickerHeight) {
-                                        val localS = px / colorPickerWidth.toFloat()
-                                        val localB = 1.0f - (py / colorPickerHeight.toFloat())
-                                        val rgb = Color.HSBtoRGB(hue, localS, localB)
-                                        image.setRGB(px, py, rgb)
-                                    }
+                    setting.updateTextureCache(
+                        id = 0,
+                        hue = hue,
+                        width = colorPickerWidth,
+                        height = colorPickerHeight,
+                        generateImage = { image, _ ->
+                            for (px in 0 until colorPickerWidth) {
+                                for (py in 0 until colorPickerHeight) {
+                                    val localS = px / colorPickerWidth.toFloat()
+                                    val localB = 1.0f - (py / colorPickerHeight.toFloat())
+                                    val rgb = Color.HSBtoRGB(hue, localS, localB)
+                                    image.setRGB(px, py, rgb)
                                 }
-                            },
-                            drawAt = { id ->
-                                drawTexture(
-                                    id,
-                                    colorPickerStartX,
-                                    colorPickerStartY,
-                                    colorPickerWidth,
-                                    colorPickerHeight
-                                )
-                            })
-
-                        val markerX = colorPickerStartX + (currSaturation * colorPickerWidth).toInt()
-                        val markerY = colorPickerStartY + ((1.0f - currBrightness) * colorPickerHeight).toInt()
-
-                        drawCustomShapeWithRadius(
-                            (markerX - 2).toFloat(), (markerY - 2).toFloat(), 5F, 1.5f, 1.5f,
-                            Color.WHITE
-                        )
-
-                        val hueSliderX = colorPickerEndX + 5
-
-                        setting.updateTextureCache(
-                            id = 1,
-                            hue = hue,
-                            width = hueSliderWidth,
-                            height = hueSliderHeight,
-                            generateImage = { image, _ ->
-                                for (y in 0 until hueSliderHeight) {
-                                    for (x in 0 until hueSliderWidth) {
-                                        val localHue = y / hueSliderHeight.toFloat()
-                                        val rgb = Color.HSBtoRGB(localHue, 1.0f, 1.0f)
-                                        image.setRGB(x, y, rgb)
-                                    }
-                                }
-                            },
-                            drawAt = { id ->
-                                drawTexture(
-                                    id,
-                                    hueSliderX,
-                                    colorPickerStartY,
-                                    hueSliderWidth,
-                                    hueSliderHeight
-                                )
-                            })
-
-                        val hueMarkerY = hueSliderStartY + (hue * hueSliderHeight).toInt()
-
-                        drawCustomShapeWithRadius(
-                            (hueSliderX - 1).toFloat(), (hueMarkerY - 1).toFloat(),
-                            (hueSliderWidth + 2).toFloat(), 1.5f, 1.5f,
-                            Color.WHITE
-                        )
-
-                        val inColorPicker =
-                            mouseX in colorPickerStartX until colorPickerEndX && mouseY in colorPickerStartY until colorPickerEndY
-                        val inHueSlider =
-                            mouseX in (hueSliderX - 1)..(hueSliderX + hueSliderWidth + 1) && mouseY in hueSliderStartY until hueSliderEndY
-
-                        if ((type == GuiEvents.CLICK || type == GuiEvents.DRAW) && (inColorPicker || inHueSlider)) {
-                            if (inColorPicker) {
-                                val newS = ((mouseX - colorPickerStartX) / colorPickerWidth.toFloat()).coerceIn(0f, 1f)
-                                val newB =
-                                    (1.0f - (mouseY - colorPickerStartY) / colorPickerHeight.toFloat()).coerceIn(
-                                        0f,
-                                        1f
-                                    )
-                                saturation = newS
-                                brightness = newB
                             }
+                        },
+                        drawAt = { id ->
+                            drawTexture(
+                                id,
+                                colorPickerStartX,
+                                colorPickerStartY.toInt(),
+                                colorPickerWidth,
+                                colorPickerHeight
+                            )
+                        })
 
-                            var finalColor = Color(Color.HSBtoRGB(hue, saturation, brightness))
+                    val markerX = (colorPickerStartX..colorPickerEndX).lerpWith(setting.colorPickerPos.x)
+                    val markerY = (colorPickerStartY..colorPickerEndY).lerpWith(setting.colorPickerPos.y)
 
-                            if (inHueSlider) {
-                                currHue = ((mouseY - hueSliderStartY) / hueSliderHeight.toFloat()).coerceIn(
+                    RenderUtils.drawBorder(
+                        markerX - 2f, markerY - 2f, markerX + 3f, markerY + 3f, 1.5f, Color.WHITE.rgb
+                    )
+
+                    val hueSliderX = colorPickerEndX + 5
+
+                    setting.updateTextureCache(
+                        id = 1,
+                        hue = hue,
+                        width = hueSliderWidth,
+                        height = hueSliderHeight,
+                        generateImage = { image, _ ->
+                            for (y in 0 until hueSliderHeight) {
+                                for (x in 0 until hueSliderWidth) {
+                                    val localHue = y / hueSliderHeight.toFloat()
+                                    val rgb = Color.HSBtoRGB(localHue, 1.0f, 1.0f)
+                                    image.setRGB(x, y, rgb)
+                                }
+                            }
+                        },
+                        drawAt = { id ->
+                            drawTexture(
+                                id,
+                                hueSliderX,
+                                colorPickerStartY.toInt(),
+                                hueSliderWidth,
+                                hueSliderHeight
+                            )
+                        })
+
+                    val opacityStartX = hueSliderX + hueSliderWidth + 5
+                    val opacityEndX = opacityStartX + hueSliderWidth
+
+                    setting.updateTextureCache(
+                        id = 2,
+                        hue = currentColor.rgb.toFloat(),
+                        width = hueSliderWidth,
+                        height = hueSliderHeight,
+                        generateImage = { image, _ ->
+                            val gridSize = 1
+
+                            for (y in 0 until hueSliderHeight) {
+                                for (x in 0 until hueSliderWidth) {
+                                    val gridX = x / gridSize
+                                    val gridY = y / gridSize
+
+                                    val checkerboardColor = if ((gridY + gridX) % 2 == 0) {
+                                        Color.WHITE.rgb
+                                    } else {
+                                        Color.BLACK.rgb
+                                    }
+
+                                    val alpha =
+                                        ((1 - y.toFloat() / hueSliderHeight.toFloat()) * 255).roundToInt()
+
+                                    val finalColor = blendColors(
+                                        Color(checkerboardColor),
+                                        currentColor.withAlpha(alpha)
+                                    )
+
+                                    image.setRGB(x, y, finalColor.rgb)
+                                }
+                            }
+                        },
+                        drawAt = { id ->
+                            drawTexture(
+                                id,
+                                opacityStartX,
+                                colorPickerStartY.toInt(),
+                                hueSliderWidth,
+                                hueSliderHeight
+                            )
+                        })
+
+                    val opacityMarkerY =
+                        (hueSliderStartY..hueSliderEndY).lerpWith(1 - setting.opacitySliderY)
+                    val hueMarkerY = (hueSliderStartY..hueSliderEndY).lerpWith(hue)
+
+                    RenderUtils.drawBorder(
+                        hueSliderX.toFloat() - 1,
+                        hueMarkerY - 1f,
+                        hueSliderX + hueSliderWidth + 1f,
+                        (hueMarkerY + 1).coerceAtMost((hueSliderEndY)) + 1,
+                        1.5f,
+                        Color.WHITE.rgb,
+                    )
+
+                    RenderUtils.drawBorder(
+                        opacityStartX.toFloat() - 1,
+                        opacityMarkerY - 1f,
+                        opacityEndX + 1f,
+                        (opacityMarkerY + 1).coerceAtMost((hueSliderEndY)) + 1,
+                        1.5f,
+                        Color.WHITE.rgb,
+                    )
+
+                    val inColorPicker =
+                        (mouseX in colorPickerStartX..<colorPickerEndX) &&
+                                (mouseY >= colorPickerStartY && mouseY < colorPickerEndY)
+
+                    val inHueSlider =
+                        (mouseX >= (hueSliderX - 1) && mouseX <= (hueSliderX + hueSliderWidth + 1)) &&
+                                (mouseY >= hueSliderStartY && mouseY < hueSliderEndY)
+
+                    val inOpacitySlider =
+                        (mouseX >= (opacityStartX - 1) && mouseX <= (opacityEndX + 1)) &&
+                                (mouseY >= hueSliderStartY && mouseY < hueSliderEndY)
+
+                    if (type == GuiEvents.CLICK && (inColorPicker || inHueSlider || inOpacitySlider)) {
+                        if (inColorPicker) {
+                            val newS =
+                                ((mouseX - colorPickerStartX) / colorPickerWidth.toFloat()).coerceIn(
                                     0f,
                                     1f
                                 )
-
-                                finalColor = Color(Color.HSBtoRGB(currHue, currSaturation, currBrightness))
-                            }
-
-                            if (inColorPicker || inHueSlider) {
-                                if (inHueSlider) {
-                                    setting.hueSliderColor = finalColor
-                                }
-
-                                setting.setAndSaveValueOnButtonRelease(finalColor)
-                            }
+                            val newB =
+                                (1.0f - (mouseY - colorPickerStartY) / colorPickerHeight.toFloat()).coerceIn(
+                                    0f,
+                                    1f
+                                )
+                            setting.colorPickerPos.x = newS
+                            setting.colorPickerPos.y = newB
                         }
-                        count += 1
+
+                        if (inHueSlider) {
+                            setting.hueSliderY =
+                                ((mouseY - hueSliderStartY) / hueSliderHeight.toFloat()).coerceIn(
+                                    0f,
+                                    1f
+                                )
+                        }
+
+                        if (inOpacitySlider) {
+                            setting.opacitySliderY =
+                                1 - ((mouseY - hueSliderStartY) / hueSliderHeight.toFloat()).coerceIn(
+                                    0f,
+                                    1f
+                                )
+                        }
+
+                        val finalColor = if (setting.rainbow) {
+                            ColorUtils.rainbow(alpha = setting.opacitySliderY)
+                        } else {
+                            Color(
+                                Color.HSBtoRGB(
+                                    setting.hueSliderY,
+                                    setting.colorPickerPos.x,
+                                    1 - setting.colorPickerPos.y
+                                )
+                            ).withAlpha((setting.opacitySliderY * 255).roundToInt())
+                        }
+
+                        setting.setAndSaveValueOnButtonRelease(finalColor)
+
+                        return
                     }
+
+                    drawCustomShapeWithRadius(
+                        colorPreviewX1,
+                        colorPreviewY1,
+                        colorPreviewX2 - colorPreviewX1,
+                        colorPreviewY2 - colorPreviewY1,
+                        2.5f,
+                        setting.get()
+                    )
+
+                    drawCustomShapeWithRadius(
+                        rainbowPreviewX1,
+                        colorPreviewY1,
+                        rainbowPreviewX2 - rainbowPreviewX1,
+                        colorPreviewY2 - colorPreviewY1,
+                        2.5f,
+                        Color(ColorUtils.rainbow(alpha = setting.opacitySliderY).rgb)
+                    )
+
+                    count += spacing
                 }
             }
 
-            // Render the key bind
+                // Render the key bind
             val bind = Keyboard.getKeyName(module.keyBind)
             val hoveringBindRect = isClickable(
                 y + Fonts.InterBold_18.getMiddleOfBox(rectHeight) - 1
