@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.coerceBodyPoint
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isFaced
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.performAngleChange
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.rotationDifference
@@ -35,6 +36,10 @@ object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
     private val legitimize by boolean("Legitimize", true) { horizontalAim || verticalAim }
     private val maxAngleChange by float("MaxAngleChange", 10f, 1F..180F) { horizontalAim || verticalAim }
     private val inViewMaxAngleChange by float("InViewMaxAngleChange", 35f, 1f..180f) { horizontalAim || verticalAim }
+    private val generateSpotBasedOnDistance by boolean(
+        "GenerateSpotBasedOnDistance",
+        false
+    ) { horizontalAim || verticalAim }
     private val predictClientMovement by int("PredictClientMovement", 2, 0..5)
     private val predictEnemyPosition by float("PredictEnemyPosition", 1.5f, -1f..2f)
     private val highestBodyPointToTargetValue: ListValue =
@@ -146,9 +151,12 @@ object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
         val boundingBox = entity.hitBox.offset(prediction)
         val (currPos, oldPos) = player.currPos to player.prevPos
 
-        val simPlayer = SimulatedPlayer.fromClientPlayer(player.movementInput)
+        val simPlayer =
+            SimulatedPlayer.fromClientPlayer(RotationUtils.modifiedInput)
 
-        repeat(predictClientMovement + 1) {
+        simPlayer.rotationYaw = (currentRotation ?: player.rotation).yaw
+
+        repeat(predictClientMovement) {
             simPlayer.tick()
         }
 
@@ -161,6 +169,7 @@ object Aimbot : Module("Aimbot", Category.COMBAT, hideModule = false) {
         } else {
             searchCenter(
                 boundingBox,
+                generateSpotBasedOnDistance,
                 outborder = false,
                 predict = true,
                 lookRange = range,

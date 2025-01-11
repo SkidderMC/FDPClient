@@ -142,7 +142,7 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, hideModule
             searchCenter(
                 it,
                 outborder = false,
-                randomization,
+                randomization = this.randomization,
                 predict = true,
                 lookRange = range,
                 attackRange = range,

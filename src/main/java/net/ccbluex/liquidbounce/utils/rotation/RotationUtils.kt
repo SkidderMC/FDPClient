@@ -226,7 +226,8 @@ object RotationUtils : MinecraftInstance, Listenable {
      * @return center
      */
     fun searchCenter(
-        bb: AxisAlignedBB, outborder: Boolean, randomization: RandomizationSettings? = null, predict: Boolean,
+        bb: AxisAlignedBB, distanceBasedSpot: Boolean = false, outborder: Boolean,
+        randomization: RandomizationSettings? = null, predict: Boolean,
         lookRange: Float, attackRange: Float, throughWallsRange: Float = 0f,
         bodyPoints: List<String> = listOf("Head", "Feet"), horizontalSearch: ClosedFloatingPointRange<Float> = 0f..1f,
     ): Rotation? {
@@ -243,7 +244,11 @@ object RotationUtils : MinecraftInstance, Listenable {
 
         val eyes = mc.thePlayer.eyes
 
-        val currRotation = Rotation.ZERO.plus(currentRotation ?: mc.thePlayer.rotation)
+        val preferredRotation = toRotation(getNearestPointBB(eyes, bb), predict).takeIf {
+            distanceBasedSpot
+        } ?: currentRotation ?: mc.thePlayer.rotation
+
+        val currRotation = Rotation.ZERO.plus(preferredRotation)
 
         var attackRotation: Pair<Rotation, Float>? = null
         var lookRotation: Pair<Rotation, Float>? = null
