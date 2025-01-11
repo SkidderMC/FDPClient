@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui
 
 import net.ccbluex.liquidbounce.FDPClient.fileManager
+import net.ccbluex.liquidbounce.config.ColorValue
 import net.ccbluex.liquidbounce.config.SettingsUtils.applyScript
-import net.ccbluex.liquidbounce.config.customBgColorValue
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.generateColor
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.handler.api.ClientApi
@@ -368,6 +368,13 @@ class SideGui : GuiPanel() {
     }
 
     private fun getBgPreviewColor(mode: String, alpha: Int): Int {
+
+        val customBgColorValue = ColorValue(
+            "CustomBG",
+            Color(32, 32, 64),
+            false
+        )
+
         return when (mode.lowercase()) {
             "none" -> Color(0, 0, 0, 0).rgb
             "dark" -> Color(21, 21, 21, alpha).rgb

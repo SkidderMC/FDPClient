@@ -15,8 +15,11 @@ import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.minecraft.client.gui.FontRenderer
+import org.lwjgl.input.Mouse
 import java.awt.Color
+import javax.vecmath.Vector2f
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 
@@ -41,7 +44,7 @@ sealed class Value<T>(
         return set(new)
     }
 
-    fun set(newValue: T, saveImmediately: Boolean = true): Boolean {
+    open fun set(newValue: T, saveImmediately: Boolean = true): Boolean {
         if (newValue == value || hidden || excluded)
             return false
 
@@ -121,6 +124,8 @@ sealed class Value<T>(
     override operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
         set(value)
     }
+
+    open fun getString() = "$value"
 
     fun shouldRender() = isSupported() && !hidden
 
@@ -425,71 +430,81 @@ class ColorValue(
     var rainbow: Boolean = false,
     var showPicker: Boolean = false
 ) : Value<Color>(name, defaultColor) {
+    var hueSliderColor = value
 
-    var hue = 0f
-    var saturation = 1f
-    var brightness = 1f
-    var alpha = 1f
+    // Sliders
+    var hueSliderY = 0F
+    var opacitySliderY = 0F
+
+    // Slider positions in the 0-1 range
+    var colorPickerPos = Vector2f(0f, 0f)
+
+    var lastChosenSlider: SliderType? = null
+        get() {
+            if (!Mouse.isButtonDown(0)) field = null
+            return field
+        }
 
     init {
         changeValue(defaultColor)
     }
 
-    fun getColor(): Color {
-        val base = Color.getHSBColor(hue, saturation, brightness)
-        val finalAlpha = (alpha * 255).toInt().coerceIn(0, 255)
-        return Color(base.red, base.green, base.blue, finalAlpha)
+    fun selectedColor() = if (rainbow) {
+        ColorUtils.rainbow(alpha = opacitySliderY)
+    }  else {
+        get()
     }
 
-    fun setColor(color: Color) {
-        set(color)
-    }
+    fun setColor(color: Color) = set(color)
 
-    override fun onInit(value: Color) {
-        val r = value.red
-        val g = value.green
-        val b = value.blue
-        val a = value.alpha
-        val hsb = Color.RGBtoHSB(r, g, b, null)
-        hue = hsb[0]
-        saturation = hsb[1]
-        brightness = hsb[2]
-        alpha = a / 255f
-    }
-
-    override fun onChange(oldValue: Color, newValue: Color): Color {
-        val r = newValue.red
-        val g = newValue.green
-        val b = newValue.blue
-        val a = newValue.alpha
-        val hsb = Color.RGBtoHSB(r, g, b, null)
-        hue = hsb[0]
-        saturation = hsb[1]
-        brightness = hsb[2]
-        alpha = a / 255f
-        return newValue
-    }
-
-    override fun toJsonF(): JsonElement? {
+    override fun toJsonF(): JsonElement {
         val argbHex = "#%08X".format(value.rgb)
-        return JsonPrimitive(argbHex)
+
+        return JsonPrimitive("hex: $argbHex, rainbow: $rainbow")
     }
 
     override fun fromJsonF(element: JsonElement): Color? {
         if (element.isJsonPrimitive) {
-            val raw = element.asString.removePrefix("#")
-            val argb = raw.toLongOrNull(16)?.toInt()
-            if (argb != null) return Color(argb, true)
+            val raw = element.asString
+
+            val regex = """hex:\s*#([A-Fa-f0-9]{6,8}),\s*rainbow:\s*(true|false)""".toRegex()
+            val matchResult = regex.find(raw)
+
+            if (matchResult != null) {
+                val hexString = matchResult.groupValues[1]
+                val rainbowString = matchResult.groupValues[2].toBoolean()
+
+                val argb = hexString.toLongOrNull(16)?.toInt()
+                if (argb != null) {
+                    return Color(argb, true).also { rainbow = rainbowString }
+                }
+            }
         }
         return null
     }
-}
 
-val customBgColorValue = ColorValue(
-    "CustomBG",
-    Color(32, 32, 64),
-    false
-)
+    // Any value set that is not coming from the ClickGUI styles should have the hue slider color changed too
+    override fun set(newValue: Color, saveImmediately: Boolean) = super.set(newValue, saveImmediately).also {
+        if (it && saveImmediately) {
+            hueSliderColor = newValue
+        }
+    }
+
+    override fun getString() = "Color[hex=${"#%06X".format(value.rgb)},rainbow=${rainbow}]"
+
+    fun readColorFromConfig(str: String): List<String>? {
+        val regex = """Color\[hex=#([0-9A-Fa-f]{6,8}),\s*rainbow=(true|false)]""".toRegex()
+        val matchResult = regex.find(str)
+
+        return matchResult?.let { listOf(it.groupValues[1], it.groupValues[2]) }
+    }
+
+    enum class SliderType {
+        COLOR,
+        HUE,
+        OPACITY
+    }
+}
 
 fun int(
     name: String,
