@@ -113,6 +113,10 @@ abstract class Style : MinecraftInstance {
         glPushMatrix()
 
         glEnable(GL_TEXTURE_2D)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_ALPHA_TEST)
+        glAlphaFunc(GL_GREATER, 0f)
 
         glBindTexture(GL_TEXTURE_2D, textureID)
 
@@ -126,10 +130,13 @@ abstract class Style : MinecraftInstance {
         glEnd()
 
         glDisable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
+        glDisable(GL_ALPHA_TEST)
 
         glPopMatrix()
         glPopAttrib()
     }
+
 
     fun clickSound() {
         mc.playSound("gui.button.press".asResourceLocation())

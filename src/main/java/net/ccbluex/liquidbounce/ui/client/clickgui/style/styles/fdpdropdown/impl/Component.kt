@@ -109,6 +109,10 @@ abstract class Component {
         glPushMatrix()
 
         glEnable(GL_TEXTURE_2D)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_ALPHA_TEST)
+        glAlphaFunc(GL_GREATER, 0f)
 
         glBindTexture(GL_TEXTURE_2D, textureID)
 
@@ -122,10 +126,13 @@ abstract class Component {
         glEnd()
 
         glDisable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
+        glDisable(GL_ALPHA_TEST)
 
         glPopMatrix()
         glPopAttrib()
     }
+
 
     fun <T> Value<T>.setAndSaveValueOnButtonRelease(new: T) {
         set(new, false)
