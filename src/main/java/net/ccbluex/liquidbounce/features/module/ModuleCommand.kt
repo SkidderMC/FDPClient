@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
 import net.minecraft.block.Block
 import net.minecraft.item.Item
+import java.awt.Color
 
 /**
  * Module command
@@ -70,6 +71,10 @@ class ModuleCommand(val module: Module, val values: Set<Value<*>> = module.value
 
                         is IntegerRangeValue, is FloatRangeValue -> {
                             chatSyntax("$moduleName ${args[1].lowercase()} <min>-<max>")
+                        }
+
+                        is ColorValue -> {
+                            chatSyntax("$moduleName ${args[1].lowercase()} <hex/rainbow>")
                         }
 
                         else -> {}
@@ -185,6 +190,21 @@ class ModuleCommand(val module: Module, val values: Set<Value<*>> = module.value
                         is TextValue -> {
                             val string = StringUtils.toCompleteString(args, 2)
                             value.set(string) to string
+                        }
+
+                        is ColorValue -> {
+                            val str = args[2]
+
+                            str.toBooleanStrictOrNull()?.let {
+                                value.rainbow = it
+
+                                chat("§7${module.getName()} §8rainbow§7 was set to §8${value.rainbow}§7.")
+                                return
+                            }
+
+                            str.toLongOrNull(16)?.toInt()?.let {
+                                value.set(Color(it, true)) to str
+                            } ?: return
                         }
 
                         else -> return

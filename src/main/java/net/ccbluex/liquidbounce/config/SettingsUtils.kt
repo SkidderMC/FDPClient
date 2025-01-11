@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.io.HttpUtils
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.translateAlternateColorCodes
 import org.lwjgl.input.Keyboard
+import java.awt.Color
 import kotlin.reflect.KMutableProperty0
 
 /**
@@ -169,6 +170,20 @@ object SettingsUtils {
                         } else (moduleValue as FloatRangeValue).changeValue(min..max)
                     }
                 }
+                is ColorValue -> {
+                    moduleValue.readColorFromConfig(value)?.let { list ->
+                        val hexColor = list[0]
+                        val rainbowFlag = list[1].toBoolean()
+
+                        val argb = hexColor.toLongOrNull(16)?.toInt()
+
+                        if (argb != null) {
+                            moduleValue.setColor(Color(argb, true))
+                        }
+
+                        moduleValue.rainbow = rainbowFlag
+                    }
+                }
                 else -> {}
             }
 
@@ -194,10 +209,10 @@ object SettingsUtils {
                     if (values) {
                         for (value in module.values) {
                             if (all || !value.subjective && value.shouldRender()) {
-                                val valueString = "${module.name} ${value.name} ${value.get()}"
+                                val valueString = "${module.name} ${value.name} ${value.getString()}"
 
                                 if (valueString.isNotBlank()) {
-                                    appendLine("${module.name} ${value.name} ${value.get()}")
+                                    appendLine(valueString)
                                 }
                             }
                         }
