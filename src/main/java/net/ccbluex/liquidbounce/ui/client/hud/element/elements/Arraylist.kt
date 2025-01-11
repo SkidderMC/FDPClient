@@ -46,92 +46,104 @@ class Arraylist(
     side: Side = Side(Horizontal.RIGHT, Vertical.UP),
 ) : Element(x, y, scale, side) {
 
-    private val textColorMode by choices("Text-Color", arrayOf("Custom", "Fade", "Theme", "Random", "Rainbow", "Gradient"), "Theme")
-    private val textColors = ColorSettingsInteger(this, "Text", withAlpha = false) {
-        textColorMode == "Custom" || textColorMode == "Fade"
-    }.with(0, 111, 255)
+        private val textColorMode by choices("Text-Color", arrayOf("Custom", "Fade", "Theme", "Random", "Rainbow", "Gradient"), "Theme")
+        private val textColors = ColorSettingsInteger(this, "Text", withAlpha = false)
+        { textColorMode == "Custom" }.with(0, 111, 255)
+        private val textFadeColors = ColorSettingsInteger(this, "Text-Fade", withAlpha = false)
+        { textColorMode == "Fade" }.with(0, 111, 255)
 
-    private val fadeDistanceValue by int("Fade-Distance", 50, 0..100) { isColorModeUsed("Fade") }
+        private val textFadeDistance by int("Text-Fade-Distance", 50, 0..100)
+        { textColorMode == "Fade" }
 
-    private val gradientTextSpeed by float("Text-Gradient-Speed", 1f, 0.5f..10f)
-    { textColorMode == "Gradient" }
+        private val gradientTextSpeed by float("Text-Gradient-Speed", 1f, 0.5f..10f)
+        { textColorMode == "Gradient" }
 
-    private val maxTextGradientColors by int("Max-Text-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS)
-    { textColorMode == "Gradient" }
-    private val textGradColors = ColorSettingsFloat.create(this, "Text-Gradient")
-    { textColorMode == "Gradient" && it <= maxTextGradientColors }
+        private val maxTextGradientColors by int("Max-Text-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS)
+        { textColorMode == "Gradient" }
+        private val textGradColors = ColorSettingsFloat.create(this, "Text-Gradient")
+        { textColorMode == "Gradient" && it <= maxTextGradientColors }
 
-    private val rectMode by choices("Rect", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "Right")
-    private val roundedRectRadius by float("RoundedRect-Radius", 2F, 0F..2F)
-    { rectMode !in setOf("None", "Outline", "Special", "Top") }
-    private val rectColorMode by choices("Rect-Color", arrayOf("Custom", "Fade", "Theme", "Random", "Rainbow", "Gradient"), "Theme")
-    { rectMode != "None" }
-    private val rectColors = ColorSettingsInteger(this, "Rect", zeroAlphaCheck = true, applyMax = true)
-    { isCustomRectSupported }
+        private val rectMode by choices("Rect", arrayOf("None", "Left", "Right", "Outline", "Special", "Top"), "Right")
+        private val roundedRectRadius by float("RoundedRect-Radius", 0F, 0F..2F)
+        { rectMode !in setOf("None", "Outline", "Special", "Top") }
+        private val rectColorMode by choices("Rect-Color", arrayOf("Custom", "Fade", "Theme", "Random", "Rainbow", "Gradient"), "Theme")
+        { rectMode != "None" }
+        private val rectColors = ColorSettingsInteger(this, "Rect", zeroAlphaCheck = true, applyMax = true)
+        { isCustomRectSupported }
+        private val rectFadeColors = ColorSettingsInteger(this, "Rect-Fade", withAlpha = false, applyMax = true)
+        { rectColorMode == "Fade" }
 
-    private val gradientRectSpeed by float("Rect-Gradient-Speed", 1f, 0.5f..10f)
-    { isCustomRectGradientSupported }
+        private val rectFadeDistance by int("Rect-Fade-Distance", 50, 0..100)
+        { rectColorMode == "Fade" }
 
-    private val maxRectGradientColors by int("Max-Rect-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS)
-    { isCustomRectGradientSupported }
-    private val rectGradColors = ColorSettingsFloat.create(this, "Rect-Gradient")
-    { isCustomRectGradientSupported && it <= maxRectGradientColors }
+        private val gradientRectSpeed by float("Rect-Gradient-Speed", 1f, 0.5f..10f)
+        { isCustomRectGradientSupported }
 
-    private val roundedBackgroundRadius by float("RoundedBackGround-Radius", 0F, 0F..5F)
-    { bgColors.color().alpha > 0 }
+        private val maxRectGradientColors by int("Max-Rect-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS)
+        { isCustomRectGradientSupported }
+        private val rectGradColors = ColorSettingsFloat.create(this, "Rect-Gradient")
+        { isCustomRectGradientSupported && it <= maxRectGradientColors }
 
-    private val backgroundMode by choices("Background-Color", arrayOf("Custom", "Fade", "Theme", "Random", "Rainbow", "Gradient"),
-        "Custom"
-    )
-    private val bgColors = ColorSettingsInteger(this, "Background", zeroAlphaCheck = true) {
-        backgroundMode == "Custom" || backgroundMode == "Fade"
-    }.with(a = 0)
+        private val roundedBackgroundRadius by float("RoundedBackGround-Radius", 0F, 0F..5F)
+        { bgColors.color().alpha > 0 }
 
-    private val gradientBackgroundSpeed by float("Background-Gradient-Speed", 1f, 0.5f..10f)
-    { backgroundMode == "Gradient" }
+        private val backgroundMode by choices(
+            "Background-Color", arrayOf("Custom", "Fade", "Theme", "Random", "Rainbow", "Gradient"),
+            "Custom"
+        )
+        private val bgColors = ColorSettingsInteger(this, "Background", zeroAlphaCheck = true)
+        { backgroundMode == "Custom" }.with(a = 0)
+        private val bgFadeColors = ColorSettingsInteger(this, "Background-Fade", withAlpha = false)
+        { backgroundMode == "Fade" }
 
-    private val maxBackgroundGradientColors by int("Max-Background-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS)
-    { backgroundMode == "Gradient" }
-    private val bgGradColors = ColorSettingsFloat.create(this, "Background-Gradient")
-    { backgroundMode == "Gradient" && it <= maxBackgroundGradientColors }
+        private val bgFadeDistance by int("Background-Fade-Distance", 50, 0..100)
+        { backgroundMode == "Fade" }
 
-    private fun isColorModeUsed(value: String) = textColorMode == value || rectMode == value || backgroundMode == value
+        private val gradientBackgroundSpeed by float("Background-Gradient-Speed", 1f, 0.5f..10f)
+        { backgroundMode == "Gradient" }
 
-    private val saturation by float("Random-Saturation", 0.9f, 0f..1f) { isColorModeUsed("Random") }
-    private val brightness by float("Random-Brightness", 1f, 0f..1f) { isColorModeUsed("Random") }
-    private val rainbowX by float("Rainbow-X", -1000F, -2000F..2000F) { isColorModeUsed("Rainbow") }
-    private val rainbowY by float("Rainbow-Y", -1000F, -2000F..2000F) { isColorModeUsed("Rainbow") }
-    private val gradientX by float("Gradient-X", -1000F, -2000F..2000F) { isColorModeUsed("Gradient") }
-    private val gradientY by float("Gradient-Y", -1000F, -2000F..2000F) { isColorModeUsed("Gradient") }
+        private val maxBackgroundGradientColors by int("Max-Background-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS)
+        { backgroundMode == "Gradient" }
+        private val bgGradColors = ColorSettingsFloat.create(this, "Background-Gradient")
+        { backgroundMode == "Gradient" && it <= maxBackgroundGradientColors }
 
-    private val tags by boolean("Tags", true)
-    private val tagsStyle by object : ListValue("TagsStyle", arrayOf("[]", "()", "<>", "-", "|", "Space"), "Space") {
-        override fun isSupported() = tags
+        private fun isColorModeUsed(value: String) = textColorMode == value || rectMode == value || backgroundMode == value
 
-        // onUpdate - updates tag onInit and onChanged
-        override fun onUpdate(value: String) = updateTagDetails()
-    }
-    private val tagsCase by choices("TagsCase", arrayOf("Normal", "Uppercase", "Lowercase"), "Normal") { tags }
-    private val tagsArrayColor by object : BoolValue("TagsArrayColor", false) {
-        override fun isSupported() = tags
-        override fun onUpdate(value: Boolean) = updateTagDetails()
-    }
+        private val saturation by float("Random-Saturation", 0.9f, 0f..1f) { isColorModeUsed("Random") }
+        private val brightness by float("Random-Brightness", 1f, 0f..1f) { isColorModeUsed("Random") }
+        private val rainbowX by float("Rainbow-X", -1000F, -2000F..2000F) { isColorModeUsed("Rainbow") }
+        private val rainbowY by float("Rainbow-Y", -1000F, -2000F..2000F) { isColorModeUsed("Rainbow") }
+        private val gradientX by float("Gradient-X", -1000F, -2000F..2000F) { isColorModeUsed("Gradient") }
+        private val gradientY by float("Gradient-Y", -1000F, -2000F..2000F) { isColorModeUsed("Gradient") }
 
-    private val font by font("Font", Fonts.minecraftFont)
-    private val textShadow by boolean("ShadowText", true)
-    private val moduleCase by choices("ModuleCase", arrayOf("Normal", "Uppercase", "Lowercase"), "Normal")
-    private val space by float("Space", 0F, 0F..5F)
-    private val textHeight by float("TextHeight", 11F, 1F..20F)
-    private val textY by float("TextY", 1.5F, 0F..20F)
+        private val tags by boolean("Tags", true)
+        private val tagsStyle by object : ListValue("TagsStyle", arrayOf("[]", "()", "<>", "-", "|", "Space"), "Space") {
+            override fun isSupported() = tags
 
-    private val animation by choices("Animation", arrayOf("Slide", "Smooth"), "Smooth") { tags }
-    private val animationSpeed by float("AnimationSpeed", 0.2F, 0.01F..1F) { animation == "Smooth" }
+            // onUpdate - updates tag onInit and onChanged
+            override fun onUpdate(value: String) = updateTagDetails()
+        }
+        private val tagsCase by choices("TagsCase", arrayOf("Normal", "Uppercase", "Lowercase"), "Normal") { tags }
+        private val tagsArrayColor by object : BoolValue("TagsArrayColor", false) {
+            override fun isSupported() = tags
+            override fun onUpdate(value: Boolean) = updateTagDetails()
+        }
 
-    companion object {
-        val spacedModules by boolean("SpacedModules", false)
-        val inactiveStyle by choices("InactiveModulesStyle", arrayOf("Normal", "Color", "Hide"), "Color")
-        { GameDetector.state }
-    }
+        private val font by font("Font", Fonts.minecraftFont)
+        private val textShadow by boolean("ShadowText", true)
+        private val moduleCase by choices("ModuleCase", arrayOf("Normal", "Uppercase", "Lowercase"), "Normal")
+        private val space by float("Space", 0F, 0F..5F)
+        private val textHeight by float("TextHeight", 11F, 1F..20F)
+        private val textY by float("TextY", 1.5F, 0F..20F)
+
+        private val animation by choices("Animation", arrayOf("Slide", "Smooth"), "Smooth") { tags }
+        private val animationSpeed by float("AnimationSpeed", 0.2F, 0.01F..1F) { animation == "Smooth" }
+
+        companion object {
+            val spacedModules by boolean("SpacedModules", false)
+            val inactiveStyle by choices("InactiveModulesStyle", arrayOf("Normal", "Color", "Hide"), "Color")
+            { GameDetector.state }
+        }
 
     private var x2 = 0
     private var y2 = 0F
@@ -246,6 +258,10 @@ class Arraylist(
                 }
                 val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
 
+                val textFadeColor = fade(textFadeColors, index * textFadeDistance, 100).rgb
+                val bgFadeColor = fade(bgFadeColors, index * bgFadeDistance, 100).rgb
+                val rectFadeColor = fade(rectFadeColors, index * rectFadeDistance, 100).rgb
+
                 val markAsInactive = inactiveStyle == "Color" && !module.isActive
 
                 val displayString = getDisplayString(module)
@@ -269,12 +285,6 @@ class Arraylist(
                             RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
                                 val themeColor = getColor(index).rgb
 
-                                val fadeColor = fade(
-                                    textColors,
-                                    index * fadeDistanceValue,
-                                    100
-                                ).rgb
-
                                 drawRoundedRect(
                                     xPos - if (rectMode == "Right") 5 else 2,
                                     yPos,
@@ -284,7 +294,7 @@ class Arraylist(
                                         "Gradient" -> 0
                                         "Rainbow" -> 0
                                         "Random" -> moduleColor
-                                        "Fade" -> fadeColor
+                                        "Fade" -> bgFadeColor
                                         "Theme" -> themeColor
                                         else -> backgroundCustomColor
                                     },
@@ -309,11 +319,7 @@ class Arraylist(
                             ).use {
                                 val themeTextColor = getColor(index).rgb
 
-                                val fadeColor = fade(
-                                    textColors,
-                                    index * fadeDistanceValue,
-                                    100
-                                ).rgb
+
 
                                 font.drawString(
                                     displayString, xPos - if (rectMode == "Right") 3 else 0, yPos + textY,
@@ -322,7 +328,7 @@ class Arraylist(
                                         "Gradient" -> 0
                                         "Rainbow" -> 0
                                         "Random" -> moduleColor
-                                        "Fade" -> fadeColor
+                                        "Fade" -> textFadeColor
                                         "Theme" -> themeTextColor
                                         else -> textCustomColor
                                     },
@@ -346,11 +352,6 @@ class Arraylist(
                                     rainbowY,
                                     rainbowOffset
                                 ).use {
-                                    val fadeColor = fade(
-                                        textColors,
-                                        index * fadeDistanceValue,
-                                        100
-                                    ).rgb
 
                                     val themeColor = getColor(index).rgb
 
@@ -360,7 +361,7 @@ class Arraylist(
                                             "Gradient" -> 0
                                             "Rainbow" -> 0
                                             "Random" -> moduleColor
-                                            "Fade" -> fadeColor
+                                            "Fade" -> rectFadeColor
                                             "Theme" -> themeColor
                                             else -> rectCustomColor
                                         }
@@ -444,11 +445,7 @@ class Arraylist(
                             gradientOffset
                         ).use {
                             RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
-                                val fadeColor = fade(
-                                    textColors,
-                                    index * fadeDistanceValue,
-                                    100
-                                ).rgb
+
 
                                 val themeColor = getColor(index).rgb
 
@@ -458,7 +455,7 @@ class Arraylist(
                                         "Gradient" -> 0
                                         "Rainbow" -> 0
                                         "Random" -> moduleColor
-                                        "Fade" -> fadeColor
+                                        "Fade" -> bgFadeColor
                                         "Theme" -> themeColor
                                         else -> backgroundCustomColor
                                     },
@@ -481,11 +478,7 @@ class Arraylist(
                                 rainbowY,
                                 rainbowOffset
                             ).use {
-                                val fadeColor = fade(
-                                    textColors,
-                                    index * fadeDistanceValue,
-                                    100
-                                ).rgb
+
 
                                 val themeColor = getColor(index).rgb
 
@@ -496,7 +489,7 @@ class Arraylist(
                                         "Gradient" -> 0
                                         "Rainbow" -> 0
                                         "Random" -> moduleColor
-                                        "Fade" -> fadeColor
+                                        "Fade" -> textFadeColor
                                         "Theme" -> themeColor
                                         else -> textCustomColor
                                     },
@@ -520,11 +513,6 @@ class Arraylist(
                                 rainbowOffset
                             ).use {
                                 if (rectMode != "None") {
-                                    val fadeColor = fade(
-                                        textColors,
-                                        index * fadeDistanceValue,
-                                        100
-                                    ).rgb
 
                                     val themeColor = getColor(index).rgb
 
@@ -534,7 +522,7 @@ class Arraylist(
                                             "Gradient" -> 0
                                             "Rainbow" -> 0
                                             "Random" -> moduleColor
-                                            "Fade" -> fadeColor
+                                            "Fade" -> rectFadeColor
                                             "Theme" -> themeColor
                                             else -> rectCustomColor
                                         }
