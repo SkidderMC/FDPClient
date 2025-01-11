@@ -107,6 +107,14 @@ object ColorUtils {
 
     fun rainbow(offset: Long, alpha: Int) = rainbow(offset, alpha.toFloat() / 255)
 
+    fun blendColors(color: Color, color2: Color): Color {
+        val alpha = color2.alpha / 255.0
+        val red = (color2.red * alpha + color.red * (1 - alpha)).toInt()
+        val green = (color2.green * alpha + color.green * (1 - alpha)).toInt()
+        val blue = (color2.blue * alpha + color.blue * (1 - alpha)).toInt()
+        return Color(red, green, blue)
+    }
+
     fun rainbow(offset: Long = 400000L, alpha: Float = 1f): Color {
         val currentColor = Color(Color.HSBtoRGB((System.nanoTime() + offset) / 10000000000F % 1, 1F, 1F))
         return Color(currentColor.red / 255F, currentColor.green / 255F, currentColor.blue / 255F, alpha)
