@@ -66,7 +66,6 @@ object RenderUtils : MinecraftInstance {
     private val DISPLAY_LISTS_2D = IntArray(4) {
         glGenLists(1)
     }
-    const val zLevel: Float = 0f
     var deltaTime = 0
 
     var startTime: Long = 0
@@ -3660,39 +3659,48 @@ object RenderUtils : MinecraftInstance {
      * @param startColor the start color
      * @param endColor   the end color
      */
-    fun drawGradientRect(left: Int, top: Int, right: Int, bottom: Int, startColor: Int, endColor: Int) {
-        val f = (startColor shr 24 and 255).toFloat() / 255.0f
-        val f1 = (startColor shr 16 and 255).toFloat() / 255.0f
-        val f2 = (startColor shr 8 and 255).toFloat() / 255.0f
-        val f3 = (startColor and 255).toFloat() / 255.0f
-        val f4 = (endColor shr 24 and 255).toFloat() / 255.0f
-        val f5 = (endColor shr 16 and 255).toFloat() / 255.0f
-        val f6 = (endColor shr 8 and 255).toFloat() / 255.0f
-        val f7 = (endColor and 255).toFloat() / 255.0f
+    fun drawGradientRect(
+        left: Int,
+        top: Int,
+        right: Int,
+        bottom: Int,
+        startColor: Int,
+        endColor: Int,
+        zLevel: Float
+    ) {
+        val a1 = (startColor shr 24 and 255) / 255f
+        val r1 = (startColor shr 16 and 255) / 255f
+        val g1 = (startColor shr 8 and 255) / 255f
+        val b1 = (startColor and 255) / 255f
+        val a2 = (endColor shr 24 and 255) / 255f
+        val r2 = (endColor shr 16 and 255) / 255f
+        val g2 = (endColor shr 8 and 255) / 255f
+        val b2 = (endColor and 255) / 255f
+
         pushMatrix()
         disableTexture2D()
         enableBlend()
         disableAlpha()
-        tryBlendFuncSeparate(770, 771, 1, 0)
-        shadeModel(7425)
+        tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 1, 0)
+        shadeModel(GL_SMOOTH)
+
         val tessellator = Tessellator.getInstance()
-        val worldrenderer = tessellator.worldRenderer
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR)
-        worldrenderer.pos(right.toDouble(), top.toDouble(), zLevel.toDouble()).color(f1, f2, f3, f)
-            .endVertex()
-        worldrenderer.pos(left.toDouble(), top.toDouble(), zLevel.toDouble()).color(f1, f2, f3, f)
-            .endVertex()
-        worldrenderer.pos(left.toDouble(), bottom.toDouble(), zLevel.toDouble()).color(f5, f6, f7, f4)
-            .endVertex()
-        worldrenderer.pos(right.toDouble(), bottom.toDouble(), zLevel.toDouble()).color(f5, f6, f7, f4)
-            .endVertex()
+        val buffer = tessellator.worldRenderer
+
+        buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
+        buffer.pos(right.toDouble(), top.toDouble(), zLevel.toDouble()).color(r1, g1, b1, a1).endVertex()
+        buffer.pos(left.toDouble(), top.toDouble(), zLevel.toDouble()).color(r1, g1, b1, a1).endVertex()
+        buffer.pos(left.toDouble(), bottom.toDouble(), zLevel.toDouble()).color(r2, g2, b2, a2).endVertex()
+        buffer.pos(right.toDouble(), bottom.toDouble(), zLevel.toDouble()).color(r2, g2, b2, a2).endVertex()
         tessellator.draw()
-        shadeModel(7424)
+
+        shadeModel(GL_FLAT)
         disableBlend()
         enableAlpha()
         enableTexture2D()
         popMatrix()
     }
+
 
     //TAHOMA
     private fun drawExhiOutlined(text: String, x: Float, y: Float, borderColor: Int, mainColor: Int): Float {
@@ -3948,7 +3956,12 @@ object RenderUtils : MinecraftInstance {
         Stencil.erase(true)
         drawGradientRect(
             left.toInt(),
-            top.toInt(), right.toInt(), bottom.toInt(), startColor, endColor
+            top.toInt(),
+            right.toInt(),
+            bottom.toInt(),
+            startColor,
+            endColor,
+            0f
         )
         Stencil.dispose()
     }

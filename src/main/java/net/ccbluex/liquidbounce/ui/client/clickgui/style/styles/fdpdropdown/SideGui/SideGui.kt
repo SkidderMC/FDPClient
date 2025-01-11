@@ -513,7 +513,7 @@ class SideGui : GuiPanel() {
                     colorY.toInt(),
                     (colorX + colorWidth).toInt(),
                     (colorY + colorHeight).toInt(),
-                    startColor, endColor
+                    startColor, endColor, 0f
                 )
 
                 val isSelected = (ClientColorMode == colorName)
