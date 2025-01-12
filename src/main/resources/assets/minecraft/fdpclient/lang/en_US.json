@@ -13,6 +13,7 @@
     "menu.configuration": "Configuration",
     "menu.contributors": "Contributors",
     "menu.discordRPC.typeBox": "Type Here..",
+    "menu.altManager.typeCustomPrefix": "Type Custom Alt Prefix Here..",
     "notification.moduleEnabled": "Enabled %s",
     "notification.moduleDisabled": "Disabled %s",
     "module.aimbot.description": "Automatically faces selected entities around you.",

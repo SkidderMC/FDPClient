@@ -14,7 +14,6 @@ import net.minecraft.util.Session
 import kotlin.random.Random
 
 object RandomUtils {
-
     fun nextInt(startInclusive: Int = 0, endExclusive: Int = Int.MAX_VALUE) =
         if (endExclusive - startInclusive <= 0) startInclusive else startInclusive + Random.nextInt(endExclusive - startInclusive)
 
@@ -33,11 +32,9 @@ object RandomUtils {
     fun random(length: Int, chars: String) = random(length, chars.toCharArray())
 
     fun random(length: Int, chars: CharArray): String = buildString(length) {
-
         repeat(length) {
             append(chars[Random.nextInt(chars.size)])
         }
-
     }
 
     @JvmOverloads
@@ -71,36 +68,48 @@ object RandomUtils {
      */
 
     fun randomUsername(
+        customPrefix: String = GuiClientConfiguration.altsPrefix,
         maxLength: Int = GuiClientConfiguration.altsLength,
         raw: Boolean = GuiClientConfiguration.unformattedAlts
     ): String {
-        //Returns classic random username if stylised alts aren't enabled.
-        if (!GuiClientConfiguration.stylisedAlts)
-            return randomString(maxLength)
+        // Adjust max length by accounting for the prefix and underscore if prefix is not empty.
+        val adjustedMaxLength = maxLength - if (customPrefix.isNotEmpty()) customPrefix.length + 1 else 0
+
+        // If the adjusted length is not valid, return just the prefix (or empty string if no prefix).
+        if (adjustedMaxLength <= 0) return customPrefix
+
+        // Returns classic random username if stylised alts aren't enabled.
+        if (!GuiClientConfiguration.stylisedAlts) {
+            val randomName = randomString(adjustedMaxLength)
+            return if (customPrefix.isNotEmpty()) "${customPrefix}_$randomName" else randomName
+        }
 
         val adjective: String
         val animal: String
 
-        //For all combinations to be equally probable, it is randomised, whether adjective or animal is chosen first.
+        // For all combinations to be equally probable, it is randomised, whether adjective or animal is chosen first.
         if (Random.nextBoolean()) {
-            adjective = ADJECTIVES.filter { it.length <= maxLength - 3 }.random()
-            animal = ANIMALS.filter { it.length <= maxLength - adjective.length }.random()
+            adjective = ADJECTIVES.filter { it.length <= adjustedMaxLength - 3 }.random()
+            animal = ANIMALS.filter { it.length <= adjustedMaxLength - adjective.length }.random()
         } else {
-            animal = ANIMALS.filter { it.length <= maxLength - 3 }.random()
-            adjective = ADJECTIVES.filter { it.length <= maxLength - animal.length }.random()
+            animal = ANIMALS.filter { it.length <= adjustedMaxLength - 3 }.random()
+            adjective = ADJECTIVES.filter { it.length <= adjustedMaxLength - animal.length }.random()
         }
 
-        //Returns raw name if unformatted alts option is not enabled.
-        if (!raw) return adjective + (if (adjective.length + animal.length < maxLength) "_" else "") + animal
+        // Generate the base name.
+        val baseName = if (!raw) {
+            adjective + (if (adjective.length + animal.length < adjustedMaxLength) "_" else "") + animal
+        } else {
+            val leetName = leetRandomly(adjective) + (if (adjective.length + animal.length < adjustedMaxLength) random(
+                1,
+                FILLER_CHARS
+            ) else "") + leetRandomly(animal)
+            val fillerCount = adjustedMaxLength - leetName.length
+            StringBuilder(random(fillerCount, FILLER_CHARS)).insert(nextInt(0, fillerCount), leetName).toString()
+        }
 
-        val baseName = leetRandomly(adjective) + (if (adjective.length + animal.length < maxLength) random(
-            1,
-            FILLER_CHARS
-        ) else "") + leetRandomly(animal)
-        val fillerCount = maxLength - baseName.length
-
-        //Adds random prefix and suffix made up from filler characters.
-        return StringBuilder(random(fillerCount, FILLER_CHARS)).insert(nextInt(0, fillerCount), baseName).toString()
+        // Adds random prefix and suffix made up from filler characters.
+        return if (customPrefix.isNotEmpty()) "${customPrefix}_$baseName" else baseName
     }
 
     //Randomly converts "leetable" characters, skips first and last.
