@@ -424,8 +424,8 @@ open class NumberValue(
 
 open class ColorValue(
     name: String, defaultColor: Color, var rainbow: Boolean = false, var showPicker: Boolean = false,
-    isSupported: (() -> Boolean)? = null
-) : Value<Color>(name, defaultColor, isSupported = isSupported) {
+    subjective: Boolean = false, isSupported: (() -> Boolean)? = null
+) : Value<Color>(name, defaultColor, subjective = subjective, isSupported = isSupported) {
     // Sliders
     var hueSliderY = 0F
     var opacitySliderY = 0F
@@ -440,7 +440,15 @@ open class ColorValue(
         }
 
     init {
-        changeValue(defaultColor)
+        initializeSliderValues(defaultColor)
+    }
+
+    fun initializeSliderValues(color: Color) {
+        Color.RGBtoHSB(color.red, color.green, color.blue, null).also {
+            hueSliderY = it[0]
+            opacitySliderY = color.alpha / 255f
+            colorPickerPos.set(it[1], 1 - it[2])
+        }
     }
 
     fun selectedColor() = if (rainbow) {
@@ -485,6 +493,10 @@ open class ColorValue(
     override fun getString() =
         "Color[picker=[${colorPickerPos.x},${colorPickerPos.y}],hueslider=${hueSliderY},opacity=${(opacitySliderY)},rainbow=$rainbow]"
 
+    override fun getValue(thisRef: Any?, property: KProperty<*>): Color {
+        return selectedColor()
+    }
+
     fun readColorFromConfig(str: String): List<String>? {
         val regex =
             """Color\[picker=\[\s*(-?\d*\.?\d+),\s*(-?\d*\.?\d+)],\s*hueslider=\s*(-?\d*\.?\d+),\s*opacity=\s*(-?\d*\.?\d+),\s*rainbow=(true|false)]""".toRegex()
@@ -492,11 +504,7 @@ open class ColorValue(
 
         return matchResult?.let {
             listOf(
-                it.groupValues[1],
-                it.groupValues[2],
-                it.groupValues[3],
-                it.groupValues[4],
-                it.groupValues[5]
+                it.groupValues[1], it.groupValues[2], it.groupValues[3], it.groupValues[4], it.groupValues[5]
             )
         }
     }
@@ -546,3 +554,13 @@ fun floatRange(
     name: String, value: ClosedFloatingPointRange<Float>, range: ClosedFloatingPointRange<Float> = 0f..Float.MAX_VALUE,
     suffix: String? = null, subjective: Boolean = false, isSupported: (() -> Boolean)? = null
 ) = FloatRangeValue(name, value, range, suffix, subjective, isSupported)
+
+fun color(
+    name: String, value: Color, rainbow: Boolean = false, showPicker: Boolean = false, subjective: Boolean = false,
+    isSupported: (() -> Boolean)? = null
+) = ColorValue(name, value, rainbow, showPicker, subjective, isSupported)
+
+fun color(
+    name: String, value: Int, rainbow: Boolean = false, showPicker: Boolean = false, subjective: Boolean = false,
+    isSupported: (() -> Boolean)? = null
+) = color(name, Color(value, true), rainbow, showPicker, subjective, isSupported)

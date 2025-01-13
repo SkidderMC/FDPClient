@@ -19,7 +19,6 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.WorldToScreen
@@ -52,9 +51,7 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
     private val glowFade by int("Glow-Fade", 10, 0..30) { mode == "Glow" }
     private val glowTargetAlpha by float("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
 
-    private val espColorMode by choices("ESP-Color", arrayOf("Custom", "Rainbow"), "Custom")
-    private val espColor = ColorSettingsInteger(this, "ESP", withAlpha = false)
-    { espColorMode in arrayOf("Custom", "Gaussian") }.with(255, 255, 255)
+    private val espColor = ColorSettingsInteger(this, "ESP").with(255, 255, 255)
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
         override fun onUpdate(value: Int) {
@@ -213,7 +210,7 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
             }
         }
 
-        return if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
+        return espColor.color()
     }
 
     fun shouldRender(entity: EntityLivingBase): Boolean {

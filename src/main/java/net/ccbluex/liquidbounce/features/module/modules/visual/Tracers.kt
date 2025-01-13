@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.minecraft.entity.Entity
@@ -29,10 +28,8 @@ import kotlin.math.pow
 
 object Tracers : Module("Tracers", Category.VISUAL, hideModule = false) {
 
-    private val colorMode by choices("Color", arrayOf("Custom", "DistanceColor", "Rainbow"), "Custom")
-    private val colorRed by int("R", 0, 0..255) { colorMode == "Custom" }
-    private val colorGreen by int("G", 160, 0..255) { colorMode == "Custom" }
-    private val colorBlue by int("B", 255, 0..255) { colorMode == "Custom" }
+    private val colorMode by choices("Color", arrayOf("Custom", "DistanceColor"), "Custom")
+    private val color by color("Color", Color(0, 160, 255, 150)) { colorMode == "Custom" }
 
     private val thickness by float("Thickness", 2F, 1F..5F)
 
@@ -65,7 +62,7 @@ object Tracers : Module("Tracers", Category.VISUAL, hideModule = false) {
     // Priority must be set lower than every other Listenable class that also listens to this event.
     // We re-apply camera transformation, which would affect NameTags if the priority was normal.
     val onRender3D = handler<Render3DEvent>(priority = -5) {
-        val thePlayer = mc.thePlayer ?: return@handler
+        mc.thePlayer ?: return@handler
 
         val originalViewBobbing = mc.gameSettings.viewBobbing
 
@@ -91,9 +88,8 @@ object Tracers : Module("Tracers", Category.VISUAL, hideModule = false) {
                 val color = when {
                     entity is EntityPlayer && entity.isClientFriend() -> Color(0, 0, 255, 150)
                     teams && Teams.handleEvents() && Teams.isInYourTeam(entity) -> Color(0, 162, 232)
-                    colorMode == "custom" -> Color(colorRed, colorGreen, colorBlue, 150)
+                    colorMode == "custom" -> color
                     colorMode == "distancecolor" -> Color(255 - dist, dist, 0, 150)
-                    colorMode == "rainbow" -> ColorUtils.rainbow()
                     else -> Color(255, 255, 255, 150)
                 }
 

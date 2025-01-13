@@ -15,11 +15,9 @@ import net.ccbluex.liquidbounce.utils.block.*
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isBlockBBValid
-import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColorWithAlpha
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockDamageText
@@ -71,9 +69,7 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
     private val font by font("Font", Fonts.font40) { blockProgress }
     private val fontShadow by boolean("Shadow", true) { blockProgress }
 
-    private val colorRed by int("R", 200, 0..255) { blockProgress }
-    private val colorGreen by int("G", 100, 0..255) { blockProgress }
-    private val colorBlue by int("B", 0, 0..255) { blockProgress }
+    private val color by color("Color", Color(200, 100, 0)) { blockProgress }
 
     private val ignoreOwnBed by boolean("IgnoreOwnBed", true)
     private val ownBedDist by int("MaxBedDistance", 16, 1..32) { ignoreOwnBed }
@@ -83,10 +79,6 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
     private val posProcess by boolean("PosProcess", false) { renderPos }
 
     private val posOutline by boolean("PosOutline", false)
-
-    private val testsuperwow by ColorValue("xxx", Color.CYAN, false, false)
-
-    private val testsuperwx by ColorValue("SuperWow", Color.CYAN, false, false)
 
     /**
      * VALUES
@@ -325,7 +317,7 @@ object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
                 currentDamage,
                 font,
                 fontShadow,
-                ColorUtils.packARGBValue(colorRed, colorGreen, colorBlue),
+                color.rgb,
                 scale,
             )
         }

@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import net.ccbluex.liquidbounce.config.block
-import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.color
 import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -23,7 +23,6 @@ import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
 import net.ccbluex.liquidbounce.utils.extensions.component3
 import net.ccbluex.liquidbounce.utils.extensions.eyes
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.minecraft.block.Block
@@ -38,10 +37,7 @@ object BlockESP : Module("BlockESP", Category.VISUAL, hideModule = false) {
     private val radius by int("Radius", 40, 5..120)
     private val blockLimit by int("BlockLimit", 256, 0..2056)
 
-    private val colorRainbow by boolean("Rainbow", false)
-    private val colorRed by int("R", 255, 0..255) { !colorRainbow }
-    private val colorGreen by int("G", 179, 0..255) { !colorRainbow }
-    private val colorBlue by int("B", 72, 0..255) { !colorRainbow }
+    private val color by color("Color", Color(255, 179, 72))
 
     private val posList = ConcurrentHashMap.newKeySet<BlockPos>()
 
@@ -74,7 +70,6 @@ object BlockESP : Module("BlockESP", Category.VISUAL, hideModule = false) {
     }
 
     val onRender3D = handler<Render3DEvent> {
-        val color = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
         when (mode) {
             "Box" -> posList.forEach { drawBlockBox(it, color, true) }
             "2D" -> posList.forEach { draw2D(it, color.rgb, Color.BLACK.rgb) }

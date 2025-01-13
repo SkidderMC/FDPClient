@@ -19,7 +19,6 @@ import net.ccbluex.liquidbounce.utils.client.realZ
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils.contains
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBacktrackBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
@@ -80,17 +79,10 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
     private val smart by boolean("Smart", true) { mode == "Modern" }
 
     // ESP
-    private val espMode by choices(
-        "ESP-Mode", arrayOf("None", "Box", "Model", "Wireframe"), "Box", subjective = true
-    ) { mode == "Modern" }
+    private val espMode by choices("ESP-Mode", arrayOf("None", "Box", "Model", "Wireframe"), "Box", subjective = true) { mode == "Modern" }
     private val wireframeWidth by float("WireFrame-Width", 1f, 0.5f..5f) { espMode == "WireFrame" }
 
-    private val espColorMode by choices(
-        "ESP-Color", arrayOf("Custom", "Rainbow"), "Custom"
-    ) { espMode != "Model" && mode == "Modern" }
-    private val espColor = ColorSettingsInteger(
-        this, "ESP", withAlpha = false
-    ) { espColorMode == "Custom" && espMode != "Model" && mode == "Modern" }.with(0, 255, 0)
+    private val espColor = ColorSettingsInteger(this, "ESP") { espMode != "Model" && mode == "Modern" }.with(0, 255, 0)
 
     private val packetQueue = ConcurrentLinkedQueue<QueueData>()
     private val positions = mutableListOf<Pair<Vec3, Long>>()
@@ -390,8 +382,6 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                             }
 
                             "wireframe" -> {
-                                val color = if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
-
                                 glPushMatrix()
                                 glPushAttrib(GL_ALL_ATTRIB_BITS)
 
@@ -677,7 +667,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
     }
 
     val color
-        get() = if (espColorMode == "Rainbow") rainbow() else Color(espColor.color().rgb)
+        get() = espColor.color()
 
     private fun shouldBacktrack() =
         mc.thePlayer != null && mc.theWorld != null && target != null && mc.thePlayer.health > 0 && (target!!.health > 0 || target!!.health.isNaN()) && mc.playerController.currentGameType != WorldSettings.GameType.SPECTATOR && System.currentTimeMillis() >= delayForNextBacktrack && target?.let {

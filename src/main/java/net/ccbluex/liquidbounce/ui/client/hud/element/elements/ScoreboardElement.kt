@@ -8,17 +8,18 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_WEBSITE
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
+import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRectInt
-import net.ccbluex.liquidbounce.config.*
-import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.minecraft.scoreboard.ScoreObjective
 import net.minecraft.scoreboard.ScorePlayerTeam
 import net.minecraft.util.EnumChatFormatting
@@ -36,26 +37,16 @@ class ScoreboardElement(
     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)
 ) : Element(x, y, scale, side) {
 
-    private val textRed by int("Text-R", 255, 0..255)
-    private val textGreen by int("Text-G", 255, 0..255)
-    private val textBlue by int("Text-B", 255, 0..255)
-
-    private val backgroundColorRed by int("Background-R", 0, 0..255)
-    private val backgroundColorGreen by int("Background-G", 0, 0..255)
-    private val backgroundColorBlue by int("Background-B", 0, 0..255)
-    private val backgroundColorAlpha by int("Background-Alpha", 95, 0..255)
+    private val textColor by color("TextColor", Color.WHITE)
+    private val backgroundColor by color("BackgroundColor", Color.BLACK.withAlpha(95))
 
     private val roundedRectRadius by float("Rounded-Radius", 3F, 0F..5F)
 
     private val rect by boolean("Rect", false)
-    private val rectColorMode by choices("Rect-Color", arrayOf("Custom", "Rainbow"), "Custom") { rect }
-    private val rectColorRed by int("Rect-R", 0, 0..255) { rect && rectColorMode == "Custom" }
-    private val rectColorGreen by int("Rect-G", 111, 0..255) { rect && rectColorMode == "Custom" }
-    private val rectColorBlue by int("Rect-B", 255, 0..255) { rect && rectColorMode == "Custom" }
-    private val rectColorAlpha by int("Rect-Alpha", 255, 0..255) { rect && rectColorMode == "Custom" }
+    private val rectColor = color("RectangleColor", Color(0, 111, 255)) { rect }
 
     private val serverIp by choices("ServerIP", arrayOf("Normal", "None", "Client", "Website"), "Normal")
-    private val number by boolean("ShowNumber", true)
+    private val number by boolean("Number", true)
     private val shadow by boolean("Shadow", false)
     private val font by font("Font", Fonts.minecraftFont)
 
@@ -66,11 +57,8 @@ class ScoreboardElement(
         assumeNonVolatile {
 
             val (fontRenderer, fontHeight) = font to ((font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT)
-            val textColor = textColor().rgb
-            val backColor = backgroundColor().rgb
-
-            val rectColorMode = rectColorMode
-            val rectCustomColor = Color(rectColorRed, rectColorGreen, rectColorBlue, rectColorAlpha).rgb
+            val textColor = textColor.rgb
+            val backColor = backgroundColor.rgb
 
             val worldScoreboard = mc.theWorld.scoreboard ?: return null
             var currObjective: ScoreObjective? = null
@@ -79,8 +67,7 @@ class ScoreboardElement(
             if (playerTeam != null) {
                 val colorIndex = playerTeam.chatFormat.colorIndex
 
-                if (colorIndex >= 0)
-                    currObjective = worldScoreboard.getObjectiveInDisplaySlot(3 + colorIndex)
+                if (colorIndex >= 0) currObjective = worldScoreboard.getObjectiveInDisplaySlot(3 + colorIndex)
             }
 
             val objective = currObjective ?: worldScoreboard.getObjectiveInDisplaySlot(1) ?: return null
@@ -98,7 +85,11 @@ class ScoreboardElement(
             for (score in scoreCollection) {
                 val scorePlayerTeam = scoreboard.getPlayersTeam(score.playerName)
                 val width = if (number) {
-                    "${ScorePlayerTeam.formatPlayerName(scorePlayerTeam, score.playerName)}: ${EnumChatFormatting.RED}${score.scorePoints}"
+                    "${
+                        ScorePlayerTeam.formatPlayerName(
+                            scorePlayerTeam, score.playerName
+                        )
+                    }: ${EnumChatFormatting.RED}${score.scorePoints}"
                 } else {
                     ScorePlayerTeam.formatPlayerName(scorePlayerTeam, score.playerName)
                 }
@@ -114,7 +105,7 @@ class ScoreboardElement(
                 val team = scoreboard.getPlayersTeam(score.playerName)
 
                 var name = ScorePlayerTeam.formatPlayerName(team, score.playerName)
-                val scorePoints =  if (number) "${EnumChatFormatting.RED}${score.scorePoints}" else ""
+                val scorePoints = if (number) "${EnumChatFormatting.RED}${score.scorePoints}" else ""
 
                 val width = 5 - if (rect) 4 else 0
                 val height = maxHeight - index * fontHeight.toFloat()
@@ -175,9 +166,9 @@ class ScoreboardElement(
                 }
 
                 if (rect) {
-                    val rectColor = when (rectColorMode) {
-                        "Rainbow" -> ColorUtils.rainbow(400000000L * index).rgb
-                        else -> rectCustomColor
+                    val rectColor = when {
+                        this.rectColor.rainbow -> ColorUtils.rainbow(400000000L * index).rgb
+                        else -> this.rectColor.selectedColor().rgb
                     }
 
                     drawRoundedRect(
@@ -196,12 +187,5 @@ class ScoreboardElement(
 
         return null
     }
-
-    private fun backgroundColor() = Color(
-        backgroundColorRed, backgroundColorGreen,
-        backgroundColorBlue, backgroundColorAlpha
-    )
-
-    private fun textColor() = Color(textRed, textGreen, textBlue)
 
 }

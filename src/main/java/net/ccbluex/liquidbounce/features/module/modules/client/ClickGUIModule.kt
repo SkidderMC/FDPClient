@@ -22,8 +22,8 @@ import java.awt.Color
 
 object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT, canBeEnabled = false) {
     var lastScale = 0
-    private val style by
-        object : ListValue("Style", arrayOf("Black", "Zywl", "FDP"), "FDP") {
+    private val style by object :
+        ListValue("Style", arrayOf("Black", "Zywl", "FDP"), "FDP") {
             override fun onChanged(oldValue: String, newValue: String) = updateStyle()
         }
     var scale by float("Scale", 0.8f, 0.5f..1.5f)
@@ -78,8 +78,8 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
     }
 
     val onPacket = handler<PacketEvent>(always = true) { event ->
-        val packet = event.packet
-        if (packet is S2EPacketCloseWindow && mc.currentScreen is ClickGui)
+        if (event.packet is S2EPacketCloseWindow && mc.currentScreen is ClickGui) {
             event.cancelEvent()
+        }
     }
 }

@@ -326,7 +326,9 @@ public abstract class MixinEntityRenderer {
                     int n2 = (int) (f13 * 255.0f);
                     int n3 = (int) (f14 * 255.0f);
                     int n4 = (int) (f15 * 255.0f);
-                    this.lightmapColors[i2] = ambience.getState() && ambience.getWorldColor() ? new Color(ambience.getWorldColorRed(), ambience.getWorldColorGreen(), ambience.getWorldColorBlue()).getRGB() : 0xFF000000 | n2 << 16 | n3 << 8 | n4;
+                    this.lightmapColors[i2] = ambience.getState() && ambience.getWorldColor()
+                            ? new Color(ambience.getColor().getRGB()).getRGB()
+                            : 0xFF000000 | n2 << 16 | n3 << 8 | n4;
                 }
                 this.lightmapTexture.updateDynamicTexture();
                 this.lightmapUpdateNeeded = false;

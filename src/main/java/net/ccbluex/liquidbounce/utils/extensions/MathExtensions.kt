@@ -85,6 +85,7 @@ fun Vec3i.copy(x: Int = this.x, y: Int = this.y, z: Int = this.z) = Vec3i(x, y, 
 fun BlockPos.copy(x: Int = this.x, y: Int = this.y, z: Int = this.z) = BlockPos(x, y, z)
 fun BlockPos.MutableBlockPos.copy(x: Int = this.x, y: Int = this.y, z: Int = this.z) = BlockPos.MutableBlockPos(x, y, z)
 fun Vec3.copy(x: Double = this.xCoord, y: Double = this.yCoord, z: Double = this.zCoord) = Vec3(x, y, z)
+
 fun BlockPos.immutableCopy() = BlockPos(x, y, z)
 fun BlockPos.mutableCopy() = BlockPos.MutableBlockPos(x, y, z)
 
@@ -124,6 +125,7 @@ fun Float.withGCD() = (this / getFixedAngleDelta()).roundToInt() * getFixedAngle
  */
 infix fun Int.safeDiv(b: Int) = if (b == 0) 0f else this.toFloat() / b.toFloat()
 infix fun Int.safeDivInt(b: Int) = if (b == 0) 0 else this / b
+
 infix fun Float.safeDiv(b: Float) = if (b == 0f) 0f else this / b
 
 fun Double.ceilInt() = MathHelper.ceiling_double_int(this)

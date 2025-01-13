@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorder
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect2
@@ -28,20 +28,12 @@ class Inventory : Element(300.0, 50.0) {
 
     private val font by font("Font", Fonts.font35)
     private val title by choices("Title", arrayOf("Center", "Left", "Right", "None"), "Left")
-    private val titleRainbow by boolean("TitleRainbow", false) { title != "None" }
-    private val titleRed by int("TitleRed", 255, 0..255) { title != "None" && !titleRainbow }
-    private val titleGreen by int("TitleGreen", 255, 0..255) { title != "None" && !titleRainbow }
-    private val titleBlue by int("TitleBlue", 255, 0..255) { title != "None" && !titleRainbow }
-
+    private val titleColor = color("TitleColor", Color.WHITE) { title != "None" }
     private val roundedRectRadius by float("Rounded-Radius", 3F, 0F..5F)
 
     private val borderValue by boolean("Border", true)
-    private val borderRainbow by boolean("BorderRainbow", false) { borderValue }
-    private val borderRed by int("Border-R", 255, 0..255) { borderValue && !borderRainbow }
-    private val borderGreen by int("Border-G", 255, 0..255) { borderValue && !borderRainbow }
-    private val borderBlue by int("Border-B", 255, 0..255) { borderValue && !borderRainbow }
-
-    private val backgroundAlpha by int("Background-Alpha", 150, 0..255)
+    private val borderColor = color("BorderColor", Color.WHITE) { borderValue }
+    private val backgroundColor by color("BackgroundColor", Color.BLACK.withAlpha(150))
 
     private val width = 174F
     private val height = 66F
@@ -50,15 +42,17 @@ class Inventory : Element(300.0, 50.0) {
     override fun drawElement(): Border {
         val font = font
         val startY = if (title != "None") -(padding + font.FONT_HEIGHT) else 0F
-        val borderColor = if (borderRainbow) ColorUtils.rainbow() else Color(borderRed, borderGreen, borderBlue)
-        val titleColor = if (titleRainbow) ColorUtils.rainbow() else Color(titleRed, titleGreen, titleBlue)
+        val borderColor = borderColor.selectedColor()
+        val titleColor = titleColor.selectedColor()
 
-        // draw rect and borders
-        drawRoundedRect2(0F, startY, width, height, Color(0, 0, 0, backgroundAlpha), roundedRectRadius)
+        // Draw rectangle and borders
+        drawRoundedRect2(0F, startY, width, height, backgroundColor, roundedRectRadius)
+
         if (borderValue) {
             drawBorder(0f, startY, width, height, 3f, borderColor.rgb)
             drawRect(0F, 0f, width, 1f, borderColor)
         }
+
         // Reset color
         resetColor()
         glColor4f(1F, 1F, 1F, 1F)
@@ -66,7 +60,8 @@ class Inventory : Element(300.0, 50.0) {
         val invDisplayName = mc.thePlayer.inventory.displayName.formattedText
 
         when (title.lowercase()) {
-            "center" -> font.drawString(invDisplayName,
+            "center" -> font.drawString(
+                invDisplayName,
                 width / 2 - font.getStringWidth(invDisplayName) / 2F,
                 -(font.FONT_HEIGHT).toFloat(),
                 titleColor.rgb,
@@ -74,7 +69,8 @@ class Inventory : Element(300.0, 50.0) {
             )
 
             "left" -> font.drawString(invDisplayName, padding, -(font.FONT_HEIGHT).toFloat(), titleColor.rgb, false)
-            "right" -> font.drawString(invDisplayName,
+            "right" -> font.drawString(
+                invDisplayName,
                 width - padding - font.getStringWidth(invDisplayName),
                 -(font.FONT_HEIGHT).toFloat(),
                 titleColor.rgb,

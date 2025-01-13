@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 import com.google.common.collect.Queues
 import net.ccbluex.liquidbounce.config.FloatValue
 import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.color
 import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
@@ -20,7 +21,6 @@ import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.client.pos
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.kotlin.removeEach
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
@@ -62,10 +62,8 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
     private val pauseOnChest by boolean("PauseOnChest", false)
 
     private val line by boolean("Line", true, subjective = true)
-    private val rainbow by boolean("Rainbow", false, subjective = true) { line }
-    private val red by int("R", 0, 0..255, subjective = true) { !rainbow && line }
-    private val green by int("G", 255, 0..255, subjective = true) { !rainbow && line }
-    private val blue by int("B", 0, 0..255, subjective = true) { !rainbow && line }
+    private val lineColor by color("LineColor", Color.GREEN, subjective = true) { line }
+
     private val renderModel by boolean("RenderModel", false, subjective = true)
 
     private val packetQueue = Queues.newArrayDeque<QueueData>()
@@ -163,7 +161,12 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
 
             if (packet is C03PacketPlayer && packet.isMoving) {
                 synchronized(positions) {
-                    positions += PositionData(packet.pos, System.currentTimeMillis(), player.renderYawOffset, RotationUtils.serverRotation)
+                    positions += PositionData(
+                        packet.pos,
+                        System.currentTimeMillis(),
+                        player.renderYawOffset,
+                        RotationUtils.serverRotation
+                    )
                 }
             }
 
@@ -230,7 +233,6 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
 
     val onRender3D = handler<Render3DEvent> { event ->
         val player = mc.thePlayer ?: return@handler
-        val color = if (rainbow) rainbow() else Color(red, green, blue)
 
         if (Blink.blinkingSend() || positions.isEmpty()) {
             renderData.reset(player)
@@ -248,7 +250,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false, hideM
             glDisable(GL_DEPTH_TEST)
             mc.entityRenderer.disableLightmap()
             glBegin(GL_LINE_STRIP)
-            glColor(color)
+            glColor(lineColor)
 
             val renderPosX = mc.renderManager.viewerPosX
             val renderPosY = mc.renderManager.viewerPosY

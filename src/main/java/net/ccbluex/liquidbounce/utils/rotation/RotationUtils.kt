@@ -255,11 +255,11 @@ object RotationUtils : MinecraftInstance, Listenable {
 
         randomization?.takeIf { it.randomize }?.run {
             val yawMovement =
-                angleDifference(currRotation.yaw, lastRotations[1].yaw).sign.takeIf { it != 0f } ?: arrayOf(
+                angleDifference(currRotation.yaw, lastRotations[2].yaw).sign.takeIf { it != 0f } ?: arrayOf(
                     -1f, 1f
                 ).random()
             val pitchMovement =
-                angleDifference(currRotation.pitch, lastRotations[1].pitch).sign.takeIf { it != 0f } ?: arrayOf(
+                angleDifference(currRotation.pitch, lastRotations[2].pitch).sign.takeIf { it != 0f } ?: arrayOf(
                     -1f, 1f
                 ).random()
 
@@ -415,7 +415,7 @@ object RotationUtils : MinecraftInstance, Listenable {
             return
         }
 
-        val lastTick1 = angleDifferences(serverRotation, lastRotations[1]).let { diffs ->
+        val lastTick1 = angleDifferences(lastRotations[1], lastRotations[2]).let { diffs ->
             if (yaw) diffs.x else diffs.y
         }
 

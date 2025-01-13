@@ -5,31 +5,24 @@
  */
 package net.ccbluex.liquidbounce.utils.render
 
+import net.ccbluex.liquidbounce.config.color
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element.Companion.MAX_GRADIENT_COLORS
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import java.awt.Color
 
 class ColorSettingsFloat(owner: Any, name: String, val index: Int? = null, generalApply: () -> Boolean = { true }) {
-    private val r by float(
-        "$name-R${index ?: ""}",
-        if ((index ?: 0) % 3 == 1) 255f else 0f,
-        0f..255f, subjective = true
-    ) { generalApply() }
-    private val g by float(
-        "$name-G${index ?: ""}",
-        if ((index ?: 0) % 3 == 2) 255f else 0f,
-        0f..255f, subjective = true
-    ) { generalApply() }
-    private val b by float(
-        "$name-B${index ?: ""}",
-        if ((index ?: 0) % 3 == 0) 255f else 0f,
-        0f..255f, subjective = true
+    private val colors = color(
+        "$name${index ?: "Color"}",
+        Color(
+            if ((index ?: 0) % 3 == 1) 255 else 0,
+            if ((index ?: 0) % 3 == 2) 255 else 0,
+            if ((index ?: 0) % 3 == 0) 255 else 0
+        ), subjective = true
     ) { generalApply() }
 
-    fun color() = Color(r / 255f, g / 255f, b / 255f)
+    fun color() = colors.selectedColor()
 
     init {
         when (owner) {
@@ -49,49 +42,28 @@ class ColorSettingsFloat(owner: Any, name: String, val index: Int? = null, gener
 }
 
 class ColorSettingsInteger(
-    owner: Any, name: String? = null, val index: Int? = null, withAlpha: Boolean = true,
-    zeroAlphaCheck: Boolean = false, applyMax: Boolean = false,
-    alphaApply: () -> Boolean? = { null }, generalApply: () -> Boolean = { true },
+    owner: Any, name: String? = null,
+    val index: Int? = null,
+    applyMax: Boolean = false,
+    generalApply: () -> Boolean = { true }
 ) {
-    private val string = if (name == null) "" else "$name-"
+    private val string = if (name == null) "Color" else "$name"
     private val max = if (applyMax) 255 else 0
 
-    private var red = int(
-        "${string}R${index ?: ""}",
-        max,
-        0..255, subjective = true
-    ) { generalApply() && (!zeroAlphaCheck || a > 0) }
-    private var green = int(
-        "${string}G${index ?: ""}",
-        max,
-        0..255, subjective = true
-    ) { generalApply() && (!zeroAlphaCheck || a > 0) }
-    private var blue = int(
-        "${string}B${index ?: ""}",
-        max,
-        0..255, subjective = true
-    ) { generalApply() && (!zeroAlphaCheck || a > 0) }
-    private var alpha = int(
-        "${string}Alpha${index ?: ""}",
-        255,
-        0..255, subjective = true
-    ) { alphaApply() ?: generalApply() && withAlpha }
+    private val colors = color("${string}${index ?: ""}", Color(max, max, max, 255), subjective = true)
+    { generalApply() }
 
-    private var r by red
-    private var g by green
-    private var b by blue
-    private var a by alpha
+    fun color(a: Int = colors.selectedColor().alpha) = color().withAlpha(a)
 
-    fun color(a: Int = this.a) = Color(r, g, b, a)
+    fun color() = colors.selectedColor()
 
-    fun color() = Color(r, g, b, a)
-
-    fun with(r: Int? = null, g: Int? = null, b: Int? = null, a: Int? = null): ColorSettingsInteger {
-        r?.let { red.setAndUpdateDefault(it) }
-        g?.let { green.setAndUpdateDefault(it) }
-        b?.let { blue.setAndUpdateDefault(it) }
-        a?.let { alpha.setAndUpdateDefault(it) }
-
+    fun with(
+        r: Int = color().red, g: Int = color().green, b: Int = color().blue, a: Int = color().alpha
+    ): ColorSettingsInteger {
+        Color(r, g, b, a).let {
+            colors.setAndUpdateDefault(it)
+            colors.initializeSliderValues(it)
+        }
         return this
     }
 
@@ -107,18 +79,10 @@ class ColorSettingsInteger(
 
     companion object {
         fun create(
-            owner: Any, name: String, colors: Int, withAlpha: Boolean = true, zeroAlphaCheck: Boolean = true,
-            applyMax: Boolean = false, generalApply: (Int) -> Boolean = { true },
+            owner: Any, name: String, colors: Int, applyMax: Boolean = false, generalApply: (Int) -> Boolean = { true }
         ): List<ColorSettingsInteger> {
             return (1..colors).map {
-                ColorSettingsInteger(
-                    owner,
-                    name,
-                    it,
-                    withAlpha,
-                    zeroAlphaCheck,
-                    applyMax
-                ) { generalApply(it) }
+                ColorSettingsInteger(owner, name, it, applyMax) { generalApply(it) }
             }
         }
     }

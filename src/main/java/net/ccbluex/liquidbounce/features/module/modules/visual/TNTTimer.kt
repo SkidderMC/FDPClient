@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
 import net.minecraft.entity.item.EntityTNTPrimed
 import org.lwjgl.opengl.GL11.*
+import java.awt.Color
 import kotlin.math.pow
 
 object TNTTimer : Module("TNTTimer", Category.VISUAL, spacedName = "TNT Timer", hideModule = false) {
@@ -27,9 +28,7 @@ object TNTTimer : Module("TNTTimer", Category.VISUAL, spacedName = "TNT Timer", 
     private val font by font("Font", Fonts.font40)
     private val fontShadow by boolean("Shadow", true)
 
-    private val colorRed by int("R", 255, 0..255)
-    private val colorGreen by int("G", 255, 0..255)
-    private val colorBlue by int("B", 255, 0..255)
+    private val color by color("Color", Color.WHITE)
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
         override fun onUpdate(value: Int) {
@@ -78,8 +77,6 @@ object TNTTimer : Module("TNTTimer", Category.VISUAL, spacedName = "TNT Timer", 
         enableGlCap(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
-        val color = ((colorRed and 0xFF) shl 16) or ((colorGreen and 0xFF) shl 8) or (colorBlue and 0xFF)
-
         val text = "TNT Explodes in: $timeRemaining"
 
         val fontRenderer = font
@@ -91,7 +88,7 @@ object TNTTimer : Module("TNTTimer", Category.VISUAL, spacedName = "TNT Timer", 
         // Draw text
         val width = fontRenderer.getStringWidth(text) * 0.5f
         fontRenderer.drawString(
-            text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, color, fontShadow
+            text, 1F + -width, if (fontRenderer == Fonts.minecraftFont) 1F else 1.5F, color.rgb, fontShadow
         )
 
         resetCaps()

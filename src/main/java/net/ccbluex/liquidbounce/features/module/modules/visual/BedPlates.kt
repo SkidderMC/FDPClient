@@ -36,13 +36,13 @@ import net.ccbluex.liquidbounce.utils.render.toColorArray
 import net.minecraft.block.Block
 import net.minecraft.block.BlockBed
 import net.minecraft.client.gui.Gui
-import net.minecraft.client.renderer.GlStateManager.*
+import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemStack
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
-import java.util.IdentityHashMap
+import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.max
 import kotlin.math.pow
@@ -65,8 +65,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
     private val scale by float("Scale", 3F, 1F..5F)
 
     private val textMode by choices("Text-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
-    private val textColors =
-        ColorSettingsInteger(this, "Text", withAlpha = false, applyMax = true) { textMode == "Custom" }
+    private val textColors = ColorSettingsInteger(this, "Text", applyMax = true) { textMode == "Custom" }
 
     private val gradientTextSpeed by float("Text-Gradient-Speed", 1f, 0.5f..10f) { textMode == "Gradient" }
 

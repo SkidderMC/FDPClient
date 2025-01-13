@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.config.color
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
@@ -50,10 +50,8 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     val globalAnimSpeed by float("Health Speed", 3F, 0.1F..5F)
     private val colorModeValue by choices("Color", arrayOf("Health", "Client"), "Client")
     private val shadowValue by boolean("Shadow", false)
-    private val bgRedValue by int("Background-Red", 0, 0..255)
-    private val bgGreenValue by int("Background-Green", 0, 0..255)
-    private val bgBlueValue by int("Background-Blue", 0, 0..255)
-    private val bgAlphaValue by int("Background-Alpha", 120, 0..255)
+    private val backgroundMode by choices("Background-Color", arrayOf("Custom", "Rainbow"), "Custom")
+    private val backgroundColor by color("Background", Color.BLACK) { backgroundMode == "Custom" }
 
     private var mainTarget: EntityLivingBase? = null
     private var animProgress = 0F
@@ -107,7 +105,7 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
         updateAnimationProgress(actualTarget != null)
 
         val preBarColor = getBarColor(actualTarget)
-        val preBgColor = Color(bgRedValue, bgGreenValue, bgBlueValue, bgAlphaValue)
+        val preBgColor = Color(backgroundColor.rgb)
 
         barColor = ColorUtils.targetReAlpha(preBarColor, preBarColor.alpha / 255F * (1F - animProgress))
         bgColor = ColorUtils.targetReAlpha(preBgColor, preBgColor.alpha / 255F * (1F - animProgress))

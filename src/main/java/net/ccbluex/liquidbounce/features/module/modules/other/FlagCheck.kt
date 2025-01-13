@@ -12,12 +12,12 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.chat
+import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPosBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
-import net.ccbluex.liquidbounce.utils.extensions.*
 import net.minecraft.client.gui.GuiGameOver
 import net.minecraft.init.Blocks
 import net.minecraft.network.login.server.S00PacketDisconnect
@@ -54,17 +54,12 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
     private val colors = ColorSettingsInteger(
         this,
         "Text",
-        zeroAlphaCheck = true,
-        alphaApply = { true },
         applyMax = true
     ) { renderServerPos == "Box" }
 
     private val boxColors = ColorSettingsInteger(
         this,
         "Box",
-        zeroAlphaCheck = true,
-        alphaApply = { true },
-        withAlpha = false
     ) { renderServerPos == "Box" }.with(r = 255, g = 255)
 
     private val scale by float("Scale", 1F, 1F..6F) { renderServerPos == "Box" }
@@ -332,7 +327,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
         }
     }
 
-           val onWorld = handler<WorldEvent> {
+    val onWorld = handler<WorldEvent> {
         clearFlags()
     }
 }

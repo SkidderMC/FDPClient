@@ -54,8 +54,7 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
     val colorBlueValue by int("Mark-Blue", 255, 0.. 255) { isMarkMode }
 
     private val circleRainbow by boolean("CircleRainbow", false, subjective = true) { markValue == "Circle" }
-    private val colors = ColorSettingsInteger(this, "Circle", alphaApply = { markValue == "Circle" })
-    { markValue == "Circle" && !circleRainbow }.with(132, 102, 255, 100)
+    private val colors = ColorSettingsInteger(this, "Circle") { markValue == "Circle" && !circleRainbow }.with(132, 102, 255, 100)
     private val fillInnerCircle by boolean("FillInnerCircle", false, subjective = true) { markValue == "Circle" }
     private val withHeight by boolean("WithHeight", true, subjective = true) { markValue == "Circle" }
     private val animateHeight by boolean("AnimateHeight", false, subjective = true) { withHeight }

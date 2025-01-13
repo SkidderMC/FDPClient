@@ -17,7 +17,6 @@ import net.ccbluex.liquidbounce.utils.attack.EntityUtils
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.colorFromDisplayName
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.getHealth
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
-import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
@@ -32,20 +31,15 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
     private val mode by choices("Mode", arrayOf("Solid", "Line", "LoopLine"), "Solid")
     private val thickness by float("Thickness", 3f, 1f..5f) { mode.contains("Line") }
 
-    private val colorMode by choices("Color-Mode", arrayOf("Custom", "Theme Client", "Rainbow", "Fade"), "Custom")
-    { healthMode == "None" }
-    private val colors = ColorSettingsInteger(this, "Colors", withAlpha = false)
-    { colorMode == "Custom" && healthMode == "None" }.with(255, 111, 255)
-    private val fadeDistance by int("Fade Distance", 50, 0..100) { colorMode == "Fade" }
+    private val colors = ColorSettingsInteger(this, "Colors") { healthMode == "None" }.with(255, 111, 255)
 
     private val healthMode by choices("Health-Mode", arrayOf("None", "Custom"), "Custom")
-    private val healthColors = ColorSettingsInteger(this, "Health", withAlpha = false)
+    private val healthColors = ColorSettingsInteger(this, "Health")
     { healthMode == "Custom" }.with(255, 255, 0)
 
     private val absorption by boolean("Absorption", true) { healthMode == "Custom" }
     private val healthFromScoreboard by boolean("HealthFromScoreboard", true) { healthMode == "Custom" }
 
-    private val alpha by int("Alpha", 255, 0..255)
     private val distanceAlpha by boolean("DistanceAlpha", true)
     private val alphaMin by int("AlphaMin", 100, -50..255) { distanceAlpha }
 
@@ -73,7 +67,6 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
         .filter { team || !Teams.isInYourTeam(it) }
         .filter { EntityUtils.isSelected(it, false) }
 
-
     val onRender2D = handler<Render2DEvent> { event ->
         if (dimension != "2d") return@handler
 
@@ -87,11 +80,6 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
 
         glPopMatrix()
         glPopAttrib()
-    }
-
-    private fun fade(color: Color, distance: Int, maxDistance: Int): Color {
-        val alpha = ((1.0 - (distance.toFloat() / maxDistance.toFloat())).coerceIn(0.0, 1.0) * 255).toInt()
-        return Color(color.red, color.green, color.blue, alpha)
     }
 
     val onRender3D = handler<Render3DEvent> { event ->
@@ -137,7 +125,6 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
         glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
 
         for (entity in entities) {
-
             val interpolatedPosX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * ticks
             val interpolatedPosZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * ticks
             val pos1 = (interpolatedPosX - playerPosX) * 0.2
@@ -151,10 +138,12 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
 
             if (player.getDistanceSqToEntity(entity) > maxRenderDistanceSq) continue
 
+            val colorAlpha = colors.color().alpha
+
             val alpha = if (distanceAlpha) {
-                (alpha - (sqrt((playerPosX - interpolatedPosX).pow(2) + (playerPosZ - interpolatedPosZ).pow(2)) / maxRenderDistance)
-                    .coerceAtMost(1.0) * (alpha - alphaMin)).toInt()
-            } else alpha
+                (colorAlpha - (sqrt((playerPosX - interpolatedPosX).pow(2) + (playerPosZ - interpolatedPosZ).pow(2)) / maxRenderDistance)
+                    .coerceAtMost(1.0) * (colorAlpha - alphaMin)).toInt()
+            } else colorAlpha
 
             val targetHealth = getHealth(entity, healthFromScoreboard, absorption)
             val arrowsColor = when {
@@ -173,11 +162,6 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
                         absorption
                     )
                 }
-
-                colorMode == "Rainbow" -> ColorUtils.rainbow()
-                colorMode ==  "Theme Client" -> ClientThemesUtils.getColor(1)
-                colorMode == "Fade" -> fade(Color(colors.color().red, colors.color().green, colors.color().blue),
-                    player.getDistanceToEntity(entity).toInt(), fadeDistance)
                 else -> colors.color(a = alpha)
             }
 

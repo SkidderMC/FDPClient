@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.Blink
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
@@ -47,10 +46,7 @@ object TickBase : Module("TickBase", Category.COMBAT) {
     private val pauseOnFlag by boolean("PauseOnFlag", true)
 
     private val line by boolean("Line", true, subjective = true)
-    private val rainbow by boolean("Rainbow", false, subjective = true) { line }
-    private val red by int("R", 0, 0..255, subjective = true) { !rainbow && line }
-    private val green by int("G", 255, 0..255, subjective = true) { !rainbow && line }
-    private val blue by int("B", 0, 0..255, subjective = true) { !rainbow && line }
+    private val lineColor by color("LineColor", Color.GREEN, subjective = true) { line }
 
     private var ticksToSkip = 0
     private var tickBalance = 0f
@@ -193,8 +189,6 @@ object TickBase : Module("TickBase", Category.COMBAT) {
     val onRender3D = handler<Render3DEvent> {
         if (!line) return@handler
 
-        val color = if (rainbow) rainbow() else Color(red, green, blue)
-
         synchronized(tickBuffer) {
             glPushMatrix()
             glDisable(GL_TEXTURE_2D)
@@ -204,7 +198,7 @@ object TickBase : Module("TickBase", Category.COMBAT) {
             glDisable(GL_DEPTH_TEST)
             mc.entityRenderer.disableLightmap()
             glBegin(GL_LINE_STRIP)
-            glColor(color)
+            glColor(lineColor)
 
             val renderPosX = mc.renderManager.viewerPosX
             val renderPosY = mc.renderManager.viewerPosY

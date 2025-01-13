@@ -198,6 +198,7 @@ object SettingsUtils {
                         }
                     }
                 }
+
                 else -> {}
             }
 

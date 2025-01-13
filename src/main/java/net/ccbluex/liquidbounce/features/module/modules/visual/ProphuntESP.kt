@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+
 import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
@@ -14,7 +15,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
@@ -32,10 +32,7 @@ object ProphuntESP : Module("ProphuntESP", Category.VISUAL, gameDetecting = fals
     private val glowFade by int("Glow-Fade", 10, 0..30) { mode == "Glow" }
     private val glowTargetAlpha by float("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
 
-    private val colorRainbow by boolean("Rainbow", false)
-    private val colorRed by int("R", 0, 0..255) { !colorRainbow }
-    private val colorGreen by int("G", 90, 0..255) { !colorRainbow }
-    private val colorBlue by int("B", 255, 0..255) { !colorRainbow }
+    private val color by color("Color", Color(0, 90, 255))
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 50, 1..200) {
         override fun onUpdate(value: Int) {
@@ -52,9 +49,6 @@ object ProphuntESP : Module("ProphuntESP", Category.VISUAL, gameDetecting = fals
     private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
 
     private val thruBlocks by boolean("ThruBlocks", true)
-
-    private val color
-        get() = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
 
     private val blocks = ConcurrentHashMap<BlockPos, Long>()
 
@@ -97,8 +91,7 @@ object ProphuntESP : Module("ProphuntESP", Category.VISUAL, gameDetecting = fals
     }
 
     val onRender2D = handler<Render2DEvent> { event ->
-        if (mc.theWorld == null || mode != "Glow")
-            return@handler
+        if (mc.theWorld == null || mode != "Glow") return@handler
 
         GlowShader.startDraw(event.partialTicks, glowRenderScale)
 

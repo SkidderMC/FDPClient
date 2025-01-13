@@ -15,14 +15,13 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.kotlin.removeEach
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
 object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) {
-    val rainbow by boolean("Rainbow", false)
-    val colors = ColorSettingsInteger(this, "Color", withAlpha = false) { !rainbow }.with(132, 102, 255)
+    val colors = ColorSettingsInteger(this, "Color").with(132, 102, 255)
     private val lineHeight by float("LineHeight", 0.25F, 0.25F..2F)
     private val temporary by boolean("Temporary", true)
     private val fade by boolean("Fade", true) { temporary }
@@ -78,9 +77,7 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) 
             val endPos = positions.getOrNull(positions.indexOf(it) + 1)?.array
                 ?: return@removeEach temporary && timestamp > fadeSeconds
 
-            val color = if (rainbow) rainbow() else colors.color()
-
-            glColor(color.withAlpha(transparency.toInt()))
+            glColor(colors.color().withAlpha(transparency.toInt()))
 
             glVertex3d(startPos[0] - renderPosX, startPos[1] - renderPosY, startPos[2] - renderPosZ)
             glVertex3d(startPos[0] - renderPosX, startPos[1] - renderPosY + lineHeight, startPos[2] - renderPosZ)

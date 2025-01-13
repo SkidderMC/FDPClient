@@ -5,10 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.config.FloatValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.config.*
 
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -17,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.minecraft.network.play.server.S03PacketTimeUpdate
 import net.minecraft.network.play.server.S2BPacketChangeGameState
+import java.awt.Color
 
 object Ambience : Module("Ambience", Category.VISUAL, gameDetecting = false, hideModule = false) {
 
@@ -31,9 +29,7 @@ object Ambience : Module("Ambience", Category.VISUAL, gameDetecting = false, hid
 
     // world color
     val worldColor by boolean("WorldColor", false)
-    val worldColorRed by int("WorldRed", 255, 0..255) { worldColor }
-    val worldColorGreen by int("WorldGreen", 255, 0..255) { worldColor }
-    val worldColorBlue by int("WorldBlue", 255, 0.. 255) { worldColor }
+    val color by color("Color", Color(0, 90, 255))
 
     private var i = 0L
 

@@ -14,20 +14,15 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import java.awt.Color
 
 @ElementInfo(name = "Keystrokes")
 class Keystrokes : Element(2.0, 123.0) {
     private val radius by float("RectangleRound-Radius", 3F, 0F..10F)
-    private val textRainbow by boolean("Text-Rainbow", false)
-    private val textColors = ColorSettingsInteger(this, "Text", zeroAlphaCheck = true, applyMax = true)
-    private val rectRainbow by boolean("Rectangle-Rainbow", false)
-    private val rectColors = ColorSettingsInteger(this, "Rectangle", zeroAlphaCheck = true).with(a = 150)
-    private val pressRainbow by boolean("Press-Rainbow", false)
-    private val pressColors = ColorSettingsInteger(this, "Press", zeroAlphaCheck = true).with(Color.BLUE)
+    private val textColors = ColorSettingsInteger(this, "Text", applyMax = true)
+    private val rectColors = ColorSettingsInteger(this, "Rectangle").with(a = 150)
+    private val pressColors = ColorSettingsInteger(this, "Press").with(Color.BLUE)
 
     private var shadow by boolean("Text-Shadow", true)
     private val font by font("Font", Fonts.font40)
@@ -51,13 +46,13 @@ class Keystrokes : Element(2.0, 123.0) {
     )
 
     private val textColor
-        get() = if (textRainbow) rainbow().withAlpha(textColors.color().alpha) else textColors.color()
+        get() = textColors.color()
 
     private val rectColor
-        get() = if (rectRainbow) rainbow().withAlpha(rectColors.color().alpha) else rectColors.color()
+        get() = rectColors.color()
 
     private val pressColor
-        get() = if (pressRainbow) rainbow().withAlpha(pressColors.color().alpha) else pressColors.color()
+        get() = pressColors.color()
 
     override fun drawElement(): Border {
         val options = mc.gameSettings
@@ -93,7 +88,11 @@ class Keystrokes : Element(2.0, 123.0) {
             val textX = (startX + endX) / 2 - (font.getStringWidth(key) / 2)
             val textY = currentY + (boxSize / 2) - (fontHeight / 2)
 
-            font.drawString(key, textX, textY, textColor.rgb, shadow)
+            if (font == mc.fontRendererObj) {
+                font.drawString(key, textX, textY, textColor.rgb, shadow)
+            } else {
+                (font as GameFontRenderer).drawString(key, textX, textY + 2f, textColor.rgb, shadow)
+            }
         }
 
         return Border(0F, boxSize + padding, boxSize * 3 + padding * 2, boxSize * 4 + padding * 3)

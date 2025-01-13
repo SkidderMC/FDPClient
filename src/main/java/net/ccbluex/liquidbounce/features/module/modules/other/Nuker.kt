@@ -18,7 +18,6 @@ import net.ccbluex.liquidbounce.utils.block.blockById
 import net.ccbluex.liquidbounce.utils.block.center
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.extensions.eyes
-import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockDamageText
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
@@ -69,9 +68,7 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
     private val font by font("Font", Fonts.font40) { blockProgress }
     private val fontShadow by boolean("Shadow", true) { blockProgress }
 
-    private val colorRed by int("R", 200, 0..255) { blockProgress }
-    private val colorGreen by int("G", 100, 0..255) { blockProgress }
-    private val colorBlue by int("B", 0, 0..255) { blockProgress }
+    private val color by color("Color", Color(200, 100, 0)) { blockProgress }
 
     /**
      * VALUES
@@ -244,7 +241,7 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
                     currentDamage,
                     font,
                     fontShadow,
-                    ColorUtils.packARGBValue(colorRed, colorGreen, colorBlue),
+                    color.rgb,
                     scale,
                 )
             }

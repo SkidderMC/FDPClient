@@ -7,17 +7,18 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.color
 import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.config.font
-import net.ccbluex.liquidbounce.config.int
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedBorder
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
@@ -31,26 +32,22 @@ import java.awt.Color
 @ElementInfo(name = "TabGUI")
 class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element(x = x, y = y) {
 
-    private val rectRainbow by boolean("Rectangle Rainbow", false)
-    private val rectRed by int("Rectangle Red", 0, 0..255) { !rectRainbow }
-    private val rectGreen by int("Rectangle Green", 148, 0..255) { !rectRainbow }
-    private val rectBlue by int("Rectangle Blue", 255, 0..255) { !rectRainbow }
-    private val rectAlpha by int("Rectangle Alpha", 140, 0..255) { !rectRainbow }
+    private val rectColor = color("RectangleColor", Color(0, 148, 255, 140))
+
+    private val rectRainbow
+        get() = rectColor.rainbow && rectColor.isSupported()
 
     private val roundedRectRadius by float("Rounded-Radius", 3F, 0F..5F)
 
-    private val backgroundRed by int("Background Red", 0, 0..255)
-    private val backgroundGreen by int("Background Green", 0, 0..255)
-    private val backgroundBlue by int("Background Blue", 0, 0..255)
-    private val backgroundAlpha by int("Background Alpha", 150, 0..255)
+    private val bgColor by color("BackgroundColor", Color.BLACK.withAlpha(150))
 
     private val borderValue by boolean("Border", false)
     private val borderStrength by float("Border Strength", 2F, 1F..5F) { borderValue }
-    private val borderRainbow by boolean("Border Rainbow", false) { borderValue }
-    private val borderRed by int("Border Red", 0, 0..255) { borderValue && !borderRainbow }
-    private val borderGreen by int("Border Green", 0, 0..255) { borderValue && !borderRainbow }
-    private val borderBlue by int("Border Blue", 0, 0..255) { borderValue && !borderRainbow }
-    private val borderAlpha by int("Border Alpha", 150, 0..255) { borderValue && !borderRainbow }
+
+    private val borderColor = color("BorderColor", Color.BLACK.withAlpha(150)) { borderValue }
+
+    private val borderRainbow
+        get() = borderColor.rainbow && borderColor.isSupported()
 
     private val rainbowX by float("Rainbow-X", -1000F, -2000F..2000F)
     { rectRainbow || (borderValue && borderRainbow) }
@@ -106,16 +103,14 @@ class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element(x = x, y = y) {
     override fun drawElement(): Border {
         updateAnimation()
 
-        val backgroundColor = Color(backgroundRed, backgroundGreen, backgroundBlue, backgroundAlpha)
-
-        val borderColor = if (borderRainbow) Color.black else Color(borderRed, borderGreen, borderBlue, borderAlpha)
+        val borderColor = if (borderRainbow) Color.black else borderColor.selectedColor()
 
         // Draw
         val guiHeight = tabs.size * tabHeight
 
         AWTFontRenderer.assumeNonVolatile {
 
-            drawRoundedRect(1F, 0F, width, guiHeight, backgroundColor.rgb, roundedRectRadius)
+            drawRoundedRect(1F, 0F, width, guiHeight, bgColor.rgb, roundedRectRadius)
 
             if (borderValue) {
                 RainbowShader.begin(
@@ -129,7 +124,7 @@ class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element(x = x, y = y) {
             }
 
             // Color
-            val rectColor = if (rectRainbow) Color.black else Color(rectRed, rectGreen, rectBlue, rectAlpha)
+            val rectColor = if (rectRainbow) Color.black else rectColor.selectedColor()
 
             RainbowShader.begin(
                 rectRainbow,
@@ -193,7 +188,7 @@ class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element(x = x, y = y) {
                         tabX,
                         y,
                         rectColor.rgb,
-                        backgroundColor.rgb,
+                        bgColor.rgb,
                         borderColor.rgb,
                         borderStrength,
                         font,

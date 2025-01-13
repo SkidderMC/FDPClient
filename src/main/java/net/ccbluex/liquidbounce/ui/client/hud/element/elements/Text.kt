@@ -20,7 +20,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
-import net.ccbluex.liquidbounce.utils.movement.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.attack.CPSCounter
 import net.ccbluex.liquidbounce.utils.client.PPSCounter
 import net.ccbluex.liquidbounce.utils.client.ServerUtils
@@ -28,6 +27,7 @@ import net.ccbluex.liquidbounce.utils.extensions.getPing
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.movement.BPSUtils
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.movement.TimerBalanceUtils
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsFloat
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
@@ -112,12 +112,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
 
     private val textColorMode by choices("Text-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
 
-    private val colors = ColorSettingsInteger(
-        this,
-        zeroAlphaCheck = true,
-        alphaApply = { textColorMode != "Rainbow" },
-        applyMax = true
-    ) { textColorMode == "Custom" }
+    private val colors = ColorSettingsInteger(this, applyMax = true) { textColorMode == "Custom" }
 
     private val gradientTextSpeed by float("Text-Gradient-Speed", 1f, 0.5f..10f) { textColorMode == "Gradient" }
 
@@ -132,7 +127,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
 
     private val backgroundMode by choices("Background-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
 
-    private val bgColors = ColorSettingsInteger(this, "Background", zeroAlphaCheck = true)
+    private val bgColors = ColorSettingsInteger(this, "Background")
     { backgroundMode == "Custom" }.with(a = 0)
 
     private val gradientBackgroundSpeed by float("Background-Gradient-Speed", 1f, 0.5f..10f)
@@ -145,7 +140,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
 
     private val backgroundBorder by float("BackgroundBorder-Width", 0.5F, 0.5F..5F)
 
-    private val bgBorderColors = ColorSettingsInteger(this, "BackgroundBorder", zeroAlphaCheck = true).with(a = 0)
+    private val bgBorderColors = ColorSettingsInteger(this, "BackgroundBorder").with(a = 0)
 
     private fun isColorModeUsed(value: String) = textColorMode == value || backgroundMode == value
 

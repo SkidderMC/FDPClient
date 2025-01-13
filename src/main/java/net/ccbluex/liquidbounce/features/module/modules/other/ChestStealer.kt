@@ -3,14 +3,12 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
  * https://github.com/SkidderMC/FDPClient/
  */
+@file:Suppress("unused")
 package net.ccbluex.liquidbounce.features.module.modules.other
 
 import kotlinx.coroutines.delay
 import net.ccbluex.liquidbounce.FDPClient.hud
-import net.ccbluex.liquidbounce.config.IntegerValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -84,22 +82,10 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
     val silentGUI by boolean("SilentGUI", false, subjective = true)
 
     val highlightSlot by boolean("Highlight-Slot", false, subjective = true) { !silentGUI }
-
-    val backgroundRed by int("Background-R", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
-    val backgroundGreen by int("Background-G", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
-    val backgroundBlue by int("Background-B", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
-    val backgroundAlpha by int(
-        "Background-Alpha",
-        255,
-        0..255,
-        subjective = true
-    ) { highlightSlot && !silentGUI }
+    val backgroundColor = color("BackgroundColor", Color(128, 128, 128), subjective = true) { highlightSlot && !silentGUI }
 
     val borderStrength by int("Border-Strength", 3, 1..5, subjective = true) { highlightSlot && !silentGUI }
-    val borderRed by int("Border-R", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
-    val borderGreen by int("Border-G", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
-    val borderBlue by int("Border-B", 128, 0..255, subjective = true) { highlightSlot && !silentGUI }
-    val borderAlpha by int("Border-Alpha", 255, 0..255, subjective = true) { highlightSlot && !silentGUI }
+    val borderColor = color("BorderColor", Color(128, 128, 128), subjective = true) { highlightSlot && !silentGUI }
 
     private val chestDebug by choices("Chest-Debug", arrayOf("Off", "Text", "Notification"), "Off", subjective = true)
     private val itemStolenDebug by boolean("ItemStolen-Debug", false, subjective = true) { chestDebug != "Off" }

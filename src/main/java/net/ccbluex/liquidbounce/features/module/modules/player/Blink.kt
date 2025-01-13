@@ -5,17 +5,16 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.visual.Breadcrumbs
 import net.ccbluex.liquidbounce.utils.client.BlinkUtils
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.int
 import org.lwjgl.opengl.GL11.*
 
 object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModule = false) {
@@ -93,9 +92,7 @@ object Blink : Module("Blink", Category.PLAYER, gameDetecting = false, hideModul
     }
 
     val onRender3D = handler<Render3DEvent> {
-        val color =
-            if (Breadcrumbs.rainbow) rainbow()
-            else Breadcrumbs.colors.color()
+        val color = Breadcrumbs.colors.color()
 
         synchronized(BlinkUtils.positions) {
             glPushMatrix()

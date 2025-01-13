@@ -73,17 +73,10 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
     private val notInContainers by boolean("NotInContainers", false) { hotbar }
 
     val highlightSlot by InventoryManager.highlightSlotValue
-
-    val backgroundRed by InventoryManager.backgroundRedValue
-    val backgroundGreen by InventoryManager.backgroundGreenValue
-    val backgroundBlue by InventoryManager.backgroundBlueValue
-    val backgroundAlpha by InventoryManager.backgroundAlphaValue
+    val backgroundColor by InventoryManager.borderColor
 
     val borderStrength by InventoryManager.borderStrength
-    val borderRed by InventoryManager.borderRed
-    val borderGreen by InventoryManager.borderGreen
-    val borderBlue by InventoryManager.borderBlue
-    val borderAlpha by InventoryManager.borderAlpha
+    val borderColor by InventoryManager.borderColor
 
     suspend fun equipFromHotbar() {
         if (!shouldOperate(onlyHotbar = true)) {

@@ -41,10 +41,7 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
     private val glowFade by int("Glow-Fade", 10, 0..30) { mode == "Glow" }
     private val glowTargetAlpha by float("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
 
-    private val colorRainbow by boolean("Rainbow", true)
-    private val colorRed by int("R", 0, 0..255) { !colorRainbow }
-    private val colorGreen by int("G", 255, 0..255) { !colorRainbow }
-    private val colorBlue by int("B", 0, 0..255) { !colorRainbow }
+    private val color by color("Color", Color.BLUE)
 
     private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 50, 1..100) {
         override fun onUpdate(value: Int) {
@@ -66,9 +63,6 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
     private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
 
     private val thruBlocks by boolean("ThruBlocks", true)
-
-    val color
-        get() = if (colorRainbow) rainbow() else Color(colorRed, colorGreen, colorBlue)
 
     private val itemEntities by EntityLookup<EntityItem>()
         .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistanceSq }

@@ -90,17 +90,10 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, hideModule
     private val onlyGoodPotions by boolean("OnlyGoodPotions", false, subjective = true)
 
     val highlightSlot by InventoryManager.highlightSlotValue
-
-    val backgroundRed by InventoryManager.backgroundRedValue
-    val backgroundGreen by InventoryManager.backgroundGreenValue
-    val backgroundBlue by InventoryManager.backgroundBlueValue
-    val backgroundAlpha by InventoryManager.backgroundAlphaValue
+    val backgroundColor by InventoryManager.borderColor
 
     val borderStrength by InventoryManager.borderStrength
-    val borderRed by InventoryManager.borderRed
-    val borderGreen by InventoryManager.borderGreen
-    val borderBlue by InventoryManager.borderBlue
-    val borderAlpha by InventoryManager.borderAlpha
+    val borderColor by InventoryManager.borderColor
 
     val highlightUseful by boolean("HighlightUseful", true, subjective = true)
 

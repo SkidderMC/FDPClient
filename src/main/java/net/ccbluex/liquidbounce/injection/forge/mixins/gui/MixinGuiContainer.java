@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoArmor;
@@ -66,34 +71,12 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
         int y = slot.yDisplayPosition;
 
         // ChestStealer Highlight Values
-        int red0 = chestStealer.getBackgroundRed();
-        int green0 = chestStealer.getBackgroundGreen();
-        int blue0 = chestStealer.getBackgroundBlue();
-        int alpha0 = chestStealer.getBackgroundAlpha();
-
-        int borderRed0 = chestStealer.getBorderRed();
-        int borderGreen0 = chestStealer.getBorderGreen();
-        int borderBlue0 = chestStealer.getBorderBlue();
-        int borderAlpha0 = chestStealer.getBorderAlpha();
+        int chestStealerBackgroundColor = chestStealer.getBackgroundColor().selectedColor().getRGB();
+        int chestStealerBorderColor = chestStealer.getBorderColor().selectedColor().getRGB();
 
         // InvCleaner & AutoArmor Highlight Values
-        int red1 = inventoryManager.getBackgroundRedValue().get();
-        int green1 = inventoryManager.getBackgroundGreenValue().get();
-        int blue1 = inventoryManager.getBackgroundBlueValue().get();
-        int alpha1 = inventoryManager.getBackgroundAlphaValue().get();
-
-        int borderRed1 = inventoryManager.getBorderRed().get();
-        int borderGreen1 = inventoryManager.getBorderGreen().get();
-        int borderBlue1 = inventoryManager.getBorderBlue().get();
-        int borderAlpha1 = inventoryManager.getBorderAlpha().get();
-
-        // ChestStealer Highlight Colors
-        int color0 = new Color(red0, green0, blue0, alpha0).getRGB();
-        int border0 = new Color(borderRed0, borderGreen0, borderBlue0, borderAlpha0).getRGB();
-
-        // InvCleaner & AutoArmor Highlight Colors
-        int color1 = new Color(red1, green1, blue1, alpha1).getRGB();
-        int border1 = new Color(borderRed1, borderGreen1, borderBlue1, borderAlpha1).getRGB();
+        int invManagerBackgroundColor = inventoryManager.getBackgroundColor().selectedColor().getRGB();
+        int invManagerBorderColor = inventoryManager.getBorderColor().selectedColor().getRGB();
 
         // Get the current slot being stolen
         int currentSlotChestStealer = inventoryManager.getChestStealerCurrentSlot();
@@ -107,7 +90,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
         if (mc.currentScreen instanceof GuiChest) {
             if (chestStealer.handleEvents() && !chestStealer.getSilentGUI() && chestStealer.getHighlightSlot()) {
                 if (slot.slotNumber == currentSlotChestStealer && currentSlotChestStealer != -1 && currentSlotChestStealer != inventoryManager.getChestStealerLastSlot()) {
-                    renderUtils.drawBorderedRect(x, y, x + 16, y + 16, chestStealer.getBorderStrength(), border0, color0);
+                    renderUtils.drawBorderedRect(x, y, x + 16, y + 16, chestStealer.getBorderStrength(), chestStealerBorderColor, chestStealerBackgroundColor);
 
                     // Prevent rendering the highlighted rectangle twice
                     if (!slot.getHasStack() && tick0.hasTimePassed(100)) {
@@ -124,7 +107,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
             if (inventoryManager.getHighlightSlotValue().get()) {
                 if (inventoryCleaner.handleEvents()) {
                     if (slot.slotNumber == currentSlotInvCleaner && currentSlotInvCleaner != -1 && currentSlotInvCleaner != inventoryManager.getInvCleanerLastSlot()) {
-                        renderUtils.drawBorderedRect(x, y, x + 16, y + 16, inventoryManager.getBorderStrength().get(), border1, color1);
+                        renderUtils.drawBorderedRect(x, y, x + 16, y + 16, inventoryManager.getBorderStrength().get(), invManagerBorderColor, invManagerBackgroundColor);
 
                         // Prevent rendering the highlighted rectangle twice
                         if (!slot.getHasStack() && tick1.hasTimePassed(100)) {
@@ -138,7 +121,7 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
 
                 if (autoArmor.handleEvents()) {
                     if (slot.slotNumber == currentSlotAutoArmor && currentSlotAutoArmor != -1 && currentSlotAutoArmor != inventoryManager.getAutoArmorLastSlot()) {
-                        renderUtils.drawBorderedRect(x, y, x + 16, y + 16, inventoryManager.getBorderStrength().get(), border1, color1);
+                        renderUtils.drawBorderedRect(x, y, x + 16, y + 16, inventoryManager.getBorderStrength().get(), invManagerBorderColor, invManagerBackgroundColor);
 
                         // Prevent rendering the highlighted rectangle twice
                         if (!slot.getHasStack() && tick2.hasTimePassed(100)) {
