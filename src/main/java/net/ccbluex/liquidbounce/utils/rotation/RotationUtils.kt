@@ -415,7 +415,7 @@ object RotationUtils : MinecraftInstance, Listenable {
             return
         }
 
-        val lastTick1 = angleDifferences(lastRotations[1], lastRotations[2]).let { diffs ->
+        val lastTick1 = angleDifferences(serverRotation, lastRotations[1]).let { diffs ->
             if (yaw) diffs.x else diffs.y
         }
 

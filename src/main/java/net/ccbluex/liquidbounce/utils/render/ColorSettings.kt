@@ -62,7 +62,7 @@ class ColorSettingsInteger(
     ): ColorSettingsInteger {
         Color(r, g, b, a).let {
             colors.setAndUpdateDefault(it)
-            colors.initializeSliderValues(it)
+            colors.setupSliders(it)
         }
         return this
     }

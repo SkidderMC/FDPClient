@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style
 
+import net.ccbluex.liquidbounce.config.ColorValue
 import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
@@ -56,7 +57,11 @@ abstract class Style : MinecraftInstance {
     }
 
     fun <T> Value<T>.setAndSaveValueOnButtonRelease(new: T) {
-        set(new, false)
+        if (this is ColorValue) {
+            changeValue(new)
+        } else {
+            set(new, false)
+        }
 
         with(WaitTickUtils) {
             if (!hasScheduled(this)) {

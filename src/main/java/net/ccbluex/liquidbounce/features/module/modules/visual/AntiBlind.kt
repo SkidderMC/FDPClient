@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
@@ -21,7 +20,6 @@ object AntiBlind : Module("AntiBlind", Category.VISUAL, gameDetecting = false, h
     val bossHealth by boolean("BossHealth", true)
     private val bookPage by boolean("BookPage", true)
     val achievements by boolean("Achievements", true)
-
 
     val onPacket = handler<PacketEvent> { event ->
         if (!bookPage) return@handler
