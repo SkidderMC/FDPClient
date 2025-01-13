@@ -74,7 +74,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
     private val bowStrafeMultiplier by float("BowStrafeMultiplier", 1f, 0.2F..1f)
 
     // Blocks
-    val soulsand by boolean("Soulsand", true)
+    val soulSand by boolean("SoulSand", true)
     val liquidPush by boolean("LiquidPush", true)
 
     private var shouldSwap = false
@@ -101,40 +101,38 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
             return@handler
 
         if (isUsingItem || shouldSwap) {
-            if (heldItem.item is ItemSword || !consumeFoodOnly && heldItem.item is ItemFood ||
-                !consumeDrinkOnly && (heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk)
+            if (heldItem.item !is ItemSword && heldItem.item !is ItemBow && (consumeFoodOnly && heldItem.item is ItemFood ||
+                        consumeDrinkOnly && (heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk))
             ) {
-                return@handler
-            }
+                when (consumeMode.lowercase()) {
+                    "aac5" ->
+                        sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, heldItem, 0f, 0f, 0f))
 
-            when (consumeMode.lowercase()) {
-                "aac5" ->
-                    sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, heldItem, 0f, 0f, 0f))
+                    "switchitem" ->
+                        if (event.eventState == EventState.PRE) {
+                            updateSlot()
+                        }
 
-                "switchitem" ->
-                    if (event.eventState == EventState.PRE) {
-                        updateSlot()
-                    }
+                    "updatedncp" ->
+                        if (event.eventState == EventState.PRE && shouldSwap) {
+                            updateSlot()
+                            sendPacket(C08PacketPlayerBlockPlacement(BlockPos.ORIGIN, 255, heldItem, 0f, 0f, 0f))
+                            shouldSwap = false
+                        }
 
-                "updatedncp" ->
-                    if (event.eventState == EventState.PRE && shouldSwap) {
-                        updateSlot()
-                        sendPacket(C08PacketPlayerBlockPlacement(BlockPos.ORIGIN, 255, heldItem, 0f, 0f, 0f))
-                        shouldSwap = false
-                    }
-
-                "invalidc08" -> {
-                    if (event.eventState == EventState.PRE) {
-                        if (InventoryUtils.hasSpaceInInventory()) {
-                            if (player.ticksExisted % 3 == 0)
-                                sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 1, null, 0f, 0f, 0f))
+                    "invalidc08" -> {
+                        if (event.eventState == EventState.PRE) {
+                            if (InventoryUtils.hasSpaceInInventory()) {
+                                if (player.ticksExisted % 3 == 0)
+                                    sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 1, null, 0f, 0f, 0f))
+                            }
                         }
                     }
-                }
 
-                "intave" -> {
-                    if (event.eventState == EventState.PRE) {
-                        sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP))
+                    "intave" -> {
+                        if (event.eventState == EventState.PRE) {
+                            sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP))
+                        }
                     }
                 }
             }
@@ -355,4 +353,3 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false, hideM
         SilentHotbar.resetSlot(this, true)
     }
 }
-
