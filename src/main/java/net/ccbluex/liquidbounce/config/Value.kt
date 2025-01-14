@@ -345,7 +345,7 @@ open class FontValue(
 
     fun previous() {
         val fonts = Fonts.fonts
-        value = fonts[(fonts.indexOf(value) - 1) % fonts.size]
+        value = fonts[(fonts.indexOf(value) - 1 + fonts.size) % fonts.size]
     }
 }
 

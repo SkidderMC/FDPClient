@@ -233,7 +233,7 @@ class Arraylist(
                 }
             }
             // Draw arraylist
-            val textCustomColor = textColors.color(1).rgb
+            val textCustomColor = textColors.color().rgb
             val rectCustomColor = rectColors.color().rgb
             val backgroundCustomColor = bgColors.color().rgb
             val textSpacer = textHeight + space

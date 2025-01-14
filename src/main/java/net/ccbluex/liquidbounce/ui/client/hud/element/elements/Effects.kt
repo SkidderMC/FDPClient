@@ -176,14 +176,14 @@ class Effects(
                 max(10.0F, abs(data.potionAnimationX - 1.2F * state) * 15.0F) * 0.3
             ).toFloat()
 
-            RenderUtils.drawRected(
+            RenderUtils.drawRect(
                 0F,
                 data.translate.y,
                 120F,
                 data.translate.y + 30F,
                 potionlpha(ColorUtils.potionColor.GREY.c, 0.1F)
             )
-            RenderUtils.drawRected(
+            RenderUtils.drawRect(
                 0F,
                 data.translate.y,
                 data.potionAnimationX,

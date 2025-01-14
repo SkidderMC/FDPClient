@@ -1049,32 +1049,6 @@ object RenderUtils : MinecraftInstance {
         drawBorder(x, y, x2, y2, width, borderColor)
     }
 
-    @JvmStatic
-    fun drawOnBorderedRect(x: Float, y: Float, x2: Float, y2: Float, width: Float, color1: Int, color2: Int) {
-        drawRect(x, y, x2, y2, color2)
-        glEnable(GL_BLEND)
-        glDisable(GL_TEXTURE_2D)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_LINE_SMOOTH)
-
-        glColor(color1)
-        glLineWidth(width)
-        glBegin(1)
-        glVertex2d(x.toDouble(), y.toDouble())
-        glVertex2d(x.toDouble(), y2.toDouble())
-        glVertex2d(x2.toDouble(), y2.toDouble())
-        glVertex2d(x2.toDouble(), y.toDouble())
-        glVertex2d(x.toDouble(), y.toDouble())
-        glVertex2d(x2.toDouble(), y.toDouble())
-        glVertex2d(x.toDouble(), y2.toDouble())
-        glVertex2d(x2.toDouble(), y2.toDouble())
-        glEnd()
-
-        glEnable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
-        glDisable(GL_LINE_SMOOTH)
-    }
-
     fun drawRoundedBorderRect(
         x: Float,
         y: Float,
@@ -1293,12 +1267,10 @@ object RenderUtils : MinecraftInstance {
         glEnd()
     }
 
-    @JvmStatic
     fun drawRect(x: Float, y: Float, x2: Float, y2: Float, color: Int) {
         glPushMatrix()
         glEnable(GL_BLEND)
         glDisable(GL_TEXTURE_2D)
-        glDisable(GL_DEPTH_TEST)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_LINE_SMOOTH)
         glColor(color)
@@ -1313,43 +1285,6 @@ object RenderUtils : MinecraftInstance {
         glDisable(GL_BLEND)
         glDisable(GL_LINE_SMOOTH)
         glPopMatrix()
-    }
-
-    fun drawRected(left: Float, top: Float, right: Float, bottom: Float, color: Int) {
-        var left = left
-        var top = top
-        var right = right
-        var bottom = bottom
-        if (left < right) {
-            val i = left
-            left = right
-            right = i
-        }
-
-        if (top < bottom) {
-            val j = top
-            top = bottom
-            bottom = j
-        }
-
-        val f3 = (color shr 24 and 255).toFloat() / 255.0f
-        val f = (color shr 16 and 255).toFloat() / 255.0f
-        val f1 = (color shr 8 and 255).toFloat() / 255.0f
-        val f2 = (color and 255).toFloat() / 255.0f
-        val tessellator = Tessellator.getInstance()
-        val worldrenderer = tessellator.worldRenderer
-        enableBlend()
-        disableTexture2D()
-        tryBlendFuncSeparate(770, 771, 1, 0)
-        color(f, f1, f2, f3)
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION)
-        worldrenderer.pos(left.toDouble(), bottom.toDouble(), 0.0).endVertex()
-        worldrenderer.pos(right.toDouble(), bottom.toDouble(), 0.0).endVertex()
-        worldrenderer.pos(right.toDouble(), top.toDouble(), 0.0).endVertex()
-        worldrenderer.pos(left.toDouble(), top.toDouble(), 0.0).endVertex()
-        tessellator.draw()
-        enableTexture2D()
-        disableBlend()
     }
 
     fun drawRect(x: Int, y: Int, x2: Int, y2: Int, color: Int) {
@@ -2502,6 +2437,7 @@ object RenderUtils : MinecraftInstance {
 
         glEnable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
+        glDisable(GL_CULL_FACE)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         glEnable(GL_ALPHA_TEST)
         glAlphaFunc(GL_GREATER, 0f)
@@ -2520,6 +2456,7 @@ object RenderUtils : MinecraftInstance {
         glDisable(GL_TEXTURE_2D)
         glDisable(GL_BLEND)
         glDisable(GL_ALPHA_TEST)
+        glEnable(GL_CULL_FACE)
 
         glPopMatrix()
         glPopAttrib()
@@ -3186,52 +3123,6 @@ object RenderUtils : MinecraftInstance {
         }
 
         glEnd()
-    }
-
-    /**
-     * Draw rect.
-     *
-     * @param left   the left
-     * @param top    the top
-     * @param right  the right
-     * @param bottom the bottom
-     * @param color  the color
-     */
-    fun drawRect(left: Double, top: Double, right: Double, bottom: Double, color: Int) {
-        var left = left
-        var top = top
-        var right = right
-        var bottom = bottom
-        if (left < right) {
-            val i = left
-            left = right
-            right = i
-        }
-
-        if (top < bottom) {
-            val j = top
-            top = bottom
-            bottom = j
-        }
-
-        val f3 = (color shr 24 and 255).toFloat() / 255.0f
-        val f = (color shr 16 and 255).toFloat() / 255.0f
-        val f1 = (color shr 8 and 255).toFloat() / 255.0f
-        val f2 = (color and 255).toFloat() / 255.0f
-        val tessellator = Tessellator.getInstance()
-        val worldrenderer = tessellator.worldRenderer
-        enableBlend()
-        disableTexture2D()
-        tryBlendFuncSeparate(770, 771, 1, 0)
-        color(f, f1, f2, f3)
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION)
-        worldrenderer.pos(left, bottom, 0.0).endVertex()
-        worldrenderer.pos(right, bottom, 0.0).endVertex()
-        worldrenderer.pos(right, top, 0.0).endVertex()
-        worldrenderer.pos(left, top, 0.0).endVertex()
-        tessellator.draw()
-        enableTexture2D()
-        disableBlend()
     }
 
     /**

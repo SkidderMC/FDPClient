@@ -174,7 +174,7 @@ class GameFontRenderer(
                 currentText,
                 x + 1f,
                 baseY + 1f,
-                Color(0, 0, 0, 150).rgb,
+                Color(0, 0, 0, minOf(150, color shr 24 and 0xFF)).rgb,
                 ignoreColor = true
             )
         }
