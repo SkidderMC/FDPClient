@@ -562,7 +562,6 @@ class SettingComponents(private val module: Module) : Component() {
                 count++
             }
 
-            // ----- ColorValue -----
             if (setting is ColorValue) {
                 val currentColor = setting.selectedColor()
                 val text = setting.name + ": " + "#%08X".format(currentColor.rgb)
@@ -589,24 +588,21 @@ class SettingComponents(private val module: Module) : Component() {
                 }
 
                 val rainbow = setting.rainbow
+
                 val hoveringColorPreview = isClickable(settingY + 2)
                         && DrRenderUtils.isHovering(
-                    previewX1,
-                    previewY1,
+                    previewX1, previewY1,
                     previewSize.toFloat(),
                     previewSize.toFloat(),
-                    mouseX,
-                    mouseY
+                    mouseX, mouseY
                 )
                 val hoveringRainbowPreview = isClickable(settingY + 2)
                         && rainbowPreviewX1 > x + 4
                         && DrRenderUtils.isHovering(
-                    rainbowPreviewX1,
-                    previewY1,
+                    rainbowPreviewX1, previewY1,
                     previewSize.toFloat(),
                     previewSize.toFloat(),
-                    mouseX,
-                    mouseY
+                    mouseX, mouseY
                 )
 
                 if (type == GuiEvents.CLICK && button in arrayOf(0, 1)) {
@@ -725,7 +721,6 @@ class SettingComponents(private val module: Module) : Component() {
 
                     val hueMarkerY = (hueSliderStartY..hueSliderEndY).lerpWith(hue)
                     val opacityMarkerY = (hueSliderStartY..hueSliderEndY).lerpWith(1 - setting.opacitySliderY)
-
                     RenderUtils.drawBorder(
                         hueSliderX - 1f,
                         hueMarkerY - 1f,
@@ -744,17 +739,20 @@ class SettingComponents(private val module: Module) : Component() {
                     )
 
                     val inColorPicker =
-                        (mouseX in colorPickerStartX until colorPickerEndX && mouseY in colorPickerStartY until colorPickerEndY)
+                        (mouseX in colorPickerStartX until colorPickerEndX
+                                && mouseY in colorPickerStartY until colorPickerEndY)
                     val inHueSlider =
                         (mouseX in hueSliderX - 1..hueSliderX + hueSliderWidth + 1
                                 && mouseY in hueSliderStartY until hueSliderEndY)
                     val inOpacitySlider =
-                        (mouseX in opacityStartX - 1..opacityEndX + 1 && mouseY in hueSliderStartY until hueSliderEndY)
+                        (mouseX in opacityStartX - 1..opacityEndX + 1
+                                && mouseY in hueSliderStartY until hueSliderEndY)
 
                     val sliderType = setting.lastChosenSlider
                     if ((type == GuiEvents.CLICK && button == 0 && (inColorPicker || inHueSlider || inOpacitySlider))
                         || (sliderValueHeld == setting && setting.lastChosenSlider != null)
                     ) {
+
                         if (inColorPicker && (sliderType == null || sliderType == ColorValue.SliderType.COLOR)) {
                             val newS = ((mouseX - colorPickerStartX) / colorPickerWidth.toFloat()).coerceIn(0f, 1f)
                             val newB = (1.0f - (mouseY - colorPickerStartY) / colorPickerHeight.toFloat()).coerceIn(0f, 1f)
@@ -797,18 +795,17 @@ class SettingComponents(private val module: Module) : Component() {
 
                         if (button == 0) {
                             setting.lastChosenSlider = when {
-                                inColorPicker  -> ColorValue.SliderType.COLOR
-                                inHueSlider    -> ColorValue.SliderType.HUE
+                                inColorPicker   -> ColorValue.SliderType.COLOR
+                                inHueSlider     -> ColorValue.SliderType.HUE
                                 inOpacitySlider -> ColorValue.SliderType.OPACITY
-                                else           -> null
+                                else            -> null
                             }
                         }
                     }
-
-                    count += 2f
+                    count += (colorPickerHeight / rectHeight) + 0.5f
 
                 } else {
-                    count += 1f
+                    count += 0.2f
                 }
             }
 
