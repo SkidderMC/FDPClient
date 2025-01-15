@@ -6,19 +6,24 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import com.google.gson.JsonElement
+import net.ccbluex.liquidbounce.config.TextValue
+import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.color
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
+import net.ccbluex.liquidbounce.utils.io.FileFilters
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomNumber
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
-import net.ccbluex.liquidbounce.config.TextValue
-import net.ccbluex.liquidbounce.utils.io.FileFilters
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
+import java.awt.Color
 import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
+
 
 /**
  * CustomHUD image element
@@ -27,6 +32,9 @@ import javax.imageio.ImageIO
  */
 @ElementInfo(name = "Image")
 class Image : Element() {
+
+    private val shadow by boolean("Shadow", true)
+    private val shadowColor by color("Color", Color.BLACK.withAlpha(128)) { shadow }
 
     companion object {
 
@@ -72,6 +80,10 @@ class Image : Element() {
      * Draw element
      */
     override fun drawElement(): Border {
+        if (shadow) {
+            drawImage(resourceLocation, 1, 1, width / 2, height / 2, shadowColor)
+        }
+
         drawImage(resourceLocation, 0, 0, width / 2, height / 2)
 
         return Border(0F, 0F, width / 2F, height / 2F)

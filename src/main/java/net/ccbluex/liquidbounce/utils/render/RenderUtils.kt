@@ -2318,13 +2318,13 @@ object RenderUtils : MinecraftInstance {
         glPopAttrib()
     }
 
-    fun drawImage(image: ResourceLocation?, x: Int, y: Int, width: Int, height: Int) {
+    fun drawImage(image: ResourceLocation?, x: Int, y: Int, width: Int, height: Int, color: Color = Color.WHITE) {
         glPushMatrix()
         glDisable(GL_DEPTH_TEST)
         glEnable(GL_BLEND)
         glDepthMask(false)
         GL14.glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
-        glColor4f(1f, 1f, 1f, 1f)
+        glColor(color)
         mc.textureManager.bindTexture(image)
         drawModalRectWithCustomSizedTexture(
             x.toFloat(),
@@ -3629,13 +3629,7 @@ object RenderUtils : MinecraftInstance {
      * @param endColor   the end color
      */
     fun drawGradientRect(
-        left: Int,
-        top: Int,
-        right: Int,
-        bottom: Int,
-        startColor: Int,
-        endColor: Int,
-        zLevel: Float
+        left: Int, top: Int, right: Int, bottom: Int, startColor: Int, endColor: Int, zLevel: Float
     ) {
         val a1 = (startColor shr 24 and 255) / 255f
         val r1 = (startColor shr 16 and 255) / 255f

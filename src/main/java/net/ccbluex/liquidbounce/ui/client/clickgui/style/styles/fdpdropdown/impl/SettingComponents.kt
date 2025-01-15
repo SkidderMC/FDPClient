@@ -628,7 +628,6 @@ class SettingComponents(private val module: Module) : Component() {
                 val colorPickerEndY = colorPickerStartY + colorPickerHeight
 
                 val hueSliderX = colorPickerEndX + spacingBetweenSliders
-                val hueSliderStartY = colorPickerStartY
                 val hueSliderEndY = colorPickerStartY + hueSliderHeight
 
                 val opacityStartX = hueSliderX + hueSliderWidth + spacingBetweenSliders
@@ -688,7 +687,7 @@ class SettingComponents(private val module: Module) : Component() {
                             }
                         },
                         drawAt = { id ->
-                            drawTexture(id, hueSliderX, hueSliderStartY, hueSliderWidth, hueSliderHeight)
+                            drawTexture(id, hueSliderX, colorPickerStartY, hueSliderWidth, hueSliderHeight)
                         }
                     )
 
@@ -715,12 +714,12 @@ class SettingComponents(private val module: Module) : Component() {
                             }
                         },
                         drawAt = { id ->
-                            drawTexture(id, opacityStartX, hueSliderStartY, hueSliderWidth, hueSliderHeight)
+                            drawTexture(id, opacityStartX, colorPickerStartY, hueSliderWidth, hueSliderHeight)
                         }
                     )
 
-                    val hueMarkerY = (hueSliderStartY..hueSliderEndY).lerpWith(hue)
-                    val opacityMarkerY = (hueSliderStartY..hueSliderEndY).lerpWith(1 - setting.opacitySliderY)
+                    val hueMarkerY = (colorPickerStartY..hueSliderEndY).lerpWith(hue)
+                    val opacityMarkerY = (colorPickerStartY..hueSliderEndY).lerpWith(1 - setting.opacitySliderY)
                     RenderUtils.drawBorder(
                         hueSliderX - 1f,
                         hueMarkerY - 1f,
@@ -743,10 +742,10 @@ class SettingComponents(private val module: Module) : Component() {
                                 && mouseY in colorPickerStartY until colorPickerEndY)
                     val inHueSlider =
                         (mouseX in hueSliderX - 1..hueSliderX + hueSliderWidth + 1
-                                && mouseY in hueSliderStartY until hueSliderEndY)
+                                && mouseY in colorPickerStartY until hueSliderEndY)
                     val inOpacitySlider =
                         (mouseX in opacityStartX - 1..opacityEndX + 1
-                                && mouseY in hueSliderStartY until hueSliderEndY)
+                                && mouseY in colorPickerStartY until hueSliderEndY)
 
                     val sliderType = setting.lastChosenSlider
                     if ((type == GuiEvents.CLICK && button == 0 && (inColorPicker || inHueSlider || inOpacitySlider))
@@ -770,7 +769,7 @@ class SettingComponents(private val module: Module) : Component() {
 
                         if (inHueSlider && (sliderType == null || sliderType == ColorValue.SliderType.HUE)) {
                             setting.hueSliderY =
-                                ((mouseY - hueSliderStartY) / hueSliderHeight.toFloat()).coerceIn(0f, 1f)
+                                ((mouseY - colorPickerStartY) / hueSliderHeight.toFloat()).coerceIn(0f, 1f)
                             finalColor = Color(
                                 Color.HSBtoRGB(
                                     setting.hueSliderY,
@@ -782,7 +781,7 @@ class SettingComponents(private val module: Module) : Component() {
 
                         if (inOpacitySlider && (sliderType == null || sliderType == ColorValue.SliderType.OPACITY)) {
                             setting.opacitySliderY =
-                                1 - ((mouseY - hueSliderStartY) / hueSliderHeight.toFloat()).coerceIn(0f, 1f)
+                                1 - ((mouseY - colorPickerStartY) / hueSliderHeight.toFloat()).coerceIn(0f, 1f)
                         }
 
                         finalColor = finalColor.withAlpha((setting.opacitySliderY * 255).roundToInt())
