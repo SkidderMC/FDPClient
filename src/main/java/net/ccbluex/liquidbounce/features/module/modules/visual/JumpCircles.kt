@@ -25,7 +25,9 @@ import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.handler
-import net.minecraft.client.renderer.GlStateManager.*
+import net.minecraft.client.renderer.GlStateManager.pushMatrix
+import net.minecraft.client.renderer.GlStateManager.popMatrix
+import net.minecraft.client.renderer.GlStateManager.translate
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
@@ -34,13 +36,10 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
-import java.util.*
 
 object JumpCircles : Module("JumpCircles", Category.VISUAL, hideModule = false) {
-
     private val maxTime by int("Max Time", 3000, 2000..8000)
     private val radius by float("Radius", 2f, 1f..3f)
-
     private val texture by choices("Texture", arrayOf("Supernatural", "Aurora", "Leeches", "Circle"), "Leeches")
     private val deepestLight by boolean("Deepest Light", true)
 
@@ -50,17 +49,14 @@ object JumpCircles : Module("JumpCircles", Category.VISUAL, hideModule = false) 
     private val circleIcon = ResourceLocation("$staticLoc/circle1.png")
     private val supernaturalIcon = ResourceLocation("$staticLoc/circle2.png")
 
-    private var jump = false
-
+    private var hasJumped = false
     private val tessellator = Tessellator.getInstance()
-    val worldRenderer = tessellator.worldRenderer
-
-    private val circles: MutableList<JumpRenderer> = ArrayList()
-
-    private val animatedGroups: MutableList<MutableList<ResourceLocation>> = mutableListOf(mutableListOf(), mutableListOf())
+    private val worldRenderer = tessellator.worldRenderer
+    private val jumpRenderers = mutableListOf<JumpRenderer>()
+    private val animatedGroups = listOf(mutableListOf<ResourceLocation>(), mutableListOf())
 
     init {
-        if (animatedGroups.any { it.isEmpty() }) {
+        if (animatedGroups.all { it.isEmpty() }) {
             initializeResources()
         }
     }
@@ -69,169 +65,164 @@ object JumpCircles : Module("JumpCircles", Category.VISUAL, hideModule = false) 
         val groupFrameLengths = intArrayOf(100, 200)
         val groupFrameFormats = arrayOf("jpeg", "png")
 
-        if (animatedGroups.all { it.isEmpty() }) {
-            for (groupIndex in groupFrameLengths.indices.reversed()) {
-                val groupFrames = groupFrameLengths[groupIndex]
-                val format = groupFrameFormats[groupIndex]
+        for (groupIndex in groupFrameLengths.indices.reversed()) {
+            val frames = groupFrameLengths[groupIndex]
+            val format = groupFrameFormats[groupIndex]
 
-                for (frame in 1..groupFrames) {
-                    val location = ResourceLocation(
-                        "$animatedLoc/animation${groupIndex + 1}/circleframe_$frame.$format"
-                    )
-                    animatedGroups[groupIndex].add(location)
-                }
+            repeat(frames) { frame ->
+                animatedGroups[groupIndex].add(
+                    ResourceLocation("$animatedLoc/animation${groupIndex + 1}/circleframe_${frame + 1}.$format")
+                )
             }
         }
     }
-
-    private fun jumpTexture(index: Int, progress: Float): ResourceLocation {
-        val adjustedProgress = if (texture == "Leeches") progress + 0.6f else progress
+    private fun selectJumpTexture(index: Int, progress: Float): ResourceLocation {
+        val offset = if (texture == "Leeches") progress + 0.6f else progress
 
         return when (texture) {
             "Aurora", "Leeches" -> {
-                val currentGroup = if (texture == "Aurora") animatedGroups[0] else animatedGroups[1]
-                val frameOffset = (if (texture == "Leeches") adjustedProgress % 1f
-                else (System.currentTimeMillis() + index) % 1500 / 1500f)
-                currentGroup[(frameOffset * currentGroup.size).toInt().coerceIn(0, currentGroup.size - 1)]
+                val frames = if (texture == "Aurora") animatedGroups[0] else animatedGroups[1]
+                val frameProgress = if (texture == "Leeches") {
+                    offset % 1f
+                } else {
+                    ((System.currentTimeMillis() + index).toFloat() % 1500f) / 1500f
+                }
+                frames[(frameProgress * frames.size).toInt().coerceIn(0, frames.size - 1)]
             }
             "Circle" -> circleIcon
             else -> supernaturalIcon
         }
     }
 
-    private fun addCircleForEntity(entity: Entity) {
-        var vec = getVec3dFromEntity(entity).add(Vec3(0.0, 0.005, 0.0))
-
-        val position = BlockPos(vec)
-        val blockState = mc.theWorld.getBlockState(position)
-        if (blockState.block === Blocks.snow) {
-            vec = vec.add(Vec3(0.0, 0.125, 0.0))
+    private fun createCircleForEntity(entity: Entity) {
+        var entityPos = calculateEntityPosition(entity).addVector(0.0, 0.005, 0.0)
+        val position = BlockPos(entityPos)
+        if (mc.theWorld.getBlockState(position).block == Blocks.snow) {
+            entityPos = entityPos.addVector(0.0, 0.125, 0.0)
         }
-
-        circles.add(JumpRenderer(vec, circles.size))
+        jumpRenderers.add(JumpRenderer(entityPos, jumpRenderers.size, System.currentTimeMillis(), maxTime))
     }
 
-    fun reset() {
-        if (circles.isNotEmpty()) circles.clear()
+    fun clearCircles() {
+        jumpRenderers.clear()
     }
 
-    fun getColor(alphaPC: Float): Int {
-        val baseColor = ClientThemesUtils.getColor().rgb
-        val alphaInt = (255f * alphaPC.coerceIn(0f, 1f)).toInt()
-        return (alphaInt shl 24) or (baseColor and 0xFFFFFF)
+    private fun combineColor(alphaFraction: Float): Int {
+        val base = ClientThemesUtils.getColor().rgb
+        val alphaValue = (255f * alphaFraction.coerceIn(0f, 1f)).toInt()
+        return (alphaValue shl 24) or (base and 0xFFFFFF)
     }
-
 
     val onUpdate = handler<UpdateEvent> {
         if (!mc.thePlayer.onGround) {
-            jump = true
+            hasJumped = true
         }
-        if (mc.thePlayer.onGround && jump) {
-            addCircleForEntity(mc.thePlayer)
-            jump = false
+        if (mc.thePlayer.onGround && hasJumped) {
+            createCircleForEntity(mc.thePlayer)
+            hasJumped = false
         }
     }
 
-
     val onRender3D = handler<Render3DEvent> {
-        if (circles.isEmpty()) return@handler
-        circles.removeIf { it.progress >= 1.0f }
-        if (circles.isEmpty()) return@handler
+        if (jumpRenderers.isEmpty()) return@handler
+        jumpRenderers.removeAll { it.progress >= 1f }
+        if (jumpRenderers.isEmpty()) return@handler
 
-        val deepestLightAnimation = if (deepestLight) 1f else 0f
-        val immersiveStrength = when {
-            deepestLightAnimation >= 1f / 255f -> {
-                when (texture) {
-                    "Circle", "Emission" -> 0.1f
-                    "Supernatural", "Aurora", "Inusual" -> 0.075f
-                    "Leeches" -> 0.2f
-                    else -> 0f
-                }
+        val lightFactor = if (deepestLight) 1f else 0f
+        val effectStrength = when {
+            lightFactor >= 1f / 255f -> when (texture) {
+                "Circle", "Emission" -> 0.1f
+                "Supernatural", "Aurora", "Inusual" -> 0.075f
+                "Leeches" -> 0.2f
+                else -> 0f
             }
             else -> 0f
         }
 
         setupDrawCircles {
-            circles.forEach { circle ->
-                doCircle(
-                    circle.position,
-                    radius.toDouble(),
-                    1f - circle.progress,
-                    circle.index * 30,
-                    deepestLightAnimation,
-                    immersiveStrength
-                )
+            jumpRenderers.forEach {
+                renderCircle(it.position, radius.toDouble(), 1f - it.progress, it.index * 30, lightFactor, effectStrength)
             }
         }
     }
+    private fun renderCircle(pos: Vec3, maxRadius: Double, timeFraction: Float, circleIndex: Int, shift: Float, intensity: Float) {
+        val waveValue = 1f - timeFraction
+        val wave = easeWave(waveValue)
+        var alphaFraction = easeOutCirc(wave.toDouble()).toFloat()
+        if (timeFraction < 0.5f) alphaFraction *= easeInOutExpo(alphaFraction.toDouble()).toFloat()
+        val mainFactor = if (timeFraction > 0.5f) {
+            easeOutElasticX((wave * wave).toDouble())
+        } else {
+            easeOutBounce(wave.toDouble())
+        }
+        val circleRadius = (mainFactor * maxRadius).toFloat()
+        val rotation = (easeInOutElasticx(wave.toDouble()) * 90.0 / (1.0 + wave.toDouble()))
+        val textureResource = selectJumpTexture(circleIndex, timeFraction)
+        val color = combineColor(alphaFraction)
 
-    private fun doCircle(
-        position: Vec3,
-        maxRadius: Double,
-        deltaTime: Float,
-        index: Int,
-        immersiveShift: Float,
-        immersiveIntensity: Float
-    ) {
-        val immersive = immersiveShift >= 1f / 255f
-        val waveDelta = easeWave(1f - deltaTime)
-        var alphaPC = easeOutCirc(waveDelta.toDouble()).toFloat()
-        if (deltaTime < 0.5f) alphaPC *= easeInOutExpo(alphaPC.toDouble()).toFloat()
+        val red = ((color shr 16) and 0xFF) / 255f
+        val green = ((color shr 8) and 0xFF) / 255f
+        val blue = (color and 0xFF) / 255f
+        val alpha = ((color shr 24) and 0xFF) / 255f
 
-        val radius = ((if (deltaTime > 0.5f) easeOutElasticX((waveDelta * waveDelta).toDouble())
-        else easeOutBounce(waveDelta.toDouble())) * maxRadius).toFloat()
-        val rotation = easeInOutElasticx(waveDelta.toDouble()) * 90.0 / (1.0 + waveDelta)
-        val resource = jumpTexture(index, deltaTime)
+        mc.textureManager.bindTexture(textureResource)
+        mc.textureManager.getTexture(textureResource).setBlurMipmap(true, true)
 
-        val color = getColor(alphaPC)
-        val red = (color shr 16 and 0xFF) / 255.0f
-        val green = (color shr 8 and 0xFF) / 255.0f
-        val blue = (color and 0xFF) / 255.0f
-        val alpha = (color shr 24 and 0xFF) / 255.0f
-
-        mc.textureManager.bindTexture(resource)
-        mc.textureManager.getTexture(resource).setBlurMipmap(true, true)
         pushMatrix()
-        translate(position.xCoord - radius / 2.0, position.yCoord, position.zCoord - radius / 2.0)
-        glRotatef(90.0f, 1.0f, 0.0f, 0.0f)
-        customRotatedObject2D(0F, 0F, radius, radius, rotation)
+        translate(pos.xCoord - circleRadius / 2.0, pos.yCoord, pos.zCoord - circleRadius / 2.0)
+        glRotatef(90f, 1f, 0f, 0f)
+        customRotatedObject2D(0f, 0f, circleRadius, circleRadius, rotation)
         worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
         worldRenderer.pos(0.0, 0.0, 0.0).tex(0.0, 0.0).color(red, green, blue, alpha).endVertex()
-        worldRenderer.pos(0.0, radius.toDouble(), 0.0).tex(0.0, 1.0).color(red, green, blue, alpha).endVertex()
-        worldRenderer.pos(radius.toDouble(), radius.toDouble(), 0.0).tex(1.0, 1.0).color(red, green, blue, alpha).endVertex()
-        worldRenderer.pos(radius.toDouble(), 0.0, 0.0).tex(1.0, 0.0).color(red, green, blue, alpha).endVertex()
+        worldRenderer.pos(0.0, circleRadius.toDouble(), 0.0).tex(0.0, 1.0).color(red, green, blue, alpha).endVertex()
+        worldRenderer.pos(circleRadius.toDouble(), circleRadius.toDouble(), 0.0).tex(1.0, 1.0).color(red, green, blue, alpha).endVertex()
+        worldRenderer.pos(circleRadius.toDouble(), 0.0, 0.0).tex(1.0, 0.0).color(red, green, blue, alpha).endVertex()
         tessellator.draw()
         popMatrix()
 
-        if (immersive) {
+        if (shift >= 1f / 255f) {
             pushMatrix()
-            translate(position.xCoord, position.yCoord, position.zCoord)
+            translate(pos.xCoord, pos.yCoord, pos.zCoord)
             glRotated(rotation, 0.0, 1.0, 0.0)
             worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
-            val polygons = 40f
-            val extMaxY = radius / 3.5f
-            val extMaxXZ = radius / 7f
-            for (i in 1 until polygons.toInt()) {
-                val iPC = i / polygons
-                val extY = extMaxY * i / polygons - extMaxY / polygons
-                val aPC = (alphaPC * immersiveIntensity * immersiveShift).takeIf { it * 255 >= 1 } ?: continue
-                val radiusPost = radius + easeOutCirc(easeWave(iPC - 1.5f / polygons).toDouble()).toFloat() * extMaxXZ
-                val alphaInt = (aPC * 255).toInt()
-                worldRenderer.pos((-radiusPost / 2f).toDouble(), extY.toDouble(), (-radiusPost / 2f).toDouble())
-                    .tex(0.0, 0.0).color(red, green, blue, alphaInt / 255.0f).endVertex()
-                worldRenderer.pos((-radiusPost / 2f).toDouble(), extY.toDouble(), (radiusPost / 2f).toDouble())
-                    .tex(0.0, 1.0).color(red, green, blue, alphaInt / 255.0f).endVertex()
-                worldRenderer.pos((radiusPost / 2f).toDouble(), extY.toDouble(), (radiusPost / 2f).toDouble())
-                    .tex(1.0, 1.0).color(red, green, blue, alphaInt / 255.0f).endVertex()
-                worldRenderer.pos((radiusPost / 2f).toDouble(), extY.toDouble(), (-radiusPost / 2f).toDouble())
-                    .tex(1.0, 0.0).color(red, green, blue, alphaInt / 255.0f).endVertex()
+
+            val polygons = 40
+            val maxY = circleRadius / 3.5f
+            val maxXZ = circleRadius / 7f
+
+            for (i in 1 until polygons) {
+                val fraction = i / polygons.toFloat()
+                val fractionValue = fraction - (1.5f / polygons)
+                val wave2 = easeWave(fractionValue)
+                val circVal = easeOutCirc(wave2.toDouble()).toFloat()
+                val alphaCheck = (alphaFraction * intensity * shift).takeIf { it * 255 >= 1 } ?: continue
+                val alphaInt = (alphaCheck * 255).toInt()
+                val variedRadius = circleRadius + circVal * maxXZ
+
+                worldRenderer.pos((-variedRadius / 2f).toDouble(), (maxY * i / polygons - maxY / polygons).toDouble(),
+                    (-variedRadius / 2f).toDouble()
+                )
+                    .tex(0.0, 0.0).color(red, green, blue, alphaInt / 255f).endVertex()
+                worldRenderer.pos((-variedRadius / 2f).toDouble(),
+                    (maxY * i / polygons - maxY / polygons).toDouble(), (variedRadius / 2f).toDouble()
+                )
+                    .tex(0.0, 1.0).color(red, green, blue, alphaInt / 255f).endVertex()
+                worldRenderer.pos(
+                    (variedRadius / 2f).toDouble(), (maxY * i / polygons - maxY / polygons).toDouble(),
+                    (variedRadius / 2f).toDouble()
+                )
+                    .tex(1.0, 1.0).color(red, green, blue, alphaInt / 255f).endVertex()
+                worldRenderer.pos((variedRadius / 2f).toDouble(), (maxY * i / polygons - maxY / polygons).toDouble(),
+                    (-variedRadius / 2f).toDouble()
+                )
+                    .tex(1.0, 0.0).color(red, green, blue, alphaInt / 255f).endVertex()
             }
             tessellator.draw()
             popMatrix()
         }
     }
 
-    private fun getVec3dFromEntity(entity: Entity): Vec3 {
+    private fun calculateEntityPosition(entity: Entity): Vec3 {
         val partialTicks = mc.timer.renderPartialTicks
         val dx = entity.posX - entity.lastTickPosX
         val dy = entity.posY - entity.lastTickPosY
@@ -243,23 +234,27 @@ object JumpCircles : Module("JumpCircles", Category.VISUAL, hideModule = false) 
         )
     }
 
-       val onWorld = handler<WorldEvent> {
-        reset()
+    val onWorld = handler<WorldEvent> {
+        clearCircles()
     }
 
     override fun onEnable() {
-        reset()
+        clearCircles()
         super.onEnable()
     }
 
     override fun onDisable() {
-        reset()
+        clearCircles()
         super.onDisable()
     }
 
-    class JumpRenderer(val position: Vec3, val index: Int) {
-        private val startTime = System.currentTimeMillis()
+    class JumpRenderer(
+        val position: Vec3,
+        val index: Int,
+        private val startTime: Long,
+        private val maxTimeValue: Int
+    ) {
         val progress: Float
-            get() = ((System.currentTimeMillis() - startTime) / maxTime.toFloat())
+            get() = (System.currentTimeMillis() - startTime).toFloat() / maxTimeValue
     }
 }
