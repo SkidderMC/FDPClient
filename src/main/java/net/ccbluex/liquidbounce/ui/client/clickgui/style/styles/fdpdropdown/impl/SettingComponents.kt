@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.colormode
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.generateColor
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle.setAndSaveValueOnButtonRelease
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle.sliderValueHeld
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation
@@ -26,6 +26,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.blendColors
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import org.lwjgl.input.Keyboard
@@ -60,13 +61,9 @@ class SettingComponents(private val module: Module) : Component() {
     var settingSize: Double = 0.0
     private var selectedField: PasswordField? = null
     private var selectedStringSetting: TextValue? = null
-    private val hueFlag = false
 
     private val colorSettingAnimMap = HashMap<ColorValue, Array<Animation>>()
     private val colorPickerAnimationMap = HashMap<ColorValue, Animation>()
-
-    private var colorPickerVisible: Boolean = false
-    private var currentColorValue: ColorValue? = null
 
     init {
         keySettingAnimMap[module] = arrayOf(
@@ -653,70 +650,93 @@ class SettingComponents(private val module: Module) : Component() {
             // ----- ColorValue -----
             if (setting is ColorValue) {
                 val currentColor = setting.selectedColor()
+                val text = setting.name + ": " + "#%08X".format(currentColor.rgb)
+                Fonts.InterMedium_18.drawString(text, x + 5, settingY + 3, textColor.rgb)
 
-                val spacing = 10
+                val previewSize = 9
+                val previewX2 = x + width - 10
+                val previewX1 = previewX2 - previewSize
+                val previewY1 = settingY + 2
+                val previewY2 = previewY1 + previewSize
 
-                val startX = x + 5
-                val startY = settingY - 1
+                drawRect(previewX1, previewY1, previewX2, previewY2, currentColor.rgb)
 
-                val colorPreviewSize = 10
-                val colorPreviewX2 = x + width - colorPreviewSize
-                val colorPreviewX1 = colorPreviewX2 - colorPreviewSize
-                val colorPreviewY1 = startY + 1
-                val colorPreviewY2 = colorPreviewY1 + colorPreviewSize
+                val rainbowPreviewX2 = previewX1 - previewSize
+                val rainbowPreviewX1 = rainbowPreviewX2 - previewSize
+                if (rainbowPreviewX1 > x + 4) {
+                    drawRect(
+                        rainbowPreviewX1,
+                        previewY1,
+                        rainbowPreviewX2,
+                        previewY2,
+                        ColorUtils.rainbow(setting.opacitySliderY).rgb
+                    )
+                }
 
-                val rainbowPreviewX2 = colorPreviewX1 - colorPreviewSize
-                val rainbowPreviewX1 = rainbowPreviewX2 - colorPreviewSize
+                val rainbow = setting.rainbow
+                val hoveringColorPreview = isClickable(settingY + 2)
+                        && DrRenderUtils.isHovering(
+                    previewX1,
+                    previewY1,
+                    previewSize.toFloat(),
+                    previewSize.toFloat(),
+                    mouseX,
+                    mouseY
+                )
+                val hoveringRainbowPreview = isClickable(settingY + 2)
+                        && rainbowPreviewX1 > x + 4
+                        && DrRenderUtils.isHovering(
+                    rainbowPreviewX1,
+                    previewY1,
+                    previewSize.toFloat(),
+                    previewSize.toFloat(),
+                    mouseX,
+                    mouseY
+                )
 
-                val textX = startX + 2F
-                val textY = startY + 3F
+                if (type == GuiEvents.CLICK && button in arrayOf(0, 1)) {
+                    if (hoveringColorPreview) {
+                        if (button == 0 && rainbow) setting.rainbow = false
+                        if (button == 1) setting.showPicker = !setting.showPicker
+                    }
+                    if (hoveringRainbowPreview) {
+                        if (button == 0) setting.rainbow = true
+                        if (button == 1) setting.showPicker = !setting.showPicker
+                    }
+                }
 
-                val hueSliderWidth = 7
-                val hueSliderHeight = 50
                 val colorPickerWidth = 75
                 val colorPickerHeight = 50
+                val hueSliderWidth = 7
+                val hueSliderHeight = 50
+                val spacingBetweenSliders = 5
 
-                val colorPickerStartX = startX.toInt()
+                val colorPickerStartX = (x + 5).toInt()
+                val colorPickerStartY = (settingY + 15).toInt()
                 val colorPickerEndX = colorPickerStartX + colorPickerWidth
-                val colorPickerStartY = colorPreviewY2 + spacing / 3
                 val colorPickerEndY = colorPickerStartY + colorPickerHeight
 
+                val hueSliderX = colorPickerEndX + spacingBetweenSliders
                 val hueSliderStartY = colorPickerStartY
                 val hueSliderEndY = colorPickerStartY + hueSliderHeight
 
-                if (type == GuiEvents.CLICK && mouseX.toFloat() in colorPreviewX1..colorPreviewX2 && mouseY.toFloat() in colorPreviewY1..colorPreviewY2 && button == 0) {
-                    if (setting.rainbow) {
-                        setting.rainbow = false
-                    } else {
-                        setting.showPicker = !setting.showPicker
-                        currentColorValue = if (setting.showPicker) setting else null
-                    }
+                val opacityStartX = hueSliderX + hueSliderWidth + spacingBetweenSliders
+                val opacityEndX = opacityStartX + hueSliderWidth
 
-                    return
-                }
-
-                if (type == GuiEvents.CLICK && mouseX.toFloat() in rainbowPreviewX1..rainbowPreviewX2 && mouseY.toFloat() in colorPreviewY1..colorPreviewY2 && button == 0) {
-                    setting.rainbow = true
-                    setting.showPicker = false
-                    currentColorValue = null
-
-                    return
-                }
-
-                val display = "${setting.name}: ${"#%08X".format(currentColor.rgb)}"
-
-                Fonts.InterMedium_18.drawString(display, textX, textY, Color.WHITE.rgb)
-
-                val normalBorderColor = if (setting.rainbow) Color(0, 0, 0, 0) else Color.BLUE
-                val rainbowBorderColor = if (setting.rainbow) Color.BLUE.rgb else 0
-
-                val hue = if (setting.rainbow) {
+                val hue = if (rainbow) {
                     Color.RGBtoHSB(currentColor.red, currentColor.green, currentColor.blue, null)[0]
                 } else {
                     setting.hueSliderY
                 }
 
                 if (setting.showPicker) {
+                    drawRect(
+                        colorPickerStartX,
+                        colorPickerStartY,
+                        colorPickerEndX,
+                        colorPickerEndY,
+                        darkRectHover.rgb
+                    )
 
                     setting.updateTextureCache(
                         id = 0,
@@ -734,23 +754,13 @@ class SettingComponents(private val module: Module) : Component() {
                             }
                         },
                         drawAt = { id ->
-                            drawTexture(
-                                id,
-                                colorPickerStartX,
-                                colorPickerStartY.toInt(),
-                                colorPickerWidth,
-                                colorPickerHeight
-                            )
-                        })
+                            drawTexture(id, colorPickerStartX, colorPickerStartY, colorPickerWidth, colorPickerHeight)
+                        }
+                    )
 
                     val markerX = (colorPickerStartX..colorPickerEndX).lerpWith(setting.colorPickerPos.x)
                     val markerY = (colorPickerStartY..colorPickerEndY).lerpWith(setting.colorPickerPos.y)
-
-                    RenderUtils.drawBorder(
-                        markerX - 2f, markerY - 2f, markerX + 3f, markerY + 3f, 1.5f, Color.WHITE.rgb
-                    )
-
-                    val hueSliderX = colorPickerEndX + 5
+                    RenderUtils.drawBorder(markerX - 2f, markerY - 2f, markerX + 3f, markerY + 3f, 1.5f, Color.WHITE.rgb)
 
                     setting.updateTextureCache(
                         id = 1,
@@ -767,17 +777,9 @@ class SettingComponents(private val module: Module) : Component() {
                             }
                         },
                         drawAt = { id ->
-                            drawTexture(
-                                id,
-                                hueSliderX,
-                                colorPickerStartY.toInt(),
-                                hueSliderWidth,
-                                hueSliderHeight
-                            )
-                        })
-
-                    val opacityStartX = hueSliderX + hueSliderWidth + 5
-                    val opacityEndX = opacityStartX + hueSliderWidth
+                            drawTexture(id, hueSliderX, hueSliderStartY, hueSliderWidth, hueSliderHeight)
+                        }
+                    )
 
                     setting.updateTextureCache(
                         id = 2,
@@ -786,142 +788,112 @@ class SettingComponents(private val module: Module) : Component() {
                         height = hueSliderHeight,
                         generateImage = { image, _ ->
                             val gridSize = 1
-
                             for (y in 0 until hueSliderHeight) {
                                 for (x in 0 until hueSliderWidth) {
                                     val gridX = x / gridSize
                                     val gridY = y / gridSize
-
-                                    val checkerboardColor = if ((gridY + gridX) % 2 == 0) {
-                                        Color.WHITE.rgb
-                                    } else {
-                                        Color.BLACK.rgb
-                                    }
-
-                                    val alpha =
-                                        ((1 - y.toFloat() / hueSliderHeight.toFloat()) * 255).roundToInt()
-
+                                    val checkerboardColor =
+                                        if ((gridY + gridX) % 2 == 0) Color.WHITE.rgb else Color.BLACK.rgb
+                                    val alpha = ((1 - y.toFloat() / hueSliderHeight.toFloat()) * 255).roundToInt()
                                     val finalColor = blendColors(
                                         Color(checkerboardColor),
                                         currentColor.withAlpha(alpha)
                                     )
-
                                     image.setRGB(x, y, finalColor.rgb)
                                 }
                             }
                         },
                         drawAt = { id ->
-                            drawTexture(
-                                id,
-                                opacityStartX,
-                                colorPickerStartY.toInt(),
-                                hueSliderWidth,
-                                hueSliderHeight
-                            )
-                        })
-
-                    val opacityMarkerY =
-                        (hueSliderStartY..hueSliderEndY).lerpWith(1 - setting.opacitySliderY)
-                    val hueMarkerY = (hueSliderStartY..hueSliderEndY).lerpWith(hue)
-
-                    RenderUtils.drawBorder(
-                        hueSliderX.toFloat() - 1,
-                        hueMarkerY - 1f,
-                        hueSliderX + hueSliderWidth + 1f,
-                        (hueMarkerY + 1).coerceAtMost((hueSliderEndY)) + 1,
-                        1.5f,
-                        Color.WHITE.rgb,
+                            drawTexture(id, opacityStartX, hueSliderStartY, hueSliderWidth, hueSliderHeight)
+                        }
                     )
 
+                    val hueMarkerY = (hueSliderStartY..hueSliderEndY).lerpWith(hue)
+                    val opacityMarkerY = (hueSliderStartY..hueSliderEndY).lerpWith(1 - setting.opacitySliderY)
+
                     RenderUtils.drawBorder(
-                        opacityStartX.toFloat() - 1,
+                        hueSliderX - 1f,
+                        hueMarkerY - 1f,
+                        hueSliderX + hueSliderWidth + 1f,
+                        hueMarkerY + 1f,
+                        1.5f,
+                        Color.WHITE.rgb
+                    )
+                    RenderUtils.drawBorder(
+                        opacityStartX - 1f,
                         opacityMarkerY - 1f,
                         opacityEndX + 1f,
-                        (opacityMarkerY + 1).coerceAtMost((hueSliderEndY)) + 1,
+                        opacityMarkerY + 1f,
                         1.5f,
-                        Color.WHITE.rgb,
+                        Color.WHITE.rgb
                     )
 
                     val inColorPicker =
-                        (mouseX in colorPickerStartX..<colorPickerEndX) &&
-                                (mouseY >= colorPickerStartY && mouseY < colorPickerEndY)
-
+                        (mouseX in colorPickerStartX until colorPickerEndX && mouseY in colorPickerStartY until colorPickerEndY)
                     val inHueSlider =
-                        (mouseX >= (hueSliderX - 1) && mouseX <= (hueSliderX + hueSliderWidth + 1)) &&
-                                (mouseY >= hueSliderStartY && mouseY < hueSliderEndY)
-
+                        (mouseX in hueSliderX - 1..hueSliderX + hueSliderWidth + 1
+                                && mouseY in hueSliderStartY until hueSliderEndY)
                     val inOpacitySlider =
-                        (mouseX >= (opacityStartX - 1) && mouseX <= (opacityEndX + 1)) &&
-                                (mouseY >= hueSliderStartY && mouseY < hueSliderEndY)
+                        (mouseX in opacityStartX - 1..opacityEndX + 1 && mouseY in hueSliderStartY until hueSliderEndY)
 
-                    if (type == GuiEvents.CLICK && (inColorPicker || inHueSlider || inOpacitySlider)) {
-                        if (inColorPicker) {
-                            val newS =
-                                ((mouseX - colorPickerStartX) / colorPickerWidth.toFloat()).coerceIn(
-                                    0f,
-                                    1f
-                                )
-                            val newB =
-                                (1.0f - (mouseY - colorPickerStartY) / colorPickerHeight.toFloat()).coerceIn(
-                                    0f,
-                                    1f
-                                )
+                    val sliderType = setting.lastChosenSlider
+                    if ((type == GuiEvents.CLICK && button == 0 && (inColorPicker || inHueSlider || inOpacitySlider))
+                        || (sliderValueHeld == setting && setting.lastChosenSlider != null)
+                    ) {
+                        if (inColorPicker && (sliderType == null || sliderType == ColorValue.SliderType.COLOR)) {
+                            val newS = ((mouseX - colorPickerStartX) / colorPickerWidth.toFloat()).coerceIn(0f, 1f)
+                            val newB = (1.0f - (mouseY - colorPickerStartY) / colorPickerHeight.toFloat()).coerceIn(0f, 1f)
                             setting.colorPickerPos.x = newS
-                            setting.colorPickerPos.y = newB
+                            setting.colorPickerPos.y = 1 - newB
                         }
 
-                        if (inHueSlider) {
+                        var finalColor = Color(
+                            Color.HSBtoRGB(
+                                setting.hueSliderY,
+                                setting.colorPickerPos.x,
+                                1 - setting.colorPickerPos.y
+                            )
+                        )
+
+                        if (inHueSlider && (sliderType == null || sliderType == ColorValue.SliderType.HUE)) {
                             setting.hueSliderY =
-                                ((mouseY - hueSliderStartY) / hueSliderHeight.toFloat()).coerceIn(
-                                    0f,
-                                    1f
-                                )
-                        }
-
-                        if (inOpacitySlider) {
-                            setting.opacitySliderY =
-                                1 - ((mouseY - hueSliderStartY) / hueSliderHeight.toFloat()).coerceIn(
-                                    0f,
-                                    1f
-                                )
-                        }
-
-                        val finalColor = if (setting.rainbow) {
-                            ColorUtils.rainbow(alpha = setting.opacitySliderY)
-                        } else {
-                            Color(
+                                ((mouseY - hueSliderStartY) / hueSliderHeight.toFloat()).coerceIn(0f, 1f)
+                            finalColor = Color(
                                 Color.HSBtoRGB(
                                     setting.hueSliderY,
                                     setting.colorPickerPos.x,
                                     1 - setting.colorPickerPos.y
                                 )
-                            ).withAlpha((setting.opacitySliderY * 255).roundToInt())
+                            )
                         }
 
-                        setting.setAndSaveValueOnButtonRelease(finalColor)
+                        if (inOpacitySlider && (sliderType == null || sliderType == ColorValue.SliderType.OPACITY)) {
+                            setting.opacitySliderY =
+                                1 - ((mouseY - hueSliderStartY) / hueSliderHeight.toFloat()).coerceIn(0f, 1f)
+                        }
 
-                        return
+                        finalColor = finalColor.withAlpha((setting.opacitySliderY * 255).roundToInt())
+
+                        sliderValueHeld = setting
+
+                        withDelayedSave {
+                            setting.set(finalColor, true)
+                        }
+
+                        if (button == 0) {
+                            setting.lastChosenSlider = when {
+                                inColorPicker  -> ColorValue.SliderType.COLOR
+                                inHueSlider    -> ColorValue.SliderType.HUE
+                                inOpacitySlider -> ColorValue.SliderType.OPACITY
+                                else           -> null
+                            }
+                        }
                     }
 
-                    drawCustomShapeWithRadius(
-                        colorPreviewX1,
-                        colorPreviewY1,
-                        colorPreviewX2 - colorPreviewX1,
-                        colorPreviewY2 - colorPreviewY1,
-                        2.5f,
-                        setting.get()
-                    )
+                    count += 2f
 
-                    drawCustomShapeWithRadius(
-                        rainbowPreviewX1,
-                        colorPreviewY1,
-                        rainbowPreviewX2 - rainbowPreviewX1,
-                        colorPreviewY2 - colorPreviewY1,
-                        2.5f,
-                        Color(ColorUtils.rainbow(alpha = setting.opacitySliderY).rgb)
-                    )
-
-                    count += spacing
+                } else {
+                    count += 1f
                 }
             }
 
@@ -987,6 +959,10 @@ class SettingComponents(private val module: Module) : Component() {
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         handle(mouseX, mouseY, state, GuiEvents.RELEASE)
+    }
+
+    private fun withDelayedSave(block: () -> Unit) {
+        block()
     }
 
     /**
