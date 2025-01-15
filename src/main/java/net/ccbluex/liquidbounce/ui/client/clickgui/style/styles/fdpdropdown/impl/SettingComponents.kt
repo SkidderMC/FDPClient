@@ -44,8 +44,6 @@ class SettingComponents(private val module: Module) : Component() {
     private val sliderintAnimMap = HashMap<IntegerValue, Array<Animation>>()
     private val sliderfloatMap = HashMap<FloatValue, Float>()
     private val sliderfloatAnimMap = HashMap<FloatValue, Array<Animation>>()
-    private val sliderMap = HashMap<NumberValue, Float>()
-    private val sliderAnimMap = HashMap<NumberValue, Array<Animation>>()
     private val toggleAnimation = HashMap<BoolValue, Array<Animation>>()
     private val modeSettingAnimMap = HashMap<ListValue, Array<Animation>>()
     private val modeSettingClick = HashMap<ListValue, Boolean>()
@@ -72,13 +70,6 @@ class SettingComponents(private val module: Module) : Component() {
         )
 
         for (setting in module.values) {
-            if (setting is NumberValue) {
-                sliderMap[setting] = 0f
-                sliderAnimMap[setting] = arrayOf(
-                    DecelerateAnimation(250, 1.0, Direction.BACKWARDS),
-                    DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
-                )
-            }
             if (setting is FloatValue) {
                 sliderfloatMap[setting] = 0f
                 sliderfloatAnimMap[setting] = arrayOf(
@@ -319,82 +310,6 @@ class SettingComponents(private val module: Module) : Component() {
                 )
                 DrRenderUtils.drawGoodCircle(
                     (x + 4 + max(4.0, sliderintMap[setting]!!.toDouble())),
-                    (sliderY + 1.5f).toDouble(), 3.75f,
-                    if (accent) accentedColor2.rgb else textColor.rgb
-                )
-
-                count += .5
-            }
-
-            // ----- NumberValue -----
-            if (setting is NumberValue) {
-                val value = round(setting.value, setting.getInc()).toFloat().toString()
-
-                val regularFontWidth = Fonts.InterMedium_18.stringWidth(setting.name + ": ").toFloat()
-                val valueFontWidth = Fonts.InterMedium_18.stringWidth(value).toFloat()
-
-                val titleX = x + width / 2f - (regularFontWidth + valueFontWidth) / 2f
-                val titleY = (settingY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight)
-                        - Fonts.InterMedium_18.getMiddleOfBox(rectHeight) / 2f + 1)
-
-                GlStateManager.color(1f, 1f, 1f, 1f)
-                Fonts.InterMedium_18.drawString(setting.name + ": ", titleX, titleY, textColor.rgb)
-                Fonts.InterBold_18.drawString(value, titleX + regularFontWidth, titleY, textColor.rgb)
-
-                val hoverAnimation = sliderAnimMap[setting]!![0]
-                val selectAnimtion = sliderAnimMap[setting]!![1]
-
-                val totalSliderWidth = width - 10
-                val hoveringSlider = isClickable(settingY + 17)
-                        && DrRenderUtils.isHovering(x + 5, settingY + 17, totalSliderWidth, 6f, mouseX, mouseY)
-
-                if (type == GuiEvents.RELEASE) {
-                    draggingNumber = null
-                }
-                hoverAnimation.setDirection(
-                    if (hoveringSlider || draggingNumber === setting) Direction.FORWARDS else Direction.BACKWARDS
-                )
-                selectAnimtion.setDirection(
-                    if (draggingNumber === setting) Direction.FORWARDS else Direction.BACKWARDS
-                )
-
-                if (type == GuiEvents.CLICK && hoveringSlider && button == 0) {
-                    draggingNumber = setting
-                }
-
-                val currentValue = setting.value
-                if (draggingNumber != null && draggingNumber === setting) {
-                    val percent = min(1.0, max(0.0, ((mouseX - (x + 5)) / totalSliderWidth).toDouble())).toFloat()
-                    val newValue = ((percent * (setting.maximum - setting.minimum))
-                            + setting.minimum)
-                    setting.value = newValue
-                }
-
-                val sliderMath = ((currentValue - setting.minimum)
-                        / (setting.maximum - setting.minimum)).toFloat()
-
-                val oldSlider = sliderMap[setting]!!
-                val targetSlider = totalSliderWidth * sliderMath
-                sliderMap[setting] =
-                    DrRenderUtils.animate(targetSlider.toDouble(), oldSlider.toDouble(), .1).toFloat()
-
-                val sliderY = (settingY + 18)
-                drawCustomShapeWithRadius(
-                    x + 5, sliderY, totalSliderWidth, 3f, 1.5f,
-                    DrRenderUtils.applyOpacity(darkRectHover, (.4f + (.2 * hoverAnimation.output)).toFloat())
-                )
-                drawCustomShapeWithRadius(
-                    x + 5, sliderY, max(4.0, sliderMap[setting]!!.toDouble()).toFloat(), 3f, 1.5f,
-                    if (accent) accentedColor2 else textColor
-                )
-
-                DrRenderUtils.setAlphaLimit(0f)
-                DrRenderUtils.fakeCircleGlow(
-                    (x + 4 + max(4.0, sliderMap[setting]!!.toDouble())).toFloat(),
-                    sliderY + 1.5f, 6f, Color.BLACK, .3f
-                )
-                DrRenderUtils.drawGoodCircle(
-                    (x + 4 + max(4.0, sliderMap[setting]!!.toDouble())),
                     (sliderY + 1.5f).toDouble(), 3.75f,
                     if (accent) accentedColor2.rgb else textColor.rgb
                 )

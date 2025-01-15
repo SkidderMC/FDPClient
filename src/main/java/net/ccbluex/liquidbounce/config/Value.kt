@@ -384,46 +384,6 @@ open class ListValue(
     }
 }
 
-/**
- * Number value represents a value with a double
- */
-open class NumberValue(
-    name: String,
-    value: Double,
-    val minimum: Double = 0.0,
-    val maximum: Double = Double.MAX_VALUE,
-    val increment: Double = 1.0,
-    subjective: Boolean = false,
-    isSupported: (() -> Boolean)? = null,
-) : Value<Double>(name, value, subjective, isSupported) {
-
-    fun set(newValue: Number): Boolean {
-        return set(newValue.toDouble().coerceIn(minimum, maximum))
-    }
-
-    override fun toJsonF() = JsonPrimitive(value)
-
-    override fun fromJsonF(element: JsonElement) = if (element.isJsonPrimitive) element.asDouble else null
-
-    fun isMinimal() = value <= minimum
-    fun isMaximal() = value >= maximum
-
-    fun getInc() = increment
-
-    fun append(o: Double): NumberValue {
-        set(get() + o)
-        return this
-    }
-
-    fun incrementValue() {
-        set(value + increment)
-    }
-
-    fun decrementValue() {
-        set(value - increment)
-    }
-}
-
 open class ColorValue(
     name: String, defaultColor: Color, var rainbow: Boolean = false, var showPicker: Boolean = false,
     subjective: Boolean = false, isSupported: (() -> Boolean)? = null
