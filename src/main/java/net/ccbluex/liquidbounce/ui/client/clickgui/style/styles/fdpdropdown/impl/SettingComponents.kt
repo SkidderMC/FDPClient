@@ -31,6 +31,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.glAlphaFunc
 import java.awt.Color
 import java.util.stream.Collectors
 import kotlin.math.*
@@ -1004,10 +1005,22 @@ class SettingComponents(private val module: Module) : Component() {
                     }
 
                     count += (colorPickerHeight / rectHeight) + 0.5f
-
                 } else {
                     count += 0.2f
                 }
+
+                GL11.glDisable(GL11.GL_SCISSOR_TEST)
+                OpenGlHelper.glBlendFunc(
+                    GL11.GL_SRC_ALPHA,
+                    GL11.GL_ONE_MINUS_SRC_ALPHA,
+                    GL11.GL_ONE,
+                    GL11.GL_ZERO
+                )
+                GlStateManager.disableBlend()
+                GlStateManager.disableAlpha()
+                GlStateManager.enableAlpha()
+                glAlphaFunc(GL11.GL_GREATER, 0.1f)
+                GlStateManager.color(1f, 1f, 1f, 1f)
             }
 
             // ----- FontValue -----
@@ -1112,10 +1125,6 @@ class SettingComponents(private val module: Module) : Component() {
         block()
     }
 
-    /**
-     * Returns whether we can safely interact with a setting at the given y-position,
-     * preventing clicks from “spilling over” the visible region.
-     */
     fun isClickable(y: Float): Boolean {
         return y > panelLimitY && y < panelLimitY + 17 + Main.allowedClickGuiHeight
     }
