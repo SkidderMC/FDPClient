@@ -249,8 +249,8 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
         val targetMixin = target as? IMixinEntity
 
         if (mode == "Modern") {
-            if (targetMixin != null) {
-                if (!Blink.blinkingReceive() && shouldBacktrack() && targetMixin.truePos) {
+            if (shouldBacktrack() && targetMixin != null) {
+                if (!Blink.blinkingReceive() && targetMixin.truePos) {
                     val trueDist = mc.thePlayer.getDistance(targetMixin.trueX, targetMixin.trueY, targetMixin.trueZ)
                     val dist = mc.thePlayer.getDistance(target.posX, target.posY, target.posZ)
 
@@ -265,15 +265,9 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
                         } else {
                             handlePacketsRange()
                         }
-                    } else {
-                        clearPackets()
-                        globalTimer.reset()
-                    }
+                    } else clear()
                 }
-            } else {
-                clearPackets()
-                globalTimer.reset()
-            }
+            } else clear()
         }
 
         ignoreWholeTick = false
@@ -676,6 +670,11 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
 
     private fun reset() {
         target = null
+        globalTimer.reset()
+    }
+
+    private fun clear() {
+        clearPackets()
         globalTimer.reset()
     }
 
