@@ -33,9 +33,7 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.stream.Collectors
-import kotlin.math.max
-import kotlin.math.min
-import kotlin.math.roundToInt
+import kotlin.math.*
 
 class SettingComponents(private val module: Module) : Component() {
     var settingHeightScissor: Animation? = null
@@ -48,6 +46,12 @@ class SettingComponents(private val module: Module) : Component() {
     private val modeSettingAnimMap = HashMap<ListValue, Array<Animation>>()
     private val modeSettingClick = HashMap<ListValue, Boolean>()
     private val modesHoverAnimation = HashMap<ListValue, HashMap<String, Animation>>()
+    private val sliderFloatRangeMap = HashMap<FloatRangeValue, Float>()
+    private val sliderFloatRangeAnimMap = HashMap<FloatRangeValue, Array<Animation>>()
+    private val sliderIntegerRangeMap = HashMap<IntegerRangeValue, Float>()
+    private val sliderIntegerRangeAnimMap = HashMap<IntegerRangeValue, Array<Animation>>()
+    private val fontValueMap = HashMap<FontValue, Float>()
+    private val fontValueAnimMap = HashMap<FontValue, Array<Animation>>()
     var binding: Module? = null
     var draggingNumber: Value<*>? = null
     var x: Float = 0f
@@ -84,6 +88,20 @@ class SettingComponents(private val module: Module) : Component() {
                     DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
                 )
             }
+            if (setting is FloatRangeValue) {
+                sliderFloatRangeMap[setting] = 0f
+                sliderFloatRangeAnimMap[setting] = arrayOf(
+                    DecelerateAnimation(250, 1.0, Direction.BACKWARDS),
+                    DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
+                )
+            }
+            if (setting is IntegerRangeValue) {
+                sliderIntegerRangeMap[setting] = 0f
+                sliderIntegerRangeAnimMap[setting] = arrayOf(
+                    DecelerateAnimation(250, 1.0, Direction.BACKWARDS),
+                    DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
+                )
+            }
             if (setting is BoolValue) {
                 toggleAnimation[setting] = arrayOf(
                     DecelerateAnimation(225, 1.0, Direction.BACKWARDS),
@@ -112,6 +130,13 @@ class SettingComponents(private val module: Module) : Component() {
 
                 setting.showPicker = false
                 setting.hueSliderY
+            }
+            if (setting is FontValue) {
+                fontValueMap[setting] = 0f
+                fontValueAnimMap[setting] = arrayOf(
+                    DecelerateAnimation(250, 1.0, Direction.BACKWARDS),
+                    DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
+                )
             }
         }
     }
@@ -240,6 +265,88 @@ class SettingComponents(private val module: Module) : Component() {
                 count += .5
             }
 
+            // ----- FloatRangeValue -----
+            if (setting is FloatRangeValue) {
+                val sliderStart = setting.get().start
+                val sliderEnd = setting.get().endInclusive
+                val nameText = "${setting.name}: ${round(sliderStart)} - ${round(sliderEnd)}"
+                val regularFontWidth = Fonts.InterMedium_18.stringWidth(nameText).toFloat()
+
+                val titleX = x + width / 2f - regularFontWidth / 2f
+                val titleY = settingY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight) / 2f
+
+                Fonts.InterMedium_18.drawString(nameText, titleX, titleY, textColor.rgb)
+
+                val totalSliderWidth = width - 10
+                val sliderPosY = settingY + 18
+
+                val rangeMin = setting.minimum
+                val rangeMax = setting.maximum
+
+                val percent1 = (sliderStart - rangeMin) / (rangeMax - rangeMin)
+                val percent2 = (sliderEnd - rangeMin) / (rangeMax - rangeMin)
+
+                val pixelPos1 = totalSliderWidth * percent1
+                val pixelPos2 = totalSliderWidth * percent2
+
+                val hoveringRangeBar = isClickable(sliderPosY - 1)
+                        && DrRenderUtils.isHovering(x + 5, sliderPosY - 2, totalSliderWidth, 6f, mouseX, mouseY)
+
+                if (type == GuiEvents.RELEASE) {
+                    draggingNumber = null
+                }
+
+                if (type == GuiEvents.CLICK && hoveringRangeBar && button == 0) {
+                    draggingNumber = setting
+                }
+
+                if (draggingNumber === setting) {
+                    val mousePercent = min(1.0, max(0.0, ((mouseX - (x + 5)) / totalSliderWidth).toDouble())).toFloat()
+                    val newVal = (rangeMin + (rangeMax - rangeMin) * mousePercent)
+                    val distStart = abs(newVal - sliderStart)
+                    val distEnd = abs(newVal - sliderEnd)
+                    if (distStart <= distEnd) {
+                        setting.setFirst(newVal.coerceIn(rangeMin, sliderEnd), false)
+                    } else {
+                        setting.setLast(newVal.coerceIn(sliderStart, rangeMax), false)
+                    }
+                }
+
+                val updatedRange = setting.get()
+                val newStart = updatedRange.start
+                val newEnd = updatedRange.endInclusive
+
+                val newPercent1 = (newStart - rangeMin) / (rangeMax - rangeMin)
+                val newPercent2 = (newEnd - rangeMin) / (rangeMax - rangeMin)
+
+                val pixel1 = totalSliderWidth * newPercent1
+                val pixel2 = totalSliderWidth * newPercent2
+
+                drawCustomShapeWithRadius(
+                    x + 5, sliderPosY, totalSliderWidth, 3f, 1.5f,
+                    DrRenderUtils.applyOpacity(darkRectHover, .35f)
+                )
+
+                val minPixel = min(pixel1, pixel2)
+                val maxPixel = max(pixel1, pixel2)
+                drawCustomShapeWithRadius(
+                    x + 5 + minPixel, sliderPosY, (maxPixel - minPixel), 3f, 1.5f,
+                    if (accent) accentedColor2 else textColor
+                )
+
+                fun drawSliderCircle(px: Float) {
+                    DrRenderUtils.fakeCircleGlow(x + 4 + px, sliderPosY + 1.5f, 6f, Color.BLACK, .3f)
+                    DrRenderUtils.drawGoodCircle(
+                        (x + 4 + px).toDouble(), sliderPosY + 1.5, 3.75f,
+                        if (accent) accentedColor2.rgb else textColor.rgb
+                    )
+                }
+                drawSliderCircle(minPixel)
+                drawSliderCircle(maxPixel)
+
+                count += .5
+            }
+
             // ----- IntegerValue -----
             if (setting is IntegerValue) {
                 val value = roundX(setting.value.toDouble(), 1.0).toFloat().toString()
@@ -313,6 +420,97 @@ class SettingComponents(private val module: Module) : Component() {
                     (sliderY + 1.5f).toDouble(), 3.75f,
                     if (accent) accentedColor2.rgb else textColor.rgb
                 )
+
+                count += .5
+            }
+
+            // ----- IntegerRangeValue -----
+            if (setting is IntegerRangeValue) {
+                val rangeValue = setting.get()
+                val sliderStart = rangeValue.first
+                val sliderEnd = rangeValue.last
+
+                val rangeMin = setting.minimum
+                val rangeMax = setting.maximum
+
+                val nameText = "${setting.name}: $sliderStart - $sliderEnd"
+                val regularFontWidth = Fonts.InterMedium_18.stringWidth(nameText).toFloat()
+                val titleX = x + width / 2f - regularFontWidth / 2f
+                val titleY = settingY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight) / 2f
+
+                Fonts.InterMedium_18.drawString(nameText, titleX, titleY, textColor.rgb)
+
+                val totalSliderWidth = (width - 10f)
+                val sliderPosY = settingY + 18f
+
+                val rangeDelta = (rangeMax - rangeMin).coerceAtLeast(1)
+                val startOffset = (sliderStart - rangeMin).coerceIn(0, rangeDelta)
+                val endOffset = (sliderEnd - rangeMin).coerceIn(0, rangeDelta)
+
+                val percent1 = startOffset.toFloat() / rangeDelta.toFloat()
+                val percent2 = endOffset.toFloat() / rangeDelta.toFloat()
+
+                val pixelPos1 = totalSliderWidth * percent1
+                val pixelPos2 = totalSliderWidth * percent2
+
+                val hoveringRangeBar = isClickable(sliderPosY - 1f) &&
+                        DrRenderUtils.isHovering(x + 5f, sliderPosY - 2f, totalSliderWidth, 6f, mouseX, mouseY)
+
+                if (type == GuiEvents.RELEASE) {
+                    draggingNumber = null
+                }
+
+                if (type == GuiEvents.CLICK && hoveringRangeBar && button == 0) {
+                    draggingNumber = setting
+                }
+
+                if (draggingNumber === setting) {
+                    val mousePosRelative = (mouseX.toFloat() - (x + 5f)).coerceIn(0f, totalSliderWidth)
+                    val mousePercent = mousePosRelative / totalSliderWidth
+                    val newVal = (rangeMin + (rangeMax - rangeMin) * mousePercent).toInt()
+
+                    val distStart = abs(newVal - sliderStart)
+                    val distEnd = abs(newVal - sliderEnd)
+                    if (distStart <= distEnd) {
+                        setting.setFirst(newVal.coerceIn(rangeMin, sliderEnd), false)
+                    } else {
+                        setting.setLast(newVal.coerceIn(sliderStart, rangeMax), false)
+                    }
+                }
+
+                val updatedRange = setting.get()
+                val newStart = updatedRange.first
+                val newEnd = updatedRange.last
+
+                val newOffset1 = (newStart - rangeMin).coerceIn(0, rangeDelta)
+                val newOffset2 = (newEnd - rangeMin).coerceIn(0, rangeDelta)
+                val newPercent1 = newOffset1.toFloat() / rangeDelta.toFloat()
+                val newPercent2 = newOffset2.toFloat() / rangeDelta.toFloat()
+
+                val pixel1 = totalSliderWidth * newPercent1
+                val pixel2 = totalSliderWidth * newPercent2
+
+                drawCustomShapeWithRadius(
+                    x + 5f, sliderPosY, totalSliderWidth, 3f, 1.5f,
+                    DrRenderUtils.applyOpacity(darkRectHover, .35f)
+                )
+
+                val minPixel = min(pixel1, pixel2)
+                val maxPixel = max(pixel1, pixel2)
+                drawCustomShapeWithRadius(
+                    x + 5f + minPixel, sliderPosY, (maxPixel - minPixel), 3f, 1.5f,
+                    if (accent) accentedColor2 else textColor
+                )
+
+                fun drawSliderCircle(px: Float) {
+                    DrRenderUtils.fakeCircleGlow(x + 4f + px, sliderPosY + 1.5f, 6f, Color.BLACK, .3f)
+                    DrRenderUtils.drawGoodCircle(
+                        (x + 4f + px).toDouble(), sliderPosY + 1.5, 3.75f,
+                        if (accent) accentedColor2.rgb else textColor.rgb
+                    )
+                }
+                drawSliderCircle(minPixel)
+                drawSliderCircle(maxPixel)
 
                 count += .5
             }
@@ -562,10 +760,14 @@ class SettingComponents(private val module: Module) : Component() {
                 count++
             }
 
+            // ----- ColorValue -----
             if (setting is ColorValue) {
                 val currentColor = setting.selectedColor()
-                val text = setting.name + ": " + "#%08X".format(currentColor.rgb)
+                val text = setting.name + ":"
                 Fonts.InterMedium_18.drawString(text, x + 5, settingY + 3, textColor.rgb)
+
+                val colorCodeText = "#%08X".format(currentColor.rgb)
+                Fonts.InterMedium_18.drawString(colorCodeText, x + 5, settingY + 3 + Fonts.InterMedium_18.height + 2, textColor.rgb)
 
                 val previewSize = 9
                 val previewX2 = x + width - 10
@@ -719,7 +921,6 @@ class SettingComponents(private val module: Module) : Component() {
                     )
 
                     val hueMarkerY = (colorPickerStartY..hueSliderEndY).lerpWith(hue)
-                    val opacityMarkerY = (colorPickerStartY..hueSliderEndY).lerpWith(1 - setting.opacitySliderY)
                     RenderUtils.drawBorder(
                         hueSliderX - 1f,
                         hueMarkerY - 1f,
@@ -728,6 +929,8 @@ class SettingComponents(private val module: Module) : Component() {
                         1.5f,
                         Color.WHITE.rgb
                     )
+
+                    val opacityMarkerY = (colorPickerStartY..hueSliderEndY).lerpWith(1 - setting.opacitySliderY)
                     RenderUtils.drawBorder(
                         opacityStartX - 1f,
                         opacityMarkerY - 1f,
@@ -751,7 +954,6 @@ class SettingComponents(private val module: Module) : Component() {
                     if ((type == GuiEvents.CLICK && button == 0 && (inColorPicker || inHueSlider || inOpacitySlider))
                         || (sliderValueHeld == setting && setting.lastChosenSlider != null)
                     ) {
-
                         if (inColorPicker && (sliderType == null || sliderType == ColorValue.SliderType.COLOR)) {
                             val newS = ((mouseX - colorPickerStartX) / colorPickerWidth.toFloat()).coerceIn(0f, 1f)
                             val newB = (1.0f - (mouseY - colorPickerStartY) / colorPickerHeight.toFloat()).coerceIn(0f, 1f)
@@ -766,7 +968,6 @@ class SettingComponents(private val module: Module) : Component() {
                                 1 - setting.colorPickerPos.y
                             )
                         )
-
                         if (inHueSlider && (sliderType == null || sliderType == ColorValue.SliderType.HUE)) {
                             setting.hueSliderY =
                                 ((mouseY - colorPickerStartY) / hueSliderHeight.toFloat()).coerceIn(0f, 1f)
@@ -801,11 +1002,46 @@ class SettingComponents(private val module: Module) : Component() {
                             }
                         }
                     }
+
                     count += (colorPickerHeight / rectHeight) + 0.5f
 
                 } else {
                     count += 0.2f
                 }
+            }
+
+            // ----- FontValue -----
+            if (setting is FontValue) {
+                val displayText = setting.displayName
+                val textColor = Color(255, 255, 255, alphaAnimation)
+                val regularFontWidth = Fonts.InterMedium_18.stringWidth(displayText).toFloat()
+
+                val titleX = x + width / 2f - regularFontWidth / 2f
+                val titleY = settingY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight) / 2f
+
+                Fonts.InterMedium_18.drawString(displayText, titleX, titleY, textColor.rgb)
+
+                val hoverWidth = regularFontWidth + 10f
+                val hoverHeight = rectHeight
+                val hoveringFont = isClickable(settingY) &&
+                        DrRenderUtils.isHovering(
+                            titleX - 5f,
+                            settingY,
+                            hoverWidth,
+                            hoverHeight,
+                            mouseX,
+                            mouseY
+                        )
+
+                if (type == GuiEvents.CLICK && hoveringFont) {
+                    if (button == 0) {
+                        setting.next()
+                    } else if (button == 1) {
+                        setting.previous()
+                    }
+                }
+
+                count += 0.5
             }
 
             // Render the key bind
