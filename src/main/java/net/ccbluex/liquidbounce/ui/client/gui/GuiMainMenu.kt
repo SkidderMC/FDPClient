@@ -282,14 +282,14 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
 
     /**
      * Quick method to colorize changelog lines by prefix:
-     * "~ " => Uppercase them
+     * "~ " => "[~]"
      * "+ " => "[+]"
      * "- " => "[-]"
      * "* " => "[*]"
      */
     private fun formatChangelogLine(line: String): String {
         return when {
-            line.startsWith("~ ") -> "§r " + line.uppercase(Locale.getDefault())
+            line.startsWith("~ ") -> "§7[§r~§7]  §r" + line.removePrefix("~  ").trim()
             line.startsWith("+ ") -> "§7[§a+§7]  §r" + line.removePrefix("+ ").trim()
             line.startsWith("- ") -> "§7[§c-§7]  §r" + line.removePrefix("- ").trim()
             line.startsWith("* ") -> "§7[§e*§7]  §r" + line.removePrefix("* ").trim()
