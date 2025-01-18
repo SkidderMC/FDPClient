@@ -42,7 +42,7 @@ public class MixinGuiTextField {
             }
 
             RenderUtils.INSTANCE.drawRoundedBorder(this.xPosition, this.yPosition + height, this.xPosition + this.width, this.yPosition + height, width - 0.5F, Color.BLUE.getRGB(), radius - 1F);
-            RenderUtils.INSTANCE.drawRoundedRect(this.xPosition, this.yPosition, this.xPosition + this.width, this.yPosition + height - 0.5F, new Color(0, 0, 0, 100).getRGB(), radius - 1F);
+            RenderUtils.INSTANCE.drawRoundedRect(this.xPosition, this.yPosition, this.xPosition + this.width, this.yPosition + height - 0.5F, new Color(0, 0, 0, 100).getRGB(), radius - 1F, RenderUtils.RoundedCorners.ALL);
             RenderUtils.INSTANCE.drawRoundedBorderedWithoutBottom(this.xPosition, this.yPosition, this.xPosition + this.width, this.yPosition + this.height, Color.BLACK.getRGB(), width, radius);
         }
 

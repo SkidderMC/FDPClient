@@ -7,8 +7,8 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_WEBSITE
-import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.config.*
+import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
@@ -16,8 +16,10 @@ import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolat
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.extensions.lerpWith
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRectInt
 import net.minecraft.scoreboard.ScoreObjective
@@ -33,8 +35,7 @@ import java.awt.Color
  */
 @ElementInfo(name = "Scoreboard")
 class ScoreboardElement(
-    x: Double = 5.0, y: Double = 0.0, scale: Float = 1F,
-    side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)
+    x: Double = 5.0, y: Double = 0.0, scale: Float = 1F, side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)
 ) : Element(x, y, scale, side) {
 
     private val textColor by color("TextColor", Color.WHITE)
@@ -44,6 +45,10 @@ class ScoreboardElement(
 
     private val rect by boolean("Rect", false)
     private val rectColor = color("RectangleColor", Color(0, 111, 255)) { rect }
+
+    private val drawRectOnTitle by boolean("DrawRectOnTitle", false)
+    private val titleRectColor by color("TitleRectColor", Color.BLACK.withAlpha(128)) { drawRectOnTitle }
+    private val rectHeightPadding by int("TitleRectHeightPadding", 2, 0..10) { drawRectOnTitle }
 
     private val serverIp by choices("ServerIP", arrayOf("Normal", "None", "Client", "Website"), "Normal")
     private val number by boolean("Number", true)
@@ -99,7 +104,11 @@ class ScoreboardElement(
             val maxHeight = scoreCollection.size * fontHeight
             val l1 = -maxWidth - 3 - if (rect) 3 else 0
 
-            drawRoundedRectInt(l1 - 4, -4, 7, maxHeight + fontHeight + 2, backColor, roundedRectRadius)
+            val inc = if (drawRectOnTitle) 2 else 0
+
+            val (minX, maxX) = l1 - 4 to 7
+
+            drawRoundedRectInt(minX, -(4 + inc), maxX, maxHeight + fontHeight + 2, backColor, roundedRectRadius)
 
             scoreCollection.filterNotNull().forEachIndexed { index, score ->
                 val team = scoreboard.getPlayersTeam(score.playerName)
@@ -154,12 +163,24 @@ class ScoreboardElement(
                 if (index == scoreCollection.size - 1) {
                     val displayName = objective.displayName
 
+                    if (drawRectOnTitle) {
+                        drawRoundedRectInt(
+                            minX,
+                            -(4 + inc),
+                            maxX,
+                            fontHeight - inc + rectHeightPadding,
+                            titleRectColor.rgb,
+                            roundedRectRadius,
+                            RenderUtils.RoundedCorners.TOP_ONLY
+                        )
+                    }
+
                     glColor4f(1f, 1f, 1f, 1f)
 
                     fontRenderer.drawString(
                         displayName,
-                        (l1 + maxWidth / 2 - fontRenderer.getStringWidth(displayName) / 2).toFloat(),
-                        height - fontHeight,
+                        (minX..maxX).lerpWith(0.5F) - fontRenderer.getStringWidth(displayName) / 2,
+                        height - fontHeight - inc,
                         textColor,
                         shadow
                     )
@@ -172,17 +193,18 @@ class ScoreboardElement(
                     }
 
                     drawRoundedRect(
-                        2F,
-                        if (index == scoreCollection.size - 1) -2F else height,
-                        5F,
-                        if (index == 0) fontHeight.toFloat() else height + fontHeight * 2F,
+                        3.25F,
+                        (if (index == scoreCollection.size - 1) -2F else height) - inc - 1.5F,
+                        maxX - 0.25F,
+                        (if (index == 0) fontHeight.toFloat() else height + fontHeight * 2F) + 2F,
                         rectColor,
-                        roundedRectRadius
+                        roundedRectRadius,
+                        RenderUtils.RoundedCorners.RIGHT_ONLY
                     )
                 }
             }
 
-            return Border(l1 - 4F, -4F, 7F, maxHeight + fontHeight + 2F)
+            return Border(l1 - 4F, -4F - inc, 7F, maxHeight + fontHeight + 2F)
         }
 
         return null

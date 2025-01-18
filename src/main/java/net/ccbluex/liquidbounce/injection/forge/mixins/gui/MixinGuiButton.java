@@ -111,11 +111,10 @@ public abstract class MixinGuiButton extends Gui {
 
       float radius = 2.5F;
 
-      RenderUtils.INSTANCE.drawRoundedRect(xPosition, yPosition, xPosition + width, yPosition + height,
-              enabled ? new Color(0F, 0F, 0F, 120 / 255f).getRGB() : new Color(0.5F, 0.5F, 0.5F, 0.5F).getRGB(), radius);
+      RenderUtils.INSTANCE.drawRoundedRect(xPosition, yPosition, xPosition + width, yPosition + height, enabled ? new Color(0F, 0F, 0F, 120 / 255f).getRGB() : new Color(0.5F, 0.5F, 0.5F, 0.5F).getRGB(), radius, RenderUtils.RoundedCorners.ALL);
 
       if (enabled && progress != xPosition) {
-         RenderUtils.INSTANCE.drawRoundedRect(xPosition, yPosition, progress, yPosition + height, new Color(0F, 0F, 1F, 1F).getRGB(), radius);
+         RenderUtils.INSTANCE.drawRoundedRect(xPosition, yPosition, progress, yPosition + height, new Color(0F, 0F, 1F, 1F).getRGB(), radius, RenderUtils.RoundedCorners.ALL);
       }
 
       mc.getTextureManager().bindTexture(buttonTextures);

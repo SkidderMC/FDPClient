@@ -9,6 +9,7 @@ import com.google.gson.JsonElement
 import net.ccbluex.liquidbounce.config.TextValue
 import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.config.color
+import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
@@ -24,7 +25,6 @@ import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
 
-
 /**
  * CustomHUD image element
  *
@@ -33,8 +33,11 @@ import javax.imageio.ImageIO
 @ElementInfo(name = "Image")
 class Image : Element() {
 
+    private val color by color("Color", Color.WHITE)
     private val shadow by boolean("Shadow", true)
-    private val shadowColor by color("Color", Color.BLACK.withAlpha(128)) { shadow }
+    private val xDistance by float("X", 1.0F, -2F..2F) { shadow }
+    private val yDistance by float("Y", 1.0F, -2F..2F) { shadow }
+    private val shadowColor by color("ShadowColor", Color.BLACK.withAlpha(128)) { shadow }
 
     companion object {
 
@@ -81,10 +84,10 @@ class Image : Element() {
      */
     override fun drawElement(): Border {
         if (shadow) {
-            drawImage(resourceLocation, 1, 1, width / 2, height / 2, shadowColor)
+            drawImage(resourceLocation, xDistance, yDistance, width / 2, height / 2, shadowColor)
         }
 
-        drawImage(resourceLocation, 0, 0, width / 2, height / 2)
+        drawImage(resourceLocation, 0, 0, width / 2, height / 2, color)
 
         return Border(0F, 0F, width / 2F, height / 2F)
     }
