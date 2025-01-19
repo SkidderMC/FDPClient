@@ -150,6 +150,12 @@ object ColorUtils {
         return Color(red, green, part)
     }
 
+    fun shiftHue(color: Color, shift: Int): Color {
+        val hsb = Color.RGBtoHSB(color.red, color.green, color.blue, null)
+        val shiftedColor = Color(Color.HSBtoRGB((hsb[0] + shift.toFloat() / 360) % 1F, hsb[1], hsb[2]))
+        return Color(shiftedColor.red, shiftedColor.green, shiftedColor.blue, color.alpha)
+    }
+
     fun fade(colorSettings: ColorSettingsInteger, speed: Int, count: Int): Color {
         val color = colorSettings.color()
 

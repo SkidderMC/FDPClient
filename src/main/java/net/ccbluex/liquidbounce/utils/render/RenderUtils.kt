@@ -83,6 +83,51 @@ object RenderUtils : MinecraftInstance {
         Vec3(-sin(theta), 0.0, cos(theta))
     }
 
+    fun drawHueCircle(position: Vec3, radius: Float, innerColor: Color, outerColor: Color) {
+        val manager = mc.renderManager
+        val renderX = manager.viewerPosX
+        val renderY = manager.viewerPosY
+        val renderZ = manager.viewerPosZ
+        glPushAttrib(GL_ALL_ATTRIB_BITS)
+        glPushMatrix()
+        glDisable(GL_TEXTURE_2D)
+        glEnable(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
+        glDisable(GL_DEPTH_TEST)
+        glDisable(GL_CULL_FACE)
+        glEnable(GL_ALPHA_TEST)
+        glAlphaFunc(GL_GREATER, 0.0f)
+        mc.entityRenderer.disableLightmap()
+        glBegin(GL_TRIANGLE_FAN)
+        circlePoints.forEachIndexed { index, pos ->
+            val innerX = pos.xCoord * radius
+            val innerZ = pos.zCoord * radius
+            val innerHue = ColorUtils.shiftHue(innerColor, (index / CIRCLE_STEPS).toInt())
+            glColor4f(innerHue.red / 255f, innerHue.green / 255f, innerHue.blue / 255f, innerColor.alpha / 255f)
+            glVertex3d(position.xCoord - renderX + innerX, position.yCoord - renderY, position.zCoord - renderZ + innerZ)
+        }
+        glEnd()
+        glBegin(GL_LINE_LOOP)
+        circlePoints.forEachIndexed { index, pos ->
+            val outerX = pos.xCoord * radius
+            val outerZ = pos.zCoord * radius
+            val outerHue = ColorUtils.shiftHue(outerColor, (index / CIRCLE_STEPS).toInt())
+            glColor4f(outerHue.red / 255f, outerHue.green / 255f, outerHue.alpha / 255f, outerColor.alpha / 255f)
+            glVertex3d(position.xCoord - renderX + outerX, position.yCoord - renderY, position.zCoord - renderZ + outerZ)
+        }
+        glEnd()
+        glEnable(GL_CULL_FACE)
+        glEnable(GL_DEPTH_TEST)
+        glDisable(GL_ALPHA_TEST)
+        glDisable(GL_LINE_SMOOTH)
+        glDisable(GL_BLEND)
+        glEnable(GL_TEXTURE_2D)
+        glPopMatrix()
+        glPopAttrib()
+    }
+
+
     init {
         glNewList(DISPLAY_LISTS_2D[0], GL_COMPILE)
         quickDrawRect(-7f, 2f, -4f, 3f)
@@ -425,7 +470,6 @@ object RenderUtils : MinecraftInstance {
 
         glEnd()
     }
-
 
     fun drawEntityBox(entity: Entity, color: Color, outline: Boolean) {
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -2364,6 +2408,26 @@ object RenderUtils : MinecraftInstance {
         resetColor()
         glEnd()
         glPopAttrib()
+    }
+
+    fun drawHead(
+        skin: ResourceLocation?,
+        x: Int,
+        y: Int,
+        u: Float,
+        v: Float,
+        uWidth: Int,
+        vHeight: Int,
+        width: Int,
+        height: Int,
+        tileWidth: Float,
+        tileHeight: Float
+    ) {
+        val texture: ResourceLocation = skin ?: mc.thePlayer.locationSkin
+
+        glColor4f(1F, 1F, 1F, 1F)
+        mc.textureManager.bindTexture(texture)
+        drawScaledCustomSizeModalRect(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight)
     }
 
     fun drawImage(image: ResourceLocation?, x: Number, y: Number, width: Int, height: Int, color: Color = Color.WHITE) {
@@ -4383,7 +4447,7 @@ object RenderUtils : MinecraftInstance {
 
     fun customRotatedObject2D(oXpos: Float, oYpos: Float, oWidth: Float, oHeight: Float, rotate: Double) {
         translate((oXpos + oWidth / 2).toDouble(), (oYpos + oHeight / 2).toDouble(), 0.0)
-        glRotated(rotate, 0.0, 0.0, 1.0)
+        rotate(rotate.toFloat(), 0f, 0f, 1f)
         translate(-(oXpos + oWidth / 2).toDouble(), -(oYpos + oHeight / 2).toDouble(), 0.0)
     }
 
