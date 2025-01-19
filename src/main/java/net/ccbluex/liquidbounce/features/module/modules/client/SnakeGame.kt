@@ -15,22 +15,23 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts.font35
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorder
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawGradientRect
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.GlStateManager.*
-import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import javax.vecmath.Point2i
 
 object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, hideModule = false) {
 
+    private val mode by choices("Mode", arrayOf("Easy", "Normal", "Hard"), "Easy")
+
+    private var obstacles = mutableListOf(Point2i(0, 0))
     private var snake = mutableListOf(Point2i(0, 0))
     private var lastKey = 208
     private var food = Point2i(0, 0)
     private var score = 0
     private var highScore = 0
-    private val Mode by choices("Mode", arrayOf("Easy", "Normal", "Hard"), "Easy")
-    private var obstacles = mutableListOf(Point2i(0, 0))
 
     private const val BLOCK_SIZE = 10
     private const val FIELD_WIDTH = 200
@@ -45,8 +46,8 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
         setupGame()
     }
 
-    private val speed: Int
-        get() = when (Mode) {
+    private val speed
+        get() = when (mode) {
             "Easy" -> 3
             "Normal" -> 2
             "Hard" -> 2
@@ -68,10 +69,12 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
     }
 
     val onUpdate = handler<UpdateEvent> {
-        if (mc.thePlayer.ticksExisted % speed == 0) {
+        val player = mc.thePlayer ?: return@handler
+
+        if (player.ticksExisted % speed == 0) {
             if (snake[0].x == food.x && snake[0].y == food.y) {
                 score++
-                when (Mode) {
+                when (mode) {
                     "Easy" -> {
                         if (score % 3 == 0) generateOneObstacle()
                         if (score % 10 == 0 && obstacles.isNotEmpty()) obstacles.removeAt(obstacles.lastIndex)
@@ -100,7 +103,7 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
                 208 -> snake[0].y++
             }
 
-            if (Mode == "Hard") {
+            if (mode == "Hard") {
                 for (obs in obstacles) {
                     if (snake[0].x == obs.x && snake[0].y == obs.y) {
                         checkHighScore()
@@ -124,8 +127,8 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
         val sr = ScaledResolution(mc)
         val w = sr.scaledWidth
         val h = sr.scaledHeight
-        val sx = (w / 2 - FIELD_WIDTH / 2).toDouble()
-        val sy = (h / 2 - FIELD_HEIGHT / 2).toDouble()
+        val sx = (w / 2 - FIELD_WIDTH / 2).toFloat()
+        val sy = (h / 2 - FIELD_HEIGHT / 2).toFloat()
 
         for (i in 0 until 18) {
             drawGradientRect(
@@ -142,6 +145,7 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
                 sy - i + 15,
                 sx + FIELD_WIDTH + i - 15,
                 sy + FIELD_HEIGHT + i - 15,
+                1f,
                 Color(6, 70, 255, 120).rgb
             )
         }
@@ -153,7 +157,7 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
         val cFood = ColorUtils.fade(Color(255, 15, 15), 1, 3)
         drawRect(fx, fy, fx + BLOCK_SIZE, fy + BLOCK_SIZE, cFood.rgb)
 
-        if (Mode in listOf("Hard", "Normal", "Easy")) {
+        if (mode in listOf("Hard", "Normal", "Easy")) {
             for (obs in obstacles) {
                 val ox = obs.x * BLOCK_SIZE + sx
                 val oy = obs.y * BLOCK_SIZE + sy
@@ -188,11 +192,11 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
         val hsX2 = hsX1 + hsW + 6
         val hsY2 = hsY1 + hsH + 4
         drawGradientRect(hsX1, hsY1, hsX2, hsY2, Color(0, 0, 0, 120).rgb, Color(0, 0, 0, 120).rgb, 0f)
-        drawBorder(hsX1.toDouble(), hsY1.toDouble(), hsX2.toDouble(), hsY2.toDouble(), Color(6, 70, 255, 120).rgb)
+        drawBorder(hsX1, hsY1, hsX2, hsY2, 1f, Color(6, 70, 255, 120).rgb)
         font35.drawStringWithShadow(hsTxt, (hsX1 + 3).toFloat(), (hsY1 + 2).toFloat(), Color(220, 220, 220).rgb)
 
         font35.drawStringWithShadow(
-            "Mode: $Mode",
+            "mode: $mode",
             (sx + FIELD_WIDTH - 50).toFloat(),
             (sy - 14.0).toFloat(),
             Color(220, 220, 220).rgb
@@ -204,7 +208,7 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
         moveFood()
         lastKey = 208
         score = 0
-        when (Mode) {
+        when (mode) {
             "Hard" -> {
                 generateObstacles(7)
             }
@@ -252,54 +256,5 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
         if (score > highScore) {
             highScore = score
         }
-    }
-
-    private fun drawRect(xs: Double, ys: Double, xe: Double, ye: Double, c: Int) {
-        val a = (c shr 24 and 0xFF) / 255.0F
-        val r = (c shr 16 and 0xFF) / 255.0F
-        val g = (c shr 8 and 0xFF) / 255.0F
-        val b = (c and 0xFF) / 255.0F
-        glEnable(GL_BLEND)
-        glDisable(GL_TEXTURE_2D)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_LINE_SMOOTH)
-        glPushMatrix()
-        glColor4f(r, g, b, a)
-        glBegin(GL_TRIANGLE_FAN)
-        glVertex2d(xe, ys)
-        glVertex2d(xs, ys)
-        glVertex2d(xs, ye)
-        glVertex2d(xe, ye)
-        glEnd()
-        glPopMatrix()
-        glEnable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
-        glDisable(GL_LINE_SMOOTH)
-        glColor4f(1f, 1f, 1f, 1f)
-    }
-
-    private fun drawBorder(xs: Double, ys: Double, xe: Double, ye: Double, c: Int) {
-        val a = (c shr 24 and 0xFF) / 255.0f
-        val r = (c shr 16 and 0xFF) / 255.0f
-        val g = (c shr 8 and 0xFF) / 255.0f
-        val b = (c and 0xFF) / 255.0f
-        enableBlend()
-        disableTexture2D()
-        blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_LINE_SMOOTH)
-        pushMatrix()
-        glColor4f(r, g, b, a)
-        glLineWidth(1f)
-        glBegin(GL_LINE_LOOP)
-        glVertex2d(xe, ys)
-        glVertex2d(xs, ys)
-        glVertex2d(xs, ye)
-        glVertex2d(xe, ye)
-        glEnd()
-        popMatrix()
-        enableTexture2D()
-        disableBlend()
-        glDisable(GL_LINE_SMOOTH)
-        color(1f, 1f, 1f, 1f)
     }
 }

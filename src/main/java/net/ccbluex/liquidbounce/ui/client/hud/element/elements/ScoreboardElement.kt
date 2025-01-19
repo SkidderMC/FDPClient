@@ -161,7 +161,31 @@ class ScoreboardElement(
                 }
 
                 if (index == scoreCollection.size - 1) {
-                    val displayName = objective.displayName
+                    var title = objective.displayName ?: ""
+                    val displayName = if (serverIp != "Normal") {
+                        try {
+                            val nameWithoutFormatting = title.replace(EnumChatFormatting.RESET.toString(), "")
+                                .replace(Regex("[\u00a7&][0-9a-fk-or]"), "").trim()
+                            val trimmedServerIP = mc.currentServerData?.serverIP?.trim()?.lowercase() ?: ""
+
+                            val domainRegex =
+                                Regex("\\b(?:[a-zA-Z0-9](?:[a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])?\\.)+[a-zA-Z]{2,63}\\b")
+                            val containsDomain = nameWithoutFormatting.let { domainRegex.containsMatchIn(it) } == true
+
+                            if (nameWithoutFormatting.lowercase() == trimmedServerIP || containsDomain) {
+                                val colorCode = title.substring(0, 2)
+                                when (serverIp.lowercase()) {
+                                    "none" -> ""
+                                    "client" -> "$colorCode$CLIENT_NAME"
+                                    "website" -> "$colorCode$CLIENT_WEBSITE"
+                                    else -> return null
+                                }
+                            } else title
+                        } catch (e: Exception) {
+                            LOGGER.error("Error while drawing ScoreboardElement", e)
+                            title
+                        }
+                    } else title
 
                     if (drawRectOnTitle) {
                         drawRoundedRectInt(
