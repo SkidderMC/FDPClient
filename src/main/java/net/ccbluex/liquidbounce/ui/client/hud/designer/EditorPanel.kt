@@ -7,6 +7,8 @@ package net.ccbluex.liquidbounce.ui.client.hud.designer
 
 import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
+import net.ccbluex.liquidbounce.file.FileManager.saveConfig
+import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.ELEMENTS
@@ -25,6 +27,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexture
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.makeScissorBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.updateTextureCache
+import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.util.MathHelper
 import org.lwjgl.input.Mouse
@@ -728,7 +731,12 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
 
                             finalColor = finalColor.withAlpha((value.opacitySliderY * 255).roundToInt())
 
-                            value.set(finalColor)
+                            value.changeValue(finalColor)
+                            if (!WaitTickUtils.hasScheduled(this)) {
+                                WaitTickUtils.conditionalSchedule(this, 10) {
+                                    (value.lastChosenSlider == null).also { if (it) saveConfig(valuesConfig) }
+                                }
+                            }
 
                             if (leftClickPressed) {
                                 value.lastChosenSlider = when {

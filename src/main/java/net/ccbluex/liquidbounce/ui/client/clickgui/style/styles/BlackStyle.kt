@@ -303,47 +303,69 @@ object BlackStyle : Style() {
                             val slider1 = value.get().first
                             val slider2 = value.get().last
 
-                            val text = "${value.name}§f: $slider1 - $slider2 §7$suffix§f (Beta)"
+                            val text = "${value.name}§f: $slider1 - $slider2 §7$suffix"
                             moduleElement.settingsWidth = font35.getStringWidth(text) + 8
 
                             val x = minX + 4
                             val y = yPos + 14
                             val width = moduleElement.settingsWidth - 12
                             val color = Color(20, 20, 20)
+                            val endX = x + width
 
-                            if (mouseButton == 0 && mouseX in x..x + width && mouseY in y - 2..y + 5 || sliderValueHeld == value) {
-                                val slider1Pos =
-                                    minX + ((slider1 - value.minimum).toFloat() / (value.maximum - value.minimum)) * (maxX - minX)
-                                val slider2Pos =
-                                    minX + ((slider2 - value.minimum).toFloat() / (value.maximum - value.minimum)) * (maxX - minX)
+                            val currSlider = value.lastChosenSlider
 
-                                val distToSlider1 = mouseX - slider1Pos
-                                val distToSlider2 = mouseX - slider2Pos
+                            if (mouseButton == 0 && mouseX in x..endX && mouseY in y - 2..y + 5 || sliderValueHeld == value) {
+                                val leftSliderPos =
+                                    x + (slider1 - value.minimum).toFloat() / (value.maximum - value.minimum) * (endX - x)
+                                val rightSliderPos =
+                                    x + (slider2 - value.minimum).toFloat() / (value.maximum - value.minimum) * (endX - x)
 
-                                val percentage = (mouseX - minX - 4F) / (maxX - minX - 8F)
+                                val distToSlider1 = mouseX - leftSliderPos
+                                val distToSlider2 = mouseX - rightSliderPos
 
-                                if (abs(distToSlider1) <= abs(distToSlider2) && distToSlider2 <= 0) {
+                                val closerToLeft = abs(distToSlider1) < abs(distToSlider2)
+
+                                val isOnLeftSlider =
+                                    (mouseX.toFloat() in x.toFloat()..leftSliderPos || closerToLeft) && rightSliderPos > x
+                                val isOnRightSlider =
+                                    (mouseX.toFloat() in rightSliderPos..endX.toFloat() || !closerToLeft) && leftSliderPos < endX
+
+                                val percentage = (mouseX.toFloat() - x) / (endX - x)
+
+                                if (isOnLeftSlider && currSlider == null || currSlider == RangeSlider.LEFT) {
                                     withDelayedSave {
-                                        value.setFirst(value.lerpWith(percentage).coerceIn(value.minimum, slider2), false)
-                                    }
-                                } else {
-                                    withDelayedSave {
-                                        value.setLast(value.lerpWith(percentage).coerceIn(slider1, value.maximum), false)
+                                        value.setFirst(
+                                            value.lerpWith(percentage).coerceIn(value.minimum, slider2),
+                                            false
+                                        )
                                     }
                                 }
 
+                                if (isOnRightSlider && currSlider == null || currSlider == RangeSlider.RIGHT) {
+                                    withDelayedSave {
+                                        value.setLast(
+                                            value.lerpWith(percentage).coerceIn(slider1, value.maximum),
+                                            false
+                                        )
+                                    }
+                                }
+
+                                // Keep changing this slider until mouse is unpressed.
                                 sliderValueHeld = value
 
-                                if (mouseButton == 0) return true
+                                // Stop rendering and interacting only when this event was triggered by a mouse click.
+                                if (mouseButton == 0) {
+                                    value.lastChosenSlider = when {
+                                        isOnLeftSlider -> RangeSlider.LEFT
+                                        isOnRightSlider -> RangeSlider.RIGHT
+                                        else -> null
+                                    }
+                                    return true
+                                }
                             }
 
-                            val displayValue1 = value.get().first
-                            val displayValue2 = value.get().last
-
-                            val sliderValue1 =
-                                x + width * (displayValue1 - value.minimum) / (value.maximum - value.minimum)
-                            val sliderValue2 =
-                                x + width * (displayValue2 - value.minimum) / (value.maximum - value.minimum)
+                            val sliderValue1 = x + width * (slider1 - value.minimum) / (value.maximum - value.minimum)
+                            val sliderValue2 = x + width * (slider2 - value.minimum) / (value.maximum - value.minimum)
 
                             drawRect(x, y, x + width, y + 2, Int.MAX_VALUE)
                             drawRect(sliderValue1, y, sliderValue2, y + 2, color.rgb)
@@ -359,7 +381,7 @@ object BlackStyle : Style() {
                             val slider1 = value.get().start
                             val slider2 = value.get().endInclusive
 
-                            val text = "${value.name}§f: ${round(slider1)} - ${round(slider2)} §7$suffix§f (Beta)"
+                            val text = "${value.name}§f: ${round(slider1)} - ${round(slider2)} §7$suffix"
                             moduleElement.settingsWidth = font35.getStringWidth(text) + 8
 
                             val x = minX + 4
@@ -367,39 +389,64 @@ object BlackStyle : Style() {
                             val width = moduleElement.settingsWidth - 12
                             val color = Color(20, 20, 20)
 
-                            if (mouseButton == 0 && mouseX in x..x + width && mouseY in y - 2..y + 5 || sliderValueHeld == value) {
-                                val slider1Pos =
-                                    minX + ((slider1 - value.minimum) / (value.maximum - value.minimum)) * (maxX - minX)
-                                val slider2Pos =
-                                    minX + ((slider2 - value.minimum) / (value.maximum - value.minimum)) * (maxX - minX)
+                            val endX = x + width
 
-                                val distToSlider1 = mouseX - slider1Pos
-                                val distToSlider2 = mouseX - slider2Pos
+                            val currSlider = value.lastChosenSlider
 
-                                val percentage = (mouseX - minX - 4F) / (maxX - minX - 8F)
+                            if (mouseButton == 0 && mouseX in x..endX && mouseY in y - 2..y + 5 || sliderValueHeld == value) {
+                                val leftSliderPos =
+                                    x + (slider1 - value.minimum) / (value.maximum - value.minimum) * (endX - x)
+                                val rightSliderPos =
+                                    x + (slider2 - value.minimum) / (value.maximum - value.minimum) * (endX - x)
 
-                                if (abs(distToSlider1) <= abs(distToSlider2) && distToSlider2 <= 0) {
+                                val distToSlider1 = mouseX - leftSliderPos
+                                val distToSlider2 = mouseX - rightSliderPos
+
+                                val closerToLeft = abs(distToSlider1) < abs(distToSlider2)
+
+                                val isOnLeftSlider =
+                                    (mouseX.toFloat() in x.toFloat()..leftSliderPos || closerToLeft) && rightSliderPos > x
+                                val isOnRightSlider =
+                                    (mouseX.toFloat() in rightSliderPos..endX.toFloat() || !closerToLeft) && leftSliderPos < endX
+
+                                val percentage = (mouseX.toFloat() - x) / (endX - x)
+
+                                if (isOnLeftSlider && currSlider == null || currSlider == RangeSlider.LEFT) {
                                     withDelayedSave {
-                                        value.setFirst(value.lerpWith(percentage).coerceIn(value.minimum, slider2), false)
-                                    }
-                                } else {
-                                    withDelayedSave {
-                                        value.setLast(value.lerpWith(percentage).coerceIn(slider1, value.maximum), false)
+                                        value.setFirst(
+                                            value.lerpWith(percentage).coerceIn(value.minimum, slider2),
+                                            false
+                                        )
                                     }
                                 }
 
+                                if (isOnRightSlider && currSlider == null || currSlider == RangeSlider.RIGHT) {
+                                    withDelayedSave {
+                                        value.setLast(
+                                            value.lerpWith(percentage).coerceIn(slider1, value.maximum),
+                                            false
+                                        )
+                                    }
+                                }
+
+                                // Keep changing this slider until mouse is unpressed.
                                 sliderValueHeld = value
 
-                                if (mouseButton == 0) return true
+                                // Stop rendering and interacting only when this event was triggered by a mouse click.
+                                if (mouseButton == 0) {
+                                    value.lastChosenSlider = when {
+                                        isOnLeftSlider -> RangeSlider.LEFT
+                                        isOnRightSlider -> RangeSlider.RIGHT
+                                        else -> null
+                                    }
+                                    return true
+                                }
                             }
 
-                            val displayValue1 = value.get().start
-                            val displayValue2 = value.get().endInclusive
-
                             val sliderValue1 =
-                                x + width * (displayValue1 - value.minimum) / (value.maximum - value.minimum)
+                                x + width * (slider1 - value.minimum) / (value.maximum - value.minimum)
                             val sliderValue2 =
-                                x + width * (displayValue2 - value.minimum) / (value.maximum - value.minimum)
+                                x + width * (slider2 - value.minimum) / (value.maximum - value.minimum)
 
                             drawRect(x, y, x + width, y + 2, Int.MAX_VALUE)
                             drawRect(sliderValue1, y.toFloat(), sliderValue2, y + 2f, color.rgb)

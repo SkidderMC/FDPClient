@@ -193,6 +193,12 @@ open class IntegerRangeValue(
     isSupported: (() -> Boolean)? = null,
 ) : Value<IntRange>(name, value, subjective, isSupported, suffix) {
 
+    var lastChosenSlider: RangeSlider? = null
+        get() {
+            if (!Mouse.isButtonDown(0)) field = null
+            return field
+        }
+
     fun setFirst(newValue: Int, immediate: Boolean = true) = set(newValue..value.last, immediate)
     fun setLast(newValue: Int, immediate: Boolean = true) = set(value.first..newValue, immediate)
 
@@ -232,6 +238,12 @@ open class FloatRangeValue(
     isSupported: (() -> Boolean)? = null,
 ) : Value<ClosedFloatingPointRange<Float>>(name, value, subjective, isSupported, suffix) {
 
+    var lastChosenSlider: RangeSlider? = null
+        get() {
+            if (!Mouse.isButtonDown(0)) field = null
+            return field
+        }
+
     fun setFirst(newValue: Float, immediate: Boolean = true) = set(newValue..value.endInclusive, immediate)
     fun setLast(newValue: Float, immediate: Boolean = true) = set(value.start..newValue, immediate)
 
@@ -259,6 +271,7 @@ open class FloatRangeValue(
 
     val random
         get() = nextFloat(value.start, value.endInclusive)
+
 }
 
 /**
@@ -530,3 +543,5 @@ fun color(
     name: String, value: Int, rainbow: Boolean = false, showPicker: Boolean = false, subjective: Boolean = false,
     isSupported: (() -> Boolean)? = null
 ) = color(name, Color(value, true), rainbow, showPicker, subjective, isSupported)
+
+enum class RangeSlider { LEFT, RIGHT }

@@ -268,48 +268,50 @@ class SettingComponents(private val module: Module) : Component() {
 
             // ----- FloatRangeValue -----
             if (setting is FloatRangeValue) {
-                val sliderStart = setting.get().start
-                val sliderEnd = setting.get().endInclusive
-                val nameText = "${setting.name}: ${round(sliderStart)} - ${round(sliderEnd)}"
-                val regularFontWidth = Fonts.InterMedium_18.stringWidth(nameText).toFloat()
+                val slider1 = setting.get().start
+                val slider2 = setting.get().endInclusive
+
+                val text = "${setting.name}: ${round(slider1)} - ${round(slider2)}"
+                val regularFontWidth = Fonts.InterMedium_18.stringWidth(text).toFloat()
 
                 val titleX = x + width / 2f - regularFontWidth / 2f
                 val titleY = settingY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight) / 2f
 
-                Fonts.InterMedium_18.drawString(nameText, titleX, titleY, textColor.rgb)
+                Fonts.InterMedium_18.drawString(text, titleX, titleY, textColor.rgb)
 
                 val totalSliderWidth = width - 10
                 val sliderPosY = settingY + 18
+                val color = if (accent) accentedColor2 else textColor
 
                 val rangeMin = setting.minimum
                 val rangeMax = setting.maximum
 
-                val percent1 = (sliderStart - rangeMin) / (rangeMax - rangeMin)
-                val percent2 = (sliderEnd - rangeMin) / (rangeMax - rangeMin)
+                val percent1 = (slider1 - rangeMin) / (rangeMax - rangeMin)
+                val percent2 = (slider2 - rangeMin) / (rangeMax - rangeMin)
 
                 val pixelPos1 = totalSliderWidth * percent1
                 val pixelPos2 = totalSliderWidth * percent2
 
-                val hoveringRangeBar = isClickable(sliderPosY - 1)
+                val hoveringSlider = isClickable(sliderPosY - 1)
                         && DrRenderUtils.isHovering(x + 5, sliderPosY - 2, totalSliderWidth, 6f, mouseX, mouseY)
 
                 if (type == GuiEvents.RELEASE) {
                     draggingNumber = null
                 }
 
-                if (type == GuiEvents.CLICK && hoveringRangeBar && button == 0) {
+                if (type == GuiEvents.CLICK && hoveringSlider && button == 0) {
                     draggingNumber = setting
                 }
 
-                if (draggingNumber === setting) {
+                if (draggingNumber == setting) {
                     val mousePercent = min(1.0, max(0.0, ((mouseX - (x + 5)) / totalSliderWidth).toDouble())).toFloat()
                     val newVal = (rangeMin + (rangeMax - rangeMin) * mousePercent)
-                    val distStart = abs(newVal - sliderStart)
-                    val distEnd = abs(newVal - sliderEnd)
+                    val distStart = abs(newVal - slider1)
+                    val distEnd = abs(newVal - slider2)
                     if (distStart <= distEnd) {
-                        setting.setFirst(newVal.coerceIn(rangeMin, sliderEnd), false)
+                        setting.setFirst(newVal.coerceIn(rangeMin, slider2), false)
                     } else {
-                        setting.setLast(newVal.coerceIn(sliderStart, rangeMax), false)
+                        setting.setLast(newVal.coerceIn(slider1, rangeMax), false)
                     }
                 }
 
@@ -320,30 +322,28 @@ class SettingComponents(private val module: Module) : Component() {
                 val newPercent1 = (newStart - rangeMin) / (rangeMax - rangeMin)
                 val newPercent2 = (newEnd - rangeMin) / (rangeMax - rangeMin)
 
+
                 val pixel1 = totalSliderWidth * newPercent1
                 val pixel2 = totalSliderWidth * newPercent2
 
                 drawCustomShapeWithRadius(
                     x + 5, sliderPosY, totalSliderWidth, 3f, 1.5f,
-                    DrRenderUtils.applyOpacity(darkRectHover, .35f)
+                    DrRenderUtils.applyOpacity(darkRectHover, (.4f))
                 )
-
-                val minPixel = min(pixel1, pixel2)
-                val maxPixel = max(pixel1, pixel2)
                 drawCustomShapeWithRadius(
-                    x + 5 + minPixel, sliderPosY, (maxPixel - minPixel), 3f, 1.5f,
-                    if (accent) accentedColor2 else textColor
+                    x + 5 + min(pixel1, pixel2), sliderPosY, abs(pixel2 - pixel1), 3f, 1.5f,
+                    color
                 )
 
                 fun drawSliderCircle(px: Float) {
                     DrRenderUtils.fakeCircleGlow(x + 4 + px, sliderPosY + 1.5f, 6f, Color.BLACK, .3f)
                     DrRenderUtils.drawGoodCircle(
                         (x + 4 + px).toDouble(), sliderPosY + 1.5, 3.75f,
-                        if (accent) accentedColor2.rgb else textColor.rgb
+                        color.rgb
                     )
                 }
-                drawSliderCircle(minPixel)
-                drawSliderCircle(maxPixel)
+                drawSliderCircle(pixel1)
+                drawSliderCircle(pixel2)
 
                 count += .5
             }
@@ -427,91 +427,87 @@ class SettingComponents(private val module: Module) : Component() {
 
             // ----- IntegerRangeValue -----
             if (setting is IntegerRangeValue) {
-                val rangeValue = setting.get()
-                val sliderStart = rangeValue.first
-                val sliderEnd = rangeValue.last
+                val slider1 = setting.get().first
+                val slider2 = setting.get().last
+
+                val text = "${setting.name}: $slider1 - $slider2"
+                val regularFontWidth = Fonts.InterMedium_18.stringWidth(text).toFloat()
+                val color = if (accent) accentedColor2 else textColor
+
+                val titleX = x + width / 2f - regularFontWidth / 2f
+                val titleY = settingY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight) / 2f
+
+                Fonts.InterMedium_18.drawString(text, titleX, titleY, textColor.rgb)
+
+
+                val totalSliderWidth = width - 10
+                val sliderPosY = settingY + 18
 
                 val rangeMin = setting.minimum
                 val rangeMax = setting.maximum
 
-                val nameText = "${setting.name}: $sliderStart - $sliderEnd"
-                val regularFontWidth = Fonts.InterMedium_18.stringWidth(nameText).toFloat()
-                val titleX = x + width / 2f - regularFontWidth / 2f
-                val titleY = settingY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight) / 2f
-
-                Fonts.InterMedium_18.drawString(nameText, titleX, titleY, textColor.rgb)
-
-                val totalSliderWidth = (width - 10f)
-                val sliderPosY = settingY + 18f
-
-                val rangeDelta = (rangeMax - rangeMin).coerceAtLeast(1)
-                val startOffset = (sliderStart - rangeMin).coerceIn(0, rangeDelta)
-                val endOffset = (sliderEnd - rangeMin).coerceIn(0, rangeDelta)
-
-                val percent1 = startOffset.toFloat() / rangeDelta.toFloat()
-                val percent2 = endOffset.toFloat() / rangeDelta.toFloat()
+                val percent1 = (slider1 - rangeMin) / (rangeMax - rangeMin)
+                val percent2 = (slider2 - rangeMin) / (rangeMax - rangeMin)
 
                 val pixelPos1 = totalSliderWidth * percent1
                 val pixelPos2 = totalSliderWidth * percent2
 
-                val hoveringRangeBar = isClickable(sliderPosY - 1f) &&
-                        DrRenderUtils.isHovering(x + 5f, sliderPosY - 2f, totalSliderWidth, 6f, mouseX, mouseY)
+                val hoveringSlider = isClickable(sliderPosY - 1)
+                        && DrRenderUtils.isHovering(x + 5, sliderPosY - 2, totalSliderWidth, 6f, mouseX, mouseY)
+
 
                 if (type == GuiEvents.RELEASE) {
                     draggingNumber = null
                 }
 
-                if (type == GuiEvents.CLICK && hoveringRangeBar && button == 0) {
+                if (type == GuiEvents.CLICK && hoveringSlider && button == 0) {
                     draggingNumber = setting
                 }
 
-                if (draggingNumber === setting) {
-                    val mousePosRelative = (mouseX.toFloat() - (x + 5f)).coerceIn(0f, totalSliderWidth)
-                    val mousePercent = mousePosRelative / totalSliderWidth
+                if (draggingNumber == setting) {
+                    val mousePercent = min(1.0, max(0.0, ((mouseX - (x + 5)) / totalSliderWidth).toDouble())).toFloat()
                     val newVal = (rangeMin + (rangeMax - rangeMin) * mousePercent).toInt()
-
-                    val distStart = abs(newVal - sliderStart)
-                    val distEnd = abs(newVal - sliderEnd)
+                    val distStart = abs(newVal - slider1)
+                    val distEnd = abs(newVal - slider2)
                     if (distStart <= distEnd) {
-                        setting.setFirst(newVal.coerceIn(rangeMin, sliderEnd), false)
+                        setting.setFirst(newVal.coerceIn(rangeMin, slider2), false)
                     } else {
-                        setting.setLast(newVal.coerceIn(sliderStart, rangeMax), false)
+                        setting.setLast(newVal.coerceIn(slider1, rangeMax), false)
                     }
                 }
+
 
                 val updatedRange = setting.get()
                 val newStart = updatedRange.first
                 val newEnd = updatedRange.last
 
-                val newOffset1 = (newStart - rangeMin).coerceIn(0, rangeDelta)
-                val newOffset2 = (newEnd - rangeMin).coerceIn(0, rangeDelta)
-                val newPercent1 = newOffset1.toFloat() / rangeDelta.toFloat()
-                val newPercent2 = newOffset2.toFloat() / rangeDelta.toFloat()
+                val newPercent1 = (newStart - rangeMin) / (rangeMax - rangeMin).toFloat()
+                val newPercent2 = (newEnd - rangeMin) / (rangeMax - rangeMin).toFloat()
 
                 val pixel1 = totalSliderWidth * newPercent1
                 val pixel2 = totalSliderWidth * newPercent2
 
+
+
                 drawCustomShapeWithRadius(
-                    x + 5f, sliderPosY, totalSliderWidth, 3f, 1.5f,
-                    DrRenderUtils.applyOpacity(darkRectHover, .35f)
+                    x + 5, sliderPosY, totalSliderWidth, 3f, 1.5f,
+                    DrRenderUtils.applyOpacity(darkRectHover, (.4f))
                 )
 
-                val minPixel = min(pixel1, pixel2)
-                val maxPixel = max(pixel1, pixel2)
                 drawCustomShapeWithRadius(
-                    x + 5f + minPixel, sliderPosY, (maxPixel - minPixel), 3f, 1.5f,
-                    if (accent) accentedColor2 else textColor
+                    x + 5 + min(pixel1, pixel2), sliderPosY, abs(pixel2 - pixel1), 3f, 1.5f,
+                    color
                 )
 
                 fun drawSliderCircle(px: Float) {
-                    DrRenderUtils.fakeCircleGlow(x + 4f + px, sliderPosY + 1.5f, 6f, Color.BLACK, .3f)
+                    DrRenderUtils.fakeCircleGlow(x + 4 + px, sliderPosY + 1.5f, 6f, Color.BLACK, .3f)
                     DrRenderUtils.drawGoodCircle(
-                        (x + 4f + px).toDouble(), sliderPosY + 1.5, 3.75f,
-                        if (accent) accentedColor2.rgb else textColor.rgb
+                        (x + 4 + px).toDouble(), sliderPosY + 1.5, 3.75f,
+                        color.rgb
                     )
                 }
-                drawSliderCircle(minPixel)
-                drawSliderCircle(maxPixel)
+                drawSliderCircle(pixel1)
+                drawSliderCircle(pixel2)
 
                 count += .5
             }
