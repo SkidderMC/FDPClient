@@ -7,10 +7,8 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.float
 
-object ItemPhysics: Module("ItemPhysics", Category.VISUAL, hideModule = false) {
+object ItemPhysics: Module("ItemPhysics", Category.VISUAL) {
 
     val realistic by boolean("Realistic", false)
     val weight by float("Weight", 0.5F, 0.1F..3F)

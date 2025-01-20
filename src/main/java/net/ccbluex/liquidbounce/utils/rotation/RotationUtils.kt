@@ -764,7 +764,7 @@ object RotationUtils : MinecraftInstance, Listenable {
 
         companion object {
             fun fromString(point: String): BodyPoint {
-                return values().find { it.name.equals(point, ignoreCase = true) } ?: UNKNOWN
+                return entries.find { it.name.equals(point, ignoreCase = true) } ?: UNKNOWN
             }
         }
     }

@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.config.*
+import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -41,22 +41,21 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
-object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
+object Backtrack : Module("Backtrack", Category.COMBAT) {
 
     private val nextBacktrackDelay by int("NextBacktrackDelay", 0, 0..2000) { mode == "Modern" }
-    private val maxDelay: IntegerValue = object : IntegerValue("MaxDelay", 80, 0..700) {
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(minDelay.get())
+    private val maxDelay: Value<Int> = int("MaxDelay", 80, 0..700).onChange { _, new ->
+        new.coerceAtLeast(minDelay.get())
     }
-    private val minDelay: IntegerValue = object : IntegerValue("MinDelay", 80, 0..700) {
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtMost(maxDelay.get())
-        override fun isSupported() = mode == "Modern"
+    private val minDelay: Value<Int> = int("MinDelay", 80, 0..700) {
+        mode == "Modern"
+    }.onChange { _, new ->
+        new.coerceAtMost(maxDelay.get())
     }
 
-    val mode by object : ListValue("Mode", arrayOf("Legacy", "Modern"), "Modern") {
-        override fun onChanged(oldValue: String, newValue: String) {
-            clearPackets()
-            backtrackedPlayer.clear()
-        }
+    val mode by choices("Mode", arrayOf("Legacy", "Modern"), "Modern").onChanged {
+        clearPackets()
+        backtrackedPlayer.clear()
     }
 
     // Legacy
@@ -67,22 +66,28 @@ object Backtrack : Module("Backtrack", Category.COMBAT, hideModule = false) {
     // Modern
     private val style by choices("Style", arrayOf("Pulse", "Smooth"), "Smooth") { mode == "Modern" }
 
-    private val maxDistanceValue: FloatValue = object : FloatValue("MaxDistance", 3.0f, 0.0f..3.5f) {
-        override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtLeast(minDistance)
-        override fun isSupported() = mode == "Modern"
+    private val maxDistance: Float by float("MaxDistance", 3.0f, 0.0f..3.5f) {
+        mode == "Modern"
+    }.onChange { _, new ->
+        new.coerceAtLeast(minDistance)
     }
-    private val maxDistance by maxDistanceValue
-    private val minDistance by object : FloatValue("MinDistance", 2.0f, 0.0f..3.0f) {
-        override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceIn(minimum, maxDistance)
-        override fun isSupported() = mode == "Modern"
+    private val minDistance: Float by float("MinDistance", 2.0f, 0.0f..3.0f) {
+        mode == "Modern"
+    }.onChange { _, new ->
+        new.coerceAtMost(maxDistance)
     }
     private val smart by boolean("Smart", true) { mode == "Modern" }
 
     // ESP
-    private val espMode by choices("ESP-Mode", arrayOf("None", "Box", "Model", "Wireframe"), "Box", subjective = true) { mode == "Modern" }
+    private val espMode by choices(
+        "ESP-Mode",
+        arrayOf("None", "Box", "Model", "Wireframe"),
+        "Box"
+    ) { mode == "Modern" }.subjective()
     private val wireframeWidth by float("WireFrame-Width", 1f, 0.5f..5f) { espMode == "WireFrame" }
 
-    private val espColor = ColorSettingsInteger(this, "ESPColor") { espMode != "Model" && mode == "Modern" }.with(0, 255, 0)
+    private val espColor =
+        ColorSettingsInteger(this, "ESPColor") { espMode != "Model" && mode == "Modern" }.with(0, 255, 0)
 
     private val packetQueue = ConcurrentLinkedQueue<QueueData>()
     private val positions = mutableListOf<Pair<Vec3, Long>>()

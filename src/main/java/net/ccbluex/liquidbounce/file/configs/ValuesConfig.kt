@@ -6,34 +6,24 @@
 package net.ccbluex.liquidbounce.file.configs
 
 import com.google.gson.JsonObject
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.FDPClient.commandManager
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.handler.cape.CapeService
-import net.ccbluex.liquidbounce.features.module.modules.client.BrandSpoofer.possibleBrands
 import net.ccbluex.liquidbounce.features.module.modules.client.IRCModule.jwtToken
+import net.ccbluex.liquidbounce.file.FileConfig
+import net.ccbluex.liquidbounce.file.FileManager
+import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
+import net.ccbluex.liquidbounce.file.configs.models.ClientConfiguration
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.animalValue
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.deadValue
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.invisibleValue
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.mobValue
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.playerValue
+import net.ccbluex.liquidbounce.handler.payload.ClientFixes
 import net.ccbluex.liquidbounce.utils.io.readJson
-import net.ccbluex.liquidbounce.handler.other.AutoReconnect.delay
-import net.ccbluex.liquidbounce.handler.payload.ClientFixes.blockFML
-import net.ccbluex.liquidbounce.handler.payload.ClientFixes.blockPayloadPackets
-import net.ccbluex.liquidbounce.handler.payload.ClientFixes.blockProxyPacket
-import net.ccbluex.liquidbounce.handler.payload.ClientFixes.blockResourcePackExploit
-import net.ccbluex.liquidbounce.handler.payload.ClientFixes.fmlFixesEnabled
-import net.ccbluex.liquidbounce.file.FileConfig
-import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
-import net.ccbluex.liquidbounce.handler.lang.LanguageManager.overrideLanguage
-import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.altsLength
-import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.altsPrefix
-import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.enabledClientTitle
-import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.enabledCustomBackground
-import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.particles
-import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.stylisedAlts
-import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration.Companion.unformattedAlts
-import java.io.*
+import java.io.File
+import java.io.IOException
 
 class ValuesConfig(file: File) : FileConfig(file) {
 
@@ -46,10 +36,20 @@ class ValuesConfig(file: File) : FileConfig(file) {
     override fun loadConfig() {
         val json = file.readJson() as? JsonObject ?: return
 
+        val prevVersion = json["ClientVersion"]?.asString ?: "unknown"
+        // Compare versions
+        if (prevVersion != FDPClient.clientVersionText) {
+            // Backup old version config before loading the new one
+            FileManager.backupAllConfigs(prevVersion, FDPClient.clientVersionText)
+        }
+
         for ((key, value) in json.entrySet()) {
             when {
-                key.equals("commandprefix", true) ->
-                    commandManager.prefix = value.asCharacter
+                key.equals("CommandPrefix", true) -> {
+                    commandManager.prefix = value.asString
+                }
+
+                // Here we revert to the old "targets" key
                 key.equals("targets", true) -> {
                     val jsonValue = value as JsonObject
                     if (jsonValue.has("TargetPlayer")) playerValue = jsonValue["TargetPlayer"].asBoolean
@@ -58,49 +58,41 @@ class ValuesConfig(file: File) : FileConfig(file) {
                     if (jsonValue.has("TargetInvisible")) invisibleValue = jsonValue["TargetInvisible"].asBoolean
                     if (jsonValue.has("TargetDead")) deadValue = jsonValue["TargetDead"].asBoolean
                 }
-                key.equals("features", true) -> {
-                    val jsonValue = value as JsonObject
-                    if (jsonValue.has("AntiForge")) fmlFixesEnabled = jsonValue["AntiForge"].asBoolean
-                    if (jsonValue.has("AntiForgeFML")) blockFML = jsonValue["AntiForgeFML"].asBoolean
-                    if (jsonValue.has("AntiForgeProxy")) blockProxyPacket = jsonValue["AntiForgeProxy"].asBoolean
-                    if (jsonValue.has("AntiForgePayloads")) blockPayloadPackets =
-                        jsonValue["AntiForgePayloads"].asBoolean
-                    if (jsonValue.has("FixResourcePackExploit")) blockResourcePackExploit =
-                        jsonValue["FixResourcePackExploit"].asBoolean
-                    if (jsonValue.has("ClientBrand")) possibleBrands.set(jsonValue["ClientBrand"].asString)
-                    if (jsonValue.has("AutoReconnectDelay")) delay = jsonValue["AutoReconnectDelay"].asInt
+
+                // ClientFixes (AntiForge, etc.)
+                key.equals(ClientFixes.name, true) -> {
+                    ClientFixes.fromJson(value)
                 }
+
+                // Liquid chat
                 key.equals("liquidchat", true) -> {
                     val jsonValue = value as JsonObject
                     if (jsonValue.has("token")) jwtToken = jsonValue["token"].asString
                 }
+
+                // Donator Cape
                 key.equals("DonatorCape", true) -> {
                     val jsonValue = value as JsonObject
                     if (jsonValue.has("TransferCode")) {
                         CapeService.knownToken = jsonValue["TransferCode"].asString
                     }
                 }
-                key.equals("clientConfiguration", true) -> {
-                    val jsonValue = value as JsonObject
-                    if (jsonValue.has("EnabledClientTitle")) enabledClientTitle =
-                        jsonValue["EnabledClientTitle"].asBoolean
-                    if (jsonValue.has("EnabledBackground")) enabledCustomBackground =
-                        jsonValue["EnabledBackground"].asBoolean
-                    if (jsonValue.has("Particles")) particles = jsonValue["Particles"].asBoolean
-                    if (jsonValue.has("StylisedAlts")) stylisedAlts = jsonValue["StylisedAlts"].asBoolean
-                    if (jsonValue.has("AltsLength")) altsLength = jsonValue["AltsLength"].asInt
-                    if (jsonValue.has("CleanAlts")) unformattedAlts = jsonValue["CleanAlts"].asBoolean
-                    if (jsonValue.has("AltsPrefix")) altsPrefix = jsonValue["AltsPrefix"].asString
-                    if (jsonValue.has("OverrideLanguage")) overrideLanguage = jsonValue["OverrideLanguage"].asString
-                }
-                key.equals("background", true) -> { // Compatibility with old versions
-                    val jsonValue = value as JsonObject
-                    if (jsonValue.has("Enabled")) enabledCustomBackground = jsonValue["Enabled"].asBoolean
-                    if (jsonValue.has("Particles")) particles = jsonValue["Particles"].asBoolean
-                }
-                else -> {
-                    val module = moduleManager[key] ?: continue
 
+                // Client Configuration
+                key.equals(ClientConfiguration.name, true) -> {
+                    ClientConfiguration.fromJson(value)
+                }
+
+                // Deprecated - old background key
+                key.equals("background", true) -> {
+                    val jsonValue = value as JsonObject
+                    if (jsonValue.has("Enabled")) ClientConfiguration.customBackground = jsonValue["Enabled"].asBoolean
+                    if (jsonValue.has("Particles")) ClientConfiguration.particles = jsonValue["Particles"].asBoolean
+                }
+
+                else -> {
+                    // Modules
+                    val module = moduleManager[key] ?: continue
                     val jsonModule = value as JsonObject
                     for (moduleValue in module.values) {
                         val element = jsonModule[moduleValue.name]
@@ -118,59 +110,47 @@ class ValuesConfig(file: File) : FileConfig(file) {
      */
     @Throws(IOException::class)
     override fun saveConfig() {
-        val jsonObject = JsonObject()
-        jsonObject.run {
+        val jsonObject = JsonObject().apply {
             addProperty("CommandPrefix", commandManager.prefix)
+            addProperty("ClientVersion", FDPClient.clientVersionText)
         }
 
-        val jsonTargets = JsonObject()
-        jsonTargets.run {
+        // Revert to old "targets" approach
+        val jsonTargets = JsonObject().apply {
             addProperty("TargetPlayer", playerValue)
             addProperty("TargetMobs", mobValue)
             addProperty("TargetAnimals", animalValue)
             addProperty("TargetInvisible", invisibleValue)
             addProperty("TargetDead", deadValue)
         }
-
         jsonObject.add("targets", jsonTargets)
-        val jsonFeatures = JsonObject()
-        jsonFeatures.run {
-            addProperty("AntiForge", fmlFixesEnabled)
-            addProperty("AntiForgeFML", blockFML)
-            addProperty("AntiForgeProxy", blockProxyPacket)
-            addProperty("AntiForgePayloads", blockPayloadPackets)
-            addProperty("FixResourcePackExploit", blockResourcePackExploit)
-            addProperty("ClientBrand", possibleBrands.get())
-            addProperty("AutoReconnectDelay", delay)
-        }
-        jsonObject.add("features", jsonFeatures)
 
-        val liquidChatObject = JsonObject()
-        liquidChatObject.addProperty("token", jwtToken)
+        // ClientFixes
+        jsonObject.add(ClientFixes.name, ClientFixes.toJson())
+
+        // Liquid chat
+        val liquidChatObject = JsonObject().apply {
+            addProperty("token", jwtToken)
+        }
         jsonObject.add("liquidchat", liquidChatObject)
 
-        val capeObject = JsonObject()
-        capeObject.addProperty("TransferCode", CapeService.knownToken)
+        // Donator Cape
+        val capeObject = JsonObject().apply {
+            addProperty("TransferCode", CapeService.knownToken)
+        }
         jsonObject.add("DonatorCape", capeObject)
 
-        val clientObject = JsonObject()
-        clientObject.run {
-            addProperty("EnabledClientTitle", enabledClientTitle)
-            addProperty("EnabledBackground", enabledCustomBackground)
-            addProperty("Particles", particles)
-            addProperty("StylisedAlts", stylisedAlts)
-            addProperty("AltsLength", altsLength)
-            addProperty("CleanAlts", unformattedAlts)
-            addProperty("AltsPrefix", altsPrefix)
-            addProperty("OverrideLanguage", overrideLanguage)
-        }
-        jsonObject.add("clientConfiguration", clientObject)
+        // Client Configuration
+        jsonObject.add(ClientConfiguration.name, ClientConfiguration.toJson())
 
+        // Modules
         for (module in moduleManager) {
             if (module.values.isEmpty()) continue
 
             val jsonModule = JsonObject()
-            for (value in module.values) jsonModule.add(value.name, value.toJson())
+            for (value in module.values) {
+                jsonModule.add(value.name, value.toJson())
+            }
             jsonObject.add(module.name, jsonModule)
         }
 

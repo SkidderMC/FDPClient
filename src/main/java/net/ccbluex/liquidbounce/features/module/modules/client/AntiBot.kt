@@ -5,10 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -28,7 +24,7 @@ import java.util.*
 import kotlin.math.abs
 import kotlin.math.sqrt
 
-object AntiBot : Module("AntiBot", Category.CLIENT, hideModule = false) {
+object AntiBot : Module("AntiBot", Category.CLIENT) {
 
     private val tab by boolean("Tab", true)
     private val tabMode by choices("TabMode", arrayOf("Equals", "Contains"), "Contains") { tab }

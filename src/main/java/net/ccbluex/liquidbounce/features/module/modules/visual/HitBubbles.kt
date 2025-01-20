@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.customRotatedObject2D
-import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.Tessellator
@@ -25,7 +24,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
-object HitBubbles : Module("HitBubbles", Category.VISUAL, hideModule = false) {
+object HitBubbles : Module("HitBubbles", Category.VISUAL) {
 
     init {
         state = true

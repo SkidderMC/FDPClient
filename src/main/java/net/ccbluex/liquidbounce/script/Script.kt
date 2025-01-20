@@ -102,7 +102,7 @@ class Script(val scriptFile: File) : MinecraftInstance {
         val name = moduleObject.getMember("name") as String
         val description = moduleObject.getMember("description") as String
         val categoryString = moduleObject.getMember("category") as String
-        val category = Category.values().find {
+        val category = Category.entries.find {
             it.displayName.equals(categoryString, true)
         } ?: Category.OTHER
 

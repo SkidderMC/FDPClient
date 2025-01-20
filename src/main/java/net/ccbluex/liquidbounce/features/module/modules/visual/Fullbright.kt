@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.event.loopHandler
@@ -14,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
 
-object Fullbright : Module("Fullbright", Category.VISUAL, gameDetecting = false, hideModule = false) {
+object Fullbright : Module("Fullbright", Category.VISUAL, gameDetecting = false) {
     private val mode by choices("Mode", arrayOf("Gamma", "NightVision"), "Gamma")
     private var prevGamma = -1f
 

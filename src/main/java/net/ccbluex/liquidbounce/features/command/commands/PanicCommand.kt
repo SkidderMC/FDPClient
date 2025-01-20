@@ -27,7 +27,7 @@ object PanicCommand : Command("panic") {
                 }
 
                 else -> {
-                    val categories = Category.values().filter { it.displayName.equals(args[1], true) }
+                    val categories = Category.entries.filter { it.displayName.equals(args[1], true) }
 
                     if (categories.isEmpty()) {
                         chat("Category ${args[1]} not found")

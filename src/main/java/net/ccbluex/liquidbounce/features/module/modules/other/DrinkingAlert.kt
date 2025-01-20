@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemPotion
 
-object DrinkingAlert : Module("DrinkingAlert", Category.OTHER, hideModule = false) {
+object DrinkingAlert : Module("DrinkingAlert", Category.OTHER) {
 
     private val alertTimer = MSTimer()
     private val drinkers = arrayListOf<EntityLivingBase>()

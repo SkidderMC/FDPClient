@@ -5,33 +5,31 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.FDPClient.hud
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.chat
-import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.io.HttpUtils
-import net.ccbluex.liquidbounce.config.ListValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
 import net.minecraft.network.Packet
 import net.minecraft.network.play.server.*
-import java.util.concurrent.ConcurrentHashMap
 import net.minecraft.network.play.server.S38PacketPlayerListItem.Action.UPDATE_LATENCY
+import java.util.concurrent.ConcurrentHashMap
 
-object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = false, hideModule = false) {
+object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = false) {
 
-    private val staffMode by object : ListValue(
+    private val staffMode by choices(
         "StaffMode", arrayOf(
             "BlocksMC", "CubeCraft", "Gamster",
             "AgeraPvP", "HypeMC", "Hypixel",
@@ -39,11 +37,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
             "CoralMC", "LibreCraft", "Originera",
             "OC-TC", "AssPixel"
         ), "BlocksMC"
-    ) {
-        override fun onUpdate(value: String) {
-            loadStaffData()
-        }
-    }
+    ).onChanged { loadStaffData() }
 
     private val tab by boolean("TAB", true)
     private val packet by boolean("Packet", true)
@@ -84,7 +78,6 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
     /**
      * Reset on World Change
      */
-
     val onWorld = handler<WorldEvent> {
         checkedStaff.clear()
         checkedSpectator.clear()
@@ -130,7 +123,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
 
         /**
          * OLD BlocksMC Staff Spectator Check
-         * Credit: By @HU & Modified by Eclipses & Zywl
+         * Credit: @HU & Modified by @EclipsesDev
          *
          * NOTE: Doesn't detect staff spectator all the time.
          */

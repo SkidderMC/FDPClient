@@ -11,12 +11,11 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.config.FloatValue
-import net.ccbluex.liquidbounce.config.boolean
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.Vec3
 
-object FreeCam : Module("FreeCam", Category.VISUAL, gameDetecting = false, hideModule = false) {
+object FreeCam : Module("FreeCam", Category.VISUAL, gameDetecting = false) {
 
     private val speed by FloatValue("Speed", 0.8f, 0.1f..2f)
 

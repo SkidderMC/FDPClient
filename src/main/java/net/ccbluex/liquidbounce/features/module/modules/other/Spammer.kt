@@ -5,57 +5,30 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
+import kotlinx.coroutines.delay
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
-import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomString
-import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
-import net.ccbluex.liquidbounce.config.IntegerValue
-import net.ccbluex.liquidbounce.config.TextValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.event.loopHandler
 
-object Spammer : Module("Spammer", Category.OTHER, subjective = true, hideModule = false) {
-    private val maxDelayValue: IntegerValue = object : IntegerValue("MaxDelay", 1000, 0..5000) {
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(minDelay)
+object Spammer : Module("Spammer", Category.OTHER, subjective = true) {
 
-        override fun onChanged(oldValue: Int, newValue: Int) {
-            delay = randomDelay(minDelay, get())
-        }
-    }
-    private val maxDelay by maxDelayValue
+    private val delay by intRange("Delay", 500..1000, 0..5000)
 
-    private val minDelay: Int by object : IntegerValue("MinDelay", 500, 0..5000) {
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtMost(maxDelay)
-
-        override fun onChanged(oldValue: Int, newValue: Int) {
-            delay = randomDelay(get(), maxDelay)
-        }
-
-        override fun isSupported() = !maxDelayValue.isMinimal()
-    }
-
-    private val message by
-        TextValue("Message", "$CLIENT_NAME Client | fdpinfo.github(.io) | opZywl on GitHub")
+    private val message by text("Message", "$CLIENT_NAME Client | fdpinfo.github(.io) | opZywl on GitHub")
 
     private val custom by boolean("Custom", false)
 
-    private val msTimer = MSTimer()
-    private var delay = randomDelay(minDelay, maxDelay)
+    val onUpdate = loopHandler {
+        mc.thePlayer.sendChatMessage(
+            if (custom) replace(message)
+            else message + " >" + randomString(nextInt(5, 11)) + "<"
+        )
 
-    val onUpdate = handler<UpdateEvent> {
-        if (msTimer.hasTimePassed(delay)) {
-            mc.thePlayer.sendChatMessage(
-                if (custom) replace(message)
-                else message + " >" + randomString(nextInt(5, 11)) + "<"
-            )
-            msTimer.reset()
-            delay = randomDelay(minDelay, maxDelay)
-        }
+        delay(delay.random().toLong())
     }
 
     private fun replace(text: String): String {
@@ -76,14 +49,15 @@ object Spammer : Module("Spammer", Category.OTHER, subjective = true, hideModule
             if (index == -1) {
                 break
             }
+
             // You have to replace them one by one, otherwise all parameters like %s would be set to the same random string.
             val newValue = newValueProvider().toString()
             newString.replace(index, index + oldValue.length, newValue)
+
             index += newValue.length
         }
         return newString.toString()
     }
-
 
     private fun randomPlayer() =
         mc.netHandler.playerInfoMap

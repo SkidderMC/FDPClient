@@ -11,10 +11,9 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.file.FileManager.friendsConfig
 import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
-import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.event.handler
 
-object AutoRole : Module("AutoRole", Category.OTHER, gameDetecting = false, hideModule = false) {
+object AutoRole : Module("AutoRole", Category.OTHER, gameDetecting = false) {
     private val formattingValue by boolean("Formatting", true)
 
         private val STAFF_PREFIXES = arrayOf(

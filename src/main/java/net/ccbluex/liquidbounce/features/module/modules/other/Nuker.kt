@@ -37,7 +37,7 @@ import net.minecraft.util.EnumFacing
 import java.awt.Color
 import kotlin.math.roundToInt
 
-object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule = false) {
+object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false) {
 
     /**
      * OPTIONS
@@ -53,7 +53,7 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false, hideModule
     private val options = RotationSettings(this).apply {
         immediate = true
 
-        resetTicksValue.hideWithState()
+        resetTicksValue.excludeWithState()
         withoutKeepRotation()
     }
 

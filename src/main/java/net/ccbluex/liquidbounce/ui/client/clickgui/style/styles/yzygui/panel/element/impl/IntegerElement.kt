@@ -6,10 +6,10 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl
 
 import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.config.IntValue
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.config.IntegerValue
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
@@ -20,7 +20,7 @@ import kotlin.math.min
  */
 class IntegerElement(
     private val element: ModuleElement,
-    private val setting: IntegerValue,
+    private val setting: IntValue,
     parent: Panel,
     x: Int,
     y: Int,

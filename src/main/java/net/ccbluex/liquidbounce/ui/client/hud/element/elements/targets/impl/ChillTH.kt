@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.impl
 
+import net.ccbluex.liquidbounce.config.BoolValue
+import net.ccbluex.liquidbounce.config.FloatValue
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Targets
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -13,8 +15,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.Cha
 import net.ccbluex.liquidbounce.utils.extensions.darker
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.Stencil
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.float
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
@@ -22,9 +22,11 @@ import org.lwjgl.opengl.GL11
 class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
 
     private val chillFontSpeed by
-        float("Chill-FontSpeed", 0.5F, 0.01F.. 1F) { targetInstance.styleValue.equals("Chill") }
+        FloatValue("Chill-FontSpeed", 0.5F, 0.01F.. 1F).apply {
+            setSupport { targetInstance.styleValue.equals("Chill")  } }
     private val chillRoundValue by
-        boolean("Chill-RoundedBar", true) { targetInstance.styleValue.equals("Chill") }
+        BoolValue("Chill-RoundedBar", true).apply {
+            setSupport { targetInstance.styleValue.equals("Chill")  } }
 
     private val numberRenderer = CharRenderer(false)
 

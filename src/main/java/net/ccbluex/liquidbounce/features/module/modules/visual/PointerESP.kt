@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -26,7 +25,7 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.*
 
-object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
+object PointerESP : Module("PointerESP", Category.VISUAL) {
     private val dimension by choices("Dimension", arrayOf("2d", "3d"), "2d")
     private val mode by choices("Mode", arrayOf("Solid", "Line", "LoopLine"), "Solid")
     private val thickness by float("Thickness", 3f, 1f..5f) { mode.contains("Line") }
@@ -43,10 +42,8 @@ object PointerESP : Module("PointerESP", Category.VISUAL, hideModule = false) {
     private val distanceAlpha by boolean("DistanceAlpha", true)
     private val alphaMin by int("AlphaMin", 100, -50..255) { distanceAlpha }
 
-    private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
-        override fun onUpdate(value: Int) {
-            maxRenderDistanceSq = value.toDouble().pow(2.0)
-        }
+    private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200).onChanged { value ->
+        maxRenderDistanceSq = value.toDouble().pow(2)
     }
 
     private var maxRenderDistanceSq = 0.0

@@ -18,8 +18,6 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.darker
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.getAlphaFromColor
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.interpolateColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.color
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.client.renderer.GlStateManager.tryBlendFuncSeparate
@@ -35,7 +33,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 // made by opZywl
-object FireFlies : Module("FireFlies", Category.VISUAL, hideModule = false) {
+object FireFlies : Module("FireFlies", Category.VISUAL) {
 
     init {
         state = true

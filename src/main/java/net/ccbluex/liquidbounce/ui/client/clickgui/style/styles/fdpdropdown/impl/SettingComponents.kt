@@ -39,8 +39,8 @@ import kotlin.math.*
 class SettingComponents(private val module: Module) : Component() {
     var settingHeightScissor: Animation? = null
     private val keySettingAnimMap = HashMap<Module, Array<Animation>>()
-    private val sliderintMap = HashMap<IntegerValue, Float>()
-    private val sliderintAnimMap = HashMap<IntegerValue, Array<Animation>>()
+    private val sliderintMap = HashMap<IntValue, Float>()
+    private val sliderintAnimMap = HashMap<IntValue, Array<Animation>>()
     private val sliderfloatMap = HashMap<FloatValue, Float>()
     private val sliderfloatAnimMap = HashMap<FloatValue, Array<Animation>>()
     private val toggleAnimation = HashMap<BoolValue, Array<Animation>>()
@@ -49,8 +49,8 @@ class SettingComponents(private val module: Module) : Component() {
     private val modesHoverAnimation = HashMap<ListValue, HashMap<String, Animation>>()
     private val sliderFloatRangeMap = HashMap<FloatRangeValue, Float>()
     private val sliderFloatRangeAnimMap = HashMap<FloatRangeValue, Array<Animation>>()
-    private val sliderIntegerRangeMap = HashMap<IntegerRangeValue, Float>()
-    private val sliderIntegerRangeAnimMap = HashMap<IntegerRangeValue, Array<Animation>>()
+    private val sliderIntegerRangeMap = HashMap<IntRangeValue, Float>()
+    private val sliderIntegerRangeAnimMap = HashMap<IntRangeValue, Array<Animation>>()
     private val fontValueMap = HashMap<FontValue, Float>()
     private val fontValueAnimMap = HashMap<FontValue, Array<Animation>>()
     var binding: Module? = null
@@ -82,7 +82,7 @@ class SettingComponents(private val module: Module) : Component() {
                     DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
                 )
             }
-            if (setting is IntegerValue) {
+            if (setting is IntValue) {
                 sliderintMap[setting] = 0f
                 sliderintAnimMap[setting] = arrayOf(
                     DecelerateAnimation(250, 1.0, Direction.BACKWARDS),
@@ -96,7 +96,7 @@ class SettingComponents(private val module: Module) : Component() {
                     DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
                 )
             }
-            if (setting is IntegerRangeValue) {
+            if (setting is IntRangeValue) {
                 sliderIntegerRangeMap[setting] = 0f
                 sliderIntegerRangeAnimMap[setting] = arrayOf(
                     DecelerateAnimation(250, 1.0, Direction.BACKWARDS),
@@ -348,8 +348,8 @@ class SettingComponents(private val module: Module) : Component() {
                 count += .5
             }
 
-            // ----- IntegerValue -----
-            if (setting is IntegerValue) {
+            // ----- IntValue -----
+            if (setting is IntValue) {
                 val value = roundX(setting.value.toDouble(), 1.0).toFloat().toString()
 
                 val regularFontWidth = Fonts.InterMedium_18.stringWidth(setting.name + ": ").toFloat()
@@ -388,7 +388,7 @@ class SettingComponents(private val module: Module) : Component() {
                 if (draggingNumber != null && draggingNumber === setting) {
                     val percent = min(1.0, max(0.0, ((mouseX - (x + 5)) / totalSliderWidth).toDouble())).toFloat()
                     val newValue = ((percent * (setting.maximum - setting.minimum))
-                            + setting.minimum).toDouble()
+                            + setting.minimum).roundToInt()
                     setting.set(newValue)
                 }
 
@@ -426,7 +426,7 @@ class SettingComponents(private val module: Module) : Component() {
             }
 
             // ----- IntegerRangeValue -----
-            if (setting is IntegerRangeValue) {
+            if (setting is IntRangeValue) {
                 val slider1 = setting.get().first
                 val slider2 = setting.get().last
 

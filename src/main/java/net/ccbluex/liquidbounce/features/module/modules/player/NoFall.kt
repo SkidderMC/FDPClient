@@ -23,7 +23,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import kotlin.math.max
 
-object NoFall : Module("NoFall", Category.PLAYER, hideModule = false) {
+object NoFall : Module("NoFall", Category.PLAYER) {
     private val noFallModes = arrayOf(
 
         // Main
@@ -56,21 +56,18 @@ object NoFall : Module("NoFall", Category.PLAYER, hideModule = false) {
 
     val mode by choices("Mode", modes, "MLG")
 
-    val minFallDistance by float("MinMLGHeight", 5f, 2f..50f, subjective = true) { mode == "MLG" }
-    private val retrieveDelayValue: IntegerValue = object : IntegerValue("RetrieveDelayTicks", 5, 1..10, subjective = true) {
-        override fun isSupported() = mode == "MLG"
-        override fun onChange(oldValue: Int, newValue: Int): Int {
-            maxRetrievalWaitingTimeValue.set(max(maxRetrievalWaitingTime, newValue))
+    val minFallDistance by float("MinMLGHeight", 5f, 2f..50f) { mode == "MLG" }.subjective()
 
-            return newValue
-        }
-    }
+    val retrieveDelay: Int by int("RetrieveDelayTicks", 5, 1..10) {
+        mode == "MLG"
+    }.onChanged {
+        maxRetrievalWaitingTimeValue.set(max(maxRetrievalWaitingTime, it))
+    }.subjective()
 
-    val retrieveDelay by retrieveDelayValue
-
-    val maxRetrievalWaitingTimeValue = object : IntegerValue("MaxRetrievalWaitingTime", 10, 1..20) {
-        override fun isSupported() = mode == "MLG"
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(retrieveDelay)
+    private val maxRetrievalWaitingTimeValue = int("MaxRetrievalWaitingTime", 10, 1..20) {
+        mode == "MLG"
+    }.onChange { _, new ->
+        new.coerceAtLeast(retrieveDelay)
     }
 
     val maxRetrievalWaitingTime by maxRetrievalWaitingTimeValue
@@ -80,24 +77,22 @@ object NoFall : Module("NoFall", Category.PLAYER, hideModule = false) {
 
     val options = RotationSettings(this) { mode == "MLG" }.apply {
         rotationsValue.excludeWithState(true)
-        resetTicksValue.setSupport { mode == "MLG" && keepRotation }
     }
 
     // Using too many times of simulatePlayer could result timer flag. Hence, why this is disabled by default.
-    val checkFallDist by boolean("CheckFallDistance", false, subjective = true) { mode == "Blink" }
+    val checkFallDist by boolean("CheckFallDistance", false) { mode == "Blink" }.subjective()
 
-    val minFallDist: FloatValue = object : FloatValue("MinFallDistance", 2.5f, 0f..10f, subjective = true) {
-        override fun isSupported() = mode == "Blink" && checkFallDist
-        override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(maxFallDist.get())
-    }
-    val maxFallDist: FloatValue = object : FloatValue("MaxFallDistance", 20f, 0f..100f, subjective = true) {
-        override fun isSupported() = mode == "Blink" && checkFallDist
-        override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtLeast(minFallDist.get())
-    }
+    val minFallDist: Value<Float> = float("MinFallDistance", 2.5f, 0f..10f) {
+        mode == "Blink" && checkFallDist
+    }.onChange { _, new -> new.coerceAtMost(maxFallDist.get()) }.subjective()
+
+    val maxFallDist: Value<Float> = float("MaxFallDistance", 20f, 0f..100f) {
+        mode == "Blink" && checkFallDist
+    }.onChange { _, new -> new.coerceAtLeast(minFallDist.get()) }.subjective()
 
     val autoOff by boolean("AutoOff", true) { mode == "Blink" }
-    val simulateDebug by boolean("SimulationDebug", false, subjective = true) { mode == "Blink" }
-    val fakePlayer by boolean("FakePlayer", true, subjective = true) { mode == "Blink" }
+    val simulateDebug by boolean("SimulationDebug", false) { mode == "Blink" }.subjective()
+    val fakePlayer by boolean("FakePlayer", true) { mode == "Blink" }.subjective()
 
     var currentMlgBlock: BlockPos? = null
     var retrievingPos: Vec3? = null

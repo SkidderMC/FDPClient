@@ -7,10 +7,6 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import net.ccbluex.liquidbounce.config.block
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.color
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.event.loopHandler
@@ -31,7 +27,7 @@ import net.minecraft.util.BlockPos
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
-object BlockESP : Module("BlockESP", Category.VISUAL, hideModule = false) {
+object BlockESP : Module("BlockESP", Category.VISUAL) {
     private val mode by choices("Mode", arrayOf("Box", "2D"), "Box")
     private val block by block("Block", 168)
     private val radius by int("Radius", 40, 5..120)

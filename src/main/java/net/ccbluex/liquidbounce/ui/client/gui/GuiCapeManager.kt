@@ -5,13 +5,13 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui
 
+import net.ccbluex.liquidbounce.config.BoolValue
+import net.ccbluex.liquidbounce.config.ListValue
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.renderer.GlStateManager.*
@@ -24,15 +24,17 @@ import java.util.*
 
 object GuiCapeManager : AbstractScreen() {
 
-    val customCape = boolean("CustomCape", true)
-    val styleValue = choices(
+    val customCape = BoolValue("CustomCape", true)
+    val styleValue = ListValue(
         "Mode",
         arrayOf(
             "classic", "classic2", "aurora", "forest", "rose", "lavender",
             "ocean", "modern1", "modern2", "lava", "citrus", "fire", "blue", "abstract", "owner"
         ),
         "classic"
-    ) { customCape.get() }
+    ).apply {
+        setSupport { customCape.get() }
+    }
 
     private val capeCache = hashMapOf<String, CapeStyle>()
     private var nowCape: CapeStyle? = null
@@ -187,7 +189,7 @@ object GuiCapeManager : AbstractScreen() {
         setActiveTexture(OpenGlHelper.defaultTexUnit)
         resetColor()
 
-        RenderUtils.drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+        drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
 
         assumeNonVolatile = false
     }

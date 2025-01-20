@@ -5,10 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -33,7 +29,7 @@ import kotlin.concurrent.thread
 import org.lwjgl.opengl.GL11
 import kotlin.math.sqrt
 
-object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, spacedName = "Infinite Aura", hideModule = false) {
+object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, spacedName = "Infinite Aura") {
     private val packetValue by choices("PacketMode", arrayOf("PacketPosition", "PacketPosLook"), "PacketPosition")
     private val packetBack by boolean("DoTeleportBackPacket", false)
     private val modeValue by choices("Mode", arrayOf("Aura", "Click"), "Aura")

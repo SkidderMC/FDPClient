@@ -6,24 +6,29 @@
 package net.ccbluex.liquidbounce.handler.payload
 
 import io.netty.buffer.Unpooled
-
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.modules.client.BrandSpoofer.customValue
 import net.ccbluex.liquidbounce.features.module.modules.client.BrandSpoofer.possibleBrands
+import net.ccbluex.liquidbounce.handler.other.AutoReconnect
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.network.PacketBuffer
 import net.minecraft.network.play.client.C17PacketCustomPayload
 
-object ClientFixes : MinecraftInstance, Listenable {
+object ClientFixes : Configurable("Features"), MinecraftInstance, Listenable {
 
-    var fmlFixesEnabled = true
-    var blockFML = true
-    var blockProxyPacket = true
-    var blockPayloadPackets = true
-    var blockResourcePackExploit = true
+    var fmlFixesEnabled by boolean("AntiForge", true)
+
+    var blockFML by boolean("AntiForgeFML", true)
+
+    var blockProxyPacket by boolean("AntiForgeProxy", true)
+
+    var blockPayloadPackets by boolean("AntiForgePayloads", true)
+
+    var blockResourcePackExploit by boolean("FixResourcePackExploit", true)
 
     val onPacket = handler<PacketEvent> { event ->
         runCatching {
@@ -71,6 +76,10 @@ object ClientFixes : MinecraftInstance, Listenable {
     }.onFailure {
         LOGGER.error("Failed to handle packet on client fixes.", it)
         }
+    }
+
+    var autoReconnectDelayValue = int("AutoReconnectDelay", 5000, AutoReconnect.MIN..AutoReconnect.MAX).onChanged { value ->
+        AutoReconnect.isEnabled = value < AutoReconnect.MAX
     }
 
     @JvmStatic

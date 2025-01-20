@@ -8,16 +8,14 @@ package net.ccbluex.liquidbounce.features.module.modules.other
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.config.IntegerValue
-import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.potion.PotionEffect
 import net.minecraft.potion.Potion.*
 
-object PotionSpoof : Module("PotionSpoof", Category.OTHER, hideModule = false) {
+object PotionSpoof : Module("PotionSpoof", Category.OTHER) {
 
-    private val level by object : IntegerValue("PotionLevel", 2, 1..5) {
-        override fun onChanged(oldValue: Int, newValue: Int) = onDisable()
+    private val level by int("PotionLevel", 2, 1..5).onChanged {
+        onDisable()
     }
 
     private val speedValue = boolean("Speed", false)

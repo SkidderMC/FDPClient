@@ -6,9 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.movement.Step
@@ -36,7 +33,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-object FightBot : Module("FightBot", Category.COMBAT, hideModule = false) {
+object FightBot : Module("FightBot", Category.COMBAT) {
 
     private val pathRenderValue by boolean("PathRender", true)
     private val jumpResetValue by boolean("JumpReset", true)

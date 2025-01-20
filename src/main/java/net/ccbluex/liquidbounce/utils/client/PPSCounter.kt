@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.utils.client
 import net.ccbluex.liquidbounce.utils.attack.RollingArrayLongBuffer
 
 object PPSCounter {
-    private val TIMESTAMP_BUFFERS = Array(PacketType.values().size) { RollingArrayLongBuffer(99999) }
+    private val TIMESTAMP_BUFFERS = Array(PacketType.entries.size) { RollingArrayLongBuffer(99999) }
 
     /**
      * Registers a packet type

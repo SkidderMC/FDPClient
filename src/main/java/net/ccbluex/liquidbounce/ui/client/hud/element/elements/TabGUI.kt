@@ -6,10 +6,6 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.color
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.font
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
@@ -31,7 +27,7 @@ import org.lwjgl.opengl.GL11.glColor4f
 import java.awt.Color
 
 @ElementInfo(name = "TabGUI")
-class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element(x = x, y = y) {
+class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element("TabGUI", x = x, y = y) {
 
     private val rectColor = color("RectangleColor", Color(0, 148, 255, 140))
 
@@ -86,7 +82,7 @@ class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element(x = x, y = y) {
     private var itemY = 0F
 
     init {
-        for (category in Category.values()) {
+        for (category in Category.entries) {
             val tab = Tab(category.displayName)
 
             moduleManager.forEach { module ->

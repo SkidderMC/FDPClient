@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.config.*
+import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -23,7 +23,7 @@ import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.client.C0BPacketEntityAction.Action.*
 import kotlin.math.abs
 
-object SuperKnockback : Module("SuperKnockback", Category.COMBAT, hideModule = false) {
+object SuperKnockback : Module("SuperKnockback", Category.COMBAT) {
 
     private val chance by int("Chance", 100, 0..100)
     private val delay by int("Delay", 0, 0..500)
@@ -34,39 +34,39 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT, hideModule = f
         arrayOf("WTap", "SprintTap", "SprintTap2", "Old", "Silent", "Packet", "SneakPacket"),
         "Old"
     )
-    private val maxTicksUntilBlock: IntegerValue = object : IntegerValue("MaxTicksUntilBlock", 2, 0..5) {
-        override fun isSupported() = mode == "WTap"
-
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(minTicksUntilBlock.get())
+    private val maxTicksUntilBlock: Value<Int> = int("MaxTicksUntilBlock", 2, 0..5) {
+        mode == "WTap"
+    }.onChange { _, new ->
+        new.coerceAtLeast(minTicksUntilBlock.get())
     }
-    private val minTicksUntilBlock: IntegerValue = object : IntegerValue("MinTicksUntilBlock", 0, 0..5) {
-        override fun isSupported() = mode == "WTap"
-
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtMost(maxTicksUntilBlock.get())
+    private val minTicksUntilBlock: Value<Int> = int("MinTicksUntilBlock", 0, 0..5) {
+        mode == "WTap"
+    }.onChange { _, new ->
+        new.coerceAtMost(maxTicksUntilBlock.get())
     }
 
-    private val reSprintMaxTicks: IntegerValue = object : IntegerValue("ReSprintMaxTicks", 2, 1..5) {
-        override fun isSupported() = mode == "WTap"
-
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(reSprintMinTicks.get())
+    private val reSprintMaxTicks: Value<Int> = int("ReSprintMaxTicks", 2, 1..5) {
+        mode == "WTap"
+    }.onChange { _, new ->
+        new.coerceAtLeast(reSprintMinTicks.get())
     }
-    private val reSprintMinTicks: IntegerValue = object : IntegerValue("ReSprintMinTicks", 1, 1..5) {
-        override fun isSupported() = mode == "WTap"
-
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtMost(reSprintMaxTicks.get())
+    private val reSprintMinTicks: Value<Int> = int("ReSprintMinTicks", 1, 1..5) {
+        mode == "WTap"
+    }.onChange { _, new ->
+        new.coerceAtMost(reSprintMaxTicks.get())
     }
 
     private val targetDistance by int("TargetDistance", 3, 1..5) { mode == "WTap" }
 
-    private val stopTicks: IntegerValue = object : IntegerValue("PressBackTicks", 1, 1..5) {
-        override fun isSupported() = mode == "SprintTap2"
-
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtMost(unSprintTicks.get())
+    private val stopTicks: Value<Int> = int("PressBackTicks", 1, 1..5) {
+        mode == "SprintTap2"
+    }.onChange { _, new ->
+        new.coerceAtMost(unSprintTicks.get())
     }
-    private val unSprintTicks: IntegerValue = object : IntegerValue("ReleaseBackTicks", 2, 1..5) {
-        override fun isSupported() = mode == "SprintTap2"
-
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(stopTicks.get())
+    private val unSprintTicks: Value<Int> = int("ReleaseBackTicks", 2, 1..5) {
+        mode == "SprintTap2"
+    }.onChange { _, new ->
+        new.coerceAtLeast(stopTicks.get())
     }
 
     private val minEnemyRotDiffToIgnore by float("MinRotationDiffFromEnemyToIgnore", 180f, 0f..180f)

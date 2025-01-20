@@ -7,9 +7,8 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.config.boolean
 
-object TargetModule : Module("Target", Category.CLIENT, defaultInArray = false, gameDetecting = false, hideModule = true, canBeEnabled = false) {
+object TargetModule : Module("Target", Category.CLIENT, gameDetecting = false, canBeEnabled = false) {
     var playerValue by boolean("Player", true)
     var animalValue by boolean("Animal", true)
     var mobValue by boolean("Mob", true)

@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -16,7 +15,6 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
@@ -24,29 +22,24 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.minecraft.entity.item.EntityItem
-import net.minecraft.init.Items
-import net.minecraft.item.ItemStack
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.pow
 
-object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
+object ItemESP : Module("ItemESP", Category.VISUAL) {
     private val mode by choices("Mode", arrayOf("Box", "OtherBox", "Glow"), "Box")
 
     private val itemText by boolean("ItemText", false)
-    private val itemTextTag by choices("ItemTextTag", arrayOf("()", "x", "[]"), "()")
 
     private val glowRenderScale by float("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
     private val glowRadius by int("Glow-Radius", 4, 1..5) { mode == "Glow" }
     private val glowFade by int("Glow-Fade", 10, 0..30) { mode == "Glow" }
     private val glowTargetAlpha by float("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
 
-    private val color by color("Color", Color.BLUE)
+    private val color by color("Color", Color.GREEN)
 
-    private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 50, 1..100) {
-        override fun onUpdate(value: Int) {
-            maxRenderDistanceSq = value.toDouble().pow(2.0)
-        }
+    private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200).onChanged { value ->
+        maxRenderDistanceSq = value.toDouble().pow(2)
     }
 
     private val scale by float("Scale", 3F, 1F..5F) { itemText }
@@ -141,12 +134,7 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
         glScalef(-scale, -scale, scale)
 
         val itemStack = entity.entityItem
-        val itemTextTagFormatted = when (itemTextTag) {
-            "x" -> "x${itemStack.stackSize}"
-            "[]" -> "[${itemStack.stackSize}]"
-            else -> "(${itemStack.stackSize})"
-        }
-        val text = if (itemCounts) itemStack.displayName + " $itemTextTagFormatted" else itemStack.displayName
+        val text = itemStack.displayName + if (itemCounts) " (${itemStack.stackSize})" else ""
 
         // Draw text
         val width = fontRenderer.getStringWidth(text) * 0.5f
@@ -157,18 +145,6 @@ object ItemESP : Module("ItemESP", Category.VISUAL, hideModule = false) {
         resetCaps()
         glPopMatrix()
         glPopAttrib()
-    }
-
-    private fun getItemColor(itemStack: ItemStack): Color {
-        return when (itemStack.item) {
-            Items.diamond -> Color(0, 255, 255)
-            Items.gold_ingot -> Color(255, 215, 0)
-            Items.iron_ingot -> Color(192, 192, 192)
-            Items.wooden_sword, Items.wooden_pickaxe, Items.wooden_axe -> Color(139, 69, 19)
-            Items.stone_sword, Items.stone_pickaxe, Items.stone_axe -> Color(169, 169, 169)
-            Items.chainmail_chestplate -> Color(105, 105, 105)
-            else -> color
-        }
     }
 
     override fun handleEvents() =

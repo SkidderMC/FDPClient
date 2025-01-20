@@ -7,9 +7,7 @@ package net.ccbluex.liquidbounce.utils.inventory
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.color
-import net.ccbluex.liquidbounce.config.int
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.loopHandler
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoArmor
@@ -23,7 +21,7 @@ import net.ccbluex.liquidbounce.utils.movement.MovementUtils.serverOnGround
 import net.minecraft.client.gui.inventory.GuiInventory
 import java.awt.Color
 
-object InventoryManager : MinecraftInstance, Listenable {
+object InventoryManager : Configurable("InventoryManager"), MinecraftInstance, Listenable {
 
 	// Shared no move click values
 	val noMoveValue = boolean("NoMoveClicks", false)
@@ -42,14 +40,14 @@ object InventoryManager : MinecraftInstance, Listenable {
 	{ if (invOpenValue.get()) autoCloseValue.get() else simulateInventoryValue.get() }
 
 	// Shared highlight slot values between AutoArmor and InventoryCleaner
-	val highlightSlotValue = boolean("Highlight-Slot", false, subjective = true)
+	val highlightSlotValue = boolean("Highlight-Slot", false).subjective()
 
 	// Shared highlight slot background values between AutoArmor and InventoryCleaner
-	val backgroundColor = color("BackgroundColor", Color(128, 128, 128), subjective = true) { highlightSlotValue.get() }
+	val backgroundColor = color("BackgroundColor", Color(128, 128, 128)) { highlightSlotValue.get() }.subjective()
 
 	// Shared highlight slot border values between AutoArmor and InventoryCleaner
-	val borderStrength = int("Border-Strength", 3, 1..5, subjective = true) { highlightSlotValue.get() }
-	val borderColor = color("BorderColor", Color(128, 128, 128), subjective = true) { highlightSlotValue.get() }
+	val borderStrength = int("Border-Strength", 3, 1..5) { highlightSlotValue.get() }.subjective()
+	val borderColor = color("BorderColor", Color(128, 128, 128)) { highlightSlotValue.get() }.subjective()
 
 	// Undetectable
 	val undetectableValue = boolean("Undetectable", false)

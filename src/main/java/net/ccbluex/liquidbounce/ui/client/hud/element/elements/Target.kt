@@ -7,10 +7,6 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.config.ListValue
 import net.ccbluex.liquidbounce.config.Value
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.color
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
@@ -36,7 +32,7 @@ import java.awt.Color
  * A Target HUD
  */
 @ElementInfo(name = "Targets")
-class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
+class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
     private val targetStyles = mutableListOf<TargetStyle>()
 
@@ -58,8 +54,8 @@ class Targets : Element(-46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vert
     var bgColor = Color(-1)
     var barColor = Color(-1)
 
-    override val values: Set<Value<*>>
-        get() = super.values + targetStyles.flatMap { it.values }.toSet()
+    val combinedValues: Set<Value<*>>
+        get() = super.values.toSet() + targetStyles.flatMap { it.values }.toSet()
 
     init {
         styleValue = choices("Style", initStyles(), "Classic")

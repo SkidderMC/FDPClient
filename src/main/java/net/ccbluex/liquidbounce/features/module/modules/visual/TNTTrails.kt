@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.minecraft.entity.item.EntityTNTPrimed
 import org.lwjgl.opengl.GL11
 
-object TNTTrails : Module("TNTTrails", Category.VISUAL, spacedName = "TNT Trails", hideModule = false) {
+object TNTTrails : Module("TNTTrails", Category.VISUAL, spacedName = "TNT Trails") {
     private val tntPositions = mutableMapOf<EntityTNTPrimed, MutableList<Triple<Double, Double, Double>>>()
 
 

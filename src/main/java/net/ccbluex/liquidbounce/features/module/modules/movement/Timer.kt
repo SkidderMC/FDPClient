@@ -10,11 +10,9 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.event.handler
 
-object Timer : Module("Timer", Category.MOVEMENT, gameDetecting = false, hideModule = false) {
+object Timer : Module("Timer", Category.MOVEMENT, gameDetecting = false) {
 
     private val mode by choices("Mode", arrayOf("OnMove", "NoMove", "Always"), "OnMove")
     private val speed by float("Speed", 2F, 0.1F..10F)

@@ -8,13 +8,13 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.features.module.modules.combat.TickBase;
 import net.ccbluex.liquidbounce.features.module.modules.other.FastPlace;
+import net.ccbluex.liquidbounce.file.configs.models.ClientConfiguration;
 import net.ccbluex.liquidbounce.handler.api.ClientUpdate;
 import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.AbortBreaking;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.MultiActions;
 import net.ccbluex.liquidbounce.injection.forge.SplashProgressLock;
-import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration;
 import net.ccbluex.liquidbounce.ui.client.gui.GuiMainMenu;
 import net.ccbluex.liquidbounce.ui.client.gui.GuiUpdate;
 import net.ccbluex.liquidbounce.utils.attack.CPSCounter;
@@ -146,7 +146,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
     private void createDisplay(CallbackInfo callbackInfo) {
-        if (GuiClientConfiguration.Companion.getEnabledClientTitle()) {
+        if (ClientConfiguration.INSTANCE.getClientTitle()) {
             Display.setTitle(FDPClient.INSTANCE.getClientTitle());
         }
     }
@@ -214,7 +214,7 @@ public abstract class MixinMinecraft {
     @Inject(method = "setWindowIcon", at = @At("HEAD"), cancellable = true)
     private void setWindowIcon(CallbackInfo callbackInfo) {
         if (Util.getOSType() != Util.EnumOS.OSX) {
-            if (GuiClientConfiguration.Companion.getEnabledClientTitle()) {
+            if (ClientConfiguration.INSTANCE.getClientTitle()) {
                 final ByteBuffer[] liquidBounceFavicon = IconUtils.INSTANCE.getFavicon();
                 if (liquidBounceFavicon != null) {
                     Display.setIcon(liquidBounceFavicon);

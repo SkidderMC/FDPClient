@@ -11,6 +11,8 @@ import net.ccbluex.liquidbounce.features.module.modules.client.Animation;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
 import net.ccbluex.liquidbounce.features.module.modules.visual.AntiBlind;
 import net.ccbluex.liquidbounce.features.module.modules.visual.Chams;
+import net.ccbluex.liquidbounce.features.module.modules.visual.SilentHotbarModule;
+import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.client.entity.EntityPlayerSP;
@@ -22,6 +24,7 @@ import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPlayer;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemMap;
 import net.minecraft.item.ItemStack;
@@ -223,5 +226,14 @@ public abstract class MixinItemRenderer {
         } else {
             GlStateManager.color(p_color_0_, p_color_1_, p_color_2_, p_color_3_);
         }
+    }
+
+    @Redirect(method = "updateEquippedItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/InventoryPlayer;getCurrentItem()Lnet/minecraft/item/ItemStack;"))
+    private ItemStack hookSilentHotbar(InventoryPlayer instance) {
+        SilentHotbarModule module = SilentHotbarModule.INSTANCE;
+
+        int slot = SilentHotbar.INSTANCE.renderSlot(module.handleEvents() && module.getKeepItemInHandInFirstPerson());
+
+        return instance.getStackInSlot(slot);
     }
 }

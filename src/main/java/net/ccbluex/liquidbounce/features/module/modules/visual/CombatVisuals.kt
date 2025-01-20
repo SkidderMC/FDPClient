@@ -38,7 +38,7 @@ import net.minecraft.util.EnumParticleTypes
 import java.awt.Color
 import java.util.*
 
-object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = false, subjective = true) {
+object CombatVisuals : Module("CombatVisuals", Category.VISUAL, subjective = true) {
 
     init {
         state = true
@@ -53,22 +53,27 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
     val colorGreenValue by int("Mark-Green", 160, 0..255) { isMarkMode }
     val colorBlueValue by int("Mark-Blue", 255, 0.. 255) { isMarkMode }
 
-    private val circleRainbow by boolean("CircleRainbow", false, subjective = true) { markValue == "Circle" }
-    private val colors = ColorSettingsInteger(this, "Circle") { markValue == "Circle" && !circleRainbow }.with(132, 102, 255, 100)
-    private val fillInnerCircle by boolean("FillInnerCircle", false, subjective = true) { markValue == "Circle" }
-    private val withHeight by boolean("WithHeight", true, subjective = true) { markValue == "Circle" }
-    private val animateHeight by boolean("AnimateHeight", false, subjective = true) { withHeight }
-    private val heightRange by floatRange("HeightRange", 0.0f..0.4f, -2f..2f, subjective = true) { withHeight }
-    private val extraWidth by float("ExtraWidth", 0F, 0F..2F, subjective = true) { markValue == "Circle" }
-    private val animateCircleY by boolean("AnimateCircleY", true, subjective = true) { fillInnerCircle || withHeight }
-    private val circleYRange by floatRange("CircleYRange", 0F..0.5F, 0F..2F, subjective = true) { animateCircleY }
+    // Circle options
+    private val circleRainbow by boolean("CircleRainbow", false) { markValue == "Circle" }.subjective()
+
+    // TODO: replace this with color value
+    private val colors = ColorSettingsInteger(
+        this,
+        "CircleColor"
+    ) { markValue == "Circle" && !circleRainbow }.with(132, 102, 255, 100)//.subjective()
+    private val fillInnerCircle by boolean("FillInnerCircle", false) { markValue == "Circle" }.subjective()
+    private val withHeight by boolean("WithHeight", true) { markValue == "Circle" }.subjective()
+    private val animateHeight by boolean("AnimateHeight", false) { withHeight }.subjective()
+    private val heightRange by floatRange("HeightRange", 0.0f..0.4f, -2f..2f) { withHeight }.subjective()
+    private val extraWidth by float("ExtraWidth", 0F, 0F..2F) { markValue == "Circle" }.subjective()
+    private val animateCircleY by boolean("AnimateCircleY", true) { fillInnerCircle || withHeight }.subjective()
+    private val circleYRange by floatRange("CircleYRange", 0F..0.5F, 0F..2F) { animateCircleY }.subjective()
     private val duration by float(
         "Duration",
         1.5F,
         0.5F..3F,
-        suffix = "Seconds",
-        subjective = true
-    ) { animateCircleY || animateHeight }
+        suffix = "Seconds"
+    ) { animateCircleY || animateHeight }.subjective()
 
     private val alphaValue by int("Alpha", 255, 0.. 255) { isMarkMode && markValue == "Zavz" && markValue == "Jello"}
 
@@ -78,10 +83,10 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, hideModule = fal
 
     private val rainbow by boolean("Mark-RainBow", false) { isMarkMode }
     private val hurt by boolean("Mark-HurtTime", true) { isMarkMode }
-    private val boxOutline by boolean("Mark-Outline", true, subjective = true) { isMarkMode && markValue == "RoundBox" }
+    private val boxOutline by boolean("Outline", true) { markValue == "Box" }.subjective()
 
     // fake sharp
-    private val fakeSharp by boolean("FakeSharp", true, subjective = true)
+    private val fakeSharp by boolean("FakeSharp", true).subjective()
 
     // Sound
 

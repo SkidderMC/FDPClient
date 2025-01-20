@@ -1,13 +1,10 @@
 /*
  * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -24,7 +21,7 @@ import net.minecraft.potion.Potion
 import net.minecraft.util.MovementInput
 import kotlin.math.abs
 
-object Sprint : Module("Sprint", Category.MOVEMENT, gameDetecting = false, hideModule = false) {
+object Sprint : Module("Sprint", Category.MOVEMENT, gameDetecting = false) {
     val mode by choices("Mode", arrayOf("Legit", "Vanilla"), "Vanilla")
 
     val onlyOnSprintPress by boolean("OnlyOnSprintPress", false)

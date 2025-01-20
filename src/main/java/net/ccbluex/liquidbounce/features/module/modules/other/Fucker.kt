@@ -41,7 +41,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.Vec3
 import java.awt.Color
 
-object Fucker : Module("Fucker", Category.OTHER, hideModule = false) {
+object Fucker : Module("Fucker", Category.OTHER) {
 
     /**
      * SETTINGS

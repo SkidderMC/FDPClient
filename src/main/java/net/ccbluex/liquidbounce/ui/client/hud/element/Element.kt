@@ -5,22 +5,22 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element
 
-import net.ccbluex.liquidbounce.utils.client.ClassUtils
-import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorderedRect
-import net.ccbluex.liquidbounce.config.Value
 import net.minecraft.client.gui.ScaledResolution
-import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.math.max
 import kotlin.math.min
 
 /**
  * CustomHUD element
+ *
+ * TODO: Make element name dependent
  */
 abstract class Element(
+    name: String,
     var x: Double = 2.0, var y: Double = 2.0, scale: Float = 1F, var side: Side = Side.default(),
-) : MinecraftInstance {
+) : Configurable(name), MinecraftInstance {
 
     val info = javaClass.getAnnotation(ElementInfo::class.java)
         ?: throw IllegalArgumentException("Passed element with missing element info")
@@ -41,9 +41,6 @@ abstract class Element(
     init {
         this.scale = scale
     }
-
-    val name
-        get() = info.name
 
     var renderX
         get() = when (side.horizontal) {
@@ -83,33 +80,6 @@ abstract class Element(
     var prevMouseX = 0F
     var prevMouseY = 0F
 
-    private val configurables = mutableListOf<Class<*>>()
-
-    fun addConfigurable(provider: Any) {
-        configurables += provider::class.java
-    }
-
-    /**
-     * Get all values of element
-     */
-    open val values: Set<Value<*>>
-        get() {
-            val orderedValues = CopyOnWriteArraySet<Value<*>>()
-
-            try {
-                javaClass.declaredFields.forEach { innerField ->
-                    innerField.isAccessible = true
-                    val element = innerField[this] ?: return@forEach
-
-                    ClassUtils.findValues(element, configurables, orderedValues)
-                }
-            } catch (e: Exception) {
-                LOGGER.error(e)
-            }
-
-            return orderedValues
-        }
-
     /**
      * Called when element created
      */
@@ -129,12 +99,6 @@ abstract class Element(
      * Update element
      */
     open fun updateElement() {}
-
-    /**
-     * Update Living Update Element
-     */
-    open fun livingupdateElement() {
-    }
 
     /**
      * Check if [x] and [y] is in element border
@@ -201,7 +165,7 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
         RIGHT("Right");
 
         companion object {
-            fun getByName(name: String) = values().find { it.sideName == name }
+            fun getByName(name: String) = entries.find { it.sideName == name }
 
         }
 
@@ -217,7 +181,7 @@ class Side(var horizontal: Horizontal, var vertical: Vertical) {
         DOWN("Down");
 
         companion object {
-            fun getByName(name: String) = values().find { it.sideName == name }
+            fun getByName(name: String) = entries.find { it.sideName == name }
 
         }
 

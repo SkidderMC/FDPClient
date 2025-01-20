@@ -5,10 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations.animations
@@ -43,7 +39,7 @@ import org.lwjgl.opengl.GL11.glTranslatef
  *
  * @author CCBlueX
  */
-object Animations : Module("Animations", Category.CLIENT, gameDetecting = false, hideModule = false) {
+object Animations : Module("Animations", Category.CLIENT, gameDetecting = false) {
 
     // Default animation
     val defaultAnimation = OneSevenAnimation()

@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
+import net.ccbluex.liquidbounce.config.ColorValue;
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoArmor;
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner;
 import net.ccbluex.liquidbounce.features.module.modules.other.ChestStealer;
@@ -71,12 +72,12 @@ public abstract class MixinGuiContainer extends MixinGuiScreen {
         int y = slot.yDisplayPosition;
 
         // ChestStealer Highlight Values
-        int chestStealerBackgroundColor = chestStealer.getBackgroundColor().selectedColor().getRGB();
-        int chestStealerBorderColor = chestStealer.getBorderColor().selectedColor().getRGB();
+        int chestStealerBackgroundColor = ((ColorValue) chestStealer.getBackgroundColor()).selectedColor().getRGB();
+        int chestStealerBorderColor = ((ColorValue) chestStealer.getBorderColor()).selectedColor().getRGB();
 
         // InvCleaner & AutoArmor Highlight Values
-        int invManagerBackgroundColor = inventoryManager.getBackgroundColor().selectedColor().getRGB();
-        int invManagerBorderColor = inventoryManager.getBorderColor().selectedColor().getRGB();
+        int invManagerBackgroundColor = ((ColorValue) inventoryManager.getBackgroundColor()).selectedColor().getRGB();
+        int invManagerBorderColor = ((ColorValue) inventoryManager.getBorderColor()).selectedColor().getRGB();
 
         // Get the current slot being stolen
         int currentSlotChestStealer = inventoryManager.getChestStealerCurrentSlot();

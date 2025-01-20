@@ -10,14 +10,13 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.other.Fucker
 import net.ccbluex.liquidbounce.features.module.modules.other.Nuker
-import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.event.handler
 
-object FastBreak : Module("FastBreak", Category.MOVEMENT, hideModule = false) {
+object FastBreak : Module("FastBreak", Category.MOVEMENT) {
 
     private val breakDamage by float("BreakDamage", 0.8F, 0.1F..1F)
 
-    val onUpdate = handler<UpdateEvent> { event ->
+    val onUpdate = handler<UpdateEvent> {
         mc.playerController.blockHitDelay = 0
 
         if (mc.playerController.curBlockDamageMP > breakDamage)

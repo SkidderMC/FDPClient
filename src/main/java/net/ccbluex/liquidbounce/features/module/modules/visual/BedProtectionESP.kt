@@ -7,10 +7,6 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.color
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.event.loopHandler
@@ -25,7 +21,7 @@ import net.minecraft.init.Blocks.*
 import net.minecraft.util.BlockPos
 import java.awt.Color
 
-object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule = false) {
+object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL) {
     private val targetBlock by choices("TargetBlock", arrayOf("Bed", "DragonEgg"), "Bed")
     private val renderMode by choices("LayerRenderMode", arrayOf("Current", "All"), "Current")
     private val radius by int("Radius", 8, 0..32)
@@ -38,6 +34,7 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, hideModule
 
     @Volatile
     private var targetBlocks = emptySet<BlockPos>()
+
     @Volatile
     private var blocksToRender = emptySet<BlockPos>()
 

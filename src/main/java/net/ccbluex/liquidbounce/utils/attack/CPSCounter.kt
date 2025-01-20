@@ -14,7 +14,7 @@ import java.nio.ByteBuffer
 
 object CPSCounter {
     private const val MAX_CPS = 50
-    private val TIMESTAMP_BUFFERS = Array(MouseButton.values().size) { RollingArrayLongBuffer(MAX_CPS) }
+    private val TIMESTAMP_BUFFERS = Array(MouseButton.entries.size) { RollingArrayLongBuffer(MAX_CPS) }
 
     /**
      * Registers a mouse button click

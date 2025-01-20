@@ -13,14 +13,17 @@ import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColorWithAlpha
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.setColor
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.config.boolean
+import net.ccbluex.liquidbounce.config.BoolValue
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import java.awt.Color
 
 class NormalTH(inst: Targets) : TargetStyle("Normal", inst, true) {
-    private val numberValue = boolean("Show Number", false) { targetInstance.styleValue.equals("Normal") }
-    private val percentValue = boolean("Percent", false) { targetInstance.styleValue.equals("Normal") && numberValue.get() }
+    private val numberValue = BoolValue("Show Number", false).apply {
+        setSupport { targetInstance.styleValue.equals("Normal")  } }
+    private val percentValue = BoolValue("Percent", false).apply {
+        setSupport { targetInstance.styleValue.equals("Normal") && numberValue.get()  } }
+
     override fun drawTarget(entity: EntityLivingBase) {
         val fonts = Fonts.font40
         val leaght = fonts.getStringWidth(entity.name)

@@ -9,8 +9,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.int
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
@@ -20,7 +18,7 @@ import net.minecraft.client.shader.Framebuffer
 import net.minecraft.util.Vec3
 
 @ElementInfo(name = "RearView")
-class RearView : Element() {
+class RearView : Element("RearView") {
 
     private var Fov by int("Fov", 110, 30..170)
     private var framebufferWidth by int("Framebuffer Width", 800, 800..1920)

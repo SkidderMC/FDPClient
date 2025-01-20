@@ -6,11 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.color
-import net.ccbluex.liquidbounce.config.floatRange
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -41,7 +36,7 @@ import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
-object JumpCircle : Module("JumpCircle", Category.VISUAL, hideModule = false) {
+object JumpCircle : Module("JumpCircle", Category.VISUAL) {
     private val colorMode by choices("Color", arrayOf("Custom", "Theme"), "Theme")
     private val circleRadius by floatRange("CircleRadius", 0.15F..0.8F, 0F..3F)
     private val innerColor = color("InnerColor", Color(0, 0, 0, 50)) { colorMode == "Custom" }

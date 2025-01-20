@@ -263,12 +263,40 @@ object BlackStyle : Style() {
                             yPos += 19
                         }
 
-                        is IntegerValue -> {
-                            val text = value.name + "§f: " + if (value is BlockValue) {
-                                getBlockName(value.get()) + " (" + value.get() + ")"
-                            } else {
-                                value.get()
-                            } + " §7$suffix"
+                        is BlockValue -> {
+                            val text = value.name + "§f: " + getBlockName(value.get()) + " (" + value.get() + ")" + " §7$suffix"
+
+                            moduleElement.settingsWidth = font35.getStringWidth(text) + 8
+
+                            val x = minX + 4
+                            val y = yPos + 14
+                            val width = moduleElement.settingsWidth - 12
+                            val color = Color(20, 20, 20)
+
+                            val displayValue = value.get().coerceIn(value.range)
+                            val sliderValue =
+                                x + width * (displayValue - value.minimum) / (value.maximum - value.minimum)
+
+                            if (mouseButton == 0 && mouseX in minX..maxX && mouseY in y - 2..y + 5 || sliderValueHeld == value) {
+                                val percentage = (mouseX - x) / width.toFloat()
+                                value.setAndSaveValueOnButtonRelease(value.range.lerpWith(percentage).roundToInt().coerceIn(value.range))
+
+                                sliderValueHeld = value
+
+                                if (mouseButton == 0) return true
+                            }
+
+                            drawRect(x, y, x + width, y + 2, Int.MAX_VALUE)
+                            drawRect(x, y, sliderValue, y + 2, color.rgb)
+                            drawFilledCircle(sliderValue, y + 1, 3f, color)
+
+                            font35.drawString(text, minX + 2, yPos + 3, Color.WHITE.rgb)
+
+                            yPos += 19
+                        }
+
+                        is IntValue -> {
+                            val text = value.name + "§f: " + value.get() + " §7$suffix"
 
                             moduleElement.settingsWidth = font35.getStringWidth(text) + 8
 
@@ -299,7 +327,7 @@ object BlackStyle : Style() {
                             yPos += 19
                         }
 
-                        is IntegerRangeValue -> {
+                        is IntRangeValue -> {
                             val slider1 = value.get().first
                             val slider2 = value.get().last
 

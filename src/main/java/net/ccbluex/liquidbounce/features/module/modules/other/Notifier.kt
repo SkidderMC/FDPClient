@@ -13,8 +13,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot
 import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
 import net.ccbluex.liquidbounce.utils.client.chat
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.block.BlockTNT
 import net.minecraft.item.ItemBlock
@@ -25,7 +23,7 @@ import net.minecraft.network.play.server.S38PacketPlayerListItem.Action.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.roundToInt
 
-object Notifier : Module("Notifier", Category.OTHER, hideModule = false) {
+object Notifier : Module("Notifier", Category.OTHER) {
 
     private val onPlayerJoin by boolean("Join", true)
     private val onPlayerLeft by boolean("Left", true)

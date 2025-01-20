@@ -5,9 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -21,7 +18,7 @@ import net.minecraft.entity.item.EntityTNTPrimed
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
-object TNTESP : Module("TNTESP", Category.VISUAL, spacedName = "TNT ESP", hideModule = false) {
+object TNTESP : Module("TNTESP", Category.VISUAL, spacedName = "TNT ESP") {
 
     private val dangerZoneDome by boolean("DangerZoneDome", false)
     private val mode by choices("Mode", arrayOf("Lines", "Triangles", "Filled"), "Lines") { dangerZoneDome }

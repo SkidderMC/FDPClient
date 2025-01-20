@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.utils.kotlin
 import me.liuli.elixir.account.CrackedAccount
 import net.ccbluex.liquidbounce.event.EventManager.call
 import net.ccbluex.liquidbounce.event.SessionUpdateEvent
-import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration
+import net.ccbluex.liquidbounce.file.configs.models.ClientConfiguration
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.minecraft.util.Session
 import kotlin.random.Random
@@ -68,9 +68,9 @@ object RandomUtils {
      */
 
     fun randomUsername(
-        customPrefix: String = GuiClientConfiguration.altsPrefix,
-        maxLength: Int = GuiClientConfiguration.altsLength,
-        raw: Boolean = GuiClientConfiguration.unformattedAlts
+        customPrefix: String = ClientConfiguration.altsPrefix,
+        maxLength: Int = ClientConfiguration.altsLength,
+        raw: Boolean = ClientConfiguration.unformattedAlts
     ): String {
         // Adjust max length by accounting for the prefix and underscore if prefix is not empty.
         val adjustedMaxLength = maxLength - if (customPrefix.isNotEmpty()) customPrefix.length + 1 else 0
@@ -79,7 +79,7 @@ object RandomUtils {
         if (adjustedMaxLength <= 0) return customPrefix
 
         // Returns classic random username if stylised alts aren't enabled.
-        if (!GuiClientConfiguration.stylisedAlts) {
+        if (!ClientConfiguration.stylisedAlts) {
             val randomName = randomString(adjustedMaxLength)
             return if (customPrefix.isNotEmpty()) "${customPrefix}_$randomName" else randomName
         }

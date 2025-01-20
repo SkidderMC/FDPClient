@@ -5,9 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
@@ -30,7 +27,7 @@ object Jesus : Module("Jesus", Category.MOVEMENT, Keyboard.KEY_J) {
 
     private var nextTick = false
 
-    val onUpdate = handler<UpdateEvent> { event ->
+    val onUpdate = handler<UpdateEvent> {
         val thePlayer = mc.thePlayer
 
         if (thePlayer == null || thePlayer.isSneaking) return@handler

@@ -1,11 +1,10 @@
 /*
  * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -33,7 +32,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulc
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanLowHop
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 
-object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
+object Speed : Module("Speed", Category.MOVEMENT) {
 
     private val speedModes = arrayOf(
 
@@ -118,14 +117,10 @@ object Speed : Module("Speed", Category.MOVEMENT, hideModule = false) {
         MiJump, Frame
     )
 
-    private val showDeprecatedValue = object : BoolValue("DeprecatedMode", true) {
-        override fun onUpdate(value: Boolean) {
-            mode.changeValue(modesList.first { it !in deprecatedMode }.modeName)
-            mode.updateValues(modesList.filter { value || it !in deprecatedMode }.map { it.modeName }.toTypedArray())
-        }
+    private val showDeprecated by boolean("DeprecatedMode", true).onChanged { value ->
+        mode.changeValue(modesList.first { it !in deprecatedMode }.modeName)
+        mode.updateValues(modesList.filter { value || it !in deprecatedMode }.map { it.modeName }.toTypedArray())
     }
-
-    private val showDeprecated by showDeprecatedValue
 
     private var modesList = speedModes
 

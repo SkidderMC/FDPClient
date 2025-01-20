@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -34,7 +33,7 @@ import kotlin.math.atan2
 import kotlin.math.sqrt
 
 // TODO: This desperately needs a recode
-object Ignite : Module("Ignite", Category.COMBAT, hideModule = false) {
+object Ignite : Module("Ignite", Category.COMBAT) {
 
     private val lighter by boolean("Lighter", true)
     private val lavaBucket by boolean("Lava", true)
@@ -86,7 +85,7 @@ object Ignite : Module("Ignite", Category.COMBAT, hideModule = false) {
 
                     player.sendUseItem(itemStack)
                 } else {
-                    for (side in EnumFacing.values()) {
+                    for (side in EnumFacing.entries) {
                         val neighbor = blockPos.offset(side)
 
                         if (!neighbor.canBeClicked())

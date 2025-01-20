@@ -48,24 +48,23 @@ import kotlin.math.max
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
+object BedPlates : Module("BedPlates", Category.VISUAL) {
     private val renderYOffset by float("RenderYOffset", 1f, -5f..5f)
 
-    private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
-        override fun onUpdate(value: Int) {
-            maxRenderDistanceSq = value.toDouble().pow(2.0)
-        }
+    private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200).onChanged { value ->
+        maxRenderDistanceSq = value.toDouble().pow(2)
     }
+
     private var maxRenderDistanceSq = 0.0
         set(value) {
-            field = if (value <= 0.0) maxRenderDistance.toDouble().pow(2.0) else value
+            field = if (value <= 0.0) maxRenderDistance.toDouble().pow(2) else value
         }
 
     private val maxLayers by int("MaxLayers", 5, 1..10)
     private val scale by float("Scale", 3F, 1F..5F)
 
-    private val textMode by choices("Text-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
-    private val textColors = ColorSettingsInteger(this, "Text", applyMax = true) { textMode == "Custom" }
+    private val textMode by choices("Text-ColorMode", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
+    private val textColors = ColorSettingsInteger(this, "TextColor", applyMax = true) { textMode == "Custom" }
 
     private val gradientTextSpeed by float("Text-Gradient-Speed", 1f, 0.5f..10f) { textMode == "Gradient" }
 
@@ -76,8 +75,8 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
 
     private val roundedRectRadius by float("Rounded-Radius", 3F, 0F..5F)
 
-    private val backgroundMode by choices("Background-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
-    private val bgColors = ColorSettingsInteger(this, "Background") { backgroundMode == "Custom" }.with(a = 100)
+    private val backgroundMode by choices("Background-Mode", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
+    private val bgColors = ColorSettingsInteger(this, "BackgroundColor") { backgroundMode == "Custom" }.with(a = 100)
 
     private val gradientBackgroundSpeed by float("Background-Gradient-Speed", 1f, 0.5f..10f)
     { backgroundMode == "Gradient" }
@@ -104,7 +103,8 @@ object BedPlates : Module("BedPlates", Category.VISUAL, hideModule = false) {
     ) : Comparable<SurroundingBlock> {
         val itemStack = ItemStack(block, count)
 
-        override fun compareTo(other: SurroundingBlock): Int = compareValuesBy(this, other,
+        override fun compareTo(other: SurroundingBlock): Int = compareValuesBy(
+            this, other,
             { it.layer }, { -it.count }, { it.block.unlocalizedName })
     }
 

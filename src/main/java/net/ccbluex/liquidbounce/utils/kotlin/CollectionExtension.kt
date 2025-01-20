@@ -19,3 +19,13 @@ inline fun <T> MutableCollection<T>.removeEach(max: Int = this.size, predicate: 
         }
     }
 }
+fun IntRange.coerceIn(range: IntRange): IntRange {
+    val newStart = this.first.coerceIn(range)
+    val newEnd = this.last.coerceIn(range)
+    return newStart..newEnd
+}
+fun ClosedFloatingPointRange<Float>.coerceIn(range: ClosedFloatingPointRange<Float>): ClosedFloatingPointRange<Float> {
+    val newStart = this.start.coerceIn(range.start, range.endInclusive)
+    val newEnd = this.endInclusive.coerceIn(range.start, range.endInclusive)
+    return newStart..newEnd
+}

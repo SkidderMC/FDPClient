@@ -13,7 +13,7 @@ object CommandManager {
     val commands = mutableListOf<Command>()
     var latestAutoComplete = emptyArray<String>()
 
-    var prefix = '.'
+    var prefix = "."
 
     /**
      * Register all default commands
@@ -27,16 +27,21 @@ object CommandManager {
      * Execute command by given [input]
      */
     fun executeCommands(input: String) {
-        val args = input.split(" ").toTypedArray()
+        if (!input.startsWith(prefix)) {
+            return
+        }
+
+        val args = input.removePrefix(prefix).split(' ').toTypedArray()
 
         for (command in commands) {
-            if (args[0].equals(prefix.toString() + command.command, ignoreCase = true)) {
+            if (args[0].equals(command.command, ignoreCase = true)) {
                 command.execute(args)
                 return
             }
 
             for (alias in command.alias) {
-                if (!args[0].equals(prefix.toString() + alias, ignoreCase = true)) continue
+                if (!args[0].equals(alias, ignoreCase = true))
+                    continue
 
                 command.execute(args)
                 return
@@ -62,28 +67,29 @@ object CommandManager {
      * @param input text that should be used to check for auto completions.
      */
     private fun getCompletions(input: String): Array<String>? {
-        if (input.isNotEmpty() && input.toCharArray()[0] == prefix) {
-            val args = input.split(" ")
-
-            return if (args.size > 1) {
-                val command = getCommand(args[0].substring(1))
-                val tabCompletions = command?.tabComplete(args.drop(1).toTypedArray())
-
-                tabCompletions?.toTypedArray()
-            } else {
-                val rawInput = input.substring(1)
-
-                commands.mapNotNull { command ->
-                    val alias = when {
-                        command.command.startsWith(rawInput, true) -> command.command
-                        else -> command.alias.firstOrNull { alias -> alias.startsWith(rawInput, true) }
-                    } ?: return@mapNotNull null
-
-                    prefix + alias
-                }.toTypedArray()
-            }
+        if (!input.startsWith(prefix)) {
+            return null
         }
-        return null
+
+        val rawInput = input.removePrefix(prefix)
+
+        val args = rawInput.split(' ').toTypedArray()
+
+        return if (args.size > 1) {
+            val command = getCommand(args[0])
+            val tabCompletions = command?.tabComplete(args.copyOfRange(1, args.size))
+
+            tabCompletions?.toTypedArray()
+        } else {
+            commands.mapNotNull { command ->
+                val alias = when {
+                    command.command.startsWith(rawInput, true) -> command.command
+                    else -> command.alias.firstOrNull { alias -> alias.startsWith(rawInput, true) }
+                } ?: return@mapNotNull null
+
+                prefix + alias
+            }.toTypedArray()
+        }
     }
 
     /**

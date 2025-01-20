@@ -8,11 +8,10 @@ package net.ccbluex.liquidbounce.features.module.modules.other
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.potion.Potion
 
-object RemoveEffect : Module("RemoveEffect", Category.OTHER, hideModule = false) {
+object RemoveEffect : Module("RemoveEffect", Category.OTHER) {
 
     private val shouldRemoveSlowness by boolean("Slowness", false)
     private val shouldRemoveMiningFatigue by boolean("Mining Fatigue", false)

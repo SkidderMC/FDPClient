@@ -18,12 +18,10 @@ import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.*
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
-object AutoDisable : Module("AutoDisable", Category.OTHER, gameDetecting = false, hideModule = false) {
+object AutoDisable : Module("AutoDisable", Category.OTHER, gameDetecting = false) {
     private val modulesList = hashSetOf(KillAura, Scaffold, Flight, Speed)
 
     private val onFlagged by boolean("onFlag", true)

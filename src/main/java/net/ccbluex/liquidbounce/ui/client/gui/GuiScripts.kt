@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.ui.client.gui
 
 import net.ccbluex.liquidbounce.FDPClient.scriptManager
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.file.FileManager.clickGuiConfig
 import net.ccbluex.liquidbounce.file.FileManager.hudConfig
 import net.ccbluex.liquidbounce.file.FileManager.loadConfig
@@ -19,6 +20,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.io.FileFilters
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.io.extractZipTo
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
@@ -55,6 +57,8 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
             Fonts.font40.drawCenteredStringWithShadow("§9§lScripts", width / 2f, 28f, 0xffffff)
         }
 
+        drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
+
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
@@ -83,11 +87,11 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
                         loadConfigs(clickGuiConfig, hudConfig)
                     }
 
-                    else -> MiscUtils.showErrorPopup("Wrong file extension", "The file extension has to be .js or .zip")
+                    else -> MiscUtils.showMessageDialog("Wrong file extension", "The file extension has to be .js or .zip")
                 }
             } catch (t: Throwable) {
                 LOGGER.error("Something went wrong while importing a script.", t)
-                MiscUtils.showErrorPopup(t.javaClass.name, t.message!!)
+                MiscUtils.showMessageDialog(t.javaClass.name, t.message!!)
             }
 
             2 -> try {
@@ -100,28 +104,28 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
                 }
             } catch (t: Throwable) {
                 LOGGER.error("Something went wrong while deleting a script.", t)
-                MiscUtils.showErrorPopup(t.javaClass.name, t.message!!)
+                MiscUtils.showMessageDialog(t.javaClass.name, t.message!!)
             }
 
             3 -> try {
                 reloadScripts()
             } catch (t: Throwable) {
                 LOGGER.error("Something went wrong while reloading all scripts.", t)
-                MiscUtils.showErrorPopup(t.javaClass.name, t.message!!)
+                MiscUtils.showMessageDialog(t.javaClass.name, t.message!!)
             }
 
             4 -> try {
                 Desktop.getDesktop().open(scriptsFolder)
             } catch (t: Throwable) {
                 LOGGER.error("Something went wrong while trying to open your scripts folder.", t)
-                MiscUtils.showErrorPopup(t.javaClass.name, t.message!!)
+                MiscUtils.showMessageDialog(t.javaClass.name, t.message!!)
             }
 
             5 -> try {
                 MiscUtils.showURL("https://github.com/CCBlueX/Documentation/blob/master/md/scriptapi_v2/getting_started.md")
             } catch (e: Exception) {
                 LOGGER.error("Something went wrong while trying to open the web scripts docs.", e)
-                MiscUtils.showErrorPopup(
+                MiscUtils.showMessageDialog(
                     "Scripts Error | Manual Link",
                     "github.com/CCBlueX/Documentation/blob/master/md/scriptapi_v2/getting_started.md"
                 )
@@ -131,7 +135,7 @@ class GuiScripts(private val prevGui: GuiScreen) : AbstractScreen() {
                 MiscUtils.showURL("https://forums.ccbluex.net/category/9/scripts")
             } catch (e: Exception) {
                 LOGGER.error("Something went wrong while trying to open web scripts forums", e)
-                MiscUtils.showErrorPopup("Scripts Error | Manual Link", "forums.ccbluex.net/category/9/scripts")
+                MiscUtils.showMessageDialog("Scripts Error | Manual Link", "forums.ccbluex.net/category/9/scripts")
             }
         }
     }

@@ -7,7 +7,6 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
-import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -15,9 +14,6 @@ import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexturedModalRect
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.font
-import net.ccbluex.liquidbounce.config.choices
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.resources.I18n
@@ -30,13 +26,10 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 
-@ElementInfo(name = "Effects")
 class Effects(
-    x: Double = 2.0,
-    y: Double = 10.0,
-    scale: Float = 1F,
+    x: Double = 2.0, y: Double = 10.0, scale: Float = 1F,
     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
-) : Element(x, y, scale, side) {
+) : Element("Effects", x, y, scale, side) {
 
     private val modeValue by choices("Mode", arrayOf("Classic", "FDP", "Default"), "Classic")
     private val font by font("Font", Fonts.font35)

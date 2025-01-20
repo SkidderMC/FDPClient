@@ -1,14 +1,10 @@
 /*
  * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -43,7 +39,7 @@ import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.max
 
-object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
+object AntiVoid : Module("AntiVoid", Category.MOVEMENT) {
 
     private val mode by choices(
         "Mode",
@@ -55,7 +51,7 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, hideModule = false) {
     private val blinkDelay by int("BlinkDelay", 10, 1..20) { mode == "Blink" }
     private val onScaffold by boolean("OnScaffold", false) { mode == "Blink" }
     private val ticksToDelay by int("TicksDelay", 5, 1..20) { mode == "Blink" && !onScaffold }
-    private val indicator by boolean("Indicator", true, subjective = true)
+    private val indicator by boolean("Indicator", true).subjective()
 
     private var detectedLocation: BlockPos? = null
     private var lastFound = 0F

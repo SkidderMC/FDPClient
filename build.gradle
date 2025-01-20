@@ -87,13 +87,13 @@ dependencies {
     include("org.knowm.xchart:xchart:3.8.8")
 
     // HTTP Client
-    include("com.squareup.okhttp3:okhttp:4.10.0") { // for Kotlin 1.6.20
+    include("com.squareup.okhttp3:okhttp:5.0.0-alpha.14") {
         exclude module: "kotlin-stdlib"
     }
     // Kotlin
     include "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    include "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3"
-    include "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.3"
+    include "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version"
+    include "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines_version"
 
     include "com.formdev:flatlaf:3.5.4"
 

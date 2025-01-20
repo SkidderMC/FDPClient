@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -31,15 +30,14 @@ import kotlin.math.abs
 import kotlin.math.roundToLong
 import kotlin.math.sqrt
 
-object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hideModule = false) {
+object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true) {
 
     // TODO: Model & Wireframe Render
     private val renderServerPos by choices(
         "RenderServerPos-Mode",
         arrayOf("None", "Box"),
         "None",
-        subjective = true
-    )
+    ).subjective()
 
     private val resetFlagCounterTicks by int("ResetCounterTicks", 5000, 1000..10000)
 
@@ -53,13 +51,13 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true, hid
 
     private val colors = ColorSettingsInteger(
         this,
-        "Text",
+        "TextColor",
         applyMax = true
     ) { renderServerPos == "Box" }
 
     private val boxColors = ColorSettingsInteger(
         this,
-        "Box",
+        "BoxColor",
     ) { renderServerPos == "Box" }.with(r = 255, g = 255)
 
     private val scale by float("Scale", 1F, 1F..6F) { renderServerPos == "Box" }

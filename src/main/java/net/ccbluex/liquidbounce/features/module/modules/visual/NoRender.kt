@@ -5,10 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.config.block
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.float
-
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -36,7 +32,7 @@ import net.minecraft.util.BlockPos
  *
  * @author opZywl
  */
-object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false, hideModule = false) {
+object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false) {
 
 	private val allEntitiesValue by boolean("AllEntities", true)
 	private val itemsValue by boolean("Items", true) { !allEntitiesValue }

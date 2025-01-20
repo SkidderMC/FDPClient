@@ -17,7 +17,8 @@ import net.minecraft.item.Item
  *
  * @author opZywl
  */
-class ModuleCommand(val module: Module, val values: Set<Value<*>> = module.values) : Command(module.name.lowercase()) {
+class ModuleCommand(val module: Module, val values: Collection<Value<*>> = module.values) :
+    Command(module.name.lowercase()) {
 
     init {
         if (values.isEmpty())
@@ -56,7 +57,7 @@ class ModuleCommand(val module: Module, val values: Set<Value<*>> = module.value
             else -> {
                 if (if (value is TextValue) args.size < 3 else args.size != 3) {
                     when (value) {
-                        is IntegerValue, is FloatValue, is TextValue -> {
+                        is IntValue, is FloatValue, is TextValue -> {
                             chatSyntax("$moduleName ${args[1].lowercase()} <value>")
                         }
 
@@ -68,11 +69,14 @@ class ModuleCommand(val module: Module, val values: Set<Value<*>> = module.value
                             )
                         }
 
-                        is IntegerRangeValue, is FloatRangeValue -> {
+                        is IntRangeValue, is FloatRangeValue -> {
                             chatSyntax("$moduleName ${args[1].lowercase()} <min>-<max>")
                         }
 
-                        else -> {}
+                        else -> {
+                            // TODO: branch completion
+                            chatInvalid(args[1], value, "Unsupported Value type")
+                        }
                     }
 
                     return
@@ -80,7 +84,7 @@ class ModuleCommand(val module: Module, val values: Set<Value<*>> = module.value
 
                 try {
                     val pair: Pair<Boolean, String> = when (value) {
-                        is IntegerRangeValue -> {
+                        is IntRangeValue -> {
                             val rangeParts = args[2].split("-").takeIf { it.size == 2 }
                             if (rangeParts != null) {
                                 val start = rangeParts[0].toIntOrNull()
@@ -167,7 +171,7 @@ class ModuleCommand(val module: Module, val values: Set<Value<*>> = module.value
                             return
                         }
 
-                        is IntegerValue -> value.set(args[2].toInt()) to args[2]
+                        is IntValue -> value.set(args[2].toInt()) to args[2]
                         is FloatValue -> value.set(args[2].toFloat()) to args[2]
                         is ListValue -> {
                             if (args[2] !in value) {
@@ -221,6 +225,7 @@ class ModuleCommand(val module: Module, val values: Set<Value<*>> = module.value
                         return Item.itemRegistry.keys.mapNotNull {
                             it.resourcePath.lowercase().takeIf { it.startsWith(args[1], true) }
                         }
+
                     }
 
                     is ListValue -> {

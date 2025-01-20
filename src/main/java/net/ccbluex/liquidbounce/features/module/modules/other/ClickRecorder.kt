@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.utils.attack.CPSCounter
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.runTimeTicks
 import net.ccbluex.liquidbounce.utils.client.chat
-import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
 import org.knowm.xchart.BitmapEncoder

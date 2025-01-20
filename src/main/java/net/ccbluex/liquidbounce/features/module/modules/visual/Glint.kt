@@ -8,11 +8,9 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.int
 import java.awt.Color
 
-object Glint: Module("Glint", Category.VISUAL, hideModule = false) {
+object Glint: Module("Glint", Category.VISUAL) {
 
     private val modeValue by choices("Mode", arrayOf("Rainbow", "Custom"), "Custom")
     private val redValue by int("Red", 255, 0.. 255) { modeValue == "Custom" }

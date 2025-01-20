@@ -7,10 +7,10 @@ package net.ccbluex.liquidbounce.utils.timing
 
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.CLICK_TIMER
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
-import net.ccbluex.liquidbounce.config.IntegerValue
+import net.ccbluex.liquidbounce.config.IntValue
 
 open class DelayTimer(
-    private val minDelayValue: IntegerValue, private val maxDelayValue: IntegerValue = minDelayValue,
+    private val minDelayValue: IntValue, private val maxDelayValue: IntValue = minDelayValue,
     private val baseTimer: MSTimer = CLICK_TIMER
 ) {
     private var delay = 0
@@ -30,7 +30,7 @@ open class DelayTimer(
 }
 
 open class TickDelayTimer(
-    private val minDelayValue: IntegerValue, private val maxDelayValue: IntegerValue = minDelayValue,
+    private val minDelayValue: IntValue, private val maxDelayValue: IntValue = minDelayValue,
     private val baseTimer: TickTimer = TickTimer()
 ) {
     private var ticks = 0

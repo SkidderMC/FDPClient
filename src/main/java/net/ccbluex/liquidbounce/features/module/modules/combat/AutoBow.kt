@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -17,7 +16,7 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.RELEASE_U
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-object AutoBow : Module("AutoBow", Category.COMBAT, subjective = true, hideModule = false) {
+object AutoBow : Module("AutoBow", Category.COMBAT, subjective = true) {
 
     private val waitForBowAimbot by boolean("WaitForBowAimbot", true)
 

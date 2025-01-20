@@ -33,10 +33,10 @@ import java.awt.Color
  *
  * Allows to move and customize minecraft scoreboard
  */
-@ElementInfo(name = "Scoreboard")
+@ElementInfo(name = "Scoreboard", force = true)
 class ScoreboardElement(
     x: Double = 5.0, y: Double = 0.0, scale: Float = 1F, side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)
-) : Element(x, y, scale, side) {
+) : Element("Scoreboard", x, y, scale, side) {
 
     private val textColor by color("TextColor", Color.WHITE)
     private val backgroundColor by color("BackgroundColor", Color.BLACK.withAlpha(95))

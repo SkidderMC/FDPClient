@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer as CustomFo
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.io.URLRegistryUtils.FONTS
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.io.HttpUtils.download
+import net.ccbluex.liquidbounce.utils.io.HttpUtils.Downloader
 import net.ccbluex.liquidbounce.utils.io.extractZipTo
 import net.ccbluex.liquidbounce.utils.io.jsonArray
 import net.ccbluex.liquidbounce.utils.io.readJson
@@ -208,7 +208,7 @@ object Fonts : MinecraftInstance {
         val robotoZipFile = File(fontsDir, "roboto.zip")
         if (!robotoZipFile.exists()) {
             LOGGER.info("Downloading roboto fonts...")
-            download("$CLIENT_CLOUD/fonts/Roboto.zip", robotoZipFile)
+            Downloader.downloadWholeFile("$CLIENT_CLOUD/fonts/Roboto.zip", robotoZipFile)
             LOGGER.info("Extract roboto fonts...")
             robotoZipFile.extractZipTo(fontsDir)
         }
@@ -216,7 +216,7 @@ object Fonts : MinecraftInstance {
         val fontZipFile = File(fontsDir, "font.zip")
         if (!fontZipFile.exists()) {
             LOGGER.info("Downloading additional fonts...")
-            download("${FONTS}/Font.zip", fontZipFile)
+            Downloader.downloadWholeFile("${FONTS}/Font.zip", fontZipFile)
         }
 
         if(fontZipFile.exists()){

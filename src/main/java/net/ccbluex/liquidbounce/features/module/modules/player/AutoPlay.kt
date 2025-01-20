@@ -13,9 +13,6 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Items
@@ -23,7 +20,7 @@ import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.potion.Potion
 
-object AutoPlay : Module("AutoPlay", Category.PLAYER, gameDetecting = false, hideModule = false) {
+object AutoPlay : Module("AutoPlay", Category.PLAYER, gameDetecting = false) {
 
     private val mode by choices("Mode", arrayOf("Paper", "Hypixel"), "Paper")
 

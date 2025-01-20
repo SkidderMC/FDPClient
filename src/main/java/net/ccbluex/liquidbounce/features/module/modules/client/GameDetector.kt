@@ -10,8 +10,6 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils.contains
-import net.ccbluex.liquidbounce.config.IntegerValue
-import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.entity.boss.IBossDisplayData
 import net.minecraft.entity.item.EntityArmorStand
@@ -19,7 +17,7 @@ import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 import net.minecraft.potion.Potion
 
-object GameDetector: Module("GameDetector", Category.CLIENT, gameDetecting = false, hideModule = false) {
+object GameDetector : Module("GameDetector", Category.CLIENT, gameDetecting = false) {
     // Check if player's gamemode is Survival or Adventure
     private val gameMode by boolean("GameModeCheck", true)
 
@@ -40,7 +38,7 @@ object GameDetector: Module("GameDetector", Category.CLIENT, gameDetecting = fal
 
     // Check for compass inside inventory. If false, then it should only check for selected slot
     private val checkAllSlots by boolean("CheckAllSlots", true) { compass }
-    private val slot by IntegerValue("Slot", 1, 1..9) { compass && !checkAllSlots }
+    private val slot by int("Slot", 1, 1..9) { compass && !checkAllSlots }
 
     // Check for any hub-like BossBar or ArmorStand entities
     private val entity by boolean("EntityCheck", false)

@@ -6,10 +6,11 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.FDPClient.hud
+import net.ccbluex.liquidbounce.config.IntValue
+import net.ccbluex.liquidbounce.config.ListValue
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
-import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blue2Value
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blueValue
@@ -28,8 +29,6 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.Stencil
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInBackNotify
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeOutBackNotify
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI35
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI40
 import net.minecraft.client.renderer.GlStateManager
@@ -46,10 +45,10 @@ import kotlin.math.sin
 /**
  * CustomHUD Notification element
  */
-@ElementInfo(name = "Notifications", single = true)
 class Notifications(
-    x: Double = 0.0, y: Double = 30.0, scale: Float = 1F, side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
-) : Element(x, y, scale, side) {
+    x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
+    side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
+) : Element("Notifications", x, y, scale, side) {
 
     /**
      * Example notification for CustomHUD designer
@@ -57,15 +56,22 @@ class Notifications(
     private val exampleNotification = Notification("Notification", "This is an example notification.", Type.INFO)
 
     companion object {
-        val styleValue by choices("Mode", arrayOf("ZAVZ", "CLASSIC", "IDE"), "ZAVZ")
-        val redValue by int("Red", 255, 0..255) { styleValue == "ZAVZ" }
-        val greenValue by int("Green", 0, 0..255) { styleValue == "ZAVZ" }
-        val blueValue by int("Blue", 84, 0..255) { styleValue == "ZAVZ" }
-        val red2Value by int("Red2", 0, 0..255) { styleValue == "ZAVZ" }
-        val green2Value by int("Green2", 19, 0..255) { styleValue == "ZAVZ" }
-        val blue2Value by int("Blue2", 0, 0..255) { styleValue == "ZAVZ" }
+        val styleValue by ListValue("Mode", arrayOf("ZAVZ", "CLASSIC", "IDE"), "ZAVZ")
+        val redValue by IntValue("Red", 255, 0..255).apply {
+            setSupport { styleValue == "ZAVZ" } }
+        val greenValue by IntValue("Green", 0, 0..255).apply {
+            setSupport { styleValue == "ZAVZ" } }
+        val blueValue by IntValue("Blue", 84, 0..255).apply {
+            setSupport { styleValue == "ZAVZ" } }
+        val red2Value by IntValue("Red2", 0, 0..255).apply {
+            setSupport { styleValue == "ZAVZ" } }
+        val green2Value by IntValue("Green2", 19, 0..255).apply {
+            setSupport { styleValue == "ZAVZ" } }
+        val blue2Value by IntValue("Blue2", 0, 0..255).apply {
+            setSupport { styleValue == "ZAVZ" } }
 
-        val alphaValue by int("Alpha", 0, 0..255) { styleValue == "CLASSIC" }
+        val alphaValue by IntValue("Alpha", 0, 0..255).apply {
+            setSupport { styleValue == "ZAVZ" } }
     }
 
     /**

@@ -5,10 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.config.IntegerValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -32,19 +28,16 @@ import net.minecraft.item.EnumAction
 import net.minecraft.item.ItemBlock
 import kotlin.random.Random.Default.nextBoolean
 
-object AutoClicker : Module("AutoClicker", Category.COMBAT, hideModule = false) {
+object AutoClicker : Module("AutoClicker", Category.COMBAT) {
 
     private val simulateDoubleClicking by boolean("SimulateDoubleClicking", false)
 
-    private val maxCPSValue: IntegerValue = object : IntegerValue("MaxCPS", 8, 1..20) {
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(minCPS)
+    private val maxCPS: Int by int("MaxCPS", 8, 1..20).onChange { _, new ->
+        new.coerceAtLeast(minCPS)
     }
-    private val maxCPS by maxCPSValue
 
-    private val minCPS by object : IntegerValue("MinCPS", 5, 1..20) {
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtMost(maxCPS)
-
-        override fun isSupported() = !maxCPSValue.isMinimal()
+    private val minCPS: Int by int("MinCPS", 5, 1..20).onChange { _, new ->
+        new.coerceAtMost(maxCPS)
     }
 
     private val hurtTime by int("HurtTime", 10, 0..10) { left }

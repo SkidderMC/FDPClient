@@ -8,4 +8,4 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 
-object HurtCam : Module("NoHurtCam", Category.VISUAL, gameDetecting = false, hideModule = false)
+object HurtCam : Module("NoHurtCam", Category.VISUAL, gameDetecting = false)

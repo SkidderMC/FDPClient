@@ -8,12 +8,10 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.network.play.server.S3FPacketCustomPayload
 
-object AntiBlind : Module("AntiBlind", Category.VISUAL, gameDetecting = false, hideModule = false) {
+object AntiBlind : Module("AntiBlind", Category.VISUAL, gameDetecting = false) {
     val confusionEffect by boolean("Confusion", true)
     val pumpkinEffect by boolean("Pumpkin", true)
     val fireEffect by float("FireAlpha", 0.3f, 0f..1f)

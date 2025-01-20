@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -25,10 +23,10 @@ import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
 
 object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
-    private val espMode by choices("ESP-Mode", arrayOf("Box", "Model", "Wireframe"), "Model", subjective = true)
+    private val espMode by choices("ESP-Mode", arrayOf("Box", "Model", "Wireframe"), "Model").subjective()
     private val wireframeWidth by float("WireFrame-Width", 1f, 0.5f..5f) { espMode == "WireFrame" }
 
-    private val espColor = ColorSettingsInteger(this, "ESP") {espMode != "Model" }.with(0, 255, 0)
+    private val espColor = ColorSettingsInteger(this, "ESPColor") { espMode != "Model" }.with(0, 255, 0)
 
     val color
         get() = espColor.color()
@@ -56,9 +54,11 @@ object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
 
                     if (iEntity.truePos) iEntity.interpolatedPosition else positionVector
                 }
+
                 this is EntityLivingBase -> {
                     Vec3(newPosX, newPosY, newPosZ)
                 }
+
                 else -> positionVector
             }
         }

@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.ele
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.config.BoolValue
 import net.ccbluex.liquidbounce.config.FloatValue
-import net.ccbluex.liquidbounce.config.IntegerValue
+import net.ccbluex.liquidbounce.config.IntValue
 import net.ccbluex.liquidbounce.config.ListValue
 import org.lwjgl.input.Keyboard
 import java.awt.Color
@@ -45,7 +45,7 @@ class ModuleElement(
             val element = when (value) {
                 is BoolValue -> BooleanElement(this, value, parent, x + 4, y, width - 8, 12)
                 is FloatValue -> FloatElement(this, value, parent, x + 4, y, width - 4, 12)
-                is IntegerValue -> IntegerElement(this, value, parent, x + 4, y, width - 4, 12)
+                is IntValue -> IntegerElement(this, value, parent, x + 4, y, width - 4, 12)
                 is ListValue -> ListElement(this, value, parent, x + 4, y, width - 8, 12)
                 else -> null
             }

@@ -1,11 +1,10 @@
 /*
  * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -18,7 +17,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.inta
 import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.other.None
 import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.other.Rewi
 
-object NoWeb : Module("NoWeb", Category.MOVEMENT, hideModule = false) {
+object NoWeb : Module("NoWeb", Category.MOVEMENT) {
 
     private val noWebModes = arrayOf(
         // Vanilla

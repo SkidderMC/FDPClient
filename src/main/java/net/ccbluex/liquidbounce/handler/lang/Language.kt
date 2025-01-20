@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.handler.lang
 
+import net.ccbluex.liquidbounce.file.configs.models.ClientConfiguration.overrideLanguage
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.io.decodeJson
@@ -17,9 +18,6 @@ object LanguageManager : MinecraftInstance {
     // Current language
     private val language: String
         get() = overrideLanguage.ifBlank { mc.gameSettings.language }
-
-    // The game language can be overridden by the user
-    var overrideLanguage = ""
 
     // Common language
     private const val COMMON_UNDERSTOOD_LANGUAGE = "en_US"

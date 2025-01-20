@@ -5,9 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.event.loopHandler
@@ -43,7 +40,7 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.event.ForgeEventFactory
 import java.awt.Color
 
-object BedDefender : Module("BedDefender", Category.OTHER, hideModule = false) {
+object BedDefender : Module("BedDefender", Category.OTHER) {
 
     private val autoBlock by choices("AutoBlock", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof")
     private val swing by boolean("Swing", true)

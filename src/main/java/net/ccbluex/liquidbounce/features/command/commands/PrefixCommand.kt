@@ -22,12 +22,8 @@ object PrefixCommand : Command("prefix") {
 
         val prefix = args[1]
 
-        if (prefix.length > 1) {
-            chat("§cPrefix can only be one character long!")
-            return
-        }
+        commandManager.prefix = prefix
 
-        commandManager.prefix = prefix.single()
         saveConfig(valuesConfig)
 
         chat("Successfully changed command prefix to '§8$prefix§3'")

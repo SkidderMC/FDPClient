@@ -11,11 +11,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSmall
-import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawExhiEnchants
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.int
-import net.ccbluex.liquidbounce.config.choices
 import net.minecraft.block.material.Material
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.renderer.GlStateManager.*
@@ -35,7 +31,7 @@ class Armor(
     y: Double = 57.0,
     scale: Float = 1F,
     side: Side = Side(Side.Horizontal.MIDDLE, Side.Vertical.DOWN)
-) : Element(x, y, scale, side) {
+) : Element("Armor", x, y, scale, side) {
 
     private val modeValue by choices("Alignment", arrayOf("Horizontal", "Vertical"), "Vertical")
     private val showAttributes by choices("Attributes", arrayOf("None", "Value", "Percentage", "All"), "Percentage")

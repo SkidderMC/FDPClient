@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.float
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -20,7 +18,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
-object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, hideModule = false) {
+object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL) {
     val colors = ColorSettingsInteger(this, "Color").with(132, 102, 255)
     private val lineHeight by float("LineHeight", 0.25F, 0.25F..2F)
     private val temporary by boolean("Temporary", true)

@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.FDPClient.clickGui
-import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -22,10 +21,15 @@ import java.awt.Color
 
 object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT, canBeEnabled = false) {
     var lastScale = 0
-    private val style by object :
-        ListValue("Style", arrayOf("Black", "Zywl", "FDP"), "FDP") {
-            override fun onChanged(oldValue: String, newValue: String) = updateStyle()
-        }
+
+    private val style by choices(
+        "Style",
+        arrayOf("Black", "Zywl", "FDP"),
+        "FDP"
+    ).onChanged {
+        updateStyle()
+    }
+
     var scale by float("Scale", 0.8f, 0.5f..1.5f)
     val maxElements by int("MaxElements", 15, 1..30)
     val fadeSpeed by float("FadeSpeed", 1f, 0.5f..4f)

@@ -9,16 +9,13 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
-import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.extensions.rotation
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.intRange
 import net.minecraft.entity.player.EntityPlayer
 
-object NoRotateSet : Module("NoRotateSet", Category.OTHER, gameDetecting = false, hideModule = false) {
+object NoRotateSet : Module("NoRotateSet", Category.OTHER, gameDetecting = false) {
     var savedRotation = Rotation.ZERO
 
     private val ignoreOnSpawn by boolean("IgnoreOnSpawn", false)

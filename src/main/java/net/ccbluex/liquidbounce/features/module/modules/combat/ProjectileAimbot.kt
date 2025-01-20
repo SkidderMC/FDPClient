@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.config.*
+import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.RotationUpdateEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -27,23 +27,22 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.*
 import java.awt.Color
 
-object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, hideModule = false) {
+object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT) {
 
-    private val bow by boolean("Bow", true, subjective = true)
-    private val egg by boolean("Egg", true, subjective = true)
-    private val snowball by boolean("Snowball", true, subjective = true)
-    private val pearl by boolean("EnderPearl", false, subjective = true)
-    private val otherItems by boolean("OtherItems", false, subjective = true)
+    private val bow by boolean("Bow", true).subjective()
+    private val egg by boolean("Egg", true).subjective()
+    private val snowball by boolean("Snowball", true).subjective()
+    private val pearl by boolean("EnderPearl", false).subjective()
+    private val otherItems by boolean("OtherItems", false).subjective()
 
     private val range by float("Range", 10f, 0f..30f)
-    private val throughWalls by boolean("ThroughWalls", false, subjective = true)
+    private val throughWalls by boolean("ThroughWalls", false)
     private val throughWallsRange by float("ThroughWallsRange", 10f, 0f..30f) { throughWalls }
 
     private val priority by choices(
         "Priority",
         arrayOf("Health", "Distance", "Direction"),
-        "Direction",
-        subjective = true
+        "Direction"
     )
 
     private val gravityType by choices("GravityType", arrayOf("None", "Projectile"), "Projectile")
@@ -56,52 +55,44 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, hideModule
 
     private val randomization = RandomizationSettings(this) { options.rotationsActive }
 
-    private val highestBodyPointToTargetValue: ListValue = object : ListValue(
-        "HighestBodyPointToTarget",
-        arrayOf("Head", "Body", "Feet"),
-        "Head"
+    private val highestBodyPointToTargetValue = choices(
+        "HighestBodyPointToTarget", arrayOf("Head", "Body", "Feet"), "Head"
     ) {
-        override fun isSupported() = options.rotationsActive
-
-        override fun onChange(oldValue: String, newValue: String): String {
-            val newPoint = RotationUtils.BodyPoint.fromString(newValue)
-            val lowestPoint = RotationUtils.BodyPoint.fromString(lowestBodyPointToTarget)
-            val coercedPoint = RotationUtils.coerceBodyPoint(newPoint, lowestPoint, RotationUtils.BodyPoint.HEAD)
-            return coercedPoint.name
-        }
+        options.rotationsActive
+    }.onChange { _, new ->
+        val newPoint = RotationUtils.BodyPoint.fromString(new)
+        val lowestPoint = RotationUtils.BodyPoint.fromString(lowestBodyPointToTarget)
+        val coercedPoint = RotationUtils.coerceBodyPoint(newPoint, lowestPoint, RotationUtils.BodyPoint.HEAD)
+        coercedPoint.name
     }
-    private val highestBodyPointToTarget by highestBodyPointToTargetValue
+    private val highestBodyPointToTarget: String by highestBodyPointToTargetValue
 
-    private val lowestBodyPointToTargetValue: ListValue = object : ListValue(
-        "LowestBodyPointToTarget",
-        arrayOf("Head", "Body", "Feet"),
-        "Body"
+    private val lowestBodyPointToTargetValue = choices(
+        "LowestBodyPointToTarget", arrayOf("Head", "Body", "Feet"), "Feet"
     ) {
-        override fun isSupported() = options.rotationsActive
-
-        override fun onChange(oldValue: String, newValue: String): String {
-            val newPoint = RotationUtils.BodyPoint.fromString(newValue)
-            val highestPoint = RotationUtils.BodyPoint.fromString(highestBodyPointToTarget)
-            val coercedPoint = RotationUtils.coerceBodyPoint(newPoint, RotationUtils.BodyPoint.FEET, highestPoint)
-            return coercedPoint.name
-        }
+        options.rotationsActive
+    }.onChange { _, new ->
+        val newPoint = RotationUtils.BodyPoint.fromString(new)
+        val highestPoint = RotationUtils.BodyPoint.fromString(highestBodyPointToTarget)
+        val coercedPoint = RotationUtils.coerceBodyPoint(newPoint, RotationUtils.BodyPoint.FEET, highestPoint)
+        coercedPoint.name
     }
 
-    private val lowestBodyPointToTarget by lowestBodyPointToTargetValue
+    private val lowestBodyPointToTarget: String by lowestBodyPointToTargetValue
 
-    private val maxHorizontalBodySearch: FloatValue = object : FloatValue("MaxHorizontalBodySearch", 1f, 0f..1f) {
-        override fun isSupported() = options.rotationsActive
-
-        override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtLeast(minHorizontalBodySearch.get())
+    private val maxHorizontalBodySearch: Value<Float> = float("MaxHorizontalBodySearch", 1f, 0f..1f) {
+        options.rotationsActive
+    }.onChange { _, new ->
+        new.coerceAtLeast(minHorizontalBodySearch.get())
     }
 
-    private val minHorizontalBodySearch: FloatValue = object : FloatValue("MinHorizontalBodySearch", 0f, 0f..1f) {
-        override fun isSupported() = options.rotationsActive
-
-        override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(maxHorizontalBodySearch.get())
+    private val minHorizontalBodySearch: Value<Float> = float("MinHorizontalBodySearch", 0f, 0f..1f) {
+        options.rotationsActive
+    }.onChange { _, new ->
+        new.coerceAtMost(maxHorizontalBodySearch.get())
     }
 
-    private val mark by boolean("Mark", true, subjective = true)
+    private val mark by boolean("Mark", true).subjective()
 
     private var target: Entity? = null
 

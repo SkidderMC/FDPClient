@@ -16,7 +16,7 @@ import net.minecraft.network.play.server.S03PacketTimeUpdate
 import net.minecraft.network.play.server.S2BPacketChangeGameState
 import java.awt.Color
 
-object Ambience : Module("Ambience", Category.VISUAL, gameDetecting = false, hideModule = false) {
+object Ambience : Module("Ambience", Category.VISUAL, gameDetecting = false) {
 
     private val timeMode by choices("Mode", arrayOf("None", "Normal", "Custom", "Day", "Dusk", "Night", "Dynamic"), "Custom")
         private val customWorldTime by int("Time", 6, 0..24) { timeMode == "Custom" }
@@ -25,7 +25,6 @@ object Ambience : Module("Ambience", Category.VISUAL, gameDetecting = false, hid
 
     private val weatherMode by choices("WeatherMode", arrayOf("None", "Sun", "Rain", "Thunder"), "None")
         private val weatherStrength by FloatValue("WeatherStrength", 1f, 0f..1f)
-            { weatherMode == "Rain" || weatherMode == "Thunder" }
 
     // world color
     val worldColor by boolean("WorldColor", false)

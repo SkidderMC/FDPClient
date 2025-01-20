@@ -5,10 +5,11 @@
  */
 package net.ccbluex.liquidbounce.script.remapper
 
+import kotlinx.coroutines.runBlocking
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.file.FileManager.dir
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
-import net.ccbluex.liquidbounce.utils.io.HttpUtils.download
+import net.ccbluex.liquidbounce.utils.io.HttpUtils.Downloader
 import net.ccbluex.liquidbounce.utils.io.isEmpty
 import net.ccbluex.liquidbounce.utils.io.sha256
 import java.io.File
@@ -44,7 +45,7 @@ object Remapper {
             if (!sha256File.exists() || !sha256File.isFile || sha256File.isEmpty) {
                 sha256File.createNewFile()
 
-                download("$CLIENT_CLOUD/srgs/mcp-$srgName.srg.sha256", sha256File)
+                Downloader.downloadWholeFile("$CLIENT_CLOUD/srgs/mcp-$srgName.srg.sha256", sha256File)
                 LOGGER.info("[Remapper] Downloaded $srgName sha256.")
             }
 
@@ -53,7 +54,9 @@ object Remapper {
                 // Download srg file
                 srgFile.createNewFile()
 
-                download("$CLIENT_CLOUD/srgs/mcp-$srgName.srg", srgFile)
+                runBlocking {
+                    Downloader.download("$CLIENT_CLOUD/srgs/mcp-$srgName.srg", srgFile)
+                }
                 LOGGER.info("[Remapper] Downloaded $srgName.")
             }
 
@@ -84,7 +87,7 @@ object Remapper {
 
     private fun parseSrg() {
         srgFile.forEachLine {
-            val args = it.split(" ")
+            val args = it.split(' ')
 
             when {
                 it.startsWith("FD:") -> {

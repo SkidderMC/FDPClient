@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.features.module.modules.other
 
 import kotlinx.coroutines.delay
 import net.ccbluex.liquidbounce.FDPClient.hud
-import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -49,7 +48,7 @@ import net.minecraft.network.play.server.S30PacketWindowItems
 import java.awt.Color
 import kotlin.math.sqrt
 
-object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false) {
+object ChestStealer : Module("ChestStealer", Category.OTHER) {
 
     private val smartDelay by boolean("SmartDelay", false)
     private val multiplier by int("DelayMultiplier", 120, 0..500) { smartDelay }
@@ -57,38 +56,41 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, hideModule = false)
 
     private val simulateShortStop by boolean("SimulateShortStop", false)
 
-    private val maxDelay: Int by object : IntegerValue("MaxDelay", 50, 0..500) {
-        override fun isSupported() = !smartDelay
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(minDelay)
+    private val maxDelay: Int by int("MaxDelay", 50, 0..500) {
+        !smartDelay
+    }.onChange { _, new ->
+        new.coerceAtLeast(minDelay)
     }
-    private val minDelay by object : IntegerValue("MinDelay", 50, 0..500) {
-        override fun isSupported() = maxDelay > 0 && !smartDelay
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtMost(maxDelay)
+    private val minDelay: Int by int("MinDelay", 50, 0..500) {
+        maxDelay > 0 && !smartDelay
+    }.onChange { _, new ->
+        new.coerceAtMost(maxDelay)
     }
 
     private val startDelay by int("StartDelay", 50, 0..500)
     private val closeDelay by int("CloseDelay", 50, 0..500)
 
-    private val noMove by InventoryManager.noMoveValue
-    private val noMoveAir by InventoryManager.noMoveAirValue
-    private val noMoveGround by InventoryManager.noMoveGroundValue
+    private val noMove by +InventoryManager.noMoveValue
+    private val noMoveAir by +InventoryManager.noMoveAirValue
+    private val noMoveGround by +InventoryManager.noMoveGroundValue
 
     private val chestTitle by boolean("ChestTitle", true)
 
     private val randomSlot by boolean("RandomSlot", true)
 
-    private val progressBar by boolean("ProgressBar", true, subjective = true)
+    private val progressBar by boolean("ProgressBar", true).subjective()
 
-    val silentGUI by boolean("SilentGUI", false, subjective = true)
+    val silentGUI by boolean("SilentGUI", false).subjective()
 
-    val highlightSlot by boolean("Highlight-Slot", false, subjective = true) { !silentGUI }
-    val backgroundColor = color("BackgroundColor", Color(128, 128, 128), subjective = true) { highlightSlot && !silentGUI }
+    val highlightSlot by boolean("Highlight-Slot", false) { !silentGUI }.subjective()
+    val backgroundColor =
+        color("BackgroundColor", Color(128, 128, 128)) { highlightSlot && !silentGUI }.subjective()
 
-    val borderStrength by int("Border-Strength", 3, 1..5, subjective = true) { highlightSlot && !silentGUI }
-    val borderColor = color("BorderColor", Color(128, 128, 128), subjective = true) { highlightSlot && !silentGUI }
+    val borderStrength by int("Border-Strength", 3, 1..5) { highlightSlot && !silentGUI }.subjective()
+    val borderColor = color("BorderColor", Color(128, 128, 128)) { highlightSlot && !silentGUI }.subjective()
 
-    private val chestDebug by choices("Chest-Debug", arrayOf("Off", "Text", "Notification"), "Off", subjective = true)
-    private val itemStolenDebug by boolean("ItemStolen-Debug", false, subjective = true) { chestDebug != "Off" }
+    private val chestDebug by choices("Chest-Debug", arrayOf("Off", "Text", "Notification"), "Off").subjective()
+    private val itemStolenDebug by boolean("ItemStolen-Debug", false) { chestDebug != "Off" }.subjective()
 
     private var progress: Float? = null
         set(value) {

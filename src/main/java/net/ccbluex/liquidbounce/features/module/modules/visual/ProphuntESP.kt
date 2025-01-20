@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-
-import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -34,10 +32,8 @@ object ProphuntESP : Module("ProphuntESP", Category.VISUAL, gameDetecting = fals
 
     private val color by color("Color", Color(0, 90, 255))
 
-    private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 50, 1..200) {
-        override fun onUpdate(value: Int) {
-            maxRenderDistanceSq = value.toDouble().pow(2.0)
-        }
+    private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200).onChanged { value ->
+        maxRenderDistanceSq = value.toDouble().pow(2)
     }
 
     private var maxRenderDistanceSq = 0.0

@@ -5,10 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import net.ccbluex.liquidbounce.config.FloatValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -56,32 +52,26 @@ object ChestAura : Module("ChestAura", Category.OTHER) {
     private val chest by boolean("Chest", true)
     private val enderChest by boolean("EnderChest", false)
 
-    private val range: Float by object : FloatValue("Range", 5F, 1F..5F) {
-        override fun onUpdate(value: Float) {
-            rangeSq = value.pow(2)
-            searchRadiusSq = (value + 1).pow(2)
-        }
+    private val range by float("Range", 5F, 1F..5F).onChanged { value ->
+        rangeSq = value.pow(2)
+        searchRadiusSq = (value + 1).pow(2)
     }
     private val delay by int("Delay", 200, 50..500)
 
     private val throughWalls by boolean("ThroughWalls", true)
-    private val wallsRange: Float by object : FloatValue("ThroughWallsRange", 3F, 1F..5F) {
-        override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(this@ChestAura.range)
-
-        override fun onUpdate(value: Float) {
-            wallsRangeSq = value.pow(2)
-        }
-
-        override fun isSupported() = throughWalls
+    private val wallsRange by float("ThroughWallsRange", 3F, 1F..5F) {
+        throughWalls
+    }.onChange { _, new ->
+        new.coerceAtMost(this@ChestAura.range)
+    }.onChanged { value ->
+        wallsRangeSq = value.pow(2)
     }
 
-    private val minDistanceFromOpponent: Float by object : FloatValue("MinDistanceFromOpponent", 10F, 0F..30F) {
-        override fun onUpdate(value: Float) {
-            minDistanceFromOpponentSq = value.pow(2)
-        }
+    private val minDistanceFromOpponent by float("MinDistanceFromOpponent", 10F, 0F..30F).onChanged { value ->
+        minDistanceFromOpponentSq = value.pow(2)
     }
 
-    private val visualSwing by boolean("VisualSwing", true, subjective = true)
+    private val visualSwing by boolean("VisualSwing", true).subjective()
 
     private val ignoreLooted by boolean("IgnoreLootedChests", true)
     private val detectRefill by boolean("DetectChestRefill", true)

@@ -5,11 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
-
 import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.RotationUpdateEvent
@@ -36,7 +31,7 @@ import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
 
-object AntiFireball : Module("AntiFireball", Category.PLAYER, hideModule = false) {
+object AntiFireball : Module("AntiFireball", Category.PLAYER) {
 
     private val indicators by boolean("Indicator", true)
 

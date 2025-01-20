@@ -1,12 +1,10 @@
 /*
  * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -16,7 +14,7 @@ import net.ccbluex.liquidbounce.utils.movement.FallingPlayer
 import net.minecraft.block.BlockAir
 import net.minecraft.util.BlockPos
 
-object SafeWalk : Module("SafeWalk", Category.MOVEMENT, hideModule = false) {
+object SafeWalk : Module("SafeWalk", Category.MOVEMENT) {
 
     private val airSafe by boolean("AirSafe", false)
     private val maxFallDistanceValue = int("MaxFallDistance", 5, 0..100)

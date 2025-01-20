@@ -9,8 +9,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.client.renderer.OpenGlHelper
 import net.minecraft.client.renderer.RenderHelper
@@ -25,7 +23,7 @@ import kotlin.math.atan
  * Draw mini figure of your character to the HUD
  */
 @ElementInfo(name = "Model")
-class Model(x: Double = 40.0, y: Double = 100.0) : Element(x, y) {
+class Model(x: Double = 40.0, y: Double = 100.0) : Element("Model", x, y) {
 
     private val yawMode by choices("Yaw", arrayOf("Player", "Animation", "Custom"), "Animation")
         private val customYaw by float("CustomYaw", 0F, -180F..180F) { yawMode == "Custom" }

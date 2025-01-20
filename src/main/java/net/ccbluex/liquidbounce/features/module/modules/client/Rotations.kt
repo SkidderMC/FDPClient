@@ -13,12 +13,9 @@ import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.serverRotation
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.event.handler
 
-object Rotations : Module("Rotations", Category.CLIENT, gameDetecting = false, hideModule = false) {
+object Rotations : Module("Rotations", Category.CLIENT, gameDetecting = false) {
 
     private val realistic by boolean("Realistic", true)
     private val body by boolean("Body", true) { !realistic }

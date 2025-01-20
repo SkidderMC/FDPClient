@@ -16,20 +16,19 @@ class ScriptModule(name: String, category: Category, description: String, privat
     : Module(name, category, forcedDescription = description) {
 
     private val events = hashMapOf<String, JSObject>()
-    private val _values = linkedMapOf<String, Value<*>>()
     private var _tag: String? = null
 
     /**
      * Allows the user to access values by typing module.settings.<valuename>
      */
-    val settings by lazy { _values }
+    val settings = linkedMapOf<String, Value<*>>()
 
     init {
         if (moduleObject.hasMember("settings")) {
             val settings = moduleObject.getMember("settings") as JSObject
 
             for (settingName in settings.keySet())
-                _values[settingName] = settings.getMember(settingName) as Value<*>
+                this.settings[settingName] = +(settings.getMember(settingName) as Value<*>)
         }
 
         if (moduleObject.hasMember("tag"))
@@ -45,9 +44,6 @@ class ScriptModule(name: String, category: Category, description: String, privat
             })
         }
     }
-
-    override val values
-        get() = _values.values.toSet()
 
     override var tag
         get() = _tag

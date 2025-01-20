@@ -8,14 +8,17 @@ package net.ccbluex.liquidbounce.script.api.global
 import jdk.nashorn.api.scripting.JSObject
 import jdk.nashorn.api.scripting.ScriptObjectMirror
 import jdk.nashorn.api.scripting.ScriptUtils
-import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.config.*
 import net.minecraft.client.gui.FontRenderer
 
 /**
  * Object used by the script API to provide an idiomatic way of creating module values.
+ * TODO: intRange, floatRange, color
+ *
+ * Note: this usage of [Configurable] is incorrect!!
  */
-object Setting {
+object Setting : Configurable("ScriptSetting") {
 
     /**
      * Creates a boolean value.
@@ -31,25 +34,22 @@ object Setting {
         val onChangeCallback = settingInfo["onChange"] as? ScriptObjectMirror
         val onChangedCallback = settingInfo["onChanged"] as? ScriptObjectMirror
 
-        return object : BoolValue(name, default) {
-            override fun isSupported() = isSupportedCallback?.call(null) as? Boolean ?: true
-
-            override fun onChange(oldValue: Boolean, newValue: Boolean) =
-                onChangeCallback?.call(null, oldValue, newValue) as? Boolean ?: newValue
-
-            override fun onChanged(oldValue: Boolean, newValue: Boolean) {
-                onChangedCallback?.call(null, oldValue, newValue)
-            }
-        }
+        return boolean(name, default) {
+            isSupportedCallback?.call(null) as? Boolean ?: true
+        }.onChange { old, new ->
+            onChangeCallback?.call(null, old, new) as? Boolean ?: new
+        }.onChanged { new ->
+            onChangedCallback?.call(null, new)
+        } as BoolValue
     }
 
     /**
      * Creates an integer value.
      * @param settingInfo JavaScript object containing information about the value.
-     * @return An instance of [IntegerValue]
+     * @return An instance of [IntValue]
      */
     @JvmStatic
-    fun integer(settingInfo: JSObject): IntegerValue {
+    fun integer(settingInfo: JSObject): IntValue {
         val name = settingInfo["name"] as String
         val default = settingInfo["default"]!!.toInt()
         val min = settingInfo["min"]!!.toInt()
@@ -59,16 +59,13 @@ object Setting {
         val onChangeCallback = settingInfo["onChange"] as? ScriptObjectMirror
         val onChangedCallback = settingInfo["onChanged"] as? ScriptObjectMirror
 
-        return object : IntegerValue(name, default, min..max) {
-            override fun isSupported() = isSupportedCallback?.call(null) as? Boolean ?: true
-
-            override fun onChange(oldValue: Int, newValue: Int) =
-                onChangeCallback?.call(null, oldValue, newValue)?.toInt() ?: newValue
-
-            override fun onChanged(oldValue: Int, newValue: Int) {
-                onChangedCallback?.call(null, oldValue, newValue)
-            }
-        }
+        return int(name, default, min..max) {
+            isSupportedCallback?.call(null) as? Boolean ?: true
+        }.onChange { old, new ->
+            onChangeCallback?.call(null, old, new)?.toInt() ?: new
+        }.onChanged { new ->
+            onChangedCallback?.call(null, new)
+        } as IntValue
     }
 
     /**
@@ -87,16 +84,13 @@ object Setting {
         val onChangeCallback = settingInfo["onChange"] as? ScriptObjectMirror
         val onChangedCallback = settingInfo["onChanged"] as? ScriptObjectMirror
 
-        return object : FloatValue(name, default, min..max) {
-            override fun isSupported() = isSupportedCallback?.call(null) as? Boolean ?: true
-
-            override fun onChange(oldValue: Float, newValue: Float) =
-                onChangeCallback?.call(null, oldValue, newValue)?.toFloat() ?: newValue
-
-            override fun onChanged(oldValue: Float, newValue: Float) {
-                onChangedCallback?.call(null, oldValue, newValue)
-            }
-        }
+        return float(name, default, min..max) {
+            isSupportedCallback?.call(null) as? Boolean ?: true
+        }.onChange { old, new ->
+            onChangeCallback?.call(null, old, new)?.toFloat() ?: new
+        }.onChanged { new ->
+            onChangedCallback?.call(null, new)
+        } as FloatValue
     }
 
     /**
@@ -113,16 +107,13 @@ object Setting {
         val onChangeCallback = settingInfo["onChange"] as? ScriptObjectMirror
         val onChangedCallback = settingInfo["onChanged"] as? ScriptObjectMirror
 
-        return object : TextValue(name, default) {
-            override fun isSupported() = isSupportedCallback?.call(null) as? Boolean ?: true
-
-            override fun onChange(oldValue: String, newValue: String) =
-                onChangeCallback?.call(null, oldValue, newValue) as? String ?: newValue
-
-            override fun onChanged(oldValue: String, newValue: String) {
-                onChangedCallback?.call(null, oldValue, newValue)
-            }
-        }
+        return text(name, default) {
+            isSupportedCallback?.call(null) as? Boolean ?: true
+        }.onChange { old, new ->
+            onChangeCallback?.call(null, old, new) as? String ?: new
+        }.onChanged { new ->
+            onChangedCallback?.call(null, new)
+        } as TextValue
     }
 
     /**
@@ -139,16 +130,13 @@ object Setting {
         val onChangeCallback = settingInfo["onChange"] as? ScriptObjectMirror
         val onChangedCallback = settingInfo["onChanged"] as? ScriptObjectMirror
 
-        return object : BlockValue(name, default) {
-            override fun isSupported() = isSupportedCallback?.call(null) as? Boolean ?: true
-
-            override fun onChange(oldValue: Int, newValue: Int) =
-                onChangeCallback?.call(null, oldValue, newValue)?.toInt() ?: newValue
-
-            override fun onChanged(oldValue: Int, newValue: Int) {
-                onChangedCallback?.call(null, oldValue, newValue)
-            }
-        }
+        return block(name, default) {
+            isSupportedCallback?.call(null) as? Boolean ?: true
+        }.onChange { old, new ->
+            onChangeCallback?.call(null, old, new)?.toInt() ?: new
+        }.onChanged { new ->
+            onChangedCallback?.call(null, new)
+        } as BlockValue
     }
 
     /**
@@ -167,16 +155,13 @@ object Setting {
         val onChangeCallback = settingInfo["onChange"] as? ScriptObjectMirror
         val onChangedCallback = settingInfo["onChanged"] as? ScriptObjectMirror
 
-        return object : ListValue(name, values, default) {
-            override fun isSupported() = isSupportedCallback?.call(null) as? Boolean ?: true
-
-            override fun onChange(oldValue: String, newValue: String) =
-                onChangeCallback?.call(null, oldValue, newValue) as? String ?: newValue
-
-            override fun onChanged(oldValue: String, newValue: String) {
-                onChangedCallback?.call(null, oldValue, newValue)
-            }
-        }
+        return choices(name, values, default) {
+            isSupportedCallback?.call(null) as? Boolean ?: true
+        }.onChange { old, new ->
+            onChangeCallback?.call(null, old, new) as? String ?: new
+        }.onChanged { new ->
+            onChangedCallback?.call(null, new)
+        } as ListValue
     }
 
     /**
@@ -193,18 +178,15 @@ object Setting {
         val onChangeCallback = settingInfo["onChange"] as? ScriptObjectMirror
         val onChangedCallback = settingInfo["onChanged"] as? ScriptObjectMirror
 
-        return object : FontValue(name, default) {
-            override fun isSupported() = isSupportedCallback?.call(null) as? Boolean ?: true
-
-            override fun onChange(oldValue: FontRenderer, newValue: FontRenderer): FontRenderer =
-                onChangeCallback?.call(null, oldValue, newValue) as? FontRenderer ?: newValue
-
-            override fun onChanged(oldValue: FontRenderer, newValue: FontRenderer) {
-                onChangedCallback?.call(null, oldValue, newValue)
-            }
-        }
+        return font(name, default) {
+            isSupportedCallback?.call(null) as? Boolean ?: true
+        }.onChange { old, new ->
+            onChangeCallback?.call(null, old, new) as? FontRenderer ?: new
+        }.onChanged { new ->
+            onChangedCallback?.call(null, new)
+        } as FontValue
     }
-    
+
 }
 
 private fun Any.toInt() = (this as Number).toInt()

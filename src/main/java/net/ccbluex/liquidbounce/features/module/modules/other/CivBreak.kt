@@ -16,8 +16,6 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getCenterDistance
 import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.float
 import net.minecraft.init.Blocks.air
 import net.minecraft.init.Blocks.bedrock
 import net.minecraft.network.play.client.C07PacketPlayerDigging
@@ -31,18 +29,15 @@ import java.awt.Color
 object CivBreak : Module("CivBreak", Category.OTHER) {
 
     private val range by float("Range", 5F, 1F..6F)
-    private val visualSwing by boolean("VisualSwing", true, subjective = false)
+    private val visualSwing by boolean("VisualSwing", true).subjective()
 
     private val options = RotationSettings(this).withoutKeepRotation()
 
     private var blockPos: BlockPos? = null
     private var enumFacing: EnumFacing? = null
 
-
     val onBlockClick = handler<ClickBlockEvent> { event ->
         blockPos = event.clickedBlock?.takeIf { it.block != bedrock } ?: return@handler
-
-        blockPos = event.clickedBlock ?: return@handler
         enumFacing = event.enumFacing ?: return@handler
 
         // Break
@@ -52,23 +47,21 @@ object CivBreak : Module("CivBreak", Category.OTHER) {
         )
     }
 
+    val onRotationUpdate = handler<RotationUpdateEvent> {
+        val pos = blockPos ?: return@handler
+        val isAirBlock = pos.block == air
 
-     val onRotationUpdate = handler<RotationUpdateEvent> {
-            val pos = blockPos ?: return@handler
-            val isAirBlock = pos.block == air
-
-            if (isAirBlock || getCenterDistance(pos) > range) {
-                blockPos = null
-                return@handler
-            }
-
-            if (options.rotationsActive) {
-                val spot = faceBlock(pos) ?: return@handler
-
-                setTargetRotation(spot.rotation, options = options)
-            }
+        if (isAirBlock || getCenterDistance(pos) > range) {
+            blockPos = null
+            return@handler
         }
 
+        if (options.rotationsActive) {
+            val spot = faceBlock(pos) ?: return@handler
+
+            setTargetRotation(spot.rotation, options = options)
+        }
+    }
 
     val onTick = handler<GameTickEvent> {
         blockPos ?: return@handler
@@ -89,8 +82,7 @@ object CivBreak : Module("CivBreak", Category.OTHER) {
         mc.playerController.clickBlock(blockPos, enumFacing)
     }
 
-
-    val onRender3D = handler<Render3DEvent> { 
+    val onRender3D = handler<Render3DEvent> {
         drawBlockBox(blockPos ?: return@handler, Color.RED, true)
     }
 }

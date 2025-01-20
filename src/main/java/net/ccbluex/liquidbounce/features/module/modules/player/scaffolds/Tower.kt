@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player.scaffolds
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
@@ -17,17 +18,13 @@ import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.blocksAmount
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
-import net.ccbluex.liquidbounce.config.FloatValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.int
 import net.minecraft.init.Blocks.air
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.stats.StatList
 import net.minecraft.util.BlockPos
 import kotlin.math.truncate
 
-object Tower : MinecraftInstance, Listenable {
+object Tower : Configurable("Tower"), MinecraftInstance, Listenable {
 
     val towerModeValues = choices(
         "TowerMode",
@@ -54,7 +51,7 @@ object Tower : MinecraftInstance, Listenable {
     val notOnMoveValues = boolean("TowerNotOnMove", false) { towerModeValues.get() != "None" }
 
     // Jump mode
-    val jumpMotionValues = FloatValue("JumpMotion", 0.42f, 0.3681289f..0.79f) { towerModeValues.get() == "MotionJump" }
+    val jumpMotionValues = float("JumpMotion", 0.42f, 0.3681289f..0.79f) { towerModeValues.get() == "MotionJump" }
     val jumpDelayValues = int(
         "JumpDelay",
         0,
@@ -62,12 +59,12 @@ object Tower : MinecraftInstance, Listenable {
     ) { towerModeValues.get() == "MotionJump" || towerModeValues.get() == "Jump" }
 
     // Constant Motion values
-    val constantMotionValues = FloatValue(
+    val constantMotionValues = float(
         "ConstantMotion",
         0.42f,
         0.1f..1f
     ) { towerModeValues.get() == "ConstantMotion" }
-    val constantMotionJumpGroundValues = FloatValue(
+    val constantMotionJumpGroundValues = float(
         "ConstantMotionJumpGround",
         0.79f,
         0.76f..1f
@@ -75,11 +72,11 @@ object Tower : MinecraftInstance, Listenable {
     val constantMotionJumpPacketValues = boolean("JumpPacket", true) { towerModeValues.get() == "ConstantMotion" }
 
     // Pull-down
-    val triggerMotionValues = FloatValue("TriggerMotion", 0.1f, 0.0f..0.2f) { towerModeValues.get() == "Pulldown" }
-    val dragMotionValues = FloatValue("DragMotion", 1.0f, 0.1f..1.0f) { towerModeValues.get() == "Pulldown" }
+    val triggerMotionValues = float("TriggerMotion", 0.1f, 0.0f..0.2f) { towerModeValues.get() == "Pulldown" }
+    val dragMotionValues = float("DragMotion", 1.0f, 0.1f..1.0f) { towerModeValues.get() == "Pulldown" }
 
     // Teleport
-    val teleportHeightValues = FloatValue("TeleportHeight", 1.15f, 0.1f..5f) { towerModeValues.get() == "Teleport" }
+    val teleportHeightValues = float("TeleportHeight", 1.15f, 0.1f..5f) { towerModeValues.get() == "Teleport" }
     val teleportDelayValues = int("TeleportDelay", 0, 0..20) { towerModeValues.get() == "Teleport" }
     val teleportGroundValues = boolean("TeleportGround", true) { towerModeValues.get() == "Teleport" }
     val teleportNoMotionValues = boolean("TeleportNoMotion", false) { towerModeValues.get() == "Teleport" }

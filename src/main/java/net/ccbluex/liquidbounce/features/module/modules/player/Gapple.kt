@@ -5,11 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.float
-import net.ccbluex.liquidbounce.config.int
-
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
@@ -30,7 +25,7 @@ import net.minecraft.potion.Potion.regeneration
 import net.minecraft.util.MathHelper
 import java.util.*
 
-object Gapple : Module("Gapple", Category.PLAYER, hideModule = false) {
+object Gapple : Module("Gapple", Category.PLAYER) {
 
     private val modeValue by choices("Mode", arrayOf("Auto", "LegitAuto", "Legit", "Head"), "Auto")
     private val percent by float("HealthPercent", 75.0f, 1.0f..100.0f)

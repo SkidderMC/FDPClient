@@ -35,7 +35,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
-object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
+object ESP : Module("ESP", Category.VISUAL) {
 
     val mode by choices(
         "Mode",
@@ -51,12 +51,10 @@ object ESP : Module("ESP", Category.VISUAL, hideModule = false) {
     private val glowFade by int("Glow-Fade", 10, 0..30) { mode == "Glow" }
     private val glowTargetAlpha by float("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
 
-    private val espColor = ColorSettingsInteger(this, "ESP").with(255, 255, 255)
+    private val espColor = ColorSettingsInteger(this, "ESPColor").with(255, 255, 255)
 
-    private val maxRenderDistance by object : IntegerValue("MaxRenderDistance", 100, 1..200) {
-        override fun onUpdate(value: Int) {
-            maxRenderDistanceSq = value.toDouble().pow(2.0)
-        }
+    private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200).onChanged { value ->
+        maxRenderDistanceSq = value.toDouble().pow(2)
     }
 
     private val onLook by boolean("OnLook", false)

@@ -5,11 +5,10 @@
  */
 package net.ccbluex.liquidbounce.utils.rotation
 
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.floatRange
 
-class RandomizationSettings(owner: Module, generalApply: () -> Boolean = { true }) {
+class RandomizationSettings(owner: Module, generalApply: () -> Boolean = { true }): Configurable("Randomization") {
 
     val randomize by boolean("RandomizeRotations", false) { generalApply() }
     val yawRandomizationChance by floatRange("YawRandomizationChance", 0.8f..1.0f, 0f..1f) { randomize }
@@ -20,6 +19,6 @@ class RandomizationSettings(owner: Module, generalApply: () -> Boolean = { true 
     { randomize && pitchRandomizationChance.start != 1F }
 
     init {
-        owner.addConfigurable(this)
+        owner.addValues(this.values)
     }
 }

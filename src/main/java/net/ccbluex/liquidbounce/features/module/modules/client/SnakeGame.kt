@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import net.ccbluex.liquidbounce.config.choices
 import net.ccbluex.liquidbounce.event.KeyEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
@@ -22,7 +21,7 @@ import net.minecraft.client.gui.ScaledResolution
 import java.awt.Color
 import javax.vecmath.Point2i
 
-object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, hideModule = false) {
+object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false) {
 
     private val mode by choices("Mode", arrayOf("Easy", "Normal", "Hard"), "Easy")
 
@@ -79,10 +78,12 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
                         if (score % 3 == 0) generateOneObstacle()
                         if (score % 10 == 0 && obstacles.isNotEmpty()) obstacles.removeAt(obstacles.lastIndex)
                     }
+
                     "Normal" -> {
                         if (score % 2 == 0) generateOneObstacle()
                         if (score % 5 == 0 && obstacles.isNotEmpty()) obstacles.removeAt(obstacles.lastIndex)
                     }
+
                     "Hard" -> {
                         if (score % 5 == 0 && obstacles.isNotEmpty()) obstacles.removeAt(obstacles.lastIndex)
                     }
@@ -212,6 +213,7 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false, h
             "Hard" -> {
                 generateObstacles(7)
             }
+
             "Normal", "Easy" -> {
                 obstacles.clear()
             }

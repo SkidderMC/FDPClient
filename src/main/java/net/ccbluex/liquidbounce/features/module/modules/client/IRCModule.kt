@@ -10,7 +10,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.ccbluex.liquidbounce.handler.irc.Client
 import net.ccbluex.liquidbounce.handler.irc.packet.packets.*
-import net.ccbluex.liquidbounce.config.BoolValue
 import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.event.loopHandler
@@ -29,17 +28,10 @@ import java.util.regex.Pattern
 
 object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecting = false) {
 
-    init {
-        state = true
-        inArray = false
-    }
-
-    var jwt by object : BoolValue("JWT", false) {
-        override fun onChanged(oldValue: Boolean, newValue: Boolean) {
-            if (state) {
-                state = false
-                state = true
-            }
+    var jwt by boolean("JWT", false).onChanged {
+        if (state) {
+            state = false
+            state = true
         }
     }
 

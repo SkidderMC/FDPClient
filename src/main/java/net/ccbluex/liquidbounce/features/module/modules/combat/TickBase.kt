@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.config.*
+import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -34,19 +34,19 @@ object TickBase : Module("TickBase", Category.COMBAT) {
     private val balanceRecoveryIncrement by float("BalanceRecoveryIncrement", 0.1f, 0.01f..10f)
     private val maxTicksAtATime by int("MaxTicksAtATime", 20, 1..100)
 
-    private val maxRangeToAttack: FloatValue = object : FloatValue("MaxRangeToAttack", 5.0f, 0f..10f) {
-        override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtLeast(minRangeToAttack.get())
+    private val maxRangeToAttack: Value<Float> = float("MaxRangeToAttack", 5.0f, 0f..10f).onChange { _, new ->
+        new.coerceAtLeast(minRangeToAttack.get())
     }
-    private val minRangeToAttack: FloatValue = object : FloatValue("MinRangeToAttack", 3.0f, 0f..10f) {
-        override fun onChange(oldValue: Float, newValue: Float) = newValue.coerceAtMost(maxRangeToAttack.get())
+    private val minRangeToAttack: Value<Float> = float("MinRangeToAttack", 3.0f, 0f..10f).onChange { _, new ->
+        new.coerceAtMost(maxRangeToAttack.get())
     }
 
     private val forceGround by boolean("ForceGround", false)
     private val pauseAfterTick by int("PauseAfterTick", 0, 0..100)
     private val pauseOnFlag by boolean("PauseOnFlag", true)
 
-    private val line by boolean("Line", true, subjective = true)
-    private val lineColor by color("LineColor", Color.GREEN, subjective = true) { line }
+    private val line by boolean("Line", true).subjective()
+    private val lineColor by color("LineColor", Color.GREEN) { line }.subjective()
 
     private var ticksToSkip = 0
     private var tickBalance = 0f

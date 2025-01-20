@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.config.boolean
 import net.ccbluex.liquidbounce.event.RotationSetEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -16,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.rotation.Rotation
 
 object FreeLook : Module("FreeLook", Category.VISUAL) {
 
-    private val autoF5 by boolean("AutoF5", true, subjective = true)
+    private val autoF5 by boolean("AutoF5", true).subjective()
 
     // The module's rotations
     private var currRotation = Rotation.ZERO

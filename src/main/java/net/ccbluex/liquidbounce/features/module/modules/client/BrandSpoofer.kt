@@ -9,15 +9,13 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.button.*
 import net.ccbluex.liquidbounce.config.ListValue
-import net.ccbluex.liquidbounce.config.choices
-import net.ccbluex.liquidbounce.config.text
 import net.minecraft.client.gui.GuiButton
 import java.util.*
 
 /**
  * The type Client spoof.
  */
-object BrandSpoofer : Module("BrandSpoofer", Category.CLIENT, hideModule = false) {
+object BrandSpoofer : Module("BrandSpoofer", Category.CLIENT) {
     /**
      * The Mode value.
      */

@@ -8,9 +8,6 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import net.ccbluex.liquidbounce.config.IntegerValue
-import net.ccbluex.liquidbounce.config.boolean
-import net.ccbluex.liquidbounce.config.int
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner.canBeRepairedWithOther
@@ -37,32 +34,30 @@ import net.minecraft.entity.EntityLiving.getArmorPosition
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 
-object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
-    private val maxDelay: Int by object : IntegerValue("MaxDelay", 50, 0..500) {
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtLeast(minDelay)
+object AutoArmor : Module("AutoArmor", Category.COMBAT) {
+    private val maxDelay: Int by int("MaxDelay", 50, 0..500).onChange { _, new ->
+        new.coerceAtLeast(minDelay)
     }
-    private val minDelay by object : IntegerValue("MinDelay", 50, 0..500) {
-        override fun onChange(oldValue: Int, newValue: Int) = newValue.coerceAtMost(maxDelay)
-
-        override fun isSupported() = maxDelay > 0
+    private val minDelay: Int by int("MinDelay", 50, 0..500).onChange { _, new ->
+        new.coerceAtMost(maxDelay)
     }
     private val minItemAge by int("MinItemAge", 0, 0..2000)
 
-    private val invOpen by InventoryManager.invOpenValue
-    private val simulateInventory by InventoryManager.simulateInventoryValue
+    private val invOpen by +InventoryManager.invOpenValue
+    private val simulateInventory by +InventoryManager.simulateInventoryValue
 
-    private val postInventoryCloseDelay by InventoryManager.postInventoryCloseDelayValue
-    private val autoClose by InventoryManager.autoCloseValue
-    private val startDelay by InventoryManager.startDelayValue
-    private val closeDelay by InventoryManager.closeDelayValue
+    private val postInventoryCloseDelay by +InventoryManager.postInventoryCloseDelayValue
+    private val autoClose by +InventoryManager.autoCloseValue
+    private val startDelay by +InventoryManager.startDelayValue
+    private val closeDelay by +InventoryManager.closeDelayValue
 
     // When swapping armor pieces, it grabs the better one, drags and swaps it with equipped one and drops the equipped one (no time of having no armor piece equipped)
     // Has to make more clicks, works slower
     val smartSwap by boolean("SmartSwap", true)
 
-    private val noMove by InventoryManager.noMoveValue
-    private val noMoveAir by InventoryManager.noMoveAirValue
-    private val noMoveGround by InventoryManager.noMoveGroundValue
+    private val noMove by +InventoryManager.noMoveValue
+    private val noMoveAir by +InventoryManager.noMoveAirValue
+    private val noMoveGround by +InventoryManager.noMoveGroundValue
 
     private val hotbar by boolean("Hotbar", true)
 
@@ -72,11 +67,11 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, hideModule = false) {
     // Prevents AutoArmor from hotbar equipping while any screen is open
     private val notInContainers by boolean("NotInContainers", false) { hotbar }
 
-    val highlightSlot by InventoryManager.highlightSlotValue
-    val backgroundColor by InventoryManager.borderColor
+    val highlightSlot by +InventoryManager.highlightSlotValue
+    val backgroundColor by +InventoryManager.borderColor
 
-    val borderStrength by InventoryManager.borderStrength
-    val borderColor by InventoryManager.borderColor
+    val borderStrength by +InventoryManager.borderStrength
+    val borderColor by +InventoryManager.borderColor
 
     suspend fun equipFromHotbar() {
         if (!shouldOperate(onlyHotbar = true)) {

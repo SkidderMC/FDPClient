@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.ELEMENTS
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.Fonts.font35
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.lerpWith
@@ -22,7 +23,6 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.blendColors
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorderedRect
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawGradientRoundedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexture
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.makeScissorBox
@@ -157,8 +157,9 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
             realHeight += 10
         }
 
-        drawGradientRoundedRect(x.toFloat()-4f, y-2F, x + width.toFloat()+4, y + 12F ,3, 1, Color(guiColor).rgb)
-        font35.drawString("§lCreate element", x + 2F, y + 3.5F, Color.WHITE.rgb)
+        drawRect(x, y, x + width, y + 12, guiColor)
+        val centerX = (x..x + width).lerpWith(0.5F)
+        font35.drawCenteredStringWithShadow("§lCreate element", centerX, y + 3.5F, Color.WHITE.rgb)
     }
 
     /**
@@ -169,10 +170,9 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         realHeight = 15
         width = 120
 
-            font35.drawString("§lCreate element", x + 2f, y.toFloat() + height, Color.WHITE.rgb)
-        if (Mouse.isButtonDown(0) && !mouseDown && mouseX in x..x + width && mouseY >= y + height
-            && mouseY <= y + height + 10)
-            create = true
+        font35.drawString("§lCreate element", x + 2f, y.toFloat() + height, Color.WHITE.rgb)
+        if (Mouse.isButtonDown(0) && !mouseDown && mouseX in x..x + width && mouseY >= y + height && mouseY <= y + height + 10) create =
+            true
 
         height += 10
         realHeight += 10
@@ -203,8 +203,10 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
             realHeight += 10
         }
 
-        drawGradientRoundedRect(x.toFloat()-4f, y-2F, x + width.toFloat()+4, y + 12F ,3, 1, Color(guiColor).rgb)
-        font35.drawString("§lEditor", x + 2F, y + 3.5f, Color.WHITE.rgb)
+        drawRect(x, y, x + width, y + 12, guiColor)
+        glColor4f(1f, 1f, 1f, 1f)
+        val centerX = (x..x + width).lerpWith(0.5F)
+        font35.drawCenteredStringWithShadow("§lElement Editor", centerX, y + 3.5f, Color.WHITE.rgb)
 
         if (showConfirmation) {
             val confirmationMessage = "Are you sure you want to reset?"
@@ -293,7 +295,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         )
 
         if (Mouse.isButtonDown(0) && !mouseDown && mouseX in x..x + width && mouseY in y + height..y + height + 10) {
-            val values = Side.Horizontal.values()
+            val values = Side.Horizontal.entries.toTypedArray()
             val currIndex = values.indexOf(element.side.horizontal)
 
             val x = element.renderX
@@ -316,7 +318,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         )
 
         if (Mouse.isButtonDown(0) && !mouseDown && mouseX in x..x + width && mouseY in y + height..y + height + 10) {
-            val values = Side.Vertical.values()
+            val values = Side.Vertical.entries.toTypedArray()
             val currIndex = values.indexOf(element.side.vertical)
 
             val y = element.renderY
@@ -394,7 +396,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
                     realHeight += 20
                 }
 
-                is IntegerValue -> {
+                is IntValue -> {
                     val current = value.get()
                     val min = value.minimum
                     val max = value.maximum
@@ -732,6 +734,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
                             finalColor = finalColor.withAlpha((value.opacitySliderY * 255).roundToInt())
 
                             value.changeValue(finalColor)
+
                             if (!WaitTickUtils.hasScheduled(this)) {
                                 WaitTickUtils.conditionalSchedule(this, 10) {
                                     (value.lastChosenSlider == null).also { if (it) saveConfig(valuesConfig) }
@@ -776,6 +779,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
                     realHeight += spacing
                 }
 
+                // TODO: branch completion
                 else -> {}
             }
         }

@@ -16,7 +16,7 @@ class PlaceInfo(val blockPos: BlockPos, val enumFacing: EnumFacing, var vec3: Ve
         /**
          * Allows you to find a specific place info for your [blockPos]
          */
-        fun get(pos: BlockPos) = EnumFacing.values().find {
+        fun get(pos: BlockPos) = EnumFacing.entries.find {
             it != EnumFacing.UP && pos.offset(it).canBeClicked()
         }?.let { side -> PlaceInfo(pos.offset(side), side.opposite) }
     }

@@ -5,16 +5,14 @@
  */
 package net.ccbluex.liquidbounce.handler.other
 
+import net.ccbluex.liquidbounce.handler.payload.ClientFixes
+
 object AutoReconnect {
     const val MAX = 60000
     const val MIN = 1000
 
     var isEnabled = true
-        private set
-    var delay = 5000
-        set(value) {
-            isEnabled = value < MAX
+        internal set
 
-            field = value
-        }
+    var delay by ClientFixes.autoReconnectDelayValue
 }
