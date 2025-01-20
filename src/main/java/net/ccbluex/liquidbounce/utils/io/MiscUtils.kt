@@ -191,4 +191,7 @@ object FileFilters {
 
     @JvmField
     val ARCHIVE = FileNameExtensionFilter("Archive Files (zip)", "zip")
+
+    @JvmField
+    val FONT = FileNameExtensionFilter("Font Files (ttf, otf)", "ttf", "otf")
 }
