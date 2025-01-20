@@ -26,7 +26,6 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.toHotbarIndex
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.awaitTicked
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.clickNextTick
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.isTicked
-import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
 import net.minecraft.block.BlockContainer
 import net.minecraft.block.BlockFalling
 import net.minecraft.block.BlockWorkbench
@@ -42,12 +41,8 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER) {
     private val drop by boolean("Drop", true).subjective()
     val sort by boolean("Sort", true).subjective()
 
-    private val maxDelay: Int by int("MaxDelay", 50, 0..500).onChange { _, new ->
-        new.coerceAtLeast(minDelay)
-    }
-    private val minDelay by int("MinDelay", 50, 0..500).onChange { _, new ->
-        new.coerceAtMost(maxDelay)
-    }
+    private val delay by intRange("Delay", 50..50, 0..1000)
+
     private val minItemAge by int("MinItemAge", 0, 0..2000)
 
     private val limitStackCounts by boolean("LimitStackCounts", true).subjective()
@@ -446,7 +441,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER) {
 
         hasScheduledInLastLoop = true
 
-        delay(randomDelay(minDelay, maxDelay).coerceAtMost(coerceTo).toLong())
+        delay(delay.random().coerceAtMost(coerceTo).toLong())
     }
 
     fun canBeSortedTo(index: Int, item: Item?, stacksSize: Int? = null): Boolean {

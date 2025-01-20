@@ -28,19 +28,13 @@ import net.ccbluex.liquidbounce.utils.timing.TickedActions.awaitTicked
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.clickNextTick
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.isTicked
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
-import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.entity.EntityLiving.getArmorPosition
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 
 object AutoArmor : Module("AutoArmor", Category.COMBAT) {
-    private val maxDelay: Int by int("MaxDelay", 50, 0..500).onChange { _, new ->
-        new.coerceAtLeast(minDelay)
-    }
-    private val minDelay: Int by int("MinDelay", 50, 0..500).onChange { _, new ->
-        new.coerceAtMost(maxDelay)
-    }
+    private val delay by intRange("Delay", 50..50, 0..1000)
     private val minItemAge by int("MinItemAge", 0, 0..2000)
 
     private val invOpen by +InventoryManager.invOpenValue
@@ -134,12 +128,11 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT) {
             nextTick(action = equippingAction)
 
             if (delayedSlotSwitch) {
-                delay(randomDelay(minDelay, maxDelay).toLong())
+                delay(delay.random().toLong())
             }
         }
 
-        // Not really needed to bypass
-        delay(randomDelay(minDelay, maxDelay).toLong())
+        delay(delay.random().toLong())
 
         awaitTicked()
 
@@ -303,6 +296,6 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT) {
 
         hasScheduledInLastLoop = true
 
-        delay(randomDelay(minDelay, maxDelay).toLong())
+        delay(delay.random().toLong())
     }
 }

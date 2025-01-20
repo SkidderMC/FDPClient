@@ -31,14 +31,7 @@ import kotlin.random.Random.Default.nextBoolean
 object AutoClicker : Module("AutoClicker", Category.COMBAT) {
 
     private val simulateDoubleClicking by boolean("SimulateDoubleClicking", false)
-
-    private val maxCPS: Int by int("MaxCPS", 8, 1..20).onChange { _, new ->
-        new.coerceAtLeast(minCPS)
-    }
-
-    private val minCPS: Int by int("MinCPS", 5, 1..20).onChange { _, new ->
-        new.coerceAtMost(maxCPS)
-    }
+    private val cps by intRange("CPS", 5..8, 1..50)
 
     private val hurtTime by int("HurtTime", 10, 0..10) { left }
 
@@ -54,9 +47,9 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT) {
 
     private val onlyBlocks by boolean("OnlyBlocks", true) { right }
 
-    private var rightDelay = randomClickDelay(minCPS, maxCPS)
+    private var rightDelay = generateNewClickTime()
     private var rightLastSwing = 0L
-    private var leftDelay = randomClickDelay(minCPS, maxCPS)
+    private var leftDelay = generateNewClickTime()
     private var leftLastSwing = 0L
 
     private var lastBlocking = 0L
@@ -152,7 +145,7 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT) {
             KeyBinding.onTick(mc.gameSettings.keyBindAttack.keyCode)
 
             leftLastSwing = time
-            leftDelay = randomClickDelay(minCPS, maxCPS)
+            leftDelay = generateNewClickTime()
         }
     }
 
@@ -161,7 +154,7 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT) {
             KeyBinding.onTick(mc.gameSettings.keyBindUseItem.keyCode)
 
             rightLastSwing = time
-            rightDelay = randomClickDelay(minCPS, maxCPS)
+            rightDelay = generateNewClickTime()
         }
     }
 
@@ -172,4 +165,6 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT) {
             lastBlocking = time
         }
     }
+
+    fun generateNewClickTime() = randomClickDelay(cps.first, cps.last)
 }

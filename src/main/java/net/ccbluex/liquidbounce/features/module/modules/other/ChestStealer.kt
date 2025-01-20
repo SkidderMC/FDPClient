@@ -56,19 +56,9 @@ object ChestStealer : Module("ChestStealer", Category.OTHER) {
 
     private val simulateShortStop by boolean("SimulateShortStop", false)
 
-    private val maxDelay: Int by int("MaxDelay", 50, 0..500) {
-        !smartDelay
-    }.onChange { _, new ->
-        new.coerceAtLeast(minDelay)
-    }
-    private val minDelay: Int by int("MinDelay", 50, 0..500) {
-        maxDelay > 0 && !smartDelay
-    }.onChange { _, new ->
-        new.coerceAtMost(maxDelay)
-    }
-
-    private val startDelay by int("StartDelay", 50, 0..500)
-    private val closeDelay by int("CloseDelay", 50, 0..500)
+    private val delay by intRange("Delay", 50..50, 0..500) { !smartDelay }
+    private val startDelay by intRange("StartDelay", 50..100, 0..500)
+    private val closeDelay by intRange("CloseDelay", 50..100, 0..500)
 
     private val noMove by +InventoryManager.noMoveValue
     private val noMoveAir by +InventoryManager.noMoveAirValue
@@ -147,7 +137,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER) {
 
         progress = 0f
 
-        delay(startDelay.toLong())
+        delay(startDelay.random().toLong())
 
         debug("Stealing items..")
 
@@ -189,7 +179,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER) {
                         val trueDelay = sqrt(dist.toDouble()) * multiplier
                         randomDelay(trueDelay.toInt(), trueDelay.toInt() + 20)
                     } else {
-                        randomDelay(minDelay, maxDelay)
+                        delay.random()
                     }
 
                     if (itemStolenDebug) debug("item: ${stack.displayName.lowercase()} | slot: $slot | delay: ${stealingDelay}ms")
@@ -234,7 +224,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER) {
             // If no clicks were sent in the last loop stop searching
             if (!hasTaken) {
                 progress = 1f
-                delay(closeDelay.toLong())
+                delay(closeDelay.random().toLong())
 
                 nextTick { SilentHotbar.resetSlot() }
                 break

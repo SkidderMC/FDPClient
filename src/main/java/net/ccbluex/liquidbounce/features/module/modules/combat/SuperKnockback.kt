@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.angleDifference
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C0BPacketEntityAction
@@ -34,27 +33,9 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT) {
         arrayOf("WTap", "SprintTap", "SprintTap2", "Old", "Silent", "Packet", "SneakPacket"),
         "Old"
     )
-    private val maxTicksUntilBlock: Value<Int> = int("MaxTicksUntilBlock", 2, 0..5) {
-        mode == "WTap"
-    }.onChange { _, new ->
-        new.coerceAtLeast(minTicksUntilBlock.get())
-    }
-    private val minTicksUntilBlock: Value<Int> = int("MinTicksUntilBlock", 0, 0..5) {
-        mode == "WTap"
-    }.onChange { _, new ->
-        new.coerceAtMost(maxTicksUntilBlock.get())
-    }
 
-    private val reSprintMaxTicks: Value<Int> = int("ReSprintMaxTicks", 2, 1..5) {
-        mode == "WTap"
-    }.onChange { _, new ->
-        new.coerceAtLeast(reSprintMinTicks.get())
-    }
-    private val reSprintMinTicks: Value<Int> = int("ReSprintMinTicks", 1, 1..5) {
-        mode == "WTap"
-    }.onChange { _, new ->
-        new.coerceAtMost(reSprintMaxTicks.get())
-    }
+    private val ticksUntilBlock by intRange("TicksUntilBlock", 0..2, 0..5) { mode == "WTap" }
+    private val reSprintTicks by intRange("ReSprintTicks", 1..2, 1..5) { mode == "WTap" }
 
     private val targetDistance by int("TargetDistance", 3, 1..5) { mode == "WTap" }
 
@@ -81,11 +62,11 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT) {
     private val timer = MSTimer()
 
     // WTap
-    private var blockInputTicks = randomDelay(minTicksUntilBlock.get(), maxTicksUntilBlock.get())
+    private var blockInputTicks = ticksUntilBlock.random()
     private var blockTicksElapsed = 0
     private var startWaiting = false
     private var blockInput = false
-    private var allowInputTicks = randomDelay(reSprintMinTicks.get(), reSprintMaxTicks.get())
+    private var allowInputTicks = reSprintTicks.random()
     private var ticksElapsed = 0
 
     // SprintTap2
@@ -164,10 +145,7 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT) {
                 if (player.isSprinting && player.serverSprintState && !blockInput && !startWaiting) {
                     val delayMultiplier = 1.0 / (abs(targetDistance - distance) + 1)
 
-                    blockInputTicks = (randomDelay(
-                        minTicksUntilBlock.get(),
-                        maxTicksUntilBlock.get()
-                    ) * delayMultiplier).toInt()
+                    blockInputTicks = (ticksUntilBlock.random() * delayMultiplier).toInt()
 
                     blockInput = blockInputTicks == 0
 
@@ -175,10 +153,7 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT) {
                         startWaiting = true
                     }
 
-                    allowInputTicks = (randomDelay(
-                        reSprintMinTicks.get(),
-                        reSprintMaxTicks.get()
-                    ) * delayMultiplier).toInt()
+                    allowInputTicks = (reSprintTicks.random() * delayMultiplier).toInt()
                 }
             }
 

@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
@@ -13,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
-import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
 import net.ccbluex.liquidbounce.utils.rotation.RaycastUtils.raycastEntity
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.init.Items.egg
@@ -22,21 +20,8 @@ import net.minecraft.init.Items.snowball
 object AutoProjectile : Module("AutoProjectile", Category.COMBAT) {
     private val facingEnemy by boolean("FacingEnemy", true)
 
-    private val mode by choices("Mode", arrayOf("Normal", "Smart"), "Normal")
     private val range by float("Range", 8F, 1F..20F)
-    private val throwDelay by int("ThrowDelay", 1000, 50..2000) { mode != "Smart" }
-
-    private val minThrowDelay: Value<Int> = int("MinThrowDelay", 1000, 50..2000) {
-        mode == "Smart"
-    }.onChange { _, new ->
-        new.coerceAtMost(maxThrowDelay.get())
-    }
-
-    private val maxThrowDelay: Value<Int> = int("MaxThrowDelay", 1500, 50..2000) {
-        mode == "Smart"
-    }.onChange { _, new ->
-        new.coerceAtLeast(minThrowDelay.get())
-    }
+    private val throwDelay by intRange("ThrowDelay", 1000..1500, 50..2000)
 
     private val switchBackDelay by int("SwitchBackDelay", 500, 50..2000)
 
@@ -84,21 +69,9 @@ object AutoProjectile : Module("AutoProjectile", Category.COMBAT) {
             }
 
             if (throwProjectile) {
-                if (mode == "Normal" && throwTimer.hasTimePassed(throwDelay)) {
-                    if (player.heldItem?.item != snowball && player.heldItem?.item != egg) {
-                        val projectile = InventoryUtils.findItemArray(36, 44, arrayOf(snowball, egg)) ?: return@handler
+                val randomThrowDelay = throwDelay.random()
 
-                        switchBack = player.inventory.currentItem
-
-                        player.inventory.currentItem = projectile
-                        mc.playerController.syncCurrentPlayItem()
-                    }
-
-                    throwProjectile()
-                }
-
-                val randomThrowDelay = RandomUtils.nextInt(minThrowDelay.get(), maxThrowDelay.get())
-                if (mode == "Smart" && throwTimer.hasTimePassed(randomThrowDelay)) {
+                if (throwTimer.hasTimePassed(randomThrowDelay)) {
                     if (player.heldItem?.item != snowball && player.heldItem?.item != egg) {
                         val projectile = InventoryUtils.findItemArray(36, 44, arrayOf(snowball, egg)) ?: return@handler
 
@@ -138,10 +111,4 @@ object AutoProjectile : Module("AutoProjectile", Category.COMBAT) {
         projectileInUse = false
         switchBack = -1
     }
-
-    /**
-     * HUD Tag
-     */
-    override val tag
-        get() = mode
 }

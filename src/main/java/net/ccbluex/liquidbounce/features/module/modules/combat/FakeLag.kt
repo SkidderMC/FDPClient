@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import com.google.common.collect.Queues
-import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -45,12 +44,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false) {
     private val delay by int("Delay", 550, 0..1000)
     private val recoilTime by int("RecoilTime", 750, 0..2000)
 
-    private val maxAllowedDistToEnemy: Value<Float> = float("MaxAllowedDistToEnemy", 3.5f, 0f..6f).onChange { _, new ->
-        new.coerceAtLeast(minAllowedDistToEnemy.get())
-    }
-    private val minAllowedDistToEnemy: Value<Float> = float("MinAllowedDistToEnemy", 1.5f, 0f..6f).onChange { _, new ->
-        new.coerceAtMost(maxAllowedDistToEnemy.get())
-    }
+    private val allowedDistToEnemy by floatRange("MinAllowedDistToEnemy", 1.5f..3.5f, 0f..6f)
 
     private val blinkOnAction by boolean("BlinkOnAction", true)
 
@@ -80,7 +74,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false) {
         val player = mc.thePlayer ?: return@handler
         val packet = event.packet
 
-        if (!handleEvents() || player.isDead || event.isCancelled || maxAllowedDistToEnemy.get() > 0.0 && wasNearEnemy || ignoreWholeTick) {
+        if (!handleEvents() || player.isDead || event.isCancelled || allowedDistToEnemy.endInclusive > 0.0 && wasNearEnemy || ignoreWholeTick) {
             return@handler
         }
 
@@ -186,7 +180,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false) {
         val player = mc.thePlayer ?: return@handler
         val world = mc.theWorld ?: return@handler
 
-        if (maxAllowedDistToEnemy.get() > 0) {
+        if (allowedDistToEnemy.endInclusive > 0) {
             val playerPos = player.currPos
             val serverPos = positions.firstOrNull()?.pos ?: playerPos
 
@@ -202,12 +196,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false) {
                 if (entityMixin != null) {
                     val eyes = getTruePositionEyes(otherPlayer)
 
-                    if (eyes.distanceTo(
-                            getNearestPointBB(
-                                eyes, playerBox
-                            )
-                        ) in minAllowedDistToEnemy.get()..maxAllowedDistToEnemy.get()
-                    ) {
+                    if (eyes.distanceTo(getNearestPointBB(eyes, playerBox)) in allowedDistToEnemy) {
                         blink()
                         wasNearEnemy = true
                         return@handler

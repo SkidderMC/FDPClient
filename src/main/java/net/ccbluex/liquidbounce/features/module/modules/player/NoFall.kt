@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -81,14 +80,9 @@ object NoFall : Module("NoFall", Category.PLAYER) {
 
     // Using too many times of simulatePlayer could result timer flag. Hence, why this is disabled by default.
     val checkFallDist by boolean("CheckFallDistance", false) { mode == "Blink" }.subjective()
-
-    val minFallDist: Value<Float> = float("MinFallDistance", 2.5f, 0f..10f) {
+    val fallDist by floatRange("FallDistance", 2.5f..20f, 0f..100f) {
         mode == "Blink" && checkFallDist
-    }.onChange { _, new -> new.coerceAtMost(maxFallDist.get()) }.subjective()
-
-    val maxFallDist: Value<Float> = float("MaxFallDistance", 20f, 0f..100f) {
-        mode == "Blink" && checkFallDist
-    }.onChange { _, new -> new.coerceAtLeast(minFallDist.get()) }.subjective()
+    }.subjective()
 
     val autoOff by boolean("AutoOff", true) { mode == "Blink" }
     val simulateDebug by boolean("SimulationDebug", false) { mode == "Blink" }.subjective()

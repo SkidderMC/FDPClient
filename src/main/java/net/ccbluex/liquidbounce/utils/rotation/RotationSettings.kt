@@ -5,8 +5,11 @@
  */
 package net.ccbluex.liquidbounce.utils.rotation
 
-import net.ccbluex.liquidbounce.config.*
+import net.ccbluex.liquidbounce.config.Configurable
+import net.ccbluex.liquidbounce.config.ListValue
+import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.extensions.random
 import net.ccbluex.liquidbounce.utils.extensions.withGCD
 import kotlin.math.abs
 
@@ -30,28 +33,11 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
     }
 
     open val legitimizeValue = boolean("Legitimize", false) { rotationsActive && generalApply() }
-    open val maxHorizontalAngleChangeValue = float("MaxHorizontalAngleChange", 180f, 1f..180f) {
-        rotationsActive && generalApply()
-    }.onChange { _, new ->
-        new.coerceAtLeast(minHorizontalAngleChange)
-    }
-    open val minHorizontalAngleChangeValue: Value<Float> = float("MinHorizontalAngleChange", 180f, 1f..180f) {
-        rotationsActive && generalApply()
-    }.onChange { _, new ->
-        new.coerceAtMost(maxHorizontalAngleChange)
-    }
 
-    open val maxVerticalAngleChangeValue: Value<Float> = float("MaxVerticalAngleChange", 180f, 1f..180f) {
-        rotationsActive && generalApply()
-    }.onChange { _, new ->
-        new.coerceAtLeast(minVerticalAngleChange)
-    }
-
-    open val minVerticalAngleChangeValue: Value<Float> = float("MinVerticalAngleChange", 180f, 1f..180f) {
-        rotationsActive && generalApply()
-    }.onChange { _, new ->
-        new.coerceAtMost(maxVerticalAngleChange)
-    }
+    open val horizontalAngleChangeValue = floatRange("HorizontalAngleChange", 180f..180f, 1f..180f)
+    { rotationsActive && generalApply() }
+    open val verticalAngleChangeValue = floatRange("VerticalAngleChange", 180f..180f, 1f..180f)
+    { rotationsActive && generalApply() }
 
     open val angleResetDifferenceValue = float("AngleResetDifference", 5f.withGCD(), 0.0f..180f) {
         rotationsActive && applyServerSide && generalApply()
@@ -75,10 +61,8 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
     val keepRotation by keepRotationValue
     val resetTicks by resetTicksValue
     val legitimize by legitimizeValue
-    val maxHorizontalAngleChange by maxHorizontalAngleChangeValue
-    val minHorizontalAngleChange by minHorizontalAngleChangeValue
-    val maxVerticalAngleChange by maxVerticalAngleChangeValue
-    val minVerticalAngleChange by minVerticalAngleChangeValue
+    val horizontalAngleChange by horizontalAngleChangeValue
+    val verticalAngleChange by verticalAngleChangeValue
     val angleResetDifference by angleResetDifferenceValue
     val minRotationDifference by minRotationDifferenceValue
 
@@ -93,10 +77,10 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
         get() = rotations
 
     val horizontalSpeed
-        get() = minHorizontalAngleChange..maxHorizontalAngleChange
+        get() = horizontalAngleChange.random()
 
     val verticalSpeed
-        get() = minVerticalAngleChange..maxVerticalAngleChange
+        get() = verticalAngleChange.random()
 
     fun withoutKeepRotation(): RotationSettings {
         keepRotationValue.excludeWithState()

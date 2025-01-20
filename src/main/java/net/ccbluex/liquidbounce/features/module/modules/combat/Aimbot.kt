@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.event.EventState
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -68,17 +67,7 @@ object Aimbot : Module("Aimbot", Category.COMBAT) {
 
     private val lowestBodyPointToTarget: String by lowestBodyPointToTargetValue
 
-    private val maxHorizontalBodySearch: Value<Float> = float("MaxHorizontalBodySearch", 1f, 0f..1f) {
-        horizontalAim
-    }.onChange { _, new ->
-        new.coerceAtLeast(minHorizontalBodySearch.get())
-    }
-
-    private val minHorizontalBodySearch: Value<Float> = float("MinHorizontalBodySearch", 0f, 0f..1f) {
-        horizontalAim
-    }.onChange { _, new ->
-        new.coerceAtMost(maxHorizontalBodySearch.get())
-    }
+    private val horizontalBodySearchRange by floatRange("HorizontalBodySearchRange", 0f..1f, 0f..1f) { horizontalAim }
 
     private val minRotationDifference by float("MinRotationDifference", 0f, 0f..2f) { verticalAim || horizontalAim }
 
@@ -174,7 +163,7 @@ object Aimbot : Module("Aimbot", Category.COMBAT) {
                 lookRange = range,
                 attackRange = if (Reach.handleEvents()) Reach.combatReach else 3f,
                 bodyPoints = listOf(highestBodyPointToTarget, lowestBodyPointToTarget),
-                horizontalSearch = minHorizontalBodySearch.get()..maxHorizontalBodySearch.get(),
+                horizontalSearch = horizontalBodySearchRange
             )
         }
 

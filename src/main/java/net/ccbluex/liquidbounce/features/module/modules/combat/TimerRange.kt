@@ -19,8 +19,6 @@ import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.client.PacketUtils
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
-import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.searchCenter
@@ -62,60 +60,25 @@ object TimerRange : Module("TimerRange", Category.COMBAT) {
 
     // Min & Max Boost Delay Settings
     private val timerBoostValue by float("TimerBoost", 1.5f, 0.01f..35f)
-
-    private val minBoostDelay: Float by float("MinBoostDelay", 0.5f, 0.1f..1.0f).onChange { _, new ->
-        new.coerceAtMost(maxBoostDelay)
-    }
-
-    private val maxBoostDelay: Float by float("MaxBoostDelay", 0.55f, 0.1f..1.0f).onChange { _, new ->
-        new.coerceAtLeast(minBoostDelay)
-    }
+    private val boostDelay by floatRange("BoostDelay", 0.5f..0.55f, 0.1f..1f)
 
     // Min & Max Charged Delay Settings
     private val timerChargedValue by float("TimerCharged", 0.45f, 0.05f..5f)
-
-    private val minChargedDelay: Float by float("MinChargedDelay", 0.75f, 0.1f..1.0f).onChange { _, new ->
-        new.coerceAtMost(maxChargedDelay)
-    }
-
-    private val maxChargedDelay: Float by float("MaxChargedDelay", 0.9f, 0.1f..1.0f).onChange { _, new ->
-        new.coerceAtLeast(minChargedDelay)
-    }
+    private val chargedDelay by floatRange("ChargedDelay", 0.75f..0.9f, 0.1f..1.0f)
 
     // Normal Mode Settings
     private val rangeValue by float("Range", 3.5f, 1f..5f) { timerBoostMode == "Normal" }
     private val cooldownTickValue by int("CooldownTick", 10, 1..50) { timerBoostMode == "Normal" }
 
     // Smart & Modern Mode Range
-    private val minRange: Float by float("MinRange", 2.5f, 0f..8f) {
-        timerBoostMode != "Normal"
-    }.onChange { _, new ->
-        new.coerceAtMost(maxRange)
-    }
+    private val range by floatRange("Range", 2.5f..3f, 2f..8f) { timerBoostMode != "Normal" }
 
-    private val maxRange: Float by float("MaxRange", 3f, 2f..8f) {
-        timerBoostMode != "Normal"
-    }.onChange { _, new ->
-        new.coerceAtLeast(minRange)
-    }
-
-    private val scanRange: Float by float("ScanRange", 8f, minRange..12f) {
-        timerBoostMode != "Normal"
-    }.onChange { _, new ->
-        new.coerceAtLeast(maxRange)
+    private val scanRange by float("ScanRange", 8f, 2f..12f) { timerBoostMode != "Normal" }.onChange { _, new ->
+        new.coerceAtLeast(range.endInclusive)
     }
 
     // Min & Max Tick Delay
-    private val minTickDelay: Int by int("MinTickDelay", 30, 1..200) {
-        timerBoostMode != "Normal"
-    }.onChange { _, new ->
-        new.coerceAtMost(maxTickDelay)
-    }
-    private val maxTickDelay: Int by int("MaxTickDelay", 60, 1..200) {
-        timerBoostMode != "Normal"
-    }.onChange { _, new ->
-        new.coerceAtLeast(minTickDelay)
-    }
+    private val tickDelay by intRange("TickDelay", 30..60, 1..200) { timerBoostMode != "Normal" }
 
     // Blink Option
     private val blink by boolean("Blink", false)
@@ -184,7 +147,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT) {
 
         val targetEntity = event.targetEntity ?: return@handler
         val entityDistance = targetEntity.let { player.getDistanceToEntityBox(it) }
-        val randomTickDelay = nextInt(minTickDelay, maxTickDelay + 1)
+        val randomTickDelay = tickDelay.random()
         val shouldReturn = Backtrack.runWithNearestTrackedDistance(targetEntity) { !updateDistance(targetEntity) }
 
         if (shouldReturn || (player.isInWeb && !onWeb) || (player.isInLiquid && !onLiquid)) {
@@ -222,7 +185,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT) {
 
         val nearbyEntity = getNearestEntityInRange() ?: return@handler
 
-        val randomTickDelay = nextInt(minTickDelay, maxTickDelay)
+        val randomTickDelay = tickDelay.random()
 
         val shouldReturn = Backtrack.runWithNearestTrackedDistance(nearbyEntity) { !updateDistance(nearbyEntity) }
 
@@ -244,7 +207,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT) {
         if (isPlayerMoving() && !confirmStop) {
             if (isLookingOnEntities(nearbyEntity, maxAngleDifference.toDouble())) {
                 val entityDistance = player.getDistanceToEntityBox(nearbyEntity)
-                if (confirmTick && entityDistance in randomRange..maxRange) {
+                if (confirmTick && entityDistance in randomRange..range.endInclusive) {
                     if (updateDistance(nearbyEntity)) {
                         playerTicks = ticksValue
                         confirmTick = false
@@ -321,11 +284,11 @@ object TimerRange : Module("TimerRange", Category.COMBAT) {
      */
     val onUpdate = handler<UpdateEvent> {
         // Randomize the timer & charged delay a bit, to bypass some AntiCheat
-        val timerboost = nextFloat(minBoostDelay, maxBoostDelay)
-        val charged = nextFloat(minChargedDelay, maxChargedDelay)
+        val timerBoost = boostDelay.random()
+        val charged = chargedDelay.random()
 
         if (mc.thePlayer != null && mc.theWorld != null) {
-            randomRange = nextFloat(minRange, maxRange)
+            randomRange = range.random()
         }
 
         if (playerTicks <= 0 || confirmStop) {
@@ -341,7 +304,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT) {
 
         val tickProgress = playerTicks.toDouble() / ticksValue.toDouble()
         val playerSpeed = when {
-            tickProgress < timerboost -> timerBoostValue
+            tickProgress < timerBoost -> timerBoostValue
             tickProgress < charged -> timerChargedValue
             else -> 1f
         }

@@ -10,8 +10,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.autoOff
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.checkFallDist
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.fakePlayer
-import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.maxFallDist
-import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.minFallDist
+import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.fallDist
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.simulateDebug
 import net.ccbluex.liquidbounce.features.module.modules.player.NoFall.state
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.NoFallMode
@@ -66,8 +65,8 @@ object Blink : NoFallMode("Blink") {
         }
 
         if (event.packet is C03PacketPlayer) {
-            if (blinked && thePlayer.fallDistance > minFallDist.get()) {
-                if (thePlayer.fallDistance < maxFallDist.get()) {
+            if (blinked && thePlayer.fallDistance > fallDist.start) {
+                if (thePlayer.fallDistance < fallDist.endInclusive) {
                     if (blinked) {
                         event.packet.onGround = thePlayer.ticksExisted % 2 == 0
                     }
@@ -103,7 +102,7 @@ object Blink : NoFallMode("Blink") {
 
         val fallingPlayer = FallingPlayer(thePlayer)
 
-        if ((checkFallDist && simPlayer.fallDistance > minFallDist.get()) ||
+        if ((checkFallDist && simPlayer.fallDistance > fallDist.start) ||
             !checkFallDist && fallingPlayer.findCollision(60) != null && simPlayer.motionY < 0
         ) {
             if (thePlayer.onGround && !blinked) {
@@ -118,7 +117,7 @@ object Blink : NoFallMode("Blink") {
         }
     }
 
-   override fun onRender3D(event: Render3DEvent) {
+    override fun onRender3D(event: Render3DEvent) {
         if (!simulateDebug) return
 
         val thePlayer = mc.thePlayer ?: return

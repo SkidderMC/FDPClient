@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
-import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -34,12 +33,7 @@ object TickBase : Module("TickBase", Category.COMBAT) {
     private val balanceRecoveryIncrement by float("BalanceRecoveryIncrement", 0.1f, 0.01f..10f)
     private val maxTicksAtATime by int("MaxTicksAtATime", 20, 1..100)
 
-    private val maxRangeToAttack: Value<Float> = float("MaxRangeToAttack", 5.0f, 0f..10f).onChange { _, new ->
-        new.coerceAtLeast(minRangeToAttack.get())
-    }
-    private val minRangeToAttack: Value<Float> = float("MinRangeToAttack", 3.0f, 0f..10f).onChange { _, new ->
-        new.coerceAtMost(maxRangeToAttack.get())
-    }
+    private val rangeToAttack by floatRange("RangeToAttack", 3f..5f, 0f..10f)
 
     private val forceGround by boolean("ForceGround", false)
     private val pauseAfterTick by int("PauseAfterTick", 0, 0..100)
@@ -88,7 +82,7 @@ object TickBase : Module("TickBase", Category.COMBAT) {
                 val tickDistance = tick.position.distanceTo(nearbyEnemy.positionVector)
 
                 (index to tick).takeIf {
-                    tickDistance < currentDistance && tickDistance in minRangeToAttack.get()..maxRangeToAttack.get() && !tick.isCollidedHorizontally && (!forceGround || tick.onGround)
+                    tickDistance < currentDistance && tickDistance in rangeToAttack && !tick.isCollidedHorizontally && (!forceGround || tick.onGround)
                 }
             }
 

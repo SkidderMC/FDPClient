@@ -65,17 +65,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT) {
 
     // Modern
     private val style by choices("Style", arrayOf("Pulse", "Smooth"), "Smooth") { mode == "Modern" }
-
-    private val maxDistance: Float by float("MaxDistance", 3.0f, 0.0f..3.5f) {
-        mode == "Modern"
-    }.onChange { _, new ->
-        new.coerceAtLeast(minDistance)
-    }
-    private val minDistance: Float by float("MinDistance", 2.0f, 0.0f..3.0f) {
-        mode == "Modern"
-    }.onChange { _, new ->
-        new.coerceAtMost(maxDistance)
-    }
+    private val distance by floatRange("Distance", 2f..3f, 0f..6f) { mode == "Modern" }
     private val smart by boolean("Smart", true) { mode == "Modern" }
 
     // ESP
@@ -265,7 +255,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT) {
                     ) {
                         shouldRender = true
 
-                        if (mc.thePlayer.getDistanceToEntityBox(target) in minDistance..maxDistance) {
+                        if (mc.thePlayer.getDistanceToEntityBox(target) in distance) {
                             handlePackets()
                         } else {
                             handlePacketsRange()
@@ -505,7 +495,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT) {
 
                 val targetBox = target.hitBox.offset(data.first - targetPos)
 
-                if (mc.thePlayer.getDistanceToBox(targetBox) in minDistance..maxDistance) {
+                if (mc.thePlayer.getDistanceToBox(targetBox) in distance) {
                     found = true
                     break
                 }

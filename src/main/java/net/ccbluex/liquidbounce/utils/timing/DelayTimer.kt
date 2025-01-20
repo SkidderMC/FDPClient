@@ -7,10 +7,9 @@ package net.ccbluex.liquidbounce.utils.timing
 
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.CLICK_TIMER
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomDelay
-import net.ccbluex.liquidbounce.config.IntValue
 
 open class DelayTimer(
-    private val minDelayValue: IntValue, private val maxDelayValue: IntValue = minDelayValue,
+    private val minDelayValue: Int, private val maxDelayValue: Int = minDelayValue,
     private val baseTimer: MSTimer = CLICK_TIMER
 ) {
     private var delay = 0
@@ -18,7 +17,7 @@ open class DelayTimer(
     open fun hasTimePassed() = baseTimer.hasTimePassed(delay)
 
     fun resetDelay() {
-        delay = randomDelay(minDelayValue.get(), maxDelayValue.get())
+        delay = randomDelay(minDelayValue, maxDelayValue)
     }
 
     fun resetTimer() = baseTimer.reset()
@@ -30,7 +29,7 @@ open class DelayTimer(
 }
 
 open class TickDelayTimer(
-    private val minDelayValue: IntValue, private val maxDelayValue: IntValue = minDelayValue,
+    private val minDelayValue: Int, private val maxDelayValue: Int = minDelayValue,
     private val baseTimer: TickTimer = TickTimer()
 ) {
     private var ticks = 0
@@ -38,7 +37,7 @@ open class TickDelayTimer(
     open fun hasTimePassed() = baseTimer.hasTimePassed(ticks)
 
     fun resetTicks() {
-        ticks = randomDelay(minDelayValue.get(), maxDelayValue.get())
+        ticks = randomDelay(minDelayValue, maxDelayValue)
     }
 
     fun resetTimer() = baseTimer.reset()
