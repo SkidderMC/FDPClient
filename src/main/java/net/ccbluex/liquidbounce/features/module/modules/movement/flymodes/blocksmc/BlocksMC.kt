@@ -58,13 +58,13 @@ object BlocksMC : FlyMode("BlocksMC"), Listenable {
             if (player.onGround && stopOnLanding) {
                 if (debugFly)
                     chat("Ground Detected.. Stopping Fly")
-                Fly.state = false
+                Flight.state = false
             }
 
             if (!player.isMoving && stopOnNoMove) {
                 if (debugFly)
                     chat("No Movement Detected.. Stopping Fly. (Could be flagged)")
-                Fly.state = false
+                Flight.state = false
             }
         }
 
@@ -95,7 +95,7 @@ object BlocksMC : FlyMode("BlocksMC"), Listenable {
     }
 
     val onWorld = handler<WorldEvent> {
-        Fly.state = false
+        Flight.state = false
     }
 
     private fun handleTimerSlow(player: EntityPlayerSP) {

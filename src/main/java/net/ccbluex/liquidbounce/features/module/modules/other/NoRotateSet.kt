@@ -7,11 +7,11 @@ package net.ccbluex.liquidbounce.features.module.modules.other
 
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.extensions.rotation
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
-import net.ccbluex.liquidbounce.utils.extensions.rotation
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.entity.player.EntityPlayer
 
@@ -22,12 +22,12 @@ object NoRotateSet : Module("NoRotateSet", Category.OTHER, gameDetecting = false
     val affectRotation by boolean("AffectRotation", true)
 
     private val ticksUntilStart = intRange("TicksUntilStart", 0..0, 0..20) { affectRotation }
+
     private val options = RotationSettings(this) { affectRotation }.apply {
+        withoutKeepRotation()
         rotationsValue.excludeWithState(true)
         applyServerSideValue.excludeWithState(true)
         resetTicksValue.excludeWithState(1)
-
-        withoutKeepRotation()
     }
 
     fun shouldModify(player: EntityPlayer) = handleEvents() && (!ignoreOnSpawn || player.ticksExisted != 0)
@@ -37,7 +37,6 @@ object NoRotateSet : Module("NoRotateSet", Category.OTHER, gameDetecting = false
 
         currentRotation = player.rotation
 
-        // This connects with the SimulateShortStop code, [performAngleChange] function.
         WaitTickUtils.schedule(ticksUntilStart.random, this)
 
         setTargetRotation(savedRotation, options = options)

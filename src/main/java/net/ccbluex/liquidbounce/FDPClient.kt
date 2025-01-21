@@ -277,7 +277,9 @@ object FDPClient {
             isStarting = false
 
             if (!FileManager.firstStart && FileManager.backedup) {
-                MiscUtils.showMessageDialog("Warning: backup triggered", "Client update detected! Please check the config folder.")
+                SharedScopes.IO.launch {
+                    MiscUtils.showMessageDialog("Warning: backup triggered", "Client update detected! Please check the config folder.")
+                }
             }
 
             EventManager.call(StartupEvent)

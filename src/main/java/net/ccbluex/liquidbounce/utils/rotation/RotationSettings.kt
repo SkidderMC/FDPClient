@@ -26,10 +26,8 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
     open val strictValue = boolean("Strict", false) { strafeValue.isActive() && generalApply() }
     open val keepRotationValue = boolean("KeepRotation", true) { rotationsActive && applyServerSide && generalApply() }
 
-    open val resetTicksValue: Value<Int> = int("ResetTicks", 1, 1..20) {
+    open val resetTicksValue = int("ResetTicks", 1, 1..20) {
         rotationsActive && applyServerSide && keepRotation && generalApply()
-    }.onChange { _, new ->
-        new.coerceAtLeast(1) // minimum
     }
 
     open val legitimizeValue = boolean("Legitimize", false) { rotationsActive && generalApply() }
@@ -41,8 +39,6 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
 
     open val angleResetDifferenceValue = float("AngleResetDifference", 5f.withGCD(), 0.0f..180f) {
         rotationsActive && applyServerSide && generalApply()
-    }.onChange { _, new ->
-        new.withGCD().coerceIn(0.0f..180f) // range
     }
 
     open val minRotationDifferenceValue = float(
@@ -82,10 +78,8 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
     val verticalSpeed
         get() = verticalAngleChange.random()
 
-    fun withoutKeepRotation(): RotationSettings {
+    fun withoutKeepRotation() = apply {
         keepRotationValue.excludeWithState()
-
-        return this
     }
 
     fun updateSimulateShortStopData(diff: Float) {
@@ -122,12 +116,8 @@ class RotationSettingsWithRotationModes(
 
     val rotationModeValue = listValue.setSupport { generalApply() }
 
-    val rotationMode by rotationModeValue
+    val rotationMode by +rotationModeValue
 
     override val rotationsActive: Boolean
         get() = rotationMode != "Off"
-
-    init {
-        owner.addValues(this.values)
-    }
 }

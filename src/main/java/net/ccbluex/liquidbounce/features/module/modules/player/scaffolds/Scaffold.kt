@@ -83,19 +83,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V) {
     // Extra clicks
     private val extraClicks by boolean("DoExtraClicks", false)
     private val simulateDoubleClicking by boolean("SimulateDoubleClicking", false) { extraClicks }
-    private val extraClickMaxCPSValue: Value<Int> = int("ExtraClickMaxCPS", 7, 0..50) {
-        extraClicks
-    }.onChange { _, new ->
-        new.coerceAtLeast(extraClickMinCPS)
-    }
-    private val extraClickMaxCPS by extraClickMaxCPSValue
-
-    private val extraClickMinCPS by int("ExtraClickMinCPS", 3, 0..50) {
-        extraClicks
-    }.onChange { _, new ->
-        new.coerceAtMost(extraClickMaxCPS)
-    }
-
+    private val extraClickCPS by intRange("ExtraClickCPS", 3..7, 0..50) { extraClicks }
     private val placementAttempt by choices(
         "PlacementAttempt", arrayOf("Fail", "Independent"), "Fail"
     ) { extraClicks }
@@ -253,7 +241,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V) {
         get() = RotationUtils.currentRotation ?: mc.thePlayer.rotation
 
     // Extra clicks
-    private var extraClick = ExtraClickInfo(TimeUtils.randomClickDelay(extraClickMinCPS, extraClickMaxCPS), 0L, 0)
+    private var extraClick = ExtraClickInfo(TimeUtils.randomClickDelay(extraClickCPS.first, extraClickCPS.last), 0L, 0)
 
     // GodBridge
     private var blocksPlacedUntilJump = 0
@@ -811,7 +799,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V) {
 
                     if (raytrace.typeOfHit.isBlock && timePassed) {
                         extraClick = ExtraClickInfo(
-                            TimeUtils.randomClickDelay(extraClickMinCPS, extraClickMaxCPS),
+                            TimeUtils.randomClickDelay(extraClickCPS.first, extraClickCPS.last),
                             System.currentTimeMillis(),
                             extraClick.clicks + 1
                         )
