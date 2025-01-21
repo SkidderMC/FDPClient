@@ -10,6 +10,8 @@ import me.liuli.elixir.compat.OAuthServer
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.file.FileManager.accountsConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
+import net.ccbluex.liquidbounce.handler.lang.translationButton
+import net.ccbluex.liquidbounce.handler.lang.translationText
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
@@ -76,8 +78,8 @@ class GuiMicrosoftLoginProgress(val updateStatus: (String) -> Unit, val done: ()
             LOGGER.error("Failed to start login server.", e)
         }
 
-        +GuiButton(0, width / 2 - 100, height / 2 + 60, "Open URL")
-        +GuiButton(1, width / 2 - 100, height / 2 + 90, "Cancel")
+        +GuiButton(0, width / 2 - 100, height / 2 + 60, translationButton("openURL"))
+        +GuiButton(1, width / 2 - 100, height / 2 + 90, translationButton("cancel"))
 
         super.initGui()
     }
@@ -86,7 +88,9 @@ class GuiMicrosoftLoginProgress(val updateStatus: (String) -> Unit, val done: ()
         assumeNonVolatile {
             drawDefaultBackground()
             drawLoadingCircle(width / 2f, height / 4f + 70)
-            Fonts.font40.drawCenteredStringWithShadow("Logging into account...", width / 2f, height / 2 - 60f, 0xffffff)
+            Fonts.font40.drawCenteredStringWithShadow(
+                translationText(
+                    "Loggingintoaccount"), width / 2f, height / 2 - 60f, 0xffffff)
         }
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))

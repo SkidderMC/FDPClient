@@ -11,6 +11,8 @@ import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.io.decodeJson
 
 fun translationMenu(key: String, vararg args: Any) = LanguageManager.getTranslation("menu.$key", *args)
+fun translationButton(key: String, vararg args: Any) = LanguageManager.getTranslation("button.$key", *args)
+fun translationText(key: String, vararg args: Any) = LanguageManager.getTranslation("text.$key", *args)
 fun translation(key: String, vararg args: Any) = LanguageManager.getTranslation(key, *args)
 
 object LanguageManager : MinecraftInstance {

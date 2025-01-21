@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.altmanager.menus
 
 import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
+import net.ccbluex.liquidbounce.handler.lang.translationButton
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -41,9 +42,9 @@ class GuiSessionLogin(private val prevGui: GuiAltManager) : AbstractScreen() {
 
         // Add buttons to screen
 
-        loginButton = +GuiButton(1, width / 2 - 100, height / 2 - 60, "Login")
+        loginButton = +GuiButton(1, width / 2 - 100, height / 2 - 60, translationButton("login"))
 
-        +GuiButton(0, width / 2 - 100, height / 2 - 30, "Back")
+        +GuiButton(0, width / 2 - 100, height / 2 - 30, translationButton("back"))
 
         // Add fields to screen
         sessionTokenField = GuiTextField(666, Fonts.font40, width / 2 - 100, height / 2 - 90, 200, 20)

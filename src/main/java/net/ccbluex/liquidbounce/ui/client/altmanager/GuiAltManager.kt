@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.ui.client.altmanager
 
-import com.google.gson.JsonParser
 import kotlinx.coroutines.launch
 import me.liuli.elixir.account.CrackedAccount
 import me.liuli.elixir.account.MicrosoftAccount
@@ -17,6 +16,7 @@ import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.file.FileManager.accountsConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
+import net.ccbluex.liquidbounce.handler.lang.translationButton
 import net.ccbluex.liquidbounce.handler.lang.translationMenu
 import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiLoginIntoAccount
 import net.ccbluex.liquidbounce.ui.client.altmanager.menus.GuiSessionLogin
@@ -73,17 +73,17 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
         // Setup buttons
 
         val startPositionY = 22
-            addButton = +GuiButton(1, width - 80, startPositionY + 24, 70, 20, "Add")
-            removeButton = +GuiButton(2, width - 80, startPositionY + 24 * 2, 70, 20, "Remove")
-            +GuiButton(7, width - 80, startPositionY + 24 * 3, 70, 20, "Import")
-            +GuiButton(12, width - 80, startPositionY + 24 * 4, 70, 20, "Export")
-            copyButton = +GuiButton(8, width - 80, startPositionY + 24 * 5, 70, 20, "Copy")
-            +GuiButton(0, width - 80, height - 65, 70, 20, "Back")
-            loginButton = +GuiButton(3, 5, startPositionY + 24, 90, 20, "Login")
-            randomAltButton = +GuiButton(4, 5, startPositionY + 24 * 2, 90, 20, "Random Alt")
-            randomNameButton = +GuiButton(5, 5, startPositionY + 24 * 3, 90, 20, "Random Name")
-            +GuiButton(6, 5, startPositionY + 24 * 4, 90, 20, "Direct Login")
-            +GuiButton(10, 5, startPositionY + 24 * 5, 90, 20, "Session Login")
+        addButton = +GuiButton(1, width - 80, startPositionY + 24, 70, 20, translationButton("add"))
+        removeButton = +GuiButton(2, width - 80, startPositionY + 24 * 2, 70, 20, translationButton("remove"))
+        +GuiButton(7, width - 80, startPositionY + 24 * 3, 70, 20, translationButton("import"))
+        +GuiButton(12, width - 80, startPositionY + 24 * 4, 70, 20, translationButton("export"))
+        copyButton = +GuiButton(8, width - 80, startPositionY + 24 * 5, 70, 20, translationButton("copy"))
+        +GuiButton(0, width - 80, height - 65, 70, 20, translationButton("back"))
+        loginButton = +GuiButton(3, 5, startPositionY + 24, 90, 20, translationButton("login"))
+        randomAltButton = +GuiButton(4, 5, startPositionY + 24 * 2, 90, 20, translationButton("randomAlt"))
+        randomNameButton = +GuiButton(5, 5, startPositionY + 24 * 3, 90, 20, translationButton("randomName"))
+        +GuiButton(6, 5, startPositionY + 24 * 4, 90, 20, translationButton("directLogin"))
+        +GuiButton(10, 5, startPositionY + 24 * 5, 90, 20, translationButton("sessionLogin"))
 
             +GuiButton(11, 5, startPositionY + 24 * 7, 90, 20, "Reload")
     }
