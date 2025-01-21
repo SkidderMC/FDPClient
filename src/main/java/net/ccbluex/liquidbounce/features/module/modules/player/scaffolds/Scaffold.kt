@@ -104,7 +104,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V) {
     private val swing by boolean("Swing", true).subjective()
     private val down by boolean("Down", true) { !sameY && scaffoldMode !in arrayOf("GodBridge", "Telly") }
 
-    private val ticksUntilRotation: Value<Int> = int("TicksUntilRotation", 3, 1..5) {
+    private val ticksUntilRotation by intRange("TicksUntilRotation", 3..3, 1..8) {
         scaffoldMode == "Telly"
     }
 
@@ -568,7 +568,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V) {
         val player = mc.thePlayer ?: return
 
         if (scaffoldMode == "Telly" && player.isMoving) {
-            if (player.airTicks < ticksUntilRotation.get() && ticksUntilJump >= jumpTicks) {
+            if (player.airTicks < ticksUntilRotation.random() && ticksUntilJump >= jumpTicks) {
                 return
             }
         }
