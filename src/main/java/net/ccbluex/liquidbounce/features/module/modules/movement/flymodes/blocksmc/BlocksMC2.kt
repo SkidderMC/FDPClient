@@ -100,7 +100,7 @@ object BlocksMC2 : FlyMode("BlocksMC2"), Listenable {
     }
 
     val onWorld = handler<WorldEvent> { event ->
-        Fly.state = false
+        Flight.state = false
 
         // Clear packets on disconnect
         if (event.worldClient == null) {
