@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.ELEMENTS
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.Fonts.font35
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.lerpWith
@@ -23,7 +22,9 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.blendColors
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorderedRect
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawGradientRoundedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedCornerRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexture
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.makeScissorBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.updateTextureCache
@@ -95,7 +96,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         }
 
         // Draw panel
-        drawRect(x, y + 12, x + width, y + realHeight, Color(0, 0, 0, 150).rgb)
+        drawRoundedCornerRect(x.toFloat()-2, y + 10F, x + width.toFloat()+2, y + realHeight.toFloat()+2,3f, Color(0, 0, 0, 150).rgb)
         when {
             create -> drawCreate(mouseX, currMouseY)
             currentElement != null -> drawEditor(mouseX, currMouseY)
@@ -168,7 +169,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
             realHeight += 10
         }
 
-        drawRect(x, y, x + width, y + 12, guiColor)
+        drawGradientRoundedRect(x.toFloat()-4f, y-2F, x + width.toFloat()+4, y + 12F ,3, 1, Color(guiColor).rgb)
         val centerX = (x..x + width).lerpWith(0.5F)
         font35.drawCenteredStringWithShadow("§lCreate element", centerX, y + 3.5F, Color.WHITE.rgb)
     }
@@ -214,7 +215,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
             realHeight += 10
         }
 
-        drawRect(x, y, x + width, y + 12, guiColor)
+        drawGradientRoundedRect(x.toFloat()-4f, y-2F, x + width.toFloat()+4, y + 12F ,3, 1, Color(guiColor).rgb)
         glColor4f(1f, 1f, 1f, 1f)
         val centerX = (x..x + width).lerpWith(0.5F)
         font35.drawCenteredStringWithShadow("§lElement Editor", centerX, y + 3.5f, Color.WHITE.rgb)
@@ -796,7 +797,7 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         }
 
         // Header
-        drawRect(x, y, x + width, y + 12, guiColor)
+        drawGradientRoundedRect(x.toFloat()-4f, y-2F, x + width.toFloat()+4, y + 12F ,3, 1, Color(guiColor).rgb)
         font35.drawString("§l${element.name}", x + 2F, y + 3.5F, Color.WHITE.rgb)
 
         // Delete button

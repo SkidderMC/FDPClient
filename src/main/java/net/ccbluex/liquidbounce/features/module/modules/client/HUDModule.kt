@@ -26,9 +26,7 @@ import java.awt.Color
 object HUDModule : Module("HUD", Category.CLIENT) {
 
     val customHotbar by boolean("CustomHotbar", true)
-
     val smoothHotbarSlot by boolean("SmoothHotbarSlot", true) { customHotbar }
-
     val roundedHotbarRadius by float("RoundedHotbar-Radius", 3F, 0F..5F) { customHotbar }
 
     val hotbarMode by choices("Hotbar-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom") { customHotbar }
@@ -60,7 +58,7 @@ object HUDModule : Module("HUD", Category.CLIENT) {
     // CROSSHAIR
     val csgoCrosshairValue by boolean("CSGO-Crosshair", true)
 
-    // WATERMAKER
+    // WATERMARK
     private val waterMark by choices("Watemark", arrayOf("Default", "Normal", "None"), "Default")
 
     // UI EFFECT
@@ -69,7 +67,6 @@ object HUDModule : Module("HUD", Category.CLIENT) {
     val UiShadowValue by choices("UIEffectMode", arrayOf("Shadow", "Glow", "None"), "Shadow") { uiEffectValue }
 
     private val blur by boolean("Blur", false)
-
     val inventoryParticle by boolean("InventoryParticle", false)
 
     // UI
@@ -79,9 +76,16 @@ object HUDModule : Module("HUD", Category.CLIENT) {
     val colorBlue by int("B", 255, 0..255) { interfaceColor }
     private val colorRainbowValue by boolean("Rainbow", true) { interfaceColor }
 
-    val guiColor
-        get() = if (colorRainbowValue) ColorUtils.rainbow().rgb
-        else Color(colorRed, colorGreen, colorBlue).rgb
+    val guiColor: Int
+        get() = if (interfaceColor) {
+            if (colorRainbowValue) {
+                ColorUtils.rainbow().rgb
+            } else {
+                Color(colorRed, colorGreen, colorBlue).rgb
+            }
+        } else {
+            ClientThemesUtils.getColor().rgb
+        }
 
     private var tickCount = 0
     private var lastSecond = System.currentTimeMillis()
@@ -90,7 +94,6 @@ object HUDModule : Module("HUD", Category.CLIENT) {
 
     val onTick = handler<GameTickEvent> {
         tickCount++
-
         val currentTime = System.currentTimeMillis()
         if (currentTime - lastSecond >= 1000) {
             tpsSamples.add(tickCount)
@@ -119,175 +122,183 @@ object HUDModule : Module("HUD", Category.CLIENT) {
                 drawNormalCrosshair(screenWidth, screenHeight)
             }
         }
-            when (waterMark) {
-                "Normal" -> {
-                    val shouldChange = ColorUtils.COLOR_PATTERN.matcher(CLIENT_NAME).find()
-                    val text = if (shouldChange) {
-                        "§r$CLIENT_NAME"
-                    } else {
-                        "${CLIENT_NAME.first()}§r§f${CLIENT_NAME.substring(1)}§7[§f${Minecraft.getDebugFPS()} FPS§7]§r "
-                    }
-
-                    val color = ClientThemesUtils.getColor().rgb
-
-                    mc.fontRendererObj.drawStringWithShadow(text, 2.0f, 2.0f, color)
+        when (waterMark) {
+            "Normal" -> {
+                val shouldChange = ColorUtils.COLOR_PATTERN.matcher(CLIENT_NAME).find()
+                val text = if (shouldChange) {
+                    "§r$CLIENT_NAME"
+                } else {
+                    "${CLIENT_NAME.first()}§r§f${CLIENT_NAME.substring(1)}§7[§f${Minecraft.getDebugFPS()} FPS§7]§r "
                 }
-                "Default" -> {
-                    val posX = 4.0f
-                    val posY = 4.0f
-                    val iconSize = 5.0f
-                    val rectWidth = 10.0f
-                    val title = "FDP"
-                    val titleWidth = Fonts.InterMedium_15.stringWidth(title)
-                    val bgColorRGB = ClientThemesUtils.getBackgroundColor(0, 120).rgb
-                    RenderUtils.drawCustomShapeWithRadius(
-                        posX,
-                        posY,
-                        rectWidth + iconSize * 2.5f + titleWidth,
-                        rectWidth + iconSize * 2.0f,
-                        4.0f,
-                        Color(bgColorRGB, true)
-                    )
-                    Fonts.Nursultan18.drawString(
-                        "S",
-                        posX + iconSize,
-                        posY + 2 + iconSize - 1.0f + 2f,
-                        ClientThemesUtils.getColor().rgb
-                    )
-                    Fonts.InterMedium_15.drawString(
-                        title,
-                        posX + rectWidth + iconSize * 1.5f,
-                        posY + rectWidth / 2.0f + 1.5f + 2f,
-                        ClientThemesUtils.getColor().rgb
-                    )
-                    val playerName = mc.thePlayer.name
-                    val playerNameWidth = Fonts.InterMedium_15.stringWidth(playerName)
-                    val playerNameX = posX + rectWidth + iconSize * 2.5f + titleWidth + iconSize
-                    RenderUtils.drawCustomShapeWithRadius(
-                        playerNameX,
-                        posY,
-                        rectWidth + iconSize * 2.5f + playerNameWidth,
-                        rectWidth + iconSize * 2.0f,
-                        4.0f,
-                        Color(bgColorRGB, true)
-                    )
-                    Fonts.InterMedium_15.drawString(
-                        "W",
-                        playerNameX + iconSize,
-                        posY + 1 + iconSize + 2f,
-                        ClientThemesUtils.getColor().rgb
-                    )
-                    Fonts.InterMedium_15.drawString(
-                        playerName,
-                        playerNameX + iconSize * 1.5f + rectWidth,
-                        posY + rectWidth / 2.0f + 1.5f + 2f,
-                        -1
-                    )
-                    val fps = Minecraft.getDebugFPS()
-                    val fpsText = "$fps FPS"
-                    val fpsTextWidth = Fonts.InterMedium_15.stringWidth(fpsText)
-                    val fpsX = playerNameX + rectWidth + iconSize * 2.5f + playerNameWidth + iconSize
-                    RenderUtils.drawCustomShapeWithRadius(
-                        fpsX,
-                        posY,
-                        rectWidth + iconSize * 2.5f + fpsTextWidth,
-                        rectWidth + iconSize * 2.0f,
-                        4.0f,
-                        Color(bgColorRGB, true)
-                    )
-                    Fonts.Nursultan18.drawString(
-                        "X",
-                        fpsX + iconSize,
-                        posY + 1 + iconSize + 2f,
-                        ClientThemesUtils.getColor().rgb
-                    )
-                    Fonts.InterMedium_15.drawString(
-                        fpsText,
-                        fpsX + iconSize * 1.5f + rectWidth,
-                        posY + rectWidth / 2.0f + 1.5f + 2f,
-                        -1
-                    )
-                    val playerPosition = "${mc.thePlayer.posX.toInt()} ${mc.thePlayer.posY.toInt()} ${mc.thePlayer.posZ.toInt()}"
-                    val positionTextWidth = Fonts.InterMedium_15.stringWidth(playerPosition)
-                    val positionY = posY + rectWidth + iconSize * 2.0f + iconSize
-                    RenderUtils.drawCustomShapeWithRadius(
-                        posX,
-                        positionY,
-                        rectWidth + iconSize * 2.5f + positionTextWidth,
-                        rectWidth + iconSize * 2.0f,
-                        4.0f,
-                        Color(bgColorRGB, true)
-                    )
 
-                    Fonts.Nursultan18.drawString(
-                        "F",
-                        posX + iconSize,
-                        positionY + 1.5f + iconSize + 2f,
-                        ClientThemesUtils.getColor().rgb
-                    )
+                // Usa a cor do tema
+                val color = ClientThemesUtils.getColor().rgb
 
-                    Fonts.InterMedium_15.drawString(
-                        playerPosition,
-                        posX + iconSize * 1.5f + rectWidth,
-                        positionY + rectWidth / 2.0f + 1.5f + 2f,
-                        -1
-                    )
-                    val ping = try {
-                        mc.netHandler.getPlayerInfo(mc.thePlayer.uniqueID).responseTime
-                    } catch (e: Exception) {
-                        0
-                    }
-                    val pingText = "$ping Ping"
-                    val pingTextWidth = Fonts.InterMedium_15.stringWidth(pingText)
-                    val pingX = posX + rectWidth + iconSize * 2.5f + positionTextWidth + iconSize
-                    RenderUtils.drawCustomShapeWithRadius(
-                        pingX,
-                        positionY,
-                        rectWidth + iconSize * 2.5f + pingTextWidth,
-                        rectWidth + iconSize * 2.0f,
-                        4.0f,
-                        Color(bgColorRGB, true)
-                    )
-
-                    Fonts.Nursultan18.drawString(
-                        "Q",
-                        pingX + iconSize,
-                        positionY + 1 + iconSize + 2f,
-                        ClientThemesUtils.getColor().rgb
-                    )
-                    Fonts.InterMedium_15.drawString(
-                        pingText,
-                        pingX + iconSize * 1.5f + rectWidth,
-                        positionY + rectWidth / 2.0f + 1.5f + 2f,
-                        -1
-                    )
-
-                    val tpsText = "TPS: %.2f".format(tps)
-                    val tpsIcon = "C"
-                    val tpsX = posX
-                    val tpsY = positionY + rectWidth + iconSize * 2.0f + 5f
-                    RenderUtils.drawCustomShapeWithRadius(
-                        tpsX,
-                        tpsY,
-                        rectWidth + iconSize * 2.5f + Fonts.InterMedium_15.stringWidth(tpsText),
-                        rectWidth + iconSize * 2.0f,
-                        4.0f,
-                        Color(bgColorRGB, true)
-                    )
-                    Fonts.Nursultan18.drawString(
-                        tpsIcon,
-                        tpsX + iconSize,
-                        tpsY + 1.5f + iconSize + 2f,
-                        ClientThemesUtils.getColor().rgb
-                    )
-                    Fonts.InterMedium_15.drawString(
-                        tpsText,
-                        tpsX + iconSize * 1.5f + rectWidth,
-                        tpsY + rectWidth / 2.0f + 1.5f + 2f,
-                        -1
-                    )
-                }
+                mc.fontRendererObj.drawStringWithShadow(text, 2.0f, 2.0f, color)
             }
+            "Default" -> {
+                val posX = 4.0f
+                val posY = 4.0f
+                val iconSize = 5.0f
+                val rectWidth = 10.0f
+                val title = "FDP"
+                val titleWidth = Fonts.InterMedium_15.stringWidth(title)
+
+                val bgColorRGB = ClientThemesUtils.getBackgroundColor(0, 120).rgb
+
+                RenderUtils.drawCustomShapeWithRadius(
+                    posX,
+                    posY,
+                    rectWidth + iconSize * 2.5f + titleWidth,
+                    rectWidth + iconSize * 2.0f,
+                    4.0f,
+                    Color(bgColorRGB, true)
+                )
+                Fonts.Nursultan18.drawString(
+                    "S",
+                    posX + iconSize,
+                    posY + 2 + iconSize - 1.0f + 2f,
+                    ClientThemesUtils.getColor().rgb
+                )
+                Fonts.InterMedium_15.drawString(
+                    title,
+                    posX + rectWidth + iconSize * 1.5f,
+                    posY + rectWidth / 2.0f + 1.5f + 2f,
+                    ClientThemesUtils.getColor().rgb
+                )
+                val playerName = mc.thePlayer.name
+                val playerNameWidth = Fonts.InterMedium_15.stringWidth(playerName)
+                val playerNameX = posX + rectWidth + iconSize * 2.5f + titleWidth + iconSize
+
+                RenderUtils.drawCustomShapeWithRadius(
+                    playerNameX,
+                    posY,
+                    rectWidth + iconSize * 2.5f + playerNameWidth,
+                    rectWidth + iconSize * 2.0f,
+                    4.0f,
+                    Color(bgColorRGB, true)
+                )
+                Fonts.InterMedium_15.drawString(
+                    "W",
+                    playerNameX + iconSize,
+                    posY + 1 + iconSize + 2f,
+                    ClientThemesUtils.getColor().rgb
+                )
+                Fonts.InterMedium_15.drawString(
+                    playerName,
+                    playerNameX + iconSize * 1.5f + rectWidth,
+                    posY + rectWidth / 2.0f + 1.5f + 2f,
+                    -1
+                )
+
+                val fps = Minecraft.getDebugFPS()
+                val fpsText = "$fps FPS"
+                val fpsTextWidth = Fonts.InterMedium_15.stringWidth(fpsText)
+                val fpsX = playerNameX + rectWidth + iconSize * 2.5f + playerNameWidth + iconSize
+
+                RenderUtils.drawCustomShapeWithRadius(
+                    fpsX,
+                    posY,
+                    rectWidth + iconSize * 2.5f + fpsTextWidth,
+                    rectWidth + iconSize * 2.0f,
+                    4.0f,
+                    Color(bgColorRGB, true)
+                )
+                Fonts.Nursultan18.drawString(
+                    "X",
+                    fpsX + iconSize,
+                    posY + 1 + iconSize + 2f,
+                    ClientThemesUtils.getColor().rgb
+                )
+                Fonts.InterMedium_15.drawString(
+                    fpsText,
+                    fpsX + iconSize * 1.5f + rectWidth,
+                    posY + rectWidth / 2.0f + 1.5f + 2f,
+                    -1
+                )
+
+                val playerPosition = "${mc.thePlayer.posX.toInt()} ${mc.thePlayer.posY.toInt()} ${mc.thePlayer.posZ.toInt()}"
+                val positionTextWidth = Fonts.InterMedium_15.stringWidth(playerPosition)
+                val positionY = posY + rectWidth + iconSize * 2.0f + iconSize
+
+                RenderUtils.drawCustomShapeWithRadius(
+                    posX,
+                    positionY,
+                    rectWidth + iconSize * 2.5f + positionTextWidth,
+                    rectWidth + iconSize * 2.0f,
+                    4.0f,
+                    Color(bgColorRGB, true)
+                )
+                Fonts.Nursultan18.drawString(
+                    "F",
+                    posX + iconSize,
+                    positionY + 1.5f + iconSize + 2f,
+                    ClientThemesUtils.getColor().rgb
+                )
+                Fonts.InterMedium_15.drawString(
+                    playerPosition,
+                    posX + iconSize * 1.5f + rectWidth,
+                    positionY + rectWidth / 2.0f + 1.5f + 2f,
+                    -1
+                )
+
+                val ping = try {
+                    mc.netHandler.getPlayerInfo(mc.thePlayer.uniqueID).responseTime
+                } catch (e: Exception) {
+                    0
+                }
+                val pingText = "$ping Ping"
+                val pingTextWidth = Fonts.InterMedium_15.stringWidth(pingText)
+                val pingX = posX + rectWidth + iconSize * 2.5f + positionTextWidth + iconSize
+
+                RenderUtils.drawCustomShapeWithRadius(
+                    pingX,
+                    positionY,
+                    rectWidth + iconSize * 2.5f + pingTextWidth,
+                    rectWidth + iconSize * 2.0f,
+                    4.0f,
+                    Color(bgColorRGB, true)
+                )
+                Fonts.Nursultan18.drawString(
+                    "Q",
+                    pingX + iconSize,
+                    positionY + 1 + iconSize + 2f,
+                    ClientThemesUtils.getColor().rgb
+                )
+                Fonts.InterMedium_15.drawString(
+                    pingText,
+                    pingX + iconSize * 1.5f + rectWidth,
+                    positionY + rectWidth / 2.0f + 1.5f + 2f,
+                    -1
+                )
+
+                val tpsText = "TPS: %.2f".format(tps)
+                val tpsIcon = "C"
+                val tpsX = posX
+                val tpsY = positionY + rectWidth + iconSize * 2.0f + 5f
+
+                RenderUtils.drawCustomShapeWithRadius(
+                    tpsX,
+                    tpsY,
+                    rectWidth + iconSize * 2.5f + Fonts.InterMedium_15.stringWidth(tpsText),
+                    rectWidth + iconSize * 2.0f,
+                    4.0f,
+                    Color(bgColorRGB, true)
+                )
+                Fonts.Nursultan18.drawString(
+                    tpsIcon,
+                    tpsX + iconSize,
+                    tpsY + 1.5f + iconSize + 2f,
+                    ClientThemesUtils.getColor().rgb
+                )
+                Fonts.InterMedium_15.drawString(
+                    tpsText,
+                    tpsX + iconSize * 1.5f + rectWidth,
+                    tpsY + rectWidth / 2.0f + 1.5f + 2f,
+                    -1
+                )
+            }
+        }
     }
 
     private fun drawSprintingCrosshair(screenWidth: Int, screenHeight: Int) {
@@ -361,10 +372,13 @@ object HUDModule : Module("HUD", Category.CLIENT) {
     val onScreen = handler<ScreenEvent>(always = true) { event ->
         if (mc.theWorld == null || mc.thePlayer == null) return@handler
         if (state && blur && !mc.entityRenderer.isShaderActive && event.guiScreen != null &&
-                !(event.guiScreen is GuiChat || event.guiScreen is GuiHudDesigner)) mc.entityRenderer.loadShader(
+            !(event.guiScreen is GuiChat || event.guiScreen is GuiHudDesigner)
+        ) mc.entityRenderer.loadShader(
             ResourceLocation(CLIENT_NAME.lowercase() + "/blur.json")
-        ) else if (mc.entityRenderer.shaderGroup != null &&
-            "fdpclient/blur.json" in mc.entityRenderer.shaderGroup.shaderGroupName) mc.entityRenderer.stopUseShader()
+        ) else if (
+            mc.entityRenderer.shaderGroup != null &&
+            "fdpclient/blur.json" in mc.entityRenderer.shaderGroup.shaderGroupName
+        ) mc.entityRenderer.stopUseShader()
     }
 
     init {
