@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player.scaffolds
 
-import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -126,10 +125,10 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V) {
     private val jumpTicksRange by intRange("JumpTicksRange", 0..0, 0..10) { scaffoldMode == "Telly" }
 
     private val allowClutching by boolean("AllowClutching", true) { scaffoldMode !in arrayOf("Telly", "Expand") }
-    private val horizontalClutchBlocks: Value<Int> = int("HorizontalClutchBlocks", 3, 1..5) {
+    private val horizontalClutchBlocks by int("HorizontalClutchBlocks", 3, 1..5) {
         allowClutching && scaffoldMode !in arrayOf("Telly", "Expand")
     }
-    private val verticalClutchBlocks: Value<Int> = int("VerticalClutchBlocks", 2, 1..3) {
+    private val verticalClutchBlocks by int("VerticalClutchBlocks", 2, 1..3) {
         allowClutching && scaffoldMode !in arrayOf("Telly", "Expand")
     }
     private val blockSafe by boolean("BlockSafe", false) { !isGodBridgeEnabled }
@@ -617,7 +616,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V) {
         val (horizontal, vertical) = if (scaffoldMode == "Telly") {
             5 to 3
         } else if (allowClutching) {
-            horizontalClutchBlocks.get() to verticalClutchBlocks.get()
+            horizontalClutchBlocks to verticalClutchBlocks
         } else {
             1 to 1
         }
