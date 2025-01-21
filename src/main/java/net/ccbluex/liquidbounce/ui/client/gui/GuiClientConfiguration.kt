@@ -204,20 +204,22 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
             7 -> {
                 val languageIndex = LanguageManager.knownLanguages.indexOf(overrideLanguage)
 
-                // If the language is not found, set it to the first language
-                if (languageIndex == -1) {
-                    overrideLanguage = LanguageManager.knownLanguages.first()
-                } else {
-                    // If the language is the last one, set it to blank
-                    if (languageIndex == LanguageManager.knownLanguages.size - 1) {
-                        overrideLanguage = ""
-                    } else {
+                overrideLanguage = when (languageIndex) {
+                    -1 -> {
+                        // If the language is not found, set it to the first language
+                        LanguageManager.knownLanguages.first()
+                    }
+                    LanguageManager.knownLanguages.size - 1 -> {
+                        // If the language is the last one, set it to blank
+                        ""
+                    }
+                    else -> {
                         // Otherwise, set it to the next language
-                        overrideLanguage = LanguageManager.knownLanguages[languageIndex + 1]
+                        LanguageManager.knownLanguages[languageIndex + 1]
                     }
                 }
 
-                initGui()
+                languageButton.displayString = "Language (${overrideLanguage.ifBlank { "Game" }})"
             }
 
             8 -> mc.displayGuiScreen(prevGui)
