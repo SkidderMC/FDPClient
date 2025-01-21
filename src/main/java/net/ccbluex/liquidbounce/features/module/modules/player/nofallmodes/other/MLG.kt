@@ -145,6 +145,7 @@ object MLG : NoFallMode("MLG") {
             if (retrievingPos == null) {
                 SilentHotbar.resetSlot(this)
             }
+
             return
         }
 
@@ -247,7 +248,7 @@ object MLG : NoFallMode("MLG") {
         }
     }
 
-    private fun placeBlock(
+    private inline fun placeBlock(
         blockPos: BlockPos,
         side: EnumFacing,
         hitVec: Vec3,
@@ -262,7 +263,7 @@ object MLG : NoFallMode("MLG") {
         }
     }
 
-    private fun tryToPlaceBlock(
+    private inline fun tryToPlaceBlock(
         stack: ItemStack, clickPos: BlockPos, side: EnumFacing, hitVec: Vec3, onSuccess: () -> Unit
     ): Boolean {
         val player = mc.thePlayer ?: return false
