@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.config.ListValue
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
+import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blue2Value
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blueValue
@@ -45,6 +46,7 @@ import kotlin.math.sin
 /**
  * CustomHUD Notification element
  */
+@ElementInfo(name = "Notifications")
 class Notifications(
     x: Double = 0.0, y: Double = 30.0, scale: Float = 1F,
     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)

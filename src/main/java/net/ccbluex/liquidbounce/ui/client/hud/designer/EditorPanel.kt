@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.ELEMENTS
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.Fonts.font35
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.lerpWith
@@ -130,6 +131,12 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         width = 90
 
         for ((element, info) in ELEMENTS) {
+
+            if (info == null) {
+                println("Warning: Element with null info found.")
+                continue
+            }
+
             if (info.single && HUD.elements.any { it.javaClass == element }) continue
 
             val name = info.name
@@ -146,8 +153,13 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
                     if (newElement.createElement()) HUD.addElement(newElement)
                 } catch (e: InstantiationException) {
                     e.printStackTrace()
+                    println("Error instantiating element: ${element.name}")
                 } catch (e: IllegalAccessException) {
                     e.printStackTrace()
+                    println("Error instantiating element: ${element.name}")
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    println("Error instantiating element: ${element.name}")
                 }
                 create = false
             }
