@@ -32,6 +32,7 @@ import net.ccbluex.liquidbounce.utils.movement.TimerBalanceUtils
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsFloat
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedBorder
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GradientFontShader
@@ -97,6 +98,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
             text.displayString = "Blocks: %blockamount%"
             text.shadow = true
             text.bgColors.with(a = 100)
+            text.bgColors.color().withAlpha(100)
             text.onScaffold = true
             text.showBlock = true
             text.backgroundScale = 1F

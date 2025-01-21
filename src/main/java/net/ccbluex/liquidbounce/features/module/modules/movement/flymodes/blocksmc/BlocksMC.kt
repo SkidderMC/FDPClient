@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.timerSlo
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.client.chat
+import net.ccbluex.liquidbounce.utils.extensions.airTicks
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
@@ -47,7 +48,6 @@ object BlocksMC : FlyMode("BlocksMC"), Listenable {
     private var isFlying = false
     private var isNotUnder = false
     private var isTeleported = false
-    private var airborneTicks = 0
     private var jumped = false
 
     override fun onUpdate() {
@@ -58,17 +58,15 @@ object BlocksMC : FlyMode("BlocksMC"), Listenable {
             if (player.onGround && stopOnLanding) {
                 if (debugFly)
                     chat("Ground Detected.. Stopping Fly")
-                Flight.state = false
+                Fly.state = false
             }
 
             if (!player.isMoving && stopOnNoMove) {
                 if (debugFly)
                     chat("No Movement Detected.. Stopping Fly. (Could be flagged)")
-                Flight.state = false
+                Fly.state = false
             }
         }
-
-        updateOffGroundTicks(player)
 
         if (shouldFly(player, world)) {
             if (isTeleported) {
@@ -97,11 +95,7 @@ object BlocksMC : FlyMode("BlocksMC"), Listenable {
     }
 
     val onWorld = handler<WorldEvent> {
-        Flight.state = false
-    }
-
-    private fun updateOffGroundTicks(player: EntityPlayerSP) {
-        airborneTicks = if (player.onGround) 0 else airborneTicks + 1
+        Fly.state = false
     }
 
     private fun handleTimerSlow(player: EntityPlayerSP) {
@@ -122,7 +116,7 @@ object BlocksMC : FlyMode("BlocksMC"), Listenable {
     }
 
     private fun handlePlayerFlying(player: EntityPlayerSP) {
-        when (airborneTicks) {
+        when (player.airTicks) {
             0 -> {
                 if (isNotUnder && isTeleported) {
                     strafe(boostSpeed + extraBoost)

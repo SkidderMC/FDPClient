@@ -285,7 +285,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V) {
         }
 
     // Telly
-    private var offGroundTicks = 0
     private var ticksUntilJump = 0
     private var blocksUntilAxisChange = 0
     private var jumpTicks = jumpTicksRange.random()
@@ -313,12 +312,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V) {
         mc.timer.timerSpeed = timer
 
         // Telly
-        if (player.onGround) {
-            offGroundTicks = 0
-            ticksUntilJump++
-        } else {
-            offGroundTicks++
-        }
+        if (player.onGround) ticksUntilJump++
 
         if (shouldGoDown) {
             mc.gameSettings.keyBindSneak.pressed = false
@@ -583,8 +577,10 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V) {
     }
 
     private fun setRotation(rotation: Rotation, ticks: Int) {
-        if (scaffoldMode == "Telly" && mc.thePlayer.isMoving) {
-            if (offGroundTicks < ticksUntilRotation.get() && ticksUntilJump >= jumpTicks) {
+        val player = mc.thePlayer ?: return
+
+        if (scaffoldMode == "Telly" && player.isMoving) {
+            if (player.airTicks < ticksUntilRotation.get() && ticksUntilJump >= jumpTicks) {
                 return
             }
         }

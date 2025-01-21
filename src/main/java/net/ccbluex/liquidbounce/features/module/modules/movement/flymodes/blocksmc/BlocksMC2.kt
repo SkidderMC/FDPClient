@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMod
 import net.ccbluex.liquidbounce.utils.client.PacketUtils
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.client.chat
+import net.ccbluex.liquidbounce.utils.extensions.airTicks
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
@@ -45,7 +46,6 @@ object BlocksMC2 : FlyMode("BlocksMC2"), Listenable {
     private var isFlying = false
     private var isNotUnder = false
     private var isBlinked = false
-    private var airborneTicks = 0
     private var jumped = false
 
     private val packets = mutableListOf<Packet<*>>()
@@ -68,8 +68,6 @@ object BlocksMC2 : FlyMode("BlocksMC2"), Listenable {
                 Flight.state = false
             }
         }
-
-        updateOffGroundTicks(player)
 
         if (shouldFly(player, world)) {
             if (isBlinked) {
@@ -102,17 +100,13 @@ object BlocksMC2 : FlyMode("BlocksMC2"), Listenable {
     }
 
     val onWorld = handler<WorldEvent> { event ->
-        Flight.state = false
+        Fly.state = false
 
         // Clear packets on disconnect
         if (event.worldClient == null) {
             packets.clear()
             packetsReceived.clear()
         }
-    }
-
-    private fun updateOffGroundTicks(player: EntityPlayerSP) {
-        airborneTicks = if (player.onGround) 0 else airborneTicks++
     }
 
     private fun handleTimerSlow(player: EntityPlayerSP) {
@@ -133,7 +127,7 @@ object BlocksMC2 : FlyMode("BlocksMC2"), Listenable {
     }
 
     private fun handlePlayerFlying(player: EntityPlayerSP) {
-        when (airborneTicks) {
+        when (player.airTicks) {
             0 -> {
                 if (isNotUnder) {
                     strafe(boostSpeed + extraBoost)

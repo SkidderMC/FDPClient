@@ -144,6 +144,11 @@ val EntityLivingBase?.isMoving: Boolean
 val Entity.isInLiquid: Boolean
     get() = isInWater || isInLava
 
+val EntityPlayerSP.airTicks
+    get() = MovementUtils.airTicks
+val EntityPlayerSP.groundTicks
+    get() = MovementUtils.groundTicks
+
 fun Entity.setPosAndPrevPos(currPos: Vec3, prevPos: Vec3 = currPos, lastTickPos: Vec3? = null) {
     setPosition(currPos.xCoord, currPos.yCoord, currPos.zCoord)
     prevPosX = prevPos.xCoord

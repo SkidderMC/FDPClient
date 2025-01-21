@@ -163,10 +163,13 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
             serverSneakState = sneaking;
         }
 
+        final MovementUtils movementUtils = MovementUtils.INSTANCE;
         if (motionEvent.getOnGround()) {
-            MovementUtils.INSTANCE.setAirTicks(0);
+            movementUtils.setGroundTicks(movementUtils.getGroundTicks() + 1);
+            movementUtils.setAirTicks(0);
         } else {
-            MovementUtils.INSTANCE.setAirTicks(MovementUtils.INSTANCE.getAirTicks() + 1);
+            movementUtils.setGroundTicks(0);
+            movementUtils.setAirTicks(movementUtils.getAirTicks() + 1);
         }
 
         if (isCurrentViewEntity()) {

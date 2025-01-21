@@ -8,11 +8,11 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.hyp
 import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed.glide
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
-import net.ccbluex.liquidbounce.utils.movement.MovementUtils.airTicks
-import net.ccbluex.liquidbounce.utils.movement.MovementUtils.speed
-import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
+import net.ccbluex.liquidbounce.utils.extensions.airTicks
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.speed
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 import net.minecraft.potion.Potion
 
 /**
@@ -32,8 +32,7 @@ object HypixelLowHop : SpeedMode("HypixelLowHop") {
             strafe()
             return
         } else {
-
-            when (airTicks) {
+            when (player.airTicks) {
                 1 -> {
                     strafe()
                 }
@@ -44,7 +43,7 @@ object HypixelLowHop : SpeedMode("HypixelLowHop") {
                 7 -> if (glide) player.motionY /= 1.5
             }
 
-            if (airTicks >= 7 && glide) {
+            if (player.airTicks >= 7 && glide) {
                 strafe(speed = speed.coerceAtLeast(0.281F), strength = 0.7)
             }
 
@@ -53,7 +52,7 @@ object HypixelLowHop : SpeedMode("HypixelLowHop") {
             }
 
             if ((player.getActivePotionEffect(Potion.moveSpeed)?.amplifier ?: 0) == 2) {
-                when (airTicks) {
+                when (player.airTicks) {
                     1, 2, 5, 6, 8 -> {
                         player.motionX *= 1.2
                         player.motionZ *= 1.2

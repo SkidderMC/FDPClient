@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.verus
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
+import net.ccbluex.liquidbounce.utils.extensions.airTicks
 import net.ccbluex.liquidbounce.utils.extensions.isInLiquid
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.airTicks
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
@@ -44,7 +45,7 @@ object VerusLowHopNew : SpeedMode("VerusLowHopNew") {
                     0.33f
                 }
             } else {
-                if (airTicks <= 1) {
+                if (player.airTicks <= 1) {
                     mc.thePlayer.motionY = -0.09800000190734863
                 }
 

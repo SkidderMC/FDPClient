@@ -40,6 +40,7 @@ object MovementUtils : MinecraftInstance, Listenable {
         get() = mc.thePlayer?.run { motionX != .0 || motionY != .0 || motionZ != .0 } == true
 
     var airTicks = 0
+    var groundTicks = 0
 
     fun hasTheMotion(): Boolean {
         return mc.thePlayer.motionX != 0.0 && mc.thePlayer.motionZ != 0.0 && mc.thePlayer.motionY != 0.0
