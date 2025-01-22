@@ -1,6 +1,6 @@
 /*
  * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge by LiquidBounce.
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
@@ -131,7 +131,6 @@ object HUDModule : Module("HUD", Category.CLIENT) {
                     "${CLIENT_NAME.first()}§r§f${CLIENT_NAME.substring(1)}§7[§f${Minecraft.getDebugFPS()} FPS§7]§r "
                 }
 
-                // Usa a cor do tema
                 val color = ClientThemesUtils.getColor().rgb
 
                 mc.fontRendererObj.drawStringWithShadow(text, 2.0f, 2.0f, color)
