@@ -31,7 +31,7 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
     open val keepRotationValue = boolean("KeepRotation", true) { rotationsActive && applyServerSide && generalApply() }
 
     open val resetTicksValue = int("ResetTicks", 1, 1..20) {
-        rotationsActive && applyServerSide && keepRotation && generalApply()
+        rotationsActive && applyServerSide && generalApply()
     }
 
     open val legitimizeValue = boolean("Legitimize", false) { rotationsActive && generalApply() }
