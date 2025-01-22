@@ -57,8 +57,8 @@ object Velocity : Module("Velocity", Category.COMBAT) {
         ), "Simple"
     )
 
-    private val horizontal by float("Horizontal", 0F, 0F..1F) { mode in arrayOf("Simple", "AAC", "Legit") }
-    private val vertical by float("Vertical", 0F, 0F..1F) { mode in arrayOf("Simple", "Legit") }
+    private val horizontal by float("Horizontal", 0F, -1F..1F) { mode in arrayOf("Simple", "AAC", "Legit") }
+    private val vertical by float("Vertical", 0F, -1F..1F) { mode in arrayOf("Simple", "Legit") }
 
     // Reverse
     private val reverseStrength by float("ReverseStrength", 1F, 0.1F..1F) { mode == "Reverse" }
