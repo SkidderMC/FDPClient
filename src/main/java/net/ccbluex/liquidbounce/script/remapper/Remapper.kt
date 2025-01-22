@@ -110,7 +110,7 @@ object Remapper {
                     val methodName = name.substringAfterLast('/')
                     val methodSrg = srg.substringAfterLast('/')
 
-                    fields.getOrPut(className, ::HashMap)[methodSrg + desc] = methodName
+                    methods.getOrPut(className, ::HashMap)[methodSrg + desc] = methodName
                 }
             }
         }
