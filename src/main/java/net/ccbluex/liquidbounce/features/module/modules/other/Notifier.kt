@@ -170,10 +170,14 @@ object Notifier : Module("Notifier", Category.OTHER) {
 
     val onAttackEntity = handler<AttackEvent> { event ->
         if (!playerCombat) return@handler
-        val player = mc.thePlayer ?: return@handler
-        val attackedEntity = event.targetEntity
-        if (attackedEntity is EntityPlayer && attackedEntity.gameProfile.id != player.uniqueID && !isBot(attackedEntity)) {
-            chat("§7${attackedEntity.name} was §cattacked by ${player.name}")
+
+        val attacker = mc.thePlayer ?: return@handler
+        val attacked = event.targetEntity as? EntityPlayer ?: return@handler
+
+        if (isBot(attacker) || isBot(attacked)) return@handler
+
+        if (attacker.gameProfile.id != attacked.gameProfile.id) {
+            chat("§7${attacked.name} was §cattacked by ${attacker.name}")
         }
     }
 
