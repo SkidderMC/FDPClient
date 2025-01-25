@@ -37,10 +37,11 @@ object HUD : MinecraftInstance {
   fun setDefault() {
     elements.clear()
 
+    addElement(TabGUI())
     addElement(Arraylist())
     addElement(ScoreboardElement())
     addElement(Notifications())
-    addElement(BlockCounter())
+    addElement(HotKeys())
   }
 
   /** Render all elements */

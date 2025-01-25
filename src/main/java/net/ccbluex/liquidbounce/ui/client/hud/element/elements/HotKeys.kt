@@ -22,15 +22,15 @@ import kotlin.math.max
 
 @ElementInfo(name = "HotKeys")
 class HotKeys(
-    x: Double = 0.0,
-    y: Double = 0.0
+    x: Double = 0.60,
+    y: Double = 268.23
 ) : Element("HotKeys", x, y) {
 
     private val font by font("Font", Fonts.font35)
     private val titleText by text("Title", "HotKeys")
 
     private val backgroundMode by choices(
-        "Background-Mode", arrayOf("Custom", "Theme"), "Theme"
+        "Background-Mode", arrayOf("Custom", "Theme"), "Custom"
     )
 
     private val bgColors = ColorSettingsInteger(this, "BackgroundColor") { backgroundMode == "Custom" }.with(a = 150)
