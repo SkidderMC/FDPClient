@@ -1171,6 +1171,7 @@ object RenderUtils : MinecraftInstance {
         glVertex2i(x, y2)
         glVertex2i(x2, y2)
         glEnd()
+        glColor(Color.WHITE)
         glEnable(GL_TEXTURE_2D)
         glDisable(GL_BLEND)
         glDisable(GL_LINE_SMOOTH)
@@ -2282,17 +2283,17 @@ object RenderUtils : MinecraftInstance {
         TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT
     }
 
-    enum class RoundedCorners(val corners: Set<Corner>) {
-        NONE(emptySet()),
-        TOP_LEFT_ONLY(setOf(Corner.TOP_LEFT)),
-        TOP_RIGHT_ONLY(setOf(Corner.TOP_RIGHT)),
-        BOTTOM_LEFT_ONLY(setOf(Corner.BOTTOM_LEFT)),
-        BOTTOM_RIGHT_ONLY(setOf(Corner.BOTTOM_RIGHT)),
-        TOP_ONLY(setOf(Corner.TOP_LEFT, Corner.TOP_RIGHT)),
-        BOTTOM_ONLY(setOf(Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT)),
-        LEFT_ONLY(setOf(Corner.TOP_LEFT, Corner.BOTTOM_LEFT)),
-        RIGHT_ONLY(setOf(Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT)),
-        ALL(setOf(Corner.TOP_LEFT, Corner.TOP_RIGHT, Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT))
+    enum class RoundedCorners(val corners: Set<Corner>, val displayName: String) {
+        NONE(emptySet(), "None"),
+        TOP_LEFT_ONLY(setOf(Corner.TOP_LEFT), "Top-Left-Only"),
+        TOP_RIGHT_ONLY(setOf(Corner.TOP_RIGHT), "Top-Right-Only"),
+        BOTTOM_LEFT_ONLY(setOf(Corner.BOTTOM_LEFT), "Bottom-Left-Only"),
+        BOTTOM_RIGHT_ONLY(setOf(Corner.BOTTOM_RIGHT), "Bottom-Right-Only"),
+        TOP_ONLY(setOf(Corner.TOP_LEFT, Corner.TOP_RIGHT), "Top-Only"),
+        BOTTOM_ONLY(setOf(Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT), "Bottom-Only"),
+        LEFT_ONLY(setOf(Corner.TOP_LEFT, Corner.BOTTOM_LEFT), "Left-Only"),
+        RIGHT_ONLY(setOf(Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT), "Right-Only"),
+        ALL(setOf(Corner.TOP_LEFT, Corner.TOP_RIGHT, Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT), "All")
     }
 
     private fun drawRoundedRectangle(
@@ -2349,7 +2350,7 @@ object RenderUtils : MinecraftInstance {
 
         glEnd()
 
-        resetColor()
+        glColor(Color.WHITE)
 
         glEnable(GL_TEXTURE_2D)
         glDisable(GL_LINE_SMOOTH)
@@ -2448,6 +2449,7 @@ object RenderUtils : MinecraftInstance {
             width.toFloat(),
             height.toFloat()
         )
+        glColor(Color.WHITE)
         glDepthMask(true)
         glDisable(GL_BLEND)
         glEnable(GL_DEPTH_TEST)

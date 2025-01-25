@@ -17,17 +17,20 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedBorder
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect2
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader
 import net.minecraft.client.gui.FontRenderer
+import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11.glColor4f
 import java.awt.Color
+import kotlin.math.abs
 
 @ElementInfo(name = "TabGUI")
-class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element("TabGUI", x = x, y = y) {
+class TabGUI(x: Double = 16.87, y: Double = 152.00) : Element("TabGUI", x = x, y = y) {
 
     private val rectColor = color("RectangleColor", Color(0, 148, 255, 140))
 
@@ -49,13 +52,27 @@ class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element("TabGUI", x = x, y = y
     private val rainbowX by float("Rainbow-X", -1000F, -2000F..2000F) { rectRainbow || (borderValue && borderRainbow) }
     private val rainbowY by float("Rainbow-Y", -1000F, -2000F..2000F) { rectRainbow || (borderValue && borderRainbow) }
 
-    private val arrows by boolean("Arrows", true)
+    private val displayIcons by boolean("DisplayIcons", true)
+    private val iconRectColor by color("IconRectColor", Color.BLACK.withAlpha(200)) { displayIcons }
+    private val useRectangleColorForChosenIconColor by boolean(
+        "UseRectangleColorForChosenIconColor", true
+    ) { displayIcons }
+    private val iconCategoryChosenColor by color(
+        "IconChosenCategoryColor", rectColor.selectedColor()
+    ) { displayIcons && !useRectangleColorForChosenIconColor }
+    private val iconNonChosenCategoryColor by color("IconNonChosenCategoryColor", Color.WHITE) { displayIcons }
+    private val iconShadows by boolean("IconShadows", true) { displayIcons }
+    private val xDistance by float("ShadowXDistance", 1.0F, -2F..2F) { iconShadows }
+    private val yDistance by float("ShadowYDistance", 1.0F, -2F..2F) { iconShadows }
+    private val shadowColor by color("ShadowColor", Color.BLACK.withAlpha(128)) { iconShadows }
+
+    private val arrows by boolean("Arrows", false)
     private val font by font("Font", Fonts.font35)
     private val textShadow by boolean("TextShadow", false)
     private val textFade by boolean("TextFade", true)
     private val textPositionY by float("TextPosition-Y", 2F, 0F..5F)
     private val width by float("Width", 60F, 55F..100F)
-    private val tabHeight by float("TabHeight", 12F, 10F..15F)
+    private val tabHeight by float("TabHeight", 13F, 10F..15F)
     private val upperCase by boolean("UpperCase", false)
 
     private val tabs = mutableListOf<Tab>()
@@ -83,7 +100,7 @@ class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element("TabGUI", x = x, y = y
 
     init {
         for (category in Category.entries) {
-            val tab = Tab(category.displayName)
+            val tab = Tab(category, category.displayName)
 
             moduleManager.forEach { module ->
                 if (category == module.category) {
@@ -95,6 +112,8 @@ class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element("TabGUI", x = x, y = y
         }
     }
 
+    private val corners = arrayOf(RenderUtils.RoundedCorners.RIGHT_ONLY, RenderUtils.RoundedCorners.LEFT_ONLY)
+
     override fun drawElement(): Border {
         updateAnimation()
 
@@ -103,8 +122,44 @@ class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element("TabGUI", x = x, y = y
         // Draw
         val guiHeight = tabs.size * tabHeight
 
+        // 4F = tab slide
+        val arrowPadding = if (arrows) 4F else 0F
+        val iconPadding = if (displayIcons) 17F else 0F
+
+        val widthWithPadding = maxOf(font.getStringWidth("Movement").toFloat() + arrowPadding, width + arrowPadding)
+        val xWithPadding = 2F - iconPadding
+
+        val iconSideX = if (side.horizontal == Side.Horizontal.RIGHT) {
+            widthWithPadding + abs(xWithPadding) to widthWithPadding
+        } else {
+            xWithPadding to 2f
+        }
+
+        val (borderX1, borderX2) = if (displayIcons) {
+            iconSideX.first to if (side.horizontal != Side.Horizontal.RIGHT) widthWithPadding else 2F
+        } else {
+            xWithPadding to widthWithPadding
+        }
+
         AWTFontRenderer.assumeNonVolatile {
-            drawRoundedRect(1F, 0F, width, guiHeight, bgColor.rgb, roundedRectRadius)
+            drawRoundedRect(
+                2F, 0F, widthWithPadding, guiHeight, bgColor.rgb, roundedRectRadius, if (displayIcons) {
+                    corners[if (side.horizontal != Side.Horizontal.RIGHT) 0 else 1]
+                } else {
+                    RenderUtils.RoundedCorners.ALL
+                }
+            )
+            if (displayIcons) {
+                drawRoundedRect(
+                    iconSideX.first,
+                    0F,
+                    iconSideX.second,
+                    guiHeight,
+                    iconRectColor.rgb,
+                    roundedRectRadius,
+                    corners[if (side.horizontal != Side.Horizontal.RIGHT) 1 else 0]
+                )
+            }
 
             val rectColor = if (rectRainbow) Color.black else rectColor.selectedColor()
 
@@ -115,35 +170,47 @@ class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element("TabGUI", x = x, y = y
                 System.currentTimeMillis() % 10000 / 10000F
             ).use {
                 val cornerToRound = when (selectedCategory) {
-                    0 -> RenderUtils.RoundedCorners.TOP_ONLY
-                    tabs.lastIndex -> RenderUtils.RoundedCorners.BOTTOM_ONLY
+                    0 -> if (displayIcons) {
+                        if (side.horizontal != Side.Horizontal.RIGHT) {
+                            RenderUtils.RoundedCorners.TOP_RIGHT_ONLY
+                        } else {
+                            RenderUtils.RoundedCorners.TOP_LEFT_ONLY
+                        }
+                    } else {
+                        RenderUtils.RoundedCorners.TOP_ONLY
+                    }
+
+                    tabs.lastIndex -> if (displayIcons) {
+                        if (side.horizontal != Side.Horizontal.RIGHT) {
+                            RenderUtils.RoundedCorners.BOTTOM_RIGHT_ONLY
+                        } else {
+                            RenderUtils.RoundedCorners.BOTTOM_LEFT_ONLY
+                        }
+                    } else {
+                        RenderUtils.RoundedCorners.BOTTOM_ONLY
+                    }
+
                     else -> RenderUtils.RoundedCorners.NONE
                 }
 
-                drawRoundedRect2(1F, 1 + tabY - 1, width, tabY + tabHeight, rectColor, roundedRectRadius, cornerToRound)
-            }
-
-            if (borderValue) {
-                RainbowShader.begin(
-                    borderRainbow,
-                    if (rainbowX == 0f) 0f else 1f / rainbowX,
-                    if (rainbowY == 0f) 0f else 1f / rainbowY,
-                    System.currentTimeMillis() % 10000 / 10000F
-                ).use {
-                    drawRoundedBorder(1F, 0F, width, guiHeight, borderStrength, borderColor.rgb, roundedRectRadius)
-                }
+                drawRoundedRect2(
+                    2F, 1 + tabY - 1, widthWithPadding, tabY + tabHeight, rectColor, roundedRectRadius, cornerToRound
+                )
             }
 
             glColor4f(1f, 1f, 1f, 1f)
 
             var y = 1F
-            tabs.forEachIndexed { index, tab ->
-                val tabName = if (upperCase) tab.tabName.uppercase()
-                else tab.tabName
 
-                val textX =
-                    if (side.horizontal == Side.Horizontal.RIGHT) width - font.getStringWidth(tabName) - tab.textFade - 3
-                    else tab.textFade + 5
+            tabs.forEachIndexed { index, tab ->
+                val tabName = tab.tabName.let { if (upperCase) it.uppercase() else it }
+
+                val textX = if (side.horizontal == Side.Horizontal.RIGHT) {
+                    widthWithPadding - font.getStringWidth(tabName) - tab.textFade - 3
+                } else {
+                    tab.textFade + 5
+                }
+
                 val textY = y + textPositionY
 
                 val textColor = if (selectedCategory == index) 0xffffff else Color(210, 210, 210).rgb
@@ -151,21 +218,31 @@ class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element("TabGUI", x = x, y = y
                 font.drawString(tabName, textX, textY, textColor, textShadow)
 
                 if (arrows) {
-                    if (side.horizontal == Side.Horizontal.RIGHT) font.drawString(
-                        if (!categoryMenu && selectedCategory == index) ">" else "<", 3F, y + 2F, 0xffffff, textShadow
-                    )
-                    else font.drawString(
-                        if (!categoryMenu && selectedCategory == index) "<" else ">",
-                        width - 8F,
-                        y + 2F,
-                        0xffffff,
-                        textShadow
-                    )
+                    if (side.horizontal == Side.Horizontal.RIGHT) {
+                        font.drawString(
+                            if (!categoryMenu && selectedCategory == index) {
+                                ">"
+                            } else {
+                                "<"
+                            }, 3F, y + 2F, 0xffffff, textShadow
+                        )
+                    } else {
+                        font.drawString(
+                            if (!categoryMenu && selectedCategory == index) "<" else ">",
+                            widthWithPadding - arrowPadding - 2F,
+                            y + 2F,
+                            0xffffff,
+                            textShadow
+                        )
+                    }
                 }
 
                 if (index == selectedCategory && !categoryMenu) {
-                    val tabX = if (side.horizontal == Side.Horizontal.RIGHT) 1F - tab.menuWidth
-                    else width + 5
+                    val tabX = if (side.horizontal == Side.Horizontal.RIGHT) {
+                        1F - tab.menuWidth
+                    } else {
+                        widthWithPadding + 5
+                    }
 
                     tab.drawTab(
                         tabX,
@@ -179,11 +256,49 @@ class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element("TabGUI", x = x, y = y
                         rectRainbow
                     )
                 }
+
+                if (borderValue) {
+                    RainbowShader.begin(
+                        borderRainbow,
+                        if (rainbowX == 0f) 0f else 1f / rainbowX,
+                        if (rainbowY == 0f) 0f else 1f / rainbowY,
+                        System.currentTimeMillis() % 10000 / 10000F
+                    ).use {
+                        drawRoundedBorder(
+                            borderX1, 0F, borderX2, guiHeight, borderStrength, borderColor.rgb, roundedRectRadius
+                        )
+                    }
+                }
+
+                if (displayIcons) {
+                    val iconX = if (side.horizontal == Side.Horizontal.RIGHT) {
+                        iconSideX.second + 1
+                    } else {
+                        iconSideX.first + 2
+                    }
+
+                    val resource = ResourceLocation("fdpclient/texture/category/${tab.category.displayName.lowercase()}.png")
+
+                    val iconY = y - 1
+
+                    if (iconShadows) {
+                        drawImage(resource, iconX + xDistance, iconY + yDistance, 12, 12, shadowColor)
+                    }
+
+                    val colorToUse = if (index == selectedCategory) {
+                        iconCategoryChosenColor
+                    } else {
+                        iconNonChosenCategoryColor
+                    }
+
+                    drawImage(resource, iconX, iconY, 12, 12, colorToUse)
+                }
+
                 y += tabHeight
             }
         }
 
-        return Border(1F, 0F, width, guiHeight)
+        return Border(borderX1, 0F, borderX2, guiHeight)
     }
 
     override fun handleKey(c: Char, keyCode: Int) {
@@ -265,7 +380,7 @@ class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element("TabGUI", x = x, y = y
     /**
      * TabGUI Tab
      */
-    private inner class Tab(val tabName: String) {
+    private inner class Tab(val category: Category, val tabName: String) {
 
         val modules = mutableListOf<Module>()
         var menuWidth = 0
@@ -321,6 +436,15 @@ class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element("TabGUI", x = x, y = y
                 )
             }
 
+            glColor4f(1f, 1f, 1f, 1f)
+
+            modules.forEachIndexed { index, module ->
+                val moduleColor = if (module.state) 0xffffff else Color(205, 205, 205).rgb
+
+                fontRenderer.drawString(
+                    getDisplayName(module), x + 2F, y + tabHeight * index + textPositionY, moduleColor, textShadow
+                )
+            }
 
             if (borderValue) {
                 RainbowShader.begin(
@@ -339,16 +463,6 @@ class TabGUI(x: Double = 2.0, y: Double = 31.0) : Element("TabGUI", x = x, y = y
                         roundedRectRadius
                     )
                 }
-            }
-
-            glColor4f(1f, 1f, 1f, 1f)
-
-            modules.forEachIndexed { index, module ->
-                val moduleColor = if (module.state) 0xffffff else Color(205, 205, 205).rgb
-
-                fontRenderer.drawString(
-                    getDisplayName(module), x + 2F, y + tabHeight * index + textPositionY, moduleColor, textShadow
-                )
             }
         }
 
