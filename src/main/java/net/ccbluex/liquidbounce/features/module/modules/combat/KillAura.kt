@@ -216,10 +216,16 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
     private val useHitDelay by boolean("UseHitDelay", false)
     private val hitDelayTicks by int("HitDelayTicks", 1, 1..5) { useHitDelay }
 
+    private val generateClicksBasedOnDist by boolean("GenerateClicksBasedOnDistance", false)
+    private val cpsMultiplier by intRange("CPS-Multiplier", 1..2, 1..10)
+    { generateClicksBasedOnDist }
+    private val distanceFactor by floatRange("DistanceFactor", 5F..10F, 1F..10F)
+    { generateClicksBasedOnDist }
+
     private val generateSpotBasedOnDistance by boolean("GenerateSpotBasedOnDistance", false) { options.rotationsActive }
 
     private val randomization = RandomizationSettings(this) { options.rotationsActive }
-    private val outborder by boolean("Outborder", false) { options.rotationsActive }
+    private val outBorder by boolean("OutBorder", false) { options.rotationsActive }
 
     private val highestBodyPointToTargetValue = choices(
         "HighestBodyPointToTarget", arrayOf("Head", "Body", "Feet"), "Head"
@@ -364,7 +370,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
         }
     }
 
-    val onWorldChange = handler<WorldEvent> {
+    val onWorld = handler<WorldEvent> {
         attackTickTimes.clear()
 
         if (blinkAutoBlock && BlinkUtils.isBlinking) BlinkUtils.unblink()
@@ -457,7 +463,13 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
             // Sometimes you also do not click. The positives outweigh the negatives, however.
             val extraClicks = if (simulateDoubleClicking && !simulateCooldown) nextInt(-1, 1) else 0
 
-            val maxClicks = clicks + extraClicks
+            // Generate clicks based on distance from us to target.
+            val generatedClicks = if (generateClicksBasedOnDist) {
+                val distance = player.getDistanceToEntityBox(target!!)
+                ((distance / distanceFactor.random()) * cpsMultiplier.random()).roundToInt()
+            } else 0
+
+            val maxClicks = clicks + extraClicks + generatedClicks
 
             repeat(maxClicks) {
                 val wasBlocking = blockStatus
@@ -720,8 +732,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
 
         val switchMode = targetMode == "Switch"
 
-        val theWorld = mc.theWorld
-        val thePlayer = mc.thePlayer
+        val theWorld = mc.theWorld ?: return
+        val thePlayer = mc.thePlayer ?: return
 
         var bestTarget: EntityLivingBase? = null
         var bestValue: Double? = null
@@ -866,7 +878,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
         val rotation = searchCenter(
             boundingBox,
             generateSpotBasedOnDistance,
-            outborder && !attackTimer.hasTimePassed(attackDelay / 2),
+            outBorder && !attackTimer.hasTimePassed(attackDelay / 2),
             randomization,
             predict = false,
             lookRange = range + scanRange,
