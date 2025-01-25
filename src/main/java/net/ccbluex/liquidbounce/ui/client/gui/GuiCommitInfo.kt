@@ -24,6 +24,8 @@ import kotlin.Throws
 
 class GuiCommitInfo : AbstractScreen() {
 
+    private val gitImage: ResourceLocation = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/mainmenu/github.png")
+
     override fun initGui() {
         val buttonWidth = 200
         val buttonHeight = 20
@@ -49,7 +51,7 @@ class GuiCommitInfo : AbstractScreen() {
 
         val lines = listOf(
             "Git Info",
-            "${FDPClient.CLIENT_NAME} built by ${GitUtils.gitInfo.getProperty("git.build.user.name")}",
+            "$CLIENT_NAME built by ${GitUtils.gitInfo.getProperty("git.build.user.name")}",
             "Version: ${GitUtils.gitInfo.getProperty("git.build.version")}",
             "CommitId: ${GitUtils.gitInfo.getProperty("git.commit.id")} (${GitUtils.gitInfo.getProperty("git.commit.id.abbrev")})",
             "CommitMessage: ${GitUtils.gitInfo.getProperty("git.commit.message.short")}",
@@ -74,9 +76,5 @@ class GuiCommitInfo : AbstractScreen() {
         if (button.id == 0) {
             mc.displayGuiScreen(null)
         }
-    }
-
-    companion object {
-        val gitImage: ResourceLocation =ResourceLocation("${CLIENT_NAME.lowercase()}/mainmenu/github.png")
     }
 }

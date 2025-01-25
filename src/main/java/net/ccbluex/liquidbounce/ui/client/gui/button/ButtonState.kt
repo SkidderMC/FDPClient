@@ -3,55 +3,33 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.gui.button;
+package net.ccbluex.liquidbounce.ui.client.gui.button
 
-public class ButtonState {
-    public int x, y;
-    public int width, height;
-    public int hoverFade = 0;
-    public String text;
+import net.minecraft.client.Minecraft
 
-    public ButtonState(String text, int x, int y) {
-        this.text = text;
-        this.x = x;
-        this.y = y;
-        this.width = 132;
-        this.height = 12;
-    }
+open class ButtonState(
+    var text: String,
+    var x: Int,
+    var y: Int,
+    var width: Int = 132,
+    var height: Int = 12
+) {
+    var hoverFade: Int = 0
+        protected set
 
-    public boolean updateHover(int mouseX, int mouseY) {
-        boolean hovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
+    open fun updateHover(mouseX: Int, mouseY: Int): Boolean {
+        val hovered = mouseX in x until (x + width) && mouseY in y until (y + height)
 
-        if (hovered) {
-            if (hoverFade < 40) hoverFade += 10;
-        } else {
-            if (hoverFade > 0) hoverFade -= 10;
+        hoverFade = when {
+            hovered && hoverFade < 40 -> hoverFade + 10
+            !hovered && hoverFade > 0 -> hoverFade - 10
+            else -> hoverFade
         }
 
-        return hovered;
+        return hovered
     }
 
-    public int getHoverFade() {
-        return hoverFade;
-    }
+    open fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int) {
 
-    public void setHoverFade(int hoverFade) {
-        this.hoverFade = hoverFade;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
     }
 }

@@ -3,68 +3,109 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.gui.button;
+package net.ccbluex.liquidbounce.ui.client.gui.button
 
-import net.ccbluex.liquidbounce.ui.font.Fonts;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
+import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.Gui
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.util.ResourceLocation
+import org.lwjgl.opengl.GL11
+import java.awt.Color
 
-import java.awt.*;
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSmall
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundOutline
 
-import static net.ccbluex.liquidbounce.ui.font.Fonts.fontSmall;
-import static net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius;
-import static net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundOutline;
+open class ImageButton(
+    text: String,
+    val image: ResourceLocation,
+    x: Int,
+    y: Int,
+    open var imageWidth: Int = 6,
+    open var imageHeight: Int = 6,
+    customWidth: Int = 12,
+    customHeight: Int = 12,
+    open var hoverEffectYOffset: Int = -12
+) : ButtonState(text, x, y, customWidth, customHeight) {
 
-public class ImageButton extends ButtonState {
-
-    protected ResourceLocation image;
-
-    public ImageButton(String text, ResourceLocation image, int x, int y) {
-        super(text, x, y);
-        this.width = 12;
-        this.height = 12;
-        this.image = image;
-    }
-
-    //@Override
-    public void drawButton(int mouseX, int mouseY) {
-        boolean hovered = mouseX >= this.x && mouseY >= this.y && mouseX < this.x + this.width && mouseY < this.y + this.height;
+    override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int) {
+        val hovered = updateHover(mouseX, mouseY)
         if (hovered) {
-            if (hoverFade < 40) hoverFade += 10;
-
-            drawHoverEffect();
+            if (hoverFade < 40) hoverFade += 10
+            drawHoverEffect()
         } else {
-            if (hoverFade > 0) hoverFade -= 10;
+            if (hoverFade > 0) hoverFade -= 10
         }
 
-        drawCustomShapeWithRadius(this.x - 1, this.y - 1, this.width + 2, this.height + 2, 2, new Color(30, 30, 30, 60));
-        drawCustomShapeWithRadius(this.x, this.y, this.width, this.height, 2, new Color(255, 255, 255, 38 + hoverFade));
+        drawCustomShapeWithRadius(
+            (x - 1).toFloat(),
+            (y - 1).toFloat(),
+            (width + 2).toFloat(),
+            (height + 2).toFloat(),
+            2f,
+            Color(30, 30, 30, 60)
+        )
+        drawCustomShapeWithRadius(
+            x.toFloat(),
+            y.toFloat(),
+            width.toFloat(),
+            height.toFloat(),
+            2f,
+            Color(255, 255, 255, 38 + hoverFade)
+        )
 
-        drawRoundOutline(this.x, this.y, this.x + this.width, this.y + this.height, 2, 3, new Color(255, 255, 255, 30).getRGB());
+        drawRoundOutline(
+            x,
+            y,
+            x + width,
+            y + height,
+            2f,
+            3f,
+            Color(255, 255, 255, 30).rgb
+        )
 
-        int color = new Color(232, 232, 232, 183).getRGB();
-        float f1 = (color >> 24 & 0xFF) / 255.0F;
-        float f2 = (color >> 16 & 0xFF) / 255.0F;
-        float f3 = (color >> 8 & 0xFF) / 255.0F;
-        float f4 = (color & 0xFF) / 255.0F;
-        GL11.glColor4f(f2, f3, f4, f1);
-        GlStateManager.enableAlpha();
-        GlStateManager.enableBlend();
+        val color = Color(232, 232, 232, 183).rgb
+        val f1 = (color shr 24 and 0xFF) / 255.0f
+        val f2 = (color shr 16 and 0xFF) / 255.0f
+        val f3 = (color shr 8 and 0xFF) / 255.0f
+        val f4 = (color and 0xFF) / 255.0f
+        GL11.glColor4f(f2, f3, f4, f1)
+        GlStateManager.enableAlpha()
+        GlStateManager.enableBlend()
 
-        Minecraft.getMinecraft().getTextureManager().bindTexture(image);
-        Gui.drawModalRectWithCustomSizedTexture(this.x + 3, this.y + 3, 0, 0, 6, 6, 6, 6);
+        mc.textureManager.bindTexture(image)
+        Gui.drawModalRectWithCustomSizedTexture(
+            x + (width - imageWidth) / 2,
+            y + (height - imageHeight) / 2,
+            0F,
+            0F,
+            imageWidth,
+            imageHeight,
+            imageWidth.toFloat(),
+            imageHeight.toFloat()
+        )
 
-        GlStateManager.disableBlend();
-        GlStateManager.disableAlpha();
+        GlStateManager.disableBlend()
+        GlStateManager.disableAlpha()
     }
 
-    private void drawHoverEffect() {
-        int w = (int) (Fonts.font20.getStringWidth(this.text) * 0.9F);
-        drawCustomShapeWithRadius(this.x + (float) (this.width - w) / 2, this.y - 12, w, 7, 2, new Color(0, 0, 0, 126));
-        fontSmall.drawCenteredTextScaled(this.text, this.x + this.width / 2, this.y - 11, new Color(255, 255, 255, 135).getRGB(), 0.9F);
+    private fun drawHoverEffect() {
+        val w = (Fonts.font20.getStringWidth(text) * 0.9f).toInt()
+        drawCustomShapeWithRadius(
+            (x + (width - w) / 2f),
+            (y + hoverEffectYOffset).toFloat(),
+            w.toFloat(),
+            7f,
+            2f,
+            Color(0, 0, 0, 126)
+        )
+        fontSmall.drawCenteredTextScaled(
+            text,
+            (x + width / 2f).toInt(),
+            (y + hoverEffectYOffset + 1).toInt(),
+            Color(255, 255, 255, 135).rgb,
+            0.9
+        )
     }
-
 }

@@ -29,7 +29,6 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.client.GuiModList
 import org.lwjgl.input.Keyboard
 import java.awt.Color
-import java.util.*
 
 class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
 
@@ -258,7 +257,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
             btnClickGUI, btnCommitInfo, btnCosmetics, btnMinecraftOptions,
             btnLanguage, btnForgeModList, btnAddAccount, btnQuit
         ).forEach {
-            it.drawButton(mouseX, mouseY)
+            it.drawButton(mc, mouseX, mouseY)
         }
 
         val branch = GitUtils.gitBranch

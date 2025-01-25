@@ -1,65 +1,103 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/SkidderMC/FDPClient/
- */
-package net.ccbluex.liquidbounce.ui.client.gui.button;
+package net.ccbluex.liquidbounce.ui.client.gui.button
 
-import net.ccbluex.liquidbounce.ui.font.Fonts;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GlStateManager;
-import net.minecraft.util.ResourceLocation;
-import org.lwjgl.opengl.GL11;
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
+import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.Gui
+import net.minecraft.client.renderer.GlStateManager
+import org.lwjgl.opengl.GL11
+import java.awt.Color
 
-import java.awt.*;
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSmall
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundOutline
+import net.minecraft.util.ResourceLocation
 
-import static net.ccbluex.liquidbounce.ui.font.Fonts.fontSmall;
-import static net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius;
-import static net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundOutline;
+class QuitButton(x: Int, y: Int) : ImageButton(
+    text = "QUIT",
+    image = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/mainmenu/exit.png"),
+    x = x,
+    y = y
+) {
 
-public class QuitButton extends ImageButton {
+    override fun drawButton(mc: Minecraft, mouseX: Int, mouseY: Int) {
+        val hovered = updateHover(mouseX, mouseY)
 
-	public QuitButton(int x, int y) {
-		super("QUIT", new ResourceLocation("fdpclient/mainmenu/exit.png"), x, y);
-	}
+        if (hovered) {
+            if (hoverFade < 40) hoverFade += 10
+            drawHoverEffect()
+        } else {
+            if (hoverFade > 0) hoverFade -= 10
+        }
 
-	@Override
-	public void drawButton(int mouseX, int mouseY) {
-		boolean hovered = mouseX >= this.getX() && mouseY >= this.getY() && mouseX < this.getX() + this.width && mouseY < this.getY() + this.height;
+        drawCustomShapeWithRadius(
+            (x - 1).toFloat(),
+            (y - 1).toFloat(),
+            (width + 2).toFloat(),
+            (height + 2).toFloat(),
+            2f,
+            Color(30, 30, 30, 60)
+        )
+        drawCustomShapeWithRadius(
+            x.toFloat(),
+            y.toFloat(),
+            width.toFloat(),
+            height.toFloat(),
+            2f,
+            Color(255 - hoverFade * 4, 255 - hoverFade * 4, 255, 38 + hoverFade)
+        )
 
-		if (hovered) {
-			if (getHoverFade() < 40) setHoverFade(getHoverFade() + 10);
-			drawHoverEffect();
-		} else {
-			if (getHoverFade() > 0) setHoverFade(getHoverFade() - 10);
-		}
+        drawRoundOutline(
+            x,
+            y,
+            x + width,
+            y + height,
+            2f,
+            3f,
+            Color(255, 255, 255, 30).rgb
+        )
 
-		drawCustomShapeWithRadius(getX() - 1, getY() - 1, getWidth() + 2, getHeight() + 2, 2, new Color(30, 30, 30, 60));
-		drawCustomShapeWithRadius(getX(), getY(), getWidth(), getHeight(), 2, new Color(255, 255 - getHoverFade() * 4, 255 - getHoverFade() * 4, 38 + getHoverFade()));
+        val color = Color(232, 232, 232, 183).rgb
+        val f1 = (color shr 24 and 0xFF) / 255.0f
+        val f2 = (color shr 16 and 0xFF) / 255.0f
+        val f3 = (color shr 8 and 0xFF) / 255.0f
+        val f4 = (color and 0xFF) / 255.0f
+        GL11.glColor4f(f2, f3, f4, f1)
+        GlStateManager.enableAlpha()
+        GlStateManager.enableBlend()
 
-		drawRoundOutline(getX(), getY(), getX() + getWidth(), getY() + getHeight(), 2, 3, new Color(255, 255, 255, 30).getRGB());
+        mc.textureManager.bindTexture(image)
+        Gui.drawModalRectWithCustomSizedTexture(
+            x + 3,
+            y + 3,
+            0F,
+            0F,
+            6,
+            6,
+            6F,
+            6F
+        )
 
-		int color = new Color(232, 232, 232, 183).getRGB();
-		float f1 = (color >> 24 & 0xFF) / 255.0F;
-		float f2 = (color >> 16 & 0xFF) / 255.0F;
-		float f3 = (color >> 8 & 0xFF) / 255.0F;
-		float f4 = (color & 0xFF) / 255.0F;
-		GL11.glColor4f(f2, f3, f4, f1);
-		GlStateManager.enableAlpha();
-		GlStateManager.enableBlend();
+        GlStateManager.disableBlend()
+        GlStateManager.disableAlpha()
+    }
 
-		Minecraft.getMinecraft().getTextureManager().bindTexture(image);
-		Gui.drawModalRectWithCustomSizedTexture(this.x + 3, this.y + 3, 0, 0, 6, 6, 6, 6);
-
-		GlStateManager.disableBlend();
-		GlStateManager.disableAlpha();
-	}
-
-	//@Override
-	protected void drawHoverEffect() {
-		int w = (int) (Fonts.font35.getStringWidth(this.text));
-		drawCustomShapeWithRadius(this.x + (float) (this.width - w) / 2, this.y + 17, w, 7, 2, new Color(0, 0, 0, 126));
-		fontSmall.drawCenteredTextScaled(this.text, this.x + this.width / 2, this.y + 18, new Color(255, 255, 255, 135).getRGB(), 0.9F);
-	}
+    private fun drawHoverEffect() {
+        val w = (Fonts.font20.getStringWidth(text) * 0.9f).toInt()
+        drawCustomShapeWithRadius(
+            (x + (width - w) / 2f),
+            (y - 12).toFloat(),
+            w.toFloat(),
+            7f,
+            2f,
+            Color(0, 0, 0, 126)
+        )
+        fontSmall.drawCenteredTextScaled(
+            text,
+            (x + width / 2f).toInt(),
+            (y - 11),
+            Color(255, 255, 255, 135).rgb,
+            0.9
+        )
+    }
 }
