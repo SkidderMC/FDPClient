@@ -48,8 +48,8 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL) {
     private val texture by choices("Texture", arrayOf("Supernatural", "Aurora", "Leeches", "Circle"), "Leeches") { useTexture }
     private val deepestLight by boolean("Deepest Light", true) { useTexture }
 
-    private val staticLoc = ResourceLocation("${CLIENT_NAME.lowercase()}/zywl/jumpcircles/default")
-    private val animatedLoc = ResourceLocation("${CLIENT_NAME.lowercase()}/zywl/jumpcircles/animated")
+    private val staticLoc = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/jumpcircle/default")
+    private val animatedLoc = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/jumpcircle/animated")
 
     private val circleIcon = ResourceLocation("$staticLoc/circle1.png")
     private val supernaturalIcon = ResourceLocation("$staticLoc/circle2.png")

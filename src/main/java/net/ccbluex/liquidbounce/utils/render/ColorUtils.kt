@@ -181,7 +181,6 @@ object ColorUtils {
         return Color(colorHSB.red, colorHSB.green, colorHSB.blue, (max(0.0, min(255.0, (alpha * 255.0f).toDouble()))).toInt())
     }
 
-
     fun setColor(color: Int) {
         setColorAlpha(color)
     }
@@ -442,5 +441,4 @@ object ColorUtils {
         val green = (g * healthRatio).toInt()
         return Color(red, green, b, a)
     }
-
 }

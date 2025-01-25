@@ -51,7 +51,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
     private lateinit var btnQuit: QuitButton
 
     override fun initGui() {
-        logo = ResourceLocation("${CLIENT_NAME.lowercase()}/mainmenu/logo.png")
+        logo = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/mainmenu/logo.png")
         val centerY = height / 2 - 80
         val buttonWidth = 133
         val buttonHeight = 20
@@ -85,14 +85,14 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         )
 
         val bottomY = height - 20
-        btnClickGUI = ImageButton("CLICKGUI", ResourceLocation("${CLIENT_NAME.lowercase()}/mainmenu/clickgui.png"), width / 2 - 45, bottomY)
-        btnCommitInfo = ImageButton("COMMIT INFO", ResourceLocation("${CLIENT_NAME.lowercase()}/mainmenu/github.png"), width / 2 - 30, bottomY)
-        btnCosmetics = ImageButton("COSMETICS", ResourceLocation("${CLIENT_NAME.lowercase()}/mainmenu/cosmetics.png"), width / 2 - 15, bottomY)
-        btnMinecraftOptions = ImageButton("MINECRAFT SETTINGS", ResourceLocation("${CLIENT_NAME.lowercase()}/mainmenu/cog.png"), width / 2, bottomY)
-        btnLanguage = ImageButton("LANGUAGE", ResourceLocation("${CLIENT_NAME.lowercase()}/mainmenu/globe.png"), width / 2 + 15, bottomY)
-        btnForgeModList = ImageButton("FORGE MODS", ResourceLocation("${CLIENT_NAME.lowercase()}/mainmenu/forge.png"), width / 2 + 30, bottomY)
+        btnClickGUI = ImageButton("CLICKGUI", ResourceLocation("${CLIENT_NAME.lowercase()}/texture/mainmenu/clickgui.png"), width / 2 - 45, bottomY)
+        btnCommitInfo = ImageButton("COMMIT INFO", ResourceLocation("${CLIENT_NAME.lowercase()}/texture/mainmenu/github.png"), width / 2 - 30, bottomY)
+        btnCosmetics = ImageButton("COSMETICS", ResourceLocation("${CLIENT_NAME.lowercase()}/texture/mainmenu/cosmetics.png"), width / 2 - 15, bottomY)
+        btnMinecraftOptions = ImageButton("MINECRAFT SETTINGS", ResourceLocation("${CLIENT_NAME.lowercase()}/texture/mainmenu/cog.png"), width / 2, bottomY)
+        btnLanguage = ImageButton("LANGUAGE", ResourceLocation("${CLIENT_NAME.lowercase()}/texture/mainmenu/globe.png"), width / 2 + 15, bottomY)
+        btnForgeModList = ImageButton("FORGE MODS", ResourceLocation("${CLIENT_NAME.lowercase()}/texture/mainmenu/forge.png"), width / 2 + 30, bottomY)
 
-        btnAddAccount = ImageButton("ALT MANAGER", ResourceLocation("${CLIENT_NAME.lowercase()}/mainmenu/add-account.png"), width - 55, 7)
+        btnAddAccount = ImageButton("ALT MANAGER", ResourceLocation("${CLIENT_NAME.lowercase()}/texture/mainmenu/add-account.png"), width - 55, 7)
         btnQuit = QuitButton(width - 17, 7)
 
         buttonList.addAll(listOf(btnSinglePlayer, btnMultiplayer, btnClientOptions, btnCheckUpdate))
