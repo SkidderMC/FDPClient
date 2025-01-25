@@ -130,8 +130,15 @@ class Armor(
         for (i in 3 downTo 0) {
             val stack = player.inventory.armorInventory[i] ?: continue
 
+            glPushMatrix()
+            glEnable(GL_BLEND)
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+            enableGUIStandardItemLighting()
             renderItem.renderItemIntoGUI(stack, x, y)
             renderItem.renderItemOverlays(mc.fontRendererObj, stack, x, y)
+            disableStandardItemLighting()
+            glDisable(GL_BLEND)
+            glPopMatrix()
 
             pushMatrix()
             drawAttributesAndEnchantments(stack, x, y, color)
