@@ -25,6 +25,7 @@ object NoRotateSet : Module("NoRotateSet", Category.OTHER, gameDetecting = false
 
     private val options = AlwaysRotationSettings(this) { affectRotation }.apply {
         withoutKeepRotation()
+        strafeValue.setSupport { rotationsActive && affectRotation }
         applyServerSideValue.excludeWithState(true)
         resetTicksValue.excludeWithState(1)
     }
