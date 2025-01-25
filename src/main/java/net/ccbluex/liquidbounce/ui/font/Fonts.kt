@@ -60,6 +60,7 @@ object Fonts : MinecraftInstance {
     lateinit var CheckFont_20: SimpleFontRenderer
 
     // NURSULTAN
+    lateinit var Nursultan13: SimpleFontRenderer
     lateinit var Nursultan15: SimpleFontRenderer
     lateinit var Nursultan16: SimpleFontRenderer
     lateinit var Nursultan18: SimpleFontRenderer
@@ -67,6 +68,7 @@ object Fonts : MinecraftInstance {
     lateinit var Nursultan30: SimpleFontRenderer
 
     //INTER
+    lateinit var InterMedium_13: SimpleFontRenderer
     lateinit var InterMedium_14: SimpleFontRenderer
     lateinit var InterMedium_15: SimpleFontRenderer
     lateinit var InterMedium_16: SimpleFontRenderer
@@ -132,6 +134,8 @@ object Fonts : MinecraftInstance {
             CheckFont_20 = registerCustomFont(FontInfo(name = "Check Font", size = 20),
                 getFontFromFile("check.ttf", 20).asSimpleFontRenderer())
 
+            Nursultan13 = registerCustomFont(FontInfo(name = "Nursultan", size = 13),
+                getFontFromFile("Nursultan.ttf", 13).asSimpleFontRenderer())
             Nursultan15 = registerCustomFont(FontInfo(name = "Nursultan", size = 15),
                 getFontFromFile("Nursultan.ttf", 15).asSimpleFontRenderer())
             Nursultan16 = registerCustomFont(FontInfo(name = "Nursultan", size = 16),
@@ -143,6 +147,8 @@ object Fonts : MinecraftInstance {
             Nursultan30 = registerCustomFont(FontInfo(name = "Nursultan", size = 30),
                 getFontFromFile("Nursultan.ttf", 30).asSimpleFontRenderer())
 
+            InterMedium_13 = registerCustomFont(FontInfo(name = "InterMedium", size = 13),
+                getFontFromFile("Inter_Medium.ttf", 13).asSimpleFontRenderer())
             InterMedium_14 = registerCustomFont(FontInfo(name = "InterMedium", size = 14),
                 getFontFromFile("Inter_Medium.ttf", 14).asSimpleFontRenderer())
             InterMedium_15 = registerCustomFont(FontInfo(name = "InterMedium", size = 15),
