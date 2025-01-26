@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.FDPClient.hud
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.visual.NameProtect
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element.Companion.MAX_GRADIENT_COLORS
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -86,6 +87,14 @@ object HUDModule : Module("HUD", Category.CLIENT) {
         } else {
             ClientThemesUtils.getColor().rgb
         }
+
+    private fun getProtectedName(): String {
+        return if (NameProtect.state) {
+            ColorUtils.stripColor(NameProtect.handleTextMessage(mc.thePlayer.name))
+        } else {
+            mc.thePlayer.name
+        }
+    }
 
     private var tickCount = 0
     private var lastSecond = System.currentTimeMillis()
@@ -165,7 +174,7 @@ object HUDModule : Module("HUD", Category.CLIENT) {
                     posY + rectWidth / 2.0f + 1.5f + 2f,
                     ClientThemesUtils.getColor().rgb
                 )
-                val playerName = mc.thePlayer.name
+                val playerName = getProtectedName()
                 val playerNameWidth = Fonts.InterMedium_15.stringWidth(playerName)
                 val playerNameX = posX + rectWidth + iconSize * 2.5f + titleWidth + iconSize
 
