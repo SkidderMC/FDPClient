@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.util
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.extensions.roundToHalf
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedOutline
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.ScaledResolution
 import java.awt.Color
 import kotlin.math.max
@@ -34,8 +34,9 @@ import kotlin.math.min
 class DropdownCategory(private val category: Category) : Screen {
 
     private val rectWidth = 110f
-    private val categoryRectHeight = 18f
-
+    private val categoryRectHeightBase = 18f
+    private val categoryRectHeight: Float
+        get() = categoryRectHeightBase + (ClickGUIModule.roundedRectRadius * 2)
     // The main fade/slide animation for this category panel
     var animation: Animation? = null
 
@@ -77,7 +78,12 @@ class DropdownCategory(private val category: Category) : Screen {
         val alphaAnimation = animClamp.toInt()
 
         // Category bar background color
-        val categoryRectColor = Color(29, 29, 29, alphaAnimation).rgb
+        val categoryRectColor = if (ClickGUIModule.headerColor) {
+            ClickGUIModule.generateColor(0).rgb
+        } else {
+            Color(29, 29, 29, alphaAnimation).rgb
+        }
+
         // Text color
         val textColor = Color(255, 255, 255, alphaAnimation).rgb
 
@@ -87,6 +93,33 @@ class DropdownCategory(private val category: Category) : Screen {
         // Dragging logic on the top bar
         category.drag.onDraw(mouseX, mouseY)
 
+        val allowedHeight = if (scrollMode == "Value") {
+            clickHeight.toFloat()
+        } else {
+            val sr = ScaledResolution(mc)
+            2 * sr.scaledHeight / 3f
+        }
+        Main.allowedClickGuiHeight = allowedHeight
+
+
+        /**
+         * 2) Draw the outline around the top bar and module list
+         * This will create a single outline around (x, y) -> (x + rectWidth, y + categoryRectHeight + allowedHeight).
+         */
+        if (ClickGUIModule.categoryOutline) {
+            val outlineColor = ClickGUIModule.generateColor(0)
+            val cornerRadius = ClickGUIModule.roundedRectRadius
+
+            RenderUtils.drawRoundedRect(
+                x - 1,
+                y - 1,
+                x + rectWidth + 1,
+                y + categoryRectHeight + allowedHeight + 1,
+                cornerRadius,
+                outlineColor.rgb
+            )
+        }
+
         // 1) Draw the category's top rectangle
         DrRenderUtils.drawRect2(
             x.toDouble(),
@@ -95,27 +128,6 @@ class DropdownCategory(private val category: Category) : Screen {
             categoryRectHeight.toDouble(),
             categoryRectColor
         )
-
-        /**
-         * 2) Draw the outline around the top bar if ClickGUIModule says so.
-         *    This will create a small 1px outline around (x, y) -> (x + rectWidth, y + categoryRectHeight).
-         */
-        if (ClickGUIModule.categoryOutline) {
-            // Example: use generateColor(0) or any other color
-            val outlineColor = ClickGUIModule.generateColor(0)
-            val outlineThickness = 1f
-            val cornerRadius = 4f // small rounding
-
-            drawRoundedOutline(
-                x,
-                y,
-                x + rectWidth,
-                y + categoryRectHeight,
-                cornerRadius,
-                outlineThickness,
-                outlineColor.rgb
-            )
-        }
 
         // 3) Draw the category's name
         Fonts.InterBold_26.drawString(
@@ -151,15 +163,6 @@ class DropdownCategory(private val category: Category) : Screen {
                 textColor
             )
         }
-
-        // Determine how tall we can draw the module list
-        val allowedHeight = if (scrollMode == "Value") {
-            clickHeight.toFloat()
-        } else {
-            val sr = ScaledResolution(mc)
-            2 * sr.scaledHeight / 3f
-        }
-        Main.allowedClickGuiHeight = allowedHeight
 
         // We'll see if user is hovering over module list
         val hoveringMods = DrRenderUtils.isHovering(

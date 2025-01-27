@@ -75,7 +75,7 @@ class SideGui : GuiPanel() {
 
     private var draggingSlider = false
     private var clickingHeader = false
-    private var showSideOutline = false
+    private var showSideOutline = true
 
     private var bgAlpha: Float = 100f
 

@@ -37,7 +37,11 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
     val spacedModules by boolean("SpacedModules", false)
     val panelsForcedInBoundaries by boolean("PanelsForcedInBoundaries", false)
 
-    val categoryOutline by boolean("Header Outline", true) { style == "FDP" }
+    val headerColor by boolean("Header Color", false) { style == "FDP" }
+
+    val categoryOutline by boolean("Outline", true) { style == "FDP" }
+
+    val roundedRectRadius by float("RoundedRect-Radius", 0F, 0F..2F)  { style == "FDP" }
 
     val backback by boolean("Background Accent", true) { style == "FDP" }
     val scrollMode by choices("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")  { style == "FDP" }
