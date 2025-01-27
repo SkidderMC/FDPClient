@@ -470,7 +470,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER) {
             is ItemFood -> isUsefulFood(stack, stacks, entityStacksMap, noLimits, strictlyBest)
             is ItemBlock -> isUsefulBlock(stack, stacks, entityStacksMap, noLimits, strictlyBest)
 
-            is ItemArmor, is ItemTool, is ItemSword, is ItemBow, is ItemFishingRod -> isUsefulEquipment(
+            is ItemArmor, is ItemTool, is ItemSword, is ItemBow, is ItemFishingRod, is ItemShears -> isUsefulEquipment(
                 stack,
                 stacks,
                 entityStacksMap
@@ -520,6 +520,11 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER) {
                     it.durability.toFloat()
                 }
             }
+
+            is ItemShears ->
+                hasBestParameters(stack, stacks, entityStacksMap) {
+                    it.durability.toFloat() * it.getEnchantmentLevel(Enchantment.efficiency)
+                }
 
             is ItemSword ->
                 hasBestParameters(stack, stacks, entityStacksMap) {
@@ -1005,6 +1010,8 @@ private val SORTING_TARGETS: Map<String, ((Item?) -> Boolean)?> = mapOf(
     "Potion" to { it is ItemPotion },
     "Throwable" to { it is ItemEgg || it is ItemSnowball },
     "FishingRod" to { it is ItemFishingRod },
+    "TNT" to { it == Item.getItemFromBlock(Blocks.tnt) },
+    "Shears" to { it is ItemShears },
     "Ignore" to null
 )
 
