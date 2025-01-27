@@ -23,6 +23,11 @@ sealed class Value<T>(
 ) : ReadWriteProperty<Any?, T> {
 
     /**
+     * The owner of this value.
+     */
+    var owner: Value<*>? = null
+
+    /**
      * Whether this value should be excluded from public configuration (text config)
      */
     var subjective: Boolean = false
@@ -129,7 +134,7 @@ sealed class Value<T>(
 
     private var supportCondition = { true }
 
-    fun isSupported() = supportCondition.invoke()
+    fun isSupported(): Boolean = (owner == null || owner!!.isSupported()) && supportCondition.invoke()
 
     fun setSupport(condition: (Boolean) -> Boolean) = apply {
         val oldCondition = supportCondition

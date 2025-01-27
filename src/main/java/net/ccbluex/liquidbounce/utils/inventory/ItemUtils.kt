@@ -9,6 +9,8 @@ import net.ccbluex.liquidbounce.injection.implementations.IMixinItemStack
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.enchantment.Enchantment
 import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.inventory.Container
+import net.minecraft.inventory.Slot
 import net.minecraft.item.*
 import net.minecraft.nbt.JsonToNBT
 import net.minecraft.util.ResourceLocation
@@ -147,6 +149,8 @@ val ItemStack.attackDamage
             1.25 * getEnchantmentLevel(Enchantment.sharpness)
 
 fun ItemStack.isSplashPotion() = item is ItemPotion && ItemPotion.isSplash(metadata)
+
+operator fun Container.get(range: IntRange): List<Slot> = range.map(::getSlot)
 
 fun EntityPlayer.inventorySlot(slot: Int) = inventoryContainer.getSlot(slot)!!
 fun EntityPlayer.hotBarSlot(slot: Int) = inventorySlot(slot + 36)
