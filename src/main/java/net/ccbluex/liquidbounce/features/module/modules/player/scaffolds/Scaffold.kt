@@ -143,11 +143,11 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V) {
     { eagle == "Silent" && scaffoldMode != "GodBridge" }
     private val eagleSpeed by float("EagleSpeed", 0.3f, 0.3f..1.0f) { eagle != "Off" && scaffoldMode != "GodBridge" }
     val eagleSprint by boolean("EagleSprint", false) { eagle == "Normal" && scaffoldMode != "GodBridge" }
-    private val blocksToEagle by int("BlocksToEagle", 0, 0..10) { eagle != "Off" && scaffoldMode != "GodBridge" }
+    private val blocksToEagle by intRange("BlocksToEagle", 0..0, 0..10) { eagle != "Off" && scaffoldMode != "GodBridge" }
     private val edgeDistance by float("EagleEdgeDistance", 0f, 0f..0.5f)
     { eagle != "Off" && scaffoldMode != "GodBridge" }
     private val useMaxSneakTime by boolean("UseMaxSneakTime", true) { eagle != "Off" && scaffoldMode != "GodBridge" }
-    private val maxSneakTicks by int("MaxSneakTicks", 3, 0..10) { useMaxSneakTime }
+    private val maxSneakTicks by intRange("MaxSneakTicks", 3..3, 0..10) { useMaxSneakTime }
     private val blockSneakingAgainUntilOnGround by boolean("BlockSneakingAgainUntilOnGround", true)
     { useMaxSneakTime && eagleMode != "OnGround" }
 
@@ -343,7 +343,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V) {
             run {
                 val options = mc.gameSettings
 
-                if (placedBlocksWithoutEagle >= blocksToEagle || alreadySneaking || blockSneaking || eagleSneaking || requestedStopSneak) {
+                if (placedBlocksWithoutEagle >= blocksToEagle.random() || alreadySneaking || blockSneaking || eagleSneaking || requestedStopSneak) {
                     val eagleCondition = when (eagleMode) {
                         "OnGround" -> player.onGround
                         "InAir" -> !player.onGround
@@ -396,7 +396,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V) {
                     if (eagleSneaking && shouldSchedule) {
                         if (useMaxSneakTime) {
                             WaitTickUtils.conditionalSchedule("sneak") { elapsed ->
-                                (elapsed >= maxSneakTicks + 1).also { requestedStopSneak = it }
+                                (elapsed >= maxSneakTicks.random() + 1).also { requestedStopSneak = it }
                             }
                         }
 
