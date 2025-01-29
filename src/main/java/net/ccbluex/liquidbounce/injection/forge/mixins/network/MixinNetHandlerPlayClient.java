@@ -68,19 +68,21 @@ public abstract class MixinNetHandlerPlayClient {
 
     @Inject(method = "handleExplosion", at = @At("HEAD"), cancellable = true)
     private void cancelExplosionMotion(S27PacketExplosion packetExplosion, CallbackInfo ci) {
+        AntiExploit module = AntiExploit.INSTANCE;
+
         double motionX = packetExplosion.field_149159_h;
         double motionY = packetExplosion.func_149144_d();
         double motionZ = packetExplosion.func_149147_e();
 
-        if (AntiExploit.INSTANCE.handleEvents() && AntiExploit.INSTANCE.getCancelExplosionMotion()) {
+        if (module.handleEvents() && module.getCancelExplosionMotion()) {
             double x = MathHelper.clamp_double(motionX, -50.0, 50.0);
             double y = MathHelper.clamp_double(motionY, -50.0, 50.0);
             double z = MathHelper.clamp_double(motionZ, -50.0, 50.0);
 
             if (x != motionX || y != motionY || z != motionZ) {
-                if (AntiExploit.INSTANCE.getWarn().equals("Chat")) {
+                if (module.getWarn().equals("Chat")) {
                     chat("Cancelled too strong TNT explosion motion");
-                } else if (AntiExploit.INSTANCE.getWarn().equals("Notification")) {
+                } else if (module.getWarn().equals("Notification")) {
                     HUD.INSTANCE.addNotification(new Notification("Cancelled too strong TNT explosion motion", "Cancelled too strong TNT explosion motion",  Type.WARNING, 1000, 200));
                 }
                 ci.cancel();
@@ -107,14 +109,16 @@ public abstract class MixinNetHandlerPlayClient {
 
     @Inject(method = "handleExplosion", at = @At("HEAD"), cancellable = true)
     private void cancelExplosionRadius(S27PacketExplosion packetExplosion, CallbackInfo ci) {
-        if (AntiExploit.INSTANCE.handleEvents() && AntiExploit.INSTANCE.getCancelExplosionRadius()) {
+        AntiExploit module = AntiExploit.INSTANCE;
+
+        if (module.handleEvents() && module.getCancelExplosionRadius()) {
             float originalRadius = packetExplosion.func_149149_c();
             float radius = MathHelper.clamp_float(originalRadius, -100f, 100f);
 
             if (radius != originalRadius) {
-                if (AntiExploit.INSTANCE.getWarn().equals("Chat")) {
+                if (module.getWarn().equals("Chat")) {
                     chat("Cancelled too big TNT explosion radius");
-                } else if (AntiExploit.INSTANCE.getWarn().equals("Notification")) {
+                } else if (module.getWarn().equals("Notification")) {
                     HUD.INSTANCE.addNotification(new Notification("Cancelled too big TNT explosion radius", "Cancelled too big TNT explosion radius", Type.WARNING, 1000, 200));
                 }
                 ci.cancel();
@@ -124,10 +128,12 @@ public abstract class MixinNetHandlerPlayClient {
 
     @Redirect(method = "handleParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/play/server/S2APacketParticles;getParticleCount()I", ordinal = 1))
     private int onParticleAmount(S2APacketParticles packetParticles) {
-        if (AntiExploit.INSTANCE.handleEvents() && AntiExploit.INSTANCE.getLimitParticlesAmount() && packetParticles.getParticleCount() >= 500) {
-            if (AntiExploit.INSTANCE.getWarn().equals("Chat")) {
+        AntiExploit module = AntiExploit.INSTANCE;
+
+        if (module.handleEvents() && module.getLimitParticlesAmount() && packetParticles.getParticleCount() >= 500) {
+            if (module.getWarn().equals("Chat")) {
                 chat("Limited too many particles");
-            } else if (AntiExploit.INSTANCE.getWarn().equals("Notification")) {
+            } else if (module.getWarn().equals("Notification")) {
                 HUD.INSTANCE.addNotification(new Notification("Limited too many particles", "Limited too many particles", Type.WARNING, 1000, 200));
             }
             return 100;
@@ -137,10 +143,12 @@ public abstract class MixinNetHandlerPlayClient {
 
     @Redirect(method = "handleParticles", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/play/server/S2APacketParticles;getParticleSpeed()F"))
     private float onParticleSpeed(S2APacketParticles packetParticles) {
-        if (AntiExploit.INSTANCE.handleEvents() && AntiExploit.INSTANCE.getLimitParticlesSpeed() && packetParticles.getParticleSpeed() >= 10f) {
-            if (AntiExploit.INSTANCE.getWarn().equals("Chat")) {
+        AntiExploit module = AntiExploit.INSTANCE;
+
+        if (module.handleEvents() && module.getLimitParticlesSpeed() && packetParticles.getParticleSpeed() >= 10f) {
+            if (module.getWarn().equals("Chat")) {
                 chat("Limited too fast particles speed");
-            } else if (AntiExploit.INSTANCE.getWarn().equals("Notification")) {
+            } else if (module.getWarn().equals("Notification")) {
                 HUD.INSTANCE.addNotification(new Notification("Limited too fast particles speed", "Limited too fast particles speed",Type.WARNING, 1000, 200));
             }
             return 5f;
@@ -150,28 +158,30 @@ public abstract class MixinNetHandlerPlayClient {
 
     @Redirect(method = "handleSpawnObject", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/play/server/S0EPacketSpawnObject;getType()I"))
     private int onSpawnObjectType(S0EPacketSpawnObject packet) {
-        if (AntiExploit.INSTANCE.handleEvents() && AntiExploit.INSTANCE.getLimitedEntitySpawn()) {
-            if (packet.getType() == 60) {
-                int arrows = AntiExploit.INSTANCE.getArrowMax();
-                AntiExploit.INSTANCE.setArrowMax(arrows + 1);
+        AntiExploit module = AntiExploit.INSTANCE;
 
-                if (arrows >= AntiExploit.INSTANCE.getMaxArrowsSpawned()) {
-                    if (AntiExploit.INSTANCE.getWarn().equals("Chat")) {
+        if (module.handleEvents() && module.getLimitedEntitySpawn()) {
+            if (packet.getType() == 60) {
+                int arrows = module.getArrowMax();
+                module.setArrowMax(arrows + 1);
+
+                if (arrows >= module.getMaxArrowsSpawned()) {
+                    if (module.getWarn().equals("Chat")) {
                         chat("Limited too many arrows spawned");
-                    } else if (AntiExploit.INSTANCE.getWarn().equals("Notification")) {
+                    } else if (module.getWarn().equals("Notification")) {
                         HUD.INSTANCE.addNotification(new Notification("Limited too many arrows spawned", "Limited too many arrows spawned", Type.WARNING, 1000, 200));
                     }
                     return -1;
                 }
             }
             if (packet.getType() == 2) {
-                int items = AntiExploit.INSTANCE.getItemMax();
-                AntiExploit.INSTANCE.setItemMax(items + 1);
+                int items = module.getItemMax();
+                module.setItemMax(items + 1);
 
-                if (items >= AntiExploit.INSTANCE.getMaxItemDropped()) {
-                    if (AntiExploit.INSTANCE.getWarn().equals("Chat")) {
+                if (items >= module.getMaxItemDropped()) {
+                    if (module.getWarn().equals("Chat")) {
                         chat("Limited too many items dropped");
-                    } else if (AntiExploit.INSTANCE.getWarn().equals("Notification")) {
+                    } else if (module.getWarn().equals("Notification")) {
                         HUD.INSTANCE.addNotification(new Notification("Limited too many items dropped", "Limited too many items dropped",Type.WARNING, 1000, 200));
                     }
                     return -1;

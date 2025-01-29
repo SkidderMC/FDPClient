@@ -121,7 +121,8 @@ fun Float.withGCD() = (this / getFixedAngleDelta()).roundToInt() * getFixedAngle
  * Prevents possible NaN / (-) Infinity results.
  */
 infix fun Int.safeDiv(b: Int) = if (b == 0) 0f else this.toFloat() / b.toFloat()
-infix fun Int.safeDivInt(b: Int) = if (b == 0) 0 else this / b
+infix fun Int.safeDivI(b: Int) = if (b == 0) 0 else this / b
+infix fun Int.safeDivD(b: Double) = if (b == 0.0) 0.0 else this / b
 
 infix fun Float.safeDiv(b: Float) = if (b == 0f) 0f else this / b
 
