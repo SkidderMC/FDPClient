@@ -136,7 +136,7 @@ class ScoreboardElement(
                 val team = scoreboard.getPlayersTeam(score.playerName)
 
                 var name = ScorePlayerTeam.formatPlayerName(team, score.playerName)
-                val scorePoints = if (number) "${score.scorePoints}" else ""
+                val scorePoints = if (number) "${EnumChatFormatting.RED}${score.scorePoints}" else ""
 
                 val height = maxHeight - index * fontHeight.toFloat()
 
