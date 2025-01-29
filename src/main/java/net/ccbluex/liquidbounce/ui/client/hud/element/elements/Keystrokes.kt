@@ -23,11 +23,11 @@ class Keystrokes : Element("Keystrokes", 2.0, 123.0) {
     private val rectColors = ColorSettingsInteger(this, "Rectangle").with(a = 150)
     private val pressColors = ColorSettingsInteger(this, "Press").with(Color.BLUE)
     private val renderBorder by boolean("RenderBorder", false)
-    private val borderColors = ColorSettingsInteger(this, "Border") { renderBorder }
-    private val borderWidth by float("BorderWidth", 1F, 0.5F..5F) { renderBorder }
+    private val borderColors = ColorSettingsInteger(this, "Border") { renderBorder }.with(Color.BLUE)
+    private val borderWidth by float("BorderWidth", 1.5F, 0.5F..5F) { renderBorder }
     private val shrinkOnPress by boolean("ShrinkOnPress", true)
-    private val shrinkPercentage by int("ShrinkPercentage", 80, 50..100, suffix = "%") { shrinkOnPress }
-    private val shrinkSpeed by int("ShrinkSpeed", 1, 0..5, suffix = "Ticks") { shrinkOnPress }
+    private val shrinkPercentage by int("ShrinkPercentage", 90, 50..100, suffix = "%") { shrinkOnPress }
+    private val shrinkSpeed by int("ShrinkSpeed", 2, 0..5, suffix = "Ticks") { shrinkOnPress }
 
     private var shadow by boolean("Text-Shadow", true)
     private val font by font("Font", Fonts.font40)
