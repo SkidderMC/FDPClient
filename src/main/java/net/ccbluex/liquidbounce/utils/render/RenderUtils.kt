@@ -2466,6 +2466,9 @@ object RenderUtils : MinecraftInstance {
 
         resetColor()
         glEnd()
+        glDisable(GL_POINT_SMOOTH)
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_BLEND)
         glPopAttrib()
     }
 

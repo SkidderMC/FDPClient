@@ -26,6 +26,8 @@ import net.minecraft.scoreboard.ScorePlayerTeam
 import net.minecraft.util.EnumChatFormatting
 import org.lwjgl.opengl.GL11.glColor4f
 import java.awt.Color
+import kotlin.math.abs
+import kotlin.math.max
 
 /**
  * CustomHUD scoreboard
@@ -113,7 +115,13 @@ class ScoreboardElement(
 
             val inc = if (drawRectOnTitle) titleRectExtraHeight else 0
 
-            val (minX, maxX) = l1 - 4 to 7
+            val (minX, maxX) = if (side.horizontal != Side.Horizontal.LEFT) {
+                l1 - 4 to 7
+            } else {
+                -7 to (abs(l1 - 4))
+            }
+
+            val numberX = maxX - 7
 
             drawRoundedRectInt(
                 minX,
@@ -128,9 +136,8 @@ class ScoreboardElement(
                 val team = scoreboard.getPlayersTeam(score.playerName)
 
                 var name = ScorePlayerTeam.formatPlayerName(team, score.playerName)
-                val scorePoints = if (number) "${EnumChatFormatting.RED}${score.scorePoints}" else ""
+                val scorePoints = if (number) "${score.scorePoints}" else ""
 
-                val width = 5 - if (rect) 4 else 0
                 val height = maxHeight - index * fontHeight.toFloat()
 
                 glColor4f(1f, 1f, 1f, 1f)
@@ -163,11 +170,17 @@ class ScoreboardElement(
                     }
                 }
 
-                fontRenderer.drawString(name, l1.toFloat(), height, textColor, shadow)
+                val textX = if (side.horizontal != Side.Horizontal.LEFT) {
+                    l1
+                } else {
+                    minX + 4 + if (rect) 4 else 0
+                }.toFloat()
+
+                fontRenderer.drawString(name, textX, height, textColor, shadow)
                 if (number) {
                     fontRenderer.drawString(
                         scorePoints,
-                        (width - fontRenderer.getStringWidth(scorePoints)).toFloat(),
+                        (numberX - font.getStringWidth(scorePoints)).toFloat(),
                         height,
                         textColor,
                         shadow
@@ -230,18 +243,26 @@ class ScoreboardElement(
                     }
 
                     drawRoundedRect(
-                        3.25F,
+                        (if (side.horizontal != Side.Horizontal.LEFT) maxX else minX).toFloat(),
                         (if (index == scoreCollection.size - 1) -2F else height) - inc - 2F,
-                        maxX - 0.25F,
+                        if (side.horizontal != Side.Horizontal.LEFT) {
+                            maxX - max(roundedRectRadius, 3f)
+                        } else {
+                            minX + max(roundedRectRadius, 3f)
+                        },
                         (if (index == 0) fontHeight.toFloat() else height + fontHeight * 2F) + 2F,
                         rectColor,
                         roundedRectRadius,
-                        RenderUtils.RoundedCorners.RIGHT_ONLY
+                        if (side.horizontal != Side.Horizontal.LEFT) {
+                            RenderUtils.RoundedCorners.RIGHT_ONLY
+                        } else {
+                            RenderUtils.RoundedCorners.LEFT_ONLY
+                        }
                     )
                 }
             }
 
-            return Border(l1 - 4F, -4F - inc, 7F, maxHeight + fontHeight + 2F)
+            return Border(minX.toFloat(), -4F - inc, maxX.toFloat(), maxHeight + fontHeight + 2F)
         }
 
         return null
