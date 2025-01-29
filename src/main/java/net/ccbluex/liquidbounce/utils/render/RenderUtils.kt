@@ -447,7 +447,8 @@ object RenderUtils : MinecraftInstance {
         disableCull()
 
         enableBlend()
-        enableDepth()
+        glEnable(GL_DEPTH_TEST)
+        depthMask(false)
         blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
 
         f()
@@ -455,10 +456,11 @@ object RenderUtils : MinecraftInstance {
         resetColor()
 
         enableTexture2D()
+        depthMask(true)
         enableCull()
 
         disableBlend()
-        disableDepth()
+        glDisable(GL_DEPTH_TEST)
 
         popMatrix()
         popAttrib()
