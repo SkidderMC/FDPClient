@@ -10,12 +10,10 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.chat
 
-
 object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
     private val debug by boolean("Debug", true)
 
     private val actionNumbers = mutableListOf<Int>()
-    private var anticheat: String? = null
     private var check = false
     private var ticksPassed = 0
 
@@ -29,10 +27,9 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
                 chat("ID: ${packet.actionNumber}")
             }
 
-            if (actionNumbers.size == 8) {
+            if (actionNumbers.size >= 5) {
                 analyzeActionNumbers()
                 check = false
-                state = false
             }
             ticksPassed = 0
         }
@@ -40,10 +37,9 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
 
     val onTick = handler<GameTickEvent> {
         if (check) ticksPassed++
-        if (ticksPassed > 40) {
+        if (ticksPassed > 40 && check) {
             chat("§3Anticheat detection timed out.")
             check = false
-            state = false
             actionNumbers.clear()
         }
     }
@@ -55,16 +51,11 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
 
     override fun onEnable() {
         reset()
-        if (mc.theWorld != null) chat("§3Reconnect to the server to start detection.")
-    }
-
-    override fun onDisable() {
-        reset()
+        // if (mc.theWorld != null) chat("§3Anticheat detection started...")
     }
 
     private fun analyzeActionNumbers() {
-        if (actionNumbers.size < 2) {
-            anticheat = null
+        if (actionNumbers.size < 3) { // Minimum 3 packets for detection
             return
         }
 
@@ -76,34 +67,34 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
         val allSame = differences.all { it == differences[0] }
         if (allSame) {
             val step = differences[0]
-            val first = actionNumbers[0]
+            val first = actionNumbers.first()
 
-            anticheat = when (step) {
-                1 -> when (first) {
-                    -23767 -> "Vulcan"
-                    100 -> "Matrix"
+            val detectedAC = when (step) {
+                1 -> when {
+                    first in -23772..-23762 -> "Vulcan"
+                    first in 95..105 -> "Matrix"
                     else -> "Verus"
                 }
-                -1 -> when (first) {
-                    0 -> "Grim"
-                    -3000 -> "Karhu"
+                -1 -> when {
+                    first in -5..0 -> "Grim"
+                    first in -3005..-2995 -> "Karhu"
                     else -> null
                 }
                 else -> null
             }
-        } else {
-            anticheat = null
+
+            detectedAC?.let {
+                chat("§3Anticheat detected: §a$it")
+                actionNumbers.clear()
+                return
+            }
         }
 
-        anticheat?.let {
-            chat("§3Anticheat detected: §a$it")
-        } ?: chat("§3No known anticheat detected.")
-
+        chat("§3No known anticheat detected.")
         if (debug) {
             chat("§3Action Numbers: ${actionNumbers.joinToString()}")
             chat("§3Differences: ${differences.joinToString()}")
         }
-
         actionNumbers.clear()
     }
 
@@ -111,6 +102,5 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
         actionNumbers.clear()
         ticksPassed = 0
         check = false
-        anticheat = null
     }
 }
