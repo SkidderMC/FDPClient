@@ -41,7 +41,7 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
     val onTick = handler<GameTickEvent> {
         if (check) ticksPassed++
         if (ticksPassed > 40 && check) {
-            addNotification(Notification("Alert", "§3Anticheat detection timed out.", Type.WARNING))
+            addNotification(Notification("Alert", "§3Anticheat detection timed out.", Type.WARNING, 3000))
             check = false
             actionNumbers.clear()
         }
@@ -87,7 +87,7 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
             }
 
             detectedAC?.let {
-                addNotification(Notification("§3Anticheat detected: §a${it}", "§3Anticheat detected: §a${it}", Type.WARNING))
+                addNotification(Notification("§3Anticheat detected: §a${it}", "§3Anticheat detected: §a${it}", Type.WARNING, 3000))
                 actionNumbers.clear()
                 return
             }
@@ -100,13 +100,13 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
             val remainingDiffs = differences.drop(2)
 
             if (firstDiff >= 100 && secondDiff == -1 && remainingDiffs.all { it == -1 }) {
-                addNotification(Notification("Alert", "§3Anticheat detected: §aPolar", Type.WARNING))
+                addNotification(Notification("Alert", "§3Anticheat detected: §aPolar", Type.WARNING, 3000))
                 actionNumbers.clear()
                 return
             }
         }
 
-        addNotification(Notification("ERROR", "§3No known anticheat detected.", Type.ERROR))
+        addNotification(Notification("ERROR", "§3No known anticheat detected.", Type.ERROR, 3000))
         if (debug) {
             chat("§3Action Numbers: ${actionNumbers.joinToString()}")
             chat("§3Differences: ${differences.joinToString()}")
