@@ -30,7 +30,7 @@ jobs:
         run: mv build/libs/FDPClient-*.jar build/libs/FDPClient-build.jar
 
       - name: Upload build artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: FDPClient
           path: build/libs/FDPClient-build.jar
