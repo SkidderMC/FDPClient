@@ -21,19 +21,16 @@ object AddAllCommand : Command("addall", arrayOf("").toString()) {
             val tag = translateAlternateColorCodes(arguments[1])
             val count = AtomicInteger(0)
             val friendManager = friendsConfig
-
             val presistent = arguments[0].contains("")
 
-            mc.thePlayer.sendQueue.playerInfoMap
-                .forEach(Consumer<NetworkPlayerInfo> { player: NetworkPlayerInfo ->
+            mc.thePlayer.sendQueue.playerInfoMap.forEach(
+                Consumer { player: NetworkPlayerInfo ->
                     val team = player.playerTeam
                     if (team != null) {
-                        if (ColorUtils.stripColor(team.colorPrefix)!!
-                                .contains(tag) || ColorUtils.stripColor(team.colorSuffix)!!
-                                .contains(tag)
+                        if (ColorUtils.stripColor(team.colorPrefix).contains(tag) ||
+                            ColorUtils.stripColor(team.colorSuffix).contains(tag)
                         ) {
                             val name = player.gameProfile.name
-
                             if (!friendManager.isFriend(name)) {
                                 friendManager.addFriend(name)
                                 count.incrementAndGet()
@@ -41,10 +38,10 @@ object AddAllCommand : Command("addall", arrayOf("").toString()) {
                             }
                         }
                     }
-                })
+                }
+            )
 
-            chat("§bFoi adicionado " + EnumChatFormatting.DARK_RED + count.get() + EnumChatFormatting.GRAY + " players.")
-            // Leaked by Lope$
+            Chat.print("Were added " + EnumChatFormatting.DARK_RED + count.get() + EnumChatFormatting.GRAY + " players.")
         } else {
             chat("§bUse: addall <tag>")
         }
