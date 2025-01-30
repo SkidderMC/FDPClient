@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.chat
+import net.minecraft.network.play.server.S32PacketConfirmTransaction
 
 object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
     private val debug by boolean("Debug", true)
@@ -19,11 +20,12 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
     private val actionNumbers = mutableListOf<Int>()
     private var check = false
     private var ticksPassed = 0
+    private var lastWorld: Any? = null
 
     val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
 
-        if (packet is net.minecraft.network.play.server.S32PacketConfirmTransaction && check) {
+        if (packet is S32PacketConfirmTransaction && check) {
             actionNumbers.add(packet.actionNumber.toInt())
 
             if (debug) {
@@ -41,7 +43,7 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
     val onTick = handler<GameTickEvent> {
         if (check) ticksPassed++
         if (ticksPassed > 40 && check) {
-            addNotification(Notification("Alert", "§3Anticheat detection timed out.", Type.WARNING, 3000))
+            addNotification(Notification("Alert", "§3No Anticheat present", Type.WARNING, 3000))
             check = false
             actionNumbers.clear()
         }
@@ -79,6 +81,7 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
                     else -> "Verus"
                 }
                 -1 -> when {
+                    first < -3000 -> "Intave"
                     first in -5..0 -> "Grim"
                     first in -3005..-2995 -> "Karhu"
                     else -> "Polar"
@@ -106,6 +109,14 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
             }
         }
 
+        // Intave zero handling
+        val firstAction = actionNumbers.firstOrNull()
+        if (firstAction != null && firstAction < -3000 && actionNumbers.any { it == 0 }) {
+            addNotification(Notification("Alert", "§3Anticheat detected: §aIntave", Type.WARNING, 3000))
+            actionNumbers.clear()
+            return
+        }
+
         addNotification(Notification("ERROR", "§3No known anticheat detected.", Type.ERROR, 3000))
         if (debug) {
             chat("§3Action Numbers: ${actionNumbers.joinToString()}")
@@ -118,5 +129,6 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
         actionNumbers.clear()
         ticksPassed = 0
         check = false
+        lastWorld = null
     }
 }
