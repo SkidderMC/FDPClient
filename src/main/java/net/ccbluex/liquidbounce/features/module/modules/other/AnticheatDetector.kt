@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
+import net.minecraft.network.play.server.S01PacketJoinGame
 
 object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
     private val debug by boolean("Debug", true)
@@ -20,23 +21,31 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
     private val actionNumbers = mutableListOf<Int>()
     private var check = false
     private var ticksPassed = 0
-    private var lastWorld: Any? = null
 
     val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
 
-        if (packet is S32PacketConfirmTransaction && check) {
-            actionNumbers.add(packet.actionNumber.toInt())
+        when (packet) {
+            is S32PacketConfirmTransaction -> {
+                if (check) {
+                    actionNumbers.add(packet.actionNumber.toInt())
 
-            if (debug) {
-                chat("ID: ${packet.actionNumber}")
+                    if (debug) {
+                        chat("ID: ${packet.actionNumber}")
+                    }
+
+                    if (actionNumbers.size >= 5) {
+                        analyzeActionNumbers()
+                        check = false
+                    }
+                    ticksPassed = 0
+                }
             }
 
-            if (actionNumbers.size >= 5) {
-                analyzeActionNumbers()
-                check = false
+            is S01PacketJoinGame -> {
+                reset()
+                check = true
             }
-            ticksPassed = 0
         }
     }
 
@@ -49,14 +58,8 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
         }
     }
 
-    val onWorld = handler<WorldEvent> {
-        reset()
-        if (it.worldClient != null) check = true
-    }
-
     override fun onEnable() {
         reset()
-        // if (mc.theWorld != null) hud.addNotification(Notification("§3Anticheat detection started..."))
     }
 
     private fun analyzeActionNumbers() {
@@ -129,6 +132,5 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
         actionNumbers.clear()
         ticksPassed = 0
         check = false
-        lastWorld = null
     }
 }
