@@ -73,7 +73,7 @@ open class Module(
         saveConfig(modulesConfig)
     }
 
-    private val resetValue = boolean("Reset", false).subjective().exclude().onChange { _, _ ->
+    private val resetValue = boolean("Reset", false).subjective().onChange { _, _ ->
         try {
             values.forEach { if (it !== this) it.resetValue() else return@forEach }
         } catch (any: Exception) {

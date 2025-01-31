@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.utils.extensions.withGCD
 import kotlin.math.abs
 
 class AlwaysRotationSettings(owner: Module, generalApply: () -> Boolean = { true }) : RotationSettings(owner, generalApply) {
+    override val rotationsValue = super.rotationsValue.apply { excludeWithState(true) }
     override val rotationsActive: Boolean = true
 }
 

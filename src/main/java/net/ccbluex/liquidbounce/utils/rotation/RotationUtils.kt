@@ -759,8 +759,11 @@ object RotationUtils : MinecraftInstance, Listenable {
         activeSettings?.updateSimulateShortStopData(diffs.x)
     }
 
-    enum class BodyPoint(val rank: Int, val range: ClosedFloatingPointRange<Double>) {
-        HEAD(1, 0.75..0.9), BODY(0, 0.5..0.75), FEET(-1, 0.1..0.4), UNKNOWN(-2, 0.0..0.0);
+    enum class BodyPoint(val rank: Int, val range: ClosedFloatingPointRange<Double>, val displayName: String) {
+        HEAD(1, 0.75..0.9, "Head"),
+        BODY(0, 0.5..0.75, "Body"),
+        FEET(-1, 0.1..0.4, "Feet"),
+        UNKNOWN(-2, 0.0..0.0, "Unknown");
 
         companion object {
             fun fromString(point: String): BodyPoint {

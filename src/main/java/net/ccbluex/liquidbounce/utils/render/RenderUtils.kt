@@ -1296,6 +1296,7 @@ object RenderUtils : MinecraftInstance {
 
         val (newX1, newY1, newX2, newY2) = orderPoints(x1, y1, x2, y2)
 
+        glPushMatrix()
         glEnable(GL_BLEND)
         glDisable(GL_TEXTURE_2D)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -1303,8 +1304,6 @@ object RenderUtils : MinecraftInstance {
         glLineWidth(width)
 
         glColor4f(red, green, blue, alpha)
-
-        if (bottom) glBegin(GL_LINE_LOOP) else glBegin(GL_LINE_STRIP)
 
         val radiusD = min(radius.toDouble(), min(newX2 - newX1, newY2 - newY1) / 2.0)
 
@@ -1315,22 +1314,24 @@ object RenderUtils : MinecraftInstance {
             doubleArrayOf(newX1 + radiusD, newY2 - radiusD, 270.0)
         )
 
-        for ((cx, cy, startAngle) in corners) {
-            for (i in 0..90 step 10) {
-                val angle = Math.toRadians(startAngle + i)
-                val x = cx + radiusD * sin(angle)
-                val y = cy + radiusD * cos(angle)
-                glVertex2d(x, y)
+        drawWithTessellatorWorldRenderer {
+            begin(if (bottom) GL_LINE_LOOP else GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+            for ((cx, cy, startAngle) in corners) {
+                for (i in 0..90 step 10) {
+                    val angle = Math.toRadians(startAngle + i)
+                    val x = cx + radiusD * sin(angle)
+                    val y = cy + radiusD * cos(angle)
+                    pos(x, y, 0.0).endVertex()
+                }
             }
         }
-
-        glEnd()
 
         resetColor()
 
         glEnable(GL_TEXTURE_2D)
         glDisable(GL_LINE_SMOOTH)
         glDisable(GL_BLEND)
+        glPopMatrix()
     }
 
     fun drawRoundedBorderedWithoutBottom(

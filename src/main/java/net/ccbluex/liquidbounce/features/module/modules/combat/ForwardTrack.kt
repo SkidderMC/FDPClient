@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
-import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBacktrackBox
@@ -64,14 +63,15 @@ object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
         }
     }
 
-    private val entities by EntityLookup<EntityLivingBase> {
-        isSelected(it, true)
-    }
-
     val onRender3D = handler<Render3DEvent> { event ->
         val renderManager = mc.renderManager
+        val world = mc.theWorld ?: return@handler
 
-        for (target in entities) {
+        for (target in world.loadedEntityList) {
+            if (!isSelected(target, true)) {
+                return@handler
+            }
+
             val vec = usePosition(target)
 
             val (x, y, z) = vec - renderManager.renderPos

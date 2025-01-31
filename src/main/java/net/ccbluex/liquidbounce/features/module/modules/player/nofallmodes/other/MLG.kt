@@ -56,11 +56,11 @@ object MLG : NoFallMode("MLG") {
                 return@let
             }
 
-            if (options.rotationsActive) {
-                RotationUtils.setTargetRotation(
-                    toRotation(it), options, if (options.keepRotation) options.resetTicks else 1
-                )
-            }
+            RotationUtils.setTargetRotation(
+                toRotation(it),
+                options,
+                if (options.keepRotation) options.resetTicks else 1
+            )
         }
 
         mlgSlot ?: return
@@ -127,11 +127,9 @@ object MLG : NoFallMode("MLG") {
                 val inc = 0.2 * min(player.fallDistance / 30F, 1F)
 
                 faceBlock(pos, targetUpperFace = true, hRange = 0.3 + inc..0.701 - inc)?.run {
-                    if (options.rotationsActive) {
-                        RotationUtils.setTargetRotation(
-                            rotation, options, if (options.keepRotation) options.resetTicks else 1
-                        )
-                    }
+                    RotationUtils.setTargetRotation(
+                        rotation, options, if (options.keepRotation) options.resetTicks else 1
+                    )
                 }
             }
 
