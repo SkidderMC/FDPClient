@@ -59,7 +59,7 @@ public abstract class MixinGuiNewChat {
      */
     @Redirect(method = {"getChatComponent", "drawChat"}, at = @At(value = "FIELD", target = "Lnet/minecraft/client/gui/FontRenderer;FONT_HEIGHT:I"))
     private int injectFontChat(FontRenderer instance) {
-        return ChatControl.INSTANCE.shouldModifyChatFont() ? Fonts.font40.getHeight() : instance.FONT_HEIGHT;
+        return ChatControl.INSTANCE.shouldModifyChatFont() ? Fonts.fontSemibold40.getHeight() : instance.FONT_HEIGHT;
     }
 
     /**
@@ -67,7 +67,7 @@ public abstract class MixinGuiNewChat {
      */
     @Redirect(method = "drawChat", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I"))
     private int injectFontChatB(FontRenderer instance, String text, float x, float y, int color) {
-        return ChatControl.INSTANCE.shouldModifyChatFont() ? Fonts.font40.drawStringWithShadow(text, x, y, color) : instance.drawStringWithShadow(text, x, y, color);
+        return ChatControl.INSTANCE.shouldModifyChatFont() ? Fonts.fontSemibold40.drawStringWithShadow(text, x, y, color) : instance.drawStringWithShadow(text, x, y, color);
     }
 
     /**
@@ -75,7 +75,7 @@ public abstract class MixinGuiNewChat {
      */
     @Redirect(method = "getChatComponent", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;getStringWidth(Ljava/lang/String;)I"))
     private int injectFontChatC(FontRenderer instance, String text) {
-        return ChatControl.INSTANCE.shouldModifyChatFont() ? Fonts.font40.getStringWidth(text) : instance.getStringWidth(text);
+        return ChatControl.INSTANCE.shouldModifyChatFont() ? Fonts.fontSemibold40.getStringWidth(text) : instance.getStringWidth(text);
     }
 
     /**
@@ -122,7 +122,7 @@ public abstract class MixinGuiNewChat {
                                     int y = -i * 9;
                                     Gui.drawRect(x, y - 9, x + chatWidth + 4, y, (alpha / 2) << 24);
                                     String text = chatLine.getChatComponent().getFormattedText();
-                                    Fonts.font40.drawStringWithShadow(text, x + 2, y - 8, 0xFFFFFF + (alpha << 24));
+                                    Fonts.fontSemibold40.drawStringWithShadow(text, x + 2, y - 8, 0xFFFFFF + (alpha << 24));
                                     glColor4f(1, 1, 1, 1);
                                     resetColor();
                                 }
@@ -131,7 +131,7 @@ public abstract class MixinGuiNewChat {
                     }
 
                     if (isChatOpen) {
-                        int fontHeight = Fonts.font40.getFontHeight();
+                        int fontHeight = Fonts.fontSemibold40.getFontHeight();
                         translate(-3f, 0f, 0f);
                         int totalHeight = totalDrawn * fontHeight + totalDrawn;
                         int renderedHeight = renderedLines * fontHeight + renderedLines;
@@ -183,15 +183,15 @@ public abstract class MixinGuiNewChat {
                 adjustedMouseY = MathHelper.floor_float((float) adjustedMouseY / chatScale);
                 if (adjustedMouseX >= 0 && adjustedMouseY >= 0) {
                     int maxLines = Math.min(getLineCount(), drawnChatLines.size());
-                    if (adjustedMouseX <= MathHelper.floor_float((float) getChatWidth() / chatScale) && adjustedMouseY < Fonts.font40.getFontHeight() * maxLines + maxLines) {
-                        int lineIndex = adjustedMouseY / Fonts.font40.getFontHeight() + scrollPos;
+                    if (adjustedMouseX <= MathHelper.floor_float((float) getChatWidth() / chatScale) && adjustedMouseY < Fonts.fontSemibold40.getFontHeight() * maxLines + maxLines) {
+                        int lineIndex = adjustedMouseY / Fonts.fontSemibold40.getFontHeight() + scrollPos;
                         if (lineIndex >= 0 && lineIndex < drawnChatLines.size()) {
                             ChatLine chatLine = drawnChatLines.get(lineIndex);
                             int currentWidth = 0;
 
                             for (IChatComponent chatComponent : chatLine.getChatComponent()) {
                                 if (chatComponent instanceof ChatComponentText) {
-                                    currentWidth += Fonts.font40.getStringWidth(GuiUtilRenderComponents.func_178909_a(((ChatComponentText) chatComponent).getChatComponentText_TextValue(), false));
+                                    currentWidth += Fonts.fontSemibold40.getStringWidth(GuiUtilRenderComponents.func_178909_a(((ChatComponentText) chatComponent).getChatComponentText_TextValue(), false));
                                     if (currentWidth > adjustedMouseX) {
                                         callbackInfo.setReturnValue(chatComponent);
                                         return;

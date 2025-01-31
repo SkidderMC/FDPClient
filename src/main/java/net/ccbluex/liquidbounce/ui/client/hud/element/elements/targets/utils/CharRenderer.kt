@@ -32,7 +32,7 @@ class CharRenderer(private val small: Boolean) : MinecraftInstance {
 
     fun renderChar(number: Float, orgX: Float, orgY: Float, initX: Float, initY: Float, scaleX: Float, scaleY: Float, shadow: Boolean, fontSpeed: Float, color: Int): Float {
         val reFormat = deFormat.format(number.toDouble()) // string
-        val fontRend = if (small) Fonts.font40 else Fonts.font72
+        val fontRend = if (small) Fonts.fontSemibold40 else Fonts.font72
         val delta = RenderUtils.deltaTime
         val scaledRes = ScaledResolution(mc)
 

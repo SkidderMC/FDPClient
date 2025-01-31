@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Com
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.red2Value
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.redValue
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.ui.font.Fonts.font35
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold35
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontIconXD85
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontNovoAngularIcon85
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils
@@ -120,7 +120,7 @@ class Notification(
     private val animeTime: Int = 500
 ) {
     val width = 100.coerceAtLeast(
-        font35.getStringWidth(this.title).coerceAtLeast(font35.getStringWidth(this.content)) + 12
+        fontSemibold35.getStringWidth(this.title).coerceAtLeast(fontSemibold35.getStringWidth(this.content)) + 12
     )
     val height = 30
     private var firstYz = 0
@@ -202,8 +202,8 @@ class Notification(
                 height.toFloat(),
                 type.renderColor
             )
-            font35.drawString(title, 4F, 4F, textColor, false)
-            font35.drawString(content, 4F, 17F, textColor, false)
+            fontSemibold35.drawString(title, 4F, 4F, textColor, false)
+            fontSemibold35.drawString(content, 4F, 17F, textColor, false)
         }
 
         // IDE Style Drawing
@@ -337,7 +337,7 @@ class Notification(
         }
 
         if (style == "ZAVZ") {
-            val width = 100.coerceAtLeast((font35.getStringWidth(this.content)) + 70)
+            val width = 100.coerceAtLeast((fontSemibold35.getStringWidth(this.content)) + 70)
 
             // Y-Axis Animation
             if (nowY != realY) {

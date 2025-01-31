@@ -48,13 +48,13 @@ class GuiServerStatus(private val prevGui: GuiScreen) : AbstractScreen() {
                 width / 2f - 115,
                 i - 5f,
                 width / 2f + 115,
-                height / 4f + 43 + if (status.keys.isEmpty()) 10 else status.keys.size * Fonts.font40.fontHeight,
+                height / 4f + 43 + if (status.keys.isEmpty()) 10 else status.keys.size * Fonts.fontSemibold40.fontHeight,
                 Integer.MIN_VALUE
             )
 
             for (server in status.keys) {
                 val color = status[server] ?: "yellow"
-                Fonts.font40.drawCenteredStringWithShadow(
+                Fonts.fontSemibold40.drawCenteredStringWithShadow(
                     "${server.replaceFirst("^http[s]?://".toRegex(), "")}: ${
                         if (color.equals(
                                 "red",
@@ -69,7 +69,7 @@ class GuiServerStatus(private val prevGui: GuiScreen) : AbstractScreen() {
                         ) "Loading..." else "Online"
                     }", width / 2f, i.toFloat(), Color.WHITE.rgb
                 )
-                i += Fonts.font40.fontHeight
+                i += Fonts.fontSemibold40.fontHeight
             }
 
             Fonts.fontBold180.drawCenteredString(

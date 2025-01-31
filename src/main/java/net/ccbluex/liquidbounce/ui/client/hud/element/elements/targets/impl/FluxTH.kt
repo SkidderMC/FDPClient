@@ -18,7 +18,7 @@ import java.awt.Color
 class FluxTH(inst: Targets) : TargetStyle("Flux", inst, true) {
     
     override fun drawTarget(entity: EntityLivingBase) {
-        val width = (38 + entity.name.let(Fonts.font40::getStringWidth))
+        val width = (38 + entity.name.let(Fonts.fontSemibold40::getStringWidth))
             .coerceAtLeast(70)
             .toFloat()
 
@@ -33,10 +33,10 @@ class FluxTH(inst: Targets) : TargetStyle("Flux", inst, true) {
         RenderUtils.drawRect(2F, 28F, 2 + (entity.totalArmorValue / 20F) * (width - 4), 30F, Color(77, 128, 255).rgb)
 
         // draw text
-        Fonts.font40.drawString(entity.name, 22, 3, Color.WHITE.rgb)
+        Fonts.fontSemibold40.drawString(entity.name, 22, 3, Color.WHITE.rgb)
         GL11.glPushMatrix()
         GL11.glScaled(0.7, 0.7, 0.7)
-        Fonts.font35.drawString("Health: ${decimalFormat.format(getHealth(entity))}", 22 / 0.7F, (4 + Fonts.font40.height) / 0.7F, Color.WHITE.rgb)
+        Fonts.fontSemibold35.drawString("Health: ${decimalFormat.format(getHealth(entity))}", 22 / 0.7F, (4 + Fonts.fontSemibold40.height) / 0.7F, Color.WHITE.rgb)
         GL11.glPopMatrix()
 
         // Draw head
@@ -46,7 +46,7 @@ class FluxTH(inst: Targets) : TargetStyle("Flux", inst, true) {
     override fun getBorder(entity: EntityLivingBase?): Border {
         entity ?: return Border(0F, 0F, 70F, 34F)
 
-        val nameWidth = Fonts.font40.getStringWidth(entity.name)
+        val nameWidth = Fonts.fontSemibold40.getStringWidth(entity.name)
         val maxWidth = (38F + nameWidth).coerceAtLeast(70F)
 
         return Border(0F, 0F, maxWidth, 34F)

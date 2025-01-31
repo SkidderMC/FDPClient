@@ -47,7 +47,7 @@ class GuiSessionLogin(private val prevGui: GuiAltManager) : AbstractScreen() {
         +GuiButton(0, width / 2 - 100, height / 2 - 30, translationButton("back"))
 
         // Add fields to screen
-        sessionTokenField = GuiTextField(666, Fonts.font40, width / 2 - 100, height / 2 - 90, 200, 20)
+        sessionTokenField = GuiTextField(666, Fonts.fontSemibold40, width / 2 - 100, height / 2 - 90, 200, 20)
         sessionTokenField.isFocused = false
         sessionTokenField.maxStringLength = 1000
 
@@ -65,14 +65,14 @@ class GuiSessionLogin(private val prevGui: GuiAltManager) : AbstractScreen() {
             drawRect(30f, 30f, width - 30f, height - 30f, Integer.MIN_VALUE)
 
             // Draw title and status
-            Fonts.font40.drawCenteredStringWithShadow("Session Login", width / 2f, height / 2 - 150f, 0xffffff)
-            Fonts.font35.drawCenteredStringWithShadow(status, width / 2f, height / 2f, 0xffffff)
+            Fonts.fontSemibold40.drawCenteredStringWithShadow("Session Login", width / 2f, height / 2 - 150f, 0xffffff)
+            Fonts.fontSemibold35.drawCenteredString(status, width / 2f, height / 2f, 0xffffff)
 
             // Draw fields
             sessionTokenField.drawTextBox()
 
             if (sessionTokenField.text.isEmpty() && !sessionTokenField.isFocused)
-                Fonts.font40.drawCenteredStringWithShadow("§7Session Token", width / 2f - 60f, height / 2 - 84f, 0xffffff)
+                Fonts.fontSemibold40.drawCenteredStringWithShadow("§7Session Token", width / 2f - 60f, height / 2 - 84f, 0xffffff)
         }
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))

@@ -36,34 +36,34 @@ import kotlin.math.max
  */
 @ElementInfo(name = "Scoreboard")
 class ScoreboardElement(
-    x: Double = 5.0, y: Double = 0.0, scale: Float = 1F, side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.MIDDLE)
+    x: Double = 5.0, y: Double = 0.0, scale: Float = 1F, side: Side = Side(Side.Horizontal.LEFT, Side.Vertical.MIDDLE)
 ) : Element("Scoreboard", x, y, scale, side) {
 
     private val corners = RenderUtils.RoundedCorners.entries
     private val options = corners.map { it.displayName }.toTypedArray()
 
     private val textColor by color("TextColor", Color.WHITE)
-    private val backgroundColor by color("BackgroundColor", Color.BLACK.withAlpha(95))
+    private val backgroundColor by color("BackgroundColor", Color.BLACK.withAlpha(128))
     private val roundedRectRadius by float("Rounded-Radius", 3F, 0F..5F)
     private val bgCornersToRound by choices(
         "BackgroundCornersToRound", options, RenderUtils.RoundedCorners.ALL.displayName
     )
 
-    private val rect by boolean("Rect", false)
+    private val rect by boolean("Rect", true)
     private val rectColor = color("RectangleColor", Color(0, 111, 255)) { rect }
 
-    private val drawRectOnTitle by boolean("DrawRectOnTitle", false)
+    private val drawRectOnTitle by boolean("DrawRectOnTitle", true)
     private val titleRectColor by color("TitleRectColor", Color.BLACK.withAlpha(128)) { drawRectOnTitle }
     private val titleRectExtraHeight by int("TitleRectExtraHeight", 5, 0..20) { drawRectOnTitle }
-    private val rectHeightPadding by int("TitleRectHeightPadding", 2, 0..10) { drawRectOnTitle }
+    private val rectHeightPadding by int("TitleRectHeightPadding", 0, 0..10) { drawRectOnTitle }
     private val titleRectCornersToRound by choices(
         "TitleRectCornersToRound", options, RenderUtils.RoundedCorners.TOP_ONLY.displayName
     ) { drawRectOnTitle }
 
     private val serverIp by choices("ServerIP", arrayOf("Normal", "None", "Client", "Website"), "Normal")
-    private val number by boolean("Number", true)
+    private val number by boolean("Number", false)
     private val shadow by boolean("Shadow", false)
-    private val font by font("Font", Fonts.minecraftFont)
+    private val font by font("Font", Fonts.fontRegular35)
 
     /**
      * Draw element

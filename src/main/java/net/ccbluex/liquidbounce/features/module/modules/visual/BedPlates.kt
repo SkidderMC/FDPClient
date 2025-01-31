@@ -86,7 +86,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL) {
     private val bgGradColors = ColorSettingsFloat.create(this, "Background-Gradient")
     { backgroundMode == "Gradient" && it <= maxBackgroundGradientColors }
 
-    private val textFont by font("Font", Fonts.font35)
+    private val textFont by font("Font", Fonts.fontSemibold35)
     private val textShadow by boolean("ShadowText", true)
 
     private val rainbowX by float("Rainbow-X", -1000F, -2000F..2000F) { backgroundMode == "Rainbow" }

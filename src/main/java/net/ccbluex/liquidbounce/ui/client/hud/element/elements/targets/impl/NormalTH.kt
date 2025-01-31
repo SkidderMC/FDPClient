@@ -25,7 +25,7 @@ class NormalTH(inst: Targets) : TargetStyle("Normal", inst, true) {
         setSupport { targetInstance.styleValue.equals("Normal") && numberValue.get()  } }
 
     override fun drawTarget(entity: EntityLivingBase) {
-        val fonts = Fonts.font40
+        val fonts = Fonts.fontSemibold40
         val leaght = fonts.getStringWidth(entity.name)
         updateAnim(entity.health)
         RenderUtils.drawRoundedRect(0F, 0F, 42F + leaght, 23F, 0F, Color(32, 32, 32, fadeAlpha(255)).rgb)
@@ -46,7 +46,7 @@ class NormalTH(inst: Targets) : TargetStyle("Normal", inst, true) {
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {
-        val entityNameWidth = if (entity != null) Fonts.font40.getStringWidth(entity.name) else 0
+        val entityNameWidth = if (entity != null) Fonts.fontSemibold40.getStringWidth(entity.name) else 0
         return Border(0F, 0F, 42F + entityNameWidth, 23F)
     }
 }

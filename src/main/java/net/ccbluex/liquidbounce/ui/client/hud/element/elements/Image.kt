@@ -42,8 +42,8 @@ class Image : Element("Image") {
         fun default(): Image {
             val image = Image()
 
-            image.x = 0.0
-            image.y = 0.0
+            image.x = 1.0
+            image.y = 1.0
 
             return image
         }
@@ -51,8 +51,7 @@ class Image : Element("Image") {
     }
 
     private val image = text("Image", "").onChanged { value ->
-        if (value.isBlank())
-            return@onChanged
+        if (value.isBlank()) return@onChanged
 
         setImage(value)
     }

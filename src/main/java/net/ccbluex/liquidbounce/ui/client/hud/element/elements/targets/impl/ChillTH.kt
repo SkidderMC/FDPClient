@@ -47,7 +47,7 @@ class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
 
         val name = entity.name
         val health = entity.health
-        val tWidth = (45F + Fonts.font40.getStringWidth(name)
+        val tWidth = (45F + Fonts.fontSemibold40.getStringWidth(name)
             .coerceAtLeast(Fonts.font72.getStringWidth(decimalFormat.format(health)))).coerceAtLeast(120F)
         val playerInfo = mc.netHandler.getPlayerInfo(entity.uniqueID)
 
@@ -74,7 +74,7 @@ class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
         GL11.glColor4f(1F, 1F, 1F, 1F)
 
         // name + health
-        Fonts.font40.drawString(name, 38F, 6F, getColor(-1).rgb)
+        Fonts.fontSemibold40.drawString(name, 38F, 6F, getColor(-1).rgb)
         numberRenderer.renderChar(
             health,
             calcTranslateX,
@@ -124,8 +124,8 @@ class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
 
     override fun getBorder(entity: EntityLivingBase?): Border {
         entity ?: return Border(0F, 0F, 120F, 48F)
-        val tWidth = (45F + Fonts.font40.getStringWidth(entity.name)
-            .coerceAtLeast(Fonts.font40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
+        val tWidth = (45F + Fonts.fontSemibold40.getStringWidth(entity.name)
+            .coerceAtLeast(Fonts.fontSemibold40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         return Border(0F, 0F, tWidth, 48F)
     }
 

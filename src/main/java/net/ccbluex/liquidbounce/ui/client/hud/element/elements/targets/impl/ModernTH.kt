@@ -24,7 +24,7 @@ class ModernTH(inst: Targets) : TargetStyle("Modern", inst, true) {
 
     override fun drawTarget(entity: EntityLivingBase) {
 
-        val font = Fonts.font35
+        val font = Fonts.fontSemibold35
 
         updateAnim(entity.health)
 
@@ -82,7 +82,7 @@ class ModernTH(inst: Targets) : TargetStyle("Modern", inst, true) {
     override fun getBorder(entity: EntityLivingBase?): Border {
         entity ?: return Border(0F, 0F, 50F, 50F)
 
-        val font = Fonts.font35
+        val font = Fonts.fontSemibold35
 
         val additionalWidth = ((font.getStringWidth(entity.name) * 1.1).toInt().coerceAtLeast(70) + font.getStringWidth("Name: ") * 1.1 + 7.0).roundToInt()
 

@@ -263,7 +263,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         val branch = GitUtils.gitBranch
         val commitIdAbbrev = GitUtils.gitInfo.getProperty("git.commit.id.abbrev")
         val infoStr = "$CLIENT_NAME($branch/$commitIdAbbrev) | Minecraft 1.8.9"
-        Fonts.font35.drawCenteredStringWithShadow(
+        Fonts.fontSemibold35.drawCenteredString(
             infoStr,
             7F,
             (this.height - 11).toFloat(),

@@ -92,20 +92,20 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
         assumeNonVolatile {
             drawBackground(0)
             altsList.drawScreen(mouseX, mouseY, partialTicks)
-            Fonts.font40.drawCenteredStringWithShadow(translationMenu("altManager"), width / 2f, 6f, 0xffffff)
-            Fonts.font35.drawCenteredStringWithShadow(
+            Fonts.fontSemibold40.drawCenteredStringWithShadow(translationMenu("altManager"), width / 2f, 6f, 0xffffff)
+            Fonts.fontSemibold35.drawCenteredStringWithShadow(
                 if (searchField.text.isEmpty()) "${accountsConfig.accounts.size} Alts" else altsList.accounts.size.toString() + " Search Results",
                 width / 2f,
                 18f,
                 0xffffff
             )
-            Fonts.font35.drawCenteredStringWithShadow(status, width / 2f, 32f, 0xffffff)
-            Fonts.font35.drawStringWithShadow(
+            Fonts.fontSemibold35.drawCenteredString(status, width / 2f, 32f, 0xffffff)
+            Fonts.fontSemibold35.drawStringWithShadow(
                 "§7User: §a${mc.getSession().username}", 6f, 6f, 0xffffff
             )
 
             searchField.drawTextBox()
-            if (searchField.text.isEmpty() && !searchField.isFocused) Fonts.font40.drawStringWithShadow(
+            if (searchField.text.isEmpty() && !searchField.isFocused) Fonts.fontSemibold40.drawStringWithShadow(
                 "§7Search...", searchField.xPosition + 4f, 17f, 0xffffff
             )
         }

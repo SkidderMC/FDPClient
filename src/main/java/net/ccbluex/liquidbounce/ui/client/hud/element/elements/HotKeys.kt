@@ -26,7 +26,7 @@ class HotKeys(
     y: Double = 268.23
 ) : Element("HotKeys", x, y) {
 
-    private val font by font("Font", Fonts.font35)
+    private val font by font("Font", Fonts.fontSemibold35)
     private val titleText by text("Title", "HotKeys")
 
     private val backgroundMode by choices(

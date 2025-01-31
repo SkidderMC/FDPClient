@@ -10,8 +10,8 @@ import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.handler.macro.Macro
 import net.ccbluex.liquidbounce.handler.macro.MacroManager
-import net.ccbluex.liquidbounce.ui.font.Fonts.font35
-import net.ccbluex.liquidbounce.ui.font.Fonts.font40
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold35
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold40
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSmall
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedBindRect
@@ -56,7 +56,7 @@ class KeyInfo(
         glTranslatef(posX, posY, 0F)
         drawRoundedBindRect(0F, 2F, width, height + 8, 6F, shadowColor)
         drawRoundedBindRect(0F, 0F, width, height, 6F, keyColor)
-        font40.drawCenteredString(keyName, width * 0.5F, height * 0.9F * 0.5F - (font35.FONT_HEIGHT * 0.5F) + 3F, if (hasKeyBind) { usedColor } else { unusedColor }, false)
+        fontSemibold40.drawCenteredString(keyName, width * 0.5F, height * 0.9F * 0.5F - (fontSemibold35.FONT_HEIGHT * 0.5F) + 3F, if (hasKeyBind) { usedColor } else { unusedColor }, false)
         glPopMatrix()
     }
 
@@ -67,16 +67,16 @@ class KeyInfo(
         drawRoundedBindRect(0F, 0F, baseTabWidth.toFloat(), baseTabHeight.toFloat(), 4F, Color.WHITE.rgb)
 
         // render modules
-        val fontHeight = 10F - font40.height * 0.5F
-        var yOffset = (12F + font40.height + 10F) - stroll
+        val fontHeight = 10F - fontSemibold40.height * 0.5F
+        var yOffset = (12F + fontSemibold40.height + 10F) - stroll
         for (module in modules) {
             if (yOffset> 0 && (yOffset - 20) <100) {
                 glPushMatrix()
                 glTranslatef(0F, yOffset, 0F)
 
                 fontSmall.drawString(module.name, 12F, fontHeight, Color.DARK_GRAY.rgb, false)
-                font35.drawString(
-                    "-", baseTabWidth - 12F - font40.getStringWidth("-"), fontHeight, Color.RED.rgb, false
+                fontSemibold35.drawString(
+                    "-", baseTabWidth - 12F - fontSemibold40.getStringWidth("-"), fontHeight, Color.RED.rgb, false
                 )
 
                 glPopMatrix()
@@ -88,9 +88,9 @@ class KeyInfo(
                 glPushMatrix()
                 glTranslatef(0F, yOffset, 0F)
 
-                font40.drawString(macro.command, 12F, fontHeight, Color.DARK_GRAY.rgb, false)
-                font35.drawString(
-                    "-", baseTabWidth - 12F - font35.getStringWidth("-"), fontHeight, Color.RED.rgb, false
+                fontSemibold40.drawString(macro.command, 12F, fontHeight, Color.DARK_GRAY.rgb, false)
+                fontSemibold35.drawString(
+                    "-", baseTabWidth - 12F - fontSemibold35.getStringWidth("-"), fontHeight, Color.RED.rgb, false
                 )
 
                 glPopMatrix()
@@ -100,10 +100,10 @@ class KeyInfo(
         }
 
         // cover the excess
-        drawRoundedBindRect(0F, 0F, baseTabWidth.toFloat(), 12F + font40.height + 10F, 6F, Color.WHITE.rgb)
-        drawRoundedBindRect(0F, baseTabHeight - 22F - font40.height, baseTabWidth.toFloat(), baseTabHeight.toFloat(), 6F, Color.WHITE.rgb)
-        font40.drawString("Key $keyDisplayName", 12F, 12F, Color.BLACK.rgb, false)
-        font40.drawString("Add", baseTabWidth - 12F - font40.getStringWidth("Add"), baseTabHeight - 12F - font40.height, Color(0, 191, 255).rgb,false)
+        drawRoundedBindRect(0F, 0F, baseTabWidth.toFloat(), 12F + fontSemibold40.height + 10F, 6F, Color.WHITE.rgb)
+        drawRoundedBindRect(0F, baseTabHeight - 22F - fontSemibold40.height, baseTabWidth.toFloat(), baseTabHeight.toFloat(), 6F, Color.WHITE.rgb)
+        fontSemibold40.drawString("Key $keyDisplayName", 12F, 12F, Color.BLACK.rgb, false)
+        fontSemibold40.drawString("Add", baseTabWidth - 12F - fontSemibold40.getStringWidth("Add"), baseTabHeight - 12F - fontSemibold40.height, Color(0, 191, 255).rgb,false)
 
         glPopMatrix()
     }
@@ -145,12 +145,12 @@ class KeyInfo(
                 return
             }
 
-            if (scaledMouseY> 22F + font40.height &&
-                scaledMouseX> baseTabWidth - 12F - font40.getStringWidth("Add")) {
-                if (scaledMouseY> baseTabHeight - 22F - font35.height) {
+            if (scaledMouseY> 22F + fontSemibold40.height &&
+                scaledMouseX> baseTabWidth - 12F - fontSemibold40.getStringWidth("Add")) {
+                if (scaledMouseY> baseTabHeight - 22F - fontSemibold35.height) {
                     keyBindMgr.popUI = KeySelectUI(this)
                 } else {
-                    var yOffset = (12F + font35.height + 10F) - stroll
+                    var yOffset = (12F + fontSemibold35.height + 10F) - stroll
                     for (module in modules) {
                         if (scaledMouseY> (yOffset + 5) && scaledMouseY <(yOffset + 15)) {
                             module.keyBind = Keyboard.KEY_NONE

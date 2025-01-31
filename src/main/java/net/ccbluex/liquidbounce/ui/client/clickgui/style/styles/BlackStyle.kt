@@ -7,13 +7,14 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles
 
 import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.scale
+import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui.clamp
 import net.ccbluex.liquidbounce.ui.client.clickgui.Panel
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ButtonElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ModuleElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.Style
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
-import net.ccbluex.liquidbounce.ui.font.Fonts.font35
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold35
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
 import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
@@ -63,16 +64,16 @@ object BlackStyle : Style() {
             )
         }
 
-        val xPos = panel.x - (font35.getStringWidth("§f" + StringUtils.stripControlCodes(panel.name)) - 100) / 2
-        font35.drawString(panel.name, xPos, panel.y + 4, Color.WHITE.rgb)
+        val xPos = panel.x - (fontSemibold35.getStringWidth("§f" + StringUtils.stripControlCodes(panel.name)) - 100) / 2
+        fontSemibold35.drawString(panel.name, xPos, panel.y + 4, Color.WHITE.rgb)
     }
 
     override fun drawHoverText(mouseX: Int, mouseY: Int, text: String) {
         val lines = text.lines()
 
         val width =
-            lines.maxOfOrNull { font35.getStringWidth(it) + 14 } ?: return // Makes no sense to render empty lines
-        val height = (font35.fontHeight * lines.size) + 3
+            lines.maxOfOrNull { fontSemibold35.getStringWidth(it) + 14 } ?: return // Makes no sense to render empty lines
+        val height = (fontSemibold35.fontHeight * lines.size) + 3
 
         // Don't draw hover text beyond window boundaries
         val (scaledWidth, scaledHeight) = ScaledResolution(mc)
@@ -82,7 +83,7 @@ object BlackStyle : Style() {
         drawBorderedRect(x + 9, y, x + width, y + height, 3, Color(40, 40, 40).rgb, Color(40, 40, 40).rgb)
 
         lines.forEachIndexed { index, text ->
-            font35.drawString(text, x + 12, y + 3 + (font35.fontHeight) * index, Color.WHITE.rgb)
+            fontSemibold35.drawString(text, x + 12, y + 3 + (fontSemibold35.fontHeight) * index, Color.WHITE.rgb)
         }
     }
 
@@ -98,7 +99,7 @@ object BlackStyle : Style() {
             )
         )
 
-        font35.drawString(buttonElement.displayName, buttonElement.x + 5, buttonElement.y + 5, Color.WHITE.rgb)
+        fontSemibold35.drawString(buttonElement.displayName, buttonElement.x + 5, buttonElement.y + 5, Color.WHITE.rgb)
     }
 
     override fun drawModuleElementAndClick(
@@ -126,7 +127,7 @@ object BlackStyle : Style() {
             )
         )
 
-        font35.drawString(
+        fontSemibold35.drawString(
             moduleElement.displayName, moduleElement.x + 5, moduleElement.y + 5,
             if (moduleElement.module.state && !moduleElement.module.isActive) Color(255, 255, 255, 128).rgb
             else Color.WHITE.rgb
@@ -135,7 +136,7 @@ object BlackStyle : Style() {
         // Draw settings
         val moduleValues = moduleElement.module.values.filter { it.shouldRender() }
         if (moduleValues.isNotEmpty()) {
-            font35.drawString(
+            fontSemibold35.drawString(
                 if (moduleElement.showSettings) "<" else ">",
                 moduleElement.x + moduleElement.width - 8,
                 moduleElement.y + 5,
@@ -167,7 +168,7 @@ object BlackStyle : Style() {
                         is BoolValue -> {
                             val text = value.name
 
-                            moduleElement.settingsWidth = font35.getStringWidth(text) + 8
+                            moduleElement.settingsWidth = fontSemibold35.getStringWidth(text) + 8
 
                             if (mouseButton == 0 && mouseX in minX..maxX && mouseY in yPos..yPos + 12) {
                                 value.toggle()
@@ -175,7 +176,7 @@ object BlackStyle : Style() {
                                 return true
                             }
 
-                            font35.drawString(
+                            fontSemibold35.drawString(
                                 text, minX + 2, yPos + 2, if (value.get()) Color.WHITE.rgb else Int.MAX_VALUE
                             )
 
@@ -185,26 +186,26 @@ object BlackStyle : Style() {
                         is ListValue -> {
                             val text = value.name
 
-                            moduleElement.settingsWidth = font35.getStringWidth(text) + 16
+                            moduleElement.settingsWidth = fontSemibold35.getStringWidth(text) + 16
 
-                            if (mouseButton == 0 && mouseX in minX..maxX && mouseY in yPos..yPos + font35.fontHeight) {
+                            if (mouseButton == 0 && mouseX in minX..maxX && mouseY in yPos..yPos + fontSemibold35.fontHeight) {
                                 value.openList = !value.openList
                                 clickSound()
                                 return true
                             }
 
-                            font35.drawString(text, minX + 2, yPos + 2, Color.WHITE.rgb)
-                            font35.drawString(
+                            fontSemibold35.drawString(text, minX + 2, yPos + 2, Color.WHITE.rgb)
+                            fontSemibold35.drawString(
                                 if (value.openList) "-" else "+",
                                 (maxX - if (value.openList) 5 else 6),
                                 yPos + 2,
                                 Color.WHITE.rgb
                             )
 
-                            yPos += font35.fontHeight + 1
+                            yPos += fontSemibold35.fontHeight + 1
 
                             for (valueOfList in value.values) {
-                                moduleElement.settingsWidth = font35.getStringWidth("> $valueOfList") + 12
+                                moduleElement.settingsWidth = fontSemibold35.getStringWidth("> $valueOfList") + 12
 
                                 if (value.openList) {
                                     if (mouseButton == 0 && mouseX in minX..maxX && mouseY in yPos..yPos + 9) {
@@ -213,14 +214,14 @@ object BlackStyle : Style() {
                                         return true
                                     }
 
-                                    font35.drawString(
+                                    fontSemibold35.drawString(
                                         "> $valueOfList",
                                         minX + 2,
                                         yPos + 2,
                                         if (value.get() == valueOfList) Color.WHITE.rgb else Int.MAX_VALUE
                                     )
 
-                                    yPos += font35.fontHeight + 1
+                                    yPos += fontSemibold35.fontHeight + 1
                                 }
                             }
                             if (!value.openList) {
@@ -231,7 +232,7 @@ object BlackStyle : Style() {
                         is FloatValue -> {
                             val text = value.name + "§f: " + round(value.get()) + " §7$suffix"
 
-                            moduleElement.settingsWidth = font35.getStringWidth(text) + 8
+                            moduleElement.settingsWidth = fontSemibold35.getStringWidth(text) + 8
 
                             val x = minX + 4
                             val y = yPos + 14
@@ -258,7 +259,7 @@ object BlackStyle : Style() {
                             drawRect(x, y, sliderValue, y + 2, color.rgb)
                             drawFilledCircle(sliderValue, y + 1, 3f, color)
 
-                            font35.drawString(text, minX + 2, yPos + 3, Color.WHITE.rgb)
+                            fontSemibold35.drawString(text, minX + 2, yPos + 3, Color.WHITE.rgb)
 
                             yPos += 19
                         }
@@ -266,7 +267,7 @@ object BlackStyle : Style() {
                         is BlockValue -> {
                             val text = value.name + "§f: " + getBlockName(value.get()) + " (" + value.get() + ")" + " §7$suffix"
 
-                            moduleElement.settingsWidth = font35.getStringWidth(text) + 8
+                            moduleElement.settingsWidth = fontSemibold35.getStringWidth(text) + 8
 
                             val x = minX + 4
                             val y = yPos + 14
@@ -290,7 +291,7 @@ object BlackStyle : Style() {
                             drawRect(x, y, sliderValue, y + 2, color.rgb)
                             drawFilledCircle(sliderValue, y + 1, 3f, color)
 
-                            font35.drawString(text, minX + 2, yPos + 3, Color.WHITE.rgb)
+                            fontSemibold35.drawString(text, minX + 2, yPos + 3, Color.WHITE.rgb)
 
                             yPos += 19
                         }
@@ -298,7 +299,7 @@ object BlackStyle : Style() {
                         is IntValue -> {
                             val text = value.name + "§f: " + value.get() + " §7$suffix"
 
-                            moduleElement.settingsWidth = font35.getStringWidth(text) + 8
+                            moduleElement.settingsWidth = fontSemibold35.getStringWidth(text) + 8
 
                             val x = minX + 4
                             val y = yPos + 14
@@ -322,7 +323,7 @@ object BlackStyle : Style() {
                             drawRect(x, y, sliderValue, y + 2, color.rgb)
                             drawFilledCircle(sliderValue, y + 1, 3f, color)
 
-                            font35.drawString(text, minX + 2, yPos + 3, Color.WHITE.rgb)
+                            fontSemibold35.drawString(text, minX + 2, yPos + 3, Color.WHITE.rgb)
 
                             yPos += 19
                         }
@@ -332,7 +333,7 @@ object BlackStyle : Style() {
                             val slider2 = value.get().last
 
                             val text = "${value.name}§f: $slider1 - $slider2 §7$suffix"
-                            moduleElement.settingsWidth = font35.getStringWidth(text) + 8
+                            moduleElement.settingsWidth = fontSemibold35.getStringWidth(text) + 8
 
                             val x = minX + 4
                             val y = yPos + 14
@@ -400,7 +401,7 @@ object BlackStyle : Style() {
                             drawFilledCircle(sliderValue1, y + 1, 3f, color)
                             drawFilledCircle(sliderValue2, y + 1, 3f, color)
 
-                            font35.drawString(text, minX + 2, yPos + 4, Color.WHITE.rgb)
+                            fontSemibold35.drawString(text, minX + 2, yPos + 4, Color.WHITE.rgb)
 
                             yPos += 19
                         }
@@ -410,7 +411,7 @@ object BlackStyle : Style() {
                             val slider2 = value.get().endInclusive
 
                             val text = "${value.name}§f: ${round(slider1)} - ${round(slider2)} §7$suffix"
-                            moduleElement.settingsWidth = font35.getStringWidth(text) + 8
+                            moduleElement.settingsWidth = fontSemibold35.getStringWidth(text) + 8
 
                             val x = minX + 4
                             val y = yPos + 14
@@ -481,16 +482,16 @@ object BlackStyle : Style() {
                             drawFilledCircle(sliderValue1.roundToInt(), y + 1, 3f, color)
                             drawFilledCircle(sliderValue2.roundToInt(), y + 1, 3f, color)
 
-                            font35.drawString(text, minX + 2, yPos + 4, Color.WHITE.rgb)
+                            fontSemibold35.drawString(text, minX + 2, yPos + 4, Color.WHITE.rgb)
 
                             yPos += 19
                         }
 
                         is FontValue -> {
                             val displayString = value.displayName
-                            moduleElement.settingsWidth = font35.getStringWidth(displayString) + 8
+                            moduleElement.settingsWidth = fontSemibold35.getStringWidth(displayString) + 8
 
-                            font35.drawString(displayString, minX + 2, yPos + 2, Color.WHITE.rgb)
+                            fontSemibold35.drawString(displayString, minX + 2, yPos + 2, Color.WHITE.rgb)
 
                             if (mouseButton != null && mouseX in minX..maxX && mouseY in yPos..yPos + 12) {
                                 if (mouseButton == 0) value.next() else value.previous()
@@ -569,11 +570,11 @@ object BlackStyle : Style() {
                             val display = "${value.name}: ${"#%08X".format(currentColor.rgb)}"
 
                             val combinedWidth = opacityEndX - colorPickerStartX
-                            val optimalWidth = maxOf(font35.getStringWidth(display), combinedWidth)
+                            val optimalWidth = maxOf(fontSemibold35.getStringWidth(display), combinedWidth)
 
                             moduleElement.settingsWidth = optimalWidth + spacing * 4
 
-                            font35.drawString(display, textX, textY, Color.WHITE.rgb)
+                            fontSemibold35.drawString(display, textX, textY, Color.WHITE.rgb)
 
                             val normalBorderColor = if (rainbow) 0 else Color.BLUE.rgb
                             val rainbowBorderColor = if (rainbow) Color.BLUE.rgb else 0
@@ -815,9 +816,9 @@ object BlackStyle : Style() {
                         else -> {
                             val text = value.name + "§f: " + value.get()
 
-                            moduleElement.settingsWidth = font35.getStringWidth(text) + 8
+                            moduleElement.settingsWidth = fontSemibold35.getStringWidth(text) + 8
 
-                            font35.drawString(text, minX + 2, yPos + 4, Color.WHITE.rgb)
+                            fontSemibold35.drawString(text, minX + 2, yPos + 4, Color.WHITE.rgb)
 
                             yPos += 12
                         }

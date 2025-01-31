@@ -10,8 +10,8 @@ import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.handler.macro.Macro
 import net.ccbluex.liquidbounce.handler.macro.MacroManager
-import net.ccbluex.liquidbounce.ui.font.Fonts.font35
-import net.ccbluex.liquidbounce.ui.font.Fonts.font40
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold35
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold40
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.minecraft.util.ChatAllowedCharacters
 import org.lwjgl.input.Keyboard
@@ -25,16 +25,16 @@ import java.awt.Color
 class KeySelectUI(val info: KeyInfo) : PopUI("Select a module to bind") {
     private var str = ""
     private var modules = moduleManager.toList()
-    private val singleHeight = 4F + font35.height
+    private val singleHeight = 4F + fontSemibold35.height
     private var stroll = 0
     private var maxStroll = modules.size * singleHeight
-    private val height = 8F + font40.height + font35.height + 0.5F
+    private val height = 8F + fontSemibold40.height + fontSemibold35.height + 0.5F
 
     override fun render() {
         // modules
         var yOffset = height - stroll + 5F
         if (str.startsWith(".")) {
-            font35.drawString("Press ENTER to add macro.", 8F, singleHeight + yOffset, Color.BLACK.rgb, false)
+            fontSemibold35.drawString("Press ENTER to add macro.", 8F, singleHeight + yOffset, Color.BLACK.rgb, false)
         } else {
             for (module in modules) {
                 if (yOffset> (height - singleHeight) && (yOffset - singleHeight) <190) {
@@ -42,7 +42,7 @@ class KeySelectUI(val info: KeyInfo) : PopUI("Select a module to bind") {
                     glTranslatef(0F, yOffset, 0F)
 
                     val name = module.name
-                    font35.drawString(if (str.isNotEmpty()) {
+                    fontSemibold35.drawString(if (str.isNotEmpty()) {
                         "§0" + name.substring(0, str.length) + "§7" + name.substring(str.length, name.length)
                     } else { "§0$name" }, 8F, singleHeight * 0.5F, Color.BLACK.rgb, false)
 
@@ -51,11 +51,11 @@ class KeySelectUI(val info: KeyInfo) : PopUI("Select a module to bind") {
                 yOffset += singleHeight
             }
         }
-        drawRect(0F, 8F + font40.height, baseWidth.toFloat(), height + 5F, Color.WHITE.rgb)
+        drawRect(0F, 8F + fontSemibold40.height, baseWidth.toFloat(), height + 5F, Color.WHITE.rgb)
         drawRect(0F, baseHeight - singleHeight, baseWidth.toFloat(), baseHeight.toFloat(), Color.WHITE.rgb)
 
         // search bar
-        font35.drawString(str.ifEmpty { "Search..." }, 8F, 8F + font40.height + 4F, Color.LIGHT_GRAY.rgb, false)
+        fontSemibold35.drawString(str.ifEmpty { "Search..." }, 8F, 8F + fontSemibold40.height + 4F, Color.LIGHT_GRAY.rgb, false)
         drawRect(8F, height + 2F, baseWidth - 8F, height + 3F, Color.LIGHT_GRAY.rgb)
     }
 

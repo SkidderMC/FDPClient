@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.keybind
 
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
-import net.ccbluex.liquidbounce.ui.font.Fonts.font40
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold40
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedBindRect
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import org.lwjgl.input.Keyboard
@@ -52,10 +52,10 @@ object KeyBindManager : AbstractScreen() {
 
         glPushMatrix()
         glScalef(2.0F, 2.0F, 2.0F)
-        font40.drawString("KeyBind Manager", width * 0.21f * 0.5f, height * 0.2f * 0.5f - 0.5F, Color.WHITE.rgb, false)
+        fontSemibold40.drawString("KeyBind Manager", width * 0.21f * 0.5f, height * 0.2f * 0.5f - 0.5F, Color.WHITE.rgb, false)
         glPopMatrix()
 
-        glTranslatef(width * 0.2f, height * 0.2f + font40.height * 2.3f, 0F)
+        glTranslatef(width * 0.2f, height * 0.2f + fontSemibold40.height * 2.3f, 0F)
         val scale = mcWidth / baseWidth.toFloat()
         // It's easier to use scale
         glScalef(scale, scale, scale)
@@ -81,7 +81,7 @@ object KeyBindManager : AbstractScreen() {
                     popUI!!.onStroll(width, height, mouseX, mouseY, wheel)
                 } else if (nowDisplayKey != null) {
                     val scaledMouseX = (mouseX - width * 0.2f) / scale
-                    val scaledMouseY = (mouseY - (height * 0.2f + font40.height * 2.3f)) / scale
+                    val scaledMouseY = (mouseY - (height * 0.2f + fontSemibold40.height * 2.3f)) / scale
 
                     nowDisplayKey!!.stroll(scaledMouseX, scaledMouseY, wheel)
                 }
@@ -96,7 +96,7 @@ object KeyBindManager : AbstractScreen() {
         if (popUI == null) {
             val scale = ((width * 0.8f) - (width * 0.2f)) / baseWidth
             val scaledMouseX = (mouseX - width * 0.2f) / scale
-            val scaledMouseY = (mouseY - (height * 0.2f + font40.height * 2.3f)) / scale
+            val scaledMouseY = (mouseY - (height * 0.2f + fontSemibold40.height * 2.3f)) / scale
 
             if (nowDisplayKey == null) {
                 // click out of area

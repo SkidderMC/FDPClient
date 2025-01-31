@@ -66,8 +66,8 @@ class LiquidBounceLegacyTH(inst: Targets) : TargetStyle("LiquidBounce", inst, tr
     private val rainbowY by FloatValue("Rainbow-Y", -1000F, -2000F..2000F).apply {
         setSupport { backgroundMode == "Rainbow" } }
 
-    private val titleFont by FontValue("TitleFont", Fonts.font40)
-    private val bodyFont by FontValue("BodyFont", Fonts.font35)
+    private val titleFont by FontValue("TitleFont", Fonts.fontSemibold40)
+    private val bodyFont by FontValue("BodyFont", Fonts.fontSemibold35)
     private val textShadow by BoolValue("TextShadow", false)
 
     private val fadeSpeed by FloatValue("FadeSpeed", 2F, 1F..9F)

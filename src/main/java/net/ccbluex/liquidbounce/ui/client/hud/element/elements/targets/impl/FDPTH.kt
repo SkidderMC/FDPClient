@@ -23,7 +23,7 @@ import kotlin.math.roundToInt
 
 class FDPTH(inst: Targets) : TargetStyle("FDP", inst, true) {
 
-    private val fontValue by FontValue("Font", Fonts.font40)
+    private val fontValue by FontValue("Font", Fonts.fontSemibold40)
 
     override fun drawTarget(entity: EntityLivingBase) {
         val font = fontValue

@@ -34,7 +34,7 @@ class Effects(
 ) : Element("Effects", x, y, scale, side) {
 
     private val modeValue by choices("Mode", arrayOf("Classic", "FDP", "Default"), "Classic")
-    private val font by font("Font", Fonts.font35)
+    private val font by font("Font", Fonts.fontSemibold35)
     private val shadow by boolean("Shadow", true)
 
     private val iconValue by boolean("Icon", true)
@@ -199,7 +199,7 @@ class Effects(
                 (pY - mc.fontRendererObj.FONT_HEIGHT).roundToInt(),
                 potionlpha(ColorUtils.potionColor.WHITE.c, 0.8F)
             )
-            Fonts.font35.drawString(
+            Fonts.fontSemibold35.drawString(
                 Potion.getDurationString(potionEffect),
                 29F,
                 pY + 4.0F,

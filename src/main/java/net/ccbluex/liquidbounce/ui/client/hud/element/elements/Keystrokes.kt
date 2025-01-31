@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import java.awt.Color
 
 @ElementInfo(name = "Keystrokes")
-class Keystrokes : Element("Keystrokes", 2.0, 123.0) {
+class Keystrokes : Element("Keystrokes", 2.0, 34.0) {
     private val radius by float("RectangleRound-Radius", 3F, 0F..10F)
     private val textColors = ColorSettingsInteger(this, "Text", applyMax = true)
     private val rectColors = ColorSettingsInteger(this, "Rectangle").with(a = 150)
@@ -30,7 +30,7 @@ class Keystrokes : Element("Keystrokes", 2.0, 123.0) {
     private val shrinkSpeed by int("ShrinkSpeed", 2, 0..5, suffix = "Ticks") { shrinkOnPress }
 
     private var shadow by boolean("Text-Shadow", true)
-    private val font by font("Font", Fonts.font40)
+    private val font by font("Font", Fonts.fontRegular35)
 
     private val textColor
         get() = textColors.color()
@@ -59,7 +59,7 @@ class Keystrokes : Element("Keystrokes", 2.0, 123.0) {
 
             scale = (scale..targetScale).lerpWith(deltaTime)
 
-            val t = 1f - ((scale - min) safeDiv (1f - min))
+            val t = 1f - (scale - min safeDiv 1f - min)
 
             val baseColor = keystrokes.rectColor
             val targetColor = keystrokes.pressColor

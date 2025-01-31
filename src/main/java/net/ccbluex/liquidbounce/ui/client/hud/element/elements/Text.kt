@@ -153,7 +153,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
     private val gradientY by float("Gradient-Y", -1500F, -2000F..2000F) { isColorModeUsed("Gradient") }
 
     private var shadow by boolean("Shadow", true)
-    private val font by font("Font", Fonts.font40)
+    private val font by font("Font", Fonts.fontSemibold40)
 
     private var editMode = false
     private var editTicks = 0

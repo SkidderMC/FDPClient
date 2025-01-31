@@ -44,7 +44,7 @@ object ItemESP : Module("ItemESP", Category.VISUAL) {
 
     private val scale by float("Scale", 3F, 1F..5F) { itemText }
     private val itemCounts by boolean("ItemCounts", true) { itemText }
-    private val font by font("Font", Fonts.font40) { itemText }
+    private val font by font("Font", Fonts.fontSemibold40) { itemText }
     private val fontShadow by boolean("Shadow", true) { itemText }
 
     private var maxRenderDistanceSq = 0.0

@@ -2810,9 +2810,9 @@ object RenderUtils : MinecraftInstance {
         setGlCap(GL_DEPTH_TEST, false)
         setGlCap(GL_BLEND, true)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        val width = Fonts.font35.getStringWidth(string) / 2
-        drawRect(-width - 1, -1, width + 1, Fonts.font35.FONT_HEIGHT, Int.MIN_VALUE)
-        Fonts.font35.drawString(string, -width.toFloat(), 1.5f, Color.WHITE.rgb, true)
+        val width = Fonts.fontSemibold35.getStringWidth(string) / 2
+        drawRect(-width - 1, -1, width + 1, Fonts.fontSemibold35.FONT_HEIGHT, Int.MIN_VALUE)
+        Fonts.fontSemibold35.drawString(string, -width.toFloat(), 1.5f, Color.WHITE.rgb, true)
         resetCaps()
         resetColor()
         glPopMatrix()

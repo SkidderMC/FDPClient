@@ -60,7 +60,7 @@ class BlockCounter(x: Double = 520.0, y: Double = 245.0) : Element("BlockCounter
 
     private val borderColors = ColorSettingsInteger(this, "Border")
 
-    private val font by font("Font", Fonts.font40)
+    private val font by font("Font", Fonts.fontSemibold40)
     private val textShadow by boolean("ShadowText", true)
 
     private val rainbowX by float("Rainbow-X", -1000F, -2000F..2000F) { backgroundMode == "Rainbow" }

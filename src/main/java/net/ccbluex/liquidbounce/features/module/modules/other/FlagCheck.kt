@@ -61,7 +61,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true) {
     ) { renderServerPos == "Box" }.with(r = 255, g = 255)
 
     private val scale by float("Scale", 1F, 1F..6F) { renderServerPos == "Box" }
-    private val font by font("Font", Fonts.font40) { renderServerPos == "Box" }
+    private val font by font("Font", Fonts.fontSemibold40) { renderServerPos == "Box" }
     private val fontShadow by boolean("Shadow", true) { renderServerPos == "Box" }
 
     private var lastCheckTime = 0L

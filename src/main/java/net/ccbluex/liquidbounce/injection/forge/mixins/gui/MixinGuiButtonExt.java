@@ -48,7 +48,7 @@ public abstract class MixinGuiButtonExt extends GuiButton {
      */
     @Overwrite
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {
-        final FontRenderer fontRenderer = mc.getLanguageManager().isCurrentLocaleUnicode() ? mc.fontRendererObj : Fonts.font35;
+        final FontRenderer fontRenderer = mc.getLanguageManager().isCurrentLocaleUnicode() ? mc.fontRendererObj : Fonts.fontSemibold35;
 
         hovered = mouseX >= xPosition && mouseY >= yPosition && mouseX < xPosition + width && mouseY < yPosition + height;
 

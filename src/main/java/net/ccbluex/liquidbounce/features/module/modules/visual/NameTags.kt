@@ -70,7 +70,7 @@ object NameTags : Module("NameTags", Category.VISUAL) {
     private val bot by boolean("Bots", true)
     private val potion by boolean("Potions", true)
     private val clearNames by boolean("ClearNames", false)
-    private val font by font("Font", Fonts.font40)
+    private val font by font("Font", Fonts.fontSemibold40)
     private val scale by float("Scale", 1F, 1F..4F)
     private val fontShadow by boolean("Shadow", true)
 

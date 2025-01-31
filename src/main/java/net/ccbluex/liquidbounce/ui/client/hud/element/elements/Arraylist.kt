@@ -88,7 +88,7 @@ class Arraylist(
     private val backgroundMode by choices(
         "Background-Mode", arrayOf("Custom", "Fade", "Theme", "Random", "Rainbow", "Gradient"), "Custom"
     )
-    private val bgColors = ColorSettingsInteger(this, "BackgroundColor") { backgroundMode == "Custom" }.with(a = 0)
+    private val bgColors = ColorSettingsInteger(this, "BackgroundColor") { backgroundMode == "Custom" }.with(a = 155)
     private val bgFadeColors = ColorSettingsInteger(this, "Background-Fade") { backgroundMode == "Fade" }
 
     private val bgFadeDistance by int("Background-Fade-Distance", 50, 0..100) { backgroundMode == "Fade" }
@@ -147,7 +147,7 @@ class Arraylist(
         tags
     }.onChanged { updateTagDetails() }
 
-    private val font by font("Font", Fonts.font40)
+    private val font by font("Font", Fonts.fontSemibold40)
     private val textShadow by boolean("ShadowText", true)
     private val moduleCase by choices("ModuleCase", arrayOf("Normal", "Uppercase", "Lowercase"), "Normal")
     private val space by float("Space", 0F, 0F..5F)

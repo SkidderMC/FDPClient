@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.keybind
 
-import net.ccbluex.liquidbounce.ui.font.Fonts.font40
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold40
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -26,7 +26,7 @@ open class PopUI(val title: String) {
         GL11.glScalef(scale, scale, scale)
 
         drawRect(0F, 0F, baseWidth.toFloat(), baseHeight.toFloat(), Color.WHITE.rgb)
-        font40.drawString(title, 8F, 8F, Color.DARK_GRAY.rgb)
+        fontSemibold40.drawString(title, 8F, 8F, Color.DARK_GRAY.rgb)
         render()
 
         GL11.glPopMatrix()

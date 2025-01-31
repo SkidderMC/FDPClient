@@ -121,7 +121,7 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
             it.enabled = stylisedAlts
         }
 
-        altPrefixField = GuiTextField(2, Fonts.font35, width / 2 - 100, height / 4 + 260 + 25, 200, 20)
+        altPrefixField = GuiTextField(2, Fonts.fontSemibold35, width / 2 - 100, height / 4 + 260 + 25, 200, 20)
         altPrefixField.maxStringLength = 16
 
         // Back button
@@ -232,14 +232,14 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
             translationMenu("configuration"), width / 2F, height / 8F + 5F, 4673984, true
         )
 
-        Fonts.font40.drawString(
+        Fonts.fontSemibold40.drawString(
             "Window", width / 2F - 98F, height / 4F + 15F, 0xFFFFFF, true
         )
 
-        Fonts.font40.drawString(
+        Fonts.fontSemibold40.drawString(
             "Background", width / 2F - 98F, height / 4F + 90F, 0xFFFFFF, true
         )
-        Fonts.font35.drawString(
+        Fonts.fontSemibold35.drawString(
             "Supported background types: (.png, .frag, .glsl)",
             width / 2F - 98F,
             height / 4F + 100 + 25 * 3,
@@ -247,16 +247,16 @@ class GuiClientConfiguration(val prevGui: GuiScreen) : AbstractScreen() {
             true
         )
 
-        Fonts.font40.drawString(
+        Fonts.fontSemibold40.drawString(
             translationMenu("altManager"), width / 2F - 98F, height / 4F + 200F, 0xFFFFFF, true
         )
 
         altPrefixField.drawTextBox()
         if (altPrefixField.text.isEmpty() && !altPrefixField.isFocused) {
-            Fonts.font35.drawStringWithShadow(
+            Fonts.fontSemibold35.drawStringWithShadow(
                 altsPrefix.ifEmpty { translationMenu("altManager.typeCustomPrefix") },
                 altPrefixField.xPosition + 4f,
-                altPrefixField.yPosition + (altPrefixField.height - Fonts.font35.FONT_HEIGHT) / 2F,
+                altPrefixField.yPosition + (altPrefixField.height - Fonts.fontSemibold35.FONT_HEIGHT) / 2F,
                 0xffffff
             )
         }

@@ -46,7 +46,7 @@ class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: B
         // Back button
         +GuiButton(0, width / 2 - 100, height / 2 + 30, "Back")
 
-        username = GuiTextField(2, Fonts.font40, width / 2 - 100, height / 2 - 90, 200, 20)
+        username = GuiTextField(2, Fonts.fontSemibold40, width / 2 - 100, height / 2 - 90, 200, 20)
         username.isFocused = false
         username.maxStringLength = 16
     }
@@ -56,24 +56,24 @@ class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: B
             drawBackground(0)
 
             drawRect(30, 30, width - 30, height - 30, Int.MIN_VALUE)
-            Fonts.font40.drawCenteredStringWithShadow(
+            Fonts.fontSemibold40.drawCenteredStringWithShadow(
                 if (directLogin) "Direct Login" else "Add Account",
                 width / 2f,
                 height / 2 - 170f,
                 0xffffff
             )
-            Fonts.font40.drawCenteredStringWithShadow(
+            Fonts.fontSemibold40.drawCenteredStringWithShadow(
                 "§7${if (directLogin) "Login to" else "Add"} an offline account",
                 width / 2f,
                 height / 2 - 110f,
                 0xffffff
             )
-            Fonts.font35.drawCenteredStringWithShadow(status, width / 2f, height / 2f - 30, 0xffffff)
+            Fonts.fontSemibold35.drawCenteredString(status, width / 2f, height / 2f - 30, 0xffffff)
 
             username.drawTextBox()
 
             if (username.text.isEmpty() && !username.isFocused)
-                Fonts.font40.drawCenteredStringWithShadow("§7Username", width / 2 - 72f, height / 2 - 84f, 0xffffff)
+                Fonts.fontSemibold40.drawCenteredStringWithShadow("§7Username", width / 2 - 72f, height / 2 - 84f, 0xffffff)
         }
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))

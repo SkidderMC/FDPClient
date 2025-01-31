@@ -25,7 +25,7 @@ import java.awt.Color
 class CrossSineTH(inst: Targets) : TargetStyle("CrossSine", inst, true) {
 
     override fun drawTarget(entity: EntityLivingBase) {
-        val fonts = Fonts.font40
+        val fonts = Fonts.fontSemibold40
         val leagth = if (fonts.getStringWidth(entity.name) < fonts.getStringWidth("HurtTime : ${entity.hurtTime}")) fonts.getStringWidth("HurtTime : ${entity.hurtTime}") else fonts.getStringWidth(entity.name)
         updateAnim(entity.health)
         drawRoundedRect(0F,0F, 70F + leagth, 42F, 4F, Color(0,0,0,fadeAlpha(80)).rgb, 2F,  getColorWithAlpha(1, fadeAlpha(255)).rgb)
@@ -53,7 +53,7 @@ class CrossSineTH(inst: Targets) : TargetStyle("CrossSine", inst, true) {
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {
-        val entityNameWidth = if (entity != null) Fonts.font40.getStringWidth(entity.name) else 0
+        val entityNameWidth = if (entity != null) Fonts.fontSemibold40.getStringWidth(entity.name) else 0
         return Border(0F, 0F, 70F + entityNameWidth, 42F)
     }
 }

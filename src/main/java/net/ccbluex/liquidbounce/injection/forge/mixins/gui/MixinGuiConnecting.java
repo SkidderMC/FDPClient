@@ -48,8 +48,8 @@ public abstract class MixinGuiConnecting extends GuiScreen {
             ip = ServerUtils.INSTANCE.hideSensitiveInformation(serverData.serverIP);
         }
 
-        Fonts.font35.drawCenteredString("Connecting to", scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 4f + 110, 0xFFFFFF, true);
-        Fonts.font35.drawCenteredString(ip, scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 4f + 120, HUDModule.INSTANCE.getGuiColor(), true);
+        Fonts.fontSemibold35.drawCenteredString("Connecting to", scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 4f + 110, 0xFFFFFF, true);
+        Fonts.fontSemibold35.drawCenteredString(ip, scaledResolution.getScaledWidth() / 2f, scaledResolution.getScaledHeight() / 4f + 120, HUDModule.INSTANCE.getGuiColor(), true);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }

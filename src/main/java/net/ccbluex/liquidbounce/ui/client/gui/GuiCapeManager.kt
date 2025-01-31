@@ -110,14 +110,14 @@ object GuiCapeManager : AbstractScreen() {
         this.drawDefaultBackground()
 
         glPushMatrix()
-        Fonts.font35.drawCenteredStringWithShadow(
+        Fonts.fontSemibold35.drawCenteredString(
             if (nowCape == null) "§cNONE" else "§a${nowCape!!.name}",
             width * 0.50f,
             height * 0.23f,
             -1
         )
         glScalef(2f, 2f, 2f)
-        Fonts.font35.drawCenteredStringWithoutShadow("Cape Manager", width * 0.25f, height * 0.03f, -1)
+        Fonts.fontSemibold35.drawCenteredString("Cape Manager", width * 0.25f, height * 0.03f, -1)
         glPopMatrix()
 
         super.drawScreen(mouseX, mouseY, partialTicks)

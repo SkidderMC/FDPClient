@@ -25,7 +25,7 @@ import java.awt.Color
 @ElementInfo(name = "Inventory")
 class Inventory : Element("Inventory", 300.0, 50.0) {
 
-    private val font by font("Font", Fonts.font35)
+    private val font by font("Font", Fonts.fontSemibold35)
     private val title by choices("Title", arrayOf("Center", "Left", "Right", "None"), "Left")
     private val titleColor = color("TitleColor", Color.WHITE) { title != "None" }
     private val roundedRectRadius by float("Rounded-Radius", 3F, 0F..5F)
