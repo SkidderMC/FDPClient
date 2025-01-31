@@ -139,7 +139,6 @@ class GameFontRenderer(
     override fun drawString(
         text: String, x: Float, y: Float, color: Int, shadow: Boolean
     ): Int {
-        glPushMatrix()
         // Basic blend
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -162,12 +161,14 @@ class GameFontRenderer(
             )
         }
 
+        glDisable(GL_BLEND)
+
         // Then real text with optional rainbow or gradient
         val rainbowActive = RainbowFontShader.isInUse
         val gradientActive = GradientFontShader.isInUse
         return drawText(
             currentText, x, baseY, color, ignoreColor = false, rainbow = rainbowActive, gradient = gradientActive
-        ).also { glDisable(GL_BLEND); enableBlend(); glPopMatrix() }
+        )
     }
 
     /**

@@ -153,7 +153,7 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
     private val gradientY by float("Gradient-Y", -1500F, -2000F..2000F) { isColorModeUsed("Gradient") }
 
     private var shadow by boolean("Shadow", true)
-    private val font by font("Font", Fonts.fontSemibold40)
+    private val font = font("Font", Fonts.fontSemibold40)
 
     private var editMode = false
     private var editTicks = 0
@@ -268,13 +268,14 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
         val stack = mc.thePlayer?.inventory?.getStackInSlot(SilentHotbar.currentSlot)
         val shouldRender = showBlock && stack?.item is ItemBlock
         val showBlockScale = if (shouldRender) 1.2F else 1F
-        val fontHeight = ((font as? GameFontRenderer)?.height ?: font.FONT_HEIGHT) + 2
+        val fontRenderer = font.get()
+        val fontHeight = ((fontRenderer as? GameFontRenderer)?.height ?: fontRenderer.FONT_HEIGHT) + 2
         val underscore = if (editMode && mc.currentScreen is GuiHudDesigner && editTicks <= 40) "_" else ""
 
         // Calculate width only once
-        val underscoreWidth = font.getStringWidth(underscore).toFloat()
-        val width = font.getStringWidth(displayText) + underscoreWidth
-        val heightPadding = if (font == mc.fontRendererObj) 1F else 0F
+        val underscoreWidth = fontRenderer.getStringWidth(underscore).toFloat()
+        val width = fontRenderer.getStringWidth(displayText) + underscoreWidth
+        val heightPadding = if (fontRenderer == mc.fontRendererObj) 1F else 0F
 
         val bgScale = max(backgroundScale, 1F)
 
@@ -364,10 +365,10 @@ class Text(x: Double = 10.0, y: Double = 10.0, scale: Float = 1F, side: Side = S
                     gradientOffset
                 ).use {
                     RainbowFontShader.begin(rainbow, rainbowX, rainbowY, rainbowOffset).use {
-                        font.drawString(displayText, 0F, 2 - heightPadding, colorToUse, shadow)
+                        fontRenderer.drawString(displayText, 0F, 2 - heightPadding, colorToUse, shadow)
 
                         if (editMode && mc.currentScreen is GuiHudDesigner && editTicks <= 40) {
-                            font.drawString("_", width - underscoreWidth, 0F, colorToUse, shadow)
+                            fontRenderer.drawString("_", width - underscoreWidth, 0F, colorToUse, shadow)
                         }
                     }
                 }

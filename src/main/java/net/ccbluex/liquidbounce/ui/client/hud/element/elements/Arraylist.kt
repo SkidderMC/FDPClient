@@ -107,9 +107,9 @@ class Arraylist(
     // Icons
     private val displayIcons by boolean("DisplayIcons", true)
     private val iconShadows by boolean("IconShadows", true) { displayIcons }
-    private val xDistance by float("ShadowXDistance", 1.0F, -2F..2F) { iconShadows }
-    private val yDistance by float("ShadowYDistance", 1.0F, -2F..2F) { iconShadows }
-    private val shadowColor by color("ShadowColor", Color.BLACK.withAlpha(128)) { iconShadows }
+    private val xDistance by float("ShadowXDistance", 0F, -2F..2F) { iconShadows }
+    private val yDistance by float("ShadowYDistance", 0F, -2F..2F) { iconShadows }
+    private val shadowColor by color("ShadowColor", Color.BLACK.withAlpha(128), rainbow = true) { iconShadows }
 
     // TODO: The images seem to be overlapped when either Rainbow or Gradient mode is active.
     private val iconColorMode by choices(
@@ -147,12 +147,12 @@ class Arraylist(
         tags
     }.onChanged { updateTagDetails() }
 
-    private val font by font("Font", Fonts.fontSemibold40)
+    private val font by font("Font", Fonts.fontSemibold35)
     private val textShadow by boolean("ShadowText", true)
     private val moduleCase by choices("ModuleCase", arrayOf("Normal", "Uppercase", "Lowercase"), "Normal")
-    private val space by float("Space", 0F, 0F..5F)
+    private val space by float("Space", 1F, 0F..5F)
     private val textHeight by float("TextHeight", 11F, 1F..20F)
-    private val textY by float("TextY", 1.5F, 0F..20F)
+    private val textY by float("TextY", 3.25F, 0F..20F)
 
     private val animation by choices("Animation", arrayOf("Slide", "Smooth"), "Smooth") { tags }
     private val animationSpeed by float("AnimationSpeed", 0.2F, 0.01F..1F) { animation == "Smooth" }

@@ -172,6 +172,7 @@ class AWTFontRenderer(
             if (loc == null) {
                 // Fallback => break quads, draw with MC font
                 glEnd()
+                GlStateManager.resetColor()
 
                 glPushMatrix()
 
