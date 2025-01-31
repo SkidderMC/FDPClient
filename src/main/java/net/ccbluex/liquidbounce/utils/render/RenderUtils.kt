@@ -2451,24 +2451,24 @@ object RenderUtils : MinecraftInstance {
     }
 
     fun drawFilledCircle(xx: Int, yy: Int, radius: Float, color: Color) {
+        val sections = 50
+        val dAngle = 2 * Math.PI / sections
+        var x: Float
+        var y: Float
         glPushAttrib(GL_ENABLE_BIT)
         glEnable(GL_BLEND)
         glDisable(GL_TEXTURE_2D)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_POINT_SMOOTH)
-        glColor(color)
-
-        glPointSize(radius * 4.5F)
-
-        glBegin(GL_POINTS)
-
-        glVertex2f(xx.toFloat(), yy.toFloat())
-
+        glEnable(GL_LINE_SMOOTH)
+        glBegin(GL_TRIANGLE_FAN)
+        for (i in 0 until sections) {
+            x = (radius * sin(i * dAngle)).toFloat()
+            y = (radius * cos(i * dAngle)).toFloat()
+            glColor4f(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f)
+            glVertex2f(xx + x, yy + y)
+        }
         resetColor()
         glEnd()
-        glDisable(GL_POINT_SMOOTH)
-        glEnable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
         glPopAttrib()
     }
 
