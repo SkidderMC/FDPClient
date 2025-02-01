@@ -17,10 +17,11 @@ import net.minecraft.network.play.server.S01PacketJoinGame
 
 object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
     private val debug by boolean("Debug", true)
-
     private val actionNumbers = mutableListOf<Int>()
     private var check = false
     private var ticksPassed = 0
+
+    var detectedACName: String = ""
 
     val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
@@ -93,7 +94,8 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
             }
 
             detectedAC?.let {
-                addNotification(Notification("§3Anticheat detected: §a${it}", "§3Anticheat detected: §a${it}", Type.WARNING, 3000))
+                detectedACName = it
+                addNotification(Notification("§3Anticheat detected: §a$it", "§3Anticheat detected: §a$it", Type.WARNING, 3000))
                 actionNumbers.clear()
                 return
             }
@@ -106,6 +108,7 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
             val remainingDiffs = differences.drop(2)
 
             if (firstDiff >= 100 && secondDiff == -1 && remainingDiffs.all { it == -1 }) {
+                detectedACName = "Polar"
                 addNotification(Notification("Alert", "§3Anticheat detected: §aPolar", Type.WARNING, 3000))
                 actionNumbers.clear()
                 return
@@ -115,6 +118,7 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
         // Intave zero handling
         val firstAction = actionNumbers.firstOrNull()
         if (firstAction != null && firstAction < -3000 && actionNumbers.any { it == 0 }) {
+            detectedACName = "Intave"
             addNotification(Notification("Alert", "§3Anticheat detected: §aIntave", Type.WARNING, 3000))
             actionNumbers.clear()
             return
@@ -125,6 +129,7 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
             chat("§3Action Numbers: ${actionNumbers.joinToString()}")
             chat("§3Differences: ${differences.joinToString()}")
         }
+        detectedACName = ""
         actionNumbers.clear()
     }
 
@@ -132,5 +137,6 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
         actionNumbers.clear()
         ticksPassed = 0
         check = false
+        detectedACName = ""
     }
 }

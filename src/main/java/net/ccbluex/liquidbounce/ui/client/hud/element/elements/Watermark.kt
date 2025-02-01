@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule
 import net.ccbluex.liquidbounce.features.module.modules.visual.NameProtect
+import net.ccbluex.liquidbounce.features.module.modules.other.AnticheatDetector
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
@@ -25,6 +26,7 @@ class Watermark : Element("Watermark") {
     private val showPosition by boolean("Show Position", true)
     private val showPing by boolean("Show Ping", true)
     private val showTPS by boolean("Show TPS", true)
+    private val showAnticheat by boolean("Show Anticheat", true)
 
     private fun getTPS(): Float {
         return HUDModule.tps
@@ -199,6 +201,34 @@ class Watermark : Element("Watermark") {
             Fonts.InterMedium_15.drawString(
                 tpsText,
                 posX + iconSize * 1.5f + rectWidth,
+                tpsY + rectWidth / 2.0f + 1.5f + 2f,
+                -1
+            )
+        }
+
+        if (showAnticheat && AnticheatDetector.state) {
+            val acName = AnticheatDetector.detectedACName.ifEmpty { "None" }
+            val tpsBoxWidth = rectWidth + iconSize * 2.5f + Fonts.InterMedium_15.stringWidth(tpsText)
+            val anticheatX = posX + tpsBoxWidth + iconSize
+
+            val acTextWidth = Fonts.InterMedium_15.stringWidth(acName)
+            RenderUtils.drawCustomShapeWithRadius(
+                anticheatX,
+                tpsY,
+                rectWidth + iconSize * 2.5f + acTextWidth,
+                rectWidth + iconSize * 2.0f,
+                4.0f,
+                Color(bgColorRGB, true)
+            )
+            Fonts.Nursultan18.drawString(
+                "N",
+                anticheatX + iconSize,
+                tpsY + 1.5f + iconSize + 2f,
+                mainColor
+            )
+            Fonts.InterMedium_15.drawString(
+                acName,
+                anticheatX + iconSize * 1.5f + rectWidth,
                 tpsY + rectWidth / 2.0f + 1.5f + 2f,
                 -1
             )
