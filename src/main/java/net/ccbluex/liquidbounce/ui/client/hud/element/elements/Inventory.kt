@@ -26,13 +26,13 @@ import java.awt.Color
 class Inventory : Element("Inventory", 300.0, 50.0) {
 
     private val font by font("Font", Fonts.fontSemibold35)
-    private val title by choices("Title", arrayOf("Center", "Left", "Right", "None"), "Left")
+    private val title by choices("Title", arrayOf("Center", "Left", "Right", "None"), "Center")
     private val titleColor = color("TitleColor", Color.WHITE) { title != "None" }
-    private val roundedRectRadius by float("Rounded-Radius", 3F, 0F..5F)
+    private val roundedRectRadius by float("Rounded-Radius", 2.5F, 0F..5F)
 
     private val borderValue by boolean("Border", true)
     private val borderColor = color("BorderColor", Color.WHITE) { borderValue }
-    private val backgroundColor by color("BackgroundColor", Color.BLACK.withAlpha(150))
+    private val backgroundColor by color("BackgroundColor", Color.BLACK.withAlpha(0))
 
     private val width = 174F
     private val height = 66F
