@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
@@ -18,7 +19,6 @@ object UsernameCommand : Command("username", "ign") {
 
         chat("Username: $username")
 
-        val stringSelection = StringSelection(username)
-        Toolkit.getDefaultToolkit().systemClipboard.setContents(stringSelection, stringSelection)
+        MiscUtils.copy(username)
     }
 }

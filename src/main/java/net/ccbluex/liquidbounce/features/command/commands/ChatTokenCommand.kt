@@ -10,8 +10,7 @@ import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.modules.client.IRCModule
 import net.ccbluex.liquidbounce.handler.irc.packet.packets.ServerRequestJWTPacket
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
-import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
+import net.ccbluex.liquidbounce.utils.io.MiscUtils
 
 object ChatTokenCommand : Command("chattoken") {
 
@@ -54,8 +53,7 @@ object ChatTokenCommand : Command("chattoken") {
                     return
                 }
 
-                val stringSelection = StringSelection(IRCModule.jwtToken)
-                Toolkit.getDefaultToolkit().systemClipboard.setContents(stringSelection, stringSelection)
+                MiscUtils.copy(IRCModule.jwtToken)
                 chat("§aCopied to clipboard!")
             }
         }

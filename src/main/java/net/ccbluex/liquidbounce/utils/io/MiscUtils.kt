@@ -24,6 +24,12 @@ import javax.swing.filechooser.FileNameExtensionFilter
 object MiscUtils : MinecraftInstance {
 
     @JvmStatic
+    fun copy(content: String) {
+        val selection = StringSelection(content)
+        Toolkit.getDefaultToolkit().systemClipboard.setContents(selection, null)
+    }
+
+    @JvmStatic
     private fun JTextArea.adjustTextAreaSize() {
         val fontMetrics = getFontMetrics(font)
 
@@ -92,8 +98,7 @@ object MiscUtils : MinecraftInstance {
 
         val copyButton = JButton("Copy Text").apply {
             addActionListener {
-                val clipboard = Toolkit.getDefaultToolkit().systemClipboard
-                clipboard.setContents(StringSelection(content), null)
+                copy(content)
                 JOptionPane.showMessageDialog(null, "Text copied to clipboard!", "Info", JOptionPane.INFORMATION_MESSAGE)
             }
         }

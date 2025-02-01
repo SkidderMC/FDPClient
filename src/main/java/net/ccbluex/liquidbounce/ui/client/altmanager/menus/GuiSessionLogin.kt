@@ -42,7 +42,7 @@ class GuiSessionLogin(private val prevGui: GuiAltManager) : AbstractScreen() {
 
         // Add buttons to screen
 
-        loginButton = +GuiButton(1, width / 2 - 100, height / 2 - 60, translationButton("login"))
+        loginButton = +GuiButton(1, width / 2 - 100, height / 2 - 60, translationButton("altManager.login"))
 
         +GuiButton(0, width / 2 - 100, height / 2 - 30, translationButton("back"))
 

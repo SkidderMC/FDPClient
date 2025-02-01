@@ -29,3 +29,13 @@ fun ClosedFloatingPointRange<Float>.coerceIn(range: ClosedFloatingPointRange<Flo
     val newEnd = this.endInclusive.coerceIn(range.start, range.endInclusive)
     return newStart..newEnd
 }
+
+fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
+    require(index1 in indices && index2 in indices)
+    if (index1 == index2) {
+        return
+    }
+    val elem = this[index1]
+    this[index1] = this[index2]
+    this[index2] = elem
+}

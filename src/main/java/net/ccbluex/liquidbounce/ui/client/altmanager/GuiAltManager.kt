@@ -27,6 +27,7 @@ import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.io.FileFilters
 import net.ccbluex.liquidbounce.utils.io.HttpUtils
 import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
+import net.ccbluex.liquidbounce.utils.kotlin.swap
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomAccount
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
@@ -38,8 +39,6 @@ import net.minecraft.client.gui.GuiTextField
 import net.minecraft.util.Session
 import org.lwjgl.input.Keyboard
 import java.awt.Color
-import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
 import java.util.*
 
 class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
@@ -60,14 +59,13 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
         searchField = GuiTextField(2, mc.fontRendererObj, width - textFieldWidth - 10, 10, textFieldWidth, 20)
         searchField.maxStringLength = Int.MAX_VALUE
 
-        altsList = GuiList(this)
-        altsList.run {
+        altsList = GuiList(this).apply {
             registerScrollButtons(7, 8)
 
             val mightBeTheCurrentAccount = accountsConfig.accounts.indexOfFirst { it.name == mc.session.username }
             elementClicked(mightBeTheCurrentAccount, false, 0, 0)
 
-            scrollBy(mightBeTheCurrentAccount * altsList.getSlotHeight())
+            scrollBy(mightBeTheCurrentAccount * this.getSlotHeight())
         }
 
         // Setup buttons
@@ -75,16 +73,18 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
         val startPositionY = 22
         addButton = +GuiButton(1, width - 80, startPositionY + 24, 70, 20, translationButton("add"))
         removeButton = +GuiButton(2, width - 80, startPositionY + 24 * 2, 70, 20, translationButton("remove"))
-        +GuiButton(7, width - 80, startPositionY + 24 * 3, 70, 20, translationButton("import"))
-        +GuiButton(12, width - 80, startPositionY + 24 * 4, 70, 20, translationButton("export"))
-        copyButton = +GuiButton(8, width - 80, startPositionY + 24 * 5, 70, 20, translationButton("copy"))
-        +GuiButton(0, width - 80, height - 65, 70, 20, translationButton("back"))
-        loginButton = +GuiButton(3, 5, startPositionY + 24, 90, 20, translationButton("login"))
-        randomAltButton = +GuiButton(4, 5, startPositionY + 24 * 2, 90, 20, translationButton("randomAlt"))
-        randomNameButton = +GuiButton(5, 5, startPositionY + 24 * 3, 90, 20, translationButton("randomName"))
-        +GuiButton(6, 5, startPositionY + 24 * 4, 90, 20, translationButton("directLogin"))
-        +GuiButton(10, 5, startPositionY + 24 * 5, 90, 20, translationButton("sessionLogin"))
+        +GuiButton(13, width - 80, startPositionY + 24 * 3, 70, 20, translationButton("moveUp"))
+        +GuiButton(14, width - 80, startPositionY + 24 * 4, 70, 20, translationButton("moveDown"))
+        +GuiButton(7, width - 80, startPositionY + 24 * 5, 70, 20, translationButton("import"))
+        +GuiButton(12, width - 80, startPositionY + 24 * 6, 70, 20, translationButton("export"))
+        copyButton = +GuiButton(8, width - 80, startPositionY + 24 * 7, 70, 20, translationButton("altManager.copy"))
 
+        +GuiButton(0, width - 80, height - 65, 70, 20, translationButton("back"))
+        loginButton = +GuiButton(3, 5, startPositionY + 24, 90, 20, translationButton("altManager.login"))
+        randomAltButton = +GuiButton(4, 5, startPositionY + 24 * 2, 90, 20, translationButton("altManager.randomAlt"))
+        randomNameButton = +GuiButton(5, 5, startPositionY + 24 * 3, 90, 20, translationButton("altManager.randomName"))
+        +GuiButton(6, 5, startPositionY + 24 * 4, 90, 20, translationButton("altManager.directLogin"))
+        +GuiButton(10, 5, startPositionY + 24 * 5, 90, 20, translationButton("altManager.sessionLogin"))
             +GuiButton(11, 5, startPositionY + 24 * 7, 90, 20, "Reload")
     }
 
@@ -246,7 +246,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
                     }
 
                     // Copy to clipboard
-                    Toolkit.getDefaultToolkit().systemClipboard.setContents(StringSelection(formattedData), null)
+                    MiscUtils.copy(formattedData)
                     status = "§aCopied account into your clipboard."
                 } catch (any: Exception) {
                     any.printStackTrace()
@@ -255,6 +255,43 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
 
             10 -> { // Session Login Button
                 mc.displayGuiScreen(GuiSessionLogin(this))
+            }
+
+            13 -> { // Move Up Button
+                val currentAccount = altsList.selectedAccount
+                if (currentAccount == null) {
+                    status = "§cSelect an account."
+                    return
+                }
+                val currentIndex = altsList.accounts.indexOf(currentAccount)
+                if (currentIndex == 0) {
+                    return
+                }
+                val prevElement = altsList.accounts[currentIndex - 1]
+                val prevIndex = accountsConfig.accounts.indexOf(prevElement)
+                val currentOriginalIndex = accountsConfig.accounts.indexOf(currentAccount)
+                // Move currentAccount
+                accountsConfig.accounts.swap(prevIndex, currentOriginalIndex)
+                accountsConfig.saveConfig()
+                altsList.selectedSlot--
+            }
+            14 -> { // Move Down Button
+                val currentAccount = altsList.selectedAccount
+                if (currentAccount == null) {
+                    status = "§cSelect an account."
+                    return
+                }
+                val currentIndex = altsList.accounts.indexOf(currentAccount)
+                if (currentIndex == altsList.accounts.lastIndex) {
+                    return
+                }
+                val nextElement = altsList.accounts[currentIndex + 1]
+                val nextIndex = accountsConfig.accounts.indexOf(nextElement)
+                val currentOriginalIndex = accountsConfig.accounts.indexOf(currentAccount)
+                // Move currentAccount
+                accountsConfig.accounts.swap(nextIndex, currentOriginalIndex)
+                accountsConfig.saveConfig()
+                altsList.selectedSlot++
             }
         }
     }

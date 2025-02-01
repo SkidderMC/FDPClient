@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.config.SettingsUtils
 import net.ccbluex.liquidbounce.utils.io.HttpUtils.get
+import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -183,8 +184,7 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                         chat("§9Token: §6${response.token}")
 
                         // Store token in clipboard
-                        val stringSelection = StringSelection(response.token)
-                        Toolkit.getDefaultToolkit().systemClipboard.setContents(stringSelection, stringSelection)
+                        MiscUtils.copy(response.token)
                     }
                     Status.ERROR -> chat("§c${response.message}")
                 }
