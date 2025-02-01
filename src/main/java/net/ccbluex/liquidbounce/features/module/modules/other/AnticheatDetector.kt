@@ -5,7 +5,9 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.event.GameTickEvent
+import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
@@ -24,9 +26,7 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
     var detectedACName: String = ""
 
     val onPacket = handler<PacketEvent> { event ->
-        val packet = event.packet
-
-        when (packet) {
+        when (val packet = event.packet) {
             is S32PacketConfirmTransaction -> {
                 if (check) {
                     actionNumbers.add(packet.actionNumber.toInt())
@@ -79,11 +79,11 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
             val first = actionNumbers.first()
 
             val detectedAC = when (step) {
-                1 -> when {
-                    first in -23772..-23762 -> "Vulcan"
-                    first in 95..105 -> "Matrix"
-                    first in -20005..-19995 -> "Matrix"
-                    first in -32773..-32762 -> "Grizzly"
+                1 -> when (first) {
+                    in -23772..-23762 -> "Vulcan"
+                    in 95..105 -> "Matrix"
+                    in -20005..-19995 -> "Matrix"
+                    in -32773..-32762 -> "Grizzly"
                     else -> "Verus"
                 }
                 -1 -> when {
