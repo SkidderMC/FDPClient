@@ -37,6 +37,7 @@ object HUD : MinecraftInstance {
   fun setDefault() {
     elements.clear()
 
+    addElement(Watermark())
     addElement(TabGUI())
     addElement(Arraylist())
     addElement(ScoreboardElement())
