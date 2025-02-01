@@ -82,6 +82,8 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
                 1 -> when {
                     first in -23772..-23762 -> "Vulcan"
                     first in 95..105 -> "Matrix"
+                    first in -20005..-19995 -> "Matrix"
+                    first in -32773..-32762 -> "Grizzly"
                     else -> "Verus"
                 }
                 -1 -> when {
