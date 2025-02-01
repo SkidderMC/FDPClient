@@ -25,7 +25,7 @@ sealed class Value<T>(
     /**
      * The owner of this value.
      */
-    var owner: Value<*>? = null
+    var owner: Configurable? = null
 
     /**
      * Whether this value should be excluded from public configuration (text config)
@@ -36,7 +36,12 @@ sealed class Value<T>(
     fun subjective() = apply { subjective = true }
 
     var excluded: Boolean = false
-        private set
+        private set(value) {
+            if (value) {
+                owner?.get()?.remove(this)
+            }
+            field = value
+        }
 
     fun exclude() = apply { excluded = true }
 
