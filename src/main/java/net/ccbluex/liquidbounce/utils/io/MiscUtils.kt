@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils.io
 
 import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import java.awt.Desktop
 import java.awt.Font
@@ -142,6 +143,7 @@ object MiscUtils : MinecraftInstance {
         if (mc.isFullScreen) mc.toggleFullscreen()
 
         val fileChooser = JFileChooser()
+        fileChooser.currentDirectory = FileManager.dir
         fileChooser.fileSelectionMode = JFileChooser.FILES_ONLY
         fileChooser.isAcceptAllFileFilterUsed = isAcceptAllFileFilterUsed || fileFilers.isEmpty()
         fileFilers.forEach(fileChooser::addChoosableFileFilter)

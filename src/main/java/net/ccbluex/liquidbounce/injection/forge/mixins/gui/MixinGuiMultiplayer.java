@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
+import kotlin.collections.CollectionsKt;
 import net.ccbluex.liquidbounce.ui.client.gui.GuiClientFixes;
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager;
 import net.minecraft.client.gui.GuiButton;
@@ -23,7 +24,7 @@ public abstract class MixinGuiMultiplayer extends MixinGuiScreen {
     @Inject(method = "initGui", at = @At("RETURN"))
     private void initGui(CallbackInfo callbackInfo) {
         // Detect ViaForge button
-        GuiButton button = buttonList.stream().filter(b -> b.displayString.equals("ViaForge")).findFirst().orElse(null);
+        GuiButton button = CollectionsKt.firstOrNull(buttonList, b -> b.displayString.equals("ViaForge"));
 
         int increase = 0;
         int yPosition = 8;

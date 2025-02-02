@@ -29,31 +29,24 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL) {
     init {
         state = true
     }
-
+    
     private val followHit by boolean("Follow Hit", true)
-
     private val dynamicRotation by boolean("Dynamic Rotation", false)
 
     private const val MAX_LIFETIME = 1000.0f
-    private val bubbles = ArrayList<Bubble>()
+    private val bubbles = arrayListOf<Bubble>()
 
     private val tessellator = Tessellator.getInstance()
     private val buffer = tessellator.worldRenderer
 
-    private val alphaPercentage: Float
-        get() = 1f
-
-    private val bubbleColor: Int
-        get() = ClientThemesUtils.getColor().rgb
-
+    private val alphaPercentage: Float get() = 1f
+    private val bubbleColor: Int get() = ClientThemesUtils.getColor().rgb
     private val icon = ResourceLocation("${CLIENT_NAME.lowercase()}/bubble.png")
-
 
     val onAttack = handler<AttackEvent> { event ->
         val target = event.targetEntity as? EntityLivingBase ?: return@handler
 
-        val bubblePosition = target.positionVector
-            .addVector(0.0, target.height / 1.6, 0.0)
+        val bubblePosition = target.positionVector.addVector(0.0, target.height / 1.6, 0.0)
 
         val hitLocation = if (followHit) {
             val playerEyes = mc.thePlayer.getPositionEyes(1.0f)
@@ -70,52 +63,53 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL) {
         addBubble(bubblePosition, hitLocation)
     }
 
-
     val onRender3D = handler<Render3DEvent> {
         val alpha = alphaPercentage
-        if (alpha < 0.05 || bubbles.isEmpty()) return@handler
+        if (alpha < 0.05f || bubbles.isEmpty()) return@handler
 
         removeExpiredBubbles()
 
         setupBubbleRendering {
             bubbles.forEach { bubble ->
-                if (bubble.deltaTime <= 1.0f) {
+                if (bubble.deltaTime < 1.0f) {
                     drawBubble(bubble, alpha)
                 }
             }
         }
     }
 
-    private fun setupBubbleRendering(render: Runnable) {
-        val renderManager = mc.renderManager
-        val offset = Vec3(renderManager.renderPosX, renderManager.renderPosY, renderManager.renderPosZ)
-        val isLightingEnabled = glIsEnabled(GL_LIGHTING)
-
+    private fun setupBubbleRendering(render: () -> Unit) {
+        glPushAttrib(GL_ALL_ATTRIB_BITS)
         pushMatrix()
-        enableBlend()
-        disableAlpha()
-        depthMask(false)
-        disableCull()
-        if (isLightingEnabled) disableLighting()
-        glShadeModel(GL_SMOOTH)
-        tryBlendFuncSeparate(770, 32772, 1, 0)
+        try {
+            enableBlend()
+            disableAlpha()
+            depthMask(false)
+            disableCull()
+            if (glIsEnabled(GL_LIGHTING)) disableLighting()
+            glShadeModel(GL_SMOOTH)
+            tryBlendFuncSeparate(770, 32772, 1, 0)
 
-        glTranslated(-offset.xCoord, -offset.yCoord, -offset.zCoord)
-        mc.textureManager.bindTexture(icon)
+            val renderManager = mc.renderManager
+            val offset = Vec3(renderManager.renderPosX, renderManager.renderPosY, renderManager.renderPosZ)
+            glTranslated(-offset.xCoord, -offset.yCoord, -offset.zCoord)
+            mc.textureManager.bindTexture(icon)
 
-        render.run()
+            render()
 
-        glTranslated(offset.xCoord, offset.yCoord, offset.zCoord)
-        resetColor()
-        enableCull()
-        depthMask(true)
-        enableAlpha()
-        popMatrix()
+            glTranslated(offset.xCoord, offset.yCoord, offset.zCoord)
+            resetColor()
+            enableCull()
+            depthMask(true)
+            enableAlpha()
+        } finally {
+            popMatrix()
+            glPopAttrib()
+        }
     }
 
     private fun drawBubble(bubble: Bubble, alpha: Float) {
         glPushMatrix()
-
         glTranslated(bubble.position.xCoord, bubble.position.yCoord, bubble.position.zCoord)
 
         val expansion = bubble.deltaTime
@@ -126,21 +120,20 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL) {
         )
 
         glNormal3d(1.0, 1.0, 1.0)
+
         glRotated(bubble.viewPitch.toDouble(), 0.0, 1.0, 0.0)
         glRotated(bubble.viewYaw.toDouble(), if (mc.gameSettings.thirdPersonView == 2) -1.0 else 1.0, 0.0, 0.0)
         glScaled(-0.1, -0.1, 0.1)
 
         drawBubbleGraphics(bubble, alpha)
-
         glPopMatrix()
     }
 
     private fun calculateDynamicRotation(bubble: Bubble): Double {
         val player = mc.thePlayer ?: return 0.0
-        val entityPos = bubble.position
-        val deltaX = entityPos.xCoord - player.posX
-        val deltaZ = entityPos.zCoord - player.posZ
-
+        val deltaX = bubble.position.xCoord - player.posX
+        val deltaZ = bubble.position.zCoord - player.posZ
+        if (deltaX == 0.0 && deltaZ == 0.0) return 0.0
         val angle = Math.toDegrees(atan2(deltaZ, deltaX))
         return angle - player.rotationYaw
     }
@@ -150,10 +143,10 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL) {
         val rotationAngle = if (dynamicRotation) calculateDynamicRotation(bubble) else 0.0
 
         customRotatedObject2D(-radius / 2, -radius / 2, radius, radius, rotationAngle)
-        buffer.begin(7, DefaultVertexFormats.POSITION_TEX_COLOR)
+        buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
 
-        val red = (bubbleColor shr 16 and 0xFF) / 255.0f
-        val green = (bubbleColor shr 8 and 0xFF) / 255.0f
+        val red = ((bubbleColor shr 16) and 0xFF) / 255.0f
+        val green = ((bubbleColor shr 8) and 0xFF) / 255.0f
         val blue = (bubbleColor and 0xFF) / 255.0f
 
         buffer.pos(0.0, 0.0, 0.0).tex(0.0, 0.0).color(red, green, blue, alpha).endVertex()
@@ -171,21 +164,12 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL) {
     private fun addBubble(position: Vec3, hitLocation: Vec3? = null) {
         val renderManager = mc.renderManager
         val finalPosition = if (followHit && hitLocation != null) hitLocation else position
-
-        bubbles.add(
-            Bubble(
-                viewYaw = renderManager.playerViewX,
-                viewPitch = -renderManager.playerViewY,
-                position = finalPosition
-            )
-        )
+        bubbles.add(Bubble(renderManager.playerViewX, -renderManager.playerViewY, finalPosition))
     }
 
-    class Bubble(var viewYaw: Float, var viewPitch: Float, var position: Vec3) {
+    data class Bubble(val viewYaw: Float, val viewPitch: Float, val position: Vec3) {
         private val creationTime: Long = System.currentTimeMillis()
-        private val lifetime: Float = MAX_LIFETIME
-
         val deltaTime: Float
-            get() = (System.currentTimeMillis() - creationTime).toFloat() / lifetime
+            get() = (System.currentTimeMillis() - creationTime).toFloat() / MAX_LIFETIME
     }
 }

@@ -37,6 +37,12 @@
     "button.openURL": "Open URL",
     "button.cancel": "Cancel",
 
+    "text.fontManager.name": "Name",
+    "text.fontManager.size": "Size",
+    "text.fontManager.preview": "Preview",
+    "text.fontManager.customFonts": "%d Custom Font",
+    "text.fontManager.customFonts.plural": "%d Custom Fonts",
+
     "text.Search": "§7Search",
     "text.Loggingintoaccount": "Logging into account...",
     "menu.discordRPC.typeBox": "Type Here..",

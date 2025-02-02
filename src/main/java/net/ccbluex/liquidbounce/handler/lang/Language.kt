@@ -59,15 +59,15 @@ object LanguageManager : MinecraftInstance {
      * Get translation from language
      */
     fun getTranslation(key: String, vararg args: Any)
-            = languageMap[language]?.getTranslation(key, *args)
-        ?: languageMap[COMMON_UNDERSTOOD_LANGUAGE]?.getTranslation(key, *args)
+            = languageMap[language]?.getTranslation(key, args = args)
+        ?: languageMap[COMMON_UNDERSTOOD_LANGUAGE]?.getTranslation(key, args = args)
         ?: key
 
 }
 
 class Language(val locale: String, val contributors: List<String>, val translations: Map<String, String>) {
 
-    fun getTranslation(key: String, vararg args: Any) = translations[key]?.format(*args)
+    fun getTranslation(key: String, vararg args: Any) = translations[key]?.format(args = args)
 
     override fun toString() = locale
 

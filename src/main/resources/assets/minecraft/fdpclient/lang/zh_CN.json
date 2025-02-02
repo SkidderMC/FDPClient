@@ -3,16 +3,52 @@
   "contributors": [
     "guosic",
     "latiao_1337",
-    "Zywl"
+    "Xebook1",
+    "MukjepScarlet"
   ],
   "translations": {
-    "menu.altManager": "帐号管理器",
+    "menu.altManager": "帐号管理",
+    "menu.fontManager": "字体管理",
     "menu.mods": "模组",
     "menu.serverStatus": "服务器状态",
     "menu.configuration": "配置",
     "menu.contributors": "贡献者",
 
     "menu.discordRPC.typeBox": "在此处输入..",
+
+    "button.back": "返回",
+    "button.moveUp": "上移",
+    "button.moveDown": "下移",
+    "button.import": "导入",
+    "button.export": "导出",
+    "button.add": "添加",
+    "button.remove": "移除",
+
+    "button.altManager.copy": "复制账号名称",
+    "button.altManager.login": "登录账号",
+    "button.altManager.randomAlt": "随机选择账号",
+    "button.altManager.randomName": "随机名字",
+    "button.altManager.directLogin": "直接登录账号",
+    "button.altManager.theAltening": "TheAltening",
+    "button.altManager.cape": "披风管理",
+    "button.altManager.sessionLogin": "Token登录",
+    "button.altManager.buy": "购买",
+
+    "button.fontManager.edit": "编辑",
+
+    "button.openURL": "打开网址",
+    "button.cancel": "取消",
+
+    "text.fontManager.name": "名称",
+    "text.fontManager.size": "大小",
+    "text.fontManager.preview": "预览文本",
+    "text.fontManager.customFonts": "%d 自定义字体",
+    "text.fontManager.customFonts.plural": "%d 自定义字体",
+
+    "text.Search": "§7账号搜索",
+    "text.Loggingintoaccount": "正在登录账号",
+
+    "menu.altManager.typeCustomPrefix": "输入自定义名称前缀...",
 
     "notification.moduleEnabled": "已启用 %s",
     "notification.moduleDisabled": "已禁用 %s",
@@ -281,92 +317,94 @@
 
     "module.plugins.description": "查看服务器使用的插件。",
 
-    "module.portalMenu.description":"允许你在地狱传送门中打开菜单。",
+    "module.portalMenu.description": "允许你在地狱传送门中打开菜单。",
 
-    "module.potionSaver.description":"当你静止不动时，冻结所有药水效果。",
+    "module.potionSaver.description": "当你静止不动时，冻结所有药水效果。",
 
-    "module.potionSpoof.description":"让你凭空获得药水效果。",
+    "module.potionSpoof.description": "让你凭空获得药水效果。",
 
-    "module.projectiles.description":"允许你看到投掷物的落点。",
+    "module.projectiles.description": "允许你看到投掷物的落点。",
 
-    "module.prophuntESP.description":"允许你在道具躲猫猫中看到伪装的玩家。",
+    "module.prophuntESP.description": "允许你在道具躲猫猫中看到伪装的玩家。",
 
-    "module.reach.description":"增加你的攻击距离。",
+    "module.reach.description": "增加你的攻击距离。",
 
-    "module.refill.description":"自动将方块和食物等物品从背包补充到快捷栏。",
+    "module.refill.description": "自动将方块和食物等物品从背包补充到快捷栏。",
 
-    "module.regen.description":"快速回血。",
+    "module.regen.description": "快速回血。",
 
-    "module.resourcePackSpoof.description":"防止服务器强制下载其资源包。",
+    "module.resourcePackSpoof.description": "防止服务器强制下载其资源包。",
 
-    "module.reverseStep.description":"允许你更快地走下方块。",
+    "module.reverseStep.description": "允许你更快地走下方块。",
 
-    "module.rotations.description":"允许你看到你在服务器端的身体旋转。",
+    "module.rotations.description": "允许你看到你在服务器端的身体旋转。",
 
-    "module.safeWalk.description":"防止你在方块边缘掉落。",
+    "module.safeWalk.description": "防止你在方块边缘掉落。",
 
-    "module.scaffold.description":"自动在你的脚下放方块。",
+    "module.scaffold.description": "自动在你的脚下放方块。",
 
-    "module.serverCrasher.description":"允许你使某些服务器崩溃。",
+    "module.serverCrasher.description": "允许你使某些服务器崩溃。",
 
-    "module.skinDerp.description":"让你的皮肤闪烁 (需要多层皮肤)。",
+    "module.skinDerp.description": "让你的皮肤闪烁 (需要多层皮肤)。",
 
-    "module.slimeJump.description":"允许你在粘液块上跳得更高。",
+    "module.slimeJump.description": "允许你在粘液块上跳得更高。",
 
-    "module.silentHotbar.description":"在某些时候使选择物品保持静默。",
+    "module.silentHotbar.description": "在某些时候使选择物品保持静默。",
 
-    "module.sneak.description":"自动保持潜行。",
+    "module.sneak.description": "自动保持潜行。",
 
-    "module.spammer.description":"使用指定的消息在聊天框刷屏。",
+    "module.spammer.description": "使用指定的消息在聊天框刷屏。",
 
-    "module.speed.description":"允许你移动得更快。",
+    "module.speed.description": "允许你移动得更快。",
 
-    "module.sprint.description":"自动保持疾跑。",
+    "module.sprint.description": "自动保持疾跑。",
 
-    "module.staffDetector.description":"检测服务器上的工作人员并提醒用户。",
+    "module.staffDetector.description": "检测服务器上的工作人员并提醒用户。",
 
-    "module.step.description":"允许你更快地走上方块。",
+    "module.step.description": "允许你更快地走上方块。",
 
-    "module.storageESP.description":"允许你透过墙壁看到箱子等方块。",
+    "module.storageESP.description": "允许你透过墙壁看到箱子等方块。",
 
-    "module.strafe.description":"允许你在空中灵活移动。",
+    "module.strafe.description": "允许你在空中灵活移动。",
 
-    "module.tNTESP.description":"允许你透过墙壁看到被点燃的TNT。",
+    "module.tNTESP.description": "允许你透过墙壁看到被点燃的TNT。",
 
-    "module.teams.description":"防止杀戮光环攻击队友。",
+    "module.teams.description": "防止杀戮光环攻击队友。",
 
-    "module.teleport.description":"允许你四处传送。",
+    "module.teleport.description": "允许你四处传送。",
 
-    "module.timerRange.description":"允许你操控游戏速度，以在与敌人对战中获得优势。",
+    "module.timerRange.description": "允许你操控游戏速度，以在与敌人对战中获得优势。",
 
-    "module.timer.description":"改变游戏的运行速度。",
+    "module.timer.description": "改变游戏的运行速度。",
 
-    "module.tracers.description":"向你周围的目标绘制一条线。",
+    "module.tracers.description": "向你周围的目标绘制一条线。",
 
-    "module.trueSight.description":"允许你看到不可见的实体和障碍物。",
+    "module.trueSight.description": "允许你看到不可见的实体和障碍物。",
 
-    "module.vehicleOneHit.description":"允许你一击就可破坏载具。",
+    "module.vehicleOneHit.description": "允许你一击就可破坏载具。",
 
-    "module.wallClimb.description":"允许你像蜘蛛一样爬上墙壁。",
+    "module.wallClimb.description": "允许你像蜘蛛一样爬上墙壁。",
 
-    "module.xRay.description":"允许你透过墙壁看到矿石。",
+    "module.xRay.description": "允许你透过墙壁看到矿石。",
 
-    "module.zoot.description":"移除所有负面药水效果/火焰。",
+    "module.zoot.description": "移除所有负面药水效果/火焰。",
 
-    "module.keepSprint.description":"允许你在攻击后不打断疾跑。",
+    "module.keepSprint.description": "允许你在攻击后不打断疾跑。",
 
-    "module.disabler.description":"使你免受服务器或特定反作弊的作弊检测。",
+    "module.disabler.description": "使你免受服务器或特定反作弊的作弊检测。",
 
-    "module.overrideRaycast.description":"使用服务器基于旋转的射线投射复盖您基于旋转的射线投射。"",
+    "module.overrideRaycast.description": "使用服务器基于旋转的raycast覆盖您基于旋转的raycast。",
 
-    "module.tickBase.description":"缓冲ticks以便尽早攻击敌人.",
+    "module.tickBase.description": "缓冲ticks以便尽早攻击敌人。",
 
-    "module.rotationRecorder.description":"记录并保存您的旋转。",
+    "module.rotationRecorder.description": "记录并保存您的旋转。",
 
-    "module.forwardTrack.description":"显示实体的实际位置。",
+    "module.forwardTrack.description": "显示实体的实际位置。",
 
-    "module.clickRecorder.description":"记录并保存您的点击。",
+    "module.clickRecorder.description": "记录并保存您的点击。",
 
-    "module.chineseHat.description":"给实体戴上一顶帽子。"
+    "module.chineseHat.description": "给实体戴上一顶帽子。",
+
+    "module.jumpCircle.description": "跳跃时在玩家底下生成一个圆环。"
   }
 }

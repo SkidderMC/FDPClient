@@ -4544,10 +4544,12 @@ object RenderUtils : MinecraftInstance {
         )
     }
 
-    fun customRotatedObject2D(oXpos: Float, oYpos: Float, oWidth: Float, oHeight: Float, rotate: Double) {
-        translate((oXpos + oWidth / 2).toDouble(), (oYpos + oHeight / 2).toDouble(), 0.0)
-        rotate(rotate.toFloat(), 0f, 0f, 1f)
-        translate(-(oXpos + oWidth / 2).toDouble(), -(oYpos + oHeight / 2).toDouble(), 0.0)
+    fun customRotatedObject2D(x: Float, y: Float, width: Float, height: Float, rotation: Double) {
+        val centerX = x + width / 2
+        val centerY = y + height / 2
+        translate(centerX.toDouble(), centerY.toDouble(), 0.0)
+        rotate(rotation.toFloat(), 0f, 0f, 1f)
+        translate(-centerX.toDouble(), -centerY.toDouble(), 0.0)
     }
 
     fun setupOrientationMatrix(x: Double, y: Double, z: Double) {
