@@ -53,6 +53,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
     private lateinit var btnQuit: QuitButton
 
     override fun initGui() {
+
         val basePath = "${CLIENT_NAME.lowercase()}/texture/mainmenu/"
         logo = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/mainmenu/logo.png")
 
@@ -64,8 +65,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         btnMultiplayer = +GuiButton(1, width / 2 - 66, centerY + 93, buttonWidth, buttonHeight, "MULTI PLAYER")
         btnClientOptions = +GuiButton(2, width / 2 - 66, centerY + 116, buttonWidth, buttonHeight, "SETTINGS")
         btnFontManager = +GuiButton(3, width / 2 - 66, centerY + 139, buttonWidth, buttonHeight, "FONT MANAGER")
-
-        btnCheckUpdate = GuiButton(4, width - 150, 7, 85, 20, "CHECK UPDATE")
+        btnCheckUpdate = GuiButton(4, width / 2 - 66, centerY + 162, buttonWidth, buttonHeight, "§aCHECK UPDATE")
 
         buttonList.addAll(listOf(btnSinglePlayer, btnMultiplayer, btnClientOptions, btnFontManager, btnCheckUpdate))
 
@@ -76,7 +76,6 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         btnMinecraftOptions = ImageButton("MINECRAFT SETTINGS", ResourceLocation("${basePath}cog.png"), width / 2, bottomY)
         btnLanguage = ImageButton("LANGUAGE", ResourceLocation("${basePath}globe.png"), width / 2 + 15, bottomY)
         btnForgeModList = ImageButton("FORGE MODS", ResourceLocation("${basePath}forge.png"), width / 2 + 30, bottomY)
-
         btnAddAccount = ImageButton("ALT MANAGER", ResourceLocation("${basePath}add-account.png"), width - 55, 7)
         btnQuit = QuitButton(width - 17, 7)
     }
@@ -87,7 +86,6 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
                 actionPerformed(guiButton)
             }
         }
-
         when {
             btnQuit.hoverFade > 0 -> mc.shutdown()
             btnMinecraftOptions.hoverFade > 0 -> mc.displayGuiScreen(GuiOptions(this, mc.gameSettings))
@@ -113,46 +111,31 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         assumeNonVolatile = true
         drawBackground(0)
-
         if (Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
             mc.displayGuiScreen(ClickGui)
         }
-
         GlStateManager.pushMatrix()
-
         // background
         drawShadowRect(
-            (width / 2 - 130).toFloat(),
-            (height / 2 - 90).toFloat(),
-            (width / 2 + 130).toFloat(),
-            (height / 2 + 90).toFloat(),
+            (width / 2 - 100).toFloat(),
+            (height / 2 - 80).toFloat(),
+            (width / 2 + 100).toFloat(),
+            (height / 2 + 112).toFloat(),
             15F,
-            Color(44, 43, 43, 100).rgb
-        )
+            Color(44, 43, 43, 100).rgb)
 
         GlStateManager.disableAlpha()
         GlStateManager.enableAlpha()
         GlStateManager.enableBlend()
         GlStateManager.color(1.0f, 1.0f, 1.0f)
         mc.textureManager.bindTexture(logo)
-        drawModalRectWithCustomSizedTexture(
-            width / 2 - 25,
-            height / 2 - 68,
-            0f,
-            0f,
-            49,
-            49,
-            49f,
-            49f
-        )
 
+        drawModalRectWithCustomSizedTexture(width / 2 - 25, height / 2 - 68, 0f, 0f, 49, 49, 49f, 49f)
         val apiMessage = if (canConnect) "§eOK" else "§cNo"
         val apiTextX = width - 10f - minecraftFont.getStringWidth("API Connection: $apiMessage")
         minecraftFont.drawStringWithShadow("API Connection: $apiMessage", apiTextX, 32f, Color(255, 255, 255, 140).rgb)
-
         val clientNameX = width - 4f - minecraftFont.getStringWidth(CLIENT_NAME)
         minecraftFont.drawStringWithShadow(CLIENT_NAME, clientNameX, height - 23f, Color(255, 255, 255, 140).rgb)
-
         val uiMessage = when {
             canConnect && isLatest -> " §e(Latest)"
             !canConnect && isLatest -> " §c(API Dead)"
@@ -166,32 +149,36 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
 
         var changeY = 48
         val changeDetails = changelogs.split("\n")
+
         for (line in changeDetails) {
+            if (line.startsWith("* ")) continue
             val formatted = formatChangelogLine(line)
             minecraftFont.drawStringWithShadow(formatted, 4f, changeY.toFloat(), Color(255, 255, 255, 150).rgb)
             changeY += 8
         }
 
-        val knownBugsText = "Known Bugs:"
-        val bugsLabelX = width - 10f - minecraftFont.getStringWidth(knownBugsText)
-        minecraftFont.drawStringWithShadow(knownBugsText, bugsLabelX, 43f, Color(255, 255, 255, 140).rgb)
+        val bugsFixedText = "Bugs Fixed:"
+        val bugsLabelX = width - 10f - minecraftFont.getStringWidth(bugsFixedText)
+        minecraftFont.drawStringWithShadow(bugsFixedText, bugsLabelX, 43f, Color(255, 255, 255, 140).rgb)
+
+        val bugLines = bugs.split("\n").filter { !it.startsWith("#") }
+        val displayBugLines = if (bugLines.size > 39) bugLines.takeLast(39) else bugLines
 
         var bugsY = 55
-        val bugDetails = bugs.split("\n")
-        for (line in bugDetails) {
-            val lineWidth = minecraftFont.getStringWidth(line)
+
+        for (line in displayBugLines) {
+            val formatted = if (line.startsWith("*")) line.substring(1).trim() + " §7[§e*§7]" else line
+            val lineWidth = minecraftFont.getStringWidth(formatted)
             val xPos = width - 12f - lineWidth
-            minecraftFont.drawStringWithShadow(line, xPos, bugsY.toFloat(), Color(255, 255, 255, 140).rgb)
+            minecraftFont.drawStringWithShadow(formatted, xPos, bugsY.toFloat(), Color(255, 255, 255, 140).rgb)
             bugsY += 11
         }
 
-        Fonts.InterMedium_15.drawCenteredStringShadow("by Zywl <3 ", width / 2f, height / 2f - 19, Color(255, 255, 255, 100).rgb)
+        Fonts.InterMedium_15.drawCenteredStringShadow("by Zywl <3 ", width / 2f, height / 2f - 25, Color(255, 255, 255, 100).rgb)
 
         buttonList.forEach { it.drawButton(mc, mouseX, mouseY) }
 
-        listOf(btnClickGUI, btnCommitInfo, btnCosmetics, btnMinecraftOptions, btnLanguage, btnForgeModList, btnAddAccount, btnQuit)
-            .forEach { it.drawButton(mc, mouseX, mouseY) }
-
+        listOf(btnClickGUI, btnCommitInfo, btnCosmetics, btnMinecraftOptions, btnLanguage, btnForgeModList, btnAddAccount, btnQuit).forEach { it.drawButton(mc, mouseX, mouseY) }
         val branch = GitUtils.gitBranch
         val commitIdAbbrev = GitUtils.gitInfo.getProperty("git.commit.id.abbrev")
         val infoStr = "$CLIENT_NAME($branch/$commitIdAbbrev) | Minecraft 1.8.9"
@@ -210,14 +197,12 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
      * "~ " => "[~]"
      * "+ " => "[+]"
      * "- " => "[-]"
-     * "* " => "[*]"
      */
     private fun formatChangelogLine(line: String): String {
         return when {
             line.startsWith("~ ") -> "§7[§r~§7]  §r" + line.removePrefix("~ ").trim()
             line.startsWith("+ ") -> "§7[§a+§7]  §r" + line.removePrefix("+ ").trim()
             line.startsWith("- ") -> "§7[§c-§7]  §r" + line.removePrefix("- ").trim()
-            line.startsWith("* ") -> "§7[§e*§7]  §r" + line.removePrefix("* ").trim()
             else -> line
         }
     }
