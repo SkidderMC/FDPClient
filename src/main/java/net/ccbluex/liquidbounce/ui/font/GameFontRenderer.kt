@@ -20,6 +20,22 @@ import org.lwjgl.opengl.GL20.glUseProgram
 import java.awt.Color
 import java.awt.Font
 
+fun FontRenderer.drawCenteredString(
+    text: String, x: Float, y: Float, color: Int, shadow: Boolean
+) {
+    val drawX = x - getStringWidth(text) / 2f
+    if (shadow) {
+        drawStringWithShadow(text, drawX, y, color)
+    } else {
+        drawString(text, drawX.toInt(), y.toInt(), color)
+    }
+}
+fun FontRenderer.drawCenteredString(
+    text: String, x: Float, y: Float, color: Int
+) {
+    val drawX = x - getStringWidth(text) / 2f
+    drawString(text, drawX.toInt(), y.toInt(), color)
+}
 /**
  * Extends Minecraft's [FontRenderer] for potential fallback usage.
  *

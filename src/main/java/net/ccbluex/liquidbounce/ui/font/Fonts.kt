@@ -5,8 +5,6 @@
  */
 package net.ccbluex.liquidbounce.ui.font
 
-import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.file.FileManager.fontsDir
 import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.SimpleFontRenderer
@@ -16,7 +14,7 @@ import net.ccbluex.liquidbounce.utils.io.URLRegistryUtils.FONTS
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.io.HttpUtils.Downloader
 import net.ccbluex.liquidbounce.utils.io.extractZipTo
-import net.ccbluex.liquidbounce.utils.io.jsonArray
+import net.ccbluex.liquidbounce.utils.io.*
 import net.ccbluex.liquidbounce.utils.io.readJson
 import net.ccbluex.liquidbounce.utils.io.writeJson
 import net.minecraft.client.gui.FontRenderer
@@ -26,12 +24,31 @@ import kotlin.system.measureTimeMillis
 
 data class FontInfo(val name: String, val size: Int = -1, val isCustom: Boolean = false)
 
+data class CustomFontInfo @JvmOverloads constructor(val fontFile: String, val fontSize: Int, val name: String = fontFile)
+
 object Fonts : MinecraftInstance {
 
     private val CUSTOM_FONT_REGISTRY = LinkedHashMap<FontInfo, CustomFontRenderer>()
 
     private val FONT_REGISTRY = LinkedHashMap<FontInfo, FontRenderer>()
 
+    /**
+     * Custom Fonts
+     */
+    private val configFile = File(fontsDir, "fonts.json")
+    private var customFontInfoList: List<CustomFontInfo>
+        get() = with(configFile) {
+            if (exists()) {
+                readJson().decode<List<CustomFontInfo>>()
+            } else {
+                createNewFile()
+                writeText("[]") // empty list
+                emptyList()
+            }
+        }
+        set(value) = configFile.writeJson(value)
+
+    val minecraftFontInfo = FontInfo(name = "Minecraft Font")
     val minecraftFont: FontRenderer by lazy {
         mc.fontRendererObj
     }
@@ -101,12 +118,24 @@ object Fonts : MinecraftInstance {
         return fontRenderer
     }
 
+    fun registerCustomAWTFont(customFontInfo: CustomFontInfo, save: Boolean = true): GameFontRenderer? {
+        val font = getFontFromFileOrNull(customFontInfo.fontFile, customFontInfo.fontSize) ?: return null
+        val result = register(
+            FontInfo(customFontInfo.name, customFontInfo.fontSize, isCustom = true),
+            font.asGameFontRenderer()
+        )
+        if (save) {
+            customFontInfoList += customFontInfo
+        }
+        return result
+    }
+
     fun loadFonts() {
         LOGGER.info("Start to load fonts.")
 
         val time = measureTimeMillis {
             downloadFonts()
-            register(FontInfo(name = "Minecraft Font"), minecraftFont)
+            register(minecraftFontInfo, minecraftFont)
             
             font20 = register(FontInfo(name = "Roboto Medium", size = 20),
                 getFontFromFile("Roboto-Medium.ttf", 20).asGameFontRenderer())
@@ -241,23 +270,8 @@ object Fonts : MinecraftInstance {
     private fun loadCustomFonts() {
         FONT_REGISTRY.keys.removeIf { it.isCustom }
 
-        File(fontsDir, "fonts.json").apply {
-            if (exists()) {
-                val jsonElement = readJson()
-
-                if (jsonElement !is JsonArray) return@apply
-
-                for (element in jsonElement) {
-                    if (element !is JsonObject) return@apply
-
-                    val font = getFontFromFile(element["fontFile"].asString, element["fontSize"].asInt)
-
-                    FONT_REGISTRY[FontInfo(font.name, font.size, isCustom = true)] = GameFontRenderer(font)
-                }
-            } else {
-                createNewFile()
-                writeJson(jsonArray())
-            }
+        customFontInfoList.forEach {
+            registerCustomAWTFont(it, save = false)
         }
     }
 
@@ -318,14 +332,32 @@ object Fonts : MinecraftInstance {
     val fonts: List<FontRenderer>
         get() = FONT_REGISTRY.values.toList()
 
-    private fun getFontFromFile(fontName: String, size: Int): Font = try {
-        File(fontsDir, fontName).inputStream().use { inputStream ->
+    val customFonts: Map<FontInfo, FontRenderer>
+        get() = FONT_REGISTRY.filterKeys { it.isCustom }
+
+    fun removeCustomFont(fontInfo: FontInfo): CustomFontInfo? {
+        if (!fontInfo.isCustom) {
+            return null
+        }
+        FONT_REGISTRY.remove(fontInfo)
+        return customFontInfoList.firstOrNull {
+            it.name == fontInfo.name && it.fontSize == fontInfo.size
+        }?.also {
+            customFontInfoList -= it
+        }
+    }
+
+    private fun getFontFromFileOrNull(file: String, size: Int): Font? = try {
+        File(fontsDir, file).inputStream().use { inputStream ->
             Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(Font.PLAIN, size.toFloat())
         }
     } catch (e: Exception) {
-        LOGGER.warn("Exception during loading font[name=${fontName}, size=${size}]", e)
-        Font("default", Font.PLAIN, size)
+        LOGGER.warn("Exception during loading font[name=${file}, size=${size}]", e)
+        null
     }
+
+    private fun getFontFromFile(file: String, size: Int): Font =
+        getFontFromFileOrNull(file, size) ?: Font("default", Font.PLAIN, size)
 
     private fun Font.asGameFontRenderer(): GameFontRenderer {
         return GameFontRenderer(this@asGameFontRenderer)
