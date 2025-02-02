@@ -5,17 +5,15 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui.button
 
-import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSmall
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundOutline
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.opengl.GL11
 import java.awt.Color
-
-import net.ccbluex.liquidbounce.ui.font.Fonts.fontSmall
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundOutline
 
 open class ImageButton(
     text: String,
@@ -91,19 +89,25 @@ open class ImageButton(
     }
 
     private fun drawHoverEffect() {
-        val w = (Fonts.font20.getStringWidth(text) * 0.9f).toInt()
+        val textWidth = (fontSmall.getStringWidth(text) * 0.9f).toInt()
+        val shadowWidth = textWidth + 4
+
+        val shadowX = x + ((width - shadowWidth) / 2f)
+        val shadowY = y + hoverEffectYOffset.toFloat()
+
         drawCustomShapeWithRadius(
-            (x + (width - w) / 2f),
-            (y + hoverEffectYOffset).toFloat(),
-            w.toFloat(),
+            shadowX,
+            shadowY,
+            shadowWidth.toFloat(),
             7f,
             2f,
             Color(0, 0, 0, 126)
         )
+
         fontSmall.drawCenteredTextScaled(
             text,
             (x + width / 2f).toInt(),
-            (y + hoverEffectYOffset + 1).toInt(),
+            (y + hoverEffectYOffset + 2).toInt(),
             Color(255, 255, 255, 135).rgb,
             0.9
         )
