@@ -81,7 +81,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
 
     include("com.github.UnlegitMC:Astar3d:bec2291cf2")
-    include 'com.jhlabs:filters:2.0.235'
+    include 'com.jhlabs:filters:2.0.235-1'
     include "org.apache.httpcomponents:httpmime:4.5.14"
 
     include("org.knowm.xchart:xchart:3.8.8")
