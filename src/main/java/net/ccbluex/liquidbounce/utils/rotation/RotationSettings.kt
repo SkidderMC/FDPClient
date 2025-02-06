@@ -12,7 +12,10 @@ import net.ccbluex.liquidbounce.utils.extensions.random
 import net.ccbluex.liquidbounce.utils.extensions.withGCD
 import kotlin.math.abs
 
-class AlwaysRotationSettings(owner: Module, generalApply: () -> Boolean = { true }) : RotationSettings(owner, generalApply) {
+// TODO: refactor them all
+
+class AlwaysRotationSettings(owner: Module, generalApply: () -> Boolean = { true }) :
+    RotationSettings(owner, generalApply) {
     override val rotationsValue = super.rotationsValue.apply { excludeWithState(true) }
     override val rotationsActive: Boolean = true
 }
@@ -36,10 +39,10 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
 
     open val legitimizeValue = boolean("Legitimize", false) { rotationsActive && generalApply() }
 
-    open val horizontalAngleChangeValue = floatRange("HorizontalAngleChange", 180f..180f, 1f..180f)
-    { rotationsActive && generalApply() }
-    open val verticalAngleChangeValue = floatRange("VerticalAngleChange", 180f..180f, 1f..180f)
-    { rotationsActive && generalApply() }
+    open val horizontalAngleChangeValue =
+        floatRange("HorizontalAngleChange", 180f..180f, 1f..180f) { rotationsActive && generalApply() }
+    open val verticalAngleChangeValue =
+        floatRange("VerticalAngleChange", 180f..180f, 1f..180f) { rotationsActive && generalApply() }
 
     open val angleResetDifferenceValue = float("AngleResetDifference", 5f.withGCD(), 0.0f..180f) {
         rotationsActive && applyServerSide && generalApply()
@@ -47,6 +50,10 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
 
     open val minRotationDifferenceValue = float(
         "MinRotationDifference", 2f, 0f..4f
+    ) { rotationsActive && generalApply() }
+
+    open val minRotationDifferenceResetTimingValue = choices(
+        "MinRotationDifferenceResetTiming", arrayOf("OnStart", "OnSlowDown", "Always"), "OnStart"
     ) { rotationsActive && generalApply() }
 
     // Variables for easier access
@@ -65,6 +72,7 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
     val verticalAngleChange by verticalAngleChangeValue
     val angleResetDifference by angleResetDifferenceValue
     val minRotationDifference by minRotationDifferenceValue
+    val minRotationDifferenceResetTiming by minRotationDifferenceResetTimingValue
 
     var prioritizeRequest = false
     var immediate = false
@@ -96,8 +104,7 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
     }
 
     fun shouldPerformShortStop(): Boolean {
-        if (abs(rotDiffBuildUp) < rotationDiffBuildUpToStop || !simulateShortStop)
-            return false
+        if (abs(rotDiffBuildUp) < rotationDiffBuildUpToStop || !simulateShortStop) return false
 
         if (maxThresholdReachAttempts < maxThresholdAttemptsToStop) {
             maxThresholdReachAttempts++

@@ -31,7 +31,7 @@ object RotationUtils : MinecraftInstance, Listenable {
     /**
      * Our final rotation point, which [currentRotation] follows.
      */
-    var targetRotation: Rotation? = null
+    private var targetRotation: Rotation? = null
 
     /**
      * The current rotation that is responsible for aiming at objects, synchronizing movement, etc.
@@ -78,7 +78,9 @@ object RotationUtils : MinecraftInstance, Listenable {
      * @param blockPos target block
      */
     fun faceBlock(
-        blockPos: BlockPos?, throughWalls: Boolean = true, targetUpperFace: Boolean = false,
+        blockPos: BlockPos?,
+        throughWalls: Boolean = true,
+        targetUpperFace: Boolean = false,
         hRange: ClosedFloatingPointRange<Double> = 0.0..1.0
     ): VecRotation? {
         val world = mc.theWorld ?: return null
@@ -253,24 +255,8 @@ object RotationUtils : MinecraftInstance, Listenable {
         var attackRotation: Pair<Rotation, Float>? = null
         var lookRotation: Pair<Rotation, Float>? = null
 
-        randomization?.takeIf { it.randomize }?.run {
-            val yawMovement =
-                angleDifference(currRotation.yaw, lastRotations[2].yaw).sign.takeIf { it != 0f } ?: arrayOf(
-                    -1f, 1f
-                ).random()
-            val pitchMovement =
-                angleDifference(currRotation.pitch, lastRotations[2].pitch).sign.takeIf { it != 0f } ?: arrayOf(
-                    -1f, 1f
-                ).random()
-
-            currRotation.yaw += if (Math.random() > yawRandomizationChance.random()) {
-                yawRandomizationRange.random() * yawMovement
-            } else 0f
-            currRotation.pitch += if (Math.random() > pitchRandomizationChance.random()) {
-                pitchRandomizationRange.random() * pitchMovement
-            } else 0f
-
-            currRotation.fixedSensitivity()
+        randomization?.takeIf { it.randomizationChosen }?.run {
+            processNextSpot(bb, currRotation, eyes, scanRange.toDouble())
         }
 
         val (hMin, hMax) = horizontalSearch.start.toDouble() to min(horizontalSearch.endInclusive + 0.01, 1.0)
@@ -351,6 +337,7 @@ object RotationUtils : MinecraftInstance, Listenable {
             vSpeed,
             !settings.instant && settings.legitimize,
             settings.minRotationDifference,
+            settings.minRotationDifferenceResetTiming
         )
     }
 
@@ -361,6 +348,7 @@ object RotationUtils : MinecraftInstance, Listenable {
         vSpeed: Float = hSpeed,
         legitimize: Boolean,
         minRotationDiff: Float,
+        minRotationDiffResetTiming: String,
     ): Rotation {
         var (yawDiff, pitchDiff) = angleDifferences(targetRotation, currentRotation)
 
@@ -373,43 +361,62 @@ object RotationUtils : MinecraftInstance, Listenable {
             yawDiff = 0F
             pitchDiff = 0F
         } else if (isShortStopActive || activeSettings?.shouldPerformShortStop() == true) {
-            // Use the tick scheduling to our advantage as we can check if short stop is still active.
             if (!isShortStopActive) {
                 WaitTickUtils.schedule(activeSettings?.shortStopDuration?.random()?.plus(1) ?: 0, this)
             }
 
             activeSettings?.resetSimulateShortStopData()
 
-            val slowdown = { (0F..0.1F).random() }
+            val yawSlowdown = (0F..0.1F).random()
+            val pitchSlowdown = (0F..0.1F).random()
 
-            yawDiff = (yawDiff * slowdown()).withGCD()
-            pitchDiff = (pitchDiff * slowdown()).withGCD()
+            yawDiff = (yawDiff * yawSlowdown).withGCD()
+            pitchDiff = (pitchDiff * pitchSlowdown).withGCD()
         }
 
-        var (straightLineYaw, straightLinePitch) =
-            abs(yawDiff safeDiv rotationDifference) * hSpeed to abs(pitchDiff safeDiv rotationDifference) * vSpeed
+        var (straightLineYaw, straightLinePitch) = run {
+            val baseYawSpeed = abs(yawDiff safeDiv rotationDifference) * hSpeed
+            val basePitchSpeed = abs(pitchDiff safeDiv rotationDifference) * vSpeed
+
+            // Apply imperfect correlation
+            if (legitimize) {
+                baseYawSpeed * (0.9F..1.1F).random()
+                basePitchSpeed * (0.9F..1.1F).random()
+            }
+
+            baseYawSpeed to basePitchSpeed
+        }
 
         straightLineYaw = yawDiff.coerceIn(-straightLineYaw, straightLineYaw)
         straightLinePitch = pitchDiff.coerceIn(-straightLinePitch, straightLinePitch)
 
-        val (minYaw, minPitch) = {
-            nextFloat(min(minRotationDiff, getFixedAngleDelta()), minRotationDiff).withGCD()
-        }.let {
-            it() to it()
+        // Humans usually have some small jitter when moving their mouse from point A to point B.
+        // Usually when a rotation axis' difference is prioritized.
+        if (rotationDifference > 0F) {
+            val yawJitter = (-0.03F..0.03F).random() * straightLineYaw
+            val pitchJitter = (-0.02F..0.02F).random() * straightLinePitch
+
+            straightLineYaw += yawJitter
+            straightLinePitch += pitchJitter
         }
 
-        applySlowDown(straightLineYaw, minYaw, true, legitimize) {
+        val minYaw = nextFloat(min(minRotationDiff, getFixedAngleDelta()), minRotationDiff).withGCD()
+        val minPitch = nextFloat(min(minRotationDiff, getFixedAngleDelta()), minRotationDiff).withGCD()
+
+        applySlowDown(straightLineYaw, minYaw, minRotationDiffResetTiming, true, legitimize) {
             straightLineYaw = it
         }
 
-        applySlowDown(straightLinePitch, minPitch, false, legitimize) {
+        applySlowDown(straightLinePitch, minPitch, minRotationDiffResetTiming, false, legitimize) {
             straightLinePitch = it
         }
 
         return currentRotation.plus(Rotation(straightLineYaw, straightLinePitch))
     }
 
-    private fun applySlowDown(diff: Float, min: Float, yaw: Boolean, applyRealism: Boolean, action: (Float) -> Unit) {
+    private fun applySlowDown(
+        diff: Float, min: Float, timing: String, yaw: Boolean, applyRealism: Boolean, action: (Float) -> Unit
+    ) {
         if (diff == 0f) {
             action(diff)
             return
@@ -420,8 +427,9 @@ object RotationUtils : MinecraftInstance, Listenable {
         }
 
         val diffAbs = abs(diff)
+        val isSlowingDown = diffAbs <= abs(lastTick1)
 
-        if (lastTick1 == 0f && diffAbs.withGCD() <= min) {
+        if (diffAbs.withGCD() <= min && (timing == "Always" || timing == "OnSlowDown" && isSlowingDown || timing == "OnStart" && lastTick1 == 0F)) {
             action(0f)
             return
         }
@@ -443,7 +451,7 @@ object RotationUtils : MinecraftInstance, Listenable {
 
         val new = (lastTick1..diff).lerpWith(range.random())
 
-        if (abs(new.withGCD()) <= min && diffAbs <= abs(lastTick1)) {
+        if (abs(new.withGCD()) <= min && isSlowingDown) {
             action(diff)
         } else {
             action(new)
@@ -636,7 +644,6 @@ object RotationUtils : MinecraftInstance, Listenable {
         val serverRotation = currentRotation ?: serverRotation
 
         if (resetTicks == 0) {
-
             if (isDifferenceAcceptableForReset(serverRotation, playerRotation, settings)) {
                 resetRotation()
                 return
@@ -666,11 +673,9 @@ object RotationUtils : MinecraftInstance, Listenable {
     private fun isDifferenceAcceptableForReset(
         curr: Rotation, target: Rotation, options: RotationSettings
     ): Boolean {
-        if (!options.applyServerSide)
-            return true
+        if (!options.applyServerSide) return true
 
-        if (rotationDifference(target, curr) > options.angleResetDifference)
-            return false
+        if (rotationDifference(target, curr) > options.angleResetDifference) return false
 
         // We use the last rotation saved 2 ticks ago because we have not updated the currentRotation yet.
         val diffs = angleDifferences(target, curr).abs
@@ -760,10 +765,9 @@ object RotationUtils : MinecraftInstance, Listenable {
     }
 
     enum class BodyPoint(val rank: Int, val range: ClosedFloatingPointRange<Double>, val displayName: String) {
-        HEAD(1, 0.75..0.9, "Head"),
-        BODY(0, 0.5..0.75, "Body"),
-        FEET(-1, 0.1..0.4, "Feet"),
-        UNKNOWN(-2, 0.0..0.0, "Unknown");
+        HEAD(1, 0.75..0.9, "Head"), BODY(0, 0.5..0.75, "Body"), FEET(-1, 0.1..0.4, "Feet"), UNKNOWN(
+            -2, 0.0..0.0, "Unknown"
+        );
 
         companion object {
             fun fromString(point: String): BodyPoint {

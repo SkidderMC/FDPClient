@@ -35,8 +35,7 @@ object Aimbot : Module("Aimbot", Category.COMBAT) {
     private val maxAngleChange by float("MaxAngleChange", 10f, 1F..180F) { horizontalAim || verticalAim }
     private val inViewMaxAngleChange by float("InViewMaxAngleChange", 35f, 1f..180f) { horizontalAim || verticalAim }
     private val generateSpotBasedOnDistance by boolean(
-        "GenerateSpotBasedOnDistance",
-        false
+        "GenerateSpotBasedOnDistance", false
     ) { horizontalAim || verticalAim }
     private val predictClientMovement by int("PredictClientMovement", 2, 0..5)
     private val predictEnemyPosition by float("PredictEnemyPosition", 1.5f, -1f..2f)
@@ -70,6 +69,9 @@ object Aimbot : Module("Aimbot", Category.COMBAT) {
     private val horizontalBodySearchRange by floatRange("HorizontalBodySearchRange", 0f..1f, 0f..1f) { horizontalAim }
 
     private val minRotationDifference by float("MinRotationDifference", 0f, 0f..2f) { verticalAim || horizontalAim }
+    private val minRotationDifferenceResetTiming by choices(
+        "MinRotationDifferenceResetTiming", arrayOf("OnStart", "Always"), "OnStart"
+    ) { verticalAim || horizontalAim }
 
     private val fov by float("FOV", 180F, 1F..180F)
     private val lock by boolean("Lock", true) { horizontalAim || verticalAim }
@@ -93,17 +95,17 @@ object Aimbot : Module("Aimbot", Category.COMBAT) {
         // Clicking delay
         if (mc.gameSettings.keyBindAttack.isKeyDown) clickTimer.reset()
 
-        if (onClick && (clickTimer.hasTimePassed(150) ||
-                    !mc.gameSettings.keyBindAttack.isKeyDown && AutoClicker.handleEvents())
-        ) {
+        if (onClick && (clickTimer.hasTimePassed(150) || !mc.gameSettings.keyBindAttack.isKeyDown && AutoClicker.handleEvents())) {
             return@handler
         }
 
         // Search for the best enemy to target
         val entity = world.loadedEntityList.filter {
             Backtrack.runWithNearestTrackedDistance(it) {
-                isSelected(it, true) && player.canEntityBeSeen(it)
-                        && player.getDistanceToEntityBox(it) <= range && rotationDifference(it) <= fov
+                isSelected(
+                    it,
+                    true
+                ) && player.canEntityBeSeen(it) && player.getDistanceToEntityBox(it) <= range && rotationDifference(it) <= fov
             }
         }.minByOrNull { player.getDistanceToEntityBox(it) } ?: return@handler
 
@@ -139,8 +141,7 @@ object Aimbot : Module("Aimbot", Category.COMBAT) {
         val boundingBox = entity.hitBox.offset(prediction)
         val (currPos, oldPos) = player.currPos to player.prevPos
 
-        val simPlayer =
-            SimulatedPlayer.fromClientPlayer(RotationUtils.modifiedInput)
+        val simPlayer = SimulatedPlayer.fromClientPlayer(RotationUtils.modifiedInput)
 
         simPlayer.rotationYaw = (currentRotation ?: player.rotation).yaw
 
@@ -205,6 +206,7 @@ object Aimbot : Module("Aimbot", Category.COMBAT) {
             realisticTurnSpeed.toFloat(),
             legitimize = legitimize,
             minRotationDiff = minRotationDifference,
+            minRotationDiffResetTiming = minRotationDifferenceResetTiming,
         )
 
         rotation.toPlayer(player, horizontalAim, verticalAim)
