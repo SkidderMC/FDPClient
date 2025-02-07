@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.font
 
+import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.file.FileManager.fontsDir
 import net.ccbluex.liquidbounce.ui.font.fontmanager.impl.SimpleFontRenderer
@@ -15,8 +16,6 @@ import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.io.HttpUtils.Downloader
 import net.ccbluex.liquidbounce.utils.io.extractZipTo
 import net.ccbluex.liquidbounce.utils.io.*
-import net.ccbluex.liquidbounce.utils.io.readJson
-import net.ccbluex.liquidbounce.utils.io.writeJson
 import net.minecraft.client.gui.FontRenderer
 import java.awt.Font
 import java.io.File
@@ -24,13 +23,13 @@ import kotlin.system.measureTimeMillis
 
 data class FontInfo(val name: String, val size: Int = -1, val isCustom: Boolean = false)
 
-data class CustomFontInfo @JvmOverloads constructor(val fontFile: String, val fontSize: Int, val name: String = fontFile)
+data class CustomFontInfo(val name: String, val fontFile: String, val fontSize: Int)
+
+private val CUSTOM_FONT_REGISTRY = LinkedHashMap<FontInfo, CustomFontRenderer>()
+
+private val FONT_REGISTRY = LinkedHashMap<FontInfo, FontRenderer>()
 
 object Fonts : MinecraftInstance {
-
-    private val CUSTOM_FONT_REGISTRY = LinkedHashMap<FontInfo, CustomFontRenderer>()
-
-    private val FONT_REGISTRY = LinkedHashMap<FontInfo, FontRenderer>()
 
     /**
      * Custom Fonts
@@ -39,7 +38,13 @@ object Fonts : MinecraftInstance {
     private var customFontInfoList: List<CustomFontInfo>
         get() = with(configFile) {
             if (exists()) {
-                readJson().decode<List<CustomFontInfo>>()
+                readJson().asJsonArray.map {
+                    it as JsonObject
+                    val fontFile = it["fontFile"].asString
+                    val fontSize = it["fontSize"].asInt
+                    val name = if (it.has("name")) it["name"].asString else fontFile
+                    CustomFontInfo(name, fontFile, fontSize)
+                }
             } else {
                 createNewFile()
                 writeText("[]") // empty list
@@ -52,7 +57,7 @@ object Fonts : MinecraftInstance {
     val minecraftFont: FontRenderer by lazy {
         mc.fontRendererObj
     }
-    
+
     lateinit var font20: GameFontRenderer
 
     lateinit var fontSmall: GameFontRenderer
@@ -136,7 +141,7 @@ object Fonts : MinecraftInstance {
         val time = measureTimeMillis {
             downloadFonts()
             register(minecraftFontInfo, minecraftFont)
-            
+
             font20 = register(FontInfo(name = "Roboto Medium", size = 20),
                 getFontFromFile("Roboto-Medium.ttf", 20).asGameFontRenderer())
 
