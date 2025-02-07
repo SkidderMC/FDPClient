@@ -110,11 +110,25 @@ private fun createTrustAllSslSocketFactory(): SSLSocketFactory {
 }
 
 /**
- * For legacy Java 8 versions like 8u51
+ * For Java 8 (e.g., 1.8.0_51) that might lack modern TLS support,
+ * we force ignoring all certificate checks, enabling all TLS versions/ciphers.
  */
 fun OkHttpClient.Builder.applyBypassHttps() = this
     .sslSocketFactory(createTrustAllSslSocketFactory(), createTrustAllTrustManager())
     .hostnameVerifier { _, _ -> true }
+    .connectionSpecs(
+        listOf(
+            ConnectionSpec.Builder(ConnectionSpec.MODERN_TLS)
+                .allEnabledTlsVersions()
+                .allEnabledCipherSuites()
+                .build(),
+            ConnectionSpec.Builder(ConnectionSpec.COMPATIBLE_TLS)
+                .allEnabledTlsVersions()
+                .allEnabledCipherSuites()
+                .build(),
+            ConnectionSpec.CLEARTEXT
+        )
+    )
 
 object Downloader {
 
