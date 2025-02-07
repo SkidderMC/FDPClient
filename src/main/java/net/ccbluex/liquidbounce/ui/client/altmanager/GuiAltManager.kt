@@ -24,11 +24,9 @@ import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolat
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
-import net.ccbluex.liquidbounce.utils.io.FileFilters
-import net.ccbluex.liquidbounce.utils.io.HttpUtils
+import net.ccbluex.liquidbounce.utils.io.*
 import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.kotlin.swap
-import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomAccount
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
@@ -437,7 +435,7 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
         fun loadActiveGenerators() {
             try {
                 // Read versions json from cloud
-                activeGenerators += HttpUtils.getJson<Map<String, Boolean>>("$CLIENT_CLOUD/generators.json")!!
+                activeGenerators += HttpClient.get("$CLIENT_CLOUD/generators.json").jsonBody<Map<String, Boolean>>()!!
 
             } catch (throwable: Throwable) {
                 // Print throwable to console

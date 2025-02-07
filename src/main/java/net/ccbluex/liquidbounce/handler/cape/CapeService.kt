@@ -11,15 +11,13 @@ import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.io.HttpUtils
+import net.ccbluex.liquidbounce.utils.io.*
 import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.login.UserUtils
-import net.ccbluex.liquidbounce.utils.io.HttpUtils.get
-import net.ccbluex.liquidbounce.utils.io.decodeJson
-import net.ccbluex.liquidbounce.utils.io.parseJson
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.internal.commonEmptyRequestBody
 import java.util.*
 import java.util.concurrent.atomic.AtomicLong
 
@@ -52,7 +50,7 @@ object CapeService : Listenable, MinecraftInstance {
 
     /**
      * The API URL to get all cape carriers.
-     * Format: [["8f617b6abea04af58e4bd026d8fa9de8", "marco"], ...]
+     * Format: [["8f617b6a-bea0-4af5-8e4b-d026d8fa9de8", "marco"], ...]
      */
     private const val CAPE_CARRIERS_URL = "$CAPE_API/carriers"
 
@@ -71,8 +69,6 @@ object CapeService : Listenable, MinecraftInstance {
     private val lastUpdate = AtomicLong(0L)
     private var refreshJob: Job? = null
 
-    private val client = HttpUtils.httpClient
-
     /**
      * Refresh cape carriers, capture from the API.
      * It will take a list of (uuid, cape_name) tuples.
@@ -84,19 +80,20 @@ object CapeService : Listenable, MinecraftInstance {
                 refreshJob = SharedScopes.IO.launch {
                     runCatching {
                         // Capture data from API and parse JSON
-                        val (json, code) = get(CAPE_CARRIERS_URL)
-                        if (code != 200) throw RuntimeException("Failed to get cape carriers. Status code: $code")
+                        HttpClient.get(CAPE_CARRIERS_URL).use {
+                            if (!it.isSuccessful) {
+                                throw RuntimeException("Failed to get cape carriers. Status code: ${it.code}")
+                            }
 
-                        // Should be a JSON Array. It will fail if not.
-                        // Format: [["8f617b6a-bea0-4af5-8e4b-d026d8fa9de8", "marco"], ...]
-                        capeCarriers = json.parseJson().asJsonArray.associate { objInArray ->
-                            // Should be a JSON Array. It will fail if not.
-                            val arrayInArray = objInArray.asJsonArray
-                            // 1. is UUID 2. is name of cape
-                            val uuid = arrayInArray[0].asString
-                            val name = arrayInArray[1].asString
+                            it.body.charStream().readJson().asJsonArray.associate { objInArray ->
+                                // Should be a JSON Array. It will fail if not.
+                                val arrayInArray = objInArray.asJsonArray
+                                // 1. is UUID 2. is name of cape
+                                val uuid = arrayInArray[0].asString
+                                val name = arrayInArray[1].asString
 
-                            UUID.fromString(uuid) to name
+                                UUID.fromString(uuid) to name
+                            }
                         }
 
                         lastUpdate.set(currentTime)
@@ -137,10 +134,13 @@ object CapeService : Listenable, MinecraftInstance {
             .addHeader("Authorization", token)
             .build()
 
-        client.newCall(request).execute().use { response ->
+        HttpClient.newCall(request).execute().use { response ->
             if (response.isSuccessful) {
-                val json = response.body?.charStream()?.decodeJson<LoginResponse>()
-                    ?: throw RuntimeException("Failed to decode JSON of self cape. Response: ${response.body?.string()}")
+                val json = try {
+                    response.body.charStream().decodeJson<LoginResponse>()
+                } catch (e: Exception) {
+                    throw RuntimeException("Failed to decode JSON of self cape. Response: ${response.body.string()}", e)
+                }
 
                 clientCapeUser = CapeSelfUser(token, json.enabled, json.uuid, json.cape)
                 LOGGER.info("Logged in successfully. Cape: ${json.cape}")
@@ -167,14 +167,14 @@ object CapeService : Listenable, MinecraftInstance {
                 .url(SELF_CAPE_URL)
                 .apply {
                     if (capeUser.enabled) delete()
-                    else put("".toRequestBody(null))
+                    else put(commonEmptyRequestBody)
                 }
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Authorization", capeUser.token)
                 .build()
 
             try {
-                val statusCode = client.newCall(request).execute().use { response ->
+                val statusCode = HttpClient.newCall(request).execute().use { response ->
                     response.code
                 }
 
@@ -216,7 +216,7 @@ object CapeService : Listenable, MinecraftInstance {
                 .addHeader("Authorization", capeUser.token)
                 .build()
 
-            client.newCall(request).execute().use { response ->
+            HttpClient.newCall(request).execute().use { response ->
                 if (response.code == 204) { // HTTP 204 No Content
                     capeUser.uuid = uuid
                     LOGGER.info("[Donator Cape] Successfully transferred cape to $uuid ($username)")

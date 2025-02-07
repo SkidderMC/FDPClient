@@ -5,7 +5,10 @@
  */
 package net.ccbluex.liquidbounce.utils.io
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.ccbluex.liquidbounce.FDPClient
@@ -33,21 +36,15 @@ object APIConnectorUtils {
         private set
     var bugs: String = ""
         private set
-
     private var appClientID: String = ""
     private var appClientSecret: String = ""
-
     private val picturesCache = mutableMapOf<Pair<String, String>, ResourceLocation>()
     private val cacheMutex = Mutex()
 
     /**
      * Data class representing an image with its metadata.
      */
-    data class Picture(
-        val fileName: String,
-        val picType: String,
-        val resourceLocation: ResourceLocation
-    )
+    data class Picture(val fileName: String, val picType: String, val resourceLocation: ResourceLocation)
 
     /**
      * Asynchronously loads images and stores them in the cache.
@@ -57,45 +54,37 @@ object APIConnectorUtils {
             picturesCache.clear()
             LOGGER.info("Image cache cleared.")
         }
-
         try {
             val locationsUrl = "${URLRegistryUtils.PICTURES}locations.txt"
-            val (locationsResponse, statusCode) = HttpUtils.get(locationsUrl)
-
-            if (statusCode != 200) {
-                throw IOException("Failed to fetch locations: HTTP $statusCode")
+            val details = HttpClient.get(locationsUrl).use { response ->
+                if (response.code != 200) throw IOException("Failed to fetch locations: HTTP ${response.code}")
+                response.body.string().split("---")
             }
-
-            val details = locationsResponse.split("---")
-            LOGGER.info("Image locations fetched: ${details.size} entries.")
-
             coroutineScope {
                 details.forEach { detail ->
                     launch {
                         runCatching {
                             val (fileName, picType) = detail.split(":")
                             val imageUrl = "${URLRegistryUtils.PICTURES}$picType/$fileName.png"
-
-                            val (imageBytes, imageStatusCode) = HttpUtils.requestStream(imageUrl, "GET")
-                            if (imageStatusCode != 200) throw IOException("Failed to download image: HTTP $imageStatusCode")
-
-                            val bufferedImage: BufferedImage = ImageIO.read(imageBytes)
-                                ?: throw IOException("Failed to decode image: $imageUrl")
-
-                            withContext(Dispatchers.Main) {
-                                try {
-                                    val dynamicTexture = DynamicTexture(bufferedImage)
-                                    val resourceLocation = MinecraftInstance.mc.textureManager.getDynamicTextureLocation(
-                                        FDPClient.clientTitle,
-                                        dynamicTexture
-                                    )
-
-                                    cacheMutex.withLock {
-                                        picturesCache[Pair(fileName, picType)] = resourceLocation
+                            HttpClient.get(imageUrl).use { response ->
+                                if (response.code != 200) throw IOException("Failed to download image: HTTP ${response.code}")
+                                val imageBytes = response.body.byteStream()
+                                val bufferedImage: BufferedImage = ImageIO.read(imageBytes)
+                                    ?: throw IOException("Failed to decode image: $imageUrl")
+                                withContext(Dispatchers.Main) {
+                                    try {
+                                        val dynamicTexture = DynamicTexture(bufferedImage)
+                                        val resourceLocation = MinecraftInstance.mc.textureManager.getDynamicTextureLocation(
+                                            FDPClient.clientTitle,
+                                            dynamicTexture
+                                        )
+                                        cacheMutex.withLock {
+                                            picturesCache[Pair(fileName, picType)] = resourceLocation
+                                        }
+                                        LOGGER.info("Image loaded successfully: $fileName, Type: $picType")
+                                    } catch (e: Exception) {
+                                        LOGGER.error("Failed to create texture for image: $fileName, Type: $picType", e)
                                     }
-                                    LOGGER.info("Image loaded successfully: $fileName, Type: $picType")
-                                } catch (e: Exception) {
-                                    LOGGER.error("Failed to create texture for image: $fileName, Type: $picType", e)
                                 }
                             }
                         }.onFailure { exception ->
@@ -129,18 +118,16 @@ object APIConnectorUtils {
      */
     suspend fun checkStatusAsync() = withContext(Dispatchers.IO) {
         try {
-            val (statusResponse, statusCode) = HttpUtils.get(URLRegistryUtils.STATUS)
-            if (statusCode != 200) throw IOException("Failed to fetch status: HTTP $statusCode")
-
-            val details = statusResponse.split("///")
+            val details = HttpClient.get(URLRegistryUtils.STATUS).use { response ->
+                if (response.code != 200) throw IOException("Failed to fetch status: HTTP ${response.code}")
+                response.body.string().split("///")
+            }
             require(details.size >= 6) { "Incomplete status data received." }
-
             appClientID = details[0]
             appClientSecret = details[1]
             discordApp = details[2]
             discord = details[4]
             isLatest = details[5] == FDPClient.clientVersionText
-
             canConnect = true
             LOGGER.info("API status checked successfully. Is Latest: $isLatest")
         } catch (e: Exception) {
@@ -154,9 +141,10 @@ object APIConnectorUtils {
      */
     suspend fun checkChangelogsAsync() = withContext(Dispatchers.IO) {
         try {
-            val (changelogsResponse, statusCode) = HttpUtils.get(URLRegistryUtils.CHANGELOGS)
-            if (statusCode != 200) throw IOException("Failed to fetch changelogs: HTTP $statusCode")
-
+            val changelogsResponse = HttpClient.get(URLRegistryUtils.CHANGELOGS).use { response ->
+                if (response.code != 200) throw IOException("Failed to fetch changelogs: HTTP ${response.code}")
+                response.body.string()
+            }
             changelogs = changelogsResponse
             LOGGER.info("Changelogs loaded successfully.")
         } catch (e: Exception) {
@@ -169,16 +157,16 @@ object APIConnectorUtils {
      */
     suspend fun checkBugsAsync() = withContext(Dispatchers.IO) {
         try {
-            val (bugsResponse, statusCode) = HttpUtils.get(URLRegistryUtils.BUGS)
-            if (statusCode != 200) throw IOException("Failed to fetch bugs: HTTP $statusCode")
-
+            val bugsResponse = HttpClient.get(URLRegistryUtils.BUGS).use { response ->
+                if (response.code != 200) throw IOException("Failed to fetch bugs: HTTP ${response.code}")
+                response.body.string()
+            }
             bugs = bugsResponse
             LOGGER.info("Bugs loaded successfully.")
         } catch (e: Exception) {
             LOGGER.error("Failed to load bugs.", e)
         }
     }
-
 
     /**
      * Executes all API checks asynchronously.

@@ -5,14 +5,14 @@
  */
 package net.ccbluex.liquidbounce.config
 
-import kotlinx.coroutines.runBlocking
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.handler.api.ClientApi
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.utils.client.chat
-import net.ccbluex.liquidbounce.utils.io.HttpUtils
+import net.ccbluex.liquidbounce.utils.io.HttpClient
+import net.ccbluex.liquidbounce.utils.io.get
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.translateAlternateColorCodes
 import org.lwjgl.input.Keyboard
@@ -22,6 +22,18 @@ import kotlin.reflect.KMutableProperty0
  * Utility class for handling settings and scripts in LiquidBounce.
  */
 object SettingsUtils {
+
+
+    fun loadFromUrl(url: String) = if (url.startsWith("http")) {
+        HttpClient.get(url).use {
+            if (!it.isSuccessful) {
+                error(it.message)
+            }
+            it.body.string()
+        }
+    } else {
+        ClientApi.getSettingsScript(settingId = url)
+    }
 
     /**
      * Execute settings script.
@@ -64,21 +76,7 @@ object SettingsUtils {
                 "load" -> {
                     val url = StringUtils.toCompleteString(args, 1)
                     runCatching {
-                        val settings = if (url.startsWith("http")) {
-                            val (text, code) = HttpUtils.get(url)
-
-                            if (code != 200) {
-                                error(text)
-                            }
-
-                            text
-                        } else {
-                            runBlocking {
-                                ClientApi.getSettingsScript(settingId = url)
-                            }
-                        }
-
-                        applyScript(settings)
+                        applyScript(loadFromUrl(url))
                     }.onSuccess {
                         chat("§7[§3§lAutoSettings§7] §7Loaded settings §a§l$url§7.")
                     }.onFailure {

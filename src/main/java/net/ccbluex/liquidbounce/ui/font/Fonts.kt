@@ -13,7 +13,6 @@ import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer as CustomFo
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.io.URLRegistryUtils.FONTS
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.io.HttpUtils.Downloader
 import net.ccbluex.liquidbounce.utils.io.extractZipTo
 import net.ccbluex.liquidbounce.utils.io.*
 import net.minecraft.client.gui.FontRenderer
@@ -281,6 +280,7 @@ object Fonts : MinecraftInstance {
     }
 
     fun downloadFonts() {
+        fontsDir.mkdirs()
         val outputFile = File(fontsDir, "outfit.zip")
         if (!outputFile.exists()) {
             LOGGER.info("Downloading roboto fonts...")

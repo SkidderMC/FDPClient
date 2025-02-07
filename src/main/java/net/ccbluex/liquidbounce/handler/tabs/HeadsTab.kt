@@ -10,7 +10,9 @@ import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.inventory.ItemUtils
-import net.ccbluex.liquidbounce.utils.io.HttpUtils
+import net.ccbluex.liquidbounce.utils.io.HttpClient
+import net.ccbluex.liquidbounce.utils.io.get
+import net.ccbluex.liquidbounce.utils.io.jsonBody
 import net.minecraft.creativetab.CreativeTabs
 import net.minecraft.init.Items
 import net.minecraft.item.Item
@@ -36,14 +38,14 @@ class HeadsTab : CreativeTabs("Heads") {
             LOGGER.info("Loading heads...")
 
             // Asynchronously fetch the heads configuration
-            val headsConf = HttpUtils.getJson<HeadsConfiguration>("$CLIENT_CLOUD/heads.json") ?: return
+            val headsConf = HttpClient.get("$CLIENT_CLOUD/heads.json").jsonBody<HeadsConfiguration>() ?: return
 
             if (headsConf.enabled) {
                 val url = headsConf.url
 
                 LOGGER.info("Loading heads from $url...")
 
-                val headsMap = HttpUtils.getJson<Map<String, HeadInfo>>(url) ?: return
+                val headsMap = HttpClient.get(url).jsonBody<Map<String, HeadInfo>>() ?: return
 
                 heads = headsMap.values.map { head ->
                     ItemUtils.createItem("skull 1 3 {display:{Name:\"${head.name}\"},SkullOwner:{Id:\"${head.uuid}\",Properties:{textures:[{Value:\"${head.value}\"}]}}}")!!

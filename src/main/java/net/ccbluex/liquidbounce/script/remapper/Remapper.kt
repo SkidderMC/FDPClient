@@ -9,7 +9,7 @@ import kotlinx.coroutines.runBlocking
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.file.FileManager.dir
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
-import net.ccbluex.liquidbounce.utils.io.HttpUtils.Downloader
+import net.ccbluex.liquidbounce.utils.io.Downloader
 import net.ccbluex.liquidbounce.utils.io.isEmpty
 import net.ccbluex.liquidbounce.utils.io.sha256
 import java.io.File
@@ -21,10 +21,11 @@ import java.io.File
  */
 object Remapper {
 
-    private const val srgName = "stable_22"
-    private val srgFile = File(dir, "mcp-$srgName.srg")
+    private const val SRG_NAME = "stable_22"
+    private val srgFile = File(dir, "mcp-$SRG_NAME.srg")
 
-    internal var mappingsLoaded = false
+    var mappingsLoaded = false
+        private set
 
     private val fields = hashMapOf<String, HashMap<String, String>>()
     private val methods = hashMapOf<String, HashMap<String, String>>()
@@ -41,12 +42,12 @@ object Remapper {
             mappingsLoaded = false
 
             // Download sha256 file
-            val sha256File = File(dir, "mcp-$srgName.srg.sha256")
+            val sha256File = File(dir, "mcp-$SRG_NAME.srg.sha256")
             if (!sha256File.exists() || !sha256File.isFile || sha256File.isEmpty) {
                 sha256File.createNewFile()
 
-                Downloader.downloadWholeFile("$CLIENT_CLOUD/srgs/mcp-$srgName.srg.sha256", sha256File)
-                LOGGER.info("[Remapper] Downloaded $srgName sha256.")
+                Downloader.downloadWholeFile("$CLIENT_CLOUD/srgs/mcp-$SRG_NAME.srg.sha256", sha256File)
+                LOGGER.info("[Remapper] Downloaded $SRG_NAME sha256.")
             }
 
             // Check if srg file is already downloaded
@@ -55,9 +56,9 @@ object Remapper {
                 srgFile.createNewFile()
 
                 runBlocking {
-                    Downloader.download("$CLIENT_CLOUD/srgs/mcp-$srgName.srg", srgFile)
+                    Downloader.download("$CLIENT_CLOUD/srgs/mcp-$SRG_NAME.srg", srgFile)
                 }
-                LOGGER.info("[Remapper] Downloaded $srgName.")
+                LOGGER.info("[Remapper] Downloaded $SRG_NAME.")
             }
 
             // Load srg

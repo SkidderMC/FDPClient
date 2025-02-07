@@ -17,7 +17,8 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.chat
-import net.ccbluex.liquidbounce.utils.io.HttpUtils
+import net.ccbluex.liquidbounce.utils.io.HttpClient
+import net.ccbluex.liquidbounce.utils.io.get
 import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
@@ -29,15 +30,27 @@ import java.util.concurrent.ConcurrentHashMap
 
 object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = false) {
 
+    // Name to IP
+    private val serverIpMap = mapOf(
+        "BlocksMC" to "blocksmc.com",
+        "CubeCraft" to "cubecraft.net",
+        "Gamster" to "gamster.org",
+        "AgeraPvP" to "agerapvp.club",
+        "HypeMC" to "hypemc.pro",
+        "Hypixel" to "hypixel.net",
+        "SuperCraft" to "supercraft.es",
+        "PikaNetwork" to "pika-network.net",
+        "GommeHD" to "gommehd.net",
+        "CoralMC" to "coralmc.it",
+        "LibreCraft" to "librecraft.com",
+        "Originera" to "mc.orea.asia",
+        "OC-TC" to "oc.tc",
+        "AssPixel" to "asspixel.net"
+    )
+
     private val staffMode by choices(
-        "StaffMode", arrayOf(
-            "BlocksMC", "CubeCraft", "Gamster",
-            "AgeraPvP", "HypeMC", "Hypixel",
-            "SuperCraft", "PikaNetwork", "GommeHD",
-            "CoralMC", "LibreCraft", "Originera",
-            "OC-TC", "AssPixel"
-        ), "BlocksMC"
-    ).onChanged { loadStaffData() }
+        "StaffMode", serverIpMap.keys.toTypedArray(), "BlocksMC"
+    ).onChanged(::loadStaffData)
 
     private val tab by boolean("TAB", true)
     private val packet by boolean("Packet", true)
@@ -52,28 +65,29 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
     private val inGame by boolean("InGame", true) { autoLeave != "Off" }
     private val warn by choices("Warn", arrayOf("Chat", "Notification"), "Chat")
 
-    private val checkedStaff = ConcurrentHashMap.newKeySet<String>()
-    private val checkedSpectator = ConcurrentHashMap.newKeySet<String>()
-    private val playersInSpectatorMode = ConcurrentHashMap.newKeySet<String>()
+    private val checkedStaff: MutableSet<String> = ConcurrentHashMap.newKeySet()
+    private val checkedSpectator: MutableSet<String> = ConcurrentHashMap.newKeySet()
+    private val playersInSpectatorMode: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     private var attemptLeave = false
 
     private var alertClearVanish = false
 
-    private var staffList: Map<String, Set<String>?> = emptyMap()
-    private var serverIp = ""
+    private val staffList = ConcurrentHashMap<String, Set<String>>()
 
-    private var moduleJob: Job? = null
+    private val moduleJobs = mutableListOf<Job>()
 
     override fun onDisable() {
-        serverIp = ""
-        moduleJob?.cancel()
+        moduleJobs.forEach { it.cancel() }
         checkedStaff.clear()
         checkedSpectator.clear()
         playersInSpectatorMode.clear()
         attemptLeave = false
         alertClearVanish = false
     }
+
+    private fun isStaff(player: String): Boolean =
+        staffList.values.any { staffNames -> staffNames.any { player.contains(it) } }
 
     /**
      * Reset on World Change
@@ -85,28 +99,11 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
         alertClearVanish = false
     }
 
-    private val serverIpMap = mapOf(
-        "blocksmc" to "blocksmc.com",
-        "cubecraft" to "cubecraft.net",
-        "gamster" to "gamster.org",
-        "agerapvp" to "agerapvp.club",
-        "hypemc" to "hypemc.pro",
-        "hypixel" to "hypixel.net",
-        "supercraft" to "supercraft.es",
-        "pikanetwork" to "pika-network.net",
-        "gommehd" to "gommehd.net",
-        "coralmc" to "coralmc.it",
-        "librecraft" to "librecraft.com",
-        "originera" to "mc.orea.asia",
-        "oc-tc" to "oc.tc",
-        "asspixel" to "asspixel.net"
-    )
+    private fun loadStaffData(serverName: String) {
+        val ip = serverIpMap[serverName] ?: return
 
-    private fun loadStaffData() {
-        serverIp = serverIpMap[staffMode.lowercase()] ?: return
-
-        moduleJob = SharedScopes.IO.launch {
-            staffList = loadStaffList("$CLIENT_CLOUD/staffs/$serverIp")
+        moduleJobs += SharedScopes.IO.launch {
+            loadStaffList(ip)
         }
     }
 
@@ -134,24 +131,24 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
                 if (teamName.equals("Z_Spectator", true)) {
                     val players = packet.players ?: return@handler
 
-                    val staffSpectateList = players.filter { it in staffList.keys } - checkedSpectator
-                    val nonStaffSpectateList = players.filter { it !in staffList.keys } - checkedSpectator
+                    val staffSpectateList = players.filter { it !in checkedSpectator && isStaff(it) }
+                    val nonStaffSpectateList = players.filter { it !in checkedSpectator && !isStaff(it) }
 
                     // Check for players who are using spectator menu
                     val miscSpectatorList = playersInSpectatorMode - players.toSet()
 
                     staffSpectateList.forEach { player ->
-                        notifySpectators(player!!)
+                        notifySpectators(player)
                     }
 
                     nonStaffSpectateList.forEach { player ->
                         if (otherSpectator) {
-                            notifySpectators(player!!)
+                            notifySpectators(player)
                         }
                     }
 
                     miscSpectatorList.forEach { player ->
-                        val isStaff = player in staffList
+                        val isStaff = isStaff(player)
 
                         if (isStaff && spectator) {
                             chat("§c[STAFF] §d${player} §3is using the spectator menu §e(compass/left)")
@@ -200,13 +197,11 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
             return
         }
 
-        val isStaff = staffList.any { entry ->
-            entry.value?.any { staffName -> player.contains(staffName) } == true
-        }
+        val isStaff = isStaff(player)
 
         if (isStaff && spectator) {
             if (warn == "Chat") {
-                chat("§c[STAFF] §d${player} §3is a spectators")
+                chat("§c[STAFF] §d${player} §3is a spectator")
             } else {
                 hud.addNotification(Notification("§c[STAFF] §d${player} §3is a spectators", "!!!", Type.INFO, 1000))
             }
@@ -250,9 +245,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
         }
 
         playerInfos.forEach { (player, responseTime) ->
-            val isStaff = staffList.any { entry ->
-                entry.value?.any { staffName -> player.contains(staffName) } == true
-            }
+            val isStaff = isStaff(player)
 
             val condition = when {
                 responseTime > 0 -> "§e(${responseTime}ms)"
@@ -289,11 +282,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
         }
 
         val isStaff = if (staff is EntityPlayer) {
-            val playerName = staff.gameProfile.name
-
-            staffList.any { entry ->
-                entry.value?.any { staffName -> playerName.contains(staffName) } == true
-            }
+            isStaff(staff.gameProfile.name)
         } else {
             false
         }
@@ -410,35 +399,31 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = f
         notifyStaffPacket(staff)
     }
 
-    private fun loadStaffList(url: String): Map<String, Set<String>> {
-        return try {
-            val (response, code) = HttpUtils.requestStream(url)
+    private fun loadStaffList(serverIp: String) {
+        try {
+            HttpClient.get("$CLIENT_CLOUD/staffs/$serverIp").use { response ->
+                when (val code = response.code) {
+                    200 -> {
+                        val staffs = response.body.charStream().buffered().lineSequence()
+                            .mapNotNullTo(hashSetOf()) { line ->
+                                line.trim().takeIf { it.isNotBlank() }
+                            }
 
-            when (code) {
-                200 -> {
-                    val staffList = response.bufferedReader().lineSequence()
-                        .filter { it.isNotBlank() }
-                        .map { it.trim() }
-                        .toSet()
+                        chat("§aSuccessfully loaded §9${staffs.size} §astaff names.")
+                        staffList[serverIp] = staffs
+                    }
 
-                    chat("§aSuccessfully loaded §9${staffList.size} §astaff names.")
-                    mapOf(url to staffList)
-                }
+                    404 -> {
+                        chat("§cFailed to load staff list. §9(§3Doesn't exist in LiquidCloud§9)")
+                    }
 
-                404 -> {
-                    chat("§cFailed to load staff list. §9(§3Doesn't exist in LiquidCloud§9)")
-                    emptyMap()
-                }
-
-                else -> {
-                    chat("§cFailed to load staff list. §9(§3ERROR CODE: $code§9)")
-                    emptyMap()
+                    else -> {
+                        chat("§cFailed to load staff list. §9(§3ERROR CODE: $code§9)")
+                    }
                 }
             }
         } catch (e: Exception) {
             chat("§cFailed to load staff list. §9(${e.message})")
-            e.printStackTrace()
-            emptyMap()
         }
     }
 

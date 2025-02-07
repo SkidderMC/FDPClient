@@ -19,15 +19,12 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.config.SettingsUtils
-import net.ccbluex.liquidbounce.utils.io.HttpUtils.get
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.awt.Desktop
-import java.awt.Toolkit
-import java.awt.datatransfer.StringSelection
 import java.io.File
 import java.io.IOException
 
@@ -64,34 +61,23 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
     }
 
     // Load subcommand
-    private suspend fun loadSettings(args: Array<String>) {
-        withContext(Dispatchers.IO) {
-            if (args.size < 3) {
-                chatSyntax("${args[0].lowercase()} load <name/url>")
-                return@withContext
-            }
+    private fun loadSettings(args: Array<String>) {
+        if (args.size < 3) {
+            chatSyntax("${args[0].lowercase()} load <name/url>")
+            return
+        }
 
-            try {
-                val settings = if (args[2].startsWith("http")) {
-                    val (text, code) = get(args[2])
-                    if (code != 200) {
-                        error(text)
-                    }
+        try {
+            val settings = SettingsUtils.loadFromUrl(args[2])
 
-                    text
-                } else {
-                    runBlocking { ClientApi.getSettingsScript(settingId = args[2]) }
-                }
-
-                chat("Applying settings...")
-                SettingsUtils.applyScript(settings)
-                chat("§6Settings applied successfully")
-                addNotification(Notification("Updated Settings", "SUCESS", Type.SUCCESS))
-                playEdit()
-            } catch (e: Exception) {
-                LOGGER.error("Failed to load settings", e)
-                chat("Failed to load settings: ${e.message}")
-            }
+            chat("Applying settings...")
+            SettingsUtils.applyScript(settings)
+            chat("§6Settings applied successfully")
+            addNotification(Notification("Settings Command", "Successfully updated settings!", Type.SUCCESS, 1000))
+            playEdit()
+        } catch (e: Exception) {
+            LOGGER.error("Failed to load settings", e)
+            chat("Failed to load settings: ${e.message}")
         }
     }
 

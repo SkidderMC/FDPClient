@@ -51,6 +51,7 @@ import net.ccbluex.liquidbounce.utils.client.BlinkUtils
 import net.ccbluex.liquidbounce.utils.client.PacketUtils
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
+import net.ccbluex.liquidbounce.utils.io.MiscUtils.showErrorPopup
 import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
@@ -146,6 +147,9 @@ object FDPClient {
 
                 // Load alt generators
                 loadActiveGenerators()
+
+                // Load SRG file
+                loadSrg()
 
                 LOGGER.info("Preload tasks of $CLIENT_NAME are completed!")
 
@@ -272,6 +276,7 @@ object FDPClient {
             FileManager.loadBackground()
         } catch (e: Exception) {
             LOGGER.error("Failed to start client: ${e.message}")
+            e.showErrorPopup()
         } finally {
             // Set is starting status
             isStarting = false
