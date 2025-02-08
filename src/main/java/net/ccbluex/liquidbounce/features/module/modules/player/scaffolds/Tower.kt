@@ -11,9 +11,9 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.Flight
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold.searchMode
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold.shouldGoDown
+import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
-import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.blocksAmount
@@ -45,41 +45,41 @@ object Tower : Configurable("Tower"), MinecraftInstance, Listenable {
         "None"
     )
 
-    val stopWhenBlockAboveValues = boolean("StopWhenBlockAbove", false) { towerModeValues.get() != "None" }
+    private val stopWhenBlockAboveValues = boolean("StopWhenBlockAbove", false) { towerModeValues.get() != "None" }
 
-    val onJumpValues = boolean("TowerOnJump", true) { towerModeValues.get() != "None" }
-    val notOnMoveValues = boolean("TowerNotOnMove", false) { towerModeValues.get() != "None" }
+    private val onJumpValues = boolean("TowerOnJump", true) { towerModeValues.get() != "None" }
+    private val notOnMoveValues = boolean("TowerNotOnMove", false) { towerModeValues.get() != "None" }
 
     // Jump mode
-    val jumpMotionValues = float("JumpMotion", 0.42f, 0.3681289f..0.79f) { towerModeValues.get() == "MotionJump" }
-    val jumpDelayValues = int(
+    private val jumpMotionValues = float("JumpMotion", 0.42f, 0.3681289f..0.79f) { towerModeValues.get() == "MotionJump" }
+    private val jumpDelayValues = int(
         "JumpDelay",
         0,
         0..20
     ) { towerModeValues.get() == "MotionJump" || towerModeValues.get() == "Jump" }
 
     // Constant Motion values
-    val constantMotionValues = float(
+    private val constantMotionValues = float(
         "ConstantMotion",
         0.42f,
         0.1f..1f
     ) { towerModeValues.get() == "ConstantMotion" }
-    val constantMotionJumpGroundValues = float(
+    private val constantMotionJumpGroundValues = float(
         "ConstantMotionJumpGround",
         0.79f,
         0.76f..1f
     ) { towerModeValues.get() == "ConstantMotion" }
-    val constantMotionJumpPacketValues = boolean("JumpPacket", true) { towerModeValues.get() == "ConstantMotion" }
+    private val constantMotionJumpPacketValues = boolean("JumpPacket", true) { towerModeValues.get() == "ConstantMotion" }
 
     // Pull-down
-    val triggerMotionValues = float("TriggerMotion", 0.1f, 0.0f..0.2f) { towerModeValues.get() == "Pulldown" }
-    val dragMotionValues = float("DragMotion", 1.0f, 0.1f..1.0f) { towerModeValues.get() == "Pulldown" }
+    private val triggerMotionValues = float("TriggerMotion", 0.1f, 0.0f..0.2f) { towerModeValues.get() == "Pulldown" }
+    private val dragMotionValues = float("DragMotion", 1.0f, 0.1f..1.0f) { towerModeValues.get() == "Pulldown" }
 
     // Teleport
-    val teleportHeightValues = float("TeleportHeight", 1.15f, 0.1f..5f) { towerModeValues.get() == "Teleport" }
-    val teleportDelayValues = int("TeleportDelay", 0, 0..20) { towerModeValues.get() == "Teleport" }
-    val teleportGroundValues = boolean("TeleportGround", true) { towerModeValues.get() == "Teleport" }
-    val teleportNoMotionValues = boolean("TeleportNoMotion", false) { towerModeValues.get() == "Teleport" }
+    private val teleportHeightValues = float("TeleportHeight", 1.15f, 0.1f..5f) { towerModeValues.get() == "Teleport" }
+    private val teleportDelayValues = int("TeleportDelay", 0, 0..20) { towerModeValues.get() == "Teleport" }
+    private val teleportGroundValues = boolean("TeleportGround", true) { towerModeValues.get() == "Teleport" }
+    private val teleportNoMotionValues = boolean("TeleportNoMotion", false) { towerModeValues.get() == "Teleport" }
 
     var isTowering = false
 
@@ -88,7 +88,7 @@ object Tower : Configurable("Tower"), MinecraftInstance, Listenable {
     private var jumpGround = 0.0
 
     // Handle motion events
-    val onMotion = handler<MotionEvent> { event ->
+    private val onMotion = handler<MotionEvent> { event ->
         val eventState = event.eventState
 
         val player = mc.thePlayer ?: return@handler
@@ -119,7 +119,7 @@ object Tower : Configurable("Tower"), MinecraftInstance, Listenable {
     }
 
     // Handle jump events
-    val onJump = handler<JumpEvent> { event ->
+    private val onJump = handler<JumpEvent> { event ->
         if (onJumpValues.get()) {
             if (Scaffold.scaffoldMode == "GodBridge" && (Scaffold.jumpAutomatically) || !Scaffold.shouldJumpOnInput)
                 return@handler
@@ -282,7 +282,7 @@ object Tower : Configurable("Tower"), MinecraftInstance, Listenable {
         }
     }
 
-    val onPacket = handler<PacketEvent> { event ->
+    private val onPacket = handler<PacketEvent> { event ->
         val player = mc.thePlayer ?: return@handler
 
         val packet = event.packet
