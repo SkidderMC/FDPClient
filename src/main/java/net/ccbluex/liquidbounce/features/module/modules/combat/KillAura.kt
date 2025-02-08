@@ -46,6 +46,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isRotationFaced
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isVisible
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.searchCenter
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.serverRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
@@ -217,10 +218,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
     private val hitDelayTicks by int("HitDelayTicks", 1, 1..5) { useHitDelay }
 
     private val generateClicksBasedOnDist by boolean("GenerateClicksBasedOnDistance", false)
-    private val cpsMultiplier by intRange("CPS-Multiplier", 1..2, 1..10)
-    { generateClicksBasedOnDist }
-    private val distanceFactor by floatRange("DistanceFactor", 5F..10F, 1F..10F)
-    { generateClicksBasedOnDist }
+    private val cpsMultiplier by intRange("CPS-Multiplier", 1..2, 1..10) { generateClicksBasedOnDist }
+    private val distanceFactor by floatRange("DistanceFactor", 5F..10F, 1F..10F) { generateClicksBasedOnDist }
 
     private val generateSpotBasedOnDistance by boolean("GenerateSpotBasedOnDistance", false) { options.rotationsActive }
 
@@ -252,8 +251,9 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
 
     private val lowestBodyPointToTarget: String by lowestBodyPointToTargetValue
 
-    private val horizontalBodySearchRange by floatRange("HorizontalBodySearchRange", 0f..1f, 0f..1f)
-    { options.rotationsActive }
+    private val horizontalBodySearchRange by floatRange(
+        "HorizontalBodySearchRange", 0f..1f, 0f..1f
+    ) { options.rotationsActive }
 
     private val fov by float("FOV", 180f, 0f..180f)
 
@@ -280,7 +280,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
         "TicksLateToSwing", 4, 0..20
     ) { swing && failSwing && swingWhenTicksLate.isActive() && options.rotationsActive }
     private val renderBoxOnSwingFail by boolean("RenderBoxOnSwingFail", false) { failSwing }
-    private val renderBoxColor = ColorSettingsInteger(this, "RenderBoxColor") { renderBoxOnSwingFail }.with(0, 255, 255)
+    private val renderBoxColor = ColorSettingsInteger(this, "RenderBoxColor") { renderBoxOnSwingFail }.with(Color.CYAN)
     private val renderBoxFadeSeconds by float("RenderBoxFadeSeconds", 1f, 0f..5f) { renderBoxOnSwingFail }
 
     // Inventory
@@ -293,6 +293,11 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
 
 
     private val displayDebug by boolean("Debug", false)
+
+    // RenderAimPoint
+    private val renderAimPointBox by boolean("RenderAimPointBox", false).subjective()
+    private val aimPointBoxColor by color("AimPointBoxColor", Color.CYAN) { renderAimPointBox }.subjective()
+    private val aimPointBoxSize by float("AimPointBoxSize", 0.1f, 0f..0.2F) { renderAimPointBox }.subjective()
 
     /**
      * MODULE
@@ -491,6 +496,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
      */
     val onRender3D = handler<Render3DEvent> {
         handleFailedSwings()
+
+        drawAimPointBox()
 
         if (cancelRun) {
             target = null
@@ -739,7 +746,10 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
         var bestValue: Double? = null
 
         for (entity in theWorld.loadedEntityList) {
-            if (entity !is EntityLivingBase || !isSelected(entity, true) || switchMode && entity.entityId in prevTargetEntities) continue
+            if (entity !is EntityLivingBase || !isSelected(
+                    entity, true
+                ) || switchMode && entity.entityId in prevTargetEntities
+            ) continue
 
             val distance = Backtrack.runWithNearestTrackedDistance(entity) { thePlayer.getDistanceToEntityBox(entity) }
 
@@ -841,8 +851,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
         val boundingBox = entity.hitBox.offset(prediction)
         val (currPos, oldPos) = player.currPos to player.prevPos
 
-        val simPlayer =
-            SimulatedPlayer.fromClientPlayer(RotationUtils.modifiedInput)
+        val simPlayer = SimulatedPlayer.fromClientPlayer(RotationUtils.modifiedInput)
 
         simPlayer.rotationYaw = (currentRotation ?: player.rotation).yaw
 
@@ -1186,6 +1195,29 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
                 timestamp > fadeSeconds
             }
         }
+    }
+
+    private fun drawAimPointBox() {
+        val player = mc.thePlayer ?: return
+        val target = this.target ?: return
+
+        if (!renderAimPointBox) {
+            return
+        }
+
+        val f = aimPointBoxSize.toDouble()
+
+        val box = AxisAlignedBB(0.0, 0.0, 0.0, f, f, f)
+
+        val renderManager = mc.renderManager
+
+        val rotationVec = player.interpolatedPosition(player.prevPos, player.eyeHeight) + getVectorForRotation(
+            serverRotation.lerpWith(currentRotation ?: player.rotation, mc.timer.renderPartialTicks)
+        ) * player.getDistanceToEntityBox(target).coerceAtMost(range.toDouble())
+
+        val offSetBox = box.offset(rotationVec - renderManager.renderPos)
+
+        RenderUtils.drawAxisAlignedBB(offSetBox, aimPointBoxColor)
     }
 
     /**
