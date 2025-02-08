@@ -46,8 +46,10 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
     val backgroundShaderFile = File(dir, "userbackground.frag")
 
     var firstStart = false
+        private set
 
     var backedup = false
+        private set
 
     val PRETTY_GSON: Gson = GsonBuilder().setPrettyPrinting().create()
 

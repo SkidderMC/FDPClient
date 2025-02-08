@@ -35,15 +35,17 @@ fun checkJavaVersion() {
                 }
                 // < Java 8u100, warn
                 update.toInt() < 100 -> {
-                    SharedScopes.IO.launch {
-                        MiscUtils.showMessageDialog(
-                            title = "Warning",
-                            message = "You are using an outdated version of Java 8 ($javaVersion).\n"
-                                    + "This might cause unexpected bugs.\n"
-                                    + "Please update it to 8u101+ or get a new one from $DOWNLOAD_PAGE.",
-                            JOptionPane.WARNING_MESSAGE
-                        )
-                        MiscUtils.showURL(DOWNLOAD_PAGE)
+                    if (FDPClient.fileManager.firstStart) {
+                        SharedScopes.IO.launch {
+                            MiscUtils.showMessageDialog(
+                                title = "Warning",
+                                message = "You are using an outdated version of Java 8 ($javaVersion).\n"
+                                        + "This might cause unexpected bugs.\n"
+                                        + "Please update it to 8u101+ or get a new one from $DOWNLOAD_PAGE.",
+                                JOptionPane.WARNING_MESSAGE
+                            )
+                            MiscUtils.showURL(DOWNLOAD_PAGE)
+                        }
                     }
                 }
             }
@@ -57,7 +59,9 @@ fun checkJavaVersion() {
                                 + "You can get JRE 8 from $DOWNLOAD_PAGE.",
                         JOptionPane.WARNING_MESSAGE
                     )
-                    MiscUtils.showURL(DOWNLOAD_PAGE)
+                    if (FDPClient.fileManager.firstStart) {
+                        MiscUtils.showURL(DOWNLOAD_PAGE)
+                    }
                 }
             }
         }
