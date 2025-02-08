@@ -20,6 +20,9 @@ open class Configurable(
     name, mutableListOf()
 ) {
 
+    // TODO: hide in clickGUI
+    var isExpanded by boolean("Expanded", false)
+
     val values: List<Value<*>>
         get() = this.get()
 
