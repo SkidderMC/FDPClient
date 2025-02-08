@@ -40,8 +40,6 @@ minecraft {
 }
 
 configurations {
-    include
-    implementation.extendsFrom(include)
 
     external
     compile.extendsFrom(external)
@@ -50,8 +48,7 @@ configurations {
 }
 
 dependencies {
-
-    include("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
+    implementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         transitive = false
         exclude module: "guava"
         exclude module: "commons-io"
@@ -63,46 +60,45 @@ dependencies {
 
     annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
 
-    include('com.github.half-cambodian-hacker-man:Koffee:d8cee73') {
+    implementation('com.github.half-cambodian-hacker-man:Koffee:d8cee73') {
         exclude module: 'asm-commons'
         exclude module: 'asm-tree'
         exclude module: 'asm'
     }
 
-    include "com.jagrosh:DiscordIPC:0.4"
+    implementation "com.jagrosh:DiscordIPC:0.4"
 
-    include("com.github.CCBlueX:Elixir:1.2.6") {
+    implementation("com.github.CCBlueX:Elixir:1.2.6") {
         exclude module: "kotlin-stdlib"
         exclude module: "authlib"
     }
 
-    include 'org.projectlombok:lombok:1.18.36'
+    implementation 'org.projectlombok:lombok:1.18.36'
 
     annotationProcessor 'org.projectlombok:lombok:1.18.36'
 
-    include("com.github.UnlegitMC:Astar3d:bec2291cf2")
-    include 'com.jhlabs:filters:2.0.235'
-    include "org.apache.httpcomponents:httpmime:4.5.14"
+    implementation("com.github.UnlegitMC:Astar3d:bec2291cf2")
+    implementation 'com.jhlabs:filters:2.0.235'
+    implementation "org.apache.httpcomponents:httpmime:4.5.14"
 
-    include("org.knowm.xchart:xchart:3.8.8")
+    implementation("org.knowm.xchart:xchart:3.8.8")
 
     // HTTP Client
-    include("com.squareup.okhttp3:okhttp:5.0.0-alpha.14") {
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14") {
         exclude module: "kotlin-stdlib"
     }
     // Kotlin
-    include "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-    include "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version"
-    include "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines_version"
 
-    include "com.formdev:flatlaf:3.5.4"
+    implementation "com.formdev:flatlaf:3.5.4"
 
-    include fileTree(include: ["*.jar"], dir: "libs")
+    implementation fileTree(include: ["*.jar"], dir: "libs")
 }
 
 shadowJar {
     archiveClassifier.set("")
-    configurations = [project.configurations.include]
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
 
     exclude "LICENSE.txt"
