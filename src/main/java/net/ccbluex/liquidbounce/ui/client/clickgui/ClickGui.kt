@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.config.SettingsUtils
 import net.ccbluex.liquidbounce.handler.api.ClientApi
 import net.ccbluex.liquidbounce.handler.api.autoSettingsList
+import net.ccbluex.liquidbounce.handler.api.loadSettings
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.scale
@@ -47,7 +48,8 @@ import kotlin.math.roundToInt
 
 object ClickGui : GuiScreen() {
 
-    val panels = mutableListOf<Panel>()
+    // Note: hash key = [Panel.name]
+    val panels = linkedSetOf<Panel>()
     private val hudIcon = ResourceLocation("${CLIENT_NAME.lowercase()}/custom_hud_icon.png")
     var style: Style = BlackStyle
     private var mouseX = 0
@@ -73,11 +75,15 @@ object ClickGui : GuiScreen() {
         var yPos = 5
 
         for (category in Category.entries) {
-            panels += object : Panel(category.displayName, 100, yPos, width, height, false) {
-                override val elements = moduleManager.mapNotNull {
-                    it.takeIf { module -> module.category == category }?.let(::ModuleElement)
-                }
-            }
+            panels += Panel(
+                category.displayName,
+                x = 100,
+                y = yPos,
+                width,
+                height,
+                false,
+                moduleManager[category].map(::ModuleElement)
+            )
 
             yPos += 20
         }
@@ -89,48 +95,49 @@ object ClickGui : GuiScreen() {
         panels += setupSettingsPanel(100, yPos, width, height)
     }
 
-    private fun setupSettingsPanel(xPos: Int = 100, yPos: Int, width: Int, height: Int) =
-        object : Panel("Auto Settings", xPos, yPos, width, height, false) {
+    private fun setupSettingsPanel(xPos: Int = 100, yPos: Int, width: Int, height: Int): Panel {
+        val list = autoSettingsList?.map { setting ->
+            ButtonElement(setting.name, { Integer.MAX_VALUE }) {
+                SharedScopes.IO.launch {
+                    try {
+                        chat("Loading settings...")
 
-            /**
-             * Auto settings list
-             */
-            override val elements = runBlocking {
-                SharedScopes.IO.async {
-                    autoSettingsList?.map { setting ->
-                        ButtonElement(setting.name, { Integer.MAX_VALUE }) {
-                            SharedScopes.IO.launch {
-                                try {
-                                    chat("Loading settings...")
+                        // Load settings and apply them
+                        val settings = ClientApi.getSettingsScript(settingId = setting.settingId)
 
-                                    // Load settings and apply them
-                                    val settings = ClientApi.getSettingsScript(settingId = setting.settingId)
+                        chat("Applying settings...")
+                        SettingsUtils.applyScript(settings)
 
-                                    chat("Applying settings...")
-                                    SettingsUtils.applyScript(settings)
-
-                                    chat("§6Settings applied successfully")
-                                    HUD.addNotification(Notification("Updated Settings", "!!!", Type.INFO, 60))
-                                    mc.playSound("random.anvil_use".asResourceLocation())
-
-                                } catch (e: Exception) {
-                                    ClientUtils.LOGGER.error("Failed to load settings", e)
-                                    chat("Failed to load settings: ${e.message}")
-                                }
-                            }
-                        }.apply {
-                            this.hoverText = buildString {
-                                appendLine("§7Description: §e${setting.description.ifBlank { "No description available" }}")
-                                appendLine("§7Type: §e${setting.type.displayName}")
-                                appendLine("§7Contributors: §e${setting.contributors}")
-                                appendLine("§7Last updated: §e${setting.date}")
-                                append("§7Status: §e${setting.statusType.displayName} §a(${setting.statusDate})")
-                            }
-                        }
-                    } ?: emptyList()
-                }.await()
+                        chat("§6Settings applied successfully.")
+                        HUD.addNotification(Notification("Updated Settings", "!!!", Type.INFO, 60))
+                        mc.playSound("random.anvil_use".asResourceLocation())
+                    } catch (e: Exception) {
+                        ClientUtils.LOGGER.error("Failed to load settings", e)
+                        chat("Failed to load settings: ${e.message}")
+                    }
+                }
+            }.apply {
+                this.hoverText = buildString {
+                    appendLine("§7Description: §e${setting.description.ifBlank { "No description available" }}")
+                    appendLine("§7Type: §e${setting.type.displayName}")
+                    appendLine("§7Contributors: §e${setting.contributors}")
+                    appendLine("§7Last updated: §e${setting.date}")
+                    append("§7Status: §e${setting.statusType.displayName} §a(${setting.statusDate})")
+                }
             }
+        } ?: run {
+            // Try load settings
+            loadSettings(useCached = true) {
+                mc.addScheduledTask {
+                    setupSettingsPanel(xPos, yPos, width, height)
+                }
+            }
+
+            emptyList()
         }
+
+        return Panel("Auto Settings", xPos, yPos, width, height, false, list)
+    }
 
     override fun drawScreen(x: Int, y: Int, partialTicks: Float) {
         // Enable DisplayList optimization
@@ -233,7 +240,7 @@ object ClickGui : GuiScreen() {
                 panel.drag = true
 
                 // Move dragged panel to top.
-                panels.removeAt(panels.lastIndex - index)
+                panels.remove(panel)
                 panels += panel
                 return
             }

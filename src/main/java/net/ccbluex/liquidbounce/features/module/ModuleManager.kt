@@ -97,6 +97,12 @@ object ModuleManager : Listenable, Collection<Module> by MODULE_REGISTRY {
     operator fun get(moduleName: String) = MODULE_REGISTRY.find { it.name.equals(moduleName, ignoreCase = true) }
     @Deprecated(message = "Only for outdated scripts", replaceWith = ReplaceWith("get(moduleClass)"))
     fun getModule(moduleClass: Class<out Module>) = get(moduleClass)
+
+    /**
+     * Get modules by [category]
+     */
+    operator fun get(category: Category) = MODULE_REGISTRY.filter { it.category === category }
+
     @Deprecated(message = "Only for outdated scripts", replaceWith = ReplaceWith("get(moduleName)"))
     fun getModule(moduleName: String) = get(moduleName)
 
