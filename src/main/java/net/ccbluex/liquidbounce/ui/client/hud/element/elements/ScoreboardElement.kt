@@ -36,7 +36,7 @@ import kotlin.math.max
  */
 @ElementInfo(name = "Scoreboard")
 class ScoreboardElement(
-    x: Double = 5.0, y: Double = 0.0, scale: Float = 1F, side: Side = Side(Side.Horizontal.LEFT, Side.Vertical.MIDDLE)
+    x: Double = 6.0, y: Double = -28.0, scale: Float = 1F, side: Side = Side(Side.Horizontal.LEFT, Side.Vertical.MIDDLE)
 ) : Element("Scoreboard", x, y, scale, side) {
 
     private val corners = RenderUtils.RoundedCorners.entries
@@ -49,7 +49,7 @@ class ScoreboardElement(
         "BackgroundCornersToRound", options, RenderUtils.RoundedCorners.ALL.displayName
     )
 
-    private val rect by boolean("Rect", true)
+    private val rect by boolean("Rect", false)
     private val rectColor = color("RectangleColor", Color(0, 111, 255)) { rect }
 
     private val drawRectOnTitle by boolean("DrawRectOnTitle", true)
@@ -63,7 +63,7 @@ class ScoreboardElement(
     private val serverIp by choices("ServerIP", arrayOf("Normal", "None", "Client", "Website"), "Normal")
     private val number by boolean("Number", false)
     private val shadow by boolean("Shadow", false)
-    private val font by font("Font", Fonts.fontRegular35)
+    private val font by font("Font", Fonts.minecraftFont)
 
     /**
      * Draw element

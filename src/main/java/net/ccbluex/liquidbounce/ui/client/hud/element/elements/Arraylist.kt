@@ -113,7 +113,7 @@ class Arraylist(
 
     // TODO: The images seem to be overlapped when either Rainbow or Gradient mode is active.
     private val iconColorMode by choices(
-        "IconColorMode", arrayOf("Custom", "Fade", "Theme", "Rainbow", "Gradient"), "Custom"
+        "IconColorMode", arrayOf("Custom", "Fade", "Theme", "Rainbow", "Gradient"), "Theme"
     ) { displayIcons }
     private val iconColor by color("IconColor", Color.WHITE) { iconColorMode == "Custom" && displayIcons }
     private val iconFadeColor by color("IconFadeColor", Color.WHITE) { iconColorMode == "Fade" && displayIcons }
@@ -147,7 +147,7 @@ class Arraylist(
         tags
     }.onChanged { updateTagDetails() }
 
-    private val font by font("Font", Fonts.fontSemibold35)
+    private val font by font("Font", Fonts.fontSemibold40)
     private val textShadow by boolean("ShadowText", true)
     private val moduleCase by choices("ModuleCase", arrayOf("Normal", "Uppercase", "Lowercase"), "Normal")
     private val space by float("Space", 1F, 0F..5F)

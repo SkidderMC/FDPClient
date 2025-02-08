@@ -21,7 +21,7 @@ object ClientThemesUtils {
      * The selected color mode (e.g., "Zywl", "Water", "Magic", etc.).
      * Now a normal var with a default value "FDP".
      */
-    var ClientColorMode: String = "FDP"
+    var ClientColorMode: String = "Reef"
         set(value) {
             field = value.lowercase()
         }
