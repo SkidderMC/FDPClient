@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.colormode
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.generateColor
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle.chosenText
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle.sliderValueHeld
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction
@@ -27,6 +28,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.blendColors
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.ui.EditableText
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import org.lwjgl.input.Keyboard
@@ -67,6 +69,7 @@ class SettingComponents(private val module: Module) : Component() {
 
     private val colorSettingAnimMap = HashMap<ColorValue, Array<Animation>>()
     private val colorPickerAnimationMap = HashMap<ColorValue, Animation>()
+    private var originalString: String? = null
 
     init {
         keySettingAnimMap[module] = arrayOf(
@@ -148,20 +151,55 @@ class SettingComponents(private val module: Module) : Component() {
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (binding != null) {
             selectedField = null
-            selectedStringSetting = null
             if (keyCode == Keyboard.KEY_SPACE || keyCode == Keyboard.KEY_ESCAPE || keyCode == Keyboard.KEY_DELETE) {
                 binding!!.keyBind = Keyboard.KEY_NONE
+            } else {
+                binding!!.keyBind = keyCode
             }
-            binding!!.keyBind = keyCode
             binding = null
             return
         }
 
+        if (chosenText != null) {
+            if (keyCode == Keyboard.KEY_ESCAPE) {
+                chosenText = null
+                return
+            }
+            when (keyCode) {
+                Keyboard.KEY_LEFT -> {
+                    chosenText!!.cursorIndex = max(chosenText!!.cursorIndex - 1, 0)
+                }
+                Keyboard.KEY_RIGHT -> {
+                    chosenText!!.cursorIndex = min(chosenText!!.cursorIndex + 1, chosenText!!.string.length)
+                }
+                Keyboard.KEY_BACK -> {
+                    if (chosenText!!.cursorIndex > 0 && chosenText!!.string.isNotEmpty()) {
+                        chosenText!!.string = chosenText!!.string.removeRange(chosenText!!.cursorIndex - 1, chosenText!!.cursorIndex)
+                        chosenText!!.cursorIndex--
+                    }
+                }
+                Keyboard.KEY_DELETE -> {
+                    if (chosenText!!.cursorIndex < chosenText!!.string.length && chosenText!!.string.isNotEmpty()) {
+                        chosenText!!.string = chosenText!!.string.removeRange(chosenText!!.cursorIndex, chosenText!!.cursorIndex + 1)
+                    }
+                }
+                else -> {
+                    if (!typedChar.isISOControl()) {
+                        chosenText!!.string = chosenText!!.string.substring(0, chosenText!!.cursorIndex) +
+                                typedChar +
+                                chosenText!!.string.substring(chosenText!!.cursorIndex)
+                        chosenText!!.cursorIndex++
+                    }
+                }
+            }
+
+            (chosenText!!.value as? TextValue)?.set(chosenText!!.string, true)
+            return
+        }
+
         if (selectedField != null) {
-            // ESC key => stop focusing
-            if (keyCode == 1) {
+            if (keyCode == Keyboard.KEY_ESCAPE) {
                 selectedField = null
-                selectedStringSetting = null
                 return
             }
             selectedField!!.textboxKeyTyped(typedChar, keyCode)
@@ -476,7 +514,6 @@ class SettingComponents(private val module: Module) : Component() {
                     }
                 }
 
-
                 val updatedRange = setting.get()
                 val newStart = updatedRange.first
                 val newEnd = updatedRange.last
@@ -712,48 +749,45 @@ class SettingComponents(private val module: Module) : Component() {
 
             // ----- TextValue -----
             if (setting is TextValue) {
-
-                DrRenderUtils.resetColor()
-                Fonts.InterMedium_16.drawString(
-                    setting.name,
-                    x + 5,
-                    settingY + 2,
-                    textColor.rgb
-                )
-
-                // Create the PasswordField (which might just be a text box in your code)
-                val stringSettingField = PasswordField(
-                    "Type Here...",
-                    0,
-                    (x + 5).toInt(),
-                    (settingY + 15).toInt(),
-                    (width - 10).toInt(),
-                    10,
-                    Fonts.InterMedium_18
-                )
-
-                // Use renamed methods to avoid ambiguous calls:
-                // (Assuming PasswordField was updated to have updateText(...) and updateTextColor(...))
-                stringSettingField.updateText(setting.get())
-                stringSettingField.setFocused(selectedStringSetting === setting)
-                stringSettingField.bottomBarColor = textColor.rgb
-                stringSettingField.updateTextColor(textColor.rgb)
-                stringSettingField.placeHolderTextX = (x + 30).toDouble()
-
+                val startText = setting.name + ": "
+                var valueText = setting.get()
+                val titleX = x + 5f
+                val textY = settingY + 4f
+                var textX = titleX + Fonts.InterMedium_18.stringWidth(startText).toFloat()
                 if (type == GuiEvents.CLICK) {
-                    stringSettingField.mouseClicked(mouseX, mouseY, button)
+                    if (mouseX >= textX && mouseX <= x + width && mouseY >= textY - 2 && mouseY <= textY + Fonts.InterMedium_18.height) {
+                        chosenText = EditableText.forTextValue(setting)
+                        originalString = valueText
+                    } else {
+                        chosenText = null
+                        if (originalString != null) {
+                            setting.set(originalString!!, true)
+                        }
+                    }
                 }
-                if (stringSettingField.isFocused()) {
-                    selectedField = stringSettingField
-                    selectedStringSetting = setting
-                } else if (selectedStringSetting === setting) {
-                    selectedStringSetting = null
-                    selectedField = null
+                var highlightCursor: (Float) -> Unit = {}
+                chosenText?.let {
+                    if (it.value == setting) {
+                        val input = it.string
+                        if (it.selectionActive()) {
+                            val start = textX - 1 + Fonts.InterMedium_18.stringWidth(input.take(it.selectionStart!!)).toFloat()
+                            val end = textX - 1 + Fonts.InterMedium_18.stringWidth(input.take(it.selectionEnd!!)).toFloat()
+                            drawRect(start, textY - 3f, end, textY + Fonts.InterMedium_18.height - 2f, Color(7, 152, 252).rgb)
+                        }
+                        highlightCursor = { tx ->
+                            val cursorX = tx + Fonts.InterMedium_18.stringWidth(input.take(it.cursorIndex)).toFloat()
+                            drawRect(cursorX, textY - 3f, cursorX + 1f, textY + Fonts.InterMedium_18.height - 2f, Color.WHITE.rgb)
+                        }
+                    }
                 }
-
-                stringSettingField.drawTextBox()
-                setting.set(stringSettingField.textValue, true)
-
+                Fonts.InterMedium_18.drawString(startText, titleX, textY, textColor.rgb)
+                Fonts.InterMedium_18.drawString(valueText, textX, textY, textColor.rgb)
+                highlightCursor(textX)
+                if (chosenText?.value == setting) {
+                    setting.set(chosenText?.string ?: valueText, true)
+                } else {
+                    setting.set(valueText, true)
+                }
                 count++
             }
 
@@ -769,14 +803,12 @@ class SettingComponents(private val module: Module) : Component() {
                     settingY + 3 + Fonts.InterMedium_18.height + 2,
                     textColor.rgb
                 )
-
                 val previewSize = 9
                 val previewX2 = x + width - 10
                 val previewX1 = previewX2 - previewSize
                 val previewY1 = settingY + 2
                 val previewY2 = previewY1 + previewSize
                 drawRect(previewX1, previewY1, previewX2, previewY2, currentColor.rgb)
-
                 val rainbowPreviewX2 = previewX1 - previewSize
                 val rainbowPreviewX1 = rainbowPreviewX2 - previewSize
                 if (rainbowPreviewX1 > x + 4) {
@@ -788,7 +820,6 @@ class SettingComponents(private val module: Module) : Component() {
                         ColorUtils.rainbow(setting.opacitySliderY).rgb
                     )
                 }
-
                 val rainbow = setting.rainbow
                 val hoveringColorPreview = isClickable(settingY + 2) &&
                         DrRenderUtils.isHovering(
@@ -809,7 +840,6 @@ class SettingComponents(private val module: Module) : Component() {
                             mouseX,
                             mouseY
                         )
-
                 if (type == GuiEvents.CLICK && button in arrayOf(0, 1)) {
                     if (hoveringColorPreview) {
                         if (button == 0 && rainbow) setting.rainbow = false
@@ -820,7 +850,6 @@ class SettingComponents(private val module: Module) : Component() {
                         if (button == 1) setting.showPicker = !setting.showPicker
                     }
                 }
-
                 val hexTextWidth = Fonts.InterMedium_18.stringWidth(colorCodeText).toFloat()
                 val hexTextX = x + 5
                 val hexTextY = settingY + 3 + Fonts.InterMedium_18.height + 2
@@ -835,7 +864,6 @@ class SettingComponents(private val module: Module) : Component() {
                 if (type == GuiEvents.CLICK && button == 1 && hoveringHex) {
                     setting.showOptions = !setting.showOptions
                 }
-
                 var extraHeight = 0f
                 if (setting.showOptions) {
                     val rgbaLabels = listOf("R", "G", "B", "A")
@@ -852,39 +880,26 @@ class SettingComponents(private val module: Module) : Component() {
                     }
                     extraHeight = optionY - optionStartY
                 }
-
                 val colorPickerWidth = 75
                 val colorPickerHeight = 50
                 val hueSliderWidth = 7
                 val hueSliderHeight = 50
                 val spacingBetweenSliders = 5
-
                 val colorPickerStartX = (x + 5).toInt()
                 val colorPickerStartY = (settingY + 15 + extraHeight).toInt()
                 val colorPickerEndX = colorPickerStartX + colorPickerWidth
                 val colorPickerEndY = colorPickerStartY + colorPickerHeight
-
                 val hueSliderX = colorPickerEndX + spacingBetweenSliders
                 val hueSliderEndY = colorPickerStartY + hueSliderHeight
-
                 val opacityStartX = hueSliderX + hueSliderWidth + spacingBetweenSliders
                 val opacityEndX = opacityStartX + hueSliderWidth
-
                 val hue = if (rainbow) {
                     Color.RGBtoHSB(currentColor.red, currentColor.green, currentColor.blue, null)[0]
                 } else {
                     setting.hueSliderY
                 }
-
                 if (setting.showPicker) {
-                    drawRect(
-                        colorPickerStartX,
-                        colorPickerStartY,
-                        colorPickerEndX,
-                        colorPickerEndY,
-                        darkRectHover.rgb
-                    )
-
+                    drawRect(colorPickerStartX, colorPickerStartY, colorPickerEndX, colorPickerEndY, darkRectHover.rgb)
                     setting.updateTextureCache(
                         id = 0,
                         hue = hue,
@@ -904,11 +919,9 @@ class SettingComponents(private val module: Module) : Component() {
                             drawTexture(id, colorPickerStartX, colorPickerStartY, colorPickerWidth, colorPickerHeight)
                         }
                     )
-
                     val markerX = (colorPickerStartX..colorPickerEndX).lerpWith(setting.colorPickerPos.x)
                     val markerY = (colorPickerStartY..colorPickerEndY).lerpWith(setting.colorPickerPos.y)
                     RenderUtils.drawBorder(markerX - 2f, markerY - 2f, markerX + 3f, markerY + 3f, 1.5f, Color.WHITE.rgb)
-
                     setting.updateTextureCache(
                         id = 1,
                         hue = hue,
@@ -927,7 +940,6 @@ class SettingComponents(private val module: Module) : Component() {
                             drawTexture(id, hueSliderX, colorPickerStartY, hueSliderWidth, hueSliderHeight)
                         }
                     )
-
                     setting.updateTextureCache(
                         id = 2,
                         hue = currentColor.rgb.toFloat(),
@@ -950,33 +962,16 @@ class SettingComponents(private val module: Module) : Component() {
                             drawTexture(id, opacityStartX, colorPickerStartY, hueSliderWidth, hueSliderHeight)
                         }
                     )
-
                     val hueMarkerY = (colorPickerStartY..(colorPickerStartY + hueSliderHeight)).lerpWith(hue)
-                    RenderUtils.drawBorder(
-                        hueSliderX - 1f,
-                        hueMarkerY - 1f,
-                        hueSliderX + hueSliderWidth + 1f,
-                        hueMarkerY + 1f,
-                        1.5f,
-                        Color.WHITE.rgb
-                    )
+                    RenderUtils.drawBorder(hueSliderX - 1f, hueMarkerY - 1f, hueSliderX + hueSliderWidth + 1f, hueMarkerY + 1f, 1.5f, Color.WHITE.rgb)
                     val opacityMarkerY = (colorPickerStartY..(colorPickerStartY + hueSliderHeight)).lerpWith(1 - setting.opacitySliderY)
-                    RenderUtils.drawBorder(
-                        opacityStartX - 1f,
-                        opacityMarkerY - 1f,
-                        opacityEndX + 1f,
-                        opacityMarkerY + 1f,
-                        1.5f,
-                        Color.WHITE.rgb
-                    )
-
+                    RenderUtils.drawBorder(opacityStartX - 1f, opacityMarkerY - 1f, opacityEndX + 1f, opacityMarkerY + 1f, 1.5f, Color.WHITE.rgb)
                     val inColorPicker = (mouseX in colorPickerStartX until colorPickerEndX &&
                             mouseY in colorPickerStartY until colorPickerEndY)
                     val inHueSlider = (mouseX in (hueSliderX - 1)..(hueSliderX + hueSliderWidth + 1) &&
                             mouseY in colorPickerStartY until (colorPickerStartY + hueSliderHeight))
                     val inOpacitySlider = (mouseX in (opacityStartX - 1)..(opacityEndX + 1) &&
                             mouseY in colorPickerStartY until (colorPickerStartY + hueSliderHeight))
-
                     val sliderType = setting.lastChosenSlider
                     if ((type == GuiEvents.CLICK && button == 0 && (inColorPicker || inHueSlider || inOpacitySlider))
                         || (sliderValueHeld == setting && setting.lastChosenSlider != null)
@@ -1009,11 +1004,10 @@ class SettingComponents(private val module: Module) : Component() {
                             }
                         }
                     }
-                    count += (colorPickerHeight / rectHeight) + 0.5f
+                    count += ((colorPickerHeight + extraHeight) / rectHeight) + 0.5f
                 } else {
-                    count += 0.2f
+                    count += (extraHeight / rectHeight) + 0.2f
                 }
-
                 GL11.glDisable(GL11.GL_SCISSOR_TEST)
                 OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
                 GlStateManager.disableBlend()

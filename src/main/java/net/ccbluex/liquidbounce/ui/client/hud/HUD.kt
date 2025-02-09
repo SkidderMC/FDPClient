@@ -39,11 +39,9 @@ object HUD : MinecraftInstance {
     elements.clear()
 
     addElement(Watermark())
-    addElement(TabGUI())
     addElement(Arraylist())
     addElement(ScoreboardElement())
     addElement(Notifications())
-    addElement(HotKeys())
   }
 
   /** Render all elements */
