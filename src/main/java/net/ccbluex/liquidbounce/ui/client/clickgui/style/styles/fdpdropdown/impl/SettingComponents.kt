@@ -16,11 +16,11 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.util
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.EaseInOutQuad
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.objects.PasswordField
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.GuiEvents
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexture
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.updateTextureCache
+import net.ccbluex.liquidbounce.utils.ui.EditableText
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -28,7 +28,6 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.blendColors
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
-import net.ccbluex.liquidbounce.utils.ui.EditableText
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import org.lwjgl.input.Keyboard
@@ -55,8 +54,8 @@ class SettingComponents(private val module: Module) : Component() {
     private val sliderIntegerRangeAnimMap = HashMap<IntRangeValue, Array<Animation>>()
     private val fontValueMap = HashMap<FontValue, Float>()
     private val fontValueAnimMap = HashMap<FontValue, Array<Animation>>()
-    var binding: Module? = null
-    var draggingNumber: Value<*>? = null
+    private var binding: Module? = null
+    private var draggingNumber: Value<*>? = null
     var x: Float = 0f
     var y: Float = 0f
     var width: Float = 0f
@@ -64,12 +63,9 @@ class SettingComponents(private val module: Module) : Component() {
     var panelLimitY: Float = 0f
     var alphaAnimation: Int = 0
     var settingSize: Double = 0.0
-    private var selectedField: PasswordField? = null
-    private var selectedStringSetting: TextValue? = null
 
     private val colorSettingAnimMap = HashMap<ColorValue, Array<Animation>>()
     private val colorPickerAnimationMap = HashMap<ColorValue, Animation>()
-    private var originalString: String? = null
 
     init {
         keySettingAnimMap[module] = arrayOf(
@@ -146,17 +142,22 @@ class SettingComponents(private val module: Module) : Component() {
     }
 
     override fun initGui() {
+        chosenText = null
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (binding != null) {
-            selectedField = null
             if (keyCode == Keyboard.KEY_SPACE || keyCode == Keyboard.KEY_ESCAPE || keyCode == Keyboard.KEY_DELETE) {
                 binding!!.keyBind = Keyboard.KEY_NONE
             } else {
                 binding!!.keyBind = keyCode
             }
             binding = null
+            return
+        }
+
+        if (keyCode == Keyboard.KEY_RETURN) {
+            chosenText = null
             return
         }
 
@@ -173,44 +174,77 @@ class SettingComponents(private val module: Module) : Component() {
                     chosenText!!.cursorIndex = min(chosenText!!.cursorIndex + 1, chosenText!!.string.length)
                 }
                 Keyboard.KEY_BACK -> {
-                    if (chosenText!!.cursorIndex > 0 && chosenText!!.string.isNotEmpty()) {
-                        chosenText!!.string = chosenText!!.string.removeRange(chosenText!!.cursorIndex - 1, chosenText!!.cursorIndex)
-                        chosenText!!.cursorIndex--
+                    if (chosenText!!.string.isNotEmpty()) {
+                        chosenText!!.cursorIndex = chosenText!!.cursorIndex.coerceIn(0, chosenText!!.string.length)
+                        if (chosenText!!.cursorIndex > 0) {
+                            val removalStart = chosenText!!.cursorIndex - 1
+                            val removalEnd = chosenText!!.cursorIndex
+                            if (removalStart < removalEnd && removalEnd <= chosenText!!.string.length) {
+                                chosenText!!.string = chosenText!!.string.removeRange(removalStart, removalEnd)
+                                chosenText!!.cursorIndex = removalStart
+                            }
+                        }
                     }
                 }
                 Keyboard.KEY_DELETE -> {
-                    if (chosenText!!.cursorIndex < chosenText!!.string.length && chosenText!!.string.isNotEmpty()) {
-                        chosenText!!.string = chosenText!!.string.removeRange(chosenText!!.cursorIndex, chosenText!!.cursorIndex + 1)
+                    if (chosenText!!.string.isNotEmpty()) {
+                        chosenText!!.cursorIndex = chosenText!!.cursorIndex.coerceIn(0, chosenText!!.string.length - 1)
+                        if (chosenText!!.cursorIndex < chosenText!!.string.length) {
+                            val removalStart = chosenText!!.cursorIndex
+                            val removalEnd = chosenText!!.cursorIndex + 1
+                            if (removalStart < removalEnd && removalEnd <= chosenText!!.string.length) {
+                                chosenText!!.string = chosenText!!.string.removeRange(removalStart, removalEnd)
+                            }
+                        }
                     }
                 }
                 else -> {
                     if (!typedChar.isISOControl()) {
-                        chosenText!!.string = chosenText!!.string.substring(0, chosenText!!.cursorIndex) +
-                                typedChar +
-                                chosenText!!.string.substring(chosenText!!.cursorIndex)
-                        chosenText!!.cursorIndex++
+                        chosenText!!.cursorIndex = chosenText!!.cursorIndex.coerceIn(0, chosenText!!.string.length)
+                        val insertionIndex = chosenText!!.cursorIndex
+                        chosenText!!.string =
+                            chosenText!!.string.substring(0, insertionIndex) +
+                                    typedChar +
+                                    chosenText!!.string.substring(insertionIndex)
+                        chosenText!!.cursorIndex = insertionIndex + 1
                     }
                 }
             }
 
-            (chosenText!!.value as? TextValue)?.set(chosenText!!.string, true)
-            return
-        }
-
-        if (selectedField != null) {
-            if (keyCode == Keyboard.KEY_ESCAPE) {
-                selectedField = null
-                return
+            val value = chosenText!!.value
+            if (value is TextValue || value is ColorValue) {
+                when (value) {
+                    is TextValue -> value.set(chosenText!!.string, true)
+                    is ColorValue -> {
+                        try {
+                            val numericString = chosenText!!.string.filter { it.isDigit() }
+                            if (numericString.isNotEmpty()) {
+                                val intValue = numericString.toInt().coerceIn(0, 255)
+                                chosenText!!.string = intValue.toString()
+                                when (value.rgbaIndex) {
+                                    0 -> value.set(Color(intValue, value.get().green, value.get().blue, value.get().alpha), true)
+                                    1 -> value.set(Color(value.get().red, intValue, value.get().blue, value.get().alpha), true)
+                                    2 -> value.set(Color(value.get().red, value.get().green, intValue, value.get().alpha), true)
+                                    3 -> value.set(Color(value.get().red, value.get().green, value.get().blue, intValue), true)
+                                }
+                            } else {
+                                chosenText!!.string = "0"
+                            }
+                        } catch (e: NumberFormatException) {
+                            chosenText!!.string = "0"
+                        }
+                    }
+                    else -> { }
+                }
             }
-            selectedField!!.textboxKeyTyped(typedChar, keyCode)
-            selectedStringSetting!!.set(selectedField!!.textValue, true)
+
+            return
         }
     }
 
     fun handle(mouseX: Int, mouseY: Int, button: Int, type: GuiEvents) {
         val textColor = Color(255, 255, 255, alphaAnimation)
         val darkRectColor = Color(48, 50, 55, alphaAnimation)
-        val darkRectColorDisabled = Color(52, 52, 52, alphaAnimation)
         val darkRectHover = DrRenderUtils.brighter(darkRectColor, .8f)
 
         val accent = colormode.equals("Color", ignoreCase = true)
@@ -750,20 +784,14 @@ class SettingComponents(private val module: Module) : Component() {
             // ----- TextValue -----
             if (setting is TextValue) {
                 val startText = setting.name + ": "
-                var valueText = setting.get()
+                val valueText = setting.get()
                 val titleX = x + 5f
                 val textY = settingY + 4f
-                var textX = titleX + Fonts.InterMedium_18.stringWidth(startText).toFloat()
+                val textX = titleX + Fonts.InterMedium_18.stringWidth(startText).toFloat()
                 if (type == GuiEvents.CLICK) {
-                    if (mouseX >= textX && mouseX <= x + width && mouseY >= textY - 2 && mouseY <= textY + Fonts.InterMedium_18.height) {
-                        chosenText = EditableText.forTextValue(setting)
-                        originalString = valueText
-                    } else {
-                        chosenText = null
-                        if (originalString != null) {
-                            setting.set(originalString!!, true)
-                        }
-                    }
+                    chosenText = if (mouseX.toFloat() in textX..(x + width) && mouseY.toFloat() in (textY - 2)..(textY + Fonts.InterMedium_18.height)) {
+                        EditableText.forTextValue(setting)
+                    } else null
                 }
                 var highlightCursor: (Float) -> Unit = {}
                 chosenText?.let {
@@ -783,11 +811,7 @@ class SettingComponents(private val module: Module) : Component() {
                 Fonts.InterMedium_18.drawString(startText, titleX, textY, textColor.rgb)
                 Fonts.InterMedium_18.drawString(valueText, textX, textY, textColor.rgb)
                 highlightCursor(textX)
-                if (chosenText?.value == setting) {
-                    setting.set(chosenText?.string ?: valueText, true)
-                } else {
-                    setting.set(valueText, true)
-                }
+                setting.set(chosenText?.string ?: valueText, true)
                 count++
             }
 
@@ -864,21 +888,50 @@ class SettingComponents(private val module: Module) : Component() {
                 if (type == GuiEvents.CLICK && button == 1 && hoveringHex) {
                     setting.showOptions = !setting.showOptions
                 }
-                var extraHeight = 0f
-                if (setting.showOptions) {
+
+                val extraOptionsHeight: Float = if (setting.showOptions && !setting.showPicker) {
                     val rgbaLabels = listOf("R", "G", "B", "A")
-                    val mainColor = currentColor
-                    val rgbaValues = listOf(mainColor.red, mainColor.green, mainColor.blue, mainColor.alpha)
-                    val optionStartY = settingY + 3 + Fonts.InterMedium_18.height * 2 + 4
+                    GL11.glDisable(GL11.GL_SCISSOR_TEST)
+                    OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
+                    GlStateManager.disableBlend()
+                    GlStateManager.disableAlpha()
+                    GlStateManager.enableAlpha()
+                    glAlphaFunc(GL11.GL_GREATER, 0.1f)
+                    GlStateManager.color(1f, 1f, 1f, 1f)
                     val labelWidth = rgbaLabels.maxOf { Fonts.InterMedium_18.stringWidth(it).toFloat() }
+                    val optionStartY = settingY + 3 + Fonts.InterMedium_18.height * 2 + 4
                     var optionY = optionStartY
                     rgbaLabels.forEachIndexed { index, label ->
-                        val valueText = rgbaValues[index].toString()
+                        val valueText = when (index) {
+                            0 -> currentColor.red.toString()
+                            1 -> currentColor.green.toString()
+                            2 -> currentColor.blue.toString()
+                            else -> currentColor.alpha.toString()
+                        }
                         Fonts.InterMedium_18.drawString("$label:", x + 5, optionY, textColor.rgb)
-                        Fonts.InterMedium_18.drawString(valueText, x + 5 + labelWidth + 5, optionY, Color.LIGHT_GRAY.rgb)
-                        optionY += Fonts.InterMedium_18.height + 2
+                        val valueTextColor = if (chosenText != null && chosenText!!.value == setting && setting.rgbaIndex == index) {
+                            Color.WHITE
+                        } else {
+                            Color.LIGHT_GRAY
+                        }
+                        Fonts.InterMedium_18.drawString(valueText, x + 5 + labelWidth + 10, optionY, valueTextColor.rgb)
+                        val valueWidth = Fonts.InterMedium_18.stringWidth(valueText).toFloat()
+                        val rgbaTextX = x + 5 + labelWidth + 10
+                        val rgbaTextY = optionY - 2
+                        val rgbaTextWidth = valueWidth
+                        val rgbaTextHeight = Fonts.InterMedium_18.height + 4
+                        if (type == GuiEvents.CLICK && button == 0 &&
+                            mouseX.toFloat() >= rgbaTextX && mouseX.toFloat() <= rgbaTextX + rgbaTextWidth &&
+                            mouseY.toFloat() >= rgbaTextY && mouseY.toFloat() <= rgbaTextY + rgbaTextHeight
+                        ) {
+                            chosenText = EditableText.forRGBA(setting, index)
+                            setting.rgbaIndex = index
+                        }
+                        optionY += Fonts.InterMedium_18.height + 4
                     }
-                    extraHeight = optionY - optionStartY
+                    optionY - optionStartY
+                } else {
+                    0f
                 }
                 val colorPickerWidth = 75
                 val colorPickerHeight = 50
@@ -886,23 +939,23 @@ class SettingComponents(private val module: Module) : Component() {
                 val hueSliderHeight = 50
                 val spacingBetweenSliders = 5
                 val colorPickerStartX = (x + 5).toInt()
-                val colorPickerStartY = (settingY + 15 + extraHeight).toInt()
+                val colorPickerStartY = (settingY + 15 + extraOptionsHeight).toInt()
                 val colorPickerEndX = colorPickerStartX + colorPickerWidth
                 val colorPickerEndY = colorPickerStartY + colorPickerHeight
                 val hueSliderX = colorPickerEndX + spacingBetweenSliders
                 val hueSliderEndY = colorPickerStartY + hueSliderHeight
                 val opacityStartX = hueSliderX + hueSliderWidth + spacingBetweenSliders
                 val opacityEndX = opacityStartX + hueSliderWidth
-                val hue = if (rainbow) {
+                val hueVal = if (rainbow) {
                     Color.RGBtoHSB(currentColor.red, currentColor.green, currentColor.blue, null)[0]
                 } else {
                     setting.hueSliderY
                 }
                 if (setting.showPicker) {
-                    drawRect(colorPickerStartX, colorPickerStartY, colorPickerEndX, colorPickerEndY, darkRectHover.rgb)
+                    drawRect(colorPickerStartX, colorPickerStartY, colorPickerEndX, colorPickerEndY, DrRenderUtils.applyOpacity(Color(48, 50, 55, alphaAnimation), 0.8f).rgb)
                     setting.updateTextureCache(
                         id = 0,
-                        hue = hue,
+                        hue = hueVal,
                         width = colorPickerWidth,
                         height = colorPickerHeight,
                         generateImage = { image, _ ->
@@ -910,7 +963,7 @@ class SettingComponents(private val module: Module) : Component() {
                                 for (py in 0 until colorPickerHeight) {
                                     val localS = px / colorPickerWidth.toFloat()
                                     val localB = 1.0f - (py / colorPickerHeight.toFloat())
-                                    val rgb = Color.HSBtoRGB(hue, localS, localB)
+                                    val rgb = Color.HSBtoRGB(hueVal, localS, localB)
                                     image.setRGB(px, py, rgb)
                                 }
                             }
@@ -924,7 +977,7 @@ class SettingComponents(private val module: Module) : Component() {
                     RenderUtils.drawBorder(markerX - 2f, markerY - 2f, markerX + 3f, markerY + 3f, 1.5f, Color.WHITE.rgb)
                     setting.updateTextureCache(
                         id = 1,
-                        hue = hue,
+                        hue = hueVal,
                         width = hueSliderWidth,
                         height = hueSliderHeight,
                         generateImage = { image, _ ->
@@ -952,8 +1005,8 @@ class SettingComponents(private val module: Module) : Component() {
                                     val gridX = x / gridSize
                                     val gridY = y / gridSize
                                     val checkerboardColor = if ((gridY + gridX) % 2 == 0) Color.WHITE.rgb else Color.BLACK.rgb
-                                    val alpha = ((1 - y.toFloat() / hueSliderHeight.toFloat()) * 255).roundToInt()
-                                    val finalColor = blendColors(Color(checkerboardColor), currentColor.withAlpha(alpha))
+                                    val alphaVal = ((1 - y.toFloat() / hueSliderHeight.toFloat()) * 255).roundToInt()
+                                    val finalColor = blendColors(Color(checkerboardColor), currentColor.withAlpha(alphaVal))
                                     image.setRGB(x, y, finalColor.rgb)
                                 }
                             }
@@ -962,7 +1015,7 @@ class SettingComponents(private val module: Module) : Component() {
                             drawTexture(id, opacityStartX, colorPickerStartY, hueSliderWidth, hueSliderHeight)
                         }
                     )
-                    val hueMarkerY = (colorPickerStartY..(colorPickerStartY + hueSliderHeight)).lerpWith(hue)
+                    val hueMarkerY = (colorPickerStartY..(colorPickerStartY + hueSliderHeight)).lerpWith(hueVal)
                     RenderUtils.drawBorder(hueSliderX - 1f, hueMarkerY - 1f, hueSliderX + hueSliderWidth + 1f, hueMarkerY + 1f, 1.5f, Color.WHITE.rgb)
                     val opacityMarkerY = (colorPickerStartY..(colorPickerStartY + hueSliderHeight)).lerpWith(1 - setting.opacitySliderY)
                     RenderUtils.drawBorder(opacityStartX - 1f, opacityMarkerY - 1f, opacityEndX + 1f, opacityMarkerY + 1f, 1.5f, Color.WHITE.rgb)
@@ -997,16 +1050,16 @@ class SettingComponents(private val module: Module) : Component() {
                         }
                         if (button == 0) {
                             setting.lastChosenSlider = when {
-                                inColorPicker   -> ColorValue.SliderType.COLOR
-                                inHueSlider     -> ColorValue.SliderType.HUE
+                                inColorPicker -> ColorValue.SliderType.COLOR
+                                inHueSlider -> ColorValue.SliderType.HUE
                                 inOpacitySlider -> ColorValue.SliderType.OPACITY
-                                else            -> null
+                                else -> null
                             }
                         }
                     }
-                    count += ((colorPickerHeight + extraHeight) / rectHeight) + 0.5f
+                    count += ((colorPickerHeight +  extraOptionsHeight) / rectHeight) + 0.5f
                 } else {
-                    count += (extraHeight / rectHeight) + 0.2f
+                    count += ( extraOptionsHeight / rectHeight) + 0.2f
                 }
                 GL11.glDisable(GL11.GL_SCISSOR_TEST)
                 OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
@@ -1119,7 +1172,7 @@ class SettingComponents(private val module: Module) : Component() {
         block()
     }
 
-    fun isClickable(y: Float): Boolean {
+    private fun isClickable(y: Float): Boolean {
         return y > panelLimitY && y < panelLimitY + 17 + Main.allowedClickGuiHeight
     }
 

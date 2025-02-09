@@ -49,6 +49,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
     val clickHeight by int("Tab Height", 250, 100.. 500) { style == "FDP" }
 
     override fun onEnable() {
+        Keyboard.enableRepeatEvents(true)
         lastScale = mc.gameSettings.guiScale
         mc.gameSettings.guiScale = 2
 
@@ -63,16 +64,18 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
             }
             style.equals("FDP", ignoreCase = true) -> {
                 mc.displayGuiScreen(FDPDropdownClickGUI())
-                Keyboard.enableRepeatEvents(true)
                 this.state = false
             }
             else -> {
                 updateStyle()
                 mc.displayGuiScreen(clickGui)
-                Keyboard.enableRepeatEvents(true)
                 this.state = false
             }
         }
+    }
+
+    override fun onDisable() {
+        Keyboard.enableRepeatEvents(false)
     }
 
     private fun updateStyle() {
