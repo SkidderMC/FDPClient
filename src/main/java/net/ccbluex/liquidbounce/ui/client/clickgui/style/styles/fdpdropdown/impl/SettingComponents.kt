@@ -760,18 +760,21 @@ class SettingComponents(private val module: Module) : Component() {
             // ----- ColorValue -----
             if (setting is ColorValue) {
                 val currentColor = setting.selectedColor()
-                val text = setting.name + ":"
-                Fonts.InterMedium_18.drawString(text, x + 5, settingY + 3, textColor.rgb)
-
+                val labelText = setting.name + ":"
+                Fonts.InterMedium_18.drawString(labelText, x + 5, settingY + 3, textColor.rgb)
                 val colorCodeText = "#%08X".format(currentColor.rgb)
-                Fonts.InterMedium_18.drawString(colorCodeText, x + 5, settingY + 3 + Fonts.InterMedium_18.height + 2, textColor.rgb)
+                Fonts.InterMedium_18.drawString(
+                    colorCodeText,
+                    x + 5,
+                    settingY + 3 + Fonts.InterMedium_18.height + 2,
+                    textColor.rgb
+                )
 
                 val previewSize = 9
                 val previewX2 = x + width - 10
                 val previewX1 = previewX2 - previewSize
                 val previewY1 = settingY + 2
                 val previewY2 = previewY1 + previewSize
-
                 drawRect(previewX1, previewY1, previewX2, previewY2, currentColor.rgb)
 
                 val rainbowPreviewX2 = previewX1 - previewSize
@@ -787,22 +790,25 @@ class SettingComponents(private val module: Module) : Component() {
                 }
 
                 val rainbow = setting.rainbow
-
-                val hoveringColorPreview = isClickable(settingY + 2)
-                        && DrRenderUtils.isHovering(
-                    previewX1, previewY1,
-                    previewSize.toFloat(),
-                    previewSize.toFloat(),
-                    mouseX, mouseY
-                )
-                val hoveringRainbowPreview = isClickable(settingY + 2)
-                        && rainbowPreviewX1 > x + 4
-                        && DrRenderUtils.isHovering(
-                    rainbowPreviewX1, previewY1,
-                    previewSize.toFloat(),
-                    previewSize.toFloat(),
-                    mouseX, mouseY
-                )
+                val hoveringColorPreview = isClickable(settingY + 2) &&
+                        DrRenderUtils.isHovering(
+                            previewX1,
+                            previewY1,
+                            previewSize.toFloat(),
+                            previewSize.toFloat(),
+                            mouseX,
+                            mouseY
+                        )
+                val hoveringRainbowPreview = isClickable(settingY + 2) &&
+                        (rainbowPreviewX1 > x + 4) &&
+                        DrRenderUtils.isHovering(
+                            rainbowPreviewX1,
+                            previewY1,
+                            previewSize.toFloat(),
+                            previewSize.toFloat(),
+                            mouseX,
+                            mouseY
+                        )
 
                 if (type == GuiEvents.CLICK && button in arrayOf(0, 1)) {
                     if (hoveringColorPreview) {
@@ -815,6 +821,38 @@ class SettingComponents(private val module: Module) : Component() {
                     }
                 }
 
+                val hexTextWidth = Fonts.InterMedium_18.stringWidth(colorCodeText).toFloat()
+                val hexTextX = x + 5
+                val hexTextY = settingY + 3 + Fonts.InterMedium_18.height + 2
+                val hoveringHex = DrRenderUtils.isHovering(
+                    hexTextX,
+                    hexTextY,
+                    hexTextWidth,
+                    Fonts.InterMedium_18.height.toFloat(),
+                    mouseX,
+                    mouseY
+                )
+                if (type == GuiEvents.CLICK && button == 1 && hoveringHex) {
+                    setting.showOptions = !setting.showOptions
+                }
+
+                var extraHeight = 0f
+                if (setting.showOptions) {
+                    val rgbaLabels = listOf("R", "G", "B", "A")
+                    val mainColor = currentColor
+                    val rgbaValues = listOf(mainColor.red, mainColor.green, mainColor.blue, mainColor.alpha)
+                    val optionStartY = settingY + 3 + Fonts.InterMedium_18.height * 2 + 4
+                    val labelWidth = rgbaLabels.maxOf { Fonts.InterMedium_18.stringWidth(it).toFloat() }
+                    var optionY = optionStartY
+                    rgbaLabels.forEachIndexed { index, label ->
+                        val valueText = rgbaValues[index].toString()
+                        Fonts.InterMedium_18.drawString("$label:", x + 5, optionY, textColor.rgb)
+                        Fonts.InterMedium_18.drawString(valueText, x + 5 + labelWidth + 5, optionY, Color.LIGHT_GRAY.rgb)
+                        optionY += Fonts.InterMedium_18.height + 2
+                    }
+                    extraHeight = optionY - optionStartY
+                }
+
                 val colorPickerWidth = 75
                 val colorPickerHeight = 50
                 val hueSliderWidth = 7
@@ -822,7 +860,7 @@ class SettingComponents(private val module: Module) : Component() {
                 val spacingBetweenSliders = 5
 
                 val colorPickerStartX = (x + 5).toInt()
-                val colorPickerStartY = (settingY + 15).toInt()
+                val colorPickerStartY = (settingY + 15 + extraHeight).toInt()
                 val colorPickerEndX = colorPickerStartX + colorPickerWidth
                 val colorPickerEndY = colorPickerStartY + colorPickerHeight
 
@@ -901,13 +939,9 @@ class SettingComponents(private val module: Module) : Component() {
                                 for (x in 0 until hueSliderWidth) {
                                     val gridX = x / gridSize
                                     val gridY = y / gridSize
-                                    val checkerboardColor =
-                                        if ((gridY + gridX) % 2 == 0) Color.WHITE.rgb else Color.BLACK.rgb
+                                    val checkerboardColor = if ((gridY + gridX) % 2 == 0) Color.WHITE.rgb else Color.BLACK.rgb
                                     val alpha = ((1 - y.toFloat() / hueSliderHeight.toFloat()) * 255).roundToInt()
-                                    val finalColor = blendColors(
-                                        Color(checkerboardColor),
-                                        currentColor.withAlpha(alpha)
-                                    )
+                                    val finalColor = blendColors(Color(checkerboardColor), currentColor.withAlpha(alpha))
                                     image.setRGB(x, y, finalColor.rgb)
                                 }
                             }
@@ -917,7 +951,7 @@ class SettingComponents(private val module: Module) : Component() {
                         }
                     )
 
-                    val hueMarkerY = (colorPickerStartY..hueSliderEndY).lerpWith(hue)
+                    val hueMarkerY = (colorPickerStartY..(colorPickerStartY + hueSliderHeight)).lerpWith(hue)
                     RenderUtils.drawBorder(
                         hueSliderX - 1f,
                         hueMarkerY - 1f,
@@ -926,8 +960,7 @@ class SettingComponents(private val module: Module) : Component() {
                         1.5f,
                         Color.WHITE.rgb
                     )
-
-                    val opacityMarkerY = (colorPickerStartY..hueSliderEndY).lerpWith(1 - setting.opacitySliderY)
+                    val opacityMarkerY = (colorPickerStartY..(colorPickerStartY + hueSliderHeight)).lerpWith(1 - setting.opacitySliderY)
                     RenderUtils.drawBorder(
                         opacityStartX - 1f,
                         opacityMarkerY - 1f,
@@ -937,15 +970,12 @@ class SettingComponents(private val module: Module) : Component() {
                         Color.WHITE.rgb
                     )
 
-                    val inColorPicker =
-                        (mouseX in colorPickerStartX until colorPickerEndX
-                                && mouseY in colorPickerStartY until colorPickerEndY)
-                    val inHueSlider =
-                        (mouseX in hueSliderX - 1..hueSliderX + hueSliderWidth + 1
-                                && mouseY in colorPickerStartY until hueSliderEndY)
-                    val inOpacitySlider =
-                        (mouseX in opacityStartX - 1..opacityEndX + 1
-                                && mouseY in colorPickerStartY until hueSliderEndY)
+                    val inColorPicker = (mouseX in colorPickerStartX until colorPickerEndX &&
+                            mouseY in colorPickerStartY until colorPickerEndY)
+                    val inHueSlider = (mouseX in (hueSliderX - 1)..(hueSliderX + hueSliderWidth + 1) &&
+                            mouseY in colorPickerStartY until (colorPickerStartY + hueSliderHeight))
+                    val inOpacitySlider = (mouseX in (opacityStartX - 1)..(opacityEndX + 1) &&
+                            mouseY in colorPickerStartY until (colorPickerStartY + hueSliderHeight))
 
                     val sliderType = setting.lastChosenSlider
                     if ((type == GuiEvents.CLICK && button == 0 && (inColorPicker || inHueSlider || inOpacitySlider))
@@ -957,39 +987,19 @@ class SettingComponents(private val module: Module) : Component() {
                             setting.colorPickerPos.x = newS
                             setting.colorPickerPos.y = 1 - newB
                         }
-
-                        var finalColor = Color(
-                            Color.HSBtoRGB(
-                                setting.hueSliderY,
-                                setting.colorPickerPos.x,
-                                1 - setting.colorPickerPos.y
-                            )
-                        )
+                        var finalColor = Color(Color.HSBtoRGB(setting.hueSliderY, setting.colorPickerPos.x, 1 - setting.colorPickerPos.y))
                         if (inHueSlider && (sliderType == null || sliderType == ColorValue.SliderType.HUE)) {
-                            setting.hueSliderY =
-                                ((mouseY - colorPickerStartY) / hueSliderHeight.toFloat()).coerceIn(0f, 1f)
-                            finalColor = Color(
-                                Color.HSBtoRGB(
-                                    setting.hueSliderY,
-                                    setting.colorPickerPos.x,
-                                    1 - setting.colorPickerPos.y
-                                )
-                            )
+                            setting.hueSliderY = ((mouseY - colorPickerStartY) / hueSliderHeight.toFloat()).coerceIn(0f, 1f)
+                            finalColor = Color(Color.HSBtoRGB(setting.hueSliderY, setting.colorPickerPos.x, 1 - setting.colorPickerPos.y))
                         }
-
                         if (inOpacitySlider && (sliderType == null || sliderType == ColorValue.SliderType.OPACITY)) {
-                            setting.opacitySliderY =
-                                1 - ((mouseY - colorPickerStartY) / hueSliderHeight.toFloat()).coerceIn(0f, 1f)
+                            setting.opacitySliderY = 1 - ((mouseY - colorPickerStartY) / hueSliderHeight.toFloat()).coerceIn(0f, 1f)
                         }
-
                         finalColor = finalColor.withAlpha((setting.opacitySliderY * 255).roundToInt())
-
                         sliderValueHeld = setting
-
                         withDelayedSave {
                             setting.set(finalColor, true)
                         }
-
                         if (button == 0) {
                             setting.lastChosenSlider = when {
                                 inColorPicker   -> ColorValue.SliderType.COLOR
@@ -999,19 +1009,13 @@ class SettingComponents(private val module: Module) : Component() {
                             }
                         }
                     }
-
                     count += (colorPickerHeight / rectHeight) + 0.5f
                 } else {
                     count += 0.2f
                 }
 
                 GL11.glDisable(GL11.GL_SCISSOR_TEST)
-                OpenGlHelper.glBlendFunc(
-                    GL11.GL_SRC_ALPHA,
-                    GL11.GL_ONE_MINUS_SRC_ALPHA,
-                    GL11.GL_ONE,
-                    GL11.GL_ZERO
-                )
+                OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
                 GlStateManager.disableBlend()
                 GlStateManager.disableAlpha()
                 GlStateManager.enableAlpha()

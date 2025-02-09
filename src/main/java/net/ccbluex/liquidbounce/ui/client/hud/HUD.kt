@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
+import net.ccbluex.liquidbounce.utils.ui.EditableText
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11.*
 import java.util.*
@@ -162,7 +163,11 @@ object HUD : MinecraftInstance {
   }
 
   /** Remove [element] from HUD */
-  fun removeElement(element: Element): HUD {
+  fun removeElement(hudDesigner: GuiHudDesigner, element: Element): HUD {
+    if (hudDesigner.elementEditableText?.element == element) {
+      hudDesigner.elementEditableText = null
+    }
+
     element.destroyElement()
     elements.remove(element)
     return this

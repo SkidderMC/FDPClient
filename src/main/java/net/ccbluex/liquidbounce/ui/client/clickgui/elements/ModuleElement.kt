@@ -22,10 +22,18 @@ class ModuleElement(val module: Module) : ButtonElement(module.name, buttonActio
         get() = module.description
 
     var showSettings = false
+    var disableFiltering = false
+
+    var supposedWidth = 0
     var settingsWidth = 0
         set(value) {
-            if (value > settingsWidth) {
+            if (value > settingsWidth || disableFiltering) {
+                disableFiltering = false
                 field = value
+            }
+
+            if (value > supposedWidth) {
+                supposedWidth = value
             }
         }
 
@@ -36,8 +44,11 @@ class ModuleElement(val module: Module) : ButtonElement(module.name, buttonActio
             field = value.coerceIn(0, 255)
         }
 
-    override fun drawScreenAndClick(mouseX: Int, mouseY: Int, mouseButton: Int?) =
-        clickGui.style.drawModuleElementAndClick(mouseX, mouseY, this, mouseButton)
+    override fun drawScreenAndClick(mouseX: Int, mouseY: Int, mouseButton: Int?): Boolean {
+        this.supposedWidth = 0
+
+        return clickGui.style.drawModuleElementAndClick(mouseX, mouseY, this, mouseButton)
+    }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
         if (!isHovered(mouseX, mouseY)) {
@@ -58,6 +69,13 @@ class ModuleElement(val module: Module) : ButtonElement(module.name, buttonActio
         }
 
         return true
+    }
+
+    fun adjustWidth() {
+        if (settingsWidth - supposedWidth > 16) {
+            disableFiltering = true
+            settingsWidth = supposedWidth
+        }
     }
 
 }

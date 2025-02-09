@@ -63,11 +63,13 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
             }
             style.equals("FDP", ignoreCase = true) -> {
                 mc.displayGuiScreen(FDPDropdownClickGUI())
+                Keyboard.enableRepeatEvents(true)
                 this.state = false
             }
             else -> {
                 updateStyle()
                 mc.displayGuiScreen(clickGui)
+                Keyboard.enableRepeatEvents(true)
                 this.state = false
             }
         }

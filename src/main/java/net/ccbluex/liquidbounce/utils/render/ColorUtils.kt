@@ -22,6 +22,11 @@ object ColorUtils {
     fun isAllowedCharacter(character: Char) =
         character.code != 167 && character.code >= 32 && character.code != 127
 
+    fun isValidColorInput(input: String): Boolean {
+        val regex = Regex("^(0|[1-9][0-9]{0,2})$")
+        return regex.matches(input)
+    }
+
     val COLOR_PATTERN = Pattern.compile("(?i)§[0-9A-FK-OR]")
 
     val hexColors = IntArray(16) { i ->
@@ -33,6 +38,8 @@ object ColorUtils {
 
         (red and 255 shl 16) or (green and 255 shl 8) or (blue and 255)
     }
+
+    val minecraftRed = Color(255, 85, 85) // §c
 
     fun Color.withAlpha(a: Int) = Color(red, green, blue, a)
     fun Color.normalize() = Color(this.red / 255f, this.green / 255f, this.blue / 255f, this.alpha / 255f)
@@ -48,6 +55,24 @@ object ColorUtils {
             argb and 0xFF
         )
     }
+
+    fun hexToColorInt(str: String): Int {
+        val hex = str.removePrefix("#")
+
+        if (hex.isEmpty()) Color.WHITE.rgb
+
+        val expandedHex = when (hex.length) {
+            1 -> hex.repeat(3) + "FF"
+            2 -> hex.repeat(3) + "FF"
+            3 -> hex[0].toString().repeat(2) + hex[1].toString().repeat(2) + hex[2].toString().repeat(2) + "FF"
+            6 -> hex + "FF"
+            8 -> hex
+            else -> throw IllegalArgumentException("Invalid hex color format")
+        }
+
+        return Color.decode("#$expandedHex").rgb
+    }
+
     fun unpackARGBFloatValue(argb: Int): FloatArray {
         return floatArrayOf(
             (argb ushr 24 and 0xFF) / 255F,

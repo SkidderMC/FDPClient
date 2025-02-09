@@ -86,7 +86,6 @@ class IntValue(
     val maximum = range.last
 }
 
-// TODO: Replace Min/Max options with this instead
 class IntRangeValue(
     name: String,
     value: IntRange,
@@ -161,7 +160,6 @@ class FloatValue(
     val maximum = range.endInclusive
 }
 
-// TODO: Replace Min/Max options with this instead
 class FloatRangeValue(
     name: String,
     value: ClosedFloatingPointRange<Float>,
@@ -336,7 +334,7 @@ class ListValue(
 }
 
 class ColorValue(
-    name: String, defaultColor: Color, var rainbow: Boolean = false, var showPicker: Boolean = false
+    name: String, defaultColor: Color, var rainbow: Boolean = false
 ) : Value<Color>(name, defaultColor) {
     // Sliders
     var hueSliderY = 0F
@@ -344,6 +342,12 @@ class ColorValue(
 
     // Slider positions in the 0-1 range
     var colorPickerPos = Vector2f(0f, 0f)
+
+    var showPicker = false
+
+    var showOptions = false
+
+    var rgbaIndex = 0
 
     var lastChosenSlider: SliderType? = null
         get() {

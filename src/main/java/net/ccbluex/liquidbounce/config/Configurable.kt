@@ -121,13 +121,12 @@ open class Configurable(
     }
 
     fun color(
-        name: String, value: Color, rainbow: Boolean = false, showPicker: Boolean = false, isSupported: (() -> Boolean)? = null
-    ) = +ColorValue(name, value, rainbow, showPicker).apply {
+        name: String, value: Color, rainbow: Boolean = false, isSupported: (() -> Boolean)? = null
+    ) = +ColorValue(name, value, rainbow).apply {
         if (isSupported != null) setSupport { isSupported.invoke() }
     }
 
     fun color(
-        name: String, value: Int, rainbow: Boolean = false, showPicker: Boolean = false, isSupported: (() -> Boolean)? = null
-    ) = color(name, Color(value, true), rainbow, showPicker, isSupported)
-
+        name: String, value: Int, rainbow: Boolean = false, isSupported: (() -> Boolean)? = null
+    ) = color(name, Color(value, true), rainbow, isSupported)
 }

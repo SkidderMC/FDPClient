@@ -16,22 +16,39 @@ import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.client.asResourceLocation
 import net.ccbluex.liquidbounce.utils.client.playSound
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
+import net.ccbluex.liquidbounce.utils.ui.EditableText
 import org.lwjgl.input.Mouse
 import java.awt.Color
 import java.math.BigDecimal
 import kotlin.math.max
 
 abstract class Style : MinecraftInstance {
+    val rgbaLabels = listOf("R:", "G:", "B:", "A:")
+
     var sliderValueHeld: Value<*>? = null
         get() {
             if (!Mouse.isButtonDown(0)) field = null
             return field
         }
+        set(value) {
+            if (chosenText?.value != value) {
+                chosenText = null
+            }
+
+            field = value
+        }
+
+    var chosenText: EditableText? = null
 
     abstract fun drawPanel(mouseX: Int, mouseY: Int, panel: Panel)
     abstract fun drawHoverText(mouseX: Int, mouseY: Int, text: String)
     abstract fun drawButtonElement(mouseX: Int, mouseY: Int, buttonElement: ButtonElement)
-    abstract fun drawModuleElementAndClick(mouseX: Int, mouseY: Int, moduleElement: ModuleElement, mouseButton: Int?): Boolean
+    abstract fun drawModuleElementAndClick(
+        mouseX: Int,
+        mouseY: Int,
+        moduleElement: ModuleElement,
+        mouseButton: Int?
+    ): Boolean
 
     fun clickSound() {
         mc.playSound("gui.button.press".asResourceLocation())
@@ -82,5 +99,21 @@ abstract class Style : MinecraftInstance {
                 }
             }
         }
+    }
+
+    fun resetChosenText(value: Value<*>) {
+        if (chosenText?.value == value) {
+            chosenText = null
+        }
+    }
+
+    fun moveRGBAIndexBy(delta: Int) {
+        val chosenText = chosenText ?: return
+
+        if (chosenText.value !is ColorValue) {
+            return
+        }
+
+        this.chosenText = EditableText.forRGBA(chosenText.value, (chosenText.value.rgbaIndex + delta).mod(4))
     }
 }

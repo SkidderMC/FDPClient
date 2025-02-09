@@ -10,8 +10,8 @@ import net.ccbluex.liquidbounce.FDPClient.clickGui
 import net.ccbluex.liquidbounce.file.FileConfig
 import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
-import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ModuleElement
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.io.json
 import net.ccbluex.liquidbounce.utils.io.readJson
 import java.io.*
 
@@ -38,19 +38,6 @@ class ClickGuiConfig(file: File) : FileConfig(file) {
                 panel.x = panelObject["posX"].asInt
                 panel.y = panelObject["posY"].asInt
 
-                for (element in panel.elements) {
-                    if (element !is ModuleElement) continue
-                    if (!panelObject.has(element.module.name)) continue
-                    try {
-                        val elementObject = panelObject.getAsJsonObject(element.module.name)
-                        element.showSettings = elementObject["Settings"].asBoolean
-                    } catch (e: Exception) {
-                        LOGGER.error(
-                            "Error while loading clickgui module element with the name '" + element.module.getName() + "' (Panel Name: " + panel.name + ").",
-                            e
-                        )
-                    }
-                }
             } catch (e: Exception) {
                 LOGGER.error("Error while loading clickgui panel with the name '" + panel.name + "'.", e)
             }
@@ -64,23 +51,15 @@ class ClickGuiConfig(file: File) : FileConfig(file) {
      */
     @Throws(IOException::class)
     override fun saveConfig() {
-        val jsonObject = JsonObject()
-
-        for (panel in clickGui.panels) {
-            val panelObject = JsonObject()
-            panelObject.run {
-                addProperty("open", panel.open)
-                addProperty("visible", panel.isVisible)
-                addProperty("posX", panel.x)
-                addProperty("posY", panel.y)
+        val jsonObject = json {
+            for (panel in clickGui.panels) {
+                panel.name to json {
+                    "open" to panel.open
+                    "visible" to panel.isVisible
+                    "posX" to panel.x
+                    "posY" to panel.y
+                }
             }
-            for (element in panel.elements) {
-                if (element !is ModuleElement) continue
-                val elementObject = JsonObject()
-                elementObject.addProperty("Settings", element.showSettings)
-                panelObject.add(element.module.name, elementObject)
-            }
-            jsonObject.add(panel.name, panelObject)
         }
 
         file.writeText(PRETTY_GSON.toJson(jsonObject))
