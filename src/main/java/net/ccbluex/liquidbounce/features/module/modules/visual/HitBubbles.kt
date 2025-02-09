@@ -29,7 +29,7 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL) {
     init {
         state = true
     }
-    
+
     private val followHit by boolean("Follow Hit", true)
     private val dynamicRotation by boolean("Dynamic Rotation", false)
 
@@ -49,8 +49,8 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL) {
         val bubblePosition = target.positionVector.addVector(0.0, target.height / 1.6, 0.0)
 
         val hitLocation = if (followHit) {
-            val playerEyes = mc.thePlayer.getPositionEyes(1.0f)
-            val playerLook = mc.thePlayer.getLook(1.0f)
+            val playerEyes = mc.thePlayer?.getPositionEyes(1.0f) ?: return@handler
+            val playerLook = mc.thePlayer?.getLook(1.0f) ?: return@handler
             playerEyes.addVector(
                 playerLook.xCoord * 3.0,
                 playerLook.yCoord * 3.0,

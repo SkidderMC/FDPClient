@@ -6,32 +6,26 @@
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.FDPClient.hud
-import net.ccbluex.liquidbounce.config.IntValue
-import net.ccbluex.liquidbounce.config.ListValue
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blue2Value
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.blueValue
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.green2Value
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.greenValue
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.red2Value
-import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notifications.Companion.redValue
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold35
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontIconXD85
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontNovoAngularIcon85
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI35
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI40
+import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold35
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils
-import net.ccbluex.liquidbounce.utils.render.shader.UIEffectRenderer.drawShadowWithCustomAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.Stencil
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInBackNotify
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeOutBackNotify
-import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI35
-import net.ccbluex.liquidbounce.ui.font.Fonts.fontSFUI40
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
+import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColor
+import net.ccbluex.liquidbounce.utils.render.shader.UIEffectRenderer.drawShadowWithCustomAlpha
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import org.lwjgl.opengl.GL11
@@ -57,24 +51,20 @@ class Notifications(
      */
     private val exampleNotification = Notification("Notification", "This is an example notification.", Type.INFO)
 
-    companion object {
-        val styleValue by ListValue("Mode", arrayOf("ZAVZ", "CLASSIC", "IDE"), "ZAVZ")
-        val redValue by IntValue("Red", 255, 0..255).apply {
-            setSupport { styleValue == "ZAVZ" } }
-        val greenValue by IntValue("Green", 0, 0..255).apply {
-            setSupport { styleValue == "ZAVZ" } }
-        val blueValue by IntValue("Blue", 84, 0..255).apply {
-            setSupport { styleValue == "ZAVZ" } }
-        val red2Value by IntValue("Red2", 0, 0..255).apply {
-            setSupport { styleValue == "ZAVZ" } }
-        val green2Value by IntValue("Green2", 19, 0..255).apply {
-            setSupport { styleValue == "ZAVZ" } }
-        val blue2Value by IntValue("Blue2", 0, 0..255).apply {
-            setSupport { styleValue == "ZAVZ" } }
+    private val styleValue by choices(
+        "Mode", arrayOf("ZAVZ", "CLASSIC", "IDE"), "ZAVZ"
+    )
 
-        val alphaValue by IntValue("Alpha", 0, 0..255).apply {
-            setSupport { styleValue == "ZAVZ" } }
-    }
+    private val colorMode by choices(
+        "Color-Mode", arrayOf("Custom", "Fade", "Theme"), "Custom"
+    )
+
+    private val customColor1 by color("Custom-Color-1", Color(0xFF0054).rgb) { colorMode == "Custom" }
+    private val customColor2 by color("Custom-Color-2", Color(0x001300).rgb) { colorMode == "Custom" }
+
+    private val fadeColor1 by color("Fade-Color-1", Color(0xFF0054).rgb) { colorMode == "Fade" }
+    private val fadeColor2 by color("Fade-Color-2", Color(0x001300).rgb) { colorMode == "Fade" }
+    private val fadeDistance by int("Fade-Distance", 50, 0..100) { colorMode == "Fade" }
 
     /**
      * Draw element
@@ -84,7 +74,30 @@ class Notifications(
         for ((index, notification) in hud.notifications.withIndex()) {
             GL11.glPushMatrix()
 
-            if (notification.drawNotification(index, Companion, renderX.toFloat(), renderY.toFloat())) {
+            val color1: Int
+            val color2: Int
+
+            when (colorMode) {
+                "Custom" -> {
+                    color1 = customColor1.rgb
+                    color2 = customColor2.rgb
+                }
+                "Fade" -> {
+                    color1 = fade(fadeColor1, index * fadeDistance, 100).rgb
+                    color2 = fade(fadeColor2, index * fadeDistance, 100).rgb
+                }
+                "Theme" -> {
+                    val themeColor = getColor(index).rgb
+                    color1 = themeColor
+                    color2 = themeColor
+                }
+                else -> {
+                    color1 = customColor1.rgb
+                    color2 = customColor2.rgb
+                }
+            }
+
+            if (notification.drawNotification(index, styleValue, color1, color2)) {
                 notificationsToRemove.add(notification)
             }
 
@@ -104,7 +117,7 @@ class Notifications(
                 "IDE" -> Border(-180F, -30F, 0F, 0F)
                 "ZAVZ" -> Border(-185F, -30F, 0F, 0F)
                 "CLASSIC" -> Border(0F, -30F, 135F, 0F)
-                else -> Border(-exampleNotification.width.toFloat(), exampleNotification.height.toFloat(), 0F, 0F)
+                else -> Border(-exampleNotification.width.toFloat(), -exampleNotification.height.toFloat(), 0F, 0F)
             }
         }
 
@@ -137,12 +150,11 @@ class Notification(
     /**
      * Draw notification
      */
-    fun drawNotification(index: Int, parent: Notifications.Companion, originalX: Float, originalY: Float): Boolean {
+    fun drawNotification(index: Int, style: String, colorValue1: Int, colorValue2: Int): Boolean {
         resetColor()
         glColor4f(1f, 1f, 1f, 1f)
 
         val nowTime = System.currentTimeMillis()
-        val style = parent.styleValue
         val realY = -(index + 1) * height
         var pct = (nowTime - animeXTime) / animeTime.toDouble()
 
@@ -193,7 +205,7 @@ class Notification(
                 }
             }
 
-            drawRect(0F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, parent.alphaValue))
+            drawRect(0F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, 150)) // Reduced alpha for better visibility
             drawShadowWithCustomAlpha(0F, 0F, width.toFloat(), height.toFloat(), 240f)
             drawRect(
                 0F,
@@ -395,7 +407,7 @@ class Notification(
 
             // Rendering shapes and elements
             RenderUtils.drawShadow(1F, 0F, width.toFloat() - 1, height.toFloat())
-            drawRect(1F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, 50))
+            drawRect(1F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, 150)) // Reduced alpha for better visibility
 
             // Draw Circle Function
             fun drawCircle(x: Float, y: Float, radius: Float, start: Int, end: Int) {
@@ -413,8 +425,8 @@ class Notification(
                 var i = end.toFloat()
                 while (i >= start) {
                     val c = RenderUtils.getGradientOffset(
-                        Color(redValue, greenValue, blueValue),
-                        Color(red2Value, green2Value, blue2Value, 1),
+                        Color(colorValue1),
+                        Color(colorValue2, true),
                         (abs(System.currentTimeMillis() / 360.0 + (i * 34 / 360) * 56 / 100) / 10)
                     ).rgb
                     val f2 = (c shr 24 and 255).toFloat() / 255.0f
@@ -441,8 +453,8 @@ class Notification(
                 height.toFloat() + 0.0,
                 width * ((nowTime - displayTime) / (animeTime * 2F + time)) + 0.0,
                 height.toFloat() + 2.0,
-                Color(redValue, greenValue, blueValue).rgb,
-                Color(red2Value, green2Value, blue2Value).rgb
+                colorValue1,
+                colorValue2
             )
             drawCircle(16f, 15f, 13f, 0, 360)
 

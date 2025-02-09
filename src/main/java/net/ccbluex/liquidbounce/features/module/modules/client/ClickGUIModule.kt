@@ -37,7 +37,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
     val spacedModules by boolean("SpacedModules", false)
     val panelsForcedInBoundaries by boolean("PanelsForcedInBoundaries", false)
 
-    val headerColor by boolean("Header Color", false) { style == "FDP" }
+    val headerColor by boolean("Header Color", true) { style == "FDP" }
 
     val categoryOutline by boolean("Outline", true) { style == "FDP" }
 

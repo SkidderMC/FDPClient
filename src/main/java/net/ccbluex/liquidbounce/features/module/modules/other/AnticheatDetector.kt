@@ -17,7 +17,8 @@ import net.ccbluex.liquidbounce.utils.client.chat
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.network.play.server.S01PacketJoinGame
 
-object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
+object AnticheatDetector : Module("AntiCheatDetector", Category.OTHER) {
+
     private val debug by boolean("Debug", true)
     private val actionNumbers = mutableListOf<Int>()
     private var check = false
@@ -140,5 +141,9 @@ object AnticheatDetector : Module("AnticheatDetector", Category.OTHER) {
         ticksPassed = 0
         check = false
         detectedACName = ""
+    }
+
+    init {
+        state = true
     }
 }
