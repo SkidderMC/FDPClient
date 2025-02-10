@@ -82,7 +82,7 @@ object FDPClient {
     const val CLIENT_CLOUD = "https://cloud.liquidbounce.net/LiquidBounce"
     const val CLIENT_WEBSITE = "fdpinfo.github.io"
     const val CLIENT_GITHUB = "https://github.com/SkidderMC/FDPClient"
-    const val CLIENT_VERSION = "b12"
+    const val CLIENT_VERSION = "b13"
     
     val clientVersionText = gitInfo["git.build.version"]?.toString() ?: "unknown"
     val clientVersionNumber = clientVersionText.substring(1).toIntOrNull() ?: 0 // version format: "b<VERSION>" on legacy
@@ -93,7 +93,7 @@ object FDPClient {
      * Defines if the client is in development mode.
      * This will enable update checking on commit time instead of regular legacy versioning.
      */
-    const val IN_DEV = true
+    const val IN_DEV = false
 
     val clientTitle = CLIENT_NAME + " " + clientVersionText + " " + clientCommit + "  | " + if (IN_DEV) " | DEVELOPMENT BUILD" else ""
 
@@ -291,7 +291,7 @@ object FDPClient {
                 }
             }
 
-            EventManager.call(StartupEvent)
+            eventManager.call(StartupEvent)
             LOGGER.info("Successfully started client")
         }
     }
@@ -301,7 +301,7 @@ object FDPClient {
      */
     fun stopClient() {
         // Call client shutdown
-        EventManager.call(ClientShutdownEvent)
+        eventManager.call(ClientShutdownEvent)
 
         // Stop all CoroutineScopes
         SharedScopes.stop()
