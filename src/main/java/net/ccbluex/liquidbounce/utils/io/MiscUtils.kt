@@ -157,7 +157,7 @@ object MiscUtils : MinecraftInstance {
         frame.dispose()
 
         return if (actionResult == JFileChooser.APPROVE_OPTION)
-            fileChooser.selectedFile.takeIf { f -> fileFilers.all { it.accept(f) } }
+            fileChooser.selectedFile.takeIf { f -> fileFilers.any { it.accept(f) } }
         else null
     }
 
