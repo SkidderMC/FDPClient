@@ -48,6 +48,9 @@ class GuiFontManager(private val prevGui: GuiScreen) : AbstractScreen() {
     private lateinit var sizeField: GuiTextField
 
     override fun initGui() {
+        buttonList.clear()
+        textFields.clear()
+
         val startPositionY = 22
         val leftStartX = 5
         val rightStartX = width - 80
