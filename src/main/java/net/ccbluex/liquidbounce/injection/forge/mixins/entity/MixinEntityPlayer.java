@@ -7,18 +7,23 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import com.mojang.authlib.GameProfile;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KeepSprint;
+import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
+import net.ccbluex.liquidbounce.features.module.modules.movement.NoSlow;
 import net.ccbluex.liquidbounce.utils.attack.CooldownHelper;
+import net.ccbluex.liquidbounce.utils.client.ClassUtils;
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.entity.player.PlayerCapabilities;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
 import net.minecraft.util.FoodStats;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
@@ -58,6 +63,8 @@ public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
 
     @Shadow
     public InventoryPlayer inventory;
+    @Shadow public ItemStack itemInUse;
+    @Shadow public int itemInUseCount;
     private ItemStack cooldownStack;
     private int cooldownStackSlot;
 
@@ -107,6 +114,27 @@ public abstract class MixinEntityPlayer extends MixinEntityLivingBase {
         // This will be used later in line 1058
         //noinspection UnusedAssignment
         i++;
+    }
+
+    @Inject(method = "getItemInUseCount", at = @At("HEAD"), cancellable = true)
+    private void injectGetItemInUseCount(CallbackInfoReturnable<Integer> cir) {
+        final KillAura killAura = KillAura.INSTANCE;
+        final NoSlow noSlow = NoSlow.INSTANCE;
+
+        if ((Object) this == mc.thePlayer) {
+            ItemStack stack = mc.thePlayer.getHeldItem();
+            if (itemInUseCount > 0 || !ClassUtils.INSTANCE.hasClass("com.orangemarshall.animations.BlockhitAnimation") || stack == null) {
+                return;
+            }
+
+            boolean isForceBlocking = (stack.getItem() instanceof ItemSword && !killAura.getAutoBlock().equals("Off") &&
+                    (killAura.getRenderBlocking() || killAura.getTarget() != null && (killAura.getBlinkAutoBlock() || killAura.getForceBlockRender()))
+                    || noSlow.isUNCPBlocking());
+
+            if (isForceBlocking) {
+                cir.setReturnValue(Integer.MAX_VALUE);
+            }
+        }
     }
 
 }

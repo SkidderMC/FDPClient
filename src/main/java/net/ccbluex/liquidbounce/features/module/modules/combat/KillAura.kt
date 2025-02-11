@@ -1022,6 +1022,10 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
             return
         }
 
+        if (unblockMode == "Empty" && player.inventory.firstEmptyStack !in 0..8) {
+            return
+        }
+
         if (!fake) {
             if (!(blockRate > 0 && nextInt(endExclusive = 100) <= blockRate)) return
 
@@ -1078,7 +1082,13 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
                     }
 
                     "empty" -> {
-                        switchToSlot(player.inventory.firstEmptyStack)
+                        player.inventory.firstEmptyStack.takeIf { it in 0..8 }.let {
+                            if (it == null) {
+                                sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.DOWN))
+                                return@let
+                            }
+                            switchToSlot(it)
+                        }
                     }
                 }
 

@@ -27,6 +27,8 @@ object ClientUtils : MinecraftInstance {
 
     var runTimeTicks = 0
 
+    var profilerName = ""
+
     val LOGGER: Logger = LogManager.getLogger("FDPCLIENT")
 
     fun disableFastRender() {

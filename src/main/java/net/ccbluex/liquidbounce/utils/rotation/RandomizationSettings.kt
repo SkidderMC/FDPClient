@@ -17,16 +17,30 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import kotlin.math.sign
 
-class RandomizationSettings(owner: Module, val generalApply: () -> Boolean = { true }): Configurable("Randomization") {
+class RandomizationSettings(owner: Module, val generalApply: () -> Boolean = { true }) : Configurable("Randomization") {
 
-    private val randomizationPattern by choices("RandomizationPattern", arrayOf("None", "Zig-Zag", "LazyFlick"), "None") { generalApply() }
-    private val yawRandomizationChance by floatRange("YawRandomizationChance", 0.8f..1.0f, 0f..1f) { randomizationChosen }
-    private val yawRandomizationRange by floatRange("YawRandomizationRange", 5f..10f, 0f..30f)
-    { isZizZagActive && !randomizationChosen && yawRandomizationChance.start != 1F }
-    private val yawSpeedIncreaseMultiplier by intRange("YawSpeedIncreaseMultiplier", 50..120, 0..500, suffix = "%") { !isZizZagActive && randomizationChosen }
-    private val pitchRandomizationChance by floatRange("PitchRandomizationChance", 0.8f..1.0f, 0f..1f) { randomizationChosen }
-    private val pitchRandomizationRange by floatRange("PitchRandomizationRange", 5f..10f, 0f..30f)
-    { randomizationChosen && pitchRandomizationChance.start != 1F }
+    private val randomizationPattern by choices(
+        "RandomizationPattern", arrayOf("None", "Zig-Zag", "LazyFlick"), "None"
+    ) { generalApply() }
+    private val yawRandomizationChance by floatRange(
+        "YawRandomizationChance", 0.8f..1.0f, 0f..1f
+    ) { randomizationChosen }
+    private val yawRandomizationRange by floatRange(
+        "YawRandomizationRange",
+        5f..10f,
+        0f..30f
+    ) { isZizZagActive && randomizationChosen && yawRandomizationChance.start != 1F }
+    private val yawSpeedIncreaseMultiplier by intRange(
+        "YawSpeedIncreaseMultiplier", 50..120, 0..500, suffix = "%"
+    ) { !isZizZagActive && randomizationChosen && yawRandomizationChance.start != 1F }
+    private val pitchRandomizationChance by floatRange(
+        "PitchRandomizationChance", 0.8f..1.0f, 0f..1f
+    ) { randomizationChosen }
+    private val pitchRandomizationRange by floatRange(
+        "PitchRandomizationRange",
+        5f..10f,
+        0f..30f
+    ) { randomizationChosen && pitchRandomizationChance.start != 1F }
 
     private val isZizZagActive
         get() = randomizationPattern == "Zig-Zag"
@@ -38,7 +52,9 @@ class RandomizationSettings(owner: Module, val generalApply: () -> Boolean = { t
         val intercept = box.calculateIntercept(eyes, eyes + getVectorForRotation(lastRotations.random()) * range)
 
         // Smooth out randomized rotation pattern using previous rotation to simulate natural movement
-        val pitchMovement = angleDifference(rotation.pitch, lastRotations[2].pitch).sign.takeIf { it != 0f } ?: (-1..1).random().toFloat()
+        val pitchMovement =
+            angleDifference(rotation.pitch, lastRotations[2].pitch).sign.takeIf { it != 0f } ?: (-1..1).random()
+                .toFloat()
         val yawMovement = angleDifference(rotation.yaw, lastRotations[2].yaw)
 
         val yawSign = yawMovement.sign.takeIf { it != 0f } ?: arrayOf(-1f, 1f).random()
