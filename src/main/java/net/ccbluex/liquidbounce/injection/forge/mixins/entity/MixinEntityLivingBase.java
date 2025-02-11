@@ -8,18 +8,16 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.event.EventState;
 import net.ccbluex.liquidbounce.event.JumpEvent;
-import net.ccbluex.liquidbounce.event.LivingUpdateEvent;
-import net.ccbluex.liquidbounce.features.module.modules.movement.AirJump;
+import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Jesus;
 import net.ccbluex.liquidbounce.features.module.modules.movement.NoJumpDelay;
 import net.ccbluex.liquidbounce.features.module.modules.movement.Sprint;
 import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
-import net.ccbluex.liquidbounce.features.module.modules.client.Rotations;
-import net.ccbluex.liquidbounce.utils.rotation.RotationSettings;
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold;
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Tower;
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils;
 import net.ccbluex.liquidbounce.utils.rotation.Rotation;
+import net.ccbluex.liquidbounce.utils.rotation.RotationSettings;
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils;
 import net.ccbluex.liquidbounce.utils.extensions.MathExtensionsKt;
 import net.minecraft.block.Block;
@@ -120,11 +118,6 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Inject(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;isJumping:Z", ordinal = 1))
     private void onJumpSection(CallbackInfo callbackInfo) {
-        if (AirJump.INSTANCE.handleEvents() && isJumping && jumpTicks == 0) {
-            jump();
-            jumpTicks = 10;
-        }
-
         final Jesus liquidWalk = Jesus.INSTANCE;
 
         if (liquidWalk.handleEvents() && !isJumping && !isSneaking() && isInWater() && liquidWalk.getMode().equals("Swim")) {
@@ -160,7 +153,6 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
         return instance instanceof EntityPlayerSP && Rotations.INSTANCE.shouldUseRealisticMode() && rotation != null ? rotation.getYaw() : instance.rotationYaw;
     }
 
-
     /**
      * Inject body rotation modification
      */
@@ -180,15 +172,5 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
         Animations module = Animations.INSTANCE;
 
         return module.handleEvents() ? (2 + (20 - module.getSwingSpeed())) : constant;
-    }
-
-    /**
-     * Injects event for entity updates
-     * creates a LivingUpdateEvent for the current entity
-     */
-    @Inject(method = "onEntityUpdate", at = @At("HEAD"))
-    public void onEntityUpdate(CallbackInfo info) {
-        LivingUpdateEvent livingUpdateEvent = new LivingUpdateEvent((EntityLivingBase) (Object) this);
-        EventManager.INSTANCE.call(livingUpdateEvent);
     }
 }
