@@ -88,9 +88,10 @@ object AnticheatDetector : Module("AntiCheatDetector", Category.OTHER) {
                     else -> "Verus"
                 }
                 -1 -> when {
+                    first in -8287..-8280 -> "Errata"
                     first < -3000 -> "Intave"
                     first in -5..0 -> "Grim"
-                    first in -3005..-2995 -> "Karhu"
+                    first in -3000..-2995 -> "Karhu"
                     else -> "Polar"
                 }
                 else -> null
@@ -127,6 +128,14 @@ object AnticheatDetector : Module("AntiCheatDetector", Category.OTHER) {
             return
         }
 
+        // Old Vulcan
+        if (actionNumbers.take(3) == listOf(-30767, -30766, -25767) &&
+            actionNumbers.drop(3).zipWithNext().all { (prev, curr) -> curr - prev == 1 }) {
+            addNotification(Notification("Alert", "§3Anticheat detected: §aOld Vulcan", Type.WARNING, 3000))
+            actionNumbers.clear()
+            return
+        }
+        
         addNotification(Notification("ERROR", "§3No known anticheat detected.", Type.ERROR, 3000))
         if (debug) {
             chat("§3Action Numbers: ${actionNumbers.joinToString()}")
