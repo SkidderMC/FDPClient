@@ -69,7 +69,8 @@ class Arraylist(
     private val rectColorMode by choices(
         "Rect-ColorMode", arrayOf("Custom", "Fade", "Theme", "Random", "Rainbow", "Gradient"), "Theme"
     ) { rectMode != "None" }
-    private val rectColors = ColorSettingsInteger(this, "RectColor", applyMax = true) { isCustomRectSupported }
+    private val rectColors =
+        ColorSettingsInteger(this, "RectColor", applyMax = true) { isCustomRectSupported }
     private val rectFadeColors = ColorSettingsInteger(this, "Rect-Fade", applyMax = true) { rectColorMode == "Fade" }
 
     private val rectFadeDistance by int("Rect-Fade-Distance", 50, 0..100) { rectColorMode == "Fade" }
@@ -88,7 +89,8 @@ class Arraylist(
     private val backgroundMode by choices(
         "Background-Mode", arrayOf("Custom", "Fade", "Theme", "Random", "Rainbow", "Gradient"), "Custom"
     )
-    private val bgColors = ColorSettingsInteger(this, "BackgroundColor") { backgroundMode == "Custom" }.with(a = 155)
+    private val bgColors =
+        ColorSettingsInteger(this, "BackgroundColor") { backgroundMode == "Custom" }.with(Color.BLACK.withAlpha(155))
     private val bgFadeColors = ColorSettingsInteger(this, "Background-Fade") { backgroundMode == "Fade" }
 
     private val bgFadeDistance by int("Background-Fade-Distance", 50, 0..100) { backgroundMode == "Fade" }
@@ -111,23 +113,12 @@ class Arraylist(
     private val yDistance by float("ShadowYDistance", 0F, -2F..2F) { iconShadows }
     private val shadowColor by color("ShadowColor", Color.BLACK.withAlpha(128), rainbow = true) { iconShadows }
 
-    // TODO: The images seem to be overlapped when either Rainbow or Gradient mode is active.
     private val iconColorMode by choices(
-        "IconColorMode", arrayOf("Custom", "Fade", "Theme", "Rainbow", "Gradient"), "Theme"
+        "IconColorMode", arrayOf("Custom", "Fade", "Theme",), "Theme"
     ) { displayIcons }
     private val iconColor by color("IconColor", Color.WHITE) { iconColorMode == "Custom" && displayIcons }
     private val iconFadeColor by color("IconFadeColor", Color.WHITE) { iconColorMode == "Fade" && displayIcons }
     private val iconFadeDistance by int("IconFadeDistance", 50, 0..100) { iconColorMode == "Fade" && displayIcons }
-    private val maxIconGradientColors by int(
-        "MaxIconGradientColors", 4, 1..MAX_GRADIENT_COLORS
-    ) { iconColorMode == "Gradient" && displayIcons }
-    private val iconGradientSpeed by float(
-        "IconGradientSpeed",
-        1f,
-        0f..10f
-    ) { iconColorMode == "Gradient" && displayIcons }
-    private val iconGradColors =
-        ColorSettingsFloat.create(this, "Icon-Gradient") { iconColorMode == "Gradient" && displayIcons }
 
     private fun isColorModeUsed(value: String) = value in listOf(textColorMode, rectMode, backgroundMode, iconColorMode)
 
@@ -322,7 +313,11 @@ class Arraylist(
                                         else -> backgroundCustomColor
                                     },
                                     roundedBackgroundRadius,
-                                    RenderUtils.RoundedCorners.LEFT_ONLY
+                                    if (rectMode == "Left") {
+                                        RenderUtils.RoundedCorners.NONE
+                                    } else {
+                                        RenderUtils.RoundedCorners.LEFT_ONLY
+                                    }
                                 )
                             }
                         }
@@ -380,7 +375,13 @@ class Arraylist(
 
                                     when (rectMode) {
                                         "Left" -> drawRoundedRect(
-                                            xPos - 5, yPos, xPos - 2, yPos + textSpacer, rectColor, roundedRectRadius,
+                                            xPos - 5,
+                                            yPos,
+                                            xPos - 2,
+                                            yPos + textSpacer,
+                                            rectColor,
+                                            roundedRectRadius,
+                                            RenderUtils.RoundedCorners.LEFT_ONLY
                                         )
 
                                         "Right" -> drawRoundedRect(
@@ -390,6 +391,13 @@ class Arraylist(
                                             yPos + textSpacer,
                                             rectColor,
                                             roundedRectRadius,
+                                            if (modules.lastIndex == 0) {
+                                                RenderUtils.RoundedCorners.RIGHT_ONLY
+                                            } else when (module) {
+                                                modules.first() -> RenderUtils.RoundedCorners.TOP_RIGHT_ONLY
+                                                modules.last() -> RenderUtils.RoundedCorners.BOTTOM_RIGHT_ONLY
+                                                else -> RenderUtils.RoundedCorners.NONE
+                                            }
                                         )
 
                                         "Outline" -> {
@@ -449,7 +457,7 @@ class Arraylist(
                         ).use {
                             RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
                                 drawRoundedRect(
-                                    0F,
+                                    if (rectMode == "Left") 1f else 0f,
                                     yPos,
                                     xPos + width + if (rectMode == "Right") 4 else 1,
                                     yPos + textSpacer,
@@ -462,7 +470,11 @@ class Arraylist(
                                         else -> backgroundCustomColor
                                     },
                                     roundedBackgroundRadius,
-                                    RenderUtils.RoundedCorners.RIGHT_ONLY
+                                    if (rectMode == "Right") {
+                                        RenderUtils.RoundedCorners.NONE
+                                    } else {
+                                        RenderUtils.RoundedCorners.RIGHT_ONLY
+                                    }
                                 )
                             }
                         }
@@ -517,12 +529,18 @@ class Arraylist(
                                     when (rectMode) {
                                         "Left" -> drawRoundedRect(
                                             0F,
-                                            yPos - 1,
+                                            yPos,
                                             3F,
                                             yPos + textSpacer,
                                             rectColor,
                                             roundedRectRadius,
-                                            RenderUtils.RoundedCorners.RIGHT_ONLY
+                                            if (modules.lastIndex == 0) {
+                                                RenderUtils.RoundedCorners.LEFT_ONLY
+                                            } else when (module) {
+                                                modules.first() -> RenderUtils.RoundedCorners.TOP_LEFT_ONLY
+                                                modules.last() -> RenderUtils.RoundedCorners.BOTTOM_LEFT_ONLY
+                                                else -> RenderUtils.RoundedCorners.NONE
+                                            }
                                         )
 
                                         "Right" -> drawRoundedRect(
