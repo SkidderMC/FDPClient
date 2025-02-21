@@ -64,47 +64,45 @@ object Tracers : Module("Tracers", Category.VISUAL) {
 
         val originalViewBobbing = mc.gameSettings.viewBobbing
 
-        FreeLook.runWithoutSavingRotations {
-            // Temporarily disable view bobbing and re-apply camera transformation
-            mc.gameSettings.viewBobbing = false
-            mc.entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0)
+        // Temporarily disable view bobbing and re-apply camera transformation
+        mc.gameSettings.viewBobbing = false
+        mc.entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0)
 
-            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-            glEnable(GL_BLEND)
-            glEnable(GL_LINE_SMOOTH)
-            glLineWidth(thickness)
-            glDisable(GL_TEXTURE_2D)
-            glDisable(GL_DEPTH_TEST)
-            glDepthMask(false)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_BLEND)
+        glEnable(GL_LINE_SMOOTH)
+        glLineWidth(thickness)
+        glDisable(GL_TEXTURE_2D)
+        glDisable(GL_DEPTH_TEST)
+        glDepthMask(false)
 
-            glBegin(GL_LINES)
+        glBegin(GL_LINES)
 
-            for (entity in entities) {
-                val dist = mc.thePlayer.getDistanceSqToEntity(entity).coerceAtMost(255.0).toInt()
+        for (entity in entities) {
+            val dist = mc.thePlayer.getDistanceSqToEntity(entity).coerceAtMost(255.0).toInt()
 
-                val colorMode = colorMode.lowercase()
-                val color = when {
-                    entity is EntityPlayer && entity.isClientFriend() -> Color(0, 0, 255, 150)
-                    teams && Teams.handleEvents() && Teams.isInYourTeam(entity) -> Color(0, 162, 232)
-                    colorMode == "custom" -> color
-                    colorMode == "distancecolor" -> Color(255 - dist, dist, 0, 150)
-                    else -> Color(255, 255, 255, 150)
-                }
-
-                drawTraces(entity, color)
+            val colorMode = colorMode.lowercase()
+            val color = when {
+                entity is EntityPlayer && entity.isClientFriend() -> Color(0, 0, 255, 150)
+                teams && Teams.handleEvents() && Teams.isInYourTeam(entity) -> Color(0, 162, 232)
+                colorMode == "custom" -> color
+                colorMode == "distancecolor" -> Color(255 - dist, dist, 0, 150)
+                else -> Color(255, 255, 255, 150)
             }
 
-            glEnd()
-
-            mc.gameSettings.viewBobbing = originalViewBobbing
-
-            glEnable(GL_TEXTURE_2D)
-            glDisable(GL_LINE_SMOOTH)
-            glEnable(GL_DEPTH_TEST)
-            glDepthMask(true)
-            glDisable(GL_BLEND)
-            glColor4f(1f, 1f, 1f, 1f)
+            drawTraces(entity, color)
         }
+
+        glEnd()
+
+        mc.gameSettings.viewBobbing = originalViewBobbing
+
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_LINE_SMOOTH)
+        glEnable(GL_DEPTH_TEST)
+        glDepthMask(true)
+        glDisable(GL_BLEND)
+        glColor4f(1f, 1f, 1f, 1f)
     }
 
     private fun drawTraces(entity: Entity, color: Color) {

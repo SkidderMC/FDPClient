@@ -91,7 +91,12 @@ public abstract class MixinEntityRenderer {
           For example, OrangeMarshall's 1.7 Animations mod.
          */
         if (ClientUtils.INSTANCE.getProfilerName().equals("hand")) {
-            EventManager.INSTANCE.call(new Render3DEvent(partialTicks));
+            FreeLook.INSTANCE.runWithoutSavingRotations(() -> {
+                FreeLook.INSTANCE.restoreOriginalRotation();
+                EventManager.INSTANCE.call(new Render3DEvent(partialTicks));
+                FreeLook.INSTANCE.useModifiedRotation();
+                return null;
+            });
         }
     }
 

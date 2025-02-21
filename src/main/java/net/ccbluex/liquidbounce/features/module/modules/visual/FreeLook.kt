@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.extensions.prevRotation
 import net.ccbluex.liquidbounce.utils.extensions.rotation
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
+import org.lwjgl.opengl.Display
 
 object FreeLook : Module("FreeLook", Category.VISUAL) {
 
@@ -69,6 +70,10 @@ object FreeLook : Module("FreeLook", Category.VISUAL) {
 
         if (!handleEvents())
             return
+
+        if (!mc.inGameHasFocus || !Display.isActive()) {
+            prevRotation = currRotation
+        }
 
         player.rotation = currRotation
         player.prevRotation = prevRotation

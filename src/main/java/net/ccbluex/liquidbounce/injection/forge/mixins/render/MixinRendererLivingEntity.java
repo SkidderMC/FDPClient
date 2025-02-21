@@ -136,16 +136,15 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
         }
     }
 
-    @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;prevRotationPitch:F", ordinal = 0, shift = At.Shift.BEFORE))
+    @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At(value = "HEAD"))
     private void injectFreeLookPitchPreMovePrevention(CallbackInfo ci) {
         FreeLook.INSTANCE.restoreOriginalRotation();
     }
 
-    @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/renderer/entity/RendererLivingEntity;renderLivingAt(Lnet/minecraft/entity/EntityLivingBase;DDD)V"))
+    @Inject(method = "doRender(Lnet/minecraft/entity/EntityLivingBase;DDDFF)V", at = @At(value = "TAIL"))
     private void injectFreeLookPitchPostMovePrevention(CallbackInfo ci) {
         FreeLook.INSTANCE.useModifiedRotation();
     }
-
     /**
      * @author Randomguy && wxdbie && Zywl
      * @reason FakeBody Rotations
