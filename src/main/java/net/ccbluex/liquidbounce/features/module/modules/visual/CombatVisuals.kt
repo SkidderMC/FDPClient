@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
@@ -15,7 +14,6 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.utils.extensions.withAlpha
-import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCircle
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCrystal
@@ -54,13 +52,9 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, subjective = tru
     val colorBlueValue by int("Mark-Blue", 255, 0.. 255) { isMarkMode }
 
     // Circle options
-    private val circleRainbow by boolean("CircleRainbow", false) { markValue == "Circle" }.subjective()
+    private val circleStartColor by color("CircleStartColor", Color.BLUE) { markValue == "Circle" }.subjective()
+    private val circleEndColor by color("CircleEndColor", Color.CYAN.withAlpha(0)) { markValue == "Circle" }.subjective()
 
-    // TODO: replace this with color value
-    private val colors = ColorSettingsInteger(
-        this,
-        "CircleColor"
-    ) { markValue == "Circle" && !circleRainbow }.with(132, 102, 255, 100)//.subjective()
     private val fillInnerCircle by boolean("FillInnerCircle", false) { markValue == "Circle" }.subjective()
     private val withHeight by boolean("WithHeight", true) { markValue == "Circle" }.subjective()
     private val animateHeight by boolean("AnimateHeight", false) { withHeight }.subjective()
@@ -187,7 +181,8 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, subjective = tru
                 fillInnerCircle,
                 withHeight,
                 circleYRange.takeIf { animateCircleY },
-                if (circleRainbow) rainbow().withAlpha(colors.color().alpha) else colors.color()
+                circleStartColor.rgb,
+                circleEndColor.rgb
             )
         }
     }

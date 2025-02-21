@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
-import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleManager
@@ -19,9 +18,10 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedBorder
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect2
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.withClipping
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.util.ResourceLocation
@@ -133,61 +133,37 @@ class TabGUI(x: Double = 16.0, y: Double = 43.0) : Element("TabGUI", x = x, y = 
         }
 
         AWTFontRenderer.assumeNonVolatile {
-            drawRoundedRect(
-                2F, 0F, widthWithPadding, guiHeight, bgColor.rgb, roundedRectRadius, if (displayIcons) {
-                    corners[if (side.horizontal != Side.Horizontal.RIGHT) 0 else 1]
-                } else {
-                    RenderUtils.RoundedCorners.ALL
-                }
-            )
-            if (displayIcons) {
-                drawRoundedRect(
-                    iconSideX.first,
-                    0F,
-                    iconSideX.second,
-                    guiHeight,
-                    iconRectColor.rgb,
-                    roundedRectRadius,
-                    corners[if (side.horizontal != Side.Horizontal.RIGHT) 1 else 0]
-                )
-            }
-
             val rectColor = if (rectRainbow) Color.black else rectColor.selectedColor()
 
-            RainbowShader.begin(
-                rectRainbow,
-                if (rainbowX == 0f) 0f else 1f / rainbowX,
-                if (rainbowY == 0f) 0f else 1f / rainbowY,
-                System.currentTimeMillis() % 10000 / 10000F
-            ).use {
-                val cornerToRound = when (selectedCategory) {
-                    0 -> if (displayIcons) {
-                        if (side.horizontal != Side.Horizontal.RIGHT) {
-                            RenderUtils.RoundedCorners.TOP_RIGHT_ONLY
-                        } else {
-                            RenderUtils.RoundedCorners.TOP_LEFT_ONLY
-                        }
+            withClipping(main = {
+                drawRoundedRect(
+                    2F, 0F, widthWithPadding, guiHeight, bgColor.rgb, roundedRectRadius, if (displayIcons) {
+                        corners[if (side.horizontal != Side.Horizontal.RIGHT) 0 else 1]
                     } else {
-                        RenderUtils.RoundedCorners.TOP_ONLY
+                        RenderUtils.RoundedCorners.ALL
                     }
-
-                    tabs.lastIndex -> if (displayIcons) {
-                        if (side.horizontal != Side.Horizontal.RIGHT) {
-                            RenderUtils.RoundedCorners.BOTTOM_RIGHT_ONLY
-                        } else {
-                            RenderUtils.RoundedCorners.BOTTOM_LEFT_ONLY
-                        }
-                    } else {
-                        RenderUtils.RoundedCorners.BOTTOM_ONLY
-                    }
-
-                    else -> RenderUtils.RoundedCorners.NONE
-                }
-
-                drawRoundedRect2(
-                    2F, 1 + tabY - 1, widthWithPadding, tabY + tabHeight, rectColor, roundedRectRadius, cornerToRound
                 )
-            }
+                if (displayIcons) {
+                    drawRoundedRect(
+                        iconSideX.first,
+                        0F,
+                        iconSideX.second,
+                        guiHeight,
+                        iconRectColor.rgb,
+                        roundedRectRadius,
+                        corners[if (side.horizontal != Side.Horizontal.RIGHT) 1 else 0]
+                    )
+                }
+            }, toClip = {
+                RainbowShader.begin(
+                    rectRainbow,
+                    if (rainbowX == 0f) 0f else 1f / rainbowX,
+                    if (rainbowY == 0f) 0f else 1f / rainbowY,
+                    System.currentTimeMillis() % 10000 / 10000F
+                ).use {
+                    drawRect(2F, 1 + tabY - 1, widthWithPadding, tabY + tabHeight, rectColor)
+                }
+            })
 
             glColor4f(1f, 1f, 1f, 1f)
 
@@ -268,7 +244,7 @@ class TabGUI(x: Double = 16.0, y: Double = 43.0) : Element("TabGUI", x = x, y = 
                         iconSideX.first + 2
                     }
 
-                    val resource = ResourceLocation("liquidbounce/tabgui/${tab.category.displayName.lowercase()}.png")
+                    val resource = ResourceLocation("fdpclient/texture/category/${tab.category.displayName.lowercase()}.png")
 
                     val iconY = y - 1
 
@@ -402,30 +378,26 @@ class TabGUI(x: Double = 16.0, y: Double = 43.0) : Element("TabGUI", x = x, y = 
 
             val menuHeight = modules.size * tabHeight
 
-            drawRoundedRect(x - 1F, y - 1F, x + menuWidth - 2F, y + menuHeight - 1F, backgroundColor, roundedRectRadius)
-
-            RainbowShader.begin(
-                rectRainbow,
-                if (rainbowX == 0f) 0f else 1f / rainbowX,
-                if (rainbowY == 0f) 0f else 1f / rainbowY,
-                System.currentTimeMillis() % 10000 / 10000F
-            ).use {
-                val cornerToRound = when (selectedModule) {
-                    0 -> RenderUtils.RoundedCorners.TOP_ONLY
-                    tabs[selectedCategory].modules.lastIndex -> RenderUtils.RoundedCorners.BOTTOM_ONLY
-                    else -> RenderUtils.RoundedCorners.NONE
-                }
-
+            withClipping(main = {
                 drawRoundedRect(
-                    x - if (borderValue) 0 else 1,
-                    y + itemY - 1,
-                    x + menuWidth - 2F,
-                    y + itemY + tabHeight - 1,
-                    color,
-                    roundedRectRadius,
-                    cornerToRound
+                    x - 1F, y - 1F, x + menuWidth - 2F, y + menuHeight - 1F, backgroundColor, roundedRectRadius
                 )
-            }
+            }, toClip = {
+                RainbowShader.begin(
+                    rectRainbow,
+                    if (rainbowX == 0f) 0f else 1f / rainbowX,
+                    if (rainbowY == 0f) 0f else 1f / rainbowY,
+                    System.currentTimeMillis() % 10000 / 10000F
+                ).use {
+                    drawRect(
+                        x - if (borderValue) 0 else 1,
+                        y + itemY - 1,
+                        x + menuWidth - 2F,
+                        y + itemY + tabHeight - 1,
+                        color
+                    )
+                }
+            })
 
             glColor4f(1f, 1f, 1f, 1f)
 

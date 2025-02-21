@@ -115,7 +115,7 @@ object EntityUtils : MinecraftInstance {
         if (absorption)
             health += entity.absorptionAmount
 
-        return if (health > 0) health else 20f
+        return if (health >= 0) health else 20f
     }
 
     fun Entity.colorFromDisplayName(): Color? {

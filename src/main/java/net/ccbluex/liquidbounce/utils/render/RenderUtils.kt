@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.block.center
 import net.ccbluex.liquidbounce.utils.block.toVec
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColor
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.disableFastRender
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.io.flipSafely
@@ -74,6 +75,38 @@ object RenderUtils : MinecraftInstance {
         glGenLists(1)
     }
     var deltaTime = 0
+
+    /**
+     * Useful for clipping any top-layered rectangle that falls outside a bottom-layered rectangle.
+     */
+    inline fun withClipping(main: () -> Unit, toClip: () -> Unit) {
+        disableFastRender()
+        checkSetupFBO()
+        glPushMatrix()
+
+        glDisable(GL_ALPHA_TEST)
+
+        glEnable(GL_STENCIL_TEST)
+        glStencilFunc(GL_ALWAYS, 1, 1)
+        glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE)
+        glStencilMask(1)
+        glClear(GL_STENCIL_BUFFER_BIT)
+
+        main()
+
+        glStencilFunc(GL_EQUAL, 1, 1)
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
+        glStencilMask(0)
+
+        toClip()
+
+        glStencilMask(0xFF)
+        glDisable(GL_STENCIL_TEST)
+
+        glEnable(GL_ALPHA_TEST)
+
+        glPopMatrix()
+    }
 
     var startTime: Long = 0
     var animationDuration: Int = 500
@@ -274,64 +307,91 @@ object RenderUtils : MinecraftInstance {
         filled: Boolean,
         withHeight: Boolean,
         circleY: ClosedFloatingPointRange<Float>? = null,
-        color: Color
+        startColor: Int,
+        endColor: Int
     ) {
         val manager = mc.renderManager
         val positions = mutableListOf<DoubleArray>()
+
         val renderX = manager.viewerPosX
         val renderY = manager.viewerPosY
         val renderZ = manager.viewerPosZ
+
         glPushAttrib(GL_ALL_ATTRIB_BITS)
         glPushMatrix()
+
         glDisable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_LINE_SMOOTH)
-        glDisable(GL_DEPTH_TEST)
         glDisable(GL_CULL_FACE)
         glEnable(GL_ALPHA_TEST)
+        glDepthMask(false)
         glAlphaFunc(GL_GREATER, 0.0f)
         mc.entityRenderer.disableLightmap()
+
+        shadeModel(GL_SMOOTH)
+
+        val a1 = (startColor shr 24 and 255) / 255f
+        val r1 = (startColor shr 16 and 255) / 255f
+        val g1 = (startColor shr 8 and 255) / 255f
+        val b1 = (startColor and 255) / 255f
+        val a2 = (endColor shr 24 and 255) / 255f
+        val r2 = (endColor shr 16 and 255) / 255f
+        val g2 = (endColor shr 8 and 255) / 255f
+        val b2 = (endColor and 255) / 255f
+
         val breathingT = AnimationUtil.breathe(speed)
         val entityHeight = (entity.hitBox.maxY - entity.hitBox.minY).toFloat()
+
         val width = (mc.renderManager.getEntityRenderObject<Entity>(entity)?.shadowSize ?: 0.5F) + size
-        val animatedHeight = (0F..entityHeight).lerpWith(height.lerpWith(breathingT))
+        val animatedHeight = (0F..entityHeight).lerpWith((height.endInclusive..height.start).lerpWith(breathingT))
         val animatedCircleY = (0F..entityHeight).lerpWith(circleY?.lerpWith(breathingT) ?: 0F)
+
+        val tessellator = Tessellator.getInstance()
+        val buffer = tessellator.worldRenderer
+
         if (filled) {
-            glBegin(GL_TRIANGLE_FAN)
-            glColor(color)
+            buffer.begin(GL_TRIANGLE_FAN, DefaultVertexFormats.POSITION_COLOR)
         }
+
         entity.interpolatedPosition(entity.prevPos).let { pos ->
-            circlePoints.forEach {
+            circlePoints.forEachIndexed { index, it ->
                 val p = pos + Vec3(it.x * width, it.y + animatedCircleY, it.z * width)
                 positions += doubleArrayOf(p.xCoord, p.yCoord, p.zCoord)
+
                 if (filled) {
-                    glVertex3d(p.xCoord - renderX, p.yCoord - renderY, p.zCoord - renderZ)
+                    buffer.pos(p.xCoord - renderX, p.yCoord - renderY, p.zCoord - renderZ).color(r1, g1, b1, a1)
+                        .endVertex()
                 }
             }
         }
+
         if (filled) {
-            glEnd()
-            glColor(Color.WHITE)
+            tessellator.draw()
         }
+
         if (withHeight) {
-            glBegin(GL_QUADS)
-            glColor(color)
+            buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
+
             positions.forEachIndexed { index, pos ->
                 val endPos = positions.getOrNull(index + 1) ?: return@forEachIndexed
-                glVertex3d(pos[0] - renderX, pos[1] - renderY, pos[2] - renderZ)
-                glVertex3d(endPos[0] - renderX, endPos[1] - renderY, endPos[2] - renderZ)
-                glVertex3d(endPos[0] - renderX, endPos[1] - renderY + animatedHeight, endPos[2] - renderZ)
-                glVertex3d(pos[0] - renderX, pos[1] - renderY + animatedHeight, pos[2] - renderZ)
+
+                buffer.pos(pos[0] - renderX, pos[1] - renderY, pos[2] - renderZ).color(r1, g1, b1, a1).endVertex()
+                buffer.pos(endPos[0] - renderX, endPos[1] - renderY, endPos[2] - renderZ).color(r1, g1, b1, a1)
+                    .endVertex()
+                buffer.pos(endPos[0] - renderX, endPos[1] - renderY + animatedHeight, endPos[2] - renderZ)
+                    .color(r2, g2, b2, a2).endVertex()
+                buffer.pos(pos[0] - renderX, pos[1] - renderY + animatedHeight, pos[2] - renderZ).color(r2, g2, b2, a2)
+                    .endVertex()
             }
-            glEnd()
-            glColor(Color.WHITE)
+            tessellator.draw()
         }
-        glEnable(GL_CULL_FACE)
-        glEnable(GL_DEPTH_TEST)
+
+        shadeModel(GL_FLAT)
         glDisable(GL_ALPHA_TEST)
-        glDisable(GL_LINE_SMOOTH)
         glDisable(GL_BLEND)
+        glEnable(GL_CULL_FACE)
+        glDepthMask(true)
         glEnable(GL_TEXTURE_2D)
         glPopMatrix()
         glPopAttrib()
@@ -2347,16 +2407,34 @@ object RenderUtils : MinecraftInstance {
     }
 
     enum class RoundedCorners(val corners: Set<Corner>, val displayName: String) {
-        NONE(emptySet(), "None"),
-        TOP_LEFT_ONLY(setOf(Corner.TOP_LEFT), "Top-Left-Only"),
-        TOP_RIGHT_ONLY(setOf(Corner.TOP_RIGHT), "Top-Right-Only"),
-        BOTTOM_LEFT_ONLY(setOf(Corner.BOTTOM_LEFT), "Bottom-Left-Only"),
-        BOTTOM_RIGHT_ONLY(setOf(Corner.BOTTOM_RIGHT), "Bottom-Right-Only"),
-        TOP_ONLY(setOf(Corner.TOP_LEFT, Corner.TOP_RIGHT), "Top-Only"),
-        BOTTOM_ONLY(setOf(Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT), "Bottom-Only"),
-        LEFT_ONLY(setOf(Corner.TOP_LEFT, Corner.BOTTOM_LEFT), "Left-Only"),
-        RIGHT_ONLY(setOf(Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT), "Right-Only"),
-        ALL(setOf(Corner.TOP_LEFT, Corner.TOP_RIGHT, Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT), "All")
+        NONE(emptySet(), "None"), TOP_LEFT_ONLY(
+            setOf(Corner.TOP_LEFT),
+            "Top-Left-Only"
+        ),
+        TOP_RIGHT_ONLY(setOf(Corner.TOP_RIGHT), "Top-Right-Only"), BOTTOM_LEFT_ONLY(
+            setOf(Corner.BOTTOM_LEFT),
+            "Bottom-Left-Only"
+        ),
+        BOTTOM_RIGHT_ONLY(setOf(Corner.BOTTOM_RIGHT), "Bottom-Right-Only"), TOP_ONLY(
+            setOf(
+                Corner.TOP_LEFT,
+                Corner.TOP_RIGHT
+            ), "Top-Only"
+        ),
+        BOTTOM_ONLY(setOf(Corner.BOTTOM_LEFT, Corner.BOTTOM_RIGHT), "Bottom-Only"), LEFT_ONLY(
+            setOf(
+                Corner.TOP_LEFT,
+                Corner.BOTTOM_LEFT
+            ), "Left-Only"
+        ),
+        RIGHT_ONLY(setOf(Corner.TOP_RIGHT, Corner.BOTTOM_RIGHT), "Right-Only"), ALL(
+            setOf(
+                Corner.TOP_LEFT,
+                Corner.TOP_RIGHT,
+                Corner.BOTTOM_LEFT,
+                Corner.BOTTOM_RIGHT
+            ), "All"
+        )
     }
 
     private fun drawRoundedRectangle(
@@ -2485,13 +2563,17 @@ object RenderUtils : MinecraftInstance {
         width: Int,
         height: Int,
         tileWidth: Float,
-        tileHeight: Float
+        tileHeight: Float,
+        color: Color
     ) {
+        glPushMatrix()
         val texture: ResourceLocation = skin ?: mc.thePlayer.locationSkin
 
-        glColor4f(1F, 1F, 1F, 1F)
+        glColor(color)
         mc.textureManager.bindTexture(texture)
         drawScaledCustomSizeModalRect(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight)
+        glColor(Color.WHITE)
+        glPopMatrix()
     }
 
     fun drawImage(
@@ -2795,6 +2877,26 @@ object RenderUtils : MinecraftInstance {
         glEnable(GL_DEPTH_TEST)
         glEnable(GL_TEXTURE_2D)
         glDisable(GL_BLEND)
+        glPopMatrix()
+    }
+
+    // Used to draw a WIFI-like icon.
+    fun drawQuarterCircle(x: Int, y: Int, radius: Float, color: Color) {
+        glPushMatrix()
+        glDisable(GL_TEXTURE_2D)
+        glColor(color)
+        glBegin(GL_TRIANGLE_FAN)
+
+        glVertex2f(x.toFloat(), y.toFloat())
+
+        for (i in CIRCLE_STEPS / 8..CIRCLE_STEPS * 3 / 8) {
+            val point = circlePoints[i]
+            glVertex2f(x + radius * point.z.toFloat(), y + radius * point.x.toFloat())
+        }
+
+        glColor4f(1f, 1f, 1f, 1f)
+        glEnd()
+        glEnable(GL_TEXTURE_2D)
         glPopMatrix()
     }
 
@@ -3852,7 +3954,7 @@ object RenderUtils : MinecraftInstance {
      * @param endColor   the end color
      */
     fun drawGradientRect(
-        left: Int, top: Int, right: Int, bottom: Int, startColor: Int, endColor: Int, zLevel: Float
+        left: Number, top: Number, right: Number, bottom: Number, startColor: Int, endColor: Int, zLevel: Float
     ) {
         val a1 = (startColor shr 24 and 255) / 255f
         val r1 = (startColor shr 16 and 255) / 255f
@@ -3874,9 +3976,9 @@ object RenderUtils : MinecraftInstance {
         val buffer = tessellator.worldRenderer
 
         buffer.begin(GL_QUADS, DefaultVertexFormats.POSITION_COLOR)
-        buffer.pos(right.toDouble(), top.toDouble(), zLevel.toDouble()).color(r1, g1, b1, a1).endVertex()
+        buffer.pos(right.toDouble(), top.toDouble(), zLevel.toDouble()).color(r2, g2, b2, a2).endVertex()
         buffer.pos(left.toDouble(), top.toDouble(), zLevel.toDouble()).color(r1, g1, b1, a1).endVertex()
-        buffer.pos(left.toDouble(), bottom.toDouble(), zLevel.toDouble()).color(r2, g2, b2, a2).endVertex()
+        buffer.pos(left.toDouble(), bottom.toDouble(), zLevel.toDouble()).color(r1, g1, b1, a1).endVertex()
         buffer.pos(right.toDouble(), bottom.toDouble(), zLevel.toDouble()).color(r2, g2, b2, a2).endVertex()
         tessellator.draw()
 
@@ -3886,7 +3988,6 @@ object RenderUtils : MinecraftInstance {
         enableTexture2D()
         popMatrix()
     }
-
 
     //TAHOMA
     private fun drawExhiOutlined(text: String, x: Float, y: Float, borderColor: Int, mainColor: Int): Float {

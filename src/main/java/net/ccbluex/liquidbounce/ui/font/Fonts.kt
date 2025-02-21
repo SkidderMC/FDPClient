@@ -167,11 +167,6 @@ object Fonts : MinecraftInstance {
                 getFontFromFile("Outfit-Semibold.ttf", 40).asGameFontRenderer()
             )
 
-            fontSemibold35 = register(
-                FontInfo(name = "Outfit Semibold", size = 35),
-                getFontFromFile("Outfit-Semibold.ttf", 35).asGameFontRenderer()
-            )
-
             fontRegular45 = register(
                 FontInfo(name = "Outfit Regular", size = 45),
                 getFontFromFile("Outfit-Regular.ttf", 45).asGameFontRenderer()

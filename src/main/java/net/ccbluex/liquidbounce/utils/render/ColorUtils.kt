@@ -147,6 +147,17 @@ object ColorUtils {
         return Color(currentColor.red / 255F, currentColor.green / 255F, currentColor.blue / 255F, alpha)
     }
 
+    fun interpolateColor(start: Color, end: Color, ratio: Float): Color {
+        val t = ratio.coerceIn(0.0f, 1.0f)
+
+        val r = (start.red + (end.red - start.red) * t).toInt()
+        val g = (start.green + (end.green - start.green) * t).toInt()
+        val b = (start.blue + (end.blue - start.blue) * t).toInt()
+        val a = (start.alpha + (end.alpha - start.alpha) * t).toInt()
+
+        return Color(r, g, b, a)
+    }
+
     fun interpolateHSB(startColor: Color, endColor: Color, process: Float): Color {
         val startHSB = Color.RGBtoHSB(startColor.red, startColor.green, startColor.blue, null)
         val endHSB = Color.RGBtoHSB(endColor.red, endColor.green, endColor.blue, null)
