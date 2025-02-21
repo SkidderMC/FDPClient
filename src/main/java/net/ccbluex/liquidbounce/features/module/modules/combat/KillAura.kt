@@ -1223,13 +1223,15 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
         val renderManager = mc.renderManager
 
         runWithSimulatedPosition(player, player.interpolatedPosition(player.prevPos)) {
-            val rotationVec = player.eyes + getVectorForRotation(
-                serverRotation.lerpWith(currentRotation ?: player.rotation, mc.timer.renderPartialTicks)
-            ) * player.getDistanceToEntityBox(target).coerceAtMost(range.toDouble())
+            runWithSimulatedPosition(target, target.interpolatedPosition(target.prevPos)) {
+                val rotationVec = player.eyes + getVectorForRotation(
+                    serverRotation.lerpWith(currentRotation ?: player.rotation, mc.timer.renderPartialTicks)
+                ) * player.getDistanceToEntityBox(target).coerceAtMost(range.toDouble())
 
-            val offSetBox = box.offset(rotationVec - renderManager.renderPos)
+                val offSetBox = box.offset(rotationVec - renderManager.renderPos)
 
-            RenderUtils.drawAxisAlignedBB(offSetBox, aimPointBoxColor)
+                RenderUtils.drawAxisAlignedBB(offSetBox, aimPointBoxColor)
+            }
         }
     }
 
