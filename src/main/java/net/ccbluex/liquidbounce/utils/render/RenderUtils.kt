@@ -111,6 +111,32 @@ object RenderUtils : MinecraftInstance {
     var startTime: Long = 0
     var animationDuration: Int = 500
 
+    inline fun withOutline(main: () -> Unit, toOutline: () -> Unit) {
+        disableFastRender()
+        checkSetupFBO()
+        glPushMatrix()
+        glDisable(GL_ALPHA_TEST)
+        glEnable(GL_STENCIL_TEST)
+        glClear(GL_STENCIL_BUFFER_BIT)
+
+        glStencilFunc(GL_ALWAYS, 1, 1)
+        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE)
+        glStencilMask(1)
+
+        main()
+
+        glStencilFunc(GL_EQUAL, 0, 1)
+        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
+        glStencilMask(0)
+
+        toOutline()
+
+        glStencilMask(0xFF)
+        glDisable(GL_STENCIL_TEST)
+        glEnable(GL_ALPHA_TEST)
+        glPopMatrix()
+    }
+
     fun deltaTimeNormalized(ticks: Int = 1) = (deltaTime safeDivD ticks * 50.0).coerceAtMost(1.0)
 
     private const val CIRCLE_STEPS = 40
