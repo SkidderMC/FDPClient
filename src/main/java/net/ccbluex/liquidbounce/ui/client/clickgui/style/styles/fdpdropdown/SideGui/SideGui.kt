@@ -97,10 +97,10 @@ class SideGui : GuiPanel() {
             y = sr.scaledHeight / 2f - rectHeight / 2f
         )
 
-        textAnimation = DecelerateAnimation(500, 1.0).apply { setDirection(Direction.BACKWARDS) }
-        clickAnimation = DecelerateAnimation(325, 1.0).apply { setDirection(Direction.BACKWARDS) }
-        hoverAnimation = DecelerateAnimation(250, 1.0).apply { setDirection(Direction.BACKWARDS) }
-        moveOverGradientAnimation = DecelerateAnimation(250, 1.0).apply { setDirection(Direction.BACKWARDS) }
+        textAnimation = DecelerateAnimation(500, 1.0).apply { direction = Direction.BACKWARDS }
+        clickAnimation = DecelerateAnimation(325, 1.0).apply { direction = Direction.BACKWARDS }
+        hoverAnimation = DecelerateAnimation(250, 1.0).apply { direction = Direction.BACKWARDS }
+        moveOverGradientAnimation = DecelerateAnimation(250, 1.0).apply { direction = Direction.BACKWARDS }
 
         categoryAnimation.clear()
         for (cat in categories) {
@@ -681,18 +681,18 @@ class SideGui : GuiPanel() {
     }
 
     private fun updateAnimations(mouseX: Int, mouseY: Int) {
-        clickAnimation?.setDirection(if (focused) Direction.FORWARDS else Direction.BACKWARDS)
+        clickAnimation?.direction =  if (focused) Direction.FORWARDS else Direction.BACKWARDS
         val hovering = DrRenderUtils.isHovering(drag!!.x, drag!!.y, rectWidth, rectHeight, mouseX, mouseY)
-        hoverAnimation?.setDirection(if (hovering) Direction.FORWARDS else Direction.BACKWARDS)
+        hoverAnimation?.direction = if (hovering) Direction.FORWARDS else Direction.BACKWARDS
         val sr = ScaledResolution(MinecraftInstance.mc)
         val stillAnimating = !timerUtil!!.hasTimeElapsed(6000) || (!hoverAnimation!!.isDone || (hoverAnimation!!.isDone && hoverAnimation!!.direction == Direction.FORWARDS))
-        textAnimation?.setDirection(if (!focused && stillAnimating) Direction.FORWARDS else Direction.BACKWARDS)
+        textAnimation?.direction = if (!focused && stillAnimating) Direction.FORWARDS else Direction.BACKWARDS
         if (!clickAnimation!!.isDone) {
             drag!!.x = interpolateFloat(sr.scaledWidth - 30f, if (focused) sr.scaledWidth / 2f - rectWidth / 2f else drag!!.x, clickAnimation!!.output.toFloat().toDouble())
             drag!!.y = interpolateFloat(sr.scaledHeight / 2f - rectHeight / 2f, drag!!.y, clickAnimation!!.output.toFloat().toDouble())
         }
         val exceedingRightEdge = drag!!.x + rectWidth > sr.scaledWidth && (focused && clickAnimation!!.isDone && clickAnimation!!.direction == Direction.FORWARDS)
-        moveOverGradientAnimation?.setDirection(if (exceedingRightEdge) Direction.FORWARDS else Direction.BACKWARDS)
+        moveOverGradientAnimation?.direction = if (exceedingRightEdge) Direction.FORWARDS else Direction.BACKWARDS
     }
 
     private fun drawMainPanel(sr: ScaledResolution, alpha: Int, mouseX: Int, mouseY: Int): Color {
@@ -729,8 +729,8 @@ class SideGui : GuiPanel() {
             val hovered = DrRenderUtils.isHovering(xVal - 30, yVal - 5, 60f, (Fonts.InterBold_26.height + 10).toFloat(), mouseX, mouseY)
             val catHoverAnim = categoryAnimation[cat]?.get(0)
             val catEnableAnim = categoryAnimation[cat]?.get(1)
-            catHoverAnim?.setDirection(if (hovered) Direction.FORWARDS else Direction.BACKWARDS)
-            catEnableAnim?.setDirection(if (currentCategory == cat) Direction.FORWARDS else Direction.BACKWARDS)
+            catHoverAnim?.direction = if (hovered) Direction.FORWARDS else Direction.BACKWARDS
+            catEnableAnim?.direction = if (currentCategory == cat) Direction.FORWARDS else Direction.BACKWARDS
             val baseColor = Color(45, 45, 45, alpha)
             val colorToInterpolate = DrRenderUtils.applyOpacity(generateColor(index).rgb, alpha / 255f)
             val colorToInterpolateAsColor = Color(colorToInterpolate, true)

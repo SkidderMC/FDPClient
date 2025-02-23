@@ -22,7 +22,7 @@ public class EaseBackIn extends Animation {
 
     @Override
     protected double getEquation(double x) {
-        double x1 = x / duration;
+        double x1 = x / getDuration();
         float shrink = easeAmount + 1;
         return Math.max(0, 1 + shrink * Math.pow(x1 - 1, 3) + easeAmount * Math.pow(x1 - 1, 2));
     }

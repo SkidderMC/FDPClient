@@ -286,12 +286,9 @@ class SettingComponents(private val module: Module) : Component() {
                 if (type == GuiEvents.RELEASE) {
                     draggingNumber = null
                 }
-                hoverAnimation.setDirection(
-                    if (hoveringSlider || draggingNumber === setting) Direction.FORWARDS else Direction.BACKWARDS
-                )
-                selectAnimtion.setDirection(
-                    if (draggingNumber === setting) Direction.FORWARDS else Direction.BACKWARDS
-                )
+                hoverAnimation.direction = if (hoveringSlider || draggingNumber === setting) Direction.FORWARDS else Direction.BACKWARDS
+
+                selectAnimtion.direction = if (draggingNumber === setting) Direction.FORWARDS else Direction.BACKWARDS
 
                 if (type == GuiEvents.CLICK && hoveringSlider && button == 0) {
                     draggingNumber = setting
@@ -445,12 +442,9 @@ class SettingComponents(private val module: Module) : Component() {
                 if (type == GuiEvents.RELEASE) {
                     draggingNumber = null
                 }
-                hoverAnimation.setDirection(
-                    if (hoveringSlider || draggingNumber === setting) Direction.FORWARDS else Direction.BACKWARDS
-                )
-                selectAnimtion.setDirection(
-                    if (draggingNumber === setting) Direction.FORWARDS else Direction.BACKWARDS
-                )
+                hoverAnimation.direction = if (hoveringSlider || draggingNumber === setting) Direction.FORWARDS else Direction.BACKWARDS
+
+                selectAnimtion.direction = if (draggingNumber === setting) Direction.FORWARDS else Direction.BACKWARDS
 
                 if (type == GuiEvents.CLICK && hoveringSlider && button == 0) {
                     draggingNumber = setting
@@ -609,13 +603,13 @@ class SettingComponents(private val module: Module) : Component() {
                     switchWidth, 8f, mouseX, mouseY
                 )
 
-                hoverAnim.setDirection(if (hoveringSwitch) Direction.FORWARDS else Direction.BACKWARDS)
+                hoverAnim.direction = if (hoveringSwitch) Direction.FORWARDS else Direction.BACKWARDS
 
                 if (type == GuiEvents.CLICK && hoveringSwitch && button == 0) {
                     setting.toggle()
                 }
 
-                toggleAnim.setDirection(if (setting.get()) Direction.FORWARDS else Direction.BACKWARDS)
+                toggleAnim.direction = if (setting.get()) Direction.FORWARDS else Direction.BACKWARDS
                 DrRenderUtils.resetColor()
 
                 val accentCircle = if (accent)
@@ -659,8 +653,8 @@ class SettingComponents(private val module: Module) : Component() {
                 if (type == GuiEvents.CLICK && hoveringModeRect && button == 1) {
                     modeSettingClick[setting] = !modeSettingClick[setting]!!
                 }
-                hoverAnim.setDirection(if (hoveringModeRect) Direction.FORWARDS else Direction.BACKWARDS)
-                openAnim.setDirection(if (modeSettingClick[setting]!!) Direction.FORWARDS else Direction.BACKWARDS)
+                hoverAnim.direction = if (hoveringModeRect) Direction.FORWARDS else Direction.BACKWARDS
+                openAnim.direction = if (modeSettingClick[setting]!!) Direction.FORWARDS else Direction.BACKWARDS
 
                 val math = (setting.values.size - 1) * rectHeight
                 drawCustomShapeWithRadius(
@@ -696,7 +690,7 @@ class SettingComponents(private val module: Module) : Component() {
                             && DrRenderUtils.isHovering(x + 5, modeY - 5, width - 10, rectHeight, mouseX, mouseY)
 
                     val modeHover = modesHoverAnimation[setting]!![mode]
-                    modeHover!!.setDirection(if (hoveringMode) Direction.FORWARDS else Direction.BACKWARDS)
+                    modeHover!!.direction = if (hoveringMode) Direction.FORWARDS else Direction.BACKWARDS
 
                     if (modeHover.finished(Direction.FORWARDS) || !modeHover.isDone) {
                         drawCustomShapeWithRadius(
@@ -1123,8 +1117,8 @@ class SettingComponents(private val module: Module) : Component() {
 
             val animations =
                 keySettingAnimMap[module]!!
-            animations[1].setDirection(if (binding === module) Direction.FORWARDS else Direction.BACKWARDS)
-            animations[0].setDirection(if (hoveringBindRect) Direction.FORWARDS else Direction.BACKWARDS)
+            animations[1].direction = if (binding === module) Direction.FORWARDS else Direction.BACKWARDS
+            animations[0].direction = if (hoveringBindRect) Direction.FORWARDS else Direction.BACKWARDS
 
             // (Any extra code for rendering the bind rectangle is commented out below)
             /*

@@ -3,79 +3,61 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations;
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations
 
-import lombok.Getter;
-import lombok.Setter;
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.TimerUtil;
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.TimerUtil
+import kotlin.math.max
+import kotlin.math.min
 
-public abstract class Animation {
+abstract class Animation(
+    protected var duration: Int,
+    var endPoint: Double,
+    direction: Direction = Direction.FORWARDS
+) {
 
-    public TimerUtil timerUtil = new TimerUtil();
-    @Setter
-    protected int duration;
-    @Getter
-    @Setter
-    protected double endPoint;
-    @Getter
-    public Direction direction;
+    val timerUtil = TimerUtil()
 
-    public Animation(int ms, double endPoint) {
-        this.duration = ms;
-        this.endPoint = endPoint;
-        this.direction = Direction.FORWARDS;
-    }
-
-    public Animation(int ms, double endPoint, Direction direction) {
-        this.duration = ms; //Time in milliseconds of how long you want the animation to take.
-        this.endPoint = endPoint; //The desired distance for the animated object to go.
-        this.direction = direction; //Direction in which the graph is going. If backwards, will start from endPoint and go to 0.
-    }
-
-    public boolean finished(Direction direction) {
-        return isDone() && this.direction.equals(direction);
-    }
-
-    public double getLinearOutput() {
-        return 1 - ((timerUtil.getTime() / (double) duration) * endPoint);
-    }
-
-    public void reset() {
-        timerUtil.reset();
-    }
-
-    public boolean isDone() {
-        return timerUtil.hasTimeElapsed(duration);
-    }
-
-    public void changeDirection() {
-        setDirection(direction.opposite());
-    }
-
-    public void setDirection(Direction direction) {
-        if (this.direction != direction) {
-            this.direction = direction;
-            timerUtil.setTime(System.currentTimeMillis() - (duration - Math.min(duration, timerUtil.getTime())));
+    var direction: Direction = direction
+        set(newDirection) {
+            if (field != newDirection) {
+                field = newDirection
+                timerUtil.time = System.currentTimeMillis() - (duration.toLong() - min(duration.toLong(), timerUtil.time))
+            }
         }
-    }
 
-    protected boolean correctOutput() {
-        return false;
-    }
+    constructor(duration: Int, endPoint: Double) : this(duration, endPoint, Direction.FORWARDS)
 
-    public double getOutput() {
-        if (direction == Direction.FORWARDS) {
-            if (isDone())
-                return endPoint;
-            return (getEquation(timerUtil.getTime()) * endPoint);
+    val isDone: Boolean
+        get() = timerUtil.hasTimeElapsed(duration.toLong())
+
+    val linearOutput: Double
+        get() = 1 - ((timerUtil.time.toDouble() / duration) * endPoint)
+
+    val output: Double
+        get() = if (direction == Direction.FORWARDS) {
+            if (isDone) endPoint
+            else getEquation(timerUtil.time.toDouble()) * endPoint
         } else {
-            if (isDone()) return 0;
-            if (correctOutput()) {
-                double revTime = Math.min(duration, Math.max(0, duration - timerUtil.getTime()));
-                return getEquation(revTime) * endPoint;
-            } else return (1 - getEquation(timerUtil.getTime())) * endPoint;
+            if (isDone) 0.0
+            else {
+                if (correctOutput()) {
+                    val revTime = min(duration.toDouble(), max(0.0, duration.toDouble() - timerUtil.time.toDouble()))
+                    getEquation(revTime) * endPoint
+                } else {
+                    (1 - getEquation(timerUtil.time.toDouble())) * endPoint
+                }
+            }
         }
+
+    fun finished(direction: Direction): Boolean = isDone && this.direction == direction
+
+    fun reset() = timerUtil.reset()
+
+    fun changeDirection() {
+        direction = direction.opposite()
     }
 
-    protected abstract double getEquation(double x);
+    protected open fun correctOutput(): Boolean = false
+
+    protected abstract fun getEquation(x: Double): Double
 }

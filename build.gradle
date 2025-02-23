@@ -70,10 +70,6 @@ dependencies {
         exclude module: "authlib"
     }
 
-    implementation 'org.projectlombok:lombok:1.18.36'
-
-    annotationProcessor 'org.projectlombok:lombok:1.18.36'
-
     implementation("com.github.UnlegitMC:Astar3d:bec2291cf2")
     implementation 'com.jhlabs:filters:2.0.235'
     implementation "org.apache.httpcomponents:httpmime:4.5.14"

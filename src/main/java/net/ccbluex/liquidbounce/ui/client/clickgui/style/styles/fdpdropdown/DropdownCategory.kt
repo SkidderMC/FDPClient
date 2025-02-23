@@ -186,9 +186,10 @@ class DropdownCategory(private val category: Category) : Screen {
         // Draw each module rect (with sub-settings)
         moduleRects?.forEach { moduleRect ->
             val animation = moduleAnimMap[moduleRect]
-            animation?.setDirection(
+            animation?.direction = (
                 if (moduleRect.module.expanded) Direction.FORWARDS else Direction.BACKWARDS
             )
+
             moduleRect.settingAnimation = animation
             moduleRect.alphaAnimation = alphaAnimation
             moduleRect.x = x

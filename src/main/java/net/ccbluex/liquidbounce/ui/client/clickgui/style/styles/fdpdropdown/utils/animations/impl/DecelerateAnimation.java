@@ -19,7 +19,7 @@ public class DecelerateAnimation extends Animation {
     }
 
     protected double getEquation(double x) {
-        double x1 = x / duration;
+        double x1 = x / getDuration();
         return 1 - ((x1 - 1) * (x1 - 1));
     }
 }
