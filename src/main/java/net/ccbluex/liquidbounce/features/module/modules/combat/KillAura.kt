@@ -392,6 +392,12 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
     val onTick = handler<GameTickEvent>(priority = 2) {
         val player = mc.thePlayer ?: return@handler
 
+        if (blockStatus && player.heldItem?.item !is ItemSword) {
+            blockStatus = false
+            renderBlocking = false
+            return@handler
+        }
+
         if (shouldPrioritize()) {
             target = null
             renderBlocking = false
