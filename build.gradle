@@ -6,15 +6,12 @@ plugins {
     id "net.minecraftforge.gradle.forge"
     id "org.spongepowered.mixin"
     id "com.gorylenko.gradle-git-properties" version "2.4.2"
-    id "maven-publish"
 }
 
 repositories {
     mavenLocal()
     mavenCentral()
-    maven { url = "https://maven.minecraftforge.net/" }
     maven { url = "https://repo.spongepowered.org/repository/maven-public/" }
-    maven { url = "https://repo.viaversion.com" }
     maven { url = "https://jitpack.io/" }
 }
 
@@ -73,10 +70,6 @@ dependencies {
         exclude module: "authlib"
     }
 
-    implementation 'org.projectlombok:lombok:1.18.36'
-
-    annotationProcessor 'org.projectlombok:lombok:1.18.36'
-
     implementation("com.github.UnlegitMC:Astar3d:bec2291cf2")
     implementation 'com.jhlabs:filters:2.0.235'
     implementation "org.apache.httpcomponents:httpmime:4.5.14"
@@ -87,11 +80,13 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.14") {
         exclude module: "kotlin-stdlib"
     }
+
     // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines_version"
 
+    // Swing LookAndFeel
     implementation "com.formdev:flatlaf:3.5.4"
 
     implementation fileTree(include: ["*.jar"], dir: "libs")
@@ -123,9 +118,11 @@ processResources {
 }
 
 task moveResources {
-    copy {
-        from "${buildDir}/resources/main"
-        into "${buildDir}/classes/java"
+    doLast {
+        copy {
+            from "${buildDir}/resources/main"
+            into "${buildDir}/classes/java"
+        }
     }
 }
 
@@ -142,7 +139,7 @@ jar {
             "TweakClass": "org.spongepowered.asm.launch.MixinTweaker",
             "TweakOrder": "0",
             "FMLAT": "fdpclient_at.cfg",
-            "Main-Class": "net.ccbluex.setup.FDPInstructionsKt",
+            "Main-Class": "net.setup.FDPInstructionsKt",
     )
 
     enabled = false
@@ -159,7 +156,6 @@ reobf {
         mappingType = "SEARGE"
     }
 }
-jar.dependsOn("shadowJar")
 
 configurations {
     compileClasspath {
@@ -169,6 +165,8 @@ configurations {
         attributes.attribute(Attribute.of("org.gradle.jvm.environment", String), "standard-jvm")
     }
 }
+
+jar.dependsOn("shadowJar")
 
 tasks.reobfShadowJar.mustRunAfter shadowJar
 tasks.reobfJar.dependsOn(shadowJar)
