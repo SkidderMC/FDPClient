@@ -29,7 +29,7 @@ class Keystrokes : Element("Keystrokes", 2.0, 34.0) {
     private val borderColors = ColorSettingsInteger(this, "Border") { renderBorder }.with(Color.BLUE)
     private val borderWidth by float("BorderWidth", 1.5F, 0.5F..5F) { renderBorder }
     private val onPressAnimation by choices(
-        "OnPressAnimationMode", arrayOf("None", "Shrink", "Fill", "ReverseFill"), "Shrink"
+        "OnPressAnimationMode", arrayOf("None", "Shrink", "Fill", "ReverseFill"), "Fill"
     )
     private val shrinkPercentage by int("ShrinkPercentage", 90, 50..100, suffix = "%") { onPressAnimation == "Shrink" }
     private val shrinkSpeed by int("ShrinkSpeed", 2, 0..5, suffix = "Ticks") { onPressAnimation == "Shrink" }

@@ -25,6 +25,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.disableFastRender
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.io.flipSafely
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.glFloatColor
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.setColour
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInOutQuadX
@@ -49,10 +50,8 @@ import net.minecraft.item.ItemSword
 import net.minecraft.util.*
 import org.lwjgl.opengl.EXTFramebufferObject
 import org.lwjgl.opengl.EXTPackedDepthStencil
-import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.*
 import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
-import org.lwjgl.opengl.GL14
 import org.lwjgl.opengl.GL14.glBlendFuncSeparate
 import org.lwjgl.util.glu.Cylinder
 import java.awt.Color
@@ -76,6 +75,62 @@ object RenderUtils : MinecraftInstance {
     }
     var deltaTime = 0
 
+    @JvmStatic
+    private fun setupFBO(fbo: Framebuffer) {
+        // Deletes old render buffer extensions such as depth
+        // Args: Render Buffer ID
+        EXTFramebufferObject.glDeleteRenderbuffersEXT(fbo.depthBuffer)
+        // Generates a new render buffer ID for the depth and stencil extension
+        val stencil_depth_buffer_ID = EXTFramebufferObject.glGenRenderbuffersEXT()
+        // Binds new render buffer by ID
+        // Args: Target (GL_RENDERBUFFER_EXT), ID
+        EXTFramebufferObject.glBindRenderbufferEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, stencil_depth_buffer_ID)
+        // Adds the depth and stencil extension
+        // Args: Target (GL_RENDERBUFFER_EXT), Extension (GL_DEPTH_STENCIL_EXT),
+        // Width, Height
+        EXTFramebufferObject.glRenderbufferStorageEXT(
+            EXTFramebufferObject.GL_RENDERBUFFER_EXT,
+            EXTPackedDepthStencil.GL_DEPTH_STENCIL_EXT,
+            mc.displayWidth,
+            mc.displayHeight
+        )
+        // Adds the stencil attachment
+        // Args: Target (GL_FRAMEBUFFER_EXT), Attachment
+        // (GL_STENCIL_ATTACHMENT_EXT), Target (GL_RENDERBUFFER_EXT), ID
+        EXTFramebufferObject.glFramebufferRenderbufferEXT(
+            EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+            EXTFramebufferObject.GL_STENCIL_ATTACHMENT_EXT,
+            EXTFramebufferObject.GL_RENDERBUFFER_EXT,
+            stencil_depth_buffer_ID
+        )
+        // Adds the depth attachment
+        // Args: Target (GL_FRAMEBUFFER_EXT), Attachment
+        // (GL_DEPTH_ATTACHMENT_EXT), Target (GL_RENDERBUFFER_EXT), ID
+        EXTFramebufferObject.glFramebufferRenderbufferEXT(
+            EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
+            EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
+            EXTFramebufferObject.GL_RENDERBUFFER_EXT,
+            stencil_depth_buffer_ID
+        )
+    }
+
+    @JvmStatic
+    fun checkSetupFBO() {
+        // Gets the FBO of Minecraft
+        val fbo = mc.framebuffer
+
+        // Check if FBO isn't null
+        if (fbo != null) {
+            // Checks if screen has been resized or new FBO has been created
+            if (fbo.depthBuffer > -1) {
+                // Sets up the FBO with depth and stencil extensions (24/8 bit)
+                setupFBO(fbo)
+                // Reset the ID to prevent multiple FBO's
+                fbo.depthBuffer = -1
+            }
+        }
+    }
+
     /**
      * Useful for clipping any top-layered rectangle that falls outside a bottom-layered rectangle.
      */
@@ -84,7 +139,7 @@ object RenderUtils : MinecraftInstance {
         checkSetupFBO()
         glPushMatrix()
 
-        glDisable(GL_ALPHA_TEST)
+        disableAlpha()
 
         glEnable(GL_STENCIL_TEST)
         glStencilFunc(GL_ALWAYS, 1, 1)
@@ -103,19 +158,18 @@ object RenderUtils : MinecraftInstance {
         glStencilMask(0xFF)
         glDisable(GL_STENCIL_TEST)
 
-        glEnable(GL_ALPHA_TEST)
+        enableAlpha()
 
         glPopMatrix()
     }
-
-    var startTime: Long = 0
-    var animationDuration: Int = 500
 
     inline fun withOutline(main: () -> Unit, toOutline: () -> Unit) {
         disableFastRender()
         checkSetupFBO()
         glPushMatrix()
-        glDisable(GL_ALPHA_TEST)
+
+        disableAlpha()
+
         glEnable(GL_STENCIL_TEST)
         glClear(GL_STENCIL_BUFFER_BIT)
 
@@ -133,7 +187,9 @@ object RenderUtils : MinecraftInstance {
 
         glStencilMask(0xFF)
         glDisable(GL_STENCIL_TEST)
-        glEnable(GL_ALPHA_TEST)
+
+        enableAlpha()
+
         glPopMatrix()
     }
 
@@ -147,11 +203,14 @@ object RenderUtils : MinecraftInstance {
 
     fun drawHueCircle(position: Vec3, radius: Float, innerColor: Color, outerColor: Color) {
         val manager = mc.renderManager
+
         val renderX = manager.viewerPosX
         val renderY = manager.viewerPosY
         val renderZ = manager.viewerPosZ
+
         glPushAttrib(GL_ALL_ATTRIB_BITS)
         glPushMatrix()
+
         glDisable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
@@ -161,6 +220,7 @@ object RenderUtils : MinecraftInstance {
         glEnable(GL_ALPHA_TEST)
         glAlphaFunc(GL_GREATER, 0.0f)
         mc.entityRenderer.disableLightmap()
+
         glBegin(GL_TRIANGLE_FAN)
         circlePoints.forEachIndexed { index, pos ->
             val innerX = pos.x * radius
@@ -169,25 +229,24 @@ object RenderUtils : MinecraftInstance {
             val innerHue = ColorUtils.shiftHue(innerColor, (index / CIRCLE_STEPS).toInt())
             glColor4f(innerHue.red / 255f, innerHue.green / 255f, innerHue.blue / 255f, innerColor.alpha / 255f)
             glVertex3d(
-                position.xCoord - renderX + innerX,
-                position.yCoord - renderY,
-                position.zCoord - renderZ + innerZ
+                position.xCoord - renderX + innerX, position.yCoord - renderY, position.zCoord - renderZ + innerZ
             )
         }
         glEnd()
+
         glBegin(GL_LINE_LOOP)
         circlePoints.forEachIndexed { index, pos ->
             val outerX = pos.x * radius
             val outerZ = pos.z * radius
+
             val outerHue = ColorUtils.shiftHue(outerColor, (index / CIRCLE_STEPS).toInt())
             glColor4f(outerHue.red / 255f, outerHue.green / 255f, outerHue.alpha / 255f, outerColor.alpha / 255f)
             glVertex3d(
-                position.xCoord - renderX + outerX,
-                position.yCoord - renderY,
-                position.zCoord - renderZ + outerZ
+                position.xCoord - renderX + outerX, position.yCoord - renderY, position.zCoord - renderZ + outerZ
             )
         }
         glEnd()
+
         glEnable(GL_CULL_FACE)
         glEnable(GL_DEPTH_TEST)
         glDisable(GL_ALPHA_TEST)
@@ -197,7 +256,6 @@ object RenderUtils : MinecraftInstance {
         glPopMatrix()
         glPopAttrib()
     }
-
 
     init {
         glNewList(DISPLAY_LISTS_2D[0], GL_COMPILE)
@@ -557,6 +615,7 @@ object RenderUtils : MinecraftInstance {
         if (useTexture) {
             mc.textureManager.bindTexture(ResourceLocation("fdpclient/textures/hat.png"))
             enableTexture2D()
+            depthMask(true)
         }
 
         drawWithTessellatorWorldRenderer {
@@ -1217,32 +1276,12 @@ object RenderUtils : MinecraftInstance {
         drawBorder(x, y, x2, y2, width, borderColor)
     }
 
+
     fun drawRoundedBorderRect(
-        x: Float,
-        y: Float,
-        x2: Float,
-        y2: Float,
-        width: Float,
-        color1: Int,
-        color2: Int,
-        radius: Float
+        x: Float, y: Float, x2: Float, y2: Float, width: Float, color1: Int, color2: Int, radius: Float
     ) {
         drawRoundedRect(x, y, x2, y2, color1, radius)
         drawRoundedBorder(x, y, x2, y2, width, color2, radius)
-    }
-
-    fun drawRoundedBorderRectInt(
-        x: Int,
-        y: Int,
-        x2: Int,
-        y2: Int,
-        width: Int,
-        color1: Int,
-        color2: Int,
-        radius: Float
-    ) {
-        drawRoundedRectInt(x, y, x2, y2, color1, radius)
-        drawRoundedBorderInt(x, y, x2, y2, width.toFloat(), color2, radius)
     }
 
     fun drawRectBasedBorder(x: Float, y: Float, x2: Float, y2: Float, width: Float, color1: Int) {
@@ -1259,15 +1298,19 @@ object RenderUtils : MinecraftInstance {
         glEnable(GL_LINE_SMOOTH)
         glColor(color)
         glLineWidth(width)
-        glBegin(GL_LINE_LOOP)
-        glVertex2d(x2.toDouble(), y.toDouble())
-        glVertex2d(x.toDouble(), y.toDouble())
-        glVertex2d(x.toDouble(), y2.toDouble())
-        glVertex2d(x2.toDouble(), y2.toDouble())
-        glEnd()
+
+        drawWithTessellatorWorldRenderer {
+            begin(GL_LINE_LOOP, DefaultVertexFormats.POSITION)
+            pos(x2.toDouble(), y.toDouble(), 0.0).endVertex()
+            pos(x.toDouble(), y.toDouble(), 0.0).endVertex()
+            pos(x.toDouble(), y2.toDouble(), 0.0).endVertex()
+            pos(x2.toDouble(), y2.toDouble(), 0.0).endVertex()
+        }
+
+        glColor(Color.WHITE)
+        glDisable(GL_LINE_SMOOTH)
         glEnable(GL_TEXTURE_2D)
         glDisable(GL_BLEND)
-        glDisable(GL_LINE_SMOOTH)
     }
 
     fun drawBorder(x: Int, y: Int, x2: Int, y2: Int, width: Number, color: Int) {
@@ -1296,10 +1339,6 @@ object RenderUtils : MinecraftInstance {
 
     fun drawRoundedBorder(x: Float, y: Float, x2: Float, y2: Float, width: Float, color: Int, radius: Float) {
         renderRoundedBorder(x, y, x2, y2, color, width, radius)
-    }
-
-    fun drawRoundedBorderInt(x: Int, y: Int, x2: Int, y2: Int, width: Float, color: Int, radius: Float) {
-        renderRoundedBorder(x.toFloat(), y.toFloat(), x2.toFloat(), y2.toFloat(), color, width, radius)
     }
 
     /** rounded rect outline
@@ -1370,17 +1409,9 @@ object RenderUtils : MinecraftInstance {
     }
 
     private fun renderRoundedBorder(
-        x1: Float,
-        y1: Float,
-        x2: Float,
-        y2: Float,
-        color: Int,
-        width: Float,
-        radius: Float,
-        bottom: Boolean = true
+        x1: Float, y1: Float, x2: Float, y2: Float, color: Int, width: Float, radius: Float, bottom: Boolean = true
     ) {
         val (alpha, red, green, blue) = ColorUtils.unpackARGBFloatValue(color)
-
         val (newX1, newY1, newX2, newY2) = orderPoints(x1, y1, x2, y2)
 
         glPushMatrix()
@@ -1403,6 +1434,7 @@ object RenderUtils : MinecraftInstance {
 
         drawWithTessellatorWorldRenderer {
             begin(if (bottom) GL_LINE_LOOP else GL_LINE_STRIP, DefaultVertexFormats.POSITION)
+
             for ((cx, cy, startAngle) in corners) {
                 for (i in 0..90 step 10) {
                     val angle = Math.toRadians(startAngle + i)
@@ -1413,8 +1445,7 @@ object RenderUtils : MinecraftInstance {
             }
         }
 
-        resetColor()
-
+        glColor(Color.WHITE)
         glEnable(GL_TEXTURE_2D)
         glDisable(GL_LINE_SMOOTH)
         glDisable(GL_BLEND)
@@ -1422,13 +1453,7 @@ object RenderUtils : MinecraftInstance {
     }
 
     fun drawRoundedBorderedWithoutBottom(
-        x1: Float,
-        y1: Float,
-        x2: Float,
-        y2: Float,
-        color: Int,
-        width: Float,
-        radius: Float
+        x1: Float, y1: Float, x2: Float, y2: Float, color: Int, width: Float, radius: Float
     ) = renderRoundedBorder(x1, y1, x2, y2, color, width, radius, false)
 
     fun quickDrawRect(x: Float, y: Float, x2: Float, y2: Float) {
@@ -1565,7 +1590,7 @@ object RenderUtils : MinecraftInstance {
     fun drawLoadingCircle(x: Float, y: Float) {
         for (i in 0..3) {
             val rot = (System.nanoTime() / 5000000 * i % 360).toInt()
-            drawCircleJump(x, y, (i * 10).toFloat(), rot - 180, rot)
+            drawCircle(x, y, (i * 10).toFloat(), rot - 180, rot)
         }
     }
 
@@ -1755,11 +1780,6 @@ object RenderUtils : MinecraftInstance {
         drawRoundedRectangle(newX1, newY1, newX2, newY2, red, green, blue, alpha, radius, cornersToRound)
     }
 
-    fun drawRoundedRectTest(x1: Double, y1: Double, x2: Double, y2: Double, radius: Float, color: Int) {
-        val (alpha, red, green, blue) = ColorUtils.unpackARGBFloatValue(color)
-
-        drawRoundedRectangle(x1.toFloat(), y1.toFloat(), x2.toFloat(), y2.toFloat(), radius, red, green, blue, alpha)
-    }
     fun drawRoundedRect(paramXStart: Float, paramYStart: Float, paramXEnd: Float, paramYEnd: Float, radius: Float, color: Int) {
         drawRoundedRect(paramXStart, paramYStart, paramXEnd, paramYEnd, radius, color, true)
     }
@@ -1990,101 +2010,6 @@ object RenderUtils : MinecraftInstance {
         disableBlend()
     }
 
-    /**
-     * @author Shoroa
-     * @param x : X pos
-     * @param y : Y pos
-     * @param x1 : X2 pos
-     * @param y1 : Y2 pos
-     * @param radius : round of edges;
-     * @param color : color;
-     * @param color2 : color2;
-     * @param color3 : color3;
-     * @param color4 : color4;
-     */
-    fun drawRoundedGradientRectCorner(
-        x: Float,
-        y: Float,
-        x1: Float,
-        y1: Float,
-        radius: Float,
-        color: Int,
-        color2: Int,
-        color3: Int,
-        color4: Int
-    ) {
-        var x = x
-        var y = y
-        var x1 = x1
-        var y1 = y1
-        setColour(-1)
-        glEnable(GL_BLEND)
-        glDisable(GL_TEXTURE_2D)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_LINE_SMOOTH)
-        glShadeModel(GL_SMOOTH)
-
-        glPushAttrib(0)
-        glScaled(0.5, 0.5, 0.5)
-        x *= 2.0.toFloat()
-        y *= 2.0.toFloat()
-        x1 *= 2.0.toFloat()
-        y1 *= 2.0.toFloat()
-        glEnable(GL_BLEND)
-        glDisable(GL_TEXTURE_2D)
-        setColour(color)
-        glEnable(GL_LINE_SMOOTH)
-        glShadeModel(GL_SMOOTH)
-        glBegin(6)
-        var i = 0
-        while (i <= 90) {
-            glVertex2d(
-                x + radius + sin(i * Math.PI / 180.0) * radius * -1.0,
-                y + radius + cos(i * Math.PI / 180.0) * radius * -1.0
-            )
-            i += 3
-        }
-        setColour(color2)
-        i = 90
-        while (i <= 180) {
-            glVertex2d(
-                x + radius + sin(i * Math.PI / 180.0) * radius * -1.0,
-                y1 - radius + cos(i * Math.PI / 180.0) * radius * -1.0
-            )
-            i += 3
-        }
-        setColour(color3)
-        i = 0
-        while (i <= 90) {
-            glVertex2d(x1 - radius + sin(i * Math.PI / 180.0) * radius, y1 - radius + cos(i * Math.PI / 180.0) * radius)
-            i += 3
-        }
-        setColour(color4)
-        i = 90
-        while (i <= 180) {
-            glVertex2d(
-                x1 - radius + sin(i * Math.PI / 180.0) * radius,
-                y + radius + cos(i * Math.PI / 180.0) * radius
-            )
-            i += 3
-        }
-        glEnd()
-        glEnable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
-        glDisable(GL_LINE_SMOOTH)
-        glDisable(GL_BLEND)
-        glEnable(GL_TEXTURE_2D)
-        glScaled(2.0, 2.0, 2.0)
-        glPopAttrib()
-
-
-        glEnable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
-        glDisable(GL_LINE_SMOOTH)
-        glShadeModel(GL_FLAT)
-        setColour(-1)
-    }
-
     fun drawRoundedGradientRectCorner(
         x: Float,
         y: Float,
@@ -2303,25 +2228,6 @@ object RenderUtils : MinecraftInstance {
         drawRoundedRectangle(newX1, newY1, newX2, newY2, red, green, blue, alpha, radius, cornersToRound)
     }
 
-    fun drawRoundedRect3(
-        x1: Float,
-        y1: Float,
-        x2: Float,
-        y2: Float,
-        rgba: Int,
-        radius: Float,
-        cornersToRound: RoundedCorners = RoundedCorners.ALL
-    ) {
-        val alpha = (rgba ushr 24 and 0xFF) / 255.0f
-        val red = (rgba ushr 16 and 0xFF) / 255.0f
-        val green = (rgba ushr 8 and 0xFF) / 255.0f
-        val blue = (rgba and 0xFF) / 255.0f
-
-        val (newX1, newY1, newX2, newY2) = orderPoints(x1, y1, x2, y2)
-
-        drawRoundedRectangle(newX1, newY1, newX2, newY2, red, green, blue, alpha, radius, cornersToRound)
-    }
-
     fun customRounded(
         paramXStart: Float,
         paramYStart: Float,
@@ -2533,7 +2439,7 @@ object RenderUtils : MinecraftInstance {
         return floatArrayOf(newX1, newY1, newX2, newY2)
     }
 
-    fun drawCircleJump(x: Float, y: Float, radius: Float, start: Int, end: Int) {
+    fun drawCircle(x: Float, y: Float, radius: Float, start: Int, end: Int) {
         enableBlend()
         disableTexture2D()
         tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ZERO)
@@ -2545,8 +2451,7 @@ object RenderUtils : MinecraftInstance {
         while (i >= start) {
             val rad = i.toRadians()
             glVertex2f(
-                x + cos(rad) * (radius * 1.001f),
-                y + sin(rad) * (radius * 1.001f)
+                x + cos(rad) * (radius * 1.001f), y + sin(rad) * (radius * 1.001f)
             )
             i -= 360 / 90f
         }
@@ -2812,18 +2717,6 @@ object RenderUtils : MinecraftInstance {
     fun glColor(red: Int, green: Int, blue: Int, alpha: Int) =
         glColor4f(red / 255f, green / 255f, blue / 255f, alpha / 255f)
 
-    fun glFloatColor(color: Color, alpha: Int) {
-        glFloatColor(color, alpha / 255f)
-    }
-
-    fun glFloatColor(color: Color, alpha: Float) {
-        val red = color.red / 255f
-        val green = color.green / 255f
-        val blue = color.blue / 255f
-
-        color(red, green, blue, alpha)
-    }
-
     /**
      * Gl color.
      *
@@ -2906,26 +2799,6 @@ object RenderUtils : MinecraftInstance {
         glPopMatrix()
     }
 
-    // Used to draw a WIFI-like icon.
-    fun drawQuarterCircle(x: Int, y: Int, radius: Float, color: Color) {
-        glPushMatrix()
-        glDisable(GL_TEXTURE_2D)
-        glColor(color)
-        glBegin(GL_TRIANGLE_FAN)
-
-        glVertex2f(x.toFloat(), y.toFloat())
-
-        for (i in CIRCLE_STEPS / 8..CIRCLE_STEPS * 3 / 8) {
-            val point = circlePoints[i]
-            glVertex2f(x + radius * point.z.toFloat(), y + radius * point.x.toFloat())
-        }
-
-        glColor4f(1f, 1f, 1f, 1f)
-        glEnd()
-        glEnable(GL_TEXTURE_2D)
-        glPopMatrix()
-    }
-
     fun renderNameTag(string: String, x: Double, y: Double, z: Double) {
         val renderManager = mc.renderManager
         val (x1, y1, z1) = Vec3(x, y, z) - renderManager.renderPos
@@ -2983,8 +2856,6 @@ object RenderUtils : MinecraftInstance {
     fun enableGlCap(vararg caps: Int) {
         for (cap in caps) setGlCap(cap, true)
     }
-
-    fun disableGlCap(cap: Int) = setGlCap(cap, true)
 
     fun disableGlCap(vararg caps: Int) {
         for (cap in caps) setGlCap(cap, false)
@@ -3092,44 +2963,6 @@ object RenderUtils : MinecraftInstance {
     }
 
     /**
-     * Draws a gradient-filled rectangle using float coordinates.
-     *
-     * @param left       the x-coordinate of the rectangle's left edge
-     * @param top        the y-coordinate of the rectangle's top edge
-     * @param right      the x-coordinate of the rectangle's right edge
-     * @param bottom     the y-coordinate of the rectangle's bottom edge
-     * @param startColor the starting color of the gradient (ARGB format)
-     * @param endColor   the ending color of the gradient (ARGB format)
-     */
-    fun drawFloatGradientRect(left: Float, top: Float, right: Float, bottom: Float, startColor: Int, endColor: Int) {
-        val f = (startColor shr 24 and 0xFF) / 255.0f
-        val f2 = (startColor shr 16 and 0xFF) / 255.0f
-        val f3 = (startColor shr 8 and 0xFF) / 255.0f
-        val f4 = (startColor and 0xFF) / 255.0f
-        val f5 = (endColor shr 24 and 0xFF) / 255.0f
-        val f6 = (endColor shr 16 and 0xFF) / 255.0f
-        val f7 = (endColor shr 8 and 0xFF) / 255.0f
-        val f8 = (endColor and 0xFF) / 255.0f
-        disableTexture2D()
-        enableBlend()
-        disableAlpha()
-        tryBlendFuncSeparate(770, 771, 1, 0)
-        shadeModel(7425)
-        val tessellator = Tessellator.getInstance()
-        val worldrenderer = tessellator.worldRenderer
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_COLOR)
-        worldrenderer.pos(right.toDouble(), top.toDouble(), 0.0).color(f2, f3, f4, f).endVertex()
-        worldrenderer.pos(left.toDouble(), top.toDouble(), 0.0).color(f2, f3, f4, f).endVertex()
-        worldrenderer.pos(left.toDouble(), bottom.toDouble(), 0.0).color(f6, f7, f8, f5).endVertex()
-        worldrenderer.pos(right.toDouble(), bottom.toDouble(), 0.0).color(f6, f7, f8, f5).endVertex()
-        tessellator.draw()
-        shadeModel(7424)
-        disableBlend()
-        enableAlpha()
-        enableTexture2D()
-    }
-
-    /**
      * Fast rounded rect.
      *
      * @param paramXStart the param x start
@@ -3201,39 +3034,6 @@ object RenderUtils : MinecraftInstance {
         }
         glEnd()
         glDisable(GL_LINE_SMOOTH)
-    }
-
-
-    /**
-     * Draws a gradient-filled rectangle with rounded corners using float coordinates.
-     *
-     * @param left       the x-coordinate of the rectangle's left edge
-     * @param top        the y-coordinate of the rectangle's top edge
-     * @param right      the x-coordinate of the rectangle's right edge
-     * @param bottom     the y-coordinate of the rectangle's bottom edge
-     * @param radius     the radius of the rounded corners
-     * @param startColor the starting color of the gradient
-     * @param endColor   the ending color of the gradient
-     */
-    fun drawFloatGradientRoundedRect(
-        left: Float,
-        top: Float,
-        right: Float,
-        bottom: Float,
-        radius: Int,
-        startColor: Int,
-        endColor: Int
-    ) {
-        Stencil.write(false)
-        glDisable(GL_TEXTURE_2D)
-        glEnable(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        fastRoundedRect(left, top, right, bottom, radius.toFloat())
-        glDisable(GL_BLEND)
-        glEnable(GL_TEXTURE_2D)
-        Stencil.erase(true)
-        drawFloatGradientRect(left, top, right, bottom, startColor, endColor)
-        Stencil.dispose()
     }
 
     /**
@@ -3528,80 +3328,6 @@ object RenderUtils : MinecraftInstance {
         glEnd() // End drawing the polygon
     }
 
-    fun drawRoundedGradientOutlineCorner(x: Float, y: Float, x1: Float, y1: Float, width: Float, radius: Float, color: Int, color2: Int) {
-        var x = x
-        var y = y
-        var x1 = x1
-        var y1 = y1
-        setColour(-1)
-        glEnable(GL_BLEND)
-        glDisable(GL_TEXTURE_2D)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_LINE_SMOOTH)
-        glShadeModel(GL_SMOOTH)
-
-        glPushAttrib(0)
-        glScaled(0.5, 0.5, 0.5)
-        x *= 2.0f
-        y *= 2.0f
-        x1 *= 2.0f
-        y1 *= 2.0f
-        glEnable(GL_BLEND)
-        glDisable(GL_TEXTURE_2D)
-        setColour(color)
-        glEnable(GL_LINE_SMOOTH)
-        glShadeModel(GL_SMOOTH)
-        glLineWidth(width)
-        glBegin(GL_LINE_LOOP)
-        var i = 0
-        while (i <= 90) {
-            glVertex2d(
-                x + radius + sin(i * Math.PI / 180.0) * radius * -1.0,
-                y + radius + cos(i * Math.PI / 180.0) * radius * -1.0
-            )
-            i += 3
-        }
-        setColour(color)
-        i = 90
-        while (i <= 180) {
-            glVertex2d(
-                x + radius + sin(i * Math.PI / 180.0) * radius * -1.0,
-                y1 - radius + cos(i * Math.PI / 180.0) * radius * -1.0
-            )
-            i += 3
-        }
-        setColour(color2)
-        i = 0
-        while (i <= 90) {
-            glVertex2d(x1 - radius + sin(i * Math.PI / 180.0) * radius, y1 - radius + cos(i * Math.PI / 180.0) * radius)
-            i += 3
-        }
-        setColour(color2)
-        i = 90
-        while (i <= 180) {
-            glVertex2d(
-                x1 - radius + sin(i * Math.PI / 180.0) * radius,
-                y + radius + cos(i * Math.PI / 180.0) * radius
-            )
-            i += 3
-        }
-        glEnd()
-        glLineWidth(1f)
-        glEnable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
-        glDisable(GL_LINE_SMOOTH)
-        glDisable(GL_BLEND)
-        glEnable(GL_TEXTURE_2D)
-        glScaled(2.0, 2.0, 2.0)
-        glPopAttrib()
-
-        glEnable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
-        glDisable(GL_LINE_SMOOTH)
-        glShadeModel(GL_FLAT)
-        setColour(-1)
-    }
-
     /**
      * Draws a portion of a circle using OpenGL, approximating it with a polygon.
      *
@@ -3891,67 +3617,6 @@ object RenderUtils : MinecraftInstance {
             (color.green / 255f).toDouble(),
             (color.blue / 255f).toDouble(),
             (color.alpha / 255f).toDouble()
-        )
-    }
-
-    @JvmStatic
-    fun checkSetupFBO() {
-        // Gets the FBO of Minecraft
-        val fbo = mc.framebuffer
-
-        // Check if FBO isn't null
-        if (fbo != null) {
-            // Checks if screen has been resized or new FBO has been created
-            if (fbo.depthBuffer > -1) {
-                // Sets up the FBO with depth and stencil extensions (24/8 bit)
-                setupFBO(fbo)
-                // Reset the ID to prevent multiple FBO's
-                fbo.depthBuffer = -1
-            }
-        }
-    }
-
-    /**
-     * Sets up the FBO with depth and stencil
-     *
-     * @param fbo Framebuffer
-     */
-    @JvmStatic
-    private fun setupFBO(fbo: Framebuffer) {
-        // Deletes old render buffer extensions such as depth
-        // Args: Render Buffer ID
-        EXTFramebufferObject.glDeleteRenderbuffersEXT(fbo.depthBuffer)
-        // Generates a new render buffer ID for the depth and stencil extension
-        val stencil_depth_buffer_ID = EXTFramebufferObject.glGenRenderbuffersEXT()
-        // Binds new render buffer by ID
-        // Args: Target (GL_RENDERBUFFER_EXT), ID
-        EXTFramebufferObject.glBindRenderbufferEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, stencil_depth_buffer_ID)
-        // Adds the depth and stencil extension
-        // Args: Target (GL_RENDERBUFFER_EXT), Extension (GL_DEPTH_STENCIL_EXT),
-        // Width, Height
-        EXTFramebufferObject.glRenderbufferStorageEXT(
-            EXTFramebufferObject.GL_RENDERBUFFER_EXT,
-            EXTPackedDepthStencil.GL_DEPTH_STENCIL_EXT,
-            mc.displayWidth,
-            mc.displayHeight
-        )
-        // Adds the stencil attachment
-        // Args: Target (GL_FRAMEBUFFER_EXT), Attachment
-        // (GL_STENCIL_ATTACHMENT_EXT), Target (GL_RENDERBUFFER_EXT), ID
-        EXTFramebufferObject.glFramebufferRenderbufferEXT(
-            EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
-            EXTFramebufferObject.GL_STENCIL_ATTACHMENT_EXT,
-            EXTFramebufferObject.GL_RENDERBUFFER_EXT,
-            stencil_depth_buffer_ID
-        )
-        // Adds the depth attachment
-        // Args: Target (GL_FRAMEBUFFER_EXT), Attachment
-        // (GL_DEPTH_ATTACHMENT_EXT), Target (GL_RENDERBUFFER_EXT), ID
-        EXTFramebufferObject.glFramebufferRenderbufferEXT(
-            EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
-            EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
-            EXTFramebufferObject.GL_RENDERBUFFER_EXT,
-            stencil_depth_buffer_ID
         )
     }
 
@@ -4382,36 +4047,6 @@ object RenderUtils : MinecraftInstance {
         return (alpha shl 24) or (red shl 16) or (green shl 8) or blue
     }
 
-    fun drawAnimatedGradient(left: Double, top: Double, right: Double, bottom: Double, col1: Int, col2: Int) {
-        val currentTime = System.currentTimeMillis()
-        if (startTime == 0L) {
-            startTime = currentTime
-        }
-
-        val elapsedTime: Long = currentTime - startTime
-        val progress: Float = (elapsedTime % animationDuration).toFloat() / animationDuration
-
-        val color1: Int
-        val color2: Int
-
-        if (elapsedTime / animationDuration % 2 == 0L) {
-            // Custom Color 1 to Custom Color 2
-            color1 = interpolateColors(col1, col2, progress)
-            color2 = interpolateColors(col2, col1, progress)
-        } else {
-            // Custom Color 2 to Custom Color 1
-            color1 = interpolateColors(col2, col1, progress)
-            color2 = interpolateColors(col1, col2, progress)
-        }
-
-        drawGradientSideways(left, top, right, bottom, color1, color2)
-
-        if (elapsedTime >= 2 * animationDuration) {
-            // Reset the start time to continue the loop
-            startTime = currentTime
-        }
-    }
-
     fun drawRectFloat(left: Float, top: Float, right: Float, bottom: Float, color: Int) {
         var left = left
         var top = top
@@ -4656,19 +4291,6 @@ object RenderUtils : MinecraftInstance {
         glDisable(2848)
         glDisable(3042)
         glEnable(2929)
-    }
-
-    fun startDrawing() {
-        glEnable(3042)
-        glEnable(3042)
-        glBlendFunc(770, 771)
-        glEnable(2848)
-        glDisable(3553)
-        glDisable(2929)
-        Minecraft.getMinecraft().entityRenderer.setupCameraTransform(
-            Minecraft.getMinecraft().timer.renderPartialTicks,
-            0
-        )
     }
 
     fun customRotatedObject2D(x: Float, y: Float, width: Float, height: Float, rotation: Double) {

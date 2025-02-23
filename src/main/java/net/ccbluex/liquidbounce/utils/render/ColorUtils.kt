@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.utils.render
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.getHealth
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.GlStateManager.color
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -360,6 +361,23 @@ object ColorUtils {
 
     fun getAlphaFromColor(color: Int): Int {
         return color shr 24 and 0xFF
+    }
+
+    fun glFloatColor(color: Color, alpha: Int) {
+        glFloatColor(color, alpha / 255f)
+    }
+
+    fun glFloatColor(color: Color, alpha: Float) {
+        val red = color.red / 255f
+        val green = color.green / 255f
+        val blue = color.blue / 255f
+
+        color(red, green, blue, alpha)
+    }
+
+    fun getMainColor(level: Int): Int {
+        if (level == 4) return -0x560000
+        return -1
     }
 
     fun interpolateColor(color1: Int, color2: Int, amount: Float): Int {

@@ -29,9 +29,10 @@ class NormalTH(inst: Targets) : TargetStyle("Normal", inst, true) {
         val leaght = fonts.getStringWidth(entity.name)
         updateAnim(entity.health)
         RenderUtils.drawRoundedRect(0F, 0F, 42F + leaght, 23F, 0F, Color(32, 32, 32, fadeAlpha(255)).rgb)
-        RenderUtils.drawAnimatedGradient(
+    /*    RenderUtils.drawAnimatedGradient(
             0.0, 0.0, (42.0 + leaght) * (easingHealth / entity.maxHealth), 1.0, setColor("START",fadeAlpha(255)).rgb, setColor("END",fadeAlpha(255)).rgb
         )
+        */
         if (numberValue.get()) {
             GlStateManager.enableBlend()
             fonts.drawStringFade((if (percentValue.get()) decimalFormat3.format((easingHealth / entity.maxHealth) * 100) + "%" else "${decimalFormat3.format(easingHealth)}❤"), (42F + leaght) * (easingHealth / entity.maxHealth), -8F, getColorWithAlpha(1,fadeAlpha(255)))
