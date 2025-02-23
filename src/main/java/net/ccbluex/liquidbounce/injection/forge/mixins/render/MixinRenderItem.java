@@ -19,11 +19,15 @@ public abstract class MixinRenderItem {
     @Shadow
     protected abstract void renderModel(IBakedModel model, int color);
 
-    @Redirect(method = "renderEffect", at = @At(value="INVOKE", target="Lnet/minecraft/client/renderer/entity/RenderItem;renderModel(Lnet/minecraft/client/resources/model/IBakedModel;I)V"))
-    private void renderModel(RenderItem renderItem, IBakedModel model, int color) {
-        final Glint glint = Glint.INSTANCE;
-
-        this.renderModel(model, glint.getState() ? glint.getColor().getRGB() : -8372020);
+    @Redirect(
+            method = "renderEffect",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/client/renderer/entity/RenderItem;renderModel(Lnet/minecraft/client/resources/model/IBakedModel;I)V"
+            )
+    )
+    private void renderModelRedirect(RenderItem renderItem, IBakedModel model, int originalColor) {
+        int colorToUse = Glint.INSTANCE.getState() ? Glint.INSTANCE.getGlintColor().getRGB() : -8372020;
+        this.renderModel(model, colorToUse);
     }
 }
-

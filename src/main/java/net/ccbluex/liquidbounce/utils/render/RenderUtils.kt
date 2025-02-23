@@ -25,12 +25,12 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.disableFastRender
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.io.flipSafely
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.getMainColor
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.glFloatColor
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.setColour
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInOutQuadX
 import net.ccbluex.liquidbounce.utils.render.shader.UIEffectRenderer.drawTexturedRect
-import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
@@ -3696,11 +3696,6 @@ object RenderUtils : MinecraftInstance {
         if (level == 4) return 0x70AA0000
         if (level >= 5) return 0x70FFAA00
         return 0x70FFFFFF
-    }
-
-    private fun getMainColor(level: Int): Int {
-        if (level == 4) return -0x560000
-        return -1
     }
 
     fun yzyTexture(

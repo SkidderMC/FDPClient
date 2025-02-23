@@ -13,14 +13,12 @@ import java.awt.Color
 object Glint: Module("Glint", Category.VISUAL) {
 
     private val modeValue by choices("Mode", arrayOf("Rainbow", "Custom"), "Custom")
-    private val redValue by int("Red", 255, 0.. 255) { modeValue == "Custom" }
-    private val greenValue by int("Green", 0, 0.. 255) { modeValue == "Custom" }
-    private val blueValue by int("Blue", 0, 0.. 255) { modeValue == "Custom" }
+    private val color by color("Color", Color.WHITE) { modeValue == "Custom" }
 
-    fun getColor(): Color {
+    fun getGlintColor(): Color {
         return when (modeValue.lowercase()) {
             "rainbow" -> ColorUtils.rainbow(10, 0.9F)
-            else -> Color(redValue, greenValue, blueValue)
+            else -> Color(color.rgb)
         }
     }
 }

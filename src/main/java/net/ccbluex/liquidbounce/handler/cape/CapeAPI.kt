@@ -44,10 +44,10 @@ object CapeAPI : MinecraftInstance {
                     override fun skinAvailable() {
                         capeInfo.isCapeAvailable = true
                     }
-
                 })
 
                 mc.textureManager.loadTexture(resourceLocation, threadDownloadImageData)
+
                 success(capeInfo)
             }.onFailure {
                 LOGGER.error("Failed to load cape for UUID: $uuid", it)
