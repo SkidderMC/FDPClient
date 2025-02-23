@@ -134,10 +134,12 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 onGround,
                 EventState.PRE
         );
+
         EventManager.INSTANCE.call(motionEvent);
 
         final InvMove inventoryMove = InvMove.INSTANCE;
         final Sneak sneak = Sneak.INSTANCE;
+
         final boolean fakeSprint = inventoryMove.handleEvents() && inventoryMove.getAacAdditionPro()
                 || AntiHunger.INSTANCE.handleEvents()
                 || sneak.handleEvents() && (!PlayerExtensionKt.isMoving(mc.thePlayer) || !sneak.getStopMove()) && sneak.getMode().equals("MineSecure")
@@ -164,6 +166,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         }
 
         final MovementUtils movementUtils = MovementUtils.INSTANCE;
+
         if (motionEvent.getOnGround()) {
             movementUtils.setGroundTicks(movementUtils.getGroundTicks() + 1);
             movementUtils.setAirTicks(0);
@@ -212,8 +215,8 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
                 lastReportedPosX = motionEvent.getX();
                 lastReportedPosY = motionEvent.getY();
                 lastReportedPosZ = motionEvent.getZ();
+                positionUpdateTicks = 0;
             }
-
 
             if (!FreeCam.INSTANCE.shouldDisableRotations()) {
                 RotationUtils.INSTANCE.setServerRotation(new Rotation(yaw, pitch));
@@ -333,6 +336,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         movementInput.updatePlayerMoveState();
 
         RotationUtils utils = RotationUtils.INSTANCE;
+
         final Rotation currentRotation = utils.getCurrentRotation();
 
         // A separate movement input for currentRotation
@@ -386,6 +390,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         }
 
         RotationSettings settings = utils.getActiveSettings();
+
         utils.setModifiedInput(settings != null && !settings.getStrict() ? modifiedInput : movementInput);
 
         pushOutOfBlocks(posX - width * 0.35, getEntityBoundingBox().minY + 0.5, posZ + width * 0.35);
