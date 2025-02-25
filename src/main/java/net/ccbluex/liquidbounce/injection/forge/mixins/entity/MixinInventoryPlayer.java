@@ -21,6 +21,7 @@ public class MixinInventoryPlayer {
     private int hookSilentHotbar(InventoryPlayer instance) {
         if (instance == null || instance.player == null || mc.thePlayer == null)
             return instance != null ? instance.currentItem : 0;
+
         return instance.player.getGameProfile().equals(mc.thePlayer.getGameProfile()) ? SilentHotbar.INSTANCE.getCurrentSlot() : instance.currentItem;
     }
 }
