@@ -406,7 +406,10 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
             return@handler
         }
 
-        if (clickOnly && !mc.gameSettings.keyBindAttack.isKeyDown) return@handler
+        if (clickOnly && !mc.gameSettings.keyBindAttack.isKeyDown) {
+            clicks = 0
+            return@handler
+        }
 
         if (blockStatus && autoBlock == "Packet" && releaseAutoBlock && !ignoreTickRule) {
             clicks = 0
