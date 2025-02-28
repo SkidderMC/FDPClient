@@ -80,7 +80,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT) {
         ColorSettingsInteger(this, "ESPColor") { espMode != "Model" && mode == "Modern" }.with(0, 255, 0)
 
     private val packetQueue = ConcurrentLinkedQueue<QueueData>()
-    private val positions = mutableListOf<Pair<Vec3, Long>>()
+    private val positions = ConcurrentLinkedQueue<Pair<Vec3, Long>>()
 
     var target: EntityLivingBase? = null
 
@@ -105,7 +105,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT) {
     private val nonDelayedSoundSubstrings = arrayOf("game.player.hurt", "game.player.die")
 
     val isPacketQueueEmpty
-        get() = synchronized(packetQueue) { packetQueue.isEmpty() }
+        get() = packetQueue.isEmpty()
 
     val areQueuedPacketsEmpty
         get() = PacketUtils.isQueueEmpty()
@@ -205,25 +205,19 @@ object Backtrack : Module("Backtrack", Category.COMBAT) {
                     when (packet) {
                         is S14PacketEntity -> if (packet.entityId == target?.entityId) {
                             (target as? IMixinEntity)?.run {
-                                synchronized(positions) {
-                                    positions += Pair(Vec3(trueX, trueY, trueZ), System.currentTimeMillis())
-                                }
+                                positions += Pair(Vec3(trueX, trueY, trueZ), System.currentTimeMillis())
                             }
                         }
 
                         is S18PacketEntityTeleport -> if (packet.entityId == target?.entityId) {
                             (target as? IMixinEntity)?.run {
-                                synchronized(positions) {
-                                    positions += Pair(Vec3(trueX, trueY, trueZ), System.currentTimeMillis())
-                                }
+                                positions += Pair(Vec3(trueX, trueY, trueZ), System.currentTimeMillis())
                             }
                         }
                     }
 
                     event.cancelEvent()
-                    synchronized(packetQueue) {
-                        packetQueue += QueueData(packet, System.currentTimeMillis())
-                    }
+                    packetQueue += QueueData(packet, System.currentTimeMillis())
                 }
             }
         }
@@ -445,18 +439,14 @@ object Backtrack : Module("Backtrack", Category.COMBAT) {
     }
 
     private fun handlePackets() {
-        synchronized(packetQueue) {
-            packetQueue.removeAll { (packet, timestamp) ->
-                if (timestamp <= System.currentTimeMillis() - supposedDelay) {
-                    PacketUtils.schedulePacketProcess(packet)
-                    true
-                } else false
-            }
+        packetQueue.removeAll { (packet, timestamp) ->
+            if (timestamp <= System.currentTimeMillis() - supposedDelay) {
+                PacketUtils.schedulePacketProcess(packet)
+                true
+            } else false
         }
 
-        synchronized(positions) {
-            positions.removeAll { (_, timestamp) -> timestamp < System.currentTimeMillis() - supposedDelay }
-        }
+        positions.removeAll { (_, timestamp) -> timestamp < System.currentTimeMillis() - supposedDelay }
     }
 
     private fun handlePacketsRange() {
@@ -467,18 +457,14 @@ object Backtrack : Module("Backtrack", Category.COMBAT) {
             return
         }
 
-        synchronized(packetQueue) {
-            packetQueue.removeAll { (packet, timestamp) ->
-                if (timestamp <= time) {
-                    PacketUtils.schedulePacketProcess(packet)
-                    true
-                } else false
-            }
+        packetQueue.removeAll { (packet, timestamp) ->
+            if (timestamp <= time) {
+                PacketUtils.schedulePacketProcess(packet)
+                true
+            } else false
         }
 
-        synchronized(positions) {
-            positions.removeAll { (_, timestamp) -> timestamp < time }
-        }
+        positions.removeAll { (_, timestamp) -> timestamp < time }
     }
 
     private fun getRangeTime(): Long {
@@ -487,18 +473,16 @@ object Backtrack : Module("Backtrack", Category.COMBAT) {
         var time = 0L
         var found = false
 
-        synchronized(positions) {
-            for (data in positions) {
-                time = data.second
+        for (data in positions) {
+            time = data.second
 
-                val targetPos = target.currPos
+            val targetPos = target.currPos
 
-                val targetBox = target.hitBox.offset(data.first - targetPos)
+            val targetBox = target.hitBox.offset(data.first - targetPos)
 
-                if (mc.thePlayer.getDistanceToBox(targetBox) in distance) {
-                    found = true
-                    break
-                }
+            if (mc.thePlayer.getDistanceToBox(targetBox) in distance) {
+                found = true
+                break
             }
         }
 
@@ -506,14 +490,12 @@ object Backtrack : Module("Backtrack", Category.COMBAT) {
     }
 
     private fun clearPackets(handlePackets: Boolean = true, stopRendering: Boolean = true) {
-        synchronized(packetQueue) {
-            packetQueue.removeAll {
-                if (handlePackets) {
-                    PacketUtils.schedulePacketProcess(it.packet)
-                }
-
-                true
+        packetQueue.removeAll {
+            if (handlePackets) {
+                PacketUtils.schedulePacketProcess(it.packet)
             }
+
+            true
         }
 
         positions.clear()
