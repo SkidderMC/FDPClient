@@ -15,11 +15,13 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ModuleElement
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.client.asResourceLocation
 import net.ccbluex.liquidbounce.utils.client.playSound
+import net.ccbluex.liquidbounce.utils.extensions.decimalPlaces
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.ccbluex.liquidbounce.utils.ui.EditableText
 import org.lwjgl.input.Mouse
 import java.awt.Color
 import java.math.BigDecimal
+import java.math.RoundingMode
 import kotlin.math.max
 
 abstract class Style : MinecraftInstance {
@@ -60,7 +62,7 @@ abstract class Style : MinecraftInstance {
 
     protected fun round(v: Float): Float {
         var bigDecimal = BigDecimal(v.toString())
-        bigDecimal = bigDecimal.setScale(2, 4)
+        bigDecimal = bigDecimal.setScale(if (decimalPlaces(v) == 3) 3 else 2, RoundingMode.HALF_UP)
         return bigDecimal.toFloat()
     }
 

@@ -236,6 +236,18 @@ fun IntRange.lerpWith(t: Float) = start + (endInclusive - start) * t
 
 fun Int.lerpWith(other: Int, t: Float) = this + (other - this) * t
 
+fun decimalPlaces(value: Float): Int {
+    var count = 0
+    var v = value
+
+    while (v != v.toInt().toFloat()) {
+        v *= 10
+        count++
+    }
+
+    return count
+}
+
 fun interpolate(oldValue: Double, newValue: Double, interpolationValue: Double): Double {
     return oldValue + (newValue - oldValue) * interpolationValue
 }
