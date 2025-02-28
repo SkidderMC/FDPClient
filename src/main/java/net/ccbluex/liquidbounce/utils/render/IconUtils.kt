@@ -10,13 +10,25 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import net.ccbluex.liquidbounce.utils.io.flipSafely
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
+import org.lwjgl.opengl.Display
 import java.io.IOException
 import java.io.InputStream
 import java.nio.ByteBuffer
 import java.util.*
 import javax.imageio.ImageIO
+
 @SideOnly(Side.CLIENT)
 object IconUtils {
+    @JvmStatic
+    fun initLwjglIcon(): Boolean {
+        val icons = getFavicon()?.filterNotNull()?.toTypedArray()
+        if (!icons.isNullOrEmpty()) {
+            Display.setIcon(icons)
+            return true
+        }
+        return false
+    }
+
     fun getFavicon() =
         IconUtils::class.java.runCatching {
             arrayOf(
@@ -27,6 +39,7 @@ object IconUtils {
         }.onFailure {
             ClientUtils.LOGGER.warn("Failed to load icons", it)
         }.getOrNull()
+
     @Throws(IOException::class)
     private fun readImageToBuffer(imageStream: InputStream?): ByteBuffer? {
         val bufferedImage = ImageIO.read(imageStream ?: return null)

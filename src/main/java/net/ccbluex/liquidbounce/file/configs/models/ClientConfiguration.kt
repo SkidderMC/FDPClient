@@ -25,7 +25,7 @@ object ClientConfiguration : Configurable("ClientConfiguration"), MinecraftInsta
 
     fun updateClientWindow() {
         if (clientTitle) {
-            // Set LiquidBounce title
+            // Set FDP title
             Display.setTitle(FDPClient.clientTitle)
             // Update favicon
             IconUtils.getFavicon()?.let { icons ->
@@ -35,7 +35,7 @@ object ClientConfiguration : Configurable("ClientConfiguration"), MinecraftInsta
             // Set original title
             Display.setTitle("Minecraft 1.8.9")
             // Update favicon
-            MinecraftInstance.mc.setWindowIcon()
+            mc.setWindowIcon()
         }
     }
 }

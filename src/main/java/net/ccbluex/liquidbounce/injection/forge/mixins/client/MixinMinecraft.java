@@ -215,9 +215,7 @@ public abstract class MixinMinecraft {
     private void setWindowIcon(CallbackInfo callbackInfo) {
         if (Util.getOSType() != Util.EnumOS.OSX) {
             if (ClientConfiguration.INSTANCE.getClientTitle()) {
-                final ByteBuffer[] liquidBounceFavicon = IconUtils.INSTANCE.getFavicon();
-                if (liquidBounceFavicon != null) {
-                    Display.setIcon(liquidBounceFavicon);
+                if (IconUtils.initLwjglIcon()) {
                     callbackInfo.cancel();
                 }
             }

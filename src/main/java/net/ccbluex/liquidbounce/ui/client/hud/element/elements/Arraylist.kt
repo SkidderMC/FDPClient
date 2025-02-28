@@ -624,8 +624,7 @@ class Arraylist(
                         -module.slide - 2 + width + if (rectMode == "Right") 0 else 2
                     }
 
-                    val resource =
-                        ResourceLocation("fdpclient/texture/category/${module.category.displayName.lowercase()}.png")
+                    val resource = module.category.iconResourceLocation
 
                     if (iconShadows) {
                         drawImage(resource, side + xDistance, yPos + yDistance, 12, 12, shadowColor)

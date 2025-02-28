@@ -5,9 +5,11 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.objects.Drag
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.Scroll
+import net.minecraft.util.ResourceLocation
 
 enum class Category(val displayName: String, val configName: String, val htmlIcon: String, initialPosX: Int, initialPosY: Int, val clicked: Boolean = false, val showMods: Boolean = true) {
     COMBAT("Combat", "Combat", "&#xe000;", 15, 15),
@@ -27,4 +29,6 @@ enum class Category(val displayName: String, val configName: String, val htmlIco
     init {
         Main.categoryCount++
     }
+
+    val iconResourceLocation = ResourceLocation("${CLIENT_NAME.lowercase()}/category/${name.lowercase()}.png")
 }

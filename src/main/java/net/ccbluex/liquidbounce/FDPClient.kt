@@ -49,7 +49,6 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.disableFastRender
 import net.ccbluex.liquidbounce.utils.client.BlinkUtils
 import net.ccbluex.liquidbounce.utils.client.PacketUtils
-import net.ccbluex.liquidbounce.utils.client.checkJavaVersion
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.io.MiscUtils.showErrorPopup
@@ -126,7 +125,7 @@ object FDPClient {
      */
     fun preload(): Future<*> {
 
-        checkJavaVersion()
+        net.ccbluex.liquidbounce.utils.client.javaVersion
 
         // Change theme of Swing
         UIManager.setLookAndFeel(FlatMacLightLaf())

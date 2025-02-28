@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.gui
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.FDPClient.clientVersionText
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
+import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.gui.button.ImageButton
@@ -16,11 +17,14 @@ import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolat
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.Fonts.minecraftFont
 import net.ccbluex.liquidbounce.ui.font.fontmanager.GuiFontManager
+import net.ccbluex.liquidbounce.utils.client.JavaVersion
+import net.ccbluex.liquidbounce.utils.client.javaVersion
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.bugs
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.canConnect
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.changelogs
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.isLatest
 import net.ccbluex.liquidbounce.utils.io.GitUtils
+import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawShadowRect
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
@@ -30,8 +34,44 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.client.GuiModList
 import org.lwjgl.input.Keyboard
 import java.awt.Color
+import java.net.HttpURLConnection
+import java.net.URL
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
+import org.json.JSONObject
+import org.lwjgl.input.Mouse
+
+data class GithubRelease(
+    val tagName: String,
+    val publishedAt: String,
+    val body: String,
+    val htmlUrl: String,
+    val prerelease: Boolean
+)
 
 class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
+
+    private var popup: PopupScreen? = null
+    private var popupOnce = false
+
+    init {
+        if (!popupOnce) {
+            javaVersion?.let {
+                when {
+                    it.major == 1 && it.minor == 8 && it.update < 100 -> showOutdatedJava8Warning()
+                    it.major > 8 -> showJava11Warning()
+                }
+            }
+            if (FileManager.firstStart) {
+                showWelcomePopup()
+            } else {
+                checkGithubUpdate()
+                checkOutdatedVersionPopup()
+            }
+            popupOnce = true
+        }
+    }
 
     private var logo: ResourceLocation? = null
 
@@ -39,7 +79,6 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
     private lateinit var btnMultiplayer: GuiButton
     private lateinit var btnClientOptions: GuiButton
     private lateinit var btnFontManager: GuiButton
-
     private lateinit var btnCheckUpdate: GuiButton
 
     private lateinit var btnClickGUI: ImageButton
@@ -53,7 +92,6 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
     private lateinit var btnQuit: QuitButton
 
     override fun initGui() {
-
         val basePath = "${CLIENT_NAME.lowercase()}/texture/mainmenu/"
         logo = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/mainmenu/logo.png")
 
@@ -81,6 +119,10 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+        if (popup != null) {
+            popup!!.mouseClicked(mouseX, mouseY, button)
+            return
+        }
         buttonList.forEach { guiButton ->
             if (guiButton.mousePressed(mc, mouseX, mouseY)) {
                 actionPerformed(guiButton)
@@ -99,6 +141,8 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
     }
 
     override fun actionPerformed(button: GuiButton) {
+        if (popup != null) return
+
         when (button.id) {
             0 -> mc.displayGuiScreen(GuiSelectWorld(this))
             1 -> mc.displayGuiScreen(GuiMultiplayer(this))
@@ -115,14 +159,14 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
             mc.displayGuiScreen(ClickGui)
         }
         GlStateManager.pushMatrix()
-        // background
         drawShadowRect(
             (width / 2 - 100).toFloat(),
             (height / 2 - 80).toFloat(),
             (width / 2 + 100).toFloat(),
             (height / 2 + 112).toFloat(),
             15F,
-            Color(44, 43, 43, 100).rgb)
+            Color(44, 43, 43, 100).rgb
+        )
 
         GlStateManager.disableAlpha()
         GlStateManager.enableAlpha()
@@ -141,7 +185,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
             !canConnect && isLatest -> " §c(API Dead)"
             else -> " §c(Outdated)"
         }
-        val buildInfoText = "Your currently build is $clientVersionText$uiMessage"
+        val buildInfoText = "Your current build is $clientVersionText$uiMessage"
         val buildInfoX = width - 4f - minecraftFont.getStringWidth(buildInfoText)
         minecraftFont.drawStringWithShadow(buildInfoText, buildInfoX, height - 12f, Color(255, 255, 255, 140).rgb)
 
@@ -149,7 +193,6 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
 
         var changeY = 48
         val changeDetails = changelogs.split("\n")
-
         for (line in changeDetails) {
             if (line.startsWith("* ")) continue
             val formatted = formatChangelogLine(line)
@@ -178,7 +221,8 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
 
         buttonList.forEach { it.drawButton(mc, mouseX, mouseY) }
 
-        listOf(btnClickGUI, btnCommitInfo, btnCosmetics, btnMinecraftOptions, btnLanguage, btnForgeModList, btnAddAccount, btnQuit).forEach { it.drawButton(mc, mouseX, mouseY) }
+        listOf(btnClickGUI, btnCommitInfo, btnCosmetics, btnMinecraftOptions, btnLanguage, btnForgeModList, btnAddAccount, btnQuit)
+            .forEach { it.drawButton(mc, mouseX, mouseY) }
         val branch = GitUtils.gitBranch
         val commitIdAbbrev = GitUtils.gitInfo.getProperty("git.commit.id.abbrev")
         val infoStr = "$CLIENT_NAME($branch/$commitIdAbbrev) | Minecraft 1.8.9"
@@ -187,6 +231,8 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
 
         GlStateManager.popMatrix()
+
+        popup?.drawScreen(width, height, mouseX, mouseY)
 
         assumeNonVolatile = false
         super.drawScreen(mouseX, mouseY, partialTicks)
@@ -205,5 +251,155 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
             line.startsWith("- ") -> "§7[§c-§7]  §r" + line.removePrefix("- ").trim()
             else -> line
         }
+    }
+
+    private fun showWelcomePopup() {
+        popup = PopupScreen {
+            title("§a§lWelcome!")
+            message(
+                """
+                §eThank you for downloading and installing §b$CLIENT_NAME§e!
+        
+                §6Here is some useful information:
+                §a- ClickGUI: Press §7[RightShift]§f to open ClickGUI.
+                §a- Right-click modules with a '+' to edit.
+                §a- Hover over a module to see its description.
+        
+                §6Important Commands:
+                §a- .bind <module> <key> / .bind <module> none
+                §a- .config load <name> / .config list
+        
+                §bNeed help? Contact us!
+                - §fCreator: §9https://github.com/opZywl
+                - §fDiscord: §9https://discord.gg/WV6qPzyqTx
+                - §fGithub: §9https://github.com/SkidderMC/FDPClient
+                - §fYouTube: §9https://www.youtube.com/@opZywl
+                """.trimIndent()
+            )
+            button("§aOK")
+            onClose { popup = null }
+        }
+    }
+
+    private fun checkGithubUpdate() {
+        Thread {
+            val githubRelease = fetchLatestGithubRelease()
+            if (githubRelease != null && githubRelease.tagName != clientVersionText) {
+                mc.addScheduledTask { showUpdatePopup(githubRelease) }
+            }
+        }.start()
+    }
+
+    private fun fetchLatestGithubRelease(): GithubRelease? {
+        try {
+            val url = URL("https://api.github.com/repos/SkidderMC/FDPClient/releases/latest")
+            val connection = url.openConnection() as HttpURLConnection
+            connection.requestMethod = "GET"
+            connection.connectTimeout = 5000
+            connection.readTimeout = 5000
+            if (connection.responseCode == 200) {
+                val response = connection.inputStream.bufferedReader().use { it.readText() }
+                val json = JSONObject(response)
+                val tagName = json.getString("tag_name")
+                val publishedAt = json.getString("published_at")
+                val body = json.getString("body")
+                val htmlUrl = json.getString("html_url")
+                val prerelease = json.getBoolean("prerelease")
+                return GithubRelease(tagName, publishedAt, body, htmlUrl, prerelease)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return null
+    }
+
+    private fun showUpdatePopup(githubRelease: GithubRelease) {
+        val updateType = if (!githubRelease.prerelease) "version" else "beta release"
+        val dateFormatter = SimpleDateFormat("EEEE, MMMM dd, yyyy, h a z", Locale.ENGLISH)
+        val inputFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.ENGLISH)
+        inputFormatter.timeZone = TimeZone.getTimeZone("UTC")
+        val publishedDate = inputFormatter.parse(githubRelease.publishedAt)
+        val formattedDate = dateFormatter.format(publishedDate)
+
+        popup = PopupScreen {
+            title("§bNew Update Available!")
+            message(
+                """
+                §eA new $updateType of $CLIENT_NAME is available!
+        
+                - §aVersion:§r ${githubRelease.tagName}
+                - §aPublished:§r $formattedDate
+        
+                §6Changes:§r
+                ${githubRelease.body}
+        
+                §bUpgrade now to enjoy the latest features and improvements!§r
+                """.trimIndent()
+            )
+            ButtonData("§aDownload") { MiscUtils.showURL(githubRelease.htmlUrl) }
+            onClose { popup = null }
+        }
+    }
+
+    private fun showOutdatedJava8Warning() {
+        popup = PopupScreen {
+            title("§c§lOutdated Java Runtime Environment")
+            message(
+                """
+                §6§lYou are using an outdated version of Java 8 (${javaVersion!!.raw}).
+                
+                §fThis may cause unexpected §c§lBUGS§f.
+                Please update to 8u101+ or download a new version from the Internet.
+                """.trimIndent()
+            )
+            button("§aDownload Java") { MiscUtils.showURL(JavaVersion.DOWNLOAD_PAGE) }
+            button("§eI understand")
+            onClose { popup = null }
+        }
+    }
+
+    private fun showJava11Warning() {
+        popup = PopupScreen {
+            title("§c§lInappropriate Java Runtime Environment")
+            message(
+                """
+                §6§lThis version of $CLIENT_NAME is designed for a Java 8 environment.
+                
+                §fHigher versions of Java may cause bugs or crashes.
+                Consider installing JRE 8.
+                """.trimIndent()
+            )
+            button("§aDownload Java") { MiscUtils.showURL(JavaVersion.DOWNLOAD_PAGE) }
+            button("§eI understand")
+            onClose { popup = null }
+        }
+    }
+
+    private fun checkOutdatedVersionPopup() {
+        if (!isLatest && canConnect) {
+            popup = PopupScreen {
+                title("§bNew Update Available!")
+                message(
+                    """
+                    §eYou are using an outdated version of $CLIENT_NAME.
+                    Please update to the latest version to enjoy new features and improvements.
+                    """.trimIndent()
+                )
+                ButtonData("§aDownload Update") { MiscUtils.showURL("https://github.com/SkidderMC/FDPClient/releases/latest") }
+                onClose { popup = null }
+            }
+        }
+    }
+
+    override fun handleMouseInput() {
+        if (popup != null) {
+            val eventDWheel = Mouse.getEventDWheel()
+            if (eventDWheel
+                != 0) {
+                popup!!.handleMouseWheel(eventDWheel)
+            }
+        }
+
+        super.handleMouseInput()
     }
 }

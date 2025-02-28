@@ -244,7 +244,7 @@ class TabGUI(x: Double = 16.0, y: Double = 43.0) : Element("TabGUI", x = x, y = 
                         iconSideX.first + 2
                     }
 
-                    val resource = ResourceLocation("fdpclient/texture/category/${tab.category.displayName.lowercase()}.png")
+                    val resource = tab.category.iconResourceLocation
 
                     val iconY = y - 1
 
