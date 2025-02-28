@@ -62,13 +62,13 @@ object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false) {
     private val nuke by int("Nuke", 1, 1..20)
     private val nukeDelay by int("NukeDelay", 1, 1..20)
 
-    private val blockProgress by boolean("BlockProgress", true)
+    private val blockProgress by boolean("BlockProgress", true).subjective()
 
-    private val scale by float("Scale", 2F, 1F..6F) { blockProgress }
-    private val font by font("Font", Fonts.fontSemibold40) { blockProgress }
-    private val fontShadow by boolean("Shadow", true) { blockProgress }
+    private val scale by float("Scale", 2F, 1F..6F) { blockProgress }.subjective()
+    private val font by font("Font", Fonts.fontSemibold40) { blockProgress }.subjective()
+    private val fontShadow by boolean("Shadow", true) { blockProgress }.subjective()
 
-    private val color by color("Color", Color(200, 100, 0)) { blockProgress }
+    private val color by color("Color", Color(200, 100, 0)) { blockProgress }.subjective()
 
     /**
      * VALUES
