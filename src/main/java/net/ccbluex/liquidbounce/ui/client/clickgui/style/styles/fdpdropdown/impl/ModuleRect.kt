@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.util
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.EaseInOutQuad
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils.resetColor
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import org.lwjgl.input.Keyboard
@@ -105,7 +106,7 @@ class ModuleRect(val module: Module) : Component() {
             val arrowSize = 6f
             arrowAnimation.direction = if (module.expanded) Direction.FORWARDS else Direction.BACKWARDS
             DrRenderUtils.setAlphaLimit(0f)
-            DrRenderUtils.resetColor()
+            resetColor()
             DrRenderUtils.drawClickGuiArrow(
                 x + width - (arrowSize + 5),
                 y + (height / 2f) - 2f,
@@ -119,23 +120,20 @@ class ModuleRect(val module: Module) : Component() {
         val expandedHeight = settingComponents.settingSize * (settingAnimation?.output ?: 0.0)
 
         if (module.expanded || (settingAnimation?.isDone == false)) {
-            DrRenderUtils.drawRect2(
-                x.toDouble(),
-                (y + height).toDouble(),
-                width.toDouble(),
-                expandedHeight * height,
-                settingRectColor.rgb
+            RenderUtils.drawGradientRect(
+                x, y + height, x + width, y + height + expandedHeight * height,
+                settingRectColor.rgb,
+                settingRectColor.darker().rgb,
+                0F
             )
 
             if (backback) {
-                DrRenderUtils.resetColor()
                 val accentAlpha = (0.85 * toggleAnimation.output).toFloat() * (alphaAnimation / 255f)
-                DrRenderUtils.drawRect2(
-                    x.toDouble(),
-                    (y + height).toDouble(),
-                    width.toDouble(),
-                    (expandedHeight * height),
-                    DrRenderUtils.applyOpacity(accentWithAlpha, accentAlpha).rgb
+                RenderUtils.drawGradientRect(
+                    x, y + height, x + width, y + height + expandedHeight * height,
+                    DrRenderUtils.applyOpacity(accentWithAlpha, accentAlpha).rgb,
+                    DrRenderUtils.applyOpacity(accentWithAlpha, accentAlpha / 2).rgb,
+                    0F
                 )
             }
 
@@ -149,29 +147,19 @@ class ModuleRect(val module: Module) : Component() {
 
             if (settingAnimation?.isDone == false) {
                 GL11.glEnable(GL11.GL_SCISSOR_TEST)
-                DrRenderUtils.scissor(
-                    x.toDouble(),
-                    (y + height).toDouble(),
-                    width.toDouble(),
-                    expandedHeight * height
-                )
+                DrRenderUtils.scissor(x.toDouble(), (y + height).toDouble(), width.toDouble(), expandedHeight * height)
                 settingComponents.drawScreen(mouseX, mouseY)
-
-                DrRenderUtils.drawGradientRect2(
-                    x.toDouble(),
-                    (y + height).toDouble(),
-                    width.toDouble(),
-                    6.0,
+                RenderUtils.drawGradientRect(
+                    x, y + height, x + width, y + height + 6.0,
                     Color(0, 0, 0, 60).rgb,
-                    Color(0, 0, 0, 0).rgb
-                )
-                DrRenderUtils.drawGradientRect2(
-                    x.toDouble(),
-                    y + 11 + (expandedHeight * height),
-                    width.toDouble(),
-                    6.0,
                     Color(0, 0, 0, 0).rgb,
-                    Color(0, 0, 0, 60).rgb
+                    0F
+                )
+                RenderUtils.drawGradientRect(
+                    x, y + 11 + expandedHeight * height, x + width, y + 17 + expandedHeight * height,
+                    Color(0, 0, 0, 0).rgb,
+                    Color(0, 0, 0, 60).rgb,
+                    0F
                 )
                 GL11.glDisable(GL11.GL_SCISSOR_TEST)
             } else {

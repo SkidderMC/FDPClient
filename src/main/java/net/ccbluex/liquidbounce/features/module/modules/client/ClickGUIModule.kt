@@ -87,7 +87,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
 
     @JvmStatic
     fun generateColor(index: Int): Color {
-        return ClientThemesUtils.getColor(index)
+        return ClientThemesUtils.getColor(0)
     }
 
     val onPacket = handler<PacketEvent>(always = true) { event ->
