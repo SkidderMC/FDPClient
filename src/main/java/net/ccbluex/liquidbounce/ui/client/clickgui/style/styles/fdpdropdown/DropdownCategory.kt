@@ -101,7 +101,6 @@ class DropdownCategory(private val category: Category) : Screen {
         }
         Main.allowedClickGuiHeight = allowedHeight
 
-
         /**
          * 2) Draw the outline around the top bar and module list
          * This will create a single outline around (x, y) -> (x + rectWidth, y + categoryRectHeight + allowedHeight).
@@ -121,15 +120,16 @@ class DropdownCategory(private val category: Category) : Screen {
         }
 
         // 1) Draw the category's top rectangle
-        DrRenderUtils.drawRect2(
-            x.toDouble(),
-            y.toDouble(),
-            rectWidth.toDouble(),
-            categoryRectHeight.toDouble(),
-            categoryRectColor
+        RenderUtils.drawGradientRect(
+            x,
+            y,
+            (x + rectWidth).toInt(),
+            (y + categoryRectHeight).toInt(),
+            categoryRectColor,
+            Color(categoryRectColor).darker().rgb,
+            0F
         )
 
-        // 3) Draw the category's name
         Fonts.InterBold_26.drawString(
             category.name,
             x + 5,
@@ -137,7 +137,6 @@ class DropdownCategory(private val category: Category) : Screen {
             textColor
         )
 
-        // Category icon logic
         val icon = when (category.name.lowercase()) {
             "combat"   -> "D"
             "movement" -> "A"
@@ -149,16 +148,15 @@ class DropdownCategory(private val category: Category) : Screen {
         }
         Fonts.ICONFONT_20.drawString(
             icon,
-            x + rectWidth - (Fonts.ICONFONT_20.stringWidth(icon) + 5),
+            x + rectWidth.toInt() - (Fonts.ICONFONT_20.stringWidth(icon) + 5),
             y + Fonts.ICONFONT_20.getMiddleOfBox(categoryRectHeight),
             textColor
         )
 
-        // If category name is "Client", draw something else (example from your code):
         if (category.name.equals("Client", ignoreCase = true)) {
             Fonts.CheckFont_20.drawString(
                 "b",
-                x + rectWidth - (Fonts.CheckFont_20.stringWidth("b") + 5),
+                x + rectWidth.toInt() - (Fonts.CheckFont_20.stringWidth("b") + 5),
                 y + Fonts.ICONFONT_20.getMiddleOfBox(categoryRectHeight),
                 textColor
             )
@@ -178,6 +176,7 @@ class DropdownCategory(private val category: Category) : Screen {
             allowedHeight.toDouble(),
             -1
         )
+
         StencilUtil.readStencilBuffer(1)
 
         val scroll = category.scroll.scroll.toDouble()
@@ -186,9 +185,7 @@ class DropdownCategory(private val category: Category) : Screen {
         // Draw each module rect (with sub-settings)
         moduleRects?.forEach { moduleRect ->
             val animation = moduleAnimMap[moduleRect]
-            animation?.direction = (
-                if (moduleRect.module.expanded) Direction.FORWARDS else Direction.BACKWARDS
-            )
+            animation?.direction = if (moduleRect.module.expanded) Direction.FORWARDS else Direction.BACKWARDS
 
             moduleRect.settingAnimation = animation
             moduleRect.alphaAnimation = alphaAnimation

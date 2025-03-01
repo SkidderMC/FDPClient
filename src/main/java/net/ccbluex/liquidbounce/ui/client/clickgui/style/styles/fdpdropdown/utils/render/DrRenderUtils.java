@@ -24,39 +24,8 @@ public class DrRenderUtils  {
     /**
      * Draws a textured rectangle at z = 0. Args: x, y, u, v, width, height, textureWidth, textureHeight
      */
-    public static void drawModalRectWithCustomSizedTexture(float x, float y, float u, float v, float width, float height, float textureWidth, float textureHeight) {
-        float f = 1.0F / textureWidth;
-        float f1 = 1.0F / textureHeight;
-        Tessellator tessellator = Tessellator.getInstance();
-        WorldRenderer worldrenderer = tessellator.getWorldRenderer();
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION_TEX);
-        worldrenderer.pos(x, y + height, 0.0D).tex(u * f, (v + height) * f1).endVertex();
-        worldrenderer.pos(x + width, y + height, 0.0D).tex((u + width) * f, (v + height) * f1).endVertex();
-        worldrenderer.pos(x + width, y, 0.0D).tex((u + width) * f, v * f1).endVertex();
-        worldrenderer.pos(x, y, 0.0D).tex(u * f, v * f1).endVertex();
-        tessellator.draw();
-    }
     public static void drawGradientRect2(double x, double y, double width, double height, int startColor, int endColor) {
         drawGradientRect(x, y, x + width, y + height, startColor, endColor);
-    }
-    public static int fadeBetween(int startColour, int endColour, double progress) {
-        if (progress > 1) progress = 1 - progress % 1;
-        return fadeTo(startColour, endColour, progress);
-    }
-    public static int fadeTo(int startColour, int endColour, double progress) {
-        double invert = 1.0 - progress;
-        int r = (int) ((startColour >> 16 & 0xFF) * invert +
-                (endColour >> 16 & 0xFF) * progress);
-        int g = (int) ((startColour >> 8 & 0xFF) * invert +
-                (endColour >> 8 & 0xFF) * progress);
-        int b = (int) ((startColour & 0xFF) * invert +
-                (endColour & 0xFF) * progress);
-        int a = (int) ((startColour >> 24 & 0xFF) * invert +
-                (endColour >> 24 & 0xFF) * progress);
-        return ((a & 0xFF) << 24) |
-                ((r & 0xFF) << 16) |
-                ((g & 0xFF) << 8) |
-                (b & 0xFF);
     }
     public static void drawGradientRect(double left, double top, double right, double bottom, int startColor, int endColor) {
         float f = (float) (startColor >> 24 & 255) / 255.0F;
@@ -89,25 +58,6 @@ public class DrRenderUtils  {
     public static float zLevel;
     public static void drawGradientRectSideways2(double x, double y, double width, double height, int startColor, int endColor) {
         drawGradientRectSideways(x, y, x + width, y + height, startColor, endColor);
-    }
-
-    public static void drawOutline(double x, double y, double width, double height, int color, float thickness) {
-        double left = x;
-        double top = y;
-        double right = x + width;
-        double bottom = y + height;
-
-        // Borda superior
-        DrRenderUtils.drawRect2(left, top, right, top + thickness, color);
-
-        // Borda inferior
-        DrRenderUtils.drawRect2(left, bottom - thickness, right, bottom, color);
-
-        // Borda esquerda
-        DrRenderUtils.drawRect2(left, top, left + thickness, bottom, color);
-
-        // Borda direita
-        DrRenderUtils.drawRect2(right - thickness, top, right, bottom, color);
     }
 
     public static void drawGradientRectSideways(double left, double top, double right, double bottom, int startColor, int endColor) {
@@ -151,17 +101,6 @@ public class DrRenderUtils  {
         Color cColor1 = new Color(color1);
         Color cColor2 = new Color(color2);
         return interpolateColorC(cColor1, cColor2, amount).getRGB();
-    }
-
-    // Bad rounded rect method but the shader one requires scaling that sucks
-    public static void renderRoundedRect(float x, float y, float width, float height, float radius, int color) {
-        drawGoodCircle(x + radius, y + radius, radius, color);
-        drawGoodCircle(x + width - radius, y + radius, radius, color);
-        drawGoodCircle(x + radius, y + height - radius, radius, color);
-        drawGoodCircle(x + width - radius, y + height - radius, radius, color);
-
-        drawRect2(x + radius, y, width - radius * 2, height, color);
-        drawRect2(x, y + radius, width, height - radius * 2, color);
     }
 
     public static Color darker(Color color, float FACTOR) {

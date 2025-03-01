@@ -30,5 +30,5 @@ enum class Category(val displayName: String, val configName: String, val htmlIco
         Main.categoryCount++
     }
 
-    val iconResourceLocation = ResourceLocation("${CLIENT_NAME.lowercase()}/category/${name.lowercase()}.png")
+    val iconResourceLocation = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/category/${name.lowercase()}.png")
 }
