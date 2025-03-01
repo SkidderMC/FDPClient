@@ -180,7 +180,7 @@ object HUDModule : Module("HUD", Category.CLIENT) {
         return ScaledResolution(Minecraft.getMinecraft()).scaledHeight
     }
 
-    val onUpdate = loopHandler {
+    val onUpdate = handler<UpdateEvent> {
         hud.update()
     }
 

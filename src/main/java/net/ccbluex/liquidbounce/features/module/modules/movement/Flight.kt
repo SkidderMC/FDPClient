@@ -6,6 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.event.async.loopSequence
+import net.ccbluex.liquidbounce.event.async.waitTicks
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.aac.*
@@ -34,7 +36,6 @@ import net.ccbluex.liquidbounce.utils.extensions.stop
 import net.ccbluex.liquidbounce.utils.extensions.stopXZ
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
@@ -231,13 +232,14 @@ object Flight : Module("Flight", Category.MOVEMENT, Keyboard.KEY_F) {
     }
 
     val onTick = handler<GameTickEvent> {
-        if (mode == "Fireball" && wasFired) {
-            WaitTickUtils.schedule(2) {
-                state = false
-            }
-        }
-
         modeModule.onTick()
+    }
+
+    val onTick1 = loopSequence {
+        if (mode == "Fireball" && wasFired) {
+            waitTicks(2)
+            state = false
+        }
     }
 
     val onRender3D = handler<Render3DEvent> { event ->

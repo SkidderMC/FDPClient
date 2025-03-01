@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.event.handler
-import net.ccbluex.liquidbounce.event.loopHandler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
@@ -115,7 +115,7 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL) {
         return result
     }
 
-    val onSearch = loopHandler(dispatcher = Dispatchers.Default) {
+    val onSearch = loopSequence(dispatcher = Dispatchers.Default) {
         val radius = radius
         val targetBlock = if (targetBlock == "Bed") bed else dragon_egg
         val maxLayers = maxLayers

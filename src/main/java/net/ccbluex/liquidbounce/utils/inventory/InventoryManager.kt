@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Listenable
-import net.ccbluex.liquidbounce.event.loopHandler
+import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoArmor
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner
 import net.ccbluex.liquidbounce.features.module.modules.other.ChestStealer
@@ -77,7 +77,7 @@ object InventoryManager : Configurable("InventoryManager"), MinecraftInstance, L
 	val passedPostInventoryCloseDelay
 		get() = System.currentTimeMillis() - timeSinceClosedInventory >= postInventoryCloseDelayValue.get()
 
-	private val managerLoop = loopHandler(dispatcher = Dispatchers.Default, priority = 100) {
+	private val managerLoop = loopSequence(dispatcher = Dispatchers.Default, priority = 100) {
 		/**
 		 * ChestStealer actions
 		 */
@@ -94,7 +94,7 @@ object InventoryManager : Configurable("InventoryManager"), MinecraftInstance, L
 		// Don't wait for NoMove not to be violated, check if there is anything to equip from hotbar and such by looping again
 		if (!canClickInventory() || (invOpenValue.get() && mc.currentScreen !is GuiInventory)) {
 			delay(50)
-			return@loopHandler
+			return@loopSequence
 		}
 
 		canCloseInventory = false
@@ -119,10 +119,9 @@ object InventoryManager : Configurable("InventoryManager"), MinecraftInstance, L
 
 		// Stores which action should be executed to close open inventory or simulated inventory
 		// If no clicks were scheduled throughout any iteration (canCloseInventory == false), then it is null, to prevent closing inventory all the time
-		val action = closingAction
-		if (action == null) {
+		val action = closingAction ?: run {
 			delay(50)
-			return@loopHandler
+			return@loopSequence
 		}
 
 		// Prepare for closing the inventory
@@ -130,11 +129,11 @@ object InventoryManager : Configurable("InventoryManager"), MinecraftInstance, L
 
 		// Try to search through inventory one more time, only close when no actions were scheduled in current iteration
 		if (!hasScheduledInLastLoop) {
-			action.invoke()
+			action.run()
 		}
 	}
 
-	private val closingAction: (() -> Unit)?
+	private val closingAction: Runnable?
 		get() = when {
 			// Check if any click was scheduled since inventory got open
 			!canCloseInventory -> null
@@ -144,11 +143,11 @@ object InventoryManager : Configurable("InventoryManager"), MinecraftInstance, L
 
 			// Check if open inventory should be closed
 			mc.currentScreen is GuiInventory && invOpenValue.get() && autoCloseValue.get() ->
-				({ mc.thePlayer?.closeScreen() })
+				Runnable { mc.thePlayer?.closeScreen() }
 
 			// Check if simulated inventory should be closed
 			mc.currentScreen !is GuiInventory && simulateInventoryValue.get() && serverOpenInventory ->
-				({ serverOpenInventory = false })
+				Runnable { serverOpenInventory = false }
 
 			else -> null
 		}

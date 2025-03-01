@@ -33,7 +33,12 @@ sealed class Value<T>(
     var subjective: Boolean = false
         private set
 
+    var hidden: Boolean = false
+        private set
+
     fun subjective() = apply { subjective = true }
+
+    fun hide() = apply { hidden = true }
 
     var excluded: Boolean = false
         private set(value) {
@@ -58,7 +63,7 @@ sealed class Value<T>(
     }
 
     fun set(newValue: T, saveImmediately: Boolean = true): Boolean {
-        if (newValue == value || excluded) {
+        if (newValue == value || excluded || hidden) {
             return false
         }
 
@@ -94,6 +99,12 @@ sealed class Value<T>(
         setAndUpdateDefault(state)
 
         excluded = true
+    }
+
+    fun hideWithState(state: T = value) {
+        setAndUpdateDefault(state)
+
+        hidden = true
     }
 
     fun get() = value
@@ -157,7 +168,7 @@ sealed class Value<T>(
         set(value)
     }
 
-    fun shouldRender() = isSupported() && !excluded
+    fun shouldRender() = isSupported() && !excluded && !hidden
 
     fun resetValue() = set(default)
 }

@@ -6,6 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
 import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.event.async.loopSequence
+import net.ccbluex.liquidbounce.event.async.waitTicks
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Phase
@@ -18,7 +20,6 @@ import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.direction
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.init.Blocks.*
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
@@ -71,13 +72,13 @@ object Step : Module("Step", Category.MOVEMENT, gameDetecting = false) {
         thePlayer.stepHeight = 0.6F
     }
 
-    val onUpdate = handler<UpdateEvent> {
+    val onUpdate = loopSequence {
         val mode = mode
-        val thePlayer = mc.thePlayer ?: return@handler
+        val thePlayer = mc.thePlayer ?: return@loopSequence
 
-        if (thePlayer.isOnLadder || thePlayer.isInLiquid || thePlayer.isInWeb) return@handler
+        if (thePlayer.isOnLadder || thePlayer.isInLiquid || thePlayer.isInWeb) return@loopSequence
 
-        if (!thePlayer.isMoving) return@handler
+        if (!thePlayer.isMoving) return@loopSequence
 
         // Motion steps
         when (mode) {
@@ -93,7 +94,7 @@ object Step : Module("Step", Category.MOVEMENT, gameDetecting = false) {
 
                     if (!couldStep() || chest.isNotEmpty()) {
                         mc.timer.timerSpeed = 1f
-                        return@handler
+                        return@loopSequence
                     }
 
                     fakeJump()
@@ -101,16 +102,13 @@ object Step : Module("Step", Category.MOVEMENT, gameDetecting = false) {
 
                     // TODO: Improve Timer Balancing
                     mc.timer.timerSpeed = 5f
-                    WaitTickUtils.schedule(1) {
-                        mc.timer.timerSpeed = 0.2f
-                    }
-                    WaitTickUtils.schedule(2) {
-                        mc.timer.timerSpeed = 4f
-                    }
-                    WaitTickUtils.schedule(3) {
-                        strafe(0.27F)
-                        mc.timer.timerSpeed = 1f
-                    }
+                    waitTicks(1)
+                    mc.timer.timerSpeed = 0.2f
+                    waitTicks(1)
+                    mc.timer.timerSpeed = 4f
+                    waitTicks(1)
+                    strafe(0.27F)
+                    mc.timer.timerSpeed = 1f
                 }
 
             "LAAC" ->

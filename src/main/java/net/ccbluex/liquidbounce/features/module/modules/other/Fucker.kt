@@ -30,7 +30,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.performRaytrace
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
-import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
 import net.minecraft.block.Block
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
@@ -223,12 +223,12 @@ object Fucker : Module("Fucker", Category.OTHER) {
         return spawnLocation!!.squareDistanceTo(currentPos.center) < ownBedDist * ownBedDist
     }
 
-    val onUpdate = loopHandler {
-        val player = mc.thePlayer ?: return@loopHandler
-        val world = mc.theWorld ?: return@loopHandler
-        val controller = mc.playerController ?: return@loopHandler
+    val onUpdate = handler<UpdateEvent> {
+        val player = mc.thePlayer ?: return@handler
+        val world = mc.theWorld ?: return@handler
+        val controller = mc.playerController ?: return@handler
 
-        var currentPos = pos ?: return@loopHandler
+        var currentPos = pos ?: return@handler
         if (obstructingPos != null) {
             currentPos = obstructingPos!!
         }
@@ -239,7 +239,7 @@ object Fucker : Module("Fucker", Category.OTHER) {
             toRotation(currentPos.center, false).fixedSensitivity()
         }
 
-        val raytrace = performRaytrace(currentPos, targetRotation, range) ?: return@loopHandler
+        val raytrace = performRaytrace(currentPos, targetRotation, range) ?: return@handler
 
         when {
             // Destroy block
@@ -247,7 +247,7 @@ object Fucker : Module("Fucker", Category.OTHER) {
                 isOwnBed = ignoreOwnBed && isBedNearSpawn(currentPos)
                 if (isOwnBed) {
                     obstructingPos = null
-                    return@loopHandler
+                    return@handler
                 }
 
                 EventManager.call(ClickBlockEvent(currentPos, raytrace.sideHit))
@@ -258,15 +258,15 @@ object Fucker : Module("Fucker", Category.OTHER) {
                     if (swing) player.swingItem()
                     sendPacket(C07PacketPlayerDigging(STOP_DESTROY_BLOCK, currentPos, raytrace.sideHit))
                     clearTarget(currentPos)
-                    return@loopHandler
+                    return@handler
                 }
 
-                val block = currentPos.block ?: return@loopHandler
+                val block = currentPos.block ?: return@handler
 
                 if (currentDamage == 0F) {
                     // Prevent flagging FastBreak
                     sendPacket(C07PacketPlayerDigging(STOP_DESTROY_BLOCK, currentPos, raytrace.sideHit))
-                    WaitTickUtils.schedule(1) {
+                    nextTick {
                         sendPacket(C07PacketPlayerDigging(START_DESTROY_BLOCK, currentPos, raytrace.sideHit))
                     }
                     if (player.capabilities.isCreativeMode ||
@@ -275,7 +275,7 @@ object Fucker : Module("Fucker", Category.OTHER) {
                         if (swing) player.swingItem()
                         controller.onPlayerDestroyBlock(currentPos, raytrace.sideHit)
                         clearTarget(currentPos)
-                        return@loopHandler
+                        return@handler
                     }
                 }
 
@@ -319,10 +319,8 @@ object Fucker : Module("Fucker", Category.OTHER) {
                 scale
             )
         }
-
         renderPosOverlay(posToDraw, currentDamage)
 
-        // Render block box
         drawBlockBox(posToDraw, Color.RED, true)
     }
 

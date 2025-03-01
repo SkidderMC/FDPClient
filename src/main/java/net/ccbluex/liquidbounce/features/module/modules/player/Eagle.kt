@@ -5,7 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import net.ccbluex.liquidbounce.event.loopHandler
+import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.block
@@ -22,10 +23,10 @@ object Eagle : Module("Eagle", Category.PLAYER) {
 
     private val sneakTimer = TickTimer()
 
-    val onUpdate = loopHandler {
-        val thePlayer = mc.thePlayer ?: return@loopHandler
+    val onUpdate = handler<UpdateEvent> {
+        val thePlayer = mc.thePlayer ?: return@handler
 
-        if (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) return@loopHandler
+        if (GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) return@handler
 
         if (thePlayer.onGround && BlockPos(thePlayer).down().block == air) {
             val shouldSneak = !onlyWhenLookingDown || thePlayer.rotationPitch >= lookDownThreshold

@@ -63,7 +63,6 @@ import net.ccbluex.liquidbounce.utils.render.MiniMapRegister
 import net.ccbluex.liquidbounce.utils.render.shader.Background
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.timing.TickedActions
-import net.ccbluex.liquidbounce.utils.timing.WaitMsUtils
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import javax.swing.UIManager
 import java.util.concurrent.CompletableFuture
@@ -194,7 +193,6 @@ object FDPClient {
             BPSUtils
             WaitTickUtils
             SilentHotbar
-            WaitMsUtils
             BlinkUtils
             KeyBindManager
 

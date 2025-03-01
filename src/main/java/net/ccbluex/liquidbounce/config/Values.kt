@@ -53,7 +53,7 @@ class BoolValue(
     fun isActive() = value && shouldRender()
 
     override fun getValue(thisRef: Any?, property: KProperty<*>): Boolean {
-        return super.getValue(thisRef, property) && shouldRender()
+        return super.getValue(thisRef, property) && (shouldRender() || hidden)
     }
 }
 

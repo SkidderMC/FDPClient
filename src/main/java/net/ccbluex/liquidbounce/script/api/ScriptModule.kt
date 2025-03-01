@@ -5,12 +5,14 @@
  */
 package net.ccbluex.liquidbounce.script.api
 
+
 import jdk.nashorn.api.scripting.JSObject
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.config.Value
+import net.ccbluex.liquidbounce.utils.extensions.toLowerCamelCase
 
 class ScriptModule(name: String, category: Category, description: String, private val moduleObject: JSObject)
     : Module(name, category, forcedDescription = description) {
@@ -23,6 +25,8 @@ class ScriptModule(name: String, category: Category, description: String, privat
      */
     val settings = linkedMapOf<String, Value<*>>()
 
+    private val eventHooks: Map<Class<out Event>, EventHook<in Event>>
+
     init {
         if (moduleObject.hasMember("settings")) {
             val settings = moduleObject.getMember("settings") as JSObject
@@ -34,14 +38,11 @@ class ScriptModule(name: String, category: Category, description: String, privat
         if (moduleObject.hasMember("tag"))
             _tag = moduleObject.getMember("tag") as String
 
-        ALL_EVENT_CLASSES.forEach { eventClass ->
-            val eventName = StringBuilder(eventClass.simpleName.removeSuffix("Event")).apply {
-                this[0] = this[0].lowercaseChar()
-            }.toString()
-
-            EventManager.registerEventHook(eventClass, EventHook.Blocking(this) {
-                callEvent(eventName)
-            })
+        eventHooks = createEventMap { eventClass ->
+            val eventName = eventClass.simpleName.removeSuffix("Event").toLowerCamelCase()
+            EventHook<Event>(this) { callEvent(eventName, it) }.also {
+                EventManager.registerEventHook(eventClass, it)
+            }
         }
     }
 
@@ -60,16 +61,20 @@ class ScriptModule(name: String, category: Category, description: String, privat
         events[eventName] = handler
     }
 
-    override fun onEnable() = callEvent("enable")
+    override fun onEnable() = callEvent("enable", null)
 
-    override fun onDisable() = callEvent("disable")
+    override fun onDisable() = callEvent("disable", null)
+
+    override fun onUnregister() {
+        this.eventHooks.forEach(EventManager::unregisterEventHook)
+    }
 
     /**
      * Calls the handler of a registered event.
      * @param eventName Name of the event to be called.
      * @param payload Event data passed to the handler function.
      */
-    private fun callEvent(eventName: String, payload: Any? = null) {
+    private fun callEvent(eventName: String, payload: Any?) {
         try {
             events[eventName]?.call(moduleObject, payload)
         } catch (throwable: Throwable) {

@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
-import net.ccbluex.liquidbounce.event.loopHandler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.material
@@ -42,7 +42,7 @@ import kotlin.math.sqrt
 object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = false) {
     private val maxTrailSize by int("MaxTrailSize", 20, 1..100)
 
-    private val colorMode by choices("Color", arrayOf("Custom", "BowPower"), "Custom")
+    private val colorMode by choices("ColorMode", arrayOf("Custom", "BowPower"), "Custom")
     private val color by color("Color", Color(0, 160, 255)) { colorMode == "Custom" }
 
     private val trailPositions = mutableMapOf<Entity, ArrayDeque<ProjectilePos>>()
@@ -338,8 +338,8 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
         glPopAttrib()
     }
 
-    val onUpdate = loopHandler {
-        val world = mc.theWorld ?: return@loopHandler
+    val onUpdate = handler<UpdateEvent> {
+        val world = mc.theWorld ?: return@handler
 
         val currentTime = System.currentTimeMillis()
 

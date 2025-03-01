@@ -49,9 +49,3 @@ private object RenderDispatcher : CoroutineDispatcher() {
         }
     }
 }
-
-suspend fun waitUntil(period: Long = 10L, condition: () -> Boolean) {
-    while (!condition()) {
-        delay(period)
-    }
-}

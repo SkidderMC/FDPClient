@@ -7,15 +7,14 @@ package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
-import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.item.ItemFishingRod
 
 object AutoFish : Module("AutoFish", Category.PLAYER, subjective = true, gameDetecting = false) {
 
     private val rodOutTimer = MSTimer()
-
 
     val onUpdate = handler<UpdateEvent> {
         val thePlayer = mc.thePlayer

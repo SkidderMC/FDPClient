@@ -6,12 +6,10 @@
 package net.ccbluex.liquidbounce.event
 
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
-import net.ccbluex.liquidbounce.utils.client.ClientUtils
+import net.ccbluex.liquidbounce.event.async.TickScheduler
 import java.util.*
-import kotlin.coroutines.cancellation.CancellationException
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * @see List.binarySearchBy
@@ -35,67 +33,26 @@ private fun List<EventHook<*>>.findIndexByPriority(item: EventHook<*>): Int {
     return low.inv()
 }
 
+internal inline fun <T : Any> createEventMap(valueSelector: (Class<out Event>) -> T): Map<Class<out Event>, T> =
+    ALL_EVENT_CLASSES.associateWithTo(IdentityHashMap(ALL_EVENT_CLASSES.size), valueSelector)
+
 /**
- * This manager will start a job for each hook.
- *
- * Once the job is finished, the next [UpdateEvent] (any stateless event is OK for this) will start a new one.
- *
- * This is designed to run **asynchronous** tasks instead of tick loops.
- *
  * @author MukjepScarlet
  */
-internal object LoopManager : Listenable, CoroutineScope by CoroutineScope(SupervisorJob()) {
-    private val registry = IdentityHashMap<EventHook.Async<UpdateEvent>, Job?>()
-
-    operator fun plusAssign(eventHook: EventHook.Async<UpdateEvent>) {
-        registry[eventHook] = null
-    }
-
-    operator fun minusAssign(eventHook: EventHook.Async<UpdateEvent>) {
-        registry.remove(eventHook)
-    }
-
-    init {
-        handler<UpdateEvent>(priority = Byte.MAX_VALUE) {
-            for ((eventHook, job) in registry) {
-                if (eventHook.isActive) {
-                    if (job == null || !job.isActive) {
-                        registry[eventHook] = launch(eventHook.dispatcher) {
-                            try {
-                                eventHook.action(this, UpdateEvent)
-                            } catch (e: CancellationException) {
-                                // The job is canceled due to handler is no longer active
-                                return@launch
-                            } catch (e: Exception) {
-                                ClientUtils.LOGGER.error("Exception during loop in", e)
-                            }
-                        }
-                    }
-                } else if (job != null) {
-                    job.cancel()
-                    registry[eventHook] = null
-                }
-            }
-        }
-    }
-}
-
-/**
- * @author opZywl
- */
 object EventManager : CoroutineScope by CoroutineScope(SupervisorJob()) {
-    private val registry = ALL_EVENT_CLASSES.associateWithTo(IdentityHashMap(ALL_EVENT_CLASSES.size)) {
-        ArrayList<EventHook<in Event>>()
-    }
+    /**
+     * All normal handlers (except of scripts) should be initialized at startup on the main thread
+     */
+    private val registry = createEventMap { CopyOnWriteArrayList<EventHook<in Event>>() }
 
     init {
-        LoopManager
+        TickScheduler
     }
 
-    fun <T : Event> unregisterEventHook(eventClass: Class<out T>, eventHook: EventHook<in T>) {
+    fun <T : Event> unregisterEventHook(eventClass: Class<out T>, eventHook: EventHook<in T>): Boolean =
         registry[eventClass]!!.remove(eventHook)
-    }
 
+    // Only called from main thread
     fun <T : Event> registerEventHook(eventClass: Class<out T>, eventHook: EventHook<T>): EventHook<T> {
         val container = registry[eventClass] ?: error("Unsupported Event type: ${eventClass.simpleName}")
 
@@ -113,37 +70,10 @@ object EventManager : CoroutineScope by CoroutineScope(SupervisorJob()) {
         return eventHook
     }
 
-    fun unregisterListener(listener: Listenable) {
-        registry.values.forEach { it.removeIf { hook -> hook.owner == listener } }
-    }
-
-    private fun <T : Event> EventHook<T>.processEvent(event: T) {
-        if (!this.isActive)
-            return
-
-        when (this) {
-            is EventHook.Blocking -> {
-                try {
-                    action(event)
-                } catch (e: Exception) {
-                    ClientUtils.LOGGER.error("Exception during call event (blocking)", e)
-                }
-            }
-
-            is EventHook.Async -> {
-                launch(dispatcher) {
-                    try {
-                        action(this, event)
-                    } catch (e: Exception) {
-                        ClientUtils.LOGGER.error("Exception during call event (async)", e)
-                    }
-                }
-            }
-        }
-    }
-
     fun <T : Event> call(event: T): T {
-        val hooks = registry[event.javaClass]!!
+        val eventClass = event::class.java
+
+        val hooks = registry[eventClass]!!
 
         hooks.forEach {
             it.processEvent(event)
@@ -153,10 +83,12 @@ object EventManager : CoroutineScope by CoroutineScope(SupervisorJob()) {
     }
 
     fun <T : Event> call(event: T, listener: Listenable): T {
-        val hooks = registry[event.javaClass]!!
+        val eventClass = event::class.java
+
+        val hooks = registry[eventClass]!!
 
         hooks.forEach {
-            if (it.owner == listener) {
+            if (it.owner === listener) {
                 it.processEvent(event)
             }
         }

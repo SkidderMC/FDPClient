@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.utils.timing
 
 import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.event.async.waitUntil
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.kotlin.waitUntil
 import net.minecraft.item.ItemStack
 import java.util.concurrent.ConcurrentLinkedQueue
 
@@ -15,14 +15,14 @@ object TickedActions : Listenable {
     private class Action(
         val owner: Module,
         val id: Int,
-        val action: () -> Unit
+        val action: Runnable
     )
 
     private val actions = ConcurrentLinkedQueue<Action>()
 
     private val calledThisTick = LinkedHashSet<Action>()
 
-    private fun schedule(id: Int, module: Module, allowDuplicates: Boolean = false, action: () -> Unit) =
+    private fun schedule(id: Int, module: Module, allowDuplicates: Boolean = false, action: Runnable) =
         if (allowDuplicates || !isScheduled(id, module)) {
             actions += Action(module, id, action)
             true
@@ -42,7 +42,7 @@ object TickedActions : Listenable {
         actions.toCollection(calledThisTick)
 
         calledThisTick.forEach {
-            it.action.invoke()
+            it.action.run()
             if (actions.isNotEmpty()) {
                 actions.remove()
             }
@@ -67,10 +67,12 @@ object TickedActions : Listenable {
         callback.invoke(newStack)
     }
 
-    fun Module.nextTick(id: Int = -1, allowDuplicates: Boolean = true, action: () -> Unit) =
+    fun Module.nextTick(id: Int = -1, allowDuplicates: Boolean = true, action: Runnable) =
         schedule(id, this, allowDuplicates, action)
 
-    suspend fun Module.awaitTicked() = waitUntil { hasNoTicked() }
+    suspend fun Module.awaitTicked() {
+        waitUntil { hasNoTicked() }
+    }
 
     fun Module.isTicked(id: Int) = isScheduled(id, this)
 

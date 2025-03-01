@@ -8,8 +8,8 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.event.handler
-import net.ccbluex.liquidbounce.event.loopHandler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
@@ -41,15 +41,15 @@ object BlockESP : Module("BlockESP", Category.VISUAL) {
         posList.clear()
     }
 
-    val onSearch = loopHandler(dispatcher = Dispatchers.Default) {
+    val onSearch = loopSequence(dispatcher = Dispatchers.Default) {
         val selectedBlock = Block.getBlockById(block)
 
         if (selectedBlock == null || selectedBlock == air) {
             delay(1000)
-            return@loopHandler
+            return@loopSequence
         }
 
-        val (x, y, z) = mc.thePlayer.eyes
+        val (x, y, z) = mc.thePlayer?.eyes ?: return@loopSequence
         val radiusSq = radius * radius
 
         posList.removeIf {

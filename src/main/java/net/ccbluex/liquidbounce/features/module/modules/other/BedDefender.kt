@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.other
 
 import net.ccbluex.liquidbounce.event.Render3DEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
-import net.ccbluex.liquidbounce.event.loopHandler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.attack.CPSCounter
@@ -52,9 +52,7 @@ object BedDefender : Module("BedDefender", Category.OTHER) {
     ) { options.rotationsActive }
     private val scannerMode by choices("Scanner", arrayOf("Nearest", "Random"), "Nearest")
 
-    private val options = RotationSettings(this).apply {
-        resetTicksValue.setSupport { it && keepRotation }
-    }
+    private val options = RotationSettings(this)
 
     private val onSneakOnly by boolean("OnSneakOnly", true)
     private val autoSneak by choices("AutoSneak", arrayOf("Off", "Normal", "Packet"), "Off") { !onSneakOnly }
@@ -82,13 +80,12 @@ object BedDefender : Module("BedDefender", Category.OTHER) {
         bedBottomPositions.clear()
     }
 
-    // TODO: Proper event to update.
-    val onUpdate = loopHandler {
-        val player = mc.thePlayer ?: return@loopHandler
-        val world = mc.theWorld ?: return@loopHandler
+    val onUpdate = handler<UpdateEvent> {
+        val player = mc.thePlayer ?: return@handler
+        val world = mc.theWorld ?: return@handler
 
         if (onSneakOnly && !mc.gameSettings.keyBindSneak.isKeyDown) {
-            return@loopHandler
+            return@handler
         }
 
         val radius = 4
@@ -123,12 +120,12 @@ object BedDefender : Module("BedDefender", Category.OTHER) {
         addDefenceBlocks(bedBottomPositions)
 
         if (defenceBlocks.isNotEmpty()) {
-            val playerPos = player.position ?: return@loopHandler
+            val playerPos = player.position ?: return@handler
             val pos = if (scannerMode == "Nearest") defenceBlocks.minByOrNull { it.distanceSq(playerPos) }
-                ?: return@loopHandler else defenceBlocks.random()
+                ?: return@handler else defenceBlocks.random()
             val blockPos = BlockPos(pos.x.toDouble(), pos.y - player.eyeHeight + 1.5, pos.z.toDouble())
             val rotation = RotationUtils.toRotation(blockPos.center, false, player)
-            val raytrace = performBlockRaytrace(rotation, mc.playerController.blockReachDistance) ?: return@loopHandler
+            val raytrace = performBlockRaytrace(rotation, mc.playerController.blockReachDistance) ?: return@handler
 
             if (options.rotationsActive) {
                 setTargetRotation(rotation, options, if (options.keepRotation) options.resetTicks else 1)
@@ -137,7 +134,7 @@ object BedDefender : Module("BedDefender", Category.OTHER) {
             blockPosition = blockPos
 
             if (timerCounter.hasTimePassed(placeDelay)) {
-                if (!isPlaceablePos(blockPos)) return@loopHandler
+                if (!isPlaceablePos(blockPos)) return@handler
 
                 when (autoSneak.lowercase()) {
                     "normal" -> mc.gameSettings.keyBindSneak.pressed = false
@@ -259,7 +256,7 @@ object BedDefender : Module("BedDefender", Category.OTHER) {
                 movingObjectPosition != null && movingObjectPosition.blockPos == pos
             }
 
-            "around" -> EnumFacing.values().any { !isBlockBBValid(pos.offset(it)) }
+            "around" -> EnumFacing.entries.any { !isBlockBBValid(pos.offset(it)) }
 
             else -> true
         }

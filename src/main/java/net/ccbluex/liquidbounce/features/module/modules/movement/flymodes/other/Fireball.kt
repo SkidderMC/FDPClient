@@ -23,7 +23,6 @@ import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
-import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.util.BlockPos
@@ -94,20 +93,20 @@ object Fireball : FlyMode("Fireball") {
                 repeat(Flight.fireballTry) {
                     player.sendUseItem(fireBall)
                 }
-            }
 
-            WaitTickUtils.schedule(2) {
-                if (autoFireball != "Off") {
-                    SilentHotbar.selectSlotSilently(
-                        this,
-                        fireballSlot,
-                        immediate = true,
-                        render = autoFireball == "Pick",
-                        resetManually = true
-                    )
+                Flight.nextTick {
+                    if (autoFireball != "Off") {
+                        SilentHotbar.selectSlotSilently(
+                            this,
+                            fireballSlot,
+                            immediate = true,
+                            render = autoFireball == "Pick",
+                            resetManually = true
+                        )
+                    }
+
+                    Flight.wasFired = true
                 }
-
-                Flight.wasFired = true
             }
         }
     }

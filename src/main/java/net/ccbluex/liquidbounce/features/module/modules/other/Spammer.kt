@@ -7,12 +7,12 @@ package net.ccbluex.liquidbounce.features.module.modules.other
 
 import kotlinx.coroutines.delay
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
+import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomString
-import net.ccbluex.liquidbounce.event.loopHandler
 
 object Spammer : Module("Spammer", Category.OTHER, subjective = true) {
 
@@ -22,8 +22,8 @@ object Spammer : Module("Spammer", Category.OTHER, subjective = true) {
 
     private val custom by boolean("Custom", false)
 
-    val onUpdate = loopHandler {
-        mc.thePlayer.sendChatMessage(
+    val onUpdate = loopSequence {
+        mc.thePlayer?.sendChatMessage(
             if (custom) replace(message)
             else message + " >" + randomString(nextInt(5, 11)) + "<"
         )

@@ -5,38 +5,32 @@
  */
 package net.ccbluex.liquidbounce.event
 
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import net.ccbluex.liquidbounce.utils.client.ClientUtils
 
-sealed class EventHook<T : Event>(
+class EventHook<T : Event>(
     val owner: Listenable,
-    val always: Boolean,
-    val priority: Byte,
+    val always: Boolean = false,
+    val priority: Byte = 0,
+    private val action: (T) -> Unit
 ) {
-    class Blocking<T : Event>(
-        owner: Listenable,
-        always: Boolean = false,
-        priority: Byte = 0,
-        val action: (T) -> Unit
-    ) : EventHook<T>(owner, always, priority)
+    val isActive: Boolean
+        get() = this.owner.handleEvents() || this.always
 
-    class Async<T : Event>(
-        owner: Listenable,
-        /**
-         * Dispatcher Usage
-         * - Unconfined: action will run blocking immediately, **unless a suspend function is called**
-         * - Main: action will start to run at **next frame** on the main thread
-         * - IO/Default: action will run at given dispatcher asynchronously
-         *
-         * If the event need to be canceled, don't set the dispatcher.
-         */
-        val dispatcher: CoroutineDispatcher = Dispatchers.Unconfined,
-        always: Boolean = false,
-        priority: Byte = 0,
-        val action: suspend CoroutineScope.(T) -> Unit
-    ) : EventHook<T>(owner, always, priority)
+    internal fun processEvent(event: T) {
+        if (!this.isActive)
+            return
+
+        try {
+            action(event)
+        } catch (e: Exception) {
+            ClientUtils.LOGGER.error(
+                "Exception during processing event, owner=${owner.javaClass.simpleName}, event=$event",
+                e
+            )
+        }
+    }
+
+    override fun toString(): String {
+        return "EventHook{owner=$owner, always=$always, priority=$priority, action=$action}"
+    }
 }
-
-val EventHook<*>.isActive: Boolean
-    get() = this.owner.handleEvents() || this.always

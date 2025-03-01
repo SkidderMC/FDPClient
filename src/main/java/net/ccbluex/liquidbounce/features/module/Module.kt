@@ -163,6 +163,11 @@ open class Module(
     open fun onDisable() {}
 
     /**
+     * Called when module unregistered (for scripts)
+     */
+    open fun onUnregister() {}
+
+    /**
      * Get value by [valueName]
      */
     fun getValue(valueName: String) = values.find { it.name.equals(valueName, ignoreCase = true) }

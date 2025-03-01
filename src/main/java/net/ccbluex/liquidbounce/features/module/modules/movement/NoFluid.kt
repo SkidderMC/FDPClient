@@ -5,7 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.movement
 
-import net.ccbluex.liquidbounce.event.loopHandler
+import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.BlockUtils
@@ -22,7 +23,7 @@ object NoFluid : Module("NoFluid", Category.MOVEMENT) {
     val lavaValue by boolean("Lava", true)
     private val oldGrim by boolean("OldGrim", false)
 
-    val onUpdate = loopHandler {
+    val onUpdate = handler<UpdateEvent> {
         if ((waterValue || lavaValue) && oldGrim) {
             BlockUtils.searchBlocks(2, setOf(water, lava)).keys.forEach {
                 // TODO:only do this for blocks that player touched

@@ -12,18 +12,19 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.kotlin.removeEach
 
+//@Deprecated("Use TickScheduler instead")
 object WaitTickUtils : MinecraftInstance, Listenable {
 
     private val scheduledActions = ArrayDeque<ScheduledAction>()
 
-    fun schedule(ticks: Int, requester: Any? = null, action: () -> Unit = { }) =
+    inline fun schedule(ticks: Int, requester: Any? = null, crossinline action: () -> Unit = { }) =
         conditionalSchedule(requester, ticks, false) { action(); null }
 
     fun conditionalSchedule(
         requester: Any? = null,
         ticks: Int? = null,
         isConditional: Boolean = true,
-        action: (Int) -> Boolean?
+        action: (tick: Int) -> Boolean?
     ) {
         if (ticks == 0) {
             action(0)
@@ -36,7 +37,7 @@ object WaitTickUtils : MinecraftInstance, Listenable {
         scheduledActions += ScheduledAction(requester, time, isConditional, ClientUtils.runTimeTicks + time, action)
     }
 
-    fun hasScheduled(obj: Any) = scheduledActions.firstOrNull { it.requester == obj } != null
+    fun hasScheduled(obj: Any) = scheduledActions.any { it.requester == obj }
 
     val onTick = handler<GameTickEvent>(priority = -1) {
         val currentTick = ClientUtils.runTimeTicks
@@ -45,11 +46,14 @@ object WaitTickUtils : MinecraftInstance, Listenable {
             val elapsed = action.duration - (action.ticks - currentTick)
             val shouldRemove = currentTick >= action.ticks
 
-            return@removeEach when {
-                !action.isConditional -> {
-                    { action.action(elapsed) ?: true }.takeIf { shouldRemove }?.invoke() ?: false
+            if (!action.isConditional) {
+                if (shouldRemove) {
+                    action.action(elapsed) ?: true
+                } else {
+                    false
                 }
-                else -> action.action(elapsed) ?: shouldRemove
+            } else {
+                action.action(elapsed) ?: shouldRemove
             }
         }
     }
@@ -59,7 +63,7 @@ object WaitTickUtils : MinecraftInstance, Listenable {
         val duration: Int,
         val isConditional: Boolean,
         val ticks: Int,
-        val action: (Int) -> Boolean?
+        val action: (tick: Int) -> Boolean?
     )
 
 }

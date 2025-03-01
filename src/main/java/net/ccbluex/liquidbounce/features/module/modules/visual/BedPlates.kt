@@ -7,11 +7,10 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.event.handler
-import net.ccbluex.liquidbounce.event.loopHandler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element.Companion.MAX_GRADIENT_COLORS
@@ -113,10 +112,10 @@ object BedPlates : Module("BedPlates", Category.VISUAL) {
         val surrounding: Collection<SurroundingBlock>,
     )
 
-    val onUpdate = loopHandler(dispatcher = Dispatchers.Default) {
-        val world = mc.theWorld ?: return@loopHandler
+    val onUpdate = loopSequence(dispatcher = Dispatchers.Default) {
+        val world = mc.theWorld ?: return@loopSequence
 
-        val searchCenter = mc.thePlayer?.position ?: return@loopHandler
+        val searchCenter = mc.thePlayer?.position ?: return@loopSequence
 
         val radius = maxRenderDistance
         val radiusSq = radius * radius

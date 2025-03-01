@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
-import net.ccbluex.liquidbounce.event.loopHandler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.minecraft.potion.Potion
@@ -31,7 +31,7 @@ object Fullbright : Module("Fullbright", Category.VISUAL, gameDetecting = false)
         mc.thePlayer?.removePotionEffectClient(Potion.nightVision.id)
     }
 
-    val onUpdate = loopHandler(always = true) {
+    val onUpdate = handler<UpdateEvent>(always = true) {
         if (state || XRay.handleEvents()) {
             when (mode.lowercase()) {
                 "gamma" -> when {

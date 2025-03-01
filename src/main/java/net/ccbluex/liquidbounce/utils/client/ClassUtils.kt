@@ -95,4 +95,15 @@ object ClassUtils {
 
     fun hasForge() = hasClass("net.minecraftforge.common.MinecraftForge")
 
+    val Any.debugString: String
+        get() = this::class.java.declaredFields.joinToString(
+            separator = ", ",
+            prefix = "${this::class.java.simpleName}(",
+            postfix = ")"
+        ) { property ->
+            property.isAccessible = true
+            val name = property.name
+            val value = property.get(this)
+            "$name=$value"
+        }
 }

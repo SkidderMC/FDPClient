@@ -84,8 +84,8 @@ object MLG : NoFallMode("MLG") {
                         var bestOffset: Vec3i? = null
                         var minDistance = Double.MAX_VALUE
 
-                        (-1..1).forEach { x ->
-                            (-1..1).forEach { z ->
+                        for (x in -1..1) {
+                            for (z in -1..1) {
                                 val offset = Vec3i(x, 0, z)
                                 val neighbor = pos.add(offset)
                                 val center = neighbor.center
@@ -108,7 +108,7 @@ object MLG : NoFallMode("MLG") {
                         bestOffset?.let {
                             suitablePos = pos.add(it)
 
-                            if (suitablePos?.state?.block in arrayOf(Blocks.web) ||
+                            if (suitablePos?.state?.block == Blocks.web ||
                                 suitablePos?.up()?.block == Blocks.water
                             ) {
                                 return
@@ -161,7 +161,7 @@ object MLG : NoFallMode("MLG") {
 
         val wasWaterBucket = item == Items.water_bucket
 
-        if (wasWaterBucket || (item as? ItemBlock)?.block in arrayOf(Blocks.web)) {
+        if (wasWaterBucket || (item as? ItemBlock)?.block == Blocks.web) {
             performBlockRaytrace(currRotation, reach)?.let {
                 if (it.blockPos != target || it.sideHit != EnumFacing.UP) {
                     return@let
@@ -208,24 +208,23 @@ object MLG : NoFallMode("MLG") {
                         }
 
                         if (player.fallDistance == 0F) {
-                            performBlockRaytrace(currRotation, reach).let { raytrace ->
-                                // Did the user decide to look somewhere else?
-                                if (raytrace == null || raytrace.blockPos != target || raytrace.sideHit != EnumFacing.UP) {
-                                    // Reset the rotation if it took more than the max retrieval waiting time to retrieve
-                                    reset(elapsedTicks >= maxRetrievalWaitingTime)
-                                    return@conditionalSchedule null
-                                }
-
-                                // We are looking at the target block, now make sure the time has passed to retrieve
-                                if (elapsedTicks < retrieveDelay) return@conditionalSchedule false
-
-                                // Time to retrieve
-                                placeBlock(it.blockPos, it.sideHit, it.hitVec, newStack)
-
-                                reset()
-
-                                return@conditionalSchedule true
+                            val raytrace = performBlockRaytrace(currRotation, reach)
+                            // Did the user decide to look somewhere else?
+                            if (raytrace == null || raytrace.blockPos != target || raytrace.sideHit != EnumFacing.UP) {
+                                // Reset the rotation if it took more than the max retrieval waiting time to retrieve
+                                reset(elapsedTicks >= maxRetrievalWaitingTime)
+                                return@conditionalSchedule null
                             }
+
+                            // We are looking at the target block, now make sure the time has passed to retrieve
+                            if (elapsedTicks < retrieveDelay) return@conditionalSchedule false
+
+                            // Time to retrieve
+                            placeBlock(it.blockPos, it.sideHit, it.hitVec, newStack)
+
+                            reset()
+
+                            return@conditionalSchedule true
                         }
 
                         return@conditionalSchedule false

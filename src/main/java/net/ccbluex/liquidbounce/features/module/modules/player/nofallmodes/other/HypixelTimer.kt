@@ -6,9 +6,10 @@
 package net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other
 
 import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.features.module.modules.player.NoFall
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.NoFallMode
 import net.ccbluex.liquidbounce.utils.movement.FallingPlayer
-import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
 import net.minecraft.network.play.client.C03PacketPlayer
 
 /*
@@ -31,7 +32,7 @@ object HypixelTimer : NoFallMode("HypixelTimer") {
                 packet.onGround = true
                 player.fallDistance = 0f
 
-                WaitTickUtils.schedule(1) {
+                NoFall.nextTick {
                     mc.timer.timerSpeed = 1f
                 }
             }
