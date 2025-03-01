@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.block.material
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.inventory.isSplashPotion
@@ -52,8 +53,13 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
         val renderManager = mc.renderManager
 
         for (entity in theWorld.loadedEntityList) {
-            val theEntity = entity as? EntityLivingBase ?: continue
-            val heldStack = theEntity.heldItem ?: continue
+            if (entity !is EntityLivingBase) continue
+            val heldStack = entity.heldItem ?: continue
+
+            // Check if the entity is selected
+            if (!isSelected(entity, false)) {
+                continue
+            }
 
             val item = heldStack.item
             var isBow = false
@@ -69,11 +75,11 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
                     gravity = 0.05F
                     size = 0.3F
 
-                    if (theEntity is EntityPlayer) {
-                        if (!theEntity.isUsingItem) continue
+                    if (entity is EntityPlayer) {
+                        if (!entity.isUsingItem) continue
 
                         // Calculate power of bow
-                        var power = theEntity.itemInUseDuration / 20f
+                        var power = entity.itemInUseDuration / 20f
                         power = (power * power + power * 2F) / 3F
                         if (power < 0.1F) continue
                         if (power > 1F) power = 1F
@@ -106,16 +112,16 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
             }
 
             // Yaw and pitch of player
-            val (yaw, pitch) = theEntity.rotation
+            val (yaw, pitch) = entity.rotation
 
             val yawRadians = yaw.toRadiansD()
             val pitchRadians = pitch.toRadiansD()
 
-            val pos = theEntity.interpolatedPosition(theEntity.lastTickPos)
+            val pos = entity.interpolatedPosition(entity.lastTickPos)
 
             // Positions
             var posX = pos.xCoord - cos(yawRadians) * 0.16F
-            var posY = pos.yCoord + theEntity.eyeHeight - 0.10000000149011612
+            var posY = pos.yCoord + entity.eyeHeight - 0.10000000149011612
             var posZ = pos.zCoord - sin(yawRadians) * 0.16F
 
             // Motions
@@ -195,11 +201,11 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
                 for (x in chunkMinX..chunkMaxX)
                     for (z in chunkMinZ..chunkMaxZ)
                         theWorld.getChunkFromChunkCoords(x, z)
-                            .getEntitiesWithinAABBForEntity(theEntity, arrowBox, collidedEntities, null)
+                            .getEntitiesWithinAABBForEntity(entity, arrowBox, collidedEntities, null)
 
                 // Check all possible entities
                 for (possibleEntity in collidedEntities) {
-                    if (possibleEntity.canBeCollidedWith() && possibleEntity != theEntity) {
+                    if (possibleEntity.canBeCollidedWith() && possibleEntity != entity) {
                         val possibleEntityBoundingBox = possibleEntity.entityBoundingBox
                             .expand(size.toDouble(), size.toDouble(), size.toDouble())
 
@@ -274,8 +280,9 @@ object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = fals
                 }
 
                 // Check if hitting an entity
-                if (hitEntity)
+                if (hitEntity) {
                     glColor(Color(255, 0, 0, 150))
+                }
             }
 
             // Rendering hit cylinder
