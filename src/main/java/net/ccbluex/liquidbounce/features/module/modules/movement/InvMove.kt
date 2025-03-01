@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenContain
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.client.gui.GuiIngameMenu
+import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.client.settings.GameSettings
@@ -43,12 +44,16 @@ object InvMove : Module("InvMove", Category.MOVEMENT, gameDetecting = false) {
     private val undetectable by +InventoryManager.undetectableValue
 
     // If player violates nomove check and inventory is open, close inventory and reopen it when still
-    private val silentlyCloseAndReopen by boolean("SilentlyCloseAndReopen", false)
-    { noMove && (noMoveAir || noMoveGround) }
+    private val silentlyCloseAndReopen by boolean(
+        "SilentlyCloseAndReopen",
+        false
+    ) { noMove && (noMoveAir || noMoveGround) }
 
     // Reopen closed inventory just before a click (could flag for clicking too fast after opening inventory)
-    private val reopenOnClick by boolean("ReopenOnClick", false)
-    { silentlyCloseAndReopen && noMove && (noMoveAir || noMoveGround) }
+    private val reopenOnClick by boolean(
+        "ReopenOnClick",
+        false
+    ) { silentlyCloseAndReopen && noMove && (noMoveAir || noMoveGround) }
 
     private val inventoryMotion by float("InventoryMotion", 1F, 0F..2F)
 
@@ -61,19 +66,14 @@ object InvMove : Module("InvMove", Category.MOVEMENT, gameDetecting = false) {
         mc.gameSettings.keyBindSprint
     )
 
-    val onUpdate = handler<UpdateEvent> {
+    val onUpdate = handler<UpdateEvent>(priority = -1) {
         val player = mc.thePlayer ?: return@handler
         val screen = mc.currentScreen
 
-        // Don't make player move when chat or ESC menu are open
-        if (screen is GuiChat || screen is GuiIngameMenu)
+        if (shouldFreezeInputs(screen)) {
+            unPressKeys()
             return@handler
-
-        if (undetectable && (screen != null && screen !is GuiHudDesigner && screen !is ClickGui))
-            return@handler
-
-        if (notInChests && screen is GuiChest)
-            return@handler
+        }
 
         if (screen is GuiInventory || screen is GuiChest) {
             player.motionX *= inventoryMotion
@@ -81,13 +81,23 @@ object InvMove : Module("InvMove", Category.MOVEMENT, gameDetecting = false) {
         }
 
         if (silentlyCloseAndReopen && screen is GuiInventory) {
-            if (canClickInventory(closeWhenViolating = true) && !reopenOnClick)
-                serverOpenInventory = true
+            if (canClickInventory(closeWhenViolating = true) && !reopenOnClick) serverOpenInventory = true
         }
 
         for (affectedBinding in affectedBindings)
             affectedBinding.pressed =
-                isButtonPressed(affectedBinding) || (affectedBinding == mc.gameSettings.keyBindSprint && Sprint.handleEvents() && Sprint.mode == "Legit" && (!Sprint.onlyOnSprintPress || mc.thePlayer.isSprinting))
+                isButtonPressed(affectedBinding) || affectedBinding == mc.gameSettings.keyBindSprint && Sprint.handleEvents() && Sprint.mode == "Legit" && (!Sprint.onlyOnSprintPress || mc.thePlayer.isSprinting) || affectedBinding == mc.gameSettings.keyBindForward && AutoWalk.handleEvents()
+    }
+
+    private fun shouldFreezeInputs(screen: GuiScreen?): Boolean {
+        // Don't make player move when chat or ESC menu are open
+        if (screen is GuiChat || screen is GuiIngameMenu) return true
+
+        if (undetectable && (screen != null && screen !is GuiHudDesigner && screen !is ClickGui)) return true
+
+        if (notInChests && screen is GuiChest) return true
+
+        return false
     }
 
     val onStrafe = handler<StrafeEvent> {
@@ -115,14 +125,13 @@ object InvMove : Module("InvMove", Category.MOVEMENT, gameDetecting = false) {
         if (!saveC0E) return@handler
 
         if (noSprintWhenClosed) {
-            if (clickWindowList.isNotEmpty() && !(serverOpenInventory || serverOpenContainer))
-                player.isSprinting = false
+            if (clickWindowList.isNotEmpty() && !(serverOpenInventory || serverOpenContainer)) player.isSprinting =
+                false
 
             if (packet is C0DPacketCloseWindow) {
                 event.cancelEvent()
                 player.isSprinting = false
-                if (!player.serverSprintState)
-                    PacketUtils.sendPacket(C0DPacketCloseWindow(), false)
+                if (!player.serverSprintState) PacketUtils.sendPacket(C0DPacketCloseWindow(), false)
             }
         }
 
@@ -140,8 +149,7 @@ object InvMove : Module("InvMove", Category.MOVEMENT, gameDetecting = false) {
     }
 
     override fun onDisable() {
-        for (affectedBinding in affectedBindings)
-            affectedBinding.pressed = isButtonPressed(affectedBinding)
+        for (affectedBinding in affectedBindings) affectedBinding.pressed = isButtonPressed(affectedBinding)
     }
 
     private fun isButtonPressed(keyBinding: KeyBinding): Boolean {
@@ -149,6 +157,12 @@ object InvMove : Module("InvMove", Category.MOVEMENT, gameDetecting = false) {
             Mouse.isButtonDown(keyBinding.keyCode + 100)
         } else {
             GameSettings.isKeyDown(keyBinding)
+        }
+    }
+
+    private fun unPressKeys() {
+        affectedBindings.forEach {
+            it.pressed = false
         }
     }
 

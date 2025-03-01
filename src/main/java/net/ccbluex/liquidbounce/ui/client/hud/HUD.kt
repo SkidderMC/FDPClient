@@ -14,17 +14,17 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
-import net.ccbluex.liquidbounce.utils.ui.EditableText
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.opengl.GL11.*
 import java.util.*
+import java.util.concurrent.CopyOnWriteArrayList
 import kotlin.math.max
 import kotlin.math.min
 
 object HUD : MinecraftInstance {
 
   val elements = mutableListOf<Element>()
-  val notifications = mutableListOf<Notification>()
+  val notifications = CopyOnWriteArrayList<Notification>()
 
   val ELEMENTS_CLASSES = ClassUtils.resolvePackage("${HUD::class.java.`package`.name}.element.elements", Element::class.java)
     .toTypedArray()

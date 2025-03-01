@@ -45,7 +45,7 @@ object MLG : NoFallMode("MLG") {
         get() = findMlgSlot()
 
     private val currRotation
-        get() = RotationUtils.serverRotation
+        get() = RotationUtils.currentRotation ?: RotationUtils.serverRotation
 
     override fun onRotationUpdate() {
         val player = mc.thePlayer ?: return

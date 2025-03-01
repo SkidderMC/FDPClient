@@ -256,14 +256,14 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false) {
 
         // A pretty basic model render process. Position and rotation interpolation is applied to look visually appealing to the user.
         // This can be smarter by adding sneak checks, more timed hand swing/body movement, etc.
-        if (mc.gameSettings.thirdPersonView == 0 || renderModel) return@handler
+        if (mc.gameSettings.thirdPersonView == 0 || !renderModel) return@handler
 
         val manager = mc.renderManager
 
         glPushMatrix()
         glPushAttrib(GL_ALL_ATTRIB_BITS)
 
-        RenderUtils.glColor(Color.BLACK)
+        glColor(Color.BLACK)
 
         val (old, new) = positions.first() to positions.elementAt(min(1, positions.size - 1))
 
