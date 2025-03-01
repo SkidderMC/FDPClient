@@ -211,7 +211,7 @@ class SideGui : GuiPanel() {
                 bgHexFocused = true
             }
         }
-        
+
         val fadeSpeedSliderX = drag!!.x + 25
         val fadeSpeedSliderY = drag!!.y + 20
         val fadeSpeedSliderWidth = 80f

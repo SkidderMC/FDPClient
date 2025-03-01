@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawGradientRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedOutline
 import org.lwjgl.input.Mouse
 import java.awt.Color
+import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.min
 
@@ -104,6 +105,33 @@ object SideGuiColorManager {
             }
         }
         drawColorExtras(mouseX, mouseY, alpha, colorXStart, drag.y + 60, colorWidth, drag)
+
+        val totalRows = ceil(themeColors.size / colorsPerRow.toDouble()).toInt()
+        val totalContentHeight = totalRows * (colorHeight.toInt() + 10) - 10
+        val visibleHeight = (drag.y + rectHeight - 60) - (drag.y + 60)
+        if (totalContentHeight > visibleHeight) {
+            val thumbHeight = visibleHeight * visibleHeight / totalContentHeight
+            val scrollRange = totalContentHeight - visibleHeight
+            val currentScrollVal = -animScroll
+            val thumbY = if (scrollRange > 0) (currentScrollVal / scrollRange) * (visibleHeight - thumbHeight) else 0f
+            val buttonWidth = 50f
+            val scrollbarX = drag.x + 25 + (colorWidth + 10) * colorsPerRow + buttonWidth + 5
+            val scrollbarY = drag.y + 60
+            DrRenderUtils.drawRect2(
+                scrollbarX.toDouble(),
+                scrollbarY.toDouble(),
+                5.0,
+                visibleHeight.toDouble(),
+                Color(50, 50, 50, alpha).rgb
+            )
+            DrRenderUtils.drawRect2(
+                scrollbarX.toDouble(),
+                (scrollbarY + thumbY).toDouble(),
+                5.0,
+                thumbHeight.toDouble(),
+                Color(150, 150, 150, alpha).rgb
+            )
+        }
     }
 
     fun getColorHexFieldArea(drag: Drag): Quad {
