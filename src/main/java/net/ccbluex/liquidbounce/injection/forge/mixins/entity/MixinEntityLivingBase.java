@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationSettings;
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils;
 import net.ccbluex.liquidbounce.utils.extensions.MathExtensionsKt;
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
@@ -77,8 +78,10 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     @Overwrite
     protected void jump() {
         final JumpEvent prejumpEvent = new JumpEvent(getJumpUpwardsMotion(), EventState.PRE);
-        EventManager.INSTANCE.call(prejumpEvent);
-        if (prejumpEvent.isCancelled()) return;
+        if ((Object) this == Minecraft.getMinecraft().thePlayer) {
+            EventManager.INSTANCE.call(prejumpEvent);
+            if (prejumpEvent.isCancelled()) return;
+        }
 
         motionY = prejumpEvent.getMotion();
 
@@ -107,8 +110,10 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
         isAirBorne = true;
 
-        final JumpEvent postjumpEvent = new JumpEvent((float) motionY, EventState.POST);
-        EventManager.INSTANCE.call(postjumpEvent);
+        if ((Object) this == Minecraft.getMinecraft().thePlayer) {
+            final JumpEvent postjumpEvent = new JumpEvent((float) motionY, EventState.POST);
+            EventManager.INSTANCE.call(postjumpEvent);
+        }
     }
 
     @Inject(method = "onLivingUpdate", at = @At("HEAD"))
