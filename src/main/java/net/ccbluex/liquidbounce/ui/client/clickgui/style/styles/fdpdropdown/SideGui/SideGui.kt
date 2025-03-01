@@ -5,13 +5,19 @@
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui
 
-import net.ccbluex.liquidbounce.FDPClient.fileManager
-import net.ccbluex.liquidbounce.config.ColorValue
-import net.ccbluex.liquidbounce.config.SettingsUtils.applyScript
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.generateColor
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
-import net.ccbluex.liquidbounce.handler.api.ClientApi
-import net.ccbluex.liquidbounce.handler.api.autoSettingsList
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiBackgroundManager
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiBackgroundManager.bgHexFocused
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiBackgroundManager.bgHexInput
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiBackgroundManager.checkBackgroundInteractions
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiBackgroundManager.getBgHexFieldArea
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiColorManager
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiColorManager.checkColorCategoryInteractions
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiColorManager.colorHexFocused
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiColorManager.colorHexInput
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiColorManager.getColorHexFieldArea
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiConfigsManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation
@@ -22,31 +28,17 @@ import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolat
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.ClientColorMode
-import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.ThemeFadeSpeed
-import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColorFromName
-import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.updown
-import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
-import net.ccbluex.liquidbounce.utils.client.ClientUtils.displayChatMessage
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.interpolateFloat
-import net.ccbluex.liquidbounce.utils.extensions.setAlpha
 import net.ccbluex.liquidbounce.utils.render.AnimationUtils.animate
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawGradientRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedOutline
 import net.minecraft.client.gui.GuiScreen.getClipboardString
 import net.minecraft.client.gui.ScaledResolution
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import java.awt.Color
-import java.awt.Desktop
-import java.io.File
-import java.io.IOException
-import java.nio.charset.StandardCharsets
-import java.nio.file.Files
-import java.util.*
 import kotlin.collections.HashMap
 import kotlin.math.max
 import kotlin.math.min
@@ -70,20 +62,9 @@ class SideGui : GuiPanel() {
     private val smooth = floatArrayOf(0f, 0f, 0f, 0f)
     private var timerUtil: TimerUtil? = null
 
-    private var showLocalConfigs = false
-    private var wasMousePressed = false
-
     private var draggingSlider = false
     private var clickingHeader = false
     private var showSideOutline = true
-
-    private var bgAlpha: Float = 100f
-
-    private var colorHexInput = "#"
-    private var colorHexFocused = false
-
-    private var bgHexInput = "#"
-    private var bgHexFocused = false
 
     override fun initGui() {
         focused = false
@@ -186,33 +167,14 @@ class SideGui : GuiPanel() {
         // Category content
         when (currentCategory) {
             "UI" -> drawUiCategory(alpha)
-            "Configs" -> drawConfigsCategory(mouseX, mouseY, alpha)
-            "Color" -> drawColorCategory(mouseX, mouseY, alpha)
-            "Background" -> drawBackgroundCategory(mouseX, mouseY, alpha)
+            "Configs" -> SideGuiConfigsManager.drawConfigsCategory(mouseX, mouseY, alpha, drag!!, rectWidth)
+            "Color" -> SideGuiColorManager.drawColorCategory(mouseX, mouseY, alpha, drag!!, animScroll, rectHeight, smooth)
+            "Background" -> SideGuiBackgroundManager.drawBackgroundCategory(mouseX, mouseY, alpha, drag!!, animScroll, rectHeight)
         }
 
         drawOverlays(sr, alpha, mouseX, mouseY)
         assumeNonVolatile = false
     }
-
-    /**
-     * Returns the (x, y, width, height) for the background hex text box.
-     * We'll center it near the bottom, for example.
-     */
-    private fun getBgHexFieldArea(): Quad {
-        val sideBgX = drag!!.x + 25 + (80f + 10) * 5
-        val sideBgY = drag!!.y + 60 + 45
-        val sideBgW = 50f
-        val sideBgH = 15f
-
-        val textW = 80f
-        val textH = 14f
-        val x = sideBgX + (sideBgW - textW) / 2f
-        val y = sideBgY - textH - 20
-        return Quad(x, y, textW, textH)
-    }
-
-    data class Quad(val x: Float, val y: Float, val w: Float, val h: Float)
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
         val isHoveringMainRect = DrRenderUtils.isHovering(drag!!.x, drag!!.y, rectWidth, rectHeight, mouseX, mouseY)
@@ -236,15 +198,15 @@ class SideGui : GuiPanel() {
         bgHexFocused = false
 
         if (currentCategory == "Color") {
-            checkColorCategoryInteractions(mouseX, mouseY)
-            val (hexX, hexY, hexW, hexH) = getColorHexFieldArea()
+            checkColorCategoryInteractions(mouseX, mouseY, drag!!)
+            val (hexX, hexY, hexW, hexH) = getColorHexFieldArea(drag!!)
             if (DrRenderUtils.isHovering(hexX, hexY, hexW, hexH, mouseX, mouseY)) {
                 colorHexFocused = true
             }
         }
         if (currentCategory == "Background") {
             checkBackgroundInteractions(mouseX, mouseY)
-            val (hexX, hexY, hexW, hexH) = getBgHexFieldArea()
+            val (hexX, hexY, hexW, hexH) = getBgHexFieldArea(drag!!)
             if (DrRenderUtils.isHovering(hexX, hexY, hexW, hexH, mouseX, mouseY)) {
                 bgHexFocused = true
             }
@@ -270,402 +232,6 @@ class SideGui : GuiPanel() {
         }
         draggingSlider = false
         clickingHeader = false
-    }
-
-    private val backgroundModes = arrayOf("none", "dark", "synced", "neverlose", "custom")
-
-    private fun drawBackgroundCategory(mouseX: Int, mouseY: Int, alpha: Int) {
-        val bgXStart = drag!!.x + 25
-        val bgYStart = drag!!.y + 60 + animScroll
-        val cardWidth = 80f
-        val cardHeight = 40f
-        val cardsPerRow = 4
-
-        var xPos = bgXStart
-        var yPos = bgYStart
-        var index = 0
-        val maxVisibleY = drag!!.y + rectHeight - 60
-
-        for (mode in backgroundModes) {
-            if (yPos + cardHeight <= maxVisibleY) {
-                val hovered = DrRenderUtils.isHovering(xPos, yPos, cardWidth, cardHeight, mouseX, mouseY)
-                if (hovered && Mouse.isButtonDown(0)) {
-                    if (mode == "custom") {
-                        openBgColorPalette()
-                    } else {
-                        ClientThemesUtils.BackgroundMode = mode
-                    }
-                }
-                val cardColor = getBgPreviewColor(mode, bgAlpha.toInt())
-                DrRenderUtils.drawRect2(xPos.toDouble(), yPos.toDouble(), cardWidth.toDouble(), cardHeight.toDouble(), cardColor)
-                if (ClientThemesUtils.BackgroundMode.equals(mode, ignoreCase = true)) {
-                    drawRoundedOutline(xPos, yPos, xPos + cardWidth, yPos + cardHeight, 6f, 2f, Color.WHITE.rgb)
-                }
-                Fonts.InterBold_26.drawCenteredStringShadow(
-                    mode.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.getDefault()) else it.toString() },
-                    xPos + cardWidth / 2f,
-                    yPos + cardHeight / 2f - Fonts.InterBold_26.height / 2,
-                    DrRenderUtils.applyOpacity(-1, alpha / 255f)
-                )
-            }
-            xPos += cardWidth + 10
-            index++
-            if (index % cardsPerRow == 0) {
-                xPos = bgXStart
-                yPos += cardHeight + 10
-            }
-        }
-        drawBackgroundAlphaSlider(mouseX, mouseY, alpha)
-        drawBackgroundHexField(alpha)
-    }
-
-    private fun getBgPreviewColor(mode: String, alpha: Int): Int {
-        val customBgColorValue = ColorValue("CustomBG", Color(32, 32, 64), false)
-        return when (mode.lowercase()) {
-            "none" -> Color(0, 0, 0, 0).rgb
-            "dark" -> Color(21, 21, 21, alpha).rgb
-            "synced" -> ClientThemesUtils.getColorWithAlpha(0, alpha).darker().darker().rgb
-            "neverlose" -> ClientThemesUtils.neverLoseBgColor.setAlpha(alpha).rgb
-            "custom" -> customBgColorValue.get().setAlpha(alpha).rgb
-            else -> Color(21, 21, 21, alpha).rgb
-        }
-    }
-
-    private fun openBgColorPalette() {
-        ClientThemesUtils.BackgroundMode = "custom"
-        displayChatMessage("Opening BG color palette for 'Custom' mode...")
-    }
-
-    private fun drawBackgroundAlphaSlider(mouseX: Int, mouseY: Int, alpha: Int) {
-        val sliderX = drag!!.x + 25
-        val sliderY = drag!!.y + 20
-        val sliderW = 80f
-        val sliderH = 10f
-
-        DrRenderUtils.drawRect2(sliderX.toDouble(), sliderY.toDouble(), sliderW.toDouble(), sliderH.toDouble(), Color(60, 60, 60, alpha).rgb)
-        val fraction = (bgAlpha - 1f) / (255f - 1f)
-        val fill = sliderW * fraction
-        DrRenderUtils.drawRect2(sliderX.toDouble(), sliderY.toDouble(), fill.toDouble(), sliderH.toDouble(), Color(100, 150, 100, alpha).rgb)
-
-        Fonts.InterBold_26.drawString("BG Alpha: ${bgAlpha.toInt()}", sliderX + 2, sliderY - 12, DrRenderUtils.applyOpacity(-1, alpha / 255f))
-        val hovered = DrRenderUtils.isHovering(sliderX, sliderY, sliderW, sliderH, mouseX, mouseY)
-        if (hovered && Mouse.isButtonDown(0)) {
-            draggingSlider = true
-            val newAlpha = ((mouseX - sliderX) / sliderW) * (255f - 1f) + 1f
-            bgAlpha = max(1f, min(255f, newAlpha))
-        }
-    }
-
-    /**
-     * Additional interactions for BG category if needed.
-     */
-    private fun checkBackgroundInteractions(mouseX: Int, mouseY: Int) {
-        // If you want other clickable items in background category, do it here
-    }
-
-    private fun drawBackgroundHexField(alpha: Int) {
-        val (x, y, width, height) = getBgHexFieldArea()
-        DrRenderUtils.drawRect2(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble(), Color(40, 40, 40, alpha).rgb)
-        if (bgHexFocused) {
-            drawRoundedOutline(x, y, x + width, y + height, 2f, 1.5f, Color.WHITE.rgb)
-        }
-        Fonts.InterBold_26.drawString(bgHexInput, x + 2, y + 3, Color.WHITE.rgb)
-        Fonts.InterBold_26.drawString("Hex:", x, y - 12, DrRenderUtils.applyOpacity(-1, alpha / 255f))
-    }
-
-    private fun drawColorCategory(mouseX: Int, mouseY: Int, alpha: Int) {
-        val themeColors = arrayOf(
-            "FDP", "Zywl", "Water", "Magic", "DarkNight", "Sun",
-            "Tree", "Flower", "Loyoi", "Cero",
-            "May", "Mint", "Azure", "Rainbow", "Astolfo",
-            "Pumpkin", "Polarized", "Sundae", "Terminal", "Coral",
-            "Fire", "Aqua", "Peony", "Magics", "EveningSunshine", "LightOrange",
-            "Reef", "Amin", "MangoPulp", "MoonPurple", "Aqualicious",
-            "Stripe", "Shifter", "Quepal", "Orca", "SublimeVivid",
-            "MoonAsteroid", "SummerDog", "PinkFlavour", "SinCityRed",
-            "Timber", "PinotNoir", "DirtyFog", "Piglet", "LittleLeaf",
-            "Nelson", "TurquoiseFlow", "Purplin", "Martini", "SoundCloud",
-            "Inbox", "Amethyst", "Blush", "MochaRose"
-        )
-
-        val colorXStart = drag!!.x + 25
-        val colorYStart = drag!!.y + 60 + animScroll
-        val colorWidth = 80f
-        val colorHeight = 60f
-        val colorsPerRow = 5
-        var colorX = colorXStart
-        var colorY = colorYStart
-        val maxVisibleHeight = drag!!.y + rectHeight - 60
-
-        themeColors.forEachIndexed { i, colorName ->
-            if (colorY + colorHeight > drag!!.y + 60 && colorY < maxVisibleHeight) {
-                val isHovered = DrRenderUtils.isHovering(colorX, colorY, colorWidth, colorHeight, mouseX, mouseY)
-                if (isHovered && Mouse.isButtonDown(0)) {
-                    ClientColorMode = colorName
-                    fileManager.saveConfig(fileManager.colorThemeConfig, true)
-                    LOGGER.info("Saved color theme configuration: $colorName")
-                }
-                val startColor = getColorFromName(colorName, 0).rgb
-                val endColor = getColorFromName(colorName, 180).rgb
-                drawGradientRect(colorX.toInt(), colorY.toInt(), (colorX + colorWidth).toInt(), (colorY + colorHeight).toInt(), startColor, endColor, 0f)
-
-                val isSelected = (ClientColorMode == colorName)
-                if (isSelected) {
-                    smooth[0] = animate(smooth[0], colorX, 0.02f * deltaTime)
-                    smooth[1] = animate(smooth[1], colorY, 0.02f * deltaTime)
-                    smooth[2] = animate(smooth[2], colorX + colorWidth, 0.02f * deltaTime)
-                    smooth[3] = animate(smooth[3], colorY + colorHeight, 0.02f * deltaTime)
-                    drawRoundedOutline(smooth[0], smooth[1], smooth[2], smooth[3], 10f, 3f, Color(startColor).brighter().rgb)
-                }
-                Fonts.InterBold_26.drawCenteredStringShadow(colorName, colorX + colorWidth / 2f, colorY + colorHeight / 2f - Fonts.InterBold_26.height / 2, Color.WHITE.rgb)
-            }
-            colorX += colorWidth + 10
-            if ((i + 1) % colorsPerRow == 0) {
-                colorX = colorXStart
-                colorY += colorHeight + 10
-            }
-        }
-        drawColorExtras(mouseX, mouseY, alpha, colorXStart, drag!!.y + 60, colorWidth)
-    }
-
-    /**
-     * The color hex text field is placed further below the "Side" button
-     * and is centered horizontally. We'll give it a ~20 px gap below the "Side" button.
-     */
-    private fun getColorHexFieldArea(): Quad {
-        val sideBtnX = drag!!.x + 25 + (80f + 10) * 5
-        val sideBtnY = drag!!.y + 60
-        val sideBtnW = 50f
-        val sideBtnH = 15f
-
-        val textW = 80f
-        val textH = 14f
-
-        val x = sideBtnX + (sideBtnW - textW) / 2f
-        val y = sideBtnY - textH - 20
-        return Quad(x, y, textW, textH)
-    }
-
-    /**
-     * Draw fade-speed slider and toggle button for the "Color" category, pinned at a fixed Y.
-     */
-    private fun drawColorExtras(
-        mouseX: Int,
-        mouseY: Int,
-        alpha: Int,
-        colorXStart: Float,
-        buttonBaseY: Float,
-        colorWidth: Float
-    ) {
-        val buttonX = colorXStart + (colorWidth + 10) * 5
-        val buttonY = buttonBaseY
-        val buttonWidth = 50f
-        val buttonHeight = 15f
-        val fadeSpeedSliderX = drag!!.x + 25
-        val fadeSpeedSliderY = drag!!.y + 20
-        val fadeSpeedSliderWidth = 80f
-        val fadeSpeedSliderHeight = 10f
-
-        // Fade speed slider
-        DrRenderUtils.drawRect2(
-            fadeSpeedSliderX.toDouble(),
-            fadeSpeedSliderY.toDouble(),
-            fadeSpeedSliderWidth.toDouble(),
-            fadeSpeedSliderHeight.toDouble(),
-            Color(60, 60, 60).rgb
-        )
-        val sliderValue = (ThemeFadeSpeed / 10f) * fadeSpeedSliderWidth
-        DrRenderUtils.drawRect2(
-            fadeSpeedSliderX.toDouble(),
-            fadeSpeedSliderY.toDouble(),
-            sliderValue.toDouble(),
-            fadeSpeedSliderHeight.toDouble(),
-            Color(100, 150, 100).rgb
-        )
-        Fonts.InterBold_26.drawString("Speed: $ThemeFadeSpeed", fadeSpeedSliderX + 5, fadeSpeedSliderY - 15, Color.WHITE.rgb)
-
-        val toggleColor = if (updown) Color(0, 150, 0).rgb else Color(150, 0, 0).rgb
-        DrRenderUtils.drawRect2(buttonX.toDouble(), buttonY.toDouble(), buttonWidth.toDouble(), buttonHeight.toDouble(), toggleColor)
-        Fonts.InterBold_26.drawString("Side", buttonX + 2, buttonY + 2, Color.WHITE.rgb)
-
-        val (hexX, hexY, hexW, hexH) = getColorHexFieldArea()
-        DrRenderUtils.drawRect2(hexX.toDouble(), hexY.toDouble(), hexW.toDouble(), hexH.toDouble(), Color(40, 40, 40, alpha).rgb)
-        if (colorHexFocused) {
-            drawRoundedOutline(hexX, hexY, hexX + hexW, hexY + hexH, 2f, 1.5f, Color.WHITE.rgb)
-        }
-        Fonts.InterBold_26.drawString(colorHexInput, hexX + 2, hexY + 2, Color.WHITE.rgb)
-        Fonts.InterBold_26.drawString("Hex:", hexX, hexY - 12, DrRenderUtils.applyOpacity(-1, alpha / 255f))
-    }
-
-    private fun checkColorCategoryInteractions(mouseX: Int, mouseY: Int) {
-        val buttonX = drag!!.x + 25 + (80f + 10) * 5
-        val buttonY = drag!!.y + 60
-        val buttonW = 50f
-        val buttonH = 15f
-        val hoveredToggle = DrRenderUtils.isHovering(buttonX, buttonY, buttonW, buttonH, mouseX, mouseY)
-        if (hoveredToggle) {
-            updown = !updown
-        }
-        // Fade speed slider
-        val sliderX = drag!!.x + 25
-        val sliderY = drag!!.y + 20
-        val sliderW = 80f
-        val sliderH = 10f
-        val hoveredSlider = DrRenderUtils.isHovering(sliderX, sliderY, sliderW, sliderH, mouseX, mouseY)
-        if (hoveredSlider) {
-            var newSpeed = ((mouseX - sliderX) / sliderW) * 10
-            newSpeed = max(0f, min(10f, newSpeed))
-            ThemeFadeSpeed = newSpeed.toInt()
-        }
-    }
-
-    private fun drawConfigsCategory(mouseX: Int, mouseY: Int, alpha: Int) {
-        val buttonToggleWidth = 70f
-        val buttonToggleHeight = 20f
-        val buttonSpacing = 10f
-
-        val xStart = drag!!.x + 25
-        val openFolderButtonWidth = buttonToggleWidth * 2
-        val openFolderButtonX = xStart
-        val openFolderButtonY = drag!!.y + 30
-        val isOpenFolderHovered = DrRenderUtils.isHovering(
-            openFolderButtonX, openFolderButtonY,
-            openFolderButtonWidth, buttonToggleHeight,
-            mouseX, mouseY
-        )
-        val openFolderButtonColor = if (isOpenFolderHovered) Color(70, 70, 70, alpha).rgb else Color(50, 50, 50, alpha).rgb
-        DrRenderUtils.drawRect2(
-            openFolderButtonX.toDouble(),
-            openFolderButtonY.toDouble(),
-            openFolderButtonWidth.toDouble(),
-            buttonToggleHeight.toDouble(),
-            openFolderButtonColor
-        )
-        Fonts.InterBold_26.drawString("OPEN FOLDER", openFolderButtonX + 10, openFolderButtonY + 5, DrRenderUtils.applyOpacity(-1, alpha / 255f))
-
-        val onlineButtonX = xStart
-        val onlineButtonY = openFolderButtonY + buttonToggleHeight + buttonSpacing
-        val isOnlineHovered = DrRenderUtils.isHovering(onlineButtonX, onlineButtonY, buttonToggleWidth, buttonToggleHeight, mouseX, mouseY)
-        val onlineButtonColor = when {
-            !showLocalConfigs -> Color(100, 150, 100, alpha).rgb
-            isOnlineHovered   -> Color(70, 70, 70, alpha).rgb
-            else              -> Color(50, 50, 50, alpha).rgb
-        }
-        DrRenderUtils.drawRect2(onlineButtonX.toDouble(), onlineButtonY.toDouble(), buttonToggleWidth.toDouble(), buttonToggleHeight.toDouble(), onlineButtonColor)
-        Fonts.InterBold_26.drawString("ONLINE", onlineButtonX + 10, onlineButtonY + 5, DrRenderUtils.applyOpacity(-1, alpha / 255f))
-
-        val localButtonX = onlineButtonX + buttonToggleWidth + buttonSpacing
-        val localButtonY = onlineButtonY
-        val isLocalHovered = DrRenderUtils.isHovering(localButtonX, localButtonY, buttonToggleWidth, buttonToggleHeight, mouseX, mouseY)
-        val localButtonColor = when {
-            showLocalConfigs -> Color(100, 150, 100, alpha).rgb
-            isLocalHovered   -> Color(70, 70, 70, alpha).rgb
-            else             -> Color(50, 50, 50, alpha).rgb
-        }
-        DrRenderUtils.drawRect2(localButtonX.toDouble(), localButtonY.toDouble(), buttonToggleWidth.toDouble(), buttonToggleHeight.toDouble(), localButtonColor)
-        Fonts.InterBold_26.drawString("LOCAL", localButtonX + 10, localButtonY + 5, DrRenderUtils.applyOpacity(-1, alpha / 255f))
-
-        if (!wasMousePressed && Mouse.isButtonDown(0)) {
-            when {
-                isOpenFolderHovered -> openFolder()
-                isOnlineHovered     -> showLocalConfigs = false
-                isLocalHovered      -> showLocalConfigs = true
-            }
-            wasMousePressed = true
-        }
-        if (!Mouse.isButtonDown(0)) wasMousePressed = false
-
-        drawConfigList(mouseX, mouseY, alpha, localButtonY + buttonToggleHeight + buttonSpacing)
-    }
-
-    private fun drawConfigList(mouseX: Int, mouseY: Int, alpha: Int, startY: Float) {
-        var configX = drag!!.x + 25
-        var configY = startY
-        val buttonWidth = (rectWidth - 50) / 4 - 10
-        val buttonHeight = 20f
-        val configsPerRow = 4
-        var configCount = 0
-
-        if (showLocalConfigs) {
-            val localConfigs = fileManager.settingsDir.listFiles { _, name -> name.endsWith(".txt") }
-            if (!localConfigs.isNullOrEmpty()) {
-                for (file in localConfigs) {
-                    drawSingleConfigButton(mouseX, mouseY, alpha, configX, configY, buttonWidth, buttonHeight) {
-                        val configName = file.name.removeSuffix(".txt")
-                        Fonts.InterBold_26.drawString(configName, configX + 5, configY + 5, DrRenderUtils.applyOpacity(-1, alpha / 255f))
-                        if (DrRenderUtils.isHovering(configX, configY, buttonWidth, buttonHeight, mouseX, mouseY) && Mouse.isButtonDown(0)) {
-                            loadLocalConfig(configName, file)
-                        }
-                    }
-                    configX += buttonWidth + 10
-                    configCount++
-                    if (configCount % configsPerRow == 0) {
-                        configX = drag!!.x + 25
-                        configY += buttonHeight + 5
-                    }
-                }
-            } else {
-                Fonts.InterBold_26.drawString("No local configurations available.", configX, configY, DrRenderUtils.applyOpacity(-1, alpha / 255f))
-            }
-        } else {
-            if (!autoSettingsList.isNullOrEmpty()) {
-                for (i in autoSettingsList!!.indices) {
-                    val autoSetting = autoSettingsList!![i]
-                    drawSingleConfigButton(mouseX, mouseY, alpha, configX, configY, buttonWidth, buttonHeight) {
-                        Fonts.InterBold_26.drawString(autoSetting.name, configX + 5, configY + 5, DrRenderUtils.applyOpacity(-1, alpha / 255f))
-                        if (DrRenderUtils.isHovering(configX, configY, buttonWidth, buttonHeight, mouseX, mouseY) && Mouse.isButtonDown(0)) {
-                            loadOnlineConfig(autoSetting.settingId, autoSetting.name)
-                        }
-                    }
-                    configX += buttonWidth + 10
-                    configCount++
-                    if (configCount % configsPerRow == 0) {
-                        configX = drag!!.x + 25
-                        configY += buttonHeight + 5
-                    }
-                }
-            } else {
-                Fonts.InterBold_26.drawString("No online configurations available.", configX, configY, DrRenderUtils.applyOpacity(-1, alpha / 255f))
-            }
-        }
-    }
-
-    private inline fun drawSingleConfigButton(
-        mouseX: Int,
-        mouseY: Int,
-        alpha: Int,
-        configX: Float,
-        configY: Float,
-        width: Float,
-        height: Float,
-        drawContent: () -> Unit
-    ) {
-        val isHovered = DrRenderUtils.isHovering(configX, configY, width, height, mouseX, mouseY)
-        val buttonColor = if (isHovered) Color(70, 70, 70, alpha).rgb else Color(50, 50, 50, alpha).rgb
-        DrRenderUtils.drawRect2(configX.toDouble(), configY.toDouble(), width.toDouble(), height.toDouble(), buttonColor)
-        drawContent()
-    }
-
-    private fun loadLocalConfig(configName: String, file: File) {
-        try {
-            displayChatMessage("Loading local configuration: $configName...")
-            val localConfigContent = Files.readAllBytes(file.toPath()).toString(StandardCharsets.UTF_8)
-            applyScript(localConfigContent)
-            displayChatMessage("Local configuration $configName loaded successfully!")
-        } catch (e: IOException) {
-            displayChatMessage("Error loading local configuration: ${e.message}")
-        }
-    }
-
-    private fun loadOnlineConfig(settingId: String, configName: String) {
-        try {
-            displayChatMessage("Loading configuration: $configName...")
-            val configScript = ClientApi.getSettingsScript("legacy", settingId)
-            applyScript(configScript)
-            displayChatMessage("Configuration $configName loaded successfully!")
-        } catch (e: Exception) {
-            displayChatMessage("Error loading configuration: ${e.message}")
-        }
     }
 
     private fun drawUiCategory(alpha: Int) {
@@ -768,22 +334,13 @@ class SideGui : GuiPanel() {
         val startX = drag!!.x + rectWidth / 2f - totalWidth / 2f
         val yVal = drag!!.y + 15
         var xOffset = 0f
-        categories.forEach {
+        categories.forEach { _ ->
             val xVal = startX + xOffset
             val hovered = DrRenderUtils.isHovering(xVal - 30, yVal - 5, 60f, (Fonts.InterBold_26.height + 10).toFloat(), mouseX, mouseY)
             if (hovered) return true
             xOffset += 60f + 10f
         }
         return false
-    }
-
-    private fun openFolder() {
-        try {
-            Desktop.getDesktop().open(fileManager.settingsDir)
-            displayChatMessage("Opening configuration folder...")
-        } catch (e: IOException) {
-            displayChatMessage("Error opening folder: ${e.message}")
-        }
     }
 
     /**
