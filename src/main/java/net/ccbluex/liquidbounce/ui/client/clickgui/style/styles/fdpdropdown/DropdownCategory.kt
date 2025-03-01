@@ -83,7 +83,6 @@ class DropdownCategory(private val category: Category) : Screen {
         } else {
             Color(29, 29, 29, alphaAnimation).rgb
         }
-
         // Text color
         val textColor = Color(255, 255, 255, alphaAnimation).rgb
 
@@ -108,7 +107,6 @@ class DropdownCategory(private val category: Category) : Screen {
         if (ClickGUIModule.categoryOutline) {
             val outlineColor = ClickGUIModule.generateColor(0)
             val cornerRadius = ClickGUIModule.roundedRectRadius
-
             RenderUtils.drawRoundedRect(
                 x - 1,
                 y - 1,
@@ -138,13 +136,13 @@ class DropdownCategory(private val category: Category) : Screen {
         )
 
         val icon = when (category.name.lowercase()) {
-            "combat"   -> "D"
+            "combat" -> "D"
             "movement" -> "A"
-            "player"   -> "B"
-            "visual"   -> "C"
-            "exploit"  -> "G"
-            "other"    -> "F"
-            else       -> ""
+            "player" -> "B"
+            "visual" -> "C"
+            "exploit" -> "G"
+            "other" -> "F"
+            else -> ""
         }
         Fonts.ICONFONT_20.drawString(
             icon,
@@ -169,14 +167,15 @@ class DropdownCategory(private val category: Category) : Screen {
 
         // Draw modules inside a scissored region for scrolling
         StencilUtil.initStencilToWrite()
-        DrRenderUtils.drawRect2(
+        RenderUtils.drawGradientRect(
             (x - 100).toDouble(),
             (y + categoryRectHeight).toDouble(),
-            (rectWidth + 150).toDouble(),
-            allowedHeight.toDouble(),
-            -1
+            (x - 100 + rectWidth + 150).toDouble(),
+            (y + categoryRectHeight + allowedHeight).toDouble(),
+            -1,
+            -1,
+            0F
         )
-
         StencilUtil.readStencilBuffer(1)
 
         val scroll = category.scroll.scroll.toDouble()
