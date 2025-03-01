@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.util
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -65,19 +66,24 @@ class ModuleRect(val module: Module) : Component() {
         val hoveringModule = DrRenderUtils.isHovering(x, y, width, height, mouseX, mouseY)
         hoverAnimation.direction = if (hoveringModule) Direction.FORWARDS else Direction.BACKWARDS
 
-        val hoveredRectColor = DrRenderUtils.interpolateColor(
+        val hoveredRectColorInt = DrRenderUtils.interpolateColor(
             baseRectColor.rgb,
             DrRenderUtils.brighter(baseRectColor, 0.8f).rgb,
             hoverAnimation.output.toFloat()
         )
-        DrRenderUtils.drawRect2(x.toDouble(), y.toDouble(), width.toDouble(), height.toDouble(), hoveredRectColor)
+        RenderUtils.drawGradientRect(
+            x, y, x + width, y + height,
+            hoveredRectColorInt,
+            Color(hoveredRectColorInt).darker().rgb,
+            0F
+        )
 
-        DrRenderUtils.drawRect2(
-            x.toDouble(),
-            y.toDouble(),
-            width.toDouble(),
-            height.toDouble(),
-            DrRenderUtils.applyOpacity(accentWithAlpha, toggleAnimation.output.toFloat()).rgb
+        val accentOverlayColor = DrRenderUtils.applyOpacity(accentWithAlpha, toggleAnimation.output.toFloat()).rgb
+        RenderUtils.drawGradientRect(
+            x, y, x + width, y + height,
+            accentOverlayColor,
+            Color(accentOverlayColor).darker().rgb,
+            0F
         )
 
         Fonts.InterMedium_20.drawString(
@@ -202,9 +208,7 @@ class ModuleRect(val module: Module) : Component() {
                     toggleAnimation.direction = if (!module.state) Direction.FORWARDS else Direction.BACKWARDS
                     module.toggle()
                 }
-                1 -> {
-                    module.expanded = !module.expanded
-                }
+                1 -> module.expanded = !module.expanded
             }
         }
         if (module.expanded) {
