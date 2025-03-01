@@ -155,6 +155,12 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         assumeNonVolatile = true
         drawBackground(0)
+        if (popup != null) {
+            popup?.drawScreen(width, height, mouseX, mouseY)
+            assumeNonVolatile = false
+            return
+        }
+
         if (Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
             mc.displayGuiScreen(ClickGui)
         }
@@ -231,8 +237,6 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
 
         GlStateManager.popMatrix()
-
-        popup?.drawScreen(width, height, mouseX, mouseY)
 
         assumeNonVolatile = false
         super.drawScreen(mouseX, mouseY, partialTicks)
@@ -394,8 +398,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
     override fun handleMouseInput() {
         if (popup != null) {
             val eventDWheel = Mouse.getEventDWheel()
-            if (eventDWheel
-                != 0) {
+            if (eventDWheel != 0) {
                 popup!!.handleMouseWheel(eventDWheel)
             }
         }
