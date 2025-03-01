@@ -145,6 +145,7 @@ class ModuleRect(val module: Module) : Component() {
             settingComponents.alphaAnimation = alphaAnimation
             settingComponents.settingHeightScissor = settingAnimation
 
+            // animations colors
             if (settingAnimation?.isDone == false) {
                 GL11.glEnable(GL11.GL_SCISSOR_TEST)
                 DrRenderUtils.scissor(x.toDouble(), (y + height).toDouble(), width.toDouble(), expandedHeight * height)

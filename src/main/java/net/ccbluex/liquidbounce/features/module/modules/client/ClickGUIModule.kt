@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.FDPDropdownClickGUI
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.yzyGUI
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard
 import java.awt.Color
@@ -29,6 +30,12 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
     ).onChanged {
         updateStyle()
     }
+
+    private val color by choices(
+        "Color", arrayOf("Custom", "Fade", "Theme"), "Theme"
+    ) { style == "FDP" }
+
+    private val customColorSetting by color("CustomColor", Color(255, 255, 255)) { color == "Custom" || color == "Fade" }
 
     var scale by float("Scale", 0.8f, 0.5f..1.5f)
     val maxElements by int("MaxElements", 15, 1..30)
@@ -85,9 +92,19 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
         }
     }
 
-    @JvmStatic
     fun generateColor(index: Int): Color {
-        return ClientThemesUtils.getColor(0)
+        return when (color) {
+            "Custom" -> {
+                customColorSetting
+            }
+            "Fade" -> {
+                fade(customColorSetting, index * 10, 100)
+            }
+            "Theme" -> {
+                ClientThemesUtils.getColor(index)
+            }
+            else -> ClientThemesUtils.getColor(index)
+        }
     }
 
     val onPacket = handler<PacketEvent>(always = true) { event ->
