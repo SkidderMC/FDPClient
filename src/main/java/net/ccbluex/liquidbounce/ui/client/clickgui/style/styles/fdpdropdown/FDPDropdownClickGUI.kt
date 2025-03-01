@@ -23,7 +23,6 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.renderer.GlStateManager.color
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
 import java.awt.Color
@@ -74,117 +73,47 @@ class FDPDropdownClickGUI : GuiScreen() {
         categoryPanels?.forEach { it.keyTyped(typedChar, keyCode) }
     }
 
-    override fun doesGuiPauseGame(): Boolean {
-        return false
-    }
+    override fun doesGuiPauseGame() = false
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        assumeNonVolatile = true
-
-        if (Mouse.isButtonDown(0) && mouseX in 5..50 && mouseY in (height - 50)..(height - 5)) {
-            mc.displayGuiScreen(GuiHudDesigner())
+        assumeNonVolatile {
+            if (Mouse.isButtonDown(0) && mouseX in 5..50 && mouseY in (height - 50)..(height - 5)) {
+                mc.displayGuiScreen(GuiHudDesigner())
+            }
+            RenderUtils.drawImage(hudIcon, 9, height - 41, 32, 32)
+            if (openingAnimation.isDone && openingAnimation.direction == Direction.BACKWARDS) {
+                mc.displayGuiScreen(null)
+                return@assumeNonVolatile
+            }
+            val sr = ScaledResolution(mc)
+            val finalScale = (openingAnimation.output + 0.6f) * ClickGUIModule.scale
+            SettingComponents.scale = finalScale.toFloat()
+            val transformedMouseX = sr.scaledWidth / 2f + (mouseX - sr.scaledWidth / 2f) / finalScale
+            val transformedMouseY = sr.scaledHeight / 2f + (mouseY - sr.scaledHeight / 2f) / finalScale
+            DrRenderUtils.scale(sr.scaledWidth / 2f, sr.scaledHeight / 2f, finalScale.toFloat()) {
+                categoryPanels?.forEach { it.drawScreen(transformedMouseX.toInt(), transformedMouseY.toInt()) }
+            }
+            sideGui.drawScreen(mouseX, mouseY, partialTicks, (255 * fadeAnimation.output).toInt().coerceIn(0, 255))
         }
-        RenderUtils.drawImage(hudIcon, 9, (height - 41), 32, 32)
-
-        if (openingAnimation.isDone && openingAnimation.direction == Direction.BACKWARDS) {
-            mc.displayGuiScreen(null)
-            return
-        }
-
-        val focusedConfigGui = sideGui.focused
-        val fakeMouseX = if (focusedConfigGui) 0 else mouseX
-        val fakeMouseY = if (focusedConfigGui) 0 else mouseY
-
-        val sr = ScaledResolution(mc)
-        val hoveringConfig = DrRenderUtils.isHovering(
-            (width - 120).toFloat(),
-            (height - 65).toFloat(),
-            75f,
-            25f,
-            fakeMouseX,
-            fakeMouseY
-        )
-        configHover.direction = if (hoveringConfig) Direction.FORWARDS else Direction.BACKWARDS
-
-        val alphaAnimation = (255 * fadeAnimation.output).toInt().coerceIn(0, 255)
-        color(1f, 1f, 1f, 1f)
-
-        SettingComponents.scale = (openingAnimation.output + 0.6f).toFloat()
-
-        // We scale around screen center
-        DrRenderUtils.scale(
-            sr.scaledWidth / 2f,
-            sr.scaledHeight / 2f,
-            (openingAnimation.output + 0.6f).toFloat()
-        ) {
-            categoryPanels?.forEach { it.drawScreen(fakeMouseX, fakeMouseY) }
-            sideGui.drawScreen(mouseX, mouseY, partialTicks, alphaAnimation)
-        }
-
-        val borderColor = ClickGUIModule.generateColor(0)
-        drawThinGuiBorder(borderColor)
-
-        // Example bloom
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor, true))
-
-        assumeNonVolatile = false
-    }
-
-    /**
-     * Draws a 1-pixel border around (0,0)-(width,height) using the given color.
-     * This prevents the entire screen from being filled.
-     */
-    private fun drawThinGuiBorder(borderColor: Color) {
-        val w = width.toFloat()
-        val h = height.toFloat()
-
-        // top edge
-        DrRenderUtils.drawRect2(
-            0.0,    // x
-            0.0,    // y
-            w.toDouble(),
-            1.0,    // thickness = 1
-            borderColor.rgb
-        )
-        // bottom edge
-        DrRenderUtils.drawRect2(
-            0.0,
-            (h - 1).toDouble(),
-            w.toDouble(),
-            1.0,
-            borderColor.rgb
-        )
-        // left edge
-        DrRenderUtils.drawRect2(
-            0.0,
-            0.0,
-            1.0,
-            h.toDouble(),
-            borderColor.rgb
-        )
-        // right edge
-        DrRenderUtils.drawRect2(
-            (w - 1).toDouble(),
-            0.0,
-            1.0,
-            h.toDouble(),
-            borderColor.rgb
-        )
+        super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val oldFocus = sideGui.focused
         sideGui.mouseClicked(mouseX, mouseY, mouseButton)
-        if (!oldFocus) {
-            categoryPanels?.forEach { it.mouseClicked(mouseX, mouseY, mouseButton) }
-        }
+        val sr = ScaledResolution(mc)
+        val finalScale = (openingAnimation.output + 0.6f) * ClickGUIModule.scale
+        val transformedMouseX = sr.scaledWidth / 2f + (mouseX - sr.scaledWidth / 2f) / finalScale
+        val transformedMouseY = sr.scaledHeight / 2f + (mouseY - sr.scaledHeight / 2f) / finalScale
+        categoryPanels?.forEach { it.mouseClicked(transformedMouseX.toInt(), transformedMouseY.toInt(), mouseButton) }
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
-        val oldFocus = sideGui.focused
         sideGui.mouseReleased(mouseX, mouseY, state)
-        if (!oldFocus) {
-            categoryPanels?.forEach { it.mouseReleased(mouseX, mouseY, state) }
-        }
+        val sr = ScaledResolution(mc)
+        val finalScale = (openingAnimation.output + 0.6f) * ClickGUIModule.scale
+        val transformedMouseX = sr.scaledWidth / 2f + (mouseX - sr.scaledWidth / 2f) / finalScale
+        val transformedMouseY = sr.scaledHeight / 2f + (mouseY - sr.scaledHeight / 2f) / finalScale
+        categoryPanels?.forEach { it.mouseReleased(transformedMouseX.toInt(), transformedMouseY.toInt(), state) }
     }
 }
