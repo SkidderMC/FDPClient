@@ -65,7 +65,7 @@ object BlackStyle : Style() {
         }
 
         val xPos = panel.x - (fontSemibold35.getStringWidth("§f" + StringUtils.stripControlCodes(panel.name)) - 100) / 2
-        fontSemibold35.drawString(panel.name, xPos, panel.y + 4, Color.WHITE.rgb)
+        fontSemibold35.drawString(panel.name, xPos, panel.y + 2, Color.WHITE.rgb)
     }
 
     override fun drawHoverText(mouseX: Int, mouseY: Int, text: String) {

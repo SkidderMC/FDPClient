@@ -340,7 +340,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
                 §bUpgrade now to enjoy the latest features and improvements!§r
                 """.trimIndent()
             )
-            ButtonData("§aDownload") { MiscUtils.showURL(githubRelease.htmlUrl) }
+            button("§aDownload") { MiscUtils.showURL(githubRelease.htmlUrl) }
             onClose { popup = null }
         }
     }
@@ -389,7 +389,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
                     Please update to the latest version to enjoy new features and improvements.
                     """.trimIndent()
                 )
-                ButtonData("§aDownload Update") { MiscUtils.showURL("https://github.com/SkidderMC/FDPClient/releases/latest") }
+                button("§aDownload Update") { MiscUtils.showURL("https://github.com/SkidderMC/FDPClient/releases/latest") }
                 onClose { popup = null }
             }
         }
