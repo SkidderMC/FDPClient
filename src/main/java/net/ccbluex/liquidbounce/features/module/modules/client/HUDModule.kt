@@ -25,7 +25,7 @@ import java.awt.Color
 object HUDModule : Module("HUD", Category.CLIENT) {
 
     val customHotbar by boolean("CustomHotbar", true)
-    val smoothHotbarSlot by boolean("SmoothHotbarSlot", true) { customHotbar }
+    val smoothHotbarSlot by boolean("SmoothHotbarSlot", false) { customHotbar }
     val roundedHotbarRadius by float("RoundedHotbar-Radius", 3F, 0F..5F) { customHotbar }
 
     val hotbarMode by choices("Hotbar-Color", arrayOf("Custom", "Rainbow", "Gradient"), "Custom") { customHotbar }
@@ -50,9 +50,6 @@ object HUDModule : Module("HUD", Category.CLIENT) {
     val rainbowY by float("Rainbow-Y", -1000F, -2000F..2000F) { customHotbar && hotbarMode == "Rainbow" }
     val gradientX by float("Gradient-X", -1000F, -2000F..2000F) { customHotbar && hotbarMode == "Gradient" }
     val gradientY by float("Gradient-Y", -1000F, -2000F..2000F) { customHotbar && hotbarMode == "Gradient" }
-
-    // InventoryPlus
-    val inventoryOnHotbar = boolean("InventoryOnHotbar", false)
 
     // CROSSHAIR
     val csgoCrosshairValue by boolean("CSGO-Crosshair", true)

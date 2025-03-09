@@ -24,7 +24,7 @@ enum class yzyCategory(val parent: Category, val displayName: String, val color:
     EXPLOIT(Category.EXPLOIT, "Exploit", Color(-0xcc6727));
 
     fun getIcon(): ResourceLocation {
-        return ResourceLocation("${CLIENT_NAME.lowercase()}/clickgui/zywl/icons/${displayName.lowercase(Locale.getDefault())}.png")
+        return ResourceLocation("${CLIENT_NAME.lowercase()}/texture/clickgui/${displayName.lowercase(Locale.getDefault())}.png")
     }
 
     companion object {

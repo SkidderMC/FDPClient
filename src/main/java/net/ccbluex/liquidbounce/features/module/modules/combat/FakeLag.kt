@@ -54,7 +54,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, gameDetecting = false) {
     private val line by boolean("Line", true).subjective()
     private val lineColor by color("LineColor", Color.GREEN) { line }.subjective()
 
-    private val renderModel by boolean("RenderModel", false).subjective()
+    private val renderModel by boolean("RenderModel", true).subjective()
 
     private val packetQueue = Queues.newArrayDeque<QueueData>()
     private val positions = Queues.newArrayDeque<PositionData>()
