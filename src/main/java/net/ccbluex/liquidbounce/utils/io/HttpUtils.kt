@@ -11,6 +11,10 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
+import net.ccbluex.liquidbounce.FDPClient.IN_DEV
+import net.ccbluex.liquidbounce.FDPClient.clientCommit
+import net.ccbluex.liquidbounce.FDPClient.clientVersionText
 import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import okhttp3.*
 import okhttp3.internal.commonEmptyRequestBody
@@ -26,8 +30,12 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.X509TrustManager
 
-private const val DEFAULT_AGENT =
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+/**
+ * User agent
+ * <version> (<commit>, <branch>, <build-type>, <platform>)
+ */
+val DEFAULT_AGENT =
+    "${CLIENT_NAME}/${clientVersionText} (${clientCommit}, ${if (IN_DEV) "dev" else "release"}, ${System.getProperty("os.name")})"
 
 /**
  * Global [OkHttpClient]

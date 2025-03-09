@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.handler.api
 
-import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.utils.io.applyBypassHttps
 import net.ccbluex.liquidbounce.utils.io.decodeJson
 import net.ccbluex.liquidbounce.utils.io.get
@@ -22,13 +21,6 @@ private const val HARD_CODED_BRANCH = "legacy"
 private const val API_V1_ENDPOINT = "https://api.liquidbounce.net/api/v1"
 
 /**
- * User agent
- * <version> (<commit>, <branch>, <build-type>, <platform>)
- */
-private val ENDPOINT_AGENT =
-    "${FDPClient.CLIENT_NAME}/${FDPClient.clientVersionText} (${FDPClient.clientCommit}, ${FDPClient.clientBranch}, ${if (FDPClient.IN_DEV) "dev" else "release"}, ${System.getProperty("os.name")})"
-
-/**
  * Session token
  *
  * This is used to identify the client in one session
@@ -42,7 +34,6 @@ private val client = OkHttpClient.Builder()
     .addInterceptor { chain ->
         val original = chain.request()
         val request: Request = original.newBuilder()
-            .header("User-Agent", ENDPOINT_AGENT)
             .header("X-Session-Token", SESSION_TOKEN)
             .build()
 
