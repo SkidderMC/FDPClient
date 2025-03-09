@@ -35,6 +35,7 @@ import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing.DOWN
+import net.minecraft.util.Vec3
 import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
@@ -53,7 +54,7 @@ object Velocity : Module("Velocity", Category.COMBAT) {
             "Reverse", "SmoothReverse", "Jump", "Glitch", "Legit",
             "GhostBlock", "Vulcan", "S32Packet", "MatrixReduce",
             "IntaveReduce", "Delay", "GrimC03", "Hypixel", "HypixelAir",
-            "Click", "BlocksMC"
+            "Click", "BlocksMC", "GrimVertical"
         ), "Simple"
     )
 
@@ -114,6 +115,16 @@ object Velocity : Module("Velocity", Category.COMBAT) {
     private val limitMaxMotionValue = boolean("LimitMaxMotion", false) { mode == "Simple" }
     private val maxXZMotion by float("MaxXZMotion", 0.4f, 0f..1.9f) { limitMaxMotionValue.isActive() }
     private val maxYMotion by float("MaxYMotion", 0.36f, 0f..0.46f) { limitMaxMotionValue.isActive() }
+
+    //Grim
+    private val grimVerticalMode by choices("GrimVerticalMode", arrayOf("Reduce", "1.17", "Vertical"), "Reduce") { mode == "GrimVertical" }
+    private val smartVelo by boolean("SmartVelo", true) { mode == "GrimVertical" && grimVerticalMode == "Vertical" }
+    private val sendC0FValue by boolean("C0F", false) { mode == "GrimVertical" && grimVerticalMode == "Vertical" }
+    private val c0fPacketAmount by int("C0FPacketAmount", 0, 1..40) { mode == "GrimVertical" && grimVerticalMode == "Vertical" && sendC0FValue }
+    private val callEvent by boolean("CallEvent", true) { mode == "GrimVertical" && grimVerticalMode == "Vertical" }
+    private val via by boolean("Via", true) { mode == "GrimVertical" && (grimVerticalMode == "Vertical" || grimVerticalMode == "Reduce") }
+
+
     //0.00075 is added silently
 
     // Vanilla XZ limits
@@ -162,6 +173,13 @@ object Velocity : Module("Velocity", Category.COMBAT) {
     // Hypixel
     private var absorbedVelocity = false
 
+    //GrimVertical Variables
+    private var attack = false
+    private var motionXZ = 0.0
+    private var velocityInput = false
+    private var canCancel = false
+    private var canSpoof = false
+
     // Pause On Explosion
     private var pauseTicks = 0
 
@@ -177,6 +195,8 @@ object Velocity : Module("Velocity", Category.COMBAT) {
         pauseTicks = 0
         mc.thePlayer?.speedInAir = 0.02F
         timerTicks = 0
+        canCancel = false
+        canSpoof = false
         reset()
     }
 
@@ -336,7 +356,75 @@ object Velocity : Module("Velocity", Category.COMBAT) {
                     hasReceivedVelocity = false
                 }
             }
+
+            "grimvertical" -> {
+                when(grimVerticalMode.lowercase()){
+                    "1.17" -> {
+                        if (canSpoof) {
+                            sendPacket(C03PacketPlayer.C06PacketPlayerPosLook(thePlayer.posX, thePlayer.posY, thePlayer.posZ, thePlayer.rotationYaw, thePlayer.rotationPitch, thePlayer.onGround))
+                            sendPacket(C07PacketPlayerDigging(C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK, BlockPos(thePlayer).down(), DOWN))
+                            canSpoof = false
+                        }
+                    }
+                    "vertical" -> {
+                        if (attack) {
+                            val entity = mc.thePlayer.entityId
+
+                            if (via) {
+                                sendPacket(C02PacketUseEntity(mc.theWorld.getEntityByID(entity), C02PacketUseEntity.Action.ATTACK))
+                                if (callEvent)
+                                    sendPacket(C0APacketAnimation())
+                            }
+                            else {
+                                if (callEvent)
+                                    sendPacket(C0APacketAnimation())
+                                sendPacket(C02PacketUseEntity(mc.theWorld.getEntityByID(entity), C02PacketUseEntity.Action.ATTACK))
+                            }
+
+
+                            if (smartVelo && thePlayer.onGround) {
+                                thePlayer.motionX *= motionXZ
+                                thePlayer.motionZ *= motionXZ
+                            } else {
+                                thePlayer.motionX *= 0.077760000
+                                thePlayer.motionZ *= 0.077760000
+                            }
+                            velocityInput = false
+                            attack = false
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    private fun getMotionNoXZ(packetEntityVelocity: S12PacketEntityVelocity): Double {
+        val vec = Vec3(
+            packetEntityVelocity.motionX.toDouble(),
+            packetEntityVelocity.motionY.toDouble(),
+            packetEntityVelocity.motionZ.toDouble()
+        )
+
+        val strength = vec.lengthVector()
+
+        val motionNoXZ: Double
+        if (strength >= 20000.0) {
+            motionNoXZ = if (mc.thePlayer.onGround) {
+                0.06425
+            } else {
+                0.075
+            }
+        } else if (strength >= 5000.0) {
+            motionNoXZ = if (mc.thePlayer.onGround) {
+                0.02625
+            } else {
+                0.0552
+            }
+        } else {
+            motionNoXZ = 0.0175
+        }
+
+        return motionNoXZ
     }
 
     /**
@@ -481,27 +569,22 @@ object Velocity : Module("Velocity", Category.COMBAT) {
                 "aac", "reverse", "smoothreverse", "aaczero", "ghostblock", "intavereduce" -> hasReceivedVelocity = true
 
                 "jump" -> {
-                    // TODO: Recode and make all velocity modes support velocity direction checks
                     var packetDirection = 0.0
                     when (packet) {
                         is S12PacketEntityVelocity -> {
                             if (packet.entityID != thePlayer.entityId) return@handler
-
                             val motionX = packet.motionX.toDouble()
                             val motionZ = packet.motionZ.toDouble()
-
                             packetDirection = atan2(motionX, motionZ)
                         }
-
                         is S27PacketExplosion -> {
                             val motionX = thePlayer.motionX + packet.field_149152_f
                             val motionZ = thePlayer.motionZ + packet.field_149159_h
-
                             packetDirection = atan2(motionX, motionZ)
                         }
                     }
                     val degreePlayer = getDirection()
-                    val degreePacket = Math.floorMod(packetDirection.toDegrees().toInt(), 360).toDouble()
+                    val degreePacket = Math.floorMod(packetDirection.toInt(), 360).toDouble()
                     var angle = abs(degreePacket + degreePlayer)
                     val threshold = 120.0
                     angle = Math.floorMod(angle.toInt(), 360).toDouble()
@@ -520,17 +603,16 @@ object Velocity : Module("Velocity", Category.COMBAT) {
 
                 "matrixreduce" -> {
                     if (packet is S12PacketEntityVelocity && packet.entityID == thePlayer.entityId) {
-                        packet.motionX = (packet.getMotionX() * 0.33).toInt()
-                        packet.motionZ = (packet.getMotionZ() * 0.33).toInt()
+                        packet.motionX = (packet.motionX * 0.33).toInt()
+                        packet.motionZ = (packet.motionZ * 0.33).toInt()
 
                         if (thePlayer.onGround) {
-                            packet.motionX = (packet.getMotionX() * 0.86).toInt()
-                            packet.motionZ = (packet.getMotionZ() * 0.86).toInt()
+                            packet.motionX = (packet.motionX * 0.86).toInt()
+                            packet.motionZ = (packet.motionZ * 0.86).toInt()
                         }
                     }
                 }
 
-                // Credit: @LiquidSquid / Ported from NextGen
                 "blocksmc" -> {
                     if (packet is S12PacketEntityVelocity && packet.entityID == thePlayer.entityId) {
                         hasReceivedVelocity = true
@@ -542,7 +624,6 @@ object Velocity : Module("Velocity", Category.COMBAT) {
                 }
 
                 "grimc03" -> {
-                    // Checks to prevent from getting flagged (BadPacketsE)
                     if (thePlayer.isMoving) {
                         hasReceivedVelocity = true
                         event.cancelEvent()
@@ -577,6 +658,57 @@ object Velocity : Module("Velocity", Category.COMBAT) {
                 "s32packet" -> {
                     hasReceivedVelocity = true
                     event.cancelEvent()
+                }
+
+                "grimvertical" -> {
+                    if (packet is S12PacketEntityVelocity) {
+                        if (packet.entityID == thePlayer.entityId) {
+                            when (grimVerticalMode.lowercase()) {
+                                "reduce" -> {
+                                    val velocityX = packet.motionX / 8000.0
+                                    val velocityZ = packet.motionZ / 8000.0
+
+                                    thePlayer.motionX = velocityX * 0.078
+                                    thePlayer.motionZ = velocityZ * 0.078
+                                    event.cancelEvent()
+                                }
+
+                                "1.17" -> {
+                                    canCancel = true
+                                    canSpoof = true
+                                    event.cancelEvent()
+                                }
+
+                                "vertical" -> {
+                                    if (packet.motionX == 0 && packet.motionZ == 0 ||
+                                        mc.thePlayer == null ||
+                                        mc.theWorld.getEntityByID(packet.entityID) != mc.thePlayer
+                                    ) {
+                                        return@handler
+                                    }
+
+                                    velocityInput = true
+                                    motionXZ = getMotionNoXZ(packet)
+
+                                    if (thePlayer.isSprinting && thePlayer.serverSprintState && thePlayer.isMoving) {
+                                        for (i in 0 until c0fPacketAmount) {
+                                            if (sendC0FValue) {
+                                                mc.netHandler.addToSendQueue(
+                                                    C0FPacketConfirmTransaction(
+                                                        nextInt(102, 1000024123),
+                                                        nextInt(102, 1000024123).toShort(),
+                                                        true
+                                                    )
+                                                )
+                                            }
+                                        }
+                                        attack = true
+                                    }
+                                    event.cancelEvent()
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
