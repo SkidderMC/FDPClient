@@ -853,54 +853,50 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
     /**
      * Update rotations to enemy
      */
-    private fun updateRotations(entity: Entity): Boolean {
+ private fun updateRotations(entity: Entity): Boolean {
         val player = mc.thePlayer ?: return false
 
         if (shouldPrioritize()) return false
 
+        
         if (!options.rotationsActive) {
             return player.getDistanceToEntityBox(entity) <= range
         }
 
-        val prediction = entity.currPos.subtract(entity.prevPos).times(2 + predictEnemyPosition.toDouble())
+        
+        val originalRotation = currentRotation ?: player.rotation
 
+        
+        val prediction = entity.currPos.subtract(entity.prevPos).times(2 + predictEnemyPosition.toDouble())
         val boundingBox = entity.hitBox.offset(prediction)
         val (currPos, oldPos) = player.currPos to player.prevPos
 
         val simPlayer = SimulatedPlayer.fromClientPlayer(RotationUtils.modifiedInput)
-
-        simPlayer.rotationYaw = (currentRotation ?: player.rotation).yaw
+        simPlayer.rotationYaw = originalRotation.yaw
 
         var pos = currPos
-
         repeat(predictClientMovement) {
             val previousPos = simPlayer.pos
-
             simPlayer.tick()
 
             if (predictOnlyWhenOutOfRange) {
                 player.setPosAndPrevPos(simPlayer.pos)
-
                 val currDist = player.getDistanceToEntityBox(entity)
-
                 player.setPosAndPrevPos(previousPos)
-
                 val prevDist = player.getDistanceToEntityBox(entity)
-
                 player.setPosAndPrevPos(currPos, oldPos)
                 pos = simPlayer.pos
-
                 if (currDist <= range && currDist <= prevDist) {
                     return@repeat
                 }
             }
-
             pos = previousPos
         }
 
+        
         player.setPosAndPrevPos(pos)
 
-        val rotation = searchCenter(
+         val foundRotation = searchCenter(
             boundingBox,
             generateSpotBasedOnDistance,
             outBorder && !attackTimer.hasTimePassed(attackDelay / 2),
@@ -913,16 +909,22 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
             horizontalSearch = horizontalBodySearchRange
         )
 
-        if (rotation == null) {
+        if (foundRotation == null) {
             player.setPosAndPrevPos(currPos, oldPos)
-
             return false
         }
 
-        setTargetRotation(rotation, options = options)
-
+        
+        val smoothingFactor = 0.2f 
+        val smoothedYaw = originalRotation.yaw + (foundRotation.yaw - originalRotation.yaw) * smoothingFactor
+        val smoothedPitch = originalRotation.pitch + (foundRotation.pitch - originalRotation.pitch) * smoothingFactor
+        val smoothedRotation = Rotation(smoothedYaw, smoothedPitch)
+        
+        
+        setTargetRotation(smoothedRotation, options = options)
+        
+       
         player.setPosAndPrevPos(currPos, oldPos)
-
         return true
     }
 
