@@ -17,6 +17,14 @@ abstract class Animation(
 
     val timerUtil = TimerUtil()
 
+    fun setDirection(direction: Direction): Animation {
+        if (this.direction !== direction) {
+            this.direction = direction
+            timerUtil.time = System.currentTimeMillis() - (duration.toLong() - min(duration.toLong(), timerUtil.time))
+        }
+        return this
+    }
+
     var direction: Direction = direction
         set(newDirection) {
             if (field != newDirection) {
