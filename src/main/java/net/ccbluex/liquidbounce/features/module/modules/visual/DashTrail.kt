@@ -468,7 +468,7 @@ object DashTrail : Module("DashTrail", Category.VISUAL) {
             }
             removeFinishedDashSparks(this)
             if (animation.timerUtil.hasTimeElapsed(getAnimationDurationTime().toLong())) {
-                animation.direction(Direction.BACKWARDS)
+                animation.setDirection(Direction.BACKWARDS)
             }
         }
 
