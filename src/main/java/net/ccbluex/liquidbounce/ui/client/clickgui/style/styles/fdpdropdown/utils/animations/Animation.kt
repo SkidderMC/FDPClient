@@ -30,9 +30,6 @@ abstract class Animation(
     val isDone: Boolean
         get() = timerUtil.hasTimeElapsed(duration.toLong())
 
-    val linearOutput: Double
-        get() = 1 - ((timerUtil.time.toDouble() / duration) * endPoint)
-
     val output: Double
         get() = if (direction == Direction.FORWARDS) {
             if (isDone) endPoint
@@ -52,10 +49,6 @@ abstract class Animation(
     fun finished(direction: Direction): Boolean = isDone && this.direction == direction
 
     fun reset() = timerUtil.reset()
-
-    fun changeDirection() {
-        direction = direction.opposite()
-    }
 
     protected open fun correctOutput(): Boolean = false
 

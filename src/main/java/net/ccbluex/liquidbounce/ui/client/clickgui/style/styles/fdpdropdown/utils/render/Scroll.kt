@@ -12,9 +12,9 @@ import org.lwjgl.input.Mouse
 
 class Scroll {
 
-    var maxScroll: Float = Float.MAX_VALUE
-    var minScroll: Float = 0f
-    var rawScroll: Float = 0f
+    var maxScroll = Float.MAX_VALUE
+    var minScroll = 0f
+    var rawScroll = 0f
 
     private var scrollAnimation: Animation = SmoothStepAnimation(0, 0.0, Direction.BACKWARDS)
 
