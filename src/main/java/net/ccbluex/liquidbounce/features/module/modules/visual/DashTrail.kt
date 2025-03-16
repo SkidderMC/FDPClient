@@ -39,6 +39,12 @@ import kotlin.math.*
 
 object DashTrail : Module("DashTrail", Category.VISUAL) {
 
+    init {
+        state = true
+    }
+
+    private val renderSelf by boolean("RenderSelf", true)
+    private val renderPlayers by boolean("Render Players", true)
     private val showDashSegments by boolean("Dash Segments", false)
     private val showDashDots by boolean("Dash Dots", true)
     private val animationTime by int("Anim Time", 20, 100..500)
@@ -47,7 +53,6 @@ object DashTrail : Module("DashTrail", Category.VISUAL) {
     private val colorModeOption by choices("Color", arrayOf("Custom", "Theme"), "Custom")
     private val outerColorOption = color("OuterColor", Color(0, 111, 255, 255)) { colorModeOption == "Custom" }
 
-    private val renderSelf by boolean("RenderSelf", true)
     private val renderOnLook by boolean("OnLook", false)
     private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { renderOnLook }
     private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200)
@@ -212,6 +217,8 @@ object DashTrail : Module("DashTrail", Category.VISUAL) {
     val onEntityMove = handler<EntityMovementEvent> { event ->
         if (event.movedEntity !is EntityLivingBase) return@handler
 
+        if (!renderPlayers && event.movedEntity != mc.thePlayer) return@handler
+
         val distanceSq = mc.thePlayer.getDistanceSqToEntity(event.movedEntity)
         if (distanceSq > maxRenderDistanceSq) return@handler
 
@@ -259,6 +266,9 @@ object DashTrail : Module("DashTrail", Category.VISUAL) {
 
         val filteredCubics = getFilteredDashCubics().filter { dashCubic ->
             val entity = dashCubic.base.entity
+
+            if(!renderPlayers && entity != mc.thePlayer) return@filter false
+
             val distanceSq = mc.thePlayer.getDistanceSqToEntity(entity)
             if (distanceSq > maxRenderDistanceSq) return@filter false
             if (renderOnLook && !isLookingOnEntities(entity, maxAngleDifference.toDouble())) return@filter false
