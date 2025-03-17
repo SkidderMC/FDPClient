@@ -131,12 +131,11 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL) {
             }
             else -> 0f
         }
-
+        GlStateManager.disableLighting()
         setupDrawCircles {
-            circles.removeIf {
+            circles.removeIf { it ->
                 val progress = ((runTimeTicks + partialTick) - it.endTime) / lifeTime
                 val radius = circleRadius.lerpWith(progress)
-
                 if(useTexture){
                     renderTexturedCircle(
                         it.pos,
@@ -149,11 +148,11 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL) {
                 } else {
                     renderSimpleCircle(it.pos, radius, progress)
                 }
-
-
                 progress >= 1F
             }
         }
+        GlStateManager.color(1f, 1f, 1f, 1f)
+        GlStateManager.enableLighting()
     }
 
     override fun onDisable() {
@@ -172,7 +171,6 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL) {
                 val inner = animateColor(innerColor.selectedColor(), 1f - timeFraction)
                 val outer = animateColor(outerColor.selectedColor(), 1f - timeFraction)
                 Pair(inner,outer)
-
             }
         }
         drawHueCircle(
@@ -181,6 +179,7 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL) {
             color,
             color2
         )
+        GlStateManager.color(1f, 1f, 1f, 1f)
     }
 
     private fun renderTexturedCircle(pos: Vec3, maxRadius: Double, timeFraction: Float, circleIndex: Int, shift: Float, intensity: Float) {
@@ -196,7 +195,6 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL) {
         val circleRadius = (mainFactor * maxRadius).toFloat()
         val rotation = (easeInOutElasticx(wave.toDouble()) * 90.0 / (1.0 + wave.toDouble()))
         val textureResource = selectJumpTexture(circleIndex, timeFraction)
-
         val (color, color2) = when (colorMode) {
             "Theme" -> {
                 val baseColor = ClientThemesUtils.getColor()
@@ -208,12 +206,8 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL) {
                 val inner = animateColor(innerColor.selectedColor(), 1f - timeFraction)
                 val outer = animateColor(outerColor.selectedColor(), 1f - timeFraction)
                 Pair(inner,outer)
-
             }
         }
-
-
-
         val red = ((color.rgb shr 16) and 0xFF) / 255f
         val green = ((color.rgb shr 8) and 0xFF) / 255f
         val blue = (color.rgb and 0xFF) / 255f
@@ -222,10 +216,8 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL) {
         val green2 = ((color2.rgb shr 8) and 0xFF) / 255f
         val blue2 = (color2.rgb and 0xFF) / 255f
         val alpha2 = ((color2.rgb shr 24) and 0xFF) / 255f
-
         mc.textureManager.bindTexture(textureResource)
         mc.textureManager.getTexture(textureResource).setBlurMipmap(true, true)
-
         GlStateManager.pushMatrix()
         GlStateManager.translate(pos.xCoord - circleRadius / 2.0, pos.yCoord, pos.zCoord - circleRadius / 2.0)
         GlStateManager.rotate(90f, 1f, 0f, 0f)
@@ -236,18 +228,16 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL) {
         worldRenderer.pos(circleRadius.toDouble(), circleRadius.toDouble(), 0.0).tex(1.0, 1.0).color(red, green, blue, alpha).endVertex()
         worldRenderer.pos(circleRadius.toDouble(), 0.0, 0.0).tex(1.0, 0.0).color(red, green, blue, alpha).endVertex()
         tessellator.draw()
+        GlStateManager.color(1f, 1f, 1f, 1f)
         GlStateManager.popMatrix()
-
         if (shift >= 1f / 255f) {
             GlStateManager.pushMatrix()
             GlStateManager.translate(pos.xCoord, pos.yCoord, pos.zCoord)
             GlStateManager.rotate(rotation.toFloat(), 0f, 1f, 0f)
             worldRenderer.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
-
             val polygons = 40
             val maxY = circleRadius / 3.5f
             val maxXZ = circleRadius / 7f
-
             for (i in 1 until polygons) {
                 val fraction = i / polygons.toFloat()
                 val fractionValue = fraction - (1.5f / polygons)
@@ -256,39 +246,28 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL) {
                 val alphaCheck = (alphaFraction * intensity * shift).takeIf { it * 255 >= 1 } ?: continue
                 val alphaInt = (alphaCheck * 255).toInt()
                 val variedRadius = circleRadius + circVal * maxXZ
-
-                worldRenderer.pos((-variedRadius / 2f).toDouble(), (maxY * i / polygons - maxY / polygons).toDouble(),
-                    (-variedRadius / 2f).toDouble()
-                )
+                worldRenderer.pos((-variedRadius / 2f).toDouble(), (maxY * i / polygons - maxY / polygons).toDouble(), (-variedRadius / 2f).toDouble())
                     .tex(0.0, 0.0).color(red2, green2, blue2, alphaInt / 255f).endVertex()
-                worldRenderer.pos((-variedRadius / 2f).toDouble(),
-                    (maxY * i / polygons - maxY / polygons).toDouble(), (variedRadius / 2f).toDouble()
-                )
+                worldRenderer.pos((-variedRadius / 2f).toDouble(), (maxY * i / polygons - maxY / polygons).toDouble(), (variedRadius / 2f).toDouble())
                     .tex(0.0, 1.0).color(red2, green2, blue2, alphaInt / 255f).endVertex()
-                worldRenderer.pos(
-                    (variedRadius / 2f).toDouble(), (maxY * i / polygons - maxY / polygons).toDouble(),
-                    (variedRadius / 2f).toDouble()
-                )
+                worldRenderer.pos((variedRadius / 2f).toDouble(), (maxY * i / polygons - maxY / polygons).toDouble(), (variedRadius / 2f).toDouble())
                     .tex(1.0, 1.0).color(red2, green2, blue2, alphaInt / 255f).endVertex()
-                worldRenderer.pos((variedRadius / 2f).toDouble(), (maxY * i / polygons - maxY / polygons).toDouble(),
-                    (-variedRadius / 2f).toDouble()
-                )
+                worldRenderer.pos((variedRadius / 2f).toDouble(), (maxY * i / polygons - maxY / polygons).toDouble(), (-variedRadius / 2f).toDouble())
                     .tex(1.0, 0.0).color(red2, green2, blue2, alphaInt / 255f).endVertex()
             }
             tessellator.draw()
+            GlStateManager.color(1f, 1f, 1f, 1f)
             GlStateManager.popMatrix()
         }
     }
     private fun animateColor(baseColor: Color, progress: Float): Color {
         val color = baseColor.withAlpha((baseColor.alpha * (1 - progress)).toInt().coerceIn(0, 255))
-
         if (hueOffsetAnim == 0) {
             return color
         }
-
         return shiftHue(color, (hueOffsetAnim * progress).toInt())
     }
-    private fun calculateEntityPosition(entity: net.minecraft.entity.Entity): Vec3 {
+    private fun calculateEntityPosition(entity: Entity): Vec3 {
         val partialTicks = mc.timer.renderPartialTicks
         val dx = entity.posX - entity.lastTickPosX
         val dy = entity.posY - entity.lastTickPosY
