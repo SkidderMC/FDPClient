@@ -22,6 +22,7 @@ object CombatManager : MinecraftInstance, Listenable {
     private val attackedEntityList = mutableListOf<EntityLivingBase>()
     val focusedPlayerList = mutableListOf<EntityPlayer>()
 
+    val onHitEntityListeners = mutableListOf<(EntityLivingBase) -> Unit>()
 
     val onUpdate = handler<UpdateEvent> {
         if (mc.thePlayer == null) return@handler
@@ -57,6 +58,10 @@ object CombatManager : MinecraftInstance, Listenable {
             this.target = target
             if (!attackedEntityList.contains(target)) {
                 attackedEntityList.add(target)
+            }
+
+            onHitEntityListeners.forEach { listener ->
+                listener(target)
             }
         }
         lastAttackTimer.reset()

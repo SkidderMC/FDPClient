@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.config.Value
@@ -28,7 +33,7 @@ import java.awt.Color
 @ElementInfo(name = "Targets")
 class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    private data class TargetData(val target: EntityLivingBase, var timer: Float)
+    private data class TargetData(val target: EntityLivingBase, var lastHitTime: Long)
 
     private val targetStyles = mutableListOf<TargetStyle>()
 
@@ -108,32 +113,35 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
         if (newTargets.isNotEmpty()) {
             if (!multiTarget) {
                 mainTargets.clear()
-                mainTargets.add(TargetData(newTargets[0], 0f))
+                mainTargets.add(TargetData(newTargets[0], System.currentTimeMillis()))
             } else {
                 if (freezeTargets) {
                     newTargets.forEach { target ->
                         val existing = mainTargets.find { it.target === target }
                         if (existing != null) {
-                            existing.timer = 0f
+                            existing.lastHitTime = System.currentTimeMillis()
                         } else if (mainTargets.size < maxTargets) {
-                            mainTargets.add(TargetData(target, 0f))
+                            mainTargets.add(TargetData(target, System.currentTimeMillis()))
                         }
                     }
                 } else {
                     newTargets.forEach { target ->
-                        mainTargets.removeAll { it.target === target }
-                        mainTargets.add(0, TargetData(target, 0f))
-                    }
-                    while (mainTargets.size > maxTargets) {
-                        mainTargets.removeAt(mainTargets.size - 1)
+                        val existing = mainTargets.find { it.target === target }
+                        if (existing != null) {
+                            existing.lastHitTime = System.currentTimeMillis()
+                        } else {
+                            mainTargets.add(0, TargetData(target, System.currentTimeMillis()))
+                            if (mainTargets.size > maxTargets) {
+                                mainTargets.removeAt(mainTargets.size - 1)
+                            }
+                        }
                     }
                 }
             }
-        } else {
-            mainTargets.forEach { it.timer += deltaTime }
         }
 
-        mainTargets.removeIf { it.timer >= 8f }
+        // Remove targets that haven't been hit for 8 seconds
+        mainTargets.removeIf { System.currentTimeMillis() - it.lastHitTime >= 8000 }
 
         if (mainTargets.isEmpty()) {
             if (resetBar) currentStyle.easingHealth = 0F
@@ -234,4 +242,14 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
     }
 
     fun getFadeProgress() = animProgress
+
+    private fun onHit(entity: EntityLivingBase) {
+        mainTargets.find { it.target == entity }?.let { it.lastHitTime = System.currentTimeMillis() }
+    }
+
+    init {
+        CombatManager.onHitEntityListeners.add { entity ->
+            onHit(entity)
+        }
+    }
 }
