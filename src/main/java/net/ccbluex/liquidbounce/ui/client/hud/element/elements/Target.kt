@@ -1,8 +1,3 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/SkidderMC/FDPClient/
- */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
 import net.ccbluex.liquidbounce.config.Value
@@ -40,6 +35,8 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
     private val multiTarget by boolean("Multi Target", false)
     private val maxTargets by int("Max Targets", 50, 1..50) { multiTarget }
     private val padding by int("Padding", 3, 0..20) { multiTarget }
+
+    private val freezeTargets by boolean("Freeze Targets", false) { multiTarget }
 
     private val onlyPlayer by boolean("Only player", false)
     private val showInChat by boolean("Show When Chat", true)
@@ -113,21 +110,27 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
                 mainTargets.clear()
                 mainTargets.add(TargetData(newTargets[0], 0f))
             } else {
-                for (data in mainTargets) {
-                    if (newTargets.any { it === data.target }) {
-                        data.timer = 0f
+                if (freezeTargets) {
+                    newTargets.forEach { target ->
+                        val existing = mainTargets.find { it.target === target }
+                        if (existing != null) {
+                            existing.timer = 0f
+                        } else if (mainTargets.size < maxTargets) {
+                            mainTargets.add(TargetData(target, 0f))
+                        }
                     }
-                }
-                for (target in newTargets) {
-                    if (mainTargets.none { it.target === target } && mainTargets.size < maxTargets) {
-                        mainTargets.add(TargetData(target, 0f))
+                } else {
+                    newTargets.forEach { target ->
+                        mainTargets.removeAll { it.target === target }
+                        mainTargets.add(0, TargetData(target, 0f))
+                    }
+                    while (mainTargets.size > maxTargets) {
+                        mainTargets.removeAt(mainTargets.size - 1)
                     }
                 }
             }
         } else {
-            for (data in mainTargets) {
-                data.timer += deltaTime
-            }
+            mainTargets.forEach { it.timer += deltaTime }
         }
 
         mainTargets.removeIf { it.timer >= 8f }

@@ -858,7 +858,6 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
 
         if (shouldPrioritize()) return false
 
-        
         if (!options.rotationsActive) {
             return player.getDistanceToEntityBox(entity) <= range
         }
@@ -869,28 +868,36 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
         val (currPos, oldPos) = player.currPos to player.prevPos
 
         val simPlayer = SimulatedPlayer.fromClientPlayer(RotationUtils.modifiedInput)
+
         simPlayer.rotationYaw = (currentRotation ?: player.rotation).yaw
 
         var pos = currPos
+
         repeat(predictClientMovement) {
             val previousPos = simPlayer.pos
+
             simPlayer.tick()
 
             if (predictOnlyWhenOutOfRange) {
                 player.setPosAndPrevPos(simPlayer.pos)
+
                 val currDist = player.getDistanceToEntityBox(entity)
+
                 player.setPosAndPrevPos(previousPos)
+
                 val prevDist = player.getDistanceToEntityBox(entity)
+
                 player.setPosAndPrevPos(currPos, oldPos)
                 pos = simPlayer.pos
+
                 if (currDist <= range && currDist <= prevDist) {
                     return@repeat
                 }
             }
+
             pos = previousPos
         }
 
-        
         player.setPosAndPrevPos(pos)
 
         val rotation = searchCenter(
@@ -908,10 +915,14 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
 
         if (rotation == null) {
             player.setPosAndPrevPos(currPos, oldPos)
+
             return false
         }
-       
+
+        setTargetRotation(rotation, options = options)
+
         player.setPosAndPrevPos(currPos, oldPos)
+
         return true
     }
 
