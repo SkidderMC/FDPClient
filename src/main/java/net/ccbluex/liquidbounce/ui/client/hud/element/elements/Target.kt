@@ -52,7 +52,6 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
     private val maxTargets by int("Max Targets", 50, 1..50)
 
     private val mainTargets = mutableListOf<TargetData>()
-    private var clearTimer = 0F
     private var animProgress = 0F
     var bgColor = Color(-1)
     var barColor = Color(-1)
@@ -134,10 +133,20 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
 
         val firstTarget = mainTargets.firstOrNull()?.target
         val preBarColor = getBarColor(firstTarget)
-        val preBgColor = Color(backgroundColor.rgb)
+        val preBgColor = backgroundColor
 
-        barColor = Color(preBarColor.red, preBarColor.green, preBarColor.blue, (preBarColor.alpha / 255F * (1F - animProgress) * 255).toInt())
-        bgColor = Color(preBgColor.red, preBgColor.green, preBgColor.blue, (preBgColor.alpha / 255F * (1F - animProgress) * 255).toInt())
+        barColor = Color(
+            preBarColor.red,
+            preBarColor.green,
+            preBarColor.blue,
+            (preBarColor.alpha / 255F * (1F - animProgress) * 255).toInt()
+        )
+        bgColor = Color(
+            preBgColor.red,
+            preBgColor.green,
+            preBgColor.blue,
+            (preBgColor.alpha / 255F * (1F - animProgress) * 255).toInt()
+        )
 
         val returnBorder = currentStyle.getBorder(firstTarget) ?: return null
         val borderWidth = returnBorder.x2 - returnBorder.x
