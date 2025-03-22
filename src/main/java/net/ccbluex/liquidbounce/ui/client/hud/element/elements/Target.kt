@@ -36,20 +36,30 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
     private data class TargetData(val target: EntityLivingBase, var timer: Float)
 
     private val targetStyles = mutableListOf<TargetStyle>()
-    val styleValue by choices("Style", initStyles(), "Classic")
-    private val onlyPlayer by boolean("Only player", false)
-    private val showInChat by boolean("Show When Chat", true)
-    private val resetBar by boolean("ResetBarWhenHiding", false)
-    private val fadeValue by boolean("Fade", false)
-    private val animationValue by boolean("Animation", false)
-    private val animationSpeed by float("Animation Speed", 1F, 0.1F..2F) { fadeValue || animationValue }
-    val globalAnimSpeed by float("Health Speed", 3F, 0.1F..5F)
-    private val colorModeValue by choices("Color", arrayOf("Health", "Client"), "Client")
-    private val shadowValue by boolean("Shadow", false)
-    private val backgroundMode by choices("Background-Color", arrayOf("Custom", "Rainbow"), "Custom")
-    private val backgroundColor by color("Background", Color.BLACK) { backgroundMode == "Custom" }
+
     private val multiTarget by boolean("Multi Target", false)
     private val maxTargets by int("Max Targets", 50, 1..50)
+    private val padding by int("Padding", 3, 0..20)
+
+    private val onlyPlayer by boolean("Only player", false)
+    private val showInChat by boolean("Show When Chat", true)
+
+    val styleValue by choices("Style", initStyles(), "Classic")
+
+    private val shadowValue by boolean("Shadow", false)
+    private val backgroundMode by choices("Background-Color", arrayOf("Custom", "Rainbow"), "Custom")
+    private val backgroundColor by color("Background", Color(0, 0, 0, 120)) { backgroundMode == "Custom" }
+
+    private val colorModeValue by choices("Color", arrayOf("Health", "Client"), "Client")
+
+    private val fadeValue by boolean("Fade", false)
+
+    private val animation by boolean("Animation", false)
+    private val animationSpeed by float("Animation Speed", 1F, 0.1F..2F) { fadeValue || animation }
+
+    private val resetBar by boolean("ResetBarWhenHiding", false)
+
+    val globalAnimSpeed by float("Health Speed", 3F, 0.1F..5F)
 
     private val mainTargets = mutableListOf<TargetData>()
     private var animProgress = 0F
@@ -177,7 +187,7 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
                 val col = i % columns
                 val row = i / columns
                 glPushMatrix()
-                glTranslated((col * borderWidth).toDouble(), (row * borderHeight).toDouble(), 0.0)
+                glTranslated((col * (borderWidth + padding)).toDouble(), (row * (borderHeight + padding)).toDouble(), 0.0)
                 currentStyle.drawTarget(data.target)
                 glPopMatrix()
             }
