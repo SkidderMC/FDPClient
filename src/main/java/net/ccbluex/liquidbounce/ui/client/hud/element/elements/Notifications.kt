@@ -66,6 +66,9 @@ class Notifications(
     private val fadeColor2 by color("Fade-Color-2", Color(0x001300).rgb) { colorMode == "Fade" }
     private val fadeDistance by int("Fade-Distance", 50, 0..100) { colorMode == "Fade" }
 
+    private val backgroundMode by boolean("Background-Color", true)
+    private val backgroundColor by color("Background", Color(0, 0, 0, 120)) { backgroundMode }
+
     /**
      * Draw element
      */
@@ -73,10 +76,8 @@ class Notifications(
         val notificationsToRemove = mutableListOf<Notification>()
         for ((index, notification) in hud.notifications.withIndex()) {
             GL11.glPushMatrix()
-
             val color1: Int
             val color2: Int
-
             when (colorMode) {
                 "Custom" -> {
                     color1 = customColor1.rgb
@@ -96,23 +97,18 @@ class Notifications(
                     color2 = customColor2.rgb
                 }
             }
-
-            if (notification.drawNotification(index, styleValue, color1, color2)) {
+            if (notification.drawNotification(index, styleValue, color1, color2, backgroundMode, backgroundColor)) {
                 notificationsToRemove.add(notification)
             }
-
             GL11.glPopMatrix()
         }
         notificationsToRemove.forEach { hud.notifications.remove(it) }
-
         if (mc.currentScreen is GuiHudDesigner) {
             if (!hud.notifications.contains(exampleNotification)) {
                 hud.addNotification(exampleNotification)
             }
-
             exampleNotification.fadeState = FadeState.STAY
             exampleNotification.displayTime = System.currentTimeMillis()
-
             return when (styleValue) {
                 "IDE" -> Border(-180F, -30F, 0F, 0F)
                 "ZAVZ" -> Border(-185F, -30F, 0F, 0F)
@@ -120,7 +116,6 @@ class Notifications(
                 else -> Border(-exampleNotification.width.toFloat(), -exampleNotification.height.toFloat(), 0F, 0F)
             }
         }
-
         return null
     }
 }
@@ -139,7 +134,6 @@ class Notification(
     private var firstYz = 0
     var x = 0f
     private var textLength = Fonts.minecraftFont.getStringWidth(content) + 10
-
     var fadeState = FadeState.IN
     private var nowY = -height
     var displayTime = System.currentTimeMillis()
@@ -150,16 +144,13 @@ class Notification(
     /**
      * Draw notification
      */
-    fun drawNotification(index: Int, style: String, colorValue1: Int, colorValue2: Int): Boolean {
+    fun drawNotification(index: Int, style: String, colorValue1: Int, colorValue2: Int, backgroundMode: Boolean, backgroundColor: Color): Boolean {
         resetColor()
         glColor4f(1f, 1f, 1f, 1f)
-
         val nowTime = System.currentTimeMillis()
         val realY = -(index + 1) * height
         var pct = (nowTime - animeXTime) / animeTime.toDouble()
-
         if (style == "CLASSIC") {
-            // Y-Axis Animation
             if (nowY != realY) {
                 pct = (nowTime - animeYTime) / animeTime.toDouble()
                 if (pct > 1) {
@@ -171,10 +162,7 @@ class Notification(
                 animeYTime = nowTime
             }
             GL11.glTranslated(0.0, nowY.toDouble(), 0.0)
-
-            // X-Axis Animation
             pct = (nowTime - animeXTime) / animeTime.toDouble()
-
             when (fadeState) {
                 FadeState.IN -> {
                     if (pct > 1) {
@@ -183,7 +171,6 @@ class Notification(
                         pct = 1.0
                     }
                 }
-
                 FadeState.STAY -> {
                     pct = 1.0
                     if ((nowTime - animeXTime) > time) {
@@ -191,7 +178,6 @@ class Notification(
                         animeXTime = nowTime
                     }
                 }
-
                 FadeState.OUT -> {
                     if (pct > 1) {
                         fadeState = FadeState.END
@@ -199,13 +185,11 @@ class Notification(
                         pct = 1.0
                     }
                 }
-
                 FadeState.END -> {
                     return true
                 }
             }
-
-            drawRect(0F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, 150)) // Reduced alpha for better visibility
+            drawRect(0F, 0F, width.toFloat(), height.toFloat(), if (backgroundMode) backgroundColor.rgb else Color(0, 0, 0, 150).rgb)
             drawShadowWithCustomAlpha(0F, 0F, width.toFloat(), height.toFloat(), 240f)
             drawRect(
                 0F,
@@ -217,10 +201,7 @@ class Notification(
             fontSemibold35.drawString(title, 4F, 4F, textColor, false)
             fontSemibold35.drawString(content, 4F, 17F, textColor, false)
         }
-
-        // IDE Style Drawing
         if (style == "IDE") {
-            // Y-Axis Animation
             if (nowY != realY) {
                 if (pct > 1) {
                     nowY = realY
@@ -231,7 +212,6 @@ class Notification(
                 animeYTime = nowTime
             }
             GL11.glTranslated(0.0, nowY.toDouble(), 0.0)
-
             when (fadeState) {
                 FadeState.IN -> {
                     if (pct > 1) {
@@ -239,32 +219,26 @@ class Notification(
                         animeXTime = nowTime
                     }
                 }
-
                 FadeState.STAY -> {
                     if ((nowTime - animeXTime) > time) {
                         fadeState = FadeState.OUT
                         animeXTime = nowTime
                     }
                 }
-
                 FadeState.OUT -> {
                     if (pct > 1) {
                         fadeState = FadeState.END
                         animeXTime = nowTime
                     }
                 }
-
                 FadeState.END -> {
                     return true
                 }
             }
-
             val y = firstYz
             val kek = -x - 1 - 20F
-
             resetColor()
             Stencil.write(true)
-
             when (type) {
                 Type.ERROR -> {
                     drawRect(
@@ -281,7 +255,6 @@ class Notification(
                         "IDE Error:", -textLength.toFloat() - 1, -y.toFloat() + 2, Color(249, 130, 108).rgb
                     )
                 }
-
                 Type.INFO -> {
                     drawRect(
                         -textLength - 23f + 5,
@@ -301,7 +274,6 @@ class Notification(
                         "IDE Information:", -textLength.toFloat() - 1, -y.toFloat() + 2, Color(119, 145, 147).rgb
                     )
                 }
-
                 Type.SUCCESS -> {
                     drawRect(
                         -textLength - 23f + 5, -y.toFloat(), kek + 21f, height.toFloat(), Color(67, 104, 67).rgb
@@ -313,7 +285,6 @@ class Notification(
                         "IDE Success:", -textLength.toFloat() - 1, -y.toFloat() + 2, Color(10, 142, 2).rgb
                     )
                 }
-
                 Type.WARNING -> {
                     drawRect(
                         -textLength - 23f + 5, -y.toFloat(), kek + 21f, height.toFloat(), Color(103, 103, 63).rgb
@@ -326,11 +297,9 @@ class Notification(
                     )
                 }
             }
-
             Stencil.erase(true)
             resetColor()
             Stencil.dispose()
-
             GL11.glPushMatrix()
             GlStateManager.disableAlpha()
             resetColor()
@@ -344,21 +313,16 @@ class Notification(
             RenderUtils.drawImage(pn, -textLength - 11, -y + 2, 7, 7)
             GlStateManager.enableAlpha()
             GL11.glPopMatrix()
-
             Fonts.minecraftFont.drawStringWithShadow(content, -textLength.toFloat() - 1, -y.toFloat() + 15, -1)
         }
-
         if (style == "ZAVZ") {
             val width = 100.coerceAtLeast((fontSemibold35.getStringWidth(this.content)) + 70)
-
-            // Y-Axis Animation
             if (nowY != realY) {
                 var pct = (nowTime - animeYTime) / animeTime.toDouble()
                 if (pct > 1) {
                     nowY = realY
                     pct = 1.0
                 } else {
-                    // Ease-out back animation could be applied here
                     pct = easeOutBackNotify(pct)
                 }
                 GL11.glTranslated(0.0, (realY - nowY) * pct, 0.0)
@@ -366,8 +330,6 @@ class Notification(
                 animeYTime = nowTime
             }
             GL11.glTranslated(0.0, nowY.toDouble(), 0.0)
-
-            // X-Axis Animation
             var pct = (nowTime - animeXTime) / animeTime.toDouble()
             when (fadeState) {
                 FadeState.IN -> {
@@ -376,10 +338,8 @@ class Notification(
                         animeXTime = nowTime
                         pct = 1.0
                     }
-                    // Ease-out back animation could be applied here
                     pct = easeOutBackNotify(pct)
                 }
-
                 FadeState.STAY -> {
                     pct = 1.0
                     if ((nowTime - animeXTime) > time) {
@@ -387,29 +347,22 @@ class Notification(
                         animeXTime = nowTime
                     }
                 }
-
                 FadeState.OUT -> {
                     if (pct > 1) {
                         fadeState = FadeState.END
                         animeXTime = nowTime
                         pct = 1.0
                     }
-                    // Inverse easing could be applied here
                     pct = 1 - easeInBackNotify(pct)
                 }
-
                 FadeState.END -> {
                     return true
                 }
             }
             GL11.glScaled(pct, pct, pct)
             GL11.glTranslatef(-width.toFloat(), -height.toFloat() + 30, 0F)
-
-            // Rendering shapes and elements
             RenderUtils.drawShadow(1F, 0F, width.toFloat() - 1, height.toFloat())
-            drawRect(1F, 0F, width.toFloat(), height.toFloat(), Color(0, 0, 0, 150)) // Reduced alpha for better visibility
-
-            // Draw Circle Function
+            drawRect(1F, 0F, width.toFloat(), height.toFloat(), if (backgroundMode) backgroundColor.rgb else Color(0, 0, 0, 150).rgb)
             fun drawCircle(x: Float, y: Float, radius: Float, start: Int, end: Int) {
                 GlStateManager.enableBlend()
                 GlStateManager.disableTexture2D()
@@ -445,8 +398,6 @@ class Notification(
                 GlStateManager.enableTexture2D()
                 GlStateManager.disableBlend()
             }
-
-            // Drawing the circle and additional elements
             RenderUtils.drawFilledForCircle(16f, 15f, 12.85f, Color(255, 255, 255, 255))
             RenderUtils.drawGradientSideways(
                 1.0,
@@ -457,8 +408,6 @@ class Notification(
                 colorValue2
             )
             drawCircle(16f, 15f, 13f, 0, 360)
-
-            // Render Type-specific Icons
             when (type) {
                 Type.INFO -> {
                     fontIconXD85.drawString("B", 11F, 8F, 0)
@@ -473,8 +422,6 @@ class Notification(
                     fontNovoAngularIcon85.drawString("M", 8F, 10F, 0)
                 }
             }
-
-            // Render text content and timing
             fontSFUI40.drawString(title, 34F, 4F, -1)
             fontSFUI35.drawString(
                 "$content  (" + BigDecimal(((time - time * ((nowTime - displayTime) / (animeTime * 2F + time))) / 1000).toDouble()).setScale(
@@ -482,11 +429,9 @@ class Notification(
                     BigDecimal.ROUND_HALF_UP
                 ).toString() + "s)", 34F, 17F, -1
             )
-
             resetColor()
             return false
         }
-
         return false
     }
 }

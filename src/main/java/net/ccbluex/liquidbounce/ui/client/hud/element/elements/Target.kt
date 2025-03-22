@@ -49,8 +49,8 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
     val styleValue by choices("Style", initStyles(), "Classic")
 
     private val shadowValue by boolean("Shadow", false)
-    private val backgroundMode by choices("Background-Color", arrayOf("Custom", "Rainbow"), "Custom")
-    private val backgroundColor by color("Background", Color(0, 0, 0, 120)) { backgroundMode == "Custom" }
+    private val backgroundMode by boolean("Background-Color", true)
+    private val backgroundColor by color("Background", Color(0, 0, 0, 120)) { backgroundMode }
 
     private val colorModeValue by choices("Color", arrayOf("Health", "Client"), "Client")
 
@@ -140,8 +140,7 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
             }
         }
 
-        // Remove targets that haven't been hit for 8 seconds
-        mainTargets.removeIf { System.currentTimeMillis() - it.lastHitTime >= 8000 }
+        mainTargets.removeIf { System.currentTimeMillis() - it.lastHitTime >= 6000 }
 
         if (mainTargets.isEmpty()) {
             if (resetBar) currentStyle.easingHealth = 0F
