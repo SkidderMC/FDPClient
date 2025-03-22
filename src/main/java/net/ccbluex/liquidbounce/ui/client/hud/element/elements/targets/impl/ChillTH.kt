@@ -21,13 +21,12 @@ import org.lwjgl.opengl.GL11
 
 class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
 
-    private val chillFontSpeed by
-        FloatValue("Chill-FontSpeed", 0.5F, 0.01F.. 1F).apply {
-            setSupport { targetInstance.styleValue.equals("Chill")  } }
-    private val chillRoundValue by
-        BoolValue("Chill-RoundedBar", true).apply {
-            setSupport { targetInstance.styleValue.equals("Chill")  } }
-
+    private val chillFontSpeed by FloatValue("Chill-FontSpeed", 0.5F, 0.01F..1F).apply {
+        setSupport { targetInstance.styleValue == "Chill" }
+    }
+    private val chillRoundValue by BoolValue("Chill-RoundedBar", true).apply {
+        setSupport { targetInstance.styleValue == "Chill" }
+    }
     private val numberRenderer = CharRenderer(false)
 
     private var calcScaleX = 0F
@@ -44,19 +43,16 @@ class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
 
     override fun drawTarget(entity: EntityLivingBase) {
         updateAnim(entity.health)
-
         val name = entity.name
         val health = entity.health
         val tWidth = (45F + Fonts.fontSemibold40.getStringWidth(name)
             .coerceAtLeast(Fonts.font72.getStringWidth(decimalFormat.format(health)))).coerceAtLeast(120F)
         val playerInfo = mc.netHandler.getPlayerInfo(entity.uniqueID)
 
-        // background
         RenderUtils.drawRoundedRect(0F, 0F, tWidth, 48F, 7F, targetInstance.bgColor.rgb)
         GlStateManager.resetColor()
         GL11.glColor4f(1F, 1F, 1F, 1F)
 
-        // head
         if (playerInfo != null) {
             Stencil.write(false)
             GL11.glDisable(GL11.GL_TEXTURE_2D)
@@ -73,7 +69,6 @@ class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
         GlStateManager.resetColor()
         GL11.glColor4f(1F, 1F, 1F, 1F)
 
-        // name + health
         Fonts.fontSemibold40.drawString(name, 38F, 6F, getColor(-1).rgb)
         numberRenderer.renderChar(
             health,
@@ -88,7 +83,6 @@ class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
             getColor(-1).rgb
         )
 
-        // health bar
         RenderUtils.drawRoundedRect(4F, 38F, tWidth - 4F, 44F, 3F, targetInstance.barColor.darker(0.5F).rgb)
 
         Stencil.write(false)
@@ -121,12 +115,10 @@ class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
         Stencil.dispose()
     }
 
-
     override fun getBorder(entity: EntityLivingBase?): Border {
         entity ?: return Border(0F, 0F, 120F, 48F)
         val tWidth = (45F + Fonts.fontSemibold40.getStringWidth(entity.name)
             .coerceAtLeast(Fonts.fontSemibold40.getStringWidth(decimalFormat.format(entity.health)))).coerceAtLeast(120F)
         return Border(0F, 0F, tWidth, 48F)
     }
-
 }

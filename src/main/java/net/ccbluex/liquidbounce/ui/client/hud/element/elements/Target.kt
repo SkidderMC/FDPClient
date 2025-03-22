@@ -38,8 +38,8 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
     private val targetStyles = mutableListOf<TargetStyle>()
 
     private val multiTarget by boolean("Multi Target", false)
-    private val maxTargets by int("Max Targets", 50, 1..50)
-    private val padding by int("Padding", 3, 0..20)
+    private val maxTargets by int("Max Targets", 50, 1..50) { multiTarget }
+    private val padding by int("Padding", 3, 0..20) { multiTarget }
 
     private val onlyPlayer by boolean("Only player", false)
     private val showInChat by boolean("Show When Chat", true)
@@ -71,7 +71,6 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
 
     private fun initStyles(): Array<String> {
         return addStyles(
-            NormalTH(this),
             CrossSineTH(this),
             ExhibitionTH(this),
             FDPClassicTH(this),
