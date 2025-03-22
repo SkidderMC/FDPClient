@@ -853,7 +853,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
     /**
      * Update rotations to enemy
      */
- private fun updateRotations(entity: Entity): Boolean {
+    private fun updateRotations(entity: Entity): Boolean {
         val player = mc.thePlayer ?: return false
 
         if (shouldPrioritize()) return false
@@ -863,16 +863,13 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
             return player.getDistanceToEntityBox(entity) <= range
         }
 
-        
-        val originalRotation = currentRotation ?: player.rotation
-
-        
         val prediction = entity.currPos.subtract(entity.prevPos).times(2 + predictEnemyPosition.toDouble())
+
         val boundingBox = entity.hitBox.offset(prediction)
         val (currPos, oldPos) = player.currPos to player.prevPos
 
         val simPlayer = SimulatedPlayer.fromClientPlayer(RotationUtils.modifiedInput)
-        simPlayer.rotationYaw = originalRotation.yaw
+        simPlayer.rotationYaw = (currentRotation ?: player.rotation).yaw
 
         var pos = currPos
         repeat(predictClientMovement) {
@@ -896,7 +893,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
         
         player.setPosAndPrevPos(pos)
 
-         val foundRotation = searchCenter(
+        val rotation = searchCenter(
             boundingBox,
             generateSpotBasedOnDistance,
             outBorder && !attackTimer.hasTimePassed(attackDelay / 2),
@@ -909,20 +906,10 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
             horizontalSearch = horizontalBodySearchRange
         )
 
-        if (foundRotation == null) {
+        if (rotation == null) {
             player.setPosAndPrevPos(currPos, oldPos)
             return false
         }
-
-        
-        val smoothingFactor = 0.2f 
-        val smoothedYaw = originalRotation.yaw + (foundRotation.yaw - originalRotation.yaw) * smoothingFactor
-        val smoothedPitch = originalRotation.pitch + (foundRotation.pitch - originalRotation.pitch) * smoothingFactor
-        val smoothedRotation = Rotation(smoothedYaw, smoothedPitch)
-        
-        
-        setTargetRotation(smoothedRotation, options = options)
-        
        
         player.setPosAndPrevPos(currPos, oldPos)
         return true
