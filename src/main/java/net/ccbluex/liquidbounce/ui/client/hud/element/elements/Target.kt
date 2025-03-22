@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 
-import net.ccbluex.liquidbounce.config.ListValue
 import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
@@ -34,9 +33,10 @@ import java.awt.Color
 @ElementInfo(name = "Targets")
 class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE, Side.Vertical.MIDDLE)) {
 
-    private val targetStyles = mutableListOf<TargetStyle>()
+    private data class TargetData(val target: EntityLivingBase, var timer: Float)
 
-    val styleValue: ListValue
+    private val targetStyles = mutableListOf<TargetStyle>()
+    val styleValue by choices("Style", initStyles(), "Classic")
     private val onlyPlayer by boolean("Only player", false)
     private val showInChat by boolean("Show When Chat", true)
     private val resetBar by boolean("ResetBarWhenHiding", false)
@@ -48,18 +48,17 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
     private val shadowValue by boolean("Shadow", false)
     private val backgroundMode by choices("Background-Color", arrayOf("Custom", "Rainbow"), "Custom")
     private val backgroundColor by color("Background", Color.BLACK) { backgroundMode == "Custom" }
+    private val multiTarget by boolean("Multi Target", false)
+    private val maxTargets by int("Max Targets", 50, 1..50)
 
-    private var mainTarget: EntityLivingBase? = null
+    private val mainTargets = mutableListOf<TargetData>()
+    private var clearTimer = 0F
     private var animProgress = 0F
     var bgColor = Color(-1)
     var barColor = Color(-1)
 
     val combinedValues: Set<Value<*>>
         get() = super.values.toSet() + targetStyles.flatMap { it.values }.toSet()
-
-    init {
-        styleValue = choices("Style", initStyles(), "Classic")
-    }
 
     private fun initStyles(): Array<String> {
         return addStyles(
@@ -85,39 +84,64 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
         }
     }
 
-    private fun getCurrentStyle(styleName: String): TargetStyle? = targetStyles.find { it.name.equals(styleName, true) }
+    private fun getCurrentStyle(styleName: String): TargetStyle? {
+        return targetStyles.find { it.name.equals(styleName, ignoreCase = true) }
+    }
 
     override fun drawElement(): Border? {
         assumeNonVolatile = true
+        val currentStyle = getCurrentStyle(styleValue) ?: return null
 
-        val currentStyle = getCurrentStyle(styleValue.get()) ?: return null
-
-        val actualTarget = when {
-            CombatManager.target != null && (!onlyPlayer || CombatManager.target is EntityPlayer) -> CombatManager.target
-            (mc.currentScreen is GuiChat && showInChat) || mc.currentScreen is GuiHudDesigner -> mc.thePlayer
-            else -> null
+        val newTargets: List<EntityLivingBase> = when {
+            CombatManager.target != null && (!onlyPlayer || CombatManager.target is EntityPlayer) ->
+                listOfNotNull(CombatManager.target)
+            (mc.currentScreen is GuiChat && showInChat) || mc.currentScreen is GuiHudDesigner ->
+                listOfNotNull(mc.thePlayer)
+            else -> emptyList()
         }
 
-        updateAnimationProgress(actualTarget != null)
+        if (newTargets.isNotEmpty()) {
+            if (!multiTarget) {
+                mainTargets.clear()
+                mainTargets.add(TargetData(newTargets[0], 0f))
+            } else {
+                for (data in mainTargets) {
+                    if (newTargets.any { it === data.target }) {
+                        data.timer = 0f
+                    }
+                }
+                for (target in newTargets) {
+                    if (mainTargets.none { it.target === target } && mainTargets.size < maxTargets) {
+                        mainTargets.add(TargetData(target, 0f))
+                    }
+                }
+            }
+        } else {
+            for (data in mainTargets) {
+                data.timer += deltaTime
+            }
+        }
 
-        val preBarColor = getBarColor(actualTarget)
+        mainTargets.removeIf { it.timer >= 8f }
+
+        if (mainTargets.isEmpty()) {
+            if (resetBar) currentStyle.easingHealth = 0F
+            assumeNonVolatile = false
+            return currentStyle.getBorder(null)
+        }
+
+        updateAnimationProgress(showTarget = true)
+
+        val firstTarget = mainTargets.firstOrNull()?.target
+        val preBarColor = getBarColor(firstTarget)
         val preBgColor = Color(backgroundColor.rgb)
 
-        barColor = ColorUtils.targetReAlpha(preBarColor, preBarColor.alpha / 255F * (1F - animProgress))
-        bgColor = ColorUtils.targetReAlpha(preBgColor, preBgColor.alpha / 255F * (1F - animProgress))
+        barColor = Color(preBarColor.red, preBarColor.green, preBarColor.blue, (preBarColor.alpha / 255F * (1F - animProgress) * 255).toInt())
+        bgColor = Color(preBgColor.red, preBgColor.green, preBgColor.blue, (preBgColor.alpha / 255F * (1F - animProgress) * 255).toInt())
 
-        mainTarget = if (actualTarget != null || !fadeValue) actualTarget else if (animProgress >= 1F) null else mainTarget
-
-
-        val returnBorder = currentStyle.getBorder(mainTarget) ?: return null
+        val returnBorder = currentStyle.getBorder(firstTarget) ?: return null
         val borderWidth = returnBorder.x2 - returnBorder.x
         val borderHeight = returnBorder.y2 - returnBorder.y
-
-        if (mainTarget == null) {
-            if (resetBar)
-                currentStyle.easingHealth = 0F
-            return returnBorder
-        }
 
         val calcScaleX = animProgress * (4F / (borderWidth / 2F))
         val calcScaleY = animProgress * (4F / (borderHeight / 2F))
@@ -129,15 +153,38 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
         }
 
         if (currentStyle is ChillTH) {
-            currentStyle.updateData(renderX.toFloat() + calcTranslateX, renderY.toFloat() + calcTranslateY, calcScaleX, calcScaleY)
+            currentStyle.updateData(
+                renderX.toFloat() + calcTranslateX,
+                renderY.toFloat() + calcTranslateY,
+                calcScaleX,
+                calcScaleY
+            )
         }
 
-        mainTarget?.let { currentStyle.drawTarget(it) }
+        if (multiTarget) {
+            val columns = 2
+            for (i in mainTargets.indices) {
+                val data = mainTargets[i]
+                val col = i % columns
+                val row = i / columns
+                glPushMatrix()
+                glTranslated((col * borderWidth).toDouble(), (row * borderHeight).toDouble(), 0.0)
+                currentStyle.drawTarget(data.target)
+                glPopMatrix()
+            }
+        } else {
+            var offsetY = 0F
+            for (data in mainTargets) {
+                glPushMatrix()
+                glTranslated(0.0, offsetY.toDouble(), 0.0)
+                currentStyle.drawTarget(data.target)
+                glPopMatrix()
+                offsetY += borderHeight
+            }
+        }
 
         GlStateManager.resetColor()
-
         assumeNonVolatile = false
-
         return returnBorder
     }
 
