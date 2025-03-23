@@ -23,7 +23,7 @@ public class MixinLayerArmorBase {
     public void doRenderLayer(EntityLivingBase entity, float limbSwing, float limbSwingAmount,
                               float partialTicks, float ageInTicks, float netHeadYaw,
                               float headPitch, float scale, CallbackInfo ci) {
-        if (CustomModel.INSTANCE.getState()) {
+        if (CustomModel.INSTANCE.getState() && !CustomModel.INSTANCE.getMode().equals("Female")) {
             ci.cancel();
         }
     }

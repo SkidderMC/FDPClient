@@ -152,7 +152,6 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
     @Overwrite
     public<T extends EntityLivingBase> void doRender(T entity, double x, double y, double z, float entityYaw, float partialTicks)
     {
-        final CustomModel customModel = CustomModel.INSTANCE;
         pushMatrix();
         disableCull();
         this.mainModel.swingProgress = this.getSwingProgress(entity, partialTicks);
