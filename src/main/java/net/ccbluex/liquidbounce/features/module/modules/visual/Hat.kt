@@ -27,7 +27,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
 import java.awt.Color
 
-object ChineseHat : Module("ChineseHat", Category.VISUAL) {
+object ChineseHat : Module("ChineseHat", Category.VISUAL, gameDetecting = false) {
 
     private val useChineseHatTexture by boolean("UseChineseHatTexture", false)
 

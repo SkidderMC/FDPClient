@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.utils.extensions.rotation
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import org.lwjgl.opengl.Display
 
-object FreeLook : Module("FreeLook", Category.VISUAL) {
+object FreeLook : Module("FreeLook", Category.VISUAL, gameDetecting = false) {
 
     private val autoF5 by boolean("AutoF5", true).subjective()
 

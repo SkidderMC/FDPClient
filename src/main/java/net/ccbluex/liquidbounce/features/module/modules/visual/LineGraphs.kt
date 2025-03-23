@@ -19,7 +19,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.MathHelper
 import net.minecraft.util.Vec3
 import net.minecraft.util.Vec3i
-import org.lwjgl.opengl.GL11
+import org.lwjgl.opengl.GL11.*
 import kotlin.math.cos
 import kotlin.math.max
 import kotlin.math.min
@@ -27,10 +27,14 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import java.util.Random
 
-object LineGraphs : Module("LineGlyphs", Category.VISUAL) {
+object LineGraphs : Module("LineGlyphs", Category.VISUAL, gameDetecting = false) {
+
+    init {
+        state = true
+    }
 
     val slowSpeed by boolean("Slow Speed", false)
-    val glyphCount by int("Glyphs Count", 70, 0..200)
+    private val glyphCount by int("Glyphs Count", 70, 0..200)
 
     private val random = Random(93882L)
     private val temp3DVectors = mutableListOf<Vec3>()
@@ -217,33 +221,33 @@ object LineGraphs : Module("LineGlyphs", Category.VISUAL) {
 
     private object GlyphVectorRenderer {
         fun with3DRendering(render: () -> Unit) {
-            GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
-            GL11.glPushMatrix()
+            glPushAttrib(GL_ALL_ATTRIB_BITS)
+            glPushMatrix()
             try {
                 val renderManager = mc.renderManager
                 val viewerX = renderManager.viewerPosX
                 val viewerY = renderManager.viewerPosY
                 val viewerZ = renderManager.viewerPosZ
-                GlStateManager.tryBlendFuncSeparate(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, 1, 0)
-                GL11.glEnable(GL11.GL_BLEND)
-                GL11.glLineWidth(1.0f)
-                GL11.glPointSize(1.0f)
-                GL11.glEnable(GL11.GL_POLYGON_SMOOTH)
-                GL11.glDisable(GL11.GL_TEXTURE_2D)
+                GlStateManager.tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, 1, 0)
+                glEnable(GL_BLEND)
+                glLineWidth(1.0f)
+                glPointSize(1.0f)
+                glEnable(GL_POLYGON_SMOOTH)
+                glDisable(GL_TEXTURE_2D)
                 mc.entityRenderer.disableLightmap()
-                GL11.glDisable(GL11.GL_LIGHTING)
-                GL11.glShadeModel(GL11.GL_SMOOTH)
-                GL11.glAlphaFunc(GL11.GL_GREATER, 0.003921569f)
-                GL11.glDisable(GL11.GL_CULL_FACE)
-                GL11.glDepthMask(false)
-                GL11.glEnable(GL11.GL_LINE_SMOOTH)
-                GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST)
-                GL11.glTranslated(-viewerX, -viewerY, -viewerZ)
+                glDisable(GL_LIGHTING)
+                glShadeModel(GL_SMOOTH)
+                glAlphaFunc(GL_GREATER, 0.003921569f)
+                glDisable(GL_CULL_FACE)
+                glDepthMask(false)
+                glEnable(GL_LINE_SMOOTH)
+                glHint(GL_LINE_SMOOTH_HINT, GL_NICEST)
+                glTranslated(-viewerX, -viewerY, -viewerZ)
                 render()
-                GL11.glTranslated(viewerX, viewerY, viewerZ)
+                glTranslated(viewerX, viewerY, viewerZ)
             } finally {
-                GL11.glPopMatrix()
-                GL11.glPopAttrib()
+                glPopMatrix()
+                glPopAttrib()
             }
         }
 
@@ -271,9 +275,9 @@ object LineGraphs : Module("LineGlyphs", Category.VISUAL) {
         fun renderGlyph(glyph: GlyphVectorGenerator, colorIndex: Int, alphaPercentage: Float, partialTicks: Float) {
             if (glyph.vectorList.size < 2) return
             val lineWidth = calcLineWidth(glyph)
-            GL11.glLineWidth(lineWidth)
+            glLineWidth(lineWidth)
             val worldRenderer = tessellator.worldRenderer
-            worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR)
+            worldRenderer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR)
             var currentColorIndex = colorIndex
             val lineVectors = glyph.getPositionVectors(partialTicks)
             lineVectors.forEach { pos ->
@@ -287,8 +291,8 @@ object LineGraphs : Module("LineGlyphs", Category.VISUAL) {
                 currentColorIndex += 180
             }
             tessellator.draw()
-            GL11.glPointSize(lineWidth * 3f)
-            worldRenderer.begin(GL11.GL_POINTS, DefaultVertexFormats.POSITION_COLOR)
+            glPointSize(lineWidth * 3f)
+            worldRenderer.begin(GL_POINTS, DefaultVertexFormats.POSITION_COLOR)
             currentColorIndex = colorIndex
             val pointVectors = glyph.getPositionVectors(partialTicks)
             pointVectors.forEach { pos ->
@@ -305,19 +309,19 @@ object LineGraphs : Module("LineGlyphs", Category.VISUAL) {
         }
 
         fun restoreDefaultGlState() {
-            GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS)
+            glPushAttrib(GL_ALL_ATTRIB_BITS)
             try {
-                GL11.glLineWidth(1.0f)
-                GL11.glPointSize(1.0f)
-                GL11.glEnable(GL11.GL_TEXTURE_2D)
-                GL11.glEnable(GL11.GL_LIGHTING)
-                GL11.glEnable(GL11.GL_CULL_FACE)
-                GL11.glDepthMask(true)
-                GL11.glShadeModel(GL11.GL_FLAT)
-                GL11.glAlphaFunc(GL11.GL_GREATER, 0.1f)
+                glLineWidth(1.0f)
+                glPointSize(1.0f)
+                glEnable(GL_TEXTURE_2D)
+                glEnable(GL_LIGHTING)
+                glEnable(GL_CULL_FACE)
+                glDepthMask(true)
+                glShadeModel(GL_FLAT)
+                glAlphaFunc(GL_GREATER, 0.1f)
                 GlStateManager.resetColor()
             } finally {
-                GL11.glPopAttrib()
+                glPopAttrib()
             }
         }
     }

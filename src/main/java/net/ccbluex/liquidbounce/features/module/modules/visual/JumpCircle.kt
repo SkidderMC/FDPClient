@@ -36,7 +36,7 @@ import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
-object JumpCircle : Module("JumpCircle", Category.VISUAL) {
+object JumpCircle : Module("JumpCircle", Category.VISUAL, gameDetecting = false) {
     private val colorMode by choices("Color", arrayOf("Custom", "Theme"), "Theme")
     private val circleRadius by floatRange("CircleRadius", 0.15F..0.8F, 0F..3F)
     private val innerColor = color("InnerColor", Color(0, 0, 0, 50)) { colorMode == "Custom" }
