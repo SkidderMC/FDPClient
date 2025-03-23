@@ -43,6 +43,7 @@
     "gui.MixinGuiSlot",
     "gui.MixinGuiSpectator",
     "gui.MixinServerSelectionList",
+    "gui.MixinGuiPlayerTabOverlay",
     "item.MixinItem",
     "item.MixinItemRenderer",
     "item.MixinMixinItemStack",

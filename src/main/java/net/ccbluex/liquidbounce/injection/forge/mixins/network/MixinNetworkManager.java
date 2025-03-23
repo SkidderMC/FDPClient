@@ -9,6 +9,8 @@ import io.netty.channel.ChannelHandlerContext;
 import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.event.EventState;
 import net.ccbluex.liquidbounce.event.PacketEvent;
+import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.ccbluex.liquidbounce.utils.client.PPSCounter;
@@ -16,6 +18,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(NetworkManager.class)
 public class MixinNetworkManager {
@@ -44,5 +47,16 @@ public class MixinNetworkManager {
         }
 
         PPSCounter.INSTANCE.registerType(PPSCounter.PacketType.SEND);
+    }
+
+
+    /**
+     * show player head in tab bar
+     */
+    @Inject(method = "getIsencrypted", at = @At("HEAD"), cancellable = true)
+    private void getIsencrypted(CallbackInfoReturnable<Boolean> cir) {
+        if(HUDModule.INSTANCE.getFlagRenderTabOverlay()) {
+            cir.setReturnValue(true);
+        }
     }
 }
