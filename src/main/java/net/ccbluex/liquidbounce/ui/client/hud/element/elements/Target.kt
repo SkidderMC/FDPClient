@@ -37,8 +37,8 @@ class Targets : Element("Target", -46.0, -40.0, 1F, Side(Side.Horizontal.MIDDLE,
 
     private val targetStyles = mutableListOf<TargetStyle>()
 
-    private val multiTarget by boolean("Multi Target", false)
-    private val maxTargets by int("Max Targets", 50, 1..50) { multiTarget }
+    private val multiTarget by boolean("Multi Target", true)
+    private val maxTargets by int("Max Targets", 4, 1..50) { multiTarget }
     private val padding by int("Padding", 3, 0..20) { multiTarget }
 
     private val freezeTargets by boolean("Freeze Targets", false) { multiTarget }

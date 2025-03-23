@@ -59,12 +59,12 @@ class Notifications(
         "Color-Mode", arrayOf("Custom", "Fade", "Theme"), "Custom"
     )
 
-    private val customColor1 by color("Custom-Color-1", Color(0xFF0054).rgb) { colorMode == "Custom" }
-    private val customColor2 by color("Custom-Color-2", Color(0x001300).rgb) { colorMode == "Custom" }
+    private val customColor1 by color("Custom-Color-1", Color(0xFF0054).rgb) { styleValue == "ZAVZ" && colorMode == "Custom" }
+    private val customColor2 by color("Custom-Color-2", Color(0x001300).rgb) { styleValue == "ZAVZ" && colorMode == "Custom" }
 
-    private val fadeColor1 by color("Fade-Color-1", Color(0xFF0054).rgb) { colorMode == "Fade" }
-    private val fadeColor2 by color("Fade-Color-2", Color(0x001300).rgb) { colorMode == "Fade" }
-    private val fadeDistance by int("Fade-Distance", 50, 0..100) { colorMode == "Fade" }
+    private val fadeColor1 by color("Fade-Color-1", Color(0xFF0054).rgb) { styleValue == "ZAVZ" && colorMode == "Fade" }
+    private val fadeColor2 by color("Fade-Color-2", Color(0x001300).rgb) { styleValue == "ZAVZ" && colorMode == "Fade" }
+    private val fadeDistance by int("Fade-Distance", 50, 0..100) { styleValue == "ZAVZ" && colorMode == "Fade" }
 
     private val backgroundMode by boolean("Background-Color", true)
     private val backgroundColor by color("Background", Color(0, 0, 0, 120)) { backgroundMode }
