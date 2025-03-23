@@ -81,6 +81,13 @@ public class MixinModelPlayerFix extends ModelBiped {
     public ModelRenderer bF3;
     public ModelRenderer bF4;
 
+    private float breastOffsetT1 = 0.0F;
+    private float breastOffsetT2 = 0.0F;
+    private float breastOffsetF1 = 0.0F;
+    private float breastOffsetF2 = 0.0F;
+    private float breastOffsetF3 = 0.0F;
+    private float breastOffsetF4 = 0.0F;
+
     @Shadow
     private boolean smallArms;
 
@@ -505,7 +512,7 @@ public class MixinModelPlayerFix extends ModelBiped {
             bF4.setRotationPoint(0.0F, 0.0F, 0.0F);
         }
 
-        float rotationDegrees = CustomModel.INSTANCE.getFemaleBreastRotation();
+        float rotationDegrees = CustomModel.INSTANCE.getBreastRotation();
 
         GlStateManager.pushMatrix();
         GlStateManager.rotate(rotationDegrees, 1.0F, 0.0F, 0.0F);
@@ -516,6 +523,58 @@ public class MixinModelPlayerFix extends ModelBiped {
         bF3.render(scale);
         bF4.render(scale);
         GlStateManager.popMatrix();
+
+        if (!CustomModel.INSTANCE.getBreastPhysics()) {
+            bT1.rotationPointY = 0.0F;
+            bT2.rotationPointY = 0.0F;
+            bF1.rotationPointY = 0.0F;
+            bF2.rotationPointY = 0.0F;
+            bF3.rotationPointY = 0.0F;
+            bF4.rotationPointY = 0.0F;
+
+            bT1.render(scale);
+            bT2.render(scale);
+            bF1.render(scale);
+            bF2.render(scale);
+            bF3.render(scale);
+            bF4.render(scale);
+
+        } else {
+            float gravity = CustomModel.INSTANCE.getBreastGravity();
+            float bounce = CustomModel.INSTANCE.getBreastBounce();
+
+            breastOffsetT1 += (0 - breastOffsetT1) * gravity;
+            breastOffsetT2 += (0 - breastOffsetT2) * gravity;
+            breastOffsetF1 += (0 - breastOffsetF1) * gravity;
+            breastOffsetF2 += (0 - breastOffsetF2) * gravity;
+            breastOffsetF3 += (0 - breastOffsetF3) * gravity;
+            breastOffsetF4 += (0 - breastOffsetF4) * gravity;
+
+            if (entityIn.motionY > 0.0D) {
+                float jumpForce = (float)entityIn.motionY * 0.5F;
+                breastOffsetT1 -= jumpForce * bounce;
+                breastOffsetT2 -= jumpForce * bounce;
+                breastOffsetF1 -= jumpForce * bounce;
+                breastOffsetF2 -= jumpForce * bounce;
+                breastOffsetF3 -= jumpForce * bounce;
+                breastOffsetF4 -= jumpForce * bounce;
+            }
+
+            bT1.rotationPointY = breastOffsetT1;
+            bT1.render(scale);
+
+            bT2.rotationPointY = breastOffsetT2;
+            bT2.render(scale);
+
+            bF1.rotationPointY = breastOffsetF1;
+            bF1.render(scale);
+
+            bF2.rotationPointY = breastOffsetF2;
+            bF3.render(scale);
+
+            bF4.rotationPointY = breastOffsetF4;
+            bF4.render(scale);
+        }
     }
 
     @Inject(method = "setRotationAngles", at = @At("RETURN"))
