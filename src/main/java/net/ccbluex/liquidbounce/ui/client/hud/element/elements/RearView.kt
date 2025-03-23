@@ -25,26 +25,18 @@ class RearView : Element("RearView") {
     private var framebufferHeight by int("Framebuffer Height", 600, 600..1080)
     private var thirdPersonView by boolean("Third Person View", false)
 
-    var pos: Vec3
-
-    var yaw: Float
-
-    var pitch: Float
+    private var pos: Vec3 = Vec3(0.0, 0.0, 0.0)
+    private var yaw: Float = 0f
+    private var pitch: Float = 0f
 
     private var isRecording: Boolean = false
-
     private var isValid: Boolean = false
-
     private var isRendering: Boolean = false
-
     private var firstUpdate = false
 
     private lateinit var frameBuffer: Framebuffer
 
     init {
-        this.pos = Vec3(0.0, 0.0, 0.0)
-        this.yaw = 0f
-        this.pitch = 0f
         updateFramebuffer()
     }
 
@@ -56,25 +48,29 @@ class RearView : Element("RearView") {
         val xOffset = 2f
         val yOffset = 100f
         val sr = ScaledResolution(mc)
-        this.isRendering = true
+        isRendering = true
+
         drawRect(
             sr.scaledWidth - xOffset - 201,
             sr.scaledHeight - yOffset - 121,
             sr.scaledWidth - xOffset + 1,
             sr.scaledHeight - yOffset + 1,
             -1
-        ) //background
-        if (this.isValid) {
-            this.pos = mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks).subtract(0.0, 1.0, 0.0)
-            this.yaw = mc.thePlayer.rotationYaw - 180.0f
-            this.pitch = 0.0f
-            this.render(
+        )
+
+        if (isValid) {
+            pos = mc.thePlayer.getPositionEyes(mc.timer.renderPartialTicks).subtract(0.0, 1.0, 0.0)
+            yaw = mc.thePlayer.rotationYaw - 180.0f
+            pitch = 0.0f
+
+            render(
                 sr.scaledWidth - xOffset - 200,
                 sr.scaledHeight - yOffset - 120,
                 sr.scaledWidth - xOffset,
                 sr.scaledHeight - yOffset
             )
         }
+
         return Border(
             sr.scaledWidth - xOffset - 201,
             sr.scaledHeight - yOffset - 121,
@@ -91,6 +87,7 @@ class RearView : Element("RearView") {
             GlStateManager.disableAlpha()
             GlStateManager.disableBlend()
             GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+
             frameBuffer.bindFramebufferTexture()
             val tessellator = Tessellator.getInstance()
             val worldRenderer = tessellator.worldRenderer
@@ -119,112 +116,154 @@ class RearView : Element("RearView") {
     }
 
     private fun updateFbo() {
-        if (!this.firstUpdate) {
+        if (!firstUpdate) {
             mc.renderGlobal.loadRenderers()
-            this.firstUpdate = true
+            firstUpdate = true
         }
-        if (mc.thePlayer != null) {
-            val posX = mc.thePlayer.posX
-            val posY = mc.thePlayer.posY
-            val posZ = mc.thePlayer.posZ
-            val prevPosX = mc.thePlayer.prevPosX
-            val prevPosY = mc.thePlayer.prevPosY
-            val prevPosZ = mc.thePlayer.prevPosZ
-            val lastTickPosX = mc.thePlayer.lastTickPosX
-            val lastTickPosY = mc.thePlayer.lastTickPosY
-            val lastTickPosZ = mc.thePlayer.lastTickPosZ
 
-            val rotationYaw = mc.thePlayer.rotationYaw
-            val prevRotationYaw = mc.thePlayer.prevRotationYaw
-            val rotationPitch = mc.thePlayer.rotationPitch
-            val prevRotationPitch = mc.thePlayer.prevRotationPitch
-            val sprinting = mc.thePlayer.isSprinting
+        mc.thePlayer?.let { player ->
+            val originalState = saveState()
+            try {
+                player.posX = pos.xCoord
+                player.posY = pos.yCoord
+                player.posZ = pos.zCoord
 
-            val hideGUI = mc.gameSettings.hideGUI
-            val clouds = mc.gameSettings.clouds
-            val thirdPersonViewSetting = mc.gameSettings.thirdPersonView
-            val gamma = mc.gameSettings.gammaSetting
-            val ambientOcclusion = mc.gameSettings.ambientOcclusion
-            val viewBobbing = mc.gameSettings.viewBobbing
-            val particles = mc.gameSettings.particleSetting
-            val displayWidth = mc.displayWidth
-            val displayHeight = mc.displayHeight
+                player.prevPosX = pos.xCoord
+                player.prevPosY = pos.yCoord
+                player.prevPosZ = pos.zCoord
 
-            val frameLimit = mc.gameSettings.limitFramerate
-            val fovSetting = mc.gameSettings.fovSetting
+                player.lastTickPosX = pos.xCoord
+                player.lastTickPosY = pos.yCoord
+                player.lastTickPosZ = pos.zCoord
 
-            mc.thePlayer.posX = pos.xCoord
-            mc.thePlayer.posY = pos.yCoord
-            mc.thePlayer.posZ = pos.zCoord
+                player.rotationYaw = yaw
+                player.prevRotationYaw = yaw
+                player.rotationPitch = pitch
+                player.prevRotationPitch = pitch
+                player.isSprinting = false
 
-            mc.thePlayer.prevPosX = pos.xCoord
-            mc.thePlayer.prevPosY = pos.yCoord
-            mc.thePlayer.prevPosZ = pos.zCoord
+                mc.gameSettings.hideGUI = true
+                mc.gameSettings.clouds = 0
+                mc.gameSettings.thirdPersonView = if (thirdPersonView) 1 else 0
+                mc.gameSettings.ambientOcclusion = 0
+                mc.gameSettings.viewBobbing = false
+                mc.gameSettings.particleSetting = 0
+                mc.displayWidth = framebufferWidth
+                mc.displayHeight = framebufferHeight
 
-            mc.thePlayer.lastTickPosX = pos.xCoord
-            mc.thePlayer.lastTickPosY = pos.yCoord
-            mc.thePlayer.lastTickPosZ = pos.zCoord
+                mc.gameSettings.limitFramerate = 10
+                mc.gameSettings.fovSetting = Fov.toFloat()
 
-            mc.thePlayer.rotationYaw = this.yaw
-            mc.thePlayer.prevRotationYaw = this.yaw
-            mc.thePlayer.rotationPitch = this.pitch
-            mc.thePlayer.prevRotationPitch = this.pitch
-            mc.thePlayer.isSprinting = false
+                isRecording = true
+                frameBuffer.bindFramebuffer(true)
 
-            mc.gameSettings.hideGUI = true
-            mc.gameSettings.clouds = 0
-            mc.gameSettings.thirdPersonView = if (thirdPersonView) 1 else 0
-            mc.gameSettings.ambientOcclusion = 0
-            mc.gameSettings.viewBobbing = false
-            mc.gameSettings.particleSetting = 0
-            mc.displayWidth = framebufferWidth
-            mc.displayHeight = framebufferHeight
+                mc.entityRenderer.renderWorld(mc.timer.renderPartialTicks, System.nanoTime())
+                mc.entityRenderer.setupOverlayRendering()
 
-            mc.gameSettings.limitFramerate = 10
-            mc.gameSettings.fovSetting = Fov.toFloat()  // Use the dynamically set FOV value
+                frameBuffer.unbindFramebuffer()
+                isRecording = false
 
-            this.isRecording = true
-            frameBuffer.bindFramebuffer(true)
-
-            mc.entityRenderer.renderWorld(mc.timer.renderPartialTicks, System.nanoTime())
-            mc.entityRenderer.setupOverlayRendering()
-
-            frameBuffer.unbindFramebuffer()
-            this.isRecording = false
-
-            mc.thePlayer.posX = posX
-            mc.thePlayer.posY = posY
-            mc.thePlayer.posZ = posZ
-
-            mc.thePlayer.prevPosX = prevPosX
-            mc.thePlayer.prevPosY = prevPosY
-            mc.thePlayer.prevPosZ = prevPosZ
-
-            mc.thePlayer.lastTickPosX = lastTickPosX
-            mc.thePlayer.lastTickPosY = lastTickPosY
-            mc.thePlayer.lastTickPosZ = lastTickPosZ
-
-            mc.thePlayer.rotationYaw = rotationYaw
-            mc.thePlayer.prevRotationYaw = prevRotationYaw
-            mc.thePlayer.rotationPitch = rotationPitch
-            mc.thePlayer.prevRotationPitch = prevRotationPitch
-            mc.thePlayer.isSprinting = sprinting
-
-            mc.gameSettings.hideGUI = hideGUI
-            mc.gameSettings.clouds = clouds
-            mc.gameSettings.thirdPersonView = thirdPersonViewSetting
-            mc.gameSettings.gammaSetting = gamma
-            mc.gameSettings.ambientOcclusion = ambientOcclusion
-            mc.gameSettings.viewBobbing = viewBobbing
-            mc.gameSettings.particleSetting = particles
-            mc.displayWidth = displayWidth
-            mc.displayHeight = displayHeight
-            mc.gameSettings.limitFramerate = frameLimit
-            mc.gameSettings.fovSetting = fovSetting
-
-            this.isValid = true
-            this.isRendering = false
+                isValid = true
+            } finally {
+                restoreState(originalState)
+                isRendering = false
+            }
         }
+    }
+
+    private data class RenderState(
+        val posX: Double,
+        val posY: Double,
+        val posZ: Double,
+        val prevPosX: Double,
+        val prevPosY: Double,
+        val prevPosZ: Double,
+        val lastTickPosX: Double,
+        val lastTickPosY: Double,
+        val lastTickPosZ: Double,
+        val rotationYaw: Float,
+        val prevRotationYaw: Float,
+        val rotationPitch: Float,
+        val prevRotationPitch: Float,
+        val isSprinting: Boolean,
+        val hideGUI: Boolean,
+        val clouds: Int,
+        val thirdPersonView: Int,
+        val gamma: Float,
+        val ambientOcclusion: Int,
+        val viewBobbing: Boolean,
+        val particleSetting: Int,
+        val displayWidth: Int,
+        val displayHeight: Int,
+        val limitFramerate: Int,
+        val fovSetting: Float
+    )
+
+    private fun saveState(): RenderState {
+        val settings = mc.gameSettings
+        val player = mc.thePlayer
+        return RenderState(
+            posX = player.posX,
+            posY = player.posY,
+            posZ = player.posZ,
+            prevPosX = player.prevPosX,
+            prevPosY = player.prevPosY,
+            prevPosZ = player.prevPosZ,
+            lastTickPosX = player.lastTickPosX,
+            lastTickPosY = player.lastTickPosY,
+            lastTickPosZ = player.lastTickPosZ,
+            rotationYaw = player.rotationYaw,
+            prevRotationYaw = player.prevRotationYaw,
+            rotationPitch = player.rotationPitch,
+            prevRotationPitch = player.prevRotationPitch,
+            isSprinting = player.isSprinting,
+            hideGUI = settings.hideGUI,
+            clouds = settings.clouds,
+            thirdPersonView = settings.thirdPersonView,
+            gamma = settings.gammaSetting,
+            ambientOcclusion = settings.ambientOcclusion,
+            viewBobbing = settings.viewBobbing,
+            particleSetting = settings.particleSetting,
+            displayWidth = mc.displayWidth,
+            displayHeight = mc.displayHeight,
+            limitFramerate = settings.limitFramerate,
+            fovSetting = settings.fovSetting
+        )
+    }
+
+    private fun restoreState(state: RenderState) {
+        val settings = mc.gameSettings
+        val player = mc.thePlayer
+
+        player.posX = state.posX
+        player.posY = state.posY
+        player.posZ = state.posZ
+
+        player.prevPosX = state.prevPosX
+        player.prevPosY = state.prevPosY
+        player.prevPosZ = state.prevPosZ
+
+        player.lastTickPosX = state.lastTickPosX
+        player.lastTickPosY = state.lastTickPosY
+        player.lastTickPosZ = state.lastTickPosZ
+
+        player.rotationYaw = state.rotationYaw
+        player.prevRotationYaw = state.prevRotationYaw
+        player.rotationPitch = state.rotationPitch
+        player.prevRotationPitch = state.prevRotationPitch
+        player.isSprinting = state.isSprinting
+
+        settings.hideGUI = state.hideGUI
+        settings.clouds = state.clouds
+        settings.thirdPersonView = state.thirdPersonView
+        settings.gammaSetting = state.gamma
+        settings.ambientOcclusion = state.ambientOcclusion
+        settings.viewBobbing = state.viewBobbing
+        settings.particleSetting = state.particleSetting
+        mc.displayWidth = state.displayWidth
+        mc.displayHeight = state.displayHeight
+        settings.limitFramerate = state.limitFramerate
+        settings.fovSetting = state.fovSetting
     }
 
     fun changeFov(fov: Int) {
