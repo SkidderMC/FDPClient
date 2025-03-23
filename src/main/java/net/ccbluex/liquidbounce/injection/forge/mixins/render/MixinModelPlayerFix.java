@@ -16,6 +16,7 @@ import net.minecraft.client.model.ModelRenderer;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
@@ -469,6 +470,15 @@ public class MixinModelPlayerFix extends ModelBiped {
             return;
         }
 
+        EntityPlayer player = (EntityPlayer) entityIn;
+        if (CustomModel.INSTANCE.getBreastNoArmor()) {
+            for (ItemStack stack : player.inventory.armorInventory) {
+                if (stack != null) {
+                    return;
+                }
+            }
+        }
+
         if (bT1 == null) {
             bT1 = new ModelRenderer(this, 20, 20);
             bT1.addBox(-3.0F, 1.0F, -3.0F, 6, 1, 1, 0.0F);
@@ -495,12 +505,17 @@ public class MixinModelPlayerFix extends ModelBiped {
             bF4.setRotationPoint(0.0F, 0.0F, 0.0F);
         }
 
+        float rotationDegrees = CustomModel.INSTANCE.getFemaleBreastRotation();
+
+        GlStateManager.pushMatrix();
+        GlStateManager.rotate(rotationDegrees, 1.0F, 0.0F, 0.0F);
         bT1.render(scale);
         bT2.render(scale);
         bF1.render(scale);
         bF2.render(scale);
         bF3.render(scale);
         bF4.render(scale);
+        GlStateManager.popMatrix();
     }
 
     @Inject(method = "setRotationAngles", at = @At("RETURN"))
