@@ -88,7 +88,7 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL, gameDetecting = false)
             disableCull()
             if (glIsEnabled(GL_LIGHTING)) disableLighting()
             glShadeModel(GL_SMOOTH)
-            tryBlendFuncSeparate(770, 771, 1, 0)
+            tryBlendFuncSeparate(770, 32772, 1, 0)
 
             val renderManager = mc.renderManager
             val offset = Vec3(renderManager.renderPosX, renderManager.renderPosY, renderManager.renderPosZ)
