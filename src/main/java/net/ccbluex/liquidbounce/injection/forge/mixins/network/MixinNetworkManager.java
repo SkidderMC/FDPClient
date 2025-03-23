@@ -9,8 +9,7 @@ import io.netty.channel.ChannelHandlerContext;
 import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.event.EventState;
 import net.ccbluex.liquidbounce.event.PacketEvent;
-import net.ccbluex.liquidbounce.features.module.modules.client.Animations;
-import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
+import net.ccbluex.liquidbounce.features.module.modules.client.TabGUIModule;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.ccbluex.liquidbounce.utils.client.PPSCounter;
@@ -55,7 +54,7 @@ public class MixinNetworkManager {
      */
     @Inject(method = "getIsencrypted", at = @At("HEAD"), cancellable = true)
     private void getIsencrypted(CallbackInfoReturnable<Boolean> cir) {
-        if(HUDModule.INSTANCE.getFlagRenderTabOverlay()) {
+        if(TabGUIModule.INSTANCE.getFlagRenderTabOverlay()) {
             cir.setReturnValue(true);
         }
     }

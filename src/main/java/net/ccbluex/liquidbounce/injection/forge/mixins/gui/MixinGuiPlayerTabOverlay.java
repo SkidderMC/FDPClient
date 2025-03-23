@@ -5,59 +5,119 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
-import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
+import net.ccbluex.liquidbounce.features.module.modules.client.TabGUIModule;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.network.NetworkPlayerInfo;
+import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
+import static net.minecraft.client.renderer.GlStateManager.*;
 
 @Mixin(GuiPlayerTabOverlay.class)
 public class MixinGuiPlayerTabOverlay {
 
-    private static final ResourceLocation ICONS = new ResourceLocation("textures/gui/icons.png");
-
-    private final Gui gui = new Gui();
-
-    final HUDModule hudModule = HUDModule.INSTANCE;
 
     @Inject(method = "renderPlayerlist", at = @At("HEAD"))
-    public void renderPlayerListPre(int p_renderPlayerlist_1_, Scoreboard p_renderPlayerlist_2_, ScoreObjective p_renderPlayerlist_3_, CallbackInfo ci) {
-        hudModule.setFlagRenderTabOverlay(true);
+    public void renderPlayerListPre(int width, Scoreboard scoreboard, ScoreObjective scoreObjective, CallbackInfo ci) {
+        TabGUIModule.INSTANCE.setFlagRenderTabOverlay(true);
+
+        String scaleOption = TabGUIModule.INSTANCE.getTabScale();
+        float scaleFactor;
+        switch (scaleOption) {
+            case "Small":
+                scaleFactor = 0.75f;
+                break;
+            case "Normal":
+                scaleFactor = 1.0f;
+                break;
+            case "Large":
+                scaleFactor = 1.25f;
+                break;
+            case "Extra Large":
+                scaleFactor = 1.5f;
+                break;
+            default:
+                scaleFactor = 1.0f;
+                break;
+        }
+        if (scaleFactor != 1.0f) {
+            pushMatrix();
+            translate((width * (1 - scaleFactor)) / 2.0f, 0, 0);
+            scale(scaleFactor, scaleFactor, scaleFactor);
+        }
     }
 
     @Inject(method = "renderPlayerlist", at = @At("RETURN"))
-    public void renderPlayerListPost(int p_renderPlayerlist_1_, Scoreboard p_renderPlayerlist_2_, ScoreObjective p_renderPlayerlist_3_, CallbackInfo ci) {
-        HUDModule.INSTANCE.setFlagRenderTabOverlay(false);
+    public void renderPlayerListPost(int width, Scoreboard scoreboard, ScoreObjective scoreObjective, CallbackInfo ci) {
+        TabGUIModule.INSTANCE.setFlagRenderTabOverlay(false);
+
+        String scaleOption = TabGUIModule.INSTANCE.getTabScale();
+        float scaleFactor;
+        switch (scaleOption) {
+            case "Small":
+                scaleFactor = 0.75f;
+                break;
+            case "Normal":
+                scaleFactor = 1.0f;
+                break;
+            case "Large":
+                scaleFactor = 1.25f;
+                break;
+            case "Extra Large":
+                scaleFactor = 1.5f;
+                break;
+            default:
+                scaleFactor = 1.0f;
+                break;
+        }
+        if (scaleFactor != 1.0f) {
+            popMatrix();
+        }
+    }
+
+    @Redirect(method = "renderPlayerlist", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/network/NetHandlerPlayClient;getPlayerInfoMap()Ljava/util/Collection;"))
+    private Collection<NetworkPlayerInfo> redirectPlayerInfoMap(NetHandlerPlayClient instance) {
+        Collection<NetworkPlayerInfo> original = instance.getPlayerInfoMap();
+        if (TabGUIModule.INSTANCE.getTabMoveSelfToTop()) {
+            if (mc.thePlayer != null) {
+                List<NetworkPlayerInfo> list = new ArrayList<>(original);
+                NetworkPlayerInfo selfInfo = null;
+                for (NetworkPlayerInfo info : list) {
+                    if (info.getGameProfile().getName().equals(mc.thePlayer.getName())) {
+                        selfInfo = info;
+                        break;
+                    }
+                }
+                if (selfInfo != null) {
+                    list.remove(selfInfo);
+                    list.add(0, selfInfo);
+                }
+                return list;
+            }
+        }
+        return original;
     }
 
     @Inject(method = "drawPing", at = @At("HEAD"), cancellable = true)
     private void drawPing(int offset, int x, int y, NetworkPlayerInfo info, CallbackInfo ci) {
-        Minecraft mc = Minecraft.getMinecraft();
-
-        if (!HUDModule.INSTANCE.getTabShowPlayerPing()) {
+        if (!TabGUIModule.INSTANCE.getTabShowPlayerPing()) {
             return;
         }
 
         int ping = info.getResponseTime();
-        int pingIndex = 4;
-        if (ping < 0) {
-            pingIndex = 5;
-        } else if (ping < 150) {
-            pingIndex = 0;
-        } else if (ping < 300) {
-            pingIndex = 1;
-        } else if (ping < 600) {
-            pingIndex = 2;
-        } else {
-            pingIndex = 3;
-        }
 
         int color;
         if (ping < 0) {
@@ -72,21 +132,34 @@ public class MixinGuiPlayerTabOverlay {
             color = 0xFFFF0000;
         }
 
-        boolean noIcon = HUDModule.INSTANCE.getNoIconPing();
-        boolean hideTag = HUDModule.INSTANCE.getHidePingTag();
-        String pingString = ping + (hideTag ? "" : "ms");
+        boolean showMsTag = TabGUIModule.INSTANCE.getHidePingTag();
+        String pingString = ping + (showMsTag ? "ms" : "");
 
-        if (!noIcon) {
-            mc.getTextureManager().bindTexture(ICONS);
-            gui.drawTexturedModalRect(x + offset - 13, y, 0, 176 + (pingIndex * 8), 10, 8);
-            int textX = x + offset - 13 - mc.fontRendererObj.getStringWidth(pingString);
+        int textX = x + offset - 8 - (mc.fontRendererObj.getStringWidth(pingString) / 2);
+        if (TabGUIModule.INSTANCE.getPingTextShadow()) {
             mc.fontRendererObj.drawStringWithShadow(pingString, textX, y, color);
         } else {
-            int textX = x + offset - 8 - (mc.fontRendererObj.getStringWidth(pingString) / 2);
-            mc.fontRendererObj.drawStringWithShadow(pingString, textX, y, color);
+            mc.fontRendererObj.drawString(pingString, textX, y, color);
         }
 
         ci.cancel();
     }
 
+    @Redirect(method = "renderPlayerlist",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I", ordinal = 0))
+    private int redirectRenderHeader(FontRenderer fontRenderer, String text, float x, float y, int color) {
+        if (TabGUIModule.INSTANCE.getTabDisableHeader()) {
+            return 0;
+        }
+        return fontRenderer.drawStringWithShadow(text, x, y, color);
+    }
+
+    @Redirect(method = "renderPlayerlist",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I", ordinal = 1))
+    private int redirectRenderFooter(FontRenderer fontRenderer, String text, float x, float y, int color) {
+        if (TabGUIModule.INSTANCE.getTabDisableFooter()) {
+            return 0;
+        }
+        return fontRenderer.drawStringWithShadow(text, x, y, color);
+    }
 }

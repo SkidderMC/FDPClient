@@ -24,11 +24,6 @@ import java.awt.Color
 
 object HUDModule : Module("HUD", Category.CLIENT) {
 
-    private val tabShowPlayerSkin by boolean("TabShowPlayerSkin", true)
-    val tabShowPlayerPing by boolean("TabShowPlayerPing", true)
-    val noIconPing by boolean("NoIconPing", true) { tabShowPlayerPing }
-    val hidePingTag by boolean("MS Tag", true) { tabShowPlayerPing }
-
     val customHotbar by boolean("CustomHotbar", true)
     val smoothHotbarSlot by boolean("SmoothHotbarSlot", false) { customHotbar }
     val roundedHotbarRadius by float("RoundedHotbar-Radius", 3F, 0F..5F) { customHotbar }
@@ -73,9 +68,6 @@ object HUDModule : Module("HUD", Category.CLIENT) {
     val colorGreen by int("G", 160, 0..255) { interfaceColor }
     val colorBlue by int("B", 255, 0..255) { interfaceColor }
     private val colorRainbowValue by boolean("Rainbow", true) { interfaceColor }
-
-    var flagRenderTabOverlay = false
-        get() = field && tabShowPlayerSkin
 
     val guiColor: Int
         get() = if (interfaceColor) {
