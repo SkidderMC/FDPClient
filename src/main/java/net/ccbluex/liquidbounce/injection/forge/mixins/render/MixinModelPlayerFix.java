@@ -74,6 +74,13 @@ public class MixinModelPlayerFix extends ModelBiped {
     public ModelRenderer handRight;
     public ModelRenderer handLeft;
 
+    public ModelRenderer bT1;
+    public ModelRenderer bT2;
+    public ModelRenderer bF1;
+    public ModelRenderer bF2;
+    public ModelRenderer bF3;
+    public ModelRenderer bF4;
+
     @Shadow
     private boolean smallArms;
 
@@ -102,8 +109,14 @@ public class MixinModelPlayerFix extends ModelBiped {
     public void renderHook(final Entity entityIn, final float limbSwing, final float limbSwingAmount, final float ageInTicks, final float netHeadYaw, final float headPitch, final float scale, final CallbackInfo ci) {
         final CustomModel customModel = CustomModel.INSTANCE;
         if (customModel.getState()) {
-            ci.cancel();
-            renderCustom(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+            if (customModel.getMode().contains("Female") && entityIn instanceof EntityPlayer) {
+                this.setRotationAngles(limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale, entityIn);
+                renderFemale(entityIn, scale);
+                ci.cancel();
+            } else {
+                ci.cancel();
+                renderCustom(entityIn, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch, scale);
+            }
         }
     }
 
@@ -413,8 +426,66 @@ public class MixinModelPlayerFix extends ModelBiped {
                 this.right_leg.render(scale);
                 GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
             }
+        } if (customModel.getState() && customModel.getMode().contains("Female")) {
+            renderFemale(entityIn, scale);
         }
         GlStateManager.popMatrix();
+    }
+
+    private void renderFemale(Entity entityIn, float scale) {
+        if (!(entityIn instanceof EntityPlayer)) return;
+
+        EntityPlayer entity = (EntityPlayer) entityIn;
+
+        float f = scale;
+
+        if (bT1 == null){
+            bT1 = new ModelRenderer(this, 20, 20);
+            bT1.addBox(-3.0F, 1.0F, -3.0F, 6, 1, 1, 0.0F);
+            bT1.setRotationPoint(0.0F, 0.0F, 0.0F);
+            bT2 = new ModelRenderer(this, 19, 21);
+            bT2.addBox(-4.0F, 2.0F, -3.0F, 8, 3, 1, 0.0F);
+            bT2.setRotationPoint(0.0F, 0.0F, 0.0F);
+            bF1 = new ModelRenderer(this, 20, 21);
+            bF1.addBox(-3.0F, 2.0F, -4.0F, 6, 1, 1, 0.0F);
+            bF1.setRotationPoint(0.0F, 0.0F, 0.0F);
+            bF2 = new ModelRenderer(this, 19, 22);
+            bF2.addBox(-4.0F, 3.0F, -4.0F, 8, 1, 1, 0.0F);
+            bF2.setRotationPoint(0.0F, 0.0F, 0.0F);
+            bF3 = new ModelRenderer(this, 20, 23);
+            bF3.addBox(-3.0F, 4.0F, -4.0F, 2, 1, 1, 0.0F);
+            bF3.setRotationPoint(0.0F, 0.0F, 0.0F);
+            bF4 = new ModelRenderer(this, 23, 23);
+            bF4.addBox(1.0F, 4.0F, -4.0F, 2, 1, 1, 0.0F);
+            bF4.setRotationPoint(0.0F, 0.0F, 0.0F);
+        }
+
+        this.bipedHead.render(f);
+        this.bipedBody.render(f);
+        this.bipedLeftArm.render(f);
+        this.bipedRightArm.render(f);
+        this.bipedLeftLeg.render(f);
+        this.bipedRightLeg.render(f);
+        this.bipedHeadwear.render(f);
+
+        int model = 2;
+        this.bipedBody.addChild(bT1);
+        this.bipedBody.addChild(bT2);
+        this.bipedBody.addChild(bF1);
+        this.bipedBody.addChild(bF2);
+        this.bipedBody.addChild(bF3);
+        this.bipedBody.addChild(bF4);
+        if (model != 0) {
+            bT1.render(f);
+            bT2.render(f);
+            if (model != 1) {
+                bF1.render(f);
+                bF2.render(f);
+                bF3.render(f);
+                bF4.render(f);
+            }
+        }
+
     }
 
     @Inject(method = "setRotationAngles", at = @At("RETURN"))
