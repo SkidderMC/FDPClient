@@ -6,8 +6,8 @@
 package net.ccbluex.liquidbounce.utils.render
 
 import net.ccbluex.liquidbounce.features.module.modules.client.Wings
+import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.callImage
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.glRGBColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.model.ModelBase
 import net.minecraft.client.model.ModelRenderer
@@ -93,17 +93,20 @@ class RenderWings : ModelBase() {
 
     private fun applyWingColor() {
         when (wingsModule.colorType) {
-            "Chroma" -> {
-                // disabled
+            "Theme" -> {
+                val themeColor = ClientThemesUtils.getColor(0)
+                GL11.glColor3f(
+                    themeColor.red / 255f,
+                    themeColor.green / 255f,
+                    themeColor.blue / 255f
+                )
             }
             "Custom" -> {
-                glRGBColor(
-                    Color(
-                        wingsModule.customRed,
-                        wingsModule.customGreen,
-                        wingsModule.customBlue
-                    ), 255f
-                )
+                val t = (System.currentTimeMillis() % 1000L) / 1000.0f
+                val factor = ((sin(t * 2 * Math.PI) + 1) / 2).toFloat()
+                val color = Color(wingsModule.color.rgb)
+
+                GL11.glColor3f(color.red / 255f, color.green / 255f, color.blue / 255f)
             }
             else -> GL11.glColor3f(1f, 1f, 1f)
         }

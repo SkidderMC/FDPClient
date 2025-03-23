@@ -613,7 +613,7 @@ object RenderUtils : MinecraftInstance {
 
     fun drawCone(width: Float, height: Float, useTexture: Boolean = false) {
         if (useTexture) {
-            mc.textureManager.bindTexture(ResourceLocation("fdpclient/textures/hat.png"))
+            mc.textureManager.bindTexture(ResourceLocation("fdpclient/texture/hat.png"))
             enableTexture2D()
             depthMask(true)
         }
