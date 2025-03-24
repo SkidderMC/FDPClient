@@ -37,7 +37,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
 
     private val customColorSetting by color("CustomColor", Color(255, 255, 255)) { color == "Custom" || color == "Fade" }
 
-    var scale by float("Scale", 0.8f, 0.5f..1.5f)
+    var scale by float("Scale", 1.0f, 0.5f..1.5f)
     val maxElements by int("MaxElements", 15, 1..30)
     val fadeSpeed by float("FadeSpeed", 1f, 0.5f..4f)
     val scrolls by boolean("Scrolls", true)

@@ -28,7 +28,6 @@ import static net.minecraft.client.renderer.GlStateManager.*;
 @Mixin(GuiPlayerTabOverlay.class)
 public class MixinGuiPlayerTabOverlay {
 
-
     @Inject(method = "renderPlayerlist", at = @At("HEAD"))
     public void renderPlayerListPre(int width, Scoreboard scoreboard, ScoreObjective scoreObjective, CallbackInfo ci) {
         TabGUIModule.INSTANCE.setFlagRenderTabOverlay(true);
