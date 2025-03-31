@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlockIntersects
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.utils.client.pos
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.minecraft.block.BlockAir
 import net.minecraft.block.BlockLadder
@@ -21,8 +22,8 @@ import kotlin.math.floor
 import kotlin.math.sin
 
 object Spider : Module("Spider", Category.MOVEMENT) {
-    
-    private val modeValue by choices("Mode", arrayOf("Collide", "Motion", "AAC3.3.12", "AAC4", "Checker", "Vulcan"), "Collide")
+
+    private val modeValue by choices("Mode", arrayOf("Collide", "Motion", "AAC3.3.12", "AAC4", "Checker", "Vulcan", "Polar"), "Collide")
     private val motionValue by float("Motion", 0.42F, 0.1F..1F) { modeValue == "Motion" }
     private val avoidLadderValue by boolean("AvoidLadder", false)
 
@@ -45,6 +46,7 @@ object Spider : Module("Spider", Category.MOVEMENT) {
             "motion" -> handleMotionMode()
             "checker" -> handleCheckerMode()
             "vulcan" -> handleVulcanMode()
+            "polar" -> handlePolar()
         }
     }
 
@@ -79,6 +81,10 @@ object Spider : Module("Spider", Category.MOVEMENT) {
                 floor(mc.thePlayer.posY),
                 event.z + 1.0
             )
+        }
+
+        if (modeValue == "Polar") {
+            handlePolar(event)
         }
     }
 
@@ -154,6 +160,20 @@ object Spider : Module("Spider", Category.MOVEMENT) {
         if (ticks in 2..3) {
             mc.thePlayer.jump()
             MovementUtils.resetMotion(false)
+        }
+    }
+
+    private fun handlePolar() {
+    }
+
+    private fun handlePolar(event: BlockBBEvent) {
+        event.boundingBox?.let { bb ->
+            if (event.pos.y >= mc.thePlayer.posY || (mc.thePlayer.isSneaking && mc.thePlayer.onGround)) {
+                event.boundingBox = AxisAlignedBB(
+                    bb.minX + 0.0001, bb.minY, bb.minZ + 0.0001,
+                    bb.maxX - 0.0001, bb.maxY, bb.maxZ - 0.0001
+                )
+            }
         }
     }
 
