@@ -754,7 +754,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
     private fun updateTarget() {
         if (shouldPrioritize()) return
 
-        // Only check distances every 3 ticks for git checkout -b killaura-improvement
+        // Only check distances every 3 ticks 
         val currentTick = System.currentTimeMillis()
         if (currentTick - lastDistanceCheck > 50) {
             lastDistanceCheck = currentTick
