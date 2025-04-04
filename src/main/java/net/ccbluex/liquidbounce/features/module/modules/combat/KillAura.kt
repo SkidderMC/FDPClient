@@ -931,98 +931,118 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
     /**
      * Check if enemy is hittable with current rotations
      */
-    private fun updateHittable() {
-        val eyes = mc.thePlayer.eyes
-
-        val currentRotation = currentRotation ?: mc.thePlayer.rotation
-        val target = this.target ?: return
-
-        if (shouldPrioritize()) return
-
-        if (!options.rotationsActive) {
-            hittable = mc.thePlayer.getDistanceToEntityBox(target) <= range
-            return
-        }
-
-        var chosenEntity: Entity? = null
-
-        if (raycast) {
-            chosenEntity = raycastEntity(
-                range.toDouble(), currentRotation.yaw, currentRotation.pitch
-            ) { entity -> !livingRaycast || entity is EntityLivingBase && entity !is EntityArmorStand }
-
-            if (chosenEntity != null && chosenEntity is EntityLivingBase && (!(chosenEntity is EntityPlayer && chosenEntity.isClientFriend()))) {
-                if (raycastIgnored && target != chosenEntity) {
-                    this.target = chosenEntity
-                }
-            }
-
-            hittable = this.target == chosenEntity
-        } else {
-            hittable = isRotationFaced(target, range.toDouble(), currentRotation)
-        }
-
-        var shouldExcept = false
-
-        chosenEntity ?: this.target?.run {
-            if (ForwardTrack.handleEvents()) {
-                ForwardTrack.includeEntityTruePos(this) {
-                    checkIfAimingAtBox(this, currentRotation, eyes, onSuccess = {
-                        hittable = true
-
-                        shouldExcept = true
-                    })
-                }
-            }
-        }
-
-        if (!hittable || shouldExcept) {
-            return
-        }
-
-        val targetToCheck = chosenEntity ?: this.target ?: return
-
-        // If player is inside entity, automatic yes because the intercept below cannot check for that
-        // Minecraft does the same, see #EntityRenderer line 353
-        if (targetToCheck.hitBox.isVecInside(eyes)) {
-            return
-        }
-
-        var checkNormally = true
-
-        if (Backtrack.handleEvents()) {
-            Backtrack.loopThroughBacktrackData(targetToCheck) {
-                var result = false
-
-                checkIfAimingAtBox(targetToCheck, currentRotation, eyes, onSuccess = {
-                    checkNormally = false
-
-                    result = true
-                }, onFail = {
-                    result = false
-                })
-
-                return@loopThroughBacktrackData result
-            }
-        } else if (ForwardTrack.handleEvents()) {
-            ForwardTrack.includeEntityTruePos(targetToCheck) {
-                checkIfAimingAtBox(targetToCheck, currentRotation, eyes, onSuccess = { checkNormally = false })
-            }
-        }
-
-        if (!checkNormally) {
-            return
-        }
-
-        // Recreate raycast logic
-        val intercept = targetToCheck.hitBox.calculateIntercept(
-            eyes, eyes + getVectorForRotation(currentRotation) * range.toDouble()
-        )
-
-        // Is the entity box raycast vector visible? If not, check through-wall range
-        hittable =
-            isVisible(intercept.hitVec) || mc.thePlayer.getDistanceToEntityBox(targetToCheck) <= throughWallsRange
+private fun updateHittable() {
+    val player = mc.thePlayer ?: return
+    val target = this.target ?: run {
+        hittable = false
+        return
     }
+
+    if (shouldPrioritize()) {
+        hittable = false
+        return
+    }
+    
+    if (!options.rotationsActive) {
+        hittable = player.getDistanceToEntityBox(target) <= range
+        return
+    }
+    
+    val eyes = player.eyes
+    val rotation = currentRotation ?: player.rotation
+    val lookVec = getVectorForRotation(rotation)
+    val distance = player.getDistanceToEntityBox(target)
+    
+    if (distance > range) {
+        hittable = false
+        return
+    }
+    
+    val targetBox = if (predictEnemyPosition > 0) {
+        val targetMotionX = target.posX - target.prevPosX
+        val targetMotionY = target.posY - target.prevPosY
+        val targetMotionZ = target.posZ - target.prevPosZ
+        
+        target.entityBoundingBox.offset(
+            targetMotionX * predictEnemyPosition,
+            targetMotionY * predictEnemyPosition,
+            targetMotionZ * predictEnemyPosition
+        )
+    } else {
+        target.entityBoundingBox
+    }
+    
+    if (raycast) {
+        val raycastEntity = raycastEntity(
+            range.toDouble(), rotation.yaw, rotation.pitch
+        ) { entity -> !livingRaycast || entity is EntityLivingBase && entity !is EntityArmorStand }
+        
+        if (raycastEntity != null && raycastEntity is EntityLivingBase && (!(raycastEntity is EntityPlayer && raycastEntity.isClientFriend()))) {
+            if (raycastIgnored && target != raycastEntity) {
+                this.target = raycastEntity
+            }
+            
+            hittable = this.target == raycastEntity
+            return
+        }
+        
+        hittable = false
+    } else {
+        hittable = isRotationFaced(target, range.toDouble(), rotation)
+        
+        if (!hittable && predictEnemyPosition > 0) {
+            val rayEnd = Vec3(
+                eyes.xCoord + lookVec.xCoord * range.toDouble(),
+                eyes.yCoord + lookVec.yCoord * range.toDouble(),
+                eyes.zCoord + lookVec.zCoord * range.toDouble()
+            )
+            val intercept = targetBox.calculateIntercept(eyes, rayEnd)
+            hittable = intercept != null
+        }
+    }
+    
+    var specialTrackingApplied = false
+    
+    if (ForwardTrack.handleEvents()) {
+        ForwardTrack.includeEntityTruePos(target) {
+            checkIfAimingAtBox(target, rotation, eyes, onSuccess = {
+                hittable = true
+                specialTrackingApplied = true
+            })
+        }
+    }
+    
+    if (!hittable && !specialTrackingApplied && Backtrack.handleEvents()) {
+        Backtrack.loopThroughBacktrackData(target) {
+            var result = false
+            
+            checkIfAimingAtBox(target, rotation, eyes, onSuccess = {
+                hittable = true
+                result = true
+            }, onFail = {
+                result = false
+            })
+            
+            return@loopThroughBacktrackData result
+        }
+    }
+
+    if (!hittable && !specialTrackingApplied) {
+        if (targetBox.isVecInside(eyes)) {
+            hittable = true
+            return
+        }
+
+        val rayEnd = Vec3(
+            eyes.xCoord + lookVec.xCoord * range.toDouble(),
+            eyes.yCoord + lookVec.yCoord * range.toDouble(),
+            eyes.zCoord + lookVec.zCoord * range.toDouble()
+        )
+        val intercept = targetBox.calculateIntercept(eyes, rayEnd)
+        
+        hittable = intercept != null && (isVisible(intercept.hitVec) || distance <= throughWallsRange)
+    }
+}
 
     /**
      * Start blocking
