@@ -747,8 +747,19 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
     /**
      * Update current target
      */
+    // Cache for distance calculations
+    private var lastDistanceCheck = 0L
+    private var cachedDistance = 0f
+    
     private fun updateTarget() {
         if (shouldPrioritize()) return
+
+        // Only check distances every 3 ticks 
+        val currentTick = System.currentTimeMillis()
+        if (currentTick - lastDistanceCheck > 50) {
+            lastDistanceCheck = currentTick
+            cachedDistance = (mc.thePlayer?.getDistanceToEntityBox(target ?: return) ?: 0f).toFloat()
+        }
 
         // Reset fixed target to null
         target = null
@@ -839,7 +850,11 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
         if (!blinkAutoBlock || !BlinkUtils.isBlinking) {
             val affectSprint = false.takeIf { KeepSprint.handleEvents() || keepSprint }
 
-            thePlayer.attackEntityWithModifiedSprint(entity, affectSprint) { if (swing) thePlayer.swingItem() }
+            // Optimized attack call
+            if (swing && (!failSwing || mc.thePlayer.onGround)) {
+                thePlayer.swingItem()
+            }
+            thePlayer.attackEntityWithModifiedSprint(entity, affectSprint) {}
         }
 
         // Start blocking after attack
@@ -855,8 +870,11 @@ object KillAura : Module("KillAura", Category.COMBAT, Keyboard.KEY_G) {
      */
     private fun updateRotations(entity: Entity): Boolean {
         val player = mc.thePlayer ?: return false
-
-        if (shouldPrioritize()) return false
+        
+        // Early exit if shouldn't rotate
+        if (shouldPrioritize() || !options.rotationsActive) {
+            return player.getDistanceToEntityBox(entity) <= range
+        }
 
         if (!options.rotationsActive) {
             return player.getDistanceToEntityBox(entity) <= range
