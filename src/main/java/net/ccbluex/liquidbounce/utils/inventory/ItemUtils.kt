@@ -73,6 +73,11 @@ object ItemUtils : MinecraftInstance {
     }
 
 
+    fun getItemDurability(stack: ItemStack?): Int {
+        return if (stack == null) 0 else stack.maxDamage - stack.itemDamage
+    }
+
+
     /**
      * Allows you to check if player is consuming item
      */

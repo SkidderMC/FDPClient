@@ -1,0 +1,476 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+package net.ccbluex.liquidbounce.features.module.modules.visual
+
+import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.event.Render2DEvent
+import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.attack.EntityUtils
+import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColor
+import net.ccbluex.liquidbounce.utils.inventory.ItemUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.minecraft.client.gui.FontRenderer
+import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GLAllocation
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.item.EntityItem
+import net.minecraft.entity.player.EntityPlayer
+import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.potion.Potion
+import org.lwjgl.opengl.Display
+import org.lwjgl.opengl.GL11
+import org.lwjgl.util.glu.GLU
+import java.awt.Color
+import java.nio.FloatBuffer
+import java.nio.IntBuffer
+import java.text.DecimalFormat
+import javax.vecmath.Vector3d
+import javax.vecmath.Vector4d
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.pow
+
+object ESP2D : Module("ESP2D", Category.VISUAL) {
+
+    val outline by boolean("Outline", true)
+    val boxMode by choices("Mode", arrayOf("Box", "Corners"), "Box")
+
+    val healthBar by boolean("Health-bar", true)
+    val hpBarMode by choices("HBar-Mode", arrayOf("Dot", "Line"), "Dot")
+
+    val absorption by boolean("Render-Absorption", true)
+
+    val armorBar by boolean("Armor-bar", true)
+    val armorBarMode by choices("ABar-Mode", arrayOf("Total", "Items"), "Total")
+
+    val healthNumber by boolean("HealthNumber", true)
+    val hpMode by choices("HP-Mode", arrayOf("Health", "Percent"), "Health")
+
+    val armorNumber by boolean("ItemArmorNumber", true)
+    val armorItems by boolean("ArmorItems", true)
+    val armorDur by boolean("ArmorDurability", true)
+
+    val hoverValue by boolean("Details-HoverOnly", false)
+    val tagsValue by boolean("Tags", true)
+    val tagsBGValue by boolean("Tags-Background", true)
+    val itemTagsValue by boolean("Item-Tags", true)
+
+    val outlineFont by boolean("OutlineFont", true)
+    val clearNameValue by boolean("Use-Clear-Name", false)
+
+    val localPlayer by boolean("Local-Player", true)
+    val droppedItems by boolean("Dropped-Items", false)
+
+    val colorMode by choices("Color", arrayOf("Custom", "Client", "AnotherRainbow"), "Custom")
+    val colorRed by int("Red", 255, 0..255)
+    val colorGreen by int("Green", 255, 0..255)
+    val colorBlue by int("Blue", 255, 0..255)
+
+    val fontScale by float("Font-Scale", 0.5f, 0f..1f)
+    val colorTeam by boolean("Team", false)
+
+    private val viewport: IntBuffer = GLAllocation.createDirectIntBuffer(16)
+    private val modelview: FloatBuffer = GLAllocation.createDirectFloatBuffer(16)
+    private val projection: FloatBuffer = GLAllocation.createDirectFloatBuffer(16)
+    private val vector: FloatBuffer = GLAllocation.createDirectFloatBuffer(4)
+
+    private val backgroundColor: Int = Color(0, 0, 0, 120).rgb
+    private val black: Int = Color.BLACK.rgb
+
+    private val dFormat = DecimalFormat("0.0")
+
+    override fun onDisable() {
+        collectedEntities.clear()
+    }
+
+    val onRender2D = handler<Render2DEvent> { event ->
+        if (mc.theWorld == null) return@handler
+
+        GL11.glPushMatrix()
+        collectEntities()
+
+        val partialTicks = event.partialTicks.toFloat()
+        val scaledResolution = ScaledResolution(mc)
+        val scaleFactor = scaledResolution.scaleFactor
+        val scaling = scaleFactor.toDouble() / scaleFactor.toDouble().pow(2.0)
+
+        GL11.glScaled(scaling, scaling, scaling)
+
+        val fr = Fonts.minecraftFont
+        val renderMng = mc.renderManager
+        val entityRenderer = mc.entityRenderer
+
+        val doOutline = outline
+        val doHealthBar = healthBar
+        val doArmorBar = armorBar
+
+        var i = 0
+        val size = collectedEntities.size
+        while (i < size) {
+            val entity = collectedEntities[i] ?: break
+            val colorRGB = getColor(entity).rgb
+
+            if (RenderUtils.isInViewFrustum(entity)) {
+                // interpolate position
+                val x = RenderUtils.interpolate(entity.posX, entity.lastTickPosX, event.partialTicks.toDouble())
+                val y = RenderUtils.interpolate(entity.posY, entity.lastTickPosY, event.partialTicks.toDouble())
+                val z = RenderUtils.interpolate(entity.posZ, entity.lastTickPosZ, event.partialTicks.toDouble())
+
+                val width = entity.width.toDouble() / 1.5
+                val height = entity.height.toDouble() + if (entity.isSneaking) -0.3 else 0.2
+                val aabb = net.minecraft.util.AxisAlignedBB(
+                    x - width, y, z - width,
+                    x + width, y + height, z + width
+                )
+                val corners = listOf(
+                    Vector3d(aabb.minX, aabb.minY, aabb.minZ),
+                    Vector3d(aabb.minX, aabb.maxY, aabb.minZ),
+                    Vector3d(aabb.maxX, aabb.minY, aabb.minZ),
+                    Vector3d(aabb.maxX, aabb.maxY, aabb.minZ),
+                    Vector3d(aabb.minX, aabb.minY, aabb.maxZ),
+                    Vector3d(aabb.minX, aabb.maxY, aabb.maxZ),
+                    Vector3d(aabb.maxX, aabb.minY, aabb.maxZ),
+                    Vector3d(aabb.maxX, aabb.maxY, aabb.maxZ)
+                )
+
+                entityRenderer.setupCameraTransform(partialTicks, 0)
+                var bbScreen: Vector4d? = null
+
+                for (corner in corners) {
+                    val vec = project2D(
+                        scaleFactor,
+                        corner.x - renderMng.viewerPosX,
+                        corner.y - renderMng.viewerPosY,
+                        corner.z - renderMng.viewerPosZ
+                    ) ?: continue
+
+                    if (vec.z in 0.0..1.0) {
+                        if (bbScreen == null) {
+                            bbScreen = Vector4d(vec.x, vec.y, vec.z, 0.0)
+                        }
+                        bbScreen.x = min(vec.x, bbScreen.x)
+                        bbScreen.y = min(vec.y, bbScreen.y)
+                        bbScreen.z = max(vec.x, bbScreen.z)
+                        bbScreen.w = max(vec.y, bbScreen.w)
+                    }
+                }
+
+                bbScreen?.let { pos ->
+                    entityRenderer.setupOverlayRendering()
+                    val minX = pos.x
+                    val minY = pos.y
+                    val maxX = pos.z
+                    val maxY = pos.w
+
+                    if (doOutline) {
+                        if (boxMode == "Box") {
+                            RenderUtils.newDrawRect(minX - 1.0, minY, minX + 0.5, maxY + 0.5, black)
+                            RenderUtils.newDrawRect(minX - 1.0, minY - 0.5, maxX + 0.5, minY + 1.0, black)
+                            RenderUtils.newDrawRect(maxX - 1.0, minY, maxX + 0.5, maxY + 0.5, black)
+                            RenderUtils.newDrawRect(minX - 1.0, maxY - 1.0, maxX + 0.5, maxY + 0.5, black)
+
+                            RenderUtils.newDrawRect(minX - 0.5, minY, minX, maxY, colorRGB)
+                            RenderUtils.newDrawRect(minX, maxY - 0.5, maxX, maxY, colorRGB)
+                            RenderUtils.newDrawRect(minX - 0.5, minY, maxX, minY + 0.5, colorRGB)
+                            RenderUtils.newDrawRect(maxX - 0.5, minY, maxX, maxY, colorRGB)
+                        } else {
+
+                            RenderUtils.newDrawRect(minX - 1.0, minY, minX + (maxX - minX) / 4.0, minY + 0.5, black)
+                            RenderUtils.newDrawRect(minX - 1.0, maxY, minX + (maxX - minX) / 4.0, maxY - 0.5, black)
+                            RenderUtils.newDrawRect(maxX + 0.5 - (maxX - minX) / 4.0, minY, maxX + 0.5, minY + 0.5, black)
+                            RenderUtils.newDrawRect(maxX + 0.5 - (maxX - minX) / 4.0, maxY, maxX + 0.5, maxY - 0.5, black)
+
+                            RenderUtils.newDrawRect(minX, minY, minX + (maxX - minX) / 4.0, minY + 0.5, colorRGB)
+                            RenderUtils.newDrawRect(minX, maxY - 0.5, minX + (maxX - minX) / 4.0, maxY, colorRGB)
+                            RenderUtils.newDrawRect(maxX - (maxX - minX) / 4.0, minY, maxX, minY + 0.5, colorRGB)
+                            RenderUtils.newDrawRect(maxX - (maxX - minX) / 4.0, maxY - 0.5, maxX, maxY, colorRGB)
+                        }
+                    }
+
+                    val isLiving = entity is EntityLivingBase
+                    val isPlayer = entity is EntityPlayer
+                    var lineY: Float
+
+                    if (isLiving && doHealthBar) {
+                        val eLiving = entity as EntityLivingBase
+                        var hp = eLiving.health
+                        val maxHp = eLiving.maxHealth
+                        if (hp > maxHp) hp = maxHp
+                        val ratio = hp / maxHp
+                        val barHeight = (maxY - minY) * ratio
+
+                        RenderUtils.newDrawRect(minX - 3.5, minY - 0.5, minX - 1.5, maxY + 0.5, backgroundColor)
+
+                        val healthCol = ColorUtils.getHealthColor(hp.toFloat(), maxHp.toFloat()).rgb
+                        RenderUtils.newDrawRect(minX - 3.0, maxY, minX - 2.0, maxY - barHeight, healthCol)
+                        if (absorption && eLiving.absorptionAmount > 0f) {
+                            val abCol = Color(Potion.absorption.liquidColor).rgb
+                            val abHeight = (maxY - minY) / 6.0 * eLiving.absorptionAmount / 2.0
+                            RenderUtils.newDrawRect(minX - 3.0, maxY, minX - 2.0, maxY - abHeight, abCol)
+                        }
+
+                        if (healthNumber && (!hoverValue || entity === mc.thePlayer || isHovering(minX, maxX, minY, maxY, scaledResolution))) {
+                            val disp = if (hpMode.equals("Health", ignoreCase = true))
+                                "${dFormat.format(eLiving.health.toDouble())} ❤"
+                            else
+                                "${(ratio * 100).toInt()}%"
+                            drawScaledString(
+                                disp,
+                                minX - 4.0 - Fonts.minecraftFont.getStringWidth(disp) * fontScale,
+                                (maxY - barHeight) - Fonts.minecraftFont.FONT_HEIGHT / 2f * fontScale,
+                                fontScale.toDouble(),
+                                -1
+                            )
+                        }
+                    }
+
+                    if (isLiving && doArmorBar) {
+                        val eLiving = entity as EntityLivingBase
+                        if (armorBarMode.equals("Items", ignoreCase = true)) {
+                            val slotHeight = (maxY - minY) / 4.0 + 0.25
+                            for (slot in 4 downTo 1) {
+                                val stack = eLiving.getEquipmentInSlot(slot)
+                                if (stack != null) {
+                                    RenderUtils.newDrawRect(maxX + 1.5, maxY + 0.5 - slotHeight * slot,
+                                        maxX + 3.5, maxY + 0.5 - slotHeight * (slot - 1),
+                                        backgroundColor)
+                                    val durRatio = ItemUtils.getItemDurability(stack).toDouble() / stack.maxDamage
+                                    RenderUtils.newDrawRect(
+                                        maxX + 2.0,
+                                        maxY + 0.5 - slotHeight * (slot - 1) - 0.25,
+                                        maxX + 3.0,
+                                        maxY + 0.5 - slotHeight * (slot - 1) - 0.25 - (slotHeight - 0.25) * durRatio,
+                                        Color(0, 255, 255).rgb
+                                    )
+                                }
+                            }
+                        } else {
+                            val armorVal = eLiving.totalArmorValue.toFloat()
+                            val armorHeight = (maxY - minY) * armorVal / 20.0
+                            RenderUtils.newDrawRect(maxX + 1.5, minY - 0.5, maxX + 3.5, maxY + 0.5, backgroundColor)
+                            if (armorVal > 0f) {
+                                RenderUtils.newDrawRect(maxX + 2.0, maxY, maxX + 3.0, maxY - armorHeight, Color(0, 255, 255).rgb)
+                            }
+                        }
+                    }
+
+                    if (entity is EntityItem && armorNumber) {
+                        val stack = entity.entityItem
+                        if (stack.isItemStackDamageable) {
+                            val maxD = stack.maxDamage
+                            val curD = (maxD - stack.itemDamage).toFloat()
+                            val height = (maxY - minY) * (curD / maxD.toDouble())
+                            RenderUtils.newDrawRect(maxX + 1.5, minY - 0.5, maxX + 3.5, maxY + 0.5, backgroundColor)
+                            RenderUtils.newDrawRect(maxX + 2.0, maxY, maxX + 3.0, maxY - height, Color(0, 255, 255).rgb)
+                            if (armorNumber && (!hoverValue || entity.entityItem == mc.thePlayer!!.heldItem || isHovering(minX, maxX, minY, maxY, scaledResolution))) {
+                                drawScaledString(
+                                    curD.toInt().toString(),
+                                    maxX + 4.0,
+                                    (maxY - height) - Fonts.minecraftFont.FONT_HEIGHT / 2f * fontScale,
+                                    fontScale.toDouble(),
+                                    -1
+                                )
+                            }
+                        }
+                    }
+
+                    if (isLiving && armorItems && (!hoverValue || entity === mc.thePlayer || isHovering(minX, maxX, minY, maxY, scaledResolution))) {
+                        val eLiving = entity as EntityLivingBase
+                        val yDist = (maxY - minY) / 4.0
+                        for (slot in 4 downTo 1) {
+                            val stack = eLiving.getEquipmentInSlot(slot)
+                            stack?.let {
+                                renderItemStack(it, maxX + 4.0, minY + yDist * (4 - slot) + yDist / 2.0 - 5.0)
+                                if (armorDur) {
+                                    drawScaledCenteredString(
+                                        ItemUtils.getItemDurability(it).toString(),
+                                        maxX + 4.0 + 4.5,
+                                        minY + yDist * (4 - slot) + yDist / 2.0 + 4.0,
+                                        fontScale.toDouble(),
+                                        -1
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    if (isLiving && tagsValue) {
+                        val eLiving = entity as EntityLivingBase
+                        val name = if (clearNameValue) eLiving.name else eLiving.displayName.formattedText
+                        if (tagsBGValue) {
+                            RenderUtils.newDrawRect(
+                                minX + (maxX - minX) / 2.0 - (Fonts.minecraftFont.getStringWidth(name) / 2f + 2f) * fontScale,
+                                minY - 1.0 - (Fonts.minecraftFont.FONT_HEIGHT + 2f) * fontScale,
+                                minX + (maxX - minX) / 2.0 + (Fonts.minecraftFont.getStringWidth(name) / 2f + 2f) * fontScale,
+                                minY - 1.0 + 2f * fontScale,
+                                -0x60000000
+                            )
+                        }
+                        drawScaledCenteredString(
+                            name,
+                            minX + (maxX - minX) / 2.0,
+                            minY - 1.0 - Fonts.minecraftFont.FONT_HEIGHT * fontScale,
+                            fontScale.toDouble(),
+                            -1
+                        )
+                    }
+
+                    if (entity is EntityLivingBase && itemTagsValue) {
+                        val eLiving = entity as EntityLivingBase
+                        val stack = eLiving.heldItem
+                        stack?.let {
+                            val itemName = it.displayName
+                            if (tagsBGValue) {
+                                RenderUtils.newDrawRect(
+                                    minX + (maxX - minX) / 2.0 - (Fonts.minecraftFont.getStringWidth(itemName) / 2f + 2f) * fontScale,
+                                    maxY + 1.0 - 2f * fontScale,
+                                    minX + (maxX - minX) / 2.0 + (Fonts.minecraftFont.getStringWidth(itemName) / 2f + 2f) * fontScale,
+                                    maxY + 1.0 + (Fonts.minecraftFont.FONT_HEIGHT + 2f) * fontScale,
+                                    -0x60000000
+                                )
+                            }
+                            drawScaledCenteredString(
+                                itemName,
+                                minX + (maxX - minX) / 2.0,
+                                maxY + 1.0,
+                                fontScale.toDouble(),
+                                -1
+                            )
+                        }
+                    } else if (entity is EntityItem && itemTagsValue) {
+                        val itemName = entity.entityItem.displayName
+                        if (tagsBGValue) {
+                            RenderUtils.newDrawRect(
+                                minX + (maxX - minX) / 2.0 - (Fonts.minecraftFont.getStringWidth(itemName) / 2f + 2f) * fontScale,
+                                maxY + 1.0 - 2f * fontScale,
+                                minX + (maxX - minX) / 2.0 + (Fonts.minecraftFont.getStringWidth(itemName) / 2f + 2f) * fontScale,
+                                maxY + 1.0 + (Fonts.minecraftFont.FONT_HEIGHT + 2f) * fontScale,
+                                -0x60000000
+                            )
+                        }
+                        drawScaledCenteredString(
+                            itemName,
+                            minX + (maxX - minX) / 2.0,
+                            maxY + 1.0,
+                            fontScale.toDouble(),
+                            -1
+                        )
+                    }
+                }
+            }
+            i++
+        }
+
+        GL11.glPopMatrix()
+        GlStateManager.enableBlend()
+        GlStateManager.resetColor()
+        mc.entityRenderer.setupOverlayRendering()
+    }
+
+    private fun isHovering(minX: Double, maxX: Double, minY: Double, maxY: Double, sc: ScaledResolution): Boolean {
+        return sc.scaledWidth / 2.0 in minX..maxX && sc.scaledHeight / 2.0 in minY..maxY
+    }
+
+    private fun drawOutlineStringWithoutGL(s: String, x: Float, y: Float, color: Int, fontRenderer: FontRenderer) {
+        fontRenderer.drawString(stripColor(s), (x * 2 - 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
+        fontRenderer.drawString(stripColor(s), (x * 2 + 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
+        fontRenderer.drawString(stripColor(s), (x * 2).toInt(), (y * 2 - 1).toInt(), Color.BLACK.rgb)
+        fontRenderer.drawString(stripColor(s), (x * 2).toInt(), (y * 2 + 1).toInt(), Color.BLACK.rgb)
+        fontRenderer.drawString(s, (x * 2).toInt(), (y * 2).toInt(), color)
+    }
+
+    private fun drawScaledString(text: String, x: Double, y: Double, scale: Double, color: Int) {
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(x, y, 0.0)
+        GlStateManager.scale(scale.toFloat(), scale.toFloat(), scale.toFloat())
+        if (outlineFont) {
+            drawOutlineStringWithoutGL(text, 0f, 0f, color, mc.fontRendererObj)
+        } else {
+            Fonts.minecraftFont.drawStringWithShadow(text, 0F, 0F, color)
+        }
+        GlStateManager.popMatrix()
+    }
+
+    private fun drawScaledCenteredString(text: String, x: Double, y: Double, scale: Double, color: Int) {
+        drawScaledString(text, x - Fonts.minecraftFont.getStringWidth(text) / 2f * scale.toFloat(), y, scale, color)
+    }
+
+    private fun renderItemStack(stack: net.minecraft.item.ItemStack, x: Double, y: Double) {
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(x, y, 0.0)
+        GlStateManager.scale(0.5, 0.5, 0.5)
+        GlStateManager.enableRescaleNormal()
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderHelper.enableGUIStandardItemLighting()
+        mc.renderItem.renderItemAndEffectIntoGUI(stack, 0, 0)
+        mc.renderItem.renderItemOverlays(Fonts.minecraftFont, stack, 0, 0)
+        RenderHelper.disableStandardItemLighting()
+        GlStateManager.disableRescaleNormal()
+        GlStateManager.disableBlend()
+        GlStateManager.popMatrix()
+    }
+
+    private fun collectEntities() {
+        collectedEntities.clear()
+        mc.theWorld.loadedEntityList.forEach { e ->
+            if (EntityUtils.isSelected(e, false)
+                || (localPlayer && e is EntityPlayerSP && mc.gameSettings.thirdPersonView != 0)
+                || (droppedItems && e is EntityItem)
+            ) {
+                collectedEntities.add(e)
+            }
+        }
+    }
+
+    private fun project2D(scaleFactor: Int, x: Double, y: Double, z: Double): Vector3d? {
+        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelview)
+        GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projection)
+        GL11.glGetInteger(GL11.GL_VIEWPORT, viewport)
+        return if (GLU.gluProject(
+                x.toFloat(), y.toFloat(), z.toFloat(),
+                modelview, projection, viewport, vector
+            )
+        ) Vector3d(
+            (vector.get(0) / scaleFactor).toDouble(),
+            ((Display.getHeight().toFloat() - vector.get(1)) / scaleFactor).toDouble(),
+            vector.get(2).toDouble()
+        ) else null
+    }
+
+    private fun getColor(entity: Entity?): Color {
+        entity as? EntityLivingBase ?: return Color(colorRed, colorGreen, colorBlue)
+
+        // friends and team
+        /*
+        if (EntityUtils.isFriend(entity)) return Color.BLUE
+        if (colorTeam) {
+            EntityUtils.colorFromDisplayName(entity)?.let { return it }
+        }
+        */
+
+        return when (colorMode) {
+            "Custom" -> Color(colorRed, colorGreen, colorBlue)
+            "Client" -> getColor(1)
+            else -> ColorUtils.fade(Color(colorRed, colorGreen, colorBlue), 0, 100)
+        }
+    }
+
+        val collectedEntities: MutableList<Entity?> = mutableListOf()
+
+        fun shouldCancelNameTag(entity: EntityLivingBase?): Boolean {
+            val mod = FDPClient.moduleManager.getModule(ESP2D::class.java) ?: return false
+            return mod.state && tagsValue && collectedEntities.contains(entity)
+        }
+}

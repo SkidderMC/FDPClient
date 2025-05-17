@@ -36,6 +36,7 @@ import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.*
 import net.minecraft.client.renderer.GlStateManager.*
+import net.minecraft.client.renderer.culling.Frustum
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.shader.Framebuffer
@@ -74,6 +75,8 @@ object RenderUtils : MinecraftInstance {
         glGenLists(1)
     }
     var deltaTime = 0
+
+    private val frustrum = Frustum()
 
     @JvmStatic
     private fun setupFBO(fbo: Framebuffer) {
@@ -4340,5 +4343,111 @@ object RenderUtils : MinecraftInstance {
         f.run()
         glEnable(GL_TEXTURE_2D)
         disableBlend()
+    }
+
+    fun interpolate(current: Double, old: Double, scale: Double): Double =
+        old + (current - old) * scale
+
+    fun isInViewFrustum(entity: Entity): Boolean =
+        isInViewFrustum(entity.entityBoundingBox) || entity.ignoreFrustumCheck
+
+    private fun isInViewFrustum(bb: AxisAlignedBB): Boolean {
+        val current = mc.renderViewEntity
+        frustrum.setPosition(current.posX, current.posY, current.posZ)
+        return frustrum.isBoundingBoxInFrustum(bb)
+    }
+
+    fun newDrawRect(
+        leftInput: Float,
+        topInput: Float,
+        rightInput: Float,
+        bottomInput: Float,
+        color: Int
+    ) {
+        var left = leftInput
+        var right = rightInput
+        var top = topInput
+        var bottom = bottomInput
+
+        if (left < right) {
+            val i = left
+            left = right
+            right = i
+        }
+        if (top < bottom) {
+            val j = top
+            top = bottom
+            bottom = j
+        }
+
+        val f3 = ((color ushr 24) and 0xFF) / 255.0f
+        val f  = ((color ushr 16) and 0xFF) / 255.0f
+        val f1 = ((color ushr 8)  and 0xFF) / 255.0f
+        val f2 = ((color)        and 0xFF) / 255.0f
+
+        val tessellator    = Tessellator.getInstance()
+        val worldRenderer  = tessellator.worldRenderer
+
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        GlStateManager.color(f, f1, f2, f3)
+
+        worldRenderer.begin(7, DefaultVertexFormats.POSITION)
+        worldRenderer.pos(left.toDouble(),  bottom.toDouble(), 0.0).endVertex()
+        worldRenderer.pos(right.toDouble(), bottom.toDouble(), 0.0).endVertex()
+        worldRenderer.pos(right.toDouble(), top.toDouble(),    0.0).endVertex()
+        worldRenderer.pos(left.toDouble(),  top.toDouble(),    0.0).endVertex()
+        tessellator.draw()
+
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
+    }
+
+    fun newDrawRect(
+        leftInput: Double,
+        topInput: Double,
+        rightInput: Double,
+        bottomInput: Double,
+        color: Int
+    ) {
+        var left = leftInput
+        var right = rightInput
+        var top = topInput
+        var bottom = bottomInput
+
+        if (left < right) {
+            val i = left
+            left = right
+            right = i
+        }
+        if (top < bottom) {
+            val j = top
+            top = bottom
+            bottom = j
+        }
+
+        val f3 = ((color ushr 24) and 0xFF) / 255.0f
+        val f  = ((color ushr 16) and 0xFF) / 255.0f
+        val f1 = ((color ushr 8)  and 0xFF) / 255.0f
+        val f2 = ((color)        and 0xFF) / 255.0f
+
+        val tessellator    = Tessellator.getInstance()
+        val worldRenderer  = tessellator.worldRenderer
+
+        GlStateManager.enableBlend()
+        GlStateManager.disableTexture2D()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        GlStateManager.color(f, f1, f2, f3)
+
+        worldRenderer.begin(7, DefaultVertexFormats.POSITION)
+        worldRenderer.pos(left,  bottom, 0.0).endVertex()
+        worldRenderer.pos(right, bottom, 0.0).endVertex()
+        worldRenderer.pos(right, top,    0.0).endVertex()
+        worldRenderer.pos(left,  top,    0.0).endVertex()
+        tessellator.draw()
+
+        GlStateManager.enableTexture2D()
+        GlStateManager.disableBlend()
     }
 }
