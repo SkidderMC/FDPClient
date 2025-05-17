@@ -5,7 +5,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "6.1.0"
     id "net.minecraftforge.gradle.forge"
     id "org.spongepowered.mixin"
-    id "com.gorylenko.gradle-git-properties" version "2.4.2"
+    id "com.gorylenko.gradle-git-properties" version "2.5.0"
 }
 
 repositories {
@@ -87,7 +87,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines_version"
 
     // Swing LookAndFeel
-    implementation "com.formdev:flatlaf:3.5.4"
+    implementation "com.formdev:flatlaf:3.6"
 
     implementation fileTree(include: ["*.jar"], dir: "libs")
 }
