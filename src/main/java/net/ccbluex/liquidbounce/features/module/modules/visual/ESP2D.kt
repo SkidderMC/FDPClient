@@ -100,7 +100,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
         GL11.glPushMatrix()
         collectEntities()
 
-        val partialTicks = event.partialTicks.toFloat()
+        val partialTicks = event.partialTicks
         val scaledResolution = ScaledResolution(mc)
         val scaleFactor = scaledResolution.scaleFactor
         val scaling = scaleFactor.toDouble() / scaleFactor.toDouble().pow(2.0)
@@ -202,26 +202,49 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                     val isPlayer = entity is EntityPlayer
                     var lineY: Float
 
-                    if (isLiving && doHealthBar) {
-                        val eLiving = entity as EntityLivingBase
-                        var hp = eLiving.health
-                        val maxHp = eLiving.maxHealth
+                    if (entity is EntityLivingBase && doHealthBar) {
+                        val eLiving = entity
+                        var hp = eLiving.health.toDouble()
+                        val maxHp = eLiving.maxHealth.toDouble()
                         if (hp > maxHp) hp = maxHp
                         val ratio = hp / maxHp
-                        val barHeight = (maxY - minY) * ratio
+                        val fullHeight = maxY - minY
+                        val barHeight = fullHeight * ratio
 
-                        RenderUtils.newDrawRect(minX - 3.5, minY - 0.5, minX - 1.5, maxY + 0.5, backgroundColor)
+                        val healthCol = ColorUtils.getHealthColor(ratio.toFloat(), ratio.toFloat()).rgb
 
-                        val healthCol = ColorUtils.getHealthColor(hp.toFloat(), maxHp.toFloat()).rgb
-                        RenderUtils.newDrawRect(minX - 3.0, maxY, minX - 2.0, maxY - barHeight, healthCol)
-                        if (absorption && eLiving.absorptionAmount > 0f) {
-                            val abCol = Color(Potion.absorption.liquidColor).rgb
-                            val abHeight = (maxY - minY) / 6.0 * eLiving.absorptionAmount / 2.0
-                            RenderUtils.newDrawRect(minX - 3.0, maxY, minX - 2.0, maxY - abHeight, abCol)
+                        if (hpBarMode.equals("Dot", ignoreCase = true) && fullHeight >= 60) {
+                            val segment = (fullHeight + 0.5) / 10.0
+                            val unit = maxHp / 10.0
+                            for (k in 0 until 10) {
+                                val segmentHP = ((hp - k * unit).coerceIn(0.0, unit)) / unit
+                                val segHei = (fullHeight / 10.0 - 0.5) * segmentHP
+                                RenderUtils.newDrawRect(
+                                    minX - 3.0,
+                                    maxY - segment * k,
+                                    minX - 2.0,
+                                    maxY - segment * k - segHei,
+                                    healthCol
+                                )
+                            }
+                        } else {
+                            RenderUtils.newDrawRect(minX - 3.0, maxY, minX - 2.0, maxY - barHeight, healthCol)
+                            val ab = eLiving.absorptionAmount
+                            if (absorption && ab > 0f) {
+                                val abCol = Color(Potion.absorption.liquidColor).rgb
+                                val abHei = fullHeight / 6.0 * ab.toDouble() / 2.0
+                                RenderUtils.newDrawRect(
+                                    minX - 3.0,
+                                    maxY,
+                                    minX - 2.0,
+                                    maxY - abHei,
+                                    abCol
+                                )
+                            }
                         }
 
                         if (healthNumber && (!hoverValue || entity === mc.thePlayer || isHovering(minX, maxX, minY, maxY, scaledResolution))) {
-                            val disp = if (hpMode.equals("Health", ignoreCase = true))
+                            val disp = if (hpMode.equals("Health", true))
                                 "${dFormat.format(eLiving.health.toDouble())} ❤"
                             else
                                 "${(ratio * 100).toInt()}%"
@@ -236,7 +259,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                     }
 
                     if (isLiving && doArmorBar) {
-                        val eLiving = entity as EntityLivingBase
+                        val eLiving = entity
                         if (armorBarMode.equals("Items", ignoreCase = true)) {
                             val slotHeight = (maxY - minY) / 4.0 + 0.25
                             for (slot in 4 downTo 1) {
@@ -286,7 +309,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                     }
 
                     if (isLiving && armorItems && (!hoverValue || entity === mc.thePlayer || isHovering(minX, maxX, minY, maxY, scaledResolution))) {
-                        val eLiving = entity as EntityLivingBase
+                        val eLiving = entity
                         val yDist = (maxY - minY) / 4.0
                         for (slot in 4 downTo 1) {
                             val stack = eLiving.getEquipmentInSlot(slot)
@@ -306,7 +329,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                     }
 
                     if (isLiving && tagsValue) {
-                        val eLiving = entity as EntityLivingBase
+                        val eLiving = entity
                         val name = if (clearNameValue) eLiving.name else eLiving.displayName.formattedText
                         if (tagsBGValue) {
                             RenderUtils.newDrawRect(
@@ -327,7 +350,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                     }
 
                     if (entity is EntityLivingBase && itemTagsValue) {
-                        val eLiving = entity as EntityLivingBase
+                        val eLiving = entity
                         val stack = eLiving.heldItem
                         stack?.let {
                             val itemName = it.displayName
