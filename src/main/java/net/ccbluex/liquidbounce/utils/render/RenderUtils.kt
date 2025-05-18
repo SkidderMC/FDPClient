@@ -4388,10 +4388,10 @@ object RenderUtils : MinecraftInstance {
         val tessellator    = Tessellator.getInstance()
         val worldRenderer  = tessellator.worldRenderer
 
-        GlStateManager.enableBlend()
-        GlStateManager.disableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        GlStateManager.color(f, f1, f2, f3)
+        enableBlend()
+        disableTexture2D()
+        tryBlendFuncSeparate(770, 771, 1, 0)
+        color(f, f1, f2, f3)
 
         worldRenderer.begin(7, DefaultVertexFormats.POSITION)
         worldRenderer.pos(left.toDouble(),  bottom.toDouble(), 0.0).endVertex()
@@ -4400,8 +4400,8 @@ object RenderUtils : MinecraftInstance {
         worldRenderer.pos(left.toDouble(),  top.toDouble(),    0.0).endVertex()
         tessellator.draw()
 
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
+        enableTexture2D()
+        disableBlend()
     }
 
     fun newDrawRect(
@@ -4435,10 +4435,10 @@ object RenderUtils : MinecraftInstance {
         val tessellator    = Tessellator.getInstance()
         val worldRenderer  = tessellator.worldRenderer
 
-        GlStateManager.enableBlend()
-        GlStateManager.disableTexture2D()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
-        GlStateManager.color(f, f1, f2, f3)
+        enableBlend()
+        disableTexture2D()
+        tryBlendFuncSeparate(770, 771, 1, 0)
+        color(f, f1, f2, f3)
 
         worldRenderer.begin(7, DefaultVertexFormats.POSITION)
         worldRenderer.pos(left,  bottom, 0.0).endVertex()
@@ -4447,7 +4447,7 @@ object RenderUtils : MinecraftInstance {
         worldRenderer.pos(left,  top,    0.0).endVertex()
         tessellator.draw()
 
-        GlStateManager.enableTexture2D()
-        GlStateManager.disableBlend()
+        enableTexture2D()
+        disableBlend()
     }
 }

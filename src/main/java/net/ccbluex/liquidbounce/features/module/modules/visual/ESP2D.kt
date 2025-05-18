@@ -5,18 +5,21 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.font.Fonts.minecraftFont
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColor
+import net.ccbluex.liquidbounce.utils.extensions.withAlpha
 import net.ccbluex.liquidbounce.utils.inventory.ItemUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.interpolate
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.isInViewFrustum
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.newDrawRect
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GLAllocation
@@ -32,6 +35,7 @@ import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
 import org.lwjgl.util.glu.GLU
 import java.awt.Color
+import java.awt.Color.getHSBColor
 import java.nio.FloatBuffer
 import java.nio.IntBuffer
 import java.text.DecimalFormat
@@ -40,6 +44,7 @@ import javax.vecmath.Vector4d
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
+import kotlin.random.Random
 
 object ESP2D : Module("ESP2D", Category.VISUAL) {
 
@@ -61,21 +66,23 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
     val armorItems by boolean("ArmorItems", true)
     val armorDur by boolean("ArmorDurability", true)
 
-    val hoverValue by boolean("Details-HoverOnly", false)
-    val tagsValue by boolean("Tags", true)
-    val tagsBGValue by boolean("Tags-Background", true)
-    val itemTagsValue by boolean("Item-Tags", true)
+    val hover by boolean("Details-HoverOnly", false)
+    val tags by boolean("Tags", true)
+    val tagsBG by boolean("Tags-Background", true)
+    val itemTags by boolean("Item-Tags", true)
 
     val outlineFont by boolean("OutlineFont", true)
-    val clearNameValue by boolean("Use-Clear-Name", false)
+    val clearName by boolean("Use-Clear-Name", false)
 
     val localPlayer by boolean("Local-Player", true)
     val droppedItems by boolean("Dropped-Items", false)
 
-    val colorMode by choices("Color", arrayOf("Custom", "Client", "AnotherRainbow"), "Custom")
-    val colorRed by int("Red", 255, 0..255)
-    val colorGreen by int("Green", 255, 0..255)
-    val colorBlue by int("Blue", 255, 0..255)
+    val colorMode by choices(
+        "Color Mode",
+        arrayOf("Custom", "Theme", "Fade", "Rainbow", "Random"),
+        "Custom"
+    )
+    private val color by color("Color", Color.WHITE)  { colorMode == "Custom" || colorMode == "Fade" }
 
     val fontScale by float("Font-Scale", 0.5f, 0f..1f)
     val colorTeam by boolean("Team", false)
@@ -85,10 +92,14 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
     private val projection: FloatBuffer = GLAllocation.createDirectFloatBuffer(16)
     private val vector: FloatBuffer = GLAllocation.createDirectFloatBuffer(4)
 
-    private val backgroundColor: Int = Color(0, 0, 0, 120).rgb
+    private val background by boolean("Background", true)
+    private val backgroundColor by color("BackgroundColor", Color.BLACK.withAlpha(120)) { background }
+
     private val black: Int = Color.BLACK.rgb
 
     private val dFormat = DecimalFormat("0.0")
+
+    val collectedEntities: MutableList<Entity?> = mutableListOf()
 
     override fun onDisable() {
         collectedEntities.clear()
@@ -107,7 +118,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
 
         GL11.glScaled(scaling, scaling, scaling)
 
-        val fr = Fonts.minecraftFont
+        val fr = minecraftFont
         val renderMng = mc.renderManager
         val entityRenderer = mc.entityRenderer
 
@@ -121,11 +132,10 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
             val entity = collectedEntities[i] ?: break
             val colorRGB = getColor(entity).rgb
 
-            if (RenderUtils.isInViewFrustum(entity)) {
-                // interpolate position
-                val x = RenderUtils.interpolate(entity.posX, entity.lastTickPosX, event.partialTicks.toDouble())
-                val y = RenderUtils.interpolate(entity.posY, entity.lastTickPosY, event.partialTicks.toDouble())
-                val z = RenderUtils.interpolate(entity.posZ, entity.lastTickPosZ, event.partialTicks.toDouble())
+            if (isInViewFrustum(entity)) {
+                val x = interpolate(entity.posX, entity.lastTickPosX, event.partialTicks.toDouble())
+                val y = interpolate(entity.posY, entity.lastTickPosY, event.partialTicks.toDouble())
+                val z = interpolate(entity.posZ, entity.lastTickPosZ, event.partialTicks.toDouble())
 
                 val width = entity.width.toDouble() / 1.5
                 val height = entity.height.toDouble() + if (entity.isSneaking) -0.3 else 0.2
@@ -175,26 +185,26 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
 
                     if (doOutline) {
                         if (boxMode == "Box") {
-                            RenderUtils.newDrawRect(minX - 1.0, minY, minX + 0.5, maxY + 0.5, black)
-                            RenderUtils.newDrawRect(minX - 1.0, minY - 0.5, maxX + 0.5, minY + 1.0, black)
-                            RenderUtils.newDrawRect(maxX - 1.0, minY, maxX + 0.5, maxY + 0.5, black)
-                            RenderUtils.newDrawRect(minX - 1.0, maxY - 1.0, maxX + 0.5, maxY + 0.5, black)
+                            newDrawRect(minX - 1.0, minY, minX + 0.5, maxY + 0.5, black)
+                            newDrawRect(minX - 1.0, minY - 0.5, maxX + 0.5, minY + 1.0, black)
+                            newDrawRect(maxX - 1.0, minY, maxX + 0.5, maxY + 0.5, black)
+                            newDrawRect(minX - 1.0, maxY - 1.0, maxX + 0.5, maxY + 0.5, black)
 
-                            RenderUtils.newDrawRect(minX - 0.5, minY, minX, maxY, colorRGB)
-                            RenderUtils.newDrawRect(minX, maxY - 0.5, maxX, maxY, colorRGB)
-                            RenderUtils.newDrawRect(minX - 0.5, minY, maxX, minY + 0.5, colorRGB)
-                            RenderUtils.newDrawRect(maxX - 0.5, minY, maxX, maxY, colorRGB)
+                            newDrawRect(minX - 0.5, minY, minX, maxY, colorRGB)
+                            newDrawRect(minX, maxY - 0.5, maxX, maxY, colorRGB)
+                            newDrawRect(minX - 0.5, minY, maxX, minY + 0.5, colorRGB)
+                            newDrawRect(maxX - 0.5, minY, maxX, maxY, colorRGB)
                         } else {
 
-                            RenderUtils.newDrawRect(minX - 1.0, minY, minX + (maxX - minX) / 4.0, minY + 0.5, black)
-                            RenderUtils.newDrawRect(minX - 1.0, maxY, minX + (maxX - minX) / 4.0, maxY - 0.5, black)
-                            RenderUtils.newDrawRect(maxX + 0.5 - (maxX - minX) / 4.0, minY, maxX + 0.5, minY + 0.5, black)
-                            RenderUtils.newDrawRect(maxX + 0.5 - (maxX - minX) / 4.0, maxY, maxX + 0.5, maxY - 0.5, black)
+                            newDrawRect(minX - 1.0, minY, minX + (maxX - minX) / 4.0, minY + 0.5, black)
+                            newDrawRect(minX - 1.0, maxY, minX + (maxX - minX) / 4.0, maxY - 0.5, black)
+                            newDrawRect(maxX + 0.5 - (maxX - minX) / 4.0, minY, maxX + 0.5, minY + 0.5, black)
+                            newDrawRect(maxX + 0.5 - (maxX - minX) / 4.0, maxY, maxX + 0.5, maxY - 0.5, black)
 
-                            RenderUtils.newDrawRect(minX, minY, minX + (maxX - minX) / 4.0, minY + 0.5, colorRGB)
-                            RenderUtils.newDrawRect(minX, maxY - 0.5, minX + (maxX - minX) / 4.0, maxY, colorRGB)
-                            RenderUtils.newDrawRect(maxX - (maxX - minX) / 4.0, minY, maxX, minY + 0.5, colorRGB)
-                            RenderUtils.newDrawRect(maxX - (maxX - minX) / 4.0, maxY - 0.5, maxX, maxY, colorRGB)
+                            newDrawRect(minX, minY, minX + (maxX - minX) / 4.0, minY + 0.5, colorRGB)
+                            newDrawRect(minX, maxY - 0.5, minX + (maxX - minX) / 4.0, maxY, colorRGB)
+                            newDrawRect(maxX - (maxX - minX) / 4.0, minY, maxX, minY + 0.5, colorRGB)
+                            newDrawRect(maxX - (maxX - minX) / 4.0, maxY - 0.5, maxX, maxY, colorRGB)
                         }
                     }
 
@@ -219,7 +229,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                             for (k in 0 until 10) {
                                 val segmentHP = ((hp - k * unit).coerceIn(0.0, unit)) / unit
                                 val segHei = (fullHeight / 10.0 - 0.5) * segmentHP
-                                RenderUtils.newDrawRect(
+                                newDrawRect(
                                     minX - 3.0,
                                     maxY - segment * k,
                                     minX - 2.0,
@@ -228,12 +238,12 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                                 )
                             }
                         } else {
-                            RenderUtils.newDrawRect(minX - 3.0, maxY, minX - 2.0, maxY - barHeight, healthCol)
+                            newDrawRect(minX - 3.0, maxY, minX - 2.0, maxY - barHeight, healthCol)
                             val ab = eLiving.absorptionAmount
                             if (absorption && ab > 0f) {
                                 val abCol = Color(Potion.absorption.liquidColor).rgb
                                 val abHei = fullHeight / 6.0 * ab.toDouble() / 2.0
-                                RenderUtils.newDrawRect(
+                                newDrawRect(
                                     minX - 3.0,
                                     maxY,
                                     minX - 2.0,
@@ -243,15 +253,15 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                             }
                         }
 
-                        if (healthNumber && (!hoverValue || entity === mc.thePlayer || isHovering(minX, maxX, minY, maxY, scaledResolution))) {
+                        if (healthNumber && (!hover || entity === mc.thePlayer || isHovering(minX, maxX, minY, maxY, scaledResolution))) {
                             val disp = if (hpMode.equals("Health", true))
                                 "${dFormat.format(eLiving.health.toDouble())} ❤"
                             else
                                 "${(ratio * 100).toInt()}%"
                             drawScaledString(
                                 disp,
-                                minX - 4.0 - Fonts.minecraftFont.getStringWidth(disp) * fontScale,
-                                (maxY - barHeight) - Fonts.minecraftFont.FONT_HEIGHT / 2f * fontScale,
+                                minX - 4.0 - minecraftFont.getStringWidth(disp) * fontScale,
+                                (maxY - barHeight) - minecraftFont.FONT_HEIGHT / 2f * fontScale,
                                 fontScale.toDouble(),
                                 -1
                             )
@@ -265,11 +275,11 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                             for (slot in 4 downTo 1) {
                                 val stack = eLiving.getEquipmentInSlot(slot)
                                 if (stack != null) {
-                                    RenderUtils.newDrawRect(maxX + 1.5, maxY + 0.5 - slotHeight * slot,
+                                    newDrawRect(maxX + 1.5, maxY + 0.5 - slotHeight * slot,
                                         maxX + 3.5, maxY + 0.5 - slotHeight * (slot - 1),
-                                        backgroundColor)
+                                        backgroundColor.rgb)
                                     val durRatio = ItemUtils.getItemDurability(stack).toDouble() / stack.maxDamage
-                                    RenderUtils.newDrawRect(
+                                    newDrawRect(
                                         maxX + 2.0,
                                         maxY + 0.5 - slotHeight * (slot - 1) - 0.25,
                                         maxX + 3.0,
@@ -281,9 +291,9 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                         } else {
                             val armorVal = eLiving.totalArmorValue.toFloat()
                             val armorHeight = (maxY - minY) * armorVal / 20.0
-                            RenderUtils.newDrawRect(maxX + 1.5, minY - 0.5, maxX + 3.5, maxY + 0.5, backgroundColor)
+                            newDrawRect(maxX + 1.5, minY - 0.5, maxX + 3.5, maxY + 0.5, backgroundColor.rgb)
                             if (armorVal > 0f) {
-                                RenderUtils.newDrawRect(maxX + 2.0, maxY, maxX + 3.0, maxY - armorHeight, Color(0, 255, 255).rgb)
+                                newDrawRect(maxX + 2.0, maxY, maxX + 3.0, maxY - armorHeight, Color(0, 255, 255).rgb)
                             }
                         }
                     }
@@ -294,13 +304,13 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                             val maxD = stack.maxDamage
                             val curD = (maxD - stack.itemDamage).toFloat()
                             val height = (maxY - minY) * (curD / maxD.toDouble())
-                            RenderUtils.newDrawRect(maxX + 1.5, minY - 0.5, maxX + 3.5, maxY + 0.5, backgroundColor)
-                            RenderUtils.newDrawRect(maxX + 2.0, maxY, maxX + 3.0, maxY - height, Color(0, 255, 255).rgb)
-                            if (armorNumber && (!hoverValue || entity.entityItem == mc.thePlayer!!.heldItem || isHovering(minX, maxX, minY, maxY, scaledResolution))) {
+                            newDrawRect(maxX + 1.5, minY - 0.5, maxX + 3.5, maxY + 0.5, backgroundColor.rgb)
+                            newDrawRect(maxX + 2.0, maxY, maxX + 3.0, maxY - height, Color(0, 255, 255).rgb)
+                            if (armorNumber && (!hover || entity.entityItem == mc.thePlayer!!.heldItem || isHovering(minX, maxX, minY, maxY, scaledResolution))) {
                                 drawScaledString(
                                     curD.toInt().toString(),
                                     maxX + 4.0,
-                                    (maxY - height) - Fonts.minecraftFont.FONT_HEIGHT / 2f * fontScale,
+                                    (maxY - height) - minecraftFont.FONT_HEIGHT / 2f * fontScale,
                                     fontScale.toDouble(),
                                     -1
                                 )
@@ -308,7 +318,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                         }
                     }
 
-                    if (isLiving && armorItems && (!hoverValue || entity === mc.thePlayer || isHovering(minX, maxX, minY, maxY, scaledResolution))) {
+                    if (isLiving && armorItems && (!hover || entity === mc.thePlayer || isHovering(minX, maxX, minY, maxY, scaledResolution))) {
                         val eLiving = entity
                         val yDist = (maxY - minY) / 4.0
                         for (slot in 4 downTo 1) {
@@ -328,14 +338,14 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                         }
                     }
 
-                    if (isLiving && tagsValue) {
+                    if (isLiving && tags) {
                         val eLiving = entity
-                        val name = if (clearNameValue) eLiving.name else eLiving.displayName.formattedText
-                        if (tagsBGValue) {
-                            RenderUtils.newDrawRect(
-                                minX + (maxX - minX) / 2.0 - (Fonts.minecraftFont.getStringWidth(name) / 2f + 2f) * fontScale,
-                                minY - 1.0 - (Fonts.minecraftFont.FONT_HEIGHT + 2f) * fontScale,
-                                minX + (maxX - minX) / 2.0 + (Fonts.minecraftFont.getStringWidth(name) / 2f + 2f) * fontScale,
+                        val name = if (clearName) eLiving.name else eLiving.displayName.formattedText
+                        if (tagsBG) {
+                            newDrawRect(
+                                minX + (maxX - minX) / 2.0 - (minecraftFont.getStringWidth(name) / 2f + 2f) * fontScale,
+                                minY - 1.0 - (minecraftFont.FONT_HEIGHT + 2f) * fontScale,
+                                minX + (maxX - minX) / 2.0 + (minecraftFont.getStringWidth(name) / 2f + 2f) * fontScale,
                                 minY - 1.0 + 2f * fontScale,
                                 -0x60000000
                             )
@@ -343,23 +353,23 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                         drawScaledCenteredString(
                             name,
                             minX + (maxX - minX) / 2.0,
-                            minY - 1.0 - Fonts.minecraftFont.FONT_HEIGHT * fontScale,
+                            minY - 1.0 - minecraftFont.FONT_HEIGHT * fontScale,
                             fontScale.toDouble(),
                             -1
                         )
                     }
 
-                    if (entity is EntityLivingBase && itemTagsValue) {
+                    if (entity is EntityLivingBase && itemTags) {
                         val eLiving = entity
                         val stack = eLiving.heldItem
                         stack?.let {
                             val itemName = it.displayName
-                            if (tagsBGValue) {
-                                RenderUtils.newDrawRect(
-                                    minX + (maxX - minX) / 2.0 - (Fonts.minecraftFont.getStringWidth(itemName) / 2f + 2f) * fontScale,
+                            if (tagsBG) {
+                                newDrawRect(
+                                    minX + (maxX - minX) / 2.0 - (minecraftFont.getStringWidth(itemName) / 2f + 2f) * fontScale,
                                     maxY + 1.0 - 2f * fontScale,
-                                    minX + (maxX - minX) / 2.0 + (Fonts.minecraftFont.getStringWidth(itemName) / 2f + 2f) * fontScale,
-                                    maxY + 1.0 + (Fonts.minecraftFont.FONT_HEIGHT + 2f) * fontScale,
+                                    minX + (maxX - minX) / 2.0 + (minecraftFont.getStringWidth(itemName) / 2f + 2f) * fontScale,
+                                    maxY + 1.0 + (minecraftFont.FONT_HEIGHT + 2f) * fontScale,
                                     -0x60000000
                                 )
                             }
@@ -371,14 +381,14 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                                 -1
                             )
                         }
-                    } else if (entity is EntityItem && itemTagsValue) {
+                    } else if (entity is EntityItem && itemTags) {
                         val itemName = entity.entityItem.displayName
-                        if (tagsBGValue) {
-                            RenderUtils.newDrawRect(
-                                minX + (maxX - minX) / 2.0 - (Fonts.minecraftFont.getStringWidth(itemName) / 2f + 2f) * fontScale,
+                        if (tagsBG) {
+                            newDrawRect(
+                                minX + (maxX - minX) / 2.0 - (minecraftFont.getStringWidth(itemName) / 2f + 2f) * fontScale,
                                 maxY + 1.0 - 2f * fontScale,
-                                minX + (maxX - minX) / 2.0 + (Fonts.minecraftFont.getStringWidth(itemName) / 2f + 2f) * fontScale,
-                                maxY + 1.0 + (Fonts.minecraftFont.FONT_HEIGHT + 2f) * fontScale,
+                                minX + (maxX - minX) / 2.0 + (minecraftFont.getStringWidth(itemName) / 2f + 2f) * fontScale,
+                                maxY + 1.0 + (minecraftFont.FONT_HEIGHT + 2f) * fontScale,
                                 -0x60000000
                             )
                         }
@@ -420,13 +430,13 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
         if (outlineFont) {
             drawOutlineStringWithoutGL(text, 0f, 0f, color, mc.fontRendererObj)
         } else {
-            Fonts.minecraftFont.drawStringWithShadow(text, 0F, 0F, color)
+            minecraftFont.drawStringWithShadow(text, 0F, 0F, color)
         }
         GlStateManager.popMatrix()
     }
 
     private fun drawScaledCenteredString(text: String, x: Double, y: Double, scale: Double, color: Int) {
-        drawScaledString(text, x - Fonts.minecraftFont.getStringWidth(text) / 2f * scale.toFloat(), y, scale, color)
+        drawScaledString(text, x - minecraftFont.getStringWidth(text) / 2f * scale.toFloat(), y, scale, color)
     }
 
     private fun renderItemStack(stack: net.minecraft.item.ItemStack, x: Double, y: Double) {
@@ -438,7 +448,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
         GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
         RenderHelper.enableGUIStandardItemLighting()
         mc.renderItem.renderItemAndEffectIntoGUI(stack, 0, 0)
-        mc.renderItem.renderItemOverlays(Fonts.minecraftFont, stack, 0, 0)
+        mc.renderItem.renderItemOverlays(minecraftFont, stack, 0, 0)
         RenderHelper.disableStandardItemLighting()
         GlStateManager.disableRescaleNormal()
         GlStateManager.disableBlend()
@@ -473,7 +483,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
     }
 
     private fun getColor(entity: Entity?): Color {
-        entity as? EntityLivingBase ?: return Color(colorRed, colorGreen, colorBlue)
+        entity as? EntityLivingBase ?: return Color(color.rgb)
 
         // friends and team
         /*
@@ -484,16 +494,26 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
         */
 
         return when (colorMode) {
-            "Custom" -> Color(colorRed, colorGreen, colorBlue)
-            "Client" -> getColor(1)
-            else -> ColorUtils.fade(Color(colorRed, colorGreen, colorBlue), 0, 100)
+            "Custom" -> Color(color.rgb)
+            "Theme"  -> getColor(1)
+            "Fade"   -> {
+                val idx   = collectedEntities.indexOf(entity).coerceAtLeast(0)
+                val total = collectedEntities.size.coerceAtLeast(1)
+                fade(Color(color.rgb), idx, total)
+            }
+            "Rainbow" -> {
+                val hue = ((System.currentTimeMillis() % 3600L) / 3600f)
+                getHSBColor(hue, 1f, 1f)
+            }
+            "Random"  -> {
+                val rnd = Random(entity.hashCode().toLong())
+                Color(rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256))
+            }
+            else      -> Color(color.rgb)
         }
     }
-
-        val collectedEntities: MutableList<Entity?> = mutableListOf()
-
         fun shouldCancelNameTag(entity: EntityLivingBase?): Boolean {
-            val mod = FDPClient.moduleManager.getModule(ESP2D::class.java) ?: return false
-            return mod.state && tagsValue && collectedEntities.contains(entity)
+            if (entity == null) return false
+            return state && tags && collectedEntities.contains(entity)
         }
 }

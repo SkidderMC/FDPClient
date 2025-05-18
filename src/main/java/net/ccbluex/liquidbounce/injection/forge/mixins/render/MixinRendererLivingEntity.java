@@ -131,7 +131,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
 
     @Inject(method = "canRenderName(Lnet/minecraft/entity/EntityLivingBase;)Z", at = @At("HEAD"), cancellable = true)
     private <T extends EntityLivingBase> void canRenderName(T entity, CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        if (NameTags.INSTANCE.shouldRenderNameTags(entity)) {
+        if (NameTags.INSTANCE.shouldRenderNameTags(entity) || ESP2D.INSTANCE.shouldCancelNameTag(entity)) {
             callbackInfoReturnable.setReturnValue(false);
         }
     }
