@@ -15,13 +15,11 @@ import java.util.*
 object ClientUpdate {
 
     val gitInfo = Properties().also {
-        val inputStream = FDPClient::class.java.classLoader.getResourceAsStream("git.properties")
-
-        if (inputStream != null) {
-            it.load(inputStream)
-        } else {
-            it["git.build.version"] = "unofficial"
-        }
+        FDPClient::class.java.classLoader
+            .getResourceAsStream("git.properties")
+            ?.use(it::load) ?: run {
+                it["git.build.version"] = "unofficial"
+            }
     }
 
     fun reloadNewestVersion() {
