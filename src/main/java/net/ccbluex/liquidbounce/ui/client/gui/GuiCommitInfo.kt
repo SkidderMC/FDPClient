@@ -8,9 +8,9 @@ package net.ccbluex.liquidbounce.ui.client.gui
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
+import net.ccbluex.liquidbounce.handler.api.ClientUpdate
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.io.GitUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
@@ -51,12 +51,12 @@ class GuiCommitInfo : AbstractScreen() {
 
         val lines = listOf(
             "Git Info",
-            "$CLIENT_NAME built by ${GitUtils.gitInfo.getProperty("git.build.user.name")}",
-            "Version: ${GitUtils.gitInfo.getProperty("git.build.version")}",
-            "CommitId: ${GitUtils.gitInfo.getProperty("git.commit.id")} (${GitUtils.gitInfo.getProperty("git.commit.id.abbrev")})",
-            "CommitMessage: ${GitUtils.gitInfo.getProperty("git.commit.message.short")}",
-            "Branch: ${GitUtils.gitInfo.getProperty("git.branch")}",
-            "Remote origin: ${GitUtils.gitInfo.getProperty("git.remote.origin.url")}",
+            "$CLIENT_NAME built by ${ClientUpdate.gitInfo.getProperty("git.build.user.name")}",
+            "Version: ${ClientUpdate.gitInfo.getProperty("git.build.version")}",
+            "CommitId: ${ClientUpdate.gitInfo.getProperty("git.commit.id")} (${ClientUpdate.gitInfo.getProperty("git.commit.id.abbrev")})",
+            "CommitMessage: ${ClientUpdate.gitInfo.getProperty("git.commit.message.short")}",
+            "Branch: ${ClientUpdate.gitInfo.getProperty("git.branch")}",
+            "Remote origin: ${ClientUpdate.gitInfo.getProperty("git.remote.origin.url")}",
             "Developers: ${FDPClient.CLIENT_AUTHOR}"
         )
 

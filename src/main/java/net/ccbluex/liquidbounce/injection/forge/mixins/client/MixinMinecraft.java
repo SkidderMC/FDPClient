@@ -51,7 +51,6 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.nio.ByteBuffer;
 import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -130,8 +129,7 @@ public abstract class MixinMinecraft {
             synchronized (SplashProgressLock.INSTANCE) {
                 try {
                     SplashProgressLock.INSTANCE.wait(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                } catch (InterruptedException ignored) {
                 }
             }
         }
@@ -165,19 +163,19 @@ public abstract class MixinMinecraft {
     }
 
     @Unique
-    private long lastFrame = getTime();
+    private long fdp$lastFrame = fdp$getTime();
 
     @Inject(method = "runGameLoop", at = @At("HEAD"))
     private void runGameLoop(final CallbackInfo callbackInfo) {
-        final long currentTime = getTime();
-        final int deltaTime = (int) (currentTime - lastFrame);
-        lastFrame = currentTime;
+        final long currentTime = fdp$getTime();
+        final int deltaTime = (int) (currentTime - fdp$lastFrame);
+        fdp$lastFrame = currentTime;
 
         RenderUtils.INSTANCE.setDeltaTime(deltaTime);
     }
 
     @Unique
-    public long getTime() {
+    public long fdp$getTime() {
         return (Sys.getTime() * 1000) / Sys.getTimerResolution();
     }
 

@@ -5,10 +5,12 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui
 
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.FDPClient.clientVersionText
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.file.FileManager
+import net.ccbluex.liquidbounce.handler.api.ClientUpdate
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.gui.button.ImageButton
@@ -23,7 +25,6 @@ import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.bugs
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.canConnect
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.changelogs
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.isLatest
-import net.ccbluex.liquidbounce.utils.io.GitUtils
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawShadowRect
@@ -229,8 +230,8 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
 
         listOf(btnClickGUI, btnCommitInfo, btnCosmetics, btnMinecraftOptions, btnLanguage, btnForgeModList, btnAddAccount, btnQuit)
             .forEach { it.drawButton(mc, mouseX, mouseY) }
-        val branch = GitUtils.gitBranch
-        val commitIdAbbrev = GitUtils.gitInfo.getProperty("git.commit.id.abbrev")
+        val branch = FDPClient.clientBranch
+        val commitIdAbbrev = ClientUpdate.gitInfo.getProperty("git.commit.id.abbrev")
         val infoStr = "$CLIENT_NAME($branch/$commitIdAbbrev) | Minecraft 1.8.9"
         Fonts.fontSemibold35.drawCenteredString(infoStr, 7F, (height - 11).toFloat(), Color(255, 255, 255, 100).rgb)
 

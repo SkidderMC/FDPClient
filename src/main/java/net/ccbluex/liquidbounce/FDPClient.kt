@@ -93,7 +93,16 @@ object FDPClient {
      */
     const val IN_DEV = true
 
-    val clientTitle = CLIENT_NAME + " " + clientVersionText + " " + clientCommit + "  | " + if (IN_DEV) " | DEVELOPMENT BUILD" else ""
+    val clientTitle = buildString(32) {
+        append(CLIENT_NAME)
+        append(' ')
+        append(clientVersionText)
+        append(' ')
+        append(clientCommit)
+        if (IN_DEV) {
+            append(" | DEVELOPMENT BUILD")
+        }
+    }
 
     var isStarting = true
     var isLoadingConfig = true
