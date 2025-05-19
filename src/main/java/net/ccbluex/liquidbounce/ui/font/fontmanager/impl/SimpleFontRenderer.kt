@@ -329,7 +329,7 @@ class SimpleFontRenderer(
                 }
 
                 i++ // Skip color character
-            } else if (character.toInt() < currentCharData.size) {
+            } else if (character.code < currentCharData.size) {
                 GL11.glBegin(GL11.GL_TRIANGLES)
                 drawChar(currentCharData, character, xScaled.toFloat(), yScaled.toFloat())
                 GL11.glEnd()
@@ -337,9 +337,9 @@ class SimpleFontRenderer(
                 if (strikethrough) {
                     drawLine(
                         xScaled,
-                        yScaled + currentCharData[character.toInt()].height / 2.0f,
-                        xScaled + (currentCharData[character.toInt()].width - 8).toDouble(),
-                        yScaled + currentCharData[character.toInt()].height / 2.0f,
+                        yScaled + currentCharData[character.code].height / 2.0f,
+                        xScaled + (currentCharData[character.code].width - 8).toDouble(),
+                        yScaled + currentCharData[character.code].height / 2.0f,
                         1.0f
                     )
                 }
@@ -347,14 +347,14 @@ class SimpleFontRenderer(
                 if (underline) {
                     drawLine(
                         xScaled,
-                        yScaled + currentCharData[character.toInt()].height - 2.0,
-                        xScaled + (currentCharData[character.toInt()].width - 8).toDouble(),
-                        yScaled + currentCharData[character.toInt()].height - 2.0,
+                        yScaled + currentCharData[character.code].height - 2.0,
+                        xScaled + (currentCharData[character.code].width - 8).toDouble(),
+                        yScaled + currentCharData[character.code].height - 2.0,
                         1.0f
                     )
                 }
 
-                xScaled += (currentCharData[character.toInt()].width - if (character == ' ') 8 else 9).toDouble()
+                xScaled += (currentCharData[character.code].width - if (character == ' ') 8 else 9).toDouble()
             }
 
             i++
@@ -447,8 +447,8 @@ class SimpleFontRenderer(
                 continue
             }
 
-            if (character.toInt() < currentData.size) {
-                width += currentData[character.toInt()].width - if (character == ' ') 8 else 9
+            if (character.code < currentData.size) {
+                width += currentData[character.code].width - if (character == ' ') 8 else 9
             }
 
             i++
@@ -458,7 +458,7 @@ class SimpleFontRenderer(
     }
 
     override fun charWidth(s: Char): Float {
-        return ((charData[s.toInt()].width - 8).toFloat()) / 2
+        return ((charData[s.code].width - 8).toFloat()) / 2
     }
 
     /**
@@ -470,7 +470,7 @@ class SimpleFontRenderer(
      * @param y The Y position.
      */
     private fun drawChar(chars: Array<CharData>, c: Char, x: Float, y: Float) {
-        val charIndex = c.toInt()
+        val charIndex = c.code
         if (charIndex >= chars.size) return
         val charData = chars[charIndex]
         drawQuad(
