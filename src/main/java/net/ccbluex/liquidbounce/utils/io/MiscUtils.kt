@@ -14,10 +14,13 @@ import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 import java.io.File
 import java.io.IOException
+import java.net.SocketException
+import java.net.SocketTimeoutException
 import java.net.URI
 import java.net.URISyntaxException
 import java.time.LocalDateTime
 import javax.imageio.ImageIO
+import javax.net.ssl.SSLException
 import javax.swing.*
 import javax.swing.filechooser.FileFilter
 import javax.swing.filechooser.FileNameExtensionFilter
@@ -65,17 +68,33 @@ object MiscUtils : MinecraftInstance {
             """.trimIndent()
         }
 
-        return base + '\n'
+        return base
     }
 
     @JvmStatic
     fun showMessageDialog(title: String, message: Any, messageType: Int = JOptionPane.ERROR_MESSAGE) =
         JOptionPane.showMessageDialog(null, message, title, messageType)
 
+    private fun Throwable.possibleTips(): String? {
+        return when (this) {
+            // Network issue
+            is SSLException, is SocketTimeoutException, is SocketException -> """
+                It looks like your network connection is experiencing problems, and some HTTP requests are failing.
+                1. Check your network, make sure you are online.
+                2. Try to restart the client. This might be a temporary issue.
+                3. Try to use a VPN. Notice: You should make sure JVM applications are applied.
+            """.trimIndent()
+            // TODO
+            is NullPointerException -> null
+            is NoClassDefFoundError -> null
+            else -> null
+        }
+    }
+
     @JvmStatic
     fun Throwable.showErrorPopup(
         titlePrefix: String = "Exception occurred: ",
-        extraContent: String = LocalDateTime.now().toString() + '\n'
+        extraContent: String = LocalDateTime.now().toString()
     ) {
         if (mc.isFullScreen) mc.toggleFullscreen()
 
@@ -83,7 +102,20 @@ object MiscUtils : MinecraftInstance {
 
         val title = titlePrefix + exceptionType
 
-        val content = extraContent + "--- Stacktrace ---\n" + stackTraceToString()
+        val tips = possibleTips()
+
+        val content = buildString {
+            append(extraContent)
+            if (isNotEmpty()) {
+                append('\n')
+            }
+            possibleTips()?.let {
+                append("-- Possible Tips ---\n")
+                append(it)
+            }
+            append("--- Stacktrace ---\n")
+            append(stackTraceToString())
+        }
 
         val textArea = JTextArea(content).apply {
             isEditable = false
