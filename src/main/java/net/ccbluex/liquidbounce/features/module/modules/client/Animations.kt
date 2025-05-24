@@ -92,7 +92,7 @@ fun itemRenderRotate() {
         return
     }
 
-    when (itemRotationMode.toLowerCase()) {
+    when (itemRotationMode.lowercase()) {
         "straight" -> rotate(delay, 0.0f, 1.0f, 0.0f)
         "forward" -> rotate(delay, 1.0f, 1.0f, 0.0f)
         "nano" -> rotate(delay, 0.0f, 0.0f, 0.0f)
