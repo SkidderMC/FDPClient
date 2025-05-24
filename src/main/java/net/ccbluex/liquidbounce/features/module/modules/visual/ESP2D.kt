@@ -487,10 +487,14 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
 
         // friends and team
         /*
-        if (EntityUtils.isFriend(entity)) return Color.BLUE
-        if (colorTeam) {
-            EntityUtils.colorFromDisplayName(entity)?.let { return it }
-        }
+        if (entity is EntityPlayer && entity.isClientFriend())
+                return Color.BLUE
+
+            if (colorTeam) {
+                entity.colorFromDisplayName()?.let {
+                    return it
+                }
+            }
         */
 
         return when (colorMode) {
