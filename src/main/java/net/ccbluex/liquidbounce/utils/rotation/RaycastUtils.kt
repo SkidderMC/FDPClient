@@ -25,14 +25,14 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
 import java.util.*
+import java.util.function.Predicate
 
 object RaycastUtils : MinecraftInstance {
-    @JvmOverloads
     fun raycastEntity(
         range: Double,
         yaw: Float = serverRotation.yaw,
         pitch: Float = serverRotation.pitch,
-        entityFilter: (Entity) -> Boolean
+        entityFilter: Predicate<Entity>,
     ): Entity? {
         val renderViewEntity = mc.renderViewEntity
 
@@ -51,7 +51,7 @@ object RaycastUtils : MinecraftInstance {
         var pointedEntity: Entity? = null
 
         for (entity in entityList) {
-            if (!entityFilter(entity)) continue
+            if (!entityFilter.test(entity)) continue
 
             val checkEntity = {
                 val axisAlignedBB = entity.hitBox
