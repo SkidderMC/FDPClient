@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.altmanager
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.liuli.elixir.account.CrackedAccount
 import me.liuli.elixir.account.MicrosoftAccount
@@ -25,7 +26,6 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.io.*
-import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.kotlin.swap
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomAccount
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
@@ -443,24 +443,29 @@ class GuiAltManager(private val prevGui: GuiScreen) : AbstractScreen() {
             }
         }
 
-        fun login(
-            minecraftAccount: MinecraftAccount, success: () -> Unit, error: (Exception) -> Unit, done: () -> Unit
-        ) = SharedScopes.IO.launch {
-            try {
-                minecraftAccount.update()
-                mc.session = Session(
-                    minecraftAccount.session.username,
-                    minecraftAccount.session.uuid,
-                    minecraftAccount.session.token,
-                    "microsoft"
-                )
-                EventManager.call(SessionUpdateEvent)
+        fun AbstractScreen.login(
+            minecraftAccount: MinecraftAccount,
+            success: () -> Unit,
+            error: (Exception) -> Unit,
+            done: () -> Unit
+        ) {
+            screenScope.launch(Dispatchers.IO) {
+                try {
+                    minecraftAccount.update()
+                    mc.session = Session(
+                        minecraftAccount.session.username,
+                        minecraftAccount.session.uuid,
+                        minecraftAccount.session.token,
+                        "microsoft"
+                    )
+                    EventManager.call(SessionUpdateEvent)
 
-                success()
-            } catch (exception: Exception) {
-                error(exception)
+                    success()
+                } catch (exception: Exception) {
+                    error(exception)
+                }
+                done()
             }
-            done()
         }
     }
 }

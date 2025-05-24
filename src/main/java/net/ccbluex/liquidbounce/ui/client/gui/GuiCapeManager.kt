@@ -67,7 +67,7 @@ object GuiCapeManager : AbstractScreen() {
     }
 
     override fun onGuiClosed() {
-        // Implement any necessary cleanup when the GUI is closed
+        super.onGuiClosed()
     }
 
     override fun initGui() {

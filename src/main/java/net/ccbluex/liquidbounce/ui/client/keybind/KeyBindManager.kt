@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.ui.client.keybind
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold40
@@ -36,11 +38,11 @@ object KeyBindManager : AbstractScreen() {
 
     fun updateAllKeys() {
         // use async because this may a bit slow
-        Thread {
+        screenScope.launch(Dispatchers.Default) {
             for (key in keys) {
                 key.update()
             }
-        }.start()
+        }
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {

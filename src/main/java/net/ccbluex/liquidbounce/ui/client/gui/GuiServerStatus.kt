@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.handler.lang.translationMenu
@@ -13,13 +14,11 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.io.HttpClient
 import net.ccbluex.liquidbounce.utils.io.defaultAgent
 import net.ccbluex.liquidbounce.utils.io.newCall
-import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
 import net.minecraft.client.gui.GuiScreen
-import okhttp3.Request
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import java.io.IOException
@@ -92,11 +91,11 @@ class GuiServerStatus(private val prevGui: GuiScreen) : AbstractScreen() {
     private fun loadInformation() {
         for (url in status.keys) {
             status[url] = null
-            SharedScopes.IO.launch {
+            screenScope.launch(Dispatchers.IO) {
                 try {
-                    status[url] = HttpClient.newCall(fun Request.Builder.() {
+                    status[url] = HttpClient.newCall {
                         url(url).head().defaultAgent()
-                    }).execute().use {
+                    }.execute().use {
                         if (it.code in 200..499) "green" else "red"
                     }
                 } catch (e: IOException) {

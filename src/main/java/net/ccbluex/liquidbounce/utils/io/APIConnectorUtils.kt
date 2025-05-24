@@ -22,18 +22,25 @@ import javax.imageio.ImageIO
 
 object APIConnectorUtils {
 
+    @Volatile
     var canConnect: Boolean = false
         private set
+    @Volatile
     var isLatest: Boolean = false
         private set
+    @Volatile
     var discord: String = ""
         private set
+    @Volatile
     var discordApp: String = ""
         private set
+    @Volatile
     var donate: String = ""
         private set
+    @Volatile
     var changelogs: String = ""
         private set
+    @Volatile
     var bugs: String = ""
         private set
     private var appClientID: String = ""

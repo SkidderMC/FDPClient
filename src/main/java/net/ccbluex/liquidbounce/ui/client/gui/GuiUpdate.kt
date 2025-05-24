@@ -126,7 +126,7 @@ class GuiUpdate : AbstractScreen() {
                 loadProgress = 0
                 errorMessage = null
 
-                SharedScopes.IO.launch {
+                screenScope.launch {
                     try {
                         performAllChecksAsync()
                     } catch (e: Exception) {

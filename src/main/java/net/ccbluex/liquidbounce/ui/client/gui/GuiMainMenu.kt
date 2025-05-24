@@ -5,6 +5,10 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui
 
+import com.google.gson.annotations.SerializedName
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.FDPClient.clientVersionText
@@ -25,7 +29,10 @@ import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.bugs
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.canConnect
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.changelogs
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.isLatest
+import net.ccbluex.liquidbounce.utils.io.HttpClient
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
+import net.ccbluex.liquidbounce.utils.io.get
+import net.ccbluex.liquidbounce.utils.io.jsonBody
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawShadowRect
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
@@ -35,20 +42,20 @@ import net.minecraft.util.ResourceLocation
 import net.minecraftforge.fml.client.GuiModList
 import org.lwjgl.input.Keyboard
 import java.awt.Color
-import java.net.HttpURLConnection
-import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.TimeZone
-import org.json.JSONObject
 import org.lwjgl.input.Mouse
 
 data class GithubRelease(
+    @SerializedName("tag_name")
     val tagName: String,
+    @SerializedName("published_at")
     val publishedAt: String,
     val body: String,
+    @SerializedName("html_url")
     val htmlUrl: String,
-    val prerelease: Boolean
+    val prerelease: Boolean,
 )
 
 class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
@@ -287,35 +294,21 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
     }
 
     private fun checkGithubUpdate() {
-        Thread {
+        screenScope.launch(Dispatchers.IO) {
             val githubRelease = fetchLatestGithubRelease()
             if (githubRelease != null && githubRelease.tagName != clientVersionText) {
-                mc.addScheduledTask { showUpdatePopup(githubRelease) }
+                withContext(Dispatchers.Main) {
+                    showUpdatePopup(githubRelease)
+                }
             }
-        }.start()
+        }
     }
 
-    private fun fetchLatestGithubRelease(): GithubRelease? {
-        try {
-            val url = URL("https://api.github.com/repos/SkidderMC/FDPClient/releases/latest")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-            connection.connectTimeout = 5000
-            connection.readTimeout = 5000
-            if (connection.responseCode == 200) {
-                val response = connection.inputStream.bufferedReader().use { it.readText() }
-                val json = JSONObject(response)
-                val tagName = json.getString("tag_name")
-                val publishedAt = json.getString("published_at")
-                val body = json.getString("body")
-                val htmlUrl = json.getString("html_url")
-                val prerelease = json.getBoolean("prerelease")
-                return GithubRelease(tagName, publishedAt, body, htmlUrl, prerelease)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return null
+    private fun fetchLatestGithubRelease(): GithubRelease? = try {
+        HttpClient.get("https://api.github.com/repos/SkidderMC/FDPClient/releases/latest")
+            .jsonBody<GithubRelease>()
+    } catch (e: Exception) {
+        null
     }
 
     private fun showUpdatePopup(githubRelease: GithubRelease) {

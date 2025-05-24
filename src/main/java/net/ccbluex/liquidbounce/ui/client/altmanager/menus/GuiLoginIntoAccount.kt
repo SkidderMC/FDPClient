@@ -151,6 +151,7 @@ class GuiLoginIntoAccount(private val prevGui: GuiAltManager, val directLogin: B
 
     override fun onGuiClosed() {
         Keyboard.enableRepeatEvents(false)
+        super.onGuiClosed()
     }
 
     private fun checkAndAddAccount(usernameText: String) {

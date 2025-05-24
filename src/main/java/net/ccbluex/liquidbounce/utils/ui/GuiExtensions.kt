@@ -5,6 +5,11 @@
  */
 package net.ccbluex.liquidbounce.utils.ui
 
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import net.ccbluex.liquidbounce.config.ColorValue
 import net.ccbluex.liquidbounce.config.TextValue
 import net.ccbluex.liquidbounce.config.Value
@@ -20,6 +25,8 @@ import java.awt.Color
 
 abstract class AbstractScreen : GuiScreen() {
 
+    val screenScope = CoroutineScope(Dispatchers.Main + SupervisorJob() + CoroutineName(this::class.java.simpleName))
+
     protected val textFields = arrayListOf<GuiTextField>()
 
     protected operator fun <T : GuiTextField> T.unaryPlus(): T {
@@ -33,6 +40,11 @@ abstract class AbstractScreen : GuiScreen() {
         }
 
         super.mouseClicked(mouseX, mouseY, mouseButton)
+    }
+
+    override fun onGuiClosed() {
+        screenScope.cancel("Screen closed")
+        super.onGuiClosed()
     }
 
     protected operator fun <T : GuiButton> T.unaryPlus(): T {
