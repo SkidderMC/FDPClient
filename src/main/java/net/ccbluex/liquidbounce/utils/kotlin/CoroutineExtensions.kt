@@ -21,6 +21,7 @@ object SharedScopes {
 
     init {
         // Set dispatcher for Dispatchers.Main
+        @OptIn(ExperimentalCoroutinesApi::class)
         Dispatchers.setMain(RenderDispatcher)
     }
 

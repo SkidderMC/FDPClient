@@ -12,8 +12,8 @@ import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
 import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import net.ccbluex.liquidbounce.config.FontValue
-import net.ccbluex.liquidbounce.utils.io.json
-import net.ccbluex.liquidbounce.utils.io.jsonArray
+import net.ccbluex.liquidbounce.file.gson.json
+import net.ccbluex.liquidbounce.file.gson.jsonArray
 import net.ccbluex.liquidbounce.utils.io.readJson
 import net.ccbluex.liquidbounce.utils.io.writeJson
 import java.io.File

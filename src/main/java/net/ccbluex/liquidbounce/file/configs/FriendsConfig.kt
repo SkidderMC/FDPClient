@@ -5,9 +5,8 @@
  */
 package net.ccbluex.liquidbounce.file.configs
 
-import com.google.gson.*
 import net.ccbluex.liquidbounce.file.FileConfig
-import net.ccbluex.liquidbounce.utils.io.decode
+import net.ccbluex.liquidbounce.file.gson.decode
 import net.ccbluex.liquidbounce.utils.io.readJson
 import net.ccbluex.liquidbounce.utils.io.writeJson
 import java.io.*

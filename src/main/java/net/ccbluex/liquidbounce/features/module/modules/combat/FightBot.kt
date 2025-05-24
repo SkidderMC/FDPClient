@@ -94,10 +94,7 @@ object FightBot : Module("FightBot", Category.COMBAT) {
             }
         }
         witherTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) }
-        return if (witherTargets.isNotEmpty())
-            witherTargets[0]
-        else
-            null
+        return witherTargets.firstOrNull()
     }
 
     val onUpdate = handler<UpdateEvent> {
@@ -122,47 +119,34 @@ object FightBot : Module("FightBot", Category.COMBAT) {
                 )
                 return@handler
             }
-            FDPClient.moduleManager[Teams::class.java.simpleName]?.let { teamsModule ->
-                val teams = teamsModule as? Teams
-                if(teams != null) {
-                    for (entity in mc.theWorld.loadedEntityList) {
-                        if (entity is EntityLivingBase) {
-                            if (entity != mc.thePlayer) {
-                                if (entity is EntityWither) {
-                                    witherTargets.add(entity)
-                                } else {
-                                    if (EntityUtils.isSelected(entity,true)) {
-                                        when (findWay.lowercase()) {
-                                            "point" -> {
-                                                if (getDistanceToPos(
-                                                        mainPos[0],
-                                                        mainPos[1],
-                                                        mainPos[2],
-                                                        entity
-                                                    ) < workReach && !teams.isInYourTeam(entity)
-                                                ) {
-                                                    discoveredTargets.add(entity)
-                                                }
-                                            }
 
-                                            "none" -> {
-                                                if (mc.thePlayer.getDistanceToEntity(entity) < workReach && !teams.isInYourTeam(
-                                                        entity
-                                                    )
-                                                ) {
-                                                    discoveredTargets.add(entity)
-                                                }
-                                            }
+            for (entity in mc.theWorld.loadedEntityList) {
+                if (entity is EntityLivingBase && entity != mc.thePlayer) {
+                    if (entity is EntityWither) {
+                        witherTargets.add(entity)
+                    } else {
+                        if (EntityUtils.isSelected(entity, true)) {
+                            when (findWay.lowercase()) {
+                                "point" -> {
+                                    if (getDistanceToPos(
+                                            mainPos[0],
+                                            mainPos[1],
+                                            mainPos[2],
+                                            entity
+                                        ) < workReach && !Teams.isInYourTeam(entity)) {
+                                        discoveredTargets.add(entity)
+                                    }
+                                }
 
-                                            "entity" -> {
-                                                if (entity.getDistanceToEntity(findWither()) < workReach && !teams.isInYourTeam(
-                                                        entity
-                                                    )
-                                                ) {
-                                                    discoveredTargets.add(entity)
-                                                }
-                                            }
-                                        }
+                                "none" -> {
+                                    if (mc.thePlayer.getDistanceToEntity(entity) < workReach && !Teams.isInYourTeam(entity)) {
+                                        discoveredTargets.add(entity)
+                                    }
+                                }
+
+                                "entity" -> {
+                                    if (entity.getDistanceToEntity(findWither()) < workReach && !Teams.isInYourTeam(entity)) {
+                                        discoveredTargets.add(entity)
                                     }
                                 }
                             }

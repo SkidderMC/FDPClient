@@ -12,8 +12,8 @@ import com.google.gson.JsonPrimitive
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
-import net.ccbluex.liquidbounce.utils.io.json
-import net.ccbluex.liquidbounce.utils.io.jsonArray
+import net.ccbluex.liquidbounce.file.gson.json
+import net.ccbluex.liquidbounce.file.gson.jsonArray
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.kotlin.coerceIn

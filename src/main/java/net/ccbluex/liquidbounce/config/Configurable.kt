@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.config
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
-import net.ccbluex.liquidbounce.utils.io.json
+import net.ccbluex.liquidbounce.file.gson.json
 import net.minecraft.client.gui.FontRenderer
 import java.awt.Color
 
