@@ -16,8 +16,8 @@ import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.login.UserUtils
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Request
+import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.internal.commonEmptyRequestBody
 import java.util.*
 import java.util.concurrent.atomic.AtomicLong
 
@@ -167,7 +167,7 @@ object CapeService : Listenable, MinecraftInstance {
                 .url(SELF_CAPE_URL)
                 .apply {
                     if (capeUser.enabled) delete()
-                    else put(commonEmptyRequestBody)
+                    else put(RequestBody.EMPTY)
                 }
                 .addHeader("Content-Type", "application/json")
                 .addHeader("Authorization", capeUser.token)

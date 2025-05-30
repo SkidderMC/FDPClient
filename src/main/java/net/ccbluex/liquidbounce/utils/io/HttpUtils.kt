@@ -17,7 +17,6 @@ import net.ccbluex.liquidbounce.FDPClient.clientCommit
 import net.ccbluex.liquidbounce.FDPClient.clientVersionText
 import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import okhttp3.*
-import okhttp3.internal.commonEmptyRequestBody
 import okio.buffer
 import okio.sink
 import okio.source
@@ -59,19 +58,19 @@ fun OkHttpClient.head(url: String) = newCall {
     url(url).defaultAgent().head()
 }.execute()
 
-fun OkHttpClient.post(url: String, body: RequestBody = commonEmptyRequestBody) = newCall {
+fun OkHttpClient.post(url: String, body: RequestBody = RequestBody.EMPTY) = newCall {
     url(url).defaultAgent().post(body)
 }.execute()
 
-fun OkHttpClient.delete(url: String, body: RequestBody? = commonEmptyRequestBody) = newCall {
+fun OkHttpClient.delete(url: String, body: RequestBody? = RequestBody.EMPTY) = newCall {
     url(url).defaultAgent().delete(body)
 }.execute()
 
-fun OkHttpClient.put(url: String, body: RequestBody = commonEmptyRequestBody) = newCall {
+fun OkHttpClient.put(url: String, body: RequestBody = RequestBody.EMPTY) = newCall {
     url(url).defaultAgent().put(body)
 }.execute()
 
-fun OkHttpClient.patch(url: String, body: RequestBody = commonEmptyRequestBody) = newCall {
+fun OkHttpClient.patch(url: String, body: RequestBody = RequestBody.EMPTY) = newCall {
     url(url).defaultAgent().patch(body)
 }.execute()
 
