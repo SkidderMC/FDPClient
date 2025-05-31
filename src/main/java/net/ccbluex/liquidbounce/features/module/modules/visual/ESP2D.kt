@@ -11,7 +11,9 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts.minecraftFont
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils
+import net.ccbluex.liquidbounce.utils.attack.EntityUtils.colorFromDisplayName
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColor
+import net.ccbluex.liquidbounce.utils.extensions.isClientFriend
 import net.ccbluex.liquidbounce.utils.extensions.withAlpha
 import net.ccbluex.liquidbounce.utils.inventory.ItemUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
@@ -30,6 +32,15 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.item.EntityItem
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.client.entity.EntityPlayerSP
+import net.minecraft.client.renderer.GlStateManager.disableBlend
+import net.minecraft.client.renderer.GlStateManager.disableRescaleNormal
+import net.minecraft.client.renderer.GlStateManager.enableBlend
+import net.minecraft.client.renderer.GlStateManager.enableRescaleNormal
+import net.minecraft.client.renderer.GlStateManager.popMatrix
+import net.minecraft.client.renderer.GlStateManager.pushMatrix
+import net.minecraft.client.renderer.GlStateManager.scale
+import net.minecraft.client.renderer.GlStateManager.translate
+import net.minecraft.client.renderer.GlStateManager.tryBlendFuncSeparate
 import net.minecraft.potion.Potion
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
@@ -424,15 +435,15 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
     }
 
     private fun drawScaledString(text: String, x: Double, y: Double, scale: Double, color: Int) {
-        GlStateManager.pushMatrix()
-        GlStateManager.translate(x, y, 0.0)
-        GlStateManager.scale(scale.toFloat(), scale.toFloat(), scale.toFloat())
+        pushMatrix()
+        translate(x, y, 0.0)
+        scale(scale.toFloat(), scale.toFloat(), scale.toFloat())
         if (outlineFont) {
             drawOutlineStringWithoutGL(text, 0f, 0f, color, mc.fontRendererObj)
         } else {
             minecraftFont.drawStringWithShadow(text, 0F, 0F, color)
         }
-        GlStateManager.popMatrix()
+        popMatrix()
     }
 
     private fun drawScaledCenteredString(text: String, x: Double, y: Double, scale: Double, color: Int) {
@@ -440,19 +451,19 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
     }
 
     private fun renderItemStack(stack: net.minecraft.item.ItemStack, x: Double, y: Double) {
-        GlStateManager.pushMatrix()
-        GlStateManager.translate(x, y, 0.0)
-        GlStateManager.scale(0.5, 0.5, 0.5)
-        GlStateManager.enableRescaleNormal()
-        GlStateManager.enableBlend()
-        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        pushMatrix()
+        translate(x, y, 0.0)
+        scale(0.5, 0.5, 0.5)
+        enableRescaleNormal()
+        enableBlend()
+        tryBlendFuncSeparate(770, 771, 1, 0)
         RenderHelper.enableGUIStandardItemLighting()
         mc.renderItem.renderItemAndEffectIntoGUI(stack, 0, 0)
         mc.renderItem.renderItemOverlays(minecraftFont, stack, 0, 0)
         RenderHelper.disableStandardItemLighting()
-        GlStateManager.disableRescaleNormal()
-        GlStateManager.disableBlend()
-        GlStateManager.popMatrix()
+        disableRescaleNormal()
+        disableBlend()
+        popMatrix()
     }
 
     private fun collectEntities() {
@@ -483,19 +494,17 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
     }
 
     private fun getColor(entity: Entity?): Color {
-        entity as? EntityLivingBase ?: return Color(color.rgb)
+        if (entity !is EntityLivingBase) return Color(color.rgb)
 
         // friends and team
-        /*
+
         if (entity is EntityPlayer && entity.isClientFriend())
                 return Color.BLUE
-
             if (colorTeam) {
                 entity.colorFromDisplayName()?.let {
                     return it
                 }
             }
-        */
 
         return when (colorMode) {
             "Custom" -> Color(color.rgb)
