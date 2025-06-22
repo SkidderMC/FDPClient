@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.handler.lang
 import net.ccbluex.liquidbounce.file.configs.models.ClientConfiguration.overrideLanguage
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
-import net.ccbluex.liquidbounce.utils.io.decodeJson
+import net.ccbluex.liquidbounce.file.gson.decodeJson
 
 fun translationMenu(key: String, vararg args: Any) = LanguageManager.getTranslation("menu.$key", *args)
 fun translationButton(key: String, vararg args: Any) = LanguageManager.getTranslation("button.$key", *args)

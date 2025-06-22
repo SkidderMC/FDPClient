@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.handler.api
 
 import net.ccbluex.liquidbounce.utils.io.applyBypassHttps
-import net.ccbluex.liquidbounce.utils.io.decodeJson
+import net.ccbluex.liquidbounce.file.gson.decodeJson
 import net.ccbluex.liquidbounce.utils.io.get
 import net.ccbluex.liquidbounce.utils.io.post
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils

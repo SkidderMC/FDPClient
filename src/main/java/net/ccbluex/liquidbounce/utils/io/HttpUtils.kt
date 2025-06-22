@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.FDPClient.IN_DEV
 import net.ccbluex.liquidbounce.FDPClient.clientCommit
 import net.ccbluex.liquidbounce.FDPClient.clientVersionText
+import net.ccbluex.liquidbounce.file.gson.decodeJson
 import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import okhttp3.*
 import okio.buffer

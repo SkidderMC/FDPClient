@@ -43,7 +43,7 @@ object FightBot : Module("FightBot", Category.COMBAT) {
     private val findWay by choices("findWay", arrayOf("None", "Point", "Entity"), "Point")
     private val workReach by float("workReach", 10f, 1f..50f)
 
-    private var mainPos: FloatArray = floatArrayOf(0f, 0f, 0f)
+    private val mainPos: FloatArray = floatArrayOf(0f, 0f, 0f)
     private var entity: EntityLivingBase? = null
     private val discoveredTargets = mutableListOf<EntityLivingBase>()
     private val witherTargets = mutableListOf<EntityLivingBase>()
@@ -54,18 +54,19 @@ object FightBot : Module("FightBot", Category.COMBAT) {
     private var backThread: Thread? = null
     override fun onEnable() {
         if (!autoJumpValue) {
-            FDPClient.moduleManager[Step::class.java.simpleName]?.let { stepModule ->
-                stepModule.state = true
-            }
+            Step.state = true
         }
-        if (findWay.contains("Point")) mainPos =
-            floatArrayOf(mc.thePlayer.posX.toFloat(), mc.thePlayer.posY.toFloat(), mc.thePlayer.posZ.toFloat())
+        if (findWay.contains("Point")) {
+            mainPos[0] = mc.thePlayer.posX.toFloat()
+            mainPos[1] = mc.thePlayer.posY.toFloat()
+            mainPos[2] = mc.thePlayer.posZ.toFloat()
+        }
     }
 
     override fun onDisable() {
-        if (!autoJumpValue) FDPClient.moduleManager[Step::class.java.simpleName]?.let { it.state = false }
-        thread?.stop()
-        backThread?.stop()
+        if (!autoJumpValue) Step.state = false
+        thread?.interrupt()
+        backThread?.interrupt()
         mc.gameSettings.keyBindForward.pressed = false
     }
 
@@ -93,10 +94,7 @@ object FightBot : Module("FightBot", Category.COMBAT) {
             }
         }
         witherTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) }
-        return if (witherTargets.size >= 1)
-            witherTargets[0]
-        else
-            null
+        return witherTargets.firstOrNull()
     }
 
     val onUpdate = handler<UpdateEvent> {
@@ -121,54 +119,41 @@ object FightBot : Module("FightBot", Category.COMBAT) {
                 )
                 return@handler
             }
-            FDPClient.moduleManager[Teams::class.java.simpleName]?.let { teamsModule ->
-                val teams = teamsModule as? Teams
-                if(teams != null) {
-                    for (entity in mc.theWorld.loadedEntityList) {
-                        if (entity is EntityLivingBase) {
-                            if (entity != mc.thePlayer) {
-                                if (entity is EntityWither) {
-                                    witherTargets.add(entity)
-                                } else {
-                                    if (EntityUtils.isSelected(entity,true)) {
-                                        when (findWay.lowercase()) {
-                                            "point" -> {
-                                                if (getDistanceToPos(
-                                                        mainPos[0],
-                                                        mainPos[1],
-                                                        mainPos[2],
-                                                        entity
-                                                    ) < workReach && !teams.isInYourTeam(entity)
-                                                ) {
-                                                    discoveredTargets.add(entity)
-                                                }
-                                            }
 
-                                            "none" -> {
-                                                if (mc.thePlayer.getDistanceToEntity(entity) < workReach && !teams.isInYourTeam(
-                                                        entity
-                                                    )
-                                                ) {
-                                                    discoveredTargets.add(entity)
-                                                }
-                                            }
+            for (entity in mc.theWorld.loadedEntityList) {
+                if (entity is EntityLivingBase && entity != mc.thePlayer) {
+                    if (entity is EntityWither) {
+                        witherTargets.add(entity)
+                    } else {
+                        if (EntityUtils.isSelected(entity, true)) {
+                            when (findWay.lowercase()) {
+                                "point" -> {
+                                    if (getDistanceToPos(
+                                            mainPos[0],
+                                            mainPos[1],
+                                            mainPos[2],
+                                            entity
+                                        ) < workReach && !Teams.isInYourTeam(entity)) {
+                                        discoveredTargets.add(entity)
+                                    }
+                                }
 
-                                            "entity" -> {
-                                                if (entity.getDistanceToEntity(findWither()) < workReach && !teams.isInYourTeam(
-                                                        entity
-                                                    )
-                                                ) {
-                                                    discoveredTargets.add(entity)
-                                                }
-                                            }
-                                        }
+                                "none" -> {
+                                    if (mc.thePlayer.getDistanceToEntity(entity) < workReach && !Teams.isInYourTeam(entity)) {
+                                        discoveredTargets.add(entity)
+                                    }
+                                }
+
+                                "entity" -> {
+                                    if (entity.getDistanceToEntity(findWither()) < workReach && !Teams.isInYourTeam(entity)) {
+                                        discoveredTargets.add(entity)
                                     }
                                 }
                             }
                         }
                     }
                 }
-                if (discoveredTargets.size >= 1) {
+                if (discoveredTargets.isNotEmpty()) {
                     discoveredTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) }
                     witherTargets.sortBy { mc.thePlayer.getDistanceToEntityBox(it) }
                     val entity = discoveredTargets[0]
