@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.ELEMENTS
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.Side
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Image
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold35
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.lerpWith
@@ -898,6 +899,15 @@ class EditorPanel(private val hudDesigner: GuiHudDesigner, var x: Int, var y: In
         // Header
         drawGradientRoundedRect(x.toFloat()-4f, y-2F, x + width.toFloat()+4, y + 12F ,3, 1, Color(guiColor).rgb)
         fontSemibold35.drawString("§l${element.name}", x + 2F, y + 3.5F, Color.WHITE.rgb)
+
+        // Save button (Image only)
+        if (element is Image) {
+            val stringWidth = x + width - fontSemibold35.getStringWidth("§lSave") - 2 - 2 - fontSemibold35.getStringWidth("§lDelete") - 2
+            fontSemibold35.drawString("§lSave", stringWidth.toFloat(), y + 3.5F, Color.WHITE.rgb)
+            if (Mouse.isButtonDown(0) && !mouseDown && mouseX in stringWidth..x + width && mouseY in y..y + 10) {
+                element.saveImage()
+            }
+        }
 
         // Delete button
         if (!element.info.force) {

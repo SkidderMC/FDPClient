@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.hud.element.elements
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element
 import net.ccbluex.liquidbounce.ui.client.hud.element.ElementInfo
+import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import net.ccbluex.liquidbounce.utils.io.FileFilters
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomNumber
@@ -15,10 +16,14 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.util.ResourceLocation
+import okio.ByteString.Companion.decodeBase64
+import okio.buffer
+import okio.sink
 import java.awt.Color
 import java.io.File
 import java.util.*
 import javax.imageio.ImageIO
+import javax.swing.JOptionPane
 
 /**
  * CustomHUD image element
@@ -95,7 +100,7 @@ class Image : Element("Image") {
         }
     }
 
-    private fun setImage(b64image: String): Image {
+    private fun setImage(b64image: String): Image = apply {
         this.image.changeValue(b64image)
 
         val bufferedImage = Base64.getDecoder().decode(b64image).inputStream().use(ImageIO::read)
@@ -104,13 +109,49 @@ class Image : Element("Image") {
         height = bufferedImage.height
 
         mc.textureManager.loadTexture(resourceLocation, DynamicTexture(bufferedImage))
-
-        return this
     }
 
-    private fun setImage(image: File): Image {
+    private fun setImage(image: File): Image = apply {
         setImage(Base64.getEncoder().encodeToString(image.readBytes()))
-        return this
+    }
+
+    /**
+     * Save Image to a file. Using Swing.
+     */
+    fun saveImage() {
+        val file = MiscUtils.saveFileChooser(FileFilters.ALL_IMAGES, acceptAll = false)
+        when {
+            file == null -> {
+                MiscUtils.showMessageDialog("Save Image", "Please choose an image file.")
+                return
+            }
+
+            file.isDirectory -> {
+                MiscUtils.showMessageDialog("Save Image", "Please choose a file, not a folder.")
+                return
+            }
+
+            file.isFile -> {
+                val result = JOptionPane.showConfirmDialog(
+                    null,
+                    "Save Image",
+                    "File ${file.name} already exists. Do you want to overwrite it?",
+                    JOptionPane.YES_NO_OPTION
+                )
+                when (result) {
+                    JOptionPane.YES_OPTION -> {} // continue
+                    else -> return
+                }
+            }
+        }
+        try {
+            file.sink().buffer().use {
+                it.write(image.get().decodeBase64() ?: error("Failed to decode Base64 image"))
+            }
+        } catch (e: Exception) {
+            ClientUtils.LOGGER.error("Failed to save image", e)
+            ClientUtils.displayChatMessage("§cFailed to save image: ${e.message}")
+        }
     }
 
 }
