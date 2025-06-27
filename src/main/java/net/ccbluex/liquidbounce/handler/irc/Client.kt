@@ -147,13 +147,10 @@ abstract class Client : ClientListener, MinecraftInstance {
     fun sendPacket(packet: AxochatPacket) {
         val channel = channel ?: return
 
-        val buffer = buildString {
-            GsonAxochatClientAdapter.INSTANCE.write(this, packet)
+        val buffer = PooledByteBufAllocator.DEFAULT.buffer(256)
+        ByteBufOutputStream(buffer).writer(Charsets.UTF_8).use {
+            GsonAxochatClientAdapter.INSTANCE.write(it, packet)
         }
-//        val buffer = PooledByteBufAllocator.DEFAULT.buffer(256)
-//        ByteBufOutputStream(buffer).writer(Charsets.UTF_8).use {
-//            GsonAxochatClientAdapter.INSTANCE.write(it, packet)
-//        }
         channel.writeAndFlush(TextWebSocketFrame(buffer))
     }
 
