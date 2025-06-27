@@ -5,10 +5,10 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
+import moe.lasoleil.axochat4j.packet.c2s.C2SRequestJWTPacket
 import net.ccbluex.liquidbounce.FDPClient.commandManager
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.modules.client.IRCModule
-import net.ccbluex.liquidbounce.handler.irc.packet.packets.ServerRequestJWTPacket
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
 
@@ -44,7 +44,7 @@ object ChatTokenCommand : Command("chattoken") {
                     return
                 }
 
-                IRCModule.client.sendPacket(ServerRequestJWTPacket())
+                IRCModule.client.sendPacket(C2SRequestJWTPacket())
             }
 
             "copy" -> {

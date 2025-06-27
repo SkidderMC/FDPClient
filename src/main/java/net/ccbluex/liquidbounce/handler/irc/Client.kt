@@ -5,11 +5,13 @@
  */
 package net.ccbluex.liquidbounce.handler.irc
 
-import com.google.gson.GsonBuilder
 import io.netty.bootstrap.Bootstrap
+import io.netty.buffer.ByteBufOutputStream
+import io.netty.buffer.PooledByteBufAllocator
 import io.netty.channel.Channel
 import io.netty.channel.ChannelInitializer
-import io.netty.channel.nio.NioEventLoopGroup
+import io.netty.channel.epoll.Epoll
+import io.netty.channel.epoll.EpollSocketChannel
 import io.netty.channel.socket.SocketChannel
 import io.netty.channel.socket.nio.NioSocketChannel
 import io.netty.handler.codec.http.DefaultHttpHeaders
@@ -20,11 +22,19 @@ import io.netty.handler.codec.http.websocketx.WebSocketClientHandshakerFactory
 import io.netty.handler.codec.http.websocketx.WebSocketVersion
 import io.netty.handler.ssl.SslContext
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory
-import net.ccbluex.liquidbounce.handler.irc.packet.PacketDeserializer
-import net.ccbluex.liquidbounce.handler.irc.packet.PacketSerializer
-import net.ccbluex.liquidbounce.handler.irc.packet.packets.*
+import moe.lasoleil.axochat4j.codec.GsonAxochatClientAdapter
+import moe.lasoleil.axochat4j.packet.AxochatPacket
+import moe.lasoleil.axochat4j.packet.c2s.C2SBanUserPacket
+import moe.lasoleil.axochat4j.packet.c2s.C2SLoginJWTPacket
+import moe.lasoleil.axochat4j.packet.c2s.C2SLoginMojangPacket
+import moe.lasoleil.axochat4j.packet.c2s.C2SMessagePacket
+import moe.lasoleil.axochat4j.packet.c2s.C2SPrivateMessagePacket
+import moe.lasoleil.axochat4j.packet.c2s.C2SRequestMojangInfoPacket
+import moe.lasoleil.axochat4j.packet.c2s.C2SUnbanUserPacket
+import moe.lasoleil.axochat4j.packet.s2c.S2CMojangInfoPacket
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.login.UserUtils
+import net.minecraft.network.NetworkManager
 import java.net.URI
 import java.util.*
 
@@ -34,28 +44,6 @@ abstract class Client : ClientListener, MinecraftInstance {
     var username = ""
     var jwt = false
     var loggedIn = false
-
-    private val serializer = PacketSerializer()
-    private val deserializer = PacketDeserializer()
-
-    init {
-        serializer.registerPacket("RequestMojangInfo", ServerRequestMojangInfoPacket::class.java)
-        serializer.registerPacket("LoginMojang", ServerLoginMojangPacket::class.java)
-        serializer.registerPacket("Message", ServerMessagePacket::class.java)
-        serializer.registerPacket("PrivateMessage", ServerPrivateMessagePacket::class.java)
-        serializer.registerPacket("BanUser", ServerBanUserPacket::class.java)
-        serializer.registerPacket("UnbanUser", ServerUnbanUserPacket::class.java)
-        serializer.registerPacket("RequestJWT", ServerRequestJWTPacket::class.java)
-        serializer.registerPacket("LoginJWT", ServerLoginJWTPacket::class.java)
-
-
-        deserializer.registerPacket("MojangInfo", ClientMojangInfoPacket::class.java)
-        deserializer.registerPacket("NewJWT", ClientNewJWTPacket::class.java)
-        deserializer.registerPacket("Message", ClientMessagePacket::class.java)
-        deserializer.registerPacket("PrivateMessage", ClientPrivateMessagePacket::class.java)
-        deserializer.registerPacket("Error", ClientErrorPacket::class.java)
-        deserializer.registerPacket("Success", ClientSuccessPacket::class.java)
-    }
 
     /**
      * Connect websocket
@@ -68,35 +56,34 @@ abstract class Client : ClientListener, MinecraftInstance {
         val ssl = uri.scheme.equals("wss", true)
         val sslContext = if (ssl) SslContext.newClientContext(InsecureTrustManagerFactory.INSTANCE) else null
 
-        val group = NioEventLoopGroup()
         val handler = ClientHandler(this, WebSocketClientHandshakerFactory.newHandshaker(
                 uri, WebSocketVersion.V13, null,
                 true, DefaultHttpHeaders()))
 
-        val bootstrap = Bootstrap()
+        channel = Bootstrap().apply {
+            if (Epoll.isAvailable()) {
+                channelFactory(::EpollSocketChannel).group(NetworkManager.CLIENT_EPOLL_EVENTLOOP.value)
+            } else {
+                channelFactory(::NioSocketChannel).group(NetworkManager.CLIENT_NIO_EVENTLOOP.value)
+            }
+        }.handler(object : ChannelInitializer<SocketChannel>() {
 
-        bootstrap.group(group)
-                .channel(NioSocketChannel::class.java)
-                .handler(object : ChannelInitializer<SocketChannel>() {
+            /**
+             * This method will be called once the [Channel] was registered. After the method returns this instance
+             * will be removed from the [ChannelPipeline] of the [Channel].
+             *
+             * @param ch            the [Channel] which was registered.
+             * @throws Exception    is thrown if an error occurs. In that case the [Channel] will be closed.
+             */
+            override fun initChannel(ch: SocketChannel) {
+                val pipeline = ch.pipeline()
 
-                    /**
-                     * This method will be called once the [Channel] was registered. After the method returns this instance
-                     * will be removed from the [ChannelPipeline] of the [Channel].
-                     *
-                     * @param ch            the [Channel] which was registered.
-                     * @throws Exception    is thrown if an error occurs. In that case the [Channel] will be closed.
-                     */
-                    override fun initChannel(ch: SocketChannel) {
-                        val pipeline = ch.pipeline()
+                if (sslContext != null) pipeline.addLast(sslContext.newHandler(ch.alloc()))
 
-                        if (sslContext != null) pipeline.addLast(sslContext.newHandler(ch.alloc()))
+                pipeline.addLast(HttpClientCodec(), HttpObjectAggregator(8192), handler)
+            }
+        }).connect(uri.host, uri.port).sync().channel()
 
-                        pipeline.addLast(HttpClientCodec(), HttpObjectAggregator(8192), handler)
-                    }
-
-                })
-
-        channel = bootstrap.connect(uri.host, uri.port).sync().channel()
         handler.handshakeFuture.sync()
 
         if (isConnected()) onConnected()
@@ -115,30 +102,26 @@ abstract class Client : ClientListener, MinecraftInstance {
     /**
      * Login to web socket
      */
-    fun loginMojang() = sendPacket(ServerRequestMojangInfoPacket())
+    fun loginMojang() = sendPacket(C2SRequestMojangInfoPacket())
 
     /**
      * Login to web socket
      */
     fun loginJWT(token: String) {
         onLogon()
-        sendPacket(ServerLoginJWTPacket(token, allowMessages = true))
+        sendPacket(C2SLoginJWTPacket(token, true))
         jwt = true
     }
 
-    fun isConnected() = channel != null && channel!!.isOpen
+    fun isConnected() = channel?.isOpen ?: false
 
     /**
      * Handle incoming message of websocket
      */
     internal fun onMessage(message: String) {
-        val gson = GsonBuilder()
-                .registerTypeAdapter(Packet::class.java, deserializer)
-                .create()
+        val packet = GsonAxochatClientAdapter.INSTANCE.read(message)
 
-        val packet = gson.fromJson(message, Packet::class.java)
-
-        if (packet is ClientMojangInfoPacket) {
+        if (packet is S2CMojangInfoPacket) {
             onLogon()
 
             try {
@@ -148,7 +131,7 @@ abstract class Client : ClientListener, MinecraftInstance {
                 username = mc.session.username
                 jwt = false
 
-                sendPacket(ServerLoginMojangPacket(mc.session.username, mc.session.profile.id, allowMessages = true))
+                sendPacket(C2SLoginMojangPacket(mc.session.username, mc.session.profile.id, true))
             } catch (throwable: Throwable) {
                 onError(throwable)
             }
@@ -161,33 +144,38 @@ abstract class Client : ClientListener, MinecraftInstance {
     /**
      * Send packet to server
      */
-    fun sendPacket(packet: Packet) {
-        val gson = GsonBuilder()
-                .registerTypeAdapter(Packet::class.java, serializer)
-                .create()
+    fun sendPacket(packet: AxochatPacket) {
+        val channel = channel ?: return
 
-        channel?.writeAndFlush(TextWebSocketFrame(gson.toJson(packet, Packet::class.java)))
+        val buffer = buildString {
+            GsonAxochatClientAdapter.INSTANCE.write(this, packet)
+        }
+//        val buffer = PooledByteBufAllocator.DEFAULT.buffer(256)
+//        ByteBufOutputStream(buffer).writer(Charsets.UTF_8).use {
+//            GsonAxochatClientAdapter.INSTANCE.write(it, packet)
+//        }
+        channel.writeAndFlush(TextWebSocketFrame(buffer))
     }
 
     /**
      * Send chat message to server
      */
-    fun sendMessage(message: String) = sendPacket(ServerMessagePacket(message))
+    fun sendMessage(message: String) = sendPacket(C2SMessagePacket(message))
 
     /**
      * Send private chat message to server
      */
-    fun sendPrivateMessage(username: String, message: String) = sendPacket(ServerPrivateMessagePacket(username, message))
+    fun sendPrivateMessage(username: String, message: String) = sendPacket(C2SPrivateMessagePacket(username, message))
 
     /**
      * Ban user from server
      */
-    fun banUser(target: String) = sendPacket(ServerBanUserPacket(toUUID(target)))
+    fun banUser(target: String) = sendPacket(C2SBanUserPacket(toUUID(target)))
 
     /**
      * Unban user from server
      */
-    fun unbanUser(target: String) = sendPacket(ServerUnbanUserPacket(toUUID(target)))
+    fun unbanUser(target: String) = sendPacket(C2SUnbanUserPacket(toUUID(target)))
 
     /**
      * Convert username or uuid to UUID

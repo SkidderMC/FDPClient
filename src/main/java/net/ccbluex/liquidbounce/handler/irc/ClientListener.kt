@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.handler.irc
 
-import net.ccbluex.liquidbounce.handler.irc.packet.packets.Packet
+import moe.lasoleil.axochat4j.packet.AxochatPacket
 
 interface ClientListener {
 
@@ -37,7 +37,7 @@ interface ClientListener {
     /**
      * Handle incoming packets
      */
-    fun onPacket(packet: Packet)
+    fun onPacket(packet: AxochatPacket)
 
     /**
      * Handle error
