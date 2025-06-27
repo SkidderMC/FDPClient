@@ -8,8 +8,13 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import moe.lasoleil.axochat4j.packet.AxochatPacket
+import moe.lasoleil.axochat4j.packet.s2c.S2CErrorPacket
+import moe.lasoleil.axochat4j.packet.s2c.S2CMessagePacket
+import moe.lasoleil.axochat4j.packet.s2c.S2CNewJWTPacket
+import moe.lasoleil.axochat4j.packet.s2c.S2CPrivateMessagePacket
+import moe.lasoleil.axochat4j.packet.s2c.S2CSuccessPacket
 import net.ccbluex.liquidbounce.handler.irc.Client
-import net.ccbluex.liquidbounce.handler.irc.packet.packets.*
 import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.event.handler
@@ -67,25 +72,25 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
         /**
          * Handle incoming packets
          */
-        override fun onPacket(packet: Packet) {
+        override fun onPacket(packet: AxochatPacket) {
             when (packet) {
-                is ClientMessagePacket -> {
+                is S2CMessagePacket -> {
                     val thePlayer = mc.thePlayer
 
                     if (thePlayer == null) {
-                        LOGGER.info("[IRC] ${packet.user.name}: ${packet.content}")
+                        LOGGER.info("[IRC] ${packet.authorInfo.name}: ${packet.content}")
                         return
                     }
 
-                    val chatComponent = ChatComponentText("§7[§a§lChat§7] §9${packet.user.name}: ")
+                    val chatComponent = ChatComponentText("§7[§a§lChat§7] §9${packet.authorInfo.name}: ")
                     val messageComponent = toChatComponent(packet.content)
                     chatComponent.appendSibling(messageComponent)
 
                     thePlayer.addChatMessage(chatComponent)
                 }
 
-                is ClientPrivateMessagePacket -> chat("§7[§a§lChat§7] §c(P)§9 ${packet.user.name}: §7${packet.content}")
-                is ClientErrorPacket -> {
+                is S2CPrivateMessagePacket -> chat("§7[§a§lChat§7] §c(P)§9 ${packet.authorInfo.name}: §7${packet.content}")
+                is S2CErrorPacket -> {
                     val message = when (packet.message) {
                         "NotSupported" -> "This method is not supported!"
                         "LoginFailed" -> "Login Failed!"
@@ -108,7 +113,7 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
                     chat("§7[§a§lChat§7] §cError: §7$message")
                 }
 
-                is ClientSuccessPacket -> {
+                is S2CSuccessPacket -> {
                     when (packet.reason) {
                         "Login" -> {
                             chat("§7[§a§lChat§7] §9Logged in!")
@@ -127,7 +132,7 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
                     }
                 }
 
-                is ClientNewJWTPacket -> {
+                is S2CNewJWTPacket -> {
                     jwtToken = packet.token
                     jwt = true
 
