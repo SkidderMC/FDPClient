@@ -80,7 +80,7 @@ dependencies {
     implementation("org.knowm.xchart:xchart:3.8.8")
 
     // HTTP Client
-    implementation("com.squareup.okhttp3:okhttp:5.0.0") {
+    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.16") {
         exclude module: "kotlin-stdlib"
     }
 
