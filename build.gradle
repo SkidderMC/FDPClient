@@ -90,7 +90,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlin_coroutines_version"
 
     // Swing LookAndFeel
-    implementation "com.formdev:flatlaf:3.6"
+    implementation "com.formdev:flatlaf:3.6.1"
 
     implementation fileTree(include: ["*.jar"], dir: "libs")
 }
