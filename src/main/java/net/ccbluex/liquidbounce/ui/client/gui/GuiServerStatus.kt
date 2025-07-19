@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.handler.lang.translationMenu
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.io.HttpClient
-import net.ccbluex.liquidbounce.utils.io.defaultAgent
 import net.ccbluex.liquidbounce.utils.io.newCall
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
@@ -94,7 +93,7 @@ class GuiServerStatus(private val prevGui: GuiScreen) : AbstractScreen() {
             screenScope.launch(Dispatchers.IO) {
                 try {
                     status[url] = HttpClient.newCall {
-                        url(url).head().defaultAgent()
+                        url(url).head()
                     }.execute().use {
                         if (it.code in 200..499) "green" else "red"
                     }

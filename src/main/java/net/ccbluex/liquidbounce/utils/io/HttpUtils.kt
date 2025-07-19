@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.utils.io
 
+import io.netty.channel.EventLoopGroup
+import io.netty.channel.epoll.Epoll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -17,6 +19,7 @@ import net.ccbluex.liquidbounce.FDPClient.clientCommit
 import net.ccbluex.liquidbounce.FDPClient.clientVersionText
 import net.ccbluex.liquidbounce.file.gson.decodeJson
 import net.ccbluex.liquidbounce.utils.client.ClientUtils
+import net.minecraft.network.NetworkManager
 import okhttp3.*
 import okio.buffer
 import okio.sink
@@ -37,54 +40,73 @@ import javax.net.ssl.X509TrustManager
 val DEFAULT_AGENT =
     "${CLIENT_NAME}/${clientVersionText} (${clientCommit}, ${if (IN_DEV) "dev" else "release"}, ${System.getProperty("os.name")})"
 
+val clientEventLoopGroup: EventLoopGroup get() = if (Epoll.isAvailable()) {
+    NetworkManager.CLIENT_EPOLL_EVENTLOOP.value
+} else {
+    NetworkManager.CLIENT_NIO_EVENTLOOP.value
+}
+
 /**
  * Global [OkHttpClient]
  */
 val HttpClient: OkHttpClient = OkHttpClient.Builder()
-    .connectTimeout(3, TimeUnit.SECONDS)
-    .readTimeout(15, TimeUnit.SECONDS)
-    .writeTimeout(15, TimeUnit.SECONDS)
+    .dispatcher(Dispatcher(clientEventLoopGroup))
+    .connectTimeout(5, TimeUnit.SECONDS)
+    .readTimeout(20, TimeUnit.SECONDS)
+    .writeTimeout(20, TimeUnit.SECONDS)
     .followRedirects(true)
     .followSslRedirects(true)
     .applyBypassHttps()
+    .addInterceptor(AddHeaderInterceptor("User-Agent", DEFAULT_AGENT))
     .build()
+
+class AddHeaderInterceptor(
+    val name: String,
+    val value: String,
+    val replace: Boolean = false,
+) : Interceptor {
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val builder = chain.request().newBuilder()
+        if (replace) builder.removeHeader(name)
+        builder.addHeader(name, value)
+        return chain.proceed(builder.build())
+    }
+}
 
 // Requests
 
 fun OkHttpClient.get(url: String) = newCall {
-    url(url).defaultAgent().get()
+    url(url).get()
 }.execute()
 
 fun OkHttpClient.head(url: String) = newCall {
-    url(url).defaultAgent().head()
+    url(url).head()
 }.execute()
 
 fun OkHttpClient.post(url: String, body: RequestBody = RequestBody.EMPTY) = newCall {
-    url(url).defaultAgent().post(body)
+    url(url).post(body)
 }.execute()
 
 fun OkHttpClient.delete(url: String, body: RequestBody? = RequestBody.EMPTY) = newCall {
-    url(url).defaultAgent().delete(body)
+    url(url).delete(body)
 }.execute()
 
 fun OkHttpClient.put(url: String, body: RequestBody = RequestBody.EMPTY) = newCall {
-    url(url).defaultAgent().put(body)
+    url(url).put(body)
 }.execute()
 
 fun OkHttpClient.patch(url: String, body: RequestBody = RequestBody.EMPTY) = newCall {
-    url(url).defaultAgent().patch(body)
+    url(url).patch(body)
 }.execute()
 
 fun OkHttpClient.request(url: String, method: String, body: RequestBody? = null) = newCall {
-    url(url).defaultAgent().method(method, body)
+    url(url).method(method, body)
 }.execute()
 
 // General
 
 inline fun OkHttpClient.newCall(requestBlock: Request.Builder.() -> Unit): Call =
     this.newCall(Request.Builder().apply(requestBlock).build())
-
-fun Request.Builder.defaultAgent() = this.header("User-Agent", DEFAULT_AGENT)
 
 inline fun <reified T> Response.jsonBody(): T? = use {
     runCatching {
