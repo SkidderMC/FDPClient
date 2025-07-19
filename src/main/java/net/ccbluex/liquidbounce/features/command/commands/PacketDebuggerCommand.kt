@@ -12,17 +12,11 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils
 
 object PacketDebuggerCommand : Command("packetdebugger", "debug") {
 
-    private lateinit var packetList: Set<String>
-
-    init {
-        runCatching {
-            javaClass.getResourceAsStream("/assets/minecraft/fdpclient/packets.txt")!!.bufferedReader().use {
-                packetList = it.readLines().toSet()
-            }
-        }.onFailure {
-            ClientUtils.LOGGER.error("Failed to load packet list", it)
-        }
-    }
+    private val packetList: Set<String> = runCatching {
+        javaClass.getResourceAsStream("/assets/minecraft/fdpclient/packets.txt")!!.bufferedReader().readLines().toSet()
+    }.onFailure {
+        ClientUtils.LOGGER.error("Failed to load packet list", it)
+    }.getOrDefault(emptySet())
 
     /**
      * Execute commands with provided [args]

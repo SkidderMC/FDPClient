@@ -70,8 +70,15 @@ dependencies {
         exclude module: "authlib"
     }
 
-    implementation("com.github.MukjepScarlet.axochat4j:axochat4j-codec-gson:6a13ba9a79") {
-        exclude module: "gson"
+    final axochat4jVersion = "bd54c8bb91"
+    implementation("com.github.MukjepScarlet.axochat4j:axochat4j-core:$axochat4jVersion") {
+        transitive = false
+    }
+    implementation("com.github.MukjepScarlet.axochat4j:axochat4j-codec-gson:$axochat4jVersion") {
+        transitive = false
+    }
+    implementation("com.github.MukjepScarlet.axochat4j:axochat4j-client-okhttp:$axochat4jVersion") {
+        transitive = false
     }
 
     implementation("com.github.UnlegitMC:Astar3d:bec2291cf2")

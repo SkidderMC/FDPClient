@@ -1,11 +1,7 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/SkidderMC/FDPClient/
- */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import moe.lasoleil.axochat4j.packet.AxochatPacket
@@ -14,13 +10,13 @@ import moe.lasoleil.axochat4j.packet.s2c.S2CMessagePacket
 import moe.lasoleil.axochat4j.packet.s2c.S2CNewJWTPacket
 import moe.lasoleil.axochat4j.packet.s2c.S2CPrivateMessagePacket
 import moe.lasoleil.axochat4j.packet.s2c.S2CSuccessPacket
-import net.ccbluex.liquidbounce.handler.irc.Client
 import net.ccbluex.liquidbounce.event.SessionUpdateEvent
 import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.features.module.modules.client.irc.IRCClient
+import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.login.UserUtils
 import net.minecraft.event.ClickEvent
@@ -42,7 +38,7 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
 
     var jwtToken = ""
 
-    val client = object : Client() {
+    val client = object : IRCClient() {
 
         /**
          * Handle connect to web socket
@@ -53,11 +49,6 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
          * Handle connect to web socket
          */
         override fun onConnected() = chat("§7[§a§lChat§7] §9Connected to chat server!")
-
-        /**
-         * Handle handshake
-         */
-        override fun onHandshake(success: Boolean) {}
 
         /**
          * Handle disconnect
@@ -72,13 +63,13 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
         /**
          * Handle incoming packets
          */
-        override fun onPacket(packet: AxochatPacket) {
+        override fun onPacket(packet: AxochatPacket.S2C) {
             when (packet) {
                 is S2CMessagePacket -> {
                     val thePlayer = mc.thePlayer
 
                     if (thePlayer == null) {
-                        LOGGER.info("[IRC] ${packet.authorInfo.name}: ${packet.content}")
+                        ClientUtils.LOGGER.info("[IRC] ${packet.authorInfo.name}: ${packet.content}")
                         return
                     }
 
@@ -195,7 +186,7 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
                 }
             }
         } catch (cause: Exception) {
-            LOGGER.error("IRC error", cause)
+            ClientUtils.LOGGER.error("IRC error", cause)
             chat("§7[§a§lChat§7] §cError: §7${cause.javaClass.name}: ${cause.message}")
         }
     }

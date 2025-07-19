@@ -5,16 +5,14 @@
  */
 package net.ccbluex.liquidbounce.handler.api
 
-import net.ccbluex.liquidbounce.utils.io.applyBypassHttps
 import net.ccbluex.liquidbounce.file.gson.decodeJson
+import net.ccbluex.liquidbounce.utils.io.AddHeaderInterceptor
+import net.ccbluex.liquidbounce.utils.io.HttpClient
 import net.ccbluex.liquidbounce.utils.io.get
 import net.ccbluex.liquidbounce.utils.io.post
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
 import okhttp3.MultipartBody
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.RequestBody
-import java.util.concurrent.TimeUnit
 
 private const val HARD_CODED_BRANCH = "legacy"
 
@@ -27,18 +25,9 @@ private const val API_V1_ENDPOINT = "https://api.liquidbounce.net/api/v1"
  */
 private val SESSION_TOKEN = RandomUtils.randomString(16)
 
-private val client = OkHttpClient.Builder()
-    .connectTimeout(3, TimeUnit.SECONDS)
-    .readTimeout(15, TimeUnit.SECONDS)
-    .applyBypassHttps()
-    .addInterceptor { chain ->
-        val original = chain.request()
-        val request: Request = original.newBuilder()
-            .header("X-Session-Token", SESSION_TOKEN)
-            .build()
-
-        chain.proceed(request)
-    }.build()
+private val client = HttpClient.newBuilder()
+    .addInterceptor(AddHeaderInterceptor("X-Session-Token", SESSION_TOKEN))
+    .build()
 
 /**
  * ClientApi

@@ -1,9 +1,4 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/SkidderMC/FDPClient/
- */
-package net.ccbluex.liquidbounce.handler.irc
+package net.ccbluex.liquidbounce.features.module.modules.client.irc
 
 import moe.lasoleil.axochat4j.packet.AxochatPacket
 
@@ -20,11 +15,6 @@ interface ClientListener {
     fun onConnected()
 
     /**
-     * Handle handshake
-     */
-    fun onHandshake(success: Boolean)
-
-    /**
      * Handle disconnect
      */
     fun onDisconnect()
@@ -37,7 +27,7 @@ interface ClientListener {
     /**
      * Handle incoming packets
      */
-    fun onPacket(packet: AxochatPacket)
+    fun onPacket(packet: AxochatPacket.S2C)
 
     /**
      * Handle error
