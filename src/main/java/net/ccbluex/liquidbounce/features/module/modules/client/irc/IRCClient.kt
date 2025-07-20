@@ -41,7 +41,7 @@ abstract class IRCClient : ClientListener, MinecraftInstance {
         onConnect()
 
         val config = AxochatClientConnection.Config.builder()
-            .packetAdaptor(GsonAxochatClientAdapter.INSTANCE)
+            .packetAdapter(GsonAxochatClientAdapter.INSTANCE)
             .uri(uri)
             .webSocketHandler { connection, event ->
                 when (event) {
