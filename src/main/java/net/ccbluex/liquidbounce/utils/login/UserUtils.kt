@@ -29,7 +29,7 @@ object UserUtils {
         return HttpClient.get(
             "https://api.minecraftservices.com/minecraft/profile/lookup/$uuid"
         ).jsonBody<Profile>()?.name?.also {
-            usernameCache[uuid] = it
+            uuidCache[uuid] = it
         }
     }
 
