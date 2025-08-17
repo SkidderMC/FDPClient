@@ -14,9 +14,9 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.ele
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.yzyGUI
 import net.ccbluex.liquidbounce.utils.attack.CPSCounter.isHovering
 import net.ccbluex.liquidbounce.utils.render.Pair
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.mc
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.yzyRectangle
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.yzyTexture
-import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager.*
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
@@ -98,7 +98,7 @@ class Panel(
         enableAlpha()
         enableBlend()
 
-        Minecraft.getMinecraft().textureManager.bindTexture(ResourceLocation("fdpclient/clickgui/zywl/icons/eye.png"))
+        mc.textureManager.bindTexture(ResourceLocation("fdpclient/texture/clickgui/eye.png"))
         val size = height - 7
         yzyTexture(
             (x + width - size * 2 - 7).toDouble(),
@@ -106,7 +106,7 @@ class Panel(
             0.0f, 0.0f, size.toDouble(), size.toDouble(), size.toFloat(), size.toFloat(), category.color
         )
 
-        Minecraft.getMinecraft().textureManager.bindTexture(category.getIcon())
+        mc.textureManager.bindTexture(category.getIcon())
         yzyTexture(
             (x + width - size - 3).toDouble(),
             (y + (height / 4.0f)).toDouble(),

@@ -15,9 +15,11 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.manager.G
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.Pair
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.util.ResourceLocation
 import org.lwjgl.input.Mouse
