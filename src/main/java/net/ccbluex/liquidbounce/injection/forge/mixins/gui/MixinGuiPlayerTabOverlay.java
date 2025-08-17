@@ -7,12 +7,13 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import net.ccbluex.liquidbounce.features.module.modules.client.TabGUIModule;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
-import net.minecraft.client.gui.FontRenderer;
-import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.client.network.NetHandlerPlayClient;
+import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.util.IChatComponent;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -27,12 +28,23 @@ import static net.minecraft.client.renderer.GlStateManager.*;
 @Mixin(GuiPlayerTabOverlay.class)
 public class MixinGuiPlayerTabOverlay {
 
+    @Shadow private IChatComponent header;
+    @Shadow private IChatComponent footer;
+
+    @Unique private IChatComponent fdp$savedHeader;
+    @Unique private IChatComponent fdp$savedFooter;
+
     @Unique
     private static int FDP_TAB_RESERVED_PING = 13;
 
     @Inject(method = "renderPlayerlist", at = @At("HEAD"))
     public void renderPlayerListPre(int width, Scoreboard scoreboard, ScoreObjective scoreObjective, CallbackInfo ci) {
         TabGUIModule.INSTANCE.setFlagRenderTabOverlay(true);
+
+        fdp$savedHeader = this.header;
+        fdp$savedFooter = this.footer;
+        if (!TabGUIModule.INSTANCE.getTabDisableHeader()) this.header = null;
+        if (!TabGUIModule.INSTANCE.getTabDisableFooter()) this.footer = null;
 
         if (TabGUIModule.INSTANCE.getTabShowPlayerPing()) {
             boolean showMs = TabGUIModule.INSTANCE.getHidePingTag();
@@ -79,6 +91,9 @@ public class MixinGuiPlayerTabOverlay {
     @Inject(method = "renderPlayerlist", at = @At("RETURN"))
     public void renderPlayerListPost(int width, Scoreboard scoreboard, ScoreObjective scoreObjective, CallbackInfo ci) {
         TabGUIModule.INSTANCE.setFlagRenderTabOverlay(false);
+
+        this.header = fdp$savedHeader;
+        this.footer = fdp$savedFooter;
 
         String scaleOption = TabGUIModule.INSTANCE.getTabScale();
         float scaleFactor;
@@ -166,23 +181,5 @@ public class MixinGuiPlayerTabOverlay {
     @ModifyConstant(method = "renderPlayerlist", constant = @Constant(intValue = 13))
     private int fdp$expandPingReserve(int original) {
         return Math.max(original, FDP_TAB_RESERVED_PING);
-    }
-
-    @Redirect(method = "renderPlayerlist",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I", ordinal = 0))
-    private int redirectRenderHeader(FontRenderer fontRenderer, String text, float x, float y, int color) {
-        if (TabGUIModule.INSTANCE.getTabDisableHeader()) {
-            return 0;
-        }
-        return fontRenderer.drawStringWithShadow(text, x, y, color);
-    }
-
-    @Redirect(method = "renderPlayerlist",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/FontRenderer;drawStringWithShadow(Ljava/lang/String;FFI)I", ordinal = 1))
-    private int redirectRenderFooter(FontRenderer fontRenderer, String text, float x, float y, int color) {
-        if (TabGUIModule.INSTANCE.getTabDisableFooter()) {
-            return 0;
-        }
-        return fontRenderer.drawStringWithShadow(text, x, y, color);
     }
 }
