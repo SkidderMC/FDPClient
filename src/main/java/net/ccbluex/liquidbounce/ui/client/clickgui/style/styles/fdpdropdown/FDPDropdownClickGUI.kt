@@ -51,6 +51,7 @@ class FDPDropdownClickGUI : GuiScreen() {
             }
             Main.reloadModules = false
         }
+
         sideGui.initGui()
 
         fadeAnimation = EaseBackIn(400, 1.0, 2.0f)

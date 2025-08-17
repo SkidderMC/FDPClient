@@ -23,12 +23,16 @@ import java.awt.Color
 object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT, canBeEnabled = false) {
     var lastScale = 0
 
+    private var fdpDropdownGui: FDPDropdownClickGUI? = null
+    private var yzyGui: yzyGUI? = null
+
     private val style by choices(
         "Style",
         arrayOf("Black", "Zywl", "FDP"),
         "FDP"
     ).onChanged {
         updateStyle()
+        resetGuiInstances()
     }
 
     private val color by choices(
@@ -62,15 +66,17 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
 
         when {
             style.equals("Zywl", ignoreCase = true) -> {
-                mc.displayGuiScreen(
-                    yzyGUI(
-                        this
-                    )
-                )
+                if (yzyGui == null) {
+                    yzyGui = yzyGUI(this)
+                }
+                mc.displayGuiScreen(yzyGui)
                 this.state = false
             }
             style.equals("FDP", ignoreCase = true) -> {
-                mc.displayGuiScreen(FDPDropdownClickGUI())
+                if (fdpDropdownGui == null) {
+                    fdpDropdownGui = FDPDropdownClickGUI()
+                }
+                mc.displayGuiScreen(fdpDropdownGui)
                 this.state = false
             }
             else -> {
@@ -83,6 +89,11 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
 
     override fun onDisable() {
         Keyboard.enableRepeatEvents(false)
+    }
+
+    private fun resetGuiInstances() {
+        fdpDropdownGui = null
+        yzyGui = null
     }
 
     private fun updateStyle() {

@@ -143,7 +143,15 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
             btnCommitInfo.hoverFade > 0 -> mc.displayGuiScreen(GuiCommitInfo())
             btnForgeModList.hoverFade > 0 -> mc.displayGuiScreen(GuiModList(mc.currentScreen))
             btnCosmetics.hoverFade > 0 -> mc.displayGuiScreen(GuiCommitInfo())
-            btnClickGUI.hoverFade > 0 -> mc.displayGuiScreen(ClickGui)
+            btnClickGUI.hoverFade > 0 -> {
+                try {
+                    mc.displayGuiScreen(ClickGui)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    ClickGui.initGui()
+                    mc.displayGuiScreen(ClickGui)
+                }
+            }
             btnAddAccount.hoverFade > 0 -> mc.displayGuiScreen(GuiAltManager(this))
         }
     }

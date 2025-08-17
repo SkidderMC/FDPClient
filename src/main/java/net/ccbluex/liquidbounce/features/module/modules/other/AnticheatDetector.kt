@@ -66,6 +66,7 @@ object AnticheatDetector : Module("AntiCheatDetector", Category.OTHER) {
                     in -32773..-32762 -> "Grizzly"
                     else -> "Verus"
                 }
+
                 -1 -> when {
                     first in -8287..-8280 -> "Errata"
                     first < -3000 -> "Intave"
