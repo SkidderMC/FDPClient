@@ -93,7 +93,12 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
 
         try {
             mc.gameSettings.guiScale = clickGui.lastScale
-            panels.forEach { it.onGuiClosed() }
+            panels.forEach { panel ->
+                panel.onGuiClosed()
+                // Save scroll position and extended states
+                guiManager.positions[panel.category] = Pair(panel.x, panel.y)
+                guiManager.extendeds[panel.category] = panel.isExtended
+            }
             mc.entityRenderer.loadEntityShader(null)
         } catch (e: Exception) {
             println("Error during yzygui cleanup: ${e.message}")
@@ -105,13 +110,9 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
             val scrollAmount = if (wheel > 0) 30 else -30
             panels.forEach { panel ->
                 val newY = panel.y + scrollAmount
-                val minY = -panel.height - 200 // Allow scrolling further up
-                val maxY = height + 100 // Allow scrolling further down
-                if (newY > minY && newY < maxY) {
-                    panel.y = newY
-                    // Update GUI manager positions
-                    guiManager.positions[panel.category] = Pair(panel.x, panel.y)
-                }
+                panel.y = newY
+                // Update GUI manager positions
+                guiManager.positions[panel.category] = Pair(panel.x, panel.y)
             }
         }
     }
@@ -173,7 +174,7 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
                     if (panel.isExtended) {
                         panel.elements.forEach { element ->
                             if (element.isHovering(mouseX, adjustedMouseY)) {
-                           //     startBindSelection(element.module, mouseX, mouseY)
+                                startBindSelection(element.module, mouseX, mouseY)
                                 return
                             }
                         }
@@ -191,8 +192,6 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
             println("Error during mouse click handling: ${e.message}")
         }
     }
-
-
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         try {
@@ -235,6 +234,12 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
         isInitialized = false
         panels.clear()
         initializePanels()
+    }
+
+    private fun startBindSelection(module: Module, mouseX: Int, mouseY: Int) {
+        bindSelectionMode = true
+        selectedModuleForBind = module
+        bindInputBox = BindInputBox(mouseX, mouseY, module.name)
     }
 }
 

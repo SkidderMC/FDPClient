@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel
 import net.ccbluex.liquidbounce.FDPClient.customFontManager
 import net.ccbluex.liquidbounce.FDPClient.guiManager
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
-import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl.ModuleElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.YzYGui
@@ -61,16 +60,14 @@ class Panel(
 
     fun handleScroll(mouseX: Int, mouseY: Int, wheel: Int): Boolean {
         try {
-            val maxElements = moduleManager[ClickGUIModule::class.java.simpleName]?.values?.find { it.name == "MaxElements" }?.get() as? Int ?: 15
-
             if (mouseX in x..(x + width) && mouseY in y..(y + height + elementsHeight.toInt())) {
                 when {
-                    wheel > 0 && dragged > 0 -> {
-                        dragged = (dragged - 1).coerceAtLeast(0)
+                    wheel > 0 -> {
+                        dragged = (dragged - 1)
                         return true
                     }
-                    wheel < 0 && dragged < (elements.size - maxElements).coerceAtLeast(0) -> {
-                        dragged = (dragged + 1).coerceAtMost((elements.size - maxElements).coerceAtLeast(0))
+                    wheel < 0 -> {
+                        dragged = (dragged + 1)
                         return true
                     }
                 }
@@ -176,6 +173,7 @@ class Panel(
                         guiManager.extendeds[category] = isExtended
 
                         if (!isExtended) {
+                            // Close all expanded modules when category is closed
                             elements.forEach { element ->
                                 element.isExtended = false
                             }
@@ -210,6 +208,7 @@ class Panel(
     fun onGuiClosed() {
         guiManager.positions[category] = Pair(x, y)
         guiManager.extendeds[category] = isExtended
+
     }
 
     companion object {

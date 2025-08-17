@@ -10,6 +10,11 @@ import net.ccbluex.liquidbounce.config.ColorValue
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexture
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.updateTextureCache
+import net.ccbluex.liquidbounce.utils.ui.EditableText
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle.chosenText
 import java.awt.Color
 import kotlin.math.roundToInt
 
@@ -27,227 +32,340 @@ class ColorElement(
     height: Int
 ) : PanelElement(parent, x, y, width, height) {
 
-    private var expanded = false
-    private var showColorPicker = false
-    private var colorPickerX = 0f
-    private var colorPickerY = 0f
-    private var hueSliderY = 0f
-    private var opacitySliderY = 1f
-
-    private val colorPickerWidth = 100
-    private val colorPickerHeight = 80
-    private val sliderWidth = 10
-    private val sliderHeight = 80
+    private val colorPickerWidth = 75
+    private val colorPickerHeight = 50
+    private val hueSliderWidth = 7
+    private val hueSliderHeight = 50
+    private val spacingBetweenSliders = 5
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val currentColor = setting.get()
+        val currentColor = setting.selectedColor()
+        val textColor = Color.WHITE
 
-        // Draw color preview
-        RenderUtils.yzyRectangle(
-            (x + width - 15).toFloat(), y + 2f,
-            12f, (height - 4).toFloat(),
-            currentColor
+        val font = FDPClient.customFontManager["lato-bold-15"]
+
+        // Draw setting name and color code
+        val labelText = setting.name + ":"
+        font?.drawString(
+            labelText,
+            (x + 5).toFloat(),
+            (y + 3).toFloat(),
+            textColor.rgb
         )
 
-        // Draw setting name
-        FDPClient.customFontManager["lato-bold-15"]?.drawString(
-            setting.name,
-            (x + 1).toFloat(),
-            y + (height / 4.0f) + 0.5f,
-            -1
+        val colorCodeText = "#%08X".format(currentColor.rgb)
+        font?.drawString(
+            colorCodeText,
+            (x + 5).toFloat(),
+            (y + 3 + 12 + 2).toFloat(),
+            textColor.rgb
         )
 
-        if (showColorPicker) {
-            val pickerStartX = x + width + 5
-            val pickerStartY = y
+        val previewSize = 9
+        val previewX2 = x + width - 10
+        val previewX1 = previewX2 - previewSize
+        val previewY1 = y + 2
+        val previewY2 = previewY1 + previewSize
 
-            // Draw color picker background
-            RenderUtils.yzyRectangle(
-                pickerStartX.toFloat(), pickerStartY.toFloat(),
-                (colorPickerWidth + sliderWidth * 2 + 20).toFloat(),
-                (colorPickerHeight + 30).toFloat(),
-                Color(40, 40, 40, 200)
+        // Main color preview
+        RenderUtils.drawRect(previewX1.toFloat(), previewY1.toFloat(), previewX2.toFloat(), previewY2.toFloat(), currentColor.rgb)
+
+        // Rainbow preview
+        val rainbowPreviewX2 = previewX1 - previewSize
+        val rainbowPreviewX1 = rainbowPreviewX2 - previewSize
+        if (rainbowPreviewX1 > x + 4) {
+            RenderUtils.drawRect(
+                rainbowPreviewX1.toFloat(), previewY1.toFloat(),
+                rainbowPreviewX2.toFloat(), previewY2.toFloat(),
+                ColorUtils.rainbow(setting.opacitySliderY).rgb
             )
-
-            // Draw HSB color picker
-            drawColorPicker(pickerStartX + 5, pickerStartY + 5, mouseX, mouseY)
-
-            // Draw hue slider
-            drawHueSlider(pickerStartX + colorPickerWidth + 10, pickerStartY + 5, mouseX, mouseY)
-
-            // Draw opacity slider
-            drawOpacitySlider(pickerStartX + colorPickerWidth + sliderWidth + 15, pickerStartY + 5, mouseX, mouseY, currentColor)
-
-            // Draw RGB values
-            val font = FDPClient.customFontManager["lato-bold-15"]
-            font?.drawString("R: ${currentColor.red}", (pickerStartX + 5).toFloat(), (pickerStartY + colorPickerHeight + 10).toFloat(), Color.WHITE.rgb)
-            font?.drawString("G: ${currentColor.green}", (pickerStartX + 35).toFloat(), (pickerStartY + colorPickerHeight + 10).toFloat(), Color.WHITE.rgb)
-            font?.drawString("B: ${currentColor.blue}", (pickerStartX + 65).toFloat(), (pickerStartY + colorPickerHeight + 10).toFloat(), Color.WHITE.rgb)
-            font?.drawString("A: ${currentColor.alpha}", (pickerStartX + 95).toFloat(), (pickerStartY + colorPickerHeight + 10).toFloat(), Color.WHITE.rgb)
         }
 
-        // Draw RGB values if expanded (simple mode)
-        if (expanded && !showColorPicker) {
-            val font = FDPClient.customFontManager["lato-bold-15"]
-            font?.drawString("R: ${currentColor.red}", (x + 1).toFloat(), y + height + 2f, Color(0xD2D2D2).rgb)
-            font?.drawString("G: ${currentColor.green}", (x + 1).toFloat(), y + height + 14f, Color(0xD2D2D2).rgb)
-            font?.drawString("B: ${currentColor.blue}", (x + 1).toFloat(), y + height + 26f, Color(0xD2D2D2).rgb)
-        }
-    }
+        val extraOptionsHeight = if (setting.showOptions && !setting.showPicker) {
+            val rgbaLabels = listOf("R", "G", "B", "A")
+            val rgbaValues = listOf(currentColor.red, currentColor.green, currentColor.blue, currentColor.alpha)
+            val labelWidth = rgbaLabels.maxOfOrNull {
+                font?.getWidth(it) ?: 10
+            }?.toFloat() ?: 10f
+            val optionStartY = y + 3 + 12 * 2 + 4
+            var optionY = optionStartY
 
-    private fun drawColorPicker(startX: Int, startY: Int, mouseX: Int, mouseY: Int) {
-        val hue = Color.RGBtoHSB(setting.get().red, setting.get().green, setting.get().blue, null)[0]
+            rgbaLabels.forEachIndexed { index, label ->
+                val valueText = rgbaValues[index].toString()
+                font?.drawString("$label:", (x + 5).toFloat(), optionY.toFloat(), textColor.rgb)
 
-        // Draw color gradient
-        for (px in 0 until colorPickerWidth) {
-            for (py in 0 until colorPickerHeight) {
-                val saturation = px / colorPickerWidth.toFloat()
-                val brightness = 1.0f - (py / colorPickerHeight.toFloat())
-                val color = Color.HSBtoRGB(hue, saturation, brightness)
-                RenderUtils.yzyRectangle(
-                    (startX + px).toFloat(), (startY + py).toFloat(),
-                    1f, 1f, Color(color)
+                val valueTextColor = if (chosenText != null && chosenText!!.value == setting && setting.rgbaIndex == index) {
+                    Color.WHITE
+                } else {
+                    Color.LIGHT_GRAY
+                }
+
+                font?.drawString(
+                    valueText,
+                    (x + 5).toFloat() + labelWidth + 10f,
+                    optionY.toFloat(),
+                    valueTextColor.rgb
+                )
+                optionY += 12 + 4
+            }
+            (optionY - optionStartY).toFloat()
+        } else 0f
+
+        if (setting.showPicker) {
+            val colorPickerStartX = x + 5
+            val colorPickerStartY = (y.toFloat() + 15f + extraOptionsHeight).toInt()
+            val colorPickerEndX = colorPickerStartX + colorPickerWidth
+            val colorPickerEndY = colorPickerStartY + colorPickerHeight
+            val hueSliderX = colorPickerEndX + spacingBetweenSliders
+            val hueSliderEndY = colorPickerStartY + hueSliderHeight
+            val opacityStartX = hueSliderX + hueSliderWidth + spacingBetweenSliders
+            val opacityEndX = opacityStartX + hueSliderWidth
+
+            val hue = if (setting.rainbow) {
+                Color.RGBtoHSB(currentColor.red, currentColor.green, currentColor.blue, null)[0]
+            } else {
+                setting.hueSliderY
+            }
+
+            // Color picker texture
+            try {
+                setting.updateTextureCache(
+                    id = 0,
+                    hue = hue,
+                    width = colorPickerWidth,
+                    height = colorPickerHeight,
+                    generateImage = { image, _ ->
+                        for (px in 0 until colorPickerWidth) {
+                            for (py in 0 until colorPickerHeight) {
+                                val localS = px / colorPickerWidth.toFloat()
+                                val localB = 1.0f - (py / colorPickerHeight.toFloat())
+                                val rgb = Color.HSBtoRGB(hue, localS, localB)
+                                image.setRGB(px, py, rgb)
+                            }
+                        }
+                    },
+                    drawAt = { id ->
+                        drawTexture(id, colorPickerStartX, colorPickerStartY, colorPickerWidth, colorPickerHeight)
+                    }
+                )
+            } catch (e: Exception) {
+                // Fallback: draw solid color rectangle if texture fails
+                RenderUtils.drawRect(
+                    colorPickerStartX.toFloat(), colorPickerStartY.toFloat(),
+                    colorPickerEndX.toFloat(), colorPickerEndY.toFloat(),
+                    Color.HSBtoRGB(hue, 1.0f, 1.0f)
                 )
             }
-        }
 
-        // Draw selection marker
-        val markerX = startX + (colorPickerX * colorPickerWidth).roundToInt()
-        val markerY = startY + (colorPickerY * colorPickerHeight).roundToInt()
-        RenderUtils.yzyRectangle(
-            markerX - 2f, markerY - 2f, 4f, 4f, Color.WHITE
-        )
-    }
+            // Color picker marker
+            val markerX = colorPickerStartX.toFloat() + (colorPickerEndX - colorPickerStartX).toFloat() * setting.colorPickerPos.x
+            val markerY = colorPickerStartY.toFloat() + (colorPickerEndY - colorPickerStartY).toFloat() * setting.colorPickerPos.y
 
-    private fun drawHueSlider(startX: Int, startY: Int, mouseX: Int, mouseY: Int) {
-        // Draw hue gradient
-        for (y in 0 until sliderHeight) {
-            val hue = y / sliderHeight.toFloat()
-            val color = Color.HSBtoRGB(hue, 1.0f, 1.0f)
-            RenderUtils.yzyRectangle(
-                startX.toFloat(), (startY + y).toFloat(),
-                sliderWidth.toFloat(), 1f, Color(color)
+            if (!setting.rainbow) {
+                RenderUtils.drawBorder(markerX - 2f, markerY - 2f, markerX + 3f, markerY + 3f, 1.5f, Color.WHITE.rgb)
+            }
+
+            // Hue slider texture
+            try {
+                setting.updateTextureCache(
+                    id = 1,
+                    hue = hue,
+                    width = hueSliderWidth,
+                    height = hueSliderHeight,
+                    generateImage = { image, _ ->
+                        for (y in 0 until hueSliderHeight) {
+                            for (x in 0 until hueSliderWidth) {
+                                val localHue = y / hueSliderHeight.toFloat()
+                                val rgb = Color.HSBtoRGB(localHue, 1.0f, 1.0f)
+                                image.setRGB(x, y, rgb)
+                            }
+                        }
+                    },
+                    drawAt = { id ->
+                        drawTexture(id, hueSliderX, colorPickerStartY, hueSliderWidth, hueSliderHeight)
+                    }
+                )
+            } catch (e: Exception) {
+                // Fallback: draw gradient manually
+                for (y in 0 until hueSliderHeight) {
+                    val localHue = y / hueSliderHeight.toFloat()
+                    val rgb = Color.HSBtoRGB(localHue, 1.0f, 1.0f)
+                    RenderUtils.drawRect(
+                        hueSliderX.toFloat(), (colorPickerStartY + y).toFloat(),
+                        (hueSliderX + hueSliderWidth).toFloat(), (colorPickerStartY + y + 1).toFloat(),
+                        rgb
+                    )
+                }
+            }
+
+            // Opacity slider texture
+            try {
+                setting.updateTextureCache(
+                    id = 2,
+                    hue = currentColor.rgb.toFloat(),
+                    width = hueSliderWidth,
+                    height = hueSliderHeight,
+                    generateImage = { image, _ ->
+                        val gridSize = 1
+                        for (y in 0 until hueSliderHeight) {
+                            for (x in 0 until hueSliderWidth) {
+                                val gridX = x / gridSize
+                                val gridY = y / gridSize
+                                val checkerboardColor = if ((gridY + gridX) % 2 == 0) {
+                                    Color.WHITE.rgb
+                                } else {
+                                    Color.BLACK.rgb
+                                }
+                                val alpha = ((1 - y.toFloat() / hueSliderHeight.toFloat()) * 255).roundToInt()
+                                val finalColor = ColorUtils.blendColors(Color(checkerboardColor), Color(currentColor.red, currentColor.green, currentColor.blue, alpha))
+                                image.setRGB(x, y, finalColor.rgb)
+                            }
+                        }
+                    },
+                    drawAt = { id ->
+                        drawTexture(id, opacityStartX, colorPickerStartY, hueSliderWidth, hueSliderHeight)
+                    }
+                )
+            } catch (e: Exception) {
+                // Fallback: draw opacity gradient manually
+                for (y in 0 until hueSliderHeight) {
+                    val alpha = ((1 - y.toFloat() / hueSliderHeight.toFloat()) * 255).roundToInt()
+                    val color = Color(currentColor.red, currentColor.green, currentColor.blue, alpha)
+                    RenderUtils.drawRect(
+                        opacityStartX.toFloat(), (colorPickerStartY + y).toFloat(),
+                        opacityEndX.toFloat(), (colorPickerStartY + y + 1).toFloat(),
+                        color.rgb
+                    )
+                }
+            }
+
+            // Draw slider markers
+            val hueMarkerY = colorPickerStartY.toFloat() + (hueSliderEndY - colorPickerStartY).toFloat() * hue
+            val opacityMarkerY = colorPickerStartY.toFloat() + (hueSliderEndY - colorPickerStartY).toFloat() * (1f - setting.opacitySliderY)
+
+            RenderUtils.drawBorder(
+                hueSliderX.toFloat() - 1f, hueMarkerY - 1f,
+                hueSliderX.toFloat() + hueSliderWidth.toFloat() + 1f, hueMarkerY + 1f,
+                1.5f, Color.WHITE.rgb
+            )
+
+            RenderUtils.drawBorder(
+                opacityStartX.toFloat() - 1f, opacityMarkerY - 1f,
+                opacityEndX.toFloat() + 1f, opacityMarkerY + 1f,
+                1.5f, Color.WHITE.rgb
             )
         }
-
-        // Draw hue marker
-        val markerY = startY + (hueSliderY * sliderHeight).roundToInt()
-        RenderUtils.yzyRectangle(
-            (startX - 2).toFloat(), (markerY - 1).toFloat(),
-            (sliderWidth + 4).toFloat(), 2f, Color.WHITE
-        )
-    }
-
-    private fun drawOpacitySlider(startX: Int, startY: Int, mouseX: Int, mouseY: Int, currentColor: Color) {
-        // Draw opacity gradient with checkerboard background
-        for (y in 0 until sliderHeight) {
-            val alpha = (1 - y / sliderHeight.toFloat()) * 255
-            val baseColor = Color(currentColor.red, currentColor.green, currentColor.blue, alpha.roundToInt())
-
-            // Checkerboard pattern
-            val checkerSize = 4
-            val isLight = ((y / checkerSize) + (0 / checkerSize)) % 2 == 0
-            val bgColor = if (isLight) Color.WHITE else Color.LIGHT_GRAY
-
-            val blendedColor = blendColors(bgColor, baseColor)
-            RenderUtils.yzyRectangle(
-                startX.toFloat(), (startY + y).toFloat(),
-                sliderWidth.toFloat(), 1f, blendedColor
-            )
-        }
-
-        // Draw opacity marker
-        val markerY = startY + ((1 - opacitySliderY) * sliderHeight).roundToInt()
-        RenderUtils.yzyRectangle(
-            (startX - 2).toFloat(), (markerY - 1).toFloat(),
-            (sliderWidth + 4).toFloat(), 2f, Color.WHITE
-        )
-    }
-
-    private fun blendColors(bg: Color, fg: Color): Color {
-        val alpha = fg.alpha / 255f
-        val invAlpha = 1f - alpha
-        return Color(
-            (fg.red * alpha + bg.red * invAlpha).roundToInt(),
-            (fg.green * alpha + bg.green * invAlpha).roundToInt(),
-            (fg.blue * alpha + bg.blue * invAlpha).roundToInt()
-        )
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
-        if (isHovering(mouseX, mouseY)) {
-            when (button) {
-                0 -> {
-                    if (showColorPicker) {
-                        handleColorPickerClick(mouseX, mouseY)
-                    } else {
-                        // Cycle through predefined colors
-                        val colors = arrayOf(
-                            Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW,
-                            Color.CYAN, Color.MAGENTA, Color.WHITE, Color.ORANGE,
-                            Color.PINK, Color.GRAY, Color.DARK_GRAY, Color.BLACK
-                        )
-                        val currentIndex = colors.indexOfFirst { it.rgb == setting.get().rgb }
-                        val nextIndex = if (currentIndex >= 0) (currentIndex + 1) % colors.size else 0
-                        setting.set(colors[nextIndex])
-                    }
+        val currentColor = setting.selectedColor()
+        val previewSize = 9
+        val previewX2 = x + width - 10
+        val previewX1 = previewX2 - previewSize
+        val previewY1 = y + 2
+        val previewY2 = previewY1 + previewSize
+        val rainbowPreviewX2 = previewX1 - previewSize
+        val rainbowPreviewX1 = rainbowPreviewX2 - previewSize
+
+        val isColorPreview = mouseX in previewX1..previewX2 && mouseY in previewY1..previewY2
+        val isRainbowPreview = mouseX in rainbowPreviewX1..rainbowPreviewX2 && mouseY in previewY1..previewY2
+
+        if (button in arrayOf(0, 1)) {
+            when {
+                isColorPreview -> {
+                    if (button == 0 && setting.rainbow) setting.rainbow = false
+                    if (button == 1) setting.showPicker = !setting.showPicker
+                    return
                 }
-                1 -> {
-                    if (showColorPicker) {
-                        showColorPicker = false
-                    } else {
-                        expanded = !expanded
-                    }
+                isRainbowPreview -> {
+                    if (button == 0) setting.rainbow = true
+                    if (button == 1) setting.showPicker = !setting.showPicker
+                    return
                 }
-                2 -> showColorPicker = !showColorPicker
             }
-        } else if (showColorPicker) {
-            handleColorPickerClick(mouseX, mouseY)
         }
-    }
 
-    private fun handleColorPickerClick(mouseX: Int, mouseY: Int) {
-        val pickerStartX = x + width + 5
-        val pickerStartY = y
+        val font = FDPClient.customFontManager["lato-bold-15"]
+        val colorCodeText = "#%08X".format(currentColor.rgb)
+        val hexTextWidth = font?.getWidth(colorCodeText)?.toFloat() ?: 50f
+        val hexTextX = (x + 5).toFloat()
+        val hexTextY = (y + 3 + 12 + 2).toFloat()
 
-        // Color picker area
-        val colorPickerArea = mouseX >= pickerStartX + 5 && mouseX <= pickerStartX + 5 + colorPickerWidth &&
-                mouseY >= pickerStartY + 5 && mouseY <= pickerStartY + 5 + colorPickerHeight
-
-        // Hue slider area
-        val hueSliderArea = mouseX >= pickerStartX + colorPickerWidth + 10 &&
-                mouseX <= pickerStartX + colorPickerWidth + 10 + sliderWidth &&
-                mouseY >= pickerStartY + 5 && mouseY <= pickerStartY + 5 + sliderHeight
-
-        // Opacity slider area
-        val opacitySliderArea = mouseX >= pickerStartX + colorPickerWidth + sliderWidth + 15 &&
-                mouseX <= pickerStartX + colorPickerWidth + sliderWidth + 15 + sliderWidth &&
-                mouseY >= pickerStartY + 5 && mouseY <= pickerStartY + 5 + sliderHeight
-
-        if (colorPickerArea) {
-            colorPickerX = ((mouseX - pickerStartX - 5).toFloat() / colorPickerWidth).coerceIn(0f, 1f)
-            colorPickerY = ((mouseY - pickerStartY - 5).toFloat() / colorPickerHeight).coerceIn(0f, 1f)
-            updateColorFromPicker()
-        } else if (hueSliderArea) {
-            hueSliderY = ((mouseY - pickerStartY - 5).toFloat() / sliderHeight).coerceIn(0f, 1f)
-            updateColorFromPicker()
-        } else if (opacitySliderArea) {
-            opacitySliderY = 1f - ((mouseY - pickerStartY - 5).toFloat() / sliderHeight).coerceIn(0f, 1f)
-            updateColorFromPicker()
+        if (button == 1 && mouseX >= hexTextX && mouseX <= hexTextX + hexTextWidth &&
+            mouseY >= hexTextY && mouseY <= hexTextY + 12f) {
+            setting.showOptions = !setting.showOptions
+            return
         }
-    }
 
-    private fun updateColorFromPicker() {
-        val hue = hueSliderY
-        val saturation = colorPickerX
-        val brightness = 1f - colorPickerY
-        val alpha = (opacitySliderY * 255).roundToInt()
+        if (setting.showOptions && button == 0) {
+            val rgbaLabels = listOf("R", "G", "B", "A")
+            val rgbaValues = listOf(currentColor.red, currentColor.green, currentColor.blue, currentColor.alpha)
+            val labelWidth = rgbaLabels.maxOfOrNull {
+                font?.getWidth(it) ?: 10
+            }?.toFloat() ?: 10f
+            val optionStartY = (y + 3 + 12 * 2 + 4).toFloat()
 
-        val rgb = Color.HSBtoRGB(hue, saturation, brightness)
-        val color = Color(rgb)
-        val finalColor = Color(color.red, color.green, color.blue, alpha)
+            rgbaLabels.forEachIndexed { index, _ ->
+                val yPosition = optionStartY + (index * (12 + 4)).toFloat()
+                val rgbaTextX = (x + 5).toFloat() + labelWidth + 10f
+                val rgbaTextY = yPosition - 2f
+                val rgbaTextHeight = (12 + 4).toFloat()
+                val maxWidth = font?.getWidth("255")?.toFloat() ?: 30f
 
-        setting.set(finalColor)
+                if (mouseX >= rgbaTextX && mouseX <= rgbaTextX + maxWidth &&
+                    mouseY >= rgbaTextY && mouseY <= rgbaTextY + rgbaTextHeight) {
+                    chosenText = EditableText.forRGBA(setting, index)
+                    setting.rgbaIndex = index
+                    return
+                }
+            }
+        }
+
+        if (setting.showPicker) {
+            val extraOptionsHeight = if (setting.showOptions) (12 * 4).toFloat() else 0f
+            val colorPickerStartX = x + 5
+            val colorPickerStartY = (y.toFloat() + 15f + extraOptionsHeight).toInt()
+            val colorPickerEndX = colorPickerStartX + colorPickerWidth
+            val colorPickerEndY = colorPickerStartY + colorPickerHeight
+            val hueSliderX = colorPickerEndX + spacingBetweenSliders
+            val hueSliderEndY = colorPickerStartY + hueSliderHeight
+            val opacityStartX = hueSliderX + hueSliderWidth + spacingBetweenSliders
+            val opacityEndX = opacityStartX + hueSliderWidth
+
+            val inColorPicker = mouseX in colorPickerStartX until colorPickerEndX &&
+                    mouseY in colorPickerStartY until colorPickerEndY && !setting.rainbow
+            val inHueSlider = mouseX in hueSliderX - 1..hueSliderX + hueSliderWidth + 1 &&
+                    mouseY in colorPickerStartY until hueSliderEndY && !setting.rainbow
+            val inOpacitySlider = mouseX in opacityStartX - 1..opacityEndX + 1 &&
+                    mouseY in colorPickerStartY until hueSliderEndY
+
+            if (button == 0 && (inColorPicker || inHueSlider || inOpacitySlider)) {
+                if (inColorPicker) {
+                    val newS = ((mouseX - colorPickerStartX) / colorPickerWidth.toFloat()).coerceIn(0f, 1f)
+                    val newB = (1.0f - (mouseY - colorPickerStartY) / colorPickerHeight.toFloat()).coerceIn(0f, 1f)
+                    setting.colorPickerPos.x = newS
+                    setting.colorPickerPos.y = 1 - newB
+                }
+
+                if (inHueSlider) {
+                    setting.hueSliderY = ((mouseY - colorPickerStartY) / hueSliderHeight.toFloat()).coerceIn(0f, 1f)
+                }
+
+                if (inOpacitySlider) {
+                    setting.opacitySliderY = 1 - ((mouseY - colorPickerStartY) / hueSliderHeight.toFloat()).coerceIn(0f, 1f)
+                }
+
+                // Update color based on picker values
+                try {
+                    var finalColor = Color(Color.HSBtoRGB(setting.hueSliderY, setting.colorPickerPos.x, 1 - setting.colorPickerPos.y))
+                    finalColor = Color(finalColor.red, finalColor.green, finalColor.blue, (setting.opacitySliderY * 255).roundToInt())
+                    setting.set(finalColor)
+                } catch (e: Exception) {
+                    // Fallback to current color if update fails
+                    println("Failed to update color: ${e.message}")
+                }
+            }
+        }
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {}
