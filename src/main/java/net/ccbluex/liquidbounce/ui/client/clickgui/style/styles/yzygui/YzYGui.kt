@@ -98,9 +98,11 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
 
     private fun handleScroll(wheel: Int) {
         if (wheel != 0) {
+            val scrollAmount = if (wheel > 0) 30 else -30
             panels.forEach { panel ->
-                val newY = panel.y + wheel
-                if (newY > -panel.height && newY < height) {
+                val newY = panel.y + scrollAmount
+
+                if (newY > -panel.height * 2 && newY < height + panel.height) {
                     panel.y = newY
                 }
             }
@@ -113,8 +115,12 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
 
             if (Mouse.hasWheel()) {
                 val wheel = Mouse.getDWheel()
-                val handledScroll = panels.asReversed().any { it.handleScroll(mouseX, mouseY, wheel) }
-                if (!handledScroll) handleScroll(wheel)
+                if (wheel != 0) {
+                    val handledScroll = panels.asReversed().any { it.handleScroll(mouseX, mouseY, wheel) }
+                    if (!handledScroll) {
+                        handleScroll(wheel)
+                    }
+                }
             }
 
             drawImage(hudIcon, 9, height - 41, 32, 32)

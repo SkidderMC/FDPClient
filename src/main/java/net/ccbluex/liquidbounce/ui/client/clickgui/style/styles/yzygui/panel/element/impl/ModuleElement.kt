@@ -16,6 +16,9 @@ import net.ccbluex.liquidbounce.config.BoolValue
 import net.ccbluex.liquidbounce.config.FloatValue
 import net.ccbluex.liquidbounce.config.IntValue
 import net.ccbluex.liquidbounce.config.ListValue
+import net.ccbluex.liquidbounce.config.ColorValue
+import net.ccbluex.liquidbounce.config.TextValue
+import net.ccbluex.liquidbounce.config.BlockValue
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
@@ -41,12 +44,15 @@ class ModuleElement(
     private var isBinding = false
 
     init {
-        module.values.forEach { value ->
+        module.values.filter { it.shouldRender() }.forEach { value ->
             val element = when (value) {
                 is BoolValue -> BooleanElement(this, value, parent, x + 4, y, width - 8, 12)
                 is FloatValue -> FloatElement(this, value, parent, x + 4, y, width - 4, 12)
                 is IntValue -> IntegerElement(this, value, parent, x + 4, y, width - 4, 12)
                 is ListValue -> ListElement(this, value, parent, x + 4, y, width - 8, 12)
+                is ColorValue -> ColorElement(this, value, parent, x + 4, y, width - 8, 12)
+                is TextValue -> TextElement(this, value, parent, x + 4, y, width - 8, 12)
+                is BlockValue -> BlockElement(this, value, parent, x + 4, y, width - 8, 12)
                 else -> null
             }
             element?.let { elements.add(it) }
@@ -86,11 +92,22 @@ class ModuleElement(
             Color(37, 37, 37)
         }
 
+        val backgroundColor = if (isExtended) Color(26, 26, 26) else moduleColor
+        val textColor = if (module.state && !isExtended) Color.WHITE else Color(0xD2D2D2)
+
         RenderUtils.yzyRectangle(
             x + 0.5f, y.toFloat(),
             (width - 1).toFloat(), moduleHeight.toFloat(),
-            if (isExtended) Color(26, 26, 26) else moduleColor
+            backgroundColor
         )
+
+        if (isHovering(mouseX, mouseY) && !isExtended) {
+            RenderUtils.yzyRectangle(
+                x + 0.5f, y.toFloat(),
+                (width - 1).toFloat(), height.toFloat(),
+                Color(moduleColor.red, moduleColor.green, moduleColor.blue, 100)
+            )
+        }
 
         var text = module.name.lowercase()
 
@@ -104,8 +121,18 @@ class ModuleElement(
             text,
             (x + width - font.getWidth(text) - 3).toFloat(),
             y + (height / 4.0f) + 0.5f,
-            if (isExtended && module.state) moduleColor.rgb else Color(0xD2D2D2).rgb
+            if (isExtended && module.state) moduleColor.rgb else textColor.rgb
         )
+
+        if (module.values.filter { it.shouldRender() }.isNotEmpty()) {
+            val indicator = if (isExtended) "▼" else "▶"
+            font.drawString(
+                indicator,
+                (x + 2).toFloat(),
+                y + (height / 4.0f) + 0.5f,
+                Color(0xD2D2D2).rgb
+            )
+        }
 
         if (isExtended) {
             elements.forEach { it.drawScreen(mouseX, mouseY, partialTicks) }
@@ -122,14 +149,18 @@ class ModuleElement(
                         module.toggle()
                     }
                 }
-                1 -> if (module.values.isNotEmpty()) {
+                1 -> if (module.values.filter { it.shouldRender() }.isNotEmpty()) {
                     isExtended = !isExtended
                 }
             }
         }
 
         if (isExtended) {
-            elements.forEach { it.mouseClicked(mouseX, mouseY, button) }
+            elements.forEach { element ->
+                if (element.isHovering(mouseX, mouseY)) {
+                    element.mouseClicked(mouseX, mouseY, button)
+                }
+            }
         }
     }
 

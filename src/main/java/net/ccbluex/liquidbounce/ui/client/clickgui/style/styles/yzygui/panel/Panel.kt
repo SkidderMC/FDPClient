@@ -61,12 +61,12 @@ class Panel(
 
     fun handleScroll(mouseX: Int, mouseY: Int, wheel: Int): Boolean {
         try {
-            val maxElements = moduleManager[ClickGUIModule::class.java.simpleName]?.values?.find { it.name == "MaxElements" }?.get() as? Int ?: 0
+            val maxElements = moduleManager[ClickGUIModule::class.java.simpleName]?.values?.find { it.name == "MaxElements" }?.get() as? Int ?: 15
 
-            if (mouseX in x..(x + 100) && mouseY in y..(y + 19 + elementsHeight.toInt())) {
+            if (mouseX in x..(x + width) && mouseY in y..(y + height + elementsHeight.toInt())) {
                 when {
-                    wheel < 0 && dragged < elements.size - maxElements -> dragged++
                     wheel > 0 && dragged > 0 -> dragged--
+                    wheel < 0 && dragged < elements.size - maxElements -> dragged++
                 }
                 return true
             }
