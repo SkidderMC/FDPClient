@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.A
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.AAC3311
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.AAC3315
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.LAAC
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.grim.Grim2371
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other.*
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other.Blink
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlock
@@ -45,6 +46,9 @@ object NoFall : Module("NoFall", Category.PLAYER) {
 
         // Vulcan
         VulcanFast288,
+
+        // Grim
+        Grim2371,
 
         // Other Server
         Spartan,
