@@ -34,7 +34,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false) {
 
     private val swordMode by choices(
         "SwordMode",
-        arrayOf("None", "NCP", "UpdatedNCP", "AAC5", "SwitchItem", "InvalidC08", "Blink"),
+        arrayOf("None", "NCP", "UpdatedNCP", "AAC5", "SwitchItem", "InvalidC08", "Blink", "Grim2371"),
         "None"
     )
 
@@ -45,7 +45,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false) {
 
     private val consumeMode by choices(
         "ConsumeMode",
-        arrayOf("None", "UpdatedNCP", "AAC5", "SwitchItem", "InvalidC08", "Intave", "Drop"),
+        arrayOf("None", "UpdatedNCP", "AAC5", "SwitchItem", "InvalidC08", "Intave", "Drop", "Grim2371"),
         "None"
     )
 
@@ -62,7 +62,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false) {
 
     private val bowPacket by choices(
         "BowMode",
-        arrayOf("None", "UpdatedNCP", "AAC5", "SwitchItem", "InvalidC08"),
+        arrayOf("None", "UpdatedNCP", "AAC5", "SwitchItem", "InvalidC08", "Grim2371"),
         "None"
     )
 
@@ -81,11 +81,16 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false) {
 
     private val BlinkTimer = TickTimer()
 
+    private var grim2371DoNotSlow = false
+    private val grim2371Timer = TickTimer()
+
     override fun onDisable() {
         shouldSwap = false
         shouldBlink = true
         BlinkTimer.reset()
         BlinkUtils.unblink()
+        grim2371DoNotSlow = false
+        grim2371Timer.reset()
     }
 
     val onMotion = handler<MotionEvent> { event ->
@@ -95,6 +100,88 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false) {
 
         if (!hasMotion && !shouldSwap)
             return@handler
+
+        if (event.eventState == EventState.PRE && isUsingItem) {
+            grim2371Timer.update()
+
+            val shouldSendPacket = when {
+                consumeMode == "Grim2371" && (heldItem.item is ItemFood || heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk) -> true
+                swordMode == "Grim2371" && heldItem.item is ItemSword -> true
+                bowPacket == "Grim2371" && heldItem.item is ItemBow -> true
+                else -> false
+            }
+
+            if (shouldSendPacket && grim2371Timer.hasTimePassed(3)) {
+                sendPacket(C08PacketPlayerBlockPlacement(
+                    BlockPos(-1, -1, -1),
+                    255,
+                    heldItem,
+                    0f,
+                    0f,
+                    0f
+                ))
+                grim2371DoNotSlow = true
+                grim2371Timer.reset()
+            }
+        }
+
+        if (!isUsingItem && grim2371DoNotSlow) {
+            grim2371DoNotSlow = false
+        }
+
+        if (swordMode == "Grim2371" && heldItem.item is ItemSword && isUsingItem) {
+            if (event.eventState == EventState.PRE) {
+                grim2371Timer.update()
+                if (grim2371Timer.hasTimePassed(1)) {
+                    grim2371DoNotSlow = true
+                    sendPacket(C08PacketPlayerBlockPlacement(
+                        BlockPos(-1, -1, -1),
+                        255,
+                        heldItem,
+                        0f,
+                        0f,
+                        0f
+                    ))
+                    grim2371Timer.reset()
+                }
+            }
+        }
+
+        if (bowPacket == "Grim2371" && heldItem.item is ItemBow && isUsingItem) {
+            if (event.eventState == EventState.PRE) {
+                grim2371Timer.update()
+                if (grim2371Timer.hasTimePassed(1)) {
+                    grim2371DoNotSlow = true
+                    sendPacket(C08PacketPlayerBlockPlacement(
+                        BlockPos(-1, -1, -1),
+                        255,
+                        heldItem,
+                        0f,
+                        0f,
+                        0f
+                    ))
+                    grim2371Timer.reset()
+                }
+            }
+        }
+
+        if (consumeMode == "Grim2371" && isUsingItem) {
+            if (event.eventState == EventState.PRE) {
+                grim2371Timer.update()
+                if (grim2371Timer.hasTimePassed(1)) {
+                    grim2371DoNotSlow = true
+                    sendPacket(C08PacketPlayerBlockPlacement(
+                        BlockPos(-1, -1, -1),
+                        255,
+                        heldItem,
+                        0f,
+                        0f,
+                        0f
+                    ))
+                    grim2371Timer.reset()
+                }
+            }
+        }
 
         if (isUsingItem || shouldSwap) {
             if (heldItem.item !is ItemSword && heldItem.item !is ItemBow && (consumeFoodOnly && heldItem.item is ItemFood ||
@@ -313,6 +400,17 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false) {
     val onSlowDown = handler<SlowDownEvent> { event ->
         val heldItem = mc.thePlayer.heldItem?.item
 
+        if ((swordMode == "Grim2371" && heldItem is ItemSword) ||
+            (consumeMode == "Grim2371" && (heldItem is ItemFood || heldItem is ItemPotion || heldItem is ItemBucketMilk)) ||
+            (bowPacket == "Grim2371" && heldItem is ItemBow)) {
+            if (grim2371DoNotSlow) {
+                event.forward = 1.0f
+                event.strafe = 1.0f
+                grim2371DoNotSlow = false
+                return@handler
+            }
+        }
+
         if (heldItem !is ItemSword) {
             if (!consumeFoodOnly && heldItem is ItemFood ||
                 !consumeDrinkOnly && (heldItem is ItemPotion || heldItem is ItemBucketMilk)
@@ -349,4 +447,3 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false) {
         SilentHotbar.resetSlot(this, true)
     }
 }
-
