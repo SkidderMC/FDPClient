@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.FDPDropdownClickGUI
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.yzyGUI
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.YzYGui
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.minecraft.network.play.server.S2EPacketCloseWindow
@@ -24,7 +24,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
     var lastScale = 0
 
     private var fdpDropdownGui: FDPDropdownClickGUI? = null
-    private var yzyGui: yzyGUI? = null
+    private var yzyGui: YzYGui? = null
 
     private val style by choices(
         "Style",
@@ -60,30 +60,41 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
     val clickHeight by int("Tab Height", 250, 100.. 500) { style == "FDP" }
 
     override fun onEnable() {
-        Keyboard.enableRepeatEvents(true)
-        lastScale = mc.gameSettings.guiScale
-        mc.gameSettings.guiScale = 2
+        try {
+            Keyboard.enableRepeatEvents(true)
+            lastScale = mc.gameSettings.guiScale
+            mc.gameSettings.guiScale = 2
 
-        when {
-            style.equals("Zywl", ignoreCase = true) -> {
-                if (yzyGui == null) {
-                    yzyGui = yzyGUI(this)
+            when {
+                style.equals("Zywl", ignoreCase = true) -> {
+                    if (yzyGui == null) {
+                        yzyGui = YzYGui(this)
+                    } else {
+                        yzyGui?.resetGui()
+                    }
+                    mc.displayGuiScreen(yzyGui)
+                    this.state = false
                 }
-                mc.displayGuiScreen(yzyGui)
-                this.state = false
-            }
-            style.equals("FDP", ignoreCase = true) -> {
-                if (fdpDropdownGui == null) {
-                    fdpDropdownGui = FDPDropdownClickGUI()
+                style.equals("FDP", ignoreCase = true) -> {
+                    if (fdpDropdownGui == null) {
+                        fdpDropdownGui = FDPDropdownClickGUI()
+                    } else {
+                        fdpDropdownGui?.resetGui()
+                    }
+                    mc.displayGuiScreen(fdpDropdownGui)
+                    this.state = false
                 }
-                mc.displayGuiScreen(fdpDropdownGui)
-                this.state = false
+                else -> {
+                    updateStyle()
+                    mc.displayGuiScreen(clickGui)
+                    this.state = false
+                }
             }
-            else -> {
-                updateStyle()
-                mc.displayGuiScreen(clickGui)
-                this.state = false
-            }
+        } catch (e: Exception) {
+            println("Error opening ClickGUI: ${e.message}")
+            updateStyle()
+            mc.displayGuiScreen(clickGui)
+            this.state = false
         }
     }
 
@@ -92,6 +103,12 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
     }
 
     private fun resetGuiInstances() {
+        try {
+            fdpDropdownGui?.onGuiClosed()
+            yzyGui?.onGuiClosed()
+        } catch (e: Exception) {
+            println("Error during GUI cleanup: ${e.message}")
+        }
         fdpDropdownGui = null
         yzyGui = null
     }

@@ -41,90 +41,118 @@ class FDPDropdownClickGUI : GuiScreen() {
     private val hudIcon = ResourceLocation("${CLIENT_NAME.lowercase()}/custom_hud_icon.png")
 
     private var categoryPanels: MutableList<DropdownCategory>? = null
+    private var isInitialized = false
 
     override fun initGui() {
-        if (categoryPanels == null || Main.reloadModules) {
-            categoryPanels = mutableListOf<DropdownCategory>().apply {
-                Category.entries.forEach { category ->
-                    add(DropdownCategory(category))
+        try {
+            if (categoryPanels == null || Main.reloadModules || !isInitialized) {
+                categoryPanels = mutableListOf<DropdownCategory>().apply {
+                    Category.entries.forEach { category ->
+                        add(DropdownCategory(category))
+                    }
                 }
+                Main.reloadModules = false
+                isInitialized = true
             }
-            Main.reloadModules = false
-        }
 
-        sideGui.initGui()
+            sideGui.initGui()
 
-        fadeAnimation = EaseBackIn(400, 1.0, 2.0f)
-        openingAnimation = EaseBackIn(400, 0.4, 2.0f)
-        configHover = DecelerateAnimation(250, 1.0)
+            fadeAnimation = EaseBackIn(400, 1.0, 2.0f)
+            openingAnimation = EaseBackIn(400, 0.4, 2.0f)
+            configHover = DecelerateAnimation(250, 1.0)
 
-        categoryPanels?.forEach { panel ->
-            panel.animation = fadeAnimation
-            panel.openingAnimation = openingAnimation
-            panel.initGui()
+            categoryPanels?.forEach { panel ->
+                panel.animation = fadeAnimation
+                panel.openingAnimation = openingAnimation
+                panel.initGui()
+            }
+        } catch (e: Exception) {
+            println("Error initializing FDPDropdownClickGUI: ${e.message}")
         }
     }
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
-        if (keyCode == 1) {
-            openingAnimation.direction = Direction.BACKWARDS
-            fadeAnimation.direction = openingAnimation.direction
+        try {
+            if (keyCode == 1) {
+                openingAnimation.direction = Direction.BACKWARDS
+                fadeAnimation.direction = openingAnimation.direction
+            }
+            sideGui.keyTyped(typedChar, keyCode)
+            categoryPanels?.forEach { it.keyTyped(typedChar, keyCode) }
+        } catch (e: Exception) {
+            println("Error handling key input: ${e.message}")
         }
-        sideGui.keyTyped(typedChar, keyCode)
-        categoryPanels?.forEach { it.keyTyped(typedChar, keyCode) }
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        assumeNonVolatile {
-            if (Mouse.isButtonDown(0) && mouseX in 5..50 && mouseY in (height - 50)..(height - 5)) {
-                mc.displayGuiScreen(GuiHudDesigner())
-            }
-            RenderUtils.drawImage(hudIcon, 9, height - 41, 32, 32)
-            if (openingAnimation.isDone && openingAnimation.direction == Direction.BACKWARDS) {
-                mc.displayGuiScreen(null)
-                return@assumeNonVolatile
-            }
-            val sr = ScaledResolution(mc)
-            val finalScale = (openingAnimation.output + 0.6f) * ClickGUIModule.scale
-            SettingComponents.scale = finalScale.toFloat()
-            val transformedMouseX = sr.scaledWidth / 2f + (mouseX - sr.scaledWidth / 2f) / finalScale
-            val transformedMouseY = sr.scaledHeight / 2f + (mouseY - sr.scaledHeight / 2f) / finalScale
+        try {
+            assumeNonVolatile {
+                if (Mouse.isButtonDown(0) && mouseX in 5..50 && mouseY in (height - 50)..(height - 5)) {
+                    mc.displayGuiScreen(GuiHudDesigner())
+                }
+                RenderUtils.drawImage(hudIcon, 9, height - 41, 32, 32)
+                if (openingAnimation.isDone && openingAnimation.direction == Direction.BACKWARDS) {
+                    mc.displayGuiScreen(null)
+                    return@assumeNonVolatile
+                }
+                val sr = ScaledResolution(mc)
+                val finalScale = (openingAnimation.output + 0.6f) * ClickGUIModule.scale
+                SettingComponents.scale = finalScale.toFloat()
+                val transformedMouseX = sr.scaledWidth / 2f + (mouseX - sr.scaledWidth / 2f) / finalScale
+                val transformedMouseY = sr.scaledHeight / 2f + (mouseY - sr.scaledHeight / 2f) / finalScale
 
-            val focusedConfigGui = sideGui.focused
-            val effectiveMouseX = if (focusedConfigGui) 0 else transformedMouseX.toInt()
-            val effectiveMouseY = if (focusedConfigGui) 0 else transformedMouseY.toInt()
+                val focusedConfigGui = sideGui.focused
+                val effectiveMouseX = if (focusedConfigGui) 0 else transformedMouseX.toInt()
+                val effectiveMouseY = if (focusedConfigGui) 0 else transformedMouseY.toInt()
 
-            DrRenderUtils.scale(sr.scaledWidth / 2f, sr.scaledHeight / 2f, finalScale.toFloat()) {
-                categoryPanels?.forEach { it.drawScreen(effectiveMouseX, effectiveMouseY) }
+                DrRenderUtils.scale(sr.scaledWidth / 2f, sr.scaledHeight / 2f, finalScale.toFloat()) {
+                    categoryPanels?.forEach { it.drawScreen(effectiveMouseX, effectiveMouseY) }
+                }
+                sideGui.drawScreen(mouseX, mouseY, partialTicks, (255 * fadeAnimation.output).toInt().coerceIn(0, 255))
             }
-            sideGui.drawScreen(mouseX, mouseY, partialTicks, (255 * fadeAnimation.output).toInt().coerceIn(0, 255))
+            drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor, true))
+            super.drawScreen(mouseX, mouseY, partialTicks)
+        } catch (e: Exception) {
+            println("Error during FDP GUI rendering: ${e.message}")
         }
-        drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor, true))
-        super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val oldFocus = sideGui.focused
-        sideGui.mouseClicked(mouseX, mouseY, mouseButton)
-        if (!oldFocus) {
-            val sr = ScaledResolution(mc)
-            val finalScale = (openingAnimation.output + 0.6f) * ClickGUIModule.scale
-            val transformedMouseX = sr.scaledWidth / 2f + (mouseX - sr.scaledWidth / 2f) / finalScale
-            val transformedMouseY = sr.scaledHeight / 2f + (mouseY - sr.scaledHeight / 2f) / finalScale
-            categoryPanels?.forEach { it.mouseClicked(transformedMouseX.toInt(), transformedMouseY.toInt(), mouseButton) }
+        try {
+            val oldFocus = sideGui.focused
+            sideGui.mouseClicked(mouseX, mouseY, mouseButton)
+            if (!oldFocus) {
+                val sr = ScaledResolution(mc)
+                val finalScale = (openingAnimation.output + 0.6f) * ClickGUIModule.scale
+                val transformedMouseX = sr.scaledWidth / 2f + (mouseX - sr.scaledWidth / 2f) / finalScale
+                val transformedMouseY = sr.scaledHeight / 2f + (mouseY - sr.scaledHeight / 2f) / finalScale
+                categoryPanels?.forEach { it.mouseClicked(transformedMouseX.toInt(), transformedMouseY.toInt(), mouseButton) }
+            }
+        } catch (e: Exception) {
+            println("Error handling mouse click: ${e.message}")
         }
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
-        val oldFocus = sideGui.focused
-        sideGui.mouseReleased(mouseX, mouseY, state)
-        if (!oldFocus) {
-            val sr = ScaledResolution(mc)
-            val finalScale = (openingAnimation.output + 0.6f) * ClickGUIModule.scale
-            val transformedMouseX = sr.scaledWidth / 2f + (mouseX - sr.scaledWidth / 2f) / finalScale
-            val transformedMouseY = sr.scaledHeight / 2f + (mouseY - sr.scaledHeight / 2f) / finalScale
-            categoryPanels?.forEach { it.mouseReleased(transformedMouseX.toInt(), transformedMouseY.toInt(), state) }
+        try {
+            val oldFocus = sideGui.focused
+            sideGui.mouseReleased(mouseX, mouseY, state)
+            if (!oldFocus) {
+                val sr = ScaledResolution(mc)
+                val finalScale = (openingAnimation.output + 0.6f) * ClickGUIModule.scale
+                val transformedMouseX = sr.scaledWidth / 2f + (mouseX - sr.scaledWidth / 2f) / finalScale
+                val transformedMouseY = sr.scaledHeight / 2f + (mouseY - sr.scaledHeight / 2f) / finalScale
+                categoryPanels?.forEach { it.mouseReleased(transformedMouseX.toInt(), transformedMouseY.toInt(), state) }
+            }
+        } catch (e: Exception) {
+            println("Error handling mouse release: ${e.message}")
         }
+    }
+
+    fun resetGui() {
+        isInitialized = false
+        categoryPanels?.clear()
+        categoryPanels = null
     }
 
     override fun doesGuiPauseGame() = false

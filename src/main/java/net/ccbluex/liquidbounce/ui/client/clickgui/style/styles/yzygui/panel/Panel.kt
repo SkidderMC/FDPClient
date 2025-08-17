@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl.ModuleElement
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.yzyGUI
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.YzYGui
 import net.ccbluex.liquidbounce.utils.attack.CPSCounter.isHovering
 import net.ccbluex.liquidbounce.utils.render.Pair
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.mc
@@ -26,14 +26,19 @@ import java.util.*
  * @author opZywl - YZY GUI
  */
 class Panel(
-    val parent: yzyGUI,
+    val parent: YzYGui,
     val category: yzyCategory,
     var x: Int,
     var y: Int
 ) {
-    private val elements: MutableList<ModuleElement> = moduleManager.getModuleInCategory(category.parent).mapIndexed { index, module ->
-        ModuleElement(module, this, x + 1, PANEL_HEIGHT + 1 + index * ModuleElement.MODULE_HEIGHT, PANEL_WIDTH - 2, ModuleElement.MODULE_HEIGHT)
-    }.toMutableList()
+    private val elements: MutableList<ModuleElement> = try {
+        moduleManager.getModuleInCategory(category.parent).mapIndexed { index, module ->
+            ModuleElement(module, this, x + 1, PANEL_HEIGHT + 1 + index * ModuleElement.MODULE_HEIGHT, PANEL_WIDTH - 2, ModuleElement.MODULE_HEIGHT)
+        }.toMutableList()
+    } catch (e: Exception) {
+        println("Error initializing panel elements for ${category.name}: ${e.message}")
+        mutableListOf()
+    }
 
     var width: Int = PANEL_WIDTH
     var height: Int = PANEL_HEIGHT
@@ -55,76 +60,90 @@ class Panel(
     }
 
     fun handleScroll(mouseX: Int, mouseY: Int, wheel: Int): Boolean {
-        val maxElements = moduleManager[ClickGUIModule::class.java.simpleName]?.values?.find { it.name == "MaxElements" }?.get() as? Int ?: 0
+        try {
+            val maxElements = moduleManager[ClickGUIModule::class.java.simpleName]?.values?.find { it.name == "MaxElements" }?.get() as? Int ?: 0
 
-        if (mouseX in x..(x + 100) && mouseY in y..(y + 19 + elementsHeight.toInt())) {
-            when {
-                wheel < 0 && dragged < elements.size - maxElements -> dragged++
-                wheel > 0 && dragged > 0 -> dragged--
+            if (mouseX in x..(x + 100) && mouseY in y..(y + 19 + elementsHeight.toInt())) {
+                when {
+                    wheel < 0 && dragged < elements.size - maxElements -> dragged++
+                    wheel > 0 && dragged > 0 -> dragged--
+                }
+                return true
             }
-            return true
+        } catch (e: Exception) {
+            println("Error handling scroll in panel ${category.name}: ${e.message}")
         }
         return false
     }
 
     fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        if (isDragging) {
-            x = mouseX + lastX
-            y = mouseY + lastY
-        }
+        try {
+            if (isDragging) {
+                val newX = mouseX + lastX
+                val newY = mouseY + lastY
+                if (newX >= 0 && newX <= parent.width - width && newY >= 0 && newY <= parent.height - height) {
+                    x = newX
+                    y = newY
+                }
+            }
 
+            var panelHeight = height.toFloat()
 
-        var panelHeight = height.toFloat()
+            for (element in elements) {
+                if (isExtended) {
+                    panelHeight += element.height.toFloat()
+                }
+                panelHeight += element.getExtendedHeight()
+            }
 
-        for (element in elements) {
+            yzyRectangle(x - 0.5f, y - 0.5f, width + 1.0f, panelHeight + 3.0f, category.color)
+            yzyRectangle(x.toFloat(), y.toFloat(), width.toFloat(), panelHeight + 2.0f, Color(26, 26, 26))
+
+            customFontManager["lato-bold-15"]?.drawStringWithShadow(
+                category.name.lowercase(Locale.getDefault()),
+                (x + 3).toDouble(),
+                (y + (height / 4.0f) + 0.5f).toDouble(),
+                -1
+            )
+
+            try {
+                pushMatrix()
+                enableAlpha()
+                enableBlend()
+
+                mc.textureManager.bindTexture(ResourceLocation("fdpclient/texture/clickgui/eye.png"))
+                val size = height - 7
+                yzyTexture(
+                    (x + width - size * 2 - 7).toDouble(),
+                    (y + (height / 4.0f)).toDouble(),
+                    0.0f, 0.0f, size.toDouble(), size.toDouble(), size.toFloat(), size.toFloat(), category.color
+                )
+
+                mc.textureManager.bindTexture(category.getIcon())
+                yzyTexture(
+                    (x + width - size - 3).toDouble(),
+                    (y + (height / 4.0f)).toDouble(),
+                    0.0f, 0.0f, size.toDouble(), size.toDouble(), size.toFloat(), size.toFloat(), category.color
+                )
+
+                disableBlend()
+                disableAlpha()
+                popMatrix()
+            } catch (e: Exception) {
+                println("Error rendering textures for panel ${category.name}: ${e.message}")
+            }
+
             if (isExtended) {
-                panelHeight += element.height.toFloat()
+                var addition = height
+                elements.forEach { element ->
+                    element.x = x + 1
+                    element.y = y + addition
+                    element.drawScreen(mouseX, mouseY, partialTicks)
+                    addition += element.height + if (element.isExtended) element.getExtendedHeight().toInt() else 0
+                }
             }
-
-            panelHeight += element.getExtendedHeight()
-        }
-
-        yzyRectangle(x - 0.5f, y - 0.5f, width + 1.0f, panelHeight + 3.0f, category.color)
-        yzyRectangle(x.toFloat(), y.toFloat(), width.toFloat(), panelHeight + 2.0f, Color(26, 26, 26))
-
-        customFontManager["lato-bold-15"]?.drawStringWithShadow(
-            category.name.lowercase(Locale.getDefault()),
-            (x + 3).toDouble(),
-            (y + (height / 4.0f) + 0.5f).toDouble(),
-            -1
-        )
-
-        pushMatrix()
-        enableAlpha()
-        enableBlend()
-
-        mc.textureManager.bindTexture(ResourceLocation("fdpclient/texture/clickgui/eye.png"))
-        val size = height - 7
-        yzyTexture(
-            (x + width - size * 2 - 7).toDouble(),
-            (y + (height / 4.0f)).toDouble(),
-            0.0f, 0.0f, size.toDouble(), size.toDouble(), size.toFloat(), size.toFloat(), category.color
-        )
-
-        mc.textureManager.bindTexture(category.getIcon())
-        yzyTexture(
-            (x + width - size - 3).toDouble(),
-            (y + (height / 4.0f)).toDouble(),
-            0.0f, 0.0f, size.toDouble(), size.toDouble(), size.toFloat(), size.toFloat(), category.color
-        )
-
-        disableBlend()
-        disableAlpha()
-        popMatrix()
-
-        if (isExtended) {
-            var addition = height
-            elements.forEach { element ->
-                element.x = x + 1
-                element.y = y + addition
-                element.drawScreen(mouseX, mouseY, partialTicks)
-                addition += element.height + if (element.isExtended) element.getExtendedHeight().toInt() else 0
-            }
+        } catch (e: Exception) {
+            println("Error drawing panel ${category.name}: ${e.message}")
         }
     }
 
