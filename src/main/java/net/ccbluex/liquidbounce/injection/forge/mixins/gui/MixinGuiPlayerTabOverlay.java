@@ -5,20 +5,22 @@
  */
 package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
+import com.google.common.collect.Ordering;
 import net.ccbluex.liquidbounce.features.module.modules.client.TabGUIModule;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
+import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.IChatComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -120,37 +122,46 @@ public class MixinGuiPlayerTabOverlay {
     }
 
     @Redirect(method = "renderPlayerlist", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/client/network/NetHandlerPlayClient;getPlayerInfoMap()Ljava/util/Collection;"))
-    private Collection<NetworkPlayerInfo> redirectPlayerInfoMap(NetHandlerPlayClient instance) {
-        Collection<NetworkPlayerInfo> original = instance.getPlayerInfoMap();
-        if (TabGUIModule.INSTANCE.getTabMoveSelfToTop()) {
-            if (mc.thePlayer != null) {
-                List<NetworkPlayerInfo> list = new ArrayList<>(original);
-                NetworkPlayerInfo selfInfo = null;
-                for (NetworkPlayerInfo info : list) {
-                    if (info.getGameProfile().getName().equals(mc.thePlayer.getName())) {
-                        selfInfo = info;
-                        break;
-                    }
+            target = "Lcom/google/common/collect/Ordering;sortedCopy(Ljava/lang/Iterable;)Ljava/util/List;"))
+    private List<NetworkPlayerInfo> redirectSortedCopy(Ordering<NetworkPlayerInfo> ordering, Iterable<NetworkPlayerInfo> iterable) {
+        List<NetworkPlayerInfo> list = ordering.sortedCopy(iterable);
+        if (TabGUIModule.INSTANCE.getTabMoveSelfToTop() && mc.thePlayer != null) {
+            NetworkPlayerInfo self = null;
+            for (NetworkPlayerInfo info : list) {
+                if (info.getGameProfile().getName().equals(mc.thePlayer.getName())) {
+                    self = info;
+                    break;
                 }
-                if (selfInfo != null) {
-                    list.remove(selfInfo);
-                    list.add(0, selfInfo);
-                }
-                return list;
+            }
+            if (self != null) {
+                list.remove(self);
+                list.add(0, self);
             }
         }
-        return original;
+        return list;
+    }
+
+    @Inject(method = "getPlayerName", at = @At("HEAD"), cancellable = true)
+    private void injectPlayerName(NetworkPlayerInfo info, CallbackInfoReturnable<String> cir) {
+        if (TabGUIModule.INSTANCE.getTabMoveSelfToTop() && mc.thePlayer != null
+                && info.getGameProfile().getName().equals(mc.thePlayer.getName())) {
+            ScorePlayerTeam team = info.getPlayerTeam();
+            String base = ScorePlayerTeam.formatPlayerName(team, info.getGameProfile().getName());
+            cir.setReturnValue("♛ " + base);
+        }
+    }
+
+    @Redirect(method = "renderPlayerlist", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/network/NetHandlerPlayClient;getPlayerInfoMap()Ljava/util/Collection;"))
+    private Collection<NetworkPlayerInfo> redirectPlayerInfoMap(NetHandlerPlayClient instance) {
+        return instance.getPlayerInfoMap();
     }
 
     @Inject(method = "drawPing", at = @At("HEAD"), cancellable = true)
     private void drawPing(int offset, int x, int y, NetworkPlayerInfo info, CallbackInfo ci) {
-        if (!TabGUIModule.INSTANCE.getTabShowPlayerPing()) {
-            return;
-        }
+        if (!TabGUIModule.INSTANCE.getTabShowPlayerPing()) return;
 
         int ping = info.getResponseTime();
-
         int color;
         if (ping < 0) {
             color = 0xFFFFFFFF;
@@ -169,11 +180,10 @@ public class MixinGuiPlayerTabOverlay {
 
         int right = x + offset - 1;
         int textX = right - mc.fontRendererObj.getStringWidth(pingString);
-        if (TabGUIModule.INSTANCE.getPingTextShadow()) {
+        if (TabGUIModule.INSTANCE.getPingTextShadow())
             mc.fontRendererObj.drawStringWithShadow(pingString, textX, y, color);
-        } else {
+        else
             mc.fontRendererObj.drawString(pingString, textX, y, color);
-        }
 
         ci.cancel();
     }
