@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.SideGui
@@ -40,6 +41,9 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
     val alpha = 255
 
     private var isInitialized = false
+    private var bindSelectionMode = false
+    private var selectedModuleForBind: Module? = null
+    private var bindInputBox: BindInputBox? = null
 
     init {
         initializePanels()
@@ -101,9 +105,12 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
             val scrollAmount = if (wheel > 0) 30 else -30
             panels.forEach { panel ->
                 val newY = panel.y + scrollAmount
-
-                if (newY > -panel.height * 2 && newY < height + panel.height) {
+                val minY = -panel.height - 200 // Allow scrolling further up
+                val maxY = height + 100 // Allow scrolling further down
+                if (newY > minY && newY < maxY) {
                     panel.y = newY
+                    // Update GUI manager positions
+                    guiManager.positions[panel.category] = Pair(panel.x, panel.y)
                 }
             }
         }
@@ -123,7 +130,9 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
                 }
             }
 
-            drawImage(hudIcon, 9, height - 41, 32, 32)
+            if (hudIcon != null) {
+                drawImage(hudIcon, 9, height - 41, 32, 32)
+            }
 
             val delta = (System.currentTimeMillis() - lastMS).toInt()
             panels.forEach {
@@ -132,6 +141,11 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
             }
 
             sideGui.drawScreen(mouseX, mouseY, partialTicks, alpha)
+
+            bindInputBox?.let { box ->
+                box.drawScreen(mouseX, mouseY, partialTicks)
+            }
+
             lastMS = System.currentTimeMillis()
 
             drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
@@ -146,7 +160,27 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         try {
+            bindInputBox?.let { box ->
+                if (box.mouseClicked(mouseX, mouseY, mouseButton)) {
+                    return
+                }
+            }
+
             val adjustedMouseY = mouseY + yShift
+
+            if (mouseButton == 2) { // Middle click
+                panels.forEach { panel ->
+                    if (panel.isExtended) {
+                        panel.elements.forEach { element ->
+                            if (element.isHovering(mouseX, adjustedMouseY)) {
+                           //     startBindSelection(element.module, mouseX, mouseY)
+                                return
+                            }
+                        }
+                    }
+                }
+            }
+
             panels.forEach { it.mouseClicked(mouseX, adjustedMouseY, mouseButton) }
             sideGui.mouseClicked(mouseX, mouseY, mouseButton)
 
@@ -158,8 +192,12 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
         }
     }
 
+
+
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         try {
+            bindInputBox?.mouseReleased(mouseX, mouseY, state)
+
             val adjustedMouseY = mouseY + yShift
             panels.forEach { it.mouseReleased(mouseX, adjustedMouseY, state) }
             sideGui.mouseReleased(mouseX, mouseY, state)
@@ -171,6 +209,20 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
     @Throws(IOException::class)
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         try {
+            if (bindSelectionMode && bindInputBox != null) {
+                if (keyCode == 1) { // ESC key
+                    bindSelectionMode = false
+                    selectedModuleForBind = null
+                    bindInputBox = null
+                } else if (keyCode != 0) {
+                    selectedModuleForBind?.keyBind = keyCode
+                    bindSelectionMode = false
+                    selectedModuleForBind = null
+                    bindInputBox = null
+                }
+                return
+            }
+
             super.keyTyped(typedChar, keyCode)
             panels.forEach { it.keyTyped(typedChar, keyCode) }
             sideGui.keyTyped(typedChar, keyCode)
@@ -179,11 +231,59 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
         }
     }
 
-    override fun doesGuiPauseGame(): Boolean = false
-
     fun resetGui() {
         isInitialized = false
         panels.clear()
         initializePanels()
     }
+}
+
+class BindInputBox(private val x: Int, private val y: Int, private val moduleName: String) {
+    private val width = 120
+    private val height = 40
+
+    fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        try {
+            // Draw background
+            net.ccbluex.liquidbounce.utils.render.RenderUtils.yzyRectangle(
+                (x - width/2).toFloat(),
+                (y - height/2).toFloat(),
+                width.toFloat(),
+                height.toFloat(),
+                Color(40, 40, 40, 200)
+            )
+
+            // Draw border
+            net.ccbluex.liquidbounce.utils.render.RenderUtils.yzyRectangle(
+                (x - width/2 - 1).toFloat(),
+                (y - height/2 - 1).toFloat(),
+                (width + 2).toFloat(),
+                (height + 2).toFloat(),
+                Color(100, 100, 255, 150)
+            )
+
+            // Draw text
+            net.ccbluex.liquidbounce.FDPClient.customFontManager["lato-bold-13"]?.drawStringWithShadow(
+                "Bind: $moduleName",
+                (x - width/2 + 5).toDouble(),
+                (y - 10).toDouble(),
+                -1
+            )
+
+            net.ccbluex.liquidbounce.FDPClient.customFontManager["lato-bold-11"]?.drawStringWithShadow(
+                "Press any key...",
+                (x - width/2 + 5).toDouble(),
+                (y + 5).toDouble(),
+                Color.GRAY.rgb
+            )
+        } catch (e: Exception) {
+            println("Error drawing bind input box: ${e.message}")
+        }
+    }
+
+    fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int): Boolean {
+        return mouseX in (x - width/2)..(x + width/2) && mouseY in (y - height/2)..(y + height/2)
+    }
+
+    fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {}
 }

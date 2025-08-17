@@ -31,7 +31,7 @@ class Panel(
     var x: Int,
     var y: Int
 ) {
-    private val elements: MutableList<ModuleElement> = try {
+    val elements: MutableList<ModuleElement> = try {
         moduleManager.getModuleInCategory(category.parent).mapIndexed { index, module ->
             ModuleElement(module, this, x + 1, PANEL_HEIGHT + 1 + index * ModuleElement.MODULE_HEIGHT, PANEL_WIDTH - 2, ModuleElement.MODULE_HEIGHT)
         }.toMutableList()
@@ -65,10 +65,15 @@ class Panel(
 
             if (mouseX in x..(x + width) && mouseY in y..(y + height + elementsHeight.toInt())) {
                 when {
-                    wheel > 0 && dragged > 0 -> dragged--
-                    wheel < 0 && dragged < elements.size - maxElements -> dragged++
+                    wheel > 0 && dragged > 0 -> {
+                        dragged = (dragged - 1).coerceAtLeast(0)
+                        return true
+                    }
+                    wheel < 0 && dragged < (elements.size - maxElements).coerceAtLeast(0) -> {
+                        dragged = (dragged + 1).coerceAtMost((elements.size - maxElements).coerceAtLeast(0))
+                        return true
+                    }
                 }
-                return true
             }
         } catch (e: Exception) {
             println("Error handling scroll in panel ${category.name}: ${e.message}")
@@ -155,11 +160,34 @@ class Panel(
                     lastX = x - mouseX
                     lastY = y - mouseY
                 }
-                1 -> isExtended = !isExtended
+                1 -> {
+                    var clickedOnElement = false
+                    if (isExtended) {
+                        elements.forEach { element ->
+                            if (element.isHovering(mouseX, mouseY)) {
+                                clickedOnElement = true
+                                return@forEach
+                            }
+                        }
+                    }
+
+                    if (!clickedOnElement) {
+                        isExtended = !isExtended
+                        guiManager.extendeds[category] = isExtended
+
+                        if (!isExtended) {
+                            elements.forEach { element ->
+                                element.isExtended = false
+                            }
+                        }
+                    }
+                }
             }
         }
 
-        if (isExtended) elements.forEach { it.mouseClicked(mouseX, mouseY, button) }
+        if (isExtended) {
+            elements.forEach { it.mouseClicked(mouseX, mouseY, button) }
+        }
     }
 
     fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {

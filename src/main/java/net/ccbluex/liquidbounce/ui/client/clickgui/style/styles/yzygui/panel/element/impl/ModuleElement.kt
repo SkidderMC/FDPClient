@@ -42,6 +42,7 @@ class ModuleElement(
     private val elements = mutableListOf<PanelElement>()
     var isExtended = false
     private var isBinding = false
+    private var isBindingSelection = false
 
     init {
         module.values.filter { it.shouldRender() }.forEach { value ->
@@ -95,13 +96,21 @@ class ModuleElement(
         val backgroundColor = if (isExtended) Color(26, 26, 26) else moduleColor
         val textColor = if (module.state && !isExtended) Color.WHITE else Color(0xD2D2D2)
 
-        RenderUtils.yzyRectangle(
-            x + 0.5f, y.toFloat(),
-            (width - 1).toFloat(), moduleHeight.toFloat(),
-            backgroundColor
-        )
+        if (isBindingSelection) {
+            RenderUtils.yzyRectangle(
+                x + 0.5f, y.toFloat(),
+                (width - 1).toFloat(), moduleHeight.toFloat(),
+                Color(255, 165, 0, 150) // Orange highlight for bind selection
+            )
+        } else {
+            RenderUtils.yzyRectangle(
+                x + 0.5f, y.toFloat(),
+                (width - 1).toFloat(), moduleHeight.toFloat(),
+                backgroundColor
+            )
+        }
 
-        if (isHovering(mouseX, mouseY) && !isExtended) {
+        if (isHovering(mouseX, mouseY) && !isExtended && !isBindingSelection) {
             RenderUtils.yzyRectangle(
                 x + 0.5f, y.toFloat(),
                 (width - 1).toFloat(), height.toFloat(),
@@ -111,7 +120,9 @@ class ModuleElement(
 
         var text = module.name.lowercase()
 
-        if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && module.keyBind != Keyboard.KEY_GRAVE) {
+        if (isBindingSelection) {
+            text = "Select bind for ${module.name}..."
+        } else if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && module.keyBind != Keyboard.KEY_GRAVE) {
             text += " [${Keyboard.getKeyName(module.keyBind).uppercase()}]"
         } else if (isBinding) {
             text = "binding..."
@@ -134,6 +145,20 @@ class ModuleElement(
             )
         }
 
+        if (isBindingSelection) {
+            RenderUtils.yzyRectangle(
+                (x + width - 20).toFloat(), (y + 2).toFloat(),
+                16f, (height - 4).toFloat(),
+                Color(255, 165, 0, 200)
+            )
+            font.drawString(
+                "B",
+                (x + width - 16).toFloat(),
+                y + (height / 4.0f) + 0.5f,
+                Color.WHITE.rgb
+            )
+        }
+
         if (isExtended) {
             elements.forEach { it.drawScreen(mouseX, mouseY, partialTicks) }
         }
@@ -143,19 +168,33 @@ class ModuleElement(
         if (isHovering(mouseX, mouseY)) {
             when (button) {
                 0 -> {
-                    if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
+                    if (isBindingSelection) {
+                        // Cancel bind selection
+                        isBindingSelection = false
+                    } else if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) {
                         isBinding = !isBinding
                     } else {
                         module.toggle()
                     }
                 }
-                1 -> if (module.values.filter { it.shouldRender() }.isNotEmpty()) {
-                    isExtended = !isExtended
+                1 -> {
+                    if (isBindingSelection) {
+                        // Cancel bind selection
+                        isBindingSelection = false
+                    } else if (module.values.filter { it.shouldRender() }.isNotEmpty()) {
+                        isExtended = !isExtended
+                    }
+                }
+                2 -> {
+                    isBindingSelection = !isBindingSelection
+                    if (isBindingSelection) {
+                        isBinding = false // Cancel regular binding if active
+                    }
                 }
             }
         }
 
-        if (isExtended) {
+        if (isExtended && !isBindingSelection) {
             elements.forEach { element ->
                 if (element.isHovering(mouseX, mouseY)) {
                     element.mouseClicked(mouseX, mouseY, button)
@@ -165,19 +204,31 @@ class ModuleElement(
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
-        if (isExtended) {
+        if (isExtended && !isBindingSelection) {
             elements.forEach { it.mouseReleased(mouseX, mouseY, state) }
         }
     }
 
     override fun keyTyped(character: Char, code: Int) {
-        if (isBinding) {
+        if (isBindingSelection) {
+            val keyCode = if (code == Keyboard.KEY_BACK || code == Keyboard.KEY_ESCAPE) {
+                if (code == Keyboard.KEY_ESCAPE) {
+                    isBindingSelection = false
+                    return
+                }
+                Keyboard.KEY_NONE
+            } else {
+                code
+            }
+            module.keyBind = keyCode
+            isBindingSelection = false
+        } else if (isBinding) {
             val keyCode = if (code == Keyboard.KEY_BACK) Keyboard.KEY_NONE else code
             module.keyBind = keyCode
             isBinding = false
         }
 
-        if (isExtended) {
+        if (isExtended && !isBindingSelection) {
             elements.forEach { it.keyTyped(character, code) }
         }
     }
