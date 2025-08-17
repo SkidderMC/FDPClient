@@ -13,9 +13,8 @@ import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.ArrayList;
@@ -28,9 +27,28 @@ import static net.minecraft.client.renderer.GlStateManager.*;
 @Mixin(GuiPlayerTabOverlay.class)
 public class MixinGuiPlayerTabOverlay {
 
+    @Unique
+    private static int FDP_TAB_RESERVED_PING = 13;
+
     @Inject(method = "renderPlayerlist", at = @At("HEAD"))
     public void renderPlayerListPre(int width, Scoreboard scoreboard, ScoreObjective scoreObjective, CallbackInfo ci) {
         TabGUIModule.INSTANCE.setFlagRenderTabOverlay(true);
+
+        if (TabGUIModule.INSTANCE.getTabShowPlayerPing()) {
+            boolean showMs = TabGUIModule.INSTANCE.getHidePingTag();
+            int max = 13;
+            if (mc.thePlayer != null && mc.thePlayer.sendQueue != null) {
+                Collection<NetworkPlayerInfo> infos = mc.thePlayer.sendQueue.getPlayerInfoMap();
+                for (NetworkPlayerInfo npi : infos) {
+                    int p = Math.max(0, npi.getResponseTime());
+                    String s = showMs ? (p + "ms") : String.valueOf(p);
+                    max = Math.max(max, mc.fontRendererObj.getStringWidth(s) + 4);
+                }
+            }
+            FDP_TAB_RESERVED_PING = max;
+        } else {
+            FDP_TAB_RESERVED_PING = 13;
+        }
 
         String scaleOption = TabGUIModule.INSTANCE.getTabScale();
         float scaleFactor;
@@ -134,7 +152,8 @@ public class MixinGuiPlayerTabOverlay {
         boolean showMsTag = TabGUIModule.INSTANCE.getHidePingTag();
         String pingString = ping + (showMsTag ? "ms" : "");
 
-        int textX = x + offset - 8 - (mc.fontRendererObj.getStringWidth(pingString) / 2);
+        int right = x + offset - 1;
+        int textX = right - mc.fontRendererObj.getStringWidth(pingString);
         if (TabGUIModule.INSTANCE.getPingTextShadow()) {
             mc.fontRendererObj.drawStringWithShadow(pingString, textX, y, color);
         } else {
@@ -142,6 +161,11 @@ public class MixinGuiPlayerTabOverlay {
         }
 
         ci.cancel();
+    }
+
+    @ModifyConstant(method = "renderPlayerlist", constant = @Constant(intValue = 13))
+    private int fdp$expandPingReserve(int original) {
+        return Math.max(original, FDP_TAB_RESERVED_PING);
     }
 
     @Redirect(method = "renderPlayerlist",
