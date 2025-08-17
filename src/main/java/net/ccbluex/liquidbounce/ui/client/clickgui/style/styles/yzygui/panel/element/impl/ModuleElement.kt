@@ -42,7 +42,7 @@ class ModuleElement(
     private val elements = mutableListOf<PanelElement>()
     var isExtended = false
     private var isBinding = false
-    private var isBindingSelection = false
+    var isBindingSelection = false
 
     init {
         module.values.filter { it.shouldRender() }.forEach { value ->
@@ -66,13 +66,25 @@ class ModuleElement(
         elements.forEach { element ->
             element.x = x + 4
             element.y = elementY
-            elementY += element.height
+            val actualHeight = if (element is ColorElement) {
+                element.getActualHeight()
+            } else {
+                element.height
+            }
+            elementY += actualHeight
         }
     }
 
     fun getExtendedHeight(): Float {
         return if (isExtended) {
-            elements.sumOf { it.height.toDouble() }.toFloat() + 2
+            val totalHeight = elements.sumOf { element ->
+                if (element is ColorElement) {
+                    element.getActualHeight().toDouble()
+                } else {
+                    element.height.toDouble()
+                }
+            }.toFloat() + 2
+            totalHeight
         } else {
             0.0f
         }
@@ -84,7 +96,13 @@ class ModuleElement(
         var moduleHeight = height
 
         if (isExtended) {
-            moduleHeight += elements.sumOf { it.height } + 2
+            moduleHeight += elements.sumOf { element ->
+                if (element is ColorElement) {
+                    element.getActualHeight()
+                } else {
+                    element.height
+                }
+            } + 2
         }
 
         val moduleColor = if (module.state) {
@@ -183,6 +201,7 @@ class ModuleElement(
                         isBindingSelection = false
                     } else if (module.values.filter { it.shouldRender() }.isNotEmpty()) {
                         isExtended = !isExtended
+                        // State is managed locally through isExtended property
                     }
                 }
                 2 -> {

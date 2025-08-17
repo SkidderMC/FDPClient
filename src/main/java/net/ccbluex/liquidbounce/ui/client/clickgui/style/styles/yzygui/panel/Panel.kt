@@ -54,6 +54,8 @@ class Panel(
 
     private val elementsHeight = 0f
 
+    private val moduleStates = mutableMapOf<String, Boolean>()
+
     fun isHovering(mouseX: Int, mouseY: Int): Boolean {
         return isHovering(mouseX, mouseY, x, y, x + width, y + height)
     }
@@ -173,9 +175,13 @@ class Panel(
                         guiManager.extendeds[category] = isExtended
 
                         if (!isExtended) {
-                            // Close all expanded modules when category is closed
                             elements.forEach { element ->
+                                moduleStates[element.module.name] = element.isExtended
                                 element.isExtended = false
+                            }
+                        } else {
+                            elements.forEach { element ->
+                                element.isExtended = moduleStates[element.module.name] ?: false
                             }
                         }
                     }
@@ -209,6 +215,33 @@ class Panel(
         guiManager.positions[category] = Pair(x, y)
         guiManager.extendeds[category] = isExtended
 
+        elements.forEach { element ->
+            moduleStates[element.module.name] = element.isExtended
+        }
+    }
+
+    fun hasActiveOverlay(): Boolean {
+        return elements.any { element ->
+            element.isExtended && element.isBindingSelection
+        }
+    }
+
+    fun renderOverlays(mouseX: Int, mouseY: Int, partialTicks: Float) {
+
+    }
+
+    fun restoreState() {
+        val savedPosition = guiManager.positions[category]
+        if (savedPosition != null) {
+            x = savedPosition.key
+            y = savedPosition.value ?: y
+        }
+
+        isExtended = guiManager.extendeds[category] ?: false
+
+        elements.forEach { element ->
+            element.isExtended = moduleStates[element.module.name] ?: false
+        }
     }
 
     companion object {

@@ -38,7 +38,23 @@ class ColorElement(
     private val hueSliderHeight = 50
     private val spacingBetweenSliders = 5
 
+    fun getActualHeight(): Int {
+        var totalHeight = 30 // Base height for name and color code
+
+        if (setting.showOptions) {
+            totalHeight += 12 * 4 + 8 // RGBA options height
+        }
+
+        if (setting.showPicker) {
+            totalHeight += colorPickerHeight + 10 // Color picker height + spacing
+        }
+
+        return totalHeight
+    }
+
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        this.height = getActualHeight()
+
         val currentColor = setting.selectedColor()
         val textColor = Color.WHITE
 
@@ -87,7 +103,7 @@ class ColorElement(
             val labelWidth = rgbaLabels.maxOfOrNull {
                 font?.getWidth(it) ?: 10
             }?.toFloat() ?: 10f
-            val optionStartY = y + 3 + 12 * 2 + 4
+            val optionStartY = y + 3 + 12 * 2 + 8 // Added more spacing
             var optionY = optionStartY
 
             rgbaLabels.forEachIndexed { index, label ->
@@ -106,14 +122,25 @@ class ColorElement(
                     optionY.toFloat(),
                     valueTextColor.rgb
                 )
-                optionY += 12 + 4
+                optionY += 12 + 2 // Reduced spacing between RGBA options
             }
             (optionY - optionStartY).toFloat()
         } else 0f
 
         if (setting.showPicker) {
+            // Draw semi-transparent background to prevent overlap
+            val pickerBackgroundY = y + 30 + extraOptionsHeight.toInt()
+            val pickerBackgroundHeight = colorPickerHeight + 20
+            RenderUtils.drawRect(
+                (x + 2).toFloat(),
+                pickerBackgroundY.toFloat(),
+                (x + width - 2).toFloat(),
+                (pickerBackgroundY + pickerBackgroundHeight).toFloat(),
+                Color(0, 0, 0, 180).rgb
+            )
+
             val colorPickerStartX = x + 5
-            val colorPickerStartY = (y.toFloat() + 15f + extraOptionsHeight).toInt()
+            val colorPickerStartY = pickerBackgroundY + 5
             val colorPickerEndX = colorPickerStartX + colorPickerWidth
             val colorPickerEndY = colorPickerStartY + colorPickerHeight
             val hueSliderX = colorPickerEndX + spacingBetweenSliders
@@ -158,8 +185,12 @@ class ColorElement(
             }
 
             // Color picker marker
-            val markerX = colorPickerStartX.toFloat() + (colorPickerEndX - colorPickerStartX).toFloat() * setting.colorPickerPos.x
-            val markerY = colorPickerStartY.toFloat() + (colorPickerEndY - colorPickerStartY).toFloat() * setting.colorPickerPos.y
+            val markerX = (colorPickerStartX..colorPickerEndX).let { range ->
+                range.first + (range.last - range.first) * setting.colorPickerPos.x
+            }
+            val markerY = (colorPickerStartY..colorPickerEndY).let { range ->
+                range.first + (range.last - range.first) * setting.colorPickerPos.y
+            }
 
             if (!setting.rainbow) {
                 RenderUtils.drawBorder(markerX - 2f, markerY - 2f, markerX + 3f, markerY + 3f, 1.5f, Color.WHITE.rgb)
@@ -240,18 +271,22 @@ class ColorElement(
             }
 
             // Draw slider markers
-            val hueMarkerY = colorPickerStartY.toFloat() + (hueSliderEndY - colorPickerStartY).toFloat() * hue
-            val opacityMarkerY = colorPickerStartY.toFloat() + (hueSliderEndY - colorPickerStartY).toFloat() * (1f - setting.opacitySliderY)
+            val hueMarkerY = (colorPickerStartY..hueSliderEndY).let { range ->
+                range.first + (range.last - range.first) * hue
+            }
+            val opacityMarkerY = (colorPickerStartY..hueSliderEndY).let { range ->
+                range.first + (range.last - range.first) * (1 - setting.opacitySliderY)
+            }
 
             RenderUtils.drawBorder(
-                hueSliderX.toFloat() - 1f, hueMarkerY - 1f,
-                hueSliderX.toFloat() + hueSliderWidth.toFloat() + 1f, hueMarkerY + 1f,
+                hueSliderX.toFloat() - 1, hueMarkerY - 1f,
+                hueSliderX + hueSliderWidth + 1f, hueMarkerY + 1f,
                 1.5f, Color.WHITE.rgb
             )
 
             RenderUtils.drawBorder(
-                opacityStartX.toFloat() - 1f, opacityMarkerY - 1f,
-                opacityEndX.toFloat() + 1f, opacityMarkerY + 1f,
+                opacityStartX.toFloat() - 1, opacityMarkerY - 1f,
+                opacityEndX + 1f, opacityMarkerY + 1f,
                 1.5f, Color.WHITE.rgb
             )
         }
@@ -288,11 +323,11 @@ class ColorElement(
         val font = FDPClient.customFontManager["lato-bold-15"]
         val colorCodeText = "#%08X".format(currentColor.rgb)
         val hexTextWidth = font?.getWidth(colorCodeText)?.toFloat() ?: 50f
-        val hexTextX = (x + 5).toFloat()
-        val hexTextY = (y + 3 + 12 + 2).toFloat()
+        val hexTextX = x + 5f
+        val hexTextY = y + 3f + 12 + 2
 
         if (button == 1 && mouseX >= hexTextX && mouseX <= hexTextX + hexTextWidth &&
-            mouseY >= hexTextY && mouseY <= hexTextY + 12f) {
+            mouseY >= hexTextY && mouseY <= hexTextY + 12) {
             setting.showOptions = !setting.showOptions
             return
         }
@@ -303,13 +338,13 @@ class ColorElement(
             val labelWidth = rgbaLabels.maxOfOrNull {
                 font?.getWidth(it) ?: 10
             }?.toFloat() ?: 10f
-            val optionStartY = (y + 3 + 12 * 2 + 4).toFloat()
+            val optionStartY = y + 3 + 12 * 2 + 8 // Added more spacing
 
             rgbaLabels.forEachIndexed { index, _ ->
-                val yPosition = optionStartY + (index * (12 + 4)).toFloat()
+                val yPosition = optionStartY + index * (12 + 2)
                 val rgbaTextX = (x + 5).toFloat() + labelWidth + 10f
-                val rgbaTextY = yPosition - 2f
-                val rgbaTextHeight = (12 + 4).toFloat()
+                val rgbaTextY = yPosition - 2
+                val rgbaTextHeight = 12 + 2
                 val maxWidth = font?.getWidth("255")?.toFloat() ?: 30f
 
                 if (mouseX >= rgbaTextX && mouseX <= rgbaTextX + maxWidth &&
@@ -322,9 +357,9 @@ class ColorElement(
         }
 
         if (setting.showPicker) {
-            val extraOptionsHeight = if (setting.showOptions) (12 * 4).toFloat() else 0f
+            val extraOptionsHeight = if (setting.showOptions) 12 * 4 + 8 else 0f
             val colorPickerStartX = x + 5
-            val colorPickerStartY = (y.toFloat() + 15f + extraOptionsHeight).toInt()
+            val colorPickerStartY = y + 30 + extraOptionsHeight.toInt() + 5
             val colorPickerEndX = colorPickerStartX + colorPickerWidth
             val colorPickerEndY = colorPickerStartY + colorPickerHeight
             val hueSliderX = colorPickerEndX + spacingBetweenSliders
