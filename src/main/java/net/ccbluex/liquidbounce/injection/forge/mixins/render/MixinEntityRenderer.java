@@ -28,6 +28,7 @@ import net.minecraft.util.*;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+import org.lwjgl.util.glu.Project;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -368,5 +369,23 @@ public abstract class MixinEntityRenderer {
         AntiBlind module = AntiBlind.INSTANCE;
 
         return (!module.handleEvents() || !module.getConfusionEffect()) && instance.isPotionActive(potion);
+    }
+
+    /**
+     * Properly implement the ThirdPerson in fov
+     */
+    @Redirect(
+            method = "setupCameraTransform",
+            at = @At(value = "INVOKE", target = "Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V")
+    )
+    private void injectThirdPersonLowerFov(float fov, float aspect, float zNear, float zFar) {
+        try {
+            if (mc != null && mc.gameSettings.thirdPersonView != 0
+                    && CameraView.INSTANCE.shouldLowerThirdPersonFov()) {
+                fov = CameraView.INSTANCE.thirdPersonFovValue();
+            }
+        } catch (Throwable ignored) {
+        }
+        Project.gluPerspective(fov, aspect, zNear, zFar);
     }
 }
