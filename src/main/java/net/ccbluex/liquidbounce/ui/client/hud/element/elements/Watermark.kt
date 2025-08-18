@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.Minecraft
+import net.minecraft.util.BlockPos
 import java.awt.Color
 
 @ElementInfo(name = "Watermark")
@@ -28,6 +29,8 @@ class Watermark : Element("Watermark") {
     private val showTPS by boolean("Show TPS", true)
     private val showAnticheat by boolean("Show Anticheat", true)
     private val showOnline by boolean("Show Online", true)
+    private val showBiomeLight by boolean("Show Biome + Light", true)
+    private val showDimension by boolean("Show Dimension", true)
 
     private fun getTPS(): Float {
         return HUDModule.tps
@@ -42,6 +45,8 @@ class Watermark : Element("Watermark") {
         val rectWidth = 10.0f
         val bgColorRGB = ClientThemesUtils.getBackgroundColor(0, 120).rgb
         val mainColor = ClientThemesUtils.getColor().rgb
+        val rowHeight = rectWidth + iconSize * 2.0f
+        val gap = 5f
 
         val title = "FDP"
         val titleWidth = Fonts.InterMedium_15.stringWidth(title)
@@ -49,7 +54,7 @@ class Watermark : Element("Watermark") {
             posX,
             posY,
             rectWidth + iconSize * 2.5f + titleWidth,
-            rectWidth + iconSize * 2.0f,
+            rowHeight,
             4.0f,
             Color(bgColorRGB, true)
         )
@@ -75,11 +80,11 @@ class Watermark : Element("Watermark") {
                 playerNameX,
                 posY,
                 rectWidth + iconSize * 2.5f + playerNameWidth,
-                rectWidth + iconSize * 2.0f,
+                rowHeight,
                 4.0f,
                 Color(bgColorRGB, true)
             )
-            Fonts.InterMedium_15.drawString(
+            Fonts.Nursultan18.drawString(
                 "W",
                 playerNameX + iconSize,
                 posY + 1 + iconSize + 2f,
@@ -103,7 +108,7 @@ class Watermark : Element("Watermark") {
                 fpsX,
                 posY,
                 rectWidth + iconSize * 2.5f + fpsTextWidth,
-                rectWidth + iconSize * 2.0f,
+                rowHeight,
                 4.0f,
                 Color(bgColorRGB, true)
             )
@@ -123,14 +128,14 @@ class Watermark : Element("Watermark") {
 
         val playerPosition = "${mc.thePlayer.posX.toInt()} ${mc.thePlayer.posY.toInt()} ${mc.thePlayer.posZ.toInt()}"
         val positionTextWidth = Fonts.InterMedium_15.stringWidth(playerPosition)
-        val positionY = posY + rectWidth + iconSize * 2.0f + iconSize
+        val positionY = posY + rowHeight + iconSize
 
         if (showPosition) {
             RenderUtils.drawCustomShapeWithRadius(
                 posX,
                 positionY,
                 rectWidth + iconSize * 2.5f + positionTextWidth,
-                rectWidth + iconSize * 2.0f,
+                rowHeight,
                 4.0f,
                 Color(bgColorRGB, true)
             )
@@ -162,7 +167,7 @@ class Watermark : Element("Watermark") {
                 pingX,
                 positionY,
                 rectWidth + iconSize * 2.5f + pingTextWidth,
-                rectWidth + iconSize * 2.0f,
+                rowHeight,
                 4.0f,
                 Color(bgColorRGB, true)
             )
@@ -195,7 +200,7 @@ class Watermark : Element("Watermark") {
                 onlineX,
                 positionY,
                 rectWidth + iconSize * 2.5f + onlineTextWidth,
-                rectWidth + iconSize * 2.0f,
+                rowHeight,
                 4.0f,
                 Color(bgColorRGB, true)
             )
@@ -213,16 +218,88 @@ class Watermark : Element("Watermark") {
             )
         }
 
+        val thirdRowY = positionY + rowHeight + 5f
+        val blockPos = BlockPos(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ)
+        val biomeName = try { mc.theWorld.getBiomeGenForCoords(blockPos).biomeName } catch (_: Throwable) { "Unknown" }
+        val lightLevel = try { mc.theWorld.getLight(blockPos) } catch (_: Throwable) { 0 }
+        val biomeLightText = "$biomeName $lightLevel"
+        val biomeLightTextWidth = Fonts.InterMedium_15.stringWidth(biomeLightText)
+        val biomeTotalWidth = rectWidth + iconSize * 2.5f + biomeLightTextWidth
+
+        var nextXThird = posX
+        var thirdRowRight = 0f
+
+        if (showBiomeLight) {
+            RenderUtils.drawCustomShapeWithRadius(
+                nextXThird,
+                thirdRowY,
+                biomeTotalWidth,
+                rowHeight,
+                4.0f,
+                Color(bgColorRGB, true)
+            )
+            Fonts.Nursultan18.drawString(
+                "B",
+                nextXThird + iconSize,
+                thirdRowY + 1.5f + iconSize + 2f,
+                mainColor
+            )
+            Fonts.InterMedium_15.drawString(
+                biomeLightText,
+                nextXThird + iconSize * 1.5f + rectWidth,
+                thirdRowY + rectWidth / 2.0f + 1.5f + 2f,
+                -1
+            )
+            thirdRowRight = maxOf(thirdRowRight, nextXThird + biomeTotalWidth)
+            nextXThird += biomeTotalWidth + iconSize
+        }
+
+        val dimId = try { mc.theWorld.provider.dimensionId } catch (_: Throwable) { 0 }
+        val dimName = when (dimId) {
+            -1 -> "Nether"
+            0 -> "Overworld"
+            1 -> "End"
+            else -> "Dim $dimId"
+        }
+        val dimText = "World $dimName"
+        val dimTextWidth = Fonts.InterMedium_15.stringWidth(dimText)
+        val dimTotalWidth = rectWidth + iconSize * 2.5f + dimTextWidth
+
+        if (showDimension) {
+            RenderUtils.drawCustomShapeWithRadius(
+                nextXThird,
+                thirdRowY,
+                dimTotalWidth,
+                rowHeight,
+                4.0f,
+                Color(bgColorRGB, true)
+            )
+            Fonts.Nursultan18.drawString(
+                "G",
+                nextXThird + iconSize,
+                thirdRowY + 1.5f + iconSize + 2f,
+                mainColor
+            )
+            Fonts.InterMedium_15.drawString(
+                dimText,
+                nextXThird + iconSize * 1.5f + rectWidth,
+                thirdRowY + rectWidth / 2.0f + 1.5f + 2f,
+                -1
+            )
+            thirdRowRight = maxOf(thirdRowRight, nextXThird + dimTotalWidth)
+        }
+
+        val hasThirdRow = showBiomeLight || showDimension
         val tpsText = "TPS: %.2f".format(getTPS())
         val tpsIcon = "C"
-        val tpsY = positionY + rectWidth + iconSize * 2.0f + 5f
+        val tpsY = if (hasThirdRow) thirdRowY + rowHeight + gap else thirdRowY
 
         if (showTPS) {
             RenderUtils.drawCustomShapeWithRadius(
                 posX,
                 tpsY,
                 rectWidth + iconSize * 2.5f + Fonts.InterMedium_15.stringWidth(tpsText),
-                rectWidth + iconSize * 2.0f,
+                rowHeight,
                 4.0f,
                 Color(bgColorRGB, true)
             )
@@ -250,7 +327,7 @@ class Watermark : Element("Watermark") {
                 anticheatX,
                 tpsY,
                 rectWidth + iconSize * 2.5f + acTextWidth,
-                rectWidth + iconSize * 2.0f,
+                rowHeight,
                 4.0f,
                 Color(bgColorRGB, true)
             )
@@ -268,6 +345,10 @@ class Watermark : Element("Watermark") {
             )
         }
 
+        val biomeRight = if (showBiomeLight) posX + biomeTotalWidth else 0f
+        val dimRight = if (showDimension) thirdRowRight else 0f
+        val tpsRight = posX + rectWidth + iconSize * 2.5f + Fonts.InterMedium_15.stringWidth(tpsText)
+
         val overallWidth = maxOf(
             posX + rectWidth + iconSize * 2.5f + titleWidth,
             playerNameX + rectWidth + iconSize * 2.5f + playerNameWidth,
@@ -275,9 +356,11 @@ class Watermark : Element("Watermark") {
             posX + rectWidth + iconSize * 2.5f + positionTextWidth,
             pingX + rectWidth + iconSize * 2.5f + pingTextWidth,
             onlineX + rectWidth + iconSize * 2.5f + onlineTextWidth,
-            posX + rectWidth + iconSize * 2.5f + Fonts.InterMedium_15.stringWidth(tpsText)
+            biomeRight,
+            dimRight,
+            tpsRight
         )
-        val overallHeight = tpsY + rectWidth + iconSize * 2.0f
+        val overallHeight = tpsY + rowHeight
 
         return Border(0F, 0F, overallWidth, overallHeight)
     }
