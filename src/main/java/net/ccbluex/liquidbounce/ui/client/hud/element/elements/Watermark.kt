@@ -27,6 +27,7 @@ class Watermark : Element("Watermark") {
     private val showPing by boolean("Show Ping", true)
     private val showTPS by boolean("Show TPS", true)
     private val showAnticheat by boolean("Show Anticheat", true)
+    private val showOnline by boolean("Show Online", true)
 
     private fun getTPS(): Float {
         return HUDModule.tps
@@ -179,6 +180,39 @@ class Watermark : Element("Watermark") {
             )
         }
 
+        val onlineCount = try {
+            val fromNetHandler = try { mc.netHandler.playerInfoMap.size } catch (t: Throwable) { null }
+            fromNetHandler ?: mc.theWorld?.playerEntities?.size ?: 1
+        } catch (_: Throwable) {
+            1
+        }
+        val onlineText = "Online $onlineCount"
+        val onlineTextWidth = Fonts.InterMedium_15.stringWidth(onlineText)
+        val onlineX = pingX + rectWidth + iconSize * 2.5f + pingTextWidth + iconSize
+
+        if (showOnline) {
+            RenderUtils.drawCustomShapeWithRadius(
+                onlineX,
+                positionY,
+                rectWidth + iconSize * 2.5f + onlineTextWidth,
+                rectWidth + iconSize * 2.0f,
+                4.0f,
+                Color(bgColorRGB, true)
+            )
+            Fonts.Nursultan18.drawString(
+                "Y",
+                onlineX + iconSize,
+                positionY + 1 + iconSize + 2f,
+                mainColor
+            )
+            Fonts.InterMedium_15.drawString(
+                onlineText,
+                onlineX + iconSize * 1.5f + rectWidth,
+                positionY + rectWidth / 2.0f + 1.5f + 2f,
+                -1
+            )
+        }
+
         val tpsText = "TPS: %.2f".format(getTPS())
         val tpsIcon = "C"
         val tpsY = positionY + rectWidth + iconSize * 2.0f + 5f
@@ -240,6 +274,7 @@ class Watermark : Element("Watermark") {
             fpsX + rectWidth + iconSize * 2.5f + fpsTextWidth,
             posX + rectWidth + iconSize * 2.5f + positionTextWidth,
             pingX + rectWidth + iconSize * 2.5f + pingTextWidth,
+            onlineX + rectWidth + iconSize * 2.5f + onlineTextWidth,
             posX + rectWidth + iconSize * 2.5f + Fonts.InterMedium_15.stringWidth(tpsText)
         )
         val overallHeight = tpsY + rectWidth + iconSize * 2.0f
