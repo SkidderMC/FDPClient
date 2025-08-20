@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.event.async
 
 import kotlinx.coroutines.*
 import net.ccbluex.liquidbounce.event.*
+import kotlin.properties.ReadOnlyProperty
 
 /**
  * Start a tick sequence job for given [Listenable]
@@ -33,12 +34,12 @@ fun Listenable.launchSequence(
  * Start a **looped** tick sequence job for given [Listenable]
  * which will be cancelled if [Listenable.handleEvents] of the owner returns false
  */
-fun Listenable.loopSequence(
+fun <T : Listenable> T.loopSequence(
     dispatcher: CoroutineDispatcher = Dispatchers.Unconfined,
     always: Boolean = false,
     priority: Byte = 0,
     body: suspend CoroutineScope.() -> Unit
-) {
+): ReadOnlyProperty<Any?, Job?> {
     var job: Job? = null
 
     handler<GameTickEvent>(always = true, priority) {
@@ -49,4 +50,6 @@ fun Listenable.loopSequence(
             job = EventManager.launch(dispatcher, block = body)
         }
     }
+
+    return ReadOnlyProperty { _, _ -> job }
 }

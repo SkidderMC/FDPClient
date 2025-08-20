@@ -15,6 +15,8 @@ import net.minecraft.world.World;
 
 public class MinecraftWorldProvider implements IWorldProvider {
 
+    private static final ThreadLocal<BlockPos.MutableBlockPos> CACHE = ThreadLocal.withInitial(BlockPos.MutableBlockPos::new);
+
     private final World world;
 
     public MinecraftWorldProvider(World world) {
@@ -31,14 +33,14 @@ public class MinecraftWorldProvider implements IWorldProvider {
     }
 
     private boolean isSolid(int x, int y, int z) {
-        Block block = world.getBlockState(new BlockPos(x, y, z)).getBlock();
+        Block block = world.getBlockState(CACHE.get().set(x, y, z)).getBlock();
         if(block == null) return true;
 
         return block.getMaterial().isSolid();
     }
 
     private boolean unableToStand(int x, int y, int z) {
-        final Block block = world.getBlockState(new BlockPos(x, y, z)).getBlock();
+        final Block block = world.getBlockState(CACHE.get().set(x, y, z)).getBlock();
         return block instanceof BlockFence || block instanceof BlockWall;
     }
 }
