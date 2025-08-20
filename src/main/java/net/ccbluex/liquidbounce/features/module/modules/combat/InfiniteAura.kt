@@ -5,9 +5,14 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.combat
 
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
-import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
@@ -25,7 +30,6 @@ import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.client.C13PacketPlayerAbilities
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.Vec3
-import kotlin.concurrent.thread
 import org.lwjgl.opengl.GL11
 import kotlin.math.sqrt
 
@@ -42,62 +46,46 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
     private val swingValue by boolean("Swing", true) { modeValue == "Aura" }
     private val pathRenderValue by boolean("PathRender", true)
 
-    val timer = MSTimer()
-    private var points = mutableListOf<Vec3>()
-    private var thread: Thread? = null
+    private val points = mutableListOf<Vec3>()
+    private val coroutineContext = Dispatchers.Default + CoroutineName("InfiniteAura-PathFinder")
 
-    private fun getDelay(): Int {
-        return 1000 / cpsValue
-    }
-
-    override fun onEnable() {
-        timer.reset()
-        points.clear()
-    }
+    private val delayMillis: Long get() = 1000L / cpsValue
 
     override fun onDisable() {
-        timer.reset()
+        auraJob?.cancel()
         points.clear()
-        thread?.interrupt()
     }
 
-    val onUpdate = handler<UpdateEvent> {
-        if (!timer.hasTimePassed(getDelay().toLong())) return@handler
-        if (thread?.isAlive == true) return@handler
-        when (modeValue.lowercase()) {
-            "aura" -> {
-                thread = thread(name = "InfiniteAura") {
-                    // do it async because a* pathfinding need some time
-                    doTpAura()
-                }
-                points.clear()
-                timer.reset()
-            }
+    private val onWorld = handler<WorldEvent> {
+        auraJob?.cancel()
+        points.clear()
+    }
 
-            "click" -> {
-                if (mc.gameSettings.keyBindAttack.isKeyDown) {
-                    thread = thread(name = "InfiniteAura") {
-                        // do it async because a* pathfinding need some time
-                        val entity = RaycastUtils.raycastEntity(distValue.toDouble()) { entity -> EntityUtils.isSelected(entity, true) } ?: return@thread
-                        if (mc.thePlayer.getDistanceToEntity(entity) < 3) {
-                            return@thread
-                        }
+    private val auraJob by loopSequence(Dispatchers.Main) {
+        when (modeValue) {
+            "Aura" -> doTpAura()
+            "Click" -> if (mc.gameSettings.keyBindAttack.isKeyDown) {
+                val entity = RaycastUtils.raycastEntity(distValue.toDouble()) { entity ->
+                    EntityUtils.isSelected(entity, true)
+                } ?: return@loopSequence
 
-                        hit(entity as EntityLivingBase, true)
-                    }
-                    timer.reset()
+                if (mc.thePlayer.getDistanceToEntity(entity) < 3) {
+                    return@loopSequence
                 }
-                points.clear()
+
+                hit(entity as EntityLivingBase, true)
             }
         }
+
+        delay(delayMillis)
     }
 
-    private fun doTpAura() {
-        val targets = mc.theWorld.loadedEntityList.filter { it is EntityLivingBase &&
+    private suspend fun doTpAura() {
+        val targets = mc.theWorld.loadedEntityList.filterTo(mutableListOf()) { it is EntityLivingBase &&
                 EntityUtils.isSelected(it, true) &&
-                mc.thePlayer.getDistanceToEntity(it) < distValue }.toMutableList()
+                mc.thePlayer.getDistanceSqToEntity(it) < distValue * distValue }
         if (targets.isEmpty()) return
-        targets.sortBy { mc.thePlayer.getDistanceToEntity(it) }
+        targets.sortBy { mc.thePlayer.getDistanceSqToEntity(it) }
 
         var count = 0
         for (entity in targets) {
@@ -108,8 +96,10 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
         }
     }
 
-    private fun hit(entity: EntityLivingBase, force: Boolean = false): Boolean {
-        val path = PathUtils.findBlinkPath(mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, entity.posX, entity.posY, entity.posZ, moveDistanceValue.toDouble())
+    private suspend fun hit(entity: EntityLivingBase, force: Boolean = false): Boolean {
+        val path = withContext(coroutineContext) {
+            PathUtils.findBlinkPath(entity.posX, entity.posY, entity.posZ, moveDistanceValue.toDouble())
+        }
         if (path.isEmpty()) return false
         val lastDistance = path.last().let { entity.getDistance(it.xCoord, it.yCoord, it.zCoord) }
         if (!force && lastDistance > 10) return false // pathfinding has failed
@@ -129,8 +119,10 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
                     )
                 )
             }
-            points.add(it)
         }
+
+        points.clear()
+        points.addAll(path)
 
         if (lastDistance > 3 && packetBack) {
             mc.netHandler.addToSendQueue(C04PacketPlayerPosition(entity.posX, entity.posY, entity.posZ, true))
@@ -168,7 +160,7 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
 
     val onPacket = handler<PacketEvent> { event ->
         if (event.packet is S08PacketPlayerPosLook) {
-            timer.reset()
+            auraJob?.cancel()
         }
         val isMovePacket = (event.packet is C04PacketPlayerPosition || event.packet is C03PacketPlayer.C06PacketPlayerPosLook)
         if (noRegenValue && event.packet is C03PacketPlayer && !isMovePacket) {
@@ -198,66 +190,64 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
     }
 
     val onRender3D = handler<Render3DEvent> {
-        synchronized(points) {
-            if (points.isEmpty() || !pathRenderValue) return@handler
-            val renderPosX = mc.renderManager.viewerPosX
-            val renderPosY = mc.renderManager.viewerPosY
-            val renderPosZ = mc.renderManager.viewerPosZ
+        if (points.isEmpty() || !pathRenderValue) return@handler
+        val renderPosX = mc.renderManager.viewerPosX
+        val renderPosY = mc.renderManager.viewerPosY
+        val renderPosZ = mc.renderManager.viewerPosZ
 
-            GL11.glPushMatrix()
-            GL11.glEnable(GL11.GL_BLEND)
-            GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
-            GL11.glShadeModel(GL11.GL_SMOOTH)
-            GL11.glDisable(GL11.GL_TEXTURE_2D)
-            GL11.glEnable(GL11.GL_LINE_SMOOTH)
-            GL11.glDisable(GL11.GL_DEPTH_TEST)
-            GL11.glDisable(GL11.GL_LIGHTING)
-            GL11.glDepthMask(false)
+        GL11.glPushMatrix()
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GL11.glShadeModel(GL11.GL_SMOOTH)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glDisable(GL11.GL_DEPTH_TEST)
+        GL11.glDisable(GL11.GL_LIGHTING)
+        GL11.glDepthMask(false)
 
-            rainbow()
+        rainbow()
 
-            for (vec in points) {
-                val x = vec.xCoord - renderPosX
-                val y = vec.yCoord - renderPosY
-                val z = vec.zCoord - renderPosZ
-                val width = 0.3
-                val height = mc.thePlayer.eyeHeight.toDouble()
-                mc.entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 2)
-                GL11.glLineWidth(2f)
-                GL11.glBegin(GL11.GL_LINE_STRIP)
-                GL11.glVertex3d(x - width, y, z - width)
-                GL11.glVertex3d(x - width, y, z - width)
-                GL11.glVertex3d(x - width, y + height, z - width)
-                GL11.glVertex3d(x + width, y + height, z - width)
-                GL11.glVertex3d(x + width, y, z - width)
-                GL11.glVertex3d(x - width, y, z - width)
-                GL11.glVertex3d(x - width, y, z + width)
-                GL11.glEnd()
-                GL11.glBegin(GL11.GL_LINE_STRIP)
-                GL11.glVertex3d(x + width, y, z + width)
-                GL11.glVertex3d(x + width, y + height, z + width)
-                GL11.glVertex3d(x - width, y + height, z + width)
-                GL11.glVertex3d(x - width, y, z + width)
-                GL11.glVertex3d(x + width, y, z + width)
-                GL11.glVertex3d(x + width, y, z - width)
-                GL11.glEnd()
-                GL11.glBegin(GL11.GL_LINE_STRIP)
-                GL11.glVertex3d(x + width, y + height, z + width)
-                GL11.glVertex3d(x + width, y + height, z - width)
-                GL11.glEnd()
-                GL11.glBegin(GL11.GL_LINE_STRIP)
-                GL11.glVertex3d(x - width, y + height, z + width)
-                GL11.glVertex3d(x - width, y + height, z - width)
-                GL11.glEnd()
-            }
-
-            GL11.glDepthMask(true)
-            GL11.glEnable(GL11.GL_DEPTH_TEST)
-            GL11.glDisable(GL11.GL_LINE_SMOOTH)
-            GL11.glEnable(GL11.GL_TEXTURE_2D)
-            GL11.glDisable(GL11.GL_BLEND)
-            GL11.glPopMatrix()
-            GL11.glColor4f(1f, 1f, 1f, 1f)
+        for (vec in points) {
+            val x = vec.xCoord - renderPosX
+            val y = vec.yCoord - renderPosY
+            val z = vec.zCoord - renderPosZ
+            val width = 0.3
+            val height = mc.thePlayer.eyeHeight.toDouble()
+            mc.entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 2)
+            GL11.glLineWidth(2f)
+            GL11.glBegin(GL11.GL_LINE_STRIP)
+            GL11.glVertex3d(x - width, y, z - width)
+            GL11.glVertex3d(x - width, y, z - width)
+            GL11.glVertex3d(x - width, y + height, z - width)
+            GL11.glVertex3d(x + width, y + height, z - width)
+            GL11.glVertex3d(x + width, y, z - width)
+            GL11.glVertex3d(x - width, y, z - width)
+            GL11.glVertex3d(x - width, y, z + width)
+            GL11.glEnd()
+            GL11.glBegin(GL11.GL_LINE_STRIP)
+            GL11.glVertex3d(x + width, y, z + width)
+            GL11.glVertex3d(x + width, y + height, z + width)
+            GL11.glVertex3d(x - width, y + height, z + width)
+            GL11.glVertex3d(x - width, y, z + width)
+            GL11.glVertex3d(x + width, y, z + width)
+            GL11.glVertex3d(x + width, y, z - width)
+            GL11.glEnd()
+            GL11.glBegin(GL11.GL_LINE_STRIP)
+            GL11.glVertex3d(x + width, y + height, z + width)
+            GL11.glVertex3d(x + width, y + height, z - width)
+            GL11.glEnd()
+            GL11.glBegin(GL11.GL_LINE_STRIP)
+            GL11.glVertex3d(x - width, y + height, z + width)
+            GL11.glVertex3d(x - width, y + height, z - width)
+            GL11.glEnd()
         }
+
+        GL11.glDepthMask(true)
+        GL11.glEnable(GL11.GL_DEPTH_TEST)
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        GL11.glEnable(GL11.GL_TEXTURE_2D)
+        GL11.glDisable(GL11.GL_BLEND)
+        GL11.glPopMatrix()
+        GL11.glColor4f(1f, 1f, 1f, 1f)
     }
 }
