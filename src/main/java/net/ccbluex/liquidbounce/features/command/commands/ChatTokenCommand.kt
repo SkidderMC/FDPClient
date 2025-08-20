@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
-import moe.lasoleil.axochat4j.packet.c2s.C2SRequestJWTPacket
 import net.ccbluex.liquidbounce.FDPClient.commandManager
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.module.modules.client.IRCModule
@@ -30,8 +29,7 @@ object ChatTokenCommand : Command("chattoken") {
                     IRCModule.jwt = true
 
                     if (IRCModule.state) {
-                        IRCModule.state = false
-                        IRCModule.state = true
+                        IRCModule.toggle()
                     }
                 } else {
                     chatSyntax("chattoken set <token>")
@@ -44,7 +42,7 @@ object ChatTokenCommand : Command("chattoken") {
                     return
                 }
 
-                IRCModule.client.sendPacket(C2SRequestJWTPacket())
+                IRCModule.chatClient.requestJWT()
             }
 
             "copy" -> {

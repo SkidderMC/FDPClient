@@ -21,15 +21,14 @@ object PrivateChatCommand : Command("pchat", "privatechat", "lcpm") {
                 return
             }
 
-            if (!IRCModule.client.isConnected()) {
+            val target = args[1]
+            val message = StringUtils.toCompleteString(args, 2)
+
+            if (!IRCModule.chatClient.privateMessage(target, message)) {
                 chat("§cError: §7IRC is currently not connected to the server!")
                 return
             }
 
-            val target = args[1]
-            val message = StringUtils.toCompleteString(args, 2)
-
-            IRCModule.client.sendPrivateMessage(target, message)
             chat("Message was successfully sent.")
         } else
             chatSyntax("pchat <username> <message>")

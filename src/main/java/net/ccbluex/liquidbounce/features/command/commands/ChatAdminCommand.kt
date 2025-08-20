@@ -27,7 +27,7 @@ object ChatAdminCommand : Command("chatadmin") {
         when (args[1].lowercase()) {
             "ban" -> {
                 if (args.size > 2) {
-                    IRCModule.client.banUser(args[2])
+                    IRCModule.chatClient.banUser(args[2])
                 } else {
                     chatSyntax("chatadmin ban <username>")
                 }
@@ -35,7 +35,7 @@ object ChatAdminCommand : Command("chatadmin") {
 
             "unban" -> {
                 if (args.size > 2) {
-                    IRCModule.client.unbanUser(args[2])
+                    IRCModule.chatClient.unbanUser(args[2])
                 } else {
                     chatSyntax("chatadmin unban <username>")
                 }
