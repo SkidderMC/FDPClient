@@ -27,10 +27,7 @@ object ChatTokenCommand : Command("chattoken") {
                 if (args.size > 2) {
                     IRCModule.jwtToken = StringUtils.toCompleteString(args, 2)
                     IRCModule.jwt = true
-
-                    if (IRCModule.state) {
-                        IRCModule.toggle()
-                    }
+                    IRCModule.reloadIfEnabled()
                 } else {
                     chatSyntax("chattoken set <token>")
                 }

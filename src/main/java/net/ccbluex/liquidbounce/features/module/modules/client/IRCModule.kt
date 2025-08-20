@@ -26,10 +26,15 @@ import kotlin.time.Duration.Companion.seconds
 
 object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecting = false) {
 
-    var jwt by boolean("JWT", false).onChanged {
+    fun reloadIfEnabled() {
         if (state) {
-            toggle()
+            state = false
+            state = true
         }
+    }
+
+    var jwt by boolean("JWT", false).onChanged {
+        reloadIfEnabled()
     }
 
     @Volatile
@@ -71,9 +76,7 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
             jwtToken = token
             jwt = true
 
-            if (state) {
-                toggle()
-            }
+            reloadIfEnabled()
         }
         .onServerMessage { _, authorInfo, content ->
             val thePlayer = mc.thePlayer
