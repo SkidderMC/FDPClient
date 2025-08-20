@@ -52,7 +52,7 @@ object ChatTokenCommand : Command("chattoken") {
                 }
 
                 MiscUtils.copy(IRCModule.jwtToken)
-                chat("§aCopied to clipboard!")
+                chat("§aCopied to clipboard! Length = ${IRCModule.jwtToken.length}")
             }
         }
     }

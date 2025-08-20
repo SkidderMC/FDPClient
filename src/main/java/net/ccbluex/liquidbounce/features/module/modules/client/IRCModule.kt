@@ -67,6 +67,7 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
             client.loginMojang(mc.session.username, mc.session.profile.id, true)
         }
         .onServerNewJWT { _, token ->
+            chat("§7[§a§lChat§7] §9New JWT token received! Reconnecting with it...")
             jwtToken = token
             jwt = true
 
