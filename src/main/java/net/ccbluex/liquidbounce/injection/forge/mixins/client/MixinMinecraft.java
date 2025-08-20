@@ -68,7 +68,7 @@ public abstract class MixinMinecraft {
     public boolean skipRenderWorld;
 
     @Shadow
-    private int leftClickCounter;
+    public int leftClickCounter;
 
     @Shadow
     public MovingObjectPosition objectMouseOver;
@@ -142,7 +142,7 @@ public abstract class MixinMinecraft {
         }
     }
 
-    @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER))
+    @Inject(method = "createDisplay", at = @At(value = "INVOKE", target = "Lorg/lwjgl/opengl/Display;setTitle(Ljava/lang/String;)V", shift = At.Shift.AFTER, remap = false))
     private void createDisplay(CallbackInfo callbackInfo) {
         if (ClientConfiguration.INSTANCE.getClientTitle()) {
             Display.setTitle(FDPClient.INSTANCE.getClientTitle());
@@ -225,7 +225,7 @@ public abstract class MixinMinecraft {
         FDPClient.INSTANCE.stopClient();
     }
 
-    @Inject(method = "displayCrashReport", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/common/FMLCommonHandler;instance()Lnet/minecraftforge/fml/common/FMLCommonHandler;"))
+    @Inject(method = "displayCrashReport", at = @At(value = "INVOKE", target = "Lnet/minecraftforge/fml/common/FMLCommonHandler;instance()Lnet/minecraftforge/fml/common/FMLCommonHandler;", remap = false))
     private void injectDisplayCrashReport(CrashReport crashReport, CallbackInfo callbackInfo) {
         MiscUtils.showErrorPopup(crashReport.getCrashCause(), "Game crashed! ", MiscUtils.generateCrashInfo());
     }
@@ -295,7 +295,7 @@ public abstract class MixinMinecraft {
         }
     }
 
-    @Redirect(method = "runGameLoop", at = @At(value = "INVOKE", target = "Ljava/util/Queue;isEmpty()Z"))
+    @Redirect(method = "runGameLoop", at = @At(value = "INVOKE", target = "Ljava/util/Queue;isEmpty()Z", remap = false))
     private boolean injectTickBase(Queue instance) {
         return TickBase.INSTANCE.getDuringTickModification() || instance.isEmpty();
     }

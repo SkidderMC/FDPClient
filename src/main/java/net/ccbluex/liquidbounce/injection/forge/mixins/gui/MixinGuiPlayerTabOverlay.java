@@ -122,7 +122,7 @@ public class MixinGuiPlayerTabOverlay {
     }
 
     @Redirect(method = "renderPlayerlist", at = @At(value = "INVOKE",
-            target = "Lcom/google/common/collect/Ordering;sortedCopy(Ljava/lang/Iterable;)Ljava/util/List;"))
+            target = "Lcom/google/common/collect/Ordering;sortedCopy(Ljava/lang/Iterable;)Ljava/util/List;", remap = false))
     private List<NetworkPlayerInfo> redirectSortedCopy(Ordering<NetworkPlayerInfo> ordering, Iterable<NetworkPlayerInfo> iterable) {
         List<NetworkPlayerInfo> list = ordering.sortedCopy(iterable);
         if (TabGUIModule.INSTANCE.getTabMoveSelfToTop() && mc.thePlayer != null) {

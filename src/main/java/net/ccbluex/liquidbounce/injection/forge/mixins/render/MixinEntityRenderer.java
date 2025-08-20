@@ -109,7 +109,7 @@ public abstract class MixinEntityRenderer {
     }
 
     @Unique
-    private float NightVisionBrightness(EntityLivingBase p_getNightVisionBrightness_1_, float p_getNightVisionBrightness_2_) {
+    private float nightVisionBrightness(EntityLivingBase p_getNightVisionBrightness_1_, float p_getNightVisionBrightness_2_) {
         int i = p_getNightVisionBrightness_1_.getActivePotionEffect(Potion.nightVision).getDuration();
         return i > 200 ? 1.0F : 0.7F + MathHelper.sin(((float) i - p_getNightVisionBrightness_2_) * 3.1415927F * 0.2F) * 0.3F;
     }
@@ -284,7 +284,7 @@ public abstract class MixinEntityRenderer {
                         f15 = 0.25f + f12 * 0.75f;
                     }
                     if (this.mc.thePlayer.isPotionActive(Potion.nightVision)) {
-                        f6 = this.NightVisionBrightness(this.mc.thePlayer, f2);
+                        f6 = this.nightVisionBrightness(this.mc.thePlayer, f2);
                         f5 = 1.0f / f13;
                         if (f5 > 1.0f / f14) {
                             f5 = 1.0f / f14;
@@ -376,7 +376,7 @@ public abstract class MixinEntityRenderer {
      */
     @Redirect(
             method = "setupCameraTransform",
-            at = @At(value = "INVOKE", target = "Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V")
+            at = @At(value = "INVOKE", target = "Lorg/lwjgl/util/glu/Project;gluPerspective(FFFF)V", remap = false)
     )
     private void injectThirdPersonLowerFov(float fov, float aspect, float zNear, float zFar) {
         try {
