@@ -83,7 +83,7 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
             }
 
             val chatComponent = ChatComponentText("§7[§a§lChat§7] §9${authorInfo.name}: ")
-            val messageComponent = toChatComponent(content)
+            val messageComponent = content.toChatComponent()
             chatComponent.appendSibling(messageComponent)
 
             thePlayer.addChatMessage(chatComponent)
@@ -157,9 +157,9 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
         Pattern.CASE_INSENSITIVE
     )
 
-    private fun toChatComponent(string: String): IChatComponent {
+    private fun String.toChatComponent(): IChatComponent {
         var component: IChatComponent? = null
-        val matcher = urlPattern.matcher(string)
+        val matcher = urlPattern.matcher(this)
         var lastEnd = 0
 
         while (matcher.find()) {
@@ -167,7 +167,7 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
             val end = matcher.end()
 
             // Append the previous leftovers.
-            val part = string.substring(lastEnd, start)
+            val part = this.substring(lastEnd, start)
             if (part.isNotEmpty()) {
                 if (component == null) {
                     component = ChatComponentText(part)
@@ -178,7 +178,7 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
 
             lastEnd = end
 
-            val url = string.substring(start, end)
+            val url = this.substring(start, end)
 
             try {
                 if (URI(url).scheme != null) {
@@ -206,13 +206,13 @@ object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecti
         }
 
         // Append the rest of the message.
-        val end = string.substring(lastEnd)
+        val end = this.substring(lastEnd)
 
         if (component == null) {
             component = ChatComponentText(end)
             component.chatStyle.color = EnumChatFormatting.GRAY
         } else if (end.isNotEmpty())
-            component.appendText(string.substring(lastEnd))
+            component.appendText(this.substring(lastEnd))
 
         return component
     }

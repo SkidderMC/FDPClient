@@ -27,7 +27,11 @@ object ChatAdminCommand : Command("chatadmin") {
         when (args[1].lowercase()) {
             "ban" -> {
                 if (args.size > 2) {
-                    IRCModule.chatClient.banUser(args[2])
+                    try {
+                        IRCModule.chatClient.banUser(args[2])
+                    } catch (_: IllegalArgumentException) {
+                        chat("§c'${args[2]}' is not a valid username or UUID!")
+                    }
                 } else {
                     chatSyntax("chatadmin ban <username>")
                 }
@@ -35,7 +39,11 @@ object ChatAdminCommand : Command("chatadmin") {
 
             "unban" -> {
                 if (args.size > 2) {
-                    IRCModule.chatClient.unbanUser(args[2])
+                    try {
+                        IRCModule.chatClient.unbanUser(args[2])
+                    } catch (_: IllegalArgumentException) {
+                        chat("§c'${args[2]}' is not a valid username or UUID!")
+                    }
                 } else {
                     chatSyntax("chatadmin unban <username>")
                 }
