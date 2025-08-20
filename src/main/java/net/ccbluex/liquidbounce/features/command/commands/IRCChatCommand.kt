@@ -21,14 +21,12 @@ object IRCChatCommand : Command("chat", "lc", "irc") {
                 return
             }
 
-            if (!IRCModule.client.isConnected()) {
+            val message = StringUtils.toCompleteString(args, 1)
+
+            if (!IRCModule.chatClient.message(message)) {
                 chat("§cError: §bIRC is currently not connected to the server!")
                 return
             }
-
-            val message = StringUtils.toCompleteString(args, 1)
-
-            IRCModule.client.sendMessage(message)
         } else
             chatSyntax("chat <message>")
     }

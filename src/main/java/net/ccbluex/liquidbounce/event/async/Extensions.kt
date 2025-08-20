@@ -39,12 +39,13 @@ fun Listenable.loopSequence(
     priority: Byte = 0,
     body: suspend CoroutineScope.() -> Unit
 ) {
-    var job = EventManager.launch(dispatcher, block = body)
+    var job: Job? = null
 
     handler<GameTickEvent>(always = true, priority) {
         if (!always && !this@loopSequence.handleEvents()) {
-            job.cancel()
-        } else if (!job.isActive) {
+            job?.cancel()
+            job = null
+        } else if (job == null || !job!!.isActive) {
             job = EventManager.launch(dispatcher, block = body)
         }
     }
