@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce
 
 import com.formdev.flatlaf.themes.FlatMacLightLaf
+import kotlinx.coroutines.future.future
 import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
@@ -66,7 +67,6 @@ import net.ccbluex.liquidbounce.utils.timing.TickedActions
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import javax.swing.UIManager
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Future
 
 object FDPClient {
 
@@ -131,46 +131,35 @@ object FDPClient {
     /**
      * Start IO tasks
      */
-    fun preload(): Future<*> {
-
+    fun preload(): CompletableFuture<*> {
         net.ccbluex.liquidbounce.utils.client.javaVersion
 
         // Change theme of Swing
         UIManager.setLookAndFeel(FlatMacLightLaf())
 
-        val future = CompletableFuture<Unit>()
+        return SharedScopes.IO.future {
+            LOGGER.info("Starting preload tasks of $CLIENT_NAME")
 
-        SharedScopes.IO.launch {
-            try {
-                LOGGER.info("Starting preload tasks of $CLIENT_NAME")
+            // Download and extract fonts
+            Fonts.downloadFonts()
 
-                // Download and extract fonts
-                Fonts.downloadFonts()
+            // Check update
+            ClientUpdate.reloadNewestVersion()
 
-                // Check update
-                ClientUpdate.reloadNewestVersion()
+            // Get MOTD
+            reloadMessageOfTheDay()
 
-                // Get MOTD
-                reloadMessageOfTheDay()
+            // Load languages
+            loadLanguages()
 
-                // Load languages
-                loadLanguages()
+            // Load alt generators
+            loadActiveGenerators()
 
-                // Load alt generators
-                loadActiveGenerators()
+            // Load SRG file
+            loadSrg()
 
-                // Load SRG file
-                loadSrg()
-
-                LOGGER.info("Preload tasks of $CLIENT_NAME are completed!")
-
-                future.complete(Unit)
-            } catch (e: Exception) {
-                future.completeExceptionally(e)
-            }
+            LOGGER.info("Preload tasks of $CLIENT_NAME are completed!")
         }
-
-        return future
     }
 
     /**

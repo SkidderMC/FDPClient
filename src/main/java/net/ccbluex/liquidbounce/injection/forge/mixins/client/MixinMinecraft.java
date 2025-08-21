@@ -52,8 +52,8 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Queue;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
 
@@ -98,7 +98,7 @@ public abstract class MixinMinecraft {
     public abstract void displayGuiScreen(GuiScreen guiScreenIn);
 
     @Unique
-    private Future<?> liquidBounce$preloadFuture;
+    private CompletableFuture<?> liquidBounce$preloadFuture;
 
     @Inject(method = "run", at = @At("HEAD"))
     private void init(CallbackInfo callbackInfo) {
@@ -119,8 +119,9 @@ public abstract class MixinMinecraft {
         try {
             liquidBounce$preloadFuture.get();
         } catch (ExecutionException e) {
-            ClientUtils.INSTANCE.getLOGGER().error("Preload execution error", e);
-            throw new IllegalStateException("Preload execution error", e);
+            final String message = "Preload task error. Please check the cause below.";
+            ClientUtils.INSTANCE.getLOGGER().error(message, e);
+            throw new IllegalStateException(message, e);
         }
 
         FDPClient.INSTANCE.startClient();
