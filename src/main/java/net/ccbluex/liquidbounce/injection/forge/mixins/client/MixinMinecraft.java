@@ -115,8 +115,13 @@ public abstract class MixinMinecraft {
     }
 
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
-    private void startGame(CallbackInfo callbackInfo) throws ExecutionException, InterruptedException {
-        liquidBounce$preloadFuture.get();
+    private void startGame(CallbackInfo callbackInfo) throws InterruptedException {
+        try {
+            liquidBounce$preloadFuture.get();
+        } catch (ExecutionException e) {
+            ClientUtils.INSTANCE.getLOGGER().error("Preload execution error", e);
+            throw new IllegalStateException("Preload execution error", e);
+        }
 
         FDPClient.INSTANCE.startClient();
     }
