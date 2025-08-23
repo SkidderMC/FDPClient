@@ -5,49 +5,55 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import net.ccbluex.liquidbounce.FDPClient.IN_DEV
+import kotlinx.coroutines.withContext
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
+import net.ccbluex.liquidbounce.handler.api.ClientUpdate
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils.performAllChecksAsync
+import net.ccbluex.liquidbounce.utils.io.HttpClient
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
-import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
+import net.ccbluex.liquidbounce.utils.io.get
+import net.ccbluex.liquidbounce.utils.io.jsonBody
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBloom
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.gui.GuiButton
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.TimeZone
 
 class GuiUpdate : AbstractScreen() {
 
     private var isLoading = false
     private var loadProgress = 0
-    private var errorMessage: String? = null  // Store any error message
+    private var errorMessage: String? = null
+
+    private var latestReleaseText: String = "Last Oficial release: loading..."
+    private var lastCommitText: String = "Last Beta: loading..."
 
     override fun initGui() {
         val j = height / 4 + 24
 
-            +GuiButton(1, width / 2 + 2, j + 24 * 2, 98, 20, "Ignore")
-            +GuiButton(2, width / 2 - 100, j + 24 * 2, 98, 20, "Go to download page")
-            +GuiButton(3, width / 2 - 49, j + 24 * 3, 98, 20, "Reload API")
+        +GuiButton(1, width / 2 + 2, j + 24 * 2, 98, 20, "Ignore")
+        +GuiButton(2, width / 2 - 100, j + 24 * 2, 98, 20, "Go to download page")
+        +GuiButton(3, width / 2 - 49, j + 24 * 3, 98, 20, "Reload API")
+
+        loadGitMeta()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) = assumeNonVolatile {
-
         drawBackground(0)
 
         val messageYPosition = (height / 8f + 60).toInt()
         val titleYPosition = (height / 16f + 10).toInt()
 
-        val mainMessage = if (!IN_DEV) {
-            "Got released!"
-        } else {
-            "New build available!"
-        }
+        val mainMessage = "New build available!"
         val mainMessageWidth = Fonts.minecraftFont.getStringWidth(mainMessage)
-
         Fonts.minecraftFont.drawStringWithShadow(
             mainMessage,
             (width / 2f - mainMessageWidth / 2),
@@ -57,11 +63,28 @@ class GuiUpdate : AbstractScreen() {
 
         val subMessage = "Press \"Download\" to visit our website or dismiss this message by pressing \"OK\"."
         val subMessageWidth = Fonts.minecraftFont.getStringWidth(subMessage)
-
         Fonts.minecraftFont.drawStringWithShadow(
             subMessage,
             (width / 2f - subMessageWidth / 2),
             (messageYPosition + Fonts.minecraftFont.FONT_HEIGHT).toFloat(),
+            0xffffff
+        )
+
+        val releaseY = (messageYPosition + Fonts.minecraftFont.FONT_HEIGHT * 3).toFloat()
+        val releaseWidth = Fonts.minecraftFont.getStringWidth(latestReleaseText)
+        Fonts.minecraftFont.drawStringWithShadow(
+            latestReleaseText,
+            (width / 2f - releaseWidth / 2),
+            releaseY,
+            0xffffff
+        )
+
+        val commitY = releaseY + Fonts.minecraftFont.FONT_HEIGHT + 2
+        val commitWidth = Fonts.minecraftFont.getStringWidth(lastCommitText)
+        Fonts.minecraftFont.drawStringWithShadow(
+            lastCommitText,
+            (width / 2f - commitWidth / 2),
+            commitY,
             0xffffff
         )
 
@@ -125,7 +148,6 @@ class GuiUpdate : AbstractScreen() {
                 isLoading = true
                 loadProgress = 0
                 errorMessage = null
-
                 screenScope.launch {
                     try {
                         performAllChecksAsync()
@@ -146,5 +168,46 @@ class GuiUpdate : AbstractScreen() {
         } else {
             super.keyTyped(typedChar, keyCode)
         }
+    }
+
+    private fun loadGitMeta() {
+        val abbrev = ClientUpdate.gitInfo.getProperty("git.commit.id.abbrev") ?: "unknown"
+        val rawTime = ClientUpdate.gitInfo.getProperty("git.commit.time")
+            ?: ClientUpdate.gitInfo.getProperty("git.build.time")
+        val prettyDate = formatGitDate(rawTime)
+        lastCommitText = "Last commit: $prettyDate ($abbrev)"
+
+        screenScope.launch(Dispatchers.IO) {
+            val rel: GithubRelease? = try {
+                HttpClient.get("https://api.github.com/repos/SkidderMC/FDPClient/releases/latest")
+                    .jsonBody<GithubRelease>()
+            } catch (_: Exception) { null }
+
+            withContext(Dispatchers.Main) {
+                latestReleaseText = if (rel != null) {
+                    "Last Oficial release: ${rel.tagName}"
+                } else {
+                    "Last Oficial release: unavailable"
+                }
+            }
+        }
+    }
+
+    private fun formatGitDate(raw: String?): String {
+        if (raw.isNullOrBlank()) return "unknown"
+        val out = SimpleDateFormat("yyyy.MM.dd", Locale.ENGLISH).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
+        val candidates = listOf(
+            "yyyy-MM-dd'T'HH:mm:ss'Z'",
+            "yyyy-MM-dd'T'HH:mm:ssXXX",
+            "yyyy-MM-dd'T'HH:mm:ssZ",
+            "EEE MMM dd HH:mm:ss zzz yyyy"
+        ).map { SimpleDateFormat(it, Locale.ENGLISH).apply { timeZone = TimeZone.getTimeZone("UTC") } }
+
+        for (fmt in candidates) {
+            try { return out.format(fmt.parse(raw)) } catch (_: Exception) {}
+        }
+        return raw.take(10).replace('-', '.')
     }
 }
