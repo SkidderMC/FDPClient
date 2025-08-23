@@ -33,6 +33,7 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
     val fontsDir = File(dir, "fonts")
     val settingsDir = File(dir, "settings")
     val themesDir = File(dir, "themes")
+    val pluginsDir = File(dir, "plugins")
 
     val modulesConfig = +ModulesConfig(File(dir, "modules.json"))
     val valuesConfig = +ValuesConfig(File(dir, "values.json"))
@@ -85,6 +86,7 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
         if (!fontsDir.exists()) fontsDir.mkdir()
         if (!settingsDir.exists()) settingsDir.mkdir()
         if (!themesDir.exists()) themesDir.mkdir()
+        if (!pluginsDir.exists()) pluginsDir.mkdir()
     }
 
     /**
