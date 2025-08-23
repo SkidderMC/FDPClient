@@ -52,7 +52,7 @@ object ClientFixes : Configurable("Features"), MinecraftInstance, Listenable {
                     packet.data = PacketBuffer(Unpooled.buffer()).writeString(
                         when (possibleBrands.get()) {
                             "Vanilla" -> "vanilla"
-                            "LunarClient" -> "lunarclient:v2.19.6-2518"
+                            "LunarClient" -> "lunarclient:v2.20.9-2533"
                             "OptiFine" -> "optifine"
                             "CheatBreaker" -> "CB"
                             "LabyMod" -> "labymod"
