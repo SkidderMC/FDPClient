@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import com.google.common.collect.Ordering;
 import net.ccbluex.liquidbounce.features.module.modules.client.TabGUIModule;
+import net.ccbluex.liquidbounce.features.module.modules.client.Teams;
 import net.ccbluex.liquidbounce.file.FileManager;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetHandlerPlayClient;
@@ -15,6 +16,7 @@ import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScorePlayerTeam;
 import net.minecraft.util.IChatComponent;
+import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -139,13 +141,12 @@ public class MixinGuiPlayerTabOverlay {
 
                 if (TabGUIModule.INSTANCE.getTabMoveSelfToTop() && playerName.equals(mc.thePlayer.getName())) {
                     self = info;
-                } else if (TabGUIModule.INSTANCE.getTabShowFriends() && FileManager.INSTANCE.getFriendsConfig().isFriend(playerName)) {
+                } else if (TabGUIModule.INSTANCE.getTabShowFriends() && fdp$isFriendOrTeammate(playerName)) {
                     priorityPlayers.add(info);
                 } else {
                     regularPlayers.add(info);
                 }
             }
-
 
             list.clear();
             if (self != null) {
@@ -167,7 +168,7 @@ public class MixinGuiPlayerTabOverlay {
 
             if (TabGUIModule.INSTANCE.getTabMoveSelfToTop() && playerName.equals(mc.thePlayer.getName())) {
                 cir.setReturnValue("♛ " + base);
-            } else if (TabGUIModule.INSTANCE.getTabShowFriends() && FileManager.INSTANCE.getFriendsConfig().isFriend(playerName)) {
+            } else if (TabGUIModule.INSTANCE.getTabShowFriends() && fdp$isFriendOrTeammate(playerName)) {
                 cir.setReturnValue("§b♣ " + base);
             }
         }
@@ -213,5 +214,21 @@ public class MixinGuiPlayerTabOverlay {
     @ModifyConstant(method = "renderPlayerlist", constant = @Constant(intValue = 13))
     private int fdp$expandPingReserve(int original) {
         return Math.max(original, FDP_TAB_RESERVED_PING);
+    }
+
+    @Unique
+    private boolean fdp$isFriendOrTeammate(String playerName) {
+        if (FileManager.INSTANCE.getFriendsConfig().isFriend(playerName)) {
+            return true;
+        }
+
+        if (Teams.INSTANCE.handleEvents() && mc.theWorld != null) {
+            EntityPlayer targetPlayer = mc.theWorld.getPlayerEntityByName(playerName);
+            if (targetPlayer != null && mc.thePlayer != null) {
+                return Teams.INSTANCE.isInYourTeam(targetPlayer);
+            }
+        }
+
+        return false;
     }
 }
