@@ -1,4 +1,5 @@
-/** FDPClient Hacked Client
+/*
+ * FDPClient Hacked Client
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/SkidderMC/FDPClient/
  */
@@ -14,6 +15,7 @@ object TabGUIModule : Module("TabGUI", Category.CLIENT) {
     val pingTextShadow by boolean("Ping Text Shadow", true) { tabShowPlayerPing }
     val tabMoveSelfToTop by boolean("Move Self To Top", true)
     val tabShowFriends by boolean("Show Friends", true)
+    val tabShowEnemies by boolean("Show Enemies", true)
     val tabDisableHeader by boolean("Show Header", true)
     val tabDisableFooter by boolean("Show Footer", true)
     val tabScale by choices("Scale", arrayOf("Small", "Normal", "Large", "Extra Large", "Default"), "Default")

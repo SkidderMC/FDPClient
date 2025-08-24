@@ -9,6 +9,7 @@ import com.google.common.collect.Ordering;
 import net.ccbluex.liquidbounce.features.module.modules.client.TabGUIModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.Teams;
 import net.ccbluex.liquidbounce.file.FileManager;
+import net.ccbluex.liquidbounce.handler.combat.CombatManager;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -132,6 +133,7 @@ public class MixinGuiPlayerTabOverlay {
 
         if (mc.thePlayer != null) {
             List<NetworkPlayerInfo> priorityPlayers = new ArrayList<>();
+            List<NetworkPlayerInfo> enemyPlayers = new ArrayList<>();
             List<NetworkPlayerInfo> regularPlayers = new ArrayList<>();
 
             NetworkPlayerInfo self = null;
@@ -141,6 +143,8 @@ public class MixinGuiPlayerTabOverlay {
 
                 if (TabGUIModule.INSTANCE.getTabMoveSelfToTop() && playerName.equals(mc.thePlayer.getName())) {
                     self = info;
+                } else if (TabGUIModule.INSTANCE.getTabShowEnemies() && fdp$isFocusedEnemy(playerName)) {
+                    enemyPlayers.add(info);
                 } else if (TabGUIModule.INSTANCE.getTabShowFriends() && fdp$isFriendOrTeammate(playerName)) {
                     priorityPlayers.add(info);
                 } else {
@@ -152,6 +156,7 @@ public class MixinGuiPlayerTabOverlay {
             if (self != null) {
                 list.add(self);
             }
+            list.addAll(enemyPlayers);
             list.addAll(priorityPlayers);
             list.addAll(regularPlayers);
         }
@@ -168,6 +173,8 @@ public class MixinGuiPlayerTabOverlay {
 
             if (TabGUIModule.INSTANCE.getTabMoveSelfToTop() && playerName.equals(mc.thePlayer.getName())) {
                 cir.setReturnValue("♛ " + base);
+            } else if (TabGUIModule.INSTANCE.getTabShowEnemies() && fdp$isFocusedEnemy(playerName)) {
+                cir.setReturnValue("§c✱ " + base);
             } else if (TabGUIModule.INSTANCE.getTabShowFriends() && fdp$isFriendOrTeammate(playerName)) {
                 cir.setReturnValue("§b♣ " + base);
             }
@@ -229,6 +236,17 @@ public class MixinGuiPlayerTabOverlay {
             }
         }
 
+        return false;
+    }
+
+    @Unique
+    private boolean fdp$isFocusedEnemy(String playerName) {
+        if (mc.theWorld != null) {
+            EntityPlayer targetPlayer = mc.theWorld.getPlayerEntityByName(playerName);
+            if (targetPlayer != null) {
+                return CombatManager.INSTANCE.getFocusedPlayerList().contains(targetPlayer);
+            }
+        }
         return false;
     }
 }
