@@ -16,6 +16,7 @@ object TabGUIModule : Module("TabGUI", Category.CLIENT) {
     val tabMoveSelfToTop by boolean("Move Self To Top", true)
     val tabShowFriends by boolean("Show Friends", true)
     val tabShowEnemies by boolean("Show Enemies", true)
+    val tabShowHealth by boolean("Show Health", true)
     val tabDisableHeader by boolean("Show Header", true)
     val tabDisableFooter by boolean("Show Footer", true)
     val tabScale by choices("Scale", arrayOf("Small", "Normal", "Large", "Extra Large", "Default"), "Default")

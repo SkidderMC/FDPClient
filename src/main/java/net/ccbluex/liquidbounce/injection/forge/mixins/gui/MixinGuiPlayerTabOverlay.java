@@ -171,12 +171,22 @@ public class MixinGuiPlayerTabOverlay {
             ScorePlayerTeam team = info.getPlayerTeam();
             String base = ScorePlayerTeam.formatPlayerName(team, playerName);
 
+            String healthText = "";
+            if (TabGUIModule.INSTANCE.getTabShowHealth() && mc.theWorld != null) {
+                EntityPlayer targetPlayer = mc.theWorld.getPlayerEntityByName(playerName);
+                if (targetPlayer != null) {
+                    healthText = fdp$getHealthString(targetPlayer);
+                }
+            }
+
             if (TabGUIModule.INSTANCE.getTabMoveSelfToTop() && playerName.equals(mc.thePlayer.getName())) {
-                cir.setReturnValue("♛ " + base);
+                cir.setReturnValue("♛ " + base + healthText);
             } else if (TabGUIModule.INSTANCE.getTabShowEnemies() && fdp$isFocusedEnemy(playerName)) {
-                cir.setReturnValue("§c✱ " + base);
+                cir.setReturnValue("§c✱ " + base + healthText);
             } else if (TabGUIModule.INSTANCE.getTabShowFriends() && fdp$isFriendOrTeammate(playerName)) {
-                cir.setReturnValue("§b♣ " + base);
+                cir.setReturnValue("§b♗ " + base + healthText);
+            } else if (TabGUIModule.INSTANCE.getTabShowHealth() && !healthText.isEmpty()) {
+                cir.setReturnValue(base + healthText);
             }
         }
     }
@@ -248,5 +258,30 @@ public class MixinGuiPlayerTabOverlay {
             }
         }
         return false;
+    }
+
+    @Unique
+    private String fdp$getHealthString(EntityPlayer player) {
+        if (player == null) return "";
+
+        float health = player.getHealth();
+        float maxHealth = player.getMaxHealth();
+        float healthPercentage = Math.max(0.0f, Math.min(1.0f, health / maxHealth));
+
+        String healthColor;
+        if (health <= 0) {
+            healthColor = "§4";
+        } else if (healthPercentage >= 0.75f) {
+            healthColor = "§a";
+        } else if (healthPercentage >= 0.5f) {
+            healthColor = "§e";
+        } else if (healthPercentage >= 0.25f) {
+            healthColor = "§6";
+        } else {
+            healthColor = "§c";
+        }
+
+        int healthInt = Math.round(health);
+        return " " + healthColor +  healthInt + "HP";
     }
 }
