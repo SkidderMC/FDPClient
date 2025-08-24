@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 
 import com.google.common.collect.Ordering;
 import net.ccbluex.liquidbounce.features.module.modules.client.TabGUIModule;
+import net.ccbluex.liquidbounce.file.FileManager;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
 import net.minecraft.client.network.NetHandlerPlayClient;
 import net.minecraft.client.network.NetworkPlayerInfo;
@@ -21,6 +22,7 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -29,7 +31,6 @@ import static net.minecraft.client.renderer.GlStateManager.*;
 
 @Mixin(GuiPlayerTabOverlay.class)
 public class MixinGuiPlayerTabOverlay {
-
     @Shadow private IChatComponent header;
     @Shadow private IChatComponent footer;
 
@@ -42,9 +43,9 @@ public class MixinGuiPlayerTabOverlay {
     @Inject(method = "renderPlayerlist", at = @At("HEAD"))
     public void renderPlayerListPre(int width, Scoreboard scoreboard, ScoreObjective scoreObjective, CallbackInfo ci) {
         TabGUIModule.INSTANCE.setFlagRenderTabOverlay(true);
-
         fdp$savedHeader = this.header;
         fdp$savedFooter = this.footer;
+
         if (!TabGUIModule.INSTANCE.getTabDisableHeader()) this.header = null;
         if (!TabGUIModule.INSTANCE.getTabDisableFooter()) this.footer = null;
 
@@ -83,6 +84,7 @@ public class MixinGuiPlayerTabOverlay {
                 scaleFactor = 1.0f;
                 break;
         }
+
         if (scaleFactor != 1.0f) {
             pushMatrix();
             translate((width * (1 - scaleFactor)) / 2.0f, 0, 0);
@@ -93,7 +95,6 @@ public class MixinGuiPlayerTabOverlay {
     @Inject(method = "renderPlayerlist", at = @At("RETURN"))
     public void renderPlayerListPost(int width, Scoreboard scoreboard, ScoreObjective scoreObjective, CallbackInfo ci) {
         TabGUIModule.INSTANCE.setFlagRenderTabOverlay(false);
-
         this.header = fdp$savedHeader;
         this.footer = fdp$savedFooter;
 
@@ -116,6 +117,7 @@ public class MixinGuiPlayerTabOverlay {
                 scaleFactor = 1.0f;
                 break;
         }
+
         if (scaleFactor != 1.0f) {
             popMatrix();
         }
@@ -125,29 +127,49 @@ public class MixinGuiPlayerTabOverlay {
             target = "Lcom/google/common/collect/Ordering;sortedCopy(Ljava/lang/Iterable;)Ljava/util/List;", remap = false))
     private List<NetworkPlayerInfo> redirectSortedCopy(Ordering<NetworkPlayerInfo> ordering, Iterable<NetworkPlayerInfo> iterable) {
         List<NetworkPlayerInfo> list = ordering.sortedCopy(iterable);
-        if (TabGUIModule.INSTANCE.getTabMoveSelfToTop() && mc.thePlayer != null) {
+
+        if (mc.thePlayer != null) {
+            List<NetworkPlayerInfo> priorityPlayers = new ArrayList<>();
+            List<NetworkPlayerInfo> regularPlayers = new ArrayList<>();
+
             NetworkPlayerInfo self = null;
+
             for (NetworkPlayerInfo info : list) {
-                if (info.getGameProfile().getName().equals(mc.thePlayer.getName())) {
+                String playerName = info.getGameProfile().getName();
+
+                if (TabGUIModule.INSTANCE.getTabMoveSelfToTop() && playerName.equals(mc.thePlayer.getName())) {
                     self = info;
-                    break;
+                } else if (TabGUIModule.INSTANCE.getTabShowFriends() && FileManager.INSTANCE.getFriendsConfig().isFriend(playerName)) {
+                    priorityPlayers.add(info);
+                } else {
+                    regularPlayers.add(info);
                 }
             }
+
+
+            list.clear();
             if (self != null) {
-                list.remove(self);
-                list.add(0, self);
+                list.add(self);
             }
+            list.addAll(priorityPlayers);
+            list.addAll(regularPlayers);
         }
+
         return list;
     }
 
     @Inject(method = "getPlayerName", at = @At("HEAD"), cancellable = true)
     private void injectPlayerName(NetworkPlayerInfo info, CallbackInfoReturnable<String> cir) {
-        if (TabGUIModule.INSTANCE.getTabMoveSelfToTop() && mc.thePlayer != null
-                && info.getGameProfile().getName().equals(mc.thePlayer.getName())) {
+        if (mc.thePlayer != null) {
+            String playerName = info.getGameProfile().getName();
             ScorePlayerTeam team = info.getPlayerTeam();
-            String base = ScorePlayerTeam.formatPlayerName(team, info.getGameProfile().getName());
-            cir.setReturnValue("♛ " + base);
+            String base = ScorePlayerTeam.formatPlayerName(team, playerName);
+
+            if (TabGUIModule.INSTANCE.getTabMoveSelfToTop() && playerName.equals(mc.thePlayer.getName())) {
+                cir.setReturnValue("♛ " + base);
+            } else if (TabGUIModule.INSTANCE.getTabShowFriends() && FileManager.INSTANCE.getFriendsConfig().isFriend(playerName)) {
+                cir.setReturnValue("§b♣ " + base);
+            }
         }
     }
 
@@ -177,9 +199,9 @@ public class MixinGuiPlayerTabOverlay {
 
         boolean showMsTag = TabGUIModule.INSTANCE.getHidePingTag();
         String pingString = ping + (showMsTag ? "ms" : "");
-
         int right = x + offset - 1;
         int textX = right - mc.fontRendererObj.getStringWidth(pingString);
+
         if (TabGUIModule.INSTANCE.getPingTextShadow())
             mc.fontRendererObj.drawStringWithShadow(pingString, textX, y, color);
         else
