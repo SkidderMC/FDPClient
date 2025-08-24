@@ -45,6 +45,29 @@ import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
 import net.minecraft.network.play.server.S30PacketWindowItems
+import net.minecraft.util.BlockPos
+import net.minecraft.block.BlockContainer
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.GlStateManager.color
+import net.minecraft.client.renderer.GlStateManager.enableDepth
+import net.minecraft.client.renderer.GlStateManager.popMatrix
+import net.minecraft.client.renderer.GlStateManager.pushMatrix
+import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.client.renderer.entity.RenderItem
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
+import net.minecraft.network.play.server.S2FPacketSetSlot
+import org.lwjgl.BufferUtils
+import org.lwjgl.BufferUtils.createFloatBuffer
+import org.lwjgl.util.glu.GLU
+import org.lwjgl.opengl.Display
+import org.lwjgl.opengl.GL11.GL_ALL_ATTRIB_BITS
+import org.lwjgl.opengl.GL11.GL_MODELVIEW_MATRIX
+import org.lwjgl.opengl.GL11.GL_PROJECTION_MATRIX
+import org.lwjgl.opengl.GL11.GL_VIEWPORT
+import org.lwjgl.opengl.GL11.glGetFloat
+import org.lwjgl.opengl.GL11.glGetInteger
+import org.lwjgl.opengl.GL11.glPopAttrib
+import org.lwjgl.opengl.GL11.glPushAttrib
 import java.awt.Color
 import kotlin.math.sqrt
 
@@ -72,6 +95,8 @@ object ChestStealer : Module("ChestStealer", Category.OTHER) {
 
     val silentGUI by boolean("SilentGUI", false).subjective()
 
+    val silentView by boolean("SilentView", false)
+
     val highlightSlot by boolean("Highlight-Slot", false) { !silentGUI }.subjective()
     val backgroundColor =
         color("BackgroundColor", Color(128, 128, 128)) { highlightSlot && !silentGUI }.subjective()
@@ -95,6 +120,48 @@ object ChestStealer : Module("ChestStealer", Category.OTHER) {
     private var receivedId: Int? = null
 
     private var stacks = emptyList<ItemStack?>()
+
+    private var currentContainerPos: BlockPos? = null
+
+    private val MV  = createFloatBuffer(16)
+    private val PRJ = createFloatBuffer(16)
+    private val VP  = BufferUtils.createIntBuffer(16)
+    private val OBJ = createFloatBuffer(3)
+
+    private fun projectToScreen(x: Double, y: Double, z: Double, scaleFactor: Int): FloatArray? {
+        MV.clear(); PRJ.clear(); VP.clear(); OBJ.clear()
+        glGetFloat(GL_MODELVIEW_MATRIX,  MV)
+        glGetFloat(GL_PROJECTION_MATRIX, PRJ)
+        glGetInteger(GL_VIEWPORT,        VP)
+
+        val ok = GLU.gluProject(
+            x.toFloat(), y.toFloat(), z.toFloat(),
+            MV, PRJ, VP, OBJ
+        )
+
+        return if (ok) {
+            floatArrayOf(
+                OBJ.get(0) / scaleFactor,
+                (Display.getHeight() - OBJ.get(1)) / scaleFactor,
+                OBJ.get(2)
+            )
+        } else null
+    }
+
+    private fun screenPointFor(blockPos: BlockPos, scaleFactor: Int): FloatArray? {
+        val rm = mc.renderManager ?: return null
+        val rx = rm.renderPosX
+        val ry = rm.renderPosY
+        val rz = rm.renderPosZ
+        val cx = blockPos.x + 0.5 - rx
+        val cy = blockPos.y + 0.5 - ry
+        val cz = blockPos.z + 0.5 - rz
+
+        val p = projectToScreen(cx, cy, cz, scaleFactor) ?: return null
+
+        if (p[2] < 0f || p[2] > 1f) return null
+        return p
+    }
 
     private suspend fun shouldOperate(): Boolean {
         while (true) {
@@ -274,13 +341,11 @@ object ChestStealer : Module("ChestStealer", Category.OTHER) {
         var spaceInInventory = countSpaceInInventory()
 
         val itemsToSteal = stacks.dropLast(36)
-            .mapIndexedNotNullTo(ArrayList(32)) { index, stack ->
-                stack ?: return@mapIndexedNotNullTo null
+            .mapIndexedNotNullTo(ArrayList(32)) { index, stack -> stack ?: return@mapIndexedNotNullTo null
 
                 if (isTicked(index)) return@mapIndexedNotNullTo null
 
-                val mergeableCount = mc.thePlayer.inventory.mainInventory.sumOf { otherStack ->
-                    otherStack ?: return@sumOf 0
+                val mergeableCount = mc.thePlayer.inventory.mainInventory.sumOf { otherStack -> otherStack ?: return@sumOf 0
 
                     if (otherStack.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(stack, otherStack))
                         otherStack.maxStackSize - otherStack.stackSize
@@ -330,9 +395,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER) {
                 if (!canFullyMerge) spaceInInventory--
 
                 ItemTakeRecord(index, stack, sortableTo)
-            }.also { it ->
-                if (randomSlot)
-                    it.shuffle()
+            }.also { it -> if (randomSlot) it.shuffle()
 
                 // Prioritise armor pieces with lower priority, so that as many pieces can get equipped from hotbar after chest gets closed
                 it.sortByDescending { it.stack.item is ItemArmor }
@@ -401,9 +464,15 @@ object ChestStealer : Module("ChestStealer", Category.OTHER) {
 
     val onPacket = handler<PacketEvent> { event ->
         when (val packet = event.packet) {
-            is C0DPacketCloseWindow, is S2DPacketOpenWindow, is S2EPacketCloseWindow -> {
+            is S2DPacketOpenWindow -> {
                 receivedId = null
                 progress = null
+            }
+
+            is C0DPacketCloseWindow, is S2EPacketCloseWindow -> {
+                receivedId = null
+                progress = null
+                currentContainerPos = null
             }
 
             is S30PacketWindowItems -> {
@@ -421,6 +490,97 @@ object ChestStealer : Module("ChestStealer", Category.OTHER) {
 
                 stacks = packet.itemStacks.toList()
             }
+
+            is S2FPacketSetSlot -> {
+                val wid = packet.func_149175_c()
+                if (wid != receivedId) return@handler
+
+                val slot = packet.func_149173_d()
+                if (slot < 0) return@handler
+
+                val list = stacks.toMutableList()
+                while (slot >= list.size) list.add(null)
+                list[slot] = packet.func_149174_e()
+                stacks = list
+            }
+
+            is C08PacketPlayerBlockPlacement -> {
+                val pos = packet.position ?: return@handler
+                val state = mc.theWorld?.getBlockState(pos) ?: return@handler
+                if (state.block is BlockContainer) {
+                    currentContainerPos = pos
+                }
+            }
+        }
+    }
+
+    private fun fallbackContainerPos(): BlockPos? {
+        val om = mc.objectMouseOver ?: return null
+        val pos = om.blockPos ?: return null
+        val state = mc.theWorld?.getBlockState(pos) ?: return null
+        return if (state.block is BlockContainer) pos else null
+    }
+
+    val onRender2DSilentView = handler<Render2DEvent> { _ ->
+        if (!silentView) return@handler
+
+        if (mc.currentScreen !is GuiChest) return@handler
+        val player = mc.thePlayer ?: return@handler
+        val container = player.openContainer ?: return@handler
+        if (progress == null) return@handler
+
+        val pos = currentContainerPos ?: fallbackContainerPos() ?: return@handler
+
+        val sr = ScaledResolution(mc)
+        val sf = sr.scaleFactor
+        val centerX = sr.scaledWidth / 2f
+        val centerY = sr.scaledHeight / 2f
+
+        val chestSlots = container.inventorySlots.filter { it.inventory != player.inventory }
+        if (chestSlots.isEmpty()) return@handler
+
+        val columns = 9
+        val rows = (chestSlots.size + 8) / 9
+        val slotSize = 18
+        val pad = 5
+
+        val boxW = (columns * slotSize + pad * 2).toFloat()
+        val boxH = (rows * slotSize + pad * 2).toFloat()
+
+        fun clamp(v: Float, a: Float, b: Float) = v.coerceIn(a, b)
+        var x0 = centerX - boxW / 2f
+        var y0 = centerY - boxH / 2f
+        x0 = clamp(x0, 5f, sr.scaledWidth - boxW - 5f)
+        y0 = clamp(y0, 5f, sr.scaledHeight - boxH - 5f)
+
+        glPushAttrib(GL_ALL_ATTRIB_BITS)
+        pushMatrix()
+        try {
+            drawRect(x0 - 1, y0 - 1, x0 + boxW + 1, y0 + boxH + 1, Color(0, 0, 0, 180).rgb)
+            drawRect(x0, y0, x0 + boxW, y0 + boxH, Color(40, 40, 40, 160).rgb)
+
+            val itemRender: RenderItem = mc.renderItem
+            RenderHelper.enableGUIStandardItemLighting()
+            GlStateManager.disableDepth()
+            itemRender.zLevel = 200.0f
+
+            chestSlots.forEach { slot ->
+                val stack = slot.stack ?: return@forEach
+                val col = slot.slotNumber % 9
+                val row = slot.slotNumber / 9
+                val ix = (x0 + pad + col * slotSize).toInt()
+                val iy = (y0 + pad + row * slotSize).toInt()
+                itemRender.renderItemAndEffectIntoGUI(stack, ix, iy)
+                itemRender.renderItemOverlayIntoGUI(mc.fontRendererObj, stack, ix, iy, null)
+            }
+        } catch (_: Throwable) {
+        } finally {
+            mc.renderItem.zLevel = 0.0f
+            enableDepth()
+            RenderHelper.disableStandardItemLighting()
+            color(1f, 1f, 1f, 1f)
+            popMatrix()
+            glPopAttrib()
         }
     }
 
