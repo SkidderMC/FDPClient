@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.FDPClient.IN_DEV
 import net.ccbluex.liquidbounce.FDPClient.clientCommit
 import net.ccbluex.liquidbounce.FDPClient.clientVersionText
+import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.gson.decodeJson
 import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import net.minecraft.network.NetworkManager
@@ -54,6 +55,7 @@ val HttpClient: OkHttpClient = OkHttpClient.Builder()
     .connectTimeout(15, TimeUnit.SECONDS)
     .readTimeout(25, TimeUnit.SECONDS)
     .writeTimeout(25, TimeUnit.SECONDS)
+    .cache(Cache(FileManager.dir.resolve("http-cache"), maxSize = 16L shl 20))
     .applyBypassHttps()
     .addInterceptor(AddHeaderInterceptor("User-Agent", DEFAULT_AGENT))
     .build()
