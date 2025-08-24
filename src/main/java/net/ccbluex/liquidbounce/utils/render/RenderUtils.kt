@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils.render
 
 import com.jhlabs.image.GaussianFilter
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.config.ColorValue
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.DOUBLE_PI
@@ -68,6 +69,8 @@ object RenderUtils : MinecraftInstance {
     const val CLIENT_COLOR = -16748545
     // ARGB 0x7f006fff
     const val CLIENT_COLOR_HALF_ALPHA = 2130735103
+
+    private val glowCircle = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/targetesp/glow_circle.png")
 
     private val glCapMap = mutableMapOf<Int, Boolean>()
     private val shadowCache: HashMap<Int, Int> = HashMap()
@@ -229,7 +232,7 @@ object RenderUtils : MinecraftInstance {
             val innerX = pos.x * radius
             val innerZ = pos.z * radius
 
-            val innerHue = ColorUtils.shiftHue(innerColor, (index / CIRCLE_STEPS).toInt())
+            val innerHue = ColorUtils.shiftHue(innerColor, (index / CIRCLE_STEPS))
             glColor4f(innerHue.red / 255f, innerHue.green / 255f, innerHue.blue / 255f, innerColor.alpha / 255f)
             glVertex3d(
                 position.xCoord - renderX + innerX, position.yCoord - renderY, position.zCoord - renderZ + innerZ
@@ -242,7 +245,7 @@ object RenderUtils : MinecraftInstance {
             val outerX = pos.x * radius
             val outerZ = pos.z * radius
 
-            val outerHue = ColorUtils.shiftHue(outerColor, (index / CIRCLE_STEPS).toInt())
+            val outerHue = ColorUtils.shiftHue(outerColor, (index / CIRCLE_STEPS))
             glColor4f(outerHue.red / 255f, outerHue.green / 255f, outerHue.alpha / 255f, outerColor.alpha / 255f)
             glVertex3d(
                 position.xCoord - renderX + outerX, position.yCoord - renderY, position.zCoord - renderZ + outerZ
@@ -482,6 +485,104 @@ object RenderUtils : MinecraftInstance {
         glEnable(GL_TEXTURE_2D)
         glPopMatrix()
         glPopAttrib()
+    }
+
+    fun drawPoints(
+        target: EntityLivingBase,
+        baseColor: Color,
+        speed: Float,
+        pointsRadius: Float,
+        pointsScale: Float,
+        pointsLayers: Int,
+        pointsAdditive: Boolean,
+        hurt: Boolean
+    ) {
+        val rm = mc.renderManager
+        val partial = mc.timer.renderPartialTicks
+
+        val x = target.lastTickPosX + (target.posX - target.lastTickPosX) * partial - rm.renderPosX
+        val y = target.lastTickPosY + (target.posY - target.lastTickPosY) * partial - rm.renderPosY + target.height / 1.6f
+        val z = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * partial - rm.renderPosZ
+
+        val altColor = Color(baseColor.red, baseColor.green, baseColor.blue, (baseColor.alpha * 0.75f).toInt())
+
+        val now = System.currentTimeMillis()
+        val s = (1500.0 / speed.coerceAtLeast(0.0001f))
+        val u = (now % 1_000_000L).toDouble() / s
+        val t = u + sin(u) / 10.0
+
+        pushMatrix()
+        translate(x, y, z)
+
+        glRotatef(-rm.playerViewY, 0f, 1f, 0f)
+        glRotatef(rm.playerViewX, 1f, 0f, 0f)
+
+        disableCull()
+        enableBlend()
+        if (pointsAdditive) {
+            tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ONE, GL_ZERO)
+        } else {
+            blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        }
+        disableAlpha()
+
+        mc.textureManager.bindTexture(glowCircle)
+        enableTexture2D()
+
+        val tess = Tessellator.getInstance()
+        val vb = tess.worldRenderer
+
+        var layerYOffset = 0.0
+        var flip = false
+        val layers = pointsLayers.coerceAtLeast(1)
+
+        repeat(layers) {
+            val angle = (t * 360.0 * if (flip) -1.0 else 1.0)
+            val end = angle + 90.0 * if (flip) -1.0 else 1.0
+            val step = if (flip) -2.0 else 2.0
+
+            var i = angle
+            while (if (flip) i >= end else i <= end) {
+                val prog = abs((i - angle) / 90.0).coerceIn(0.0, 1.0)
+
+                val rad = Math.toRadians(i)
+                val rf = pointsRadius
+                val pointY = layerYOffset + sin(rad * 1.2) * 0.10
+
+                val sizeBase = (if (!flip) 0.25f else 0.15f) *
+                        (max(if (flip) 0.25f else 0.15f, if (flip) prog.toFloat() else (1f + (0.4f - prog.toFloat())) / 2f) + 0.45f)
+
+                val size = (sizeBase * (2f + ((1f - 0.5f) * 2f)) * pointsScale).toDouble()
+                val half = size / 2.0
+
+                val c = if (prog < 0.5) baseColor else altColor
+                val r = c.red / 255f
+                val g = c.green / 255f
+                val b = c.blue / 255f
+                val a = (c.alpha / 255f) * (if (hurt && target.hurtTime > 3) 1.0f else 0.9f)
+
+                pushMatrix()
+                translate((cos(rad).toFloat() * rf).toDouble(), pointY, (sin(rad).toFloat() * rf).toDouble())
+
+                vb.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
+                vb.pos(-half, -half, 0.0).tex(0.0, 0.0).color((r * 255).toInt(), (g * 255).toInt(), (b * 255).toInt(), (a * 255).toInt()).endVertex()
+                vb.pos(-half,  half, 0.0).tex(0.0, 1.0).color((r * 255).toInt(), (g * 255).toInt(), (b * 255).toInt(), (a * 255).toInt()).endVertex()
+                vb.pos( half,  half, 0.0).tex(1.0, 1.0).color((r * 255).toInt(), (g * 255).toInt(), (b * 255).toInt(), (a * 255).toInt()).endVertex()
+                vb.pos( half, -half, 0.0).tex(1.0, 0.0).color((r * 255).toInt(), (g * 255).toInt(), (b * 255).toInt(), (a * 255).toInt()).endVertex()
+                tess.draw()
+                popMatrix()
+
+                i += step
+            }
+
+            flip = !flip
+            layerYOffset += 0.45
+        }
+
+        enableAlpha()
+        disableBlend()
+        enableCull()
+        popMatrix()
     }
 
     /**
@@ -1976,43 +2077,6 @@ object RenderUtils : MinecraftInstance {
         drawRoundedBindRect(paramXStart, paramYStart, paramXEnd, paramYEnd, radius, color, true)
     }
 
-    fun drawArrayRect(left: Float, top: Float, right: Float, bottom: Float, color: Int) {
-        var left = left
-        var top = top
-        var right = right
-        var bottom = bottom
-        if (left < right) {
-            val i = left
-            left = right
-            right = i
-        }
-
-        if (top < bottom) {
-            val j = top
-            top = bottom
-            bottom = j
-        }
-
-        val f3 = (color shr 24 and 255).toFloat() / 255.0f
-        val f = (color shr 16 and 255).toFloat() / 255.0f
-        val f1 = (color shr 8 and 255).toFloat() / 255.0f
-        val f2 = (color and 255).toFloat() / 255.0f
-        val tessellator = Tessellator.getInstance()
-        val worldrenderer = tessellator.worldRenderer
-        enableBlend()
-        disableTexture2D()
-        tryBlendFuncSeparate(770, 771, 1, 0)
-        color(f, f1, f2, f3)
-        worldrenderer.begin(7, DefaultVertexFormats.POSITION)
-        worldrenderer.pos(left.toDouble(), bottom.toDouble(), 0.0).endVertex()
-        worldrenderer.pos(right.toDouble(), bottom.toDouble(), 0.0).endVertex()
-        worldrenderer.pos(right.toDouble(), top.toDouble(), 0.0).endVertex()
-        worldrenderer.pos(left.toDouble(), top.toDouble(), 0.0).endVertex()
-        tessellator.draw()
-        enableTexture2D()
-        disableBlend()
-    }
-
     fun drawRoundedGradientRectCorner(
         x: Float,
         y: Float,
@@ -3201,7 +3265,7 @@ object RenderUtils : MinecraftInstance {
      */
     fun drawRoundedShapeOutline(x: Float, y: Float, x2: Float, y2: Float, radius: Float, width: Float) {
         val segments = 18 // Number of segments to approximate the rounded corners
-        val angleStep = 90 / segments
+        90 / segments
 
         // Disable unnecessary features and enable needed ones
         disableTexture2D()
@@ -3347,55 +3411,6 @@ object RenderUtils : MinecraftInstance {
             glVertex2d(x + sin(Math.toRadians(i.toDouble())) * xRadius, y + cos(Math.toRadians(i.toDouble())) * yRadius)
             i -= 4
         }
-    }
-
-    /**
-     * Draws an axis-aligned bounding box (AABB) with the specified parameters.
-     *
-     * @param axisAlignedBB The axis-aligned bounding box to be drawn.
-     * @param color         The color of the bounding box.
-     * @param outline       Whether to draw the outline of the bounding box.
-     * @param box           Whether to draw the filled box of the bounding box.
-     * @param outlineWidth  The width of the outline if drawn.
-     */
-    fun drawOutlineAxisAlignedBB(
-        axisAlignedBB: AxisAlignedBB?,
-        color: Color,
-        outline: Boolean,
-        box: Boolean,
-        outlineWidth: Float
-    ) {
-        // Set up OpenGL states for drawing
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_BLEND)
-        glLineWidth(outlineWidth)
-        glDisable(GL_TEXTURE_2D)
-        glDisable(GL_DEPTH_TEST)
-        glDepthMask(false)
-        glColor(color)
-
-        // Draw outline if specified
-        if (outline) {
-            glLineWidth(outlineWidth)
-            enableGlCap(GL_LINE_SMOOTH)
-            // Set outline color with alpha
-            glColor(color.red, color.green, color.blue, 95)
-            drawSelectionBoundingBox(axisAlignedBB!!)
-        }
-
-        // Draw filled box if specified
-        if (box) {
-            // Set filled box color with alpha, different alpha if outline is also drawn
-            glColor(color.red, color.green, color.blue, if (outline) 26 else 35)
-            drawFilledBox(axisAlignedBB!!)
-        }
-
-        // Reset OpenGL states
-        resetColor()
-        glEnable(GL_TEXTURE_2D)
-        glEnable(GL_DEPTH_TEST)
-        glDepthMask(true)
-        glDisable(GL_BLEND)
     }
 
     /**
@@ -3621,20 +3636,6 @@ object RenderUtils : MinecraftInstance {
             (color.blue / 255f).toDouble(),
             (color.alpha / 255f).toDouble()
         )
-    }
-
-    /**
-     * Gl color.
-     *
-     * @param color with alpha the color
-     */
-    @JvmStatic
-    fun glRGBColor(color: Color, alpha: Float) {
-        val red = color.red / 255f
-        val green = color.green / 255f
-        val blue = color.blue / 255f
-
-        color(red, green, blue, alpha)
     }
 
     /**

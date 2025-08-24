@@ -25,6 +25,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawLies
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatformESP
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawZavz
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPoints
 import net.minecraft.block.Block
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EntityLivingBase
@@ -43,7 +44,11 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, subjective = tru
     }
 
     // Mark - TargetESP
-    private val markValue by choices("MarkMode", arrayOf("None", "Zavz", "Circle", "Jello", "Lies", "FDP", "Sims", "Box", "RoundBox", "Head", "Mark"), "Zavz")
+    private val markValue by choices(
+        "MarkMode",
+        arrayOf("None", "Points", "Zavz", "Circle", "Jello", "Lies", "FDP", "Sims", "Box", "RoundBox", "Head", "Mark"),
+        "Points"
+    )
     private val isMarkMode: Boolean
         get() = markValue != "None" && markValue != "Sims" && markValue != "FDP"  && markValue != "Lies" && markValue != "Jello"
 
@@ -54,6 +59,12 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, subjective = tru
     // Circle options
     private val circleStartColor by color("CircleStartColor", Color.BLUE) { markValue == "Circle" }.subjective()
     private val circleEndColor by color("CircleEndColor", Color.CYAN.withAlpha(0)) { markValue == "Circle" }.subjective()
+
+    private val pointsSpeed by float("PointsSpeed", 2.0f, 0.5f..5.0f) { markValue == "Points" }.subjective()
+    private val pointsRadius by float("PointsRadius", 0.60f, 0.20f..1.20f) { markValue == "Points" }.subjective()
+    private val pointsScale by float("PointsScale", 0.25f, 0.05f..0.60f) { markValue == "Points" }.subjective()
+    private val pointsLayers by int("PointsLayers", 3, 1..5) { markValue == "Points" }.subjective()
+    private val pointsAdditive by boolean("PointsAdditive", true) { markValue == "Points" }.subjective()
 
     private val fillInnerCircle by boolean("FillInnerCircle", false) { markValue == "Circle" }.subjective()
     private val withHeight by boolean("WithHeight", true) { markValue == "Circle" }.subjective()
@@ -80,7 +91,7 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, subjective = tru
     private val boxOutline by boolean("Outline", true) { markValue == "Box" }.subjective()
 
     // fake sharp
-    private val fakeSharp by boolean("FakeSharp", true).subjective()
+    private val fakeSharp by boolean("FakeSharp", false).subjective()
 
     // Sound
 
@@ -183,6 +194,17 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, subjective = tru
                 circleYRange.takeIf { animateCircleY },
                 circleStartColor.rgb,
                 circleEndColor.rgb
+            )
+
+            "points" -> drawPoints(
+                entityLivingBase,
+                color,
+                pointsSpeed,
+                pointsRadius,
+                pointsScale,
+                pointsLayers,
+                pointsAdditive,
+                hurt
             )
         }
     }
