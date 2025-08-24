@@ -21,7 +21,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCrystal
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBoxESP
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawFDP
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImageMark
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawJello
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawLies
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
@@ -229,7 +229,7 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, subjective = tru
                     "TriangleStipple" -> trianglestipple
                     else -> glowCircle
                 }
-                drawImage(
+                drawImageMark(
                     entityLivingBase,
                     tex,
                     imageColor1,

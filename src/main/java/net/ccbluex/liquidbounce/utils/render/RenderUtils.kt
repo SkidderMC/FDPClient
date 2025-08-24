@@ -581,7 +581,7 @@ object RenderUtils : MinecraftInstance {
         popMatrix()
     }
 
-    fun drawImage(
+    fun drawImageMark(
         target: EntityLivingBase,
         texture: ResourceLocation,
         color1: Color,

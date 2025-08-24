@@ -36,14 +36,14 @@ import net.minecraft.client.renderer.GlStateManager.disableBlend
 import net.minecraft.client.renderer.GlStateManager.disableRescaleNormal
 import net.minecraft.client.renderer.GlStateManager.enableBlend
 import net.minecraft.client.renderer.GlStateManager.enableRescaleNormal
+import net.minecraft.client.renderer.GlStateManager.popMatrix
+import net.minecraft.client.renderer.GlStateManager.pushMatrix
 import net.minecraft.client.renderer.GlStateManager.scale
 import net.minecraft.client.renderer.GlStateManager.translate
 import net.minecraft.client.renderer.GlStateManager.tryBlendFuncSeparate
 import net.minecraft.potion.Potion
 import org.lwjgl.opengl.Display
 import org.lwjgl.opengl.GL11
-import org.lwjgl.opengl.GL11.glPopMatrix
-import org.lwjgl.opengl.GL11.glPushMatrix
 import org.lwjgl.util.glu.GLU
 import java.awt.Color
 import java.awt.Color.getHSBColor
@@ -54,6 +54,7 @@ import javax.vecmath.Vector3d
 import javax.vecmath.Vector4d
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.pow
 import kotlin.random.Random
 
 object ESP2D : Module("ESP2D", Category.VISUAL) {
@@ -118,18 +119,14 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
     val onRender2D = handler<Render2DEvent> { event ->
         if (mc.theWorld == null) return@handler
 
-        collectedEntities.clear()
+        GL11.glPushMatrix()
         collectEntities()
-
-        if (collectedEntities.isEmpty()) return@handler
 
         val partialTicks = event.partialTicks
         val scaledResolution = ScaledResolution(mc)
         val scaleFactor = scaledResolution.scaleFactor
+        val scaling = scaleFactor.toDouble() / scaleFactor.toDouble().pow(2.0)
 
-        val scaling = 1.0 / scaleFactor.toDouble()
-
-        glPushMatrix()
         GL11.glScaled(scaling, scaling, scaling)
 
         val fr = minecraftFont
@@ -140,11 +137,10 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
         val doHealthBar = healthBar
         val doArmorBar = armorBar
 
+        var i = 0
         val size = collectedEntities.size
-        for (i in 0 until size) {
-            if (i >= collectedEntities.size) break
-            val entity = collectedEntities.getOrNull(i) ?: continue
-
+        while (i < size) {
+            val entity = collectedEntities[i] ?: break
             val colorRGB = getColor(entity).rgb
 
             if (isInViewFrustum(entity)) {
@@ -169,12 +165,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                     Vector3d(aabb.maxX, aabb.maxY, aabb.maxZ)
                 )
 
-                try {
-                    entityRenderer.setupCameraTransform(partialTicks, 0)
-                } catch (e: Exception) {
-                    continue
-                }
-
+                entityRenderer.setupCameraTransform(partialTicks, 0)
                 var bbScreen: Vector4d? = null
 
                 for (corner in corners) {
@@ -197,12 +188,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                 }
 
                 bbScreen?.let { pos ->
-                    try {
-                        entityRenderer.setupOverlayRendering()
-                    } catch (e: Exception) {
-                        return@let
-                    }
-
+                    entityRenderer.setupOverlayRendering()
                     val minX = pos.x
                     val minY = pos.y
                     val maxX = pos.z
@@ -220,6 +206,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                             newDrawRect(minX - 0.5, minY, maxX, minY + 0.5, colorRGB)
                             newDrawRect(maxX - 0.5, minY, maxX, maxY, colorRGB)
                         } else {
+
                             newDrawRect(minX - 1.0, minY, minX + (maxX - minX) / 4.0, minY + 0.5, black)
                             newDrawRect(minX - 1.0, maxY, minX + (maxX - minX) / 4.0, maxY - 0.5, black)
                             newDrawRect(maxX + 0.5 - (maxX - minX) / 4.0, minY, maxX + 0.5, minY + 0.5, black)
@@ -234,6 +221,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
 
                     val isLiving = entity is EntityLivingBase
                     val isPlayer = entity is EntityPlayer
+                    var lineY: Float
 
                     if (entity is EntityLivingBase && doHealthBar) {
                         val eLiving = entity
@@ -425,17 +413,13 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
                     }
                 }
             }
+            i++
         }
 
-        glPopMatrix()
-        enableBlend()
+        GL11.glPopMatrix()
+        GlStateManager.enableBlend()
         GlStateManager.resetColor()
-
-        try {
-            mc.entityRenderer.setupOverlayRendering()
-        } catch (e: Exception) {
-
-        }
+        mc.entityRenderer.setupOverlayRendering()
     }
 
     private fun isHovering(minX: Double, maxX: Double, minY: Double, maxY: Double, sc: ScaledResolution): Boolean {
@@ -451,18 +435,15 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
     }
 
     private fun drawScaledString(text: String, x: Double, y: Double, scale: Double, color: Int) {
-        glPushMatrix()
-        try {
-            translate(x, y, 0.0)
-            scale(scale.toFloat(), scale.toFloat(), scale.toFloat())
-            if (outlineFont) {
-                drawOutlineStringWithoutGL(text, 0f, 0f, color, mc.fontRendererObj)
-            } else {
-                minecraftFont.drawStringWithShadow(text, 0F, 0F, color)
-            }
-        } finally {
-            glPopMatrix()
+        pushMatrix()
+        translate(x, y, 0.0)
+        scale(scale.toFloat(), scale.toFloat(), scale.toFloat())
+        if (outlineFont) {
+            drawOutlineStringWithoutGL(text, 0f, 0f, color, mc.fontRendererObj)
+        } else {
+            minecraftFont.drawStringWithShadow(text, 0F, 0F, color)
         }
+        popMatrix()
     }
 
     private fun drawScaledCenteredString(text: String, x: Double, y: Double, scale: Double, color: Int) {
@@ -470,61 +451,46 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
     }
 
     private fun renderItemStack(stack: net.minecraft.item.ItemStack, x: Double, y: Double) {
-        glPushMatrix()
-        try {
-            translate(x, y, 0.0)
-            scale(0.5, 0.5, 0.5)
-            enableRescaleNormal()
-            enableBlend()
-            tryBlendFuncSeparate(770, 771, 1, 0)
-            RenderHelper.enableGUIStandardItemLighting()
-            mc.renderItem.renderItemAndEffectIntoGUI(stack, 0, 0)
-            mc.renderItem.renderItemOverlays(minecraftFont, stack, 0, 0)
-            RenderHelper.disableStandardItemLighting()
-            disableRescaleNormal()
-            disableBlend()
-        } finally {
-            glPopMatrix()
-        }
+        pushMatrix()
+        translate(x, y, 0.0)
+        scale(0.5, 0.5, 0.5)
+        enableRescaleNormal()
+        enableBlend()
+        tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderHelper.enableGUIStandardItemLighting()
+        mc.renderItem.renderItemAndEffectIntoGUI(stack, 0, 0)
+        mc.renderItem.renderItemOverlays(minecraftFont, stack, 0, 0)
+        RenderHelper.disableStandardItemLighting()
+        disableRescaleNormal()
+        disableBlend()
+        popMatrix()
     }
 
     private fun collectEntities() {
-        try {
-            collectedEntities.clear()
-            mc.theWorld?.loadedEntityList?.forEach { e ->
-                if (e != null && (EntityUtils.isSelected(e, false)
-                            || (localPlayer && e is EntityPlayerSP && mc.gameSettings.thirdPersonView != 0)
-                            || (droppedItems && e is EntityItem))
-                ) {
-                    collectedEntities.add(e)
-                }
+        collectedEntities.clear()
+        mc.theWorld.loadedEntityList.forEach { e ->
+            if (EntityUtils.isSelected(e, false)
+                || (localPlayer && e is EntityPlayerSP && mc.gameSettings.thirdPersonView != 0)
+                || (droppedItems && e is EntityItem)
+            ) {
+                collectedEntities.add(e)
             }
-        } catch (e: Exception) {
-
-            collectedEntities.clear()
         }
     }
 
     private fun project2D(scaleFactor: Int, x: Double, y: Double, z: Double): Vector3d? {
-        return try {
-            GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelview)
-            GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projection)
-            GL11.glGetInteger(GL11.GL_VIEWPORT, viewport)
-
-            if (GLU.gluProject(
-                    x.toFloat(), y.toFloat(), z.toFloat(),
-                    modelview, projection, viewport, vector
-                )
-            ) {
-                Vector3d(
-                    (vector.get(0) / scaleFactor).toDouble(),
-                    ((Display.getHeight().toFloat() - vector.get(1)) / scaleFactor).toDouble(),
-                    vector.get(2).toDouble()
-                )
-            } else null
-        } catch (e: Exception) {
-            null
-        }
+        GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelview)
+        GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projection)
+        GL11.glGetInteger(GL11.GL_VIEWPORT, viewport)
+        return if (GLU.gluProject(
+                x.toFloat(), y.toFloat(), z.toFloat(),
+                modelview, projection, viewport, vector
+            )
+        ) Vector3d(
+            (vector.get(0) / scaleFactor).toDouble(),
+            ((Display.getHeight().toFloat() - vector.get(1)) / scaleFactor).toDouble(),
+            vector.get(2).toDouble()
+        ) else null
     }
 
     private fun getColor(entity: Entity?): Color {
@@ -559,7 +525,6 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
             else      -> Color(color.rgb)
         }
     }
-
     fun shouldCancelNameTag(entity: EntityLivingBase?): Boolean {
         if (entity == null) return false
         return state && tags && collectedEntities.contains(entity)
