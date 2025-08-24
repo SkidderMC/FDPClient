@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.WorldEvent
@@ -20,6 +21,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCrystal
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBoxESP
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawFDP
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawImage
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawJello
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawLies
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
@@ -34,6 +36,7 @@ import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
 import net.minecraft.potion.Potion
 import net.minecraft.util.EnumParticleTypes
+import net.minecraft.util.ResourceLocation
 import java.awt.Color
 import java.util.*
 
@@ -46,15 +49,14 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, subjective = tru
     // Mark - TargetESP
     private val markValue by choices(
         "MarkMode",
-        arrayOf("None", "Points", "Zavz", "Circle", "Jello", "Lies", "FDP", "Sims", "Box", "RoundBox", "Head", "Mark"),
+        arrayOf("None", "Points", "Image", "Zavz", "Circle", "Jello", "Lies", "FDP", "Sims", "Box", "RoundBox", "Head", "Mark"),
         "Points"
     )
     private val isMarkMode: Boolean
         get() = markValue != "None" && markValue != "Sims" && markValue != "FDP"  && markValue != "Lies" && markValue != "Jello"
 
-    val colorRedValue by int("Mark-Red", 0, 0.. 255) { isMarkMode }
-    val colorGreenValue by int("Mark-Green", 160, 0..255) { isMarkMode }
-    val colorBlueValue by int("Mark-Blue", 255, 0.. 255) { isMarkMode }
+    val colorPrimary by color("Color Primary", Color(0, 90, 255)) { isMarkMode }
+    val colorSecondary by color("Color Secondary",Color(0, 90, 255)) { isMarkMode && markValue == "Zavz" }
 
     // Circle options
     private val circleStartColor by color("CircleStartColor", Color.BLUE) { markValue == "Circle" }.subjective()
@@ -65,6 +67,29 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, subjective = tru
     private val pointsScale by float("PointsScale", 0.25f, 0.05f..0.60f) { markValue == "Points" }.subjective()
     private val pointsLayers by int("PointsLayers", 3, 1..5) { markValue == "Points" }.subjective()
     private val pointsAdditive by boolean("PointsAdditive", true) { markValue == "Points" }.subjective()
+
+    private val imageMode by choices(
+        "ImageMode",
+        arrayOf("Rectangle","QuadStapple","TriangleStapple","TriangleStipple","GlowCircle"),
+        "Rectangle"
+    ) { markValue == "Image" }.subjective()
+    private val imageScale by float("ImageScale", 0.6f, 0.1f..2.0f) { markValue == "Image" }.subjective()
+    private val imageXOffset by float("ImageXOffset", 0.0f, -1.5f..1.5f) { markValue == "Image" }.subjective()
+    private val imageYOffset by float("ImageYOffset", 0.0f, -0.5f..1.5f) { markValue == "Image" }.subjective()
+    private val imageAdditive by boolean("ImageAdditive", true) { markValue == "Image" }.subjective()
+    private val imageSpin by boolean("ImageSpin", false) { markValue == "Image" }.subjective()
+    private val imageSpinSpeed by float("ImageSpinSpeed", 1.0f, 0.1f..5.0f) { markValue == "Image" && imageSpin }.subjective()
+    private val imageBillboard by boolean("ImageBillboard", true) { markValue == "Image" }.subjective()
+    private val imageColor1 by color("ImageColor1", Color(255,255,255,255)) { markValue == "Image" }.subjective()
+    private val imageColor2 by color("ImageColor2", Color(255,255,255,255)) { markValue == "Image" }.subjective()
+    private val imageColor3 by color("ImageColor3", Color(255,255,255,255)) { markValue == "Image" }.subjective()
+    private val imageColor4 by color("ImageColor4", Color(255,255,255,255)) { markValue == "Image" }.subjective()
+
+    private val glowCircle = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/targetesp/glow_circle.png")
+    private val rectangle = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/targetesp/rectangle.png")
+    private val quadstapple = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/targetesp/quadstapple.png")
+    private val trianglestapple = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/targetesp/trianglestapple.png")
+    private val trianglestipple  = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/targetesp/trianglestipple.png")
 
     private val fillInnerCircle by boolean("FillInnerCircle", false) { markValue == "Circle" }.subjective()
     private val withHeight by boolean("WithHeight", true) { markValue == "Circle" }.subjective()
@@ -79,12 +104,6 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, subjective = tru
         0.5F..3F,
         suffix = "Seconds"
     ) { animateCircleY || animateHeight }.subjective()
-
-    private val alphaValue by int("Alpha", 255, 0.. 255) { isMarkMode && markValue == "Zavz" && markValue == "Jello"}
-
-    val colorRedTwoValue by int("Mark-Red 2", 0, 0.. 255) { isMarkMode && markValue == "Zavz" }
-    val colorGreenTwoValue by int("Mark-Green 2", 160, 0..255) { isMarkMode && markValue == "Zavz" }
-    val colorBlueTwoValue by int("Mark-Blue 2", 255, 0.. 255) { isMarkMode && markValue == "Zavz" }
 
     private val rainbow by boolean("Mark-RainBow", false) { isMarkMode }
     private val hurt by boolean("Mark-HurtTime", true) { isMarkMode }
@@ -119,12 +138,7 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, subjective = tru
     }
 
     val onRender3D = handler<Render3DEvent> { event ->
-        val color: Color = if (rainbow) rainbow() else Color(
-            colorRedValue,
-            colorGreenValue,
-            colorBlueValue,
-            alphaValue
-        )
+        val color: Color = if (rainbow) rainbow() else colorPrimary.withAlpha(255)
         val renderManager = mc.renderManager
         val entityLivingBase = combat.target ?: return@handler
         (entityLivingBase.lastTickPosX + (entityLivingBase.posX - entityLivingBase.lastTickPosX) * mc.timer.renderPartialTicks
@@ -206,6 +220,32 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, subjective = tru
                 pointsAdditive,
                 hurt
             )
+
+            "image" -> {
+                val tex = when (imageMode) {
+                    "Rectangle" -> rectangle
+                    "QuadStapple" -> quadstapple
+                    "TriangleStapple" -> trianglestapple
+                    "TriangleStipple" -> trianglestipple
+                    else -> glowCircle
+                }
+                drawImage(
+                    entityLivingBase,
+                    tex,
+                    imageColor1,
+                    imageColor2,
+                    imageColor3,
+                    imageColor4,
+                    imageScale,
+                    imageXOffset,
+                    imageYOffset,
+                    imageAdditive,
+                    imageSpin,
+                    imageSpinSpeed,
+                    imageBillboard,
+                    hurt
+                )
+            }
         }
     }
 

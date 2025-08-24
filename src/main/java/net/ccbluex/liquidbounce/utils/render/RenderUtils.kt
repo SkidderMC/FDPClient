@@ -10,12 +10,8 @@ import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.config.ColorValue
 import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.DOUBLE_PI
-import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorBlueTwoValue
-import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorBlueValue
-import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorGreenTwoValue
-import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorGreenValue
-import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorRedTwoValue
-import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorRedValue
+import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorPrimary
+import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.colorSecondary
 import net.ccbluex.liquidbounce.features.module.modules.visual.CombatVisuals.start
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.block.block
@@ -585,6 +581,68 @@ object RenderUtils : MinecraftInstance {
         popMatrix()
     }
 
+    fun drawImage(
+        target: EntityLivingBase,
+        texture: ResourceLocation,
+        color1: Color,
+        color2: Color,
+        color3: Color,
+        color4: Color,
+        scale: Float,
+        xOffset: Float,
+        yOffset: Float,
+        additive: Boolean,
+        spin: Boolean,
+        spinSpeed: Float,
+        billboard: Boolean,
+        hurt: Boolean
+    ) {
+        val rm = mc.renderManager
+        val partial = mc.timer.renderPartialTicks
+        val x = target.lastTickPosX + (target.posX - target.lastTickPosX) * partial - rm.renderPosX + xOffset
+        val y = target.lastTickPosY + (target.posY - target.lastTickPosY) * partial - rm.renderPosY + target.height / 1.6f + yOffset
+        val z = target.lastTickPosZ + (target.posZ - target.lastTickPosZ) * partial - rm.renderPosZ
+        val aMul = if (hurt && target.hurtTime > 3) 1f else 0.9f
+        val r1 = color1.red; val g1 = color1.green; val b1 = color1.blue; val a1 = (color1.alpha * aMul).toInt().coerceIn(0,255)
+        val r2 = color2.red; val g2 = color2.green; val b2 = color2.blue; val a2 = (color2.alpha * aMul).toInt().coerceIn(0,255)
+        val r3 = color3.red; val g3 = color3.green; val b3 = color3.blue; val a3 = (color3.alpha * aMul).toInt().coerceIn(0,255)
+        val r4 = color4.red; val g4 = color4.green; val b4 = color4.blue; val a4 = (color4.alpha * aMul).toInt().coerceIn(0,255)
+        pushMatrix()
+        translate(x, y, z)
+        if (billboard) {
+            glRotatef(-rm.playerViewY, 0f, 1f, 0f)
+            glRotatef(rm.playerViewX, 1f, 0f, 0f)
+        }
+        if (spin) {
+            val now = System.currentTimeMillis()
+            val ang = ((now % 10000L).toFloat() / 10000f) * 360f * spinSpeed
+            glRotatef(ang, 0f, 0f, 1f)
+        }
+        disableCull()
+        enableBlend()
+        if (additive) {
+            tryBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ONE, GL_ZERO)
+        } else {
+            blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        }
+        disableAlpha()
+        mc.textureManager.bindTexture(texture)
+        enableTexture2D()
+        val tess = Tessellator.getInstance()
+        val vb = tess.worldRenderer
+        val half = (scale / 2f).toDouble()
+        vb.begin(GL_QUADS, DefaultVertexFormats.POSITION_TEX_COLOR)
+        vb.pos(-half, -half, 0.0).tex(0.0, 0.0).color(r1, g1, b1, a1).endVertex()
+        vb.pos(-half,  half, 0.0).tex(0.0, 1.0).color(r2, g2, b2, a2).endVertex()
+        vb.pos( half,  half, 0.0).tex(1.0, 1.0).color(r3, g3, b3, a3).endVertex()
+        vb.pos( half, -half, 0.0).tex(1.0, 0.0).color(r4, g4, b4, a4).endVertex()
+        tess.draw()
+        enableAlpha()
+        disableBlend()
+        enableCull()
+        popMatrix()
+    }
+
     /**
      * Draws a dome around the specified [pos]
      *
@@ -1010,19 +1068,21 @@ object RenderUtils : MinecraftInstance {
         val precision = 360
 
         var startPos = start % 360
-
         start += speed
 
         for (i in 0..precision) {
             val posX = x + radius * cos(startPos + i * DOUBLE_PI / (precision / 2.0))
             val posZ = z + radius * sin(startPos + i * DOUBLE_PI / (precision / 2.0))
 
-            glColor(ColorUtils.getGradientOffset(Color(colorRedValue, colorGreenValue, colorBlueValue), Color(colorRedTwoValue, colorGreenTwoValue, colorBlueTwoValue, 1), abs((System.currentTimeMillis() / 10L).toDouble()) / 100.0 + y))
+            val t = abs(System.currentTimeMillis() / 10.0) / 100.0 + y
+            val grad = ColorUtils
+                .getGradientOffset(colorPrimary, colorSecondary, t)
+                .withAlpha(255)
+
+            glColor(grad.red, grad.green, grad.blue, grad.alpha)
 
             glVertex3d(posX, y, posZ)
-
             y += entity.height / precision
-
             glColor(0, 0, 0, 0)
         }
 
@@ -1047,7 +1107,6 @@ object RenderUtils : MinecraftInstance {
             glBegin(GL_LINE_STRIP)
 
             startPos = start % 360
-
             start += speed
 
             y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * ticks - mc.renderManager.renderPosY + entity.height
@@ -1056,12 +1115,15 @@ object RenderUtils : MinecraftInstance {
                 val posX = x + radius * cos(-(startPos + i * DOUBLE_PI / (precision / 2.0)))
                 val posZ = z + radius * sin(-(startPos + i * DOUBLE_PI / (precision / 2.0)))
 
-                glColor(ColorUtils.getGradientOffset(Color(colorRedValue, colorGreenValue, colorBlueValue), Color(colorRedTwoValue, colorGreenTwoValue, colorBlueTwoValue, 1), abs((System.currentTimeMillis() / 10L).toDouble()) / 100.0 + y))
+                val t2 = abs(System.currentTimeMillis() / 10.0) / 100.0 + y
+                val grad2 = ColorUtils
+                    .getGradientOffset(colorPrimary, colorSecondary, t2)
+                    .withAlpha(255)
+
+                glColor(grad2.red, grad2.green, grad2.blue, grad2.alpha)
 
                 glVertex3d(posX, y, posZ)
-
                 y -= entity.height / precision
-
                 glColor(0, 0, 0, 0)
             }
 

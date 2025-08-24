@@ -173,18 +173,24 @@ object ColorUtils {
         return Color.getHSBColor(hue, saturation, brightness)
     }
 
-    fun getGradientOffset(color1: Color, color2: Color, offset: Double): Color {
-        var offset = offset
-        if (offset > 1) {
-            val left = offset % 1
+    fun getGradientOffset(c1: Color, c2: Color, offsetIn: Double): Color {
+        var offset = offsetIn
+        if (offset > 1.0) {
+            val left = offset % 1.0
             val off = offset.toInt()
-            offset = if (off % 2 == 0) left else 1 - left
+            offset = if (off % 2 == 0) left else 1.0 - left
         }
-        val percent = 1 - offset
-        val red = (color1.red * percent + color2.red * offset).toInt()
-        val green = (color1.green * percent + color2.green * offset).toInt()
-        val part = (color1.blue * percent + color2.blue * offset).toInt()
-        return Color(red, green, part)
+        val inv = 1.0 - offset
+
+        fun mix(a: Int, b: Int) =
+            (a * inv + b * offset).toInt().coerceIn(0, 255)
+
+        val r = mix(c1.red,   c2.red)
+        val g = mix(c1.green, c2.green)
+        val b = mix(c1.blue,  c2.blue)
+        val a = mix(c1.alpha, c2.alpha)
+
+        return Color(r, g, b, a)
     }
 
     fun shiftHue(color: Color, shift: Int): Color {
