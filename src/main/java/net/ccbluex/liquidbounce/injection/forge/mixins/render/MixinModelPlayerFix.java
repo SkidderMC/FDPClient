@@ -18,6 +18,10 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.AbstractClientPlayer;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -472,59 +476,62 @@ public class MixinModelPlayerFix extends ModelBiped {
         GlStateManager.popMatrix();
     }
 
-    private void renderFemale(final Entity entityIn, final float scale) {
-        if (!(entityIn instanceof EntityPlayer)) {
-            return;
-        }
+    private boolean bindChestArmorTexture(EntityPlayer player) {
+        ItemStack chest = player.inventory.armorInventory[2];
+        if (chest != null && chest.getItem() instanceof ItemArmor) {
+            ItemArmor armor = (ItemArmor) chest.getItem();
+            String mat = armor.getArmorMaterial().getName().toLowerCase();
+            ResourceLocation tex = new ResourceLocation("textures/models/armor/" + mat + "_layer_1.png");
+            Minecraft.getMinecraft().getTextureManager().bindTexture(tex);
 
-        EntityPlayer player = (EntityPlayer) entityIn;
+            if (armor.getArmorMaterial() == ItemArmor.ArmorMaterial.LEATHER) {
+                int c = armor.getColor(chest);
+                float r = (float)(c >> 16 & 255) / 255.0F;
+                float g = (float)(c >>  8 & 255) / 255.0F;
+                float b = (float)(c       & 255) / 255.0F;
+                GlStateManager.color(r, g, b, 1.0F);
+            } else {
+                GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+            }
+            return true;
+        }
+        return false;
+    }
+
+    private void rebindPlayerSkin(AbstractClientPlayer player) {
+        Minecraft.getMinecraft().getTextureManager().bindTexture(player.getLocationSkin());
+        GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    private void renderFemale(final Entity entityIn, final float scale) {
+        if (!(entityIn instanceof EntityPlayer)) return;
+
+        final EntityPlayer player = (EntityPlayer) entityIn;
+
         if (CustomModel.INSTANCE.getBreastNoArmor()) {
             for (ItemStack stack : player.inventory.armorInventory) {
-                if (stack != null) {
-                    return;
-                }
+                if (stack != null) return;
             }
         }
 
         if (bT1 == null) {
-            bT1 = new ModelRenderer(this, 20, 20);
-            bT1.addBox(-3.0F, 1.0F, -3.0F, 6, 1, 1, 0.0F);
-            bT1.setRotationPoint(0.0F, 0.0F, 0.0F);
-
-            bT2 = new ModelRenderer(this, 19, 21);
-            bT2.addBox(-4.0F, 2.0F, -3.0F, 8, 3, 1, 0.0F);
-            bT2.setRotationPoint(0.0F, 0.0F, 0.0F);
-
-            bF1 = new ModelRenderer(this, 20, 21);
-            bF1.addBox(-3.0F, 2.0F, -4.0F, 6, 1, 1, 0.0F);
-            bF1.setRotationPoint(0.0F, 0.0F, 0.0F);
-
-            bF2 = new ModelRenderer(this, 19, 22);
-            bF2.addBox(-4.0F, 3.0F, -4.0F, 8, 1, 1, 0.0F);
-            bF2.setRotationPoint(0.0F, 0.0F, 0.0F);
-
-            bF3 = new ModelRenderer(this, 20, 23);
-            bF3.addBox(-3.0F, 4.0F, -4.0F, 2, 1, 1, 0.0F);
-            bF3.setRotationPoint(0.0F, 0.0F, 0.0F);
-
-            bF4 = new ModelRenderer(this, 23, 23);
-            bF4.addBox(1.0F, 4.0F, -4.0F, 2, 1, 1, 0.0F);
-            bF4.setRotationPoint(0.0F, 0.0F, 0.0F);
+            bT1 = new ModelRenderer(this, 20, 20); bT1.addBox(-3.0F, 1.0F, -3.0F, 6, 1, 1, 0.0F);
+            bT2 = new ModelRenderer(this, 19, 21); bT2.addBox(-4.0F, 2.0F, -3.0F, 8, 3, 1, 0.0F);
+            bF1 = new ModelRenderer(this, 20, 21); bF1.addBox(-3.0F, 2.0F, -4.0F, 6, 1, 1, 0.0F);
+            bF2 = new ModelRenderer(this, 19, 22); bF2.addBox(-4.0F, 3.0F, -4.0F, 8, 1, 1, 0.0F);
+            bF3 = new ModelRenderer(this, 20, 23); bF3.addBox(-3.0F, 4.0F, -4.0F, 2, 1, 1, 0.0F);
+            bF4 = new ModelRenderer(this, 23, 23); bF4.addBox( 1.0F, 4.0F, -4.0F, 2, 1, 1, 0.0F);
         }
 
-        float rotationDegrees = CustomModel.INSTANCE.getBreastRotation();
+        final float rotationDegrees = CustomModel.INSTANCE.getBreastRotation();
+
+        boolean usingArmorTex = bindChestArmorTexture(player);
 
         GlStateManager.pushMatrix();
         GlStateManager.rotate(rotationDegrees, 1.0F, 0.0F, 0.0F);
-        bT1.render(scale);
-        bT2.render(scale);
-        bF1.render(scale);
-        bF2.render(scale);
-        bF3.render(scale);
-        bF4.render(scale);
-        GlStateManager.popMatrix();
 
         if (!CustomModel.INSTANCE.getBreastPhysics()) {
+
             bT1.rotationPointY = 0.0F;
             bT2.rotationPointY = 0.0F;
             bF1.rotationPointY = 0.0F;
@@ -538,10 +545,9 @@ public class MixinModelPlayerFix extends ModelBiped {
             bF2.render(scale);
             bF3.render(scale);
             bF4.render(scale);
-
         } else {
-            float gravity = CustomModel.INSTANCE.getBreastGravity();
-            float bounce = CustomModel.INSTANCE.getBreastBounce();
+            final float gravity = CustomModel.INSTANCE.getBreastGravity();
+            final float bounce  = CustomModel.INSTANCE.getBreastBounce();
 
             breastOffsetT1 += (0 - breastOffsetT1) * gravity;
             breastOffsetT2 += (0 - breastOffsetT2) * gravity;
@@ -551,7 +557,7 @@ public class MixinModelPlayerFix extends ModelBiped {
             breastOffsetF4 += (0 - breastOffsetF4) * gravity;
 
             if (entityIn.motionY > 0.0D) {
-                float jumpForce = (float)entityIn.motionY * 0.5F;
+                float jumpForce = (float) entityIn.motionY * 0.5F;
                 breastOffsetT1 -= jumpForce * bounce;
                 breastOffsetT2 -= jumpForce * bounce;
                 breastOffsetF1 -= jumpForce * bounce;
@@ -560,20 +566,18 @@ public class MixinModelPlayerFix extends ModelBiped {
                 breastOffsetF4 -= jumpForce * bounce;
             }
 
-            bT1.rotationPointY = breastOffsetT1;
-            bT1.render(scale);
+            bT1.rotationPointY = breastOffsetT1; bT1.render(scale);
+            bT2.rotationPointY = breastOffsetT2; bT2.render(scale);
+            bF1.rotationPointY = breastOffsetF1; bF1.render(scale);
+            bF2.rotationPointY = breastOffsetF2; bF2.render(scale);
+            bF3.rotationPointY = breastOffsetF3; bF3.render(scale);
+            bF4.rotationPointY = breastOffsetF4; bF4.render(scale);
+        }
 
-            bT2.rotationPointY = breastOffsetT2;
-            bT2.render(scale);
+        GlStateManager.popMatrix();
 
-            bF1.rotationPointY = breastOffsetF1;
-            bF1.render(scale);
-
-            bF2.rotationPointY = breastOffsetF2;
-            bF3.render(scale);
-
-            bF4.rotationPointY = breastOffsetF4;
-            bF4.render(scale);
+        if (usingArmorTex && player instanceof AbstractClientPlayer) {
+            rebindPlayerSkin((AbstractClientPlayer) player);
         }
     }
 
