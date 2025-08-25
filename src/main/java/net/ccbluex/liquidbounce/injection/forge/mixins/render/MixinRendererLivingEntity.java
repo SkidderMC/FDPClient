@@ -257,7 +257,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                 glBlendFunc(770,771);
                 glDisable(2896);
                 glPolygonMode(1032,6914);
-                glColor4f((float) rotations.getColorRedValue() / 255, (float) rotations.getColorGreenValue() / 255, rotations.getColorBlueValue(), (float) rotations.getAlphaValue() / 255);
+                RenderUtils.INSTANCE.glColor(rotations.getColor());
                 glRotatef(renderyaw - f, 0, 0.001f, 0);
                 this.mainModel.render(mc.thePlayer, f6, f5, renderpitch, f2, renderpitch, 0.0625F);
                 glEnable(2896);

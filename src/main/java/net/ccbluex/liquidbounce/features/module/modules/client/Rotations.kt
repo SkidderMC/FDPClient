@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.serverRotation
 import net.ccbluex.liquidbounce.event.handler
+import java.awt.Color
 
 object Rotations : Module("Rotations", Category.CLIENT, gameDetecting = false) {
 
@@ -25,11 +26,7 @@ object Rotations : Module("Rotations", Category.CLIENT, gameDetecting = false) {
 
     val ghost by boolean("Ghost", true)
 
-    val colorRedValue by int("R", 0, 0..255) { ghost }
-    val colorGreenValue by int("G", 160, 0..255) { ghost }
-    val colorBlueValue by int("B", 255, 0..255) { ghost }
-    val alphaValue by int("Alpha", 255, 0..255) { ghost }
-    val rainbow by boolean("RainBow", false) { ghost }
+    val color by color("Color", Color(110, 0, 120)) { ghost }
 
     val debugRotations by boolean("DebugRotations", false)
 
