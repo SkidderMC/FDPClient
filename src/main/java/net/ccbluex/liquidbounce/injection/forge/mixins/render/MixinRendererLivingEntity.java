@@ -380,19 +380,19 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             boolean textured = chams.getTexturedValue();
 
             Color chamsColor = new Color(0x00000000);
-            Color chamsBehindColor = new Color(chams.getBehindRedValue(), chams.getBehindGreenValue(), chams.getBehindBlueValue());
+            Color chamsBehindColor = chams.getBehindColor();
 
             switch (chams.getColorModeValue()) {
                 case "Custom":
-                    chamsColor = new Color(chams.getRedValue(), chams.getGreenValue(), chams.getBlueValue());
+                    chamsColor = chams.getColor();
                     break;
                 case "Fade":
-                    chamsColor = ColorUtils.INSTANCE.fade(new Color(chams.getRedValue(), chams.getGreenValue(), chams.getBlueValue(), chams.getAlphaValue()), 0, 100);
+                    chamsColor = ColorUtils.INSTANCE.fade(chams.getColor(), 0, 100);
                     break;
             }
 
-            chamsColor = inAlpha(chamsColor, chams.getAlphaValue());
-            chamsBehindColor = inAlpha(chamsBehindColor, chams.getBehindAlphaValue());
+            chamsColor = inAlpha(chamsColor,  255);
+            chamsBehindColor = inAlpha(chamsBehindColor, 255);
 
             if (chamsFlag) {
                 Color chamsColor2 = new Color(0x00000000);

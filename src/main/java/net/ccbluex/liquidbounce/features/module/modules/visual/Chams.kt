@@ -23,14 +23,8 @@ object Chams : Module("Chams", Category.VISUAL) {
     val legacyMode by boolean("Legacy-Mode", false)
 
     val behindColorModeValue by choices("Behind-Color", arrayOf("Same", "Opposite", "Custom"), "Same") { !legacyMode }
-    val redValue by int("Red", 255, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") }
-    val greenValue by int("Green", 119, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") }
-    val blueValue by int("Blue", 119, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") }
-    val alphaValue by int("Alpha", 255, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue== "Fade") }
-    val behindRedValue by int("BehindRed", 0, 0..255) { !legacyMode && (colorModeValue== "Custom" || colorModeValue== "Fade") && behindColorModeValue == "Custom" }
-    val behindGreenValue by int("BehindGreen", 223, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") && behindColorModeValue == "Custom" }
-    val behindBlueValue by int("BehindBlue", 255, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") && behindColorModeValue == "Custom" }
-    val behindAlphaValue by int("BehindAlpha", 255, 0..255) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") && behindColorModeValue == "Custom" }
+    val color by color("Color", Color(0, 0, 120)) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") }
+    val behindColor by color("Behind", Color(255, 0, 0)) { !legacyMode && (colorModeValue== "Custom" || colorModeValue== "Fade") && behindColorModeValue == "Custom" }
 
     fun preHandRender() {
         GL11.glDisable(3553)
