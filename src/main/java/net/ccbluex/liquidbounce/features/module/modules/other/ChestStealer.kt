@@ -47,6 +47,7 @@ import net.minecraft.network.play.server.S2EPacketCloseWindow
 import net.minecraft.network.play.server.S30PacketWindowItems
 import net.minecraft.util.BlockPos
 import net.minecraft.block.BlockContainer
+import net.minecraft.client.gui.inventory.GuiFurnace
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager.color
 import net.minecraft.client.renderer.GlStateManager.enableDepth
@@ -54,6 +55,7 @@ import net.minecraft.client.renderer.GlStateManager.popMatrix
 import net.minecraft.client.renderer.GlStateManager.pushMatrix
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.client.renderer.entity.RenderItem
+import net.minecraft.inventory.ContainerFurnace
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.server.S2FPacketSetSlot
 import org.lwjgl.BufferUtils
@@ -96,6 +98,8 @@ object ChestStealer : Module("ChestStealer", Category.OTHER) {
     val silentGUI by boolean("SilentGUI", false).subjective()
 
     val silentView by boolean("SilentView", false)
+
+    private val furnace by boolean("Furnace", false)
 
     val highlightSlot by boolean("Highlight-Slot", false) { !silentGUI }.subjective()
     val backgroundColor =
@@ -194,6 +198,26 @@ object ChestStealer : Module("ChestStealer", Category.OTHER) {
         val thePlayer = mc.thePlayer ?: return
 
         val screen = mc.currentScreen ?: return
+
+        if (furnace && screen is GuiFurnace) {
+            val container = mc.thePlayer.openContainer as? ContainerFurnace ?: return
+
+            val slots = container.inventorySlots
+            var hasTaken = false
+
+            for (i in slots.indices) {
+                val slot = slots[i]
+                val stack = slot.stack ?: continue
+
+                clickNextTick(i, 0, 1)
+                delay(delay.random().toLong())
+                hasTaken = true
+            }
+
+            if (!hasTaken) {
+                mc.thePlayer.closeScreen()
+            }
+        }
 
         if (screen !is GuiChest || !shouldOperate())
             return
@@ -467,6 +491,11 @@ object ChestStealer : Module("ChestStealer", Category.OTHER) {
             is S2DPacketOpenWindow -> {
                 receivedId = null
                 progress = null
+
+                if (furnace && packet.windowTitle.unformattedText.lowercase().contains("furnace")) {
+                    receivedId = packet.windowId
+                    stacks = emptyList()
+                }
             }
 
             is C0DPacketCloseWindow, is S2EPacketCloseWindow -> {
