@@ -42,6 +42,7 @@ class GuiUpdate : AbstractScreen() {
         +GuiButton(1, width / 2 + 2, j + 24 * 2, 98, 20, "Ignore")
         +GuiButton(2, width / 2 - 100, j + 24 * 2, 98, 20, "Go to download page")
         +GuiButton(3, width / 2 - 49, j + 24 * 3, 98, 20, "Reload API")
+        +GuiButton(4, width / 2 - 49, j + 24 * 4, 98, 20, "Join Discord")
 
         loadGitMeta()
     }
@@ -159,6 +160,7 @@ class GuiUpdate : AbstractScreen() {
                     }
                 }
             }
+            4 -> MiscUtils.showURL("https://discord.com/invite/3XRFGeqEYD")
         }
     }
 
