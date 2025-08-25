@@ -22,7 +22,7 @@ object DelayRemover : Module("DelayRemover", Category.PLAYER) {
 
     val noSlowBreak by boolean("NoSlowBreak", false)
     val air by boolean("Air", true) { noSlowBreak }
-    val water by boolean("Water", false) { noSlowBreak }
+    val water by boolean("Water", true) { noSlowBreak }
 
     val exitGuiValue by boolean("NoExitGuiDelay", true)
 
