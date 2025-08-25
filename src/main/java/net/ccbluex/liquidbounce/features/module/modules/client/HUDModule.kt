@@ -63,19 +63,12 @@ object HUDModule : Module("HUD", Category.CLIENT) {
     val inventoryParticle by boolean("InventoryParticle", false)
 
     // UI
-    private val interfaceColor by boolean("Interface Color", false)
-    val colorRed by int("R", 0, 0..255) { interfaceColor }
-    val colorGreen by int("G", 160, 0..255) { interfaceColor }
-    val colorBlue by int("B", 255, 0..255) { interfaceColor }
-    private val colorRainbowValue by boolean("Rainbow", true) { interfaceColor }
+    private val interfaceColor by boolean("Bloom Color", false)
+    val color by color("Color", Color(0, 160, 255)) { interfaceColor }
 
     val guiColor: Int
         get() = if (interfaceColor) {
-            if (colorRainbowValue) {
-                ColorUtils.rainbow().rgb
-            } else {
-                Color(colorRed, colorGreen, colorBlue).rgb
-            }
+            color.rgb
         } else {
             ClientThemesUtils.getColor().rgb
         }
