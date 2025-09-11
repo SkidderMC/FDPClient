@@ -70,7 +70,7 @@ dependencies {
         exclude module: "authlib"
     }
 
-    final axochat4jVersion = "0.2.0"
+    final axochat4jVersion = "0.3.0"
     implementation("com.github.MukjepScarlet.axochat4j:axochat4j-core:$axochat4jVersion")
     implementation("com.github.MukjepScarlet.axochat4j:axochat4j-codec-gson:$axochat4jVersion") {
         transitive = false
