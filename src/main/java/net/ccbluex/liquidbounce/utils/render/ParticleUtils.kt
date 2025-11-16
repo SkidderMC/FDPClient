@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.utils.render
 
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
-import net.vitox.ParticleGenerator
+import net.ccbluex.liquidbounce.utils.render.particle.ParticleGenerator
 
 @SideOnly(Side.CLIENT)
 object ParticleUtils {
