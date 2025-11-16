@@ -1,4 +1,4 @@
-package net.vitox;
+package net.ccbluex.liquidbounce.utils.render.particle;
 
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Random;
 
 import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
-import static net.vitox.particle.util.RenderUtils.drawCircle;
+import static net.ccbluex.liquidbounce.utils.render.particle.RenderUtils.drawCircle;
 
 /**
  * Particle API This Api is free2use But u have to mention me.

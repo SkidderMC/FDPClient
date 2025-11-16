@@ -1,4 +1,4 @@
-package net.vitox;
+package net.ccbluex.liquidbounce.utils.render.particle;
 
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraftforge.fml.relauncher.Side;
@@ -9,7 +9,7 @@ import java.math.RoundingMode;
 import java.util.Random;
 
 import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
-import static net.vitox.particle.util.RenderUtils.connectPoints;
+import static net.ccbluex.liquidbounce.utils.render.particle.RenderUtils.connectPoints;
 
 /**
  * Particle API
