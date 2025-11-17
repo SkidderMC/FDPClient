@@ -6,6 +6,8 @@
 package net.ccbluex.liquidbounce.event
 
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam
+import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyConnectionChangedEvent
+import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyStateChangedEvent
 import net.ccbluex.liquidbounce.utils.extensions.withY
 import net.minecraft.block.Block
 import net.minecraft.client.gui.GuiScreen
@@ -286,5 +288,7 @@ internal val ALL_EVENT_CLASSES = arrayOf(
     MotionEvent::class.java,
     WorldEvent::class.java,
     DelayedPacketProcessEvent::class.java,
-    EntityKilledEvent::class.java
+    EntityKilledEvent::class.java,
+    SpotifyConnectionChangedEvent::class.java,
+    SpotifyStateChangedEvent::class.java,
 )

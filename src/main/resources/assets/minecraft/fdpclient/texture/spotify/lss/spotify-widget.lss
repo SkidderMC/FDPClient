@@ -1,0 +1,159 @@
+Spotify {
+  top: 0;
+  left: 0;
+  height: 34;
+  min-width: 170;
+  width: fit-content;
+  max-width: 400;
+
+  orientation: horizontal;
+  background-color: rgba(0, 0, 0, 0);
+
+  .minimized-bar {
+    visible: var(--progress-visible);
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 1;
+  }
+
+  .player {
+    height: 100%;
+    orientation: vertical;
+    width: 136;
+    padding-left: 2;
+    padding-right: 2;
+
+    .text-and-control {
+      height: 100%;
+      orientation: horizontal;
+      space-between-entries: 2;
+
+
+      .text {
+        margin-top: 2;
+        height: fit-content;
+
+        Component {
+          left: 0;
+          top: 0;
+          max-lines: 1;
+          overflow-strategy: clip;
+          width: 100%;
+        }
+      }
+
+      .controls {
+        height: 100%;
+        width: 30;
+        padding: 1;
+
+        Icon {
+          width: 8;
+          height: 8;
+
+          visible: false;
+        }
+
+        .play {
+          top: 50%;
+          left: 50%;
+          alignment-x: center;
+          alignment-y: center;
+        }
+
+        .previous {
+          top: 50%;
+          left: 0;
+          alignment-y: center;
+        }
+
+        .next {
+          top: 50%;
+          right: 0;
+          alignment-y: center;
+        }
+      }
+    }
+
+    .progress {
+      visible: false;
+    }
+  }
+
+  .cover {
+    width: 34;
+    height: 34;
+    right: 0;
+    top: 0;
+    visible: true;
+  }
+
+  &.no-cover {
+    max-width: 140;
+
+    .cover {
+      visible: false;
+    }
+  }
+
+  .progress {
+    margin-right: 1;
+    visible: var(--large-progress-visible);
+
+    orientation: horizontal;
+    height: 8;
+    width: 100%;
+    space-between-entries: 2;
+
+    .full-bar {
+      left: 0;
+      top: 50%;
+      max-height: 2;
+      width: 100%;
+      alignment-y: center;
+
+      margin-bottom: 2;
+      margin-left: 1;
+    }
+
+    Component {
+      font-size: small;
+    }
+  }
+
+  &.maximized {
+    background-color: #1a1a1a;
+
+    .minimized-bar {
+      visible: false;
+    }
+
+    .controls {
+      Icon {
+        visible: true;
+      }
+    }
+  }
+
+  &.right {
+    .text {
+      Component {
+        alignment-x: right;
+      }
+    }
+  }
+
+  &.left {
+    .text {
+      Component {
+        alignment-x: left;
+      }
+    }
+  }
+
+  ProgressBar {
+    background-color: rgb(68, 68, 68);
+    foreground-color: rgb(44, 214, 105);
+  }
+}
