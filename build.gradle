@@ -42,7 +42,7 @@ minecraft {
     def spotifyHttpTimeout = (project.findProperty("spotify_http_timeout_ms") ?: "12000").toString()
     def spotifyDashboardUrl = (project.findProperty("spotify_dashboard_url") ?: "https://developer.spotify.com/dashboard").toString()
     def spotifyAuthGuideUrl = (project.findProperty("spotify_authorization_guide_url") ?: "https://developer.spotify.com/documentation/web-api/tutorials/refreshing-tokens").toString()
-    def spotifyAuthScopes = (project.findProperty("spotify_authorization_scopes") ?: "user-read-currently-playing user-read-playback-state").toString()
+    def spotifyAuthScopes = (project.findProperty("spotify_authorization_scopes") ?: "user-read-currently-playing user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative user-library-read").toString()
     def spotifyAuthRedirectPort = (project.findProperty("spotify_authorization_redirect_port") ?: "43791").toString()
     def spotifyAuthRedirectPath = (project.findProperty("spotify_authorization_redirect_path") ?: "/spotify-oauth-callback").toString()
 

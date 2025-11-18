@@ -39,7 +39,7 @@ object SpotifyDefaults {
     val authorizationScopes: String = read(
         "spotify.authorizationScopes",
         "SPOTIFY_AUTH_SCOPES",
-        "user-read-currently-playing user-read-playback-state",
+        "user-read-currently-playing user-read-playback-state user-modify-playback-state playlist-read-private playlist-read-collaborative user-library-read",
     )
     val authorizationRedirectPort: Int = read(
         "spotify.authorizationRedirectPort",
