@@ -1,8 +1,8 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui
 
 import net.ccbluex.liquidbounce.features.module.Category
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Settings.BoolSetting
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Settings.Numbersetting
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.BoolSetting
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.Numbersetting
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Direction
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import java.awt.Color

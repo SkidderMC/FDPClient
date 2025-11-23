@@ -10,14 +10,17 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Rende
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.interpolateColorC
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.isHovering
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.resetColor
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Settings.BoolSetting
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Settings.ColorSetting
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Settings.Numbersetting
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Settings.StringsSetting
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.BoolSetting
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Animation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Direction
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.impl.DecelerateAnimation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil.Companion.drawRound
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.ColorSetting
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.FontSetting
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.Numbersetting
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.RangeSetting
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.StringsSetting
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.TextSetting
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import java.awt.Color
 import java.util.function.Consumer
@@ -57,11 +60,20 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
             if (setting is FloatValue || setting is IntValue) {
                 this.downwards.add(Numbersetting(setting, this))
             }
+            if (setting is FloatRangeValue || setting is IntRangeValue) {
+                this.downwards.add(RangeSetting(setting, this))
+            }
             if (setting is ListValue) {
                 this.downwards.add(StringsSetting(setting, this))
             }
             if (setting is ColorValue) {
                 this.downwards.add(ColorSetting(setting, this))
+            }
+            if (setting is TextValue) {
+                this.downwards.add(TextSetting(setting, this))
+            }
+            if (setting is FontValue) {
+                this.downwards.add(FontSetting(setting, this))
             }
         }
     }
@@ -115,7 +127,7 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
             module.name,
             x + 100 + posx,
             y + posy + 55 + scrollY,
-            if (getInstance().light) Color(95, 95, 95).getRGB() else -1
+            if (getInstance().light) Color(95, 95, 95).rgb else -1
         )
 
         drawRound(
@@ -152,10 +164,10 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
 
         if (module.values.isEmpty()) {
             Fonts.Nl.Nl_22.Nl_22!!.drawString(
-                "No Settings.",
+                "No settings.",
                 x + 100 + posx,
                 y + posy + scrollY + 72,
-                if (getInstance().light) Color(95, 95, 95).getRGB() else -1
+                if (getInstance().light) Color(95, 95, 95).rgb else -1
             )
         }
     }
@@ -165,7 +177,7 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
 
         val darkRectHover = brighter(darkRectColor, .8f)
 
-        val accentCircle = darker(NeverloseGui.Companion.neverlosecolor, .5f)
+        val accentCircle = darker(NeverloseGui.neverlosecolor, .5f)
 
 
         toggleAnimation.direction = if (module.state) Direction.FORWARDS else Direction.BACKWARDS
@@ -188,7 +200,7 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
             6.5f,
             6.5f,
             3f,
-            if (module.state) NeverloseGui.Companion.neverlosecolor else if (getInstance().light) Color(
+            if (module.state) NeverloseGui.neverlosecolor else if (getInstance().light) Color(
                 255,
                 255,
                 255

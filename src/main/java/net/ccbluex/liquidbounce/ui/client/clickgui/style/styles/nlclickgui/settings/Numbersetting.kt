@@ -1,4 +1,9 @@
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Settings
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings
 
 import net.ccbluex.liquidbounce.config.FloatValue
 import net.ccbluex.liquidbounce.config.IntValue
@@ -7,15 +12,12 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Downw
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui.Companion.getInstance
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NlModule
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.drawRoundedRect
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.isHovering
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Animation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Direction
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.impl.DecelerateAnimation
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil.Companion.drawCircle
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil.Companion.drawRound
-import net.ccbluex.liquidbounce.ui.font.Fonts.Nl_15
-import net.ccbluex.liquidbounce.ui.font.Fonts.Nl_16
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.minecraft.client.Minecraft
 import net.minecraft.util.MathHelper
 import org.lwjgl.input.Keyboard
@@ -23,6 +25,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s, moduleRender) {
     var percent: Float = 0f
@@ -32,21 +35,16 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
 
     private var finalvalue: String? = null
 
-
     var HoveringAnimation: Animation = DecelerateAnimation(225, 1.0, Direction.BACKWARDS)
-
 
     override fun draw(mouseX: Int, mouseY: Int) {
         val mainx = getInstance().x
         val mainy = getInstance().y
 
-
         val numbery = (y + getScrollY()).toInt()
 
-
-
-        HoveringAnimation.direction = if (iloveyou || isHovering(
-                getInstance().x + 170 + x,
+        HoveringAnimation.direction = if (iloveyou || RenderUtil.isHovering(
+                (getInstance().x + 170 + x),
                 (getInstance().y + (y + getScrollY()).toInt() + 58).toFloat(),
                 60f,
                 2f,
@@ -54,7 +52,6 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
                 mouseY
             )
         ) Direction.FORWARDS else Direction.BACKWARDS
-
 
         val clamp = MathHelper.clamp_double(Minecraft.getDebugFPS() / 30.0, 1.0, 9999.0)
 
@@ -74,15 +71,16 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
 
         percent = max(0f, min(1f, (percent + (max(0.0, min(percentBar, 1.0)) - percent) * (0.2 / clamp)).toFloat()))
 
-        Nl_16.drawString(
+        // Ajuste de fonte padronizado
+        Fonts.Nl.Nl_16.Nl_16.drawString(
             setting.name,
             mainx + 100 + x,
             (mainy + numbery + 57).toFloat(),
             if (getInstance().light) Color(95, 95, 95).rgb else -1
         )
 
-        drawRound(
-            mainx + 170 + x,
+        RoundedUtil.drawRound(
+            (mainx + 170 + x),
             (mainy + numbery + 58).toFloat(),
             60f,
             2f,
@@ -90,9 +88,9 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
             if (getInstance().light) Color(230, 230, 230) else Color(5, 22, 41)
         )
 
-        drawRound(mainx + 170 + x, (mainy + numbery + 58).toFloat(), 60 * percent, 2f, 2f, Color(12, 100, 138))
+        RoundedUtil.drawRound((mainx + 170 + x), (mainy + numbery + 58).toFloat(), 60 * percent, 2f, 2f, Color(12, 100, 138))
 
-        drawCircle(
+        RoundedUtil.drawCircle(
             mainx + 167 + x + (60 * percent),
             (mainy + numbery + 56).toFloat(),
             (5.5f + (0.5f * HoveringAnimation.getOutput())).toFloat(),
@@ -100,12 +98,11 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
         )
 
         if (iloveyou) {
-
             val percentt = min(1f, max(0f, ((mouseX.toFloat() - (mainx + 170 + x)) / 99.0f) * 1.55f))
             val newValue = ((percentt * (maximum - minimum)) + minimum)
 
             if (setting is IntValue) {
-                (setting as IntValue).set(Math.round(newValue).toInt(), true)
+                (setting as IntValue).set(newValue.roundToInt(), true)
             } else if (setting is FloatValue) {
                 (setting as FloatValue).set(newValue.toFloat(), true)
             }
@@ -115,12 +112,12 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
             GL11.glTranslatef(0.0f, 0.0f, 2.0f)
         }
 
-
         val displayString = if (isset) "${finalvalue ?: ""}_" else "$current"
-        val stringWidth = Nl_15.stringWidth(displayString) + 4
 
-        drawRoundedRect(
-            mainx + 235 + x,
+        val stringWidth = Fonts.Nl_15.stringWidth(displayString) + 4
+
+        RenderUtil.drawRoundedRect(
+            (mainx + 235 + x),
             (mainy + numbery + 55).toFloat(),
             stringWidth.toFloat(),
             9f,
@@ -130,7 +127,7 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
             Color(13, 24, 35).rgb
         )
 
-        Nl_15.drawString(
+        Fonts.Nl_15.drawString(
             displayString,
             mainx + 237 + x,
             (mainy + numbery + 58).toFloat(),
@@ -145,9 +142,8 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val current = (setting.get() as Number).toDouble()
 
-
-        if (isHovering(
-                getInstance().x + 170 + x,
+        if (RenderUtil.isHovering(
+                (getInstance().x + 170 + x),
                 (getInstance().y + (y + getScrollY()).toInt() + 58).toFloat(),
                 60f,
                 2f,
@@ -160,14 +156,12 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
             }
         }
 
-
         val displayString = if (isset) "${finalvalue ?: ""}_" else "$current"
-        val stringWidth = Nl_15.stringWidth(displayString) + 4
+        val stringWidth = Fonts.Nl_15.stringWidth(displayString) + 4
 
-
-        if (isHovering(
-                getInstance().x + 235 + x,
-                getInstance().y + (y + getScrollY()) + 55,
+        if (RenderUtil.isHovering(
+                (getInstance().x + 235 + x),
+                (getInstance().y + (y + getScrollY()) + 55),
                 stringWidth.toFloat(),
                 9f,
                 mouseX,
@@ -195,7 +189,6 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
                 isset = false
             } else if (keynumbers(keyCode)) {
                 if (!(keyCode == Keyboard.KEY_PERIOD && (finalvalue ?: "").contains("."))) {
-
                     finalvalue = "${finalvalue ?: ""}$typedChar"
                 }
             }
