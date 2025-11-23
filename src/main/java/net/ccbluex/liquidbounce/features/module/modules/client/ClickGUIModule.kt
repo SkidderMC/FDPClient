@@ -21,7 +21,7 @@ import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, Category.SubCategory.CLIENT_GENERAL, Keyboard.KEY_RSHIFT, canBeEnabled = false) {
+object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL,  Keyboard.KEY_RSHIFT, canBeEnabled = false) {
     var lastScale = 0
 
     private var fdpDropdownGui: FDPDropdownClickGUI? = null
