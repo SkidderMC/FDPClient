@@ -27,7 +27,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 import java.util.Random
 
-object LineGraphs : Module("LineGlyphs", Category.VISUAL, gameDetecting = false) {
+object LineGraphs : Module("LineGlyphs", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     init {
         state = true

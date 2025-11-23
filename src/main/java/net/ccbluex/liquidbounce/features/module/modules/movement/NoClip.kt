@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 
-object NoClip : Module("NoClip", Category.MOVEMENT) {
+object NoClip : Module("NoClip", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
     val speed by float("Speed", 0.5f, 0f..10f)
 
     override fun onDisable() {

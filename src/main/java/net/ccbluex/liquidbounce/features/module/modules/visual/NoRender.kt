@@ -32,7 +32,7 @@ import net.minecraft.util.BlockPos
  *
  * @author opZywl
  */
-object NoRender : Module("NoRender", Category.VISUAL, gameDetecting = false) {
+object NoRender : Module("NoRender", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
 	private val allEntitiesValue by boolean("AllEntities", true)
 	private val itemsValue by boolean("Items", true) { !allEntitiesValue }

@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.updateControls
 import net.ccbluex.liquidbounce.event.handler
 
-object DelayRemover : Module("DelayRemover", Category.PLAYER) {
+object DelayRemover : Module("DelayRemover", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
    // val jumpDelay by boolean("NoJumpDelay", false)
   //  val jumpDelayTicks by IntegerValue("JumpDelayTicks", 0, 0.. 4) { jumpDelay }

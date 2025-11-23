@@ -32,7 +32,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulc
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanLowHop
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 
-object Speed : Module("Speed", Category.MOVEMENT) {
+object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
 
     private val speedModes = arrayOf(
 

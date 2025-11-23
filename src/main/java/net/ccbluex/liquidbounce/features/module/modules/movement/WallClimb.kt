@@ -18,7 +18,7 @@ import net.minecraft.util.AxisAlignedBB
 import kotlin.math.cos
 import kotlin.math.sin
 
-object WallClimb : Module("WallClimb", Category.MOVEMENT) {
+object WallClimb : Module("WallClimb", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
     private val mode by choices("Mode", arrayOf("Simple", "CheckerClimb", "Clip", "AAC3.3.12", "AACGlide"), "Simple")
     private val clipMode by choices("ClipMode", arrayOf("Jump", "Fast"), "Fast") { mode == "Clip" }
     private val checkerClimbMotion by float("CheckerClimbMotion", 0f, 0f..1f) { mode == "CheckerClimb" }

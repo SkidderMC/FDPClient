@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.minecraft.client.settings.GameSettings
 
-object KeepTabList : Module("KeepTabList", Category.VISUAL, gameDetecting = false) {
+object KeepTabList : Module("KeepTabList", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     val onUpdate = handler<UpdateEvent> {
         if (mc.thePlayer == null || mc.theWorld == null) return@handler

@@ -8,6 +8,6 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 
-object NoFOV : Module("NoFOV", Category.VISUAL, gameDetecting = false) {
+object NoFOV : Module("NoFOV", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
     val fov by float("FOV", 1f, 0f..1.5f)
 }

@@ -40,7 +40,7 @@ import net.minecraft.util.ResourceLocation
 import java.awt.Color
 import java.util.*
 
-object CombatVisuals : Module("CombatVisuals", Category.VISUAL, subjective = true) {
+object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, subjective = true) {
 
     init {
         state = true

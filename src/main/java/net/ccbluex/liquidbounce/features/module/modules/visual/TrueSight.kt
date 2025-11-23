@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 
-object TrueSight : Module("TrueSight", Category.VISUAL) {
+object TrueSight : Module("TrueSight", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     val barriers by boolean("Barriers", true)
     val entities by boolean("Entities", true)
 

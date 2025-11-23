@@ -61,7 +61,7 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.random.Random
 
-object ESP2D : Module("ESP2D", Category.VISUAL) {
+object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
 
     val outline by boolean("Outline", true)
     val boxMode by choices("Mode", arrayOf("Box", "Corners"), "Box")

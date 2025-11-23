@@ -21,7 +21,7 @@ import java.math.BigDecimal
 import kotlin.math.abs
 import kotlin.random.Random
 
-object DamageParticle : Module("DamageParticle", Category.VISUAL) {
+object DamageParticle : Module("DamageParticle", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
 
     private val aliveTicks by int("AliveTicks", 50, 10..50)
     private val size by int("Size", 3, 1..7)

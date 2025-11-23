@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import org.lwjgl.opengl.GL11.*
 
-object Blink : Module("Blink", Category.PLAYER, gameDetecting = false) {
+object Blink : Module("Blink", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val mode by choices("Mode", arrayOf("Sent", "Received", "Both"), "Sent")
 

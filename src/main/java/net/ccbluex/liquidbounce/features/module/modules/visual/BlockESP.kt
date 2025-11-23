@@ -27,7 +27,7 @@ import net.minecraft.util.BlockPos
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
-object BlockESP : Module("BlockESP", Category.VISUAL) {
+object BlockESP : Module("BlockESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     private val mode by choices("Mode", arrayOf("Box", "2D"), "Box")
     private val block by block("Block", 168)
     private val radius by int("Radius", 40, 5..120)

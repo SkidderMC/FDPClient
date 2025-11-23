@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 
-object NoBob : Module("NoBob", Category.VISUAL, gameDetecting = false) {
+object NoBob : Module("NoBob", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
     val onMotion = handler<MotionEvent> {
         mc.thePlayer?.distanceWalkedModified = -1f

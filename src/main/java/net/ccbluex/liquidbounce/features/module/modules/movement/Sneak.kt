@@ -19,7 +19,7 @@ import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.client.C0BPacketEntityAction.Action.START_SNEAKING
 import net.minecraft.network.play.client.C0BPacketEntityAction.Action.STOP_SNEAKING
 
-object Sneak : Module("Sneak", Category.MOVEMENT) {
+object Sneak : Module("Sneak", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
 
     val mode by choices("Mode", arrayOf("Legit", "Vanilla", "Switch", "MineSecure"), "MineSecure")
     val stopMove by boolean("StopMove", false)

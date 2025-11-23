@@ -38,7 +38,7 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.pow
 
-object StorageESP : Module("StorageESP", Category.VISUAL) {
+object StorageESP : Module("StorageESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     private val mode by
     ListValue("Mode", arrayOf("Box", "OtherBox", "Outline", "Glow", "2D", "WireFrame"), "Outline")
 

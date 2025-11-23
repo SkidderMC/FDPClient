@@ -27,7 +27,7 @@ import net.minecraft.stats.StatList
 import kotlin.math.cos
 import kotlin.math.sin
 
-object Step : Module("Step", Category.MOVEMENT, gameDetecting = false) {
+object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN, gameDetecting = false) {
 
     /**
      * OPTIONS

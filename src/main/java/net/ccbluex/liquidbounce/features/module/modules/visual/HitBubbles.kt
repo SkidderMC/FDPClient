@@ -24,7 +24,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 
-object HitBubbles : Module("HitBubbles", Category.VISUAL, gameDetecting = false) {
+object HitBubbles : Module("HitBubbles", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     init {
         state = true

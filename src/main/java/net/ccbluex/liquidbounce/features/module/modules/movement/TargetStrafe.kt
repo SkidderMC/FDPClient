@@ -28,7 +28,7 @@ import kotlin.math.cos
 import kotlin.math.roundToInt
 import kotlin.math.sin
 
-object TargetStrafe : Module("TargetStrafe", Category.MOVEMENT, gameDetecting = false) {
+object TargetStrafe : Module("TargetStrafe", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN, gameDetecting = false) {
 
     private val thirdPersonViewValue by boolean("ThirdPersonView", false)
 

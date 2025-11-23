@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 
-object CustomModel : Module("CustomModel", Category.VISUAL) {
+object CustomModel : Module("CustomModel", Category.VISUAL, Category.SubCategory.RENDER_SELF) {
 
     init {
         state = true

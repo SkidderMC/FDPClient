@@ -15,7 +15,7 @@ import net.minecraft.network.play.server.S03PacketTimeUpdate
 import net.minecraft.network.play.server.S2BPacketChangeGameState
 import java.awt.Color
 
-object Ambience : Module("Ambience", Category.VISUAL, gameDetecting = false) {
+object Ambience : Module("Ambience", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
     private val timeMode by choices("Mode", arrayOf("None", "Normal", "Custom", "Day", "Dusk", "Night", "Dynamic"), "Custom")
         private val customWorldTime by int("Time", 6, 0..24) { timeMode == "Custom" }

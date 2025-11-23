@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.inta
 import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.other.None
 import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.other.Rewi
 
-object NoWeb : Module("NoWeb", Category.MOVEMENT) {
+object NoWeb : Module("NoWeb", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
 
     private val noWebModes = arrayOf(
         // Vanilla

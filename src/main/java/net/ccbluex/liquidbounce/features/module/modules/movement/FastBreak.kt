@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.other.Fucker
 import net.ccbluex.liquidbounce.features.module.modules.other.Nuker
 
-object FastBreak : Module("FastBreak", Category.MOVEMENT) {
+object FastBreak : Module("FastBreak", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS) {
 
     private val breakDamage by float("BreakDamage", 0.8F, 0.1F..1F)
 

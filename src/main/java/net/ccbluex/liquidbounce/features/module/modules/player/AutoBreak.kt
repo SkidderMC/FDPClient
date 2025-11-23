@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.utils.block.block
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.init.Blocks
 
-object AutoBreak : Module("AutoBreak", Category.PLAYER, subjective = true, gameDetecting = false) {
+object AutoBreak : Module("AutoBreak", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, subjective = true, gameDetecting = false) {
 
     val onUpdate = handler<UpdateEvent> {
         mc.theWorld ?: return@handler

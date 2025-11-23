@@ -2,7 +2,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui
 
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Animation
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.gl.GLClientState
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NlDebugOverlay
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.tessellate.Tessellation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.tessellate.Tessellation.Companion.createExpanding
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer
@@ -39,9 +39,7 @@ object RenderUtil {
         return mouseX >= x && mouseX <= x2 && mouseY >= y && mouseY <= y2
     }
 
-    /**
-     * Sets up basic rendering parameters
-     */
+
     fun startRender() {
         GL11.glEnable(GL11.GL_BLEND)
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
@@ -50,9 +48,7 @@ object RenderUtil {
         GL11.glDisable(GL11.GL_CULL_FACE)
     }
 
-    /**
-     * Resets the rendering parameters
-     */
+
     fun stopRender() {
         GL11.glEnable(GL11.GL_CULL_FACE)
         GL11.glEnable(GL11.GL_ALPHA_TEST)
@@ -108,11 +104,6 @@ object RenderUtil {
         GL11.glEnd()
         stopRender()
     }
-
-    fun smoothAnimation(ani: Float, finalState: Float, speed: Float, scale: Float): Float {
-        return getAnimationState(ani, finalState, max(10.0f, abs(ani - finalState) * speed) * scale)
-    }
-
 
     fun drawFastRoundedRect(x0: Float, y0: Float, x1: Float, y1: Float, radius: Float, color: Int) {
         val f2 = (color shr 24 and 0xFF) / 255.0f
@@ -366,6 +357,12 @@ object RenderUtil {
         GL11.glHint(3155, 4352)
     }
 
+    fun hasDepthAttachment(framebuffer: Framebuffer?): Boolean {
+        framebuffer ?: return false
+
+        return framebuffer.useDepth || framebuffer.depthBuffer > -1
+    }
+
     private fun draw(
         renderer: WorldRenderer,
         x: Int,
@@ -386,12 +383,23 @@ object RenderUtil {
     }
 
     fun createFrameBuffer(framebuffer: Framebuffer?): Framebuffer {
-        if (framebuffer == null || framebuffer.framebufferWidth != mc.displayWidth || framebuffer.framebufferHeight != mc.displayHeight) {
-            if (framebuffer != null) {
-                framebuffer.deleteFramebuffer()
-            }
-            return Framebuffer(mc.displayWidth, mc.displayHeight, true)
+        val hadDepthAttachment = hasDepthAttachment(framebuffer)
+        val needsRebuild = framebuffer == null || framebuffer.framebufferWidth != mc.displayWidth ||
+                framebuffer.framebufferHeight != mc.displayHeight || hadDepthAttachment
+
+        if (needsRebuild) {
+            framebuffer?.deleteFramebuffer()
+
+            // Depth buffers are not required for the GUI passes and enabling them leads to dark
+            // artifacts around the window while it is dragged. Keep the framebuffer colour-only
+            // to avoid the unintended shadow. Record the rebuild for the debug overlay so issues
+            // are easier to diagnose on-device.
+            NlDebugOverlay.noteFramebuffer(needsRebuild = true, hadDepthAttachment = hadDepthAttachment, hasDepthAfter = false)
+            return Framebuffer(mc.displayWidth, mc.displayHeight, false)
         }
+
+        NlDebugOverlay.noteFramebuffer(needsRebuild = false, hadDepthAttachment = hadDepthAttachment, hasDepthAfter = hadDepthAttachment)
+
         return framebuffer
     }
 
@@ -905,8 +913,8 @@ object RenderUtil {
     fun fakeCircleGlow(posX: Float, posY: Float, radius: Float, color: Color, maxAlpha: Float) {
         setAlphaLimit(0f)
         GL11.glShadeModel(GL11.GL_SMOOTH)
-        GLUtil.setup2DRendering({
-            GLUtil.render(GL11.GL_TRIANGLE_FAN, {
+        setup2DRendering(Runnable {
+            render(GL11.GL_TRIANGLE_FAN, Runnable {
                 color(color.getRGB(), maxAlpha)
                 GL11.glVertex2d(posX.toDouble(), posY.toDouble())
                 color(color.getRGB(), 0f)
@@ -928,11 +936,7 @@ object RenderUtil {
         var b = color.getBlue()
         val alpha = color.getAlpha()
 
-        /* From 2D group:
-         * 1. black.brighter() should return grey
-         * 2. applying brighter to blue will always return blue, brighter
-         * 3. non pure color (non zero rgb) will eventually return white
-         */
+
         val i = (1.0 / (1.0 - FACTOR)).toInt()
         if (r == 0 && g == 0 && b == 0) {
             return Color(i, i, i, alpha)
@@ -993,16 +997,7 @@ object RenderUtil {
         })
     }
 
-    /**
-     *
-     * @param n X
-     * @param n2 Y
-     * @param n3 大小
-     * @param n4 颜色
-     * @param n5 起始点
-     * @param n6 圈
-     * @param n7
-     */
+
     fun drawArc(n: Float, n2: Float, n3: Double, n4: Int, n5: Int, n6: Double, n7: Int) {
         var n = n
         var n2 = n2
@@ -1973,28 +1968,6 @@ object RenderUtil {
         return color3
     }
 
-    fun drawLine(x: Float, y: Float, x1: Float, y1: Float, width: Float) {
-        drawLine(x, y, 0.0f, x1, y1, 0.0f, width)
-    }
-
-    fun drawLine(x: Float, y: Float, z: Float, x1: Float, y1: Float, z1: Float, width: Float) {
-        GL11.glLineWidth(width)
-        setupRender(true)
-        setupClientState(GLClientState.VERTEX, true)
-        tessellator.addVertex(x, y, z).addVertex(x1, y1, z1).draw(3)
-        setupClientState(GLClientState.VERTEX, false)
-        setupRender(false)
-    }
-
-    fun setupClientState(state: GLClientState, enabled: Boolean) {
-        csBuffer.clear()
-        if (state.ordinal > 0) {
-            csBuffer.add(state.cap)
-        }
-        csBuffer.add(32884)
-        csBuffer.forEach(if (enabled) ENABLE_CLIENT_STATE else DISABLE_CLIENT_STATE)
-    }
-
     fun resetColor() {
         GlStateManager.color(1f, 1f, 1f, 1f)
     }
@@ -2024,11 +1997,7 @@ object RenderUtil {
         GlStateManager.depthMask(!start)
     }
 
-    /**
-     * Bind a texture using the specified integer refrence to the texture.
-     *
-     * @see org.lwjgl.opengl.GL13 for more information about texture bindings
-     */
+
     fun bindTexture(texture: Int) {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture)
     }

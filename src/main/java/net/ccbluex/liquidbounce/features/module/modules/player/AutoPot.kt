@@ -28,7 +28,7 @@ import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.item.ItemPotion
 import net.minecraft.potion.Potion
 
-object AutoPot : Module("AutoPot", Category.PLAYER) {
+object AutoPot : Module("AutoPot", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
     private val health by float("Health", 15F, 1F..20F) { healPotion || regenerationPotion }
     private val delay by int("Delay", 500, 500..1000)

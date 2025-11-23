@@ -37,7 +37,7 @@ import java.util.*
 import javax.imageio.ImageIO
 import kotlin.math.*
 
-object DashTrail : Module("DashTrail", Category.VISUAL, gameDetecting = false) {
+object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     init {
         state = true

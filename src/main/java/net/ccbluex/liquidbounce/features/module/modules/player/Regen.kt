@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.potion.Potion
 
-object Regen : Module("Regen", Category.PLAYER) {
+object Regen : Module("Regen", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
     private val mode by choices("Mode", arrayOf("Vanilla", "Spartan"), "Vanilla")
     private val speed by int("Speed", 100, 1..100) { mode == "Vanilla" }

@@ -8,4 +8,4 @@ package net.ccbluex.liquidbounce.features.module.modules.movement
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 
-object AirJump : Module("AirJump", Category.MOVEMENT)
+object AirJump : Module("AirJump", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN)

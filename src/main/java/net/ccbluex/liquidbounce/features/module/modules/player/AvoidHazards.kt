@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.minecraft.init.Blocks
 import net.minecraft.util.AxisAlignedBB
 
-object AvoidHazards : Module("AvoidHazards", Category.PLAYER) {
+object AvoidHazards : Module("AvoidHazards", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
     private val fire by boolean("Fire", true)
     private val cobweb by boolean("Cobweb", true)
     private val cactus by boolean("Cactus", true)

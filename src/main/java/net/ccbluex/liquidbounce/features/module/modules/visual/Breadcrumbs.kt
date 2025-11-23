@@ -18,7 +18,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
-object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL) {
+object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     val colors = ColorSettingsInteger(this, "Color").with(132, 102, 255)
     private val lineHeight by float("LineHeight", 0.25F, 0.25F..2F)
     private val temporary by boolean("Temporary", true)

@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Ghost
 import net.minecraft.client.gui.GuiGameOver
 
-object AutoRespawn : Module("AutoRespawn", Category.PLAYER, gameDetecting = false) {
+object AutoRespawn : Module("AutoRespawn", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val instant by boolean("Instant", true)
 

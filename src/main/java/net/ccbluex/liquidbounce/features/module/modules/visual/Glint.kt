@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import java.awt.Color
 
-object Glint: Module("Glint", Category.VISUAL, gameDetecting = false) {
+object Glint: Module("Glint", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
     private val modeValue by choices("Mode", arrayOf("Rainbow", "Custom"), "Custom")
     private val color by color("Color", Color.WHITE) { modeValue == "Custom" }

@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.inventory.hotBarSlot
 import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 
-object AutoPlay : Module("AutoPlay", Category.PLAYER, gameDetecting = false) {
+object AutoPlay : Module("AutoPlay", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val mode by choices("Mode", arrayOf("Paper", "Hypixel"), "Paper")
 

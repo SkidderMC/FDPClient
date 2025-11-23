@@ -30,7 +30,7 @@ import net.minecraft.network.status.server.S01PacketPong
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-object NoSlow : Module("NoSlow", Category.MOVEMENT, gameDetecting = false) {
+object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN, gameDetecting = false) {
 
     private val swordMode by choices(
         "SwordMode",
