@@ -87,17 +87,18 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
         if (this.isSelected && subCategory != SubCategory.CONFIGS) {
             val scrolll = getScroll().toDouble()
             visibleModules = getVisibleModules()
+            val moduleLayouts = layoutModules(visibleModules)
             for (nlModule in visibleModules) {
                 nlModule.scrollY = roundToHalf(scrolll).toInt()
+                moduleLayouts[nlModule]?.let { layout ->
+                    nlModule.setLayout(layout.startX, layout.yOffset, layout.cardWidth, x)
+                }
             }
             onScroll(40)
 
-            if (!visibleModules.isEmpty()) {
-                val lastModule = visibleModules[visibleModules.size - 1]
-                maxScroll = max(0, lastModule.y + 50 + lastModule.posy + lastModule.height).toFloat()
-            } else {
-                maxScroll = 0f
-            }
+            val tallestColumnHeight = (moduleLayouts.values.maxOfOrNull { it.yOffset + it.heightWithGap } ?: 0) - MODULE_VERTICAL_GAP
+            val contentHeight = max(0, tallestColumnHeight) + 50
+            maxScroll = max(0f, (contentHeight - (h - 40)).toFloat())
 
             for (nlModule in visibleModules) {
                 nlModule.x = x
@@ -160,17 +161,45 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
     val isSelected: Boolean
         get() = getInstance().selectedSub == this
 
-    val layoutModules: MutableList<NlModule?>?
-        get() = (if (visibleModules.isEmpty() && getInstance().isSearching) visibleModules else (if (visibleModules.isEmpty()) nlModules else visibleModules)) as MutableList<NlModule?>?
-
     private fun getVisibleModules(): MutableList<NlModule> {
         if (!getInstance().isSearching) {
             return nlModules
         }
+
         val query: String = getInstance().searchTextContent.lowercase(getDefault())
         return nlModules.stream()
             .filter { module: NlModule? -> module!!.module.name.lowercase(getDefault()).contains(query) }
             .collect(Collectors.toList())
+    }
+
+    private fun layoutModules(modules: List<NlModule>): Map<NlModule, ModuleLayout> {
+        val contentWidth = (w - 90).toFloat()
+        val contentStart = (x + 90).toFloat()
+        val horizontalGap = 12f
+        val minCardWidth = 175f
+        val columns = max(2, ((contentWidth + horizontalGap) / (minCardWidth + horizontalGap)).toInt())
+        val cardWidth = (contentWidth - horizontalGap * (columns + 1)) / columns
+        val columnHeights = MutableList(columns) { 0 }
+
+        val moduleLayouts = HashMap<NlModule, ModuleLayout>()
+
+        for (module in modules) {
+            val column = columnHeights.indices.minByOrNull { columnHeights[it] } ?: 0
+            val startX = contentStart + horizontalGap + column * (cardWidth + horizontalGap)
+            val yOffset = columnHeights[column]
+            val moduleHeight = module.calcHeight()
+
+            moduleLayouts[module] = ModuleLayout(startX, yOffset, cardWidth, moduleHeight + MODULE_VERTICAL_GAP)
+            columnHeights[column] = yOffset + moduleHeight + MODULE_VERTICAL_GAP
+        }
+
+        return moduleLayouts
+    }
+
+    private data class ModuleLayout(val startX: Float, val yOffset: Int, val cardWidth: Float, val heightWithGap: Int)
+
+    companion object {
+        private const val MODULE_VERTICAL_GAP = 12
     }
 
     private val icon: String

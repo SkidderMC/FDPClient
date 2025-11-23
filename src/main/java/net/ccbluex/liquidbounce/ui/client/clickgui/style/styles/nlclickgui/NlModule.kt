@@ -45,11 +45,17 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
     var posx: Int
     var posy: Int = 0
 
+    private var layoutY: Int = 0
+    private var cardWidth: Float = 160f
+
     var height: Int = 0
 
     var downwards: MutableList<Downward<*>> = ArrayList<Downward<*>>()
 
     var scrollY: Int = 0
+
+    private var toggleXPosition = 0f
+    private var toggleYPosition = 0f
 
     var toggleAnimation: Animation = DecelerateAnimation(225, 1.0, Direction.BACKWARDS)
 
@@ -97,33 +103,29 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
     }
 
 
+    fun setLayout(cardStartX: Float, layoutY: Int, cardWidth: Float, panelX: Int) {
+        this.cardWidth = cardWidth
+        this.layoutY = layoutY
+        this.posx = (cardStartX - (panelX + 95)).toInt()
+    }
+
+
     fun calcY(): Int {
-        leftAdd = 0
-        rightAdd = 0
-
-        for (tabModule in NlSub.layoutModules!!) {
-            if (tabModule === this) {
-                break
-            } else {
-                if (tabModule!!.lef) {
-                    leftAdd += tabModule.calcHeight() + 10
-                } else {
-                    rightAdd += tabModule.calcHeight() + 10
-                }
-            }
-        }
-
-        return if (lef) leftAdd else rightAdd
+        return layoutY
     }
 
     fun draw(mx: Int, my: Int) {
         posy = calcY()
         height = calcHeight()
 
+        val cardStartX = (x + 95 + posx).toFloat()
+        toggleXPosition = cardStartX + cardWidth - 22f
+        toggleYPosition = (y + posy + scrollY + 56).toFloat()
+
         drawRound(
-            (x + 95 + posx).toFloat(),
+            cardStartX,
             (y + 50 + posy + scrollY).toFloat(),
-            160f,
+            cardWidth,
             calcHeight().toFloat(),
             2f,
             if (getInstance().light) Color(245, 245, 245) else Color(3, 13, 26)
@@ -131,24 +133,27 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
 
         Fonts.Nl.Nl_18.Nl_18.drawString(
             module.name,
-            (x + 100 + posx).toFloat(),
+            (cardStartX + 5f),
             (y + posy + 55 + scrollY).toFloat(),
             if (getInstance().light) Color(95, 95, 95).rgb else -1
         )
 
         drawRound(
-            (x + 100 + posx).toFloat(),
+            (cardStartX + 5f),
             (y + 65 + posy + scrollY).toFloat(),
-            150f,
+            cardWidth - 10f,
             0.7f,
             0f,
             if (getInstance().light) Color(213, 213, 213) else Color(9, 21, 34)
         )
 
 
+        val toggleX = toggleXPosition
+        val toggleY = toggleYPosition
+
         HoveringAnimation.direction = if (isHovering(
-                (x + 265 - 32 + posx).toFloat(),
-                (y + posy + scrollY + 56).toFloat(),
+                toggleX,
+                toggleY,
                 16f,
                 4.5f,
                 mx,
@@ -189,20 +194,20 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
         toggleAnimation.direction = if (module.state) Direction.FORWARDS else Direction.BACKWARDS
 
         drawRound(
-            (x + 265 - 32 + posx).toFloat(), (y + posy + scrollY + 56).toFloat(), 16f, 4.5f,
+            toggleXPosition, toggleYPosition, 16f, 4.5f,
             2f, interpolateColorC(applyOpacity(darkRectHover, .5f), accentCircle, toggleAnimation.getOutput().toFloat())
         )
 
         fakeCircleGlow(
-            (x + 265 + 3 - 32 + posx + ((11) * toggleAnimation.getOutput())).toFloat(),
-            (y + posy + scrollY + 56 + 2).toFloat(), 6f, Color.BLACK, .3f
+            toggleXPosition + 3 + ((11) * toggleAnimation.getOutput()).toFloat(),
+            toggleYPosition + 2, 6f, Color.BLACK, .3f
         )
 
         resetColor()
 
         drawRound(
-            (x + 265 - 32 + posx + ((11) * toggleAnimation.getOutput())).toFloat(),
-            (y + posy + scrollY + 56 - 1).toFloat(),
+            toggleXPosition + ((11) * toggleAnimation.getOutput()).toFloat(),
+            toggleYPosition - 1,
             6.5f,
             6.5f,
             3f,
@@ -232,8 +237,8 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
             .forEach { e: Downward<*>? -> e!!.mouseClicked(mx, my, mb) }
 
         if (isHovering(
-                (x + 265 - 32 + posx).toFloat(),
-                (y + posy + scrollY + 56).toFloat(),
+                toggleXPosition,
+                toggleYPosition,
                 16f,
                 4.5f,
                 mx,
