@@ -1,18 +1,13 @@
-/*
- * FDPClient Hacked Client
- * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
- * https://github.com/SkidderMC/FDPClient/
- */
-package net.ccbluex.liquidbounce.features.module.modules.other
+package net.ccbluex.liquidbounce.features.module.modules.player
 
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.minecraft.potion.Potion.*
+import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
 
-object PotionSpoof : Module("PotionSpoof", Category.PLAYER) {
+object PotionSpoof : Module("PotionSpoof", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST) {
 
     private val level by int("PotionLevel", 2, 1..5).onChanged {
         onDisable()
@@ -37,23 +32,23 @@ object PotionSpoof : Module("PotionSpoof", Category.PLAYER) {
     private val waterBreathingValue = boolean("WaterBreathing", false)
 
     private val potionMap = mapOf(
-        moveSpeed.id to speedValue,
-        moveSlowdown.id to moveSlowDownValue,
-        digSpeed.id to hasteValue,
-        digSlowdown.id to digSlowDownValue,
-        blindness.id to blindnessValue,
-        damageBoost.id to strengthValue,
-        jump.id to jumpBoostValue,
-        weakness.id to weaknessValue,
-        regeneration.id to regenerationValue,
-        wither.id to witherValue,
-        resistance.id to resistanceValue,
-        fireResistance.id to fireResistanceValue,
-        absorption.id to absorptionValue,
-        healthBoost.id to healthBoostValue,
-        poison.id to poisonValue,
-        saturation.id to saturationValue,
-        waterBreathing.id to waterBreathingValue
+        Potion.moveSpeed.id to speedValue,
+        Potion.moveSlowdown.id to moveSlowDownValue,
+        Potion.digSpeed.id to hasteValue,
+        Potion.digSlowdown.id to digSlowDownValue,
+        Potion.blindness.id to blindnessValue,
+        Potion.damageBoost.id to strengthValue,
+        Potion.jump.id to jumpBoostValue,
+        Potion.weakness.id to weaknessValue,
+        Potion.regeneration.id to regenerationValue,
+        Potion.wither.id to witherValue,
+        Potion.resistance.id to resistanceValue,
+        Potion.fireResistance.id to fireResistanceValue,
+        Potion.absorption.id to absorptionValue,
+        Potion.healthBoost.id to healthBoostValue,
+        Potion.poison.id to poisonValue,
+        Potion.saturation.id to saturationValue,
+        Potion.waterBreathing.id to waterBreathingValue
     )
 
     override fun onDisable() {

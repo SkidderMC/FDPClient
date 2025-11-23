@@ -16,22 +16,15 @@ object BloomUtil {
     val gaussianBloom = ShaderUtil("fdpclient/shaders/bloom.frag")
     var framebuffer = Framebuffer(1, 1, false)
 
-    private val weightBuffer: FloatBuffer = BufferUtils.createFloatBuffer(256)
-
     fun renderBlur(sourceTexture: Int, radius: Int, offset: Int) {
         framebuffer = RenderUtil.createFrameBuffer(framebuffer)
 
-        val depthEnabled = GL11.glIsEnabled(GL11.GL_DEPTH_TEST)
-        val depthMask = GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK)
-
-        GlStateManager.disableDepth()
-        GlStateManager.depthMask(false)
         GlStateManager.enableAlpha()
         GlStateManager.alphaFunc(516, 0.0f)
         GlStateManager.enableBlend()
         OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
 
-        weightBuffer.clear()
+        val weightBuffer: FloatBuffer = BufferUtils.createFloatBuffer(256)
         for (i in 0..radius) {
             weightBuffer.put(calculateGaussianValue(i.toFloat(), radius.toFloat()))
         }
@@ -44,7 +37,7 @@ object BloomUtil {
         gaussianBloom.init()
         setupUniforms(radius, offset, 0, weightBuffer)
         RenderUtil.bindTexture(sourceTexture)
-        ShaderUtil.drawQuads(0f, 0f, RenderUtil.mc.displayWidth.toFloat(), RenderUtil.mc.displayHeight.toFloat())
+        ShaderUtil.drawQuads()
         gaussianBloom.unload()
         framebuffer.unbindFramebuffer()
 
@@ -57,19 +50,12 @@ object BloomUtil {
         GL13.glActiveTexture(GL13.GL_TEXTURE0)
         RenderUtil.bindTexture(framebuffer.framebufferTexture)
 
-        ShaderUtil.drawQuads(0f, 0f, RenderUtil.mc.displayWidth.toFloat(), RenderUtil.mc.displayHeight.toFloat())
+        ShaderUtil.drawQuads()
         gaussianBloom.unload()
 
         GlStateManager.alphaFunc(516, 0.1f)
         GlStateManager.enableAlpha()
         GlStateManager.bindTexture(0)
-
-        GlStateManager.depthMask(depthMask)
-        if (depthEnabled) {
-            GlStateManager.enableDepth()
-        } else {
-            GlStateManager.disableDepth()
-        }
     }
 
     fun setupUniforms(radius: Int, directionX: Int, directionY: Int, weights: FloatBuffer) {

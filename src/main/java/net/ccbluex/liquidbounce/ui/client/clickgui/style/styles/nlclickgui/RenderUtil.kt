@@ -2,7 +2,6 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui
 
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Animation
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NlDebugOverlay
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.tessellate.Tessellation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.tessellate.Tessellation.Companion.createExpanding
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer
@@ -394,12 +393,8 @@ object RenderUtil {
             // artifacts around the window while it is dragged. Keep the framebuffer colour-only
             // to avoid the unintended shadow. Record the rebuild for the debug overlay so issues
             // are easier to diagnose on-device.
-            NlDebugOverlay.noteFramebuffer(needsRebuild = true, hadDepthAttachment = hadDepthAttachment, hasDepthAfter = false)
             return Framebuffer(mc.displayWidth, mc.displayHeight, false)
         }
-
-        NlDebugOverlay.noteFramebuffer(needsRebuild = false, hadDepthAttachment = hadDepthAttachment, hasDepthAfter = hadDepthAttachment)
-
         return framebuffer
     }
 

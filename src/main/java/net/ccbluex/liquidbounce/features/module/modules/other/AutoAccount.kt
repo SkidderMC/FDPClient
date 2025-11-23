@@ -27,7 +27,7 @@ import net.minecraft.util.ChatComponentText
 import net.minecraft.util.Session
 
 object AutoAccount :
-    Module("AutoAccount", Category.CLIENT, subjective = true, gameDetecting = false) {
+    Module("AutoAccount", Category.OTHER, Category.SubCategory.MISCELLANEOUS,  subjective = true, gameDetecting = false) {
 
     private val register by boolean("AutoRegister", true)
     private val login by boolean("AutoLogin", true)

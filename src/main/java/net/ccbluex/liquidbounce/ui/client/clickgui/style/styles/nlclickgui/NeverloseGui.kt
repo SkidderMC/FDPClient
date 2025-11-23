@@ -47,6 +47,7 @@ class NeverloseGui : GuiScreen() {
     val configs = Configs()
     private val configManager = NeverloseConfigManager()
     private var bloomFramebuffer = Framebuffer(1, 1, false)
+    private var previousDebugInfoState = false
 
     init {
         INSTANCE = this
@@ -72,7 +73,14 @@ class NeverloseGui : GuiScreen() {
     override fun initGui() {
         super.initGui()
         configManager.refresh()
+        previousDebugInfoState = mc.gameSettings.showDebugInfo
+        mc.gameSettings.showDebugInfo = false
         alphaani = EaseInOutQuad(300, 0.6, Direction.FORWARDS)
+    }
+
+    override fun onGuiClosed() {
+        mc.gameSettings.showDebugInfo = previousDebugInfoState
+        super.onGuiClosed()
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
