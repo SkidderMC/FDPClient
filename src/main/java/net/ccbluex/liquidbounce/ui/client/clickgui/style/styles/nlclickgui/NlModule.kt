@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui
 
 import net.ccbluex.liquidbounce.config.*
@@ -57,7 +62,7 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
             if (setting is BoolValue) {
                 this.downwards.add(BoolSetting(setting, this))
             }
-            if (setting is FloatValue || setting is IntValue) {
+            if (setting is FloatValue || setting is IntValue || setting is BlockValue) {
                 this.downwards.add(Numbersetting(setting, this))
             }
             if (setting is FloatRangeValue || setting is IntRangeValue) {
@@ -113,6 +118,7 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
 
     fun draw(mx: Int, my: Int) {
         posy = calcY()
+        height = calcHeight()
 
         drawRound(
             (x + 95 + posx).toFloat(),
@@ -125,8 +131,8 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
 
         Fonts.Nl.Nl_18.Nl_18.drawString(
             module.name,
-            x + 100 + posx,
-            y + posy + 55 + scrollY,
+            (x + 100 + posx).toFloat(),
+            (y + posy + 55 + scrollY).toFloat(),
             if (getInstance().light) Color(95, 95, 95).rgb else -1
         )
 

@@ -16,6 +16,7 @@ import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.util.*
+import java.util.Locale.getDefault
 import java.util.function.Consumer
 import java.util.stream.Collectors
 import kotlin.math.max
@@ -32,7 +33,7 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
 
     var alphaani: Animation = EaseInOutQuad(150, 1.0, Direction.BACKWARDS)
 
-    private var maxScroll = Float.Companion.MAX_VALUE
+    private var maxScroll = Float.MAX_VALUE
     private val minScroll = 0f
     private var rawScroll = 0f
 
@@ -74,13 +75,13 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
             this.icon,
             x + 10,
             y + y2 + 14,
-            NeverloseGui.Companion.neverlosecolor.getRGB()
+            NeverloseGui.neverlosecolor.rgb
         )
 
         Fonts.Nl.Nl_18.Nl_18.drawString(
             subCategory.toString(), x + 10 + Fonts.NlIcon.nlfont_20.nlfont_20.stringWidth(
                 this.icon
-            ) + 8, y + y2 + 13, if (getInstance().light) Color(18, 18, 19).getRGB() else -1
+            ) + 8, y + y2 + 13, if (getInstance().light) Color(18, 18, 19).rgb else -1
         )
 
         if (this.isSelected && subCategory != SubCategory.CONFIGS) {
@@ -92,7 +93,7 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
             onScroll(40)
 
             if (!visibleModules.isEmpty()) {
-                val lastModule = visibleModules.get(visibleModules.size - 1)
+                val lastModule = visibleModules[visibleModules.size - 1]
                 maxScroll = max(0, lastModule.y + 50 + lastModule.posy + lastModule.height).toFloat()
             } else {
                 maxScroll = 0f
@@ -166,9 +167,9 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
         if (!getInstance().isSearching) {
             return nlModules
         }
-        val query: String = getInstance().searchTextContent.toLowerCase()
+        val query: String = getInstance().searchTextContent.lowercase(getDefault())
         return nlModules.stream()
-            .filter { module: NlModule? -> module!!.module.name.lowercase(Locale.getDefault()).contains(query) }
+            .filter { module: NlModule? -> module!!.module.name.lowercase(getDefault()).contains(query) }
             .collect(Collectors.toList())
     }
 

@@ -27,11 +27,20 @@ class ColorSetting(setting: ColorValue, moduleRender: NlModule) : Downward<Color
         val colory = (y + getScrollY()).toInt()
 
         val titleColor = if (gui.light) Color(95, 95, 95).rgb else -1
+        val (label, labelTruncated) = abbreviate(setting.name)
+        val labelX = (mainx + 100 + x).toFloat()
+        val labelY = (mainy + colory + 57).toFloat()
 
-        Fonts.Nl.Nl_16.Nl_16.drawString(setting.name, (mainx + 100 + x), (mainy + colory + 57).toFloat(), titleColor)
+        Fonts.Nl.Nl_16.Nl_16.drawString(label, labelX, labelY, titleColor)
+
+        if (labelTruncated && RenderUtil.isHovering(labelX, labelY - 3f, Fonts.Nl.Nl_16.Nl_16.stringWidth(label).toFloat(), 12f, mouseX, mouseY)) {
+            drawTooltip(setting.name, mouseX, mouseY)
+        }
 
         val currentColor = setting.selectedColor()
-        val previewX = (mainx + 170 + x)
+        val hexText = "#%08X".format(currentColor.rgb)
+        val hexX = labelX + Fonts.Nl.Nl_16.Nl_16.stringWidth(label) + 6f
+        val previewX = computePreviewX(label, hexText, mainx)
         val previewY = (mainy + colory + 52).toFloat()
 
         RoundedUtil.drawRound(previewX, previewY, 18f, 12f, 2f, currentColor)
@@ -42,7 +51,7 @@ class ColorSetting(setting: ColorValue, moduleRender: NlModule) : Downward<Color
         RoundedUtil.drawRound(rainbowPreviewX, previewY, 18f, 12f, 2f, if (setting.rainbow) rainbowColor else Color(50, 50, 50, 90))
         RenderUtil.drawBorderedRect(rainbowPreviewX, previewY, rainbowPreviewX + 18, previewY + 12, 1f, Color(0, 0, 0, 60).rgb, Color(0, 0, 0, 80).rgb)
 
-        Fonts.Nl_15.drawString("#%08X".format(currentColor.rgb), previewX + 46, previewY + 3, titleColor)
+        Fonts.Nl_15.drawString(hexText, hexX, previewY + 3, titleColor)
 
         if (setting.showPicker && dragging != null) {
             updateFromMouse(mouseX, mouseY, dragging!!)
@@ -57,7 +66,11 @@ class ColorSetting(setting: ColorValue, moduleRender: NlModule) : Downward<Color
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val gui = NeverloseGui.getInstance()
-        val previewX = (gui.x + 170 + x)
+        val (label, _) = abbreviate(setting.name)
+        val labelX = (gui.x + 100 + x).toFloat()
+        val currentColor = setting.selectedColor()
+        val hexText = "#%08X".format(currentColor.rgb)
+        val previewX = computePreviewX(label, hexText, gui.x)
         val previewY = (gui.y + (y + getScrollY()).toInt() + 52).toFloat()
 
         val inColorPreview = RenderUtil.isHovering(previewX, previewY, 18f, 12f, mouseX, mouseY)
@@ -155,7 +168,9 @@ class ColorSetting(setting: ColorValue, moduleRender: NlModule) : Downward<Color
 
     private fun updateFromMouse(mouseX: Int, mouseY: Int, slider: ColorValue.SliderType) {
         val gui = NeverloseGui.getInstance()
-        val baseX = (gui.x + 170 + x)
+        val (label, _) = abbreviate(setting.name)
+        val hexText = "#%08X".format(setting.selectedColor().rgb)
+        val baseX = computePreviewX(label, hexText, gui.x)
         val baseY = (gui.y + (y + getScrollY()).toInt() + 72).toFloat()
         val padding = 4f
         val squareSize = 70f
@@ -193,6 +208,30 @@ class ColorSetting(setting: ColorValue, moduleRender: NlModule) : Downward<Color
 
     private fun titleColor(gui: NeverloseGui): Int {
         return if (gui.light) Color(95, 95, 95).rgb else -1
+    }
+
+    private fun computePreviewX(label: String, hexText: String, mainx: Int): Float {
+        val labelX = (mainx + 100 + x).toFloat()
+        val hexX = labelX + Fonts.Nl.Nl_16.Nl_16.stringWidth(label) + 6f
+        return hexX + Fonts.Nl_15.stringWidth(hexText) + 8f
+    }
+
+    private fun abbreviate(value: String): Pair<String, Boolean> {
+        return if (value.length > 10) {
+            value.substring(0, 10) + "..." to true
+        } else {
+            value to false
+        }
+    }
+
+    private fun drawTooltip(text: String, mouseX: Int, mouseY: Int) {
+        val width = Fonts.Nl_15.stringWidth(text) + 6
+        val height = Fonts.Nl_15.height + 4
+        val renderX = (mouseX + 6).toFloat()
+        val renderY = (mouseY - height - 2).toFloat()
+
+        RenderUtil.drawRoundedRect(renderX, renderY, width.toFloat(), height.toFloat(), 2f, Color(0, 5, 19).rgb, 1f, Color(13, 24, 35).rgb)
+        Fonts.Nl_15.drawString(text, renderX + 3f, renderY + 2f, Color.WHITE.rgb)
     }
 
     override fun drawGradientRect(left: Int, top: Int, right: Int, bottom: Int, startColor: Int, endColor: Int) {

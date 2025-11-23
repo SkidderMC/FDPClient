@@ -34,8 +34,13 @@ class RangeSetting(
         val mainy = gui.y
         val rangeY = (y + getScrollY()).toInt()
 
-        val barX = (mainx + 170 + x).toFloat()
+        val barX = (mainx + 150 + x).toFloat()
         val barY = (mainy + rangeY + 58).toFloat()
+
+        val (label, labelTruncated) = abbreviate(setting.name)
+        val labelX = (mainx + 100 + x).toFloat()
+        val labelY = (mainy + rangeY + 57).toFloat()
+        val valueBoxX = (mainx + 215 + x).toFloat()
 
         val intRange = setting as? IntRangeValue
         val floatRange = setting as? FloatRangeValue
@@ -65,11 +70,15 @@ class RangeSetting(
         val endX = barX + (60 * percentEnd).toFloat()
 
         Fonts.Nl.Nl_16.Nl_16.drawString(
-            setting.name,
-            (mainx + 100 + x),
-            (mainy + rangeY + 57).toFloat(),
+            label,
+            labelX,
+            labelY,
             if (gui.light) Color(95, 95, 95).rgb else -1
         )
+
+        if (labelTruncated && RenderUtil.isHovering(labelX, labelY - 3f, Fonts.Nl.Nl_16.Nl_16.stringWidth(label).toFloat(), 12f, mouseX, mouseY)) {
+            drawTooltip(setting.name, mouseX, mouseY)
+        }
 
         RoundedUtil.drawRound(barX, barY, 60f, 2f, 2f, if (gui.light) Color(230, 230, 230) else Color(5, 22, 41))
 
@@ -78,8 +87,8 @@ class RangeSetting(
 
         RoundedUtil.drawRound(fillStart, barY, max(2f, fillWidth), 2f, 2f, NeverloseGui.neverlosecolor)
 
-        RoundedUtil.drawCircle(startX, barY - 2, 5.5f, NeverloseGui.neverlosecolor)
-        RoundedUtil.drawCircle(endX, barY - 2, 5.5f, NeverloseGui.neverlosecolor)
+        RoundedUtil.drawCircle(startX - 3, barY - 2, 5.5f, NeverloseGui.neverlosecolor)
+        RoundedUtil.drawCircle(endX - 3, barY - 2, 5.5f, NeverloseGui.neverlosecolor)
 
         if (draggingLeft || draggingRight) {
             val percent = ((mouseX.toFloat() - barX) / 60f).coerceIn(0f, 1f)
@@ -105,7 +114,7 @@ class RangeSetting(
         val stringWidth = Fonts.Nl_15.stringWidth(valueString) + 4
 
         RenderUtil.drawRoundedRect(
-            (mainx + 235 + x).toFloat(),
+            valueBoxX,
             (mainy + rangeY + 55).toFloat(),
             stringWidth.toFloat(),
             9f,
@@ -117,7 +126,7 @@ class RangeSetting(
 
         Fonts.Nl_15.drawString(
             valueString,
-            mainx + 237 + x,
+            valueBoxX + 2f,
             (mainy + rangeY + 58).toFloat(),
             if (gui.light) Color(95, 95, 95).rgb else -1
         )
@@ -125,7 +134,7 @@ class RangeSetting(
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val gui = NeverloseGui.getInstance()
-        val barX = (gui.x + 170 + x).toFloat()
+        val barX = (gui.x + 150 + x).toFloat()
         val barY = (gui.y + (y + getScrollY()).toInt() + 58).toFloat()
 
         val intRange = setting as? IntRangeValue
@@ -149,21 +158,21 @@ class RangeSetting(
 
         val startX = barX + 60 * percentStart
         val endX = barX + 60 * percentEnd
+        val startKnob = startX - 3
+        val endKnob = endX - 3
 
-        if (mouseButton == 0) {
-            val nearStart = abs(mouseX - startX) <= 6
-            val nearEnd = abs(mouseX - endX) <= 6
+        if (mouseButton == 0 && RenderUtil.isHovering(barX - 6f, barY - 4f, 72f, 12f, mouseX, mouseY)) {
+            val nearStart = abs(mouseX - startKnob) <= 6
+            val nearEnd = abs(mouseX - endKnob) <= 6
 
-            if (nearStart || nearEnd || RenderUtil.isHovering(barX, barY, 60f, 6f, mouseX, mouseY)) {
-                if (nearStart && nearEnd) {
-                    if (abs(mouseX - startX) <= abs(mouseX - endX)) draggingLeft = true else draggingRight = true
-                } else if (nearStart) {
-                    draggingLeft = true
-                } else if (nearEnd) {
-                    draggingRight = true
-                } else {
-                    if (abs(mouseX - startX) < abs(mouseX - endX)) draggingLeft = true else draggingRight = true
-                }
+            if (nearStart && nearEnd) {
+                if (abs(mouseX - startKnob) <= abs(mouseX - endKnob)) draggingLeft = true else draggingRight = true
+            } else if (nearStart) {
+                draggingLeft = true
+            } else if (nearEnd) {
+                draggingRight = true
+            } else {
+                if (abs(mouseX - startKnob) < abs(mouseX - endKnob)) draggingLeft = true else draggingRight = true
             }
         }
     }
@@ -173,6 +182,24 @@ class RangeSetting(
             draggingLeft = false
             draggingRight = false
         }
+    }
+
+    private fun abbreviate(value: String): Pair<String, Boolean> {
+        return if (value.length > 10) {
+            value.substring(0, 10) + "..." to true
+        } else {
+            value to false
+        }
+    }
+
+    private fun drawTooltip(text: String, mouseX: Int, mouseY: Int) {
+        val width = Fonts.Nl_15.stringWidth(text) + 6
+        val height = Fonts.Nl_15.height + 4
+        val renderX = (mouseX + 6).toFloat()
+        val renderY = (mouseY - height - 2).toFloat()
+
+        RenderUtil.drawRoundedRect(renderX, renderY, width.toFloat(), height.toFloat(), 2f, Color(0, 5, 19).rgb, 1f, Color(13, 24, 35).rgb)
+        Fonts.Nl_15.drawString(text, renderX + 3f, renderY + 2f, Color.WHITE.rgb)
     }
 
     data class Quadruple<A, B, C, D>(val first: A, val second: B, val third: C, val fourth: D)

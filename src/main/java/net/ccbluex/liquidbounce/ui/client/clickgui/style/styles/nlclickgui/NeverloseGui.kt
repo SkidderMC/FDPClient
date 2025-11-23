@@ -1,7 +1,13 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui
 
 import com.mojang.realmsclient.gui.ChatFormatting
-import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
+import net.ccbluex.liquidbounce.FDPClient.fileManager
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.StencilUtil
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Config.Configs
@@ -39,7 +45,7 @@ class NeverloseGui : GuiScreen() {
     private var settings = false
     private var search = false
     private var searchText = ""
-    private val defaultAvatar = ResourceLocation(FDPClient.CLIENT_NAME.lowercase(Locale.getDefault()) + "/64.png")
+    private val defaultAvatar = ResourceLocation(CLIENT_NAME.lowercase(Locale.getDefault()) + "/64.png")
     private var avatarTexture: ResourceLocation = defaultAvatar
     private var avatarLoaded = false
     private var nlSetting: NlSetting = NlSetting()
@@ -118,7 +124,7 @@ class NeverloseGui : GuiScreen() {
         Fonts.Nl_18.drawString(mc.session.username, (x + 29).toFloat(), (avatarY + 1).toFloat(), if (light) Color(51, 51, 51).rgb else -1)
         Fonts.Nl_16.drawString(ChatFormatting.GRAY.toString() + "Till: " + ChatFormatting.RESET + SimpleDateFormat("dd:MM").format(Date()) + " " + SimpleDateFormat("HH:mm").format(Date()), (x + 29).toFloat(), (avatarY + 13).toFloat(), neverlosecolor.rgb)
         if (!light) {
-            NLOutline("FDPCLIENT", Fonts.NLBold_28, (x + 7).toFloat(), (y + 12).toFloat(), -1, neverlosecolor.rgb, 0.7f)
+            NLOutline("FDP", Fonts.NLBold_28, (x + 7).toFloat(), (y + 12).toFloat(), -1, neverlosecolor.rgb, 0.7f)
         } else {
             Fonts.NLBold_28.drawString("FDP", (x + 8).toFloat(), (y + 12).toFloat(), Color(51, 51, 51).rgb, false)
         }
@@ -178,7 +184,7 @@ class NeverloseGui : GuiScreen() {
                 if (configManager.activeConfig() != null) {
                     configManager.saveConfig(configManager.activeConfig()!!.name)
                 } else {
-                    FDPClient.fileManager.saveAllConfigs()
+                    fileManager.saveAllConfigs()
                     configManager.refresh()
                 }
             }
@@ -251,7 +257,7 @@ class NeverloseGui : GuiScreen() {
     companion object {
         lateinit var INSTANCE: NeverloseGui
         var neverlosecolor = Color(28, 133, 192)
-        @JvmStatic
+
         fun getInstance(): NeverloseGui = INSTANCE
 
         @JvmStatic
