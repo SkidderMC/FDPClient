@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Rende
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import java.awt.Color
 import kotlin.math.max
+import kotlin.math.min
 
 class FontSetting(setting: FontValue, moduleRender: NlModule) : Downward<FontValue>(setting, moduleRender) {
 
@@ -22,18 +23,15 @@ class FontSetting(setting: FontValue, moduleRender: NlModule) : Downward<FontVal
         val mainy = gui.y
         val fontY = (y + getScrollY()).toInt()
 
-        // Ajuste da Fonte para evitar erro de referência (padronizado com NlModule)
-        // Se der erro, tente remover o ".Nl_16" extra
         Fonts.Nl.Nl_16.Nl_16.drawString(
             setting.name,
-            (mainx + 100 + x),
+            (mainx + 100 + x).toFloat(),
             (mainy + fontY + 57).toFloat(),
             if (gui.light) Color(95, 95, 95).rgb else -1
         )
 
-        val display = setting.displayName
-        val widthStr = Fonts.Nl_15.stringWidth(display)
-        val rectWidth = max(100, widthStr + 20)
+        val (display, truncated) = abbreviate(setting.displayName)
+        val rectWidth = calculateRectWidth(display)
 
         val rectX = mainx + 170 + x
         val rectY = mainy + fontY + 54
@@ -49,8 +47,8 @@ class FontSetting(setting: FontValue, moduleRender: NlModule) : Downward<FontVal
             Color(13, 24, 35).rgb
         )
 
-        Fonts.Nl_15.drawString("<", rectX + 4, (rectY + 5).toFloat(), if (gui.light) Color(95, 95, 95).rgb else -1)
-        Fonts.Nl_15.drawString(">", rectX + rectWidth - 9, (rectY + 5).toFloat(), if (gui.light) Color(95, 95, 95).rgb else -1)
+        Fonts.Nl_15.drawString("<", (rectX + 4).toFloat(), (rectY + 5).toFloat(), if (gui.light) Color(95, 95, 95).rgb else -1)
+        Fonts.Nl_15.drawString(">", (rectX + rectWidth - 9).toFloat(), (rectY + 5).toFloat(), if (gui.light) Color(95, 95, 95).rgb else -1)
 
         Fonts.Nl_15.drawCenteredString(
             display,
@@ -58,16 +56,19 @@ class FontSetting(setting: FontValue, moduleRender: NlModule) : Downward<FontVal
             (rectY + 5).toFloat(),
             if (gui.light) Color(95, 95, 95).rgb else -1
         )
+
+        if (truncated && RenderUtil.isHovering(rectX.toFloat(), rectY.toFloat(), rectWidth.toFloat(), 14f, mouseX, mouseY)) {
+            drawTooltip(setting.displayName, mouseX, mouseY)
+        }
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val gui = NeverloseGui.getInstance()
         val rectX = gui.x + 170 + x
         val rectY = gui.y + (y + getScrollY()).toInt() + 54
-        val display = setting.displayName
+        val display = abbreviate(setting.displayName).first
 
-        val widthStr = Fonts.Nl_15.stringWidth(display)
-        val rectWidth = max(100, widthStr + 20)
+        val rectWidth = calculateRectWidth(display)
 
         if (mouseButton == 0 && RenderUtil.isHovering(rectX, rectY.toFloat(), rectWidth.toFloat(), 14f, mouseX, mouseY)) {
             val relativeX = mouseX - rectX
@@ -80,4 +81,26 @@ class FontSetting(setting: FontValue, moduleRender: NlModule) : Downward<FontVal
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {}
+
+    private fun abbreviate(value: String): Pair<String, Boolean> {
+        return if (value.length > 10) {
+            value.take(10) + "..." to true
+        } else {
+            value to false
+        }
+    }
+
+    private fun calculateRectWidth(display: String): Int {
+        return max(100, min(140, Fonts.Nl_15.stringWidth(display) + 20))
+    }
+
+    private fun drawTooltip(text: String, mouseX: Int, mouseY: Int) {
+        val width = Fonts.Nl_15.stringWidth(text) + 6
+        val height = Fonts.Nl_15.height + 4
+        val renderX = (mouseX + 6).toFloat()
+        val renderY = (mouseY - height - 2).toFloat()
+
+        RenderUtil.drawRoundedRect(renderX, renderY, width.toFloat(), height.toFloat(), 2f, Color(0, 5, 19).rgb, 1f, Color(13, 24, 35).rgb)
+        Fonts.Nl_15.drawString(text, renderX + 3f, renderY + 2f, Color.WHITE.rgb)
+    }
 }

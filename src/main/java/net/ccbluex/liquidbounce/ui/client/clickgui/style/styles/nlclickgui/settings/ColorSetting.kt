@@ -28,7 +28,6 @@ class ColorSetting(setting: ColorValue, moduleRender: NlModule) : Downward<Color
 
         val titleColor = if (gui.light) Color(95, 95, 95).rgb else -1
 
-        // Verifique se Fonts.Nl_16 existe. Se der erro, mude para Fonts.Nl.Nl_16.Nl_16
         Fonts.Nl.Nl_16.Nl_16.drawString(setting.name, (mainx + 100 + x), (mainy + colory + 57).toFloat(), titleColor)
 
         val currentColor = setting.selectedColor()
@@ -104,7 +103,6 @@ class ColorSetting(setting: ColorValue, moduleRender: NlModule) : Downward<Color
 
         val hueColor = Color(Color.HSBtoRGB(setting.hueSliderY, 1f, 1f))
 
-        // Chamada da função drawGradientRect (Adicionei a definição lá embaixo)
         drawGradientRect(squareX.toInt(), squareY.toInt(), (squareX + squareSize).toInt(), (squareY + squareSize).toInt(), Color.WHITE.rgb, hueColor.rgb)
         drawGradientRect(squareX.toInt(), squareY.toInt(), (squareX + squareSize).toInt(), (squareY + squareSize).toInt(), Color(0, 0, 0, 0).rgb, Color(0, 0, 0, 255).rgb)
 
@@ -197,7 +195,6 @@ class ColorSetting(setting: ColorValue, moduleRender: NlModule) : Downward<Color
         return if (gui.light) Color(95, 95, 95).rgb else -1
     }
 
-    // Esta função foi adicionada para corrigir o erro, pois ela era chamada mas não existia
     override fun drawGradientRect(left: Int, top: Int, right: Int, bottom: Int, startColor: Int, endColor: Int) {
         val f = (startColor shr 24 and 255).toFloat() / 255.0f
         val f1 = (startColor shr 16 and 255).toFloat() / 255.0f

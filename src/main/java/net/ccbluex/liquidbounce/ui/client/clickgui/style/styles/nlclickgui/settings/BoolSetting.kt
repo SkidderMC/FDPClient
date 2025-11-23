@@ -1,3 +1,8 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderMC/FDPClient/
+ */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings
 
 import net.ccbluex.liquidbounce.config.BoolValue
@@ -18,8 +23,8 @@ class BoolSetting(s: BoolValue, moduleRender: NlModule) : Downward<BoolValue>(s,
     private val hoveringAnimation: Animation = DecelerateAnimation(225, 1.0, Direction.BACKWARDS)
 
     override fun draw(mouseX: Int, mouseY: Int) {
-        val mainx = NeverloseGui.Companion.getInstance().x
-        val mainy = NeverloseGui.Companion.getInstance().y
+        val mainx = NeverloseGui.getInstance().x
+        val mainy = NeverloseGui.getInstance().y
 
         val booly = (y + getScrollY()).toInt()
 
@@ -27,20 +32,19 @@ class BoolSetting(s: BoolValue, moduleRender: NlModule) : Downward<BoolValue>(s,
             setting.name,
             (mainx + 100 + x),
             (mainy + booly + 57).toFloat(),
-            if (NeverloseGui.Companion.getInstance().light) Color(95, 95, 95).rgb else -1
+            if (NeverloseGui.getInstance().light) Color(95, 95, 95).rgb else -1
         )
 
         val darkRectColor = Color(29, 29, 39, 255)
         val darkRectHover = RenderUtil.brighter(darkRectColor, .8f)
-        val accentCircle = RenderUtil.darker(NeverloseGui.Companion.neverlosecolor, .5f)
+        val accentCircle = RenderUtil.darker(NeverloseGui.neverlosecolor, .5f)
 
         toggleAnimation.direction = if (setting.get()) Direction.FORWARDS else Direction.BACKWARDS
 
-        // CORREÇÃO: Adicionado .toFloat() na posição X
         hoveringAnimation.direction = if (
             RenderUtil.isHovering(
-                (NeverloseGui.Companion.getInstance().x + 265 - 32 + x).toFloat(),
-                (NeverloseGui.Companion.getInstance().y + (y + getScrollY()).toInt() + 57).toFloat(),
+                (NeverloseGui.getInstance().x + 265 - 32 + x).toFloat(),
+                (NeverloseGui.getInstance().y + (y + getScrollY()).toInt() + 57).toFloat(),
                 16f,
                 4.5f,
                 mouseX,
@@ -48,15 +52,13 @@ class BoolSetting(s: BoolValue, moduleRender: NlModule) : Downward<BoolValue>(s,
             )
         ) Direction.FORWARDS else Direction.BACKWARDS
 
-        // Fundo do Toggle
-        // CORREÇÃO: Adicionado .toFloat() na posição X
-        RoundedUtil.Companion.drawRound(
+        RoundedUtil.drawRound(
             (mainx + 265 - 32 + x).toFloat(),
             (mainy + booly + 57).toFloat(),
             16f,
             4.5f,
             2f,
-            if (NeverloseGui.Companion.getInstance().light) {
+            if (NeverloseGui.getInstance().light) {
                 RenderUtil.interpolateColorC(
                     Color(230, 230, 230),
                     Color(0, 112, 186),
@@ -71,7 +73,6 @@ class BoolSetting(s: BoolValue, moduleRender: NlModule) : Downward<BoolValue>(s,
             }
         )
 
-        // Efeito de Glow
         RenderUtil.fakeCircleGlow(
             (mainx + 265 + 3 - 32 + x + 11 * toggleAnimation.getOutput()).toFloat(),
             (mainy + booly + 59).toFloat(),
@@ -82,16 +83,15 @@ class BoolSetting(s: BoolValue, moduleRender: NlModule) : Downward<BoolValue>(s,
 
         RenderUtil.resetColor()
 
-        // Bolinha do Toggle
-        RoundedUtil.Companion.drawRound(
+        RoundedUtil.drawRound(
             (mainx + 265 - 32 + x + 11 * toggleAnimation.getOutput()).toFloat(),
             (mainy + booly + 56).toFloat(),
             6.5f,
             6.5f,
             3f,
             if (setting.get()) {
-                NeverloseGui.Companion.neverlosecolor
-            } else if (NeverloseGui.Companion.getInstance().light) {
+                NeverloseGui.neverlosecolor
+            } else if (NeverloseGui.getInstance().light) {
                 Color(255, 255, 255)
             } else {
                 Color(
@@ -105,11 +105,10 @@ class BoolSetting(s: BoolValue, moduleRender: NlModule) : Downward<BoolValue>(s,
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         if (mouseButton == 0) {
-            // CORREÇÃO: Adicionado .toFloat() na posição X
             if (
                 RenderUtil.isHovering(
-                    (NeverloseGui.Companion.getInstance().x + 265 - 32 + x).toFloat(),
-                    (NeverloseGui.Companion.getInstance().y + (y + getScrollY()).toInt() + 57).toFloat(),
+                    (NeverloseGui.getInstance().x + 265 - 32 + x).toFloat(),
+                    (NeverloseGui.getInstance().y + (y + getScrollY()).toInt() + 57).toFloat(),
                     16f,
                     4.5f,
                     mouseX,

@@ -64,7 +64,6 @@ class RangeSetting(
         val startX = barX + (60 * percentStart).toFloat()
         val endX = barX + (60 * percentEnd).toFloat()
 
-        // Fonte Ajustada para o padrão
         Fonts.Nl.Nl_16.Nl_16.drawString(
             setting.name,
             (mainx + 100 + x),
