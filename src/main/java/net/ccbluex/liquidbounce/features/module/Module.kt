@@ -33,6 +33,7 @@ open class Module(
 
     name: String,
     val category: Category,
+    val subCategory: Category.SubCategory = Category.SubCategory.GENERAL,
     defaultKeyBind: Int = Keyboard.KEY_NONE,
     private val canBeEnabled: Boolean = true,
     private val forcedDescription: String? = null,

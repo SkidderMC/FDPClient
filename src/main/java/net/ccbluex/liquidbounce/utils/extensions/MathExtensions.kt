@@ -5,7 +5,10 @@
  */
 package net.ccbluex.liquidbounce.utils.extensions
 
-import net.ccbluex.liquidbounce.config.*
+import net.ccbluex.liquidbounce.config.FloatRangeValue
+import net.ccbluex.liquidbounce.config.FloatValue
+import net.ccbluex.liquidbounce.config.IntRangeValue
+import net.ccbluex.liquidbounce.config.IntValue
 import net.ccbluex.liquidbounce.utils.block.toVec
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getFixedAngleDelta
@@ -16,10 +19,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.util.*
 import java.math.BigDecimal
 import javax.vecmath.Vector2f
-import kotlin.math.abs
-import kotlin.math.ceil
-import kotlin.math.floor
-import kotlin.math.roundToInt
+import kotlin.math.*
 
 /**
  * Provides:
@@ -292,4 +292,10 @@ fun randomizeDouble(min: Double, max: Double): Double {
 
 fun lerp(min: Float, max: Float, delta: Float): Float {
     return min + (max - min) * delta
+}
+
+fun calculateGaussianValue(x: Float, sigma: Float): Float {
+    val PI = 3.141592653
+    val output = 1.0 / sqrt(2.0 * PI * (sigma * sigma))
+    return (output * exp(-(x * x) / (2.0 * (sigma * sigma)))).toFloat()
 }

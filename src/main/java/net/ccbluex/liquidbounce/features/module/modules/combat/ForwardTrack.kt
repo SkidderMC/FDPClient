@@ -21,7 +21,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
 
-object ForwardTrack : Module("ForwardTrack", Category.COMBAT) {
+object ForwardTrack : Module("ForwardTrack", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
     private val espMode by choices("ESP-Mode", arrayOf("Box", "Model", "Wireframe"), "Model").subjective()
     private val wireframeWidth by float("WireFrame-Width", 1f, 0.5f..5f) { espMode == "WireFrame" }
 

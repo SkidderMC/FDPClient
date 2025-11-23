@@ -18,7 +18,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 
-object Criticals : Module("Criticals", Category.COMBAT) {
+object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     val mode by choices(
         "Mode",

@@ -47,7 +47,7 @@ import java.util.*
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-object ChestAura : Module("ChestAura", Category.OTHER) {
+object ChestAura : Module("ChestAura", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val chest by boolean("Chest", true)
     private val enderChest by boolean("EnderChest", false)

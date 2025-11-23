@@ -33,7 +33,7 @@ import kotlin.math.atan2
 import kotlin.math.sqrt
 
 // TODO: This desperately needs a recode
-object Ignite : Module("Ignite", Category.COMBAT) {
+object Ignite : Module("Ignite", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val lighter by boolean("Lighter", true)
     private val lavaBucket by boolean("Lava", true)

@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.init.Items.egg
 import net.minecraft.init.Items.snowball
 
-object AutoProjectile : Module("AutoProjectile", Category.COMBAT) {
+object AutoProjectile : Module("AutoProjectile", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
     private val facingEnemy by boolean("FacingEnemy", true)
 
     private val range by float("Range", 8F, 1F..20F)

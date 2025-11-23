@@ -18,7 +18,7 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.Item
 import java.awt.Color
 
-object MurderDetector : Module("MurderDetector", Category.OTHER, gameDetecting = false) {
+object MurderDetector : Module("MurderDetector", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val showText by boolean("ShowText", true)
     private val chatValue by boolean("Chat", true)

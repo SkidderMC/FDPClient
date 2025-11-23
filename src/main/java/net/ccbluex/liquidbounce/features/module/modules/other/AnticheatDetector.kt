@@ -18,7 +18,7 @@ import net.minecraft.network.play.server.S01PacketJoinGame
 import net.minecraft.network.play.server.S32PacketConfirmTransaction
 import net.ccbluex.liquidbounce.utils.client.ServerUtils.remoteIp
 
-object AnticheatDetector : Module("AntiCheatDetector", Category.OTHER) {
+object AnticheatDetector : Module("AntiCheatDetector", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val debug by boolean("Debug", true)
     private val actionNumbers = mutableListOf<Int>()

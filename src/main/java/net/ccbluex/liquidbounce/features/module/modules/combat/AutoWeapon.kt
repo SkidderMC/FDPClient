@@ -18,7 +18,7 @@ import net.minecraft.item.ItemTool
 import net.minecraft.network.play.client.C02PacketUseEntity
 import net.minecraft.network.play.client.C02PacketUseEntity.Action.ATTACK
 
-object AutoWeapon : Module("AutoWeapon", Category.COMBAT, subjective = true) {
+object AutoWeapon : Module("AutoWeapon", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT, subjective = true) {
 
     private val onlySword by boolean("OnlySword", false)
 

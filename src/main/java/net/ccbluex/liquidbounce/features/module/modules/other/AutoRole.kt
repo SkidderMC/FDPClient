@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.script.api.global.Chat
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.event.handler
 
-object AutoRole : Module("AutoAddStaff", Category.OTHER, gameDetecting = false) {
+object AutoRole : Module("AutoAddStaff", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
     private val formattingValue by boolean("Formatting", true)
 
         private val STAFF_PREFIXES = arrayOf(

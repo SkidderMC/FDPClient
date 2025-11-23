@@ -46,7 +46,7 @@ import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.*
 
-object Scaffold : Module("Scaffold", Category.PLAYER, Keyboard.KEY_V) {
+object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER,Keyboard.KEY_V) {
 
     /**
      * TOWER MODES & SETTINGS

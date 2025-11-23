@@ -24,7 +24,7 @@ import net.minecraft.potion.Potion
 import kotlin.math.roundToInt
 import java.util.concurrent.ConcurrentHashMap
 
-object Notifier : Module("Notifier", Category.OTHER) {
+object Notifier : Module("Notifier", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val onPlayerJoin by boolean("Join", true)
     private val onPlayerLeft by boolean("Left", true)

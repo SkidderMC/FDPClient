@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
-import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -37,7 +36,7 @@ import net.minecraft.util.EnumFacing
 import java.awt.Color
 import kotlin.math.roundToInt
 
-object Nuker : Module("Nuker", Category.OTHER, gameDetecting = false) {
+object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     /**
      * OPTIONS

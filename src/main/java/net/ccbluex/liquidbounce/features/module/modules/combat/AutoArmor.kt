@@ -33,7 +33,7 @@ import net.minecraft.entity.EntityLiving.getArmorPosition
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 
-object AutoArmor : Module("AutoArmor", Category.COMBAT) {
+object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
     private val delay by intRange("Delay", 50..50, 0..1000)
     private val minItemAge by int("MinItemAge", 0, 0..2000)
 

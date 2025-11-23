@@ -21,7 +21,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 
-object AutoDisable : Module("AutoDisable", Category.OTHER, gameDetecting = false) {
+object AutoDisable : Module("AutoDisable", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
     private val modulesList = hashSetOf(KillAura, Scaffold, Flight, Speed)
 
     private val onFlagged by boolean("onFlag", true)

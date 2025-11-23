@@ -28,7 +28,7 @@ import net.minecraft.item.EnumAction
 import net.minecraft.item.ItemBlock
 import kotlin.random.Random.Default.nextBoolean
 
-object AutoClicker : Module("AutoClicker", Category.COMBAT) {
+object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val simulateDoubleClicking by boolean("SimulateDoubleClicking", false)
     private val cps by intRange("CPS", 5..8, 1..50)

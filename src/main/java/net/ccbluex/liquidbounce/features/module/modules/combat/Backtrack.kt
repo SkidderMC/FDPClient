@@ -41,7 +41,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 
-object Backtrack : Module("Backtrack", Category.COMBAT) {
+object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     private val nextBacktrackDelay by int("NextBacktrackDelay", 0, 0..2000) { mode == "Modern" }
     private val maxDelay: Value<Int> = int("MaxDelay", 80, 0..2000).onChange { _, new ->

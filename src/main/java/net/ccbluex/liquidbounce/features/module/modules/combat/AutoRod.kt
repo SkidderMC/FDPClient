@@ -20,7 +20,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.init.Items
 
-object AutoRod : Module("AutoRod", Category.COMBAT) {
+object AutoRod : Module("AutoRod", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val facingEnemy by boolean("FacingEnemy", true)
 

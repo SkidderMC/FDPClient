@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.FDPDropdownClickGUI
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.YzYGui
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
@@ -20,15 +21,16 @@ import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT, canBeEnabled = false) {
+object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, Keyboard.KEY_RSHIFT, canBeEnabled = false) {
     var lastScale = 0
 
     private var fdpDropdownGui: FDPDropdownClickGUI? = null
     private var yzyGui: YzYGui? = null
+    private var neverloseGui: NeverloseGui? = null
 
     private val style by choices(
         "Style",
-        arrayOf("Black", "Zywl", "FDP"),
+        arrayOf("Black", "Zywl", "FDP", "Neverlose"),
         "FDP"
     ).onChanged {
         updateStyle()
@@ -84,6 +86,13 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
                     mc.displayGuiScreen(fdpDropdownGui)
                     this.state = false
                 }
+                style.equals("Neverlose", ignoreCase = true) -> {
+                    if (neverloseGui == null) {
+                        neverloseGui = NeverloseGui()
+                    }
+                    mc.displayGuiScreen(neverloseGui)
+                    this.state = false
+                }
                 else -> {
                     updateStyle()
                     mc.displayGuiScreen(clickGui)
@@ -106,6 +115,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
         try {
             fdpDropdownGui?.onGuiClosed()
             yzyGui?.onGuiClosed()
+            neverloseGui = null
         } catch (e: Exception) {
             println("Error during GUI cleanup: ${e.message}")
         }

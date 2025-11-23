@@ -30,6 +30,37 @@ private val FONT_REGISTRY = LinkedHashMap<FontInfo, FontRenderer>()
 
 object Fonts : MinecraftInstance {
 
+    // Legacy wrappers to support older GUI code that expects nested font holders
+    class LegacyIconFont(
+        val nlfont_18: SimpleFontRenderer,
+        val nlfont_20: SimpleFontRenderer,
+        val nlfont_24: SimpleFontRenderer,
+        val nlfont_28: SimpleFontRenderer
+    )
+
+    class LegacyNlFont(
+        val Nl_16: SimpleFontRenderer,
+        val Nl_18: SimpleFontRenderer,
+        val Nl_19: SimpleFontRenderer,
+        val Nl_20: SimpleFontRenderer,
+        val Nl_22: SimpleFontRenderer? = null
+    )
+
+    object NlIcon {
+        lateinit var nlfont_20: LegacyIconFont
+        lateinit var nlfont_18: LegacyIconFont
+        lateinit var nlfont_24: LegacyIconFont
+        lateinit var nlfont_28: LegacyIconFont
+    }
+
+    object Nl {
+        lateinit var Nl_18: LegacyNlFont
+        lateinit var Nl_16: LegacyNlFont
+        lateinit var Nl_19: LegacyNlFont
+        lateinit var Nl_20: LegacyNlFont
+        lateinit var Nl_22: LegacyNlFont
+    }
+
     /**
      * Custom Fonts
      */
@@ -87,6 +118,7 @@ object Fonts : MinecraftInstance {
 
     lateinit var fontNovoAngularIcon85: GameFontRenderer
 
+    lateinit var ICONFONT_17: SimpleFontRenderer
     lateinit var ICONFONT_20: SimpleFontRenderer
     lateinit var CheckFont_20: SimpleFontRenderer
 
@@ -117,6 +149,24 @@ object Fonts : MinecraftInstance {
     lateinit var InterRegular_40: SimpleFontRenderer
 
     lateinit var fontTahomaSmall: GameFontRenderer
+
+    lateinit var Nl_15: SimpleFontRenderer
+    lateinit var Nl_16: SimpleFontRenderer
+    lateinit var Nl_18: SimpleFontRenderer
+    lateinit var Nl_19: SimpleFontRenderer
+    lateinit var Nl_20: SimpleFontRenderer
+    lateinit var Nl_22: SimpleFontRenderer
+
+    lateinit var Nl_16_ICON: SimpleFontRenderer
+    lateinit var nlfont_18: SimpleFontRenderer
+    lateinit var nlfont_20: SimpleFontRenderer
+    lateinit var nlfont_24: SimpleFontRenderer
+    lateinit var nlfont_28: SimpleFontRenderer
+
+    lateinit var NLBold_18: SimpleFontRenderer
+    lateinit var NLBold_32: SimpleFontRenderer
+    lateinit var NLBold_35: SimpleFontRenderer
+    lateinit var NLBold_28: SimpleFontRenderer
 
     private fun <T : FontRenderer> register(fontInfo: FontInfo, fontRenderer: T): T {
         FONT_REGISTRY[fontInfo] = fontRenderer
@@ -215,6 +265,8 @@ object Fonts : MinecraftInstance {
 
             ICONFONT_20 = registerCustomFont(FontInfo(name = "ICONFONT", size = 20),
                 getFontFromFile("stylesicons.ttf", 20).asSimpleFontRenderer())
+            ICONFONT_17 = registerCustomFont(FontInfo(name = "ICONFONT", size = 17),
+                getFontFromFile("stylesicons.ttf", 17).asSimpleFontRenderer())
 
             CheckFont_20 = registerCustomFont(FontInfo(name = "Check Font", size = 20),
                 getFontFromFile("check.ttf", 20).asSimpleFontRenderer())
@@ -266,6 +318,53 @@ object Fonts : MinecraftInstance {
             fontTahomaSmall = register(FontInfo(name = "Tahoma", size = 18),
                 getFontFromFile("Tahoma.ttf", 18).asGameFontRenderer())
 
+            //   NL ICON
+
+            Nl_16_ICON = registerCustomFont(FontInfo(name = "nlicon", size = 16),
+                getFontFromFile("nlicon.ttf", 16).asSimpleFontRenderer())
+
+            Nl_15 = registerCustomFont(FontInfo(name = "nlfont", size = 15),
+                getFontFromFile("nlfont.ttf", 15).asSimpleFontRenderer())
+            Nl_16 = registerCustomFont(FontInfo(name = "nlfont", size = 16),
+                getFontFromFile("nlfont.ttf", 16).asSimpleFontRenderer())
+            Nl_18 = registerCustomFont(FontInfo(name = "nlfont", size = 18),
+                getFontFromFile("nlfont.ttf", 18).asSimpleFontRenderer())
+            Nl_19 = registerCustomFont(FontInfo(name = "nlfont", size = 19),
+                getFontFromFile("nlfont.ttf", 19).asSimpleFontRenderer())
+            Nl_20 = registerCustomFont(FontInfo(name = "nlfont", size = 20),
+                getFontFromFile("nlfont.ttf", 20).asSimpleFontRenderer())
+            Nl_22 = registerCustomFont(FontInfo(name = "nlfont", size = 22),
+                getFontFromFile("nlfont.ttf", 22).asSimpleFontRenderer())
+
+            nlfont_18 = registerCustomFont(FontInfo(name = "nlicon", size = 18),
+                getFontFromFile("nlicon.ttf", 18).asSimpleFontRenderer())
+            nlfont_20 = registerCustomFont(FontInfo(name = "nlicon", size = 20),
+                getFontFromFile("nlicon.ttf", 20).asSimpleFontRenderer())
+            nlfont_24 = registerCustomFont(FontInfo(name = "nlicon", size = 24),
+                getFontFromFile("nlicon.ttf", 24).asSimpleFontRenderer())
+            nlfont_28 = registerCustomFont(FontInfo(name = "nlicon", size = 28),
+                getFontFromFile("nlicon.ttf", 28).asSimpleFontRenderer())
+
+            // Provide legacy nested holders for nlclickgui
+            NlIcon.nlfont_18 = LegacyIconFont(nlfont_18, nlfont_20, nlfont_24, nlfont_28)
+            NlIcon.nlfont_20 = LegacyIconFont(nlfont_18, nlfont_20, nlfont_24, nlfont_28)
+            NlIcon.nlfont_24 = LegacyIconFont(nlfont_18, nlfont_20, nlfont_24, nlfont_28)
+            NlIcon.nlfont_28 = LegacyIconFont(nlfont_18, nlfont_20, nlfont_24, nlfont_28)
+
+            Nl.Nl_16 = LegacyNlFont(Nl_16, Nl_18, Nl_19, Nl_20, Nl_22)
+            Nl.Nl_18 = LegacyNlFont(Nl_16, Nl_18, Nl_19, Nl_20, Nl_22)
+            Nl.Nl_19 = LegacyNlFont(Nl_16, Nl_18, Nl_19, Nl_20, Nl_22)
+            Nl.Nl_20 = LegacyNlFont(Nl_16, Nl_18, Nl_19, Nl_20, Nl_22)
+            Nl.Nl_22 = LegacyNlFont(Nl_16, Nl_18, Nl_19, Nl_20, Nl_22)
+
+            NLBold_32 = registerCustomFont(FontInfo(name = "Museo", size = 32),
+                getFontFromFile("MuseoSans_900.ttf", 32).asSimpleFontRenderer())
+            NLBold_35 = registerCustomFont(FontInfo(name = "Museo", size = 35),
+                getFontFromFile("MuseoSans_900.ttf", 35).asSimpleFontRenderer())
+            NLBold_18 = registerCustomFont(FontInfo(name = "Museo", size = 18),
+                getFontFromFile("MuseoSans_900.ttf", 18).asSimpleFontRenderer())
+            NLBold_28 = registerCustomFont(FontInfo(name = "Museo", size = 28),
+                getFontFromFile("MuseoSans_900.ttf", 28).asSimpleFontRenderer())
 
             loadCustomFonts()
         }

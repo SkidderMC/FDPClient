@@ -73,7 +73,7 @@ import org.lwjgl.opengl.GL11.glPushAttrib
 import java.awt.Color
 import kotlin.math.sqrt
 
-object ChestStealer : Module("ChestStealer", Category.OTHER) {
+object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val smartDelay by boolean("SmartDelay", false)
     private val multiplier by int("DelayMultiplier", 120, 0..500) { smartDelay }

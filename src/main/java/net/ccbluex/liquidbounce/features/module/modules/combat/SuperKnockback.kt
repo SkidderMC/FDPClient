@@ -22,7 +22,7 @@ import net.minecraft.network.play.client.C0BPacketEntityAction
 import net.minecraft.network.play.client.C0BPacketEntityAction.Action.*
 import kotlin.math.abs
 
-object SuperKnockback : Module("SuperKnockback", Category.COMBAT) {
+object SuperKnockback : Module("SuperKnockback", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     private val chance by int("Chance", 100, 0..100)
     private val delay by int("Delay", 0, 0..500)

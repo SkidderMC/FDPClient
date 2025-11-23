@@ -43,7 +43,7 @@ import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.sqrt
 
-object Velocity : Module("Velocity", Category.COMBAT) {
+object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     /**
      * OPTIONS
