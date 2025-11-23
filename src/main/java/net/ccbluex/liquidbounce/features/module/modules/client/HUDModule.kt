@@ -22,7 +22,7 @@ import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
-object HUDModule : Module("HUD", Category.CLIENT) {
+object HUDModule : Module("HUD", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL) {
 
     val customHotbar by boolean("CustomHotbar", true)
     val smoothHotbarSlot by boolean("SmoothHotbarSlot", false) { customHotbar }

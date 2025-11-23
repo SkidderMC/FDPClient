@@ -17,7 +17,7 @@ import net.minecraft.init.Items
 import net.minecraft.item.ItemStack
 import net.minecraft.potion.Potion
 
-object GameDetector : Module("GameDetector", Category.CLIENT, gameDetecting = false) {
+object GameDetector : Module("GameDetector", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false) {
     // Check if player's gamemode is Survival or Adventure
     private val gameMode by boolean("GameModeCheck", true)
 

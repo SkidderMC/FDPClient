@@ -22,7 +22,7 @@ import org.lwjgl.input.Keyboard.*
 import java.awt.Color
 import javax.vecmath.Point2i
 
-object SnakeGame : Module("SnakeGame", Category.CLIENT, gameDetecting = false) {
+object SnakeGame : Module("SnakeGame", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false) {
 
     // Game field constants
     private const val BLOCK_SIZE = 10

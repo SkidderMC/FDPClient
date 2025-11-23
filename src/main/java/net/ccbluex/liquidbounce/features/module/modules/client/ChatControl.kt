@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 
-object ChatControl : Module("ChatControl", Category.CLIENT, gameDetecting = false, subjective = true) {
+object ChatControl : Module("ChatControl", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false, subjective = true) {
 
     init {
         state = true

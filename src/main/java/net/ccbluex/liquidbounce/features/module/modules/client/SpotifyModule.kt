@@ -40,7 +40,7 @@ import java.util.EnumMap
 /**
  * Standalone Spotify integration that fetches the currently playing track from the Spotify Web API.
  */
-object SpotifyModule : Module("Spotify", Category.CLIENT, defaultState = false) {
+object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, defaultState = false) {
 
     private val moduleScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val service: SpotifyService

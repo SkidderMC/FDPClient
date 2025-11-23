@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 
-object TabGUIModule : Module("TabGUI", Category.CLIENT) {
+object TabGUIModule : Module("TabGUI", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL) {
     val tabShowPlayerSkin by boolean("Show Player Heads", true)
     val tabShowPlayerPing by boolean("Show Ping Numbers", true)
     val hidePingTag by boolean("Show Ping MS Tag", false) { tabShowPlayerPing }

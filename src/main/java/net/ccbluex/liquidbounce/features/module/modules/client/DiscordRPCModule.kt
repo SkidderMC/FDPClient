@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import net.ccbluex.liquidbounce.FDPClient.discordRPC
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-object DiscordRPCModule : Module("DiscordRPC", Category.CLIENT) {
+object DiscordRPCModule : Module("DiscordRPC", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL) {
 
     val showServerValue by boolean("ShowServer", false)
     val showNameValue by boolean("ShowName", true)

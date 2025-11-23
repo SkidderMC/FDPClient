@@ -24,7 +24,7 @@ import java.net.URISyntaxException
 import java.util.regex.Pattern
 import kotlin.time.Duration.Companion.seconds
 
-object IRCModule : Module("IRC", Category.CLIENT, subjective = true, gameDetecting = false) {
+object IRCModule : Module("IRC", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, subjective = true, gameDetecting = false) {
 
     fun reloadIfEnabled() {
         if (state) {

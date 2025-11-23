@@ -15,7 +15,7 @@ import java.util.*
 /**
  * The type Client spoof.
  */
-object BrandSpoofer : Module("BrandSpoofer", Category.CLIENT) {
+object BrandSpoofer : Module("BrandSpoofer", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL) {
     /**
      * The Mode value.
      */
