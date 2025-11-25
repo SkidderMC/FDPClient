@@ -6,9 +6,10 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui
 
 import com.mojang.realmsclient.gui.ChatFormatting
-import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
-import net.ccbluex.liquidbounce.FDPClient.fileManager
+import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.modules.client.SpotifyModule
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.SideGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.StencilUtil
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Config.Configs
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Config.NeverloseConfigManager
@@ -20,7 +21,10 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.blur.
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer
+import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.minecraft.client.gui.GuiScreen
+import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.shader.Framebuffer
 import net.minecraft.util.ChatAllowedCharacters
 import net.minecraft.util.ResourceLocation
@@ -31,6 +35,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class NeverloseGui : GuiScreen() {
+
+    private val sideGui = SideGui()
+
     var x = 100
     var y = 100
     var w = 500
@@ -45,7 +52,12 @@ class NeverloseGui : GuiScreen() {
     private var settings = false
     private var search = false
     private var searchText = ""
-    private val defaultAvatar = ResourceLocation(CLIENT_NAME.lowercase(Locale.getDefault()) + "/64.png")
+    private val defaultAvatar = ResourceLocation(FDPClient.CLIENT_NAME.lowercase(Locale.getDefault()) + "/64.png")
+    private val customHudIcon = ResourceLocation(FDPClient.CLIENT_NAME.lowercase(Locale.getDefault()) + "/custom_hud_icon.png")
+    private val eyeIcon = ResourceLocation(FDPClient.CLIENT_NAME.lowercase(Locale.getDefault()) + "/texture/category/visual.png")
+    private val spotifyIcon = ResourceLocation(FDPClient.CLIENT_NAME.lowercase(Locale.getDefault()) + "/texture/spotify/spotify.png")
+    private val keyBindIcon = ResourceLocation(FDPClient.CLIENT_NAME.lowercase(Locale.getDefault()) + "/texture/keyboard.png")
+    private val headerIconHitboxes = mutableListOf<HeaderIconHitbox>()
     private var avatarTexture: ResourceLocation = defaultAvatar
     private var avatarLoaded = false
     private var nlSetting: NlSetting = NlSetting()
@@ -82,6 +94,7 @@ class NeverloseGui : GuiScreen() {
         previousDebugInfoState = mc.gameSettings.showDebugInfo
         mc.gameSettings.showDebugInfo = false
         alphaani = EaseInOutQuad(300, 0.6, Direction.FORWARDS)
+        sideGui.initGui()
     }
 
     override fun onGuiClosed() {
@@ -123,18 +136,28 @@ class NeverloseGui : GuiScreen() {
         RoundedUtil.drawRoundTextured((x + 4).toFloat(), avatarY.toFloat(), 20f, 20f, 10f, 1f)
         Fonts.Nl_18.drawString(mc.session.username, (x + 29).toFloat(), (avatarY + 1).toFloat(), if (light) Color(51, 51, 51).rgb else -1)
         Fonts.Nl_16.drawString(ChatFormatting.GRAY.toString() + "Till: " + ChatFormatting.RESET + SimpleDateFormat("dd:MM").format(Date()) + " " + SimpleDateFormat("HH:mm").format(Date()), (x + 29).toFloat(), (avatarY + 13).toFloat(), neverlosecolor.rgb)
+
+        val fdpString = "FDP"
+        val fdpWidth = Fonts.NLBold_28.stringWidth(fdpString)
+        val centerX = x + (90 - fdpWidth) / 2f
+
         if (!light) {
-            NLOutline("FDP", Fonts.NLBold_28, (x + 7).toFloat(), (y + 12).toFloat(), -1, neverlosecolor.rgb, 0.7f)
+            NLOutline(fdpString, Fonts.NLBold_28, centerX, (y + 12).toFloat(), -1, neverlosecolor.rgb, 0.7f)
         } else {
-            Fonts.NLBold_28.drawString("FDP", (x + 8).toFloat(), (y + 12).toFloat(), Color(51, 51, 51).rgb, false)
+            Fonts.NLBold_28.drawString(fdpString, centerX, (y + 12).toFloat(), Color(51, 51, 51).rgb, false)
         }
+
         RoundedUtil.drawRound(x.toFloat(), footerLineY.toFloat(), 89f, 1f, 0f, if (light) Color(213, 213, 213) else Color(26, 26, 26))
+
+        val bgMouseX = if (sideGui.focused) -1 else mouseX
+        val bgMouseY = if (sideGui.focused) -1 else mouseY
+
         for (nlTab in nlTabs) {
             nlTab.x = x
             nlTab.y = y
             nlTab.w = w
             nlTab.h = h
-            nlTab.draw(mouseX, mouseY)
+            nlTab.draw(bgMouseX, bgMouseY)
         }
 
         val searchProgress = searchanim.getOutput().toFloat()
@@ -155,10 +178,62 @@ class NeverloseGui : GuiScreen() {
         if (settings) {
             nlSetting.draw(mouseX, mouseY)
         }
+
         RoundedUtil.drawRoundOutline((x + 105).toFloat(), (y + 10).toFloat(), 55f, 21f, 2f, 0.1f, if (light) Color(245, 245, 245) else Color(13, 13, 11), if (RenderUtil.isHovering((x + 105).toFloat(), (y + 10).toFloat(), 55f, 21f, mouseX, mouseY)) neverlosecolor else Color(19, 19, 17))
         Fonts.Nl_18.drawString("Save", (x + 128).toFloat(), (y + 18).toFloat(), if (light) Color(18, 18, 19).rgb else -1)
         Fonts.NlIcon.nlfont_20.nlfont_20.drawString("K", (x + 110).toFloat(), (y + 19).toFloat(), if (light) Color(18, 18, 19).rgb else -1)
+
+        val buttonSpacing = 8f
+        var nextButtonX = (x + 170).toFloat()
+        val buttonY = (y + 10).toFloat()
+        val buttonHeight = 21f
+
+        headerIconHitboxes.clear()
+
+        val headerIcons = listOf(
+            HeaderIcon("Edit", customHudIcon) { mc.displayGuiScreen(GuiHudDesigner()) },
+            HeaderIcon("Viewer", eyeIcon) {},
+            HeaderIcon("Spotify", spotifyIcon) { SpotifyModule.openPlayerScreen() },
+            HeaderIcon("Keybind", keyBindIcon) { mc.displayGuiScreen(KeyBindManager) }
+        )
+
+        GlStateManager.enableTexture2D()
+        GlStateManager.enableBlend()
+        GlStateManager.enableAlpha()
+
+        headerIcons.forEach { icon ->
+            val textWidth = Fonts.Nl_18.stringWidth(icon.name)
+            val buttonWidth = textWidth + 28f
+
+            val isHovering = RenderUtil.isHovering(nextButtonX, buttonY, buttonWidth, buttonHeight, mouseX, mouseY)
+
+            val borderColor = if (isHovering) neverlosecolor else Color(19, 19, 17)
+            val backgroundColor = if (light) Color(245, 245, 245) else Color(13, 13, 11)
+            val textColor = if (light) Color(18, 18, 19).rgb else -1
+
+            RoundedUtil.drawRoundOutline(nextButtonX, buttonY, buttonWidth, buttonHeight, 2f, 0.1f, backgroundColor, borderColor)
+
+            if (light) {
+                val darkColor = Color(18, 18, 19)
+                GlStateManager.color(darkColor.red / 255f, darkColor.green / 255f, darkColor.blue / 255f, 1f)
+            } else {
+                GlStateManager.color(1f, 1f, 1f, 1f)
+            }
+
+            RenderUtil.drawImage(icon.location, nextButtonX + 5, buttonY + 4.5f, 12f, 12f)
+
+            Fonts.Nl_18.drawString(icon.name, nextButtonX + 22, buttonY + 8f, textColor)
+
+            headerIconHitboxes.add(HeaderIconHitbox(nextButtonX, buttonY, buttonWidth, buttonHeight, icon.onClick))
+
+            nextButtonX += buttonWidth + buttonSpacing
+        }
+
+        GlStateManager.resetColor()
         GL11.glPopMatrix()
+
+        sideGui.drawScreen(mouseX, mouseY, partialTicks, 255)
+
         super.drawScreen(mouseX, mouseY, partialTicks)
     }
 
@@ -170,58 +245,70 @@ class NeverloseGui : GuiScreen() {
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        nlTabs.forEach { it.click(mouseX, mouseY, mouseButton) }
-        if (settings) {
-            nlSetting.click(mouseX, mouseY, mouseButton)
-        }
-        if (mouseButton == 0) {
-            if (RenderUtil.isHovering((x + 110).toFloat(), y.toFloat(), (w - 110).toFloat(), (h - 300).toFloat(), mouseX, mouseY)) {
-                x2 = (x - mouseX)
-                y2 = (y - mouseY)
-                dragging = true
+        val oldFocus = sideGui.focused
+        sideGui.mouseClicked(mouseX, mouseY, mouseButton)
+        if (!oldFocus) {
+            nlTabs.forEach { it.click(mouseX, mouseY, mouseButton) }
+            if (settings) {
+                nlSetting.click(mouseX, mouseY, mouseButton)
             }
-            if (RenderUtil.isHovering((x + 105).toFloat(), (y + 10).toFloat(), 55f, 21f, mouseX, mouseY)) {
-                if (configManager.activeConfig() != null) {
-                    configManager.saveConfig(configManager.activeConfig()!!.name)
-                } else {
-                    fileManager.saveAllConfigs()
-                    configManager.refresh()
+            if (mouseButton == 0) {
+                if (handleHeaderIconClick(mouseX, mouseY)) {
+                    return
+                }
+                if (RenderUtil.isHovering((x + 110).toFloat(), y.toFloat(), (w - 110).toFloat(), (h - 300).toFloat(), mouseX, mouseY)) {
+                    x2 = (x - mouseX)
+                    y2 = (y - mouseY)
+                    dragging = true
+                }
+                if (RenderUtil.isHovering((x + 105).toFloat(), (y + 10).toFloat(), 55f, 21f, mouseX, mouseY)) {
+                    if (configManager.activeConfig() != null) {
+                        configManager.saveConfig(configManager.activeConfig()!!.name)
+                    } else {
+                        FDPClient.fileManager.saveAllConfigs()
+                        configManager.refresh()
+                    }
+                }
+
+                val searchProgress = searchanim.getOutput().toFloat()
+                val closeButtonX = (x + w - 50 + (if (search || !searchanim.isDone()) (-83f * searchProgress) else 0f))
+
+                if (RenderUtil.isHovering(closeButtonX, (y + 17).toFloat(), Fonts.NlIcon.nlfont_24.nlfont_24.stringWidth("x").toFloat(), Fonts.NlIcon.nlfont_24.nlfont_24.height.toFloat(), mouseX, mouseY)) {
+                    settings = !settings
+                    dragging = false
+                    nlSetting.x = x + w + 20
+                    nlSetting.y = y
+                }
+                if (RenderUtil.isHovering((x + w - 30).toFloat(), (y + 18).toFloat(), Fonts.NlIcon.nlfont_20.nlfont_20.stringWidth("j").toFloat(), Fonts.NlIcon.nlfont_20.nlfont_20.height.toFloat(), mouseX, mouseY)) {
+                    search = !search
+                    dragging = false
+                    if (!search) {
+                        searchText = ""
+                    }
                 }
             }
-
-            val searchProgress = searchanim.getOutput().toFloat()
-            val closeButtonX = (x + w - 50 + (if (search || !searchanim.isDone()) (-83f * searchProgress) else 0f))
-
-            if (RenderUtil.isHovering(closeButtonX, (y + 17).toFloat(), Fonts.NlIcon.nlfont_24.nlfont_24.stringWidth("x").toFloat(), Fonts.NlIcon.nlfont_24.nlfont_24.height.toFloat(), mouseX, mouseY)) {
-                settings = !settings
-                dragging = false
-                nlSetting.x = x + w + 20
-                nlSetting.y = y
-            }
-            if (RenderUtil.isHovering((x + w - 30).toFloat(), (y + 18).toFloat(), Fonts.NlIcon.nlfont_20.nlfont_20.stringWidth("j").toFloat(), Fonts.NlIcon.nlfont_20.nlfont_20.height.toFloat(), mouseX, mouseY)) {
-                search = !search
-                dragging = false
-                if (!search) {
-                    searchText = ""
-                }
-            }
+            super.mouseClicked(mouseX, mouseY, mouseButton)
         }
-        super.mouseClicked(mouseX, mouseY, mouseButton)
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
-        nlTabs.forEach { it.released(mouseX, mouseY, state) }
-        if (state == 0) {
-            dragging = false
+        val oldFocus = sideGui.focused
+        sideGui.mouseReleased(mouseX, mouseY, state)
+        if (!oldFocus) {
+            nlTabs.forEach { it.released(mouseX, mouseY, state) }
+            if (state == 0) {
+                dragging = false
+            }
+            if (settings) {
+                nlSetting.released(mouseX, mouseY, state)
+            }
+            super.mouseReleased(mouseX, mouseY, state)
         }
-        if (settings) {
-            nlSetting.released(mouseX, mouseY, state)
-        }
-        super.mouseReleased(mouseX, mouseY, state)
     }
 
     @Throws(IOException::class)
     override fun keyTyped(typedChar: Char, keyCode: Int) {
+        sideGui.keyTyped(typedChar, keyCode)
         if (search) {
             when (keyCode) {
                 1 -> {
@@ -266,5 +353,19 @@ class NeverloseGui : GuiScreen() {
             fontRenderer.drawString(str, x, y - size, color2, false)
             fontRenderer.drawString(str, x, y, color, false)
         }
+    }
+
+    private data class HeaderIcon(val name: String, val location: ResourceLocation, val onClick: () -> Unit)
+
+    private data class HeaderIconHitbox(val x: Float, val y: Float, val width: Float, val height: Float, val onClick: () -> Unit) {
+        fun isHovering(mouseX: Int, mouseY: Int): Boolean = RenderUtil.isHovering(x, y, width, height, mouseX, mouseY)
+    }
+
+    private fun handleHeaderIconClick(mouseX: Int, mouseY: Int): Boolean {
+        headerIconHitboxes.firstOrNull { it.isHovering(mouseX, mouseY) }?.let { hitbox ->
+            hitbox.onClick.invoke()
+            return true
+        }
+        return false
     }
 }
