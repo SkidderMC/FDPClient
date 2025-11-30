@@ -6,7 +6,8 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui
 
 import net.ccbluex.liquidbounce.config.BoolValue
-import net.ccbluex.liquidbounce.config.Value
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.resetColor
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.scissor
@@ -18,6 +19,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.client.gui.inventory.GuiInventory.drawEntityOnScreen
 import net.minecraft.client.renderer.GlStateManager
+import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.abs
@@ -30,10 +32,12 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
     private var dragY = 0
     private var dragging = false
     private var adsorb = true
-    private var managingElements = false
+    private var managingElements = true
+    private var selectedModule: Module? = null
+    private var modelYaw = 0f
+    private var modelPitch = 0f
 
     private val openAnimation: Animation = EaseInOutQuad(250, 1.0, Direction.BACKWARDS)
-    private val espValues: List<Value<*>> = ModuleManager["ESP"]?.values ?: emptyList()
 
     fun draw(mouseX: Int, mouseY: Int) {
         if (dragging) {
@@ -50,9 +54,10 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
         openAnimation.direction = if (managingElements) Direction.FORWARDS else Direction.BACKWARDS
 
         val previewX = posX + gui.w + 12
-        val previewY = posY + 10
-        val previewWidth = 200f
-        val previewHeight = gui.h - 20f
+        val previewY = posY + 12
+        val previewWidth = 230f
+        val previewHeight = gui.h - 24f
+        val playerAreaHeight = 205f
 
         val backgroundColor = if (gui.light) Color(243, 246, 249, 230) else Color(9, 13, 19, 210)
         val outlineColor = if (gui.light) Color(200, 208, 216, 180) else Color(40, 50, 64, 180)
@@ -84,26 +89,27 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
             textColor.rgb
         )
         resetColor()
+        drawPreviewPlayer(mouseX, mouseY, previewX, previewY, previewWidth, playerAreaHeight)
 
-        GlStateManager.pushMatrix()
-        drawEntityOnScreen(
-            (previewX + previewWidth / 2).toInt(),
-            (previewY + 200 + 75 * (1 - openAnimation.getOutput())).toInt(),
-            80,
-            0f,
-            0f,
-            mc.thePlayer
+        drawElementsManager(
+            mouseX,
+            mouseY,
+            previewX,
+            previewY,
+            previewWidth,
+            previewHeight,
+            playerAreaHeight,
+            backgroundColor,
+            outlineColor,
+            textColor
         )
-        GlStateManager.popMatrix()
-
-        drawElementsManager(mouseX, mouseY, previewX, previewY, previewWidth, previewHeight, backgroundColor, outlineColor, textColor)
     }
 
     fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         val previewX = posX + gui.w + 12
-        val previewY = posY + 10
-        val previewWidth = 200f
-        val previewHeight = gui.h - 20f
+        val previewY = posY + 12
+        val previewWidth = 230f
+        val previewHeight = gui.h - 24f
 
         if (isHovering(previewX.toFloat(), previewY.toFloat(), previewWidth, previewHeight, mouseX, mouseY) && mouseButton == 0 && !managingElements) {
             dragging = true
@@ -111,17 +117,11 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
             dragY = posY - mouseY
         }
 
-        val manageButtonX = previewX + 70f
-        val manageButtonY = previewY + previewHeight - 25f
+        val manageButtonX = previewX + 20f
+        val manageButtonY = previewY + previewHeight - 26f
 
-        if (isHovering(manageButtonX, manageButtonY, 85f, 12f, mouseX, mouseY) && mouseButton == 0) {
-            managingElements = true
-        }
-
-        val closeX = previewX + previewWidth - 14f
-        val closeY = previewY + previewHeight - (170f * openAnimation.getOutput()).toFloat()
-        if (managingElements && isHovering(closeX, closeY, 10f, 10f, mouseX, mouseY) && mouseButton == 0) {
-            managingElements = false
+        if (isHovering(manageButtonX, manageButtonY, 190f, 16f, mouseX, mouseY) && mouseButton == 0 && activeVisualModules().isNotEmpty()) {
+            managingElements = !managingElements
         }
 
         if (managingElements) {
@@ -144,38 +144,55 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
         previewY: Int,
         previewWidth: Float,
         previewHeight: Float,
+        playerAreaHeight: Float,
         backgroundColor: Color,
         outlineColor: Color,
         textColor: Color,
     ) {
-        val manageButtonX = previewX + 70f
-        val manageButtonY = previewY + previewHeight - 25f
-        val hoveringManage = isHovering(manageButtonX, manageButtonY, 85f, 12f, mouseX, mouseY)
+        val visuals = activeVisualModules()
+        if (selectedModule !in visuals) {
+            selectedModule = visuals.firstOrNull()
+        }
+
+        val manageButtonX = previewX + 20f
+        val manageButtonY = previewY + previewHeight - 26f
+        val manageButtonWidth = 190f
+        val manageButtonHeight = 16f
+        val hoveringManage = isHovering(manageButtonX, manageButtonY, manageButtonWidth, manageButtonHeight, mouseX, mouseY)
+
+        val manageBg = if (visuals.isEmpty()) Color(backgroundColor.red, backgroundColor.green, backgroundColor.blue, 90) else backgroundColor
+        val manageOutline = when {
+            visuals.isEmpty() -> Color(outlineColor.red, outlineColor.green, outlineColor.blue, 120)
+            hoveringManage || managingElements -> NeverloseGui.neverlosecolor
+            else -> outlineColor
+        }
 
         RoundedUtil.drawRoundOutline(
             manageButtonX,
             manageButtonY,
-            85f,
-            12f,
-            2f,
+            manageButtonWidth,
+            manageButtonHeight,
+            3f,
             0.1f,
-            backgroundColor,
-            if (hoveringManage || managingElements) NeverloseGui.neverlosecolor else outlineColor
+            manageBg,
+            manageOutline
         )
-        Fonts.Nl_16.drawCenteredString(
-            if (managingElements) "Managing Elements" else "Manage Elements",
-            manageButtonX + 42.5f,
-            manageButtonY + 2f,
-            textColor.rgb
-        )
+        val manageLabel = when {
+            visuals.isEmpty() -> "No visual modules active"
+            managingElements -> "Close visual manager"
+            else -> "Manage active visuals"
+        }
+        val manageLabelY = manageButtonY + (manageButtonHeight - Fonts.Nl_16.height) / 2f
+        Fonts.Nl_16.drawCenteredString(manageLabel, manageButtonX + manageButtonWidth / 2f, manageLabelY, textColor.rgb)
 
         val progress = openAnimation.getOutput().toFloat()
-        if (progress <= 0.05f) {
+        if (progress <= 0.05f || visuals.isEmpty()) {
             return
         }
 
-        val panelHeight = 180f * progress
-        val panelY = previewY + previewHeight - panelHeight
+        val panelMaxHeight = (previewHeight - playerAreaHeight - manageButtonHeight - 30f).coerceAtLeast(80f)
+        val panelHeight = panelMaxHeight * progress
+        val panelY = previewY + playerAreaHeight + 14f
 
         GL11.glPushMatrix()
         scissor(previewX.toDouble(), panelY.toDouble(), previewWidth.toDouble(), panelHeight.toDouble())
@@ -192,83 +209,185 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
             outlineColor
         )
 
-        Fonts.Nl_16.drawString("Drag & Drop Elements", previewX + 8f, panelY + 8f, textColor.rgb)
-        Fonts.Nl_16_ICON.drawString(
-            "m",
-            previewX + previewWidth - 14f,
-            panelY + 6f,
-            if (isHovering(previewX + previewWidth - 14f, panelY + 2f, 12f, 12f, mouseX, mouseY)) NeverloseGui.neverlosecolor.rgb else textColor.rgb
-        )
+        drawManagerHeader(mouseX, mouseY, previewX, previewWidth, panelY, textColor)
 
-        drawValueButtons(mouseX, mouseY, previewX, panelY, previewWidth, panelHeight, textColor, outlineColor, backgroundColor)
+        val moduleButtons = moduleButtons(previewX, panelY, previewWidth)
+        drawModuleSelector(moduleButtons, mouseX, mouseY, textColor, outlineColor, backgroundColor)
+
+        val valueButtons = valueButtons(previewX, panelY, previewWidth, moduleButtons, panelHeight)
+        drawValueButtons(valueButtons, textColor, outlineColor, backgroundColor)
 
         GL11.glDisable(GL11.GL_SCISSOR_TEST)
         GL11.glPopMatrix()
     }
 
-    private fun drawValueButtons(
+    private fun drawPreviewPlayer(
         mouseX: Int,
         mouseY: Int,
         previewX: Int,
-        panelY: Float,
+        previewY: Int,
         previewWidth: Float,
-        panelHeight: Float,
+        playerAreaHeight: Float
+    ) {
+        val playerAreaY = previewY + 10
+        val playerAreaX = previewX + 8
+        val playerAreaWidth = previewWidth - 16f
+
+        RoundedUtil.drawRound(playerAreaX.toFloat(), playerAreaY.toFloat(), playerAreaWidth, playerAreaHeight - 8f, 3f, Color(0, 0, 0, 35))
+
+        val hoveringPlayer = isHovering(playerAreaX.toFloat(), playerAreaY.toFloat(), playerAreaWidth, playerAreaHeight - 8f, mouseX, mouseY)
+        if (hoveringPlayer && (Mouse.isButtonDown(0) || Mouse.isButtonDown(1))) {
+            modelYaw += Mouse.getDX() * 0.8f
+            modelPitch = (modelPitch - Mouse.getDY() * 0.6f).coerceIn(-60f, 60f)
+        }
+
+        val entityX = (previewX + previewWidth / 2).toInt()
+        val entityY = (playerAreaY + playerAreaHeight - 18f).toInt()
+        GlStateManager.pushMatrix()
+        drawEntityOnScreen(
+            entityX,
+            entityY,
+            70,
+            modelYaw,
+            modelPitch,
+            mc.thePlayer
+        )
+        GlStateManager.popMatrix()
+    }
+
+    private fun drawManagerHeader(mouseX: Int, mouseY: Int, previewX: Int, previewWidth: Float, panelY: Float, textColor: Color) {
+        Fonts.Nl_16.drawString("Visual modules", previewX + 10f, panelY + 8f, textColor.rgb)
+        val closeIconX = previewX + previewWidth - 16f
+        val closeIconY = panelY + 5f
+        val hoveringClose = isHovering(closeIconX, closeIconY, 12f, 12f, mouseX, mouseY)
+        Fonts.Nl_16_ICON.drawString(
+            "m",
+            closeIconX,
+            closeIconY,
+            if (hoveringClose) NeverloseGui.neverlosecolor.rgb else textColor.rgb
+        )
+        if (hoveringClose && Mouse.isButtonDown(0)) {
+            managingElements = false
+        }
+    }
+
+    private fun drawModuleSelector(
+        moduleButtons: List<ButtonArea<Module>>,
+        mouseX: Int,
+        mouseY: Int,
         textColor: Color,
         outlineColor: Color,
         backgroundColor: Color,
     ) {
-        var xOffset = 0f
-        var yOffset = 26f
-
-        for (value in espValues) {
-            if (value !is BoolValue || value.hidden || value.excluded || !value.isSupported()) continue
-
-            val label = value.name
-            val width = Fonts.Nl_16.stringWidth(label) + 6f
-            if (xOffset + width > previewWidth - 16f) {
-                xOffset = 0f
-                yOffset += 14f
+        moduleButtons.forEach { button ->
+            val selected = button.target == selectedModule
+            val buttonBackground = when {
+                selected -> NeverloseGui.neverlosecolor
+                button.target.state -> Color(44, 120, 168, 110)
+                else -> backgroundColor
             }
+            val buttonOutline = if (selected || button.target.state) NeverloseGui.neverlosecolor else outlineColor
 
-            val buttonX = previewX + 8f + xOffset
-            val buttonY = panelY + yOffset
-            val enabled = value.get()
+            RoundedUtil.drawRoundOutline(button.x, button.y, button.w, button.h, 2f, 0.1f, buttonBackground, buttonOutline)
+            val textY = button.y + (button.h - Fonts.Nl_16.height) / 2f
+            Fonts.Nl_16.drawCenteredString(button.target.name, button.x + button.w / 2f, textY, textColor.rgb)
+
+            if (isHovering(button.x, button.y, button.w, button.h, mouseX, mouseY) && Mouse.isButtonDown(0)) {
+                selectedModule = button.target
+            }
+        }
+    }
+
+    private fun drawValueButtons(
+        valueButtons: List<ButtonArea<BoolValue>>,
+        textColor: Color,
+        outlineColor: Color,
+        backgroundColor: Color,
+    ) {
+        valueButtons.forEach { button ->
+            val enabled = button.target.get()
             val buttonBackground = if (enabled) NeverloseGui.neverlosecolor else backgroundColor
             val buttonOutline = if (enabled) NeverloseGui.neverlosecolor else outlineColor
 
-            RoundedUtil.drawRoundOutline(buttonX, buttonY, width, 12f, 2f, 0.1f, buttonBackground, buttonOutline)
-            Fonts.Nl_16.drawCenteredString(label, buttonX + width / 2f, buttonY + 2f, textColor.rgb)
-
-            xOffset += width + 4f
+            RoundedUtil.drawRoundOutline(button.x, button.y, button.w, button.h, 2f, 0.1f, buttonBackground, buttonOutline)
+            val textY = button.y + (button.h - Fonts.Nl_16.height) / 2f
+            Fonts.Nl_16.drawCenteredString(button.target.name, button.x + button.w / 2f, textY, textColor.rgb)
         }
     }
 
-    private fun handleElementClick(mouseX: Int, mouseY: Int, previewX: Int, previewY: Int, previewWidth: Float, previewHeight: Float) {
+    private fun handleElementClick(
+        mouseX: Int,
+        mouseY: Int,
+        previewX: Int,
+        previewY: Int,
+        previewWidth: Float,
+        previewHeight: Float
+    ) {
         val progress = openAnimation.getOutput().toFloat()
         if (progress <= 0.05f) return
+        val playerAreaHeight = 205f
+        val manageButtonHeight = 16f
+        val panelY = previewY + playerAreaHeight + 14f
+        val panelHeight = (previewHeight - playerAreaHeight - manageButtonHeight - 30f).coerceAtLeast(80f) * progress
+        val moduleButtons = moduleButtons(previewX, panelY, previewWidth)
+        moduleButtons.firstOrNull { isHovering(it.x, it.y, it.w, it.h, mouseX, mouseY) }?.let {
+            selectedModule = it.target
+            return
+        }
 
+        val valueButtons = valueButtons(previewX, panelY, previewWidth, moduleButtons, panelHeight)
+        valueButtons.firstOrNull { isHovering(it.x, it.y, it.w, it.h, mouseX, mouseY) }?.let {
+            it.target.set(!it.target.get())
+            return
+        }
+    }
+
+    private fun activeVisualModules(): List<Module> =
+        ModuleManager[Category.VISUAL].filter { it.state }
+
+    private fun moduleButtons(previewX: Int, panelY: Float, previewWidth: Float): List<ButtonArea<Module>> {
+        val buttons = mutableListOf<ButtonArea<Module>>()
         var xOffset = 0f
         var yOffset = 26f
-        for (value in espValues) {
-            if (value !is BoolValue || value.hidden || value.excluded || !value.isSupported()) continue
+        for (module in activeVisualModules()) {
+            val labelWidth = Fonts.Nl_16.stringWidth(module.name) + 10f
+            if (xOffset + labelWidth > previewWidth - 16f) {
+                xOffset = 0f
+                yOffset += 16f
+            }
+            buttons += ButtonArea(module, previewX + 8f + xOffset, panelY + yOffset, labelWidth, 14f)
+            xOffset += labelWidth + 4f
+        }
+        return buttons
+    }
 
-            val label = value.name
-            val width = Fonts.Nl_16.stringWidth(label) + 6f
-            if (xOffset + width > previewWidth - 16f) {
+    private fun valueButtons(
+        previewX: Int,
+        panelY: Float,
+        previewWidth: Float,
+        moduleButtons: List<ButtonArea<Module>>,
+        panelHeight: Float
+    ): List<ButtonArea<BoolValue>> {
+        val buttons = mutableListOf<ButtonArea<BoolValue>>()
+        val values = selectedModule?.values.orEmpty().filterIsInstance<BoolValue>()
+        var xOffset = 0f
+        val startY = (moduleButtons.maxOfOrNull { it.y + it.h } ?: panelY + 26f) + 10f
+        var yOffset = startY - panelY
+        for (value in values) {
+            val labelWidth = Fonts.Nl_16.stringWidth(value.name) + 6f
+            if (xOffset + labelWidth > previewWidth - 16f) {
                 xOffset = 0f
                 yOffset += 14f
             }
-
-            val buttonX = previewX + 8f + xOffset
-            val buttonY = previewY + previewHeight - 180f * progress + yOffset
-
-            if (isHovering(buttonX, buttonY, width, 12f, mouseX, mouseY)) {
-                value.set(!value.get())
+            if (panelY + yOffset + 12f <= panelY + panelHeight - 8f) {
+                buttons += ButtonArea(value, previewX + 8f + xOffset, panelY + yOffset, labelWidth, 12f)
             }
-
-            xOffset += width + 4f
+            xOffset += labelWidth + 5f
         }
+        return buttons
     }
+
+    private data class ButtonArea<T>(val target: T, val x: Float, val y: Float, val w: Float, val h: Float)
 
     private fun isHovering(x: Float, y: Float, w: Float, h: Float, mouseX: Int, mouseY: Int): Boolean {
         return mouseX >= x && mouseX <= x + w && mouseY >= y && mouseY <= y + h
