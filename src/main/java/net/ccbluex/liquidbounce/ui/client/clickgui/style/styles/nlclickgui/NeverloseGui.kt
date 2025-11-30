@@ -7,6 +7,8 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui
 
 import com.mojang.realmsclient.gui.ChatFormatting
 import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_GITHUB
+import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.client.SpotifyModule
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.SideGui
@@ -19,8 +21,10 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.anima
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.blur.BloomUtil
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.blur.GaussianBlur
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil
+import net.ccbluex.liquidbounce.ui.client.gui.GuiUpdate
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer
+import net.ccbluex.liquidbounce.ui.font.fontmanager.GuiFontManager
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.minecraft.client.gui.GuiScreen
@@ -33,10 +37,14 @@ import java.awt.Color
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+import net.ccbluex.liquidbounce.utils.io.MiscUtils
 
 class NeverloseGui : GuiScreen() {
 
     private val sideGui = SideGui()
+
+    private var viewerOpen = false
+    private var espPreviewComponent = EspPreviewComponent(this)
 
     var x = 100
     var y = 100
@@ -53,18 +61,18 @@ class NeverloseGui : GuiScreen() {
     private var search = false
     private var searchText = ""
 
-    private val clientPath = FDPClient.CLIENT_NAME.lowercase(Locale.getDefault())
+    private val clientPath = CLIENT_NAME.lowercase(Locale.getDefault())
     private val defaultAvatar = ResourceLocation("$clientPath/texture/mainmenu/clickgui.png")
 
-    private val githubIcon = ResourceLocation("$clientPath/texture/github.png")
+    private val githubIcon = ResourceLocation("$clientPath/texture/mainmenu/github.png")
     private val editIcon = ResourceLocation("$clientPath/custom_hud_icon.png")
     private val eyeIcon = ResourceLocation("$clientPath/texture/category/visual.png")
     private val spotifyIcon = ResourceLocation("$clientPath/texture/spotify/spotify.png")
     private val keyBindIcon = ResourceLocation("$clientPath/texture/keyboard.png")
     private val supportIcon = ResourceLocation("$clientPath/texture/support.png")
     private val updateIcon = ResourceLocation("$clientPath/texture/update.png")
-    private val themeIcon = ResourceLocation("$clientPath/texture/theme.png")
-    private val discordIcon = ResourceLocation("$clientPath/texture/discord.png")
+    private val themeIcon = ResourceLocation("$clientPath/texture/mainmenu/pallete.png")
+    private val discordIcon = ResourceLocation("$clientPath/texture/mainmenu/discord.png")
     private val fontsIcon = ResourceLocation("$clientPath/texture/fonts.png")
 
     private val headerIconHitboxes = mutableListOf<HeaderIconHitbox>()
@@ -198,17 +206,22 @@ class NeverloseGui : GuiScreen() {
         headerIconHitboxes.clear()
 
         val headerIcons = listOf(
-            HeaderIcon("GitHub", githubIcon) { },
+            HeaderIcon("GitHub", githubIcon) { MiscUtils.showURL(CLIENT_GITHUB) },
             HeaderIcon("Edit", editIcon) { mc.displayGuiScreen(GuiHudDesigner()) },
-            HeaderIcon("Viewer", eyeIcon) { },
+            HeaderIcon("Viewer", eyeIcon) {
+                viewerOpen = !viewerOpen
+                if (viewerOpen) {
+                    espPreviewComponent = EspPreviewComponent(this)
+                }
+            },
             HeaderIcon("Spotify", spotifyIcon) { SpotifyModule.openPlayerScreen() },
             HeaderIcon("Keybind", keyBindIcon) { mc.displayGuiScreen(KeyBindManager) },
 
-            HeaderIcon("Support", supportIcon) { },
-            HeaderIcon("Update", updateIcon) { },
-            HeaderIcon("Theme", themeIcon) { },
-            HeaderIcon("Discord", discordIcon) { },
-            HeaderIcon("Fonts", fontsIcon) { }
+            HeaderIcon("Support", supportIcon) { MiscUtils.showURL("https://github.com/opZywl/fdpclient/issues") },
+            HeaderIcon("Update", updateIcon) { mc.displayGuiScreen(GuiUpdate()) },
+            HeaderIcon("Theme", themeIcon) { sideGui.openCategory("Color") },
+            HeaderIcon("Discord", discordIcon) { MiscUtils.showURL("https://discord.com/invite/3XRFGeqEYD") },
+            HeaderIcon("Fonts", fontsIcon) { mc.displayGuiScreen(GuiFontManager(this)) }
         )
 
         GlStateManager.enableTexture2D()
@@ -249,6 +262,10 @@ class NeverloseGui : GuiScreen() {
             nextButtonX += buttonWidth + buttonSpacing
         }
 
+        if (viewerOpen) {
+            espPreviewComponent.draw(mouseX, mouseY)
+        }
+
         GlStateManager.resetColor()
         GL11.glPopMatrix()
 
@@ -271,6 +288,9 @@ class NeverloseGui : GuiScreen() {
             nlTabs.forEach { it.click(mouseX, mouseY, mouseButton) }
             if (settings) {
                 nlSetting.click(mouseX, mouseY, mouseButton)
+            }
+            if (viewerOpen) {
+                espPreviewComponent.mouseClicked(mouseX, mouseY, mouseButton)
             }
             if (mouseButton == 0) {
                 if (handleHeaderIconClick(mouseX, mouseY)) {
@@ -322,6 +342,9 @@ class NeverloseGui : GuiScreen() {
             if (settings) {
                 nlSetting.released(mouseX, mouseY, state)
             }
+            if (viewerOpen) {
+                espPreviewComponent.mouseReleased(mouseX, mouseY, state)
+            }
             super.mouseReleased(mouseX, mouseY, state)
         }
     }
@@ -349,6 +372,9 @@ class NeverloseGui : GuiScreen() {
             }
         }
         nlTabs.forEach { it.keyTyped(typedChar, keyCode) }
+        if (viewerOpen) {
+            espPreviewComponent.keyTyped(typedChar, keyCode)
+        }
         super.keyTyped(typedChar, keyCode)
     }
 
