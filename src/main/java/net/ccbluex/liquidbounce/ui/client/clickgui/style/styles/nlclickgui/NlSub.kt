@@ -98,7 +98,7 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
 
             val tallestColumnHeight = (moduleLayouts.values.maxOfOrNull { it.yOffset + it.heightWithGap } ?: 0) - MODULE_VERTICAL_GAP
             val contentHeight = max(0, tallestColumnHeight) + 50
-            maxScroll = max(0f, (contentHeight - (h - 40)).toFloat())
+            maxScroll = max(0f, (contentHeight - (h - NeverloseGui.HEADER_HEIGHT)).toFloat())
 
             for (nlModule in visibleModules) {
                 nlModule.x = x
@@ -107,7 +107,7 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
                 nlModule.h = h
 
                 GL11.glEnable(GL11.GL_SCISSOR_TEST)
-                scissor((x + 90).toDouble(), (y + 40).toDouble(), (w - 90).toDouble(), (h - 40).toDouble())
+                scissor((x + 90).toDouble(), (y + NeverloseGui.HEADER_HEIGHT).toDouble(), (w - 90).toDouble(), (h - NeverloseGui.HEADER_HEIGHT).toDouble())
 
                 nlModule.draw(mx, my)
                 GL11.glDisable(GL11.GL_SCISSOR_TEST)
@@ -117,12 +117,12 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
         if (this.isSelected && (subCategory == SubCategory.CONFIGS)) {
             val scrolll = getScroll().toDouble()
             getInstance().configs.setScroll(roundToHalf(scrolll).toInt())
-            getInstance().configs.setBounds(x + 90, y + 40, (w - 110).toFloat())
+            getInstance().configs.setBounds(x + 90, y + NeverloseGui.HEADER_HEIGHT, (w - 110).toFloat())
             onScroll(40)
-            maxScroll = max(0, getInstance().configs.contentHeight - (h - 40)).toFloat()
+            maxScroll = max(0, getInstance().configs.contentHeight - (h - NeverloseGui.HEADER_HEIGHT)).toFloat()
 
             GL11.glEnable(GL11.GL_SCISSOR_TEST)
-            scissor((x + 90).toDouble(), (y + 40).toDouble(), (w - 90).toDouble(), (h - 40).toDouble())
+            scissor((x + 90).toDouble(), (y + NeverloseGui.HEADER_HEIGHT).toDouble(), (w - 90).toDouble(), (h - NeverloseGui.HEADER_HEIGHT).toDouble())
             getInstance().configs.draw(mx, my)
             GL11.glDisable(GL11.GL_SCISSOR_TEST)
         }

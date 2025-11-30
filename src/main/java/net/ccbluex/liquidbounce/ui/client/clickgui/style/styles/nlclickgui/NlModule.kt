@@ -91,7 +91,7 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
 
 
     fun calcHeight(): Int {
-        var h = 20
+        var h = 30
         for (s in module.values.stream().filter { obj: Value<*>? -> obj!!.shouldRender() }
             .collect(Collectors.toList())) {
             h += 20
@@ -119,12 +119,14 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
         height = calcHeight()
 
         val cardStartX = (x + 95 + posx).toFloat()
+        val cardStartY = y + posy + scrollY + NeverloseGui.HEADER_HEIGHT + 10
+
         toggleXPosition = cardStartX + cardWidth - 22f
-        toggleYPosition = (y + posy + scrollY + 56).toFloat()
+        toggleYPosition = (cardStartY + 6).toFloat()
 
         drawRound(
             cardStartX,
-            (y + 50 + posy + scrollY).toFloat(),
+            cardStartY.toFloat(),
             cardWidth,
             calcHeight().toFloat(),
             2f,
@@ -134,13 +136,13 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
         Fonts.Nl.Nl_18.Nl_18.drawString(
             module.name,
             (cardStartX + 5f),
-            (y + posy + 55 + scrollY).toFloat(),
+            (cardStartY + 5).toFloat(),
             if (getInstance().light) Color(95, 95, 95).rgb else -1
         )
 
         drawRound(
             (cardStartX + 5f),
-            (y + 65 + posy + scrollY).toFloat(),
+            (cardStartY + 15).toFloat(),
             cardWidth - 10f,
             0.7f,
             0f,
@@ -162,7 +164,7 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
         ) Direction.FORWARDS else Direction.BACKWARDS
 
 
-        var cheigt = 20
+        var cheigt = 42
         for (downward in downwards.stream().filter { s: Downward<*>? -> s!!.setting.shouldRender() }
             .collect(Collectors.toList())) {
             downward.setX(posx)
@@ -177,7 +179,7 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
             Fonts.Nl.Nl_22.Nl_22!!.drawString(
                 "No settings.",
                 x + 100 + posx,
-                y + posy + scrollY + 72,
+                y + posy + scrollY + NeverloseGui.HEADER_HEIGHT + 42,
                 if (getInstance().light) Color(95, 95, 95).rgb else -1
             )
         }

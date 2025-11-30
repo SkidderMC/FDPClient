@@ -52,11 +52,21 @@ class NeverloseGui : GuiScreen() {
     private var settings = false
     private var search = false
     private var searchText = ""
-    private val defaultAvatar = ResourceLocation(FDPClient.CLIENT_NAME.lowercase(Locale.getDefault()) + "/64.png")
-    private val customHudIcon = ResourceLocation(FDPClient.CLIENT_NAME.lowercase(Locale.getDefault()) + "/custom_hud_icon.png")
-    private val eyeIcon = ResourceLocation(FDPClient.CLIENT_NAME.lowercase(Locale.getDefault()) + "/texture/category/visual.png")
-    private val spotifyIcon = ResourceLocation(FDPClient.CLIENT_NAME.lowercase(Locale.getDefault()) + "/texture/spotify/spotify.png")
-    private val keyBindIcon = ResourceLocation(FDPClient.CLIENT_NAME.lowercase(Locale.getDefault()) + "/texture/keyboard.png")
+
+    private val clientPath = FDPClient.CLIENT_NAME.lowercase(Locale.getDefault())
+    private val defaultAvatar = ResourceLocation("$clientPath/texture/mainmenu/clickgui.png")
+
+    private val githubIcon = ResourceLocation("$clientPath/texture/github.png")
+    private val editIcon = ResourceLocation("$clientPath/custom_hud_icon.png")
+    private val eyeIcon = ResourceLocation("$clientPath/texture/category/visual.png")
+    private val spotifyIcon = ResourceLocation("$clientPath/texture/spotify/spotify.png")
+    private val keyBindIcon = ResourceLocation("$clientPath/texture/keyboard.png")
+    private val supportIcon = ResourceLocation("$clientPath/texture/support.png")
+    private val updateIcon = ResourceLocation("$clientPath/texture/update.png")
+    private val themeIcon = ResourceLocation("$clientPath/texture/theme.png")
+    private val discordIcon = ResourceLocation("$clientPath/texture/discord.png")
+    private val fontsIcon = ResourceLocation("$clientPath/texture/fonts.png")
+
     private val headerIconHitboxes = mutableListOf<HeaderIconHitbox>()
     private var avatarTexture: ResourceLocation = defaultAvatar
     private var avatarLoaded = false
@@ -124,9 +134,9 @@ class NeverloseGui : GuiScreen() {
         GaussianBlur.renderBlur(10F)
         StencilUtil.uninitStencilBuffer()
         RoundedUtil.drawRound(x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), 2f, if (light) Color(240, 245, 248, 230) else Color(7, 13, 23, 230))
-        RoundedUtil.drawRound((x + 90).toFloat(), (y + 40).toFloat(), (w - 90).toFloat(), (h - 40).toFloat(), 1f, if (light) Color(255, 255, 255) else Color(9, 9, 9))
-        RoundedUtil.drawRound((x + 90).toFloat(), y.toFloat(), (w - 90).toFloat(), (h - 300).toFloat(), 1f, if (light) Color(255, 255, 255) else Color(9, 9, 9))
-        RoundedUtil.drawRound((x + 90).toFloat(), (y + 39).toFloat(), (w - 90).toFloat(), 1f, 0f, if (light) Color(213, 213, 213) else Color(26, 26, 26))
+        RoundedUtil.drawRound((x + 90).toFloat(), (y + HEADER_HEIGHT).toFloat(), (w - 90).toFloat(), (h - HEADER_HEIGHT).toFloat(), 1f, if (light) Color(255, 255, 255) else Color(9, 9, 9))
+        RoundedUtil.drawRound((x + 90).toFloat(), y.toFloat(), (w - 90).toFloat(), HEADER_HEIGHT.toFloat(), 1f, if (light) Color(255, 255, 255) else Color(9, 9, 9))
+        RoundedUtil.drawRound((x + 90).toFloat(), (y + HEADER_HEIGHT - 1).toFloat(), (w - 90).toFloat(), 1f, 0f, if (light) Color(213, 213, 213) else Color(26, 26, 26))
         RoundedUtil.drawRound((x + 89).toFloat(), y.toFloat(), 1f, h.toFloat(), 0f, if (light) Color(213, 213, 213) else Color(26, 26, 26))
         GL11.glEnable(GL11.GL_BLEND)
         ensureAvatarTexture()
@@ -179,31 +189,41 @@ class NeverloseGui : GuiScreen() {
             nlSetting.draw(mouseX, mouseY)
         }
 
-        RoundedUtil.drawRoundOutline((x + 105).toFloat(), (y + 10).toFloat(), 55f, 21f, 2f, 0.1f, if (light) Color(245, 245, 245) else Color(13, 13, 11), if (RenderUtil.isHovering((x + 105).toFloat(), (y + 10).toFloat(), 55f, 21f, mouseX, mouseY)) neverlosecolor else Color(19, 19, 17))
-        Fonts.Nl_18.drawString("Save", (x + 128).toFloat(), (y + 18).toFloat(), if (light) Color(18, 18, 19).rgb else -1)
-        Fonts.NlIcon.nlfont_20.nlfont_20.drawString("K", (x + 110).toFloat(), (y + 19).toFloat(), if (light) Color(18, 18, 19).rgb else -1)
-
-        val buttonSpacing = 8f
-        var nextButtonX = (x + 170).toFloat()
-        val buttonY = (y + 10).toFloat()
+        val buttonSpacing = 5f
+        val startX = (x + 105).toFloat()
+        var nextButtonX = startX
+        var buttonY = (y + 10).toFloat()
         val buttonHeight = 21f
 
         headerIconHitboxes.clear()
 
         val headerIcons = listOf(
-            HeaderIcon("Edit", customHudIcon) { mc.displayGuiScreen(GuiHudDesigner()) },
-            HeaderIcon("Viewer", eyeIcon) {},
+            HeaderIcon("GitHub", githubIcon) { },
+            HeaderIcon("Edit", editIcon) { mc.displayGuiScreen(GuiHudDesigner()) },
+            HeaderIcon("Viewer", eyeIcon) { },
             HeaderIcon("Spotify", spotifyIcon) { SpotifyModule.openPlayerScreen() },
-            HeaderIcon("Keybind", keyBindIcon) { mc.displayGuiScreen(KeyBindManager) }
+            HeaderIcon("Keybind", keyBindIcon) { mc.displayGuiScreen(KeyBindManager) },
+
+            HeaderIcon("Support", supportIcon) { },
+            HeaderIcon("Update", updateIcon) { },
+            HeaderIcon("Theme", themeIcon) { },
+            HeaderIcon("Discord", discordIcon) { },
+            HeaderIcon("Fonts", fontsIcon) { }
         )
 
         GlStateManager.enableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.enableAlpha()
 
-        headerIcons.forEach { icon ->
+        headerIcons.forEachIndexed { index, icon ->
+
+            if (index == 5) {
+                nextButtonX = startX
+                buttonY += 24f
+            }
+
             val textWidth = Fonts.Nl_18.stringWidth(icon.name)
-            val buttonWidth = textWidth + 28f
+            val buttonWidth = textWidth + 26f
 
             val isHovering = RenderUtil.isHovering(nextButtonX, buttonY, buttonWidth, buttonHeight, mouseX, mouseY)
 
@@ -344,6 +364,7 @@ class NeverloseGui : GuiScreen() {
     companion object {
         lateinit var INSTANCE: NeverloseGui
         var neverlosecolor = Color(28, 133, 192)
+        const val HEADER_HEIGHT = 64
 
         fun getInstance(): NeverloseGui = INSTANCE
 
