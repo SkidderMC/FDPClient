@@ -530,7 +530,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVER
         ) else null
     }
 
-    private fun getColor(entity: Entity?): Color {
+    fun getColor(entity: Entity?): Color {
         if (entity !is EntityLivingBase) return Color(color.rgb)
 
         if (entity is EntityPlayer && entity.isClientFriend())
