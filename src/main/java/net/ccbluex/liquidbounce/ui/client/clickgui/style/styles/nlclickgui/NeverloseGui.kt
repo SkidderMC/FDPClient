@@ -62,18 +62,18 @@ class NeverloseGui : GuiScreen() {
     private var searchText = ""
 
     private val clientPath = CLIENT_NAME.lowercase(Locale.getDefault())
-    private val defaultAvatar = ResourceLocation("$clientPath/texture/mainmenu/clickgui.png")
+    private val defaultAvatar = ResourceLocation("$clientPath/64.png")
 
     private val githubIcon = ResourceLocation("$clientPath/texture/mainmenu/github.png")
     private val editIcon = ResourceLocation("$clientPath/custom_hud_icon.png")
     private val eyeIcon = ResourceLocation("$clientPath/texture/category/visual.png")
     private val spotifyIcon = ResourceLocation("$clientPath/texture/spotify/spotify.png")
     private val keyBindIcon = ResourceLocation("$clientPath/texture/keyboard.png")
-    private val supportIcon = ResourceLocation("$clientPath/texture/support.png")
-    private val updateIcon = ResourceLocation("$clientPath/texture/update.png")
+    private val supportIcon = ResourceLocation("$clientPath/texture/mainmenu/support.png")
+    private val updateIcon = ResourceLocation("$clientPath/texture/mainmenu/update.png")
     private val themeIcon = ResourceLocation("$clientPath/texture/mainmenu/pallete.png")
     private val discordIcon = ResourceLocation("$clientPath/texture/mainmenu/discord.png")
-    private val fontsIcon = ResourceLocation("$clientPath/texture/fonts.png")
+    private val fontsIcon = ResourceLocation("$clientPath/texture/mainmenu/fonts.png")
 
     private val headerIconHitboxes = mutableListOf<HeaderIconHitbox>()
     private var avatarTexture: ResourceLocation = defaultAvatar

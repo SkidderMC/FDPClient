@@ -17,13 +17,20 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.anima
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.inventory.ItemUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.newDrawRect
+import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.inventory.GuiInventory.drawEntityOnScreen
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.RenderHelper
+import net.minecraft.item.ItemStack
+import net.minecraft.potion.Potion
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
 import java.awt.Color
+import java.text.DecimalFormat
 import kotlin.math.abs
 import net.ccbluex.liquidbounce.config.BoolValue
 
@@ -54,6 +61,7 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
     private val modeNames = listOf("Rotation", "Zoom", "Box Pos", "Box Scale", "Health", "Armor", "Tags Pos", "Tags Scale")
 
     private val openAnimation: Animation = EaseInOutQuad(250, 1.0, Direction.BACKWARDS)
+    private val dFormat = DecimalFormat("0.0")
 
     fun draw(mouseX: Int, mouseY: Int) {
         if (dragging) {
@@ -364,36 +372,65 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
 
             val offset = 8.0 * scaleFactor
             val barWidth = 2.0
-            newDrawRect(minX - offset, maxY, minX - (offset - barWidth), maxY - barHeight, healthCol)
+
+            if (ESP2D.hpBarMode.equals("Dot", ignoreCase = true) && fullHeight >= 10) {
+                val segment = (fullHeight + 0.5) / 10.0
+                val unit = 20.0 / 10.0
+                for (k in 0 until 10) {
+                    val segmentHP = ((20.0 - k * unit).coerceIn(0.0, unit)) / unit
+                    val segHei = (fullHeight / 10.0 - 0.5) * segmentHP
+                    newDrawRect(minX - offset, maxY - segment * k, minX - (offset - barWidth), maxY - segment * k - segHei, healthCol)
+                }
+            } else {
+                newDrawRect(minX - offset, maxY, minX - (offset - barWidth), maxY - barHeight, healthCol)
+                if (ESP2D.absorption) {
+                    val abHei = fullHeight / 6.0 * 4.0 / 2.0
+                    newDrawRect(minX - offset, maxY, minX - (offset - barWidth), maxY - abHei, Color(Potion.absorption.liquidColor).rgb)
+                }
+            }
 
             if (ESP2D.healthNumber) {
                 val hpDisp = if (ESP2D.hpMode.equals("Health", true)) "20.0 ❤" else "100%"
-                val fr = Fonts.minecraftFont
                 val scale = ESP2D.fontScale
-
-                GL11.glPushMatrix()
-                val strWidth = fr.getStringWidth(hpDisp).toDouble()
-                val fontHeight = fr.FONT_HEIGHT.toDouble()
-                val scaleD = scale.toDouble()
-
-                GL11.glTranslated(minX - (offset + 2.0) - strWidth * scaleD, (maxY - barHeight) - fontHeight / 2.0 * scaleD, 0.0)
-                GL11.glScalef(scale, scale, scale)
-                fr.drawStringWithShadow(hpDisp, 0f, 0f, -1)
-                GL11.glPopMatrix()
+                val fontRenderer = mc.fontRendererObj
+                drawScaledString(hpDisp, minX - (offset + 2.0) - fontRenderer.getStringWidth(hpDisp) * scale, (maxY - barHeight) - fontRenderer.FONT_HEIGHT / 2f * scale, scale.toDouble(), -1)
             }
         }
 
-        if (ESP2D.armorBar) {
+        if (ESP2D.armorBar || (ESP2D.armorItems && mc.thePlayer.inventory.armorInventory.isNotEmpty())) {
             val maxX = baseMaxX + armorOffX
             val minY = baseMinY + armorOffY
             val maxY = baseMaxY + armorOffY
 
-            if (ESP2D.armorBarMode.equals("Total", ignoreCase = true)) {
-                val armorHeight = (maxY - minY)
-                val offset = 6.5 * scaleFactor
+            if (ESP2D.armorBar) {
+                if (ESP2D.armorBarMode.equals("Items", ignoreCase = true)) {
+                    val slotHeight = (maxY - minY) / 4.0
+                    for (slot in 0..3) {
+                        newDrawRect(maxX + 1.5, maxY - slotHeight * (slot + 1), maxX + 3.5, maxY - slotHeight * slot, backgroundColor.rgb)
+                        newDrawRect(maxX + 2.0, maxY - slotHeight * (slot + 1) + 0.5, maxX + 3.0, maxY - slotHeight * slot - 0.5, Color(0, 255, 255).rgb)
+                    }
+                } else {
+                    val armorHeight = (maxY - minY)
+                    newDrawRect(maxX + 1.5, minY - 0.5, maxX + 3.5, maxY + 0.5, backgroundColor.rgb)
+                    newDrawRect(maxX + 2.0, maxY, maxX + 3.0, maxY - armorHeight, Color(0, 255, 255).rgb)
+                }
+            }
 
-                newDrawRect(maxX + offset, minY - 0.5, maxX + offset + 2.0, maxY + 0.5, backgroundColor.rgb)
-                newDrawRect(maxX + offset + 0.5, maxY, maxX + offset + 1.5, maxY - armorHeight, Color(0, 255, 255).rgb)
+            if (ESP2D.armorItems) {
+                val yDist = (maxY - minY) / 4.0
+                for (slot in 3 downTo 0) {
+                    val stack = mc.thePlayer.inventory.armorInventory[slot]
+                    if (stack != null) {
+                        val renderY = minY + yDist * (3 - slot) + yDist / 2.0 - 8.0
+                        renderItemStack(stack, maxX + 4.0, renderY)
+                        if (ESP2D.armorDur) {
+                            val dur = ItemUtils.getItemDurability(stack).toString()
+                            val scale = ESP2D.fontScale
+                            val fontRenderer = mc.fontRendererObj
+                            drawScaledCenteredString(dur, maxX + 4.0 + 8.0, renderY + 12.0, scale.toDouble(), -1)
+                        }
+                    }
+                }
             }
         }
 
@@ -401,29 +438,78 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
             val textXCenter = baseX + tagsOffX
             val textYBase = baseMinY + tagsOffY
 
-            val name = mc.thePlayer.name
-            val fr = Fonts.minecraftFont
+            val name = if (ESP2D.clearName) stripColor(mc.thePlayer.name) else mc.thePlayer.displayName.formattedText
             val scale = ESP2D.fontScale * tagsScale
-            val textWidth = fr.getStringWidth(name).toDouble() * scale.toDouble()
+            val fontRenderer = mc.fontRendererObj
+            val textWidth = fontRenderer.getStringWidth(name).toDouble() * scale.toDouble()
 
-            val textY = textYBase - (10.0 * scaleFactor) - fr.FONT_HEIGHT * scale
+            val textY = textYBase - (10.0 * scaleFactor) - fontRenderer.FONT_HEIGHT * scale
 
             if (ESP2D.tagsBG) {
-                newDrawRect(
-                    textXCenter - textWidth / 2.0 - 2.0,
-                    textY - 2.0,
-                    textXCenter + textWidth / 2.0 + 2.0,
-                    textY + fr.FONT_HEIGHT * scale,
-                    -0x60000000
-                )
+                newDrawRect(textXCenter - textWidth / 2.0 - 2.0, textY - 2.0, textXCenter + textWidth / 2.0 + 2.0, textY + fontRenderer.FONT_HEIGHT * scale, -0x60000000)
             }
-
-            GL11.glPushMatrix()
-            GL11.glTranslated(textXCenter - textWidth / 2.0, textY, 0.0)
-            GL11.glScalef(scale, scale, scale)
-            fr.drawStringWithShadow(name, 0f, 0f, -1)
-            GL11.glPopMatrix()
+            drawScaledCenteredString(name, textXCenter, textY, scale.toDouble(), -1)
         }
+
+        if (ESP2D.itemTags) {
+            val stack = mc.thePlayer.heldItem
+            if (stack != null) {
+                val textXCenter = baseX + tagsOffX
+                val textYBase = baseMaxY + (boxOffY * 0.1)
+
+                val itemName = stack.displayName
+                val scale = ESP2D.fontScale * tagsScale
+                val fontRenderer = mc.fontRendererObj
+                val textWidth = fontRenderer.getStringWidth(itemName).toDouble() * scale.toDouble()
+                val textY = textYBase + (4.0 * scaleFactor)
+
+                if (ESP2D.tagsBG) {
+                    newDrawRect(textXCenter - textWidth / 2.0 - 2.0, textY - 2.0, textXCenter + textWidth / 2.0 + 2.0, textY + fontRenderer.FONT_HEIGHT * scale, -0x60000000)
+                }
+                drawScaledCenteredString(itemName, textXCenter, textY, scale.toDouble(), -1)
+            }
+        }
+    }
+
+    private fun drawOutlineStringWithoutGL(s: String, x: Float, y: Float, color: Int, fontRenderer: FontRenderer) {
+        fontRenderer.drawString(stripColor(s), (x * 2 - 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
+        fontRenderer.drawString(stripColor(s), (x * 2 + 1).toInt(), (y * 2).toInt(), Color.BLACK.rgb)
+        fontRenderer.drawString(stripColor(s), (x * 2).toInt(), (y * 2 - 1).toInt(), Color.BLACK.rgb)
+        fontRenderer.drawString(stripColor(s), (x * 2).toInt(), (y * 2 + 1).toInt(), Color.BLACK.rgb)
+        fontRenderer.drawString(s, (x * 2).toInt(), (y * 2).toInt(), color)
+    }
+
+    private fun drawScaledString(text: String, x: Double, y: Double, scale: Double, color: Int) {
+        GL11.glPushMatrix()
+        GL11.glTranslated(x, y, 0.0)
+        GL11.glScaled(scale, scale, scale)
+        if (ESP2D.outlineFont) {
+            drawOutlineStringWithoutGL(text, 0f, 0f, color, mc.fontRendererObj)
+        } else {
+            mc.fontRendererObj.drawStringWithShadow(text, 0f, 0f, color)
+        }
+        GL11.glPopMatrix()
+    }
+
+    private fun drawScaledCenteredString(text: String, x: Double, y: Double, scale: Double, color: Int) {
+        val width = mc.fontRendererObj.getStringWidth(text) * scale
+        drawScaledString(text, x - width / 2.0, y, scale, color)
+    }
+
+    private fun renderItemStack(stack: ItemStack, x: Double, y: Double) {
+        GL11.glPushMatrix()
+        GL11.glTranslated(x, y, 0.0)
+        GL11.glScalef(0.5f, 0.5f, 0.5f)
+        GlStateManager.enableRescaleNormal()
+        GlStateManager.enableBlend()
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+        RenderHelper.enableStandardItemLighting()
+        mc.renderItem.renderItemAndEffectIntoGUI(stack, 0, 0)
+        mc.renderItem.renderItemOverlays(mc.fontRendererObj, stack, 0, 0)
+        RenderHelper.disableStandardItemLighting()
+        GlStateManager.disableRescaleNormal()
+        GlStateManager.disableBlend()
+        GL11.glPopMatrix()
     }
 
     private fun drawManagerHeader(mouseX: Int, mouseY: Int, previewX: Int, previewWidth: Float, panelY: Float, textColor: Color) {
