@@ -30,7 +30,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
 
     private val style by choices(
         "Style",
-        arrayOf("Black", "Zywl", "FDP", "Neverlose"),
+        arrayOf("Black", "Zywl", "Dropdown", "FDP"),
         "FDP"
     ).onChanged {
         updateStyle()
@@ -39,7 +39,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
 
     private val color by choices(
         "Color", arrayOf("Custom", "Fade", "Theme"), "Theme"
-    ) { style == "FDP" }
+    ) { style == "Dropdown" }
 
     private val customColorSetting by color("CustomColor", Color(255, 255, 255)) { color == "Custom" || color == "Fade" }
 
@@ -50,16 +50,16 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
     val spacedModules by boolean("SpacedModules", false)
     val panelsForcedInBoundaries by boolean("PanelsForcedInBoundaries", false)
 
-    val headerColor by boolean("Header Color", true) { style == "FDP" }
+    val headerColor by boolean("Header Color", true) { style == "Dropdown" }
 
-    val categoryOutline by boolean("Outline", true) { style == "FDP" }
+    val categoryOutline by boolean("Outline", true) { style == "Dropdown" }
 
-    val roundedRectRadius by float("RoundedRect-Radius", 0F, 0F..2F)  { style == "FDP" }
+    val roundedRectRadius by float("RoundedRect-Radius", 0F, 0F..2F)  { style == "Dropdown" }
 
-    val backback by boolean("Background Accent", true) { style == "FDP" }
-    val scrollMode by choices("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")  { style == "FDP" }
-    val colormode by choices("Setting Accent", arrayOf("White", "Color"), "Color") { style == "FDP" }
-    val clickHeight by int("Tab Height", 250, 100.. 500) { style == "FDP" }
+    val backback by boolean("Background Accent", true) { style == "Dropdown" }
+    val scrollMode by choices("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")  { style == "Dropdown" }
+    val colormode by choices("Setting Accent", arrayOf("White", "Color"), "Color") { style == "Dropdown" }
+    val clickHeight by int("Tab Height", 250, 100.. 500) { style == "Dropdown" }
 
     override fun onEnable() {
         try {
@@ -77,7 +77,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
                     mc.displayGuiScreen(yzyGui)
                     this.state = false
                 }
-                style.equals("FDP", ignoreCase = true) -> {
+                style.equals("Dropdown", ignoreCase = true) -> {
                     if (fdpDropdownGui == null) {
                         fdpDropdownGui = FDPDropdownClickGUI()
                     } else {
@@ -86,7 +86,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
                     mc.displayGuiScreen(fdpDropdownGui)
                     this.state = false
                 }
-                style.equals("Neverlose", ignoreCase = true) -> {
+                style.equals("FDP", ignoreCase = true) -> {
                     if (neverloseGui == null) {
                         neverloseGui = NeverloseGui()
                     }
