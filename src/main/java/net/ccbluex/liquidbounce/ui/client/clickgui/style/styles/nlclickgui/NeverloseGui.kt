@@ -43,7 +43,7 @@ class NeverloseGui : GuiScreen() {
 
     private val sideGui = SideGui()
 
-    private var viewerOpen = false
+    private var viewerOpen = true
     private var espPreviewComponent = EspPreviewComponent(this)
 
     var x = 100
