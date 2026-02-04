@@ -34,7 +34,7 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.pow
 
-object ESP : Module("ESP", Category.VISUAL) {
+object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
 
     val mode by choices(
         "Mode",

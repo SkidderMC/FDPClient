@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 
-object Chams : Module("Chams", Category.VISUAL) {
+object Chams : Module("Chams", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     val targets by boolean("Targets", true)
     val chests by boolean("Chests", true)
     val items by boolean("Items", true)

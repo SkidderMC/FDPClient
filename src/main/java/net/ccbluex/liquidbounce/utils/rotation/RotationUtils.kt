@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.rotation.RaycastUtils.raycastEntity
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.*
@@ -782,5 +783,41 @@ object RotationUtils : MinecraftInstance, Listenable {
             point.rank > maxPoint.rank -> maxPoint
             else -> point
         }
+    }
+
+    fun calculateYawFromSrcToDst(yaw: Float, srcX: Double, srcZ: Double, dstX: Double, dstZ: Double): Float {
+        val xDist = dstX - srcX
+        val zDist = dstZ - srcZ
+        val var1 = (StrictMath.atan2(zDist, xDist) * 180.0 / Math.PI).toFloat() - 90.0f
+        return yaw + MathHelper.wrapAngleTo180_float(var1 - yaw)
+    }
+
+    /**
+     * Gets rotations entity.
+     *
+     * @param entity the entity
+     * @return the rotations entity
+     */
+    fun getRotationsEntity(entity: EntityLivingBase): Rotation {
+        return getRotations(entity.posX, entity.posY + entity.eyeHeight - 0.4, entity.posZ)
+    }
+
+    /**
+     * Gets rotations.
+     *
+     * @param posX the pos x
+     * @param posY the pos y
+     * @param posZ the pos z
+     * @return the rotations
+     */
+    fun getRotations(posX: Double, posY: Double, posZ: Double): Rotation {
+        val player = mc.thePlayer
+        val x = posX - player.posX
+        val y = posY - (player.posY + player.getEyeHeight().toDouble())
+        val z = posZ - player.posZ
+        val dist = MathHelper.sqrt_double(x * x + z * z).toDouble()
+        val yaw = (atan2(z, x) * 180.0 / 3.141592653589793).toFloat() - 90.0f
+        val pitch = (-(atan2(y, dist) * 180.0 / 3.141592653589793)).toFloat()
+        return Rotation(yaw, pitch)
     }
 }

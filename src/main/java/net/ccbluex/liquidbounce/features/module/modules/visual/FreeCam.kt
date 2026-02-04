@@ -15,7 +15,7 @@ import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.util.Vec3
 
-object FreeCam : Module("FreeCam", Category.VISUAL, gameDetecting = false) {
+object FreeCam : Module("FreeCam", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
     private val speed by FloatValue("Speed", 0.8f, 0.1f..2f)
 

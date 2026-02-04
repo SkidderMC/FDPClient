@@ -37,7 +37,7 @@ import net.minecraft.init.Items
 import net.minecraft.item.*
 import net.minecraft.potion.Potion
 
-object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER) {
+object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST) {
     private val drop by boolean("Drop", true).subjective()
     val sort by boolean("Sort", true).subjective()
 

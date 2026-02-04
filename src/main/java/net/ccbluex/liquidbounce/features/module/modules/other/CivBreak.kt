@@ -26,7 +26,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 import java.awt.Color
 
-object CivBreak : Module("CivBreak", Category.OTHER) {
+object CivBreak : Module("CivBreak", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val range by float("Range", 5F, 1F..6F)
     private val visualSwing by boolean("VisualSwing", true).subjective()

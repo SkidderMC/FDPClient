@@ -26,7 +26,7 @@ import net.minecraft.entity.Entity
 import java.util.*
 import kotlin.math.atan
 
-object Aimbot : Module("Aimbot", Category.COMBAT) {
+object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val range by float("Range", 4.4F, 1F..8F)
     private val horizontalAim by boolean("HorizontalAim", true)

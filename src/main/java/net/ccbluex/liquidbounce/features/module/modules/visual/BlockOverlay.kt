@@ -25,7 +25,7 @@ import net.minecraft.util.BlockPos
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
-object BlockOverlay : Module("BlockOverlay", Category.VISUAL, gameDetecting = false) {
+object BlockOverlay : Module("BlockOverlay", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
     private val mode by choices("Mode", arrayOf("Box", "OtherBox", "Outline"), "Box")
     private val depth3D by boolean("Depth3D", false)
     private val thickness by float("Thickness", 2F, 1F..5F)

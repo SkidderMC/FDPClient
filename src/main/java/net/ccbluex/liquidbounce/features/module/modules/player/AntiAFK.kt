@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.client.settings.GameSettings
 
-object AntiAFK : Module("AntiAFK", Category.PLAYER, gameDetecting = false) {
+object AntiAFK : Module("AntiAFK", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val mode by choices("Mode", arrayOf("Old", "Random", "Custom"), "Random")
 

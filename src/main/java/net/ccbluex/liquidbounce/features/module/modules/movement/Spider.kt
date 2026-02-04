@@ -21,7 +21,7 @@ import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
 
-object Spider : Module("Spider", Category.MOVEMENT) {
+object Spider : Module("Spider", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
 
     private val modeValue by choices("Mode", arrayOf("Collide", "Motion", "AAC3.3.12", "AAC4", "Checker", "Vulcan", "Polar"), "Collide")
     private val motionValue by float("Motion", 0.42F, 0.1F..1F) { modeValue == "Motion" }

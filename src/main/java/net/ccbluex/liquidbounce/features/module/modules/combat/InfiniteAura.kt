@@ -33,7 +33,7 @@ import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11
 import kotlin.math.sqrt
 
-object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, spacedName = "Infinite Aura") {
+object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, subCategory = Category.SubCategory.COMBAT_RAGE, spacedName = "Infinite Aura") {
     private val packetValue by choices("PacketMode", arrayOf("PacketPosition", "PacketPosLook"), "PacketPosition")
     private val packetBack by boolean("DoTeleportBackPacket", false)
     private val modeValue by choices("Mode", arrayOf("Aura", "Click"), "Aura")

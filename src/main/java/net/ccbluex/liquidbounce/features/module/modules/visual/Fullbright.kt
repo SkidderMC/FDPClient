@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.minecraft.potion.Potion
 import net.minecraft.potion.PotionEffect
 
-object Fullbright : Module("Fullbright", Category.VISUAL, gameDetecting = false) {
+object Fullbright : Module("Fullbright", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
     private val mode by choices("Mode", arrayOf("Gamma", "NightVision"), "Gamma")
     private var prevGamma = -1f
 

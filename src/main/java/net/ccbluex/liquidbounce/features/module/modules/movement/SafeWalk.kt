@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.utils.movement.FallingPlayer
 import net.minecraft.block.BlockAir
 import net.minecraft.util.BlockPos
 
-object SafeWalk : Module("SafeWalk", Category.MOVEMENT) {
+object SafeWalk : Module("SafeWalk", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS) {
 
     private val airSafe by boolean("AirSafe", false)
     private val maxFallDistanceValue = int("MaxFallDistance", 5, 0..100)

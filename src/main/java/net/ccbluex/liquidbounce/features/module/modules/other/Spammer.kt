@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomString
 
-object Spammer : Module("Spammer", Category.OTHER, subjective = true) {
+object Spammer : Module("Spammer", Category.OTHER, Category.SubCategory.MISCELLANEOUS, subjective = true) {
 
     private val delay by intRange("Delay", 500..1000, 0..5000)
 

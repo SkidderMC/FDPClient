@@ -35,7 +35,7 @@ import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
 import java.awt.Color
 
-object TimerRange : Module("TimerRange", Category.COMBAT) {
+object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     private var playerTicks = 0
     private var smartTick = 0

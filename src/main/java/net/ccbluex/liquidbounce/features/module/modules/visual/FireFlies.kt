@@ -33,7 +33,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 // made by opZywl
-object FireFlies : Module("FireFlies", Category.VISUAL, gameDetecting = false) {
+object FireFlies : Module("FireFlies", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     init {
         state = true

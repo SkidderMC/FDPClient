@@ -8,6 +8,6 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 
-object NoSwing : Module("NoSwing", Category.VISUAL) {
+object NoSwing : Module("NoSwing", Category.VISUAL, Category.SubCategory.RENDER_SELF) {
     val serverSide by boolean("ServerSide", true)
 }

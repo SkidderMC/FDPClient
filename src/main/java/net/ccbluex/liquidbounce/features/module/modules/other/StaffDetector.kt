@@ -28,7 +28,7 @@ import net.minecraft.network.play.server.*
 import net.minecraft.network.play.server.S38PacketPlayerListItem.Action.UPDATE_LATENCY
 import java.util.concurrent.ConcurrentHashMap
 
-object StaffDetector : Module("StaffDetector", Category.OTHER, gameDetecting = false) {
+object StaffDetector : Module("StaffDetector", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     // Name to IP
     private val serverIpMap = mapOf(

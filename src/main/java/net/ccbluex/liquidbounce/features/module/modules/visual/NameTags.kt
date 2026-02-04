@@ -44,7 +44,7 @@ import java.util.*
 import kotlin.math.pow
 import kotlin.math.roundToInt
 
-object NameTags : Module("NameTags", Category.VISUAL) {
+object NameTags : Module("NameTags", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
 
     private val typeValue = choices("Mode", arrayOf("3DTag", "2DTag"), "2DTag")
 

@@ -16,7 +16,7 @@ import net.minecraft.network.play.server.S01PacketJoinGame
 import net.minecraft.network.play.server.S40PacketDisconnect
 import java.util.*
 
-object NameProtect : Module("NameProtect", Category.VISUAL, subjective = true, gameDetecting = false) {
+object NameProtect : Module("NameProtect", Category.VISUAL, Category.SubCategory.RENDER_SELF, subjective = true, gameDetecting = false) {
 
     val allPlayers by boolean("AllPlayers", false)
 

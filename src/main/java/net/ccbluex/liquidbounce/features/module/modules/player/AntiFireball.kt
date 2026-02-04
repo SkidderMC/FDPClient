@@ -32,7 +32,7 @@ import kotlin.math.floor
 import kotlin.math.sin
 import org.lwjgl.opengl.GL11
 
-object AntiFireball : Module("AntiFireball", Category.PLAYER) {
+object AntiFireball : Module("AntiFireball", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
     private val indicators by boolean("Indicator", true)
     private val range by float("Range", 4.5f, 3f..8f)

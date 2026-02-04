@@ -40,7 +40,7 @@ import net.minecraft.util.Vec3
 import net.minecraftforge.event.ForgeEventFactory
 import java.awt.Color
 
-object BedDefender : Module("BedDefender", Category.OTHER) {
+object BedDefender : Module("BedDefender", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val autoBlock by choices("AutoBlock", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof")
     private val swing by boolean("Swing", true)

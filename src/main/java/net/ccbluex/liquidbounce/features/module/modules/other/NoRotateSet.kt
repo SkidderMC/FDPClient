@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.entity.player.EntityPlayer
 
-object NoRotateSet : Module("NoRotateSet", Category.OTHER, gameDetecting = false) {
+object NoRotateSet : Module("NoRotateSet", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
     var savedRotation = Rotation.ZERO
 
     private val ignoreOnSpawn by boolean("IgnoreOnSpawn", false)

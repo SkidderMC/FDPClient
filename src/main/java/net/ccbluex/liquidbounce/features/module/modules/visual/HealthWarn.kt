@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.event.handler
 
-object HealthWarn: Module("HealthWarn", Category.VISUAL, gameDetecting = false) {
+object HealthWarn: Module("HealthWarn", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val healthValue by int("Health", 7, 1.. 20)
 

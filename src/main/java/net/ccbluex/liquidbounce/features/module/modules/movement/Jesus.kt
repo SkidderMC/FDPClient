@@ -18,7 +18,7 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
 import org.lwjgl.input.Keyboard
 
-object Jesus : Module("Jesus", Category.MOVEMENT, Keyboard.KEY_J) {
+object Jesus : Module("Jesus", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN,Keyboard.KEY_J) {
 
     val mode by choices("Mode", arrayOf("Vanilla", "NCP", "AAC", "AAC3.3.11", "AACFly", "Spartan", "Dolphin"), "NCP")
     private val aacFly by float("AACFlyMotion", 0.5f, 0.1f..1f) { mode == "AACFly" }

@@ -27,7 +27,7 @@ import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.client.C0EPacketClickWindow
 import org.lwjgl.input.Mouse
 
-object InvMove : Module("InvMove", Category.MOVEMENT, gameDetecting = false) {
+object InvMove : Module("InvMove", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS, gameDetecting = false) {
 
     private val notInChests by boolean("NotInChests", false)
     val aacAdditionPro by boolean("AACAdditionPro", false)

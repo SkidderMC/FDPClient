@@ -39,7 +39,7 @@ import kotlin.math.abs
 import kotlin.math.floor
 import kotlin.math.max
 
-object AntiVoid : Module("AntiVoid", Category.MOVEMENT) {
+object AntiVoid : Module("AntiVoid", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS) {
 
     private val mode by choices(
         "Mode",

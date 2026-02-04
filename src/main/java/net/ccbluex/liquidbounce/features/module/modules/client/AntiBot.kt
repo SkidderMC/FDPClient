@@ -24,7 +24,7 @@ import java.util.*
 import kotlin.math.abs
 import kotlin.math.sqrt
 
-object AntiBot : Module("AntiBot", Category.CLIENT) {
+object AntiBot : Module("AntiBot", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL) {
 
     private val tab by boolean("Tab", true)
     private val tabMode by choices("TabMode", arrayOf("Equals", "Contains"), "Contains") { tab }

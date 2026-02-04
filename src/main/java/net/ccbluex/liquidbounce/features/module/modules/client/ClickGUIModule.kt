@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.FDPDropdownClickGUI
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.YzYGui
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
@@ -20,15 +21,16 @@ import net.minecraft.network.play.server.S2EPacketCloseWindow
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
-object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT, canBeEnabled = false) {
+object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL,  Keyboard.KEY_RSHIFT, canBeEnabled = false) {
     var lastScale = 0
 
     private var fdpDropdownGui: FDPDropdownClickGUI? = null
     private var yzyGui: YzYGui? = null
+    private var neverloseGui: NeverloseGui? = null
 
     private val style by choices(
         "Style",
-        arrayOf("Black", "Zywl", "FDP"),
+        arrayOf("Black", "Zywl", "Dropdown", "FDP"),
         "FDP"
     ).onChanged {
         updateStyle()
@@ -37,7 +39,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
 
     private val color by choices(
         "Color", arrayOf("Custom", "Fade", "Theme"), "Theme"
-    ) { style == "FDP" }
+    ) { style == "Dropdown" }
 
     private val customColorSetting by color("CustomColor", Color(255, 255, 255)) { color == "Custom" || color == "Fade" }
 
@@ -48,16 +50,16 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
     val spacedModules by boolean("SpacedModules", false)
     val panelsForcedInBoundaries by boolean("PanelsForcedInBoundaries", false)
 
-    val headerColor by boolean("Header Color", true) { style == "FDP" }
+    val headerColor by boolean("Header Color", true) { style == "Dropdown" }
 
-    val categoryOutline by boolean("Outline", true) { style == "FDP" }
+    val categoryOutline by boolean("Outline", true) { style == "Dropdown" }
 
-    val roundedRectRadius by float("RoundedRect-Radius", 0F, 0F..2F)  { style == "FDP" }
+    val roundedRectRadius by float("RoundedRect-Radius", 0F, 0F..2F)  { style == "Dropdown" }
 
-    val backback by boolean("Background Accent", true) { style == "FDP" }
-    val scrollMode by choices("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")  { style == "FDP" }
-    val colormode by choices("Setting Accent", arrayOf("White", "Color"), "Color") { style == "FDP" }
-    val clickHeight by int("Tab Height", 250, 100.. 500) { style == "FDP" }
+    val backback by boolean("Background Accent", true) { style == "Dropdown" }
+    val scrollMode by choices("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")  { style == "Dropdown" }
+    val colormode by choices("Setting Accent", arrayOf("White", "Color"), "Color") { style == "Dropdown" }
+    val clickHeight by int("Tab Height", 250, 100.. 500) { style == "Dropdown" }
 
     override fun onEnable() {
         try {
@@ -75,13 +77,20 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
                     mc.displayGuiScreen(yzyGui)
                     this.state = false
                 }
-                style.equals("FDP", ignoreCase = true) -> {
+                style.equals("Dropdown", ignoreCase = true) -> {
                     if (fdpDropdownGui == null) {
                         fdpDropdownGui = FDPDropdownClickGUI()
                     } else {
                         fdpDropdownGui?.resetGui()
                     }
                     mc.displayGuiScreen(fdpDropdownGui)
+                    this.state = false
+                }
+                style.equals("FDP", ignoreCase = true) -> {
+                    if (neverloseGui == null) {
+                        neverloseGui = NeverloseGui()
+                    }
+                    mc.displayGuiScreen(neverloseGui)
                     this.state = false
                 }
                 else -> {
@@ -106,6 +115,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Keyboard.KEY_RSHIFT,
         try {
             fdpDropdownGui?.onGuiClosed()
             yzyGui?.onGuiClosed()
+            neverloseGui = null
         } catch (e: Exception) {
             println("Error during GUI cleanup: ${e.message}")
         }

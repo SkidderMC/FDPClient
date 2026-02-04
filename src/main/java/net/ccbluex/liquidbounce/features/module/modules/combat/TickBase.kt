@@ -22,7 +22,7 @@ import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
-object TickBase : Module("TickBase", Category.COMBAT) {
+object TickBase : Module("TickBase", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     private val mode by choices("Mode", arrayOf("Past", "Future"), "Past")
     private val onlyOnKillAura by boolean("OnlyOnKillAura", true)

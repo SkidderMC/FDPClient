@@ -24,7 +24,7 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.DROP_ITEM
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-object AutoSoup : Module("AutoSoup", Category.PLAYER) {
+object AutoSoup : Module("AutoSoup", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
     private val health by float("Health", 15f, 0f..20f)
     private val delay by int("Delay", 150, 0..500)

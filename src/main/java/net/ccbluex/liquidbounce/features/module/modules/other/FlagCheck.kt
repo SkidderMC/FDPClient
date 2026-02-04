@@ -30,7 +30,7 @@ import kotlin.math.abs
 import kotlin.math.roundToLong
 import kotlin.math.sqrt
 
-object FlagCheck : Module("FlagCheck", Category.OTHER, gameDetecting = true) {
+object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = true) {
 
     // TODO: Model & Wireframe Render
     private val renderServerPos by choices(

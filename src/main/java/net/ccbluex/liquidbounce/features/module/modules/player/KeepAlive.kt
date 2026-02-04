@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.init.Items
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 
-object KeepAlive : Module("KeepAlive", Category.PLAYER) {
+object KeepAlive : Module("KeepAlive", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST) {
 
     val mode by choices("Mode", arrayOf("/heal", "Soup"), "/heal")
 

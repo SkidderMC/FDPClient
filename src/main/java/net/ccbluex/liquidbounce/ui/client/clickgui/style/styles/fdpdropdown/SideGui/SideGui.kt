@@ -310,6 +310,13 @@ class SideGui : GuiPanel() {
         }
     }
 
+    fun openCategory(category: String) {
+        if (categories.contains(category)) {
+            currentCategory = category
+            focused = true
+        }
+    }
+
     private fun checkCategoryClick(mouseX: Int, mouseY: Int) {
         val totalWidth = 4 * 60f + 3 * 10f
         val startX = drag!!.x + rectWidth / 2f - totalWidth / 2f

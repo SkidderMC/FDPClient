@@ -28,6 +28,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorUtils.setColour
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInOutQuadX
 import net.ccbluex.liquidbounce.utils.render.shader.UIEffectRenderer.drawTexturedRect
+import net.minecraft.client.Minecraft.getMinecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.ScaledResolution
@@ -4344,6 +4345,16 @@ object RenderUtils : MinecraftInstance {
         enableBlend()
         resetColor()
         popMatrix()
+    }
+
+    fun startDrawing() {
+        glEnable(3042);
+        glEnable(3042);
+        glBlendFunc(770, 771);
+        glEnable(2848);
+        glDisable(3553);
+        glDisable(2929);
+        getMinecraft().entityRenderer.setupCameraTransform(getMinecraft().timer.renderPartialTicks, 0);
     }
 
     fun stopDrawing() {

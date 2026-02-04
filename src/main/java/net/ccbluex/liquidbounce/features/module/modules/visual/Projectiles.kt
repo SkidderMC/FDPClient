@@ -40,7 +40,7 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
-object Projectiles : Module("Projectiles", Category.VISUAL, gameDetecting = false) {
+object Projectiles : Module("Projectiles", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
     private val maxTrailSize by int("MaxTrailSize", 20, 1..100)
 
     private val colorMode by choices("ColorMode", arrayOf("Custom", "BowPower"), "Custom")

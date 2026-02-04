@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.ItemArmor
 
-object Teams : Module("Teams", Category.CLIENT, gameDetecting = false) {
+object Teams : Module("Teams", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false) {
 
     private val scoreboard by boolean("ScoreboardTeam", true)
     private val nameColor by boolean("NameColor", true)

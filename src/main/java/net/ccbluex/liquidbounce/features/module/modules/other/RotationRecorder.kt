@@ -27,7 +27,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import kotlin.math.absoluteValue
 
-object RotationRecorder : Module("RotationRecorder", Category.OTHER) {
+object RotationRecorder : Module("RotationRecorder", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val captureNegativeNumbers by boolean("CaptureNegativeNumbers", false)
 

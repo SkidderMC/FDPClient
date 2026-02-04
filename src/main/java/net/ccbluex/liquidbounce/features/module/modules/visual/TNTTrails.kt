@@ -17,7 +17,7 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.pow
 
-object TNTTrails : Module("TNTTrails", Category.VISUAL, spacedName = "TNT Trails") {
+object TNTTrails : Module("TNTTrails", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, spacedName = "TNT Trails") {
 
     private val renderMode by choices("Mode", arrayOf("Line", "Area", "Particles"), "Line")
     private val activeColor by color("ActiveColor", Color.WHITE)

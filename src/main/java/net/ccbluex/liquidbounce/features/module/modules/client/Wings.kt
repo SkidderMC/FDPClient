@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.render.RenderWings
 import java.awt.Color
 
-object Wings : Module("Wings", Category.CLIENT) {
+object Wings : Module("Wings", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL) {
     private val onlyThirdPerson by boolean("OnlyThirdPerson", true)
     val colorType by choices("Color Type", arrayOf("Custom", "Theme", "None"), "Custom")
 

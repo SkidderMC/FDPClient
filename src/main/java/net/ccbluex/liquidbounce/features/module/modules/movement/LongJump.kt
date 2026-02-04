@@ -23,7 +23,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.o
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 
-object LongJump : Module("LongJump", Category.MOVEMENT) {
+object LongJump : Module("LongJump", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
 
     private val longJumpModes = arrayOf(
         // NCP

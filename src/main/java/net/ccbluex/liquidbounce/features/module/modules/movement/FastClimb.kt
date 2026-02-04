@@ -19,7 +19,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
 
-object FastClimb : Module("FastClimb", Category.MOVEMENT) {
+object FastClimb : Module("FastClimb", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
 
     val mode by choices(
         "Mode",

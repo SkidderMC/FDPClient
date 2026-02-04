@@ -26,7 +26,7 @@ import net.minecraft.entity.EntityLivingBase
 import net.minecraft.item.*
 import java.awt.Color
 
-object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT) {
+object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val bow by boolean("Bow", true).subjective()
     private val egg by boolean("Egg", true).subjective()

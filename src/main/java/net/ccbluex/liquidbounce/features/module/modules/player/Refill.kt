@@ -20,7 +20,7 @@ import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C0EPacketClickWindow
 
-object Refill : Module("Refill", Category.PLAYER) {
+object Refill : Module("Refill", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
     private val delay by int("Delay", 400, 10..1000)
 
     private val minItemAge by int("MinItemAge", 400, 0..1000)

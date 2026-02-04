@@ -26,7 +26,7 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.pow
 
-object Tracers : Module("Tracers", Category.VISUAL) {
+object Tracers : Module("Tracers", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
 
     private val colorMode by choices("ColorMode", arrayOf("Custom", "DistanceColor"), "Custom")
     private val color by color("Color", Color(0, 160, 255, 150)) { colorMode == "Custom" }

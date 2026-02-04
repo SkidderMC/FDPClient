@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.extensions.isMob
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
 
-object HitBox : Module("HitBox", Category.COMBAT) {
+object HitBox : Module("HitBox", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     private val targetPlayers by boolean("TargetPlayers", true)
     private val playerSize by float("PlayerSize", 0.4F, 0F..1F) { targetPlayers }

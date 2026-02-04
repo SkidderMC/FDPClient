@@ -15,7 +15,7 @@ import net.minecraft.client.settings.GameSettings
 import net.minecraft.init.Blocks.air
 import net.minecraft.util.BlockPos
 
-object Eagle : Module("Eagle", Category.PLAYER) {
+object Eagle : Module("Eagle", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST) {
 
     private val maxSneakTime by intRange("MaxSneakTime", 1..5, 0..20)
     private val onlyWhenLookingDown by boolean("OnlyWhenLookingDown", false)

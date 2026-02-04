@@ -21,7 +21,7 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.pow
 
-object TNTTimer : Module("TNTTimer", Category.VISUAL, spacedName = "TNT Timer") {
+object TNTTimer : Module("TNTTimer", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, spacedName = "TNT Timer") {
 
     private val scale by float("Scale", 3F, 1F..4F)
     private val font by font("Font", Fonts.fontSemibold40)

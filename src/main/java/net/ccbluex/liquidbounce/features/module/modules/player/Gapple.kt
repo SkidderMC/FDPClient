@@ -25,7 +25,7 @@ import net.minecraft.potion.Potion.regeneration
 import net.minecraft.util.MathHelper
 import java.util.*
 
-object Gapple : Module("Gapple", Category.PLAYER) {
+object Gapple : Module("Gapple", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
     private val modeValue by choices("Mode", arrayOf("Auto", "LegitAuto", "Legit", "Head"), "Auto")
     private val percent by float("HealthPercent", 75.0f, 1.0f..100.0f)

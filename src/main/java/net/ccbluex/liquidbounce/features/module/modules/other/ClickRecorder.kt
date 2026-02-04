@@ -23,7 +23,7 @@ import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-object ClickRecorder : Module("ClickRecorder", Category.OTHER) {
+object ClickRecorder : Module("ClickRecorder", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val recordRightClick by boolean("RecordRightClick", false)
     private val recordMiddleClick by boolean("RecordMiddleClick", false)

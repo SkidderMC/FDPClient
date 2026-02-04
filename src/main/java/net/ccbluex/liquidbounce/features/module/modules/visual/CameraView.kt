@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffold
 
-object CameraView : Module("CameraView", Category.VISUAL) {
+object CameraView : Module("CameraView", Category.VISUAL, Category.SubCategory.RENDER_SELF) {
 
     val clip by boolean("Clip", true)
 

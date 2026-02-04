@@ -1,4 +1,4 @@
-package net.vitox.particle.util;
+package net.ccbluex.liquidbounce.utils.render.particle;
 
 import net.ccbluex.liquidbounce.utils.extensions.MathExtensionsKt;
 

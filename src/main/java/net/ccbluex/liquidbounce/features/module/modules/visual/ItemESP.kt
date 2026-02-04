@@ -26,7 +26,7 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.pow
 
-object ItemESP : Module("ItemESP", Category.VISUAL) {
+object ItemESP : Module("ItemESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     private val mode by choices("Mode", arrayOf("Box", "OtherBox", "Glow"), "Box")
 
     private val itemText by boolean("ItemText", false)

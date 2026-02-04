@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.network.play.client.C03PacketPlayer
 
-object FastUse : Module("FastUse", Category.PLAYER) {
+object FastUse : Module("FastUse", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
     private val mode by choices("Mode", arrayOf("Instant", "NCP", "AAC", "Custom"), "NCP")
 

@@ -23,7 +23,7 @@ import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.pow
 
-object ProphuntESP : Module("ProphuntESP", Category.VISUAL, gameDetecting = false) {
+object ProphuntESP : Module("ProphuntESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
     private val mode by choices("Mode", arrayOf("Box", "OtherBox", "Glow"), "OtherBox")
     private val glowRenderScale by float("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
     private val glowRadius by int("Glow-Radius", 4, 1..5) { mode == "Glow" }

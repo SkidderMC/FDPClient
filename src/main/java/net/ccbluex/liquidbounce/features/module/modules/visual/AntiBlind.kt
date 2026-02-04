@@ -11,7 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.event.handler
 import net.minecraft.network.play.server.S3FPacketCustomPayload
 
-object AntiBlind : Module("AntiBlind", Category.VISUAL, gameDetecting = false) {
+object AntiBlind : Module("AntiBlind", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
     val confusionEffect by boolean("Confusion", true)
     val pumpkinEffect by boolean("Pumpkin", true)
     val fireEffect by float("FireAlpha", 0.3f, 0f..1f)

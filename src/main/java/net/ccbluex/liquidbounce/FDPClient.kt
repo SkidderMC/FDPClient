@@ -30,6 +30,7 @@ import net.ccbluex.liquidbounce.handler.discord.DiscordRPC
 import net.ccbluex.liquidbounce.handler.lang.LanguageManager.loadLanguages
 import net.ccbluex.liquidbounce.handler.macro.MacroManager
 import net.ccbluex.liquidbounce.handler.payload.ClientFixes
+import net.ccbluex.liquidbounce.handler.spotify.SpotifyIntegration
 import net.ccbluex.liquidbounce.handler.tabs.BlocksTab
 import net.ccbluex.liquidbounce.handler.tabs.ExploitsTab
 import net.ccbluex.liquidbounce.handler.tabs.HeadsTab
@@ -80,8 +81,8 @@ object FDPClient {
     const val CLIENT_CLOUD = "https://cloud.liquidbounce.net/LiquidBounce"
     const val CLIENT_WEBSITE = "fdpinfo.github.io"
     const val CLIENT_GITHUB = "https://github.com/SkidderMC/FDPClient"
-    const val CLIENT_VERSION = "b15"
-    
+    const val CLIENT_VERSION = "b16"
+
     val clientVersionText = gitInfo["git.build.version"]?.toString() ?: "unknown"
     val clientVersionNumber = clientVersionText.substring(1).toIntOrNull() ?: 0 // version format: "b<VERSION>" on legacy
     val clientCommit = gitInfo["git.commit.id.abbrev"]?.let { "git-$it" } ?: "unknown"
@@ -193,6 +194,7 @@ object FDPClient {
             SilentHotbar
             BlinkUtils
             KeyBindManager
+            SpotifyIntegration
 
             // Load settings
             loadSettings(false) {

@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.serverRotation
 import net.ccbluex.liquidbounce.event.handler
 import java.awt.Color
 
-object Rotations : Module("Rotations", Category.CLIENT, gameDetecting = false) {
+object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false) {
 
     private val realistic by boolean("Realistic", true)
     private val body by boolean("Body", true) { !realistic }

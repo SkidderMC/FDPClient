@@ -23,7 +23,7 @@ import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
 import kotlin.math.max
 
-object NoFall : Module("NoFall", Category.PLAYER) {
+object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
     private val noFallModes = arrayOf(
 
         // Main

@@ -61,7 +61,7 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.random.Random
 
-object ESP2D : Module("ESP2D", Category.VISUAL) {
+object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
 
     val outline by boolean("Outline", true)
     val boxMode by choices("Mode", arrayOf("Box", "Corners"), "Box")
@@ -530,7 +530,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL) {
         ) else null
     }
 
-    private fun getColor(entity: Entity?): Color {
+    fun getColor(entity: Entity?): Color {
         if (entity !is EntityLivingBase) return Color(color.rgb)
 
         if (entity is EntityPlayer && entity.isClientFriend())

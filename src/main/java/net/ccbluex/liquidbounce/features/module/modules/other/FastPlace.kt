@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.other
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 
-object FastPlace : Module("FastPlace", Category.OTHER) {
+object FastPlace : Module("FastPlace", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
     val speed by int("Speed", 0, 0..4)
     val onlyBlocks by boolean("OnlyBlocks", true)
     val facingBlocks by boolean("OnlyWhenFacingBlocks", true)

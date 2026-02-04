@@ -25,7 +25,7 @@ import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.*
 
-object PointerESP : Module("PointerESP", Category.VISUAL) {
+object PointerESP : Module("PointerESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     private val dimension by choices("Dimension", arrayOf("2d", "3d"), "2d")
     private val mode by choices("Mode", arrayOf("Solid", "Line", "LoopLine"), "Solid")
     private val thickness by float("Thickness", 3f, 1f..5f) { mode.contains("Line") }

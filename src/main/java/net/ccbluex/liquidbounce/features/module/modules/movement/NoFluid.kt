@@ -17,7 +17,7 @@ import net.minecraft.network.play.client.C07PacketPlayerDigging
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action
 import net.minecraft.util.EnumFacing
 
-object NoFluid : Module("NoFluid", Category.MOVEMENT) {
+object NoFluid : Module("NoFluid", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
 
     val waterValue by boolean("Water", true)
     val lavaValue by boolean("Lava", true)
