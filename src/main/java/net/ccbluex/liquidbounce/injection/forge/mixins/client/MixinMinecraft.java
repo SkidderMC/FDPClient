@@ -57,8 +57,6 @@ import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
-
 @Mixin(Minecraft.class)
 @SideOnly(Side.CLIENT)
 public abstract class MixinMinecraft {
@@ -157,13 +155,19 @@ public abstract class MixinMinecraft {
         }
     }
 
+    /**
+     * AI_Kolbasa Fix: Решаем NoSuchMethodError: ScaledResolution.<init>
+     * Используем прямой каст (Minecraft) (Object) this вместо статического mc.
+     */
     @Inject(method = "displayGuiScreen", at = @At(value = "FIELD", target = "Lnet/minecraft/client/Minecraft;currentScreen:Lnet/minecraft/client/gui/GuiScreen;", shift = At.Shift.AFTER))
     private void handleDisplayGuiScreen(CallbackInfo callbackInfo) {
         if (currentScreen instanceof net.minecraft.client.gui.GuiMainMenu || (currentScreen != null && currentScreen.getClass().getName().startsWith("net.labymod") && currentScreen.getClass().getSimpleName().equals("ModGuiMainMenu"))) {
             currentScreen = new GuiMainMenu();
 
-            ScaledResolution scaledResolution = new ScaledResolution(mc);
-            currentScreen.setWorldAndResolution(mc, scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight());
+            Minecraft minecraftInstance = (Minecraft) (Object) this;
+            ScaledResolution scaledResolution = new ScaledResolution(minecraftInstance);
+            
+            currentScreen.setWorldAndResolution(minecraftInstance, scaledResolution.getScaledWidth(), scaledResolution.getScaledHeight());
             skipRenderWorld = false;
         }
 
@@ -208,12 +212,10 @@ public abstract class MixinMinecraft {
         int keyCode = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
         boolean pressed = Keyboard.getEventKeyState();
 
-        // Fire KeyStateEvent on both press and release
         if (currentScreen == null) {
             EventManager.INSTANCE.call(new KeyStateEvent(keyCode, pressed));
         }
 
-        // Fire KeyEvent only on press
         if (pressed && currentScreen == null) {
             EventManager.INSTANCE.call(new KeyEvent(keyCode));
         }
@@ -276,17 +278,13 @@ public abstract class MixinMinecraft {
         final FastPlace fastPlace = FastPlace.INSTANCE;
         if (!fastPlace.handleEvents()) return;
 
-        // Don't spam-click when the player isn't holding blocks
         if (fastPlace.getOnlyBlocks() && (thePlayer.getHeldItem() == null || !(thePlayer.getHeldItem().getItem() instanceof ItemBlock)))
             return;
 
         if (objectMouseOver != null && objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
             BlockPos blockPos = objectMouseOver.getBlockPos();
             IBlockState blockState = theWorld.getBlockState(blockPos);
-            // Don't spam-click when interacting with a TileEntity (chests, ...)
-            // Doesn't prevent spam-clicking anvils, crafting tables, ... (couldn't figure out a non-hacky way)
             if (blockState.getBlock().hasTileEntity(blockState)) return;
-            // Return if not facing a block
         } else if (fastPlace.getFacingBlocks()) return;
 
         rightClickDelayTimer = fastPlace.getSpeed();
@@ -301,13 +299,10 @@ public abstract class MixinMinecraft {
         EventManager.INSTANCE.call(new WorldEvent(p_loadWorld_1_));
     }
 
-
     @Redirect(method = "sendClickBlockToController", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/entity/EntityPlayerSP;isUsingItem()Z"))
     private boolean injectMultiActions(EntityPlayerSP instance) {
         ItemStack itemStack = instance.itemInUse;
-
         if (MultiActions.INSTANCE.handleEvents()) itemStack = null;
-
         return itemStack != null;
     }
 

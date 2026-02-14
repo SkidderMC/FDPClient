@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.utils.io
 
 import io.netty.channel.EventLoopGroup
-import io.netty.channel.epoll.Epoll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -41,11 +40,11 @@ import javax.net.ssl.X509TrustManager
 val DEFAULT_AGENT =
     "${CLIENT_NAME}/${clientVersionText} (${clientCommit}, ${if (IN_DEV) "dev" else "release"}, ${System.getProperty("os.name")})"
 
-val clientEventLoopGroup: EventLoopGroup get() = if (Epoll.isAvailable()) {
-    NetworkManager.CLIENT_EPOLL_EVENTLOOP.value
-} else {
-    NetworkManager.CLIENT_NIO_EVENTLOOP.value
-}
+/**
+ * AI_Kolbasa Fix: Убираем Epoll.isAvailable(), чтобы Windows не вылетала с NoClassDefFoundError.
+ * На винде Epoll не существует, а попытка его проверить на Java 8 руинит запуск.
+ */
+val clientEventLoopGroup: EventLoopGroup get() = NetworkManager.CLIENT_NIO_EVENTLOOP.value
 
 /**
  * Global [OkHttpClient]
