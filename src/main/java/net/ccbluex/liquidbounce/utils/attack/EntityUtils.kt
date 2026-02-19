@@ -18,17 +18,12 @@ import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.extensions.isAnimal
 import net.ccbluex.liquidbounce.utils.extensions.isClientFriend
 import net.ccbluex.liquidbounce.utils.extensions.isMob
-import net.ccbluex.liquidbounce.utils.extensions.toRadiansD
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils.contains
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.Vec3
 import java.awt.Color
-import kotlin.math.cos
-import kotlin.math.sin
 
 object EntityUtils : MinecraftInstance {
 
@@ -62,40 +57,6 @@ object EntityUtils : MinecraftInstance {
         return false
     }
 
-    fun isLookingOnEntities(entity: Any, maxAngleDifference: Double): Boolean {
-        val player = mc.thePlayer ?: return false
-
-        if (entity == player) return true
-
-        val playerYaw = player.rotationYawHead
-        val playerPitch = player.rotationPitch
-
-        val maxAngleDifferenceRadians = Math.toRadians(maxAngleDifference)
-
-        val lookVec = Vec3(
-            -sin(playerYaw.toRadiansD()),
-            -sin(playerPitch.toRadiansD()),
-            cos(playerYaw.toRadiansD())
-        ).normalize()
-
-        val playerPos = player.positionVector.addVector(0.0, player.eyeHeight.toDouble(), 0.0)
-
-        val entityPos = when (entity) {
-            is Entity -> entity.positionVector.addVector(0.0, entity.eyeHeight.toDouble(), 0.0)
-            is TileEntity -> Vec3(
-                entity.pos.x.toDouble(),
-                entity.pos.y.toDouble(),
-                entity.pos.z.toDouble()
-            )
-            else -> return false
-        }
-
-        val directionToEntity = entityPos.subtract(playerPos).normalize()
-        val dotProductThreshold = lookVec.dotProduct(directionToEntity)
-
-        return dotProductThreshold > cos(maxAngleDifferenceRadians)
-    }
-
     fun getHealth(entity: EntityLivingBase, fromScoreboard: Boolean = false, absorption: Boolean = true): Float {
         if (fromScoreboard && entity is EntityPlayer) run {
             val scoreboard = entity.worldScoreboard
@@ -126,7 +87,7 @@ object EntityUtils : MinecraftInstance {
             if (chars[i] != '§') continue
 
             val index = getColorIndex(chars[i + 1])
-            if (index < 0 || index > 15) continue
+            if (index !in 0..15) continue
 
             color = ColorUtils.hexColors[index]
             break

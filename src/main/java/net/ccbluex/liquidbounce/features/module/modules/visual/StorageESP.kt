@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.other.ChestAura.clickedTileEntities
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.disableFastRender
-import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.block.toVec
@@ -136,7 +135,7 @@ object StorageESP : Module("StorageESP", Category.VISUAL, Category.SubCategory.R
                             continue
                     }
 
-                    if (onLook && !isLookingOnEntities(tileEntity, maxAngleDifference.toDouble()))
+                    if (onLook && !mc.thePlayer.isLookingOnEntity(tileEntity, maxAngleDifference.toDouble()))
                         continue
 
                     if (!thruBlocks && !isEntityHeightVisible(tileEntity)) continue
@@ -190,7 +189,7 @@ object StorageESP : Module("StorageESP", Category.VISUAL, Category.SubCategory.R
 
                 if (distanceSquared <= maxRenderDistanceSq) {
                     if (entity is EntityMinecartChest) {
-                        if (onLook && !isLookingOnEntities(entity, maxAngleDifference.toDouble()))
+                        if (onLook && !mc.thePlayer.isLookingOnEntity(entity, maxAngleDifference.toDouble()))
                             continue
 
                         if (!thruBlocks && !isEntityHeightVisible(entity)) continue
@@ -270,7 +269,7 @@ object StorageESP : Module("StorageESP", Category.VISUAL, Category.SubCategory.R
                         if (distanceSquared > maxRenderDistanceSq)
                             continue
 
-                        if (onLook && !isLookingOnEntities(entity, maxAngleDifference.toDouble()))
+                        if (onLook && !mc.thePlayer.isLookingOnEntity(entity, maxAngleDifference.toDouble()))
                             continue
 
                         if (!thruBlocks && !isEntityHeightVisible(entity))

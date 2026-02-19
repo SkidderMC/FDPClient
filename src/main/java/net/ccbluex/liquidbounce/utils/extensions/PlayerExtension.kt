@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getFixedSensitivity
 import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.resources.DefaultPlayerSkin
 import net.minecraft.entity.Entity
+import net.minecraft.entity.EntityLiving
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.boss.EntityDragon
 import net.minecraft.entity.monster.EntityGhast
@@ -35,8 +36,10 @@ import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
+import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.*
 import net.minecraftforge.event.ForgeEventFactory
+import kotlin.math.cos
 
 /**
  * Allows to get the distance between the current entity and [entity] from the nearest corner of the bounding box
@@ -78,10 +81,45 @@ fun getNearestPointBB(eye: Vec3, box: AxisAlignedBB): Vec3 {
 fun EntityPlayer.getPing() = mc.netHandler.getPlayerInfo(uniqueID)?.responseTime ?: 0
 
 val EntityLivingBase.renderHurtTime: Float
-    get() = this.hurtTime - if (this.hurtTime != 0) { mc.timer.renderPartialTicks } else { 0f }
+    get() = this.hurtTime - if (this.hurtTime != 0) {
+        mc.timer.renderPartialTicks
+    } else {
+        0f
+    }
 
 val EntityLivingBase.hurtPercent: Float
     get() = (this.renderHurtTime) / 10
+
+fun EntityLivingBase.isLookingOnEntity(entity: Any, maxAngleDifference: Double): Boolean {
+    if (entity == this) return true
+
+    val maxAngleDifferenceRadians = maxAngleDifference.toRadians()
+
+    // Get the nearest point on the entity's bounding box to properly detect if looking at entity
+    val entityPosVec = when (entity) {
+        is Entity -> getNearestPointBB(eyes, entity.hitBox)
+        is TileEntity -> Vec3(
+            entity.pos.x.toDouble(),
+            entity.pos.y.toDouble(),
+            entity.pos.z.toDouble()
+        )
+
+        else -> return false
+    }
+
+    val directionToEntity = entityPosVec.subtract(eyes).normalize()
+    val dotProductThreshold = lookVec.dotProduct(directionToEntity)
+
+    return dotProductThreshold > cos(maxAngleDifferenceRadians)
+}
+
+fun EntityLivingBase.isAttackingEntity(entity: Entity, maxAngleDifference: Double, range: Double): Boolean {
+    val isSwinging = swingProgress > 0f
+    val isLookingAtEntity = isLookingOnEntity(entity, maxAngleDifference)
+    val isInRange = getDistanceToEntityBox(entity) < range
+
+    return isSwinging && isLookingAtEntity && isInRange
+}
 
 fun Entity.isAnimal() =
     this is EntityAnimal
@@ -103,7 +141,11 @@ fun EntityPlayer.isClientFriend(): Boolean {
 }
 
 val EntityLivingBase.skin: ResourceLocation
-    get() = if (this is EntityPlayer) { mc.netHandler.getPlayerInfo(this.uniqueID)?.locationSkin } else { null } ?: DefaultPlayerSkin.getDefaultSkinLegacy()
+    get() = if (this is EntityPlayer) {
+        mc.netHandler.getPlayerInfo(this.uniqueID)?.locationSkin
+    } else {
+        null
+    } ?: DefaultPlayerSkin.getDefaultSkinLegacy()
 
 var Entity?.rotation
     get() = Rotation(this?.rotationYaw ?: 0f, this?.rotationPitch ?: 0f)

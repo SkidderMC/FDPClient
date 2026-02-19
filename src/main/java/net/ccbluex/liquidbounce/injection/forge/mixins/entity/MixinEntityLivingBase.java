@@ -30,6 +30,7 @@ import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
+import org.objectweb.asm.Opcodes;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 import org.spongepowered.asm.mixin.Shadow;
@@ -40,8 +41,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(EntityLivingBase.class)
 public abstract class MixinEntityLivingBase extends MixinEntity {
 
-    @Shadow
-    public float rotationYawHead;
     @Shadow
     public boolean isJumping;
     @Shadow
@@ -74,6 +73,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     /**
      * @author CCBlueX
+     * @reason Maintains jump boost effect and adds Jesus module support
      */
     @Overwrite
     protected void jump() {
@@ -118,7 +118,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
 
     @Inject(method = "onLivingUpdate", at = @At("HEAD"))
     private void headLiving(CallbackInfo callbackInfo) {
-        if (NoJumpDelay.INSTANCE.handleEvents() || Scaffold.INSTANCE.handleEvents() && Tower.INSTANCE.getTowerModeValues().equals("Pulldown")) jumpTicks = 0;
+        if (NoJumpDelay.INSTANCE.handleEvents() || Scaffold.INSTANCE.handleEvents() && Tower.INSTANCE.getTowerModeValues().get().equals("Pulldown")) jumpTicks = 0;
     }
 
     @Inject(method = "onLivingUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;isJumping:Z", ordinal = 1))
@@ -144,14 +144,15 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     private void hookHeadRotations(CallbackInfo ci) {
         Rotation rotation = Rotations.INSTANCE.getRotation();
 
-        //noinspection ConstantValue
-        this.rotationYawHead = ((EntityLivingBase) (Object) this) instanceof EntityPlayerSP && Rotations.INSTANCE.shouldUseRealisticMode() && rotation != null ? rotation.getYaw() : this.rotationYawHead;
+        if (((EntityLivingBase) (Object) this) instanceof EntityPlayerSP && Rotations.INSTANCE.shouldUseRealisticMode() && rotation != null) {
+            rotation.getYaw();
+        }
     }
 
     /**
      * Inject body rotation modification
      */
-    @Redirect(method = "onUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;rotationYaw:F", ordinal = 0))
+    @Redirect(method = "onUpdate", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;rotationYaw:F", ordinal = 0, opcode = Opcodes.GETFIELD))
     private float hookBodyRotationsA(EntityLivingBase instance) {
         Rotation rotation = Rotations.INSTANCE.getRotation();
 
@@ -161,7 +162,7 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     /**
      * Inject body rotation modification
      */
-    @Redirect(method = "updateDistance", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;rotationYaw:F"))
+    @Redirect(method = "updateDistance", at = @At(value = "FIELD", target = "Lnet/minecraft/entity/EntityLivingBase;rotationYaw:F", opcode = Opcodes.GETFIELD))
     private float hookBodyRotationsB(EntityLivingBase instance) {
         Rotation rotation = Rotations.INSTANCE.getRotation();
 

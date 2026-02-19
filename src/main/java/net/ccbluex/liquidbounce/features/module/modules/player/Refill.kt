@@ -8,98 +8,141 @@ package net.ccbluex.liquidbounce.features.module.modules.player
 import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.canClickInventory
-import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.CLICK_TIMER
+import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
+import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.CacheState
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
-import net.ccbluex.liquidbounce.utils.inventory.hasItemAgePassed
-import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
 import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.CLICK_TIMER
+import net.ccbluex.liquidbounce.utils.timing.TickTimer
+import net.minecraft.client.entity.EntityPlayerSP
 import net.minecraft.client.gui.inventory.GuiInventory
-import net.minecraft.item.ItemStack
-import net.minecraft.network.play.client.C0EPacketClickWindow
+import net.minecraft.init.Items
 
+/**
+ * Refill module - Automatically refills items
+ *
+ * Automatically refills your hotbar with items from your inventory,
+ * such as potions or soups, when the hotbar slots are empty.
+ *
+ * @author itsakc-me
+ */
 object Refill : Module("Refill", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
-    private val delay by int("Delay", 400, 10..1000)
+    private val instant by boolean("Instant", false)
+    private val delay by int("Delay", 50, 50..500) { !instant }
+    
+    private val silent by boolean("Silent", false)
 
-    private val minItemAge by int("MinItemAge", 400, 0..1000)
+    private val autoClose by boolean("AutoClose", false) { !silent }
+    private val autoCloseDelay by int("CloseDelay", 10, 0..20) { autoClose }
 
-    private val mode by choices("Mode", arrayOf("Swap", "Merge"), "Swap")
+    private val mode by choices("Mode", arrayOf("Soup", "Potion"), "Soup")
 
-    private val invOpen by boolean("InvOpen", false)
-    private val simulateInventory by boolean("SimulateInventory", false) { !invOpen }
+    private var shouldCloseInventory = false
+    private val closeTimer = TickTimer()
 
-    private val noMove by InventoryManager.noMoveValue
-    private val noMoveAir by InventoryManager.noMoveAirValue
-    private val noMoveGround by InventoryManager.noMoveGroundValue
+    // Track cache revision to skip redundant scans
+    private var lastCacheRevision = -1L
+    private var cachedRefillSlots = emptyList<Int>()
+    
+    // List of Metadata values for Healing and Regeneration potions in 1.8.9
+    // Includes: Healing I/II, Regen I/II, and their Splash variations
+    private val healPotionMetadata = arrayOf(
+        8193, 8257, 8225, // Regeneration I, Extended, II
+        16385, 16449, 16417, // Splash Regeneration I, Extended, II
+        8197, 8229, // Healing I, II
+        16389, 16421 // Splash Healing I, II
+    )
+
+    override val tag: String
+        get() = mode
+
+    override fun onDisable() {
+        closeTimer.reset()
+        lastCacheRevision = -1L
+        cachedRefillSlots = emptyList()
+    }
 
     val onTick = handler<GameTickEvent> {
-        if (!CLICK_TIMER.hasTimePassed(delay))
+        val thePlayer = mc.thePlayer ?: return@handler
+
+        if (!instant && !CLICK_TIMER.hasTimePassed(delay))
             return@handler
 
-        if (invOpen && mc.currentScreen !is GuiInventory)
+        if (!silent && mc.currentScreen !is GuiInventory)
             return@handler
 
         if (!canClickInventory())
             return@handler
 
-        for (slot in 36..44) {
-            val stack = mc.thePlayer.inventorySlot(slot).stack ?: continue
-            if (stack.stackSize == stack.maxStackSize || !stack.hasItemAgePassed(minItemAge)) continue
+        // TODO: We want the Cache system here in [Refill]
+        // Ensure cache is up-to-date (cheap if already synced)
+        if (InventoryUtils.cacheState != CacheState.SYNCED) {
+            InventoryUtils.syncCache()
+        }
 
-            when (mode) {
-                "Swap" -> {
-                    val bestOption = mc.thePlayer.inventoryContainer.inventory.withIndex()
-                        .filter { (index, searchStack) ->
-                            index < 36 && searchStack != null && searchStack.stackSize > stack.stackSize
-                                    && (ItemStack.areItemsEqual(stack, searchStack)
-                                    || searchStack.item.javaClass.isAssignableFrom(stack.item.javaClass)
-                                    || stack.item.javaClass.isAssignableFrom(searchStack.item.javaClass))
-                        }.maxByOrNull { it.value.stackSize }
-
-                    if (bestOption != null) {
-                        val (index, betterStack) = bestOption
-
-                        click(index, slot - 36, 2, betterStack)
-                        break
-                    }
-                }
-
-                "Merge" -> {
-                    val bestOption = mc.thePlayer.inventoryContainer.inventory.withIndex()
-                        .filter { (index, searchStack) ->
-                            index < 36 && searchStack != null && ItemStack.areItemsEqual(stack, searchStack)
-                        }.minByOrNull { it.value.stackSize }
-
-                    if (bestOption != null) {
-                        val (otherSlot, otherStack) = bestOption
-
-                        click(otherSlot, 0, 0, otherStack)
-                        click(slot, 0, 0, stack)
-
-                        // Return items that couldn't fit into hotbar slot
-                        if (stack.stackSize + otherStack.stackSize > stack.maxStackSize)
-                            click(otherSlot, 0, 0, otherStack)
-
-                        break
-                    }
+        // Rebuild refill slot list only when cache revision changes
+        val currentRevision = InventoryUtils.cacheRevision
+        if (currentRevision != lastCacheRevision) {
+            lastCacheRevision = currentRevision
+            cachedRefillSlots = InventoryUtils.findCachedSlots(9..35) { stack ->
+                stack != null && when (mode) {
+                    "Soup" -> stack.item == Items.mushroom_stew
+                    "Potion" -> stack.item == Items.potionitem && healPotionMetadata.contains(stack.metadata)
+                    else -> false
                 }
             }
         }
 
-        if (simulateInventory && serverOpenInventory && mc.currentScreen !is GuiInventory)
+        // Use cached hotbar space check
+        if (!InventoryUtils.cachedHasSpaceInHotbar())
+            return@handler
+
+        val pendingSlots = cachedRefillSlots.toMutableList()
+        for (slot in pendingSlots) {
+            // Double-check live slot validity (cache may lag behind by one tick)
+            val itemStack = thePlayer.inventoryContainer.getSlot(slot).stack ?: continue
+
+            val isValidItem = when (mode) {
+                "Soup" -> itemStack.item == Items.mushroom_stew
+                "Potion" -> itemStack.item == Items.potionitem && healPotionMetadata.contains(itemStack.metadata)
+                else -> false
+            }
+
+            if (isValidItem) {
+                click(slot, thePlayer)
+
+                // Invalidate cache after we moved an item
+                InventoryUtils.invalidateCache()
+
+                // If it's not instant, break to wait for [delay] tick
+                if (!instant)
+                    return@handler
+            }
+        }
+
+        if (silent && mc.currentScreen !is GuiInventory)
             serverOpenInventory = false
+
+        if (autoClose && shouldCloseInventory && closeTimer.hasTimePassed(autoCloseDelay)) {
+            if (mc.currentScreen is GuiInventory) {
+                mc.thePlayer?.closeScreen()
+            }
+
+            shouldCloseInventory = false
+            closeTimer.reset()
+        }
     }
 
-    fun click(slot: Int, button: Int, mode: Int, stack: ItemStack) {
-        if (simulateInventory) serverOpenInventory = true
+    fun click(slot: Int, thePlayer: EntityPlayerSP) {
+        if (silent && mc.currentScreen !is GuiInventory) serverOpenInventory = true
+        else shouldCloseInventory = true
 
-        sendPacket(
-            C0EPacketClickWindow(
-                mc.thePlayer.openContainer.windowId, slot, button, mode, stack,
-                mc.thePlayer.openContainer.getNextTransactionID(mc.thePlayer.inventory)
-            )
-        )
+        // Reset close timer on each click for better timing
+        closeTimer.reset()
+
+        // If we send multiple packets in one tick, it can cause desyncs
+        // So instead we simulate window clicks
+        mc.playerController.windowClick(0, slot, 0, 1, thePlayer)
     }
 }

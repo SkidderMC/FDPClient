@@ -51,7 +51,7 @@ object Remapper {
             }
 
             // Check if srg file is already downloaded
-            if (!srgFile.exists() || !hashMatches(srgFile, sha256File)) {
+            if (!srgFile.exists() || !hashMatches(sha256File)) {
                 // Download srg file
                 srgFile.createNewFile()
 
@@ -70,7 +70,7 @@ object Remapper {
         }
     }
 
-    private fun hashMatches(srgFile: File, sha256File: File): Boolean {
+    private fun hashMatches(sha256File: File): Boolean {
         if (!sha256File.exists()) {
             LOGGER.warn("[Remapper] No sha256 file found.")
             return false

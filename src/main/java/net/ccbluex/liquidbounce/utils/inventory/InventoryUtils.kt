@@ -16,9 +16,11 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.block.BlockBush
+import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.init.Blocks
 import net.minecraft.item.Item
 import net.minecraft.item.ItemBlock
+import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C0DPacketCloseWindow
 import net.minecraft.network.play.client.C0EPacketClickWindow
@@ -27,8 +29,150 @@ import net.minecraft.network.play.client.C16PacketClientStatus.EnumState.OPEN_IN
 import net.minecraft.network.play.server.S09PacketHeldItemChange
 import net.minecraft.network.play.server.S2DPacketOpenWindow
 import net.minecraft.network.play.server.S2EPacketCloseWindow
+import net.minecraft.network.play.server.S2FPacketSetSlot
+import net.minecraft.network.play.server.S30PacketWindowItems
 
 object InventoryUtils : MinecraftInstance, Listenable {
+
+    // ──────────────────────────────────────────────
+    //  Inventory Cache
+    // ──────────────────────────────────────────────
+
+    /**
+     * Cache state indicating whether the cached inventory snapshot is still valid.
+     *
+     * | State           | Meaning                                              |
+     * |-----------------|------------------------------------------------------|
+     * | `UNINITIALIZED` | No snapshot has been taken yet (fresh login / world) |
+     * | `SYNCED`        | Cache matches the live inventory — safe to read      |
+     * | `CHANGED`       | Inventory was modified since last sync — re-query    |
+     *
+     * @author itsakc-me
+     */
+    enum class CacheState {
+        UNINITIALIZED,
+        SYNCED,
+        CHANGED
+    }
+
+    /** Current cache validity state. */
+    @JvmStatic
+    var cacheState: CacheState = CacheState.UNINITIALIZED
+        private set
+
+    /**
+     * Monotonically increasing revision counter. Bumped every time the cache
+     * transitions to [CacheState.CHANGED]. Modules can store the last-seen
+     * revision and compare cheaply: `if (cacheRevision != lastRevision) { ... }`
+     */
+    @JvmStatic
+    var cacheRevision: Long = 0L
+        private set
+
+    /** Snapshot of every slot's [ItemStack] (slots 0-44 of inventoryContainer). */
+    @JvmStatic
+    val cachedSlots = arrayOfNulls<ItemStack?>(45)
+
+    /**
+     * Takes a full snapshot of the player's inventory container.
+     * After this call [cacheState] == [CacheState.SYNCED].
+     */
+    @JvmStatic
+    fun syncCache() {
+        val player = mc.thePlayer ?: return
+        val container = player.inventoryContainer ?: return
+
+        for (i in 0 until minOf(45, container.inventorySlots.size)) {
+            cachedSlots[i] = container.getSlot(i).stack?.copy()
+        }
+
+        cacheState = CacheState.SYNCED
+    }
+
+    /**
+     * Marks the cache as dirty. Cheap — does NOT re-read slots.
+     * Consumers will see [CacheState.CHANGED] and can decide to call [syncCache].
+     */
+    @JvmStatic
+    fun invalidateCache() {
+        if (cacheState == CacheState.UNINITIALIZED) return
+        if (cacheState != CacheState.CHANGED) {
+            cacheState = CacheState.CHANGED
+            cacheRevision++
+        }
+    }
+
+    /** Resets to [CacheState.UNINITIALIZED] and clears all cached data. */
+    @JvmStatic
+    fun resetCache() {
+        cachedSlots.fill(null)
+        cacheState = CacheState.UNINITIALIZED
+        cacheRevision++
+    }
+
+    // ── Cache query helpers ──────────────────────
+
+    /**
+     * Returns the cached [ItemStack] at the given container slot index,
+     * or `null` if the slot is empty or cache is uninitialized.
+     */
+    @JvmStatic
+    fun getCachedSlot(index: Int): ItemStack? {
+        if (cacheState == CacheState.UNINITIALIZED || index !in cachedSlots.indices) return null
+        return cachedSlots[index]
+    }
+
+    /**
+     * Finds all slot indices in [range] whose cached stack satisfies [predicate].
+     */
+    @JvmStatic
+    inline fun findCachedSlots(range: IntRange, predicate: (ItemStack?) -> Boolean): List<Int> {
+        if (cacheState == CacheState.UNINITIALIZED) return emptyList()
+        return range.filter { it in cachedSlots.indices && predicate(cachedSlots[it]) }
+    }
+
+    /**
+     * Returns the first slot index in [range] whose cached stack satisfies [predicate],
+     * or `null` if none match.
+     */
+    @JvmStatic
+    inline fun findFirstCachedSlot(range: IntRange, predicate: (ItemStack?) -> Boolean): Int? {
+        if (cacheState == CacheState.UNINITIALIZED) return null
+        return range.firstOrNull { it in cachedSlots.indices && predicate(cachedSlots[it]) }
+    }
+
+    /**
+     * Counts how many slots in [range] satisfy [predicate] on the cached snapshot.
+     */
+    @JvmStatic
+    inline fun countCachedSlots(range: IntRange, predicate: (ItemStack?) -> Boolean): Int {
+        if (cacheState == CacheState.UNINITIALIZED) return 0
+        return range.count { it in cachedSlots.indices && predicate(cachedSlots[it]) }
+    }
+
+    /**
+     * Whether any hotbar slot (36-44) is empty in the cached snapshot.
+     * Falls back to live check if cache is uninitialized.
+     */
+    @JvmStatic
+    fun cachedHasSpaceInHotbar(): Boolean {
+        if (cacheState == CacheState.UNINITIALIZED) return hasSpaceInHotbar()
+        return (36..44).any { cachedSlots[it] == null }
+    }
+
+    /**
+     * Quick check: does the cache contain at least one stack matching [item] in [range]?
+     */
+    @JvmStatic
+    fun cachedContainsItem(range: IntRange, item: Item): Boolean {
+        if (cacheState == CacheState.UNINITIALIZED) return false
+        return range.any { it in cachedSlots.indices && cachedSlots[it]?.item == item }
+    }
+
+    // ──────────────────────────────────────────────
+    //  Server-side inventory state
+    // ──────────────────────────────────────────────
+
     // Is inventory open on server-side?
     var serverOpenInventory
         get() = _serverOpenInventory
@@ -169,6 +313,20 @@ object InventoryUtils : MinecraftInstance, Listenable {
         return amount
     }
 
+    /** Sync cache when player opens their inventory GUI. */
+    val onScreen = handler<ScreenEvent> {
+        if (it.guiScreen is GuiInventory) {
+            syncCache()
+        }
+    }
+
+    /** Auto-sync on tick if state is CHANGED and inventory screen is still open. */
+    val onGameTick = handler<GameTickEvent> {
+        if (cacheState == CacheState.CHANGED && mc.currentScreen is GuiInventory) {
+            syncCache()
+        }
+    }
+
     val onPacket = handler<PacketEvent> { event ->
         if (event.isCancelled) return@handler
 
@@ -176,8 +334,21 @@ object InventoryUtils : MinecraftInstance, Listenable {
             is C08PacketPlayerBlockPlacement, is C0EPacketClickWindow -> {
                 CLICK_TIMER.reset()
 
-                if (packet is C0EPacketClickWindow)
+                if (packet is C0EPacketClickWindow) {
                     isFirstInventoryClick = false
+                    // Invalidate cache when player clicks in their inventory
+                    if (packet.windowId == 0) invalidateCache()
+                }
+            }
+
+            // Server updated a single slot in player inventory
+            is S2FPacketSetSlot -> {
+                if (packet.func_149175_c() == 0) invalidateCache()
+            }
+
+            // Server sent full window contents for player inventory
+            is S30PacketWindowItems -> {
+                if (packet.func_148911_c() == 0) invalidateCache()
             }
 
             is C16PacketClientStatus ->
@@ -239,7 +410,8 @@ object InventoryUtils : MinecraftInstance, Listenable {
 
         _serverOpenInventory = false
         serverOpenContainer = false
+
+        // Reset cache on world change (server switch / respawn)
+        resetCache()
     }
-
-
 }

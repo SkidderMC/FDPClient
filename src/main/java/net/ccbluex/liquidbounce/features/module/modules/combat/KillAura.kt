@@ -22,7 +22,6 @@ import net.ccbluex.liquidbounce.utils.*
 import net.ccbluex.liquidbounce.utils.attack.CPSCounter
 import net.ccbluex.liquidbounce.utils.attack.CooldownHelper.getAttackCooldownProgress
 import net.ccbluex.liquidbounce.utils.attack.CooldownHelper.resetLastAttackedTicks
-import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.client.BlinkUtils
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.runTimeTicks
@@ -786,7 +785,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
 
             if (distance > maxRange || fov != 180F && entityFov > fov) continue
 
-            if (switchMode && !isLookingOnEntities(entity, maxSwitchFOV.toDouble())) continue
+            if (switchMode && !thePlayer.isLookingOnEntity(entity, maxSwitchFOV.toDouble())) continue
 
             val currentValue = when (priority.lowercase()) {
                 "distance" -> distance

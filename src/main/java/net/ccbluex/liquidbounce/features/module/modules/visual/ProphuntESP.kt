@@ -10,9 +10,9 @@ import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
+import net.ccbluex.liquidbounce.utils.extensions.isLookingOnEntity
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
@@ -49,7 +49,7 @@ object ProphuntESP : Module("ProphuntESP", Category.VISUAL, Category.SubCategory
     private val blocks = ConcurrentHashMap<BlockPos, Long>()
 
     private val entities by EntityLookup<EntityFallingBlock>()
-        .filter { !onLook || isLookingOnEntities(it, maxAngleDifference.toDouble()) }
+        .filter { !onLook || mc.thePlayer.isLookingOnEntity(it, maxAngleDifference.toDouble()) }
         .filter { thruBlocks || isEntityHeightVisible(it) }
         .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistanceSq }
 

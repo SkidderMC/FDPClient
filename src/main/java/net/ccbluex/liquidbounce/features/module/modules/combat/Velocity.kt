@@ -11,13 +11,13 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler
 import net.ccbluex.liquidbounce.features.module.modules.movement.Speed
-import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.client.*
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.isOnGround
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.speed
 import net.ccbluex.liquidbounce.utils.rotation.RaycastUtils.runWithModifiedRaycastResult
@@ -43,6 +43,12 @@ import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.sqrt
 
+/**
+ * Velocity module - Modifies knockback taken
+ *
+ * Reduces or modifies the knockback you take from attacks and explosions.
+ * Supports various modes for different anti-cheat systems.
+ */
 object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     /**
@@ -224,7 +230,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
                 if (nearbyEntity != null) {
                     if (!thePlayer.onGround) {
-                        if (onLook && !isLookingOnEntities(nearbyEntity, maxAngleDifference.toDouble())) {
+                        if (onLook && !thePlayer.isLookingOnEntity(nearbyEntity, maxAngleDifference.toDouble())) {
                             return@handler
                         }
 
@@ -242,7 +248,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
                         thePlayer.speedInAir = 0.02F
                         reverseHurt = false
                     } else {
-                        if (onLook && !isLookingOnEntities(nearbyEntity, maxAngleDifference.toDouble())) {
+                        if (onLook && !thePlayer.isLookingOnEntity(nearbyEntity, maxAngleDifference.toDouble())) {
                             hasReceivedVelocity = false
                             thePlayer.speedInAir = 0.02F
                             reverseHurt = false
@@ -436,7 +442,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
      *
      * This is where we come in clutch by making the player always sprint before dropping
      *
-     * [clicks] amount of hits on the target [entity]
+     * [clicks] amount of hits on the target [Entity]
      *
      * We also explicitly-cast the player as an [Entity] to avoid triggering any other things caused from setting new sprint status.
      *
@@ -515,26 +521,6 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         return true
     }
 
-    // TODO: Recode
-    private fun getDirection(): Double {
-        var moveYaw = mc.thePlayer.rotationYaw
-        when {
-            mc.thePlayer.moveForward != 0f && mc.thePlayer.moveStrafing == 0f -> {
-                moveYaw += if (mc.thePlayer.moveForward > 0) 0 else 180
-            }
-
-            mc.thePlayer.moveForward != 0f && mc.thePlayer.moveStrafing != 0f -> {
-                if (mc.thePlayer.moveForward > 0) moveYaw += if (mc.thePlayer.moveStrafing > 0) -45 else 45 else moveYaw -= if (mc.thePlayer.moveStrafing > 0) -45 else 45
-                moveYaw += if (mc.thePlayer.moveForward > 0) 0 else 180
-            }
-
-            mc.thePlayer.moveStrafing != 0f && mc.thePlayer.moveForward == 0f -> {
-                moveYaw += if (mc.thePlayer.moveStrafing > 0) -90 else 90
-            }
-        }
-        return Math.floorMod(moveYaw.toInt(), 360).toDouble()
-    }
-
     val onPacket = handler<PacketEvent>(priority = 1) { event ->
         val thePlayer = mc.thePlayer ?: return@handler
 
@@ -583,7 +569,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
                             packetDirection = atan2(motionX, motionZ)
                         }
                     }
-                    val degreePlayer = getDirection()
+                    val degreePlayer = MovementUtils.direction
                     val degreePacket = Math.floorMod(packetDirection.toInt(), 360).toDouble()
                     var angle = abs(degreePacket + degreePlayer)
                     val threshold = 120.0

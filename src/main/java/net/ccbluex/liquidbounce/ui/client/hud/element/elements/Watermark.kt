@@ -27,10 +27,13 @@ class Watermark : Element("Watermark") {
     private val showPosition by boolean("Show Position", true)
     private val showPing by boolean("Show Ping", true)
     private val showTPS by boolean("Show TPS", true)
+    private val showBPS by boolean("Show BPS", true)
     private val showAnticheat by boolean("Show Anticheat", true)
     private val showOnline by boolean("Show Online", true)
     private val showBiomeLight by boolean("Show Biome + Light", true)
     private val showDimension by boolean("Show Dimension", true)
+
+    private val textElement = Text()
 
     private fun getTPS(): Float {
         return HUDModule.tps
@@ -293,12 +296,14 @@ class Watermark : Element("Watermark") {
         val tpsText = "TPS: %.2f".format(getTPS())
         val tpsIcon = "C"
         val tpsY = if (hasThirdRow) thirdRowY + rowHeight + gap else thirdRowY
+        val tpsTextWidth = Fonts.InterMedium_15.stringWidth(tpsText)
+        val tpsBoxWidth = rectWidth + iconSize * 2.5f + tpsTextWidth
 
         if (showTPS) {
             RenderUtils.drawCustomShapeWithRadius(
                 posX,
                 tpsY,
-                rectWidth + iconSize * 2.5f + Fonts.InterMedium_15.stringWidth(tpsText),
+                rectWidth + iconSize * 2.5f + tpsTextWidth,
                 rowHeight,
                 4.0f,
                 Color(bgColorRGB, true)
@@ -317,10 +322,39 @@ class Watermark : Element("Watermark") {
             )
         }
 
+        // BPS is necessary DUDE :D
+        val bpsText = "BPS: ${textElement.getReplacement("bps")}"
+        val bpsIcon = "J"
+        val bpsX = posX + tpsBoxWidth + iconSize
+        val bpsTextWidth = Fonts.InterMedium_15.stringWidth(bpsText)
+        val bpsBoxWidth = rectWidth + iconSize * 2.5f + bpsTextWidth
+
+        if (showBPS) {
+            RenderUtils.drawCustomShapeWithRadius(
+                bpsX,
+                tpsY,
+                rectWidth + iconSize * 2.5f + bpsTextWidth,
+                rowHeight,
+                4.0f,
+                Color(bgColorRGB, true)
+            )
+            Fonts.Nursultan18.drawString(
+                bpsIcon,
+                bpsX + iconSize,
+                tpsY + 1.5f + iconSize + 2f,
+                mainColor
+            )
+            Fonts.InterMedium_15.drawString(
+                bpsText,
+                bpsX + iconSize * 1.5f + rectWidth,
+                tpsY + rectWidth / 2.0f + 1.5f + 2f,
+                -1
+            )
+        }
+
         if (showAnticheat && AnticheatDetector.state) {
             val acName = AnticheatDetector.detectedACName.ifEmpty { "None" }
-            val tpsBoxWidth = rectWidth + iconSize * 2.5f + Fonts.InterMedium_15.stringWidth(tpsText)
-            val anticheatX = posX + tpsBoxWidth + iconSize
+            val anticheatX = bpsX + bpsBoxWidth + iconSize
 
             val acTextWidth = Fonts.InterMedium_15.stringWidth(acName)
             RenderUtils.drawCustomShapeWithRadius(
@@ -347,7 +381,7 @@ class Watermark : Element("Watermark") {
 
         val biomeRight = if (showBiomeLight) posX + biomeTotalWidth else 0f
         val dimRight = if (showDimension) thirdRowRight else 0f
-        val tpsRight = posX + rectWidth + iconSize * 2.5f + Fonts.InterMedium_15.stringWidth(tpsText)
+        val tpsRight = if (showTPS) posX + tpsBoxWidth else 0f
 
         val overallWidth = maxOf(
             posX + rectWidth + iconSize * 2.5f + titleWidth,

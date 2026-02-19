@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.Reach
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
-import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.client.BlinkUtils
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
@@ -205,7 +204,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
         }
 
         if (isPlayerMoving() && !confirmStop) {
-            if (isLookingOnEntities(nearbyEntity, maxAngleDifference.toDouble())) {
+            if (player.isLookingOnEntity(nearbyEntity, maxAngleDifference.toDouble())) {
                 val entityDistance = player.getDistanceToEntityBox(nearbyEntity)
                 if (confirmTick && entityDistance in randomRange..range.endInclusive) {
                     if (updateDistance(nearbyEntity)) {
@@ -330,7 +329,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
 
             if (entityDistance > scanRange) return@let
 
-            val color = if (isLookingOnEntities(nearbyEntity, maxAngleDifference.toDouble())) {
+            val color = if (player.isLookingOnEntity(nearbyEntity, maxAngleDifference.toDouble())) {
                 Color(37, 126, 255, 70)
             } else {
                 Color(210, 60, 60, 70)

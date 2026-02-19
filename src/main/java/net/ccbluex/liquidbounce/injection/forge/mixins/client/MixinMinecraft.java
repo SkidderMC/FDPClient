@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.client;
 
 import net.ccbluex.liquidbounce.FDPClient;
+import net.ccbluex.liquidbounce.features.module.modules.combat.HitSelect;
 import net.ccbluex.liquidbounce.features.module.modules.combat.TickBase;
 import net.ccbluex.liquidbounce.features.module.modules.other.FastPlace;
 import net.ccbluex.liquidbounce.file.configs.models.ClientConfiguration;
@@ -21,6 +22,7 @@ import net.ccbluex.liquidbounce.utils.attack.CPSCounter;
 import net.ccbluex.liquidbounce.utils.client.ClientUtils;
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar;
 import net.ccbluex.liquidbounce.utils.io.MiscUtils;
+import net.ccbluex.liquidbounce.utils.movement.BPSUtils;
 import net.ccbluex.liquidbounce.utils.render.IconUtils;
 import net.ccbluex.liquidbounce.utils.render.MiniMapRegister;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -203,8 +205,18 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "runTick", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;dispatchKeypresses()V", shift = At.Shift.AFTER))
     private void onKey(CallbackInfo callbackInfo) {
-        if (Keyboard.getEventKeyState() && currentScreen == null)
-            EventManager.INSTANCE.call(new KeyEvent(Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey()));
+        int keyCode = Keyboard.getEventKey() == 0 ? Keyboard.getEventCharacter() + 256 : Keyboard.getEventKey();
+        boolean pressed = Keyboard.getEventKeyState();
+
+        // Fire KeyStateEvent on both press and release
+        if (currentScreen == null) {
+            EventManager.INSTANCE.call(new KeyStateEvent(keyCode, pressed));
+        }
+
+        // Fire KeyEvent only on press
+        if (pressed && currentScreen == null) {
+            EventManager.INSTANCE.call(new KeyEvent(keyCode));
+        }
     }
 
     @Inject(method = "sendClickBlockToController", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/MovingObjectPosition;getBlockPos()Lnet/minecraft/util/BlockPos;"))
@@ -236,8 +248,13 @@ public abstract class MixinMinecraft {
         MiscUtils.showErrorPopup(crashReport.getCrashCause(), "Game crashed! ", MiscUtils.generateCrashInfo());
     }
 
-    @Inject(method = "clickMouse", at = @At("HEAD"))
+    @Inject(method = "clickMouse", at = @At("HEAD"), cancellable = true)
     private void clickMouse(CallbackInfo callbackInfo) {
+        if (HitSelect.shouldCancelClick(objectMouseOver, thePlayer)) {
+            callbackInfo.cancel();
+            return;
+        }
+
         if (AutoClicker.INSTANCE.handleEvents()) {
             leftClickCounter = 0;
         }

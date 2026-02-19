@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
 import net.ccbluex.liquidbounce.features.module.modules.client.Teams
-import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.extensions.*
@@ -54,7 +53,7 @@ object Tracers : Module("Tracers", Category.VISUAL, Category.SubCategory.RENDER_
         .filter { isSelected(it, false) }
         .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistanceSq }
         .filter { bot || !isBot(it) }
-        .filter { !onLook || isLookingOnEntities(it, maxAngleDifference.toDouble()) }
+        .filter { !onLook || mc.thePlayer.isLookingOnEntity(it, maxAngleDifference.toDouble()) }
         .filter { thruBlocks || isEntityHeightVisible(it) }
 
     // Priority must be set lower than every other Listenable class that also listens to this event.

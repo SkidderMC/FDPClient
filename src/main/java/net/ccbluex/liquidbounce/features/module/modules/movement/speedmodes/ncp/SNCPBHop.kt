@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.toRadiansD
-import net.minecraft.potion.Potion
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils.defaultSpeed
 import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.math.cos
@@ -30,7 +30,7 @@ object SNCPBHop : SpeedMode("SNCPBHop") {
 
     override fun onDisable() {
         mc.timer.timerSpeed = 1f
-        moveSpeed = baseMoveSpeed
+        moveSpeed = defaultSpeed()
         level = 0
     }
 
@@ -43,6 +43,7 @@ object SNCPBHop : SpeedMode("SNCPBHop") {
 
     // TODO: Recode this mess
     override fun onMove(event: MoveEvent) {
+        val defaultSpeed = defaultSpeed()
         ++timerDelay
         timerDelay %= 5
         if (timerDelay != 0) {
@@ -63,7 +64,7 @@ object SNCPBHop : SpeedMode("SNCPBHop") {
         }
         if (level == 1 && mc.thePlayer.isMoving) {
             level = 2
-            moveSpeed = 1.35 * baseMoveSpeed - 0.01
+            moveSpeed = 1.35 * defaultSpeed - 0.01
         } else if (level == 2) {
             level = 3
             mc.thePlayer.motionY = 0.399399995803833
@@ -71,27 +72,27 @@ object SNCPBHop : SpeedMode("SNCPBHop") {
             moveSpeed *= 2.149
         } else if (level == 3) {
             level = 4
-            val difference = 0.66 * (lastDist - baseMoveSpeed)
+            val difference = 0.66 * (lastDist - defaultSpeed)
             moveSpeed = lastDist - difference
         } else if (level == 88) {
-            moveSpeed = baseMoveSpeed
+            moveSpeed = defaultSpeed
             lastDist = 0.0
             level = 89
         } else if (level == 89) {
             if (mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, mc.thePlayer.motionY, 0.0)).isNotEmpty() || mc.thePlayer.isCollidedVertically) level = 1
             lastDist = 0.0
-            moveSpeed = baseMoveSpeed
+            moveSpeed = defaultSpeed
             return
         } else {
             if (mc.theWorld.getCollidingBoundingBoxes(mc.thePlayer, mc.thePlayer.entityBoundingBox.offset(0.0, mc.thePlayer.motionY, 0.0)).isNotEmpty() || mc.thePlayer.isCollidedVertically) {
-                moveSpeed = baseMoveSpeed
+                moveSpeed = defaultSpeed
                 lastDist = 0.0
                 level = 88
                 return
             }
             moveSpeed = lastDist - lastDist / 159.0
         }
-        moveSpeed = moveSpeed.coerceAtLeast(baseMoveSpeed)
+        moveSpeed = moveSpeed.coerceAtLeast(defaultSpeed)
 
         val movementInput = mc.thePlayer.movementInput
         var forward = movementInput.moveForward
@@ -122,13 +123,6 @@ object SNCPBHop : SpeedMode("SNCPBHop") {
 
         if (!mc.thePlayer.isMoving) event.zeroXZ()
     }
-
-    private val baseMoveSpeed: Double
-        get() {
-            var baseSpeed = 0.2873
-            if (mc.thePlayer.isPotionActive(Potion.moveSpeed)) baseSpeed *= 1.0 + 0.2 * (mc.thePlayer.getActivePotionEffect(Potion.moveSpeed).amplifier + 1)
-            return baseSpeed
-        }
 
     private fun round(value: Double): Double {
         var bigDecimal = BigDecimal(value)

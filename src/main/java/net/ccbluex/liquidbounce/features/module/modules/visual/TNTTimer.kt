@@ -10,7 +10,6 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts
-import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
@@ -44,7 +43,7 @@ object TNTTimer : Module("TNTTimer", Category.VISUAL, Category.SubCategory.RENDE
     private val tntEntities by EntityLookup<EntityTNTPrimed>()
         .filter { it.fuse > 0 }
         .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistanceSq }
-        .filter { !onLook || isLookingOnEntities(it, maxAngleDifference.toDouble()) }
+        .filter { !onLook || mc.thePlayer.isLookingOnEntity(it, maxAngleDifference.toDouble()) }
 
     val onRender3D = handler<Render3DEvent> {
         for (entity in tntEntities) {

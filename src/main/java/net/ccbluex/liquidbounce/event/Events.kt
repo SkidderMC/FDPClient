@@ -24,7 +24,7 @@ import net.minecraft.util.*
  *
  * @param targetEntity Attacked entity
  */
-class AttackEvent(val targetEntity: Entity?) : Event()
+class AttackEvent(val targetEntity: Entity?) : CancellableEvent()
 
 /**
  * Called when player killed other entity
@@ -79,6 +79,14 @@ class JumpEvent(var motion: Float, val eventState: EventState) : CancellableEven
  * @param key Pressed key
  */
 class KeyEvent(val key: Int) : Event()
+
+/**
+ * Called when a key state changes (press or release)
+ *
+ * @param key The key code
+ * @param pressed True if the key is pressed, false if released
+ */
+class KeyStateEvent(val key: Int, val pressed: Boolean) : Event()
 
 /**
  * Called in "onUpdateWalkingPlayer"
@@ -209,7 +217,7 @@ object GameTickEvent : Event()
 object TickEndEvent : Event()
 
 /**
- * tick tack for player
+ * ticktack for player
  */
 class PlayerTickEvent(val state: EventState) : CancellableEvent()
 
@@ -262,6 +270,7 @@ internal val ALL_EVENT_CLASSES = arrayOf(
     SneakSlowDownEvent::class.java,
     PostSprintUpdateEvent::class.java,
     KeyEvent::class.java,
+    KeyStateEvent::class.java,
     SlowDownEvent::class.java,
     TickEndEvent::class.java,
     JumpEvent::class.java,

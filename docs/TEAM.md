@@ -17,6 +17,9 @@ OWNER | https://github.com/opZywl
 ### Yuugiri (AKA Liulihaocai)
 OWNER | https://github.com/hax0r31337
 
+### itsakc-me
+DEV | https://github.com/itsakc-me
+
 ### Co丶Dynamic 
 DEV | https://github.com/contionability
 

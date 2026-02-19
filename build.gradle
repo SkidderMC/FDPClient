@@ -5,7 +5,7 @@ plugins {
     id "com.github.johnrengelman.shadow" version "6.1.0"
     id "net.minecraftforge.gradle.forge"
     id "org.spongepowered.mixin"
-    id "com.gorylenko.gradle-git-properties" version "2.5.3"
+    id "com.gorylenko.gradle-git-properties" version "2.4.1"
 }
 
 repositories {
@@ -21,12 +21,6 @@ group = project.maven_group
 
 sourceCompatibility = targetCompatibility = 1.8
 compileJava.options.encoding = "UTF-8"
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
 
 minecraft {
     version = "1.8.9-11.15.1.2318-1.8.9"
@@ -61,7 +55,6 @@ minecraft {
 }
 
 configurations {
-
     external
     compile.extendsFrom(external)
 
@@ -69,6 +62,7 @@ configurations {
 }
 
 dependencies {
+    annotationProcessor("org.spongepowered:mixin:0.7.11-SNAPSHOT")
     implementation("org.spongepowered:mixin:0.7.11-SNAPSHOT") {
         transitive = false
         exclude module: "guava"
@@ -122,6 +116,9 @@ dependencies {
     implementation "com.formdev:flatlaf:3.6.1"
 
     implementation fileTree(include: ["*.jar"], dir: "libs")
+
+    implementation "org.apache.logging.log4j:log4j-core:2.0-beta9"
+    implementation "org.apache.logging.log4j:log4j-api:2.0-beta9"
 }
 
 shadowJar {
@@ -134,6 +131,7 @@ shadowJar {
     exclude "META-INF/versions/**"
 
     exclude "org/apache/log4j/**"
+    exclude "org/apache/logging/log4j/**"
     exclude "org/apache/commons/**"
     exclude "org/junit/**"
 }
@@ -149,6 +147,16 @@ processResources {
     rename "(.+_at.cfg)", "META-INF/\$1"
 }
 
+tasks.register('copyRefMap') {
+    doLast {
+        copy {
+            from "${buildDir}/tmp/compileJava/fdpclient.mixins.refmap.json"
+            into "${buildDir}/resources/main"
+        }
+    }
+    it.dependsOn(compileJava)
+}
+
 tasks.register('moveResources') {
     doLast {
         copy {
@@ -156,7 +164,7 @@ tasks.register('moveResources') {
             into "${buildDir}/classes/java"
         }
     }
-    it.dependsOn(processResources)
+    it.dependsOn(processResources, copyRefMap)
 }
 
 classes.dependsOn(moveResources)

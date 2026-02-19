@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.AntiBot.isBot
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.colorFromDisplayName
-import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isLookingOnEntities
 import net.ccbluex.liquidbounce.utils.attack.EntityUtils.isSelected
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
@@ -215,7 +214,7 @@ object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY)
 
         return (player.getDistanceSqToEntity(entity) <= maxRenderDistanceSq
                 && (thruBlocks || isEntityHeightVisible(entity))
-                && (!onLook || isLookingOnEntities(entity, maxAngleDifference.toDouble()))
+                && (!onLook || player.isLookingOnEntity(entity, maxAngleDifference.toDouble()))
                 && isSelected(entity, false)
                 && (bot || !isBot(entity)))
     }
