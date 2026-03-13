@@ -2,6 +2,8 @@ name: build
 
 on:
   - push
+  # 下面这行就是手动触发
+  - workflow_dispatch
 
 jobs:
   build:
