@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.util.Vec3
@@ -37,6 +38,7 @@ object TickBase : Module("TickBase", Category.COMBAT, Category.SubCategory.COMBA
 
     private val forceGround by boolean("ForceGround", false)
     private val pauseAfterTick by int("PauseAfterTick", 0, 0..100)
+    private val recoilTime by int("RecoilTime", 0, 0..2000)
     private val pauseOnFlag by boolean("PauseOnFlag", true)
 
     private val line by boolean("Line", true).subjective()
@@ -46,6 +48,7 @@ object TickBase : Module("TickBase", Category.COMBAT, Category.SubCategory.COMBA
     private var tickBalance = 0f
     private var reachedTheLimit = false
     private val tickBuffer = mutableListOf<TickData>()
+    private val recoilTimer = MSTimer()
     var duringTickModification = false
 
     override val tag
@@ -53,6 +56,10 @@ object TickBase : Module("TickBase", Category.COMBAT, Category.SubCategory.COMBA
 
     override fun onToggle(state: Boolean) {
         duringTickModification = false
+
+        if (state) {
+            recoilTimer.zero()
+        }
     }
 
     val onPreTick = handler<PlayerTickEvent> { event ->
@@ -108,7 +115,12 @@ object TickBase : Module("TickBase", Category.COMBAT, Category.SubCategory.COMBA
                 return@handler
             }
 
+            if (!recoilTimer.hasTimePassed(recoilTime)) {
+                return@handler
+            }
+
             duringTickModification = true
+            recoilTimer.reset()
 
             val skipTicks = (bestTick + pauseAfterTick).coerceAtMost(maxTicksAtATime + pauseAfterTick)
 
@@ -217,6 +229,7 @@ object TickBase : Module("TickBase", Category.COMBAT, Category.SubCategory.COMBA
     val onPacket = handler<PacketEvent> { event ->
         if (event.packet is S08PacketPlayerPosLook && pauseOnFlag) {
             tickBalance = 0f
+            recoilTimer.reset()
         }
     }
 
