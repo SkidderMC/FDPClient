@@ -129,6 +129,12 @@ class RotationSettingsWithRotationModes(
 
     val rotationMode by +rotationModeValue
 
+    var rotationModeProvider: (() -> String)? = null
+    var rotationsActiveProvider: (() -> Boolean)? = null
+
+    val activeRotationMode: String
+        get() = rotationModeProvider?.invoke() ?: rotationMode
+
     override val rotationsActive: Boolean
-        get() = rotationMode != "Off"
+        get() = (rotationsActiveProvider?.invoke() ?: activeRotationMode) != "Off"
 }
