@@ -10,11 +10,11 @@ import net.ccbluex.liquidbounce.config.ListValue
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoArmor
+import net.ccbluex.liquidbounce.features.module.modules.combat.ArmorFilter
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.isFullBlock
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.extensions.shuffled
 import net.ccbluex.liquidbounce.utils.inventory.*
-import net.ccbluex.liquidbounce.utils.inventory.ArmorComparator.getBestArmorSet
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.canClickInventory
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.hasScheduledInLastLoop
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.invCleanerCurrentSlot
@@ -497,7 +497,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
         val item = stack?.item ?: return false
 
         return when (item) {
-            is ItemArmor -> stack in getBestArmorSet(stacks, entityStacksMap)
+            is ItemArmor -> stack in ArmorFilter.selectBestArmorSet(stacks, entityStacksMap)
 
             is ItemTool -> {
                 val blockType = when (item) {
