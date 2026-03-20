@@ -497,7 +497,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
         val item = stack?.item ?: return false
 
         return when (item) {
-            is ItemArmor -> stack in ArmorFilter.selectBestArmorSet(stacks, entityStacksMap)
+            is ItemArmor -> ArmorFilter.isUsefulArmor(stack, stacks, entityStacksMap)
 
             is ItemTool -> {
                 val blockType = when (item) {

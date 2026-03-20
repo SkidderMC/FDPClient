@@ -14,7 +14,6 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner.canBeRepairedWithOther
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
-import net.ccbluex.liquidbounce.utils.inventory.ArmorSet
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.autoArmorCurrentSlot
 import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.autoArmorLastSlot
@@ -52,6 +51,8 @@ private val ARMOR_BIND_KEYS = mutableListOf<String>().apply {
     }
 }.toTypedArray()
 
+private data class ManualArmorRequest(val armorType: Int, val cycle: Boolean)
+
 object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
     private val delay by intRange("Delay", 50..50, 0..1000)
     private val minItemAge by int("MinItemAge", 0, 0..2000)
@@ -64,8 +65,8 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
     private val startDelay by +InventoryManager.startDelayValue
     private val closeDelay by +InventoryManager.closeDelayValue
 
-    // When swapping armor pieces, it grabs the better one, drags and swaps it with equipped one and drops the equipped one (no time of having no armor piece equipped)
-    // Has to make more clicks, works slower
+    // When swapping armor pieces, it grabs the better one, drags and swaps it with equipped one.
+    // This keeps armor coverage while preserving the old piece in the original slot.
     val smartSwap by boolean("SmartSwap", true)
 
     private val noMove by +InventoryManager.noMoveValue
@@ -74,13 +75,14 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
 
     private val hotbar by boolean("Hotbar", true)
 
-    // Sacrifices 1 tick speed for complete undetectability, needed to bypass Vulcan
+    // Sacrifices 1 tick speed for complete undetectability, needed to bypass Vulcan.
     private val delayedSlotSwitch by boolean("DelayedSlotSwitch", true) { hotbar }
 
-    // Prevents AutoArmor from hotbar equipping while any screen is open
+    // Prevents AutoArmor from hotbar equipping while any screen is open.
     private val notInContainers by boolean("NotInContainers", false) { hotbar }
 
     private val manualSwap by boolean("ManualSwap", true)
+    private val manualSwapMode by choices("ManualSwapMode", arrayOf("Best", "Cycle"), "Best") { manualSwap }
     private val helmetBind by bindChoice("HelmetBind")
     private val chestplateBind by bindChoice("ChestplateBind")
     private val leggingsBind by bindChoice("LeggingsBind")
@@ -93,7 +95,7 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
     val borderColor by +InventoryManager.borderColor
 
     @Volatile
-    private var pendingManualArmorType: Int? = null
+    private var pendingManualArmorRequest: ManualArmorRequest? = null
 
     val onKey = handler<KeyEvent> { event ->
         if (!manualSwap || event.key == Keyboard.KEY_NONE || event.key == keyBind) {
@@ -101,18 +103,18 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
         }
 
         resolveManualArmorType(event.key)?.let {
-            pendingManualArmorType = it
+            pendingManualArmorRequest = ManualArmorRequest(it, manualSwapMode == "Cycle")
         }
     }
 
     override fun onDisable() {
-        pendingManualArmorType = null
+        pendingManualArmorRequest = null
         resetHighlight()
     }
 
     suspend fun handleManualSwapRequest(): Boolean {
-        val armorType = pendingManualArmorType ?: return false
-        pendingManualArmorType = null
+        val request = pendingManualArmorRequest ?: return false
+        pendingManualArmorRequest = null
 
         if (!shouldOperate()) {
             resetHighlight()
@@ -124,8 +126,8 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
             thePlayer.openContainer.inventorySlots.map { it.stack }
         }
 
-        val armorSet = ArmorFilter.selectBestArmorSet(stacks) ?: return false
-        val hasScheduledClick = equipArmorType(armorType, stacks, armorSet)
+        val candidate = selectManualCandidate(request, stacks) ?: return false
+        val hasScheduledClick = equipArmorCandidate(request.armorType, candidate.first, candidate.second, stacks)
 
         if (hasScheduledClick) {
             awaitTicked()
@@ -153,7 +155,7 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
         for (armorType in 0..3) {
             val (index, stack) = bestArmorSet[armorType] ?: continue
 
-            // Check if the armor piece is in the hotbar
+            // Check if the armor piece is in the hotbar.
             val hotbarIndex = index?.toHotbarIndex(stacks.size) ?: continue
 
             if (isTicked(index) || isTicked(armorType + 5))
@@ -164,14 +166,13 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
 
             val armorPos = getArmorPosition(stack) - 1
 
-            // Check if target armor slot isn't occupied
+            // Check if target armor slot isn't occupied.
             if (thePlayer.inventory.armorInventory[armorPos] != null)
                 continue
 
             hasClickedHotbar = true
 
             val equippingAction = {
-                // Set current slot being stolen for highlighting
                 autoArmorCurrentSlot = hotbarIndex
 
                 SilentHotbar.selectSlotSilently(
@@ -182,15 +183,14 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
                     resetManually = true
                 )
 
-                // Switch selected hotbar slot, right click to equip
+                // Switch selected hotbar slot, right click to equip.
                 sendPacket(C08PacketPlayerBlockPlacement(stack))
 
-                // Instantly update inventory on client-side to prevent repetitive clicking because of ping
+                // Instantly update inventory on client-side to prevent repetitive clicking because of ping.
                 thePlayer.inventory.armorInventory[armorPos] = stack
                 thePlayer.inventory.mainInventory[hotbarIndex] = null
             }
 
-            // Schedule hotbar click
             nextTick(action = equippingAction)
 
             if (delayedSlotSwitch) {
@@ -199,10 +199,8 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
         }
 
         delay(delay.random().toLong())
-
         awaitTicked()
 
-        // Sync selected slot next tick
         if (hasClickedHotbar) {
             nextTick { SilentHotbar.resetSlot(this) }
         }
@@ -226,85 +224,92 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
                 thePlayer.openContainer.inventorySlots.map { it.stack }
             }
 
-            val armorSet = ArmorFilter.selectBestArmorSet(stacks) ?: continue
-            equipArmorType(armorType, stacks, armorSet)
+            val candidate = ArmorFilter.getArmorCandidates(stacks, armorType).firstOrNull() ?: continue
+            equipArmorCandidate(armorType, candidate.first, candidate.second, stacks)
         }
 
-        // Wait till all scheduled clicks were sent
         awaitTicked()
     }
 
     fun equipFromHotbarInChest(hotbarIndex: Int?, stack: ItemStack) {
-        // AutoArmor is disabled or prohibited from equipping while in containers
         if (hotbarIndex == null || !canEquipFromChest()) {
             resetHighlight()
             return
         }
 
-        // Set current slot being stolen for highlighting
         autoArmorCurrentSlot = hotbarIndex
 
         SilentHotbar.selectSlotSilently(this, hotbarIndex, immediate = true, render = false, resetManually = true)
-
         sendPacket(C08PacketPlayerBlockPlacement(stack))
     }
 
     fun canEquipFromChest() = handleEvents() && hotbar && !notInContainers
 
-    private suspend fun equipArmorType(armorType: Int, stacks: List<ItemStack?>, armorSet: ArmorSet): Boolean {
-        // Shouldn't iterate over armor set because after waiting for nomove and invopen it could be outdated
-        val (index, stack) = armorSet[armorType] ?: return false
+    private fun selectManualCandidate(
+        request: ManualArmorRequest,
+        stacks: List<ItemStack?>,
+    ): Pair<Int?, ItemStack>? {
+        val candidates = ArmorFilter.getArmorCandidates(stacks, request.armorType)
+            .filter { (_, stack) -> stack.hasItemAgePassed(minItemAge) }
 
-        // Index is null when searching in chests for already equipped armor to prevent any accidental impossible interactions
+        if (candidates.isEmpty()) {
+            return null
+        }
+
+        if (!request.cycle) {
+            return candidates.first()
+        }
+
+        val equippedStack = stacks.getOrNull(request.armorType + 5)
+        val currentIndex = candidates.indexOfFirst { (_, stack) -> stack == equippedStack }
+
+        return candidates[if (currentIndex == -1) 0 else (currentIndex + 1) % candidates.size]
+    }
+
+    private suspend fun equipArmorCandidate(
+        armorType: Int,
+        index: Int?,
+        stack: ItemStack,
+        stacks: List<ItemStack?>,
+    ): Boolean {
         index ?: return false
 
-        // Check if best item is already scheduled to be equipped next tick
         if (isTicked(index) || isTicked(armorType + 5))
             return false
 
         if (!stack.hasItemAgePassed(minItemAge))
             return false
 
-        // Don't equip if it can be repaired with other armor piece, wait for the repair to happen first
-        // Armor piece will then get equipped right after the repair
         if (canBeRepairedWithOther(stack, stacks))
             return false
 
-        // Set current slot being stolen for highlighting
         autoArmorCurrentSlot = index
 
         when (stacks[armorType + 5]) {
-            // Best armor is already equipped
             stack -> {
                 resetHighlight()
                 return false
             }
 
-            // No item is equipped in armor slot
             null ->
-                // Equip by shift-clicking
                 click(index, 0, 1)
 
             else -> {
                 if (smartSwap) {
-                    // Player has worse armor equipped, drag the best armor, swap it with equipped one and drop the equipped one
-                    // This way there is no time of having no armor (but more clicks)
-
-                    // Grab better armor
+                    // Swap the equipped armor back into the source slot instead of dropping it.
                     click(index, 0, 0)
-
-                    // Swap it with currently equipped armor
                     click(armorType + 5, 0, 0)
-
-                    // Drop worse item by dragging and dropping it
-                    click(-999, 0, 0)
+                    click(index, 0, 0)
                 } else {
-                    // Normal version
+                    val storageSlot = findStorageSlot(stacks, index)
 
-                    // Drop worse armor
-                    click(armorType + 5, 0, 4)
+                    if (storageSlot != null) {
+                        click(armorType + 5, 0, 0)
+                        click(storageSlot, 0, 0)
+                    } else {
+                        click(armorType + 5, 0, 4)
+                    }
 
-                    // Equip better armor
                     click(index, 0, 1)
                 }
             }
@@ -312,6 +317,9 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
 
         return true
     }
+
+    private fun findStorageSlot(stacks: List<ItemStack?>, excludedSlot: Int): Int? =
+        stacks.indices.firstOrNull { it >= 9 && it != excludedSlot && stacks[it] == null }
 
     private suspend fun shouldOperate(onlyHotbar: Boolean = false): Boolean {
         while (true) {
@@ -324,29 +332,24 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
             if (mc.playerController?.currentGameType?.isSurvivalOrAdventure != true)
                 return false
 
-            // It is impossible to equip armor when a container is open; only try to equip by right-clicking from hotbar (if NotInContainers is disabled)
+            // It is impossible to equip armor when a container is open; only try to equip by right-clicking from hotbar (if NotInContainers is disabled).
             if (mc.thePlayer?.openContainer?.windowId != 0 && (!onlyHotbar || notInContainers))
                 return false
 
-            // Player doesn't need to have inventory open or not to move, when equipping from hotbar
             if (onlyHotbar)
                 return hotbar
 
             if (invOpen && mc.currentScreen !is GuiInventory)
                 return false
 
-            // Wait till NoMove check isn't violated
             if (canClickInventory(closeWhenViolating = true))
                 return true
 
-            // If NoMove is violated, wait a tick and check again
-            // If there is no delay, very weird things happen: https://www.guilded.gg/CCBlueX/groups/1dgpg8Jz/channels/034be45e-1b72-4d5a-bee7-d6ba52ba1657/chat?messageId=94d314cd-6dc4-41c7-84a7-212c8ea1cc2a
             delay(50)
         }
     }
 
     private suspend fun click(slot: Int, button: Int, mode: Int, allowDuplicates: Boolean = false) {
-        // Wait for NoMove or cancel click
         if (!shouldOperate())
             return
 
@@ -354,16 +357,12 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
             serverOpenInventory = true
 
         if (isFirstInventoryClick) {
-            // Have to set this manually, because it would delay all clicks until a first scheduled click was sent
             isFirstInventoryClick = false
-
             delay(startDelay.toLong())
         }
 
         clickNextTick(slot, button, mode, allowDuplicates)
-
         hasScheduledInLastLoop = true
-
         delay(delay.random().toLong())
     }
 

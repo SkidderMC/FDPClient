@@ -370,7 +370,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
 
                 if (isTicked(index)) return@mapIndexedNotNullTo null
 
-                if (stack.item is ItemArmor && ArmorFilter.handleEvents() && !ArmorFilter.isArmorAllowed(stack))
+                if (stack.item is ItemArmor && ArmorFilter.handleEvents() && !ArmorFilter.isUsefulArmor(stack, stacks))
                     return@mapIndexedNotNullTo null
 
                 val mergeableCount = mc.thePlayer.inventory.mainInventory.sumOf { otherStack -> otherStack ?: return@sumOf 0
