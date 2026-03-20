@@ -31,29 +31,15 @@ import net.ccbluex.liquidbounce.utils.timing.TickedActions.isTicked
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.entity.EntityLiving.getArmorPosition
+import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import org.lwjgl.input.Keyboard
 
-private val ARMOR_BIND_KEYS = mutableListOf<String>().apply {
-    add("NONE")
-
-    for (key in 1 until Keyboard.KEYBOARD_SIZE) {
-        val keyName = Keyboard.getKeyName(key)
-
-        if (keyName.isNullOrBlank() || keyName.equals("NONE", true) || keyName.equals("UNKNOWN", true)) {
-            continue
-        }
-
-        if (keyName !in this) {
-            add(keyName)
-        }
-    }
-}.toTypedArray()
-
-private data class ManualArmorRequest(val armorType: Int, val cycle: Boolean)
+private data class ManualArmorRequest(val armorType: Int)
 
 object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
+    private val mode by choices("Mode", arrayOf("Fast", "Legit"), "Fast")
     private val delay by intRange("Delay", 50..50, 0..1000)
     private val minItemAge by int("MinItemAge", 0, 0..2000)
 
@@ -65,9 +51,9 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
     private val startDelay by +InventoryManager.startDelayValue
     private val closeDelay by +InventoryManager.closeDelayValue
 
-    // When swapping armor pieces, it grabs the better one, drags and swaps it with equipped one.
-    // This keeps armor coverage while preserving the old piece in the original slot.
+    // Keeps armor coverage while preserving the old piece whenever possible.
     val smartSwap by boolean("SmartSwap", true)
+    private val dropOldArmor by boolean("DropOldArmor", false)
 
     private val noMove by +InventoryManager.noMoveValue
     private val noMoveAir by +InventoryManager.noMoveAirValue
@@ -82,11 +68,19 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
     private val notInContainers by boolean("NotInContainers", false) { hotbar }
 
     private val manualSwap by boolean("ManualSwap", true)
-    private val manualSwapMode by choices("ManualSwapMode", arrayOf("Best", "Cycle"), "Best") { manualSwap }
-    private val helmetBind by bindChoice("HelmetBind")
-    private val chestplateBind by bindChoice("ChestplateBind")
-    private val leggingsBind by bindChoice("LeggingsBind")
-    private val bootsBind by bindChoice("BootsBind")
+    private val manualSelection by choices(
+        "ManualSelection",
+        arrayOf("First", "Best", "BestPercent", "Defense", "Enchantments"),
+        "Best"
+    ) { manualSwap }
+    private val manualCycle by boolean("ManualCycle", false) { manualSwap }
+    private val manualUseArmorFilter by boolean("ManualUseArmorFilter", false) { manualSwap }
+    private val manualIgnoreMinItemAge by boolean("ManualIgnoreMinItemAge", true) { manualSwap }
+
+    private val helmetBind by bindText("HelmetBind")
+    private val chestplateBind by bindText("ChestplateBind")
+    private val leggingsBind by bindText("LeggingsBind")
+    private val bootsBind by bindText("BootsBind")
 
     val highlightSlot by +InventoryManager.highlightSlotValue
     val backgroundColor by +InventoryManager.borderColor
@@ -97,13 +91,16 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
     @Volatile
     private var pendingManualArmorRequest: ManualArmorRequest? = null
 
+    override val tag
+        get() = mode
+
     val onKey = handler<KeyEvent> { event ->
         if (!manualSwap || event.key == Keyboard.KEY_NONE || event.key == keyBind) {
             return@handler
         }
 
         resolveManualArmorType(event.key)?.let {
-            pendingManualArmorRequest = ManualArmorRequest(it, manualSwapMode == "Cycle")
+            pendingManualArmorRequest = ManualArmorRequest(it)
         }
     }
 
@@ -126,8 +123,15 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
             thePlayer.openContainer.inventorySlots.map { it.stack }
         }
 
-        val candidate = selectManualCandidate(request, stacks) ?: return false
-        val hasScheduledClick = equipArmorCandidate(request.armorType, candidate.first, candidate.second, stacks)
+        val candidate = selectManualCandidate(request.armorType, stacks) ?: return false
+        val hasScheduledClick = equipArmorCandidate(
+            armorType = request.armorType,
+            index = candidate.first,
+            stack = candidate.second,
+            stacks = stacks,
+            ignoreMinAge = manualIgnoreMinItemAge,
+            ignoreRepairCheck = true
+        )
 
         if (hasScheduledClick) {
             awaitTicked()
@@ -154,8 +158,6 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
 
         for (armorType in 0..3) {
             val (index, stack) = bestArmorSet[armorType] ?: continue
-
-            // Check if the armor piece is in the hotbar.
             val hotbarIndex = index?.toHotbarIndex(stacks.size) ?: continue
 
             if (isTicked(index) || isTicked(armorType + 5))
@@ -166,7 +168,6 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
 
             val armorPos = getArmorPosition(stack) - 1
 
-            // Check if target armor slot isn't occupied.
             if (thePlayer.inventory.armorInventory[armorPos] != null)
                 continue
 
@@ -183,10 +184,8 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
                     resetManually = true
                 )
 
-                // Switch selected hotbar slot, right click to equip.
                 sendPacket(C08PacketPlayerBlockPlacement(stack))
 
-                // Instantly update inventory on client-side to prevent repetitive clicking because of ping.
                 thePlayer.inventory.armorInventory[armorPos] = stack
                 thePlayer.inventory.mainInventory[hotbarIndex] = null
             }
@@ -245,42 +244,60 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
 
     fun canEquipFromChest() = handleEvents() && hotbar && !notInContainers
 
-    private fun selectManualCandidate(
-        request: ManualArmorRequest,
-        stacks: List<ItemStack?>,
-    ): Pair<Int?, ItemStack>? {
-        val candidates = ArmorFilter.getArmorCandidates(stacks, request.armorType)
-            .filter { (_, stack) -> stack.hasItemAgePassed(minItemAge) }
-
+    private fun selectManualCandidate(armorType: Int, stacks: List<ItemStack?>): Pair<Int, ItemStack>? {
+        val candidates = collectManualCandidates(stacks, armorType)
         if (candidates.isEmpty()) {
             return null
         }
 
-        if (!request.cycle) {
-            return candidates.first()
+        val sortedCandidates = when (manualSelection) {
+            "First" -> candidates
+            else -> candidates.sortedByDescending { (_, stack) ->
+                ArmorFilter.scoreArmorStack(stack, toArmorPriorityMode(manualSelection))
+            }
         }
 
-        val equippedStack = stacks.getOrNull(request.armorType + 5)
-        val currentIndex = candidates.indexOfFirst { (_, stack) -> stack == equippedStack }
+        if (!manualCycle) {
+            return sortedCandidates.first()
+        }
 
-        return candidates[if (currentIndex == -1) 0 else (currentIndex + 1) % candidates.size]
+        val equippedStack = stacks.getOrNull(armorType + 5)
+        val currentIndex = sortedCandidates.indexOfFirst { (_, stack) -> stack == equippedStack }
+        return sortedCandidates[if (currentIndex == -1) 0 else (currentIndex + 1) % sortedCandidates.size]
     }
+
+    private fun collectManualCandidates(stacks: List<ItemStack?>, armorType: Int): List<Pair<Int, ItemStack>> =
+        stacks.mapIndexedNotNull { index, stack ->
+            val armor = stack?.item as? ItemArmor ?: return@mapIndexedNotNull null
+
+            if (index <= 8 || armor.armorType != armorType) {
+                return@mapIndexedNotNull null
+            }
+
+            if (manualUseArmorFilter && !ArmorFilter.isArmorAllowed(stack)) {
+                return@mapIndexedNotNull null
+            }
+
+            index to stack
+        }
 
     private suspend fun equipArmorCandidate(
         armorType: Int,
         index: Int?,
         stack: ItemStack,
         stacks: List<ItemStack?>,
+        ignoreMinAge: Boolean = false,
+        ignoreRepairCheck: Boolean = false,
     ): Boolean {
         index ?: return false
 
         if (isTicked(index) || isTicked(armorType + 5))
             return false
 
-        if (!stack.hasItemAgePassed(minItemAge))
+        if (!ignoreMinAge && !stack.hasItemAgePassed(minItemAge))
             return false
 
-        if (canBeRepairedWithOther(stack, stacks))
+        if (!ignoreRepairCheck && canBeRepairedWithOther(stack, stacks))
             return false
 
         autoArmorCurrentSlot = index
@@ -303,11 +320,15 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
                 } else {
                     val storageSlot = findStorageSlot(stacks, index)
 
-                    if (storageSlot != null) {
-                        click(armorType + 5, 0, 0)
-                        click(storageSlot, 0, 0)
-                    } else {
-                        click(armorType + 5, 0, 4)
+                    when {
+                        storageSlot != null -> {
+                            click(armorType + 5, 0, 0)
+                            click(storageSlot, 0, 0)
+                        }
+
+                        dropOldArmor -> click(armorType + 5, 0, 4)
+
+                        else -> return false
                     }
 
                     click(index, 0, 1)
@@ -319,7 +340,7 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
     }
 
     private fun findStorageSlot(stacks: List<ItemStack?>, excludedSlot: Int): Int? =
-        stacks.indices.firstOrNull { it >= 9 && it != excludedSlot && stacks[it] == null }
+        stacks.indices.firstOrNull { it > 8 && it != excludedSlot && stacks[it] == null }
 
     private suspend fun shouldOperate(onlyHotbar: Boolean = false): Boolean {
         while (true) {
@@ -332,7 +353,6 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
             if (mc.playerController?.currentGameType?.isSurvivalOrAdventure != true)
                 return false
 
-            // It is impossible to equip armor when a container is open; only try to equip by right-clicking from hotbar (if NotInContainers is disabled).
             if (mc.thePlayer?.openContainer?.windowId != 0 && (!onlyHotbar || notInContainers))
                 return false
 
@@ -353,7 +373,7 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
         if (!shouldOperate())
             return
 
-        if (simulateInventory || invOpen)
+        if (simulateInventory || invOpen || this.mode == "Legit")
             serverOpenInventory = true
 
         if (isFirstInventoryClick) {
@@ -366,7 +386,9 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
         delay(delay.random().toLong())
     }
 
-    private fun bindChoice(name: String) = choices(name, ARMOR_BIND_KEYS, "NONE") { manualSwap }
+    private fun bindText(name: String) = text(name, "NONE") { manualSwap }.onChange { _, new ->
+        normalizeBindName(new)
+    }
 
     private fun resolveManualArmorType(key: Int): Int? = when (key) {
         keyCodeOf(helmetBind) -> 0
@@ -377,11 +399,24 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
     }
 
     private fun keyCodeOf(bind: String): Int {
-        if (bind.equals("NONE", true)) {
+        val normalized = normalizeBindName(bind)
+        if (normalized == "NONE") {
             return Keyboard.KEY_NONE
         }
 
-        return Keyboard.getKeyIndex(bind.uppercase())
+        return Keyboard.getKeyIndex(normalized)
+    }
+
+    private fun normalizeBindName(bind: String): String {
+        val normalized = bind.trim().uppercase().replace(" ", "")
+        return if (normalized.isBlank()) "NONE" else normalized
+    }
+
+    private fun toArmorPriorityMode(selection: String) = when (selection) {
+        "BestPercent" -> "Durability"
+        "Defense" -> "Defense"
+        "Enchantments" -> "Enchantments"
+        else -> "Balanced"
     }
 
     private fun resetHighlight() {

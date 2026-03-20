@@ -33,7 +33,7 @@ object ArmorFilter : Module("ArmorFilter", Category.COMBAT, Category.SubCategory
             return ArmorComparator.getBestArmorSet(stacks, entityStacksMap)
         }
 
-        val armorMap = getArmorCandidatesByType(stacks, entityStacksMap)
+        val armorMap = getArmorCandidatesByType(stacks, entityStacksMap, respectFilter = true)
         val armorSet = ArmorSet(
             armorMap[0]?.firstOrNull(),
             armorMap[1]?.firstOrNull(),
@@ -48,7 +48,10 @@ object ArmorFilter : Module("ArmorFilter", Category.COMBAT, Category.SubCategory
         stacks: List<ItemStack?>,
         armorType: Int,
         entityStacksMap: Map<ItemStack, EntityItem>? = null,
-    ): List<Pair<Int?, ItemStack>> = getArmorCandidatesByType(stacks, entityStacksMap)[armorType].orEmpty()
+        respectFilter: Boolean = true,
+        priorityMode: String = priority,
+    ): List<Pair<Int?, ItemStack>> =
+        getArmorCandidatesByType(stacks, entityStacksMap, respectFilter, priorityMode)[armorType].orEmpty()
 
     fun getUsefulArmorPieces(
         stacks: List<ItemStack?>,
@@ -61,7 +64,7 @@ object ArmorFilter : Module("ArmorFilter", Category.COMBAT, Category.SubCategory
 
         val keepPerType = (keepBackups + 1).coerceAtLeast(1)
 
-        return getArmorCandidatesByType(stacks, entityStacksMap)
+        return getArmorCandidatesByType(stacks, entityStacksMap, respectFilter = true)
             .values
             .flatMapTo(linkedSetOf()) { candidates -> candidates.take(keepPerType).map { it.second } }
     }
@@ -97,11 +100,30 @@ object ArmorFilter : Module("ArmorFilter", Category.COMBAT, Category.SubCategory
         return stack.enchantmentSum >= minEnchantmentSum
     }
 
+    fun scoreArmorStack(stack: ItemStack, priorityMode: String = priority): Double {
+        val defense = armorDefenseScore(stack)
+        val protection = stack.getEnchantmentLevel(Enchantment.protection).toDouble()
+        val enchantments = stack.enchantmentSum.toDouble()
+        val durabilityScore =
+            if (stack.maxDamage > 0) stack.totalDurability.toDouble() / stack.maxDamage else stack.totalDurability.toDouble()
+
+        return when (priorityMode) {
+            "Defense" -> defense * 1000 + protection * 100 + enchantments * 15 + durabilityScore
+            "Durability" -> durabilityScore * 100 + defense * 1000 + enchantments * 10 + protection * 50
+            "Enchantments" -> enchantments * 250 + protection * 150 + defense * 1000 + durabilityScore
+            else -> defense * 1000 + enchantments * 60 + protection * 100 + durabilityScore * 20
+        }
+    }
+
     private fun getArmorCandidatesByType(
         stacks: List<ItemStack?>,
         entityStacksMap: Map<ItemStack, EntityItem>? = null,
+        respectFilter: Boolean = true,
+        priorityMode: String = priority,
     ): Map<Int, List<Pair<Int?, ItemStack>>> {
-        val filteredStacks = if (handleEvents()) {
+        val shouldFilter = handleEvents() && respectFilter
+
+        val filteredStacks = if (shouldFilter) {
             stacks.map { stack ->
                 if (stack?.item is ItemArmor && !isArmorAllowed(stack)) null else stack
             }
@@ -109,29 +131,14 @@ object ArmorFilter : Module("ArmorFilter", Category.COMBAT, Category.SubCategory
             stacks
         }
 
-        val filteredEntityStacks = if (handleEvents()) {
+        val filteredEntityStacks = if (shouldFilter) {
             entityStacksMap?.filterKeys(::isArmorAllowed)
         } else {
             entityStacksMap
         }
 
         return ArmorComparator.getSortedArmorPieces(filteredStacks, filteredEntityStacks)
-            .mapValues { (_, stacksForType) -> stacksForType.sortedByDescending { armorUtilityScore(it.second) } }
-    }
-
-    private fun armorUtilityScore(stack: ItemStack): Double {
-        val defense = armorDefenseScore(stack)
-        val protection = stack.getEnchantmentLevel(Enchantment.protection).toDouble()
-        val enchantments = stack.enchantmentSum.toDouble()
-        val durabilityScore =
-            if (stack.maxDamage > 0) stack.totalDurability.toDouble() / stack.maxDamage else stack.totalDurability.toDouble()
-
-        return when (priority) {
-            "Defense" -> defense * 1000 + protection * 100 + enchantments * 15 + durabilityScore
-            "Durability" -> durabilityScore * 100 + defense * 1000 + enchantments * 10 + protection * 50
-            "Enchantments" -> enchantments * 250 + protection * 150 + defense * 1000 + durabilityScore
-            else -> defense * 1000 + enchantments * 60 + protection * 100 + durabilityScore * 20
-        }
+            .mapValues { (_, stacksForType) -> stacksForType.sortedByDescending { scoreArmorStack(it.second, priorityMode) } }
     }
 
     private fun armorDefenseScore(stack: ItemStack): Double {
