@@ -24,6 +24,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RaycastUtils.runWithModifiedRayca
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.block.BlockAir
+import net.minecraft.client.settings.GameSettings
 import net.minecraft.entity.Entity
 import net.minecraft.network.Packet
 import net.minecraft.network.play.client.*
@@ -58,14 +59,14 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         "Mode", arrayOf(
             "Simple", "AAC", "AACPush", "AACZero", "AACv4",
             "Reverse", "SmoothReverse", "Jump", "Glitch", "Legit",
-            "GhostBlock", "Vulcan", "S32Packet", "MatrixSimple", "MatrixReduce",
-            "IntaveReduce", "Delay", "GrimC03", "Hypixel", "HypixelAir",
-            "Click", "BlocksMC", "GrimVertical"
+            "GhostBlock", "Vulcan", "S32Packet", "MatrixSimple", "MatrixReduce", "MatrixReverse",
+            "IntaveReduce", "Intave", "Delay", "GrimC03", "Hypixel", "HypixelAir", "HypixelBoost",
+            "Click", "BlocksMC", "GrimVertical", "AttackReduce", "Spoof", "Tick", "AAC5Reduce", "Minemen"
         ), "Simple"
     )
 
-    private val horizontal by float("Horizontal", 0F, -1F..1F) { mode in arrayOf("Simple", "AAC", "Legit") }
-    private val vertical by float("Vertical", 0F, -1F..1F) { mode in arrayOf("Simple", "Legit") }
+    private val horizontal by float("Horizontal", 0F, -1F..1F) { mode in arrayOf("Simple", "AAC", "Legit", "Tick") }
+    private val vertical by float("Vertical", 0F, -1F..1F) { mode in arrayOf("Simple", "Legit", "Tick") }
 
     // Reverse
     private val reverseStrength by float("ReverseStrength", 1F, 0.1F..1F) { mode == "Reverse" }
@@ -85,6 +86,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
     // AAC v4
     private val aacv4MotionReducer by float("AACv4MotionReducer", 0.62F, 0F..1F) { mode == "AACv4" }
+    private val aac5ReduceAmount by float("AAC5ReduceAmount", 0.81f, 0f..1f) { mode == "AAC5Reduce" }
 
     // Legit
     private val legitDisableInAir by boolean("DisableInAir", true) { mode == "Legit" }
@@ -105,6 +107,9 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         mode == "GhostBlock"
     }
 
+    // AttackReduce
+    private val attackReduceAmount by float("ReduceAmount", 0.8f, 0.3f..1f) { mode == "AttackReduce" }
+
     // Delay
     private val spoofDelay by int("SpoofDelay", 500, 0..5000) { mode == "Delay" }
     var delayMode = false
@@ -115,6 +120,16 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     // IntaveReduce
     private val reduceFactor by float("Factor", 0.6f, 0.6f..1f) { mode == "IntaveReduce" }
     private val hurtTime by int("HurtTime", 9, 1..10) { mode == "IntaveReduce" }
+
+    // Spoof
+    private val spoofModifyTimer by boolean("ModifyTimer", true) { mode == "Spoof" }
+    private val spoofTimerValue by float("Timer", 0.6f, 0.1f..1f) { mode == "Spoof" && spoofModifyTimer }
+
+    // Tick
+    private val velocityTickValue by int("VelocityTick", 1, 0..20) { mode == "Tick" }
+    private val tickReductionAmount by float("TickReductionAmount", 1f, 0f..1f) { mode == "Tick" }
+    private val tickResetMotionY by boolean("ResetMotionY", true) { mode == "Tick" }
+    private val tickBypass by boolean("TickBypass", true) { mode == "Tick" }
 
     private val pauseOnExplosion by boolean("PauseOnExplosion", true)
     private val ticksToPause by int("TicksToPause", 20, 1..50) { pauseOnExplosion }
@@ -169,9 +184,14 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     private var intaveTick = 0
     private var lastAttackTime = 0L
     private var intaveDamageTick = 0
+    private var intaveJumped = 0
 
     // Delay
     private val packets = LinkedHashMap<Packet<*>, Long>()
+
+    // Tick / Spoof
+    private var velocityTick = 0
+    private var wasTimer = false
 
     // Grim
     private var timerTicks = 0
@@ -181,6 +201,9 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
     // Hypixel
     private var absorbedVelocity = false
+    private var minemenTicks = 0
+    private var minemenLastCancel = false
+    private var minemenCanCancel = false
 
     //GrimVertical Variables
     private var attack = false
@@ -203,19 +226,59 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     override fun onDisable() {
         pauseTicks = 0
         mc.thePlayer?.speedInAir = 0.02F
+        mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+        if (wasTimer) {
+            mc.timer.timerSpeed = 1f
+            wasTimer = false
+        }
         timerTicks = 0
         canCancel = false
         canSpoof = false
+        velocityTick = 0
+        intaveJumped = 0
+        minemenTicks = 0
+        minemenLastCancel = false
+        minemenCanCancel = false
         reset()
     }
 
     val onUpdate = handler<UpdateEvent> {
         val thePlayer = mc.thePlayer ?: return@handler
 
+        if (mode != "Intave") {
+            mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+        }
+
+        if (wasTimer) {
+            mc.timer.timerSpeed = 1f
+            wasTimer = false
+        }
+
         if (thePlayer.isInLiquid || thePlayer.isInWeb || thePlayer.isDead)
             return@handler
 
         when (mode.lowercase()) {
+            "tick" -> {
+                if (velocityInput) {
+                    velocityTick++
+                }
+
+                if (velocityTick > velocityTickValue) {
+                    if (thePlayer.motionY > 0 && tickResetMotionY) {
+                        thePlayer.motionY = 0.0
+                    }
+
+                    thePlayer.motionX *= 1.0 - tickReductionAmount.toDouble()
+                    thePlayer.motionZ *= 1.0 - tickReductionAmount.toDouble()
+                    thePlayer.jumpMovementFactor = if (tickBypass) -0.001f else 0.0f
+                    velocityInput = false
+                }
+
+                if (thePlayer.onGround && velocityTick > 1) {
+                    velocityInput = false
+                }
+            }
+
             "glitch" -> {
                 thePlayer.noClip = hasReceivedVelocity
 
@@ -351,6 +414,33 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
                 }
             }
 
+            "intave" -> {
+                if (mc.currentScreen != null) {
+                    mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+                    return@handler
+                }
+
+                if (thePlayer.hurtTime == 9) {
+                    if (++intaveJumped % 2 == 0 && thePlayer.onGround && thePlayer.isSprinting) {
+                        mc.gameSettings.keyBindJump.pressed = true
+                        intaveJumped = 0
+                    }
+                } else {
+                    mc.gameSettings.keyBindJump.pressed = GameSettings.isKeyDown(mc.gameSettings.keyBindJump)
+                }
+            }
+
+            "aac5reduce" -> {
+                if (thePlayer.hurtTime > 1 && velocityInput) {
+                    thePlayer.motionX *= aac5ReduceAmount.toDouble()
+                    thePlayer.motionZ *= aac5ReduceAmount.toDouble()
+                }
+
+                if (velocityInput && (thePlayer.hurtTime < 5 || thePlayer.onGround) && velocityTimer.hasTimePassed(120L)) {
+                    velocityInput = false
+                }
+            }
+
             "hypixel" -> {
                 if (hasReceivedVelocity && thePlayer.onGround) {
                     absorbedVelocity = false
@@ -402,6 +492,27 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
                             attack = false
                         }
                     }
+                }
+            }
+
+            "hypixelboost" -> {
+                if (thePlayer.hurtTime == 8) {
+                    MovementUtils.strafe(MovementUtils.speed * 0.7f)
+                }
+            }
+
+            "minemen" -> {
+                minemenTicks++
+
+                if (minemenTicks > 23) {
+                    minemenCanCancel = true
+                }
+
+                if (minemenTicks in 2..4 && !minemenLastCancel) {
+                    thePlayer.motionX *= 0.99
+                    thePlayer.motionZ *= 0.99
+                } else if (minemenTicks == 5 && !minemenLastCancel) {
+                    MovementUtils.strafe()
                 }
             }
         }
@@ -494,6 +605,15 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
     val onAttack = handler<AttackEvent> {
         val player = mc.thePlayer ?: return@handler
+
+        if (mode == "AttackReduce") {
+            if (player.hurtTime >= 3) {
+                player.motionX *= attackReduceAmount.toDouble()
+                player.motionZ *= attackReduceAmount.toDouble()
+            }
+
+            return@handler
+        }
 
         if (mode != "IntaveReduce" || !hasReceivedVelocity) return@handler
 
@@ -622,6 +742,16 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
                     }
                 }
 
+                "matrixreverse" -> {
+                    if (packet is S12PacketEntityVelocity && packet.entityID == thePlayer.entityId) {
+                        event.cancelEvent()
+                        thePlayer.motionX = packet.realMotionX
+                        thePlayer.motionY = packet.realMotionY
+                        thePlayer.motionZ = packet.realMotionZ
+                        MovementUtils.strafe()
+                    }
+                }
+
                 "blocksmc" -> {
                     if (packet is S12PacketEntityVelocity && packet.entityID == thePlayer.entityId) {
                         hasReceivedVelocity = true
@@ -658,6 +788,58 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
                 "hypixelair" -> {
                     hasReceivedVelocity = true
                     event.cancelEvent()
+                }
+
+                "spoof" -> {
+                    if (packet is S12PacketEntityVelocity && packet.entityID == thePlayer.entityId) {
+                        event.cancelEvent()
+                        sendPacket(
+                            C03PacketPlayer.C04PacketPlayerPosition(
+                                thePlayer.posX + packet.realMotionX,
+                                thePlayer.posY + packet.realMotionY,
+                                thePlayer.posZ + packet.realMotionZ,
+                                false
+                            ),
+                            false
+                        )
+
+                        if (spoofModifyTimer) {
+                            mc.timer.timerSpeed = spoofTimerValue
+                            wasTimer = true
+                        }
+                    }
+                }
+
+                "tick" -> {
+                    if (packet is S12PacketEntityVelocity && packet.entityID == thePlayer.entityId) {
+                        velocityInput = true
+                        velocityTick = 0
+
+                        if (horizontal == 0f && vertical == 0f) {
+                            event.cancelEvent()
+                        }
+
+                        packet.motionX = (packet.motionX * horizontal).toInt()
+                        packet.motionY = (packet.motionY * vertical).toInt()
+                        packet.motionZ = (packet.motionZ * horizontal).toInt()
+                    }
+                }
+
+                "aac5reduce" -> velocityInput = true
+
+                "minemen" -> {
+                    if (packet is S12PacketEntityVelocity && packet.entityID == thePlayer.entityId) {
+                        minemenTicks = 0
+
+                        if (minemenCanCancel) {
+                            event.cancelEvent()
+                            minemenLastCancel = true
+                            minemenCanCancel = false
+                        } else {
+                            thePlayer.tryJump()
+                            minemenLastCancel = false
+                        }
+                    }
                 }
 
                 "vulcan" -> {
