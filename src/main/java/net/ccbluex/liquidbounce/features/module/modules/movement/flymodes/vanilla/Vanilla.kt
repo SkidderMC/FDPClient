@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vanil
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.handleVanillaKickBypass
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.vanillaSpeed
+import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.vanillaVerticalSpeed
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 
@@ -25,10 +26,10 @@ object Vanilla : FlyMode("Vanilla") {
         var ySpeed = 0.0
 
         if (mc.gameSettings.keyBindJump.isKeyDown)
-            ySpeed += vanillaSpeed
+            ySpeed += vanillaVerticalSpeed
 
         if (mc.gameSettings.keyBindSneak.isKeyDown)
-            ySpeed -= vanillaSpeed
+            ySpeed -= vanillaVerticalSpeed
 
         thePlayer.motionY = ySpeed
         event.y = ySpeed

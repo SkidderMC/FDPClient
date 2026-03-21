@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.other
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.vanillaSpeed
+import net.ccbluex.liquidbounce.features.module.modules.movement.Flight.vanillaVerticalSpeed
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.FlyMode
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
@@ -17,8 +18,8 @@ object KeepAlive : FlyMode("KeepAlive") {
 		mc.thePlayer.capabilities.isFlying = false
 
 		mc.thePlayer.motionY = when {
-			mc.gameSettings.keyBindJump.isKeyDown -> vanillaSpeed.toDouble()
-			mc.gameSettings.keyBindSneak.isKeyDown -> -vanillaSpeed.toDouble()
+			mc.gameSettings.keyBindJump.isKeyDown -> vanillaVerticalSpeed.toDouble()
+			mc.gameSettings.keyBindSneak.isKeyDown -> -vanillaVerticalSpeed.toDouble()
 			else -> 0.0
 		}
 
