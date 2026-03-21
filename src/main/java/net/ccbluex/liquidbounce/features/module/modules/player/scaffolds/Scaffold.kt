@@ -117,6 +117,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
     val jumpAutomatically by boolean("JumpAutomatically", true) { scaffoldMode == "GodBridge" }
     private val blocksToJumpRange by intRange("BlocksToJumpRange", 4..4, 1..8) {  scaffoldMode == "GodBridge" && !jumpAutomatically }
+    private val godbridgeMovementMode by choices("GodBridgeMovementMode", arrayOf("Jump", "Sneak", "Both"), "Jump") { scaffoldMode == "GodBridge" }
 
     // Telly mode sub-values
     private val startHorizontally by boolean("StartHorizontally", true) { scaffoldMode == "Telly" }
@@ -577,7 +578,17 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         simPlayer.tick()
 
         if (!simPlayer.onGround && !isManualJumpOptionActive || blocksPlacedUntilJump > blocksToJump) {
-            event.originalInput.jump = true
+            when (godbridgeMovementMode) {
+                "Jump" -> event.originalInput.jump = true
+                "Sneak" -> event.originalInput.sneak = true
+                "Both" -> {
+                    if (RandomUtils.nextBoolean()) {
+                        event.originalInput.jump = true
+                    } else {
+                        event.originalInput.sneak = true
+                    }
+                }
+            }
 
             blocksPlacedUntilJump = 0
 
