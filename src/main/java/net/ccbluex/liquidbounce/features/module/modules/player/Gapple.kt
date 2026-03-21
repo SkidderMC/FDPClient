@@ -21,6 +21,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C09PacketHeldItemChange
 import net.minecraft.network.play.server.S09PacketHeldItemChange
+import net.minecraft.item.Item
 import net.minecraft.potion.Potion.regeneration
 import net.minecraft.util.MathHelper
 import java.util.*
@@ -28,7 +29,9 @@ import java.util.*
 object Gapple : Module("Gapple", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
     private val modeValue by choices("Mode", arrayOf("Auto", "LegitAuto", "Legit", "Head"), "Auto")
-    private val percent by float("HealthPercent", 75.0f, 1.0f..100.0f)
+    private val triggerMode by choices("TriggerMode", arrayOf("Percent", "Health"), "Percent")
+    private val percent by float("HealthPercent", 75.0f, 1.0f..100.0f) { triggerMode == "Percent" }
+    private val healthValue by float("Health", 10.0f, 1.0f..20.0f) { triggerMode == "Health" }
     private val min by int("MinDelay", 75, 1.. 5000)
     private val max by int("MaxDelay", 125, 1.. 5000)
     private val regenSec by float("MinRegenSec", 4.6f, 0.0f.. 10.0f)
@@ -36,8 +39,13 @@ object Gapple : Module("Gapple", Category.PLAYER, Category.SubCategory.PLAYER_CO
     private val waitRegen by boolean("WaitRegen", true)
     private val invCheck by boolean("InvCheck", false)
     private val absorpCheck by boolean("NoAbsorption", true)
-    private val fastEatValue by boolean("FastEat", false) { modeValue == ("LegitAuto") || modeValue == ("Legit") }
-    private val eatDelayValue by int("FastEatDelay", 14, 0.. 35) { fastEatValue }
+    private val legitCompletion by choices("LegitCompletion", arrayOf("Current", "Legacy"), "Current") {
+        modeValue == "LegitAuto" || modeValue == "Legit"
+    }
+    private val fastEatValue by boolean("FastEat", false) {
+        legitCompletion == "Current" && (modeValue == "LegitAuto" || modeValue == "Legit")
+    }
+    private val eatDelayValue by int("FastEatDelay", 14, 0.. 35) { legitCompletion == "Current" && fastEatValue }
     val timer = MSTimer()
     private var eating = -1
     var delay = 0
@@ -53,6 +61,23 @@ object Gapple : Module("Gapple", Category.PLAYER, Category.SubCategory.PLAYER_CO
         isDisable = false
         tryHeal = false
         delay = MathHelper.getRandomIntegerInRange(Random(), min, max)
+    }
+
+    private fun findHotbarContainerSlot(item: Item): Int? = InventoryUtils.findItem(36, 44, item)?.plus(36)
+    private fun shouldFinishLegitEating(): Boolean =
+        eating > 35 || (legitCompletion == "Current" && fastEatValue && eating > eatDelayValue)
+
+    private fun sendRemainingEatPackets() {
+        if (legitCompletion != "Current") return
+
+        repeat((35 - eating).coerceAtLeast(0)) {
+            sendPacket(C03PacketPlayer(mc.thePlayer.onGround))
+        }
+    }
+
+    private fun shouldStartHealing(): Boolean = when (triggerMode) {
+        "Health" -> mc.thePlayer.health <= healthValue
+        else -> mc.thePlayer.health <= (percent / 100.0f) * mc.thePlayer.maxHealth
     }
 
 
@@ -76,11 +101,9 @@ object Gapple : Module("Gapple", Category.PLAYER, Category.SubCategory.PLAYER_CO
         if (tryHeal) {
             when (modeValue.lowercase()) {
                 "auto" -> {
-                    val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
-                    if (gappleInHotbar != -1) {
-                        if (gappleInHotbar != null) {
-                            sendPacket(C09PacketHeldItemChange(gappleInHotbar - 36))
-                        }
+                    val gappleInHotbar = findHotbarContainerSlot(Items.golden_apple)
+                    if (gappleInHotbar != null) {
+                        sendPacket(C09PacketHeldItemChange(gappleInHotbar - 36))
                         sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                         repeat(35) {
                             sendPacket(C03PacketPlayer(mc.thePlayer.onGround))
@@ -96,20 +119,15 @@ object Gapple : Module("Gapple", Category.PLAYER, Category.SubCategory.PLAYER_CO
                 }
                 "legitauto" -> {
                     if (eating == -1) {
-                        val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
-                        if(gappleInHotbar == -1) {
+                        val gappleInHotbar = findHotbarContainerSlot(Items.golden_apple) ?: run {
                             tryHeal = false
                             return@handler
                         }
-                        if (gappleInHotbar != null) {
-                            sendPacket(C09PacketHeldItemChange(gappleInHotbar - 36))
-                        }
+                        sendPacket(C09PacketHeldItemChange(gappleInHotbar - 36))
                         mc.netHandler.addToSendQueue(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                         eating = 0
-                    } else if (eating > 35 || (fastEatValue && eating > eatDelayValue)) {
-	      		repeat(35 - eating) {
-                    sendPacket(C03PacketPlayer(mc.thePlayer.onGround))
-                        }
+                    } else if (shouldFinishLegitEating()) {
+                        sendRemainingEatPackets()
                         sendPacket(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                         timer.reset()
                         tryHeal = false
@@ -118,34 +136,27 @@ object Gapple : Module("Gapple", Category.PLAYER, Category.SubCategory.PLAYER_CO
                 }
                 "legit" -> {
                     if (eating == -1) {
-                        val gappleInHotbar = InventoryUtils.findItem(36, 45, Items.golden_apple)
-                        if(gappleInHotbar == -1) {
+                        val gappleInHotbar = findHotbarContainerSlot(Items.golden_apple) ?: run {
                             tryHeal = false
                             return@handler
                         }
                         if (prevSlot == -1)
                             prevSlot = mc.thePlayer.inventory.currentItem
 
-                        if (gappleInHotbar != null) {
-                            mc.thePlayer.inventory.currentItem = gappleInHotbar - 36
-                        }
+                        mc.thePlayer.inventory.currentItem = gappleInHotbar - 36
                         sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                         eating = 0
-                    } else if (eating > 35 || (fastEatValue && eating > eatDelayValue)) {
-			repeat(35 - eating) {
-                sendPacket(C03PacketPlayer(mc.thePlayer.onGround))
-                        }
+                    } else if (shouldFinishLegitEating()) {
+                        sendRemainingEatPackets()
                         timer.reset()
                         tryHeal = false
                         delay = MathHelper.getRandomIntegerInRange(Random(), min, max)
                     }
                 }
                 "head" -> {
-                    val headInHotbar = InventoryUtils.findItem(36, 45, Items.skull)
-                    if (headInHotbar != -1) {
-                        if (headInHotbar != null) {
-                            sendPacket(C09PacketHeldItemChange(headInHotbar - 36))
-                        }
+                    val headInHotbar = findHotbarContainerSlot(Items.skull)
+                    if (headInHotbar != null) {
+                        sendPacket(C09PacketHeldItemChange(headInHotbar - 36))
                         sendPacket(C08PacketPlayerBlockPlacement(mc.thePlayer.heldItem))
                         sendPacket(C09PacketHeldItemChange(mc.thePlayer.inventory.currentItem))
                         timer.reset()
@@ -178,7 +189,7 @@ object Gapple : Module("Gapple", Category.PLAYER, Category.SubCategory.PLAYER_CO
             return@handler
         if (waitRegen && mc.thePlayer.isPotionActive(regeneration) && mc.thePlayer.getActivePotionEffect(regeneration).duration > regenSec * 20.0f)
             return@handler
-        if (!isDisable && (mc.thePlayer.health <= (percent / 100.0f) * mc.thePlayer.maxHealth) && timer.hasTimePassed(delay.toLong())) {
+        if (!isDisable && shouldStartHealing() && timer.hasTimePassed(delay.toLong())) {
             if (tryHeal)
                 return@handler
             tryHeal = true
