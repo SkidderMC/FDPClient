@@ -16,13 +16,16 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.hasMotion
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
 import net.minecraft.item.*
+import net.minecraft.network.Packet
 import net.minecraft.network.handshake.client.C00Handshake
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.DROP_ITEM
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.RELEASE_USE_ITEM
 import net.minecraft.network.play.server.S08PacketPlayerPosLook
+import net.minecraft.network.play.server.S09PacketHeldItemChange
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.network.play.server.S2FPacketSetSlot
@@ -37,18 +40,37 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
     private val swordMode by choices(
         "SwordMode",
-        arrayOf("None", "NCP", "UpdatedNCP", "AAC5", "SwitchItem", "InvalidC08", "Blink", "Grim2371"),
+        arrayOf(
+            "None", "NCP", "UpdatedNCP", "AAC4", "AAC5", "SwitchItem", "InvalidC08",
+            "Blink", "Grim2371", "OldIntave", "Medusa", "HypixelNew", "SpamItemChange",
+            "SpamPlace", "SpamEmptyPlace", "Matrix", "GrimAC"
+        ),
         "None"
     )
 
     private val reblinkTicks by int("ReblinkTicks", 10, 1..20) { swordMode == "Blink" }
+    private val antiSwitchItem by boolean("AntiSwitchItem", false)
+    private val onlyGround by boolean("OnlyGround", false)
+    private val onlyMove by boolean("OnlyMove", false)
+    private val aac4C07 by boolean("AAC4-C07", true) {
+        swordMode == "AAC4" || consumeMode == "AAC4" || bowPacket == "AAC4"
+    }
+    private val aac4C08 by boolean("AAC4-C08", true) {
+        swordMode == "AAC4" || consumeMode == "AAC4" || bowPacket == "AAC4"
+    }
+    private val aac4OnGround by boolean("AAC4-OnGround", true) {
+        swordMode == "AAC4" || consumeMode == "AAC4" || bowPacket == "AAC4"
+    }
 
     private val blockForwardMultiplier by float("BlockForwardMultiplier", 1f, 0.2F..1f)
     private val blockStrafeMultiplier by float("BlockStrafeMultiplier", 1f, 0.2F..1f)
 
     private val consumeMode by choices(
         "ConsumeMode",
-        arrayOf("None", "UpdatedNCP", "AAC5", "SwitchItem", "InvalidC08", "Intave", "Drop", "Grim2371"),
+        arrayOf(
+            "None", "UpdatedNCP", "AAC4", "AAC5", "SwitchItem", "InvalidC08", "Intave",
+            "Drop", "Grim2371", "HypixelNew", "SpamItemChange", "SpamPlace", "SpamEmptyPlace", "Medusa"
+        ),
         "None"
     )
 
@@ -65,7 +87,10 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
     private val bowPacket by choices(
         "BowMode",
-        arrayOf("None", "UpdatedNCP", "AAC5", "SwitchItem", "InvalidC08", "Grim2371"),
+        arrayOf(
+            "None", "UpdatedNCP", "AAC4", "AAC5", "SwitchItem", "InvalidC08",
+            "Grim2371", "HypixelNew", "SpamItemChange", "SpamPlace", "SpamEmptyPlace", "Medusa"
+        ),
         "None"
     )
 
@@ -101,9 +126,15 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     private var hasDropped = false
 
     private val BlinkTimer = TickTimer()
+    private val aac4Timer = MSTimer()
+    private val matrixBufferTimer = MSTimer()
 
     private var grim2371DoNotSlow = false
     private val grim2371Timer = TickTimer()
+    private val matrixPacketBuffer = mutableListOf<Packet<*>>()
+    private var matrixBuffering = false
+    private var lastBlockingState = false
+    private var medusaCanStopSprint = true
 
     override fun onDisable() {
         shouldSwap = false
@@ -113,6 +144,10 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         grim2371DoNotSlow = false
         grim2371Timer.reset()
         pendingFlagApplyPacket = false
+        matrixPacketBuffer.clear()
+        matrixBuffering = false
+        lastBlockingState = false
+        medusaCanStopSprint = true
     }
 
     val onMotion = handler<MotionEvent> { event ->
@@ -120,7 +155,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         val heldItem = player.heldItem ?: return@handler
         val isUsingItem = usingItemFunc()
 
-        if (!hasMotion && !shouldSwap)
+        if ((!hasMotion && !shouldSwap) || !shouldHandleNoSlow(player))
             return@handler
 
         if (event.eventState == EventState.PRE && isUsingItem) {
@@ -210,6 +245,9 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
                         consumeDrinkOnly && (heldItem.item is ItemPotion || heldItem.item is ItemBucketMilk))
             ) {
                 when (consumeMode.lowercase()) {
+                    "aac4" ->
+                        handleAAC4Packet(event, heldItem)
+
                     "aac5" ->
                         sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, heldItem, 0f, 0f, 0f))
 
@@ -239,12 +277,36 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
                             sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos.ORIGIN, EnumFacing.UP))
                         }
                     }
+
+                    "hypixelnew" -> {
+                        if (InventoryUtils.hasSpaceInInventory() && event.eventState == EventState.PRE && player.ticksExisted % 3 != 0) {
+                            sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0f, 0f, 0f))
+                        }
+                    }
+
+                    "spamitemchange" ->
+                        if (event.eventState == EventState.PRE) {
+                            sendPacket(C09PacketHeldItemChange(player.inventory.currentItem))
+                        }
+
+                    "spamplace" ->
+                        if (event.eventState == EventState.PRE) {
+                            sendPacket(C08PacketPlayerBlockPlacement(heldItem))
+                        }
+
+                    "spamemptyplace" ->
+                        if (event.eventState == EventState.PRE) {
+                            sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0f, 0f, 0f))
+                        }
                 }
             }
         }
 
         if (heldItem.item is ItemBow && (isUsingItem || shouldSwap)) {
             when (bowPacket.lowercase()) {
+                "aac4" ->
+                    handleAAC4Packet(event, heldItem)
+
                 "aac5" ->
                     sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, heldItem, 0f, 0f, 0f))
 
@@ -268,6 +330,27 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
                         }
                     }
                 }
+
+                "hypixelnew" -> {
+                    if (InventoryUtils.hasSpaceInInventory() && event.eventState == EventState.PRE && player.ticksExisted % 3 != 0) {
+                        sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0f, 0f, 0f))
+                    }
+                }
+
+                "spamitemchange" ->
+                    if (event.eventState == EventState.PRE) {
+                        sendPacket(C09PacketHeldItemChange(player.inventory.currentItem))
+                    }
+
+                "spamplace" ->
+                    if (event.eventState == EventState.PRE) {
+                        sendPacket(C08PacketPlayerBlockPlacement(heldItem))
+                    }
+
+                "spamemptyplace" ->
+                    if (event.eventState == EventState.PRE) {
+                        sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0f, 0f, 0f))
+                    }
             }
         }
 
@@ -287,6 +370,9 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
                         else -> return@handler
                     }
+
+                "aac4" ->
+                    handleAAC4Packet(event, heldItem)
 
                 "updatedncp" ->
                     if (event.eventState == EventState.POST) {
@@ -313,7 +399,86 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
                         }
                     }
                 }
+
+                "oldintave" -> {
+                    if (event.eventState == EventState.PRE) {
+                        sendPacket(C09PacketHeldItemChange((player.inventory.currentItem + 1) % 9))
+                        sendPacket(C09PacketHeldItemChange(player.inventory.currentItem))
+                    }
+
+                    if (event.eventState == EventState.POST) {
+                        sendPacket(C08PacketPlayerBlockPlacement(player.inventoryContainer.getSlot(player.inventory.currentItem + 36).stack))
+                    }
+                }
+
+                "hypixelnew" -> {
+                    if (InventoryUtils.hasSpaceInInventory() && event.eventState == EventState.PRE && player.ticksExisted % 3 != 0) {
+                        sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0f, 0f, 0f))
+                    }
+                }
+
+                "spamitemchange" ->
+                    if (event.eventState == EventState.PRE) {
+                        sendPacket(C09PacketHeldItemChange(player.inventory.currentItem))
+                    }
+
+                "spamplace" ->
+                    if (event.eventState == EventState.PRE) {
+                        sendPacket(C08PacketPlayerBlockPlacement(heldItem))
+                    }
+
+                "spamemptyplace" ->
+                    if (event.eventState == EventState.PRE) {
+                        sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, null, 0f, 0f, 0f))
+                    }
             }
+        }
+    }
+
+    val onUpdate = handler<UpdateEvent> {
+        val player = mc.thePlayer ?: return@handler
+        val blockingSword = isBlockingSword()
+
+        if ((swordMode == "Matrix" || swordMode == "GrimAC") && (lastBlockingState || blockingSword)) {
+            if (matrixBufferTimer.hasTimePassed(230L) && matrixBuffering) {
+                matrixBuffering = false
+
+                if (swordMode == "GrimAC") {
+                    sendPacket(C09PacketHeldItemChange((player.inventory.currentItem + 1) % 9), false)
+                    sendPacket(C09PacketHeldItemChange(player.inventory.currentItem), false)
+                } else {
+                    sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN), false)
+                }
+
+                if (matrixPacketBuffer.isNotEmpty()) {
+                    var canAttack = false
+
+                    for (queuedPacket in matrixPacketBuffer) {
+                        if (queuedPacket is C03PacketPlayer) {
+                            canAttack = true
+                        }
+
+                        if (!((queuedPacket is C02PacketUseEntity || queuedPacket is C0APacketAnimation) && !canAttack)) {
+                            sendPacket(queuedPacket, false)
+                        }
+                    }
+
+                    matrixPacketBuffer.clear()
+                }
+            }
+
+            if (!matrixBuffering) {
+                lastBlockingState = blockingSword
+                if (!blockingSword) {
+                    return@handler
+                }
+
+                sendPacket(C08PacketPlayerBlockPlacement(BlockPos(-1, -1, -1), 255, player.inventory.getCurrentItem(), 0f, 0f, 0f), false)
+                matrixBuffering = true
+                matrixBufferTimer.reset()
+            }
+        } else {
+            lastBlockingState = false
         }
     }
 
@@ -388,6 +553,41 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
                         }
                     }
                 }
+            }
+        }
+
+        if (antiSwitchItem && packet is S09PacketHeldItemChange && event.eventType == EventState.RECEIVE && usingItemFunc()) {
+            event.cancelEvent()
+            sendPacket(C09PacketHeldItemChange(packet.heldItemHotbarIndex), false)
+            sendPacket(C09PacketHeldItemChange(player.inventory.currentItem), false)
+            return@handler
+        }
+
+        if (!shouldHandleNoSlow(player)) {
+            return@handler
+        }
+
+        if (isMedusaActive()) {
+            if (medusaCanStopSprint) {
+                sendPacket(C0BPacketEntityAction(player, C0BPacketEntityAction.Action.STOP_SPRINTING), false)
+                medusaCanStopSprint = false
+            }
+        } else {
+            medusaCanStopSprint = true
+        }
+
+        if ((swordMode == "Matrix" || swordMode == "GrimAC") && matrixBuffering && event.eventType == EventState.SEND) {
+            if ((packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement) && isBlockingSword()) {
+                event.cancelEvent()
+                return@handler
+            }
+
+            if (packet is C03PacketPlayer || packet is C0APacketAnimation || packet is C0BPacketEntityAction ||
+                packet is C02PacketUseEntity || packet is C07PacketPlayerDigging || packet is C08PacketPlayerBlockPlacement
+            ) {
+                matrixPacketBuffer += packet
+                event.cancelEvent()
+                return@handler
             }
         }
 
@@ -490,7 +690,12 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     }
 
     val onSlowDown = handler<SlowDownEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
         val heldItem = mc.thePlayer.heldItem?.item
+
+        if (!shouldHandleNoSlow(player)) {
+            return@handler
+        }
 
         if ((swordMode == "Grim2371" && heldItem is ItemSword) ||
             (consumeMode == "Grim2371" && (heldItem is ItemFood || heldItem is ItemPotion || heldItem is ItemBucketMilk)) ||
@@ -533,6 +738,52 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
     fun usingItemFunc() =
         mc.thePlayer?.heldItem != null && (mc.thePlayer.isUsingItem || (mc.thePlayer.heldItem?.item is ItemSword && KillAura.blockStatus) || isUNCPBlocking())
+
+    private fun shouldHandleNoSlow(player: net.minecraft.client.entity.EntityPlayerSP): Boolean {
+        if (onlyMove && !player.isMoving) {
+            return false
+        }
+
+        if (onlyGround && !player.onGround) {
+            return false
+        }
+
+        return true
+    }
+
+    private fun handleAAC4Packet(event: MotionEvent, heldItem: ItemStack) {
+        val player = mc.thePlayer ?: return
+
+        if (aac4OnGround && !player.onGround) {
+            return
+        }
+
+        if (aac4C07 && event.eventState == EventState.PRE && aac4Timer.hasTimePassed(80L)) {
+            sendPacket(C07PacketPlayerDigging(RELEASE_USE_ITEM, BlockPos(-1, -1, -1), EnumFacing.DOWN))
+        }
+
+        if (aac4C08 && event.eventState == EventState.POST && aac4Timer.hasTimePassed(80L)) {
+            sendPacket(C08PacketPlayerBlockPlacement(heldItem))
+            aac4Timer.reset()
+        }
+    }
+
+    private fun isBlockingSword(): Boolean {
+        val player = mc.thePlayer ?: return false
+        return (player.isUsingItem || KillAura.blockStatus) && player.heldItem?.item is ItemSword
+    }
+
+    private fun isMedusaActive(): Boolean {
+        val player = mc.thePlayer ?: return false
+        val item = player.heldItem?.item ?: return false
+
+        return when (item) {
+            is ItemSword -> swordMode == "Medusa" && usingItemFunc()
+            is ItemBow -> bowPacket == "Medusa" && usingItemFunc()
+            is ItemFood, is ItemPotion, is ItemBucketMilk -> consumeMode == "Medusa" && usingItemFunc()
+            else -> false
+        }
+    }
 
     private fun updateSlot() {
         SilentHotbar.selectSlotSilently(this, (SilentHotbar.currentSlot + 1) % 9, immediate = true)
