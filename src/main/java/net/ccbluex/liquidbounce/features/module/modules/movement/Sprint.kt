@@ -66,7 +66,15 @@ object Sprint : Module("Sprint", Category.MOVEMENT, Category.SubCategory.MOVEMEN
                 player setSprintSafely false
                 isSprinting = false
                 return
-            } else if (Scaffold.sprint && Scaffold.eagle == "Normal" && player.isMoving && player.onGround && Scaffold.eagleSneaking && Scaffold.eagleSprint) {
+            }
+
+            if (!Scaffold.canSprint) {
+                player setSprintSafely false
+                isSprinting = false
+                return
+            }
+
+            if (Scaffold.eagle == "Normal" && player.isMoving && player.onGround && Scaffold.eagleSneaking && Scaffold.eagleSprint) {
                 player setSprintSafely true
                 isSprinting = true
                 return

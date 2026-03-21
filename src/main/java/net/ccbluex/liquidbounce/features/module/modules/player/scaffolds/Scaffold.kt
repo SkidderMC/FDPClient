@@ -101,8 +101,10 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
     // Basic stuff
     val sprint by boolean("Sprint", false)
+    val sprintMode by choices("SprintMode", arrayOf("Normal", "MotionSprint", "OnlyOnGround", "OnlyInAir"), "Normal") { sprint }
     private val swing by boolean("Swing", true).subjective()
     private val down by boolean("Down", true) { !sameY && scaffoldMode !in arrayOf("GodBridge", "Telly") }
+    private val autoJump by boolean("AutoJump", false) { scaffoldMode !in arrayOf("GodBridge", "Telly") }
 
     private val ticksUntilRotation by intRange("TicksUntilRotation", 3..3, 1..8) {
         scaffoldMode == "Telly"
@@ -155,10 +157,45 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
     // Rotation Options
     private val modeList =
-        choices("Rotations", arrayOf("Off", "Normal", "Stabilized", "ReverseYaw", "GodBridge"), "Normal")
+        choices(
+            "Rotations",
+            arrayOf("Off", "Normal", "Stabilized", "ReverseYaw", "AAC", "Custom", "Advanced", "Backwards", "GodBridge"),
+            "Normal"
+        )
     private val jumpRotationMode by choices(
-        "JumpRotations", arrayOf("Same", "Off", "Normal", "Stabilized", "ReverseYaw", "GodBridge"), "Same"
+        "JumpRotations",
+        arrayOf("Same", "Off", "Normal", "Stabilized", "ReverseYaw", "AAC", "Custom", "Advanced", "Backwards", "GodBridge"),
+        "Same"
     )
+    private val aacYawOffset by int("AACYawOffset", 0, -180..180) { supportsAacRotations }
+    private val customYaw by int("CustomYaw", -145, -180..180) { supportsCustomRotations }
+    private val customPitch by float("CustomPitch", 82.4f, -90f..90f) { supportsCustomRotations }
+    private val advancedYawMode by choices(
+        "AdvancedYawMode",
+        arrayOf("Offset", "Static", "RoundStatic", "Vanilla", "Round", "MoveDirection", "OffsetMove", "RoundMoveDir"),
+        "MoveDirection"
+    ) { supportsAdvancedRotations }
+    private val advancedPitchMode by choices(
+        "AdvancedPitchMode", arrayOf("Offset", "Static", "Vanilla", "Backwards"), "Static"
+    ) { supportsAdvancedRotations }
+    private val advancedYawOffset by int("AdvancedYawOffset", -15, -180..180) {
+        supportsAdvancedRotations && advancedYawMode == "Offset"
+    }
+    private val advancedYawMoveOffset by int("AdvancedYawMoveOffset", -15, -180..180) {
+        supportsAdvancedRotations && advancedYawMode == "OffsetMove"
+    }
+    private val advancedYawStatic by int("AdvancedYawStatic", 145, -180..180) {
+        supportsAdvancedRotations && advancedYawMode in arrayOf("Static", "RoundStatic")
+    }
+    private val advancedYawRoundValue by int("AdvancedYawRoundValue", 45, 1..180) {
+        supportsAdvancedRotations && advancedYawMode in arrayOf("Round", "RoundStatic", "RoundMoveDir")
+    }
+    private val advancedPitchOffset by float("AdvancedPitchOffset", -0.4f, -90f..90f) {
+        supportsAdvancedRotations && advancedPitchMode == "Offset"
+    }
+    private val advancedPitchStatic by float("AdvancedPitchStatic", 82.4f, -90f..90f) {
+        supportsAdvancedRotations && advancedPitchMode == "Static"
+    }
 
     private val options: RotationSettingsWithRotationModes = RotationSettingsWithRotationModes(this, modeList).apply {
         strictValue.excludeWithState()
@@ -279,8 +316,20 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     private val supportsGodBridgeRotations: Boolean
         get() = scaffoldMode == "GodBridge" || options.rotationMode == "GodBridge" || jumpRotationMode == "GodBridge"
 
+    private val supportsAacRotations: Boolean
+        get() = options.rotationMode == "AAC" || jumpRotationMode == "AAC"
+
+    private val supportsCustomRotations: Boolean
+        get() = options.rotationMode == "Custom" || jumpRotationMode == "Custom"
+
+    private val supportsAdvancedRotations: Boolean
+        get() = options.rotationMode == "Advanced" || jumpRotationMode == "Advanced"
+
     private val isGodBridgeBehaviorEnabled: Boolean
         get() = scaffoldMode == "GodBridge" || activeRotationMode == "GodBridge"
+
+    private val usesLegacyRotationPlacement: Boolean
+        get() = activeRotationMode in arrayOf("AAC", "Custom", "Advanced", "Backwards")
 
     private val shouldUseGodBridgeRotations: Boolean
         get() = activeRotationMode == "GodBridge"
@@ -458,6 +507,10 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     val onStrafe = handler<StrafeEvent> {
         val player = mc.thePlayer ?: return@handler
 
+        if (autoJump && !Tower.isTowering && !shouldGoDown && player.onGround && player.isMoving) {
+            player.tryJump()
+        }
+
         // Jumping needs to be done here, so it doesn't get detected by movement-sensitive anti-cheats.
         if (scaffoldMode == "Telly" && player.onGround && player.isMoving && currRotation == player.rotation && ticksUntilJump >= jumpTicks) {
             player.tryJump()
@@ -502,7 +555,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     val onTick = handler<GameTickEvent> {
         val target = placeRotation?.placeInfo
 
-        val raycastProperly = !(scaffoldMode == "Expand" && expandLength > 1 || shouldGoDown) && currentRotationsActive
+        val raycastProperly =
+            !(scaffoldMode == "Expand" && expandLength > 1 || shouldGoDown) && currentRotationsActive && !usesLegacyRotationPlacement
 
         /**
          * Calculate block raytracing process once to simulate proper vanilla ray-cast update logic.
@@ -1005,16 +1059,9 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             }
         }
 
-        var rotation = toRotation(vec, false)
-
-        val roundYaw90 = round(rotation.yaw / 90f) * 90f
-        val roundYaw45 = round(rotation.yaw / 45f) * 45f
-
-        rotation = when (activeRotationMode) {
-            "Stabilized" -> Rotation(roundYaw45, rotation.pitch)
-            "ReverseYaw" -> Rotation(if (!isLookingDiagonally) roundYaw90 else roundYaw45, rotation.pitch)
-            else -> rotation
-        }.fixedSensitivity()
+        val baseRotation = toRotation(vec, false).fixedSensitivity()
+        val rotation = applyRotationMode(baseRotation)
+        val rotationForPlacement = if (usesLegacyRotationPlacement) baseRotation else rotation
 
         // If the current rotation already looks at the target block and side, then return right here
         performBlockRaytrace(currRotation, maxReach)?.let { raytrace ->
@@ -1027,12 +1074,12 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             }
         }
 
-        val raytrace = performBlockRaytrace(rotation, maxReach) ?: return null
+        val raytrace = performBlockRaytrace(rotationForPlacement, maxReach) ?: return null
 
         val multiplier = if (options.legitimize) 3 else 1
 
         if (raytrace.blockPos == offsetPos && (!raycast || raytrace.sideHit == side.opposite) && canUpdateRotation(
-                currRotation, rotation, multiplier
+                currRotation, rotationForPlacement, multiplier
             )
         ) {
             return PlaceRotation(
@@ -1104,7 +1151,16 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
         val prevSize = stack.stackSize
 
+        val motionSprintActive = sprint && sprintMode == "MotionSprint" && thePlayer.isMoving
+        if (motionSprintActive) {
+            sendPacket(C0BPacketEntityAction(thePlayer, C0BPacketEntityAction.Action.STOP_SPRINTING))
+        }
+
         val clickedSuccessfully = thePlayer.onPlayerRightClick(clickPos, side, hitVec, stack)
+
+        if (motionSprintActive) {
+            sendPacket(C0BPacketEntityAction(thePlayer, C0BPacketEntityAction.Action.START_SPRINTING))
+        }
 
         if (clickedSuccessfully) {
             if (!attempt) {
@@ -1217,6 +1273,66 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     }
 
     private var isOnRightSide = false
+
+    val canSprint: Boolean
+        get() {
+            val player = mc.thePlayer ?: return false
+
+            return when (sprintMode) {
+                "OnlyOnGround" -> player.onGround
+                "OnlyInAir" -> !player.onGround
+                else -> true
+            }
+        }
+
+    private fun movementDirectionYaw(): Float = MovementUtils.direction.toDegreesF()
+
+    private fun backwardsPitch(yaw: Float): Float = if ((round(yaw / 45f) * 45f) % 90f == 0f) 82f else 78f
+
+    private fun applyRotationMode(baseRotation: Rotation): Rotation {
+        val player = mc.thePlayer ?: return baseRotation
+
+        val roundYaw90 = round(baseRotation.yaw / 90f) * 90f
+        val roundYaw45 = round(baseRotation.yaw / 45f) * 45f
+        val movingYaw = movementDirectionYaw() - 180f
+
+        val rotation = when (activeRotationMode) {
+            "Stabilized" -> Rotation(roundYaw45, baseRotation.pitch)
+            "ReverseYaw" -> Rotation(if (!isLookingDiagonally) roundYaw90 else roundYaw45, baseRotation.pitch)
+            "AAC" -> Rotation(
+                player.rotationYaw + if (player.movementInput.moveForward < 0) 0f else 180f + aacYawOffset,
+                baseRotation.pitch
+            )
+            "Custom" -> Rotation(player.rotationYaw + customYaw, customPitch)
+            "Backwards" -> {
+                val yaw = round(movingYaw / 45f) * 45f
+                Rotation(yaw, backwardsPitch(yaw))
+            }
+            "Advanced" -> {
+                val advancedYaw = when (advancedYawMode) {
+                    "Offset" -> baseRotation.yaw + advancedYawOffset
+                    "Static" -> player.rotationYaw + advancedYawStatic
+                    "RoundStatic" -> round((player.rotationYaw + advancedYawStatic) / advancedYawRoundValue) * advancedYawRoundValue
+                    "Vanilla" -> baseRotation.yaw
+                    "Round" -> round(baseRotation.yaw / advancedYawRoundValue) * advancedYawRoundValue
+                    "MoveDirection" -> movingYaw
+                    "OffsetMove" -> movingYaw + advancedYawMoveOffset
+                    "RoundMoveDir" -> round((baseRotation.yaw - movingYaw) / advancedYawRoundValue) * advancedYawRoundValue + movingYaw
+                    else -> baseRotation.yaw
+                }
+                val advancedPitch = when (advancedPitchMode) {
+                    "Offset" -> baseRotation.pitch + advancedPitchOffset
+                    "Static" -> advancedPitchStatic
+                    "Backwards" -> backwardsPitch(advancedYaw)
+                    else -> baseRotation.pitch
+                }
+                Rotation(advancedYaw, advancedPitch)
+            }
+            else -> baseRotation
+        }
+
+        return rotation.fixedSensitivity()
+    }
 
     /**
      * God-bridge rotation generation method from Nextgen
