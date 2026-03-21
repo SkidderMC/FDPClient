@@ -86,6 +86,11 @@ object InventoryManager : Configurable("InventoryManager"), MinecraftInstance, L
 		/**
 		 * AutoArmor actions
 		 */
+		if (AutoArmor.handleManualSwapRequest()) {
+			delay(50)
+			return@loopSequence
+		}
+
 		AutoArmor.equipFromHotbar()
 
 		// Following actions require inventory / simulated inventory, ...

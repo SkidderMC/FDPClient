@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoArmor
+import net.ccbluex.liquidbounce.features.module.modules.combat.ArmorFilter
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner.canBeSortedTo
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner.isStackUseful
@@ -368,6 +369,9 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
             .mapIndexedNotNullTo(ArrayList(32)) { index, stack -> stack ?: return@mapIndexedNotNullTo null
 
                 if (isTicked(index)) return@mapIndexedNotNullTo null
+
+                if (stack.item is ItemArmor && ArmorFilter.handleEvents() && !ArmorFilter.isUsefulArmor(stack, stacks))
+                    return@mapIndexedNotNullTo null
 
                 val mergeableCount = mc.thePlayer.inventory.mainInventory.sumOf { otherStack -> otherStack ?: return@sumOf 0
 

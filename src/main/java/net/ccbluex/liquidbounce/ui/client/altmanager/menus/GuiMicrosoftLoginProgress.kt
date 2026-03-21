@@ -27,11 +27,12 @@ class GuiMicrosoftLoginProgress(val updateStatus: (String) -> Unit, val done: ()
 
     private var oAuthServer: OAuthServer? = null
     private var loginUrl: String? = null
+    private var copyStatus = "Waiting for Microsoft authentication link..."
 
     private var serverStopAlreadyCalled = false
 
     override fun initGui() {
-        // This will start a login server and open the browser.
+        // This starts the login server and copies the auth URL for manual opening.
         try {
             oAuthServer = MicrosoftAccount.buildFromOpenBrowser(object : MicrosoftAccount.OAuthHandler {
 
@@ -65,8 +66,7 @@ class GuiMicrosoftLoginProgress(val updateStatus: (String) -> Unit, val done: ()
                  * Called when the server has prepared the user for authentication
                  */
                 override fun openUrl(url: String) {
-                    loginUrl = url
-                    MiscUtils.showURL(url)
+                    copyLoginUrl(url)
                 }
 
             })
@@ -79,7 +79,8 @@ class GuiMicrosoftLoginProgress(val updateStatus: (String) -> Unit, val done: ()
         }
 
         +GuiButton(0, width / 2 - 100, height / 2 + 60, translationButton("openURL"))
-        +GuiButton(1, width / 2 - 100, height / 2 + 90, translationButton("cancel"))
+        +GuiButton(1, width / 2 - 100, height / 2 + 90, translationButton("altManager.copy"))
+        +GuiButton(2, width / 2 - 100, height / 2 + 120, translationButton("cancel"))
 
         super.initGui()
     }
@@ -89,8 +90,18 @@ class GuiMicrosoftLoginProgress(val updateStatus: (String) -> Unit, val done: ()
             drawDefaultBackground()
             drawLoadingCircle(width / 2f, height / 4f + 70)
             Fonts.fontSemibold40.drawCenteredStringWithShadow(
-                translationText(
-                    "Loggingintoaccount"), width / 2f, height / 2 - 60f, 0xffffff)
+                translationText("Loggingintoaccount"),
+                width / 2f,
+                height / 2 - 60f,
+                0xffffff
+            )
+            Fonts.fontSemibold35.drawCenteredStringWithShadow(copyStatus, width / 2f, height / 2 - 25f, 0xffffff)
+            Fonts.fontSemibold35.drawCenteredStringWithShadow(
+                "Open the copied link in your browser, finish the login, then return here.",
+                width / 2f,
+                height / 2f,
+                0xffffff
+            )
         }
 
         drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor))
@@ -105,11 +116,10 @@ class GuiMicrosoftLoginProgress(val updateStatus: (String) -> Unit, val done: ()
         }
 
         when (button.id) {
-            0 -> loginUrl?.let { MiscUtils.showURL(it) }
-
-            1 -> errorAndDone("Login cancelled.")
+            0 -> loginUrl?.let(MiscUtils::showURL)
+            1 -> loginUrl?.let(::copyLoginUrl)
+            2 -> errorAndDone("Login cancelled.")
         }
-
 
         super.actionPerformed(button)
     }
@@ -123,12 +133,19 @@ class GuiMicrosoftLoginProgress(val updateStatus: (String) -> Unit, val done: ()
     }
 
     private fun successAndDone() {
-        updateStatus("§aSuccessfully logged in.")
+        updateStatus("\u00A7aSuccessfully logged in.")
         done()
     }
 
+    private fun copyLoginUrl(url: String) {
+        loginUrl = url
+        MiscUtils.copy(url)
+        copyStatus = "Microsoft login link copied to clipboard."
+        updateStatus("\u00A7aMicrosoft login link copied to clipboard.")
+    }
+
     private fun errorAndDone(error: String) {
-        updateStatus("§c$error")
+        updateStatus("\u00A7c$error")
         done()
     }
 

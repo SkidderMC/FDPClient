@@ -109,11 +109,11 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     }
 
     // GodBridge mode sub-values
-    private val waitForRots by boolean("WaitForRotations", false) { isGodBridgeEnabled }
-    private val useOptimizedPitch by boolean("UseOptimizedPitch", false) { isGodBridgeEnabled }
+    private val waitForRots by boolean("WaitForRotations", false) { supportsGodBridgeRotations }
+    private val useOptimizedPitch by boolean("UseOptimizedPitch", false) { supportsGodBridgeRotations }
     private val customGodPitch by float(
         "GodBridgePitch", 73.5f, 0f..90f
-    ) { isGodBridgeEnabled && !useOptimizedPitch }
+    ) { supportsGodBridgeRotations && !useOptimizedPitch }
 
     val jumpAutomatically by boolean("JumpAutomatically", true) { scaffoldMode == "GodBridge" }
     private val blocksToJumpRange by intRange("BlocksToJumpRange", 4..4, 1..8) {  scaffoldMode == "GodBridge" && !jumpAutomatically }
@@ -132,7 +132,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     private val verticalClutchBlocks by int("VerticalClutchBlocks", 2, 1..3) {
         allowClutching && scaffoldMode !in arrayOf("Telly", "Expand")
     }
-    private val blockSafe by boolean("BlockSafe", false) { !isGodBridgeEnabled }
+    private val blockSafe by boolean("BlockSafe", false) { !isGodBridgeBehaviorEnabled }
 
     // Eagle
     private val eagleValue =
@@ -155,10 +155,15 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     // Rotation Options
     private val modeList =
         choices("Rotations", arrayOf("Off", "Normal", "Stabilized", "ReverseYaw", "GodBridge"), "Normal")
+    private val jumpRotationMode by choices(
+        "JumpRotations", arrayOf("Same", "Off", "Normal", "Stabilized", "ReverseYaw", "GodBridge"), "Same"
+    )
 
-    private val options = RotationSettingsWithRotationModes(this, modeList).apply {
+    private val options: RotationSettingsWithRotationModes = RotationSettingsWithRotationModes(this, modeList).apply {
         strictValue.excludeWithState()
         resetTicksValue.setSupport { it && scaffoldMode != "Telly" }
+        rotationModeProvider = { this@Scaffold.activeRotationMode }
+        rotationsActiveProvider = { this@Scaffold.hasConfiguredRotations }
     }
 
     // Search options
@@ -251,8 +256,33 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
     private var blocksToJump = blocksToJumpRange.random()
 
-    private val isGodBridgeEnabled
-        get() = scaffoldMode == "GodBridge" || scaffoldMode == "Normal" && options.rotationMode == "GodBridge"
+    private val hasJumpRotationOverride: Boolean
+        get() = jumpRotationMode != "Same"
+
+    private val defaultRotationMode: String
+        get() = if (scaffoldMode == "GodBridge") "GodBridge" else options.rotationMode
+
+    private val activeRotationMode: String
+        get() = if (mc.gameSettings.keyBindJump.isKeyDown && hasJumpRotationOverride) {
+            jumpRotationMode
+        } else {
+            defaultRotationMode
+        }
+
+    private val currentRotationsActive: Boolean
+        get() = activeRotationMode != "Off"
+
+    private val hasConfiguredRotations: Boolean
+        get() = scaffoldMode == "GodBridge" || options.rotationMode != "Off" || jumpRotationMode !in arrayOf("Same", "Off")
+
+    private val supportsGodBridgeRotations: Boolean
+        get() = scaffoldMode == "GodBridge" || options.rotationMode == "GodBridge" || jumpRotationMode == "GodBridge"
+
+    private val isGodBridgeBehaviorEnabled: Boolean
+        get() = scaffoldMode == "GodBridge" || activeRotationMode == "GodBridge"
+
+    private val shouldUseGodBridgeRotations: Boolean
+        get() = activeRotationMode == "GodBridge"
 
     private var godBridgeTargetRotation: Rotation? = null
 
@@ -450,16 +480,16 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         val ticks = if (options.keepRotation) {
             if (scaffoldMode == "Telly") 1 else options.resetTicks
         } else {
-            if (isGodBridgeEnabled) options.resetTicks else RotationUtils.resetTicks
+            if (shouldUseGodBridgeRotations) options.resetTicks else RotationUtils.resetTicks
         }
 
-        if (!Tower.isTowering && isGodBridgeEnabled && options.rotationsActive) {
+        if (!Tower.isTowering && shouldUseGodBridgeRotations && currentRotationsActive) {
             generateGodBridgeRotations(ticks)
 
             return@handler
         }
 
-        if (options.rotationsActive && rotation != null) {
+        if (currentRotationsActive && rotation != null) {
             val placeRotation = this.placeRotation?.rotation ?: rotation
 
             if (RotationUtils.resetTicks != 0 || options.keepRotation) {
@@ -471,7 +501,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     val onTick = handler<GameTickEvent> {
         val target = placeRotation?.placeInfo
 
-        val raycastProperly = !(scaffoldMode == "Expand" && expandLength > 1 || shouldGoDown) && options.rotationsActive
+        val raycastProperly = !(scaffoldMode == "Expand" && expandLength > 1 || shouldGoDown) && currentRotationsActive
 
         /**
          * Calculate block raytracing process once to simulate proper vanilla ray-cast update logic.
@@ -507,7 +537,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         }
 
         raycast.let {
-            if (!options.rotationsActive || it != null && it.blockPos == target.blockPos && (!raycastProperly || it.sideHit == target.enumFacing)) {
+            if (!currentRotationsActive || it != null && it.blockPos == target.blockPos && (!raycastProperly || it.sideHit == target.enumFacing)) {
                 val result = if (raycastProperly && it != null) {
                     PlaceInfo(it.blockPos, it.sideHit, it.hitVec)
                 } else {
@@ -531,7 +561,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     val onMovementInput = handler<MovementInputEvent> { event ->
         val player = mc.thePlayer ?: return@handler
 
-        if (!isGodBridgeEnabled || !player.onGround) return@handler
+        if (!isGodBridgeBehaviorEnabled || !player.onGround) return@handler
 
         if (waitForRots) {
             godBridgeTargetRotation?.run {
@@ -876,7 +906,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
                 continue
             }
 
-            if (!area || isGodBridgeEnabled) {
+            if (!area || isGodBridgeBehaviorEnabled) {
                 currPlaceRotation =
                     findTargetPlace(blockPosition, neighbor, Vec3(0.5, 0.5, 0.5), side, eyes, maxReach, raycast)
                         ?: continue
@@ -899,7 +929,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
         placeRotation ?: return false
 
-        if (options.rotationsActive && !isGodBridgeEnabled) {
+        if (currentRotationsActive && !shouldUseGodBridgeRotations) {
             val rotationDifference = rotationDifference(placeRotation.rotation, currRotation)
             val rotationDifference2 = rotationDifference(placeRotation.rotation / 90F, currRotation / 90F)
 
@@ -969,7 +999,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         val roundYaw90 = round(rotation.yaw / 90f) * 90f
         val roundYaw45 = round(rotation.yaw / 45f) * 45f
 
-        rotation = when (options.rotationMode) {
+        rotation = when (activeRotationMode) {
             "Stabilized" -> Rotation(roundYaw45, rotation.pitch)
             "ReverseYaw" -> Rotation(if (!isLookingDiagonally) roundYaw90 else roundYaw45, rotation.pitch)
             else -> rotation

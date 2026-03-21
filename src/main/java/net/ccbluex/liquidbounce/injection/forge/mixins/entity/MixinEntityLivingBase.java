@@ -177,6 +177,13 @@ public abstract class MixinEntityLivingBase extends MixinEntity {
     private int injectAnimationsModule(int constant) {
         Animations module = Animations.INSTANCE;
 
-        return module.handleEvents() ? (2 + (20 - module.getSwingSpeed())) : constant;
+        if (module.handleEvents()) {
+            int swingSpeed = module.getSwingSpeed();
+
+            int ticks = (int) Math.round(2 + (20 - swingSpeed) * 0.9);
+            return Math.max(2, Math.min(20, ticks));
+        }
+
+        return constant;
     }
 }
