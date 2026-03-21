@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.other
 
 import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump
-import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump.autoDisable
+import net.ccbluex.liquidbounce.features.module.modules.movement.LongJump.autoDisableValue
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.LongJumpMode
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.client.chat
@@ -72,11 +72,11 @@ object VerusDamage : LongJumpMode("VerusDamage") {
             player.motionY += 0.015f
 
             // player onGround checks will not work due to sendPacket ground, so for temporary. I'll be using player motionY.
-            if (autoDisable && player.motionY <= -0.4330104027478734) {
+            if (autoDisableValue && player.motionY <= -0.4330104027478734) {
                 player.stopXZ()
                 LongJump.state = false
             }
-        } else if (autoDisable) {
+        } else if (autoDisableValue) {
             LongJump.state = false
         }
     }

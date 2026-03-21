@@ -44,7 +44,7 @@ object VerusSpeeds : SpeedMode("VerusSpeeds") {
         }
     }
 
-     fun onPreMotion() {
+    override fun onPreMotion() {
         when (verusSpeed) {
             "Ground" -> {
                 if (mc.thePlayer.onGround)

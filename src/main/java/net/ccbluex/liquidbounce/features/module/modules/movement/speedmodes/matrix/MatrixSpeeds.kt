@@ -102,7 +102,7 @@ object MatrixSpeeds : SpeedMode("MatrixSpeeds") {
         }
     }
 
-    fun onPreMotion() {
+    override fun onPreMotion() {
         when (matrixSpeed) {
             "Matrix6.6.1" -> {
                 if (!matrixUsePreMotion) return

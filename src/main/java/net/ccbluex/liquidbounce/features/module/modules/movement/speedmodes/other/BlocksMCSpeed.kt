@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.minecraft.potion.Potion
 
-object BlocksMCSpeed : SpeedMode("Custom") {
+object BlocksMCSpeed : SpeedMode("BlocksMC") {
   
     private var wasSlow = false
 

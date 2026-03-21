@@ -17,6 +17,8 @@ object CombatManager : MinecraftInstance, Listenable {
     private val lastAttackTimer = MSTimer()
 
     private var inCombat = false
+    val inCombatState: Boolean
+        get() = inCombat
     var target: EntityLivingBase? = null
         private set
     private val attackedEntityList = mutableListOf<EntityLivingBase>()

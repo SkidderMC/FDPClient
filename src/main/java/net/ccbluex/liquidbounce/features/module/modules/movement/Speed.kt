@@ -30,6 +30,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.veru
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanGround288
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanLowHop
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanSpeeds
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 
 object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
@@ -64,12 +65,14 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
         VerusFHop,
         VerusLowHop,
         VerusLowHopNew,
+        LatestVerusHop,
         VerusSpeeds,
 
         // Vulcan
         VulcanHop,
         VulcanLowHop,
         VulcanGround288,
+        VulcanSpeeds,
 
         // Matrix
         OldMatrixHop,
@@ -127,12 +130,74 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     val mode = choices("Mode", modesList.map { it.modeName }.toTypedArray(), "NCPBHop")
 
     // Custom Speed
+    val customBehavior by choices("CustomBehavior", arrayOf("Current", "Legacy"), "Current") { mode.get() == "Custom" }
     val customY by float("CustomY", 0.42f, 0f..4f) { mode.get() == "Custom" }
     val customGroundStrafe by float("CustomGroundStrafe", 1.6f, 0f..2f) { mode.get() == "Custom" }
     val customAirStrafe by float("CustomAirStrafe", 0f, 0f..2f) { mode.get() == "Custom" }
     val customGroundTimer by float("CustomGroundTimer", 1f, 0.1f..2f) { mode.get() == "Custom" }
     val customAirTimerTick by int("CustomAirTimerTick", 5, 1..20) { mode.get() == "Custom" }
     val customAirTimer by float("CustomAirTimer", 1f, 0.1f..2f) { mode.get() == "Custom" }
+    val legacyCustomSpeed by float("CustomSpeed", 1.6f, 0f..2f) { mode.get() == "Custom" && customBehavior == "Legacy" }
+    val legacyCustomDoLaunchSpeed by boolean("CustomDoLaunchSpeed", true) { mode.get() == "Custom" && customBehavior == "Legacy" }
+    val legacyCustomLaunchSpeed by float("CustomLaunchSpeed", 1.6f, 0.2f..2f) {
+        mode.get() == "Custom" && customBehavior == "Legacy" && legacyCustomDoLaunchSpeed
+    }
+    val legacyCustomLaunchMoveBeforeJump by boolean("CustomLaunchMoveBeforeJump", false) {
+        mode.get() == "Custom" && customBehavior == "Legacy"
+    }
+    val legacyCustomDoMinimumSpeed by boolean("CustomDoMinimumSpeed", true) {
+        mode.get() == "Custom" && customBehavior == "Legacy"
+    }
+    val legacyCustomMinimumSpeed by float("CustomMinimumSpeed", 0.25f, 0.1f..2f) {
+        mode.get() == "Custom" && customBehavior == "Legacy" && legacyCustomDoMinimumSpeed
+    }
+    val legacyCustomAddYMotion by float("CustomAddYMotion", 0f, 0f..2f) {
+        mode.get() == "Custom" && customBehavior == "Legacy"
+    }
+    val legacyCustomDoModifyJumpY by boolean("CustomDoModifyJumpY", true) {
+        mode.get() == "Custom" && customBehavior == "Legacy"
+    }
+    val legacyCustomUpTimer by float("CustomUpTimer", 1f, 0.1f..2f) {
+        mode.get() == "Custom" && customBehavior == "Legacy"
+    }
+    val legacyCustomJumpTimer by float("CustomJumpTimer", 1.25f, 0.1f..2f) {
+        mode.get() == "Custom" && customBehavior == "Legacy"
+    }
+    val legacyCustomDownTimer by float("CustomDownTimer", 1f, 0.1f..2f) {
+        mode.get() == "Custom" && customBehavior == "Legacy"
+    }
+    val legacyCustomUpAirSpeed by float("CustomUpAirSpeed", 2.03f, 0.5f..3.5f) {
+        mode.get() == "Custom" && customBehavior == "Legacy"
+    }
+    val legacyCustomDownAirSpeed by float("CustomDownAirSpeed", 2.01f, 0.5f..3.5f) {
+        mode.get() == "Custom" && customBehavior == "Legacy"
+    }
+    val legacyCustomStrafe by choices(
+        "CustomStrafe",
+        arrayOf("Strafe", "Boost", "AirSpeed", "Plus", "PlusOnlyUp", "PlusOnlyDown", "Non-Strafe"),
+        "Boost"
+    ) { mode.get() == "Custom" && customBehavior == "Legacy" }
+    val legacyCustomPlusMode by choices("PlusBoostMode", arrayOf("Add", "Multiply"), "Add") {
+        mode.get() == "Custom" && customBehavior == "Legacy" &&
+            legacyCustomStrafe in arrayOf("Plus", "PlusOnlyUp", "PlusOnlyDown")
+    }
+    val legacyCustomPlusMultiplyAmount by float("PlusMultiplyAmount", 1.1f, 1f..2f) {
+        mode.get() == "Custom" && customBehavior == "Legacy" &&
+            legacyCustomPlusMode == "Multiply" &&
+            legacyCustomStrafe in arrayOf("Plus", "PlusOnlyUp", "PlusOnlyDown")
+    }
+    val legacyCustomGroundStay by int("CustomGroundStay", 0, 0..10) { mode.get() == "Custom" && customBehavior == "Legacy" }
+    val legacyCustomGroundResetXZ by boolean("CustomGroundResetXZ", false) { mode.get() == "Custom" && customBehavior == "Legacy" }
+    val legacyCustomDoJump by boolean("CustomDoJump", true) { mode.get() == "Custom" && customBehavior == "Legacy" }
+    val legacyCustomPressSpaceKeyOnGround by boolean("CustomPressSpaceKeyOnGround", true) {
+        mode.get() == "Custom" && customBehavior == "Legacy"
+    }
+    val legacyCustomPressSpaceKeyInAir by boolean("CustomPressSpaceKeyInAir", false) {
+        mode.get() == "Custom" && customBehavior == "Legacy"
+    }
+    val legacyCustomUsePreMotion by boolean("CustomUsePreMotion", true) {
+        mode.get() == "Custom" && customBehavior == "Legacy"
+    }
 
     // Extra options
     val resetXZ by boolean("ResetXZ", false) { mode.get() == "Custom" }
@@ -166,6 +231,36 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     val verusSpeed by choices("Verus-Mode", arrayOf("OldHop", "Float", "Ground", "YPort", "YPort2"), "OldHop")  { mode.get() == "VerusSpeeds" }
     val verusYPortspeedValue by float("YPort-Speed", 0.61f, 0.1f.. 1f)  { mode.get() == "VerusSpeeds" }
     val verusYPort2speedValue by float("YPort2-Speed", 0.61f, 0.1f.. 1f)  { mode.get() == "VerusSpeeds" }
+    val latestVerusHopCustomSpeed by boolean("LatestVerusHop-CustomSpeed", false) { mode.get() == "LatestVerusHop" }
+    val latestVerusHopJumpMovementFactorWithPotion by float("LatestVerusHop-JumpMovementFactorWithPotion", 0.02f, 0.01f..0.04f) {
+        mode.get() == "LatestVerusHop" && latestVerusHopCustomSpeed
+    }
+    val latestVerusHopJumpMovementFactorWithoutPotion by float("LatestVerusHop-JumpMovementFactorWithoutPotion", 0.02f, 0.01f..0.04f) {
+        mode.get() == "LatestVerusHop" && latestVerusHopCustomSpeed
+    }
+    val latestVerusHopFrictionWithPotion by float("LatestVerusHop-FrictionWithPotion", 0.48f, 0.1f..2f) {
+        mode.get() == "LatestVerusHop" && latestVerusHopCustomSpeed
+    }
+    val latestVerusHopFrictionWithoutPotion by float("LatestVerusHop-FrictionWithoutPotion", 0.48f, 0.1f..2f) {
+        mode.get() == "LatestVerusHop" && latestVerusHopCustomSpeed
+    }
+    val latestVerusHopSpeedWithPotion by float("LatestVerusHop-SpeedWithPotion", 2.8f, 1f..4f) {
+        mode.get() == "LatestVerusHop" && latestVerusHopCustomSpeed
+    }
+    val latestVerusHopSpeedWithoutPotion by float("LatestVerusHop-SpeedWithoutPotion", 2.0f, 1f..4f) {
+        mode.get() == "LatestVerusHop" && latestVerusHopCustomSpeed
+    }
+    val latestVerusHopDamageBoost by boolean("LatestVerusHop-DamageBoost", false) { mode.get() == "LatestVerusHop" }
+    val latestVerusHopBoostSpeed by float("LatestVerusHop-BoostSpeed", 1f, 0.1f..9f) {
+        mode.get() == "LatestVerusHop" && latestVerusHopDamageBoost
+    }
+
+    // Vulcan legacy speed pack
+    val vulcanMode by choices("Vulcan-Mode", arrayOf("LowHop", "Hop", "OldGround", "YPort", "YPort2", "LowHop2"), "LowHop") {
+        mode.get() == "Vulcan"
+    }
+    val vulcanBoostDelay by int("Boost-Delay", 8, 2..15) { mode.get() == "Vulcan" && vulcanMode == "OldGround" }
+    val vulcanGroundBoost by boolean("Ground-Boost", true) { mode.get() == "Vulcan" && vulcanMode == "OldGround" }
 
     // UNCPHopNew Speed
     private val pullDown by boolean("PullDown", true) { mode.get() == "UNCPHopNew" }
@@ -215,6 +310,7 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
             thePlayer.isSprinting = true
 
         modeModule.onMotion()
+        modeModule.onPreMotion()
     }
 
     val onMove = handler<MoveEvent> { event ->
