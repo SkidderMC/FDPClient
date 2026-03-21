@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.kotlin.coerceIn
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
+import net.ccbluex.liquidbounce.features.module.modules.other.Settings
 import net.minecraft.client.gui.FontRenderer
 import org.lwjgl.input.Mouse
 import java.awt.Color
@@ -67,7 +68,13 @@ class IntValue(
     suffix: String? = null,
 ) : Value<Int>(name, value, suffix) {
 
-    override fun validate(newValue: Int): Int = newValue.coerceIn(range)
+    override fun validate(newValue: Int): Int {
+        return if (Settings.handleEvents() && Settings.removeLimits) {
+            newValue
+        } else {
+            newValue.coerceIn(range)
+        }
+    }
 
     override fun toJson() = JsonPrimitive(value)
 
@@ -93,7 +100,13 @@ class IntRangeValue(
     suffix: String? = null,
 ) : Value<IntRange>(name, value, suffix) {
 
-    override fun validate(newValue: IntRange): IntRange = newValue.coerceIn(range)
+    override fun validate(newValue: IntRange): IntRange {
+        return if (Settings.handleEvents() && Settings.removeLimits) {
+            newValue
+        } else {
+            newValue.coerceIn(range)
+        }
+    }
 
     var lastChosenSlider: RangeSlider? = null
         get() {
@@ -139,7 +152,13 @@ class FloatValue(
     suffix: String? = null,
 ) : Value<Float>(name, value, suffix) {
 
-    override fun validate(newValue: Float): Float = newValue.coerceIn(range)
+    override fun validate(newValue: Float): Float {
+        return if (Settings.handleEvents() && Settings.removeLimits) {
+            newValue
+        } else {
+            newValue.coerceIn(range)
+        }
+    }
 
     fun set(newValue: Number) = set(newValue.toFloat())
 
@@ -167,7 +186,13 @@ class FloatRangeValue(
     suffix: String? = null,
 ) : Value<ClosedFloatingPointRange<Float>>(name, value, suffix) {
 
-    override fun validate(newValue: ClosedFloatingPointRange<Float>): ClosedFloatingPointRange<Float> = newValue.coerceIn(range)
+    override fun validate(newValue: ClosedFloatingPointRange<Float>): ClosedFloatingPointRange<Float> {
+        return if (Settings.handleEvents() && Settings.removeLimits) {
+            newValue
+        } else {
+            newValue.coerceIn(range)
+        }
+    }
 
     var lastChosenSlider: RangeSlider? = null
         get() {
@@ -284,7 +309,13 @@ class BlockValue(
     name: String, value: Int, val range: IntRange = 1..197
 ) : Value<Int>(name, value, suffix = null) {
 
-    override fun validate(newValue: Int): Int = newValue.coerceIn(range)
+    override fun validate(newValue: Int): Int {
+        return if (Settings.handleEvents() && Settings.removeLimits) {
+            newValue
+        } else {
+            newValue.coerceIn(range)
+        }
+    }
 
     override fun toJson() = JsonPrimitive(value)
 

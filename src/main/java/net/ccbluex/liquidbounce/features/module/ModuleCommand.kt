@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.module
 
 import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.features.module.modules.other.Settings
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
 import net.minecraft.block.Block
@@ -98,7 +99,9 @@ class ModuleCommand(val module: Module, val values: Collection<Value<*>> = modul
                                         return
                                     }
 
-                                    if (newRange.first in value.range && newRange.last in value.range) {
+                                    val limitsRemoved = Settings.handleEvents() && Settings.removeLimits
+
+                                    if (limitsRemoved || (newRange.first in value.range && newRange.last in value.range)) {
                                         if (value.set(newRange)) {
                                             chat("§7${module.getName()} §8${args[1]}§7 was set to §8${newRange.first} - ${newRange.last}§7.")
                                             playEdit()
@@ -129,7 +132,9 @@ class ModuleCommand(val module: Module, val values: Collection<Value<*>> = modul
                                         return
                                     }
 
-                                    if (newRange.start in value.range && newRange.endInclusive in value.range) {
+                                    val limitsRemoved = Settings.handleEvents() && Settings.removeLimits
+
+                                    if (limitsRemoved || (newRange.start in value.range && newRange.endInclusive in value.range)) {
                                         if (value.set(newRange)) {
                                             chat("§7${module.getName()} §8${args[1]}§7 was set to §8${newRange.start} - ${newRange.endInclusive}§7.")
                                             playEdit()
