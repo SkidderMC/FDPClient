@@ -21,7 +21,7 @@ object ClientConfiguration : Configurable("ClientConfiguration"), MinecraftInsta
     var altsLength by int("AltsLength", 16, 4..20)
     var altsPrefix by text("AltsPrefix", "")
     // The game language can be overridden by the user. empty=default
-    var overrideLanguage by text("OverrideLanguage","")
+    var overrideLanguage by text("OverrideLanguage","zh_CN")
 
     fun updateClientWindow() {
         if (clientTitle) {

@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.FDPClient;
 import net.ccbluex.liquidbounce.utils.client.ServerUtils;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiIngameMenu;
+import net.minecraft.client.gui.GuiLanguage;
 import net.minecraft.client.gui.GuiMultiplayer;
 import net.minecraft.client.gui.GuiScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,6 +30,7 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
             this.buttonList.add(new GuiButton(1068,this.width / 2 - 100,this.height / 4 + 128 + 24,"Switcher"));
             this.buttonList.add(new GuiButton(1078, this.width / 2 - 100, this.height / 4 + 128, "Key Bind Manager"));
             buttonList.add(new GuiButton(1337, width / 2 - 100, height / 4 + 120 - 16, 98, 20, "Reconnect"));
+            buttonList.add(new GuiButton(1088, width / 2 - 100, height / 4 + 120 + 48, "Language"));
         }
     }
 
@@ -46,6 +48,10 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
 
         if (button.id == 1068) {
             mc.displayGuiScreen(new GuiMultiplayer((GuiScreen) (Object) this));
+        }
+
+        if (button.id == 1088) {
+            mc.displayGuiScreen(new GuiLanguage((GuiScreen) (Object) this, mc.gameSettings, mc.languageManager));
         }
     }
 }
