@@ -23,9 +23,13 @@ import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.init.Blocks.*
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
+import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.stats.StatList
+import net.minecraft.item.ItemStack
+import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.sqrt
 
 object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN, gameDetecting = false) {
 
@@ -36,9 +40,9 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
     private val mode by choices(
         "Mode",
         arrayOf(
-            "Vanilla", "Jump", "Matrix6.7.0", "NCP", "MotionNCP",
-            "OldNCP", "AAC", "LAAC", "AAC3.3.4",
-            "Spartan", "Rewinside", "BlocksMCTimer"
+            "Vanilla", "Jump", "Matrix6.7.0", "NCP", "NCPNew", "MotionNCP",
+            "OldNCP", "AAC", "OldAAC", "AAC4.4.0", "LAAC", "AAC3.3.4",
+            "Spartan", "Rewinside", "Vulcan", "Verus", "BlocksMC", "BlocksMCTimer"
         ),
         "NCP"
     )
@@ -49,6 +53,12 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
     { mode == "Jump" }
 
     private val delay by int("Delay", 0, 0..500)
+    private val timerValue by float("Timer", 1F, 0.05F..1F) {
+        mode !in arrayOf("Matrix6.7.0", "Verus")
+    }
+    private val timerDynValue by boolean("UseDynamicTimer", false) {
+        mode !in arrayOf("Matrix6.7.0", "Verus")
+    }
 
     /**
      * VALUES
@@ -88,7 +98,7 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
             wasTimer = false
         }
 
-        if (mode == "Matrix6.7.0") {
+        if (mode in arrayOf("AAC4.4.0", "NCPNew", "Matrix6.7.0")) {
             if (thePlayer.isCollidedHorizontally && thePlayer.onGround && lastOnGround) {
                 canStep = true
                 thePlayer.stepHeight = height
@@ -230,7 +240,7 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
 
         val mode = mode
 
-        if (mode == "Matrix6.7.0") {
+        if (mode in arrayOf("AAC4.4.0", "NCPNew", "Matrix6.7.0")) {
             if (!canStep || event.stepHeight <= 0.6F) {
                 thePlayer.stepHeight = 0.6F
                 event.stepHeight = 0.6F
@@ -268,9 +278,17 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
             return@handler
 
         if (thePlayer.entityBoundingBox.minY - stepY > 0.6) { // Check if full block step
+            if (timerValue < 1.0f) {
+                wasTimer = true
+                mc.timer.timerSpeed = timerValue
+
+                if (timerDynValue) {
+                    mc.timer.timerSpeed = (mc.timer.timerSpeed / sqrt(thePlayer.entityBoundingBox.minY - stepY)).toFloat()
+                }
+            }
 
             when (mode) {
-                "NCP", "AAC" -> {
+                "NCP", "AAC", "OldAAC" -> {
                     fakeJump()
 
                     // Half legit step (1 packet missing) [COULD TRIGGER TOO MANY PACKETS]
@@ -278,6 +296,96 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
                         C04PacketPlayerPosition(stepX, stepY + 0.41999998688698, stepZ, false),
                         C04PacketPlayerPosition(stepX, stepY + 0.7531999805212, stepZ, false)
                     )
+                    timer.reset()
+                }
+
+                "AAC4.4.0" -> {
+                    val rstepHeight = thePlayer.entityBoundingBox.minY - stepY
+
+                    fakeJump()
+                    timer.reset()
+
+                    when {
+                        rstepHeight >= 1.0 - 0.015625 && rstepHeight < 1.5 - 0.015625 -> {
+                            arrayOf(0.4, 0.7, 0.9).forEach { offset ->
+                                sendPacket(C04PacketPlayerPosition(stepX, stepY + offset, stepZ, false))
+                            }
+                            sendPacket(C04PacketPlayerPosition(stepX, stepY + 1.0, stepZ, true))
+                        }
+
+                        rstepHeight >= 1.5 - 0.015625 && rstepHeight < 2.0 - 0.015625 -> {
+                            arrayOf(0.42, 0.7718, 1.0556, 1.2714, 1.412).forEach { offset ->
+                                sendPacket(C04PacketPlayerPosition(stepX, stepY + offset, stepZ, false))
+                            }
+                            sendPacket(C04PacketPlayerPosition(stepX, stepY + 1.50, stepZ, true))
+                        }
+
+                        rstepHeight >= 2.0 - 0.015625 -> {
+                            arrayOf(0.45, 0.84375, 1.18125, 1.4625, 1.6875, 1.85625, 1.96875).forEach { offset ->
+                                sendPacket(C04PacketPlayerPosition(stepX, stepY + offset, stepZ, false))
+                            }
+                            sendPacket(
+                                C04PacketPlayerPosition(
+                                    stepX + thePlayer.motionX * 0.5,
+                                    stepY + 2.0,
+                                    stepZ + thePlayer.motionZ * 0.5,
+                                    true
+                                )
+                            )
+                        }
+                    }
+                }
+
+                "NCPNew" -> {
+                    val rstepHeight = thePlayer.entityBoundingBox.minY - stepY
+
+                    fakeJump()
+
+                    when {
+                        rstepHeight > 2.019 -> {
+                            arrayOf(0.425, 0.821, 0.699, 0.599, 1.022, 1.372, 1.652, 1.869, 2.019, 1.919).forEach { offset ->
+                                sendPacket(C04PacketPlayerPosition(stepX, stepY + offset, stepZ, false))
+                            }
+                            thePlayer.motionX = 0.0
+                            thePlayer.motionZ = 0.0
+                        }
+
+                        rstepHeight <= 2.019 && rstepHeight > 1.869 -> {
+                            arrayOf(0.425, 0.821, 0.699, 0.599, 1.022, 1.372, 1.652, 1.869).forEach { offset ->
+                                sendPacket(C04PacketPlayerPosition(stepX, stepY + offset, stepZ, false))
+                            }
+                            thePlayer.motionX = 0.0
+                            thePlayer.motionZ = 0.0
+                        }
+
+                        rstepHeight <= 1.869 && rstepHeight > 1.5 -> {
+                            arrayOf(0.425, 0.821, 0.699, 0.599, 1.022, 1.372, 1.652).forEach { offset ->
+                                sendPacket(C04PacketPlayerPosition(stepX, stepY + offset, stepZ, false))
+                            }
+                            thePlayer.motionX = 0.0
+                            thePlayer.motionZ = 0.0
+                        }
+
+                        rstepHeight <= 1.5 && rstepHeight > 1.015 -> {
+                            arrayOf(0.42, 0.7532, 1.01, 1.093, 1.015).forEach { offset ->
+                                sendPacket(C04PacketPlayerPosition(stepX, stepY + offset, stepZ, false))
+                            }
+                        }
+
+                        rstepHeight <= 1.015 && rstepHeight > 0.875 -> {
+                            sendPackets(
+                                C04PacketPlayerPosition(stepX, stepY + 0.41999998688698, stepZ, false),
+                                C04PacketPlayerPosition(stepX, stepY + 0.7531999805212, stepZ, false)
+                            )
+                        }
+
+                        rstepHeight <= 0.875 && rstepHeight > 0.6 -> {
+                            arrayOf(0.39, 0.6938).forEach { offset ->
+                                sendPacket(C04PacketPlayerPosition(stepX, stepY + offset, stepZ, false))
+                            }
+                        }
+                    }
+
                     timer.reset()
                 }
 
@@ -400,6 +508,75 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
                         }
                     }
 
+                    timer.reset()
+                }
+
+                "Verus" -> {
+                    val rstepHeight = thePlayer.entityBoundingBox.minY - stepY
+                    var stepHeightOffset = 0.0
+
+                    mc.timer.timerSpeed = 1f / ceil(rstepHeight * 2.0).toFloat()
+                    fakeJump()
+
+                    repeat((ceil(rstepHeight * 2.0) - 1.0).toInt()) {
+                        stepHeightOffset += 0.5
+                        sendPacket(C04PacketPlayerPosition(stepX, stepY + stepHeightOffset, stepZ, true))
+                    }
+
+                    wasTimer = true
+                }
+
+                "Vulcan" -> {
+                    val rstepHeight = thePlayer.entityBoundingBox.minY - stepY
+
+                    fakeJump()
+
+                    when {
+                        rstepHeight > 2.0 -> {
+                            arrayOf(0.5, 1.0, 1.5, 2.0).forEach { offset ->
+                                sendPacket(C04PacketPlayerPosition(stepX, stepY + offset, stepZ, true))
+                            }
+                        }
+
+                        rstepHeight <= 2.0 && rstepHeight > 1.5 -> {
+                            arrayOf(0.5, 1.0, 1.5).forEach { offset ->
+                                sendPacket(C04PacketPlayerPosition(stepX, stepY + offset, stepZ, true))
+                            }
+                        }
+
+                        rstepHeight <= 1.5 && rstepHeight > 1.0 -> {
+                            arrayOf(0.5, 1.0).forEach { offset ->
+                                sendPacket(C04PacketPlayerPosition(stepX, stepY + offset, stepZ, true))
+                            }
+                        }
+
+                        rstepHeight <= 1.0 && rstepHeight > 0.6 -> {
+                            sendPacket(C04PacketPlayerPosition(stepX, stepY + 0.5, stepZ, true))
+                        }
+                    }
+
+                    timer.reset()
+                }
+
+                "BlocksMC" -> {
+                    val pos = thePlayer.position.add(0.0, -1.5, 0.0)
+
+                    fakeJump()
+                    sendPacket(
+                        C08PacketPlayerBlockPlacement(
+                            pos,
+                            1,
+                            ItemStack(stone.getItem(mc.theWorld, pos)),
+                            0.0F,
+                            0.5F + Math.random().toFloat() * 0.44F,
+                            0.0F
+                        )
+                    )
+                    sendPackets(
+                        C04PacketPlayerPosition(stepX, stepY + 0.41999998688698, stepZ, false),
+                        C04PacketPlayerPosition(stepX, stepY + 0.7531999805212, stepZ, false),
+                        C04PacketPlayerPosition(stepX, stepY + 1.0, stepZ, true)
+                    )
                     timer.reset()
                 }
             }
