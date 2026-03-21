@@ -22,7 +22,8 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
 
     @Inject(method = "initGui", at = @At("RETURN"))
     private void initGui(CallbackInfo callbackInfo) {
-        if (!mc.isIntegratedServerRunning()) {
+        // 调整断开按钮位置
+        if (!mc.isIntegratedServerRunning() && !buttonList.isEmpty()) {
             final GuiButton disconnectButton = buttonList.get(0);
             disconnectButton.xPosition = width / 2 + 2;
             disconnectButton.width = 98;
@@ -30,8 +31,9 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
             this.buttonList.add(new GuiButton(1068,this.width / 2 - 100,this.height / 4 + 128 + 24,"Switcher"));
             this.buttonList.add(new GuiButton(1078, this.width / 2 - 100, this.height / 4 + 128, "Key Bind Manager"));
             buttonList.add(new GuiButton(1337, width / 2 - 100, height / 4 + 120 - 16, 98, 20, "Reconnect"));
-            buttonList.add(new GuiButton(1088, width / 2 - 100, height / 4 + 120 + 48, "Language"));
         }
+        // 添加语言按钮（单人游戏和服务器都显示）
+        buttonList.add(new GuiButton(1088, width / 2 - 100, height / 4 + 24, "Language"));
     }
 
     @Inject(method = "actionPerformed", at = @At("HEAD"))
