@@ -18,7 +18,7 @@ import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.kotlin.coerceIn
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
-import net.ccbluex.liquidbounce.features.module.modules.other.Settings
+import net.ccbluex.liquidbounce.features.module.modules.other.UnlimitedValues
 import net.minecraft.client.gui.FontRenderer
 import org.lwjgl.input.Mouse
 import java.awt.Color
@@ -69,7 +69,7 @@ class IntValue(
 ) : Value<Int>(name, value, suffix) {
 
     override fun validate(newValue: Int): Int {
-        return if (Settings.handleEvents() && Settings.removeLimits) {
+        return if (UnlimitedValues.handleEvents() && UnlimitedValues.removeLimits) {
             newValue
         } else {
             newValue.coerceIn(range)
@@ -101,7 +101,7 @@ class IntRangeValue(
 ) : Value<IntRange>(name, value, suffix) {
 
     override fun validate(newValue: IntRange): IntRange {
-        return if (Settings.handleEvents() && Settings.removeLimits) {
+        return if (UnlimitedValues.handleEvents() && UnlimitedValues.removeLimits) {
             newValue
         } else {
             newValue.coerceIn(range)
@@ -153,7 +153,7 @@ class FloatValue(
 ) : Value<Float>(name, value, suffix) {
 
     override fun validate(newValue: Float): Float {
-        return if (Settings.handleEvents() && Settings.removeLimits) {
+        return if (UnlimitedValues.handleEvents() && UnlimitedValues.removeLimits) {
             newValue
         } else {
             newValue.coerceIn(range)
@@ -187,7 +187,7 @@ class FloatRangeValue(
 ) : Value<ClosedFloatingPointRange<Float>>(name, value, suffix) {
 
     override fun validate(newValue: ClosedFloatingPointRange<Float>): ClosedFloatingPointRange<Float> {
-        return if (Settings.handleEvents() && Settings.removeLimits) {
+        return if (UnlimitedValues.handleEvents() && UnlimitedValues.removeLimits) {
             newValue
         } else {
             newValue.coerceIn(range)
@@ -310,7 +310,7 @@ class BlockValue(
 ) : Value<Int>(name, value, suffix = null) {
 
     override fun validate(newValue: Int): Int {
-        return if (Settings.handleEvents() && Settings.removeLimits) {
+        return if (UnlimitedValues.handleEvents() && UnlimitedValues.removeLimits) {
             newValue
         } else {
             newValue.coerceIn(range)
