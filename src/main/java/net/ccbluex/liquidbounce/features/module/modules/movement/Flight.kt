@@ -16,12 +16,14 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.blocks
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.hypixel.BoostHypixel
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.hypixel.FreeHypixel
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.hypixel.Hypixel
+import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.ncp.BlockDrop
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.ncp.NCP
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.ncp.OldNCP
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.other.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.spartan.BugSpartan
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.spartan.Spartan
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.spartan.Spartan2
+import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vanilla.Creative
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vanilla.DefaultVanilla
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vanilla.SmoothVanilla
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vanilla.Vanilla
@@ -44,10 +46,10 @@ import java.awt.Color
 
 object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN, Keyboard.KEY_F) {
     private val flyModes = arrayOf(
-        Vanilla, SmoothVanilla, DefaultVanilla,
+        Vanilla, SmoothVanilla, DefaultVanilla, Creative,
 
         // NCP
-        NCP, OldNCP,
+        NCP, OldNCP, BlockDrop,
 
         // AAC
         AAC1910, AAC305, AAC316, AAC3312, AAC3312Glide, AAC3313,
@@ -74,7 +76,7 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         MineSecure, HawkEye, HAC, WatchCat,
 
         // Other
-        Jetpack, KeepAlive, Collide, Jump, Flag, Fireball
+        Jetpack, KeepAlive, Collide, Jump, Flag, Fireball, Clip, FakeGround, FunCraft, TeleportRewinside
     )
 
     /**
@@ -90,10 +92,13 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         Hypixel, BoostHypixel, FreeHypixel,
 
         NCP, OldNCP,
+        BlockDrop,
 
         AAC1910, AAC305, AAC316, AAC3312, AAC3312Glide, AAC3313,
 
-        CubeCraft
+        CubeCraft,
+
+        Creative, Clip, FakeGround, FunCraft, TeleportRewinside
     )
 
     private val showDeprecated by boolean("DeprecatedMode", true).onChanged { value ->
@@ -120,6 +125,21 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
             "KeepAlive"
         )
     }.subjective()
+    val blockDropHorizontalSpeed by float("BlockDrop-HorizontalSpeed", 1f, 0.1f..5f) { mode == "BlockDrop" }
+    val blockDropVerticalSpeed by float("BlockDrop-VerticalSpeed", 1f, 0.1f..5f) { mode == "BlockDrop" }
+    val clipX by float("ClipX", 2f, -5f..5f) { mode == "Clip" }
+    val clipY by float("ClipY", 2f, -5f..5f) { mode == "Clip" }
+    val clipZ by float("ClipZ", 2f, -5f..5f) { mode == "Clip" }
+    val clipDelay by int("ClipDelay", 500, 0..3000) { mode == "Clip" }
+    val clipMotionX by float("ClipMotionX", 0f, -1f..1f) { mode == "Clip" }
+    val clipMotionY by float("ClipMotionY", 0f, -1f..1f) { mode == "Clip" }
+    val clipMotionZ by float("ClipMotionZ", 0f, -1f..1f) { mode == "Clip" }
+    val clipSpoofGround by boolean("ClipSpoofGround", false) { mode == "Clip" }
+    val clipGroundWhenClip by boolean("ClipGroundWhenClip", true) { mode == "Clip" }
+    val clipTimer by float("ClipTimer", 0.7f, 0.02f..2.5f) { mode == "Clip" }
+    val fakeGroundNoJump by boolean("FakeGround-NoJump", false) { mode == "FakeGround" }
+    val fakeGroundJumpUpY by boolean("FakeGround-JumpUpY", false) { mode == "FakeGround" }
+    val funCraftTimer by float("FunCraft-Timer", 1f, 0.1f..10f) { mode == "FunCraft" }
     private val vanillaKickBypass by boolean(
         "VanillaKickBypass",
         false
