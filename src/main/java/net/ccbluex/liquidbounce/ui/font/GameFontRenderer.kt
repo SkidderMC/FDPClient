@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.font
 
 import net.ccbluex.liquidbounce.features.module.modules.visual.NameProtect
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
+import net.ccbluex.liquidbounce.utils.kotlin.LruCache
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.hexColors
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.randomMagicText
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawLine
@@ -65,8 +66,32 @@ class GameFontRenderer(
     val height: Int
         get() = defaultFont.height / 2
 
+    // LRU cache for string width calculations (avoid repeated parsing)
+    private val stringWidthCache = LruCache<String, Int>(MAX_CACHED_WIDTHS)
+
+    // Cache for parsed colored text segments (avoid repeated split operations)
+    private val coloredSegmentCache = LruCache<String, List<String>>(MAX_CACHED_SEGMENTS)
+
     init {
         fontHeight = height
+    }
+
+    companion object {
+        private const val MAX_CACHED_WIDTHS = 512
+        private const val MAX_CACHED_SEGMENTS = 256
+
+        /**
+         * Map '0'..'9' => 0..9, 'a'..'f' => 10..15, 'k'..'o' => 16..20, 'r' => 21
+         */
+        fun getColorIndex(type: Char): Int {
+            return when (type) {
+                in '0'..'9' -> type - '0'
+                in 'a'..'f' -> type - 'a' + 10
+                in 'k'..'o' -> type - 'k' + 16
+                'r' -> 21
+                else -> -1
+            }
+        }
     }
 
     /**
@@ -171,16 +196,15 @@ class GameFontRenderer(
         // Shift text slightly to align
         val baseY = y - 3f
 
+        // Shadow optimization: calculate shadow color once
+        val shadowColor = if (shadow) {
+            Color(0, 0, 0, minOf(150, color shr 24 and 0xFF)).rgb
+        } else 0
+
         // If shadow => draw black behind
         if (shadow) {
             glUseProgram(0) // disable any shader
-            drawText(
-                currentText,
-                x + 1f,
-                baseY + 1f,
-                Color(0, 0, 0, minOf(150, color shr 24 and 0xFF)).rgb,
-                ignoreColor = true
-            )
+            drawText(currentText, x + 1f, baseY + 1f, shadowColor, ignoreColor = true)
         }
 
         glDisable(GL_BLEND)
@@ -223,9 +247,9 @@ class GameFontRenderer(
         var drawColor = if ((color and -0x4000000) == 0) (color or -16777216) else color
         val alpha = (drawColor ushr 24) and 0xFF
 
-        // If text has color codes => parse them
+        // If text has color codes => parse them (with caching to avoid repeated splits)
         if ('§' in text) {
-            val segments = text.split('§')
+            val segments = coloredSegmentCache.getOrPut(text) { text.split('§') }
             var currFont: AWTFontRenderer = defaultFont
             var widthSoFar = 0.0
             var randomCase = false
@@ -337,10 +361,14 @@ class GameFontRenderer(
 
         // NameProtect transformation
         val realText = NameProtect.handleTextMessage(text)
-        // If color codes => parse for advanced widths
-        return if ('§' in realText) parseColoredWidth(realText) else {
-            // Otherwise => just default
-            defaultFont.getStringWidth(realText) / 2
+
+        // Use cached width to avoid repeated calculations
+        return stringWidthCache.getOrPut(realText) {
+            // If color codes => parse for advanced widths
+            if ('§' in realText) parseColoredWidth(realText) else {
+                // Otherwise => just default
+                defaultFont.getStringWidth(realText) / 2
+            }
         }
     }
 
@@ -350,7 +378,7 @@ class GameFontRenderer(
      * Parse color codes in [text] to get accurate width.
      */
     private fun parseColoredWidth(text: String): Int {
-        val segments = text.split('§')
+        val segments = coloredSegmentCache.getOrPut(text) { text.split('§') }
         var widthPx = 0
         var currentFont = defaultFont
         var bold = false
@@ -387,20 +415,5 @@ class GameFontRenderer(
             }
         }
         return widthPx / 2
-    }
-
-    companion object {
-        /**
-         * Map '0'..'9' => 0..9, 'a'..'f' => 10..15, 'k'..'o' => 16..20, 'r' => 21
-         */
-        fun getColorIndex(type: Char): Int {
-            return when (type) {
-                in '0'..'9' -> type - '0'
-                in 'a'..'f' -> type - 'a' + 10
-                in 'k'..'o' -> type - 'k' + 16
-                'r' -> 21
-                else -> -1
-            }
-        }
     }
 }

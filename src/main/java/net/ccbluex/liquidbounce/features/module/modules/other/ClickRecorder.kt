@@ -28,6 +28,9 @@ object ClickRecorder : Module("ClickRecorder", Category.OTHER, Category.SubCateg
     private val recordRightClick by boolean("RecordRightClick", false)
     private val recordMiddleClick by boolean("RecordMiddleClick", false)
 
+    // Memory leak fix: Limit maximum recorded clicks
+    private const val MAX_RECORDED_CLICKS = 1000
+
     private val ticks = mutableListOf<Int>()
     private val leftClicks = mutableListOf<Int>()
     private val rightClicks = mutableListOf<Int>()
@@ -114,6 +117,13 @@ object ClickRecorder : Module("ClickRecorder", Category.OTHER, Category.SubCateg
 
     private fun updateRecordInfo(wasPreviousTick: Boolean = false) {
         val runTimeTicks = runTimeTicks - if (wasPreviousTick) 1 else 0
+
+        // Memory leak fix: Enforce click limit
+        if (ticks.size >= MAX_RECORDED_CLICKS) {
+            chat("§cWarning: Maximum click limit reached ($MAX_RECORDED_CLICKS). Recording stopped.")
+            state = false
+            return
+        }
 
         ticks += runTimeTicks
         leftClicks += CPSCounter.getCPS(CPSCounter.MouseButton.LEFT, runTimeTicks)

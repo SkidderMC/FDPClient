@@ -31,6 +31,9 @@ object RotationRecorder : Module("RotationRecorder", Category.OTHER, Category.Su
 
     private val captureNegativeNumbers by boolean("CaptureNegativeNumbers", false)
 
+    // Memory leak fix: Limit maximum recorded rotations
+    private const val MAX_RECORDED_ROTATIONS = 1000
+
     private val ticks = mutableListOf<Double>()
     private val yawDiffs = mutableListOf<Double>()
     private val pitchDiffs = mutableListOf<Double>()
@@ -120,6 +123,13 @@ object RotationRecorder : Module("RotationRecorder", Category.OTHER, Category.Su
         if (!captureNegativeNumbers) {
             yawDiff = yawDiff.absoluteValue
             pitchDiff = pitchDiff.absoluteValue
+        }
+
+        // Memory leak fix: Enforce rotation limit
+        if (ticks.size >= MAX_RECORDED_ROTATIONS) {
+            chat("§cWarning: Maximum rotation limit reached ($MAX_RECORDED_ROTATIONS). Recording stopped.")
+            state = false
+            return
         }
 
         ticks.add(runTimeTicks.toDouble() - if (wasPreviousTick) 1 else 0)

@@ -100,6 +100,11 @@ object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COM
     // Legacy
     private val maximumCachedPositions by int("MaxCachedPositions", 10, 1..20) { mode == "Legacy" }
 
+    // Memory leak fix: Enforce strict limits on collections
+    private const val MAX_PACKET_QUEUE_SIZE = 50
+    private const val MAX_POSITIONS_SIZE = 100
+    private const val MAX_BACKTRACKED_PLAYERS = 50
+
     private val backtrackedPlayer = ConcurrentHashMap<UUID, MutableList<BacktrackData>>()
 
     private val nonDelayedSoundSubstrings = arrayOf("game.player.hurt", "game.player.die")
@@ -205,18 +210,31 @@ object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COM
                     when (packet) {
                         is S14PacketEntity -> if (packet.entityId == target?.entityId) {
                             (target as? IMixinEntity)?.run {
+                                // Memory leak fix: Limit positions size
+                                if (positions.size >= MAX_POSITIONS_SIZE) {
+                                    positions.poll() // Remove oldest
+                                }
                                 positions += Pair(Vec3(trueX, trueY, trueZ), System.currentTimeMillis())
                             }
                         }
 
                         is S18PacketEntityTeleport -> if (packet.entityId == target?.entityId) {
                             (target as? IMixinEntity)?.run {
+                                // Memory leak fix: Limit positions size
+                                if (positions.size >= MAX_POSITIONS_SIZE) {
+                                    positions.poll() // Remove oldest
+                                }
                                 positions += Pair(Vec3(trueX, trueY, trueZ), System.currentTimeMillis())
                             }
                         }
                     }
 
                     event.cancelEvent()
+
+                    // Memory leak fix: Limit packet queue size
+                    if (packetQueue.size >= MAX_PACKET_QUEUE_SIZE) {
+                        packetQueue.poll() // Remove oldest
+                    }
                     packetQueue += QueueData(packet, System.currentTimeMillis())
                 }
             }
@@ -231,6 +249,15 @@ object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COM
 
                 // Remove player if there is no data left. This prevents memory leaks.
                 if (backtrackData.isEmpty()) removeBacktrackData(key)
+            }
+
+            // Memory leak fix: Limit total tracked players
+            if (backtrackedPlayer.size > MAX_BACKTRACKED_PLAYERS) {
+                // Remove oldest entries
+                val entriesToRemove = backtrackedPlayer.size - MAX_BACKTRACKED_PLAYERS
+                backtrackedPlayer.keys.take(entriesToRemove).forEach { key ->
+                    backtrackedPlayer.remove(key)
+                }
             }
         }
 

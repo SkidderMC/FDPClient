@@ -36,6 +36,9 @@ object LineGraphs : Module("LineGlyphs", Category.VISUAL, Category.SubCategory.R
     val slowSpeed by boolean("Slow Speed", false)
     private val glyphCount by int("Glyphs Count", 70, 0..200)
 
+    // Memory leak fix: Limit maximum glyph generators
+    private const val MAX_GLYPH_GENERATORS = 200
+
     private val random = Random(93882L)
     private val temp3DVectors = mutableListOf<Vec3>()
     private val glyphVectorGenerators = mutableListOf<GlyphVectorGenerator>()
@@ -148,11 +151,18 @@ object LineGraphs : Module("LineGlyphs", Category.VISUAL, Category.SubCategory.R
     val onUpdate = handler<UpdateEvent> {
         if (!state || mc.thePlayer == null) return@handler
 
-        if (glyphVectorGenerators.size < maxGlyphCount()) {
+        // Memory leak fix: Enforce strict limit
+        val targetCount = min(maxGlyphCount(), MAX_GLYPH_GENERATORS)
+        if (glyphVectorGenerators.size < targetCount) {
             addOneGlyph()
         }
         updateGlyphs()
         removeExpiredGlyphs()
+
+        // Aggressive cleanup if over limit
+        if (glyphVectorGenerators.size > MAX_GLYPH_GENERATORS) {
+            glyphVectorGenerators.subList(0, glyphVectorGenerators.size - MAX_GLYPH_GENERATORS).clear()
+        }
     }
 
     val onRender3D = handler<Render3DEvent> { event ->

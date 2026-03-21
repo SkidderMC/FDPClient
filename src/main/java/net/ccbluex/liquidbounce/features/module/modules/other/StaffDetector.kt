@@ -65,6 +65,9 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, Category.SubCateg
     private val inGame by boolean("InGame", true) { autoLeave != "Off" }
     private val warn by choices("Warn", arrayOf("Chat", "Notification"), "Chat")
 
+    // Memory leak fix: Limit detection history
+    private const val MAX_DETECTION_HISTORY = 50
+
     private val checkedStaff: MutableSet<String> = ConcurrentHashMap.newKeySet()
     private val checkedSpectator: MutableSet<String> = ConcurrentHashMap.newKeySet()
     private val playersInSpectatorMode: MutableSet<String> = ConcurrentHashMap.newKeySet()
@@ -264,6 +267,12 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, Category.SubCateg
 
                 attemptLeave = false
                 checkedStaff.add(player)
+
+                // Memory leak fix: Limit detection history
+                if (checkedStaff.size > MAX_DETECTION_HISTORY) {
+                    // Remove first entry (oldest)
+                    checkedStaff.remove(checkedStaff.first())
+                }
 
                 autoLeave()
             }

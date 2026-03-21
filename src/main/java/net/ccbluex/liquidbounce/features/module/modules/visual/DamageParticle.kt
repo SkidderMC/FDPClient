@@ -29,11 +29,24 @@ object DamageParticle : Module("DamageParticle", Category.VISUAL, Category.SubCa
     private val customColor by color("Color", Color.WHITE) { colorMode == "Custom" }
     private val shadowMode by choices("Shadow", arrayOf("Normal", "Default", "Vanilla", "Outline", "None"), "Outline") { colorMode != "Damage" }
 
+    // Memory leak fix: Limit maximum particles to prevent unbounded growth
+    private const val MAX_PARTICLES = 100
+    private const val MAX_HEALTH_DATA_SIZE = 200
+
     private val healthData = mutableMapOf<Int, Float>()
     private val particles = mutableListOf<SingleParticle>()
 
     val onUpdate = handler<UpdateEvent> {
         synchronized(particles) {
+            // Memory leak fix: Enforce particle limit before adding new ones
+            if (particles.size >= MAX_PARTICLES) {
+                // Remove oldest particles first
+                particles.removeAll { particle ->
+                    particle.ticks++
+                    particle.ticks > aliveTicks / 2
+                }
+            }
+
             for (entity in mc.theWorld.loadedEntityList) {
                 if (entity is EntityLivingBase && EntityUtils.isSelected(entity, true)) {
                     val lastHealth = healthData.getOrDefault(entity.entityId, entity.maxHealth)
@@ -52,20 +65,32 @@ object DamageParticle : Module("DamageParticle", Category.VISUAL, Category.SubCa
 
                     val damageAmount = BigDecimal(abs((lastHealth - entity.health).toDouble())).setScale(1, BigDecimal.ROUND_HALF_UP).toDouble()
 
-                    particles.add(
-                        SingleParticle(
-                            colorPrefix + prefix + damageAmount,
-                            entity.posX - 0.5 + Random.nextInt(5).toDouble() * 0.1,
-                            entity.entityBoundingBox.minY + (entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2.0,
-                            entity.posZ - 0.5 + Random(1).nextInt(5).toDouble() * 0.1
+                    // Only add if under limit
+                    if (particles.size < MAX_PARTICLES) {
+                        particles.add(
+                            SingleParticle(
+                                colorPrefix + prefix + damageAmount,
+                                entity.posX - 0.5 + Random.nextInt(5).toDouble() * 0.1,
+                                entity.entityBoundingBox.minY + (entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2.0,
+                                entity.posZ - 0.5 + Random(1).nextInt(5).toDouble() * 0.1
+                            )
                         )
-                    )
+                    }
                 }
             }
 
             particles.removeAll { particle ->
                 particle.ticks++
                 particle.ticks > aliveTicks
+            }
+
+            // Clean up health data for removed entities
+            if (healthData.size > MAX_HEALTH_DATA_SIZE) {
+                val activeEntityIds = mc.theWorld.loadedEntityList
+                    .filterIsInstance<EntityLivingBase>()
+                    .map { it.entityId }
+                    .toSet()
+                healthData.keys.retainAll(activeEntityIds)
             }
         }
     }

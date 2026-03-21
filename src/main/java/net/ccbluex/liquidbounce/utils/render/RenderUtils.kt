@@ -70,7 +70,8 @@ object RenderUtils : MinecraftInstance {
     private val glowCircle = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/targetesp/glow_circle.png")
 
     private val glCapMap = mutableMapOf<Int, Boolean>()
-    private val shadowCache: HashMap<Int, Int> = HashMap()
+    // Use LRU cache for shadow textures to prevent unbounded memory growth
+    private val shadowCache = net.ccbluex.liquidbounce.utils.kotlin.LruCache<Int, Int>(50)
     private val DISPLAY_LISTS_2D = IntArray(4) {
         glGenLists(1)
     }

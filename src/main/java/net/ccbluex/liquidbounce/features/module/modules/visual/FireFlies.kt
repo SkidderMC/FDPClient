@@ -172,6 +172,9 @@ object FireFlies : Module("FireFlies", Category.VISUAL, Category.SubCategory.REN
         glPopMatrix()
     }
 
+    override fun onDisable() {
+        partList.clear()
+    }
 
     val onUpdate = handler<UpdateEvent> {
         if (mc.thePlayer != null && mc.thePlayer.ticksExisted == 1) {

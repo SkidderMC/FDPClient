@@ -48,6 +48,9 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL, Category.SubCategory.R
     private val texture by choices("Texture", arrayOf("Supernatural", "Aurora", "Leeches", "Circle"), "Leeches") { useTexture }
     private val deepestLight by boolean("Deepest Light", true) { useTexture }
 
+    // Memory leak fix: Limit maximum circles to prevent unbounded growth
+    private const val MAX_CIRCLES = 30
+
     private val staticLoc = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/jumpcircle/default")
     private val animatedLoc = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/jumpcircle/animated")
 
@@ -107,6 +110,13 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL, Category.SubCategory.R
         if (mc.theWorld.getBlockState(position).block == Blocks.snow) {
             entityPos = entityPos.addVector(0.0, 0.125, 0.0)
         }
+
+        // Memory leak fix: Enforce circle limit
+        if (circles.size >= MAX_CIRCLES) {
+            // Remove oldest circle
+            circles.removeAt(0)
+        }
+
         circles += JumpData(entityPos, runTimeTicks + if (blackHole) lifeTime else 0)
     }
 

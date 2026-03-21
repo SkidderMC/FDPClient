@@ -47,6 +47,9 @@ class SimpleFontRenderer(
         private const val IMG_SIZE: Float = 512f
         private const val CHAR_OFFSET: Float = 0f
 
+        // Cache for frequently used color conversions (ARGB to RGB components)
+        private val colorComponentCache = mutableMapOf<Int, FloatArray>()
+
         /**
          * Creates an instance of [SimpleFontRenderer] with specified settings.
          *
@@ -95,6 +98,20 @@ class SimpleFontRenderer(
             }
 
             return colorCodes
+        }
+
+        /**
+         * Cached color component extraction to avoid repeated bit operations
+         */
+        private fun getColorComponents(color: Int): FloatArray {
+            return colorComponentCache.getOrPut(color) {
+                floatArrayOf(
+                    ((color shr 16) and 0xFF) / 255.0f,
+                    ((color shr 8) and 0xFF) / 255.0f,
+                    (color and 0xFF) / 255.0f,
+                    ((color shr 24) and 0xFF) / 255.0f
+                )
+            }
         }
     }
 
@@ -231,7 +248,6 @@ class SimpleFontRenderer(
         }
 
         var currentCharData = charData
-        val alpha = ((modifiedColor shr 24) and 0xFF) / 255.0f
 
         var xScaled = xPos * 2.0
         var yScaled = (y - 3.0) * 2.0
@@ -241,18 +257,10 @@ class SimpleFontRenderer(
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(770, 771)
 
-        GL11.glColor4f(
-            ((modifiedColor shr 16) and 0xFF) / 255.0f,
-            ((modifiedColor shr 8) and 0xFF) / 255.0f,
-            (modifiedColor and 0xFF) / 255.0f,
-            alpha
-        )
-        GlStateManager.color(
-            ((modifiedColor shr 16) and 0xFF) / 255.0f,
-            ((modifiedColor shr 8) and 0xFF) / 255.0f,
-            (modifiedColor and 0xFF) / 255.0f,
-            alpha
-        )
+        // Use cached color components to avoid repeated bit operations
+        val colorComponents = getColorComponents(modifiedColor)
+        GL11.glColor4f(colorComponents[0], colorComponents[1], colorComponents[2], colorComponents[3])
+        GlStateManager.color(colorComponents[0], colorComponents[1], colorComponents[2], colorComponents[3])
         GlStateManager.enableTexture2D()
         GlStateManager.bindTexture(texturePlain.glTextureId)
 
@@ -286,13 +294,9 @@ class SimpleFontRenderer(
                         if (shadow) ci += 16
 
                         val colorCode = COLOR_CODES.getOrElse(ci) { COLOR_CODES[15] }
+                        val codeComponents = getColorComponents(colorCode or 0xFF000000.toInt())
 
-                        GlStateManager.color(
-                            ((colorCode shr 16) and 0xFF) / 255.0f,
-                            ((colorCode shr 8) and 0xFF) / 255.0f,
-                            (colorCode and 0xFF) / 255.0f,
-                            1.0f
-                        )
+                        GlStateManager.color(codeComponents[0], codeComponents[1], codeComponents[2], 1.0f)
                     }
                     colorIndex == 17 -> { // Bold
                         bold = true
@@ -316,12 +320,8 @@ class SimpleFontRenderer(
                         underline = false
                         strikethrough = false
 
-                        GlStateManager.color(
-                            ((modifiedColor shr 16) and 0xFF) / 255.0f,
-                            ((modifiedColor shr 8) and 0xFF) / 255.0f,
-                            (modifiedColor and 0xFF) / 255.0f,
-                            1.0f
-                        )
+                        val resetComponents = getColorComponents(modifiedColor)
+                        GlStateManager.color(resetComponents[0], resetComponents[1], resetComponents[2], 1.0f)
                         GlStateManager.bindTexture(texturePlain.glTextureId)
 
                         currentCharData = charData
@@ -380,7 +380,9 @@ class SimpleFontRenderer(
             val currentChar = text[index]
             if (skipNext) {
                 skipNext = false
-                when (currentChar.toLowerCase()) {
+                // Use lowercase char directly instead of creating string
+                val lowerChar = currentChar.lowercaseChar()
+                when (lowerChar) {
                     'l' -> bold = true
                     'r' -> {
                         bold = false
@@ -390,7 +392,12 @@ class SimpleFontRenderer(
             } else if (currentChar == COLOR_PREFIX) {
                 skipNext = true
             } else {
-                val charWidth = stringWidth(currentChar.toString())
+                // Optimize: use charWidth() directly instead of creating string
+                val charWidth = if (currentChar.code < charData.size) {
+                    ((charData[currentChar.code].width - 8).toFloat()) / 2
+                } else {
+                    stringWidth(currentChar.toString()).toFloat()
+                }
                 accumulatedWidth += charWidth
                 if (bold) accumulatedWidth += 1
 

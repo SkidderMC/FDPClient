@@ -171,6 +171,10 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL, Category.SubCategory.R
         bubbles.add(Bubble(renderManager.playerViewX, -renderManager.playerViewY, finalPosition))
     }
 
+    override fun onDisable() {
+        bubbles.clear()
+    }
+
     data class Bubble(val viewYaw: Float, val viewPitch: Float, val position: Vec3) {
         private val creationTime: Long = System.currentTimeMillis()
         val deltaTime: Float

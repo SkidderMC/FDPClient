@@ -46,6 +46,11 @@ class Notifications(
     side: Side = Side(Side.Horizontal.RIGHT, Side.Vertical.DOWN)
 ) : Element("Notifications", x, y, scale, side) {
 
+    companion object {
+        // Memory leak fix: Limit maximum notifications
+        private const val MAX_NOTIFICATIONS = 20
+    }
+
     /**
      * Example notification for CustomHUD designer
      */
@@ -73,6 +78,11 @@ class Notifications(
      * Draw element
      */
     override fun drawElement(): Border? {
+        // Memory leak fix: Enforce notification limit
+        while (hud.notifications.size > MAX_NOTIFICATIONS) {
+            hud.notifications.removeAt(0) // Remove oldest
+        }
+
         val notificationsToRemove = mutableListOf<Notification>()
         for ((index, notification) in hud.notifications.withIndex()) {
             GL11.glPushMatrix()

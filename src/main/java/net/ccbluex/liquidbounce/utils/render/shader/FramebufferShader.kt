@@ -80,12 +80,22 @@ abstract class FramebufferShader(fragmentShader: String) : Shader(fragmentShader
     }
 
     /**
-     * @author TheSlowly, Navex
+     * @author TheSlowly, Navex, Zywl
+     * Optimized to avoid unnecessary framebuffer recreation
      */
     fun setupFrameBuffer(frameBuffer: Framebuffer?, renderScale: Float): Framebuffer {
+        val targetWidth = (mc.displayWidth * renderScale).roundToInt()
+        val targetHeight = (mc.displayHeight * renderScale).roundToInt()
+
+        // Only recreate if dimensions changed or framebuffer is null
+        if (frameBuffer != null &&
+            frameBuffer.framebufferWidth == targetWidth &&
+            frameBuffer.framebufferHeight == targetHeight) {
+            return frameBuffer
+        }
+
         frameBuffer?.deleteFramebuffer()
-        
-        return Framebuffer((mc.displayWidth * renderScale).roundToInt(), (mc.displayHeight * renderScale).roundToInt(), true)
+        return Framebuffer(targetWidth, targetHeight, true)
     }
 
     /**

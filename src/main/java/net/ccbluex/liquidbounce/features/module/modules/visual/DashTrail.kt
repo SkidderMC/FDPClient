@@ -66,6 +66,9 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
     private const val POSITION_OFFSET_RANGE = 0.175f
     private const val Y_OFFSET_MULTIPLIER = 0.7f
 
+    // Memory leak fix: Limit maximum dash cubics to prevent unbounded growth
+    private const val MAX_DASH_CUBICS = 200
+
     private val DASH_CUBIC_BLOOM_TEXTURE = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/dashtrail/dashbloomsample.png")
     private val dashCubicTextures: MutableList<TextureResource> = ArrayList()
     private val dashCubicAnimatedTextures: MutableList<MutableList<TextureResource>> = ArrayList()
@@ -194,23 +197,34 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
                 MathHelper.clamp_float((entitySpeed / SPEED_DIVISOR).toInt().toFloat(), MIN_DASH_COUNT.toFloat(), MAX_DASH_COUNT.toFloat()).toInt()
             }
             val renderOptions = getDashRenderOptions()
-            for (i in 0 until dashCount) {
-                dashCubics.add(
-                    DashCubic(
-                        DashBase(
-                            player,
-                            0.04f,
-                            DashTexture(true),
-                            i.toFloat() / dashCount,
-                            getAnimationDurationTime()
-                        ),
-                        renderOptions[0] || renderOptions[1]
+
+            // Memory leak fix: Check limit before adding
+            if (dashCubics.size < MAX_DASH_CUBICS) {
+                for (i in 0 until dashCount) {
+                    if (dashCubics.size >= MAX_DASH_CUBICS) break
+                    dashCubics.add(
+                        DashCubic(
+                            DashBase(
+                                player,
+                                0.04f,
+                                DashTexture(true),
+                                i.toFloat() / dashCount,
+                                getAnimationDurationTime()
+                            ),
+                            renderOptions[0] || renderOptions[1]
+                        )
                     )
-                )
+                }
             }
         }
 
         dashCubics.removeIf { it.animation.finished(Direction.BACKWARDS) }
+
+        // Memory leak fix: Aggressive cleanup if over limit
+        if (dashCubics.size > MAX_DASH_CUBICS) {
+            dashCubics.subList(0, dashCubics.size - MAX_DASH_CUBICS).clear()
+        }
+
         dashCubics.forEach { it.processMotion(null) }
     }
 
@@ -241,19 +255,23 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
         val renderOptions = getDashRenderOptions()
         val dashCount = MathHelper.clamp_float((entitySpeed / SPEED_DIVISOR).toInt().toFloat(), MIN_DASH_COUNT.toFloat(), MAX_DASH_COUNT.toFloat()).toInt()
 
-        for (i in 0 until dashCount) {
-            dashCubics.add(
-                DashCubic(
-                    DashBase(
-                        targetEntity,
-                        0.04f,
-                        DashTexture(animated),
-                        i.toFloat() / dashCount,
-                        getAnimationDurationTime()
-                    ),
-                    renderOptions[0] || renderOptions[1]
+        // Memory leak fix: Check limit before adding
+        if (dashCubics.size < MAX_DASH_CUBICS) {
+            for (i in 0 until dashCount) {
+                if (dashCubics.size >= MAX_DASH_CUBICS) break
+                dashCubics.add(
+                    DashCubic(
+                        DashBase(
+                            targetEntity,
+                            0.04f,
+                            DashTexture(animated),
+                            i.toFloat() / dashCount,
+                            getAnimationDurationTime()
+                        ),
+                        renderOptions[0] || renderOptions[1]
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -606,5 +624,9 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
 
         fun getRenderPosZ(partialTicks: Float): Double =
             prevPosZ + (posZ - prevPosZ) * partialTicks.toDouble()
+    }
+
+    override fun onDisable() {
+        dashCubics.clear()
     }
 }

@@ -25,6 +25,10 @@ object TNTTrails : Module("TNTTrails", Category.VISUAL, Category.SubCategory.REN
     private var maxRenderDistanceSq = maxRenderDistance.toDouble().pow(2)
         set(value) { field = if (value <= 0.0) maxRenderDistance.toDouble().pow(2) else value }
 
+    // Memory leak fix: Limit maximum TNT trails to prevent unbounded growth
+    private const val MAX_TNT_TRAILS = 50
+    private const val MAX_COMPLETED_TRAILS = 20
+
     private val activeTrails = mutableMapOf<EntityTNTPrimed, MutableList<MutableList<Triple<Double, Double, Double>>>>()
     private val completedTrails = mutableListOf<MutableList<MutableList<Triple<Double, Double, Double>>>>()
 
@@ -109,11 +113,22 @@ object TNTTrails : Module("TNTTrails", Category.VISUAL, Category.SubCategory.REN
             val toRemove = mutableListOf<EntityTNTPrimed>()
             activeTrails.forEach { (tnt, scribbleList) ->
                 if (!loadedTNTs.contains(tnt)) {
+                    // Memory leak fix: Limit completed trails
+                    if (completedTrails.size >= MAX_COMPLETED_TRAILS) {
+                        completedTrails.removeAt(0)
+                    }
                     completedTrails.add(scribbleList)
                     toRemove.add(tnt)
                 }
             }
             toRemove.forEach { activeTrails.remove(it) }
+
+            // Memory leak fix: Limit active trails
+            if (activeTrails.size >= MAX_TNT_TRAILS) {
+                // Remove oldest trail
+                activeTrails.remove(activeTrails.keys.first())
+            }
+
             loadedTNTs.forEach { tnt ->
                 if (!activeTrails.containsKey(tnt)) {
                     when (renderMode) {

@@ -91,8 +91,10 @@ abstract class Shader : MinecraftInstance {
         glPushMatrix()
         glUseProgram(programId)
 
-        if (uniformsMap.isEmpty())
+        // Only setup uniforms once (cached in uniformsMap)
+        if (uniformsMap.isEmpty()) {
             setupUniforms()
+        }
 
         updateUniforms()
     }

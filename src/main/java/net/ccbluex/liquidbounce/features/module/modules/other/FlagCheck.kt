@@ -49,6 +49,9 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
     private val rubberbandThreshold by float("RubberBandThreshold", 5.0f, 0.05f..10.0f)
     { rubberbandCheck }
 
+    // Memory leak fix: Limit flag history tracking
+    private const val MAX_BLOCK_PLACEMENT_ATTEMPTS = 100
+
     private val colors = ColorSettingsInteger(
         this,
         "TextColor",
@@ -143,6 +146,17 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
 
         if (packet is C08PacketPlayerBlockPlacement) {
             val blockPos = packet.position
+
+            // Memory leak fix: Limit placement attempts tracking
+            if (blockPlacementAttempts.size >= MAX_BLOCK_PLACEMENT_ATTEMPTS) {
+                // Remove oldest entry
+                val oldestKey = blockPlacementAttempts.keys.firstOrNull()
+                if (oldestKey != null) {
+                    blockPlacementAttempts.remove(oldestKey)
+                    successfulPlacements.remove(oldestKey)
+                }
+            }
+
             blockPlacementAttempts[blockPos] = System.currentTimeMillis()
             successfulPlacements.add(blockPos)
         }
