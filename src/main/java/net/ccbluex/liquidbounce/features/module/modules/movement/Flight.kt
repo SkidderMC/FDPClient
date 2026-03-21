@@ -114,6 +114,12 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
             "BugSpartan"
         )
     }.subjective()
+    val vanillaVerticalSpeed by float("VanillaVerticalSpeed", 2f, 0f..10f) {
+        mode in arrayOf(
+            "Vanilla",
+            "KeepAlive"
+        )
+    }.subjective()
     private val vanillaKickBypass by boolean(
         "VanillaKickBypass",
         false
