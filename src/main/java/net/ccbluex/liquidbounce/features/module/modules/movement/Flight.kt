@@ -28,6 +28,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vanill
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vanilla.SmoothVanilla
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vanilla.Vanilla
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.verus.Verus
+import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.verus.VerusDamage
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.verus.VerusGlide
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vulcan.Vulcan
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vulcan.VulcanGhost
@@ -70,7 +71,7 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         Vulcan, VulcanOld, VulcanGhost,
 
         // Verus
-        Verus, VerusGlide,
+        Verus, VerusDamage, VerusGlide,
 
         // Other anti-cheats
         MineSecure, HawkEye, HAC, WatchCat,
@@ -98,7 +99,7 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
         CubeCraft,
 
-        Creative, Clip, FakeGround, FunCraft, TeleportRewinside
+        Creative, Clip, FakeGround, FunCraft, TeleportRewinside, VerusDamage
     )
 
     private val showDeprecated by boolean("DeprecatedMode", true).onChanged { value ->
@@ -175,6 +176,15 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     val boostTicksValue by int("BoostTicks", 20, 1..30) { mode == "Verus" }
     val boostMotion by float("BoostMotion", 6.5f, 1f..9.85f) { mode == "Verus" }
     val yBoost by float("YBoost", 0.42f, 0f..10f) { mode == "Verus" }
+    val verusDamageSpeed by float("VerusDamageSpeed", 1.5f, 0f..10f) { mode == "VerusDamage" }
+    val verusDamageBoostMode by choices(
+        "VerusDamageBoostMode",
+        arrayOf("Boost1", "Boost2", "Boost3"),
+        "Boost1"
+    ) { mode == "VerusDamage" }
+    val verusDamageReDamage by boolean("VerusDamageBoost3-ReDamage", true) {
+        mode == "VerusDamage" && verusDamageBoostMode == "Boost3"
+    }
 
     // BlocksMC
     val stable by boolean("Stable", false) { mode == "BlocksMC" || mode == "BlocksMC2" }
