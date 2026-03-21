@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.A
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.AAC3315
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.LAAC
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.grim.Grim2371
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.matrix.Matrix663
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other.*
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other.Blink
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlock
@@ -47,6 +48,9 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
         // Vulcan
         VulcanFast288,
 
+        // Matrix
+        Matrix663,
+
         // Grim
         Grim2371,
 
@@ -79,6 +83,7 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
     val swing by boolean("Swing", true) { mode == "MLG" }
 
     val options = AlwaysRotationSettings(this) { mode == "MLG" }
+    val matrixSafe by boolean("SafeNoFall", true) { mode == "Matrix6.6.3" }
 
     // Using too many times of simulatePlayer could result timer flag. Hence, why this is disabled by default.
     val checkFallDist by boolean("CheckFallDistance", false) { mode == "Blink" }.subjective()
