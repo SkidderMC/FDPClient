@@ -8,14 +8,17 @@ package net.ccbluex.liquidbounce.features.module.modules.player
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.AAC
-import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.AAC3311
-import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.AAC3315
-import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.LAAC
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.*
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.grim.Grim2371
-import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.matrix.Matrix663
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.matrix.*
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.normal.*
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other.*
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other.Blink
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.packet.Packet1
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.packet.Packet2
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.verus.Verus
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.vulcan.LatestVulcan
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.vulcan.OldVulcan
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlock
 import net.ccbluex.liquidbounce.utils.rotation.AlwaysRotationSettings
 import net.minecraft.block.BlockLiquid
@@ -35,26 +38,50 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
         MLG,
         Blink,
 
+        // Vanilla / Normal
+        Vanilla,
+        AlwaysSpoof,
+        Damage,
+        MotionFlag,
+        Phase,
+
+        // Packet
+        Packet1,
+        Packet2,
+
         // AAC
         AAC,
         LAAC,
         AAC3311,
         AAC3315,
+        AAC44XFlag,
+        AAC5014,
+        AAC504,
+        AACv4,
 
         // Hypixel (Watchdog)
         Hypixel,
+        HypixelBlink,
+        HypixelFlag,
         HypixelTimer,
 
         // Vulcan
         VulcanFast288,
+        OldVulcan,
+        LatestVulcan,
 
         // Matrix
+        Matrix62x,
+        Matrix62xPacket,
+        MatrixCollide,
         Matrix663,
+        MatrixNew,
 
         // Grim
         Grim2371,
 
         // Other Server
+        Verus,
         Spartan,
         CubeCraft,
     )
@@ -84,6 +111,9 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
 
     val options = AlwaysRotationSettings(this) { mode == "MLG" }
     val matrixSafe by boolean("SafeNoFall", true) { mode == "Matrix6.6.3" }
+    val motionFlagSpeed by float("MotionFlag-MotionSpeed", -0.01f, -5f..5f) { mode == "MotionFlag" }
+    val phaseOffset by int("PhaseOffset", 1, 0..5) { mode == "Phase" }
+    val hypixelBlinkIndicator by boolean("Indicator", true) { mode == "HypixelBlink" }
 
     // Using too many times of simulatePlayer could result timer flag. Hence, why this is disabled by default.
     val checkFallDist by boolean("CheckFallDistance", false) { mode == "Blink" }.subjective()
@@ -97,6 +127,7 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
 
     var currentMlgBlock: BlockPos? = null
     var retrievingPos: Vec3? = null
+    var wasTimer = false
 
     override fun onEnable() {
         modeModule.onEnable()
@@ -119,6 +150,11 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
     val onUpdate = handler<UpdateEvent> {
         val thePlayer = mc.thePlayer
 
+        if (wasTimer) {
+            mc.timer.timerSpeed = 1f
+            wasTimer = false
+        }
+
         if (collideBlock(thePlayer.entityBoundingBox) { it is BlockLiquid } || collideBlock(
                 fromBounds(
                     thePlayer.entityBoundingBox.maxX,
@@ -136,6 +172,10 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
 
     val onRender3D = handler<Render3DEvent> {
         modeModule.onRender3D(it)
+    }
+
+    val onRender2D = handler<Render2DEvent> {
+        modeModule.onRender2D(it)
     }
 
     val onPacket = handler<PacketEvent> {

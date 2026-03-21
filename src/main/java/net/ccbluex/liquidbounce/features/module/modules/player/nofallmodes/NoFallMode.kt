@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 open class NoFallMode(val modeName: String) : MinecraftInstance {
     open fun onMove(event: MoveEvent) {}
     open fun onPacket(event: PacketEvent) {}
+    open fun onRender2D(event: Render2DEvent) {}
     open fun onRender3D(event: Render3DEvent) {}
     open fun onBB(event: BlockBBEvent) {}
     open fun onJump(event: JumpEvent) {}
