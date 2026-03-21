@@ -60,8 +60,11 @@ open class Module(
 
     // Module information
 
-    // Get normal or spaced name
-    fun getName(spaced: Boolean = Arraylist.spacedModulesValue.get()) = if (spaced) spacedName else name
+    // Get normal or spaced name (using translation if available)
+    fun getName(spaced: Boolean = Arraylist.spacedModulesValue.get()): String {
+        val baseName = if (spaced) spacedName else name
+        return translation("module.$baseName", baseName)
+    }
 
     var keyBind = defaultKeyBind
         set(keyBind) {
