@@ -58,7 +58,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         "Mode", arrayOf(
             "Simple", "AAC", "AACPush", "AACZero", "AACv4",
             "Reverse", "SmoothReverse", "Jump", "Glitch", "Legit",
-            "GhostBlock", "Vulcan", "S32Packet", "MatrixReduce",
+            "GhostBlock", "Vulcan", "S32Packet", "MatrixSimple", "MatrixReduce",
             "IntaveReduce", "Delay", "GrimC03", "Hypixel", "HypixelAir",
             "Click", "BlocksMC", "GrimVertical"
         ), "Simple"
@@ -108,6 +108,9 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     // Delay
     private val spoofDelay by int("SpoofDelay", 500, 0..5000) { mode == "Delay" }
     var delayMode = false
+
+    // Memory leak fix: Limit maximum packet queue size
+    private const val MAX_PACKET_QUEUE = 100
 
     // IntaveReduce
     private val reduceFactor by float("Factor", 0.6f, 0.6f..1f) { mode == "IntaveReduce" }
@@ -537,6 +540,26 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
         if (event.isCancelled)
             return@handler
 
+        if (mode == "MatrixSimple") {
+            when (packet) {
+                is S12PacketEntityVelocity -> {
+                    if (packet.entityID == thePlayer.entityId) {
+                        packet.motionX = (packet.motionX * 0.36).toInt()
+                        packet.motionZ = (packet.motionZ * 0.36).toInt()
+
+                        if (thePlayer.onGround) {
+                            packet.motionX = (packet.motionX * 0.9).toInt()
+                            packet.motionZ = (packet.motionZ * 0.9).toInt()
+                        }
+                    }
+
+                    return@handler
+                }
+
+                is S27PacketExplosion -> return@handler
+            }
+        }
+
         if ((packet is S12PacketEntityVelocity && thePlayer.entityId == packet.entityID && packet.motionY > 0 && (packet.motionX != 0 || packet.motionZ != 0))
             || (packet is S27PacketExplosion && (thePlayer.motionY + packet.field_149153_g) > 0.0
                     && ((thePlayer.motionX + packet.field_149152_f) != 0.0 || (thePlayer.motionZ + packet.field_149159_h) != 0.0))
@@ -774,6 +797,14 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
                 // Delaying packet like PingSpoof
                 synchronized(packets) {
+                    // Memory leak fix: Enforce queue limit
+                    if (packets.size >= MAX_PACKET_QUEUE) {
+                        // Remove oldest packet
+                        val oldestKey = packets.keys.firstOrNull()
+                        if (oldestKey != null) {
+                            packets.remove(oldestKey)
+                        }
+                    }
                     packets[packet] = System.currentTimeMillis()
                 }
             }
