@@ -25,6 +25,7 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, Category.SubCategory
     private val fade by boolean("Fade", true) { temporary }
     private val lifeTime by float("LifeTime", 1F, 0F..10F) { temporary }
 
+    private const val MAX_BREADCRUMB_POSITIONS = 500
     private val positions = ArrayDeque<PositionData>()
 
     val onRender3D = handler<Render3DEvent> {
@@ -54,7 +55,12 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, Category.SubCategory
 
             val lastData = positions.lastOrNull()?.array
 
-            if (lastData == null || !lastData.contentEquals(data.array)) positions += data
+            if (lastData == null || !lastData.contentEquals(data.array)) {
+                if (!temporary && positions.size > MAX_BREADCRUMB_POSITIONS) {
+                    positions.removeFirst()
+                }
+                positions += data
+            }
         }
 
         mc.entityRenderer.disableLightmap()

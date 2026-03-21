@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import java.util.function.BooleanSupplier
 import kotlin.coroutines.RestrictsSuspension
@@ -28,6 +29,8 @@ import kotlin.coroutines.RestrictsSuspension
  */
 object TickScheduler : Listenable, MinecraftInstance {
 
+    private const val MAX_SCHEDULED_TASKS = 100
+
     private val currentTickTasks = arrayListOf<BooleanSupplier>()
     private val nextTickTasks = arrayListOf<BooleanSupplier>()
 
@@ -45,7 +48,11 @@ object TickScheduler : Listenable, MinecraftInstance {
      * @param breakLoop Stop tick the body when it returns `true`
      */
     fun schedule(breakLoop: BooleanSupplier) {
-        // Prevent modification in removeIf (Continuation.resume)
-        mc.addScheduledTask { nextTickTasks += breakLoop }
+        if (currentTickTasks.size + nextTickTasks.size < MAX_SCHEDULED_TASKS) {
+            // Prevent modification in removeIf (Continuation.resume)
+            mc.addScheduledTask { nextTickTasks += breakLoop }
+        } else {
+            ClientUtils.LOGGER.warn("[TickScheduler] Task queue full, dropping task")
+        }
     }
 }

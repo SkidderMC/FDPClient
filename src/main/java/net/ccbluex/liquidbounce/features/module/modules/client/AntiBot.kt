@@ -70,7 +70,7 @@ object AntiBot : Module("AntiBot", Category.CLIENT, Category.SubCategory.CLIENT_
     private val invalidGroundList = mutableMapOf<Int, Int>()
     private val invalidSpeedList = mutableSetOf<Int>()
     private val swingList = mutableSetOf<Int>()
-    private val invisibleList = mutableListOf<Int>()
+    private val invisibleList = mutableSetOf<Int>()  // Changed from MutableList to MutableSet for O(1) operations
     private val propertiesList = mutableSetOf<Int>()
     private val hitList = mutableSetOf<Int>()
     private val notAlwaysInRadiusList = mutableSetOf<Int>()
@@ -82,6 +82,9 @@ object AntiBot : Module("AntiBot", Category.CLIENT, Category.SubCategory.CLIENT_
     private val entityTickMap = mutableMapOf<Int, Int>()
 
     val botList = mutableSetOf<UUID>()
+
+    // Periodic cleanup counter to prevent unbounded growth
+    private var cleanupTicks = 0
 
     fun isBot(entity: EntityLivingBase): Boolean {
         // Check if entity is a player
@@ -232,6 +235,52 @@ object AntiBot : Module("AntiBot", Category.CLIENT, Category.SubCategory.CLIENT_
                 }
             }
         }
+
+        // Periodic cleanup every 100 ticks (~5 seconds) to prevent memory leaks
+        cleanupTicks++
+        if (cleanupTicks >= 100) {
+            cleanupTicks = 0
+            performPeriodicCleanup(world)
+        }
+    }
+
+    /**
+     * Removes stale entity data from tracking collections
+     * Called every ~5 seconds to prevent unbounded memory growth
+     */
+    private fun performPeriodicCleanup(world: net.minecraft.world.World) {
+        val validEntityIds = world.loadedEntityList
+            .filterIsInstance<EntityPlayer>()
+            .mapTo(mutableSetOf()) { it.entityId }
+
+        // Remove invalid entity IDs from all collections
+        groundList.retainAll(validEntityIds)
+        airList.retainAll(validEntityIds)
+        invalidGroundList.keys.retainAll(validEntityIds)
+        invalidSpeedList.retainAll(validEntityIds)
+        swingList.retainAll(validEntityIds)
+        invisibleList.retainAll(validEntityIds)
+        propertiesList.retainAll(validEntityIds)
+        hitList.retainAll(validEntityIds)
+        notAlwaysInRadiusList.retainAll(validEntityIds)
+        alwaysBehindList.retainAll(validEntityIds)
+        entityTickMap.keys.retainAll(validEntityIds)
+
+        // Clean up bot list - remove UUIDs of players no longer in world
+        val validUUIDs = world.playerEntities
+            .mapNotNullTo(mutableSetOf()) { it.gameProfile?.id }
+        botList.retainAll(validUUIDs)
+
+        // Clean up duplicate name tracking
+        val currentWorldPlayers = world.playerEntities.mapTo(mutableSetOf()) { it.name }
+        worldPlayerNames.retainAll(currentWorldPlayers)
+        worldDuplicateNames.retainAll(currentWorldPlayers)
+
+        val currentTabPlayers = mc.netHandler?.playerInfoMap
+            ?.mapNotNullTo(mutableSetOf()) { stripColor(it.getFullName()) }
+            ?: emptySet()
+        tabPlayerNames.retainAll(currentTabPlayers)
+        tabDuplicateNames.retainAll(currentTabPlayers)
     }
 
     // Alternative for isBot() check.

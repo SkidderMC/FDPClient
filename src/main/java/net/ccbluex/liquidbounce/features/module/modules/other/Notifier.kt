@@ -180,6 +180,13 @@ object Notifier : Module("Notifier", Category.OTHER, Category.SubCategory.MISCEL
         val world = mc.theWorld ?: return@handler
         val currentTime = System.currentTimeMillis()
 
+        recentlyWarned.entries.removeIf { (_, timestamp) -> currentTime - timestamp > warnDelay * 2 }
+
+        val onlinePlayers = world.playerEntities.mapTo(mutableSetOf()) { it.name }
+        invisiblePlayers.retainAll(onlinePlayers)
+
+        trackedItems.forEach { it.playerList.retainAll(onlinePlayers) }
+
         if (drinkAlert) {
             for (entity in world.playerEntities) {
                 if (entity !in drinkers && entity != player && entity.isUsingItem && entity.heldItem?.item is ItemPotion) {

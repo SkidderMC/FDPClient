@@ -49,6 +49,9 @@ import kotlin.math.sqrt
 
 object ChestAura : Module("ChestAura", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
+    private const val MAX_TRACKED_CHESTS = 100
+    private const val CHEST_DATA_EXPIRY = 300000L
+
     private val chest by boolean("Chest", true)
     private val enderChest by boolean("EnderChest", false)
 
@@ -107,6 +110,13 @@ object ChestAura : Module("ChestAura", Category.OTHER, Category.SubCategory.MISC
             return@handler
 
         val thePlayer = mc.thePlayer ?: return@handler
+
+        val currentTime = System.currentTimeMillis()
+        chestOpenMap.entries.removeIf { (_, data) -> currentTime - data.second > CHEST_DATA_EXPIRY }
+        if (clickedTileEntities.size > MAX_TRACKED_CHESTS) {
+            val toRemove = clickedTileEntities.take(clickedTileEntities.size - MAX_TRACKED_CHESTS)
+            clickedTileEntities.removeAll(toRemove.toSet())
+        }
 
         // Check if there is an opponent in range
         if (mc.theWorld.loadedEntityList.any {

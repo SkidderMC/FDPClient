@@ -43,6 +43,7 @@ object FireFlies : Module("FireFlies", Category.VISUAL, Category.SubCategory.REN
     private val lighting by boolean("Lighting", false)
     private val spawnDelay by float("SpawnDelay", 3.0f, 1.0f..10.0f)
 
+    private const val MAX_FIREFLIES = 20
     private val partList = ArrayList<FirePart>()
     private val icon = ResourceLocation("${CLIENT_NAME.lowercase()}/firepart.png")
 
@@ -181,7 +182,11 @@ object FireFlies : Module("FireFlies", Category.VISUAL, Category.SubCategory.REN
         partList.forEach { it.updatePart() }
         partList.removeIf { it.toRemove || (currentTime - it.startTime) >= maxPartAliveTime }
 
-        if (mc.thePlayer.ticksExisted % (spawnDelay.toInt() + 1) == 0) {
+        while (partList.size > MAX_FIREFLIES) {
+            partList.removeAt(0)
+        }
+
+        if (partList.size < MAX_FIREFLIES && mc.thePlayer.ticksExisted % (spawnDelay.toInt() + 1) == 0) {
             partList.add(
                 FirePart(
                     generateVecForPart(10.0, 4.0),

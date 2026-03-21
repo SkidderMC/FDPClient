@@ -34,6 +34,7 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL, Category.SubCategory.R
     private val dynamicRotation by boolean("Dynamic Rotation", false)
 
     private const val MAX_LIFETIME = 1000.0f
+    private const val MAX_BUBBLES = 50
     private val bubbles = arrayListOf<Bubble>()
 
     private val tessellator = Tessellator.getInstance()
@@ -162,6 +163,9 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL, Category.SubCategory.R
     }
 
     private fun addBubble(position: Vec3, hitLocation: Vec3? = null) {
+        if (bubbles.size >= MAX_BUBBLES) {
+            bubbles.removeAt(0)
+        }
         val renderManager = mc.renderManager
         val finalPosition = if (followHit && hitLocation != null) hitLocation else position
         bubbles.add(Bubble(renderManager.playerViewX, -renderManager.playerViewY, finalPosition))
