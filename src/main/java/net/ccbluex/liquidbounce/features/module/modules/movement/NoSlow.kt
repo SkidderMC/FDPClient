@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
+import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.hasMotion
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
 import net.minecraft.item.*
@@ -21,6 +22,7 @@ import net.minecraft.network.handshake.client.C00Handshake
 import net.minecraft.network.play.client.*
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.DROP_ITEM
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.RELEASE_USE_ITEM
+import net.minecraft.network.play.server.S08PacketPlayerPosLook
 import net.minecraft.network.play.server.S12PacketEntityVelocity
 import net.minecraft.network.play.server.S27PacketExplosion
 import net.minecraft.network.play.server.S2FPacketSetSlot
@@ -29,6 +31,7 @@ import net.minecraft.network.status.client.C01PacketPing
 import net.minecraft.network.status.server.S01PacketPong
 import net.minecraft.util.BlockPos
 import net.minecraft.util.EnumFacing
+import kotlin.math.sqrt
 
 object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN, gameDetecting = false) {
 
@@ -72,10 +75,28 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     // Blocks
     val soulSand by boolean("SoulSand", true)
     val liquidPush by boolean("LiquidPush", true)
+    private val teleportValue by boolean("Teleport", false)
+    private val teleportMode by choices("TeleportMode", arrayOf("Vanilla", "VanillaNoSetback", "Custom", "Decrease"), "Vanilla") {
+        teleportValue
+    }
+    private val teleportNoApplyValue by boolean("TeleportNoApply", false) { teleportValue }
+    private val teleportCustomSpeedValue by float("Teleport-CustomSpeed", 0.13f, 0f..1f) {
+        teleportValue && teleportMode == "Custom"
+    }
+    private val teleportCustomYValue by boolean("Teleport-CustomY", false) {
+        teleportValue && teleportMode == "Custom"
+    }
+    private val teleportDecreasePercentValue by float("Teleport-DecreasePercent", 0.13f, 0f..1f) {
+        teleportValue && teleportMode == "Decrease"
+    }
 
     private var shouldSwap = false
     private var shouldBlink = true
     private var shouldNoSlow = false
+    private var pendingFlagApplyPacket = false
+    private var lastMotionX = 0.0
+    private var lastMotionY = 0.0
+    private var lastMotionZ = 0.0
 
     private var hasDropped = false
 
@@ -91,6 +112,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         BlinkUtils.unblink()
         grim2371DoNotSlow = false
         grim2371Timer.reset()
+        pendingFlagApplyPacket = false
     }
 
     val onMotion = handler<MotionEvent> { event ->
@@ -298,6 +320,76 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet
         val player = mc.thePlayer ?: return@handler
+
+        if (!event.isCancelled && teleportValue) {
+            when {
+                packet is S08PacketPlayerPosLook && event.eventType == EventState.RECEIVE -> {
+                    pendingFlagApplyPacket = true
+                    lastMotionX = player.motionX
+                    lastMotionY = player.motionY
+                    lastMotionZ = player.motionZ
+
+                    if (teleportMode == "VanillaNoSetback") {
+                        val x = packet.x - player.posX
+                        val y = packet.y - player.posY
+                        val z = packet.z - player.posZ
+                        val diff = sqrt(x * x + y * y + z * z)
+
+                        if (diff <= 8) {
+                            event.cancelEvent()
+                            pendingFlagApplyPacket = false
+                            sendPacket(
+                                C03PacketPlayer.C06PacketPlayerPosLook(
+                                    packet.x,
+                                    packet.y,
+                                    packet.z,
+                                    packet.yaw,
+                                    packet.pitch,
+                                    player.onGround
+                                ),
+                                false
+                            )
+                        }
+                    }
+                }
+
+                pendingFlagApplyPacket && packet is C03PacketPlayer.C06PacketPlayerPosLook && event.eventType == EventState.SEND -> {
+                    pendingFlagApplyPacket = false
+
+                    if (teleportNoApplyValue) {
+                        event.cancelEvent()
+                    }
+
+                    when (teleportMode) {
+                        "Vanilla", "VanillaNoSetback" -> {
+                            player.motionX = lastMotionX
+                            player.motionY = lastMotionY
+                            player.motionZ = lastMotionZ
+                        }
+
+                        "Custom" -> {
+                            if (player.isMoving) {
+                                MovementUtils.strafe(teleportCustomSpeedValue)
+                            }
+
+                            if (teleportCustomYValue) {
+                                player.motionY = if (lastMotionY > 0.0) {
+                                    teleportCustomSpeedValue.toDouble()
+                                } else {
+                                    -teleportCustomSpeedValue.toDouble()
+                                }
+                            }
+                        }
+
+                        "Decrease" -> {
+                            player.motionX = lastMotionX * teleportDecreasePercentValue
+                            player.motionY = lastMotionY * teleportDecreasePercentValue
+                            player.motionZ = lastMotionZ * teleportDecreasePercentValue
+                        }
+                    }
+                }
+            }
+        }
 
         if (event.isCancelled || shouldSwap)
             return@handler
