@@ -10,6 +10,9 @@ import net.ccbluex.liquidbounce.utils.animations.Direction
 import kotlin.math.max
 import kotlin.math.pow
 
+/**
+ * @author Zywl
+ */
 class EaseBackIn @JvmOverloads constructor(
     duration: Int,
     endPoint: Double,

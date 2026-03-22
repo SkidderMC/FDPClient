@@ -9,6 +9,10 @@ import net.ccbluex.liquidbounce.utils.animations.Animation
 import net.ccbluex.liquidbounce.utils.animations.Direction
 import kotlin.math.*
 
+/**
+ * @author Zywl
+ */
+
 class EaseInOutElasticAnimation @JvmOverloads constructor(
     duration: Int,
     endPoint: Double,

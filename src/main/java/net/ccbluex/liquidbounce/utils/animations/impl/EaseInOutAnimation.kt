@@ -8,6 +8,10 @@ package net.ccbluex.liquidbounce.utils.animations.impl
 import net.ccbluex.liquidbounce.utils.animations.Animation
 import net.ccbluex.liquidbounce.utils.animations.Direction
 
+
+/**
+ * @author Zywl
+ */
 class EaseInOutAnimation @JvmOverloads constructor(
     duration: Int,
     endPoint: Double,

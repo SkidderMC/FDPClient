@@ -11,6 +11,8 @@ import kotlin.math.*
 /**
  * Animation utility functions for easing calculations
  * Consolidated from utils/render/animation/AnimationUtil
+ *
+ * @author Zywl
  */
 object AnimationUtil {
     val debugFPS: Float
