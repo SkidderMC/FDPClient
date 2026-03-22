@@ -20,7 +20,6 @@ import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.WorldToScreen
-import net.ccbluex.liquidbounce.utils.render.shader.shaders.GlowShader
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.minecraft.client.renderer.GlStateManager.enableTexture2D
 import net.minecraft.entity.Entity
@@ -44,26 +43,11 @@ object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY)
 
     val wireframeWidth by float("WireFrame-Width", 2f, 0.5f..5f) { mode == "WireFrame" }
 
-    private val glowRenderScale by float("Glow-Renderscale", 1f, 0.5f..2f) { mode == "Glow" }
-    private val glowRadius by int("Glow-Radius", 4, 1..5) { mode == "Glow" }
-    private val glowFade by int("Glow-Fade", 10, 0..30) { mode == "Glow" }
-    private val glowTargetAlpha by float("Glow-Target-Alpha", 0f, 0f..1f) { mode == "Glow" }
+    private val glowSettings = GlowRenderSettings(isSupported = { mode == "Glow" }).also { addValues(it.values) }
 
     private val espColor = ColorSettingsInteger(this, "ESPColor").with(255, 255, 255)
 
-    private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200).onChanged { value ->
-        maxRenderDistanceSq = value.toDouble().pow(2)
-    }
-
-    private val onLook by boolean("OnLook", false)
-    private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
-
-    private val thruBlocks by boolean("ThruBlocks", true)
-
-    private var maxRenderDistanceSq = 0.0
-        set(value) {
-            field = if (value <= 0.0) maxRenderDistance.toDouble().pow(2.0) else value
-        }
+    private val renderFilters = RenderFilterSettings(50, 1..200).also { addValues(it.values) }
 
     private val colorTeam by boolean("TeamColor", false)
     private val bot by boolean("Bots", true)
@@ -173,13 +157,11 @@ object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY)
 
         try {
             entities.groupBy(::getColor).forEach { (color, entities) ->
-                GlowShader.startDraw(event.partialTicks, glowRenderScale)
-
-                for (entity in entities) {
-                    mc.renderManager.renderEntitySimple(entity, event.partialTicks)
+                renderGlow(event.partialTicks, color, glowSettings) {
+                    for (entity in entities) {
+                        mc.renderManager.renderEntitySimple(entity, event.partialTicks)
+                    }
                 }
-
-                GlowShader.stopDraw(color, glowRadius, glowFade, glowTargetAlpha)
             }
         } catch (ex: Exception) {
             LOGGER.error("An error occurred while rendering all entities for shader esp", ex)
@@ -212,9 +194,9 @@ object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY)
     fun shouldRender(entity: EntityLivingBase): Boolean {
         val player = mc.thePlayer ?: return false
 
-        return (player.getDistanceSqToEntity(entity) <= maxRenderDistanceSq
-                && (thruBlocks || isEntityHeightVisible(entity))
-                && (!onLook || player.isLookingOnEntity(entity, maxAngleDifference.toDouble()))
+        return (renderFilters.withinDistance(player.getDistanceSqToEntity(entity))
+                && (renderFilters.thruBlocks || isEntityHeightVisible(entity))
+                && (!renderFilters.onLook || player.isLookingOnEntity(entity, renderFilters.maxAngleDifference.toDouble()))
                 && isSelected(entity, false)
                 && (bot || !isBot(entity)))
     }

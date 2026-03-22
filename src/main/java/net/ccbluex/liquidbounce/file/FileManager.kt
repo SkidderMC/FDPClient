@@ -32,6 +32,7 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
     val dir = File(mc.mcDataDir, "FDPCLIENT")
     val fontsDir = File(dir, "fonts")
     val settingsDir = File(dir, "settings")
+    val guiLayoutsDir = File(dir, "gui-layouts")
     val themesDir = File(dir, "themes")
     val pluginsDir = File(dir, "plugins")
 
@@ -85,6 +86,7 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
         }
         if (!fontsDir.exists()) fontsDir.mkdir()
         if (!settingsDir.exists()) settingsDir.mkdir()
+        if (!guiLayoutsDir.exists()) guiLayoutsDir.mkdir()
         if (!themesDir.exists()) themesDir.mkdir()
         if (!pluginsDir.exists()) pluginsDir.mkdir()
     }
@@ -236,7 +238,7 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
         }
 
         nowConfig = name
-        val configFile = File(settingsDir, "$name.json")
+        val configFile = SettingsFiles.clientConfigFile(name)
 
         val json = if (configFile.exists()) {
             JsonParser().parse(configFile.reader(Charsets.UTF_8)).asJsonObject

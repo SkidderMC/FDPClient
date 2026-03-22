@@ -8,6 +8,8 @@ package net.ccbluex.liquidbounce.features.module.modules.movement
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.modeNames
+import net.ccbluex.liquidbounce.features.module.modules.selectedMode
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.aac.AACv1
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.aac.AACv2
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.aac.AACv3
@@ -46,9 +48,7 @@ object LongJump : Module("LongJump", Category.MOVEMENT, Category.SubCategory.MOV
         VulcanLongJumpMode
     )
 
-    private val modes = longJumpModes.map { it.modeName }.toTypedArray()
-
-    val mode by choices("Mode", modes, "NCP")
+    val mode by choices("Mode", longJumpModes.modeNames(), "NCP")
     val ncpBoost by float("NCPBoost", 4.25f, 1f..10f) { mode == "NCP" }
     val autoJumpValue by boolean("AutoJump", true)
     val autoDisableValue by boolean("AutoDisable", true)
@@ -191,5 +191,5 @@ object LongJump : Module("LongJump", Category.MOVEMENT, Category.SubCategory.MOV
     }
 
     private val modeModule
-        get() = longJumpModes.find { it.modeName == mode }!!
+        get() = longJumpModes.selectedMode(mode)
 }

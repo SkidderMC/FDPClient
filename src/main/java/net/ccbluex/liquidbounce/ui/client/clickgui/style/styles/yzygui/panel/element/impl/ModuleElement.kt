@@ -48,8 +48,8 @@ class ModuleElement(
         module.values.filter { it.shouldRender() }.forEach { value ->
             val element = when (value) {
                 is BoolValue -> BooleanElement(this, value, parent, x + 4, y, width - 8, 12)
-                is FloatValue -> FloatElement(this, value, parent, x + 4, y, width - 4, 12)
-                is IntValue -> IntegerElement(this, value, parent, x + 4, y, width - 4, 12)
+                is FloatValue -> FloatElement(value, parent, x + 4, y, width - 4, 12)
+                is IntValue -> IntegerElement(value, parent, x + 4, y, width - 4, 12)
                 is ListValue -> ListElement(this, value, parent, x + 4, y, width - 8, 12)
                 is ColorValue -> ColorElement(this, value, parent, x + 4, y, width - 8, 12)
                 is TextValue -> TextElement(this, value, parent, x + 4, y, width - 8, 12)

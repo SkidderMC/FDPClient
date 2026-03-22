@@ -9,8 +9,8 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
 import net.ccbluex.liquidbounce.file.FileManager.deleteFile
-import net.ccbluex.liquidbounce.file.FileManager.settingsDir
 import net.ccbluex.liquidbounce.file.FileManager.writeFile
+import net.ccbluex.liquidbounce.file.SettingsFiles
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
 import net.ccbluex.liquidbounce.utils.render.Pair
 import java.io.File
@@ -27,11 +27,24 @@ class GUIManager {
     val extendeds = mutableMapOf<yzyCategory, Boolean>()
 
     private fun getCategoryFile(category: yzyCategory): File =
-        File(settingsDir, "${category.name.lowercase(Locale.getDefault())}.yzygui")
+        SettingsFiles.yzyLayoutFile(category.name.lowercase(Locale.getDefault()))
+
+    private fun ensureCategoryFile(category: yzyCategory): File {
+        val categoryName = category.name.lowercase(Locale.getDefault())
+        val currentFile = getCategoryFile(category)
+        val legacyFile = SettingsFiles.legacyYzyLayoutFile(categoryName)
+
+        if (!currentFile.exists() && legacyFile.exists()) {
+            legacyFile.copyTo(currentFile, overwrite = true)
+            legacyFile.delete()
+        }
+
+        return currentFile
+    }
 
     fun register() {
         yzyCategory.entries.forEach { category ->
-            val categoryFile = getCategoryFile(category)
+            val categoryFile = ensureCategoryFile(category)
             if (categoryFile.exists()) {
                 try {
                     FileReader(categoryFile).use { reader ->

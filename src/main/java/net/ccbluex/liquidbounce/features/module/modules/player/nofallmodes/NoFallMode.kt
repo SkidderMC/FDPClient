@@ -6,9 +6,10 @@
 package net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes
 
 import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.features.module.modules.NamedMode
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 
-open class NoFallMode(val modeName: String) : MinecraftInstance {
+open class NoFallMode(override val modeName: String) : MinecraftInstance, NamedMode {
     open fun onMove(event: MoveEvent) {}
     open fun onPacket(event: PacketEvent) {}
     open fun onRender2D(event: Render2DEvent) {}

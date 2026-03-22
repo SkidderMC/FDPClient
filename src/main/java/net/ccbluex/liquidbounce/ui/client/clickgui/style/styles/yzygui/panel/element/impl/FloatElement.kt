@@ -5,14 +5,8 @@
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl
 
-import net.ccbluex.liquidbounce.FDPClient
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.config.FloatValue
-import java.awt.Color
-import kotlin.math.max
-import kotlin.math.min
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
 import kotlin.math.round
 
 /**
@@ -20,72 +14,31 @@ import kotlin.math.round
  * @author opZywl
  */
 class FloatElement(
-    private val element: ModuleElement,
     private val setting: FloatValue,
     parent: Panel,
     x: Int,
     y: Int,
     width: Int,
-    height: Int
-) : PanelElement(parent, x, y, width, height) {
+    height: Int,
+) : NumericSliderElement(parent, x, y, width, height) {
 
-    private var dragging = false
+    override val label: String
+        get() = setting.name
 
-    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val min = setting.minimum
-        val max = setting.maximum
-        val value = setting.get()
+    override val minimum: Float
+        get() = setting.minimum
 
-        if (dragging) {
-            var newValue = round((mouseX - x) * (max - min) / width + min)
-            newValue = max(min, min(max, newValue))
-            setting.set(newValue)
-        }
+    override val maximum: Float
+        get() = setting.maximum
 
-        val percentage = width / (max - min)
-        val barWidth = percentage * value - percentage * min
-        val categoryColor = parent.category.color
+    override val currentValue: Float
+        get() = setting.get()
 
-        RenderUtils.yzyRectangle(
-            x.toFloat(), y.toFloat(),
-            width = barWidth, height = height.toFloat(),
-            color = categoryColor
-        )
-
-        RenderUtils.yzyRectangle(
-            (x + barWidth - 3), y.toFloat(),
-            3.0f, height.toFloat(),
-            categoryColor.darker()
-        )
-
-        val font = FDPClient.customFontManager["lato-bold-15"]
-
-        font?.drawString(
-            setting.name,
-            (x + 1).toFloat(),
-            y + (height / 4.0f) + 0.5f,
-            -1
-        )
-
-        val roundedValue = round(setting.get()).toInt().toString()
-
-        font?.drawString(
-            roundedValue,
-            (x + width - 3 - font.getWidth(roundedValue)).toFloat(),
-            y + (height / 4.0f) + 0.5f,
-            Color(0xD2D2D2).rgb
-        )
+    override fun setValue(value: Float) {
+        setting.set(value)
     }
 
-    override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
-        if (isHovering(mouseX, mouseY)) {
-            dragging = true
-        }
-    }
+    override fun formatValue(value: Float) = round(value).toInt().toString()
 
-    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
-        dragging = false
-    }
-
-    override fun keyTyped(character: Char, code: Int) {}
+    override fun normalizeDraggedValue(value: Float) = round(value)
 }

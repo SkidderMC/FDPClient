@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.ccbluex.liquidbounce.file.SettingsFiles
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.file.FileManager.settingsDir
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
@@ -53,7 +54,7 @@ object LocalSettingsCommand : Command("localsettings", "localsetting", "localcon
                 return@withContext
             }
 
-            val settingsFile = File(settingsDir, args[2] + ".txt")
+            val settingsFile = SettingsFiles.localScriptFile(args[2])
 
             if (!settingsFile.exists()) {
                 chat("§cSettings file does not exist! §e(Ensure its .txt)")
@@ -81,7 +82,7 @@ object LocalSettingsCommand : Command("localsettings", "localsetting", "localcon
                 return@withContext
             }
 
-            val settingsFile = File(settingsDir, args[2] + ".txt")
+            val settingsFile = SettingsFiles.localScriptFile(args[2])
 
             try {
                 if (settingsFile.exists())
@@ -122,7 +123,7 @@ object LocalSettingsCommand : Command("localsettings", "localsetting", "localcon
                 return@withContext
             }
 
-            val settingsFile = File(settingsDir, args[2] + ".txt")
+            val settingsFile = SettingsFiles.localScriptFile(args[2])
 
             if (!settingsFile.exists()) {
                 chat("§cSettings file does not exist!")
@@ -138,10 +139,10 @@ object LocalSettingsCommand : Command("localsettings", "localsetting", "localcon
         withContext(Dispatchers.IO) {
             chat("§cSettings:")
 
-            val settings = settingsDir.listFiles() ?: return@withContext
+            val settings = SettingsFiles.listLocalScripts()
 
             for (file in settings) {
-                chat("> " + file.name.removeSuffix(".txt"))
+                chat("> " + SettingsFiles.localScriptName(file))
             }
         }
     }
@@ -167,8 +168,9 @@ object LocalSettingsCommand : Command("localsettings", "localsetting", "localcon
             2 -> {
                 when (args[0].lowercase()) {
                     "delete", "load", "save" -> {
-                        val settings = settingsDir.listFiles() ?: return emptyList()
-                        settings.map { it.name.removeSuffix(".txt") }.filter { it.startsWith(args[1], true) }
+                        SettingsFiles.listLocalScripts()
+                            .map(SettingsFiles::localScriptName)
+                            .filter { it.startsWith(args[1], true) }
                     }
                     else -> emptyList()
                 }

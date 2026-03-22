@@ -8,6 +8,8 @@ package net.ccbluex.liquidbounce.features.module.modules.player
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.modeNames
+import net.ccbluex.liquidbounce.features.module.modules.selectedMode
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.aac.*
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.grim.Grim2371
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.matrix.*
@@ -86,9 +88,7 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
         CubeCraft,
     )
 
-    private val modes = noFallModes.map { it.modeName }.toTypedArray()
-
-    val mode by choices("Mode", modes, "MLG")
+    val mode by choices("Mode", noFallModes.modeNames(), "MLG")
 
     val minFallDistance by float("MinMLGHeight", 5f, 2f..50f) { mode == "MLG" }.subjective()
 
@@ -230,5 +230,5 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
         get() = mode
 
     private val modeModule
-        get() = noFallModes.find { it.modeName == mode }!!
+        get() = noFallModes.selectedMode(mode)
 }

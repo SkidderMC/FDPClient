@@ -8,9 +8,10 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes
 import net.ccbluex.liquidbounce.event.JumpEvent
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
+import net.ccbluex.liquidbounce.features.module.modules.NamedMode
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 
-open class SpeedMode(val modeName: String) : MinecraftInstance {
+open class SpeedMode(override val modeName: String) : MinecraftInstance, NamedMode {
     open fun onPreMotion() {}
     open fun onMotion() {}
     open fun onUpdate() {}

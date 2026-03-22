@@ -1,8 +1,8 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Config
 
 import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.file.SettingsFiles
 import net.ccbluex.liquidbounce.utils.client.ClientUtils
-import java.io.File
 import java.io.IOException
 import java.util.Comparator
 
@@ -28,15 +28,11 @@ class NeverloseConfigManager {
 
     fun refresh() {
         configs.clear()
-        val configFiles = FDPClient.fileManager.settingsDir.listFiles { _, name ->
-            name.endsWith(".json") || name.endsWith(".txt")
+        val configFiles = SettingsFiles.listClientConfigs()
+        for (file in configFiles) {
+            configs.add(NeverloseConfig(file.name.removeSuffix(".json"), file))
         }
-        if (configFiles != null) {
-            for (file in configFiles) {
-                configs.add(NeverloseConfig(removeExtension(file.name), file))
-            }
-            configs.sortWith(Comparator.comparing({ it.name }, String.CASE_INSENSITIVE_ORDER))
-        }
+        configs.sortWith(Comparator.comparing({ it.name }, String.CASE_INSENSITIVE_ORDER))
     }
 
     fun toggleExpansion(config: NeverloseConfig) {
@@ -67,7 +63,7 @@ class NeverloseConfigManager {
     }
 
     fun ensureConfig(name: String): NeverloseConfig {
-        val file = File(FDPClient.fileManager.settingsDir, "$name.json")
+        val file = SettingsFiles.clientConfigFile(name)
         if (!file.exists()) {
             try {
                 file.createNewFile()
@@ -80,10 +76,5 @@ class NeverloseConfigManager {
         }
         return configs.firstOrNull { it.name.equals(name, ignoreCase = true) }
             ?: NeverloseConfig(name, file).also { configs.add(it) }
-    }
-
-    private fun removeExtension(name: String): String {
-        val dotIndex = name.lastIndexOf('.')
-        return if (dotIndex == -1) name else name.substring(0, dotIndex)
     }
 }

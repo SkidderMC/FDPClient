@@ -9,6 +9,8 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.modeNames
+import net.ccbluex.liquidbounce.features.module.modules.selectedMode
 import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.aac.AAC
 import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.aac.LAAC
 import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.grim.OldGrim
@@ -37,10 +39,8 @@ object NoWeb : Module("NoWeb", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
         Rewi,
     )
 
-    private val modes = noWebModes.map { it.modeName }.toTypedArray()
-
     val mode by choices(
-        "Mode", modes, "None"
+        "Mode", noWebModes.modeNames(), "None"
     )
 
     val onUpdate = handler<UpdateEvent> {
@@ -51,5 +51,5 @@ object NoWeb : Module("NoWeb", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
         get() = mode
 
     private val modeModule
-        get() = noWebModes.find { it.modeName == mode }!!
+        get() = noWebModes.selectedMode(mode)
 }

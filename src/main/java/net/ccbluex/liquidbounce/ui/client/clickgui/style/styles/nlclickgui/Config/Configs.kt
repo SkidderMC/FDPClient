@@ -2,6 +2,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Conf
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.config.SettingsUtils
+import net.ccbluex.liquidbounce.file.SettingsFiles
 import net.ccbluex.liquidbounce.handler.api.ClientApi
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.isHovering
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui
@@ -163,11 +164,11 @@ class Configs {
         val standardTextColor = applyTextColor(alpha, false)
 
         if (showLocalConfigs) {
-            val localConfigs = FDPClient.fileManager.settingsDir.listFiles { _, name -> name.endsWith(".txt") }
-            if (localConfigs != null && localConfigs.isNotEmpty()) {
+            val localConfigs = SettingsFiles.listLocalScripts()
+            if (localConfigs.isNotEmpty()) {
                 for (file in localConfigs) {
                     drawConfigButton(mx, my, buttonWidth, buttonHeight, configX, configY) { loadLocalConfig(file) }
-                    Fonts.InterBold_26.drawString(file.name.replace(".txt", ""), configX + 5, configY + 5, standardTextColor)
+                    Fonts.InterBold_26.drawString(SettingsFiles.localScriptName(file), configX + 5, configY + 5, standardTextColor)
                     configX += buttonWidth + 10
                     configCount++
                     if (configCount % configsPerRow == 0) {
@@ -224,8 +225,7 @@ class Configs {
             var itemCount = 0
             val rowHeight = 25
             itemCount = if (showLocalConfigs) {
-                val localConfigs = FDPClient.fileManager.settingsDir.listFiles { _, name -> name.endsWith(".txt") }
-                localConfigs?.size ?: 0
+                SettingsFiles.listLocalScripts().size
             } else {
                 onlineConfigsCache?.size ?: 0
             }
@@ -237,7 +237,7 @@ class Configs {
         }
 
     private fun loadLocalConfig(file: File) {
-        val configName = file.name.replace(".txt", "")
+        val configName = SettingsFiles.localScriptName(file)
         try {
             ClientUtils.displayChatMessage("Loading local configuration: $configName...")
             val localConfigContent = String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8)

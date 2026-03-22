@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.Sid
 
 import net.ccbluex.liquidbounce.FDPClient.fileManager
 import net.ccbluex.liquidbounce.config.SettingsUtils.applyScript
+import net.ccbluex.liquidbounce.file.SettingsFiles
 import net.ccbluex.liquidbounce.handler.api.ClientApi
 import net.ccbluex.liquidbounce.handler.api.autoSettingsList
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -105,11 +106,11 @@ object SideGuiConfigsManager {
         var configCount = 0
 
         if (showLocalConfigs) {
-            val localConfigs = fileManager.settingsDir.listFiles { _, name -> name.endsWith(".txt") }
+            val localConfigs = SettingsFiles.listLocalScripts()
             if (!localConfigs.isNullOrEmpty()) {
                 for (file in localConfigs) {
                     drawSingleConfigButton(mouseX, mouseY, alpha, configX, configY, buttonWidth, buttonHeight) {
-                        val configName = file.name.removeSuffix(".txt")
+                        val configName = SettingsFiles.localScriptName(file)
                         Fonts.InterBold_26.drawString(configName, configX + 5, configY + 5, RenderUtils.applyOpacity(-1, alpha / 255f))
                         if (RenderUtils.isHovering(configX, configY, buttonWidth, buttonHeight, mouseX, mouseY) && Mouse.isButtonDown(0)) {
                             loadLocalConfig(configName, file)

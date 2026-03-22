@@ -10,6 +10,8 @@ import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.event.async.waitTicks
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.modeNames
+import net.ccbluex.liquidbounce.features.module.modules.selectedMode
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.aac.*
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.blocksmc.BlocksMC
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.blocksmc.BlocksMC2
@@ -104,12 +106,12 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
     private val showDeprecated by boolean("DeprecatedMode", true).onChanged { value ->
         modeValue.changeValue(modesList.first { it !in deprecatedMode }.modeName)
-        modeValue.updateValues(modesList.filter { value || it !in deprecatedMode }.map { it.modeName }.toTypedArray())
+        modeValue.updateValues(modesList.filter { value || it !in deprecatedMode }.modeNames())
     }
 
     private var modesList = flyModes
 
-    val modeValue = choices("Mode", modesList.map { it.modeName }.toTypedArray(), "Vanilla")
+    val modeValue = choices("Mode", modesList.modeNames(), "Vanilla")
     val mode by modeValue
 
     val vanillaSpeed by float("VanillaSpeed", 2f, 0f..10f) {
@@ -370,5 +372,5 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         get() = mode
 
     private val modeModule
-        get() = flyModes.find { it.modeName == mode }!!
+        get() = flyModes.selectedMode(mode)
 }

@@ -1,12 +1,5 @@
 package net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.other
 
-import net.ccbluex.liquidbounce.event.PacketEvent
-import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.NoFallMode
-import net.minecraft.network.play.client.C03PacketPlayer
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.GroundSpoofNoFallMode
 
-object SpoofGround : NoFallMode("SpoofGround") {
-    override fun onPacket(event: PacketEvent) {
-        if (event.packet is C03PacketPlayer)
-            event.packet.onGround = true
-    }
-}
+object SpoofGround : GroundSpoofNoFallMode("SpoofGround", true)

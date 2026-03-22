@@ -11,9 +11,10 @@ import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.StepEvent
+import net.ccbluex.liquidbounce.features.module.modules.NamedMode
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 
-open class LongJumpMode(val modeName: String) : MinecraftInstance {
+open class LongJumpMode(override val modeName: String) : MinecraftInstance, NamedMode {
     open fun onUpdate() {}
     open fun onMove(event: MoveEvent) {}
     open fun onMotion(event: MotionEvent) {}

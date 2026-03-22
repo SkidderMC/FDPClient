@@ -8,6 +8,8 @@ package net.ccbluex.liquidbounce.features.module.modules.movement
 import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.modeNames
+import net.ccbluex.liquidbounce.features.module.modules.selectedMode
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.aac.AACHop3313
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.aac.AACHop350
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.aac.AACHop4
@@ -122,12 +124,12 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
 
     private val showDeprecated by boolean("DeprecatedMode", true).onChanged { value ->
         mode.changeValue(modesList.first { it !in deprecatedMode }.modeName)
-        mode.updateValues(modesList.filter { value || it !in deprecatedMode }.map { it.modeName }.toTypedArray())
+        mode.updateValues(modesList.filter { value || it !in deprecatedMode }.modeNames())
     }
 
     private var modesList = speedModes
 
-    val mode = choices("Mode", modesList.map { it.modeName }.toTypedArray(), "NCPBHop")
+    val mode = choices("Mode", modesList.modeNames(), "NCPBHop")
 
     // Custom Speed
     val customBehavior by choices("CustomBehavior", arrayOf("Current", "Legacy"), "Current") { mode.get() == "Custom" }
@@ -371,7 +373,7 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
         get() = mode.get()
 
     private val modeModule
-        get() = speedModes.find { it.modeName == mode.get() }!!
+        get() = speedModes.selectedMode(mode.get())
 
     private val sprintManually
         // Maybe there are more but for now there's the Legit mode.get().

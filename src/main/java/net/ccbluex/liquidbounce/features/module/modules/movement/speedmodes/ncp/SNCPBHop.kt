@@ -8,12 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.ncp
 import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.SpeedMode
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
-import net.ccbluex.liquidbounce.utils.extensions.toRadiansD
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.defaultSpeed
-import java.math.BigDecimal
-import java.math.RoundingMode
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlin.math.sqrt
 
 object SNCPBHop : SpeedMode("SNCPBHop") {
@@ -44,20 +39,9 @@ object SNCPBHop : SpeedMode("SNCPBHop") {
     // TODO: Recode this mess
     override fun onMove(event: MoveEvent) {
         val defaultSpeed = defaultSpeed()
-        ++timerDelay
-        timerDelay %= 5
-        if (timerDelay != 0) {
-            mc.timer.timerSpeed = 1f
-        } else {
-            if (mc.thePlayer.isMoving) mc.timer.timerSpeed = 32767f
-            if (mc.thePlayer.isMoving) {
-                mc.timer.timerSpeed = 1.3f
-                mc.thePlayer.motionX *= 1.0199999809265137
-                mc.thePlayer.motionZ *= 1.0199999809265137
-            }
-        }
+        timerDelay = updateBHopTimer(timerDelay)
         if (mc.thePlayer.onGround && mc.thePlayer.isMoving) level = 2
-        if (round(mc.thePlayer.posY - mc.thePlayer.posY.toInt().toDouble()) == round(0.138)) {
+        if (roundedBHopValue(mc.thePlayer.posY - mc.thePlayer.posY.toInt().toDouble()) == roundedBHopValue(0.138)) {
             mc.thePlayer.motionY -= 0.08
             event.y -= 0.09316090325960147
             mc.thePlayer.posY -= 0.09316090325960147
@@ -95,38 +79,9 @@ object SNCPBHop : SpeedMode("SNCPBHop") {
         moveSpeed = moveSpeed.coerceAtLeast(defaultSpeed)
 
         val movementInput = mc.thePlayer.movementInput
-        var forward = movementInput.moveForward
-        var strafe = movementInput.moveStrafe
-        var yaw = mc.thePlayer.rotationYaw
-        if (forward == 0f && strafe == 0f) {
-            event.x = 0.0
-            event.z = 0.0
-        } else if (forward != 0f) {
-            if (strafe >= 1f) {
-                yaw += (if (forward > 0f) -45 else 45).toFloat()
-                strafe = 0f
-            } else if (strafe <= -1f) {
-                yaw += (if (forward > 0f) 45 else -45).toFloat()
-                strafe = 0f
-            }
-            if (forward > 0f) {
-                forward = 1f
-            } else if (forward < 0f) {
-                forward = -1f
-            }
-        }
-        val mx2 = cos((yaw + 90f).toRadiansD())
-        val mz2 = sin((yaw + 90f).toRadiansD())
-        event.x = forward * moveSpeed * mx2 + strafe * moveSpeed * mz2
-        event.z = forward * moveSpeed * mz2 - strafe * moveSpeed * mx2
+        applyBHopDirection(event, moveSpeed, movementInput.moveForward, movementInput.moveStrafe, mc.thePlayer.rotationYaw)
         mc.thePlayer.stepHeight = 0.6f
 
         if (!mc.thePlayer.isMoving) event.zeroXZ()
-    }
-
-    private fun round(value: Double): Double {
-        var bigDecimal = BigDecimal(value)
-        bigDecimal = bigDecimal.setScale(3, RoundingMode.HALF_UP)
-        return bigDecimal.toDouble()
     }
 }
