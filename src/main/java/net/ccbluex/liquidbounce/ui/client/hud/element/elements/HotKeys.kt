@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColor
 import net.ccbluex.liquidbounce.utils.extensions.darker
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
-import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil
+import net.ccbluex.liquidbounce.utils.animations.AnimationUtil
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 import kotlin.math.max

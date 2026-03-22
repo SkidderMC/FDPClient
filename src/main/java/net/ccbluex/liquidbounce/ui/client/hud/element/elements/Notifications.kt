@@ -21,8 +21,8 @@ import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.StencilUtils
-import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInBackNotify
-import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeOutBackNotify
+import net.ccbluex.liquidbounce.utils.animations.AnimationUtil.easeInBackNotify
+import net.ccbluex.liquidbounce.utils.animations.AnimationUtil.easeOutBackNotify
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColor
 import net.ccbluex.liquidbounce.utils.render.shader.UIEffectRenderer.drawShadowWithCustomAlpha

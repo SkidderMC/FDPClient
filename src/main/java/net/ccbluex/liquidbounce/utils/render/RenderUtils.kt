@@ -25,8 +25,8 @@ import net.ccbluex.liquidbounce.utils.io.flipSafely
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.getMainColor
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.glFloatColor
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.setColour
-import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil
-import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInOutQuadX
+import net.ccbluex.liquidbounce.utils.animations.AnimationUtil
+import net.ccbluex.liquidbounce.utils.animations.AnimationUtil.easeInOutQuadX
 import net.ccbluex.liquidbounce.utils.render.shader.UIEffectRenderer.drawTexturedRect
 import net.minecraft.client.Minecraft.getMinecraft
 import net.minecraft.client.gui.FontRenderer

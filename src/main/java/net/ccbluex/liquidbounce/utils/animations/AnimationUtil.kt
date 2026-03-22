@@ -3,18 +3,27 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.utils.render.animation
+package net.ccbluex.liquidbounce.utils.animations
 
 import net.minecraft.client.Minecraft
 import kotlin.math.*
 
+/**
+ * Animation utility functions for easing calculations
+ * Consolidated from utils/render/animation/AnimationUtil
+ */
 object AnimationUtil {
     val debugFPS: Float
         get() = max(Minecraft.getDebugFPS().toFloat(), 60f)
 
+    /**
+     * Base interpolation that accounts for FPS
+     */
     fun base(current: Double, target: Double, speed: Double): Double {
         return ((current + (target - current) * (speed / (debugFPS / 60.0))) * 1000).toInt() / 1000.0
     }
+
+    // ==================== TIME-BASED EASING ====================
 
     fun linear(startTime: Long, duration: Long, start: Double, end: Double): Double {
         return (end - start) * ((System.currentTimeMillis() - startTime) * 1.0 / duration) + start
@@ -41,12 +50,13 @@ object AnimationUtil {
         }
     }
 
+    // ==================== NORMALIZED EASING (0-1) ====================
+
     fun easeInOutQuadX(x: Double): Double {
         return if (x < 0.5) { 2 * x * x } else { 1 - (-2 * x + 2).pow(2) / 2 }
     }
 
     fun easeOutBounce(value: Double): Double {
-        val value = value
         val n1 = 7.5625
         val d1 = 2.75
         return when {
@@ -92,6 +102,8 @@ object AnimationUtil {
             else -> (2 - 2.0.pow(-20 * value + 10)) / 2
         }
     }
+
+    // ==================== PENNER EASING EQUATIONS ====================
 
     fun easeInElastic(t: Double, b: Double, c: Double, d: Double): Double {
         var t = t
@@ -162,18 +174,15 @@ object AnimationUtil {
     }
 
     fun easeInBackNotify(x: Double): Double {
-        val c1 = 1.70158;
-        val c3 = c1 + 1;
-
-        return c3 * x * x * x - c1 * x * x;
+        val c1 = 1.70158
+        val c3 = c1 + 1
+        return c3 * x * x * x - c1 * x * x
     }
 
-
     fun easeOutBackNotify(x: Double): Double {
-        val c1 = 1.70158;
-        val c3 = c1 + 1;
-
-        return 1 + c3 * (x - 1).pow(3) + c1 * (x - 1).pow(2);
+        val c1 = 1.70158
+        val c3 = c1 + 1
+        return 1 + c3 * (x - 1).pow(3) + c1 * (x - 1).pow(2)
     }
 
     fun easeOutBack(t: Double, b: Double, c: Double, d: Double): Double {
@@ -182,6 +191,8 @@ object AnimationUtil {
         t = t / d - 1
         return c * (t * t * ((s + 1) * t + s) + 1) + b
     }
+
+    // ==================== UTILITY ====================
 
     fun breathe(duration: Float): Float {
         val progress = System.currentTimeMillis() % duration.toLong() / duration

@@ -18,8 +18,8 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.deltaTime
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedBorderRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawScaledCustomSizeModalRect
-import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil
-import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.debugFPS
+import net.ccbluex.liquidbounce.utils.animations.AnimationUtil
+import net.ccbluex.liquidbounce.utils.animations.AnimationUtil.debugFPS
 import net.ccbluex.liquidbounce.utils.render.shader.shaders.RainbowShader
 import net.minecraft.client.gui.GuiChat
 import net.minecraft.entity.EntityLivingBase
