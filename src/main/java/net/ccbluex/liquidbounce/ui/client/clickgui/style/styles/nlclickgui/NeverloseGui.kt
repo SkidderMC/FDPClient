@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.client.SpotifyModule
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.SideGui
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.StencilUtil
+import net.ccbluex.liquidbounce.utils.render.StencilUtils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Config.Configs
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Config.NeverloseConfigManager
 import net.ccbluex.liquidbounce.utils.animations.Animation
@@ -136,11 +136,11 @@ class NeverloseGui : GuiScreen() {
         RoundedUtil.drawRound(x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), 4f, if (light) Color(240, 245, 248, 230) else Color(7, 13, 23, 230))
         bloomFramebuffer.unbindFramebuffer()
         BloomUtil.renderBlur(bloomFramebuffer.framebufferTexture, 6, 3)
-        StencilUtil.initStencilToWrite()
+        StencilUtils.initStencilToWrite()
         RoundedUtil.drawRound(x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), 4f, if (light) Color(240, 245, 248, 230) else Color(7, 13, 23, 230))
-        StencilUtil.readStencilBuffer(1)
+        StencilUtils.readStencilBuffer(1)
         GaussianBlur.renderBlur(10F)
-        StencilUtil.uninitStencilBuffer()
+        StencilUtils.uninitStencilBuffer()
         RoundedUtil.drawRound(x.toFloat(), y.toFloat(), w.toFloat(), h.toFloat(), 2f, if (light) Color(240, 245, 248, 230) else Color(7, 13, 23, 230))
         RoundedUtil.drawRound((x + 90).toFloat(), (y + HEADER_HEIGHT).toFloat(), (w - 90).toFloat(), (h - HEADER_HEIGHT).toFloat(), 1f, if (light) Color(255, 255, 255) else Color(9, 9, 9))
         RoundedUtil.drawRound((x + 90).toFloat(), y.toFloat(), (w - 90).toFloat(), HEADER_HEIGHT.toFloat(), 1f, if (light) Color(255, 255, 255) else Color(9, 9, 9))

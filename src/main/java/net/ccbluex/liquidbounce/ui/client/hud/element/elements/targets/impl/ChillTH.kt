@@ -14,7 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.TargetSty
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.targets.utils.CharRenderer
 import net.ccbluex.liquidbounce.utils.extensions.darker
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.Stencil
+import net.ccbluex.liquidbounce.utils.render.StencilUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
@@ -54,16 +54,16 @@ class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
         GL11.glColor4f(1F, 1F, 1F, 1F)
 
         if (playerInfo != null) {
-            Stencil.write(false)
+            StencilUtils.write(false)
             GL11.glDisable(GL11.GL_TEXTURE_2D)
             GL11.glEnable(GL11.GL_BLEND)
             GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
             RenderUtils.fastRoundedRect(4F, 4F, 34F, 34F, 7F)
             GL11.glDisable(GL11.GL_BLEND)
             GL11.glEnable(GL11.GL_TEXTURE_2D)
-            Stencil.erase(true)
+            StencilUtils.erase(true)
             drawHead(playerInfo.locationSkin, 4, 4, 30, 30, (1F - targetInstance.getFadeProgress()).toInt().toFloat())
-            Stencil.dispose()
+            StencilUtils.dispose()
         }
 
         GlStateManager.resetColor()
@@ -85,13 +85,13 @@ class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
 
         RenderUtils.drawRoundedRect(4F, 38F, tWidth - 4F, 44F, 3F, targetInstance.barColor.darker(0.5F).rgb)
 
-        Stencil.write(false)
+        StencilUtils.write(false)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
         GL11.glEnable(GL11.GL_BLEND)
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         RenderUtils.fastRoundedRect(4F, 38F, tWidth - 4F, 44F, 3F)
         GL11.glDisable(GL11.GL_BLEND)
-        Stencil.erase(true)
+        StencilUtils.erase(true)
         if (chillRoundValue)
             RenderUtils.customRounded(
                 4F,
@@ -112,7 +112,7 @@ class ChillTH(inst: Targets) : TargetStyle("Chill", inst, true) {
                 44F,
                 targetInstance.barColor.rgb
             )
-        Stencil.dispose()
+        StencilUtils.dispose()
     }
 
     override fun getBorder(entity: EntityLivingBase?): Border {

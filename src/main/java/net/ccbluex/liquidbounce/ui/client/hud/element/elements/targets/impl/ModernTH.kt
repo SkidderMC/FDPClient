@@ -13,7 +13,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.getColorWithAlpha
 import net.ccbluex.liquidbounce.utils.extensions.hurtPercent
 import net.ccbluex.liquidbounce.utils.extensions.skin
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.Stencil
+import net.ccbluex.liquidbounce.utils.render.StencilUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.entity.EntityLivingBase
 import org.lwjgl.opengl.GL11
@@ -46,16 +46,16 @@ class ModernTH(inst: Targets) : TargetStyle("Modern", inst, true) {
         GL11.glPushMatrix()
         GL11.glTranslatef(9f, 10f, 0f)
         GL11.glColor4f(1f, 1 - entity.hurtPercent, 1 - entity.hurtPercent, 1f)
-        Stencil.write(false)
+        StencilUtils.write(false)
         GL11.glDisable(GL11.GL_TEXTURE_2D)
         GL11.glEnable(GL11.GL_BLEND)
         GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         RenderUtils.fastRoundedRect(-2F, -3F, 33F, 33F, 8F)
         GL11.glDisable(GL11.GL_BLEND)
         GL11.glEnable(GL11.GL_TEXTURE_2D)
-        Stencil.erase(true)
+        StencilUtils.erase(true)
         RenderUtils.drawHead(entity.skin, -2, -3, 35, 35, Color(255,255,255,fadeAlpha(255)).rgb)
-        Stencil.dispose()
+        StencilUtils.dispose()
         GL11.glPopMatrix()
         GlStateManager.disableAlpha()
         GlStateManager.disableBlend()

@@ -16,7 +16,7 @@ import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Screen
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.StencilUtil
+import net.ccbluex.liquidbounce.utils.render.StencilUtils
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.extensions.roundToHalf
@@ -165,7 +165,7 @@ class DropdownCategory(private val category: Category) : Screen {
         )
 
         // Draw modules inside a scissored region for scrolling
-        StencilUtil.initStencilToWrite()
+        StencilUtils.initStencilToWrite()
         RenderUtils.drawGradientRect(
             (x - 100).toDouble(),
             (y + categoryRectHeight).toDouble(),
@@ -175,7 +175,7 @@ class DropdownCategory(private val category: Category) : Screen {
             -1,
             0F
         )
-        StencilUtil.readStencilBuffer(1)
+        StencilUtils.readStencilBuffer(1)
 
         val scroll = category.scroll.scroll.toDouble()
         var count = 0.0
@@ -205,7 +205,7 @@ class DropdownCategory(private val category: Category) : Screen {
             category.scroll.maxScroll = max(0.0, hiddenHeight.toDouble()).toFloat()
         }
 
-        StencilUtil.uninitStencilBuffer()
+        StencilUtils.uninitStencilBuffer()
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {

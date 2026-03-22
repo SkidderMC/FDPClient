@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedGradientRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRoundedRect
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawHead
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.fastRoundedRect
-import net.ccbluex.liquidbounce.utils.render.Stencil
+import net.ccbluex.liquidbounce.utils.render.StencilUtils
 import net.minecraft.client.renderer.GlStateManager.disableAlpha
 import net.minecraft.client.renderer.GlStateManager.disableBlend
 import net.minecraft.client.renderer.GlStateManager.enableBlend
@@ -68,16 +68,16 @@ class CrossSineTH(inst: Targets) : TargetStyle("CrossSine", inst, true) {
         glPushMatrix()
         glTranslatef(7f, 7f, 0f)
         glColor4f(1f, 1 - entity.hurtPercent, 1 - entity.hurtPercent, 1f)
-        Stencil.write(false)
+        StencilUtils.write(false)
         glDisable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         fastRoundedRect(-2F, -3F, 33F, 33F, 8F)
         glDisable(GL_BLEND)
         glEnable(GL_TEXTURE_2D)
-        Stencil.erase(true)
+        StencilUtils.erase(true)
         drawHead(entity.skin, -2, -3, 35, 35, Color(255, 255, 255, fadeAlpha(255)).rgb)
-        Stencil.dispose()
+        StencilUtils.dispose()
         glPopMatrix()
         disableAlpha()
         disableBlend()

@@ -79,123 +79,28 @@ object RenderUtils : MinecraftInstance {
 
     private val frustrum = Frustum()
 
-    @JvmStatic
-    private fun setupFBO(fbo: Framebuffer) {
-        // Deletes old render buffer extensions such as depth
-        // Args: Render Buffer ID
-        EXTFramebufferObject.glDeleteRenderbuffersEXT(fbo.depthBuffer)
-        // Generates a new render buffer ID for the depth and stencil extension
-        val stencil_depth_buffer_ID = EXTFramebufferObject.glGenRenderbuffersEXT()
-        // Binds new render buffer by ID
-        // Args: Target (GL_RENDERBUFFER_EXT), ID
-        EXTFramebufferObject.glBindRenderbufferEXT(EXTFramebufferObject.GL_RENDERBUFFER_EXT, stencil_depth_buffer_ID)
-        // Adds the depth and stencil extension
-        // Args: Target (GL_RENDERBUFFER_EXT), Extension (GL_DEPTH_STENCIL_EXT),
-        // Width, Height
-        EXTFramebufferObject.glRenderbufferStorageEXT(
-            EXTFramebufferObject.GL_RENDERBUFFER_EXT,
-            EXTPackedDepthStencil.GL_DEPTH_STENCIL_EXT,
-            mc.displayWidth,
-            mc.displayHeight
-        )
-        // Adds the stencil attachment
-        // Args: Target (GL_FRAMEBUFFER_EXT), Attachment
-        // (GL_STENCIL_ATTACHMENT_EXT), Target (GL_RENDERBUFFER_EXT), ID
-        EXTFramebufferObject.glFramebufferRenderbufferEXT(
-            EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
-            EXTFramebufferObject.GL_STENCIL_ATTACHMENT_EXT,
-            EXTFramebufferObject.GL_RENDERBUFFER_EXT,
-            stencil_depth_buffer_ID
-        )
-        // Adds the depth attachment
-        // Args: Target (GL_FRAMEBUFFER_EXT), Attachment
-        // (GL_DEPTH_ATTACHMENT_EXT), Target (GL_RENDERBUFFER_EXT), ID
-        EXTFramebufferObject.glFramebufferRenderbufferEXT(
-            EXTFramebufferObject.GL_FRAMEBUFFER_EXT,
-            EXTFramebufferObject.GL_DEPTH_ATTACHMENT_EXT,
-            EXTFramebufferObject.GL_RENDERBUFFER_EXT,
-            stencil_depth_buffer_ID
-        )
-    }
+    // Stencil operations have been moved to StencilUtils
+    // These methods are kept as delegates for backward compatibility
 
+    /**
+     * @deprecated Use StencilUtils.checkSetupFBO() instead
+     */
+    @Deprecated("Use StencilUtils.checkSetupFBO() instead", ReplaceWith("StencilUtils.checkSetupFBO()"))
     @JvmStatic
-    fun checkSetupFBO() {
-        // Gets the FBO of Minecraft
-        val fbo = mc.framebuffer
-
-        // Check if FBO isn't null
-        if (fbo != null) {
-            // Checks if screen has been resized or new FBO has been created
-            if (fbo.depthBuffer > -1) {
-                // Sets up the FBO with depth and stencil extensions (24/8 bit)
-                setupFBO(fbo)
-                // Reset the ID to prevent multiple FBO's
-                fbo.depthBuffer = -1
-            }
-        }
-    }
+    fun checkSetupFBO() = StencilUtils.checkSetupFBO()
 
     /**
      * Useful for clipping any top-layered rectangle that falls outside a bottom-layered rectangle.
+     * @deprecated Use StencilUtils.withClipping() instead
      */
-    inline fun withClipping(main: () -> Unit, toClip: () -> Unit) {
-        disableFastRender()
-        checkSetupFBO()
-        glPushMatrix()
+    @Deprecated("Use StencilUtils.withClipping() instead", ReplaceWith("StencilUtils.withClipping(main, toClip)"))
+    inline fun withClipping(main: () -> Unit, toClip: () -> Unit) = StencilUtils.withClipping(main, toClip)
 
-        disableAlpha()
-
-        glEnable(GL_STENCIL_TEST)
-        glStencilFunc(GL_ALWAYS, 1, 1)
-        glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE)
-        glStencilMask(1)
-        glClear(GL_STENCIL_BUFFER_BIT)
-
-        main()
-
-        glStencilFunc(GL_EQUAL, 1, 1)
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
-        glStencilMask(0)
-
-        toClip()
-
-        glStencilMask(0xFF)
-        glDisable(GL_STENCIL_TEST)
-
-        enableAlpha()
-
-        glPopMatrix()
-    }
-
-    inline fun withOutline(main: () -> Unit, toOutline: () -> Unit) {
-        disableFastRender()
-        checkSetupFBO()
-        glPushMatrix()
-
-        disableAlpha()
-
-        glEnable(GL_STENCIL_TEST)
-        glClear(GL_STENCIL_BUFFER_BIT)
-
-        glStencilFunc(GL_ALWAYS, 1, 1)
-        glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE)
-        glStencilMask(1)
-
-        main()
-
-        glStencilFunc(GL_EQUAL, 0, 1)
-        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP)
-        glStencilMask(0)
-
-        toOutline()
-
-        glStencilMask(0xFF)
-        glDisable(GL_STENCIL_TEST)
-
-        enableAlpha()
-
-        glPopMatrix()
-    }
+    /**
+     * @deprecated Use StencilUtils.withOutline() instead
+     */
+    @Deprecated("Use StencilUtils.withOutline() instead", ReplaceWith("StencilUtils.withOutline(main, toOutline)"))
+    inline fun withOutline(main: () -> Unit, toOutline: () -> Unit) = StencilUtils.withOutline(main, toOutline)
 
     fun deltaTimeNormalized(ticks: Int = 1) = (deltaTime safeDivD ticks * 50.0).coerceAtMost(1.0)
 
@@ -3987,14 +3892,14 @@ object RenderUtils : MinecraftInstance {
         startColor: Int,
         endColor: Int
     ) {
-        Stencil.write(false)
+        StencilUtils.write(false)
         glDisable(GL_TEXTURE_2D)
         glEnable(GL_BLEND)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
         fastRoundedRect(left, top, right, bottom, radius.toFloat())
         glDisable(GL_BLEND)
         glEnable(GL_TEXTURE_2D)
-        Stencil.erase(true)
+        StencilUtils.erase(true)
         drawGradientRect(
             left.toInt(),
             top.toInt(),
@@ -4004,7 +3909,7 @@ object RenderUtils : MinecraftInstance {
             endColor,
             0f
         )
-        Stencil.dispose()
+        StencilUtils.dispose()
     }
 
     fun drawEntityBoxESP(entity: Entity, color: Color) {

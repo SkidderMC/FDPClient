@@ -20,7 +20,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold35
 import net.ccbluex.liquidbounce.utils.io.APIConnectorUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
-import net.ccbluex.liquidbounce.utils.render.Stencil
+import net.ccbluex.liquidbounce.utils.render.StencilUtils
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeInBackNotify
 import net.ccbluex.liquidbounce.utils.render.animation.AnimationUtil.easeOutBackNotify
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
@@ -248,7 +248,7 @@ class Notification(
             val y = firstYz
             val kek = -x - 1 - 20F
             resetColor()
-            Stencil.write(true)
+            StencilUtils.write(true)
             when (type) {
                 Type.ERROR -> {
                     drawRect(
@@ -307,9 +307,9 @@ class Notification(
                     )
                 }
             }
-            Stencil.erase(true)
+            StencilUtils.erase(true)
             resetColor()
-            Stencil.dispose()
+            StencilUtils.dispose()
             GL11.glPushMatrix()
             GlStateManager.disableAlpha()
             resetColor()
