@@ -11,23 +11,25 @@ import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.co
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.generateColor
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle.chosenText
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle.sliderValueHeld
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.EaseInOutQuad
+import net.ccbluex.liquidbounce.utils.animations.Animation
+import net.ccbluex.liquidbounce.utils.animations.Direction
+import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation
+import net.ccbluex.liquidbounce.utils.animations.impl.EaseInOutQuad
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.GuiEvents
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawTexture
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.updateTextureCache
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetColor
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.scissor
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawClickGuiArrow
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.GuiEvents
 import net.ccbluex.liquidbounce.utils.ui.EditableText
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.blendColors
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCustomShapeWithRadius
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import org.lwjgl.input.Keyboard
@@ -245,15 +247,15 @@ class SettingComponents(private val module: Module) : Component() {
     fun handle(mouseX: Int, mouseY: Int, button: Int, type: GuiEvents) {
         val textColor = Color(255, 255, 255, alphaAnimation)
         val darkRectColor = Color(48, 50, 55, alphaAnimation)
-        val darkRectHover = DrRenderUtils.brighter(darkRectColor, .8f)
+        val darkRectHover = RenderUtils.brighter(darkRectColor, .8f)
 
         val accent = colormode.equals("Color", ignoreCase = true)
         val index = 0
         val color2 = Color(generateColor(index).rgb)
         val colors = arrayOf(color2, color2)
 
-        val accentedColor = DrRenderUtils.applyOpacity(colors[0], alphaAnimation / 255f)
-        val accentedColor2 = DrRenderUtils.applyOpacity(colors[1], alphaAnimation / 255f)
+        val accentedColor = RenderUtils.applyOpacity(colors[0], alphaAnimation / 255f)
+        val accentedColor2 = RenderUtils.applyOpacity(colors[1], alphaAnimation / 255f)
 
         var count = 0.0
 
@@ -281,7 +283,7 @@ class SettingComponents(private val module: Module) : Component() {
 
                 val totalSliderWidth = width - 10
                 val hoveringSlider = isClickable(settingY + 17)
-                        && DrRenderUtils.isHovering(x + 5, settingY + 17, totalSliderWidth, 6f, mouseX, mouseY)
+                        && RenderUtils.isHovering(x + 5, settingY + 17, totalSliderWidth, 6f, mouseX, mouseY)
 
                 if (type == GuiEvents.RELEASE) {
                     draggingNumber = null
@@ -309,24 +311,24 @@ class SettingComponents(private val module: Module) : Component() {
                 val oldSlider = sliderfloatMap[setting]!!
                 val targetSlider = totalSliderWidth * sliderMath
                 sliderfloatMap[setting] =
-                    DrRenderUtils.animate(targetSlider.toDouble(), oldSlider.toDouble(), .1).toFloat()
+                    RenderUtils.animate(targetSlider.toDouble(), oldSlider.toDouble(), .1).toFloat()
 
                 val sliderY = (settingY + 18)
                 drawCustomShapeWithRadius(
                     x + 5, sliderY, totalSliderWidth, 3f, 1.5f,
-                    DrRenderUtils.applyOpacity(darkRectHover, (.4f + (.2 * hoverAnimation.output)).toFloat())
+                    RenderUtils.applyOpacity(darkRectHover, (.4f + (.2 * hoverAnimation.output)).toFloat())
                 )
                 drawCustomShapeWithRadius(
                     x + 5, sliderY, max(4.0, sliderfloatMap[setting]!!.toDouble()).toFloat(), 3f, 1.5f,
                     if (accent) accentedColor2 else textColor
                 )
 
-                DrRenderUtils.setAlphaLimit(0f)
-                DrRenderUtils.fakeCircleGlow(
+                RenderUtils.setAlphaLimit(0f)
+                RenderUtils.fakeCircleGlow(
                     (x + 4 + max(4.0, sliderfloatMap[setting]!!.toDouble())).toFloat(),
                     sliderY + 1.5f, 6f, Color.BLACK, .3f
                 )
-                DrRenderUtils.drawGoodCircle(
+                RenderUtils.drawGoodCircle(
                     (x + 4 + max(4.0, sliderfloatMap[setting]!!.toDouble())),
                     (sliderY + 1.5f).toDouble(), 3.75f,
                     if (accent) accentedColor2.rgb else textColor.rgb
@@ -362,7 +364,7 @@ class SettingComponents(private val module: Module) : Component() {
                 val pixelPos2 = totalSliderWidth * percent2
 
                 val hoveringSlider = isClickable(sliderPosY - 1)
-                        && DrRenderUtils.isHovering(x + 5, sliderPosY - 2, totalSliderWidth, 6f, mouseX, mouseY)
+                        && RenderUtils.isHovering(x + 5, sliderPosY - 2, totalSliderWidth, 6f, mouseX, mouseY)
 
                 if (type == GuiEvents.RELEASE) {
                     draggingNumber = null
@@ -397,7 +399,7 @@ class SettingComponents(private val module: Module) : Component() {
 
                 drawCustomShapeWithRadius(
                     x + 5, sliderPosY, totalSliderWidth, 3f, 1.5f,
-                    DrRenderUtils.applyOpacity(darkRectHover, (.4f))
+                    RenderUtils.applyOpacity(darkRectHover, (.4f))
                 )
                 drawCustomShapeWithRadius(
                     x + 5 + min(pixel1, pixel2), sliderPosY, abs(pixel2 - pixel1), 3f, 1.5f,
@@ -405,8 +407,8 @@ class SettingComponents(private val module: Module) : Component() {
                 )
 
                 fun drawSliderCircle(px: Float) {
-                    DrRenderUtils.fakeCircleGlow(x + 4 + px, sliderPosY + 1.5f, 6f, Color.BLACK, .3f)
-                    DrRenderUtils.drawGoodCircle(
+                    RenderUtils.fakeCircleGlow(x + 4 + px, sliderPosY + 1.5f, 6f, Color.BLACK, .3f)
+                    RenderUtils.drawGoodCircle(
                         (x + 4 + px).toDouble(), sliderPosY + 1.5, 3.75f,
                         color.rgb
                     )
@@ -437,7 +439,7 @@ class SettingComponents(private val module: Module) : Component() {
 
                 val totalSliderWidth = width - 10
                 val hoveringSlider = isClickable(settingY + 17)
-                        && DrRenderUtils.isHovering(x + 5, settingY + 17, totalSliderWidth, 6f, mouseX, mouseY)
+                        && RenderUtils.isHovering(x + 5, settingY + 17, totalSliderWidth, 6f, mouseX, mouseY)
 
                 if (type == GuiEvents.RELEASE) {
                     draggingNumber = null
@@ -465,24 +467,24 @@ class SettingComponents(private val module: Module) : Component() {
                 val oldSlider = sliderintMap[setting]!!
                 val targetSlider = totalSliderWidth * sliderMath
                 sliderintMap[setting] =
-                    DrRenderUtils.animate(targetSlider.toDouble(), oldSlider.toDouble(), .1).toFloat()
+                    RenderUtils.animate(targetSlider.toDouble(), oldSlider.toDouble(), .1).toFloat()
 
                 val sliderY = (settingY + 18)
                 drawCustomShapeWithRadius(
                     x + 5, sliderY, totalSliderWidth, 3f, 1.5f,
-                    DrRenderUtils.applyOpacity(darkRectHover, (.4f + (.2 * hoverAnimation.output)).toFloat())
+                    RenderUtils.applyOpacity(darkRectHover, (.4f + (.2 * hoverAnimation.output)).toFloat())
                 )
                 drawCustomShapeWithRadius(
                     x + 5, sliderY, max(4.0, sliderintMap[setting]!!.toDouble()).toFloat(), 3f, 1.5f,
                     if (accent) accentedColor2 else textColor
                 )
 
-                DrRenderUtils.setAlphaLimit(0f)
-                DrRenderUtils.fakeCircleGlow(
+                RenderUtils.setAlphaLimit(0f)
+                RenderUtils.fakeCircleGlow(
                     (x + 4 + max(4.0, sliderintMap[setting]!!.toDouble())).toFloat(),
                     sliderY + 1.5f, 6f, Color.BLACK, .3f
                 )
-                DrRenderUtils.drawGoodCircle(
+                RenderUtils.drawGoodCircle(
                     (x + 4 + max(4.0, sliderintMap[setting]!!.toDouble())),
                     (sliderY + 1.5f).toDouble(), 3.75f,
                     if (accent) accentedColor2.rgb else textColor.rgb
@@ -519,7 +521,7 @@ class SettingComponents(private val module: Module) : Component() {
                 val pixelPos2 = totalSliderWidth * percent2
 
                 val hoveringSlider = isClickable(sliderPosY - 1)
-                        && DrRenderUtils.isHovering(x + 5, sliderPosY - 2, totalSliderWidth, 6f, mouseX, mouseY)
+                        && RenderUtils.isHovering(x + 5, sliderPosY - 2, totalSliderWidth, 6f, mouseX, mouseY)
 
 
                 if (type == GuiEvents.RELEASE) {
@@ -556,7 +558,7 @@ class SettingComponents(private val module: Module) : Component() {
 
                 drawCustomShapeWithRadius(
                     x + 5, sliderPosY, totalSliderWidth, 3f, 1.5f,
-                    DrRenderUtils.applyOpacity(darkRectHover, (.4f))
+                    RenderUtils.applyOpacity(darkRectHover, (.4f))
                 )
 
                 drawCustomShapeWithRadius(
@@ -565,8 +567,8 @@ class SettingComponents(private val module: Module) : Component() {
                 )
 
                 fun drawSliderCircle(px: Float) {
-                    DrRenderUtils.fakeCircleGlow(x + 4 + px, sliderPosY + 1.5f, 6f, Color.BLACK, .3f)
-                    DrRenderUtils.drawGoodCircle(
+                    RenderUtils.fakeCircleGlow(x + 4 + px, sliderPosY + 1.5f, 6f, Color.BLACK, .3f)
+                    RenderUtils.drawGoodCircle(
                         (x + 4 + px).toDouble(), sliderPosY + 1.5, 3.75f,
                         color.rgb
                     )
@@ -584,7 +586,7 @@ class SettingComponents(private val module: Module) : Component() {
                 val hoverAnim =
                     toggleAnimation[setting]!![1]
 
-                DrRenderUtils.resetColor()
+                RenderUtils.resetColor()
                 OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
                 GlStateManager.enableBlend()
 
@@ -597,7 +599,7 @@ class SettingComponents(private val module: Module) : Component() {
 
                 val switchWidth = 16f
                 val hoveringSwitch = isClickable(settingY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight) - 1)
-                        && DrRenderUtils.isHovering(
+                        && RenderUtils.isHovering(
                     x + width - (switchWidth + 6),
                     settingY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight) - 1,
                     switchWidth, 8f, mouseX, mouseY
@@ -610,31 +612,31 @@ class SettingComponents(private val module: Module) : Component() {
                 }
 
                 toggleAnim.direction = if (setting.get()) Direction.FORWARDS else Direction.BACKWARDS
-                DrRenderUtils.resetColor()
+                RenderUtils.resetColor()
 
                 val accentCircle = if (accent)
-                    DrRenderUtils.applyOpacity(accentedColor, .8f)
+                    RenderUtils.applyOpacity(accentedColor, .8f)
                 else
-                    DrRenderUtils.darker(textColor, .8f)
+                    RenderUtils.darker(textColor, .8f)
 
                 drawCustomShapeWithRadius(
                     x + width - (switchWidth + 5.5f),
                     settingY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight) + 2,
                     switchWidth, 4.5f, 2f,
-                    DrRenderUtils.interpolateColorC(
-                        DrRenderUtils.applyOpacity(darkRectHover, .5f),
+                    RenderUtils.interpolateColorC(
+                        RenderUtils.applyOpacity(darkRectHover, .5f),
                         accentCircle, toggleAnim.output.toFloat()
                     )
                 )
 
-                DrRenderUtils.fakeCircleGlow(
+                RenderUtils.fakeCircleGlow(
                     ((x + width - (switchWidth + 3))
                             + ((switchWidth - 5) * toggleAnim.output)).toFloat(),
                     settingY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight) + 4,
                     6f, Color.BLACK, .3f
                 )
 
-                DrRenderUtils.resetColor()
+                RenderUtils.resetColor()
                 drawCustomShapeWithRadius(
                     (x + width - (switchWidth + 6) + ((switchWidth - 5) * toggleAnim.output)).toFloat(),
                     settingY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight) + 1,
@@ -648,7 +650,7 @@ class SettingComponents(private val module: Module) : Component() {
                 val openAnim = modeSettingAnimMap[setting]!![1]
 
                 val hoveringModeRect = isClickable(settingY + 5)
-                        && DrRenderUtils.isHovering(x + 5, settingY + 5, width - 10, rectHeight + 7, mouseX, mouseY)
+                        && RenderUtils.isHovering(x + 5, settingY + 5, width - 10, rectHeight + 7, mouseX, mouseY)
 
                 if (type == GuiEvents.CLICK && hoveringModeRect && button == 1) {
                     modeSettingClick[setting] = !modeSettingClick[setting]!!
@@ -663,12 +665,12 @@ class SettingComponents(private val module: Module) : Component() {
                     width - 10,
                     (math * openAnim.output).toFloat(),
                     3f,
-                    DrRenderUtils.applyOpacity(darkRectHover, (.35f * openAnim.output).toFloat())
+                    RenderUtils.applyOpacity(darkRectHover, (.35f * openAnim.output).toFloat())
                 )
 
                 if (!openAnim.isDone && type == GuiEvents.DRAW) {
                     GL11.glEnable(GL11.GL_SCISSOR_TEST)
-                    DrRenderUtils.scissor(
+                    RenderUtils.scissor(
                         (x + 5).toDouble(),
                         (settingY + 7 + rectHeight + (3 * openAnim.output)).toFloat().toDouble(),
                         (width - 10).toDouble(),
@@ -683,11 +685,11 @@ class SettingComponents(private val module: Module) : Component() {
                     val modeY = ((settingY + rectHeight + 11
                             + ((8 + (modeCount * rectHeight)) * openAnim.output))
                             ).toFloat()
-                    DrRenderUtils.resetColor()
+                    RenderUtils.resetColor()
 
                     val hoveringMode = isClickable(modeY - 5)
                             && openAnim.direction == Direction.FORWARDS
-                            && DrRenderUtils.isHovering(x + 5, modeY - 5, width - 10, rectHeight, mouseX, mouseY)
+                            && RenderUtils.isHovering(x + 5, modeY - 5, width - 10, rectHeight, mouseX, mouseY)
 
                     val modeHover = modesHoverAnimation[setting]!![mode]
                     modeHover!!.direction = if (hoveringMode) Direction.FORWARDS else Direction.BACKWARDS
@@ -695,7 +697,7 @@ class SettingComponents(private val module: Module) : Component() {
                     if (modeHover.finished(Direction.FORWARDS) || !modeHover.isDone) {
                         drawCustomShapeWithRadius(
                             x + 5, modeY - 5, width - 10, rectHeight, 3f,
-                            DrRenderUtils.applyOpacity(textColor, (.2f * modeHover.output).toFloat())
+                            RenderUtils.applyOpacity(textColor, (.2f * modeHover.output).toFloat())
                         )
                     }
 
@@ -708,7 +710,7 @@ class SettingComponents(private val module: Module) : Component() {
                             mode,
                             x + 13,
                             modeY,
-                            DrRenderUtils.applyOpacity(textColor, openAnim.output.toFloat()).rgb
+                            RenderUtils.applyOpacity(textColor, openAnim.output.toFloat()).rgb
                         )
                     }
                     modeCount++
@@ -726,13 +728,13 @@ class SettingComponents(private val module: Module) : Component() {
 
                 drawCustomShapeWithRadius(
                     x + 5, settingY + 5, width - 10, rectHeight + 7, 3f,
-                    DrRenderUtils.applyOpacity(darkRectHover, .45f)
+                    RenderUtils.applyOpacity(darkRectHover, .45f)
                 )
 
                 if (!hoverAnim.isDone || hoverAnim.finished(Direction.FORWARDS)) {
                     drawCustomShapeWithRadius(
                         x + 5, settingY + 5, width - 10, rectHeight + 7, 3f,
-                        DrRenderUtils.applyOpacity(textColor, (.2f * hoverAnim.output).toFloat())
+                        RenderUtils.applyOpacity(textColor, (.2f * hoverAnim.output).toFloat())
                     )
                 }
 
@@ -755,7 +757,7 @@ class SettingComponents(private val module: Module) : Component() {
                     textColor.rgb
                 )
 
-                DrRenderUtils.resetColor()
+                RenderUtils.resetColor()
                 Fonts.InterBold_18.drawString(
                     setting.get(),
                     x + 13,
@@ -763,8 +765,8 @@ class SettingComponents(private val module: Module) : Component() {
                     textColor.rgb
                 )
 
-                DrRenderUtils.resetColor()
-                DrRenderUtils.drawClickGuiArrow(
+                RenderUtils.resetColor()
+                RenderUtils.drawClickGuiArrow(
                     x + width - 15,
                     settingY + 17,
                     5f,
@@ -840,7 +842,7 @@ class SettingComponents(private val module: Module) : Component() {
                 }
                 val rainbow = setting.rainbow
                 val hoveringColorPreview = isClickable(settingY + 2) &&
-                        DrRenderUtils.isHovering(
+                        RenderUtils.isHovering(
                             previewX1,
                             previewY1,
                             previewSize.toFloat(),
@@ -850,7 +852,7 @@ class SettingComponents(private val module: Module) : Component() {
                         )
                 val hoveringRainbowPreview = isClickable(settingY + 2) &&
                         (rainbowPreviewX1 > x + 4) &&
-                        DrRenderUtils.isHovering(
+                        RenderUtils.isHovering(
                             rainbowPreviewX1,
                             previewY1,
                             previewSize.toFloat(),
@@ -871,7 +873,7 @@ class SettingComponents(private val module: Module) : Component() {
                 val hexTextWidth = Fonts.InterMedium_18.stringWidth(colorCodeText).toFloat()
                 val hexTextX = x + 5
                 val hexTextY = settingY + 3 + Fonts.InterMedium_18.height + 2
-                val hoveringHex = DrRenderUtils.isHovering(
+                val hoveringHex = RenderUtils.isHovering(
                     hexTextX,
                     hexTextY,
                     hexTextWidth,
@@ -946,7 +948,7 @@ class SettingComponents(private val module: Module) : Component() {
                     setting.hueSliderY
                 }
                 if (setting.showPicker) {
-                    drawRect(colorPickerStartX, colorPickerStartY, colorPickerEndX, colorPickerEndY, DrRenderUtils.applyOpacity(Color(48, 50, 55, alphaAnimation), 0.8f).rgb)
+                    drawRect(colorPickerStartX, colorPickerStartY, colorPickerEndX, colorPickerEndY, RenderUtils.applyOpacity(Color(48, 50, 55, alphaAnimation), 0.8f).rgb)
                     setting.updateTextureCache(
                         id = 0,
                         hue = hueVal,
@@ -1078,7 +1080,7 @@ class SettingComponents(private val module: Module) : Component() {
                 val hoverWidth = regularFontWidth + 10f
                 val hoverHeight = rectHeight
                 val hoveringFont = isClickable(settingY) &&
-                        DrRenderUtils.isHovering(
+                        RenderUtils.isHovering(
                             titleX - 5f,
                             settingY,
                             hoverWidth,
@@ -1102,7 +1104,7 @@ class SettingComponents(private val module: Module) : Component() {
             val bind = Keyboard.getKeyName(module.keyBind)
             val hoveringBindRect = isClickable(
                 y + Fonts.InterBold_18.getMiddleOfBox(rectHeight) - 1
-            ) && DrRenderUtils.isHovering(
+            ) && RenderUtils.isHovering(
                 x + width - (Fonts.InterBold_18.stringWidth(bind) + 10),
                 y + Fonts.InterBold_18.getMiddleOfBox(rectHeight) - 1,
                 (Fonts.InterBold_18.stringWidth(bind) + 8).toFloat(),
@@ -1131,14 +1133,14 @@ class SettingComponents(private val module: Module) : Component() {
                  (float) (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 8),
                  Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getHeight() + 6,
                  5,
-                 DrRenderUtils.applyOpacity(darkRectHover, (float) (.4 + (.2 * animations[0].getOutput())))
+                 RenderUtils.applyOpacity(darkRectHover, (float) (.4 + (.2 * animations[0].getOutput())))
              );
 
              Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.drawString(
                  bind,
                  x + width - (Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.stringWidth(bind) + 9) + offsetX,
                  bindButtonY + Fonts.SFBOLD.SFBOLD_18.SFBOLD_18.getMiddleOfBox(rectHeight) + 1,
-                 DrRenderUtils.interpolateColor(
+                 RenderUtils.interpolateColor(
                      textColor.getRGB(),
                      accentedColor2.getRGB(),
                      (float) animations[1].getOutput()

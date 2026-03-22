@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Random;
 
 import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
-import static net.ccbluex.liquidbounce.utils.render.particle.RenderUtils.drawCircle;
+import static net.ccbluex.liquidbounce.utils.render.RenderUtils.drawParticleCircle;
 
 /**
  * Particle API This Api is free2use But u have to mention me.
@@ -54,7 +54,7 @@ public class ParticleGenerator {
                         .forEach(connectable -> particle.connect(connectable.getX(), connectable.getY()));
             }
 
-            drawCircle(particle.getX(), particle.getY(), particle.size, 0xffFFFFFF);
+            drawParticleCircle(particle.getX(), particle.getY(), particle.size, 0xffFFFFFF);
         }
     }
 

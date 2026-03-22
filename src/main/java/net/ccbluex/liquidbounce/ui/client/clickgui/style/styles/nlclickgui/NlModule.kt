@@ -8,17 +8,17 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui
 import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui.Companion.getInstance
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.applyOpacity
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.brighter
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.darker
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.fakeCircleGlow
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.interpolateColorC
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.isHovering
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.resetColor
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.applyOpacity
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.brighter
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.darker
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.fakeCircleGlow
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.interpolateColorC
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.isHovering
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetColor
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.BoolSetting
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Animation
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Direction
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.impl.DecelerateAnimation
+import net.ccbluex.liquidbounce.utils.animations.Animation
+import net.ccbluex.liquidbounce.utils.animations.Direction
+import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil.Companion.drawRound
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.ColorSetting
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.FontSetting
@@ -197,18 +197,18 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
 
         drawRound(
             toggleXPosition, toggleYPosition, 16f, 4.5f,
-            2f, interpolateColorC(applyOpacity(darkRectHover, .5f), accentCircle, toggleAnimation.getOutput().toFloat())
+            2f, interpolateColorC(applyOpacity(darkRectHover, .5f), accentCircle, toggleAnimation.output.toFloat())
         )
 
         fakeCircleGlow(
-            toggleXPosition + 3 + ((11) * toggleAnimation.getOutput()).toFloat(),
+            toggleXPosition + 3 + ((11) * toggleAnimation.output).toFloat(),
             toggleYPosition + 2, 6f, Color.BLACK, .3f
         )
 
         resetColor()
 
         drawRound(
-            toggleXPosition + ((11) * toggleAnimation.getOutput()).toFloat(),
+            toggleXPosition + ((11) * toggleAnimation.output).toFloat(),
             toggleYPosition - 1,
             6.5f,
             6.5f,
@@ -218,9 +218,9 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
                 255,
                 255
             ) else Color(
-                (68 - (28 * HoveringAnimation.getOutput())).toInt(),
-                (82 + (44 * HoveringAnimation.getOutput())).toInt(),
-                (87 + (83 * HoveringAnimation.getOutput())).toInt()
+                (68 - (28 * HoveringAnimation.output)).toInt(),
+                (82 + (44 * HoveringAnimation.output)).toInt(),
+                (87 + (83 * HoveringAnimation.output)).toInt()
             )
         )
     }

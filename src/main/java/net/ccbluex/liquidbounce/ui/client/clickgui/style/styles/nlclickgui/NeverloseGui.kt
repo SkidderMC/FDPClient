@@ -15,9 +15,9 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.Side
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.StencilUtil
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Config.Configs
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Config.NeverloseConfigManager
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Animation
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Direction
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.impl.EaseInOutQuad
+import net.ccbluex.liquidbounce.utils.animations.Animation
+import net.ccbluex.liquidbounce.utils.animations.Direction
+import net.ccbluex.liquidbounce.utils.animations.impl.EaseInOutQuad
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.blur.BloomUtil
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.blur.GaussianBlur
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil
@@ -178,15 +178,15 @@ class NeverloseGui : GuiScreen() {
             nlTab.draw(bgMouseX, bgMouseY)
         }
 
-        val searchProgress = searchanim.getOutput().toFloat()
-        val closeButtonOffset = if (search || !searchanim.isDone()) -83f * searchProgress else 0f
+        val searchProgress = searchanim.output.toFloat()
+        val closeButtonOffset = if (search || !searchanim.isDone) -83f * searchProgress else 0f
         val closeButtonX = (x + w - 50 + closeButtonOffset).toFloat()
         Fonts.NlIcon.nlfont_20.nlfont_20.drawString("x", closeButtonX, (y + 17).toFloat(), if (settings) neverlosecolor.rgb else if (light) Color(95, 95, 95).rgb else -1)
 
         Fonts.NlIcon.nlfont_20.nlfont_20.drawString("j", (x + w - 30).toFloat(), (y + 18).toFloat(), if (search) neverlosecolor.rgb else if (light) Color(95, 95, 95).rgb else -1)
         searchanim.direction = if (search) Direction.FORWARDS else Direction.BACKWARDS
 
-        if (search || !searchanim.isDone()) {
+        if (search || !searchanim.isDone) {
             val searchBarX = (x + w - 30 - (85f * searchProgress))
             val searchBarWidth = (80f * searchProgress)
             RoundedUtil.drawRound(searchBarX, (y + 12).toFloat(), searchBarWidth, 15f, 1f, if (light) Color(235, 235, 235) else neverlosecolor)
@@ -310,8 +310,8 @@ class NeverloseGui : GuiScreen() {
                     }
                 }
 
-                val searchProgress = searchanim.getOutput().toFloat()
-                val closeButtonX = (x + w - 50 + (if (search || !searchanim.isDone()) (-83f * searchProgress) else 0f))
+                val searchProgress = searchanim.output.toFloat()
+                val closeButtonX = (x + w - 50 + (if (search || !searchanim.isDone) (-83f * searchProgress) else 0f))
 
                 if (RenderUtil.isHovering(closeButtonX, (y + 17).toFloat(), Fonts.NlIcon.nlfont_24.nlfont_24.stringWidth("x").toFloat(), Fonts.NlIcon.nlfont_24.nlfont_24.height.toFloat(), mouseX, mouseY)) {
                     settings = !settings

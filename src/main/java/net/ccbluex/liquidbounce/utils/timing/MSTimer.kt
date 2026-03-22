@@ -19,4 +19,12 @@ class MSTimer {
     fun zero() {
         time = -1L
     }
+
+    fun hasTimeElapsed(duration: Long): Boolean = System.currentTimeMillis() - time > duration
+
+    fun getElapsedTime(): Long = System.currentTimeMillis() - time
+
+    fun setInitialTime(initialTime: Long) {
+        time = initialTime
+    }
 }

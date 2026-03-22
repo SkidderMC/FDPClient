@@ -13,10 +13,11 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Downw
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui.Companion.getInstance
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NlModule
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Animation
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Direction
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.impl.DecelerateAnimation
+import net.ccbluex.liquidbounce.utils.animations.Animation
+import net.ccbluex.liquidbounce.utils.animations.Direction
+import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.minecraft.client.Minecraft
@@ -113,7 +114,7 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
         RoundedUtil.drawCircle(
             mainx + 147 + x + (60 * percent),
             (mainy + numbery + 56).toFloat(),
-            (5.5f + (0.5f * HoveringAnimation.getOutput())).toFloat(),
+            (5.5f + (0.5f * HoveringAnimation.output)).toFloat(),
             NeverloseGui.neverlosecolor
         )
 

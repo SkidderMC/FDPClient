@@ -8,15 +8,16 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.imp
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.backback
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.generateColor
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.EaseInOutQuad
+import net.ccbluex.liquidbounce.utils.animations.Animation
+import net.ccbluex.liquidbounce.utils.animations.Direction
+import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation
+import net.ccbluex.liquidbounce.utils.animations.impl.EaseInOutQuad
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils.resetColor
-import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetColor
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawClickGuiArrow
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.scissor
+import net.ccbluex.liquidbounce.ui.font.Fonts
 import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import java.awt.Color
@@ -62,14 +63,14 @@ class ModuleRect(val module: Module) : Component() {
 
         val accentIndex = 0
         val accent = Color(generateColor(accentIndex).rgb)
-        val accentWithAlpha = DrRenderUtils.applyOpacity(accent, alphaAnimation / 255f)
+        val accentWithAlpha = RenderUtils.applyOpacity(accent, alphaAnimation / 255f)
 
-        val hoveringModule = DrRenderUtils.isHovering(x, y, width, height, mouseX, mouseY)
+        val hoveringModule = RenderUtils.isHovering(x, y, width, height, mouseX, mouseY)
         hoverAnimation.direction = if (hoveringModule) Direction.FORWARDS else Direction.BACKWARDS
 
-        val hoveredRectColorInt = DrRenderUtils.interpolateColor(
+        val hoveredRectColorInt = RenderUtils.interpolateColor(
             baseRectColor.rgb,
-            DrRenderUtils.brighter(baseRectColor, 0.8f).rgb,
+            RenderUtils.brighter(baseRectColor, 0.8f).rgb,
             hoverAnimation.output.toFloat()
         )
         RenderUtils.drawGradientRect(
@@ -79,7 +80,7 @@ class ModuleRect(val module: Module) : Component() {
             0F
         )
 
-        val accentOverlayColor = DrRenderUtils.applyOpacity(accentWithAlpha, toggleAnimation.output.toFloat()).rgb
+        val accentOverlayColor = RenderUtils.applyOpacity(accentWithAlpha, toggleAnimation.output.toFloat()).rgb
         RenderUtils.drawGradientRect(
             x, y, x + width, y + height,
             accentOverlayColor,
@@ -105,9 +106,9 @@ class ModuleRect(val module: Module) : Component() {
         } else {
             val arrowSize = 6f
             arrowAnimation.direction = if (module.expanded) Direction.FORWARDS else Direction.BACKWARDS
-            DrRenderUtils.setAlphaLimit(0f)
+            RenderUtils.setAlphaLimit(0f)
             resetColor()
-            DrRenderUtils.drawClickGuiArrow(
+            RenderUtils.drawClickGuiArrow(
                 x + width - (arrowSize + 5),
                 y + (height / 2f) - 2f,
                 arrowSize,
@@ -131,8 +132,8 @@ class ModuleRect(val module: Module) : Component() {
                 val accentAlpha = (0.85 * toggleAnimation.output).toFloat() * (alphaAnimation / 255f)
                 RenderUtils.drawGradientRect(
                     x, y + height, x + width, y + height + expandedHeight * height,
-                    DrRenderUtils.applyOpacity(accentWithAlpha, accentAlpha).rgb,
-                    DrRenderUtils.applyOpacity(accentWithAlpha, accentAlpha / 2).rgb,
+                    RenderUtils.applyOpacity(accentWithAlpha, accentAlpha).rgb,
+                    RenderUtils.applyOpacity(accentWithAlpha, accentAlpha / 2).rgb,
                     0F
                 )
             }
@@ -148,7 +149,7 @@ class ModuleRect(val module: Module) : Component() {
             // animations colors
             if (settingAnimation?.isDone == false) {
                 GL11.glEnable(GL11.GL_SCISSOR_TEST)
-                DrRenderUtils.scissor(x.toDouble(), (y + height).toDouble(), width.toDouble(), expandedHeight * height)
+                RenderUtils.scissor(x.toDouble(), (y + height).toDouble(), width.toDouble(), expandedHeight * height)
                 settingComponents.drawScreen(mouseX, mouseY)
                 RenderUtils.drawGradientRect(
                     x, y + height, x + width, y + height + 6.0,
@@ -165,7 +166,7 @@ class ModuleRect(val module: Module) : Component() {
                 GL11.glDisable(GL11.GL_SCISSOR_TEST)
             } else {
                 settingComponents.drawScreen(mouseX, mouseY)
-                DrRenderUtils.drawGradientRect2(
+                RenderUtils.drawGradientRect2(
                     x.toDouble(),
                     (y + height).toDouble(),
                     width.toDouble(),
@@ -173,7 +174,7 @@ class ModuleRect(val module: Module) : Component() {
                     Color(0, 0, 0, 60).rgb,
                     Color(0, 0, 0, 0).rgb
                 )
-                DrRenderUtils.drawGradientRect2(
+                RenderUtils.drawGradientRect2(
                     x.toDouble(),
                     y + 11 + (expandedHeight * height),
                     width.toDouble(),
@@ -188,7 +189,7 @@ class ModuleRect(val module: Module) : Component() {
 
     fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
         val hoveringModule = isClickable(y, panelLimitY) &&
-                DrRenderUtils.isHovering(x, y, width, height, mouseX, mouseY)
+                RenderUtils.isHovering(x, y, width, height, mouseX, mouseY)
         if (hoveringModule) {
             when (button) {
                 0 -> {

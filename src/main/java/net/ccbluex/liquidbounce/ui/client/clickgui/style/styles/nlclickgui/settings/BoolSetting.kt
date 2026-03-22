@@ -9,10 +9,11 @@ import net.ccbluex.liquidbounce.config.BoolValue
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Downward
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NlModule
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Animation
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Direction
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.impl.DecelerateAnimation
+import net.ccbluex.liquidbounce.utils.animations.Animation
+import net.ccbluex.liquidbounce.utils.animations.Direction
+import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import java.awt.Color
@@ -62,19 +63,19 @@ class BoolSetting(s: BoolValue, moduleRender: NlModule) : Downward<BoolValue>(s,
                 RenderUtil.interpolateColorC(
                     Color(230, 230, 230),
                     Color(0, 112, 186),
-                    toggleAnimation.getOutput().toFloat()
+                    toggleAnimation.output.toFloat()
                 )
             } else {
                 RenderUtil.interpolateColorC(
                     RenderUtil.applyOpacity(darkRectHover, .5f),
                     accentCircle,
-                    toggleAnimation.getOutput().toFloat()
+                    toggleAnimation.output.toFloat()
                 )
             }
         )
 
         RenderUtil.fakeCircleGlow(
-            (mainx + 265 + 3 - 32 + x + 11 * toggleAnimation.getOutput()).toFloat(),
+            (mainx + 265 + 3 - 32 + x + 11 * toggleAnimation.output).toFloat(),
             (mainy + booly + 59).toFloat(),
             6f,
             Color.BLACK,
@@ -84,7 +85,7 @@ class BoolSetting(s: BoolValue, moduleRender: NlModule) : Downward<BoolValue>(s,
         RenderUtil.resetColor()
 
         RoundedUtil.drawRound(
-            (mainx + 265 - 32 + x + 11 * toggleAnimation.getOutput()).toFloat(),
+            (mainx + 265 - 32 + x + 11 * toggleAnimation.output).toFloat(),
             (mainy + booly + 56).toFloat(),
             6.5f,
             6.5f,
@@ -95,9 +96,9 @@ class BoolSetting(s: BoolValue, moduleRender: NlModule) : Downward<BoolValue>(s,
                 Color(255, 255, 255)
             } else {
                 Color(
-                    (68 - 28 * hoveringAnimation.getOutput()).toInt(),
-                    (82 + 44 * hoveringAnimation.getOutput()).toInt(),
-                    (87 + 83 * hoveringAnimation.getOutput()).toInt()
+                    (68 - 28 * hoveringAnimation.output).toInt(),
+                    (82 + 44 * hoveringAnimation.output).toInt(),
+                    (87 + 83 * hoveringAnimation.output).toInt()
                 )
             }
         )

@@ -3,9 +3,11 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations;
+package net.ccbluex.liquidbounce.utils.animations
 
-public enum Direction {
+enum class Direction {
     FORWARDS,
-    BACKWARDS
+    BACKWARDS;
+
+    fun opposite(): Direction = if (this == FORWARDS) BACKWARDS else FORWARDS
 }

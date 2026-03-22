@@ -10,17 +10,16 @@ import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.clickHeight
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.scrollMode
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl.ModuleRect
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Animation
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.Direction
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.animations.impl.DecelerateAnimation
+import net.ccbluex.liquidbounce.utils.animations.Animation
+import net.ccbluex.liquidbounce.utils.animations.Direction
+import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Main
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.normal.Screen
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.StencilUtil
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance.Companion.mc
 import net.ccbluex.liquidbounce.utils.extensions.roundToHalf
-import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.ScaledResolution
 import java.awt.Color
 import kotlin.math.max
@@ -161,7 +160,7 @@ class DropdownCategory(private val category: Category) : Screen {
         }
 
         // We'll see if user is hovering over module list
-        val hoveringMods = DrRenderUtils.isHovering(
+        val hoveringMods = RenderUtils.isHovering(
             x, y + categoryRectHeight, rectWidth, allowedHeight, mouseX, mouseY
         )
 
@@ -211,7 +210,7 @@ class DropdownCategory(private val category: Category) : Screen {
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
         // Let user drag top bar
-        val canDrag = DrRenderUtils.isHovering(
+        val canDrag = RenderUtils.isHovering(
             category.drag.x, category.drag.y, rectWidth, categoryRectHeight, mouseX, mouseY
         )
         category.drag.onClick(mouseX, mouseY, button, canDrag)

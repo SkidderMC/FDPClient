@@ -346,7 +346,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
                         break;
                     case "outline":
                         ClientUtils.INSTANCE.disableFastRender();
-                        resetColor();
+                        RenderUtils.resetColor();
 
                         final Color color = esp.getColor(entitylivingbaseIn);
                         setColor(color);
@@ -451,7 +451,7 @@ public abstract class MixinRendererLivingEntity extends MixinRender {
             }
 
             if (shouldRenderGaussianESP) {
-                resetColor();
+                RenderUtils.resetColor();
             }
 
             if (semiVisible) {

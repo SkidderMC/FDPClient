@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.modules.other.OverrideRaycast;
 import net.ccbluex.liquidbounce.features.module.modules.player.Reach;
 import net.ccbluex.liquidbounce.features.module.modules.visual.*;
 import net.ccbluex.liquidbounce.utils.client.ClientUtils;
+import net.ccbluex.liquidbounce.utils.performance.PerformanceMonitor;
 import net.ccbluex.liquidbounce.utils.rotation.Rotation;
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils;
 import net.minecraft.client.Minecraft;
@@ -122,6 +123,7 @@ public abstract class MixinEntityRenderer {
 
     @Inject(at = @At("HEAD"), method = "updateCameraAndRender")
     private void injectCameraModifications(float p_updateCameraAndRender_1_, long p_updateCameraAndRender_2_, CallbackInfo ci) {
+        PerformanceMonitor.INSTANCE.startFrame();
         FreeCam.INSTANCE.useModifiedPosition();
     }
 
@@ -134,6 +136,7 @@ public abstract class MixinEntityRenderer {
     private void injectCameraRestorations(float p_updateCameraAndRender_1_, long p_updateCameraAndRender_2_, CallbackInfo ci) {
         FreeLook.INSTANCE.restoreOriginalRotation();
         FreeCam.INSTANCE.restoreOriginalPosition();
+        PerformanceMonitor.INSTANCE.endFrame();
     }
 
     /**

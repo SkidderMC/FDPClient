@@ -9,7 +9,7 @@ import java.math.RoundingMode;
 import java.util.Random;
 
 import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
-import static net.ccbluex.liquidbounce.utils.render.particle.RenderUtils.connectPoints;
+import static net.ccbluex.liquidbounce.utils.render.RenderUtils.connectPoints;
 
 /**
  * Particle API

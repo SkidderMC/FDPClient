@@ -3,7 +3,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Conf
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.config.SettingsUtils
 import net.ccbluex.liquidbounce.handler.api.ClientApi
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils.isHovering
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.isHovering
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil
 import net.ccbluex.liquidbounce.ui.font.Fonts

@@ -1,7 +1,7 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui
 
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Animation
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.ccbluex.liquidbounce.utils.animations.Animation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.tessellate.Tessellation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.tessellate.Tessellation.Companion.createExpanding
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontRenderer
@@ -958,10 +958,10 @@ object RenderUtil {
         var amount = amount
         amount = min(1f, max(0f, amount))
         return Color(
-            DrRenderUtils.interpolateInt(color1.getRed(), color2.getRed(), amount.toDouble()),
-            DrRenderUtils.interpolateInt(color1.getGreen(), color2.getGreen(), amount.toDouble()),
-            DrRenderUtils.interpolateInt(color1.getBlue(), color2.getBlue(), amount.toDouble()),
-            DrRenderUtils.interpolateInt(color1.getAlpha(), color2.getAlpha(), amount.toDouble())
+            RenderUtils.interpolateInt(color1.getRed(), color2.getRed(), amount),
+            RenderUtils.interpolateInt(color1.getGreen(), color2.getGreen(), amount),
+            RenderUtils.interpolateInt(color1.getBlue(), color2.getBlue(), amount),
+            RenderUtils.interpolateInt(color1.getAlpha(), color2.getAlpha(), amount)
         )
     }
 
@@ -1142,14 +1142,14 @@ object RenderUtil {
         setup2DRendering(Runnable {
             render(GL11.GL_TRIANGLE_STRIP, Runnable {
                 color(color)
-                val interpolation = interpolate(0.0, size / 2.0, animation.getOutput())
-                if (animation.getOutput() >= .48) {
-                    GL11.glVertex2d((size / 2f).toDouble(), interpolate(size / 2.0, 0.0, animation.getOutput()))
+                val interpolation = interpolate(0.0, size / 2.0, animation.output)
+                if (animation.output >= .48) {
+                    GL11.glVertex2d((size / 2f).toDouble(), interpolate(size / 2.0, 0.0, animation.output))
                 }
                 GL11.glVertex2d(0.0, interpolation)
 
-                if (animation.getOutput() < .48) {
-                    GL11.glVertex2d((size / 2f).toDouble(), interpolate(size / 2.0, 0.0, animation.getOutput()))
+                if (animation.output < .48) {
+                    GL11.glVertex2d((size / 2f).toDouble(), interpolate(size / 2.0, 0.0, animation.output))
                 }
                 GL11.glVertex2d(size.toDouble(), interpolation)
             })

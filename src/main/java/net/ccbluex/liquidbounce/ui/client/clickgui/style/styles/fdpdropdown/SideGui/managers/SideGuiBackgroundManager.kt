@@ -7,7 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.Sid
 
 import net.ccbluex.liquidbounce.config.ColorValue
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.objects.Drag
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils.neverLoseBgColor
@@ -40,7 +40,7 @@ object SideGuiBackgroundManager {
         val maxVisibleY = drag.y + rectHeight - 60
         for (mode in backgroundModes) {
             if (yPos + cardHeight <= maxVisibleY) {
-                val hovered = DrRenderUtils.isHovering(xPos, yPos, cardWidth, cardHeight, mouseX, mouseY)
+                val hovered = RenderUtils.isHovering(xPos, yPos, cardWidth, cardHeight, mouseX, mouseY)
                 if (hovered && Mouse.isButtonDown(0)) {
                     if (mode == "custom") {
                         openBgColorPalette()
@@ -49,7 +49,7 @@ object SideGuiBackgroundManager {
                     }
                 }
                 val cardColor = getBgPreviewColor(mode, bgAlpha.toInt())
-                DrRenderUtils.drawRect2(xPos.toDouble(), yPos.toDouble(), cardWidth.toDouble(), cardHeight.toDouble(), cardColor)
+                RenderUtils.drawRect2(xPos.toDouble(), yPos.toDouble(), cardWidth.toDouble(), cardHeight.toDouble(), cardColor)
                 if (ClientThemesUtils.BackgroundMode.equals(mode, ignoreCase = true)) {
                     drawRoundedOutline(xPos, yPos, xPos + cardWidth, yPos + cardHeight, 6f, 2f, Color.WHITE.rgb)
                 }
@@ -57,7 +57,7 @@ object SideGuiBackgroundManager {
                     mode.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() },
                     xPos + cardWidth / 2f,
                     yPos + cardHeight / 2f - Fonts.InterBold_26.height / 2,
-                    DrRenderUtils.applyOpacity(-1, alpha / 255f)
+                    RenderUtils.applyOpacity(-1, alpha / 255f)
                 )
             }
             xPos += cardWidth + 10
@@ -86,20 +86,20 @@ object SideGuiBackgroundManager {
         val sliderY = drag.y + 20
         val sliderW = 80f
         val sliderH = 10f
-        DrRenderUtils.drawRect2(sliderX.toDouble(), sliderY.toDouble(), sliderW.toDouble(), sliderH.toDouble(), Color(60, 60, 60, alpha).rgb)
+        RenderUtils.drawRect2(sliderX.toDouble(), sliderY.toDouble(), sliderW.toDouble(), sliderH.toDouble(), Color(60, 60, 60, alpha).rgb)
         val fraction = (bgAlpha - 1f) / (255f - 1f)
         val fill = sliderW * fraction
-        DrRenderUtils.drawRect2(sliderX.toDouble(), sliderY.toDouble(), fill.toDouble(), sliderH.toDouble(), Color(100, 150, 100, alpha).rgb)
-        Fonts.InterBold_26.drawString("BG Alpha: ${bgAlpha.toInt()}", sliderX + 2, sliderY - 12, DrRenderUtils.applyOpacity(-1, alpha / 255f))
-        val hovered = DrRenderUtils.isHovering(sliderX, sliderY, sliderW, sliderH, mouseX, mouseY)
+        RenderUtils.drawRect2(sliderX.toDouble(), sliderY.toDouble(), fill.toDouble(), sliderH.toDouble(), Color(100, 150, 100, alpha).rgb)
+        Fonts.InterBold_26.drawString("BG Alpha: ${bgAlpha.toInt()}", sliderX + 2, sliderY - 12, RenderUtils.applyOpacity(-1, alpha / 255f))
+        val hovered = RenderUtils.isHovering(sliderX, sliderY, sliderW, sliderH, mouseX, mouseY)
         if (hovered && Mouse.isButtonDown(0)) {
             bgAlpha = max(1f, min(255f, ((mouseX - sliderX) / sliderW) * (255f - 1f) + 1f))
         }
     }
     fun drawBackgroundHexField(alpha: Int, drag: Drag) {
         val quad = getBgHexFieldArea(drag)
-        DrRenderUtils.drawRect2(quad.x.toDouble(), quad.y.toDouble(), quad.w.toDouble(), quad.h.toDouble(), Color(40, 40, 40, alpha).rgb)
-        Fonts.InterBold_26.drawString("Hex:", quad.x, quad.y - 12, DrRenderUtils.applyOpacity(-1, alpha / 255f))
+        RenderUtils.drawRect2(quad.x.toDouble(), quad.y.toDouble(), quad.w.toDouble(), quad.h.toDouble(), Color(40, 40, 40, alpha).rgb)
+        Fonts.InterBold_26.drawString("Hex:", quad.x, quad.y - 12, RenderUtils.applyOpacity(-1, alpha / 255f))
     }
     fun getBgPreviewColor(mode: String, alpha: Int): Int {
         val customBgColorValue = ColorValue("CustomBG", Color(32, 32, 64), false)

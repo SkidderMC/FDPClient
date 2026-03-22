@@ -9,11 +9,11 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.module.modules.visual.ESP2D
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.resetColor
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.scissor
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Animation
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Direction
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.impl.EaseInOutQuad
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetColor
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.scissor
+import net.ccbluex.liquidbounce.utils.animations.Animation
+import net.ccbluex.liquidbounce.utils.animations.Direction
+import net.ccbluex.liquidbounce.utils.animations.impl.EaseInOutQuad
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
@@ -256,7 +256,7 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
         val manageLabelY = manageButtonY + (manageButtonHeight - Fonts.Nl_16.height) / 2f
         Fonts.Nl_16.drawCenteredString(manageLabel, manageButtonX + manageButtonWidth / 2f, manageLabelY, textColor.rgb)
 
-        val progress = openAnimation.getOutput().toFloat()
+        val progress = openAnimation.output.toFloat()
         if (progress <= 0.05f || visuals.isEmpty()) return
 
         val panelMaxHeight = (previewHeight - playerAreaHeight - manageButtonHeight - 30f).coerceAtLeast(80f)
@@ -552,7 +552,7 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
     }
 
     private fun handleElementClick(mouseX: Int, mouseY: Int, previewX: Int, previewY: Int, previewWidth: Float, previewHeight: Float) {
-        val progress = openAnimation.getOutput().toFloat()
+        val progress = openAnimation.output.toFloat()
         if (progress <= 0.05f) return
         val playerAreaHeight = 205f
         val manageButtonHeight = 16f

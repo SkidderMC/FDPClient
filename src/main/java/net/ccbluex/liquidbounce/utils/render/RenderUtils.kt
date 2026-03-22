@@ -4525,4 +4525,358 @@ object RenderUtils : MinecraftInstance {
         enableTexture2D()
         disableBlend()
     }
+
+    /**
+     * Draws a gradient rectangle sideways
+     */
+    @JvmStatic
+    fun drawGradientRectSideways(left: Double, top: Double, right: Double, bottom: Double, startColor: Int, endColor: Int) {
+        val f = (startColor shr 24 and 255).toFloat() / 255.0f
+        val f1 = (startColor shr 16 and 255).toFloat() / 255.0f
+        val f2 = (startColor shr 8 and 255).toFloat() / 255.0f
+        val f3 = (startColor and 255).toFloat() / 255.0f
+        val f4 = (endColor shr 24 and 255).toFloat() / 255.0f
+        val f5 = (endColor shr 16 and 255).toFloat() / 255.0f
+        val f6 = (endColor shr 8 and 255).toFloat() / 255.0f
+        val f7 = (endColor and 255).toFloat() / 255.0f
+
+        disableTexture2D()
+        enableBlend()
+        disableAlpha()
+        tryBlendFuncSeparate(770, 771, 1, 0)
+        shadeModel(GL_SMOOTH)
+
+        val tessellator = Tessellator.getInstance()
+        val worldRenderer = tessellator.worldRenderer
+        worldRenderer.begin(7, DefaultVertexFormats.POSITION_COLOR)
+        worldRenderer.pos(right, top, 0.0).color(f5, f6, f7, f4).endVertex()
+        worldRenderer.pos(left, top, 0.0).color(f1, f2, f3, f).endVertex()
+        worldRenderer.pos(left, bottom, 0.0).color(f1, f2, f3, f).endVertex()
+        worldRenderer.pos(right, bottom, 0.0).color(f5, f6, f7, f4).endVertex()
+        tessellator.draw()
+
+        shadeModel(GL_FLAT)
+        disableBlend()
+        enableAlpha()
+        enableTexture2D()
+    }
+
+    /**
+     * Draws a gradient rectangle sideways with width/height
+     */
+    @JvmStatic
+    fun drawGradientRectSideways2(x: Double, y: Double, width: Double, height: Double, startColor: Int, endColor: Int) {
+        drawGradientRectSideways(x, y, x + width, y + height, startColor, endColor)
+    }
+
+    /**
+     * Interpolates between two colors
+     */
+    @JvmStatic
+    fun interpolateColor(color1: Int, color2: Int, amount: Float): Int {
+        val amountClamped = amount.coerceIn(0f, 1f)
+        val cColor1 = Color(color1, true)
+        val cColor2 = Color(color2, true)
+        return interpolateColorC(cColor1, cColor2, amountClamped).rgb
+    }
+
+    /**
+     * Interpolates between two Color objects
+     */
+    @JvmStatic
+    fun interpolateColorC(color1: Color, color2: Color, amount: Float): Color {
+        val amountClamped = amount.coerceIn(0f, 1f)
+        return Color(
+            interpolateInt(color1.red, color2.red, amount),
+            interpolateInt(color1.green, color2.green, amount),
+            interpolateInt(color1.blue, color2.blue, amount),
+            interpolateInt(color1.alpha, color2.alpha, amount)
+        )
+    }
+
+    /**
+     * Interpolates between two integers
+     */
+    @JvmStatic
+    fun interpolateInt(oldValue: Int, newValue: Int, interpolationValue: Float): Int {
+        return interpolateDouble(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toDouble()).toInt()
+    }
+
+    /**
+     * Interpolates between two double values
+     */
+    @JvmStatic
+    fun interpolateDouble(oldValue: Double, newValue: Double, interpolationValue: Double): Double {
+        return oldValue + (newValue - oldValue) * interpolationValue
+    }
+
+    /**
+     * Makes a color darker
+     */
+    @JvmStatic
+    fun darker(color: Color, factor: Float): Color {
+        return Color(
+            max((color.red * factor).toInt(), 0),
+            max((color.green * factor).toInt(), 0),
+            max((color.blue * factor).toInt(), 0),
+            color.alpha
+        )
+    }
+
+    /**
+     * Makes a color brighter
+     */
+    @JvmStatic
+    fun brighter(color: Color, factor: Float): Color {
+        var r = color.red
+        var g = color.green
+        var b = color.blue
+        val alpha = color.alpha
+
+        val i = (1.0 / (1.0 - factor)).toInt()
+        if (r == 0 && g == 0 && b == 0) {
+            return Color(i, i, i, alpha)
+        }
+        if (r in 1 until i) r = i
+        if (g in 1 until i) g = i
+        if (b in 1 until i) b = i
+
+        return Color(
+            min((r / factor).toInt(), 255),
+            min((g / factor).toInt(), 255),
+            min((b / factor).toInt(), 255),
+            alpha
+        )
+    }
+
+    /**
+     * Applies opacity to a color
+     */
+    @JvmStatic
+    fun applyOpacity(color: Color, opacity: Float): Color {
+        val opacityClamped = opacity.coerceIn(0f, 1f)
+        return Color(color.red, color.green, color.blue, (color.alpha * opacityClamped).toInt())
+    }
+
+    /**
+     * Applies opacity to a color int
+     */
+    @JvmStatic
+    fun applyOpacity(color: Int, opacity: Float): Int {
+        val old = Color(color, true)
+        return applyOpacity(old, opacity).rgb
+    }
+
+    /**
+     * Draws a good circle using GL_POINTS
+     */
+    @JvmStatic
+    fun drawGoodCircle(x: Double, y: Double, radius: Float, color: Int) {
+        color(color)
+        setup2DRenderingGLUtil {
+            glEnable(GL_POINT_SMOOTH)
+            glHint(GL_POINT_SMOOTH_HINT, GL_NICEST)
+            glPointSize(radius * (2 * mc.gameSettings.guiScale))
+            renderGLUtil(GL_POINTS) { glVertex2d(x, y) }
+        }
+    }
+
+    /**
+     * Animates a value towards an endpoint
+     */
+    @JvmStatic
+    fun animate(endPoint: Double, current: Double, speed: Double): Double {
+        val shouldContinueAnimation = endPoint > current
+        val speedClamped = speed.coerceIn(0.0, 1.0)
+
+        val dif = max(endPoint, current) - min(endPoint, current)
+        val factor = dif * speedClamped
+        return current + (if (shouldContinueAnimation) factor else -factor)
+    }
+
+    /**
+     * Draws a fake circle glow effect
+     */
+    @JvmStatic
+    fun fakeCircleGlow(posX: Float, posY: Float, radius: Float, color: Color, maxAlpha: Float) {
+        setAlphaLimit(0f)
+        glShadeModel(GL_SMOOTH)
+        setup2DRenderingGLUtil {
+            renderGLUtil(GL_TRIANGLE_FAN) {
+                color(color.rgb, maxAlpha)
+                glVertex2d(posX.toDouble(), posY.toDouble())
+                color(color.rgb, 0f)
+                for (i in 0..100) {
+                    val angle = (i * 0.06283) + 3.1415
+                    val x2 = sin(angle) * radius
+                    val y2 = cos(angle) * radius
+                    glVertex2d(posX + x2, posY + y2)
+                }
+            }
+        }
+        glShadeModel(GL_FLAT)
+        setAlphaLimit(1f)
+    }
+
+    /**
+     * Scales rendering
+     */
+    @JvmStatic
+    fun scale(x: Float, y: Float, scale: Float, runnable: Runnable) {
+        glPushMatrix()
+        glTranslatef(x, y, 0f)
+        glScalef(scale, scale, 1f)
+        glTranslatef(-x, -y, 0f)
+        runnable.run()
+        glPopMatrix()
+    }
+
+    /**
+     * Sets the alpha limit
+     */
+    @JvmStatic
+    fun setAlphaLimit(limit: Float) {
+        enableAlpha()
+        alphaFunc(GL_GREATER, limit * 0.01f)
+    }
+
+    /**
+     * Checks if mouse is hovering over an area
+     */
+    @JvmStatic
+    fun isHovering(x: Float, y: Float, width: Float, height: Float, mouseX: Int, mouseY: Int): Boolean {
+        return mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height
+    }
+
+    // ==================== PARTICLE RENDERING ====================
+
+    /**
+     * Connects two points with a line (for particles)
+     */
+    @JvmStatic
+    fun connectPoints(xOne: Float, yOne: Float, xTwo: Float, yTwo: Float) {
+        glPushMatrix()
+        glEnable(GL_LINE_SMOOTH)
+        glColor4f(1f, 1f, 1f, 0.8f)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_BLEND)
+        glLineWidth(0.5f)
+        glBegin(GL_LINES)
+        glVertex2f(xOne, yOne)
+        glVertex2f(xTwo, yTwo)
+        glEnd()
+        glColor4f(1f, 1f, 1f, 1f)
+        glDisable(GL_LINE_SMOOTH)
+        glEnable(GL_TEXTURE_2D)
+        glPopMatrix()
+    }
+
+    /**
+     * Draws a circle for particles
+     */
+    @JvmStatic
+    fun drawParticleCircle(x: Float, y: Float, radius: Float, color: Int) {
+        val alpha = (color shr 24 and 0xFF) / 255f
+        val red = (color shr 16 and 0xFF) / 255f
+        val green = (color shr 8 and 0xFF) / 255f
+        val blue = (color and 0xFF) / 255f
+
+        glColor4f(red, green, blue, alpha)
+        glEnable(GL_BLEND)
+        glDisable(GL_TEXTURE_2D)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_LINE_SMOOTH)
+        glPushMatrix()
+        glLineWidth(1f)
+        glBegin(GL_POLYGON)
+
+        for (i in 0..360) {
+            val rad = Math.toRadians(i.toDouble())
+            glVertex2d(x + sin(rad) * radius, y + cos(rad) * radius)
+        }
+
+        glEnd()
+        glPopMatrix()
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_LINE_SMOOTH)
+        glColor4f(1f, 1f, 1f, 1f)
+    }
+
+    /**
+     * Draws a rectangle with width/height parameters instead of coordinates
+     * (from DrRenderUtils)
+     */
+    @JvmStatic
+    fun drawRect2(x: Double, y: Double, width: Double, height: Double, color: Int) {
+        resetColor()
+        setup2DRenderingGLUtil {
+            renderGLUtil(GL_QUADS) {
+                color(color)
+                glVertex2d(x, y)
+                glVertex2d(x, y + height)
+                glVertex2d(x + width, y + height)
+                glVertex2d(x + width, y)
+            }
+        }
+    }
+
+    /**
+     * Draws a gradient rectangle with width/height parameters
+     * (from DrRenderUtils)
+     */
+    @JvmStatic
+    fun drawGradientRect2(x: Double, y: Double, width: Double, height: Double, startColor: Int, endColor: Int) {
+        drawGradientRect(x, y, x + width, y + height, startColor, endColor, 0f)
+    }
+
+    /**
+     * Resets GL color to white (1,1,1,1)
+     * (from DrRenderUtils)
+     */
+    @JvmStatic
+    fun resetColor() {
+        GlStateManager.color(1f, 1f, 1f, 1f)
+    }
+
+    /**
+     * Sets up scissor box for clipping
+     * (from DrRenderUtils)
+     */
+    @JvmStatic
+    fun scissor(x: Double, y: Double, width: Double, height: Double) {
+        val sr = ScaledResolution(mc)
+        val scale = sr.scaleFactor.toDouble()
+        val finalHeight = height * scale
+        val finalY = (sr.scaledHeight - y) * scale
+        val finalX = x * scale
+        val finalWidth = width * scale
+        glScissor(finalX.toInt(), (finalY - finalHeight).toInt(), finalWidth.toInt(), finalHeight.toInt())
+    }
+
+    /**
+     * Draws an animated arrow for ClickGUI
+     * (from DrRenderUtils)
+     */
+    @JvmStatic
+    fun drawClickGuiArrow(x: Float, y: Float, size: Float, animation: net.ccbluex.liquidbounce.utils.animations.Animation, color: Int) {
+        glTranslatef(x, y, 0f)
+        setup2DRenderingGLUtil {
+            renderGLUtil(GL_TRIANGLE_STRIP) {
+                color(color)
+
+                val interpolation = interpolate(0.0, (size / 2.0).toDouble(), animation.output)
+                if (animation.output >= 0.48) {
+                    glVertex2d((size / 2f).toDouble(), interpolate((size / 2.0), 0.0, animation.output))
+                }
+                glVertex2d(0.0, interpolation)
+
+                if (animation.output < 0.48) {
+                    glVertex2d((size / 2f).toDouble(), interpolate((size / 2.0), 0.0, animation.output))
+                }
+                glVertex2d(size.toDouble(), interpolation)
+            }
+        }
+        glTranslatef(-x, -y, 0f)
+    }
 }

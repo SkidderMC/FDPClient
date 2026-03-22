@@ -4,11 +4,11 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Category.SubCategory
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui.Companion.getInstance
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil.scissor
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Animation
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.Direction
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.impl.EaseInOutQuad
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.animations.impl.SmoothStepAnimation
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.scissor
+import net.ccbluex.liquidbounce.utils.animations.Animation
+import net.ccbluex.liquidbounce.utils.animations.Direction
+import net.ccbluex.liquidbounce.utils.animations.impl.EaseInOutQuad
+import net.ccbluex.liquidbounce.utils.animations.impl.SmoothStepAnimation
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round.RoundedUtil.Companion.drawRound
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.roundToHalf
@@ -66,8 +66,8 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
                     200,
                     200,
                     200,
-                    (100 + (155 * alphaani.getOutput())).toInt()
-                ) else Color(8, 48, 70, (100 + (155 * alphaani.getOutput())).toInt())
+                    (100 + (155 * alphaani.output)).toInt()
+                ) else Color(8, 48, 70, (100 + (155 * alphaani.output)).toInt())
             )
         }
 
@@ -129,14 +129,14 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
     }
 
     fun onScroll(ms: Int) {
-        scroll = (rawScroll - scrollAnimation.getOutput()).toFloat()
+        scroll = (rawScroll - scrollAnimation.output).toFloat()
         rawScroll += Mouse.getDWheel() / 4f
         rawScroll = max(min(minScroll, rawScroll), -maxScroll)
         scrollAnimation = SmoothStepAnimation(ms, (rawScroll - scroll).toDouble(), Direction.BACKWARDS)
     }
 
     fun getScroll(): Float {
-        scroll = (rawScroll - scrollAnimation.getOutput()).toFloat()
+        scroll = (rawScroll - scrollAnimation.output).toFloat()
         return scroll
     }
 

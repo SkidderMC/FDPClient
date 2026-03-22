@@ -1,6 +1,6 @@
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.round
 
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.DrRenderUtils.resetColor
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetColor
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager
