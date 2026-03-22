@@ -69,9 +69,8 @@ object RenderUtils : MinecraftInstance {
 
     private val glowCircle = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/targetesp/glow_circle.png")
 
+    @Deprecated("Use RenderGL.glCapMap", ReplaceWith("RenderGL"))
     private val glCapMap = mutableMapOf<Int, Boolean>()
-    // Use LRU cache for shadow textures to prevent unbounded memory growth
-    private val shadowCache = net.ccbluex.liquidbounce.utils.kotlin.LruCache<Int, Int>(50)
     private val DISPLAY_LISTS_2D = IntArray(4) {
         glGenLists(1)
     }
@@ -909,333 +908,25 @@ object RenderUtils : MinecraftInstance {
      * @param color The color of the ESP effect.
      * @param e The Render3DEvent containing partial ticks for interpolation.
      */
-    fun drawCrystal(entity: EntityLivingBase, color: Int, e: Render3DEvent) {
-        val x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * e.partialTicks - mc.renderManager.renderPosX
-        val y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * e.partialTicks - mc.renderManager.renderPosY
-        val z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * e.partialTicks - mc.renderManager.renderPosZ
-        val radius = 0.15f
-        val side = 4
+    @Deprecated("Use RenderEntity.drawCrystal", ReplaceWith("RenderEntity.drawCrystal(entity, color, e)"))
+    fun drawCrystal(entity: EntityLivingBase, color: Int, e: Render3DEvent) =
+        RenderEntity.drawCrystal(entity, color, e)
 
-        glPushMatrix()
-        glTranslated(x, y + 2, z)
-        glRotatef(-entity.width, 0.0f, 1.0f, 0.0f)
+    @Deprecated("Use RenderEntity.drawZavz", ReplaceWith("RenderEntity.drawZavz(entity, event, dual)"))
+    fun drawZavz(entity: EntityLivingBase, event: Render3DEvent, dual: Boolean) =
+        RenderEntity.drawZavz(entity, event, dual)
 
-        glColor(color)
-        enableSmoothLine(1.5f)
+    @Deprecated("Use RenderEntity.drawJello", ReplaceWith("RenderEntity.drawJello(entity)"))
+    fun drawJello(entity: EntityLivingBase) =
+        RenderEntity.drawJello(entity)
 
-        val c = Cylinder()
-        glRotatef(-90.0f, 1.0f, 0.0f, 0.0f)
-        c.drawStyle = 100012
-        glColor(if ((entity.hurtTime <= 0)) Color(80, 255, 80, 200) else Color(255, 0, 0, 200))
-        c.draw(0.0f, radius, 0.3f, side, 1)
-        c.drawStyle = 100012
+    @Deprecated("Use RenderEntity.drawFDP", ReplaceWith("RenderEntity.drawFDP(entity, event)"))
+    fun drawFDP(entity: EntityLivingBase, event: Render3DEvent) =
+        RenderEntity.drawFDP(entity, event)
 
-        glTranslated(0.0, 0.0, 0.3)
-        c.draw(radius, 0.0f, 0.3f, side, 1)
-
-        glRotatef(90.0f, 0.0f, 0.0f, 1.0f)
-        c.drawStyle = 100011
-
-        glTranslated(0.0, 0.0, -0.3)
-        glColor(color)
-        c.draw(0.0f, radius, 0.3f, side, 1)
-        c.drawStyle = 100011
-
-        glTranslated(0.0, 0.0, 0.3)
-        c.draw(radius, 0.0f, 0.3f, side, 1)
-
-        disableSmoothLine()
-        glPopMatrix()
-    }
-
-    /**
-     * Draws a visual effect around the specified entity in 3D space.
-     *
-     * @param event The render event containing the partial tick time for smooth rendering.
-     */
-    fun drawZavz(entity: EntityLivingBase, event: Render3DEvent, dual: Boolean) {
-        val speed = 0.1f
-
-        val ticks = event.partialTicks
-        glPushMatrix()
-        glDisable(GL_TEXTURE_2D)
-
-        startSmooth()
-
-        glDisable(GL_DEPTH_TEST)
-        glDepthMask(false)
-        glLineWidth(2.0f)
-        glBegin(GL_LINE_STRIP)
-
-        val x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * ticks - mc.renderManager.renderPosX
-        val z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * ticks - mc.renderManager.renderPosZ
-        var y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * ticks - mc.renderManager.renderPosY
-
-        val radius = 0.65
-        val precision = 360
-
-        var startPos = start % 360
-        start += speed
-
-        for (i in 0..precision) {
-            val posX = x + radius * cos(startPos + i * DOUBLE_PI / (precision / 2.0))
-            val posZ = z + radius * sin(startPos + i * DOUBLE_PI / (precision / 2.0))
-
-            val t = abs(System.currentTimeMillis() / 10.0) / 100.0 + y
-            val grad = ColorUtils
-                .getGradientOffset(colorPrimary, colorSecondary, t)
-                .withAlpha(255)
-
-            glColor(grad.red, grad.green, grad.blue, grad.alpha)
-
-            glVertex3d(posX, y, posZ)
-            y += entity.height / precision
-            glColor(0, 0, 0, 0)
-        }
-
-        glEnd()
-        glDepthMask(true)
-        glEnable(GL_DEPTH_TEST)
-
-        endSmooth()
-
-        glEnable(GL_TEXTURE_2D)
-        glPopMatrix()
-
-        if (dual) {
-            glPushMatrix()
-            glDisable(GL_TEXTURE_2D)
-
-            startSmooth()
-
-            glDisable(GL_DEPTH_TEST)
-            glDepthMask(false)
-            glLineWidth(2.0f)
-            glBegin(GL_LINE_STRIP)
-
-            startPos = start % 360
-            start += speed
-
-            y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * ticks - mc.renderManager.renderPosY + entity.height
-
-            for (i in 0..precision) {
-                val posX = x + radius * cos(-(startPos + i * DOUBLE_PI / (precision / 2.0)))
-                val posZ = z + radius * sin(-(startPos + i * DOUBLE_PI / (precision / 2.0)))
-
-                val t2 = abs(System.currentTimeMillis() / 10.0) / 100.0 + y
-                val grad2 = ColorUtils
-                    .getGradientOffset(colorPrimary, colorSecondary, t2)
-                    .withAlpha(255)
-
-                glColor(grad2.red, grad2.green, grad2.blue, grad2.alpha)
-
-                glVertex3d(posX, y, posZ)
-                y -= entity.height / precision
-                glColor(0, 0, 0, 0)
-            }
-
-            glEnd()
-            glDepthMask(true)
-            glEnable(GL_DEPTH_TEST)
-
-            endSmooth()
-
-            glEnable(GL_TEXTURE_2D)
-            glPopMatrix()
-        }
-    }
-
-    /**
-     * Draws a jello-like effect around the given entity.
-     *
-     * @param entity The entity to draw the jello effect around.
-     * @param partialTicks The partial ticks for smooth rendering.
-     */
-    fun drawJello(entity: EntityLivingBase) {
-
-        val drawTime = (System.currentTimeMillis() % 2000).toInt()
-        val drawMode = drawTime > 1000
-        var drawPercent = drawTime / 1000.0
-
-        drawPercent = if (drawMode) drawPercent - 1 else 1 - drawPercent
-        drawPercent = easeInOutQuadX(drawPercent)
-
-        val bb = entity.entityBoundingBox
-        val radius = bb.maxX - bb.minX
-        val height = bb.maxY - bb.minY
-        val posX = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks
-        var posY = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * mc.timer.renderPartialTicks
-        posY += if (drawMode) -0.5 else 0.5
-        val posZ = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * mc.timer.renderPartialTicks
-
-        val points = mutableListOf<Vec3>()
-        for (i in 0..360 step 7) {
-            points.add(Vec3(
-                posX - sin(i * Math.PI / 180F) * radius,
-                posY + height * drawPercent,
-                posZ + cos(i * Math.PI / 180F) * radius
-            ))
-        }
-        points.add(points[0])
-
-        mc.entityRenderer.disableLightmap()
-        glPushMatrix()
-        glDisable(GL_TEXTURE_2D)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_LINE_SMOOTH)
-        glEnable(GL_BLEND)
-        glDisable(GL_DEPTH_TEST)
-        glBegin(GL_LINE_STRIP)
-
-        val baseMove = if (drawPercent > 0.5) 1 - drawPercent else drawPercent
-        val min = (height / 60) * 20 * (1 - baseMove) * (if (drawMode) -1 else 1)
-
-        for (i in 0..20) {
-            var moveFace = (height / 60F) * i * baseMove
-            if (drawMode) moveFace = -moveFace
-
-            val firstPoint = points[0]
-            glVertex3d(
-                firstPoint.xCoord - mc.renderManager.viewerPosX,
-                firstPoint.yCoord - moveFace - min - mc.renderManager.viewerPosY,
-                firstPoint.zCoord - mc.renderManager.viewerPosZ
-            )
-
-            glColor4f(1F, 1F, 1F, 0.7F * (i / 20F))
-            for (vec3 in points) {
-                glVertex3d(
-                    vec3.xCoord - mc.renderManager.viewerPosX,
-                    vec3.yCoord - moveFace - min - mc.renderManager.viewerPosY,
-                    vec3.zCoord - mc.renderManager.viewerPosZ
-                )
-            }
-            glColor4f(0F,0F,0F,0F)
-        }
-
-        glEnd()
-        glEnable(GL_DEPTH_TEST)
-        glDisable(GL_LINE_SMOOTH)
-        glDisable(GL_BLEND)
-        glEnable(GL_TEXTURE_2D)
-        glPopMatrix()
-    }
-
-    fun drawFDP(entity: EntityLivingBase, event: Render3DEvent) {
-
-        val themeTextColor = getColor(1).rgb
-
-        val drawTime = (System.currentTimeMillis() % 1500).toInt()
-        val drawMode = drawTime > 750
-        var drawPercent = drawTime / 750.0
-        // true when goes up
-        if (!drawMode) {
-            drawPercent = 1 - drawPercent
-        } else {
-            drawPercent -= 1
-        }
-        drawPercent = easeInOutQuadX(drawPercent)
-        mc.entityRenderer.disableLightmap()
-        glPushMatrix()
-        glDisable(GL_TEXTURE_2D)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_LINE_SMOOTH)
-        glEnable(GL_BLEND)
-        glDisable(GL_DEPTH_TEST)
-
-        val bb = entity.entityBoundingBox
-        val radius = ((bb.maxX - bb.minX) + (bb.maxZ - bb.minZ)) * 0.5f
-        val height = bb.maxY - bb.minY
-        val x =
-            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
-        val y =
-            (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
-        val z =
-            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
-        mc.entityRenderer.disableLightmap()
-        glLineWidth((radius * 8f).toFloat())
-        glBegin(GL_LINE_STRIP)
-        for (i in 0..360 step 10) {
-            glColor(themeTextColor)
-            glVertex3d(x - sin(i * Math.PI / 180F) * radius, y, z + cos(i * Math.PI / 180F) * radius)
-        }
-        glEnd()
-
-        glEnable(GL_DEPTH_TEST)
-        glDisable(GL_LINE_SMOOTH)
-        glDisable(GL_BLEND)
-        glEnable(GL_TEXTURE_2D)
-        glPopMatrix()
-    }
-
-    fun drawLies(entity: EntityLivingBase, event: Render3DEvent) {
-
-        val themeTextColor = getColor(1)
-
-        val everyTime = 3000
-        val drawTime = (System.currentTimeMillis() % everyTime).toInt()
-        val drawMode = drawTime > (everyTime / 2)
-        var drawPercent = drawTime / (everyTime / 2.0)
-
-        if (!drawMode) {
-            drawPercent = 1 - drawPercent
-        } else {
-            drawPercent -= 1
-        }
-        drawPercent = easeInOutQuadX(drawPercent)
-        mc.entityRenderer.disableLightmap()
-        glPushMatrix()
-        glDisable(GL_TEXTURE_2D)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_LINE_SMOOTH)
-        glEnable(GL_BLEND)
-        glDisable(GL_DEPTH_TEST)
-        glDisable(GL_CULL_FACE)
-        glShadeModel(7425)
-        mc.entityRenderer.disableLightmap()
-
-        val bb = entity.entityBoundingBox
-        val radius = ((bb.maxX - bb.minX) + (bb.maxZ - bb.minZ)) * 0.5f
-        val height = bb.maxY - bb.minY
-        val x =
-            entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * event.partialTicks - mc.renderManager.viewerPosX
-        val y =
-            (entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * event.partialTicks - mc.renderManager.viewerPosY) + height * drawPercent
-        val z =
-            entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * event.partialTicks - mc.renderManager.viewerPosZ
-        val eased = (height / 3) * (if (drawPercent > 0.5) {
-            1 - drawPercent
-        } else {
-            drawPercent
-        }) * (if (drawMode) {
-            -1
-        } else {
-            1
-        })
-
-        for (i in 5..360 step 5) {
-            val x1 = x - sin(i * Math.PI / 180F) * radius
-            val z1 = z + cos(i * Math.PI / 180F) * radius
-            val x2 = x - sin((i - 5) * Math.PI / 180F) * radius
-            val z2 = z + cos((i - 5) * Math.PI / 180F) * radius
-            glBegin(GL_QUADS)
-            glFloatColor(themeTextColor, 0f)
-            glVertex3d(x1, y + eased, z1)
-            glVertex3d(x2, y + eased, z2)
-            glFloatColor(themeTextColor, 150f)
-            glVertex3d(x2, y, z2)
-            glVertex3d(x1, y, z1)
-            glEnd()
-        }
-
-        glEnable(GL_CULL_FACE)
-        glShadeModel(7424)
-        glColor4f(1f, 1f, 1f, 1f)
-        glEnable(GL_DEPTH_TEST)
-        glDisable(GL_LINE_SMOOTH)
-        glDisable(GL_BLEND)
-        glEnable(GL_TEXTURE_2D)
-        glPopMatrix()
-    }
+    @Deprecated("Use RenderEntity.drawLies", ReplaceWith("RenderEntity.drawLies(entity, event)"))
+    fun drawLies(entity: EntityLivingBase, event: Render3DEvent) =
+        RenderEntity.drawLies(entity, event)
 
 
     /**
@@ -2137,6 +1828,7 @@ object RenderUtils : MinecraftInstance {
      * @param radius      the radius
      * @param color       the color
      */
+    @Deprecated("Use RenderEffects.drawShadowRect", ReplaceWith("RenderEffects.drawShadowRect(paramXStart, paramYStart, paramXEnd, paramYEnd, radius, color)"))
     fun drawShadowRect(
         paramXStart: Float,
         paramYStart: Float,
@@ -2144,21 +1836,9 @@ object RenderUtils : MinecraftInstance {
         paramYEnd: Float,
         radius: Float,
         color: Int
-    ) {
-        drawShadowRect(paramXStart, paramYStart, paramXEnd, paramYEnd, radius, color, true)
-    }
+    ) = RenderEffects.drawShadowRect(paramXStart, paramYStart, paramXEnd, paramYEnd, radius, color)
 
-    /**
-     * Draw rounded rect.
-     *
-     * @param paramXStart the param x start
-     * @param paramYStart the param y start
-     * @param paramXEnd   the param x end
-     * @param paramYEnd   the param y end
-     * @param radius      the radius
-     * @param color       the color
-     * @param popPush     the pop push
-     */
+    @Deprecated("Use RenderEffects.drawShadowRect", ReplaceWith("RenderEffects.drawShadowRect(paramXStart, paramYStart, paramXEnd, paramYEnd, radius, color, popPush)"))
     fun drawShadowRect(
         paramXStart: Float,
         paramYStart: Float,
@@ -2167,84 +1847,7 @@ object RenderUtils : MinecraftInstance {
         radius: Float,
         color: Int,
         popPush: Boolean
-    ) {
-        var paramXStart = paramXStart
-        var paramYStart = paramYStart
-        var paramXEnd = paramXEnd
-        var paramYEnd = paramYEnd
-        val alpha = (color shr 24 and 0xFF) / 255.0f
-        val red = (color shr 16 and 0xFF) / 255.0f
-        val green = (color shr 8 and 0xFF) / 255.0f
-        val blue = (color and 0xFF) / 255.0f
-
-        var z: Float
-        if (paramXStart > paramXEnd) {
-            z = paramXStart
-            paramXStart = paramXEnd
-            paramXEnd = z
-        }
-
-        if (paramYStart > paramYEnd) {
-            z = paramYStart
-            paramYStart = paramYEnd
-            paramYEnd = z
-        }
-
-        val x1 = (paramXStart + radius).toDouble()
-        val y1 = (paramYStart + radius).toDouble()
-        val x2 = (paramXEnd - radius).toDouble()
-        val y2 = (paramYEnd - radius).toDouble()
-
-        if (popPush) glPushMatrix()
-        glEnable(GL_BLEND)
-        glDisable(GL_TEXTURE_2D)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_LINE_SMOOTH)
-        glLineWidth(1f)
-
-        glColor4f(red, green, blue, alpha)
-        glBegin(GL_POLYGON)
-
-        val degree = Math.PI / 180
-        run {
-            var i = 0.0
-            while (i <= 90) {
-                glVertex2d(x2 + sin(i * degree) * radius, y2 + cos(i * degree) * radius)
-                i += 1.0
-            }
-        }
-        run {
-            var i = 90.0
-            while (i <= 180) {
-                glVertex2d(
-                    x2 + sin(i * degree) * radius,
-                    y1 + cos(i * degree) * radius
-                )
-                i += 1.0
-            }
-        }
-        run {
-            var i = 180.0
-            while (i <= 270) {
-                glVertex2d(
-                    x1 + sin(i * degree) * radius,
-                    y1 + cos(i * degree) * radius
-                )
-                i += 1.0
-            }
-        }
-        var i = 270.0
-        while (i <= 360) {
-            glVertex2d(x1 + sin(i * degree) * radius, y2 + cos(i * degree) * radius)
-            i += 1.0
-        }
-        glEnd()
-
-        glEnable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
-        glDisable(GL_LINE_SMOOTH)
-        if (popPush) glPopMatrix()
-    }
+    ) = RenderEffects.drawShadowRect(paramXStart, paramYStart, paramXEnd, paramYEnd, radius, color, popPush)
     fun drawRoundedRect2(
         x1: Float,
         y1: Float,
@@ -2602,29 +2205,15 @@ object RenderUtils : MinecraftInstance {
         glPopMatrix()
     }
 
-    /**
-     * Draws a textured rectangle at z = 0. Args: x, y, u, v, width, height, textureWidth, textureHeight
-     */
+    @Deprecated("Use RenderTexture.drawModalRectWithCustomSizedTexture", ReplaceWith("RenderTexture.drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, textureWidth, textureHeight)"))
     fun drawModalRectWithCustomSizedTexture(
         x: Float, y: Float, u: Float, v: Float, width: Float, height: Float, textureWidth: Float, textureHeight: Float
-    ) = drawWithTessellatorWorldRenderer {
-        val f = 1f / textureWidth
-        val f1 = 1f / textureHeight
-        begin(7, DefaultVertexFormats.POSITION_TEX)
-        pos(x.toDouble(), (y + height).toDouble(), 0.0).tex((u * f).toDouble(), ((v + height) * f1).toDouble())
-            .endVertex()
-        pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(
-            ((u + width) * f).toDouble(), ((v + height) * f1).toDouble()
-        ).endVertex()
-        pos((x + width).toDouble(), y.toDouble(), 0.0).tex(((u + width) * f).toDouble(), (v * f1).toDouble())
-            .endVertex()
-        pos(x.toDouble(), y.toDouble(), 0.0).tex((u * f).toDouble(), (v * f1).toDouble()).endVertex()
-    }
+    ) = RenderTexture.drawModalRectWithCustomSizedTexture(x, y, u, v, width, height, textureWidth, textureHeight)
 
+    @Deprecated("Use RenderTexture.ColorValueCache", ReplaceWith("RenderTexture.ColorValueCache"))
     data class ColorValueCache(val lastHue: Float, val cachedTextureID: Int)
 
-    private val colorValueCache: MutableMap<ColorValue, MutableMap<Int, ColorValueCache>> = mutableMapOf()
-
+    @Deprecated("Use RenderTexture.updateTextureCache", ReplaceWith("RenderTexture.updateTextureCache(id, hue, width, height, generateImage, drawAt)"))
     fun ColorValue.updateTextureCache(
         id: Int,
         hue: Float,
@@ -2632,123 +2221,16 @@ object RenderUtils : MinecraftInstance {
         height: Int,
         generateImage: (BufferedImage, Graphics2D) -> Unit,
         drawAt: (Int) -> Unit
-    ) {
-        val cached = colorValueCache[this]?.get(id)
-        val lastHue = cached?.lastHue
+    ) = RenderTexture.run { updateTextureCache(id, hue, width, height, generateImage, drawAt) }
 
-        if (lastHue == null || lastHue != hue) {
-            val image = createRGBImageDrawing(width, height) { img, graphics -> generateImage(img, graphics) }
-            val texture = convertImageToTexture(image)
-            colorValueCache.getOrPut(this, ::mutableMapOf)[id] = ColorValueCache(hue, texture)
-        }
+    @Deprecated("Use RenderTexture.drawTexture", ReplaceWith("RenderTexture.drawTexture(textureID, x, y, width, height)"))
+    fun drawTexture(textureID: Int, x: Int, y: Int, width: Int, height: Int) =
+        RenderTexture.drawTexture(textureID, x, y, width, height)
 
-        colorValueCache[this]?.get(id)?.cachedTextureID?.let(drawAt)
-    }
-
-    private fun createRGBImageDrawing(width: Int, height: Int, f: (BufferedImage, Graphics2D) -> Unit): BufferedImage {
-        val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
-        val g = image.createGraphics()
-
-        f(image, g)
-
-        g.dispose()
-        return image
-    }
-
-    private fun convertImageToTexture(image: BufferedImage): Int {
-        val width = image.width
-        val height = image.height
-
-        val pixels = IntArray(width * height)
-
-        image.getRGB(0, 0, width, height, pixels, 0, width)
-
-        val buffer = ByteBuffer.allocateDirect(width * height * 4)
-
-        for (i in pixels.indices) {
-            val pixel = pixels[i]
-            buffer.put(((pixel shr 16) and 0xFF).toByte())
-            buffer.put(((pixel shr 8) and 0xFF).toByte())
-            buffer.put(((pixel shr 0) and 0xFF).toByte())
-            buffer.put(((pixel shr 24) and 0xFF).toByte())
-        }
-
-        buffer.flipSafely()
-
-        val textureID = glGenTextures()
-
-        glPushAttrib(GL_ALL_ATTRIB_BITS)
-        glPushMatrix()
-
-        glBindTexture(GL_TEXTURE_2D, textureID)
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
-
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer)
-
-        glPopMatrix()
-        glPopAttrib()
-
-        return textureID
-    }
-
-    fun drawTexture(textureID: Int, x: Int, y: Int, width: Int, height: Int) {
-        glPushAttrib(GL_ALL_ATTRIB_BITS)
-        glPushMatrix()
-
-        glEnable(GL_TEXTURE_2D)
-        glEnable(GL_BLEND)
-        glDisable(GL_CULL_FACE)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_ALPHA_TEST)
-        glAlphaFunc(GL_GREATER, 0f)
-
-        glBindTexture(GL_TEXTURE_2D, textureID)
-
-        glTranslatef(x.toFloat(), y.toFloat(), 0.0f)
-
-        glBegin(GL_QUADS)
-        glTexCoord2f(0.0f, 0.0f); glVertex2f(0.0f, 0.0f) // Bottom-left corner
-        glTexCoord2f(1.0f, 0.0f); glVertex2f(width.toFloat(), 0.0f) // Bottom-right corner
-        glTexCoord2f(1.0f, 1.0f); glVertex2f(width.toFloat(), height.toFloat()) // Top-right corner
-        glTexCoord2f(0.0f, 1.0f); glVertex2f(0.0f, height.toFloat()) // Top-left corner
-        glEnd()
-
-        glDisable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
-        glDisable(GL_ALPHA_TEST)
-        glEnable(GL_CULL_FACE)
-
-        glPopMatrix()
-        glPopAttrib()
-    }
-
-    /**
-     * Draws a textured rectangle at the stored z-value. Args: x, y, u, v, width, height.
-     */
+    @Deprecated("Use RenderTexture.drawTexturedModalRect", ReplaceWith("RenderTexture.drawTexturedModalRect(x, y, textureX, textureY, width, height, zLevel)"))
     fun drawTexturedModalRect(
         x: Int, y: Int, textureX: Int, textureY: Int, width: Int, height: Int, zLevel: Float
-    ) = drawWithTessellatorWorldRenderer {
-        val f = 0.00390625f
-        val f1 = 0.00390625f
-        begin(7, DefaultVertexFormats.POSITION_TEX)
-        pos(x.toDouble(), (y + height).toDouble(), zLevel.toDouble()).tex(
-            (textureX.toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble()
-        ).endVertex()
-        pos(
-            (x + width).toDouble(), (y + height).toDouble(), zLevel.toDouble()
-        ).tex(((textureX + width).toFloat() * f).toDouble(), ((textureY + height).toFloat() * f1).toDouble())
-            .endVertex()
-        pos((x + width).toDouble(), y.toDouble(), zLevel.toDouble()).tex(
-            ((textureX + width).toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble()
-        ).endVertex()
-        pos(x.toDouble(), y.toDouble(), zLevel.toDouble()).tex(
-            (textureX.toFloat() * f).toDouble(), (textureY.toFloat() * f1).toDouble()
-        ).endVertex()
-    }
+    ) = RenderTexture.drawTexturedModalRect(x, y, textureX, textureY, width, height, zLevel)
 
     fun glColor(red: Int, green: Int, blue: Int, alpha: Int) =
         glColor4f(red / 255f, green / 255f, blue / 255f, alpha / 255f)
@@ -2904,6 +2386,7 @@ object RenderUtils : MinecraftInstance {
 
     fun setGlState(cap: Int, state: Boolean) = if (state) glEnable(cap) else glDisable(cap)
 
+    @Deprecated("Use RenderTexture.drawScaledCustomSizeModalRect", ReplaceWith("RenderTexture.drawScaledCustomSizeModalRect(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight)"))
     fun drawScaledCustomSizeModalRect(
         x: Int,
         y: Int,
@@ -2915,88 +2398,11 @@ object RenderUtils : MinecraftInstance {
         height: Int,
         tileWidth: Float,
         tileHeight: Float
-    ) = drawWithTessellatorWorldRenderer {
-        val f = 1f / tileWidth
-        val f1 = 1f / tileHeight
-        begin(7, DefaultVertexFormats.POSITION_TEX)
-        pos(x.toDouble(), (y + height).toDouble(), 0.0).tex(
-            (u * f).toDouble(), ((v + vHeight.toFloat()) * f1).toDouble()
-        ).endVertex()
-        pos((x + width).toDouble(), (y + height).toDouble(), 0.0).tex(
-            ((u + uWidth.toFloat()) * f).toDouble(), ((v + vHeight.toFloat()) * f1).toDouble()
-        ).endVertex()
-        pos((x + width).toDouble(), y.toDouble(), 0.0).tex(((u + uWidth.toFloat()) * f).toDouble(), (v * f1).toDouble())
-            .endVertex()
-        pos(x.toDouble(), y.toDouble(), 0.0).tex((u * f).toDouble(), (v * f1).toDouble()).endVertex()
-    }
+    ) = RenderTexture.drawScaledCustomSizeModalRect(x, y, u, v, uWidth, vHeight, width, height, tileWidth, tileHeight)
 
-    /**
-     * Draws a bloom effect with a specified blur radius and color.
-     *
-     * This method creates a blurred rectangle that simulates a glow effect
-     * around the specified area.
-     *
-     * @param x          The x-coordinate of the rectangle's top-left corner.
-     * @param y          The y-coordinate of the rectangle's top-left corner.
-     * @param width      The width of the rectangle.
-     * @param height     The height of the rectangle.
-     * @param blurRadius The radius of the blur applied to the edges.
-     * @param color      The [java.awt.Color] used for the bloom effect.
-     */
-    fun drawBloom(x: Int, y: Int, width: Int, height: Int, blurRadius: Int, color: Color) {
-        var x = x
-        var y = y
-        var width = width
-        var height = height
-        Gui.drawRect(0, 0, 0, 0, 0)
-        pushAttrib()
-        pushMatrix()
-        alphaFunc(516, 0.01f)
-        height = max(0.0, height.toDouble()).toInt()
-        width = max(0.0, width.toDouble()).toInt()
-        width += blurRadius * 2
-        height += blurRadius * 2
-        x -= blurRadius
-        y -= blurRadius
-        val _X = x - 0.25f
-        val _Y = y + 0.25f
-        val identifier = width * height + width + color.hashCode() * blurRadius + blurRadius
-        glEnable(3553)
-        glDisable(2884)
-        glEnable(3008)
-        glEnable(3042)
-        if (shadowCache.containsKey(identifier)) {
-            val texId: Int = shadowCache.get(identifier)!!
-            bindTexture(texId)
-        } else {
-            val original = BufferedImage(width, height, 2)
-            val g = original.graphics
-            g.color = color
-            g.fillRect(blurRadius, blurRadius, width - blurRadius * 2, height - blurRadius * 2)
-            g.dispose()
-            val op = GaussianFilter(blurRadius.toFloat())
-            val blurred = op.filter(original, null)
-            val texId = TextureUtil.uploadTextureImageAllocate(TextureUtil.glGenTextures(), blurred, true, false)
-            shadowCache[identifier] = texId
-        }
-        glColor4f(1.0f, 1.0f, 1.0f, 1.0f)
-        glBegin(7)
-        glTexCoord2f(0.0f, 0.0f)
-        glVertex2d(_X.toDouble(), _Y.toDouble())
-        glTexCoord2f(0.0f, 1.0f)
-        glVertex2d(_X.toDouble(), (_Y + height).toDouble())
-        glTexCoord2f(1.0f, 1.0f)
-        glVertex2d((_X + width).toDouble(), (_Y + height).toDouble())
-        glTexCoord2f(1.0f, 0.0f)
-        glVertex2d((_X + width).toDouble(), _Y.toDouble())
-        glEnd()
-        glDisable(3553)
-        glEnable(2884)
-        glDisable(3008)
-        glDisable(3042)
-        popAttrib()
-        popMatrix()
-    }
+    @Deprecated("Use RenderEffects.drawBloom", ReplaceWith("RenderEffects.drawBloom(x, y, width, height, blurRadius, color)"))
+    fun drawBloom(x: Int, y: Int, width: Int, height: Int, blurRadius: Int, color: Color) =
+        RenderEffects.drawBloom(x, y, width, height, blurRadius, color)
 
     /**
      * Fast rounded rect.
@@ -3382,24 +2788,9 @@ object RenderUtils : MinecraftInstance {
         }
     }
 
-    /**
-     * Draws a shadow effect around a rectangular area using textured rectangles.
-     *
-     * @param x      The x-coordinate of the top-left corner of the rectangular area.
-     * @param y      The y-coordinate of the top-left corner of the rectangular area.
-     * @param width  The width of the rectangular area.
-     * @param height The height of the rectangular area.
-     */
-    fun drawShadow(x: Float, y: Float, width: Float, height: Float) {
-        drawTexturedRect(x - 9, y - 9, 9F, 9F, "paneltopleft")
-        drawTexturedRect(x - 9, y + height, 9F, 9F, "panelbottomleft")
-        drawTexturedRect(x + width, y + height, 9F, 9F, "panelbottomright")
-        drawTexturedRect(x + width, y - 9, 9F, 9F, "paneltopright")
-        drawTexturedRect(x - 9, y, 9F, height, "panelleft")
-        drawTexturedRect(x + width, y, 9F, height, "panelright")
-        drawTexturedRect(x, y - 9, width, 9F, "paneltop")
-        drawTexturedRect(x, y + height, width, 9F, "panelbottom")
-    }
+    @Deprecated("Use RenderEffects.drawShadow", ReplaceWith("RenderEffects.drawShadow(x, y, width, height)"))
+    fun drawShadow(x: Float, y: Float, width: Float, height: Float) =
+        RenderEffects.drawShadow(x, y, width, height)
 
     /**
      * Draw filled circle.
@@ -4599,29 +3990,10 @@ object RenderUtils : MinecraftInstance {
         return current + (if (shouldContinueAnimation) factor else -factor)
     }
 
-    /**
-     * Draws a fake circle glow effect
-     */
+    @Deprecated("Use RenderEffects.fakeCircleGlow", ReplaceWith("RenderEffects.fakeCircleGlow(posX, posY, radius, color, maxAlpha)"))
     @JvmStatic
-    fun fakeCircleGlow(posX: Float, posY: Float, radius: Float, color: Color, maxAlpha: Float) {
-        setAlphaLimit(0f)
-        glShadeModel(GL_SMOOTH)
-        setup2DRenderingGLUtil {
-            renderGLUtil(GL_TRIANGLE_FAN) {
-                color(color.rgb, maxAlpha)
-                glVertex2d(posX.toDouble(), posY.toDouble())
-                color(color.rgb, 0f)
-                for (i in 0..100) {
-                    val angle = (i * 0.06283) + 3.1415
-                    val x2 = sin(angle) * radius
-                    val y2 = cos(angle) * radius
-                    glVertex2d(posX + x2, posY + y2)
-                }
-            }
-        }
-        glShadeModel(GL_FLAT)
-        setAlphaLimit(1f)
-    }
+    fun fakeCircleGlow(posX: Float, posY: Float, radius: Float, color: Color, maxAlpha: Float) =
+        RenderEffects.fakeCircleGlow(posX, posY, radius, color, maxAlpha)
 
     /**
      * Scales rendering
