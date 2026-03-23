@@ -193,39 +193,14 @@ object RenderUtils : MinecraftInstance {
     }
 
     @JvmStatic
+    @Deprecated("Use RenderText.drawBlockDamageText", ReplaceWith("RenderText.run { drawBlockDamageText(currentDamage, font, fontShadow, color, scale) }"))
     fun BlockPos.drawBlockDamageText(
         currentDamage: Float,
         font: FontRenderer,
         fontShadow: Boolean,
         color: Int,
         scale: Float,
-    ) {
-        require(currentDamage in 0f..1f)
-        val renderManager = mc.renderManager
-        val progress = (currentDamage * 100).coerceIn(0f, 100f).toInt()
-        val progressText = "$progress%"
-        glPushAttrib(GL_ENABLE_BIT)
-        glPushMatrix()
-        val (x, y, z) = this.center - renderManager.renderPos
-        // Translate to block position
-        glTranslated(x, y, z)
-        glRotatef(-renderManager.playerViewY, 0F, 1F, 0F)
-        glRotatef(renderManager.playerViewX, 1F, 0F, 0F)
-        disableGlCap(GL_LIGHTING, GL_DEPTH_TEST)
-        enableGlCap(GL_BLEND)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        // Scale
-        val renderScale = (mc.thePlayer.getDistanceSq(this) / 8F).coerceAtLeast(1.5) / 150F * scale
-        glScaled(-renderScale, -renderScale, renderScale)
-        // Draw text
-        val width = font.getStringWidth(progressText) * 0.5f
-        font.drawString(
-            progressText, -width, if (font == Fonts.minecraftFont) 1F else 1.5F, color, fontShadow
-        )
-        resetCaps()
-        glPopMatrix()
-        glPopAttrib()
-    }
+    ) = RenderText.run { drawBlockDamageText(currentDamage, font, fontShadow, color, scale) }
 
     fun drawBlockBox(blockPos: BlockPos, color: Color, outline: Boolean) {
         val renderManager = mc.renderManager
@@ -2232,32 +2207,22 @@ object RenderUtils : MinecraftInstance {
         x: Int, y: Int, textureX: Int, textureY: Int, width: Int, height: Int, zLevel: Float
     ) = RenderTexture.drawTexturedModalRect(x, y, textureX, textureY, width, height, zLevel)
 
+    @Deprecated("Use RenderColor.glColor", ReplaceWith("RenderColor.glColor(red, green, blue, alpha)"))
     fun glColor(red: Int, green: Int, blue: Int, alpha: Int) =
-        glColor4f(red / 255f, green / 255f, blue / 255f, alpha / 255f)
+        RenderColor.glColor(red, green, blue, alpha)
 
-    /**
-     * Gl color.
-     *
-     * @param hex the hex
-     */
+    @Deprecated("Use RenderColor.glHexColor", ReplaceWith("RenderColor.glHexColor(hex)"))
     @JvmStatic
-    fun glHexColor(hex: Int) {
-        val alpha = (hex shr 24 and 0xFF) / 255f
-        val red = (hex shr 16 and 0xFF) / 255f
-        val green = (hex shr 8 and 0xFF) / 255f
-        val blue = (hex and 0xFF) / 255f
+    fun glHexColor(hex: Int) = RenderColor.glHexColor(hex)
 
-        color(red, green, blue, alpha)
-    }
+    @Deprecated("Use RenderColor.glColor", ReplaceWith("RenderColor.glColor(color)"))
+    fun glColor(color: Color) = RenderColor.glColor(color)
 
-    fun glColor(color: Color) = glColor(color.red, color.green, color.blue, color.alpha)
+    @Deprecated("Use RenderColor.glStateManagerColor", ReplaceWith("RenderColor.glStateManagerColor(color)"))
+    fun glStateManagerColor(color: Color) = RenderColor.glStateManagerColor(color)
 
-    fun glStateManagerColor(color: Color) =
-        color(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f)
-
-
-    fun glColor(hex: Int) =
-        glColor(hex shr 16 and 0xFF, hex shr 8 and 0xFF, hex and 0xFF, hex shr 24 and 0xFF)
+    @Deprecated("Use RenderColor.glColor", ReplaceWith("RenderColor.glColor(hex)"))
+    fun glColor(hex: Int) = RenderColor.glColor(hex)
 
     fun draw2D(entity: EntityLivingBase, posX: Double, posY: Double, posZ: Double, color: Int, backgroundColor: Int) {
         glPushMatrix()
@@ -2317,48 +2282,17 @@ object RenderUtils : MinecraftInstance {
         glPopMatrix()
     }
 
-    fun renderNameTag(string: String, x: Double, y: Double, z: Double) {
-        val renderManager = mc.renderManager
-        val (x1, y1, z1) = Vec3(x, y, z) - renderManager.renderPos
+    @Deprecated("Use RenderText.renderNameTag", ReplaceWith("RenderText.renderNameTag(string, x, y, z)"))
+    fun renderNameTag(string: String, x: Double, y: Double, z: Double) =
+        RenderText.renderNameTag(string, x, y, z)
 
-        glPushMatrix()
-        glTranslated(x1, y1, z1)
-        glNormal3f(0f, 1f, 0f)
-        glRotatef(-renderManager.playerViewY, 0f, 1f, 0f)
-        glRotatef(renderManager.playerViewX, 1f, 0f, 0f)
-        glScalef(-0.05f, -0.05f, 0.05f)
-        setGlCap(GL_LIGHTING, false)
-        setGlCap(GL_DEPTH_TEST, false)
-        setGlCap(GL_BLEND, true)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        val width = Fonts.fontSemibold35.getStringWidth(string) / 2
-        drawRect(-width - 1, -1, width + 1, Fonts.fontSemibold35.FONT_HEIGHT, Int.MIN_VALUE)
-        Fonts.fontSemibold35.drawString(string, -width.toFloat(), 1.5f, Color.WHITE.rgb, true)
-        resetCaps()
-        resetColor()
-        glPopMatrix()
-    }
+    @Deprecated("Use RenderHelper.drawLine", ReplaceWith("RenderHelper.drawLine(x, y, x1, y1, width)"))
+    fun drawLine(x: Double, y: Double, x1: Double, y1: Double, width: Float) =
+        RenderHelper.drawLine(x, y, x1, y1, width)
 
-    fun drawLine(x: Double, y: Double, x1: Double, y1: Double, width: Float) {
-        glDisable(GL_TEXTURE_2D)
-        glLineWidth(width)
-        glBegin(GL_LINES)
-        glVertex2d(x, y)
-        glVertex2d(x1, y1)
-        glEnd()
-        glEnable(GL_TEXTURE_2D)
-    }
-
-    fun makeScissorBox(x: Float, y: Float, x2: Float, y2: Float) {
-        val scaledResolution = ScaledResolution(mc)
-        val factor = scaledResolution.scaleFactor
-        glScissor(
-            (x * factor).toInt(),
-            ((scaledResolution.scaledHeight - y2) * factor).toInt(),
-            ((x2 - x) * factor).toInt(),
-            ((y2 - y) * factor).toInt()
-        )
-    }
+    @Deprecated("Use RenderHelper.makeScissorBox", ReplaceWith("RenderHelper.makeScissorBox(x, y, x2, y2)"))
+    fun makeScissorBox(x: Float, y: Float, x2: Float, y2: Float) =
+        RenderHelper.makeScissorBox(x, y, x2, y2)
 
     /**
      * GL CAP MANAGER
@@ -2498,16 +2432,11 @@ object RenderUtils : MinecraftInstance {
         )
     }
 
-    fun color(color: Int, alpha: Float) {
-        val r = (color shr 16 and 0xFF) / 255.0f
-        val g = (color shr 8 and 0xFF) / 255.0f
-        val b = (color and 0xFF) / 255.0f
-        color(r, g, b, alpha)
-    }
+    @Deprecated("Use RenderColor.color", ReplaceWith("RenderColor.color(color, alpha)"))
+    fun color(color: Int, alpha: Float) = RenderColor.color(color, alpha)
 
-    fun color(color: Int) {
-        color(color, (color shr 24 and 0xFF) / 255.0f)
-    }
+    @Deprecated("Use RenderColor.color", ReplaceWith("RenderColor.color(color)"))
+    fun color(color: Int) = RenderColor.color(color)
 
     /**
      * Draws a rounded rectangle with customizability for rounded corners.
@@ -3139,7 +3068,7 @@ object RenderUtils : MinecraftInstance {
 
     fun drawExhiEnchants(stack: ItemStack, x: Float, y: Float) {
         var y = y
-        RenderHelper.disableStandardItemLighting()
+        net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting()
         disableDepth()
         disableBlend()
         resetColor()
@@ -3271,7 +3200,7 @@ object RenderUtils : MinecraftInstance {
             }
         }
         enableDepth()
-        RenderHelper.enableGUIStandardItemLighting()
+        net.minecraft.client.renderer.RenderHelper.enableGUIStandardItemLighting()
     }
 
     fun drawGradientRoundedRect(
@@ -3375,7 +3304,7 @@ object RenderUtils : MinecraftInstance {
         scale((-scale), scale, scale)
         rotate(180f, 0f, 0f, 1f)
         rotate(135f, 0f, 1f, 0f)
-        RenderHelper.enableStandardItemLighting()
+        net.minecraft.client.renderer.RenderHelper.enableStandardItemLighting()
         rotate(-135f, 0f, 1f, 0f)
         translate(0.0, 0.0, 0.0)
 
@@ -3386,7 +3315,7 @@ object RenderUtils : MinecraftInstance {
         rendermanager.isRenderShadow = true
 
         popMatrix()
-        RenderHelper.disableStandardItemLighting()
+        net.minecraft.client.renderer.RenderHelper.disableStandardItemLighting()
         disableRescaleNormal()
         setActiveTexture(OpenGlHelper.lightmapTexUnit)
         disableTexture2D()
