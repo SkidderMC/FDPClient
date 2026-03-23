@@ -682,8 +682,6 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         val player = mc.thePlayer ?: return
         val holdingItem = player.heldItem?.item is ItemBlock
 
-        placeRotation = null
-
         if (!holdingItem && (autoBlock == "Off" || InventoryUtils.findBlockInHotbar() == null)) {
             return
         }
