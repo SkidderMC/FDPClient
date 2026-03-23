@@ -38,13 +38,22 @@ object SilentHotbar : Listenable, MinecraftInstance {
      */
     fun selectSlotSilently(
         requester: Any?, slot: Int, ticksUntilReset: Int? = null, immediate: Boolean = false,
-        render: Boolean = true, resetManually: Boolean = false,
+        render: Boolean = true, resetManually: Boolean = false, renderHotbar: Boolean = render,
+        renderFirstPerson: Boolean = render, renderThirdPerson: Boolean = render,
     ) {
         if (originalSlot == null) {
             originalSlot = mc.thePlayer?.inventory?.currentItem ?: 0
         }
 
-        hotbarState = SilentHotbarState(slot, requester, ticksUntilReset, render, resetManually)
+        hotbarState = SilentHotbarState(
+            slot,
+            requester,
+            ticksUntilReset,
+            renderHotbar,
+            renderFirstPerson,
+            renderThirdPerson,
+            resetManually
+        )
         ticksSinceLastUpdate = 0
 
         if (immediate) {
@@ -85,14 +94,28 @@ object SilentHotbar : Listenable, MinecraftInstance {
         ticksSinceLastUpdate++
     }
 
-    fun renderSlot(option: Boolean): Int {
+    fun renderSlot(option: Boolean) = renderHotbarSlot(option)
+
+    fun renderHotbarSlot(option: Boolean): Int {
+        return resolveRenderedSlot(option) { it.renderHotbar }
+    }
+
+    fun renderFirstPersonSlot(option: Boolean): Int {
+        return resolveRenderedSlot(option) { it.renderFirstPerson }
+    }
+
+    fun renderThirdPersonSlot(option: Boolean): Int {
+        return resolveRenderedSlot(option) { it.renderThirdPerson }
+    }
+
+    private inline fun resolveRenderedSlot(option: Boolean, shouldRender: (SilentHotbarState) -> Boolean): Int {
         val player = mc.thePlayer ?: return 0
 
         val original = player.inventory.currentItem
 
         val state = hotbarState ?: return original
 
-        return if (option || state.render) currentSlot else original
+        return if (option || shouldRender(state)) currentSlot else original
     }
 
     private fun shouldReset(slot: Int, other: Int? = originalSlot, keyPressCheck: Boolean = false): Boolean {
@@ -142,5 +165,6 @@ object SilentHotbar : Listenable, MinecraftInstance {
 
 class SilentHotbarState(
     val enforcedSlot: Int, var requester: Any?, var resetTicks: Int?,
-    val render: Boolean, val resetManually: Boolean,
+    val renderHotbar: Boolean, val renderFirstPerson: Boolean, val renderThirdPerson: Boolean,
+    val resetManually: Boolean,
 )

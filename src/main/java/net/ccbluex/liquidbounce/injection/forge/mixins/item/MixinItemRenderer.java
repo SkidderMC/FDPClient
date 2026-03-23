@@ -232,7 +232,7 @@ public abstract class MixinItemRenderer {
     private ItemStack hookSilentHotbar(InventoryPlayer instance) {
         SilentHotbarModule module = SilentHotbarModule.INSTANCE;
 
-        int slot = SilentHotbar.INSTANCE.renderSlot(module.handleEvents() && module.getKeepItemInHandInFirstPerson());
+        int slot = SilentHotbar.INSTANCE.renderFirstPersonSlot(module.handleEvents() && module.getKeepItemInHandInFirstPerson());
 
         return instance.getStackInSlot(slot);
     }

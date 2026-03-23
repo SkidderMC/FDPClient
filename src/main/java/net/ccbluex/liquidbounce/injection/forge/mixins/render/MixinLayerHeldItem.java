@@ -49,7 +49,7 @@ public class MixinLayerHeldItem {
     public void doRenderLayer(EntityLivingBase entity, float p_177141_2_, float p_177141_3_, float partialTicks, float p_177141_5_, float p_177141_6_, float p_177141_7_, float scale) {
         SilentHotbarModule module = SilentHotbarModule.INSTANCE;
 
-        int slot = SilentHotbar.INSTANCE.renderSlot(module.handleEvents() && module.getKeepItemInHandInThirdPerson());
+        int slot = SilentHotbar.INSTANCE.renderThirdPersonSlot(module.handleEvents() && module.getKeepItemInHandInThirdPerson());
 
         ItemStack itemstack = entity instanceof EntityPlayerSP ? ((EntityPlayerSP) entity).inventory.getStackInSlot(slot) : entity.getHeldItem();
 

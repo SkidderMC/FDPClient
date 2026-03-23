@@ -47,7 +47,7 @@ public abstract class MixinRenderPlayer {
         } else {
             SilentHotbarModule module = SilentHotbarModule.INSTANCE;
 
-            int slot = SilentHotbar.INSTANCE.renderSlot(module.handleEvents() && module.getKeepItemInHandInThirdPerson());
+            int slot = SilentHotbar.INSTANCE.renderThirdPersonSlot(module.handleEvents() && module.getKeepItemInHandInThirdPerson());
 
             ItemStack itemstack = entity instanceof EntityPlayerSP ? entity.inventory.getStackInSlot(slot) : entity.getHeldItem();
 

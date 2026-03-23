@@ -168,6 +168,51 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
         return p
     }
 
+    private fun resetStealState(clearProgress: Boolean = false) {
+        chestStealerCurrentSlot = -1
+        chestStealerLastSlot = -1
+
+        if (clearProgress) {
+            progress = null
+        }
+    }
+
+    private fun syncOpenChestState(): Boolean {
+        val player = mc.thePlayer ?: return false
+
+        if (mc.currentScreen !is GuiChest) {
+            return false
+        }
+
+        val container = player.openContainer ?: return false
+        if (container.windowId == 0) {
+            return false
+        }
+
+        if (receivedId != container.windowId || stacks.isEmpty() || stacks.size != container.inventorySlots.size) {
+            receivedId = container.windowId
+            stacks = container.inventorySlots.map { it.stack }
+        }
+
+        return true
+    }
+
+    private fun canTakeStack(stack: ItemStack): Boolean {
+        if (hasSpaceInInventory()) {
+            return true
+        }
+
+        val mergeableCount = mc.thePlayer?.inventory?.mainInventory?.sumOf { otherStack ->
+            otherStack?.takeIf {
+                it.isItemEqual(stack) && ItemStack.areItemStackTagsEqual(stack, otherStack)
+            }?.let { mergeableStack ->
+                mergeableStack.maxStackSize - mergeableStack.stackSize
+            } ?: 0
+        } ?: 0
+
+        return mergeableCount > 0
+    }
+
     private suspend fun shouldOperate(): Boolean {
         while (true) {
             if (!handleEvents())
@@ -178,6 +223,8 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
 
             if (mc.currentScreen !is GuiChest)
                 return false
+
+            syncOpenChestState()
 
             if (mc.thePlayer?.openContainer?.windowId != receivedId)
                 return false
@@ -223,6 +270,8 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
         if (screen !is GuiChest || !shouldOperate())
             return
 
+        syncOpenChestState()
+
         // Check if chest isn't a custom gui
         if (chestTitle && Blocks.chest.localizedName !in (screen.lowerChestInventory ?: return).name)
             return
@@ -238,26 +287,29 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
             if (!shouldOperate())
                 return
 
-            if (!hasSpaceInInventory())
-                return
+            val itemsToSteal = getItemsToSteal()
+
+            if (itemsToSteal.isEmpty()) {
+                progress = 1f
+                delay(closeDelay.random().toLong())
+
+                nextTick { SilentHotbar.resetSlot() }
+                break
+            }
 
             var hasTaken = false
-
-            val itemsToSteal = getItemsToSteal()
 
             run scheduler@{
                 itemsToSteal.forEachIndexed { index, (slot, stack, sortableTo) ->
                     // Wait for NoMove or cancel click
                     if (!shouldOperate()) {
                         nextTick { SilentHotbar.resetSlot() }
-                        chestStealerCurrentSlot = -1
-                        chestStealerLastSlot = -1
+                        resetStealState()
                         return
                     }
 
-                    if (!hasSpaceInInventory()) {
-                        chestStealerCurrentSlot = -1
-                        chestStealerLastSlot = -1
+                    if (!canTakeStack(stack)) {
+                        resetStealState()
                         return@scheduler
                     }
 
@@ -326,13 +378,12 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
             awaitTicked()
 
             // Before closing the chest, check all items once more, whether server hadn't cancelled some of the actions.
-            stacks = thePlayer.openContainer.inventory
+            stacks = thePlayer.openContainer.inventorySlots.map { it.stack }
         }
 
         // Wait before the chest gets closed (if it gets closed out of tick loop it could throw npe)
         nextTick {
-            chestStealerCurrentSlot = -1
-            chestStealerLastSlot = -1
+            resetStealState()
             thePlayer.closeScreen()
             progress = null
 
@@ -443,6 +494,14 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
         return itemsToSteal
     }
 
+    override fun onDisable() {
+        receivedId = null
+        stacks = emptyList()
+        currentContainerPos = null
+        SilentHotbar.resetSlot(this)
+        resetStealState(clearProgress = true)
+    }
+
     private fun sortBasedOnOptimumPath(itemsToSteal: MutableList<ItemTakeRecord>) {
         for (i in itemsToSteal.indices) {
             var nextIndex = i
@@ -493,19 +552,22 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
     val onPacket = handler<PacketEvent> { event ->
         when (val packet = event.packet) {
             is S2DPacketOpenWindow -> {
-                receivedId = null
-                progress = null
+                resetStealState(clearProgress = true)
+                currentContainerPos = null
 
-                if (furnace && packet.windowTitle.unformattedText.lowercase().contains("furnace")) {
-                    receivedId = packet.windowId
-                    stacks = emptyList()
+                receivedId = when {
+                    packet.guiId == "minecraft:chest" || packet.guiId == "minecraft:container" -> packet.windowId
+                    furnace && packet.windowTitle.unformattedText.lowercase().contains("furnace") -> packet.windowId
+                    else -> null
                 }
+                stacks = emptyList()
             }
 
             is C0DPacketCloseWindow, is S2EPacketCloseWindow -> {
                 receivedId = null
-                progress = null
+                stacks = emptyList()
                 currentContainerPos = null
+                resetStealState(clearProgress = true)
             }
 
             is S30PacketWindowItems -> {
@@ -516,7 +578,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
                     return@handler
 
                 if (receivedId != packetWindowId) {
-                    debug("Chest opened with ${stacks.size} items")
+                    debug("Chest opened with ${packet.itemStacks.size} items")
                 }
 
                 receivedId = packetWindowId

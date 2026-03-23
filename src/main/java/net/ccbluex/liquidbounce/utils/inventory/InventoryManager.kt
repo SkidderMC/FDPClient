@@ -78,6 +78,8 @@ object InventoryManager : Configurable("InventoryManager"), MinecraftInstance, L
 		get() = System.currentTimeMillis() - timeSinceClosedInventory >= postInventoryCloseDelayValue.get()
 
 	private val managerLoop = loopSequence(dispatcher = Dispatchers.Default, priority = 100) {
+		hasScheduledInLastLoop = false
+
 		/**
 		 * ChestStealer actions
 		 */
