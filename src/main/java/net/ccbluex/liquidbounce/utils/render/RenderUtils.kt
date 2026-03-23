@@ -3574,13 +3574,13 @@ object RenderUtils : MinecraftInstance {
     }
 
     fun startDrawing() {
-        glEnable(3042);
-        glEnable(3042);
-        glBlendFunc(770, 771);
-        glEnable(2848);
-        glDisable(3553);
-        glDisable(2929);
-        getMinecraft().entityRenderer.setupCameraTransform(getMinecraft().timer.renderPartialTicks, 0);
+        glEnable(3042)
+        glEnable(3042)
+        glBlendFunc(770, 771)
+        glEnable(2848)
+        glDisable(3553)
+        glDisable(2929)
+        getMinecraft().entityRenderer.setupCameraTransform(getMinecraft().timer.renderPartialTicks, 0)
     }
 
     fun stopDrawing() {
@@ -3810,7 +3810,7 @@ object RenderUtils : MinecraftInstance {
      */
     @JvmStatic
     fun interpolateColorC(color1: Color, color2: Color, amount: Float): Color {
-        val amountClamped = amount.coerceIn(0f, 1f)
+        amount.coerceIn(0f, 1f)
         return Color(
             interpolateInt(color1.red, color2.red, amount),
             interpolateInt(color1.green, color2.green, amount),
@@ -4042,7 +4042,7 @@ object RenderUtils : MinecraftInstance {
      */
     @JvmStatic
     fun resetColor() {
-        GlStateManager.color(1f, 1f, 1f, 1f)
+        color(1f, 1f, 1f, 1f)
     }
 
     /**
