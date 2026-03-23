@@ -89,7 +89,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     ) { extraClicks }
 
     // Autoblock
-    private val autoBlock by choices("AutoBlock", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof")
+    private val autoBlock by choices("AutoBlock", arrayOf("Off", "Pick", "Spoof", "FakeSpoof", "Switch"), "Spoof")
     private val sortByHighestAmount by boolean("SortByHighestAmount", false) { autoBlock != "Off" }
     private val earlySwitch by boolean("EarlySwitch", false) { autoBlock != "Off" && !sortByHighestAmount }
     private val amountBeforeSwitch by int(
@@ -352,6 +352,18 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             return isYawDiagonal && (isMovingDiagonal || isStrafing)
         }
 
+    private fun isHalfBlockLevel(y: Double) = abs(y - floor(y) - 0.5) <= 1E-3
+
+    private fun isUsableBlockStack(stack: ItemStack?, fullCubeOnly: Boolean = false): Boolean {
+        val itemBlock = stack?.item as? ItemBlock ?: return false
+        val block = itemBlock.block
+
+        return stack.stackSize > 0
+                && block !in InventoryUtils.BLOCK_BLACKLIST
+                && block !is BlockBush
+                && (!fullCubeOnly || block.isFullCube)
+    }
+
     // Telly
     private var ticksUntilJump = 0
     private var blocksUntilAxisChange = 0
@@ -369,6 +381,10 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
         launchY = player.posY.roundToInt()
         blocksUntilAxisChange = 0
+        blocksPlacedUntilJump = 0
+        blocksToJump = blocksToJumpRange.random()
+        godBridgeTargetRotation = null
+        placeRotation = null
     }
 
     // Events
@@ -592,7 +608,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         }
 
         raycast.let {
-            if (!currentRotationsActive || it != null && it.blockPos == target.blockPos && (!raycastProperly || it.sideHit == target.enumFacing)) {
+            if (!currentRotationsActive || it != null && it.typeOfHit.isBlock && it.blockPos == target.blockPos && (!raycastProperly || it.sideHit == target.enumFacing)) {
                 val result = if (raycastProperly && it != null) {
                     PlaceInfo(it.blockPos, it.sideHit, it.hitVec)
                 } else {
@@ -631,12 +647,24 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
         simPlayer.tick()
 
-        if (!simPlayer.onGround && !isManualJumpOptionActive || blocksPlacedUntilJump > blocksToJump) {
+        val shouldTriggerMovement = if (isManualJumpOptionActive) {
+            blocksPlacedUntilJump >= blocksToJump
+        } else {
+            !simPlayer.onGround
+        }
+
+        if (shouldTriggerMovement) {
+            val shouldAvoidJump = isLookingDiagonally
+
             when (godbridgeMovementMode) {
-                "Jump" -> event.originalInput.jump = true
+                "Jump" -> if (shouldAvoidJump) {
+                    event.originalInput.sneak = true
+                } else {
+                    event.originalInput.jump = true
+                }
                 "Sneak" -> event.originalInput.sneak = true
                 "Both" -> {
-                    if (RandomUtils.nextBoolean()) {
+                    if (!shouldAvoidJump && RandomUtils.nextBoolean()) {
                         event.originalInput.jump = true
                     } else {
                         event.originalInput.sneak = true
@@ -653,6 +681,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     fun update() {
         val player = mc.thePlayer ?: return
         val holdingItem = player.heldItem?.item is ItemBlock
+
+        placeRotation = null
 
         if (!holdingItem && (autoBlock == "Off" || InventoryUtils.findBlockInHotbar() == null)) {
             return
@@ -680,14 +710,14 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         if (!shouldKeepLaunchPosition) launchY = player.posY.roundToInt()
 
         val blockPosition = if (shouldGoDown) {
-            if (player.posY == player.posY.roundToInt() + 0.5) {
+            if (isHalfBlockLevel(player.posY)) {
                 BlockPos(player.posX, player.posY - 0.6, player.posZ)
             } else {
                 BlockPos(player.posX, player.posY - 0.6, player.posZ).down()
             }
         } else if (shouldKeepLaunchPosition && launchY <= player.posY) {
             BlockPos(player.posX, launchY - 1.0, player.posZ)
-        } else if (player.posY == player.posY.roundToInt() + 0.5) {
+        } else if (isHalfBlockLevel(player.posY)) {
             BlockPos(player)
         } else {
             BlockPos(player).down()
@@ -740,8 +770,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
         var stack = player.hotBarSlot(currentSlot).stack
 
-        //TODO: blacklist more blocks than only bushes
-        if (stack == null || stack.item !is ItemBlock || (stack.item as ItemBlock).block is BlockBush || stack.stackSize <= 0 || sortByHighestAmount || earlySwitch) {
+        if (!isUsableBlockStack(stack) || sortByHighestAmount || earlySwitch) {
             val blockSlot = if (sortByHighestAmount) {
                 InventoryUtils.findLargestBlockStackInHotbar() ?: return
             } else if (earlySwitch) {
@@ -762,7 +791,13 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             }
 
             if (autoBlock != "Off") {
-                SilentHotbar.selectSlotSilently(this, blockSlot, render = autoBlock == "Pick", resetManually = true)
+                SilentHotbar.selectSlotSilently(
+                    this,
+                    blockSlot,
+                    render = autoBlock in arrayOf("Pick", "FakeSpoof"),
+                    renderFirstPerson = autoBlock == "Pick",
+                    resetManually = true
+                )
             }
         }
 
@@ -852,6 +887,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         }
 
         placeRotation = null
+        godBridgeTargetRotation = null
+        blocksPlacedUntilJump = 0
         mc.timer.timerSpeed = 1f
 
         SilentHotbar.resetSlot(this)
@@ -915,7 +952,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             val z = if (omniDirectionalExpand) cos(yaw).roundToInt() else player.horizontalFacing.directionVec.z
             val blockPos = BlockPos(
                 player.posX + x * it,
-                if (shouldKeepLaunchPosition && launchY <= player.posY) launchY - 1.0 else player.posY - (if (player.posY == player.posY + 0.5) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0,
+                if (shouldKeepLaunchPosition && launchY <= player.posY) launchY - 1.0 else player.posY - (if (isHalfBlockLevel(player.posY)) 0.0 else 1.0) - if (shouldGoDown) 1.0 else 0.0,
                 player.posZ + z * it
             )
             val placeInfo = PlaceInfo.get(blockPos)
@@ -1045,8 +1082,15 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
         val distance = eyes.distanceTo(vec)
 
-        if (raycast && (distance > maxReach || world.rayTraceBlocks(eyes, vec, false, true, false) != null)) {
-            return null
+        if (raycast) {
+            if (distance > maxReach) {
+                return null
+            }
+
+            val visibilityTrace = world.rayTraceBlocks(eyes, vec, false, false, true)
+            if (visibilityTrace != null && (!visibilityTrace.typeOfHit.isBlock || visibilityTrace.blockPos != offsetPos || visibilityTrace.sideHit != side.opposite)) {
+                return null
+            }
         }
 
         val diff = vec - eyes
@@ -1065,7 +1109,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
         // If the current rotation already looks at the target block and side, then return right here
         performBlockRaytrace(currRotation, maxReach)?.let { raytrace ->
-            if (raytrace.blockPos == offsetPos && (!raycast || raytrace.sideHit == side.opposite)) {
+            if (raytrace.typeOfHit.isBlock && raytrace.blockPos == offsetPos && (!raycast || raytrace.sideHit == side.opposite)) {
                 return PlaceRotation(
                     PlaceInfo(
                         raytrace.blockPos, side.opposite, modifyVec(raytrace.hitVec, side, Vec3(offsetPos), !raycast)
@@ -1078,7 +1122,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
         val multiplier = if (options.legitimize) 3 else 1
 
-        if (raytrace.blockPos == offsetPos && (!raycast || raytrace.sideHit == side.opposite) && canUpdateRotation(
+        if (raytrace.typeOfHit.isBlock && raytrace.blockPos == offsetPos && (!raycast || raytrace.sideHit == side.opposite) && canUpdateRotation(
                 currRotation, rotationForPlacement, multiplier
             )
         ) {
@@ -1128,7 +1172,13 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             InventoryUtils.findBlockInHotbar()
         } ?: return
 
-        SilentHotbar.selectSlotSilently(this, switchSlot, render = autoBlock == "Pick", resetManually = true)
+        SilentHotbar.selectSlotSilently(
+            this,
+            switchSlot,
+            render = autoBlock in arrayOf("Pick", "FakeSpoof"),
+            renderFirstPerson = autoBlock == "Pick",
+            resetManually = true
+        )
     }
 
     private fun updatePlacedBlocksForTelly() {
@@ -1150,6 +1200,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         val thePlayer = mc.thePlayer ?: return false
 
         val prevSize = stack.stackSize
+        val suppressFirstPersonSwitchAnimation = autoBlock == "FakeSpoof" && SilentHotbar.isSlotModified(this)
 
         val motionSprintActive = sprint && sprintMode == "MotionSprint" && thePlayer.isMoving
         if (motionSprintActive) {
@@ -1182,7 +1233,9 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             if (stack.stackSize <= 0) {
                 thePlayer.inventory.mainInventory[SilentHotbar.currentSlot] = null
                 ForgeEventFactory.onPlayerDestroyItem(thePlayer, stack)
-            } else if (stack.stackSize != prevSize || mc.playerController.isInCreativeMode) mc.entityRenderer.itemRenderer.resetEquippedProgress()
+            } else if (!suppressFirstPersonSwitchAnimation && (stack.stackSize != prevSize || mc.playerController.isInCreativeMode)) {
+                mc.entityRenderer.itemRenderer.resetEquippedProgress()
+            }
 
             placeRotation = null
 
@@ -1190,7 +1243,9 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
             onSuccess()
         } else {
-            if (thePlayer.sendUseItem(stack)) mc.entityRenderer.itemRenderer.resetEquippedProgress2()
+            if (thePlayer.sendUseItem(stack) && !suppressFirstPersonSwitchAnimation) {
+                mc.entityRenderer.itemRenderer.resetEquippedProgress2()
+            }
         }
 
         return clickedSuccessfully
