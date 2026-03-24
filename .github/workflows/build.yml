@@ -2,6 +2,7 @@ name: build
 
 on:
   - push
+  - workflow_dispatch
 
 jobs:
   build:
@@ -17,20 +18,24 @@ jobs:
         with:
           distribution: "zulu"
           java-version: 8
-          cache: "gradle"
-
-      - name: Set outputs
-        id: vars
-        run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
 
       - name: Build
-        run: chmod +x ./gradlew && ./gradlew setupCiWorkspace && ./gradlew build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew setupCiWorkspace
+          ./gradlew build --no-daemon
 
-      - name: Rename build artifacts
-        run: mv build/libs/FDPClient-*.jar build/libs/FDPClient-build.jar
+      - name: Find and rename jar
+        run: |
+          ls -la build/libs/
+          if ls build/libs/FDPClient-*.jar 1> /dev/null 2>&1; then
+            mv build/libs/FDPClient-*.jar build/libs/FDPClient-build.jar
+          fi
+          ls -la build/libs/
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: FDPClient
           path: build/libs/FDPClient-build.jar

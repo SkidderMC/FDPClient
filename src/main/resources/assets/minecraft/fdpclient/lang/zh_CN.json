@@ -13,9 +13,7 @@
     "menu.serverStatus": "服务器状态",
     "menu.configuration": "配置",
     "menu.contributors": "贡献者",
-
     "menu.discordRPC.typeBox": "在此处输入..",
-
     "button.back": "返回",
     "button.moveUp": "上移",
     "button.moveDown": "下移",
@@ -23,7 +21,6 @@
     "button.export": "导出",
     "button.add": "添加",
     "button.remove": "移除",
-
     "button.altManager.copy": "复制账号名称",
     "button.altManager.login": "登录账号",
     "button.altManager.randomAlt": "随机选择账号",
@@ -33,378 +30,435 @@
     "button.altManager.cape": "披风管理",
     "button.altManager.sessionLogin": "Token登录",
     "button.altManager.buy": "购买",
-
     "button.fontManager.edit": "编辑",
-
     "button.openURL": "打开网址",
     "button.cancel": "取消",
-
     "text.fontManager.name": "名称",
     "text.fontManager.size": "大小",
     "text.fontManager.preview": "预览文本",
     "text.fontManager.customFonts": "%d 自定义字体",
     "text.fontManager.customFonts.plural": "%d 自定义字体",
-
     "text.Search": "§7账号搜索",
     "text.Loggingintoaccount": "正在登录账号",
-
     "menu.altManager.typeCustomPrefix": "输入自定义名称前缀...",
-
     "notification.moduleEnabled": "已启用 %s",
     "notification.moduleDisabled": "已禁用 %s",
-
     "module.aimbot.description": "自动瞄准范围内的目标。",
-
     "module.autoArmor.description": "自动穿上最好的盔甲。",
-
     "module.autoBow.description": "弓拉满时自动射出。",
-
     "module.autoClicker.description": "按住鼠标按钮时自动点击。",
-
     "module.autoDisable.description": "根据指定事件自动禁用特定模块。",
-
     "module.autoLeave.description": "血量低时自动退出服务器。",
-
     "module.autoPot.description": "血量低时自动投掷治疗药水。",
-
     "module.autoRod.description": "自动将钓鱼竿用于PVP对战",
-
     "module.autoSoup.description": "血量低时自动喝汤。",
-
     "module.autoWeapon.description": "攻击时自动切换到快捷栏中伤害最高的武器。",
-
     "module.backtrack.description": "允许你通过攻击玩家曾经处于的位置对其进行攻击。",
-
     "module.bedDefender.description": "自动用方块防守床",
-
     "module.bedPlates.description": "允许您看到床周围的方块。",
-
     "module.pointerESP.description": "允许您pointed实体的位置。",
-
     "module.projectileAimbot.description": "拉弓时自动瞄准玩家。",
-
     "module.criticals.description": "攻击生物时自动暴击。",
-
     "module.fastBow.description": "让你射出弓箭的速度更快。",
-
     "module.hitBox.description": "增大目标的判定箱。",
-
     "module.ignite.description": "自动在周围的目标脚下点火。",
-
     "module.killAura.description": "自动攻击周围的目标。",
-
     "module.noFriends.description": "忽略朋友功能。",
-
     "module.superKnockback.description": "增加对其他生物的击退。",
-
     "module.teleportHit.description": "允许你手动攻击时打击远处的生物。",
-
     "module.tNTBlock.description": "当周围的TNT爆炸时，自动用剑格挡。",
-
     "module.tNTTimer.description": "显示一个计时器，指示距离附近 TNT 爆炸还有多长时间。",
-
     "module.velocity.description": "修改你所受到的击退。",
-
     "module.abortBreaking.description": "允许你停止破坏方块而不会丢失破坏进度。",
-
     "module.ambience.description": "改变世界时间和天气。(视觉上)",
-
     "module.antiHunger.description": "防止饥饿。",
-
     "module.bedGodMode.description": "允许你躺在床上四处走动。(对于1.9)",
-
     "module.clip.description": "允许你clip通过方块。",
-
     "module.antiBounce.description": "防止你在方块上弹跳.",
-
     "module.animations.description": "自定义格挡动画。",
-
     "module.antiAFK.description": "防止挂机时被踢。",
-
     "module.antiBlind.description": "消除失明效果。(视觉上)",
-
     "module.antiBot.description": "防止杀戮光环攻击反作弊发的假人。",
-
     "module.antiExploit.description": "防止服务器崩溃你。",
-
     "module.antiCactus.description": "防止受到仙人掌伤害。",
-
     "module.antiFireball.description": "自动打走火球。",
-
     "module.antiVoid.description": "坠落一定距离后自动拉回。(虚空回弹)",
-
     "module.atAllProvider.description": "当你在消息中使用'@a'时，自动提及服务器上的所有人。",
-
     "module.attackEffects.description": "自定义攻击时显示的效果。",
-
     "module.autoAccount.description": "功能丰富的自动注册/登录和帐号管理器。",
-
     "module.autoBreak.description": "自动破坏你瞄准的方块。",
-
     "module.autoFish.description": "切换到鱼竿时自动钓鱼。",
-
     "module.autoProjectile.description": "自动扔鸡蛋/雪球。",
-
     "module.autoPlay.description": "自动为下一场比赛排队。",
-
     "module.autoRespawn.description": "死后自动重生。",
-
     "module.autoTool.description": "挖方块时自动切换到快捷栏中最合适的工具。",
-
     "module.autoWalk.description": "持续前行。",
-
     "module.avoidHazards.description": "防止走进可能对你有害的方块。",
-
     "module.blink.description": "挂起所有移动数据包(达到开关后瞬间移动的效果)。",
-
     "module.bedProtectionESP.description": "帮助你找到保护床所需放置方块的位置。 ",
-
     "module.blockESP.description": "允许你透过墙壁看到指定的方块。",
-
     "module.blockOverlay.description": "标记你所瞄准的方块。",
-
     "module.blockWalk.description": "允许你在不完整的方块上行走。",
-
     "module.breadcrumbs.description": "在你身后留下足迹。",
-
     "module.bufferSpeed.description": "允许你在台阶和楼梯上走得更快。",
-
     "module.cameraClip.description": "允许你在第三人称视角中透过墙壁看到另一边。",
-
     "module.cameraView.description": "允许您修改视角 Y 轴的位置。",
-
     "module.chams.description": "允许你透过方块看到目标。",
-
     "module.chestAura.description": "自动打开周围的箱子。",
-
     "module.chestStealer.description": "自动拿走箱子里的物品。",
-
     "module.civBreak.description": "允许你立即破坏所选的方块。",
-
     "module.clickGUI.description": "打开功能界面。",
-
     "module.componentOnHover.description": "允许你在鼠标悬停时看到聊天消息组件的点击动作和值。",
-
     "module.consoleSpammer.description": "在服务器控制台上刷屏错误信息。",
-
     "module.damage.description": "对自己造成伤害。",
-
     "module.derp.description": "让你看起来像是在瞎折腾。",
-
     "module.eSP.description": "允许你透过墙壁看到目标。",
-
     "module.eagle.description": "到方块边缘自动潜行。(别名：FastBridge)",
-
     "module.fakeLag.description": "在首次击中之前，使你在服务器端的位置滞后。",
-
     "module.fastBreak.description": "允许你更快地破坏方块。",
-
     "module.fastClimb.description": "允许你更快地爬梯子和藤蔓。",
-
     "module.fastPlace.description": "允许你更快地放方块。",
-
     "module.fastStairs.description": "允许你更快地上楼梯。",
-
     "module.fastUse.description": "允许你更快地使用物品。",
-
     "module.flagCheck.description": "检测您是否被反作弊标记。",
-
     "module.fly.description": "允许你在生存模式下飞行。",
-
     "module.forceUnicodeChat.description": "允许你在聊天栏中发送unicode消息。",
-
     "module.freeCam.description": "允许你离开身体。(灵魂出窍)",
-
     "module.freeLook.description": "允许您以第三人称视角观察周围环境。",
-
     "module.freeze.description": "允许你停留在空中。",
-
     "module.fucker.description": "破坏周围的指定的方块。(别名：IDNuker)",
-
     "module.fullbright.description": "让你在黑暗中看清一切。",
-
     "module.gameDetector.description": "检测你是否在一场已经开始的游戏中。",
-
     "module.ghost.description": "允许你在死亡后四处走动并与环境互动。",
-
     "module.ghostHand.description": "允许你透过墙壁与指定的方块交互。",
-
     "module.godMode.description": "AAC的GodMode漏洞。",
-
     "module.hUD.description": "改变或开关游戏作弊界面。",
-
     "module.highJump.description": "允许你跳得更高。",
-
     "module.iceSpeed.description": "允许你在冰上走得更快。",
-
     "module.inventoryCleaner.description": "自动丢弃无用物品。",
-
     "module.inventoryMove.description": "允许你在打开背包时行走。",
-
     "module.itemESP.description": "允许你透过墙壁看到物品。",
-
     "module.itemTeleport.description": "允许你捡起远处的物品。",
-
     "module.itemPhysics.description": "使掉落物具有物理特性。",
-
     "module.keepAlive.description": "尝试防止你死去。",
-
     "module.keepContainer.description": "允许你在任何位置打开上次关闭的容器 (按INSERT键打开)",
-
     "module.keepTabList.description": "保持 TAB 列表打开",
-
     "module.keyPearl.description": "允许你使用快捷键扔出在快捷栏中的末影珍珠。",
-
     "module.kick.description": "把自己踢出服务器。",
-
     "module.liquidChat.description": "允许你与其他LiquidBounce用户聊天。",
-
     "module.liquidWalk.description": "允许你在水上行走。",
-
     "module.liquids.description": "允许你与液体交互。",
-
     "module.longJump.description": "允许你跳得更远。",
-
     "module.midClick.description": "允许你通过中键单击玩家将其添加为朋友。",
-
     "module.moreCarry.description": "允许你将物品存储在合成槽中。",
-
     "module.multiActions.description": "允许你在挖方块时使用物品。",
-
     "module.nameProtect.description": "在客户端更改玩家名称。(假名)",
-
     "module.nameTags.description": "更改名称标签的比例，以便你始终可以阅读它们。",
-
     "module.noBob.description": "禁用视角摇晃效果。",
-
     "module.noClip.description": "允许你自由穿行于墙壁 (需要有沙子落在头上)。",
-
     "module.noFOV.description": "禁用由速度等效果引起的视野变化。",
-
     "module.noFall.description": "防止你受到摔落伤害。",
-
     "module.noFluid.description": "消除水和熔岩等流体造成的减速效果。",
-
     "module.noHurtCam.description": "禁用受伤时视角晃动效果。",
-
     "module.noJumpDelay.description": "移除跳跃之间的延迟。",
-
     "module.noPitchLimit.description": "允许你向各个方向无限制地旋转你的头。",
-
     "module.noRotateSet.description": "防止服务器旋转你的头。",
-
     "module.noSlotSet.description": "防止服务器更改你的物品栏。",
-
     "module.noSlow.description": "消除灵魂沙和使用物品造成的减速效果。",
-
     "module.noSlowBreak.description": "消除负面影响造成的破坏减速。",
-
     "module.noSwing.description": "禁用击打实体/挖方块时的摆臂动作。",
-
     "module.noWeb.description": "防止你在蜘蛛网中减速。",
-
     "module.nuker.description": "破坏周围所有的方块。",
-
     "module.packetDebugger.description": "允许您调试正在发送/接收的服务器/客户端数据包",
-
     "module.parkour.description": "到方块边缘自动跳跃帮你完成跑酷。",
-
     "module.perfectHorseJump.description": "自动在马的跳跃进度条完全充满时跳跃。",
-
     "module.phase.description": "允许你穿过方块。",
-
     "module.pingSpoof.description": "将延迟伪装为指定值。",
-
     "module.plugins.description": "查看服务器使用的插件。",
-
     "module.portalMenu.description": "允许你在地狱传送门中打开菜单。",
-
     "module.potionSaver.description": "当你静止不动时，冻结所有药水效果。",
-
     "module.potionSpoof.description": "让你凭空获得药水效果。",
-
     "module.projectiles.description": "允许你看到投掷物的落点。",
-
     "module.prophuntESP.description": "允许你在道具躲猫猫中看到伪装的玩家。",
-
     "module.reach.description": "增加你的攻击距离。",
-
     "module.refill.description": "自动将方块和食物等物品从背包补充到快捷栏。",
-
     "module.regen.description": "快速回血。",
-
     "module.resourcePackSpoof.description": "防止服务器强制下载其资源包。",
-
     "module.reverseStep.description": "允许你更快地走下方块。",
-
     "module.rotations.description": "允许你看到你在服务器端的身体旋转。",
-
     "module.safeWalk.description": "防止你在方块边缘掉落。",
-
     "module.scaffold.description": "自动在你的脚下放方块。",
-
     "module.serverCrasher.description": "允许你使某些服务器崩溃。",
-
     "module.skinDerp.description": "让你的皮肤闪烁 (需要多层皮肤)。",
-
     "module.slimeJump.description": "允许你在粘液块上跳得更高。",
-
     "module.silentHotbar.description": "在某些时候使选择物品保持静默。",
-
     "module.sneak.description": "自动保持潜行。",
-
     "module.spammer.description": "使用指定的消息在聊天框刷屏。",
-
     "module.speed.description": "允许你移动得更快。",
-
     "module.sprint.description": "自动保持疾跑。",
-
     "module.staffDetector.description": "检测服务器上的工作人员并提醒用户。",
-
     "module.step.description": "允许你更快地走上方块。",
-
     "module.storageESP.description": "允许你透过墙壁看到箱子等方块。",
-
     "module.strafe.description": "允许你在空中灵活移动。",
-
     "module.tNTESP.description": "允许你透过墙壁看到被点燃的TNT。",
-
     "module.teams.description": "防止杀戮光环攻击队友。",
-
     "module.teleport.description": "允许你四处传送。",
-
     "module.timerRange.description": "允许你操控游戏速度，以在与敌人对战中获得优势。",
-
     "module.timer.description": "改变游戏的运行速度。",
-
     "module.tracers.description": "向你周围的目标绘制一条线。",
-
     "module.trueSight.description": "允许你看到不可见的实体和障碍物。",
-
     "module.vehicleOneHit.description": "允许你一击就可破坏载具。",
-
     "module.wallClimb.description": "允许你像蜘蛛一样爬上墙壁。",
-
     "module.xRay.description": "允许你透过墙壁看到矿石。",
-
     "module.zoot.description": "移除所有负面药水效果/火焰。",
-
     "module.keepSprint.description": "允许你在攻击后不打断疾跑。",
-
     "module.disabler.description": "使你免受服务器或特定反作弊的作弊检测。",
-
     "module.overrideRaycast.description": "使用服务器基于旋转的raycast覆盖您基于旋转的raycast。",
-
     "module.tickBase.description": "缓冲ticks以便尽早攻击敌人。",
-
     "module.rotationRecorder.description": "记录并保存您的旋转。",
-
     "module.forwardTrack.description": "显示实体的实际位置。",
-
     "module.clickRecorder.description": "记录并保存您的点击。",
-
     "module.chineseHat.description": "给实体戴上一顶帽子。",
-
-    "module.jumpCircle.description": "跳跃时在玩家底下生成一个圆环。"
+    "module.jumpCircle.description": "跳跃时在玩家底下生成一个圆环。",
+    "module.AbortBreaking": "终止破坏",
+    "module.Aimbot": "自动瞄准",
+    "module.AirJump": "空中跳跃",
+    "module.Ambience": "环境效果",
+    "module.Animations": "动画",
+    "module.AntiAFK": "反AFK",
+    "module.AntiBlind": "防失明",
+    "module.AntiBot": "防机器人",
+    "module.AntiBounce": "防反弹",
+    "module.AnticheatDetector": "反作弊检测",
+    "module.AntiExploit": "防利用",
+    "module.AntiFireball": "防火球",
+    "module.AntiHunger": "防饥饿",
+    "module.AntiVoid": "防虚空",
+    "module.ArmorFilter": "装备过滤",
+    "module.AutoArmor": "自动装备",
+    "module.AutoBlock": "自动格挡",
+    "module.AutoBow": "自动弓",
+    "module.AutoBreak": "自动破坏",
+    "module.AutoClicker": "自动点击",
+    "module.AutoDisable": "自动关闭",
+    "module.AutoFish": "自动钓鱼",
+    "module.AutoPlay": "自动游戏",
+    "module.AutoPot": "自动药水",
+    "module.AutoProjectile": "自动抛射物",
+    "module.AutoRespawn": "自动重生",
+    "module.AutoRod": "自动钓竿",
+    "module.AutoRole": "自动角色",
+    "module.AutoSoup": "自动喝汤",
+    "module.AutoTool": "自动工具",
+    "module.AutoWalk": "自动行走",
+    "module.AutoWeapon": "自动武器",
+    "module.AvoidHazards": "躲避危险",
+    "module.Backtrack": "回溯",
+    "module.BedDefender": "床防御",
+    "module.BedPlates": "床板",
+    "module.BedProtectionESP": "床保护透视",
+    "module.Blink": "闪烁",
+    "module.BlockESP": "方块透视",
+    "module.BlockOverlay": "方块覆盖",
+    "module.BrandSpoofer": "品牌伪装",
+    "module.Breadcrumbs": "面包屑",
+    "module.CameraView": "相机视角",
+    "module.CapeManager": "披风管理",
+    "module.Chams": "穿墙透视",
+    "module.ChatControl": "聊天控制",
+    "module.ChestAura": "箱子光环",
+    "module.ChestStealer": "箱子偷取",
+    "module.ChineseHat": "中国帽",
+    "module.CivBreak": "市民破坏",
+    "module.ClickGUIModule": "点击GUI",
+    "module.ClickRecorder": "点击录制",
+    "module.CombatVisuals": "战斗显示",
+    "module.Criticals": "暴击",
+    "module.CustomModel": "自定义模型",
+    "module.Damage": "伤害",
+    "module.DamageParticle": "伤害粒子",
+    "module.DashTrail": "冲刺轨迹",
+    "module.DelayRemover": "延迟移除",
+    "module.Disabler": "失效器",
+    "module.DiscordRPCModule": "Discord RPC",
+    "module.Eagle": "老鹰",
+    "module.ESP": "透视",
+    "module.FakeLag": "假延迟",
+    "module.FakePlayer": "假玩家",
+    "module.FastAccel": "快速加速",
+    "module.FastBow": "快速弓",
+    "module.FastBreak": "快速破坏",
+    "module.FastClimb": "快速爬墙",
+    "module.FastPlace": "快速放置",
+    "module.FastUse": "快速使用",
+    "module.FightBot": "战斗机器人",
+    "module.FireFlies": "萤火虫",
+    "module.FlagCheck": "旗帜检查",
+    "module.Flight": "飞行",
+    "module.ForwardTrack": "前进轨迹",
+    "module.FreeCam": "自由相机",
+    "module.FreeLook": "自由视角",
+    "module.Fucker": "破坏者",
+    "module.Fullbright": "全亮",
+    "module.GameDetector": "游戏检测",
+    "module.Gapple": "金苹果",
+    "module.Ghost": "幽灵",
+    "module.GhostHand": "幽灵手",
+    "module.GuiClicker": "GUI点击",
+    "module.HighJump": "高跳",
+    "module.HitBox": "碰撞箱",
+    "module.HitBubbles": "击打气泡",
+    "module.HitSelect": "选择目标",
+    "module.HudDesigner": "HUD设计器",
+    "module.HUDModule": "HUD",
+    "module.HurtCam": "伤屏",
+    "module.Ignite": "点燃",
+    "module.InfiniteAura": "无限光环",
+    "module.InstantStop": "即时停止",
+    "module.InventoryCleaner": "物品清理",
+    "module.InvMove": "物品移动",
+    "module.IRCModule": "IRC",
+    "module.ItemESP": "物品透视",
+    "module.ItemTeleport": "物品传送",
+    "module.Jesus": "耶稣",
+    "module.JumpCircle": "跳跃圆圈",
+    "module.KeepAlive": "保持存活",
+    "module.KeepSprint": "保持冲刺",
+    "module.KeepTabList": "保持列表",
+    "module.KillAura": "击杀光环",
+    "module.LightningDetect": "闪电检测",
+    "module.LineGraphs": "折线图",
+    "module.LongJump": "长跳",
+    "module.MidClick": "中键点击",
+    "module.MoveHelper": "移动助手",
+    "module.MultiActions": "多重动作",
+    "module.MurderDetector": "杀手检测",
+    "module.NameProtect": "名字保护",
+    "module.NameTags": "名字标签",
+    "module.NoBob": "无摇摆",
+    "module.NoBooks": "无书",
+    "module.NoClip": "穿墙",
+    "module.NoFall": "无掉落",
+    "module.NoFluid": "无流体",
+    "module.NoFOV": "无FOV",
+    "module.NoJumpDelay": "无跳跃延迟",
+    "module.NoPitchLimit": "无视角限制",
+    "module.NoRender": "无渲染",
+    "module.NoRotateSet": "无旋转设置",
+    "module.NoSlotSet": "无槽位设置",
+    "module.NoSlow": "无减速",
+    "module.NoSwing": "无摆动",
+    "module.Notifier": "通知器",
+    "module.NoWeb": "无蛛网",
+    "module.Nuker": "挖掘机",
+    "module.OverrideRaycast": "覆盖射线",
+    "module.PacketDebugger": "数据包调试",
+    "module.Parkour": "跑酷",
+    "module.Phase": "相位",
+    "module.PingFix": "延迟修复",
+    "module.PingSpoof": "延迟伪装",
+    "module.Plugins": "插件",
+    "module.PointerESP": "指针透视",
+    "module.PotionSpoof": "药水伪装",
+    "module.ProjectileAimbot": "抛射物瞄准",
+    "module.Projectiles": "抛射物",
+    "module.ProphuntESP": "藏猫猫透视",
+    "module.Reach": "触达",
+    "module.Refill": "补充",
+    "module.Regen": "再生",
+    "module.RemoveEffect": "移除效果",
+    "module.ResourcePackSpoof": "资源包伪装",
+    "module.RotationRecorder": "旋转记录",
+    "module.Rotations": "旋转",
+    "module.SafeWalk": "安全行走",
+    "module.Scaffold": "脚手架",
+    "module.ServerCrasher": "服务器崩溃",
+    "module.ServerLag": "服务器延迟",
+    "module.SilentHotbarModule": "快捷栏",
+    "module.SnakeGame": "贪吃蛇",
+    "module.SnapTap": "快敲",
+    "module.Sneak": "潜行",
+    "module.Spammer": "刷屏",
+    "module.Speed": "速度",
+    "module.Spider": "蜘蛛",
+    "module.SpotifyModule": "Spotify",
+    "module.Sprint": "冲刺",
+    "module.StaffDetector": "管理检测",
+    "module.Step": "台阶",
+    "module.StorageESP": "存储透视",
+    "module.Strafe": "闪避",
+    "module.SuperKnockback": "超级击退",
+    "module.TabGUIModule": "TabGUI",
+    "module.TargetModule": "目标模块",
+    "module.TargetStrafe": "目标闪避",
+    "module.Teams": "队伍",
+    "module.Teleport": "传送",
+    "module.TickBase": "tick基础",
+    "module.Timer": "计时器",
+    "module.TimerRange": "计时器范围",
+    "module.TNTESP": "TNT透视",
+    "module.TNTTimer": "TNT计时器",
+    "module.TNTTrails": "TNT轨迹",
+    "module.Tracers": "轨迹",
+    "module.TrueSight": "真实视野",
+    "module.Velocity": "速度",
+    "module.WallClimb": "爬墙",
+    "module.Wings": "翅膀",
+    "module.XRay": "X光",
+    "setting.Mode": "模式",
+    "setting.Enabled": "启用",
+    "setting.Speed": "速度",
+    "setting.Range": "范围",
+    "setting.Radius": "半径",
+    "setting.Delay": "延迟",
+    "setting.Timer": "计时器",
+    "setting.Strength": "强度",
+    "setting.Value": "值",
+    "setting.Time": "时间",
+    "setting.Level": "等级",
+    "setting.Color": "颜色",
+    "setting.Size": "大小",
+    "setting.Height": "高度",
+    "setting.Width": "宽度",
+    "setting.Distance": "距离",
+    "setting.Health": "生命值",
+    "setting.Armor": "护甲",
+    "setting.ClickDelay": "点击延迟",
+    "setting.CPS": "点击次数",
+    "setting.MinCPS": "最小CPS",
+    "setting.MaxCPS": "最大CPS",
+    "setting.Sprint": "冲刺",
+    "setting.Sneak": "潜行",
+    "setting.Jump": "跳跃",
+    "setting.ThroughWalls": "透视墙壁",
+    "setting.Outline": "描边",
+    "setting.ColorSync": "颜色同步",
+    "setting.Alpha": "透明度",
+    "setting.Thickness": "厚度",
+    "setting.Target": "目标",
+    "setting.Targets": "目标",
+    "setting.Players": "玩家",
+    "setting.Mobs": "生物",
+    "setting.Animals": "动物",
+    "setting.Vehicles": "载具",
+    "setting.Invisible": "隐形",
+    "setting.AttackSpeed": "攻击速度",
+    "setting.AttackRange": "攻击范围",
+    "setting.AttackDelay": "攻击延迟",
+    "setting.MultiTarget": "多重目标",
+    "setting.Autoblock": "自动格挡",
+    "setting.KeepSprint": "保持冲刺",
+    "setting.Criticals": "暴击",
+    "setting.Flight": "飞行",
+    "setting.NoFall": "无掉落",
+    "setting.Jesus": "耶稣",
+    "setting.Spider": "蜘蛛",
+    "setting.Step": "台阶",
+    "setting.WaterWalk": "水上行走",
+    "setting.Debug": "调试",
+    "setting.NoPacket": "无数据包",
+    "setting.Predict": "预测",
+    "setting.Smooth": "平滑",
+    "setting.Interpolation": "插值"
   }
 }
