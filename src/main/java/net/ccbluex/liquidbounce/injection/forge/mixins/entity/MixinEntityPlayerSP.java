@@ -33,6 +33,7 @@ import net.minecraft.crash.CrashReportCategory;
 import net.minecraft.entity.Entity;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemSword;
+import net.minecraft.network.Packet;
 import net.minecraft.network.play.client.C03PacketPlayer;
 import net.minecraft.network.play.client.C0APacketAnimation;
 import net.minecraft.network.play.client.C0BPacketEntityAction;
@@ -47,6 +48,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -240,20 +242,25 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         return content;
     }
 
-    @Inject(method = "swingItem", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "swingItem", at = @At("HEAD"))
     private void swingItem(CallbackInfo callbackInfo) {
         final NoSwing noSwing = NoSwing.INSTANCE;
 
-        if (noSwing.handleEvents()) {
-            callbackInfo.cancel();
-
-            if (!noSwing.getServerSide()) {
-                sendQueue.addToSendQueue(new C0APacketAnimation());
-                CooldownHelper.INSTANCE.resetLastAttackedTicks();
-            }
-        } else {
+        // NoSwing no longer hides your own first-person swing - the local animation always plays.
+        // Only the outgoing swing packet is suppressed (see redirectSwingAnimationPacket), so other
+        // players / anti-cheats stop seeing the swing while you still see your hand swing when attacking.
+        if (!noSwing.handleEvents() || !noSwing.getServerSide()) {
             CooldownHelper.INSTANCE.resetLastAttackedTicks();
         }
+    }
+
+    @Redirect(method = "swingItem", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/NetHandlerPlayClient;addToSendQueue(Lnet/minecraft/network/Packet;)V"))
+    private void redirectSwingAnimationPacket(NetHandlerPlayClient instance, Packet<?> packet) {
+        final NoSwing noSwing = NoSwing.INSTANCE;
+        if (noSwing.handleEvents() && noSwing.getServerSide()) {
+            return; // server-side no-swing: drop the packet; the local first-person animation still plays
+        }
+        instance.addToSendQueue(packet);
     }
 
     @Inject(method = "pushOutOfBlocks", at = @At("HEAD"), cancellable = true)
