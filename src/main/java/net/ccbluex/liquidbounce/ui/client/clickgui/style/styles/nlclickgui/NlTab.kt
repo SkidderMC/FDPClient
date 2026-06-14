@@ -37,7 +37,8 @@ class NlTab(val type: Category, val y2: Int) {
             nlSub.w = w
             nlSub.h = h
 
-            if (!nlSub.isSelected) {
+            val searchingAll = NeverloseGui.getInstance().let { it.isSearching && it.searchScopeAll }
+            if (!nlSub.isSelected && !searchingAll) {
                 for (nlModule in nlSub.nlModules) {
                     for (nlSetting in nlModule.downwards) {
                         if (nlSetting is Numbersetting) {

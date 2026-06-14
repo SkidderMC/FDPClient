@@ -60,20 +60,16 @@ class NeverloseGui : GuiScreen() {
     private var settings = false
     private var search = false
     private var searchText = ""
+    private var searchAllCategories = true
+
+    // Search-mode header widgets (populated each frame while the search panel is visible)
+    private var searchCloseRect = floatArrayOf(0f, 0f, 0f, 0f)
+    private var searchAllChipRect = floatArrayOf(0f, 0f, 0f, 0f)
+    private var searchCatChipRect = floatArrayOf(0f, 0f, 0f, 0f)
+    private var searchPanelRect = floatArrayOf(0f, 0f, 0f, 0f)
 
     private val clientPath = CLIENT_NAME.lowercase(Locale.getDefault())
     private val defaultAvatar = ResourceLocation("$clientPath/64.png")
-
-    private val githubIcon = ResourceLocation("$clientPath/texture/mainmenu/github.png")
-    private val editIcon = ResourceLocation("$clientPath/custom_hud_icon.png")
-    private val eyeIcon = ResourceLocation("$clientPath/texture/category/visual.png")
-    private val spotifyIcon = ResourceLocation("$clientPath/texture/spotify/spotify.png")
-    private val keyBindIcon = ResourceLocation("$clientPath/texture/keyboard.png")
-    private val supportIcon = ResourceLocation("$clientPath/texture/mainmenu/support.png")
-    private val updateIcon = ResourceLocation("$clientPath/texture/mainmenu/update.png")
-    private val themeIcon = ResourceLocation("$clientPath/texture/mainmenu/pallete.png")
-    private val discordIcon = ResourceLocation("$clientPath/texture/mainmenu/discord.png")
-    private val fontsIcon = ResourceLocation("$clientPath/texture/mainmenu/fonts.png")
 
     private val headerIconHitboxes = mutableListOf<HeaderIconHitbox>()
     private var avatarTexture: ResourceLocation = defaultAvatar
@@ -178,88 +174,126 @@ class NeverloseGui : GuiScreen() {
             nlTab.draw(bgMouseX, bgMouseY)
         }
 
-        val searchProgress = searchanim.output.toFloat()
-        val closeButtonOffset = if (search || !searchanim.isDone) -83f * searchProgress else 0f
-        val closeButtonX = (x + w - 50 + closeButtonOffset).toFloat()
-        Fonts.NlIcon.nlfont_20.nlfont_20.drawString("x", closeButtonX, (y + 17).toFloat(), if (settings) neverlosecolor.rgb else if (light) Color(95, 95, 95).rgb else -1)
-
-        Fonts.NlIcon.nlfont_20.nlfont_20.drawString("j", (x + w - 30).toFloat(), (y + 18).toFloat(), if (search) neverlosecolor.rgb else if (light) Color(95, 95, 95).rgb else -1)
         searchanim.direction = if (search) Direction.FORWARDS else Direction.BACKWARDS
+        val searchProgress = searchanim.output.toFloat()
 
-        if (search || !searchanim.isDone) {
-            val searchBarX = (x + w - 30 - (85f * searchProgress))
-            val searchBarWidth = (80f * searchProgress)
-            RoundedUtil.drawRound(searchBarX, (y + 12).toFloat(), searchBarWidth, 15f, 1f, if (light) Color(235, 235, 235) else neverlosecolor)
-            val searchTextX = (x + w - 26 - (85f * searchProgress))
-            Fonts.Nl_16.drawString(searchText, searchTextX, (y + 15).toFloat(), if (light) Color(18, 18, 19).rgb else -1)
-        }
+        // Top-right toggles: settings gear ("x") and search ("j")
+        Fonts.NlIcon.nlfont_20.nlfont_20.drawString("x", (x + w - 50).toFloat(), (y + 17).toFloat(), if (settings) neverlosecolor.rgb else if (light) Color(95, 95, 95).rgb else -1)
+        Fonts.NlIcon.nlfont_20.nlfont_20.drawString("j", (x + w - 30).toFloat(), (y + 18).toFloat(), if (search) neverlosecolor.rgb else if (light) Color(95, 95, 95).rgb else -1)
+
         if (settings) {
             nlSetting.draw(mouseX, mouseY)
         }
 
-        val buttonSpacing = 5f
-        val startX = (x + 105).toFloat()
-        var nextButtonX = startX
-        var buttonY = (y + 10).toFloat()
-        val buttonHeight = 21f
-
-        headerIconHitboxes.clear()
-
         val headerIcons = listOf(
-            HeaderIcon("GitHub", githubIcon) { MiscUtils.showURL(CLIENT_GITHUB) },
-            HeaderIcon("Edit", editIcon) { mc.displayGuiScreen(GuiHudDesigner()) },
-            HeaderIcon("Viewer", eyeIcon) {
+            HeaderIcon("GitHub", "G") { MiscUtils.showURL(CLIENT_GITHUB) },
+            HeaderIcon("Edit", "E") { mc.displayGuiScreen(GuiHudDesigner()) },
+            HeaderIcon("Viewer", "V") {
                 viewerOpen = !viewerOpen
                 if (viewerOpen) {
                     espPreviewComponent = EspPreviewComponent(this)
                 }
             },
-            HeaderIcon("Spotify", spotifyIcon) { SpotifyModule.openPlayerScreen() },
-            HeaderIcon("Keybind", keyBindIcon) { mc.displayGuiScreen(KeyBindManager) },
+            HeaderIcon("Spotify", "S") { SpotifyModule.openPlayerScreen() },
+            HeaderIcon("Keybind", "K") { mc.displayGuiScreen(KeyBindManager) },
 
-            HeaderIcon("Support", supportIcon) { MiscUtils.showURL("https://github.com/opZywl/fdpclient/issues") },
-            HeaderIcon("Update", updateIcon) { mc.displayGuiScreen(GuiUpdate()) },
-            HeaderIcon("Theme", themeIcon) { sideGui.openCategory("Color") },
-            HeaderIcon("Discord", discordIcon) { MiscUtils.showURL("https://discord.com/invite/3XRFGeqEYD") },
-            HeaderIcon("Fonts", fontsIcon) { mc.displayGuiScreen(GuiFontManager(this)) }
+            HeaderIcon("Support", "H") { MiscUtils.showURL("https://github.com/opZywl/fdpclient/issues") },
+            HeaderIcon("Update", "U") { mc.displayGuiScreen(GuiUpdate()) },
+            HeaderIcon("Theme", "T") { sideGui.openCategory("Color") },
+            HeaderIcon("Discord", "D") { MiscUtils.showURL("https://discord.com/invite/3XRFGeqEYD") },
+            HeaderIcon("Fonts", "F") { mc.displayGuiScreen(GuiFontManager(this)) }
         )
 
-        GlStateManager.enableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.enableAlpha()
 
-        headerIcons.forEachIndexed { index, icon ->
-
-            if (index == 5) {
-                nextButtonX = startX
-                buttonY += 24f
-            }
-
-            val textWidth = Fonts.Nl_18.stringWidth(icon.name)
-            val buttonWidth = textWidth + 26f
-
-            val isHovering = RenderUtil.isHovering(nextButtonX, buttonY, buttonWidth, buttonHeight, mouseX, mouseY)
-
-            val borderColor = if (isHovering) neverlosecolor else Color(19, 19, 17)
-            val backgroundColor = if (light) Color(245, 245, 245) else Color(13, 13, 11)
+        // ----- Header icon grid (clean filled chips; hidden once the search panel is fully open) -----
+        headerIconHitboxes.clear()
+        if (!(search && searchanim.isDone)) {
+            val buttonSpacing = 5f
+            val gridStartX = (x + 105).toFloat()
+            val buttonHeight = 21f
             val textColor = if (light) Color(18, 18, 19).rgb else -1
+            var nextButtonX = gridStartX
+            var buttonY = (y + 10).toFloat()
 
-            RoundedUtil.drawRoundOutline(nextButtonX, buttonY, buttonWidth, buttonHeight, 2f, 0.1f, backgroundColor, borderColor)
+            headerIcons.forEachIndexed { index, icon ->
+                if (index == 5) {
+                    nextButtonX = gridStartX
+                    buttonY += 24f
+                }
 
-            if (light) {
-                val darkColor = Color(18, 18, 19)
-                GlStateManager.color(darkColor.red / 255f, darkColor.green / 255f, darkColor.blue / 255f, 1f)
-            } else {
-                GlStateManager.color(1f, 1f, 1f, 1f)
+                val buttonWidth = Fonts.Nl_18.stringWidth(icon.name) + 26f
+                val isHovering = !search && RenderUtil.isHovering(nextButtonX, buttonY, buttonWidth, buttonHeight, mouseX, mouseY)
+                val backgroundColor = if (light) Color(236, 238, 242) else Color(22, 23, 26)
+
+                if (isHovering) {
+                    RoundedUtil.drawRoundOutline(nextButtonX, buttonY, buttonWidth, buttonHeight, 3f, 0.5f, backgroundColor, neverlosecolor)
+                } else {
+                    RoundedUtil.drawRound(nextButtonX, buttonY, buttonWidth, buttonHeight, 3f, backgroundColor)
+                }
+
+                val iconFont = Fonts.nlHeaderIcon_24
+                val iconGlyphWidth = iconFont.stringWidth(icon.glyph).toFloat()
+                iconFont.drawString(icon.glyph, nextButtonX + 5f + (12f - iconGlyphWidth) / 2f, buttonY + 7.5f, textColor)
+                Fonts.Nl_18.drawString(icon.name, nextButtonX + 22f, buttonY + 8f, textColor)
+
+                if (!search) {
+                    headerIconHitboxes.add(HeaderIconHitbox(nextButtonX, buttonY, buttonWidth, buttonHeight, icon.onClick))
+                }
+
+                nextButtonX += buttonWidth + buttonSpacing
             }
+        }
 
-            RenderUtil.drawImage(icon.location, nextButtonX + 5, buttonY + 4.5f, 12f, 12f)
+        // ----- Animated search panel: slides over the icon grid, offers scope + close -----
+        if (search || !searchanim.isDone) {
+            val pLeft = (x + 105).toFloat()
+            val pRight = (x + w - 58).toFloat()
+            val pTop = (y + 8).toFloat()
+            val pHeight = 50f
+            val fullWidth = pRight - pLeft
+            val drawWidth = fullWidth * searchProgress
+            val drawLeft = pRight - drawWidth
 
-            Fonts.Nl_18.drawString(icon.name, nextButtonX + 22, buttonY + 8f, textColor)
+            val panelBg = if (light) Color(236, 238, 242) else Color(15, 16, 18)
+            RoundedUtil.drawRoundOutline(drawLeft, pTop, drawWidth, pHeight, 3f, 0.1f, panelBg, neverlosecolor)
+            searchPanelRect = floatArrayOf(pLeft, pTop, fullWidth, pHeight)
 
-            headerIconHitboxes.add(HeaderIconHitbox(nextButtonX, buttonY, buttonWidth, buttonHeight, icon.onClick))
+            if (searchProgress > 0.85f) {
+                val inputX = pLeft + 6f
+                val inputY = pTop + 5f
+                val inputW = fullWidth - 12f
+                val inputH = 19f
+                RoundedUtil.drawRound(inputX, inputY, inputW, inputH, 3f, if (light) Color(250, 250, 250) else Color(26, 27, 30))
+                Fonts.NlIcon.nlfont_20.nlfont_20.drawString("j", inputX + 7f, inputY + 4f, neverlosecolor.rgb)
+                if (searchText.isEmpty()) {
+                    Fonts.Nl_16.drawString("Search modules...", inputX + 23f, inputY + 5f, (if (light) Color(150, 150, 150) else Color(120, 120, 120)).rgb)
+                } else {
+                    Fonts.Nl_16.drawString(searchText, inputX + 23f, inputY + 5f, if (light) Color(18, 18, 19).rgb else -1)
+                }
 
-            nextButtonX += buttonWidth + buttonSpacing
+                val closeHover = RenderUtil.isHovering(pRight - 24f, inputY, 20f, inputH, mouseX, mouseY)
+                Fonts.ICONFONT_17.drawString("I", pRight - 21f, inputY + 5f, if (closeHover) Color(235, 70, 70).rgb else if (light) Color(95, 95, 95).rgb else -1)
+                searchCloseRect = floatArrayOf(pRight - 24f, inputY, 20f, inputH)
+
+                val chipY = pTop + 28f
+                val chipH = 16f
+                val allWidth = Fonts.Nl_16.stringWidth("Search All") + 16f
+                val catWidth = Fonts.Nl_16.stringWidth("In Category") + 16f
+                val allX = pLeft + 6f
+                val catX = allX + allWidth + 6f
+
+                val activeChip = neverlosecolor
+                val idleChip = if (light) Color(224, 226, 230) else Color(30, 31, 34)
+                RoundedUtil.drawRound(allX, chipY, allWidth, chipH, 3f, if (searchAllCategories) activeChip else idleChip)
+                Fonts.Nl_16.drawString("Search All", allX + 8f, chipY + 4f, if (searchAllCategories) -1 else if (light) Color(60, 60, 60).rgb else Color(170, 170, 170).rgb)
+                searchAllChipRect = floatArrayOf(allX, chipY, allWidth, chipH)
+
+                RoundedUtil.drawRound(catX, chipY, catWidth, chipH, 3f, if (!searchAllCategories) activeChip else idleChip)
+                Fonts.Nl_16.drawString("In Category", catX + 8f, chipY + 4f, if (!searchAllCategories) -1 else if (light) Color(60, 60, 60).rgb else Color(170, 170, 170).rgb)
+                searchCatChipRect = floatArrayOf(catX, chipY, catWidth, chipH)
+            }
         }
 
         if (viewerOpen) {
@@ -293,6 +327,26 @@ class NeverloseGui : GuiScreen() {
                 espPreviewComponent.mouseClicked(mouseX, mouseY, mouseButton)
             }
             if (mouseButton == 0) {
+                // While the search panel is open its widgets take priority over the header buttons
+                if (search) {
+                    if (hovering(searchCloseRect, mouseX, mouseY)) {
+                        search = false
+                        searchText = ""
+                        dragging = false
+                        return
+                    }
+                    if (hovering(searchAllChipRect, mouseX, mouseY)) {
+                        searchAllCategories = true
+                        return
+                    }
+                    if (hovering(searchCatChipRect, mouseX, mouseY)) {
+                        searchAllCategories = false
+                        return
+                    }
+                    if (hovering(searchPanelRect, mouseX, mouseY)) {
+                        return
+                    }
+                }
                 if (handleHeaderIconClick(mouseX, mouseY)) {
                     return
                 }
@@ -301,7 +355,7 @@ class NeverloseGui : GuiScreen() {
                     y2 = (y - mouseY)
                     dragging = true
                 }
-                if (RenderUtil.isHovering((x + 105).toFloat(), (y + 10).toFloat(), 55f, 21f, mouseX, mouseY)) {
+                if (!search && RenderUtil.isHovering((x + 105).toFloat(), (y + 10).toFloat(), 55f, 21f, mouseX, mouseY)) {
                     if (configManager.activeConfig() != null) {
                         configManager.saveConfig(configManager.activeConfig()!!.name)
                     } else {
@@ -310,10 +364,7 @@ class NeverloseGui : GuiScreen() {
                     }
                 }
 
-                val searchProgress = searchanim.output.toFloat()
-                val closeButtonX = (x + w - 50 + (if (search || !searchanim.isDone) (-83f * searchProgress) else 0f))
-
-                if (RenderUtil.isHovering(closeButtonX, (y + 17).toFloat(), Fonts.NlIcon.nlfont_24.nlfont_24.stringWidth("x").toFloat(), Fonts.NlIcon.nlfont_24.nlfont_24.height.toFloat(), mouseX, mouseY)) {
+                if (RenderUtil.isHovering((x + w - 50).toFloat(), (y + 17).toFloat(), Fonts.NlIcon.nlfont_20.nlfont_20.stringWidth("x").toFloat(), Fonts.NlIcon.nlfont_20.nlfont_20.height.toFloat(), mouseX, mouseY)) {
                     settings = !settings
                     dragging = false
                     nlSetting.x = x + w + 20
@@ -334,11 +385,11 @@ class NeverloseGui : GuiScreen() {
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         val oldFocus = sideGui.focused
         sideGui.mouseReleased(mouseX, mouseY, state)
+        if (state == 0) {
+            dragging = false
+        }
         if (!oldFocus) {
             nlTabs.forEach { it.released(mouseX, mouseY, state) }
-            if (state == 0) {
-                dragging = false
-            }
             if (settings) {
                 nlSetting.released(mouseX, mouseY, state)
             }
@@ -384,6 +435,16 @@ class NeverloseGui : GuiScreen() {
     val searchTextContent: String
         get() = searchText
 
+    /** True when the search query should match modules from every category, not just the open one. */
+    val searchScopeAll: Boolean
+        get() = searchAllCategories
+
+    /** Every module across all tabs/subcategories, used by the "Search All" scope. */
+    fun allModules(): List<NlModule> = nlTabs.flatMap { tab -> tab.nlSubList }.flatMap { it.nlModules }
+
+    private fun hovering(rect: FloatArray, mouseX: Int, mouseY: Int): Boolean =
+        RenderUtil.isHovering(rect[0], rect[1], rect[2], rect[3], mouseX, mouseY)
+
     val light: Boolean
         get() = nlSetting.Light
 
@@ -402,7 +463,7 @@ class NeverloseGui : GuiScreen() {
         }
     }
 
-    private data class HeaderIcon(val name: String, val location: ResourceLocation, val onClick: () -> Unit)
+    private data class HeaderIcon(val name: String, val glyph: String, val onClick: () -> Unit)
 
     private data class HeaderIconHitbox(val x: Float, val y: Float, val width: Float, val height: Float, val onClick: () -> Unit) {
         fun isHovering(mouseX: Int, mouseY: Int): Boolean = RenderUtil.isHovering(x, y, width, height, mouseX, mouseY)

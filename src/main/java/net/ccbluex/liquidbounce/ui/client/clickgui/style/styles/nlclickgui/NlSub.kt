@@ -145,12 +145,12 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
     }
 
     fun released(mx: Int, my: Int, mb: Int) {
-        nlModules.forEach(Consumer { e: NlModule? -> e!!.released(mx, my, mb) })
+        visibleModules.forEach(Consumer { e: NlModule? -> e!!.released(mx, my, mb) })
     }
 
     fun click(mx: Int, my: Int, mb: Int) {
         if (this.isSelected && subCategory != SubCategory.CONFIGS) {
-            nlModules.forEach(Consumer { e: NlModule? -> e!!.click(mx, my, mb) })
+            visibleModules.forEach(Consumer { e: NlModule? -> e!!.click(mx, my, mb) })
         }
 
         if (this.isSelected && (subCategory == SubCategory.CONFIGS)) {
@@ -162,12 +162,15 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
         get() = getInstance().selectedSub == this
 
     private fun getVisibleModules(): MutableList<NlModule> {
-        if (!getInstance().isSearching) {
+        val gui = getInstance()
+        if (!gui.isSearching) {
             return nlModules
         }
 
-        val query: String = getInstance().searchTextContent.lowercase(getDefault())
-        return nlModules.stream()
+        val query: String = gui.searchTextContent.lowercase(getDefault())
+        // "Search All" pulls matches from every category; "In Category" stays within this subcategory.
+        val source = if (gui.searchScopeAll) gui.allModules() else nlModules
+        return source.stream()
             .filter { module: NlModule? -> module!!.module.name.lowercase(getDefault()).contains(query) }
             .collect(Collectors.toList())
     }
