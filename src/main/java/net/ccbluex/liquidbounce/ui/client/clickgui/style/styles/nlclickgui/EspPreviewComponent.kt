@@ -42,7 +42,7 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
     private var dragY = 0
     private var dragging = false
     private var adsorb = true
-    private var managingElements = true
+    private var managingElements = false
     private var selectedModule: Module? = null
 
     private var customYaw = 0f
@@ -132,13 +132,16 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
         val previewHeight = gui.h - 24f
         val playerAreaHeight = 205f
 
-        if (isHovering(previewX.toFloat(), previewY.toFloat(), previewWidth, previewHeight, mouseX, mouseY) && mouseButton == 0 && !managingElements) {
+        val controlsBandHover = isHovering(previewX.toFloat(), previewY + playerAreaHeight + 3f, previewWidth, 22f, mouseX, mouseY)
+        val manageButtonHover = isHovering(previewX + 20f, previewY + previewHeight - 26f, 190f, 16f, mouseX, mouseY)
+
+        if (isHovering(previewX.toFloat(), previewY.toFloat(), previewWidth, previewHeight, mouseX, mouseY) && mouseButton == 0 && !managingElements && !controlsBandHover && !manageButtonHover) {
             dragging = true
             dragX = posX - mouseX
             dragY = posY - mouseY
         }
 
-        val controlsY = previewY + playerAreaHeight - 15f
+        val controlsY = previewY + playerAreaHeight + 8f
         val centerX = previewX + previewWidth / 2f
         val btnSize = 14f
         val modeBtnWidth = 60f
@@ -212,7 +215,7 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
     fun keyTyped(typedChar: Char, keyCode: Int) {}
 
     private fun drawControls(mouseX: Int, mouseY: Int, previewX: Int, previewY: Int, previewWidth: Float, playerAreaHeight: Float, outlineColor: Color, textColor: Color) {
-        val controlsY = previewY + playerAreaHeight - 15f
+        val controlsY = previewY + playerAreaHeight + 8f
         val centerX = previewX + previewWidth / 2f
         val btnSize = 14f
         val modeBtnWidth = 60f
@@ -259,9 +262,9 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
         val progress = openAnimation.output.toFloat()
         if (progress <= 0.05f || visuals.isEmpty()) return
 
-        val panelMaxHeight = (previewHeight - playerAreaHeight - manageButtonHeight - 30f).coerceAtLeast(80f)
+        val panelMaxHeight = (previewHeight - playerAreaHeight - manageButtonHeight - 42f).coerceAtLeast(80f)
         val panelHeight = panelMaxHeight * progress
-        val panelY = previewY + playerAreaHeight + 14f
+        val panelY = previewY + playerAreaHeight + 26f
 
         GL11.glPushMatrix()
         scissor(previewX.toDouble(), panelY.toDouble(), previewWidth.toDouble(), panelHeight.toDouble())
@@ -556,10 +559,10 @@ class EspPreviewComponent(private val gui: NeverloseGui) : MinecraftInstance {
         if (progress <= 0.05f) return
         val playerAreaHeight = 205f
         val manageButtonHeight = 16f
-        val panelY = previewY + playerAreaHeight + 14f
-        val panelHeight = (previewHeight - playerAreaHeight - manageButtonHeight - 30f).coerceAtLeast(80f) * progress
+        val panelY = previewY + playerAreaHeight + 26f
+        val panelHeight = (previewHeight - playerAreaHeight - manageButtonHeight - 42f).coerceAtLeast(80f) * progress
         val moduleButtons = moduleButtons(previewX, panelY, previewWidth)
-        moduleButtons.firstOrNull { isHovering(it.x, it.y, it.w, it.h, mouseX, mouseY) }?.let { selectedModule = it.target; return }
+        moduleButtons.firstOrNull { it.y + it.h <= panelY + panelHeight - 8f && isHovering(it.x, it.y, it.w, it.h, mouseX, mouseY) }?.let { selectedModule = it.target; return }
 
         val valueButtons = valueButtons(previewX, panelY, previewWidth, moduleButtons, panelHeight)
         valueButtons.firstOrNull { isHovering(it.x, it.y, it.w, it.h, mouseX, mouseY) }?.let { it.target.set(!it.target.get()); return }
