@@ -61,6 +61,8 @@ object Fonts : MinecraftInstance {
         lateinit var Nl_22: LegacyNlFont
     }
 
+    private const val HEADER_ICON_FONT = "/assets/minecraft/fdpclient/fonts/fdpheadericons.ttf"
+
     /**
      * Custom Fonts
      */
@@ -162,6 +164,10 @@ object Fonts : MinecraftInstance {
     lateinit var nlfont_20: SimpleFontRenderer
     lateinit var nlfont_24: SimpleFontRenderer
     lateinit var nlfont_28: SimpleFontRenderer
+
+    // Unified Font Awesome 6 header icon glyphs (bundled, remapped to ASCII), see NeverloseGui header bar
+    lateinit var nlHeaderIcon_20: SimpleFontRenderer
+    lateinit var nlHeaderIcon_24: SimpleFontRenderer
 
     lateinit var NLBold_18: SimpleFontRenderer
     lateinit var NLBold_32: SimpleFontRenderer
@@ -345,6 +351,12 @@ object Fonts : MinecraftInstance {
             nlfont_28 = registerCustomFont(FontInfo(name = "nlicon", size = 28),
                 getFontFromFile("nlicon.ttf", 28).asSimpleFontRenderer())
 
+            // Header icon font (GitHub/Spotify/Discord brands + UI glyphs from Font Awesome 6).
+            // Loaded from the bundled jar resource so it is always present, even on a fresh install
+            // where fontsDir is populated from the remote Font.zip.
+            nlHeaderIcon_20 = getBundledFont(HEADER_ICON_FONT, 20).asSimpleFontRenderer()
+            nlHeaderIcon_24 = getBundledFont(HEADER_ICON_FONT, 24).asSimpleFontRenderer()
+
             // Provide legacy nested holders for nlclickgui
             NlIcon.nlfont_18 = LegacyIconFont(nlfont_18, nlfont_20, nlfont_24, nlfont_28)
             NlIcon.nlfont_20 = LegacyIconFont(nlfont_18, nlfont_20, nlfont_24, nlfont_28)
@@ -463,6 +475,24 @@ object Fonts : MinecraftInstance {
 
     private fun getFontFromFile(file: String, size: Int): Font =
         getFontFromFileOrNull(file, size) ?: Font("default", Font.PLAIN, size)
+
+    /**
+     * Loads a font bundled inside the jar (classpath resource). Falls back to [fontsDir] so the
+     * font still resolves while running from a dev workspace where resources are not yet packed.
+     */
+    private fun getBundledFontOrNull(resourcePath: String, size: Int): Font? = try {
+        val stream = javaClass.getResourceAsStream(resourcePath)
+            ?: File(fontsDir, resourcePath.substringAfterLast('/')).takeIf { it.exists() }?.inputStream()
+        stream?.use { input ->
+            Font.createFont(Font.TRUETYPE_FONT, input).deriveFont(Font.PLAIN, size.toFloat())
+        }
+    } catch (e: Exception) {
+        LOGGER.warn("Exception during loading bundled font[resource=${resourcePath}, size=${size}]", e)
+        null
+    }
+
+    private fun getBundledFont(resourcePath: String, size: Int): Font =
+        getBundledFontOrNull(resourcePath, size) ?: Font("default", Font.PLAIN, size)
 
     private fun Font.asGameFontRenderer(): GameFontRenderer {
         return GameFontRenderer(this@asGameFontRenderer)

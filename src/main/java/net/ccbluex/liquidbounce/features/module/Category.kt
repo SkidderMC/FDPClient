@@ -63,7 +63,7 @@ enum class Category(
         CONFIGS("Configs", "x"),
 
         // Other
-        MISCELLANEOUS("Miscellaneous", "\ue5d3"),
+        MISCELLANEOUS("Miscellaneous", "u"),
 
         // Exploit
         EXPLOIT_EXTRAS("Extras", "j"),
