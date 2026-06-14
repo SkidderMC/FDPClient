@@ -18,6 +18,7 @@ import net.ccbluex.liquidbounce.handler.api.ClientUpdate
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.gui.button.ImageButton
+import net.ccbluex.liquidbounce.ui.client.gui.multiplayer.GuiServerSelect
 import net.ccbluex.liquidbounce.ui.client.gui.button.QuitButton
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -161,7 +162,7 @@ class GuiMainMenu : AbstractScreen(), GuiYesNoCallback {
 
         when (button.id) {
             0 -> mc.displayGuiScreen(GuiSelectWorld(this))
-            1 -> mc.displayGuiScreen(GuiMultiplayer(this))
+            1 -> mc.displayGuiScreen(GuiServerSelect(this))
             2 -> mc.displayGuiScreen(GuiInfo(this))
             3 -> mc.displayGuiScreen(GuiFontManager(this))
             4 -> mc.displayGuiScreen(GuiUpdate())
