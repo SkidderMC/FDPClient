@@ -103,6 +103,7 @@ public class MixinGuiEditSign extends GuiScreen {
 
     /**
      * @author CCBlueX
+     * @reason Route sign key input through additional command fields
      */
     @Overwrite
     protected void keyTyped(char typedChar, int keyCode) throws IOException {

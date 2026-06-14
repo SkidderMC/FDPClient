@@ -55,7 +55,7 @@ public abstract class MixinRenderEntityItem extends Render<EntityItem> {
     /**
      * @author Eclipses
      *
-     * @reason
+     * @reason Apply item physics transforms while preserving stack rendering
      * Original simplified code by FDPClient & Modified by Eclipses:
      * https://github.com/SkidderMC/FDPClient/blob/main/src/main/java/net/ccbluex/liquidbounce/injection/forge/mixins/render/MixinRenderEntityItem.java
      *

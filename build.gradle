@@ -126,6 +126,7 @@ shadowJar {
     duplicatesStrategy DuplicatesStrategy.EXCLUDE
 
     exclude "LICENSE.txt"
+    exclude "module-info.class"
 
     exclude "META-INF/maven/**"
     exclude "META-INF/versions/**"

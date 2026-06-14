@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.file.configs
 
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import me.liuli.elixir.account.CrackedAccount
 import me.liuli.elixir.account.MinecraftAccount
@@ -37,36 +38,9 @@ class AccountsConfig(file: File) : FileConfig(file) {
                 // Import Elixir account format
                 accounts += fromJson(accountElement.asJsonObject)
             } catch (e: JsonSyntaxException) {
-                // Import old account format
-                val name = accountObject["name"]
-                val password = accountObject["password"]
-                val inGameName = accountObject["inGameName"]
-                if (inGameName.isJsonNull && password.isJsonNull) {
-                    val mojangAccount = MojangAccount()
-                    mojangAccount.email = name.asString
-                    mojangAccount.name = inGameName.asString
-                    mojangAccount.password = password.asString
-                    accounts += mojangAccount
-                } else {
-                    val crackedAccount = CrackedAccount()
-                    crackedAccount.name = name.asString
-                    accounts += crackedAccount
-                }
+                importLegacyAccount(accountObject)?.let(accounts::add)
             } catch (e: IllegalStateException) {
-                val name = accountObject["name"]
-                val password = accountObject["password"]
-                val inGameName = accountObject["inGameName"]
-                if (inGameName.isJsonNull && password.isJsonNull) {
-                    val mojangAccount = MojangAccount()
-                    mojangAccount.email = name.asString
-                    mojangAccount.name = inGameName.asString
-                    mojangAccount.password = password.asString
-                    accounts += mojangAccount
-                } else {
-                    val crackedAccount = CrackedAccount()
-                    crackedAccount.name = name.asString
-                    accounts += crackedAccount
-                }
+                importLegacyAccount(accountObject)?.let(accounts::add)
             }
         }
     }
@@ -84,6 +58,40 @@ class AccountsConfig(file: File) : FileConfig(file) {
             jsonArray.add(toJson(minecraftAccount))
 
         file.writeText(PRETTY_GSON.toJson(jsonArray))
+        restrictAccountFilePermissions()
+    }
+
+    private fun importLegacyAccount(accountObject: JsonObject): MinecraftAccount? {
+        val name = accountObject.getNullableString("name") ?: return null
+        val password = accountObject.getNullableString("password")
+        val inGameName = accountObject.getNullableString("inGameName")
+
+        return if (password.isNullOrEmpty()) {
+            CrackedAccount().apply {
+                this.name = inGameName ?: name
+            }
+        } else {
+            MojangAccount().apply {
+                email = name
+                this.name = inGameName ?: name
+                this.password = password
+            }
+        }
+    }
+
+    private fun JsonObject.getNullableString(memberName: String): String? {
+        val element = get(memberName) ?: return null
+        return if (element.isJsonNull) null else element.asString
+    }
+
+    private fun restrictAccountFilePermissions() {
+        runCatching {
+            file.setReadable(false, false)
+            file.setWritable(false, false)
+            file.setExecutable(false, false)
+            file.setReadable(true, true)
+            file.setWritable(true, true)
+        }
     }
 
     /**

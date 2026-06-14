@@ -118,6 +118,7 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
 
     /**
      * @author CCBlueX
+     * @reason Apply custom slot rendering and scissor clipping
      */
     @Overwrite
     public void drawScreen(int mouseXIn, int mouseYIn, float p_148128_3_) {
@@ -214,6 +215,7 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
 
     /**
      * @author CCBlueX
+     * @reason Move the scrollbar to the right edge
      */
     @Overwrite
     protected int getScrollBarX() {
@@ -232,6 +234,7 @@ public abstract class MixinGuiSlot implements IMixinGuiSlot {
 
     /**
      * @author CCBlueX (superblaubeere27)
+     * @reason Allow caller-controlled list width
      */
     @Overwrite
     public int getListWidth() {

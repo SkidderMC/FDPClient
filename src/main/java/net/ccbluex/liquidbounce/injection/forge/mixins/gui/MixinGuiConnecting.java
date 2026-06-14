@@ -32,6 +32,7 @@ public abstract class MixinGuiConnecting extends GuiScreen {
 
     /**
      * @author CCBlueX
+     * @reason Render the custom connecting screen and masked server address
      */
     @Overwrite
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {

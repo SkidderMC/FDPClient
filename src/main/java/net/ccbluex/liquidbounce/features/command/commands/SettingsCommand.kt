@@ -6,10 +6,8 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.runBlocking
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.file.FileManager.settingsDir
@@ -20,6 +18,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.config.SettingsUtils
 import net.ccbluex.liquidbounce.utils.io.MiscUtils
+import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -41,7 +40,7 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
             return
         }
 
-        GlobalScope.launch {
+        SharedScopes.IO.launch {
             when (args[1].lowercase()) {
                 "load" -> loadSettings(args)
                 "loadlocal" -> localSettings(args)
@@ -104,7 +103,8 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                 addNotification(Notification("Updated Settings", "SUCESS", Type.SUCCESS))
                 playEdit()
             } catch (e: IOException) {
-                e.printStackTrace()
+                LOGGER.error("Failed to load local settings", e)
+                chat("Failed to load local settings: ${e.message}")
             }
         }
     }
@@ -118,7 +118,7 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
             }
 
             try {
-                val response = runBlocking { ClientApi.reportSettings(settingId = args[2]) }
+                val response = ClientApi.reportSettings(settingId = args[2])
                 when (response.status) {
                     Status.SUCCESS -> chat("§6${response.message}")
                     Status.ERROR -> chat("§c${response.message}")
@@ -152,17 +152,15 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                 val serverData = mc.currentServerData ?: error("You need to be on a server to upload settings.")
 
                 val name = "${FDPClient.clientCommit}-${serverData.serverIP.replace(".", "_")}"
-                val response = runBlocking {
-                    ClientApi.uploadSettings(
-                        name = name.toRequestBody(),
-                        contributors = mc.session.username.toRequestBody(),
-                        settingsFile = MultipartBody.Part.createFormData(
-                            "settings_file",
-                            "settings_file",
-                            settingsScript.toByteArray().toRequestBody("application/octet-stream".toMediaTypeOrNull())
-                        )
+                val response = ClientApi.uploadSettings(
+                    name = name.toRequestBody(),
+                    contributors = mc.session.username.toRequestBody(),
+                    settingsFile = MultipartBody.Part.createFormData(
+                        "settings_file",
+                        "settings_file",
+                        settingsScript.toByteArray().toRequestBody("application/octet-stream".toMediaTypeOrNull())
                     )
-                }
+                )
 
                 when (response.status) {
                     Status.SUCCESS -> {
@@ -240,7 +238,7 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
                 settingsFile.createNewFile()
                 chat("§6Settings file created successfully.")
             } catch (e: IOException) {
-                e.printStackTrace()
+                LOGGER.error("Failed to create settings file", e)
                 chat("§cFailed to create settings file: ${e.message}")
             }
         }

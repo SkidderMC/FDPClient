@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.file.FileManager.saveActiveConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
 import net.ccbluex.liquidbounce.handler.macro.Macro
@@ -68,6 +69,7 @@ object MacroCommand : Command("macro", "m") {
 
     private fun save() {
         saveConfig(valuesConfig)
+        saveActiveConfig()
         playEdit()
     }
 }

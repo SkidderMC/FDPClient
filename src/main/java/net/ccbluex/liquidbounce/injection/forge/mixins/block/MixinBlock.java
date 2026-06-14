@@ -59,6 +59,7 @@ public abstract class MixinBlock {
 
     /**
      * @author CCBlueX
+     * @reason Dispatch block collision events before adding collision boxes
      */
     @Overwrite
     public void addCollisionBoxesToList(World worldIn, BlockPos pos, IBlockState state, AxisAlignedBB mask, List<AxisAlignedBB> list, Entity collidingEntity) {

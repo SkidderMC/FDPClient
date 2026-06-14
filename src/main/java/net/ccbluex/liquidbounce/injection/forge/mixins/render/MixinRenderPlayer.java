@@ -36,6 +36,7 @@ public abstract class MixinRenderPlayer {
 
     /**
      * @author CCBlueX
+     * @reason Apply custom model visibility and silent hotbar held item state
      */
     @Overwrite
     private void setModelVisibilities(AbstractClientPlayer entity) {
