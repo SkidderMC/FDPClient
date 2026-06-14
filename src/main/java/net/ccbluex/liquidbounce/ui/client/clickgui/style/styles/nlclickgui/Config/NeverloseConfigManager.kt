@@ -45,8 +45,9 @@ class NeverloseConfigManager {
     }
 
     fun saveConfig(name: String) {
-        FDPClient.fileManager.load(name, false)
-        FDPClient.fileManager.saveAllConfigs()
+        val fileManager = FDPClient.fileManager
+        fileManager.nowConfig = name
+        fileManager.saveActiveConfig(false)
         refresh()
     }
 

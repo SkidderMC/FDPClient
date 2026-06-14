@@ -155,9 +155,9 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
 
         HoveringAnimation.direction = if (isHovering(
                 toggleX,
-                toggleY,
+                toggleY - 1,
                 16f,
-                4.5f,
+                6.5f,
                 mx,
                 my
             )
@@ -235,14 +235,16 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
     }
 
     fun click(mx: Int, my: Int, mb: Int) {
+        if (my < y + NeverloseGui.HEADER_HEIGHT || my >= y + h) return
+
         downwards.stream().filter { e: Downward<*>? -> e!!.setting.shouldRender() }
             .forEach { e: Downward<*>? -> e!!.mouseClicked(mx, my, mb) }
 
         if (isHovering(
                 toggleXPosition,
-                toggleYPosition,
+                toggleYPosition - 1,
                 16f,
-                4.5f,
+                6.5f,
                 mx,
                 my
             ) && mb == 0

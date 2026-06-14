@@ -65,7 +65,7 @@ class StringsSetting(setting: ListValue, moduleRender: NlModule) : Downward<List
             pendingTooltip = setting.get()
         }
 
-        val valFps = Minecraft.getDebugFPS() / 8.3
+        val valFps = Math.max(1.0, Minecraft.getDebugFPS() / 8.3)
         if (setting.openList && length > -3) {
             length -= 3 / valFps
         } else if (!setting.openList && length < 3) {

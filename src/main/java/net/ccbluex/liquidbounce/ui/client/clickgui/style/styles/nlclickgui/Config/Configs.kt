@@ -33,6 +33,7 @@ class Configs {
     var contentHeight = 0
 
     private var onlineConfigsCache: List<*>? = null
+    private var localConfigsCache: Array<File> = emptyArray()
     @Volatile
     private var isLoadingOnline = false
 
@@ -59,7 +60,7 @@ class Configs {
         val openFolderWidth = buttonToggleWidth * 2
 
         drawButton(baseX, baseY, openFolderWidth, buttonHeight, mx, my, NeverloseGui.getInstance().light, false)
-        Fonts.InterBold_26.drawString("OPEN FOLDER", (baseX + 10).toFloat(), (baseY + 5).toFloat(), applyTextColor(alpha, false))
+        Fonts.InterBold_26.drawString("OPEN FOLDER", baseX + (openFolderWidth - Fonts.InterBold_26.stringWidth("OPEN FOLDER")) / 2f, (baseY + 5).toFloat(), applyTextColor(alpha, false))
         interactiveAreas.add(ButtonArea(baseX.toFloat(), baseY.toFloat(), openFolderWidth.toFloat(), buttonHeight.toFloat()) {
             openFolder()
         })
@@ -68,7 +69,7 @@ class Configs {
 
         val onlineActive = !showLocalConfigs
         drawToggle(baseX, togglesY, buttonToggleWidth, buttonHeight, mx, my, onlineActive)
-        Fonts.InterBold_26.drawString("ONLINE", (baseX + 10).toFloat(), (togglesY + 5).toFloat(), applyTextColor(alpha, onlineActive))
+        Fonts.InterBold_26.drawString("ONLINE", baseX + (buttonToggleWidth - Fonts.InterBold_26.stringWidth("ONLINE")) / 2f, (togglesY + 5).toFloat(), applyTextColor(alpha, onlineActive))
         interactiveAreas.add(ButtonArea(baseX.toFloat(), togglesY.toFloat(), buttonToggleWidth.toFloat(), buttonHeight.toFloat()) {
             showLocalConfigs = false
             if (onlineConfigsCache == null) {
@@ -80,7 +81,7 @@ class Configs {
 
         val localActive = showLocalConfigs
         drawToggle(localX, togglesY, buttonToggleWidth, buttonHeight, mx, my, localActive)
-        Fonts.InterBold_26.drawString("LOCAL", (localX + 10).toFloat(), (togglesY + 5).toFloat(), applyTextColor(alpha, localActive))
+        Fonts.InterBold_26.drawString("LOCAL", localX + (buttonToggleWidth - Fonts.InterBold_26.stringWidth("LOCAL")) / 2f, (togglesY + 5).toFloat(), applyTextColor(alpha, localActive))
         interactiveAreas.add(ButtonArea(localX.toFloat(), togglesY.toFloat(), buttonToggleWidth.toFloat(), buttonHeight.toFloat()) {
             showLocalConfigs = true
         })
@@ -133,10 +134,14 @@ class Configs {
             my.toFloat().toInt()
         )
         val base = if (NeverloseGui.getInstance().light) Color(220, 222, 225) else Color(50, 50, 50)
-        val activeColor = Color(100, 150, 100)
+        val activeColor = NeverloseGui.neverlosecolor
         val hoverColor = if (NeverloseGui.getInstance().light) Color(200, 200, 205) else Color(70, 70, 70)
         val fill = if (active) activeColor else if (hovered) hoverColor else base
-        drawButton(x, y, width, height, fill)
+        if (active || hovered) {
+            RoundedUtil.drawRoundOutline(x.toFloat(), y.toFloat(), width.toFloat(), height.toFloat(), 3f, 0.5f, fill, NeverloseGui.neverlosecolor)
+        } else {
+            drawButton(x, y, width, height, fill)
+        }
     }
 
     private fun drawButton(x: Int, y: Int, width: Int, height: Int, mx: Int, my: Int, light: Boolean, active: Boolean) {
@@ -165,10 +170,12 @@ class Configs {
 
         if (showLocalConfigs) {
             val localConfigs = SettingsFiles.listLocalScripts()
+            localConfigsCache = localConfigs
             if (localConfigs.isNotEmpty()) {
                 for (file in localConfigs) {
                     drawConfigButton(mx, my, buttonWidth, buttonHeight, configX, configY) { loadLocalConfig(file) }
-                    Fonts.InterBold_26.drawString(SettingsFiles.localScriptName(file), configX + 5, configY + 5, standardTextColor)
+                    val localName = SettingsFiles.localScriptName(file)
+                    Fonts.InterBold_26.drawString(localName, configX + (buttonWidth - Fonts.InterBold_26.stringWidth(localName)) / 2f, configY + 5f, standardTextColor)
                     configX += buttonWidth + 10
                     configCount++
                     if (configCount % configsPerRow == 0) {
@@ -197,7 +204,7 @@ class Configs {
                     drawConfigButton(mx, my, buttonWidth, buttonHeight, configX, configY) {
                         loadOnlineConfig(settingId, settingName)
                     }
-                    Fonts.InterBold_26.drawString(settingName, configX + 5, configY + 5, standardTextColor)
+                    Fonts.InterBold_26.drawString(settingName, configX + (buttonWidth - Fonts.InterBold_26.stringWidth(settingName)) / 2f, configY + 5f, standardTextColor)
                     configX += buttonWidth + 10
                     configCount++
                     if (configCount % configsPerRow == 0) {
@@ -216,7 +223,11 @@ class Configs {
         val base = if (NeverloseGui.getInstance().light) Color(220, 222, 225) else Color(50, 50, 50)
         val hover = if (NeverloseGui.getInstance().light) Color(200, 200, 205) else Color(70, 70, 70)
         val fill = if (hovered) hover else base
-        RoundedUtil.drawRound(configX, configY, width, height, 3f, fill)
+        if (hovered) {
+            RoundedUtil.drawRoundOutline(configX, configY, width, height, 3f, 0.5f, fill, NeverloseGui.neverlosecolor)
+        } else {
+            RoundedUtil.drawRound(configX, configY, width, height, 3f, fill)
+        }
         interactiveAreas.add(ButtonArea(configX, configY, width, height, action))
     }
 
@@ -225,7 +236,7 @@ class Configs {
             var itemCount = 0
             val rowHeight = 25
             itemCount = if (showLocalConfigs) {
-                SettingsFiles.listLocalScripts().size
+                localConfigsCache.size
             } else {
                 onlineConfigsCache?.size ?: 0
             }

@@ -119,7 +119,7 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
         )
 
         if (iloveyou) {
-            val percentt = min(1f, max(0f, ((mouseX.toFloat() - sliderX) / 99.0f) * 1.55f))
+            val percentt = min(1f, max(0f, (mouseX.toFloat() - sliderX) / 60f))
             val newValue = ((percentt * (maximum - minimum)) + minimum)
 
             if (setting is IntValue) {
@@ -218,7 +218,7 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
                 }
             }
 
-            if (Keyboard.isKeyDown(Keyboard.KEY_BACK) && !finalvalue.isNullOrEmpty()) {
+            if (keyCode == Keyboard.KEY_BACK && !finalvalue.isNullOrEmpty()) {
                 finalvalue = finalvalue!!.substring(0, finalvalue!!.length - 1)
             }
 

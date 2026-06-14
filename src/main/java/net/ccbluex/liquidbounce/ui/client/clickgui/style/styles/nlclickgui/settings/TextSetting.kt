@@ -58,8 +58,6 @@ class TextSetting(setting: TextValue, moduleRender: NlModule) : Downward<TextVal
 
         if (!editing) {
             buffer = setting.get()
-        } else {
-            setting.set(buffer)
         }
     }
 
