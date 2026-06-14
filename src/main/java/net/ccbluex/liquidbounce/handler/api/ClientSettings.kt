@@ -6,14 +6,14 @@
 package net.ccbluex.liquidbounce.handler.api
 
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withTimeoutOrNull
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import java.text.SimpleDateFormat
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 
 // Define a loadingLock object to synchronize access to the settings loading code
 private val loadingLock = Mutex()
@@ -23,6 +23,8 @@ var autoSettingsList: Array<AutoSettings>? = null
 
 // Define a function to load settings from a remote GitHub repository
 fun loadSettings(useCached: Boolean, timeout: Long? = null, callback: (Array<AutoSettings>) -> Unit = {}) {
+    val completionLatch = if (timeout != null) CountDownLatch(1) else null
+
     // Launch a new job to perform the loading operation
     val job = SharedScopes.IO.launch {
         // Synchronize access to the loading code to prevent concurrent loading of settings
@@ -64,11 +66,10 @@ fun loadSettings(useCached: Boolean, timeout: Long? = null, callback: (Array<Aut
     }
 
     // If a timeout is provided, block the current thread until the loading thread completes or the timeout is reached
-    if (timeout != null) {
-        runBlocking {
-            withTimeoutOrNull(timeout) {
-                job.join()
-            }
+    if (timeout != null && completionLatch != null) {
+        job.invokeOnCompletion {
+            completionLatch.countDown()
         }
+        completionLatch.await(timeout, TimeUnit.MILLISECONDS)
     }
 }

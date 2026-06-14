@@ -44,6 +44,7 @@ public class MixinLayerHeldItem {
 
     /**
      * @author CCBlueX
+     * @reason Apply silent hotbar and blocking state while rendering held items
      */
     @Overwrite
     public void doRenderLayer(EntityLivingBase entity, float p_177141_2_, float p_177141_3_, float partialTicks, float p_177141_5_, float p_177141_6_, float p_177141_7_, float scale) {

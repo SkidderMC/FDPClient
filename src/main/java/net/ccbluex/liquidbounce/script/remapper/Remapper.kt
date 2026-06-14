@@ -5,7 +5,6 @@
  */
 package net.ccbluex.liquidbounce.script.remapper
 
-import kotlinx.coroutines.runBlocking
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_CLOUD
 import net.ccbluex.liquidbounce.file.FileManager.dir
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
@@ -55,9 +54,7 @@ object Remapper {
                 // Download srg file
                 srgFile.createNewFile()
 
-                runBlocking {
-                    Downloader.download("$CLIENT_CLOUD/srgs/mcp-$SRG_NAME.srg", srgFile)
-                }
+                Downloader.downloadWholeFile("$CLIENT_CLOUD/srgs/mcp-$SRG_NAME.srg", srgFile)
                 LOGGER.info("[Remapper] Downloaded $SRG_NAME.")
             }
 

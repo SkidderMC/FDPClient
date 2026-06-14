@@ -162,6 +162,7 @@ public abstract class MixinGuiChat extends MixinGuiScreen {
 
     /**
      * @author CCBlueX
+     * @reason Render FDP chat input, autocomplete hint, and hover effects
      */
     @Overwrite
     public void drawScreen(int mouseX, int mouseY, float partialTicks) {

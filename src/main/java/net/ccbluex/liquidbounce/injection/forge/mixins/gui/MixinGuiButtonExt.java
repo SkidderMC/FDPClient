@@ -45,6 +45,7 @@ public abstract class MixinGuiButtonExt extends GuiButton {
 
     /**
      * @author CCBlueX
+     * @reason Render custom animated Forge buttons
      */
     @Overwrite
     public void drawButton(Minecraft mc, int mouseX, int mouseY) {

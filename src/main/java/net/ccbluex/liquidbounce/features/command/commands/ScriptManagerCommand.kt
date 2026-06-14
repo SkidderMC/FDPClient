@@ -37,6 +37,8 @@ object ScriptManagerCommand : Command("scriptmanager", "scripts") {
             return
         }
 
+        var handled = true
+
         when (args[1].lowercase()) {
             "import" -> {
                 try {
@@ -132,15 +134,17 @@ object ScriptManagerCommand : Command("scriptmanager", "scripts") {
                     chat("${t.javaClass.name}: ${t.message}")
                 }
             }
+
+            else -> handled = false
         }
 
-        return
+        if (handled) return
 
-        val scriptManager = scriptManager
+        val loadedScripts = scriptManager
 
-        if (scriptManager.isNotEmpty()) {
+        if (loadedScripts.isNotEmpty()) {
             chat("§c§lScripts")
-            scriptManager.forEachIndexed { index, script ->
+            loadedScripts.forEachIndexed { index, script ->
                 chat(
                     "$index: §a§l${script.scriptName} §a§lv${script.scriptVersion} §3by §a§l${
                         script.scriptAuthors.joinToString(

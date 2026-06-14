@@ -40,3 +40,13 @@ Thumbs.db
 
 .claude/
 .vscode/
+
+# local generated artifacts
+CLAUDE.md
+nul
+run-*.log
+build-*.log
+run.cmd
+validate-run.cmd
+tmp_*.py
+tmp_*/

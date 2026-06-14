@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.FDPClient.background
 import net.ccbluex.liquidbounce.FDPClient.isStarting
 import net.ccbluex.liquidbounce.file.configs.*
+import net.ccbluex.liquidbounce.file.configs.section.MacrosSection
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.shader.Background
@@ -43,6 +44,8 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
     val friendsConfig = +FriendsConfig(File(dir, "friends.json"))
     val colorThemeConfig = +ColorThemeConfig(File(dir, "colorTheme.json"))
     val hudConfig = +HudConfig(File(dir, "hud.json"))
+
+    val macrosSection = +MacrosSection()
 
     val backgroundImageFile = File(dir, "userbackground.png")
     val backgroundShaderFile = File(dir, "userbackground.frag")
@@ -75,6 +78,11 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
     @Suppress("NOTHING_TO_INLINE")
     private inline operator fun <T : FileConfig> T.unaryPlus(): T = apply {
         FILE_CONFIGS.add(this)
+    }
+
+    @Suppress("NOTHING_TO_INLINE")
+    private inline operator fun <T : ConfigSection> T.unaryPlus(): T = apply {
+        sections += this
     }
 
     /**
@@ -181,6 +189,8 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
                 LOGGER.error("[FileManager] Failed to save config file of ${it.file.name}.", e)
             }
         }
+
+        saveActiveConfig()
     }
 
     /**
@@ -210,6 +220,25 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
         }
     }
 
+    fun saveActiveConfig(ignoreStarting: Boolean = true) {
+        if (ignoreStarting && isStarting) return
+
+        val configFile = SettingsFiles.clientConfigFile(nowConfig)
+        val jsonObject = JsonObject()
+
+        for (section in sections) {
+            jsonObject.add(section.sectionName, section.save())
+        }
+
+        try {
+            if (!configFile.parentFile.exists()) configFile.parentFile.mkdirs()
+            configFile.writeText(PRETTY_GSON.toJson(jsonObject))
+            LOGGER.info("[FileManager] Saved config profile: ${configFile.name}.")
+        } catch (t: Throwable) {
+            LOGGER.error("[FileManager] Failed to save config profile: ${configFile.name}.", t)
+        }
+    }
+
     /**
      * Load background for background
      */
@@ -233,32 +262,35 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
      */
     fun load(name: String, save: Boolean = true) {
         FDPClient.isLoadingConfig = true
-        if (save && nowConfig != name) {
-            saveAllConfigs() // Save all current configs before loading the new one
+        try {
+            if (save && nowConfig != name) {
+                saveAllConfigs()
+            }
+
+            nowConfig = name
+            val configFile = SettingsFiles.clientConfigFile(name)
+
+            val json = if (configFile.exists() && configFile.length() > 0) {
+                JsonParser().parse(configFile.reader(Charsets.UTF_8)).asJsonObject
+            } else {
+                JsonObject()
+            }
+
+            for (section in sections) {
+                section.load(if (json.has(section.sectionName)) json.getAsJsonObject(section.sectionName) else JsonObject())
+            }
+
+            if (!configFile.exists() || save) {
+                saveActiveConfig(false)
+            }
+
+            if (save) {
+                saveAllConfigs()
+            }
+
+            LOGGER.info("Config $name.json loaded.")
+        } finally {
+            FDPClient.isLoadingConfig = false
         }
-
-        nowConfig = name
-        val configFile = SettingsFiles.clientConfigFile(name)
-
-        val json = if (configFile.exists()) {
-            JsonParser().parse(configFile.reader(Charsets.UTF_8)).asJsonObject
-        } else {
-            JsonObject()
-        }
-
-        for (section in sections) {
-            section.load(if (json.has(section.sectionName)) { json.getAsJsonObject(section.sectionName) } else { JsonObject() })
-        }
-
-        if (!configFile.exists()) {
-            saveAllConfigs() // Save the new config if it doesn't exist
-        }
-
-        if (save) {
-            saveAllConfigs()
-        }
-
-        LOGGER.info("Config $name.json loaded.")
-        FDPClient.isLoadingConfig = false
     }
 }

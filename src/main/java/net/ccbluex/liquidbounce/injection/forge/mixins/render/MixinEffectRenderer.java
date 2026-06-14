@@ -30,6 +30,7 @@ public abstract class MixinEffectRenderer {
     /**
      * @author Mojang
      * @author Marco
+     * @reason Keep particle emitter updates from breaking the effect loop
      */
     @Overwrite
     public void updateEffects() {

@@ -46,6 +46,7 @@ public class MixinTileEntityItemStackRenderer {
 
     /**
      * @author CCBlueX
+     * @reason Preserve special tile entity item rendering with client hooks
      */
     @Overwrite
     public void renderByItem(ItemStack itemStackIn) {
