@@ -21,6 +21,14 @@ import java.io.IOException;
 @Mixin(value = GuiMultiplayer.class, priority = 1001)
 public abstract class MixinGuiMultiplayer extends MixinGuiScreen {
 
+    @Inject(method = "initGui", at = @At("HEAD"), cancellable = true)
+    private void redirectToServerSelect(CallbackInfo ci) {
+        // FDP uses its own server-list screen everywhere; bounce the vanilla multiplayer menu to it
+        // (covers disconnect, download-terrain, connection-error and any other vanilla path).
+        mc.displayGuiScreen(new net.ccbluex.liquidbounce.ui.client.gui.multiplayer.GuiServerSelect(new net.ccbluex.liquidbounce.ui.client.gui.GuiMainMenu()));
+        ci.cancel();
+    }
+
     @Inject(method = "initGui", at = @At("RETURN"))
     private void initGui(CallbackInfo callbackInfo) {
         // Detect ViaForge button

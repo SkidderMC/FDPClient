@@ -40,7 +40,7 @@ public abstract class MixinGuiDownloadTerrain extends MixinGuiScreen {
                 RealmsBridge realmsbridge = new RealmsBridge();
                 realmsbridge.switchToRealms(new GuiMainMenu());
             } else {
-                mc.displayGuiScreen(new GuiMultiplayer(new GuiMainMenu()));
+                mc.displayGuiScreen(new net.ccbluex.liquidbounce.ui.client.gui.multiplayer.GuiServerSelect(new GuiMainMenu()));
             }
         }
 

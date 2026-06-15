@@ -21,7 +21,7 @@ object ConnectCommand : Command("connect") {
             3 -> {
                 if(args[2] == "silent") {
                     chat("Connecting to §a§l${args[1]} §7(Silent mode)")
-                    mc.displayGuiScreen(GuiConnecting(GuiMultiplayer(GuiMainMenu()), mc, ServerData("", args[1], false)))
+                    mc.displayGuiScreen(GuiConnecting(net.ccbluex.liquidbounce.ui.client.gui.multiplayer.GuiServerSelect(GuiMainMenu()), mc, ServerData("", args[1], false)))
                 }
                 return
             }
@@ -30,7 +30,7 @@ object ConnectCommand : Command("connect") {
         if (args.size == 2) {
             chat("Connecting to §a§l${args[1]}")
             mc.theWorld.sendQuittingDisconnectingPacket()
-            mc.displayGuiScreen(GuiConnecting(GuiMultiplayer(GuiMainMenu()), mc, ServerData("", args[1], false)))
+            mc.displayGuiScreen(GuiConnecting(net.ccbluex.liquidbounce.ui.client.gui.multiplayer.GuiServerSelect(GuiMainMenu()), mc, ServerData("", args[1], false)))
         } else chatSyntax("connect <ip:port> (silent)")
     }
 

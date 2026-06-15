@@ -58,7 +58,7 @@ object ServerUtils : MinecraftInstance {
                     C00PacketLoginStart(mc.session.profile)
                 )
             }
-        } else mc.displayGuiScreen(GuiConnecting(GuiMultiplayer(GuiMainMenu()), mc, serverData))
+        } else mc.displayGuiScreen(GuiConnecting(net.ccbluex.liquidbounce.ui.client.gui.multiplayer.GuiServerSelect(GuiMainMenu()), mc, serverData))
     }
 
     /**

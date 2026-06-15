@@ -77,7 +77,7 @@ public abstract class MixinGuiDisconnected extends MixinGuiScreen {
                     return null;
                 }, e -> {
                     mc.addScheduledTask(() -> {
-                        mc.displayGuiScreen(new GuiDisconnected(new GuiMultiplayer(new GuiMainMenu()), e.getMessage(), new ChatComponentText(e.getMessage())));
+                        mc.displayGuiScreen(new GuiDisconnected(new net.ccbluex.liquidbounce.ui.client.gui.multiplayer.GuiServerSelect(new GuiMainMenu()), e.getMessage(), new ChatComponentText(e.getMessage())));
                     });
                     return null;
                 }, () -> null));

@@ -45,7 +45,7 @@ public abstract class MixinGuiIngameMenu extends MixinGuiScreen {
         }
 
         if (button.id == 1068) {
-            mc.displayGuiScreen(new GuiMultiplayer((GuiScreen) (Object) this));
+            mc.displayGuiScreen(new net.ccbluex.liquidbounce.ui.client.gui.multiplayer.GuiServerSelect(new net.ccbluex.liquidbounce.ui.client.gui.GuiMainMenu()));
         }
     }
 }
