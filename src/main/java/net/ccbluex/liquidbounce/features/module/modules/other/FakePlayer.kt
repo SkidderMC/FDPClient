@@ -5,41 +5,218 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.other
 
+import net.ccbluex.liquidbounce.event.AttackEvent
+import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.WorldEvent
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.inventory.attackDamage
 import net.minecraft.client.entity.EntityOtherPlayerMP
+import net.minecraft.entity.EntityLivingBase
+import net.minecraft.entity.SharedMonsterAttributes
+import net.minecraft.enchantment.EnchantmentHelper
+import net.minecraft.potion.Potion
+import net.minecraft.util.DamageSource
+import net.minecraft.util.EnumParticleTypes
+import kotlin.math.max
+import kotlin.math.sqrt
 
 object FakePlayer : Module("FakePlayer", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
-    // Stores the reference to the fake player
+    private val healthValue by float("Health", 20F, 1F..40F, suffix = "HP")
+    private val weaponDamage by boolean("WeaponDamage", true)
+    private val baseDamage by float("BaseDamage", 1F, 0F..20F, suffix = "HP") { !weaponDamage }
+    private val damageMultiplier by float("DamageMultiplier", 1F, 0.1F..5F)
+    private val invulnerabilityTicks by int("InvulnerabilityTicks", 10, 0..20, suffix = "Ticks")
+    private val knockbackValue by float("Knockback", 0.4F, 0F..2F)
+    private val sprintKnockbackValue by float("SprintKnockback", 0.4F, 0F..2F)
+    private val criticalParticles by boolean("CriticalParticles", true)
+    private val removeOnDeath by boolean("RemoveOnDeath", true)
+
     private var fakePlayer: EntityOtherPlayerMP? = null
+    private var fakeHealth = 20F
 
-    /**
-     * Initializes the fake player when the module is enabled.
-     */
-    override fun onEnable() {
-        // Create an instance of EntityOtherPlayerMP using the current player's profile
-        fakePlayer = EntityOtherPlayerMP(mc.theWorld, mc.thePlayer.gameProfile).apply {
-            // Clone the current player's properties
-            clonePlayer(mc.thePlayer, true)
-            rotationYawHead = mc.thePlayer.rotationYawHead
-            // Copy the current player's location and angles
-            copyLocationAndAnglesFrom(mc.thePlayer)
+    override val tag: String?
+        get() = fakePlayer?.let { "%.1f HP".format(fakeHealth) }
+
+    val onAttack = handler<AttackEvent>(priority = Byte.MAX_VALUE) { event ->
+        val fake = fakePlayer ?: return@handler
+        val target = event.targetEntity ?: return@handler
+
+        if (target !== fake && target.entityId != fake.entityId) {
+            return@handler
         }
 
-        // Add the fake player to the world with a unique negative ID
-        mc.theWorld.addEntityToWorld(-1000, fakePlayer)
+        event.cancelEvent()
+
+        if (fake.isDead || fakeHealth <= 0F || fake.hurtResistantTime > invulnerabilityTicks) {
+            return@handler
+        }
+
+        applyFakeHit(fake)
     }
 
-    /**
-     * Removes the fake player when the module is disabled.
-     */
-    override fun onDisable() {
-        fakePlayer?.let {
-            // Remove the fake player from the world using its entity ID
-            mc.theWorld.removeEntityFromWorld(it.entityId)
+    val onUpdate = handler<UpdateEvent> {
+        val fake = fakePlayer ?: return@handler
+
+        if (fake.isDead || fake.worldObj !== mc.theWorld) {
+            fakePlayer = null
+            fakeHealth = 0F
+            return@handler
         }
-        // Clear the reference to the fake player
+
+        // EntityOtherPlayerMP normally only interpolates server positions and runs no physics of its
+        // own, so its motion (e.g. knockback) is ignored. Drive movement + gravity + friction manually.
+        fake.moveEntity(fake.motionX, fake.motionY, fake.motionZ)
+        fake.motionY = (fake.motionY - 0.08) * 0.98
+        val friction = if (fake.onGround) 0.6 * 0.91 else 0.91
+        fake.motionX *= friction
+        fake.motionZ *= friction
+
+        fakeHealth = fake.health.coerceAtLeast(0F)
+
+        if (fakeHealth <= 0F && removeOnDeath) {
+            removeFakePlayer()
+        }
+    }
+
+    val onWorld = handler<WorldEvent>(always = true) {
         fakePlayer = null
+        fakeHealth = 0F
     }
-}
+
+    override fun onEnable() {
+        val world = mc.theWorld ?: return
+        val player = mc.thePlayer ?: return
+
+        removeFakePlayer()
+
+        fakeHealth = healthValue
+        fakePlayer = EntityOtherPlayerMP(world, player.gameProfile).apply {
+            clonePlayer(player, true)
+            rotationYawHead = player.rotationYawHead
+            copyLocationAndAnglesFrom(player)
+            capabilities.disableDamage = false
+            getEntityAttribute(SharedMonsterAttributes.maxHealth).baseValue = healthValue.toDouble()
+            health = healthValue
+            hurtTime = 0
+            maxHurtTime = 0
+            hurtResistantTime = 0
+            deathTime = 0
+        }
+
+        world.addEntityToWorld(FAKE_PLAYER_ID, fakePlayer)
+    }
+
+    override fun onDisable() {
+        removeFakePlayer()
+    }
+
+    private fun applyFakeHit(fake: EntityOtherPlayerMP) {
+        val player = mc.thePlayer ?: return
+        val damage = currentDamage()
+
+        val damaged = fake.attackEntityFrom(DamageSource.causePlayerDamage(player), damage)
+        if (!damaged && fake.health == fakeHealth) {
+            return
+        }
+
+        fakeHealth = fake.health.coerceAtLeast(0F)
+        fake.hurtTime = 10
+        fake.maxHurtTime = 10
+        fake.hurtResistantTime = 20
+        fake.attackedAtYaw = player.rotationYaw - fake.rotationYaw
+
+        applyKnockback(fake)
+        spawnHitEffects(fake)
+
+        if (criticalParticles && isCriticalHit(player)) {
+            player.onCriticalHit(fake)
+        }
+
+        if (EnchantmentHelper.getModifierForCreature(player.heldItem, fake.creatureAttribute) > 0F) {
+            player.onEnchantmentCritical(fake)
+        }
+
+        if (fakeHealth <= 0F || fake.isDead) {
+            fakeHealth = 0F
+            fake.deathTime = 20
+
+            if (removeOnDeath) {
+                removeFakePlayer()
+            }
+        }
+    }
+
+    private fun currentDamage(): Float {
+        val player = mc.thePlayer ?: return baseDamage
+        val damage = if (weaponDamage) {
+            player.heldItem?.attackDamage?.toFloat() ?: 1F
+        } else {
+            baseDamage
+        }
+
+        return max(0F, damage * damageMultiplier)
+    }
+
+    private fun applyKnockback(fake: EntityOtherPlayerMP) {
+        val player = mc.thePlayer ?: return
+        val strength = knockbackValue + if (player.isSprinting) sprintKnockbackValue else 0F
+
+        if (strength <= 0F) {
+            return
+        }
+
+        var x = fake.posX - player.posX
+        var z = fake.posZ - player.posZ
+        var distance = sqrt(x * x + z * z)
+
+        if (distance < 0.01) {
+            x = -kotlin.math.sin(Math.toRadians(player.rotationYaw.toDouble()))
+            z = kotlin.math.cos(Math.toRadians(player.rotationYaw.toDouble()))
+            distance = sqrt(x * x + z * z)
+        }
+
+        fake.motionX += x / distance * strength
+        fake.motionZ += z / distance * strength
+        fake.motionY = max(fake.motionY, 0.35)
+        fake.velocityChanged = true
+    }
+
+    private fun spawnHitEffects(fake: EntityLivingBase) {
+        repeat(5) {
+            mc.theWorld.spawnParticle(
+                EnumParticleTypes.CRIT,
+                fake.posX,
+                fake.posY + fake.height * 0.5,
+                fake.posZ,
+                0.0,
+                0.0,
+                0.0
+            )
+        }
+    }
+
+    private fun isCriticalHit(player: EntityLivingBase): Boolean {
+        return player.fallDistance > 0F &&
+            !player.onGround &&
+            !player.isOnLadder &&
+            !player.isInWater &&
+            !player.isPotionActive(Potion.blindness) &&
+            player.ridingEntity == null
+    }
+
+    private fun removeFakePlayer() {
+        val fake = fakePlayer ?: return
+        val world = mc.theWorld
+
+        world?.removeEntityFromWorld(fake.entityId)
+        fake.setDead()
+
+        fakePlayer = null
+        fakeHealth = 0F
+    }
+
+    private const val FAKE_PLAYER_ID = -1000
+    }
