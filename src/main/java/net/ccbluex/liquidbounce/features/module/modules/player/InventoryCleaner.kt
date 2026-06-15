@@ -77,6 +77,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
     private val ignoreVehicles by boolean("IgnoreVehicles", false).subjective()
 
     private val onlyGoodPotions by boolean("OnlyGoodPotions", false).subjective()
+    private val maxPotionStacks by int("MaxPotionStacks", 36, 0..36) { limitStackCounts }.subjective()
 
     val highlightSlot by +InventoryManager.highlightSlotValue
     val backgroundColor by +InventoryManager.borderColor
@@ -478,7 +479,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
 
             is ItemBoat, is ItemMinecart -> !ignoreVehicles
 
-            is ItemPotion -> isUsefulPotion(stack)
+            is ItemPotion -> isUsefulPotion(stack, stacks, entityStacksMap, noLimits, strictlyBest)
 
             is ItemBucket -> isUsefulBucket(stack, stacks, entityStacksMap)
 
@@ -540,7 +541,11 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
         }
     }
 
-    private fun isUsefulPotion(stack: ItemStack?): Boolean {
+    // Rank potions by strength and keep the best ones up to maxPotionStacks (facet + ranking).
+    private fun isUsefulPotion(
+        stack: ItemStack?, stacks: List<ItemStack?>, entityStacksMap: Map<ItemStack, EntityItem>?,
+        ignoreLimits: Boolean, strictlyBest: Boolean,
+    ): Boolean {
         val item = stack?.item ?: return false
 
         if (item !is ItemPotion) return false
@@ -548,8 +553,81 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
         val isSplash = stack.isSplashPotion()
         val isHarmful = item.getEffects(stack)?.any { it.potionID in NEGATIVE_EFFECT_IDS } ?: return false
 
-        // Only keep helpful potions and, if 'onlyGoodPotions' is disabled, also splash harmful potions
-        return !isHarmful || (!onlyGoodPotions && isSplash)
+        // Discard purely harmful drinkable potions; keep splash harmful only if offensive use is allowed
+        if (isHarmful && (onlyGoodPotions || !isSplash)) return false
+
+        // Skip ranking if there is no stack limit set and when not strictly searching for the best
+        if (ignoreLimits || !limitStackCounts) {
+            if (!strictlyBest)
+                return true
+        } else if (maxPotionStacks == 0)
+            return false
+
+        val value = potionValue(stack)
+
+        val index = stacks.indexOf(stack)
+
+        val isSorted = canBeSortedTo(index, item, stacks.size)
+
+        val stacksToIterate = stacks.toMutableList()
+
+        var distanceSqToItem = .0
+
+        if (!entityStacksMap.isNullOrEmpty()) {
+            distanceSqToItem = mc.thePlayer.getDistanceSqToEntity(entityStacksMap[stack] ?: return false)
+            stacksToIterate += entityStacksMap.keys
+        }
+
+        val betterCount = stacksToIterate.withIndex().count { (otherIndex, otherStack) ->
+            if (otherStack == stack)
+                return@count false
+
+            val otherItem = otherStack?.item ?: return@count false
+
+            if (otherItem !is ItemPotion)
+                return@count false
+
+            // Apply the same keep/discard rule to the compared potion
+            val otherHarmful = otherItem.getEffects(otherStack)?.any { it.potionID in NEGATIVE_EFFECT_IDS } ?: return@count false
+            if (otherHarmful && (onlyGoodPotions || !otherStack.isSplashPotion()))
+                return@count false
+
+            // Items dropped on ground should have index -1
+            val otherIndex = if (otherIndex > stacks.lastIndex) -1 else otherIndex
+
+            when (potionValue(otherStack).compareTo(value)) {
+                // Other potion is stronger
+                1 -> true
+                // Both potions are equally strong
+                0 -> {
+                    // Only true when both items are dropped on ground
+                    if (index == otherIndex) {
+                        val otherEntityItem = entityStacksMap?.get(otherStack) ?: return@count false
+
+                        // If other item is closer, count it as better
+                        distanceSqToItem > mc.thePlayer.getDistanceSqToEntity(otherEntityItem)
+                    } else {
+                        val isOtherSorted = canBeSortedTo(otherIndex, otherItem, stacks.size)
+
+                        // Count as better alternative only when compared stack isn't sorted and the other is sorted, or has higher index
+                        !isSorted && (isOtherSorted || otherIndex > index)
+                    }
+                }
+
+                else -> false
+            }
+        }
+
+        // If sorting is checking if item is strictly the best option, only return true for items that have no better alternatives
+        return if (strictlyBest) betterCount == 0 else betterCount < maxPotionStacks
+    }
+
+    // Higher = stronger: sum of (amplifier + 1) * duration in seconds, splash slightly preferred
+    private fun potionValue(stack: ItemStack): Int {
+        val item = stack.item as? ItemPotion ?: return 0
+        val effects = item.getEffects(stack) ?: return 0
+        val base = effects.sumOf { (it.amplifier + 1) * (it.duration / 20).coerceAtLeast(1) }
+        return base + if (stack.isSplashPotion()) 1 else 0
     }
 
     private fun isUsefulLighter(
