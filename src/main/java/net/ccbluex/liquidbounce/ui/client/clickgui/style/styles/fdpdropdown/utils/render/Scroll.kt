@@ -28,8 +28,8 @@ class Scroll {
         // Save the previous scroll value (already compensated by the current animation)
         val oldScroll = scroll
 
-        // Update the raw scroll value using the mouse wheel
-        rawScroll += Mouse.getDWheel() / 4f
+        // Update the raw scroll value using the mouse wheel (skip while a SideGui panel is focused)
+        if (!net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.SideGui.anyFocused) rawScroll += Mouse.getDWheel() / 4f
 
         // Clamp rawScroll within the range [-maxScroll, minScroll]
         rawScroll = rawScroll.coerceIn(-maxScroll, minScroll)

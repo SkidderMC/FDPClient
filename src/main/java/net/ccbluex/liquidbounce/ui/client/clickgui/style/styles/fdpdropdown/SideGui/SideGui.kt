@@ -45,9 +45,19 @@ import kotlin.math.min
 
 class SideGui : GuiPanel() {
 
+    companion object {
+        /** True while a SideGui panel is focused, so the click-GUI behind it stops scrolling. */
+        @JvmStatic
+        var anyFocused = false
+    }
+
     private val categories = arrayOf("UI", "Configs", "Color", "Background")
 
     var focused = false
+        set(value) {
+            field = value
+            anyFocused = value
+        }
     private var clickAnimation: Animation? = null
     private var hoverAnimation: Animation? = null
     private var textAnimation: Animation? = null
@@ -283,16 +293,22 @@ class SideGui : GuiPanel() {
         return mainRectColor
     }
 
+    // Tabs are sized to their label (+ padding) so longer names like "Background" no longer overflow the box.
+    private val tabGap = 10f
+    private fun tabBoxWidth(cat: String) = Fonts.InterBold_26.stringWidth(cat) + 24f
+    private fun tabsTotalWidth() = categories.map { tabBoxWidth(it) }.sum() + tabGap * (categories.size - 1)
+    private fun tabStartX() = drag!!.x + rectWidth / 2f - tabsTotalWidth() / 2f
+    private fun tabHeight() = (Fonts.InterBold_26.height + 10).toFloat()
+
     private fun drawCategoryTabs(mouseX: Int, mouseY: Int, alpha: Int) {
         val textColor = RenderUtils.applyOpacity(-1, alpha / 255f)
-        val totalWidth = 4 * 60f + 3 * 10f
-        val startX = drag!!.x + rectWidth / 2f - totalWidth / 2f
         val yVal = drag!!.y + 15
+        val h = tabHeight()
 
-        var xOffset = 0f
+        var x = tabStartX()
         categories.forEachIndexed { index, cat ->
-            val xVal = startX + xOffset
-            val hovered = RenderUtils.isHovering(xVal - 30, yVal - 5, 60f, (Fonts.InterBold_26.height + 10).toFloat(), mouseX, mouseY)
+            val w = tabBoxWidth(cat)
+            val hovered = RenderUtils.isHovering(x, yVal - 5, w, h, mouseX, mouseY)
             val catHoverAnim = categoryAnimation[cat]?.get(0)
             val catEnableAnim = categoryAnimation[cat]?.get(1)
             catHoverAnim?.direction = if (hovered) Direction.FORWARDS else Direction.BACKWARDS
@@ -304,9 +320,9 @@ class SideGui : GuiPanel() {
             val enableOut = catEnableAnim?.output?.toFloat() ?: 0f
             val hoverColor: Color = RenderUtils.interpolateColorC(baseColor, RenderUtils.brighter(baseColor, 0.8f), hoverOut)
             val finalColor: Color = RenderUtils.interpolateColorC(hoverColor, colorToInterpolateAsColor, enableOut)
-            drawCustomShapeWithRadius(xVal - 30, yVal - 5, 60f, (Fonts.InterBold_26.height + 10).toFloat(), 6f, finalColor)
-            Fonts.InterBold_26.drawCenteredString(cat, xVal, yVal, textColor)
-            xOffset += 60f + 10f
+            drawCustomShapeWithRadius(x, yVal - 5, w, h, 6f, finalColor)
+            Fonts.InterBold_26.drawCenteredString(cat, x + w / 2f, yVal, textColor)
+            x += w + tabGap
         }
     }
 
@@ -318,18 +334,16 @@ class SideGui : GuiPanel() {
     }
 
     private fun checkCategoryClick(mouseX: Int, mouseY: Int) {
-        val totalWidth = 4 * 60f + 3 * 10f
-        val startX = drag!!.x + rectWidth / 2f - totalWidth / 2f
         val yVal = drag!!.y + 15
-        var xOffset = 0f
+        val h = tabHeight()
+        var x = tabStartX()
         categories.forEach { cat ->
-            val xVal = startX + xOffset
-            val hovered = RenderUtils.isHovering(xVal - 30, yVal - 5, 60f, (Fonts.InterBold_26.height + 10).toFloat(), mouseX, mouseY)
-            if (hovered) {
+            val w = tabBoxWidth(cat)
+            if (RenderUtils.isHovering(x, yVal - 5, w, h, mouseX, mouseY)) {
                 currentCategory = cat
                 return
             }
-            xOffset += 60f + 10f
+            x += w + tabGap
         }
     }
 
@@ -337,15 +351,13 @@ class SideGui : GuiPanel() {
      * Check if the mouse is hovering on any header button (UI, Configs, Color).
      */
     private fun isHoveringHeader(mouseX: Int, mouseY: Int): Boolean {
-        val totalWidth = 4 * 60f + 3 * 10f
-        val startX = drag!!.x + rectWidth / 2f - totalWidth / 2f
         val yVal = drag!!.y + 15
-        var xOffset = 0f
-        categories.forEach { _ ->
-            val xVal = startX + xOffset
-            val hovered = RenderUtils.isHovering(xVal - 30, yVal - 5, 60f, (Fonts.InterBold_26.height + 10).toFloat(), mouseX, mouseY)
-            if (hovered) return true
-            xOffset += 60f + 10f
+        val h = tabHeight()
+        var x = tabStartX()
+        categories.forEach { cat ->
+            val w = tabBoxWidth(cat)
+            if (RenderUtils.isHovering(x, yVal - 5, w, h, mouseX, mouseY)) return true
+            x += w + tabGap
         }
         return false
     }

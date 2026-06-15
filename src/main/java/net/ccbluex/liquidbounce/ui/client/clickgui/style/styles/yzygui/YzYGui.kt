@@ -122,7 +122,7 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
             assumeNonVolatile = true
 
             if (Mouse.hasWheel()) {
-                val wheel = Mouse.getDWheel()
+                val wheel = if (net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.SideGui.anyFocused) 0 else Mouse.getDWheel()
                 if (wheel != 0) {
                     val handledScroll = panels.asReversed().any { it.handleScroll(mouseX, mouseY, wheel) }
                     if (!handledScroll) {
