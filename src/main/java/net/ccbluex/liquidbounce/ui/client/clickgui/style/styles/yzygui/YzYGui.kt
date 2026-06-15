@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.SideGui
+import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.SideGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.manager.GUIManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
@@ -122,7 +122,7 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
             assumeNonVolatile = true
 
             if (Mouse.hasWheel()) {
-                val wheel = if (net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.SideGui.anyFocused) 0 else Mouse.getDWheel()
+                val wheel = if (net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.SideGui.anyFocused) 0 else Mouse.getDWheel()
                 if (wheel != 0) {
                     val handledScroll = panels.asReversed().any { it.handleScroll(mouseX, mouseY, wheel) }
                     if (!handledScroll) {

@@ -3,21 +3,21 @@
  * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
  * https://github.com/SkidderMC/FDPClient/
  */
-package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui
+package net.ccbluex.liquidbounce.ui.client.clickgui.sidegui
 
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.generateColor
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiBackgroundManager
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiBackgroundManager.bgHexFocused
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiBackgroundManager.bgHexInput
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiBackgroundManager.checkBackgroundInteractions
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiBackgroundManager.getBgHexFieldArea
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiColorManager
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiColorManager.checkColorCategoryInteractions
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiColorManager.colorHexFocused
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiColorManager.colorHexInput
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiColorManager.getColorHexFieldArea
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.SideGui.managers.SideGuiConfigsManager
+import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiBackgroundManager
+import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiBackgroundManager.bgHexFocused
+import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiBackgroundManager.bgHexInput
+import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiBackgroundManager.checkBackgroundInteractions
+import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiBackgroundManager.getBgHexFieldArea
+import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiColorManager
+import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiColorManager.checkColorCategoryInteractions
+import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiColorManager.colorHexFocused
+import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiColorManager.colorHexInput
+import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiColorManager.getColorHexFieldArea
+import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiConfigsManager
 import net.ccbluex.liquidbounce.utils.animations.Animation
 import net.ccbluex.liquidbounce.utils.animations.Direction
 import net.ccbluex.liquidbounce.utils.animations.impl.DecelerateAnimation
