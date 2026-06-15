@@ -181,7 +181,7 @@ public abstract class MixinEntityRenderer {
 
             pointedEntity = null;
             Vec3 vec33 = null;
-            List<Entity> list = mc.theWorld.getEntities(Entity.class, Predicates.and(EntitySelectors.NOT_SPECTATING, p_apply_1_ -> p_apply_1_ != null && p_apply_1_.canBeCollidedWith() && p_apply_1_ != entity));
+            List<Entity> list = mc.theWorld.getEntities(Entity.class, Predicates.and(EntitySelectors.NOT_SPECTATING, p_apply_1_ -> p_apply_1_ != null && p_apply_1_.canBeCollidedWith() && p_apply_1_ != entity && !EntityVisibilityFilter.shouldSkipMouseOver(p_apply_1_)));
             double d2 = d1;
 
             for (Entity entity1 : list) {
@@ -386,9 +386,6 @@ public abstract class MixinEntityRenderer {
             if (mc != null && mc.gameSettings.thirdPersonView != 0
                     && CameraView.INSTANCE.shouldLowerThirdPersonFov()) {
                 fov = CameraView.INSTANCE.thirdPersonFovValue();
-            }
-            if (Zoom.INSTANCE.handleEvents()) {
-                fov *= Zoom.INSTANCE.getFovMultiplier();
             }
         } catch (Throwable ignored) {
         }
