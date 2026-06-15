@@ -387,6 +387,9 @@ public abstract class MixinEntityRenderer {
                     && CameraView.INSTANCE.shouldLowerThirdPersonFov()) {
                 fov = CameraView.INSTANCE.thirdPersonFovValue();
             }
+            if (Zoom.INSTANCE.handleEvents()) {
+                fov *= Zoom.INSTANCE.getFovMultiplier();
+            }
         } catch (Throwable ignored) {
         }
         Project.gluPerspective(fov, aspect, zNear, zFar);
