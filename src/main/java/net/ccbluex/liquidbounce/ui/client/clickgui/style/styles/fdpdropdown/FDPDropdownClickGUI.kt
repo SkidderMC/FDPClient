@@ -55,6 +55,7 @@ class FDPDropdownClickGUI : GuiScreen() {
             }
 
             sideGui.initGui()
+            net.ccbluex.liquidbounce.ui.client.clickgui.ClickGuiHeader.close()
 
             fadeAnimation = EaseBackIn(400, 1.0, 2.0f)
             openingAnimation = EaseBackIn(400, 0.4, 2.0f)
@@ -108,6 +109,7 @@ class FDPDropdownClickGUI : GuiScreen() {
                     categoryPanels?.forEach { it.drawScreen(effectiveMouseX, effectiveMouseY) }
                 }
                 sideGui.drawScreen(mouseX, mouseY, partialTicks, (255 * fadeAnimation.output).toInt().coerceIn(0, 255))
+                net.ccbluex.liquidbounce.ui.client.clickgui.ClickGuiHeader.draw(sideGui, this@FDPDropdownClickGUI, mouseX, mouseY)
             }
             drawBloom(mouseX - 5, mouseY - 5, 10, 10, 16, Color(guiColor, true))
             super.drawScreen(mouseX, mouseY, partialTicks)
@@ -118,6 +120,7 @@ class FDPDropdownClickGUI : GuiScreen() {
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         try {
+            if (net.ccbluex.liquidbounce.ui.client.clickgui.ClickGuiHeader.handleClick(mouseX, mouseY)) return
             val oldFocus = sideGui.focused
             sideGui.mouseClicked(mouseX, mouseY, mouseButton)
             if (!oldFocus) {

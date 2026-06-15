@@ -29,7 +29,7 @@ class Scroll {
         val oldScroll = scroll
 
         // Update the raw scroll value using the mouse wheel (skip while a SideGui panel is focused)
-        if (!net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.SideGui.anyFocused) rawScroll += Mouse.getDWheel() / 4f
+        if (!net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.SideGui.anyFocused && !net.ccbluex.liquidbounce.ui.client.clickgui.ClickGuiHeader.isOpen) rawScroll += Mouse.getDWheel() / 4f
 
         // Clamp rawScroll within the range [-maxScroll, minScroll]
         rawScroll = rawScroll.coerceIn(-maxScroll, minScroll)

@@ -83,6 +83,7 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
 
         try {
             sideGui.initGui()
+            net.ccbluex.liquidbounce.ui.client.clickgui.ClickGuiHeader.close()
         } catch (e: Exception) {
             println("Error initializing sideGui: ${e.message}")
         }
@@ -122,7 +123,7 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
             assumeNonVolatile = true
 
             if (Mouse.hasWheel()) {
-                val wheel = if (net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.SideGui.anyFocused) 0 else Mouse.getDWheel()
+                val wheel = if (net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.SideGui.anyFocused || net.ccbluex.liquidbounce.ui.client.clickgui.ClickGuiHeader.isOpen) 0 else Mouse.getDWheel()
                 if (wheel != 0) {
                     val handledScroll = panels.asReversed().any { it.handleScroll(mouseX, mouseY, wheel) }
                     if (!handledScroll) {
@@ -143,6 +144,8 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
 
             sideGui.drawScreen(mouseX, mouseY, partialTicks, alpha)
 
+            net.ccbluex.liquidbounce.ui.client.clickgui.ClickGuiHeader.draw(sideGui, this, mouseX, mouseY)
+
             bindInputBox?.let { box ->
                 box.drawScreen(mouseX, mouseY, partialTicks)
             }
@@ -161,6 +164,7 @@ class YzYGui(private val clickGui: ClickGUIModule) : GuiScreen() {
     @Throws(IOException::class)
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
         try {
+            if (net.ccbluex.liquidbounce.ui.client.clickgui.ClickGuiHeader.handleClick(mouseX, mouseY)) return
             bindInputBox?.let { box ->
                 if (box.mouseClicked(mouseX, mouseY, mouseButton)) {
                     return

@@ -130,7 +130,7 @@ class NlSub(parentCategory: Category?, var subCategory: SubCategory, var y2: Int
 
     fun onScroll(ms: Int) {
         scroll = (rawScroll - scrollAnimation.output).toFloat()
-        if (!net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.SideGui.anyFocused) rawScroll += Mouse.getDWheel() / 4f
+        if (!net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.SideGui.anyFocused && !net.ccbluex.liquidbounce.ui.client.clickgui.ClickGuiHeader.isOpen) rawScroll += Mouse.getDWheel() / 4f
         rawScroll = max(min(minScroll, rawScroll), -maxScroll)
         scrollAnimation = SmoothStepAnimation(ms, (rawScroll - scroll).toDouble(), Direction.BACKWARDS)
     }
