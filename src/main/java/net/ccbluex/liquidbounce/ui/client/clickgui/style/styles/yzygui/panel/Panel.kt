@@ -181,7 +181,8 @@ class Panel(
                             }
                         } else {
                             elements.forEach { element ->
-                                element.isExtended = moduleStates[element.module.name] ?: false
+                                element.isExtended = guiManager.moduleExtendeds[element.module.name]
+                                    ?: moduleStates[element.module.name] ?: false
                             }
                         }
                     }
@@ -217,6 +218,7 @@ class Panel(
 
         elements.forEach { element ->
             moduleStates[element.module.name] = element.isExtended
+            guiManager.moduleExtendeds[element.module.name] = element.isExtended
         }
     }
 

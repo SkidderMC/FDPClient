@@ -19,6 +19,9 @@ import net.ccbluex.liquidbounce.config.ListValue
 import net.ccbluex.liquidbounce.config.ColorValue
 import net.ccbluex.liquidbounce.config.TextValue
 import net.ccbluex.liquidbounce.config.BlockValue
+import net.ccbluex.liquidbounce.config.FontValue
+import net.ccbluex.liquidbounce.config.IntRangeValue
+import net.ccbluex.liquidbounce.config.FloatRangeValue
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
@@ -40,7 +43,7 @@ class ModuleElement(
     }
 
     private val elements = mutableListOf<PanelElement>()
-    var isExtended = false
+    var isExtended = FDPClient.guiManager.isModuleExtended(module.name)
     private var isBinding = false
     var isBindingSelection = false
 
@@ -50,10 +53,13 @@ class ModuleElement(
                 is BoolValue -> BooleanElement(this, value, parent, x + 4, y, width - 8, 12)
                 is FloatValue -> FloatElement(value, parent, x + 4, y, width - 4, 12)
                 is IntValue -> IntegerElement(value, parent, x + 4, y, width - 4, 12)
+                is FloatRangeValue -> RangeElement(value, parent, x + 4, y, width - 4, 12)
+                is IntRangeValue -> RangeElement(value, parent, x + 4, y, width - 4, 12)
                 is ListValue -> ListElement(this, value, parent, x + 4, y, width - 8, 12)
                 is ColorValue -> ColorElement(this, value, parent, x + 4, y, width - 8, 12)
                 is TextValue -> TextElement(this, value, parent, x + 4, y, width - 8, 12)
                 is BlockValue -> BlockElement(this, value, parent, x + 4, y, width - 8, 12)
+                is FontValue -> FontElement(this, value, parent, x + 4, y, width - 8, 12)
                 else -> null
             }
             element?.let { elements.add(it) }
@@ -201,7 +207,7 @@ class ModuleElement(
                         isBindingSelection = false
                     } else if (module.values.filter { it.shouldRender() }.isNotEmpty()) {
                         isExtended = !isExtended
-                        // State is managed locally through isExtended property
+                        FDPClient.guiManager.moduleExtendeds[module.name] = isExtended
                     }
                 }
                 2 -> {

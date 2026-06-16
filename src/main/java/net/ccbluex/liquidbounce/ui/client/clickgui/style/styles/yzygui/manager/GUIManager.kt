@@ -25,6 +25,7 @@ class GUIManager {
 
     val positions = mutableMapOf<yzyCategory, Pair<Int, Int?>>()
     val extendeds = mutableMapOf<yzyCategory, Boolean>()
+    val moduleExtendeds = mutableMapOf<String, Boolean>()
 
     private fun getCategoryFile(category: yzyCategory): File =
         SettingsFiles.yzyLayoutFile(category.name.lowercase(Locale.getDefault()))
@@ -109,6 +110,9 @@ class GUIManager {
 
     fun isExtended(category: yzyCategory): Boolean =
         extendeds[category] ?: false
+
+    fun isModuleExtended(moduleName: String): Boolean =
+        moduleExtendeds[moduleName] ?: false
 
     fun getPositions(category: yzyCategory): Pair<Int, Int?> =
         positions[category] ?: Pair(0, null)
