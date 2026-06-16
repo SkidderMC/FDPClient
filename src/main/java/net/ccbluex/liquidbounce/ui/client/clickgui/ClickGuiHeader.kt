@@ -20,7 +20,9 @@ import net.ccbluex.liquidbounce.utils.io.MiscUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.gui.ScaledResolution
+import org.lwjgl.input.Mouse
 import java.awt.Color
+import kotlin.math.abs
 
 /**
  * Shared top navigation used by every ClickGUI style: two clean tabs ("ClickGUI" and "Settings").
@@ -48,11 +50,26 @@ object ClickGuiHeader : MinecraftInstance {
     /** True while the Settings modal is open, so the click-GUI behind it stops scrolling. */
     val isOpen: Boolean get() = settingsOpen
 
-    private class Box(val x: Float, val y: Float, val w: Float, val h: Float, val onClick: () -> Unit)
+    private class Box(val x: Float, val y: Float, val w: Float, val h: Float, val onClick: () -> Unit, val settingsTab: Boolean = false)
 
     private val tabBoxes = mutableListOf<Box>()
     private val itemBoxes = mutableListOf<Box>()
     private var modal = floatArrayOf(0f, 0f, 0f, 0f)
+
+    private var navX = 0f
+    private var navY = 0f
+    private var navW = 0f
+    private var navH = 0f
+    private var posInit = false
+
+    private var wasDown = false
+    private var armed = false
+    private var movedWhileDown = false
+    private var pressX = 0
+    private var pressY = 0
+    private var grabDX = 0f
+    private var grabDY = 0f
+    private var pressedSettingsTab: Boolean? = null
 
     fun close() {
         settingsOpen = false
@@ -78,16 +95,30 @@ object ClickGuiHeader : MinecraftInstance {
     }
 
     private fun drawTabs(sr: ScaledResolution, mouseX: Int, mouseY: Int) {
-        tabBoxes.clear()
         val labels = listOf("ClickGUI" to false, "Settings" to true)
         val height = 22f
         val gap = 6f
         val padX = 18f
         val widths = labels.map { Fonts.Nl_18.stringWidth(it.first) + padX * 2 }
         val total = widths.sum() + gap
-        var x = (sr.scaledWidth - total) / 2f
-        val y = 6f
+
+        navW = total
+        navH = height
+        if (!posInit) {
+            navX = (sr.scaledWidth - total) / 2f
+            navY = 6f
+            posInit = true
+        }
+
+        updateDrag(sr, mouseX, mouseY)
+
+        navX = navX.coerceIn(0f, (sr.scaledWidth - navW).coerceAtLeast(0f))
+        navY = navY.coerceIn(0f, (sr.scaledHeight - navH).coerceAtLeast(0f))
+
+        tabBoxes.clear()
         val accent = ClientThemesUtils.getColor()
+        var x = navX
+        val y = navY
 
         labels.forEachIndexed { i, (label, isSettings) ->
             val w = widths[i]
@@ -100,10 +131,45 @@ object ClickGuiHeader : MinecraftInstance {
             }
             RoundedUtil.drawRound(x, y, w, height, 5f, bg)
             Fonts.Nl_18.drawString(label, x + (w - Fonts.Nl_18.stringWidth(label)) / 2f, y + 7f, -1)
-            val captured = isSettings
-            tabBoxes.add(Box(x, y, w, height) { settingsOpen = captured })
+            tabBoxes.add(Box(x, y, w, height, { }, isSettings))
             x += w + gap
         }
+    }
+
+    private fun updateDrag(sr: ScaledResolution, mouseX: Int, mouseY: Int) {
+        val down = Mouse.isButtonDown(0)
+        val onNav = mouseX >= navX && mouseX <= navX + navW && mouseY >= navY && mouseY <= navY + navH
+
+        if (down && !wasDown && onNav) {
+            armed = true
+            movedWhileDown = false
+            pressX = mouseX
+            pressY = mouseY
+            grabDX = mouseX - navX
+            grabDY = mouseY - navY
+            pressedSettingsTab = tabBoxes.firstOrNull { inside(it, mouseX, mouseY) }?.settingsTab
+        }
+
+        if (down && armed) {
+            if (!movedWhileDown && (abs(mouseX - pressX) > 3 || abs(mouseY - pressY) > 3)) {
+                movedWhileDown = true
+            }
+            if (movedWhileDown) {
+                navX = mouseX - grabDX
+                navY = mouseY - grabDY
+            }
+        }
+
+        if (!down && wasDown) {
+            if (armed && !movedWhileDown) {
+                pressedSettingsTab?.let { settingsOpen = it }
+            }
+            armed = false
+            movedWhileDown = false
+            pressedSettingsTab = null
+        }
+
+        wasDown = down
     }
 
     private fun drawModal(sr: ScaledResolution, sideGui: SideGui, parent: GuiScreen, mouseX: Int, mouseY: Int) {
@@ -144,8 +210,7 @@ object ClickGuiHeader : MinecraftInstance {
 
     /** Returns true when the click was consumed (a tab, an item, or anywhere while the modal is open). */
     fun handleClick(mouseX: Int, mouseY: Int): Boolean {
-        tabBoxes.firstOrNull { inside(it, mouseX, mouseY) }?.let {
-            it.onClick()
+        if (tabBoxes.any { inside(it, mouseX, mouseY) }) {
             return true
         }
 
