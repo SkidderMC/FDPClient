@@ -65,7 +65,7 @@ public class MixinLayerHeldItem {
             }
 
             final UUID uuid = entity.getUniqueID();
-            final EntityPlayer entityplayer = mc.theWorld.getPlayerEntityByUUID(uuid);
+            final EntityPlayer entityplayer = mc.theWorld == null ? null : mc.theWorld.getPlayerEntityByUUID(uuid);
 
             if (entityplayer != null && (entityplayer.isBlocking() || entityplayer instanceof EntityPlayerSP && ((itemstack.getItem() instanceof ItemSword && KillAura.INSTANCE.getRenderBlocking()) || NoSlow.INSTANCE.isUNCPBlocking()))) {
                 if (entity.isSneaking()) {

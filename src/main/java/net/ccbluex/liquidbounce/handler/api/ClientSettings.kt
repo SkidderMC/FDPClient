@@ -56,7 +56,7 @@ fun loadSettings(useCached: Boolean, timeout: Long? = null, callback: (Array<Aut
                 // Invoke the callback with the parsed AutoSetting objects and store them in the cache for future use
                 callback(autoSettings)
                 autoSettingsList = autoSettings
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 LOGGER.error("Failed to fetch auto settings list.", e)
 
                 // If an error occurs, display an error message to the user

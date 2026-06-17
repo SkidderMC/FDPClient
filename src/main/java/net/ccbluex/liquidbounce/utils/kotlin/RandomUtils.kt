@@ -43,12 +43,15 @@ object RandomUtils {
         crackedAccount.name = randomUsername()
 
         if (changeSession) {
-            mc.session = Session(
-                crackedAccount.session.username, crackedAccount.session.uuid,
-                crackedAccount.session.token, crackedAccount.session.type
-            )
+            try {
+                mc.session = Session(
+                    crackedAccount.session.username, crackedAccount.session.uuid,
+                    crackedAccount.session.token, crackedAccount.session.type
+                )
 
-            call(SessionUpdateEvent)
+                call(SessionUpdateEvent)
+            } catch (ignored: Throwable) {
+            }
         }
 
         return crackedAccount

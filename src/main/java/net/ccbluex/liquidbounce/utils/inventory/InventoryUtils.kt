@@ -225,31 +225,34 @@ object InventoryUtils : MinecraftInstance, Listenable {
     )
 
     fun findItemArray(startInclusive: Int, endInclusive: Int, items: Array<Item>): Int? {
+        val container = mc.thePlayer?.openContainer ?: return null
         for (i in startInclusive..endInclusive)
-            if (mc.thePlayer.openContainer.getSlot(i).stack?.item in items)
+            if (i in 0 until container.inventorySlots.size && container.getSlot(i).stack?.item in items)
                 return i - 36
 
         return null
     }
 
     fun findItem(start: Int, end: Int, item: Item): Int? {
+        val container = mc.thePlayer?.openContainer ?: return null
         for (i in start..end)
-            if (mc.thePlayer.openContainer.getSlot(i).stack?.item == item)
+            if (i in 0 until container.inventorySlots.size && container.getSlot(i).stack?.item == item)
                 return i - if (start == 36 && end == 44) 36 else 0
 
         return null
     }
 
     fun hasSpaceInHotbar(): Boolean {
+        val container = mc.thePlayer?.openContainer ?: return false
         for (i in 36..44)
-            mc.thePlayer.openContainer.getSlot(i).stack ?: return true
+            if (i >= container.inventorySlots.size || container.getSlot(i).stack == null) return true
 
         return false
     }
 
     fun hasSpaceInInventory() = mc.thePlayer?.inventory?.firstEmptyStack != -1
 
-    fun countSpaceInInventory() = mc.thePlayer.inventory.mainInventory.count { it.isEmpty() }
+    fun countSpaceInInventory() = mc.thePlayer?.inventory?.mainInventory?.count { it.isEmpty() } ?: 0
 
     fun findBlockInHotbar(): Int? {
         val player = mc.thePlayer ?: return null

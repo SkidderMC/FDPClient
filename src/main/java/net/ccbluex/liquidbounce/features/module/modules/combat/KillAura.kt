@@ -714,7 +714,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         } else {
             var targets = 0
 
-            for (entity in world.loadedEntityList) {
+            for (entity in world.loadedEntityList.toList()) {
                 val distance = player.getDistanceToEntityBox(entity)
 
                 if (entity is EntityLivingBase && isSelected(entity, true) && distance <= getRange(entity)) {

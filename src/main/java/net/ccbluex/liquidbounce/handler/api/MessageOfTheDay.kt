@@ -10,7 +10,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 fun reloadMessageOfTheDay() {
     try {
         messageOfTheDay = ClientApi.getMessageOfTheDay()
-    } catch (e: Exception) {
+    } catch (e: Throwable) {
         LOGGER.error("Unable to receive message of the day", e)
     }
 }

@@ -119,11 +119,12 @@ public abstract class MixinMinecraft {
     @Inject(method = "startGame", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/Minecraft;checkGLError(Ljava/lang/String;)V", ordinal = 2, shift = At.Shift.AFTER))
     private void startGame(CallbackInfo callbackInfo) throws InterruptedException {
         try {
-            liquidBounce$preloadFuture.get();
-        } catch (ExecutionException e) {
-            final String message = "Preload task error. Please check the cause below.";
+            if (liquidBounce$preloadFuture != null) {
+                liquidBounce$preloadFuture.get();
+            }
+        } catch (Throwable e) {
+            final String message = "Preload task error. Please check the cause below. Continuing startup anyway.";
             ClientUtils.INSTANCE.getLOGGER().error(message, e);
-            throw new IllegalStateException(message, e);
         }
 
         FDPClient.INSTANCE.startClient();

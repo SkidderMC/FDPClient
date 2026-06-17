@@ -26,7 +26,7 @@ object ClientUpdate {
         // https://api.liquidbounce.net/api/v1/version/builds/legacy
         try {
             newestVersion = ClientApi.getNewestBuild(release = !IN_DEV)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             LOGGER.error("Unable to receive update information", e)
         }
     }

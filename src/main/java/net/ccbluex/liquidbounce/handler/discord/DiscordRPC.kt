@@ -62,7 +62,11 @@ object DiscordRPC : MinecraftInstance, Listenable {
                 override fun onReady(client: IPCClient?) {
                     SharedScopes.IO.launch {
                         while (running) {
-                            update()
+                            try {
+                                update()
+                            } catch (e: Throwable) {
+                                LOGGER.error("Failed to update Discord RPC.", e)
+                            }
 
                             try {
                                 delay(1000L)
@@ -151,11 +155,11 @@ object DiscordRPC : MinecraftInstance, Listenable {
      * Shutdown ipc client
      */
     fun stop() {
-        if (ipcClient?.status != PipeStatus.CONNECTED) {
-            return
-        }
-
         try {
+            if (ipcClient?.status != PipeStatus.CONNECTED) {
+                return
+            }
+
             ipcClient?.close()
         } catch (e: Throwable) {
             LOGGER.error("Failed to close Discord RPC.", e)

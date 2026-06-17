@@ -22,7 +22,7 @@ class EventHook<T : Event>(
 
         try {
             action(event)
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             ClientUtils.LOGGER.error(
                 "Exception during processing event, owner=${owner.javaClass.simpleName}, event=$event",
                 e
