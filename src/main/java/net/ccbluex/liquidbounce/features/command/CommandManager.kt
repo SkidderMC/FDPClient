@@ -35,7 +35,7 @@ object CommandManager {
 
         for (command in commands) {
             if (args[0].equals(command.command, ignoreCase = true)) {
-                command.execute(args)
+                CommandUtils.runSafe(command.command) { command.execute(args) }
                 return
             }
 
@@ -43,7 +43,7 @@ object CommandManager {
                 if (!args[0].equals(alias, ignoreCase = true))
                     continue
 
-                command.execute(args)
+                CommandUtils.runSafe(command.command) { command.execute(args) }
                 return
             }
         }
