@@ -108,6 +108,7 @@
     "module.itemESP.description": "Permite ver itens através das paredes.",
     "module.logoffSpot.description": "Marca a última posição conhecida de jogadores que deslogam ou somem perto de você.",
     "module.voidESP.description": "Destaca jogadores parados sobre o void e avisa quando você está sobre ele.",
+    "module.strongholdFinder.description": "Triangula uma fortaleza a partir de dois olhos do End lançados e mostra a localização.",
     "module.itemTeleport.description": "Permite pegar itens distantes.",
     "module.itemPhysics.description": "Permite que itens caídos tenham física.",
     "module.keepAlive.description": "Tenta impedir que você morra.",

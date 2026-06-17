@@ -145,6 +145,7 @@
     "module.itemESP.description": "Allows you to see items through walls.",
     "module.logoffSpot.description": "Marks the last known position of players who log off or vanish near you.",
     "module.voidESP.description": "Highlights players standing over the void and warns you when you are over it.",
+    "module.strongholdFinder.description": "Triangulates a stronghold from two thrown eyes of ender and renders its location.",
     "module.itemTeleport.description": "Allows you to pick up items far away.",
     "module.itemPhysics.description": "Allows dropped items to have physics",
     "module.keepAlive.description": "Tries to prevent you from dying.",
