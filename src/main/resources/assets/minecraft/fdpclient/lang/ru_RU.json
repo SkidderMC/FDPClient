@@ -98,6 +98,8 @@
         "module.inventoryCleaner.description": "Автоматически выкидывает бесполезные вещи c (приоритетом).",
         "module.inventoryMove.description": "Позволяет ходить с открытым инвентарем.",
         "module.itemESP.description": "Позволяет видеть лут сквозь стены.",
+        "module.logoffSpot.description": "Отмечает последнюю известную позицию игроков, вышедших из игры рядом с вами.",
+        "module.voidESP.description": "Подсвечивает игроков, стоящих над бездной, и предупреждает, когда вы над ней.",
         "module.itemTeleport.description": "Позволяет подбирать лут издалека.",
         "module.itemPhysics.description": "Позволяет выпавшим предметам иметь физику падения",
         "module.keepAlive.description": "Пытается не дать вам умереть",
