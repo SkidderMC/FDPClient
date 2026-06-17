@@ -3794,103 +3794,45 @@ object RenderUtils : MinecraftInstance {
         drawGradientRectSideways(x, y, x + width, y + height, startColor, endColor)
     }
 
-    /**
-     * Interpolates between two colors
-     */
+    @Deprecated("Use RenderColor.interpolateColor", ReplaceWith("RenderColor.interpolateColor(color1, color2, amount)"))
     @JvmStatic
-    fun interpolateColor(color1: Int, color2: Int, amount: Float): Int {
-        val amountClamped = amount.coerceIn(0f, 1f)
-        val cColor1 = Color(color1, true)
-        val cColor2 = Color(color2, true)
-        return interpolateColorC(cColor1, cColor2, amountClamped).rgb
-    }
+    fun interpolateColor(color1: Int, color2: Int, amount: Float): Int =
+        RenderColor.interpolateColor(color1, color2, amount)
 
-    /**
-     * Interpolates between two Color objects
-     */
+    @Deprecated("Use RenderColor.interpolateColorC", ReplaceWith("RenderColor.interpolateColorC(color1, color2, amount)"))
     @JvmStatic
-    fun interpolateColorC(color1: Color, color2: Color, amount: Float): Color {
-        amount.coerceIn(0f, 1f)
-        return Color(
-            interpolateInt(color1.red, color2.red, amount),
-            interpolateInt(color1.green, color2.green, amount),
-            interpolateInt(color1.blue, color2.blue, amount),
-            interpolateInt(color1.alpha, color2.alpha, amount)
-        )
-    }
+    fun interpolateColorC(color1: Color, color2: Color, amount: Float): Color =
+        RenderColor.interpolateColorC(color1, color2, amount)
 
-    /**
-     * Interpolates between two integers
-     */
+    @Deprecated("Use RenderColor.interpolateInt", ReplaceWith("RenderColor.interpolateInt(oldValue, newValue, interpolationValue)"))
     @JvmStatic
-    fun interpolateInt(oldValue: Int, newValue: Int, interpolationValue: Float): Int {
-        return interpolateDouble(oldValue.toDouble(), newValue.toDouble(), interpolationValue.toDouble()).toInt()
-    }
+    fun interpolateInt(oldValue: Int, newValue: Int, interpolationValue: Float): Int =
+        RenderColor.interpolateInt(oldValue, newValue, interpolationValue)
 
-    /**
-     * Interpolates between two double values
-     */
+    @Deprecated("Use RenderColor.interpolateDouble", ReplaceWith("RenderColor.interpolateDouble(oldValue, newValue, interpolationValue)"))
     @JvmStatic
-    fun interpolateDouble(oldValue: Double, newValue: Double, interpolationValue: Double): Double {
-        return oldValue + (newValue - oldValue) * interpolationValue
-    }
+    fun interpolateDouble(oldValue: Double, newValue: Double, interpolationValue: Double): Double =
+        RenderColor.interpolateDouble(oldValue, newValue, interpolationValue)
 
-    /**
-     * Makes a color darker
-     */
+    @Deprecated("Use RenderColor.darker", ReplaceWith("RenderColor.darker(color, factor)"))
     @JvmStatic
-    fun darker(color: Color, factor: Float): Color {
-        return Color(
-            max((color.red * factor).toInt(), 0),
-            max((color.green * factor).toInt(), 0),
-            max((color.blue * factor).toInt(), 0),
-            color.alpha
-        )
-    }
+    fun darker(color: Color, factor: Float): Color =
+        RenderColor.darker(color, factor)
 
-    /**
-     * Makes a color brighter
-     */
+    @Deprecated("Use RenderColor.brighter", ReplaceWith("RenderColor.brighter(color, factor)"))
     @JvmStatic
-    fun brighter(color: Color, factor: Float): Color {
-        var r = color.red
-        var g = color.green
-        var b = color.blue
-        val alpha = color.alpha
+    fun brighter(color: Color, factor: Float): Color =
+        RenderColor.brighter(color, factor)
 
-        val i = (1.0 / (1.0 - factor)).toInt()
-        if (r == 0 && g == 0 && b == 0) {
-            return Color(i, i, i, alpha)
-        }
-        if (r in 1 until i) r = i
-        if (g in 1 until i) g = i
-        if (b in 1 until i) b = i
-
-        return Color(
-            min((r / factor).toInt(), 255),
-            min((g / factor).toInt(), 255),
-            min((b / factor).toInt(), 255),
-            alpha
-        )
-    }
-
-    /**
-     * Applies opacity to a color
-     */
+    @Deprecated("Use RenderColor.applyOpacity", ReplaceWith("RenderColor.applyOpacity(color, opacity)"))
     @JvmStatic
-    fun applyOpacity(color: Color, opacity: Float): Color {
-        val opacityClamped = opacity.coerceIn(0f, 1f)
-        return Color(color.red, color.green, color.blue, (color.alpha * opacityClamped).toInt())
-    }
+    fun applyOpacity(color: Color, opacity: Float): Color =
+        RenderColor.applyOpacity(color, opacity)
 
-    /**
-     * Applies opacity to a color int
-     */
+    @Deprecated("Use RenderColor.applyOpacity", ReplaceWith("RenderColor.applyOpacity(color, opacity)"))
     @JvmStatic
-    fun applyOpacity(color: Int, opacity: Float): Int {
-        val old = Color(color, true)
-        return applyOpacity(old, opacity).rgb
-    }
+    fun applyOpacity(color: Int, opacity: Float): Int =
+        RenderColor.applyOpacity(color, opacity)
 
     /**
      * Draws a good circle using GL_POINTS
