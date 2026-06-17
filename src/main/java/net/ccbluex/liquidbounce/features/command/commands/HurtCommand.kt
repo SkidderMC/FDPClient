@@ -22,7 +22,7 @@ object HurtCommand : Command("hurt") {
 
         if (args.size > 1) {
             try {
-                damage = args[1].toInt()
+                damage = args[1].toInt().coerceIn(1, 1000)
             } catch (ignored: NumberFormatException) {
                 chatSyntaxError()
                 return

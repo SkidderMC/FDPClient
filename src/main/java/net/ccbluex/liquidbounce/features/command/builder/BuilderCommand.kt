@@ -19,10 +19,9 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
  * Subclass it with a no-arg constructor so the classpath scanner in [CommandManager] can
  * instantiate it, OR register an instance manually via `commandManager.registerCommand(...)`.
  *
- * Faithful to nextgen semantics: typed parameters, subcommands, auto usage, and tab-completion all
+ * Faithful to the original design semantics: typed parameters, subcommands, auto usage, and tab-completion all
  * derived from the same [BuiltCommand]. Crash-safe: every failure path becomes a §c chat message.
  *
- * @author ported from LiquidBounce nextgen (CCBlueX) for FDPClient 1.8.9
  */
 abstract class BuilderCommand(private val built: BuiltCommand) :
     Command(built.name, *built.aliases) {
@@ -61,7 +60,7 @@ abstract class BuilderCommand(private val built: BuiltCommand) :
      * invokes the handler. Throws [CommandException] with an auto-generated usage on any problem.
      */
     private fun dispatch(node: BuiltCommand, tokens: List<String>) {
-        // Prefer subcommand resolution when the next token names one — exactly like nextgen,
+        // Prefer subcommand resolution when the next token names one —,
         // where subcommand names take precedence over being treated as a positional argument.
         if (tokens.isNotEmpty() && node.subcommands.isNotEmpty()) {
             val sub = node.getSubcommand(tokens[0])

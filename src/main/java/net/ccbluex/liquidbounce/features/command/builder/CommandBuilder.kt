@@ -7,17 +7,17 @@ package net.ccbluex.liquidbounce.features.command.builder
 
 /**
  * The handler invoked when a (sub)command is executed. [args] are the already-parsed, typed
- * values in parameter order (cast at the call-site, exactly like nextgen). A handler may throw
+ * values in parameter order (cast at the call-site,). A handler may throw
  * [CommandException] to report a runtime error to the user without crashing.
  */
 typealias CommandHandler = (command: BuiltCommand, args: Array<Any?>) -> Unit
 
 /**
- * An immutable, fully-built command node — faithful port of nextgen's `Command`.
+ * An immutable, fully-built command node — implementation of the original `Command`.
  *
  * A node has a [name], optional [aliases], an ordered list of [parameters], a list of
  * [subcommands], and an optional [handler]. A node is either a "leaf" (has a [handler] and usually
- * parameters) or a "group" (has subcommands and no handler of its own), exactly like nextgen — and
+ * parameters) or a "group" (has subcommands and no handler of its own) — and
  * it may even be both (a group with a default handler).
  *
  * [parentName] is the dotted path of ancestors used to render usage (`.command sub <arg>`).
@@ -87,7 +87,7 @@ class BuiltCommand(
 }
 
 /**
- * Fluent builder for a command tree — faithful port of nextgen's `CommandBuilder`.
+ * Fluent builder for a command tree — implementation of the original `CommandBuilder`.
  *
  * Example (port of FriendCommand):
  * ```
@@ -102,12 +102,11 @@ class BuiltCommand(
  *     .build()
  * ```
  *
- * Invariants enforced by [build] (matching nextgen):
+ * Invariants enforced by [build]:
  *  - at most one vararg parameter, and it must be last;
  *  - no required parameter may follow an optional one;
  *  - a node must have a handler OR at least one subcommand (otherwise it is unusable).
  *
- * @author ported from LiquidBounce nextgen (CCBlueX) for FDPClient 1.8.9
  */
 class CommandBuilder private constructor(private val name: String) {
 

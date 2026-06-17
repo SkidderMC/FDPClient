@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.command.builder
 /**
  * Thrown by the command builder layer when parsing/validation/execution fails.
  *
- * In LiquidBounce nextgen this carried a translation key plus arguments which were resolved
+ * This originally carried a translation key plus arguments which were resolved
  * against the language files. FDPClient 1.8.9 has no command translation system, so instead we
  * carry an already-formatted, human readable [message]. The dispatcher catches this and prints it
  * to chat in red (§c) instead of letting an exception bubble up to the chat input handler.

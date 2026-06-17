@@ -10,9 +10,9 @@ import net.minecraft.item.Item
 import net.minecraft.util.ResourceLocation
 
 /**
- * Fluent builder for a single [Parameter] — faithful port of nextgen's `ParameterBuilder<T>`.
+ * Fluent builder for a single [Parameter] — implementation of the original `ParameterBuilder<T>`.
  *
- * Usage mirrors nextgen:
+ * Usage mirrors the original design:
  * ```
  * ParameterBuilder.begin<Int>("amount")
  *     .verifiedBy(ParameterBuilder.INTEGER_VALIDATOR)
@@ -21,9 +21,8 @@ import net.minecraft.util.ResourceLocation
  * ```
  *
  * Defaults: a parameter is required and not a vararg until told otherwise, and has no verifier
- * (meaning it is treated as a raw String). [build] enforces nextgen's invariants.
+ * (meaning it is treated as a raw String). [build] enforces the original invariants.
  *
- * @author ported from LiquidBounce nextgen (CCBlueX) for FDPClient 1.8.9
  */
 class ParameterBuilder<T> private constructor(private val name: String) {
 
@@ -45,7 +44,7 @@ class ParameterBuilder<T> private constructor(private val name: String) {
     /**
      * Provide static/dynamic auto-completions for this parameter. [begin] is the partially typed
      * token; [args] are all already-typed tokens of the command (after the command name) for
-     * context-aware completion. Faithful to nextgen's `autocompletedWith`.
+     * context-aware completion. Matches the original `autocompletedWith`.
      */
     fun autocompletedWith(
         autocompleter: (begin: String, args: List<String>) -> List<String>
@@ -55,7 +54,7 @@ class ParameterBuilder<T> private constructor(private val name: String) {
     }
 
     /**
-     * Convenience overload matching nextgen call-sites that ignore the full arg list.
+     * Convenience overload call-sites that ignore the full arg list.
      */
     fun autocompletedWith(autocompleter: (begin: String) -> List<String>): ParameterBuilder<T> {
         this.autocompleter = { begin, _ -> autocompleter(begin) }
@@ -66,7 +65,7 @@ class ParameterBuilder<T> private constructor(private val name: String) {
      * Marks this parameter to use Minecraft's native tab-completion (player names, etc.).
      * In 1.8.9 we don't hook the server completion packet from the builder, so this simply flags
      * the parameter; the dispatcher falls back to online player names which covers the common
-     * nextgen use-case (target/player parameters).
+     * common use-case (target/player parameters).
      */
     fun useMinecraftAutoCompletion(): ParameterBuilder<T> {
         this.useMinecraftAutoCompletion = true
@@ -105,14 +104,14 @@ class ParameterBuilder<T> private constructor(private val name: String) {
         fun <T> begin(name: String): ParameterBuilder<T> = ParameterBuilder(name)
 
         /**
-         * Validator that accepts any string (identity). Faithful to nextgen's `STRING_VALIDATOR`.
+         * Validator that accepts any string (identity). Matches the original `STRING_VALIDATOR`.
          */
         val STRING_VALIDATOR: (String) -> ParameterValidationResult<String> = { value ->
             ParameterValidationResult.ok(value)
         }
 
         /**
-         * Parses a base-10 integer. Faithful to nextgen's `INTEGER_VALIDATOR`.
+         * Parses a base-10 integer. Matches the original `INTEGER_VALIDATOR`.
          */
         val INTEGER_VALIDATOR: (String) -> ParameterValidationResult<Int> = { value ->
             val parsed = value.toIntOrNull()
@@ -124,7 +123,7 @@ class ParameterBuilder<T> private constructor(private val name: String) {
         }
 
         /**
-         * Parses a long. Faithful to nextgen's `LONG_VALIDATOR`.
+         * Parses a long. Matches the original `LONG_VALIDATOR`.
          */
         val LONG_VALIDATOR: (String) -> ParameterValidationResult<Long> = { value ->
             val parsed = value.toLongOrNull()
@@ -136,7 +135,7 @@ class ParameterBuilder<T> private constructor(private val name: String) {
         }
 
         /**
-         * Parses a float. Faithful to nextgen's `FLOAT_VALIDATOR`.
+         * Parses a float. Matches the original `FLOAT_VALIDATOR`.
          */
         val FLOAT_VALIDATOR: (String) -> ParameterValidationResult<Float> = { value ->
             val parsed = value.toFloatOrNull()
@@ -148,7 +147,7 @@ class ParameterBuilder<T> private constructor(private val name: String) {
         }
 
         /**
-         * Parses a double. Faithful to nextgen's `DOUBLE_VALIDATOR`.
+         * Parses a double. Matches the original `DOUBLE_VALIDATOR`.
          */
         val DOUBLE_VALIDATOR: (String) -> ParameterValidationResult<Double> = { value ->
             val parsed = value.toDoubleOrNull()
@@ -160,7 +159,7 @@ class ParameterBuilder<T> private constructor(private val name: String) {
         }
 
         /**
-         * Parses a boolean from common truthy/falsy spellings. Faithful to nextgen's
+         * Parses a boolean from common truthy/falsy spellings. Faithful to the original design's
          * `BOOLEAN_VALIDATOR`, extended with the on/off spelling 1.8.9 commands commonly use.
          */
         val BOOLEAN_VALIDATOR: (String) -> ParameterValidationResult<Boolean> = { value ->
@@ -174,7 +173,7 @@ class ParameterBuilder<T> private constructor(private val name: String) {
 
         /**
          * Resolves a Minecraft [Block] by its registry name (e.g. `stone`, `minecraft:stone`).
-         * 1.8.9 adaptation of nextgen's `BLOCK_VALIDATOR` (which used the 1.21 block registry).
+         * 1.8.9 implementation of the original `BLOCK_VALIDATOR` (which used the 1.21 block registry).
          */
         val BLOCK_VALIDATOR: (String) -> ParameterValidationResult<Block> = { value ->
             // Block.getBlockFromName accepts both `stone` and `minecraft:stone` and returns null
@@ -188,7 +187,7 @@ class ParameterBuilder<T> private constructor(private val name: String) {
         }
 
         /**
-         * Resolves a Minecraft [Item] by its registry name. 1.8.9 adaptation of nextgen's item
+         * Resolves a Minecraft [Item] by its registry name. 1.8.9 implementation of the original item
          * parameter support.
          */
         val ITEM_VALIDATOR: (String) -> ParameterValidationResult<Item> = { value ->
@@ -204,7 +203,7 @@ class ParameterBuilder<T> private constructor(private val name: String) {
 
         /**
          * Creates an enum validator that accepts any of the [values] by case-insensitive name.
-         * Faithful to nextgen's enum parameter support.
+         * Matches the original enum parameter support.
          */
         inline fun <reified E : Enum<E>> enumValidator(): (String) -> ParameterValidationResult<E> {
             val values = enumValues<E>()

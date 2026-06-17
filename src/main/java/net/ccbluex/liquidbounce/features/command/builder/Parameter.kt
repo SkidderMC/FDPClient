@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.features.command.builder
 
 /**
- * A typed, named command parameter — faithful port of LiquidBounce nextgen's `Parameter<T>`.
+ * A typed, named command parameter — implementation of the original `Parameter<T>`.
  *
  * A parameter knows:
  *  - its [name] (used in auto-generated usage like `<name>` / `[name]`)
@@ -18,7 +18,6 @@ package net.ccbluex.liquidbounce.features.command.builder
  * The generic type is erased at runtime; values come out of [ParameterValidationResult] and the
  * command handler reads them positionally/by index from the parsed argument list.
  *
- * @author ported from LiquidBounce nextgen (CCBlueX) for FDPClient 1.8.9
  */
 class Parameter<T>(
     val name: String,
@@ -34,7 +33,7 @@ class Parameter<T>(
 /**
  * Result of converting/validating a single raw token into a typed value.
  *
- * Mirrors nextgen's `ParameterValidationResult`: either [ok] with a value, or an error with a
+ * Matches the original `ParameterValidationResult`: either [ok] with a value, or an error with a
  * message. Use the factory methods [ok] / [error].
  */
 class ParameterValidationResult<T> private constructor(
