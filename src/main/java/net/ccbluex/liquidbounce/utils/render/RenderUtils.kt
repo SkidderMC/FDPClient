@@ -763,21 +763,9 @@ object RenderUtils : MinecraftInstance {
         glDisable(GL_BLEND)
     }
 
-    fun drawAxisAlignedBB(axisAlignedBB: AxisAlignedBB, color: Color) {
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_BLEND)
-        glLineWidth(2f)
-        glDisable(GL_TEXTURE_2D)
-        glDisable(GL_DEPTH_TEST)
-        glDepthMask(false)
-        glColor(color)
-        drawFilledBox(axisAlignedBB)
-        resetColor()
-        glEnable(GL_TEXTURE_2D)
-        glEnable(GL_DEPTH_TEST)
-        glDepthMask(true)
-        glDisable(GL_BLEND)
-    }
+    @Deprecated("Use Render3D.drawAxisAlignedBB", ReplaceWith("Render3D.drawAxisAlignedBB(axisAlignedBB, color)"))
+    fun drawAxisAlignedBB(axisAlignedBB: AxisAlignedBB, color: Color) =
+        Render3D.drawAxisAlignedBB(axisAlignedBB, color)
 
     fun drawPlatform(y: Double, color: Color, size: Double) {
         val renderY = y - mc.renderManager.renderPosY
@@ -951,57 +939,9 @@ object RenderUtils : MinecraftInstance {
         disableBlend()
     }
 
-    fun drawFilledBox(axisAlignedBB: AxisAlignedBB) = drawWithTessellatorWorldRenderer {
-        begin(7, DefaultVertexFormats.POSITION)
-        pos(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.maxY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.minX, axisAlignedBB.minY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.minZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.maxY, axisAlignedBB.maxZ).endVertex()
-        pos(axisAlignedBB.maxX, axisAlignedBB.minY, axisAlignedBB.maxZ).endVertex()
-    }
+    @Deprecated("Use Render3D.drawFilledBox", ReplaceWith("Render3D.drawFilledBox(axisAlignedBB)"))
+    fun drawFilledBox(axisAlignedBB: AxisAlignedBB) =
+        Render3D.drawFilledBox(axisAlignedBB)
 
     fun drawRect(x: Float, y: Float, x2: Float, y2: Float, color: Color) = drawRect(x, y, x2, y2, color.rgb)
 
@@ -2983,13 +2923,9 @@ object RenderUtils : MinecraftInstance {
         return x + Fonts.fontSmall.getStringWidth(text) - 2f
     }
 
-    private fun getBorderColor(level: Int): Int {
-        if (level == 2) return 0x7055FF55
-        if (level == 3) return 0x7000AAAA
-        if (level == 4) return 0x70AA0000
-        if (level >= 5) return 0x70FFAA00
-        return 0x70FFFFFF
-    }
+    @Deprecated("Use RenderColor.getBorderColor", ReplaceWith("RenderColor.getBorderColor(level)"))
+    private fun getBorderColor(level: Int): Int =
+        RenderColor.getBorderColor(level)
 
     fun yzyTexture(
         x: Double,
@@ -3645,8 +3581,9 @@ object RenderUtils : MinecraftInstance {
         disableBlend()
     }
 
+    @Deprecated("Use RenderHelper.interpolate", ReplaceWith("RenderHelper.interpolate(current, old, scale)"))
     fun interpolate(current: Double, old: Double, scale: Double): Double =
-        old + (current - old) * scale
+        RenderHelper.interpolate(current, old, scale)
 
     fun isInViewFrustum(entity: Entity): Boolean =
         isInViewFrustum(entity.entityBoundingBox) || entity.ignoreFrustumCheck
@@ -3870,31 +3807,25 @@ object RenderUtils : MinecraftInstance {
      * Scales rendering
      */
     @JvmStatic
-    fun scale(x: Float, y: Float, scale: Float, runnable: Runnable) {
-        glPushMatrix()
-        glTranslatef(x, y, 0f)
-        glScalef(scale, scale, 1f)
-        glTranslatef(-x, -y, 0f)
-        runnable.run()
-        glPopMatrix()
-    }
+    @Deprecated("Use RenderHelper.scale", ReplaceWith("RenderHelper.scale(x, y, scale, runnable)"))
+    fun scale(x: Float, y: Float, scale: Float, runnable: Runnable) =
+        RenderHelper.scale(x, y, scale, runnable)
 
     /**
      * Sets the alpha limit
      */
     @JvmStatic
-    fun setAlphaLimit(limit: Float) {
-        enableAlpha()
-        alphaFunc(GL_GREATER, limit * 0.01f)
-    }
+    @Deprecated("Use RenderHelper.setAlphaLimit", ReplaceWith("RenderHelper.setAlphaLimit(limit)"))
+    fun setAlphaLimit(limit: Float) =
+        RenderHelper.setAlphaLimit(limit)
 
     /**
      * Checks if mouse is hovering over an area
      */
     @JvmStatic
-    fun isHovering(x: Float, y: Float, width: Float, height: Float, mouseX: Int, mouseY: Int): Boolean {
-        return mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height
-    }
+    @Deprecated("Use RenderHelper.isHovering", ReplaceWith("RenderHelper.isHovering(x, y, width, height, mouseX, mouseY)"))
+    fun isHovering(x: Float, y: Float, width: Float, height: Float, mouseX: Int, mouseY: Int): Boolean =
+        RenderHelper.isHovering(x, y, width, height, mouseX, mouseY)
 
     // ==================== PARTICLE RENDERING ====================
 
@@ -3992,15 +3923,9 @@ object RenderUtils : MinecraftInstance {
      * (from DrRenderUtils)
      */
     @JvmStatic
-    fun scissor(x: Double, y: Double, width: Double, height: Double) {
-        val sr = ScaledResolution(mc)
-        val scale = sr.scaleFactor.toDouble()
-        val finalHeight = height * scale
-        val finalY = (sr.scaledHeight - y) * scale
-        val finalX = x * scale
-        val finalWidth = width * scale
-        glScissor(finalX.toInt(), (finalY - finalHeight).toInt(), finalWidth.toInt(), finalHeight.toInt())
-    }
+    @Deprecated("Use RenderHelper.scissor", ReplaceWith("RenderHelper.scissor(x, y, width, height)"))
+    fun scissor(x: Double, y: Double, width: Double, height: Double) =
+        RenderHelper.scissor(x, y, width, height)
 
     /**
      * Draws an animated arrow for ClickGUI
