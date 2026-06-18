@@ -122,10 +122,11 @@ sealed class Value<T>(
     protected abstract fun fromTextF(text: String): T?
 
     fun fromJson(element: JsonElement) {
-        val result = fromJsonF(element) ?: return
-        changeValue(result)
+        val raw = runCatching { fromJsonF(element) }.getOrNull() ?: return
+        val safe = runCatching { validate(raw) }.getOrElse { raw }
+        changeValue(safe)
 
-        onChangedListeners.forEach { it.invoke(result) }
+        onChangedListeners.forEach { it.invoke(safe) }
     }
 
     fun fromText(text: String) {

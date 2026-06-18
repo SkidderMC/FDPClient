@@ -12,6 +12,10 @@ import com.google.gson.JsonPrimitive
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
+import net.ccbluex.liquidbounce.file.gson.asBooleanOrNull
+import net.ccbluex.liquidbounce.file.gson.asFloatOrNull
+import net.ccbluex.liquidbounce.file.gson.asIntOrNull
+import net.ccbluex.liquidbounce.file.gson.asStringOrNull
 import net.ccbluex.liquidbounce.file.gson.json
 import net.ccbluex.liquidbounce.file.gson.jsonArray
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
@@ -37,10 +41,7 @@ class BoolValue(
     override fun toJson() = JsonPrimitive(value)
 
     override fun fromJsonF(element: JsonElement) =
-        when {
-            element.isJsonPrimitive -> element.asBoolean || element.asString.equals("true", ignoreCase = true)
-            else -> null
-        }
+        element.asBooleanOrNull() ?: element.asStringOrNull()?.equals("true", ignoreCase = true)
 
     override fun fromTextF(text: String): Boolean? =
         when (text.lowercase()) {
@@ -78,11 +79,7 @@ class IntValue(
 
     override fun toJson() = JsonPrimitive(value)
 
-    override fun fromJsonF(element: JsonElement) =
-        when {
-            element.isJsonPrimitive -> element.asInt
-            else -> null
-        }
+    override fun fromJsonF(element: JsonElement) = element.asIntOrNull()
 
     override fun fromTextF(text: String): Int? = text.toIntOrNull()
 
@@ -164,11 +161,7 @@ class FloatValue(
 
     override fun toJson() = JsonPrimitive(value)
 
-    override fun fromJsonF(element: JsonElement) =
-        when {
-            element.isJsonPrimitive -> element.asFloat
-            else -> null
-        }
+    override fun fromJsonF(element: JsonElement) = element.asFloatOrNull()
 
     override fun fromTextF(text: String): Float? = text.toFloatOrNull()
 
@@ -319,11 +312,7 @@ class BlockValue(
 
     override fun toJson() = JsonPrimitive(value)
 
-    override fun fromJsonF(element: JsonElement) =
-        when {
-            element.isJsonPrimitive -> element.asInt
-            else -> null
-        }
+    override fun fromJsonF(element: JsonElement) = element.asIntOrNull()
 
     override fun fromTextF(text: String): Int? = text.toIntOrNull()
 

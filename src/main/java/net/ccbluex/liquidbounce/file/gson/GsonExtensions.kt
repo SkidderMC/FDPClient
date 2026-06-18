@@ -77,6 +77,14 @@ inline fun jsonArray(builderAction: JsonArrayBuilder.() -> Unit): JsonArray {
     return JsonArrayBuilder().apply(builderAction).build()
 }
 
+fun JsonElement.asIntOrNull() = (this as? JsonPrimitive)?.takeIf { it.isNumber }?.asInt
+
+fun JsonElement.asFloatOrNull() = (this as? JsonPrimitive)?.takeIf { it.isNumber }?.asFloat
+
+fun JsonElement.asBooleanOrNull() = (this as? JsonPrimitive)?.takeIf { it.isBoolean }?.asBoolean
+
+fun JsonElement.asStringOrNull() = (this as? JsonPrimitive)?.takeIf { it.isString }?.asString
+
 inline fun <reified T> JsonElement.decode(gson: Gson = PRETTY_GSON): T = gson.fromJson(this, object : TypeToken<T>() {}.type)
 
 inline fun <reified T> Reader.decodeJson(gson: Gson = PRETTY_GSON): T = gson.fromJson(this, object : TypeToken<T>() {}.type)

@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.invi
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.mobValue
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.playerValue
 import net.ccbluex.liquidbounce.handler.payload.ClientFixes
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.io.readJson
 import java.io.File
 import java.io.IOException
@@ -90,15 +91,17 @@ class ValuesConfig(file: File) : FileConfig(file) {
                     if (jsonValue.has("Particles")) ClientConfiguration.particles = jsonValue["Particles"].asBoolean
                 }
 
-                else -> {
+                else -> runCatching {
                     // Modules
-                    val module = moduleManager[key] ?: continue
-                    val jsonModule = value as JsonObject
+                    val jsonModule = value as? JsonObject ?: return@runCatching
+                    val module = moduleManager[key] ?: return@runCatching
                     for (moduleValue in module.values) {
-                        val element = jsonModule[moduleValue.name]
-                        if (element != null) moduleValue.fromJson(element)
+                        jsonModule[moduleValue.name]?.let { element ->
+                            runCatching { moduleValue.fromJson(element) }
+                                .onFailure { LOGGER.warn("[Cfg] ${module.name}.${moduleValue.name} skipped: ${it.message}") }
+                        }
                     }
-                }
+                }.onFailure { LOGGER.warn("[Cfg] entry $key skipped: ${it.message}") }
             }
         }
     }

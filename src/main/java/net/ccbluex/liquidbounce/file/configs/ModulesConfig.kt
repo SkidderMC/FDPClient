@@ -9,7 +9,10 @@ import com.google.gson.JsonObject
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.file.FileConfig
 import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
+import net.ccbluex.liquidbounce.file.gson.asBooleanOrNull
+import net.ccbluex.liquidbounce.file.gson.asIntOrNull
 import net.ccbluex.liquidbounce.file.gson.json
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.io.readJson
 import java.io.*
 
@@ -25,11 +28,13 @@ class ModulesConfig(file: File) : FileConfig(file) {
         val json = file.readJson() as? JsonObject ?: return
 
         for ((key, value) in json.entrySet()) {
-            val module = moduleManager[key] ?: continue
+            runCatching {
+                val module = moduleManager[key] ?: return@runCatching
+                val jsonModule = value as? JsonObject ?: return@runCatching
 
-            val jsonModule = value as JsonObject
-            module.state = jsonModule["State"].asBoolean
-            module.keyBind = jsonModule["KeyBind"].asInt
+                jsonModule["State"]?.asBooleanOrNull()?.let { module.state = it }
+                jsonModule["KeyBind"]?.asIntOrNull()?.let { module.keyBind = it }
+            }.onFailure { LOGGER.warn("[Cfg] module $key skipped: ${it.message}") }
         }
     }
 
