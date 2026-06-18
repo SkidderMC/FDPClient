@@ -30,6 +30,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.blendColors
+import net.ccbluex.liquidbounce.utils.block.BlockUtils
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.OpenGlHelper
 import org.lwjgl.input.Keyboard
@@ -44,6 +45,8 @@ class SettingComponents(private val module: Module) : Component() {
     private val keySettingAnimMap = HashMap<Module, Array<Animation>>()
     private val sliderintMap = HashMap<IntValue, Float>()
     private val sliderintAnimMap = HashMap<IntValue, Array<Animation>>()
+    private val sliderBlockMap = HashMap<BlockValue, Float>()
+    private val sliderBlockAnimMap = HashMap<BlockValue, Array<Animation>>()
     private val sliderfloatMap = HashMap<FloatValue, Float>()
     private val sliderfloatAnimMap = HashMap<FloatValue, Array<Animation>>()
     private val toggleAnimation = HashMap<BoolValue, Array<Animation>>()
@@ -86,6 +89,13 @@ class SettingComponents(private val module: Module) : Component() {
             if (setting is IntValue) {
                 sliderintMap[setting] = 0f
                 sliderintAnimMap[setting] = arrayOf(
+                    DecelerateAnimation(250, 1.0, Direction.BACKWARDS),
+                    DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
+                )
+            }
+            if (setting is BlockValue) {
+                sliderBlockMap[setting] = 0f
+                sliderBlockAnimMap[setting] = arrayOf(
                     DecelerateAnimation(250, 1.0, Direction.BACKWARDS),
                     DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
                 )
@@ -486,6 +496,82 @@ class SettingComponents(private val module: Module) : Component() {
                 )
                 RenderUtils.drawGoodCircle(
                     (x + 4 + max(4.0, sliderintMap[setting]!!.toDouble())),
+                    (sliderY + 1.5f).toDouble(), 3.75f,
+                    if (accent) accentedColor2.rgb else textColor.rgb
+                )
+
+                count += .5
+            }
+
+            // ----- BlockValue -----
+            if (setting is BlockValue) {
+                val blockId = setting.get()
+                val blockName = BlockUtils.getBlockName(blockId)
+                val value = "$blockName ($blockId)"
+
+                val regularFontWidth = Fonts.InterMedium_18.stringWidth(setting.name + ": ").toFloat()
+                val valueFontWidth = Fonts.InterMedium_18.stringWidth(value).toFloat()
+
+                val titleX = x + width / 2f - (regularFontWidth + valueFontWidth) / 2f
+                val titleY = (settingY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight)
+                        - Fonts.InterMedium_18.getMiddleOfBox(rectHeight) / 2f + 1)
+
+                GlStateManager.color(1f, 1f, 1f, 1f)
+                Fonts.InterMedium_18.drawString(setting.name + ": ", titleX, titleY, textColor.rgb)
+                Fonts.InterBold_18.drawString(value, titleX + regularFontWidth, titleY, textColor.rgb)
+
+                val hoverAnimation = sliderBlockAnimMap[setting]!![0]
+                val selectAnimtion = sliderBlockAnimMap[setting]!![1]
+
+                val totalSliderWidth = width - 10
+                val hoveringSlider = isClickable(settingY + 17)
+                        && RenderUtils.isHovering(x + 5, settingY + 17, totalSliderWidth, 6f, mouseX, mouseY)
+
+                if (type == GuiEvents.RELEASE) {
+                    draggingNumber = null
+                }
+                hoverAnimation.direction = if (hoveringSlider || draggingNumber === setting) Direction.FORWARDS else Direction.BACKWARDS
+
+                selectAnimtion.direction = if (draggingNumber === setting) Direction.FORWARDS else Direction.BACKWARDS
+
+                if (type == GuiEvents.CLICK && hoveringSlider && button == 0) {
+                    draggingNumber = setting
+                }
+
+                val currentValue = setting.get().toDouble()
+                if (draggingNumber != null && draggingNumber === setting) {
+                    val percent = min(1.0, max(0.0, ((mouseX - (x + 5)) / totalSliderWidth).toDouble())).toFloat()
+                    val newValue = ((percent * (setting.maximum - setting.minimum))
+                            + setting.minimum).roundToInt()
+                    setting.set(newValue)
+                }
+
+                val sliderMath = ((currentValue - setting.minimum)
+                        / (setting.maximum - setting.minimum)).toFloat()
+
+                // Animate the slider position
+                val oldSlider = sliderBlockMap[setting]!!
+                val targetSlider = totalSliderWidth * sliderMath
+                sliderBlockMap[setting] =
+                    RenderUtils.animate(targetSlider.toDouble(), oldSlider.toDouble(), .1).toFloat()
+
+                val sliderY = (settingY + 18)
+                drawCustomShapeWithRadius(
+                    x + 5, sliderY, totalSliderWidth, 3f, 1.5f,
+                    RenderUtils.applyOpacity(darkRectHover, (.4f + (.2 * hoverAnimation.output)).toFloat())
+                )
+                drawCustomShapeWithRadius(
+                    x + 5, sliderY, max(4.0, sliderBlockMap[setting]!!.toDouble()).toFloat(), 3f, 1.5f,
+                    if (accent) accentedColor2 else textColor
+                )
+
+                RenderUtils.setAlphaLimit(0f)
+                RenderUtils.fakeCircleGlow(
+                    (x + 4 + max(4.0, sliderBlockMap[setting]!!.toDouble())).toFloat(),
+                    sliderY + 1.5f, 6f, Color.BLACK, .3f
+                )
+                RenderUtils.drawGoodCircle(
+                    (x + 4 + max(4.0, sliderBlockMap[setting]!!.toDouble())),
                     (sliderY + 1.5f).toDouble(), 3.75f,
                     if (accent) accentedColor2.rgb else textColor.rgb
                 )
