@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.el
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.ValueDispatcher
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.category.yzyCategory
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.font.renderer.FontRenderer
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
@@ -51,7 +52,7 @@ class ModuleElement(
     var isBindingSelection = false
 
     init {
-        module.values.filter { it.shouldRender() }.forEach { value ->
+        ValueDispatcher.visible(module).forEach { value ->
             val element = when (value) {
                 is BoolValue -> BooleanElement(this, value, parent, x + 4, y, width - 8, 12)
                 is FloatValue -> FloatElement(value, parent, x + 4, y, width - 4, 12)
@@ -165,7 +166,7 @@ class ModuleElement(
             if (isExtended && module.state) moduleColor.rgb else textColor.rgb
         )
 
-        if (module.values.filter { it.shouldRender() }.isNotEmpty()) {
+        if (ValueDispatcher.visible(module).isNotEmpty()) {
             val indicator = if (isExtended) "▼" else "▶"
             font.drawString(
                 indicator,
@@ -211,7 +212,7 @@ class ModuleElement(
                     if (isBindingSelection) {
                         // Cancel bind selection
                         isBindingSelection = false
-                    } else if (module.values.filter { it.shouldRender() }.isNotEmpty()) {
+                    } else if (ValueDispatcher.visible(module).isNotEmpty()) {
                         isExtended = !isExtended
                         FDPClient.guiManager.moduleExtendeds[module.name] = isExtended
                     }

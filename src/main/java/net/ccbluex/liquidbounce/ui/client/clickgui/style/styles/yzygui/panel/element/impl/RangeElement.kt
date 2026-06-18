@@ -8,11 +8,11 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.el
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.config.FloatRangeValue
 import net.ccbluex.liquidbounce.config.IntRangeValue
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.RangeController
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.Panel
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.PanelElement
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import java.awt.Color
-import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.round
@@ -99,7 +99,11 @@ class RangeElement private constructor(
         if (!isHovering(mouseX, mouseY)) return
         val lowPixel = pixelOf(getLow())
         val highPixel = pixelOf(getHigh())
-        if (abs(mouseX - lowPixel) <= abs(mouseX - highPixel)) draggingLow = true else draggingHigh = true
+        if (RangeController.nearerThumb(mouseX.toDouble(), lowPixel.toDouble(), highPixel.toDouble()) == 0) {
+            draggingLow = true
+        } else {
+            draggingHigh = true
+        }
     }
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {

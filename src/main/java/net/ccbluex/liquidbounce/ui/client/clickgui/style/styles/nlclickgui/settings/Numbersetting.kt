@@ -13,6 +13,8 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Downw
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui.Companion.getInstance
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NlModule
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.SliderMath
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.TextUtil
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil
 import net.ccbluex.liquidbounce.utils.animations.Animation
@@ -64,19 +66,7 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
 
         val clamp = MathHelper.clamp_double(Minecraft.getDebugFPS() / 30.0, 1.0, 9999.0)
 
-        var minimum = 0.0
-        var maximum = 1.0
-
-        if (setting is IntValue) {
-            minimum = (setting as IntValue).minimum.toDouble()
-            maximum = (setting as IntValue).maximum.toDouble()
-        } else if (setting is FloatValue) {
-            minimum = (setting as FloatValue).minimum.toDouble()
-            maximum = (setting as FloatValue).maximum.toDouble()
-        } else if (setting is BlockValue) {
-            minimum = (setting as BlockValue).minimum.toDouble()
-            maximum = (setting as BlockValue).maximum.toDouble()
-        }
+        val (minimum, maximum) = SliderMath.bounds(setting) ?: (0.0 to 1.0)
 
         val current = (setting.get() as Number).toDouble()
         val percentBar = (current - minimum) / (maximum - minimum)
@@ -119,8 +109,8 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
         )
 
         if (iloveyou) {
-            val percentt = min(1f, max(0f, (mouseX.toFloat() - sliderX) / 60f))
-            val newValue = ((percentt * (maximum - minimum)) + minimum)
+            val percentt = SliderMath.percentFromMouse(mouseX.toDouble(), sliderX.toDouble(), 60.0)
+            val newValue = SliderMath.valueFromPercent(percentt, minimum, maximum)
 
             if (setting is IntValue) {
                 (setting as IntValue).set(newValue.roundToInt(), true)
@@ -268,11 +258,7 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
     }
 
     private fun abbreviate(value: String): Pair<String, Boolean> {
-        return if (value.length > 10) {
-            value.substring(0, 10) + "..." to true
-        } else {
-            value to false
-        }
+        return TextUtil.abbreviate(value, 10) to (value.length > 10)
     }
 
     private fun drawTooltip(text: String, mouseX: Int, mouseY: Int) {

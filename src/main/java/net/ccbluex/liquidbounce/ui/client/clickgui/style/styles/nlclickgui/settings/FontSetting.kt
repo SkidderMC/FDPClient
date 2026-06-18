@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.config.FontValue
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Downward
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NlModule
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.TextUtil
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil
 import net.ccbluex.liquidbounce.ui.font.Fonts
@@ -92,11 +93,7 @@ class FontSetting(setting: FontValue, moduleRender: NlModule) : Downward<FontVal
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {}
 
     private fun abbreviate(value: String): Pair<String, Boolean> {
-        return if (value.length > 10) {
-            value.substring(0, 10) + "..." to true
-        } else {
-            value to false
-        }
+        return TextUtil.abbreviate(value, 10) to (value.length > 10)
     }
 
     private fun calculateRectWidth(display: String): Int {

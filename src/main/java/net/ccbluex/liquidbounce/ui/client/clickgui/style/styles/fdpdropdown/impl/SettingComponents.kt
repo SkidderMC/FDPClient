@@ -25,6 +25,10 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.scissor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawClickGuiArrow
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.GuiEvents
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.KeyCapture
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.RangeController
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.SliderMath
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.ValueDispatcher
 import net.ccbluex.liquidbounce.utils.ui.EditableText
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.extensions.*
@@ -37,7 +41,6 @@ import org.lwjgl.input.Keyboard
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL11.glAlphaFunc
 import java.awt.Color
-import java.util.stream.Collectors
 import kotlin.math.*
 
 class SettingComponents(private val module: Module) : Component() {
@@ -163,21 +166,13 @@ class SettingComponents(private val module: Module) : Component() {
 
     override fun keyTyped(typedChar: Char, keyCode: Int) {
         if (binding != null) {
-            if (keyCode == Keyboard.KEY_SPACE || keyCode == Keyboard.KEY_ESCAPE || keyCode == Keyboard.KEY_DELETE) {
-                binding!!.keyBind = Keyboard.KEY_NONE
-            } else {
-                binding!!.keyBind = keyCode
-            }
+            binding!!.keyBind = KeyCapture.resolve(keyCode)
             binding = null
             return
         }
 
         if (bindingKeyValue != null) {
-            if (keyCode == Keyboard.KEY_SPACE || keyCode == Keyboard.KEY_ESCAPE || keyCode == Keyboard.KEY_DELETE) {
-                bindingKeyValue!!.set(Keyboard.KEY_NONE)
-            } else {
-                bindingKeyValue!!.set(keyCode)
-            }
+            bindingKeyValue!!.set(KeyCapture.resolve(keyCode))
             bindingKeyValue = null
             return
         }
@@ -301,8 +296,7 @@ class SettingComponents(private val module: Module) : Component() {
 
         var count = 0.0
 
-        for (setting in module.values.stream().filter { obj: Value<*> -> obj.shouldRender() }
-            .collect(Collectors.toList())) {
+        for (setting in ValueDispatcher.visible(module)) {
             val settingY = roundToHalf(y + (count * rectHeight)).toFloat()
 
             // ----- FloatValue -----
@@ -340,9 +334,8 @@ class SettingComponents(private val module: Module) : Component() {
 
                 val currentValue = setting.value.toDouble()
                 if (draggingNumber != null && draggingNumber === setting) {
-                    val percent = min(1.0, max(0.0, ((mouseX - (x + 5)) / totalSliderWidth).toDouble())).toFloat()
-                    val newValue = ((percent * (setting.maximum - setting.minimum))
-                            + setting.minimum).toDouble()
+                    val percent = SliderMath.percentFromMouse(mouseX.toDouble(), (x + 5).toDouble(), totalSliderWidth.toDouble())
+                    val newValue = SliderMath.valueFromPercent(percent, setting.minimum.toDouble(), setting.maximum.toDouble())
                     setting.set(newValue)
                 }
 
@@ -417,11 +410,9 @@ class SettingComponents(private val module: Module) : Component() {
                 }
 
                 if (draggingNumber == setting) {
-                    val mousePercent = min(1.0, max(0.0, ((mouseX - (x + 5)) / totalSliderWidth).toDouble())).toFloat()
+                    val mousePercent = SliderMath.percentFromMouse(mouseX.toDouble(), (x + 5).toDouble(), totalSliderWidth.toDouble())
                     val newVal = (rangeMin + (rangeMax - rangeMin) * mousePercent)
-                    val distStart = abs(newVal - slider1)
-                    val distEnd = abs(newVal - slider2)
-                    if (distStart <= distEnd) {
+                    if (RangeController.nearerThumb(newVal.toDouble(), slider1.toDouble(), slider2.toDouble()) == 0) {
                         setting.setFirst(newVal.coerceIn(rangeMin, slider2), false)
                     } else {
                         setting.setLast(newVal.coerceIn(slider1, rangeMax), false)
@@ -496,9 +487,8 @@ class SettingComponents(private val module: Module) : Component() {
 
                 val currentValue = setting.value.toDouble()
                 if (draggingNumber != null && draggingNumber === setting) {
-                    val percent = min(1.0, max(0.0, ((mouseX - (x + 5)) / totalSliderWidth).toDouble())).toFloat()
-                    val newValue = ((percent * (setting.maximum - setting.minimum))
-                            + setting.minimum).roundToInt()
+                    val percent = SliderMath.percentFromMouse(mouseX.toDouble(), (x + 5).toDouble(), totalSliderWidth.toDouble())
+                    val newValue = SliderMath.valueFromPercent(percent, setting.minimum.toDouble(), setting.maximum.toDouble()).roundToInt()
                     setting.set(newValue)
                 }
 
@@ -572,9 +562,8 @@ class SettingComponents(private val module: Module) : Component() {
 
                 val currentValue = setting.get().toDouble()
                 if (draggingNumber != null && draggingNumber === setting) {
-                    val percent = min(1.0, max(0.0, ((mouseX - (x + 5)) / totalSliderWidth).toDouble())).toFloat()
-                    val newValue = ((percent * (setting.maximum - setting.minimum))
-                            + setting.minimum).roundToInt()
+                    val percent = SliderMath.percentFromMouse(mouseX.toDouble(), (x + 5).toDouble(), totalSliderWidth.toDouble())
+                    val newValue = SliderMath.valueFromPercent(percent, setting.minimum.toDouble(), setting.maximum.toDouble()).roundToInt()
                     setting.set(newValue)
                 }
 
@@ -651,11 +640,9 @@ class SettingComponents(private val module: Module) : Component() {
                 }
 
                 if (draggingNumber == setting) {
-                    val mousePercent = min(1.0, max(0.0, ((mouseX - (x + 5)) / totalSliderWidth).toDouble())).toFloat()
+                    val mousePercent = SliderMath.percentFromMouse(mouseX.toDouble(), (x + 5).toDouble(), totalSliderWidth.toDouble())
                     val newVal = (rangeMin + (rangeMax - rangeMin) * mousePercent).toInt()
-                    val distStart = abs(newVal - slider1)
-                    val distEnd = abs(newVal - slider2)
-                    if (distStart <= distEnd) {
+                    if (RangeController.nearerThumb(newVal.toDouble(), slider1.toDouble(), slider2.toDouble()) == 0) {
                         setting.setFirst(newVal.coerceIn(rangeMin, slider2), false)
                     } else {
                         setting.setLast(newVal.coerceIn(slider1, rangeMax), false)

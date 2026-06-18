@@ -12,6 +12,8 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.Panel
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ButtonElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.elements.ModuleElement
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.Style
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.SliderMath
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.ValueDispatcher
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer.Companion.assumeNonVolatile
 import net.ccbluex.liquidbounce.ui.font.Fonts.fontSemibold35
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.getBlockName
@@ -131,7 +133,7 @@ object BlackStyle : Style() {
         )
 
         // Draw settings
-        val moduleValues = moduleElement.module.values.filter { it.shouldRender() }
+        val moduleValues = ValueDispatcher.visible(moduleElement.module)
         if (moduleValues.isNotEmpty()) {
             fontSemibold35.drawString(
                 if (moduleElement.showSettings) "<" else ">",
@@ -241,7 +243,8 @@ object BlackStyle : Style() {
                                 (x + width * (displayValue - value.minimum) / (value.maximum - value.minimum)).roundToInt()
 
                             if (mouseButton == 0 && mouseX in minX..maxX && mouseY in y - 2..y + 5 || sliderValueHeld == value) {
-                                val percentage = (mouseX - x) / width.toFloat()
+                                val percentage =
+                                    SliderMath.percentFromMouse(mouseX.toDouble(), x.toDouble(), width.toDouble())
                                 value.setAndSaveValueOnButtonRelease(
                                     round(value.minimum + (value.maximum - value.minimum) * percentage).coerceIn(
                                         value.range
@@ -278,7 +281,8 @@ object BlackStyle : Style() {
                                 x + width * (displayValue - value.minimum) / (value.maximum - value.minimum)
 
                             if (mouseButton == 0 && mouseX in minX..maxX && mouseY in y - 2..y + 5 || sliderValueHeld == value) {
-                                val percentage = (mouseX - x) / width.toFloat()
+                                val percentage =
+                                    SliderMath.percentFromMouse(mouseX.toDouble(), x.toDouble(), width.toDouble())
                                 value.setAndSaveValueOnButtonRelease(
                                     value.range.lerpWith(percentage).roundToInt().coerceIn(value.range)
                                 )
@@ -312,7 +316,8 @@ object BlackStyle : Style() {
                                 x + width * (displayValue - value.minimum) / (value.maximum - value.minimum)
 
                             if (mouseButton == 0 && mouseX in minX..maxX && mouseY in y - 2..y + 5 || sliderValueHeld == value) {
-                                val percentage = (mouseX - x) / width.toFloat()
+                                val percentage =
+                                    SliderMath.percentFromMouse(mouseX.toDouble(), x.toDouble(), width.toDouble())
                                 value.setAndSaveValueOnButtonRelease(value.lerpWith(percentage).coerceIn(value.range))
 
                                 sliderValueHeld = value

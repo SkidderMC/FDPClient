@@ -10,6 +10,9 @@ import net.ccbluex.liquidbounce.config.IntRangeValue
 import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.Downward
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.RangeController
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.SliderMath
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.TextUtil
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NlModule
@@ -92,8 +95,8 @@ class RangeSetting(
         RoundedUtil.drawCircle(endX - 3, barY - 2, 5.5f, NeverloseGui.neverlosecolor)
 
         if (draggingLeft || draggingRight) {
-            val percent = ((mouseX.toFloat() - barX) / 60f).coerceIn(0f, 1f)
-            val newValue = minimum + (maximum - minimum) * percent
+            val percent = SliderMath.percentFromMouse(mouseX.toDouble(), barX.toDouble(), 60.0)
+            val newValue = SliderMath.valueFromPercent(percent, minimum, maximum)
 
             intRange?.let {
                 if (draggingLeft) it.setFirst(MathHelper.floor_double(newValue).coerceAtMost(it.get().last), true)
@@ -167,7 +170,7 @@ class RangeSetting(
             val nearEnd = abs(mouseX - endKnob) <= 6
 
             if (nearStart && nearEnd) {
-                if (abs(mouseX - startKnob) <= abs(mouseX - endKnob)) draggingLeft = true else draggingRight = true
+                if (RangeController.nearerThumb(mouseX.toDouble(), startKnob, endKnob) == 0) draggingLeft = true else draggingRight = true
             } else if (nearStart) {
                 draggingLeft = true
             } else if (nearEnd) {
@@ -186,11 +189,7 @@ class RangeSetting(
     }
 
     private fun abbreviate(value: String): Pair<String, Boolean> {
-        return if (value.length > 10) {
-            value.substring(0, 10) + "..." to true
-        } else {
-            value to false
-        }
+        return TextUtil.abbreviate(value, 10) to (value.length > 10)
     }
 
     private fun drawTooltip(text: String, mouseX: Int, mouseY: Int) {
