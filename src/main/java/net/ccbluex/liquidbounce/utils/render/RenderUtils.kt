@@ -3913,10 +3913,9 @@ object RenderUtils : MinecraftInstance {
      * Resets GL color to white (1,1,1,1)
      * (from DrRenderUtils)
      */
+    @Deprecated("Use RenderColor.resetColor", ReplaceWith("RenderColor.resetColor()"))
     @JvmStatic
-    fun resetColor() {
-        color(1f, 1f, 1f, 1f)
-    }
+    fun resetColor() = RenderColor.resetColor()
 
     /**
      * Sets up scissor box for clipping
