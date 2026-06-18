@@ -10,7 +10,22 @@ import net.ccbluex.liquidbounce.features.command.Command
 object PingCommand : Command("ping") {
 
     override fun execute(args: Array<String>) {
-        chat("§3Your ping is §a${mc.netHandler.getPlayerInfo(mc.thePlayer.uniqueID).responseTime}ms§3.")
+        val player = mc.thePlayer
+        val netHandler = mc.netHandler
+
+        if (player == null || netHandler == null) {
+            chat("§cYou need to be in-game to check your ping.")
+            return
+        }
+
+        val playerInfo = netHandler.getPlayerInfo(player.uniqueID)
+
+        if (playerInfo == null) {
+            chat("§cCould not resolve your ping.")
+            return
+        }
+
+        chat("§3Your ping is §a${playerInfo.responseTime}ms§3.")
     }
 
 }

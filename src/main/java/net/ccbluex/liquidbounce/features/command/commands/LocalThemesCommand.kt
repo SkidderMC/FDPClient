@@ -114,7 +114,13 @@ object LocalThemesCommand : Command("localthemes", "localtheme") {
             }
 
             "folder" -> {
-                Desktop.getDesktop().open(themesDir)
+                try {
+                    Desktop.getDesktop().open(themesDir)
+                    chat("§6Opening themes folder...")
+                } catch (throwable: Throwable) {
+                    LOGGER.error("Failed to open themes folder.", throwable)
+                    chat("§cFailed to open themes folder: §3${throwable.message}")
+                }
             }
         }
     }

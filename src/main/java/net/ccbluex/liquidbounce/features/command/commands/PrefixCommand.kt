@@ -22,6 +22,11 @@ object PrefixCommand : Command("prefix") {
 
         val prefix = args[1]
 
+        if (prefix.isBlank()) {
+            chat("§cThe prefix cannot be blank or whitespace.")
+            return
+        }
+
         commandManager.prefix = prefix
 
         saveConfig(valuesConfig)

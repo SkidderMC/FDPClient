@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.features.command.TabCompleteUtils
 import net.ccbluex.liquidbounce.handler.combat.CombatManager.focusedPlayerList
 
 object FocusCommand : Command("focus") {
@@ -17,7 +18,12 @@ object FocusCommand : Command("focus") {
         if (args.size == 3) {
             val focused = args[1]
             val target = args[2]
-            val entity = mc.theWorld.playerEntities.filter { it.name.equals(target, true) && !it.equals(mc.thePlayer) }.also {
+            val world = mc.theWorld
+            if (world == null) {
+                chat("§6Couldn't find anyone named §a${target.lowercase()}§6 in the world.")
+                return
+            }
+            val entity = world.playerEntities.filter { it.name.equals(target, true) && !it.equals(mc.thePlayer) }.also {
                 if (it.isEmpty()) {
                     chat("§6Couldn't find anyone named §a${target.lowercase()}§6 in the world.")
                     return
@@ -53,16 +59,16 @@ object FocusCommand : Command("focus") {
     override fun tabComplete(args: Array<String>): List<String> {
         if (args.isEmpty()) return emptyList()
 
-        val pref = args[0]
-
         return when (args.size) {
-            1 -> listOf("clear", "add", "remove")
-            2 -> if (args[0].equals("add", true) || args[0].equals("remove", true)) {
-                    mc.theWorld.playerEntities
-                        .filter { it.name.startsWith(pref, true) }
-                        .map { it.name }
-                        .toList()
-            } else emptyList()
+            1 -> TabCompleteUtils.match(args[0], "clear", "add", "remove")
+            2 -> when (args[0].lowercase()) {
+                "add" -> TabCompleteUtils.players(args[1], includeSelf = false)
+                "remove" -> {
+                    val focused = focusedPlayerList.mapNotNull { it.name }
+                    TabCompleteUtils.match(args[1], focused)
+                }
+                else -> emptyList()
+            }
             else -> emptyList()
         }
     }

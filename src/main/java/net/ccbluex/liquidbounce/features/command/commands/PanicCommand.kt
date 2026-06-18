@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.features.command.TabCompleteUtils
 import net.ccbluex.liquidbounce.features.module.Category
 
 object PanicCommand : Command("panic") {
@@ -51,11 +52,11 @@ object PanicCommand : Command("panic") {
     }
 
     override fun tabComplete(args: Array<String>): List<String> {
-        if (args.isEmpty()) return emptyList()
-
         return when (args.size) {
-            1 -> listOf("all", "nonrender", "combat", "player", "movement", "render", "world", "misc", "exploit", "fun")
-                .filter { it.startsWith(args[0], true) }
+            1 -> TabCompleteUtils.match(
+                args[0],
+                "all", "nonrender", "combat", "player", "movement", "render", "world", "misc", "exploit", "fun"
+            )
 
             else -> emptyList()
         }

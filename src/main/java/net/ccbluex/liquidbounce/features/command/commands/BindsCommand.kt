@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.features.command.TabCompleteUtils
 import org.lwjgl.input.Keyboard
 
 object BindsCommand : Command("binds") {
@@ -30,5 +31,14 @@ object BindsCommand : Command("binds") {
                 chat("§6> §c${it.getName()}: §a§l${Keyboard.getKeyName(it.keyBind)}")
         }
         chatSyntax("binds clear")
+    }
+
+    override fun tabComplete(args: Array<String>): List<String> {
+        if (args.isEmpty()) return emptyList()
+
+        return when (args.size) {
+            1 -> TabCompleteUtils.match(args[0], "clear")
+            else -> emptyList()
+        }
     }
 }

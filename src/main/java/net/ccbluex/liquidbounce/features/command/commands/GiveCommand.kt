@@ -6,10 +6,10 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.features.command.TabCompleteUtils
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.inventory.ItemUtils
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
-import net.minecraft.item.Item
 import net.minecraft.network.play.client.C10PacketCreativeInventoryAction
 
 object GiveCommand : Command("give", "item", "i", "get") {
@@ -53,11 +53,7 @@ object GiveCommand : Command("give", "item", "i", "get") {
             return emptyList()
 
         return when (args.size) {
-            1 -> {
-                return Item.itemRegistry.keys
-                    .map { it.resourcePath.lowercase() }
-                    .filter { it.startsWith(args[0], true) }
-            }
+            1 -> TabCompleteUtils.items(args[0])
             else -> emptyList()
         }
     }

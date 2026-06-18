@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.features.command.TabCompleteUtils
 import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
@@ -42,12 +43,9 @@ object BindCommand : Command("bind") {
     override fun tabComplete(args: Array<String>): List<String> {
         if (args.isEmpty()) return emptyList()
 
-        val moduleName = args[0]
-
         return when (args.size) {
-            1 -> moduleManager
-                .map { it.name }
-                .filter { it.startsWith(moduleName, true) }
+            1 -> TabCompleteUtils.modules(args[0])
+            2 -> TabCompleteUtils.keys(args[1])
             else -> emptyList()
         }
     }

@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.features.command.TabCompleteUtils
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.event.Listenable
@@ -86,6 +87,13 @@ object TpsCommand : Command("tps"), Listenable {
                 else chat("§3Server TPS is §a${"%.2f".format(currentTps)}§3.")
             }
             else -> chat("§7Usage: §b.tps §7| §b.tps watch [seconds] §7| §b.tps stop §7| §b.tps once")
+        }
+    }
+
+    override fun tabComplete(args: Array<String>): List<String> {
+        return when (args.size) {
+            1 -> TabCompleteUtils.match(args[0], "watch", "start", "stop", "off", "once")
+            else -> emptyList()
         }
     }
 }

@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.features.command.TabCompleteUtils
 import net.ccbluex.liquidbounce.features.module.modules.client.IRCModule
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
 
@@ -32,5 +33,12 @@ object PrivateChatCommand : Command("pchat", "privatechat", "lcpm") {
             chat("Message was successfully sent.")
         } else
             chatSyntax("pchat <username> <message>")
+    }
+
+    override fun tabComplete(args: Array<String>): List<String> {
+        return when (args.size) {
+            1 -> TabCompleteUtils.tabListPlayers(args[0])
+            else -> emptyList()
+        }
     }
 }

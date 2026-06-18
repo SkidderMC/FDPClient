@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.FDPClient.scriptManager
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.command.CommandManager
+import net.ccbluex.liquidbounce.features.command.CommandUtils.intArg
 import net.ccbluex.liquidbounce.file.FileManager.clickGuiConfig
 import net.ccbluex.liquidbounce.file.FileManager.hudConfig
 import net.ccbluex.liquidbounce.file.FileManager.loadConfig
@@ -82,10 +83,15 @@ object ScriptManagerCommand : Command("scriptmanager", "scripts") {
                         return
                     }
 
-                    val scriptIndex = args[2].toInt()
+                    if (ScriptManager.size == 0) {
+                        chat("§cThere are no scripts to delete.")
+                        return
+                    }
 
-                    if (scriptIndex >= ScriptManager.size) {
-                        chat("Index $scriptIndex is too high.")
+                    val scriptIndex = args.intArg(2, 0, ScriptManager.size - 1)
+
+                    if (scriptIndex == null) {
+                        chat("§cInvalid index. Pick a number between 0 and ${ScriptManager.size - 1}.")
                         return
                     }
 

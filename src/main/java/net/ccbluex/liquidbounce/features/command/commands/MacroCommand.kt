@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.features.command.TabCompleteUtils
 import net.ccbluex.liquidbounce.file.FileManager.saveActiveConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
@@ -65,6 +66,24 @@ object MacroCommand : Command("macro", "m") {
             return
         }
         chatSyntax("macro <add/remove/list>")
+    }
+
+    override fun tabComplete(args: Array<String>): List<String> {
+        if (args.isEmpty()) return emptyList()
+
+        return when (args.size) {
+            1 -> TabCompleteUtils.match(args[0], "add", "remove", "list")
+            2 -> when (args[0].lowercase()) {
+                "add" -> TabCompleteUtils.keys(args[1])
+                "remove" -> {
+                    val keyNames = MacroManager.macros
+                        .mapNotNull { Keyboard.getKeyName(it.key) }
+                    TabCompleteUtils.match(args[1], keyNames)
+                }
+                else -> emptyList()
+            }
+            else -> emptyList()
+        }
     }
 
     private fun save() {

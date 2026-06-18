@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.features.command.TabCompleteUtils
 import net.ccbluex.liquidbounce.file.FileManager.friendsConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils
@@ -91,22 +92,12 @@ object FriendCommand : Command("friend", "friends") {
         if (args.isEmpty()) return emptyList()
 
         return when (args.size) {
-            1 -> listOf("add", "remove", "list", "clear").filter { it.startsWith(args[0], true) }
-            2 -> {
-                when (args[0].lowercase()) {
-                    "add" -> {
-                        return mc.theWorld.playerEntities
-                            .mapNotNull { it.name?.takeIf { name -> name.startsWith(args[1], true) } }
-                    }
-
-                    "remove" -> {
-                        return friendsConfig.friends
-                            .mapNotNull { it.playerName.takeIf { name -> name.startsWith(args[1], true) } }
-                    }
-                }
-                return emptyList()
+            1 -> TabCompleteUtils.match(args[0], "add", "remove", "list", "clear")
+            2 -> when (args[0].lowercase()) {
+                "add" -> TabCompleteUtils.players(args[1], includeSelf = false)
+                "remove" -> TabCompleteUtils.match(args[1], friendsConfig.friends.map { it.playerName })
+                else -> emptyList()
             }
-
             else -> emptyList()
         }
     }

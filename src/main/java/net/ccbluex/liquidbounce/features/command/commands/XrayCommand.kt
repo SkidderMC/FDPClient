@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.features.command.commands
 
 import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.features.command.TabCompleteUtils
 import net.ccbluex.liquidbounce.features.module.modules.visual.XRay
 import net.minecraft.block.Block
 
@@ -106,22 +107,10 @@ object XrayCommand : Command("xray") {
             }
             2 -> {
                 when (args[0].lowercase()) {
-                    "add" -> {
-                        return Block.blockRegistry.keys
-                            .map { it.resourcePath.lowercase() }
-                            .filter { Block.getBlockFromName(it.lowercase()) != null }
-                            .filter { Block.getBlockFromName(it.lowercase()) !in XRay.xrayBlocks }
-                            .filter { it.startsWith(args[1], true) }
-                    }
-                    "remove" -> {
-                        return Block.blockRegistry.keys
-                            .map { it.resourcePath.lowercase() }
-                            .filter { Block.getBlockFromName(it) in XRay.xrayBlocks }
-                            .filter { it.startsWith(args[1], true) }
-                    }
+                    "add" -> TabCompleteUtils.blocks(args[1]) { it !in XRay.xrayBlocks }
+                    "remove" -> TabCompleteUtils.blocks(args[1]) { it in XRay.xrayBlocks }
                     else -> emptyList()
                 }
-
             }
             else -> emptyList()
         }

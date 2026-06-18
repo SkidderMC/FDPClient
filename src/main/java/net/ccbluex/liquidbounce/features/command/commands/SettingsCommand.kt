@@ -277,8 +277,13 @@ object SettingsCommand : Command("autosettings", "autosetting", "settings", "set
     // Open folder subcommand
     private suspend fun openFolder() {
         withContext(Dispatchers.IO) {
-            Desktop.getDesktop().open(FDPClient.fileManager.settingsDir)
-            chat("Opening folder...")
+            try {
+                Desktop.getDesktop().open(FDPClient.fileManager.settingsDir)
+                chat("Opening folder...")
+            } catch (throwable: Throwable) {
+                LOGGER.error("Failed to open settings folder.", throwable)
+                chat("§cFailed to open settings folder: §3${throwable.message}")
+            }
         }
     }
 
