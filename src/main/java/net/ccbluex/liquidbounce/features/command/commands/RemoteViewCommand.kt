@@ -28,6 +28,7 @@ object RemoteViewCommand : Command("remoteview", "rv") {
         if (args.size < 2) {
             if (mc.renderViewEntity != thePlayer) {
                 mc.renderViewEntity = thePlayer
+                chat("§3Restored your own perspective.")
                 return
             }
             chatSyntax("remoteview <username>")
@@ -36,14 +37,15 @@ object RemoteViewCommand : Command("remoteview", "rv") {
 
         val targetName = args[1]
 
-        for (entity in theWorld.loadedEntityList) {
-            if (targetName == entity.name) {
-                mc.renderViewEntity = entity
-                chat("Now viewing perspective of §8${entity.name}§3.")
-                chat("Execute §8${commandManager.prefix}remoteview §3again to go back to yours.")
-                break
-            }
+        val target = theWorld.loadedEntityList.firstOrNull { targetName == it.name }
+        if (target == null) {
+            chat("§6Couldn't find anyone named §a$targetName§6 in the world.")
+            return
         }
+
+        mc.renderViewEntity = target
+        chat("Now viewing perspective of §8${target.name}§3.")
+        chat("Execute §8${commandManager.prefix}remoteview §3again to go back to yours.")
     }
 
     override fun tabComplete(args: Array<String>): List<String> {

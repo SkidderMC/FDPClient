@@ -19,9 +19,11 @@ object ConnectCommand : Command("connect") {
     override fun execute(args: Array<String>) {
         when (args.size) {
             3 -> {
-                if (args[2] == "silent") {
+                if (args[2].equals("silent", true)) {
                     chat("Connecting to §a§l${args[1]} §7(Silent mode)")
                     mc.displayGuiScreen(GuiConnecting(net.ccbluex.liquidbounce.ui.client.gui.multiplayer.GuiServerSelect(GuiMainMenu()), mc, ServerData("", args[1], false)))
+                } else {
+                    chatSyntax("connect <ip:port> (silent)")
                 }
                 return
             }
