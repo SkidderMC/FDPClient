@@ -11,18 +11,19 @@ import net.montoyo.mcef.MCEF
 import net.montoyo.mcef.api.API
 import net.montoyo.mcef.api.IBrowser
 import net.montoyo.mcef.api.MCEFApi
+import java.io.File
 import java.lang.reflect.Method
+import java.lang.reflect.Proxy
 
 /**
  * Boots the embedded browser runtime on demand and drives its per-frame work so the web
- * ClickGUI can render inside the game. The native runtime is fetched once and cached in the
- * game directory; everything here is reflection-based so the client compiles without the
- * embedded-browser native classes on the build classpath.
+ * ClickGUI can render inside the game. Everything here is reflection-based so the client compiles
+ * without the embedded-browser native classes on the build classpath.
  *
- * The embedded runtime is single-threaded with a manual message loop: it MUST be initialized,
- * pumped and have its texture uploaded all on the same render thread. We therefore run the whole
- * setup on the client/render thread (the first-time native download briefly blocks it; the runtime
- * is cached afterwards so subsequent boots are instant).
+ * The native runtime (~160 MB) is fetched once and cached in the game directory. The download runs
+ * on a background thread so a fresh install never freezes the render thread; the browser itself is
+ * single-threaded with a manual message loop, so it is initialized, pumped and uploaded all on the
+ * render thread.
  */
 object NextGenBrowserRuntime {
 
@@ -37,6 +38,8 @@ object NextGenBrowserRuntime {
         private set
 
     private const val PROXY_CLASS = "net.montoyo.mcef.client.ClientProxy"
+    private const val REMOTE_CONFIG_CLASS = "net.montoyo.mcef.remote.RemoteConfig"
+    private const val PROGRESS_LISTENER_CLASS = "net.montoyo.mcef.utilities.IProgressListener"
 
     private var cefApp: Any? = null
     private var doMessageLoopWork: Method? = null
@@ -52,36 +55,78 @@ object NextGenBrowserRuntime {
         state = State.INITIALIZING
         detail = "Preparing in-game browser (one-time setup)..."
 
-        Minecraft.getMinecraft().addScheduledTask {
+        Thread({
             try {
-                val proxyClass = Class.forName(PROXY_CLASS)
-                val instance = proxyClass.getDeclaredConstructor().newInstance()
-
                 MCEF.SKIP_UPDATES = false
                 MCEF.WARN_UPDATES = false
-                MCEF::class.java.getField("PROXY").set(null, instance)
 
-                proxyClass.getMethod("onInit").invoke(instance)
+                // Phase 1 (background): fetch the native runtime so the render thread never blocks.
+                downloadNatives()
 
-                val virtual = proxyClass.getField("VIRTUAL").getBoolean(null)
-                if (virtual) {
-                    state = State.FAILED
-                    detail = "In-game browser unavailable (virtual mode)."
-                    return@addScheduledTask
-                }
-
-                val app = proxyClass.getMethod("getCefApp").invoke(instance)
-                cefApp = app
-                doMessageLoopWork = app?.javaClass?.getMethod("doMessageLoopWork", Long::class.javaPrimitiveType)
-
-                state = State.READY
-                detail = "In-game browser ready."
-                LOGGER.info("[NextGen] In-game browser runtime ready (render thread).")
+                // Phase 2 (render thread): CEF must be initialized on the same thread that later
+                // pumps the message loop and uploads its texture.
+                Minecraft.getMinecraft().addScheduledTask { initOnRenderThread() }
             } catch (throwable: Throwable) {
                 state = State.FAILED
-                detail = "In-game browser failed to start."
-                LOGGER.error("[NextGen] Failed to initialize the in-game browser runtime", throwable)
+                detail = "In-game browser failed to download."
+                LOGGER.error("[NextGen] Failed to prepare the in-game browser runtime", throwable)
             }
+        }, "NextGen-Browser-Init").apply { isDaemon = true }.start()
+    }
+
+    /** Replicates the proxy's native-download step (load manifest, mark missing, download). Background only. */
+    private fun downloadNatives() {
+        val remoteConfigClass = Class.forName(REMOTE_CONFIG_CLASS)
+        val remoteConfig = remoteConfigClass.getDeclaredConstructor().newInstance()
+        remoteConfigClass.getMethod("load").invoke(remoteConfig)
+
+        val updateFileListing =
+            remoteConfigClass.getMethod("updateFileListing", File::class.java, Boolean::class.javaPrimitiveType)
+        (remoteConfigClass.getMethod("getResourceArray").invoke(remoteConfig) as? Array<*>)?.forEach { resource ->
+            (resource as? File)?.let { updateFileListing.invoke(remoteConfig, it, false) }
+        }
+
+        val listenerClass = Class.forName(PROGRESS_LISTENER_CLASS)
+        val listener = Proxy.newProxyInstance(listenerClass.classLoader, arrayOf(listenerClass)) { _, method, args ->
+            when (method.name) {
+                "onTaskChanged" -> detail = "Downloading in-game browser: ${args?.getOrNull(0)}"
+                "onProgressed" -> {
+                    val pct = (args?.getOrNull(0) as? Double)?.takeIf { it in 0.0..100.0 }
+                    if (pct != null) detail = "Downloading in-game browser: ${pct.toInt()}%"
+                }
+                "onProgressEnd" -> detail = "Starting in-game browser..."
+            }
+            null
+        }
+        remoteConfigClass.getMethod("downloadMissing", listenerClass).invoke(remoteConfig, listener)
+    }
+
+    private fun initOnRenderThread() {
+        try {
+            val proxyClass = Class.forName(PROXY_CLASS)
+            val instance = proxyClass.getDeclaredConstructor().newInstance()
+
+            MCEF::class.java.getField("PROXY").set(null, instance)
+            proxyClass.getMethod("onInit").invoke(instance)
+
+            val virtual = proxyClass.getField("VIRTUAL").getBoolean(null)
+            if (virtual) {
+                state = State.FAILED
+                detail = "In-game browser unavailable (virtual mode)."
+                return
+            }
+
+            val app = proxyClass.getMethod("getCefApp").invoke(instance)
+            cefApp = app
+            doMessageLoopWork = app?.javaClass?.getMethod("doMessageLoopWork", Long::class.javaPrimitiveType)
+
+            state = State.READY
+            detail = "In-game browser ready."
+            LOGGER.info("[NextGen] In-game browser runtime ready (render thread).")
+        } catch (throwable: Throwable) {
+            state = State.FAILED
+            detail = "In-game browser failed to start."
+            LOGGER.error("[NextGen] Failed to initialize the in-game browser runtime", throwable)
         }
     }
 
