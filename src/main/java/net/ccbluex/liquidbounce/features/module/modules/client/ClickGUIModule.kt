@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.FDPDropdownClickGUI
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen.NextGenClickGuiScreen
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.YzYGui
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
@@ -27,10 +28,11 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
     private var fdpDropdownGui: FDPDropdownClickGUI? = null
     private var yzyGui: YzYGui? = null
     private var neverloseGui: NeverloseGui? = null
+    private var nextGenGui: NextGenClickGuiScreen? = null
 
     private val style by choices(
         "Style",
-        arrayOf("Black", "Zywl", "Dropdown", "FDP"),
+        arrayOf("Black", "Zywl", "Dropdown", "FDP", "NextGen"),
         "FDP"
     ).onChanged {
         updateStyle()
@@ -60,6 +62,8 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
     val scrollMode by choices("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")  { style == "Dropdown" }
     val colormode by choices("Setting Accent", arrayOf("White", "Color"), "Color") { style == "Dropdown" }
     val clickHeight by int("Tab Height", 250, 100.. 500) { style == "Dropdown" }
+
+    val nextGenInBrowser by boolean("Open In Browser", false) { style == "NextGen" }
 
     override fun onEnable() {
         try {
@@ -93,6 +97,13 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
                     mc.displayGuiScreen(neverloseGui)
                     this.state = false
                 }
+                style.equals("NextGen", ignoreCase = true) -> {
+                    if (nextGenGui == null) {
+                        nextGenGui = NextGenClickGuiScreen()
+                    }
+                    mc.displayGuiScreen(nextGenGui)
+                    this.state = false
+                }
                 else -> {
                     updateStyle()
                     mc.displayGuiScreen(clickGui)
@@ -115,12 +126,14 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
         try {
             fdpDropdownGui?.onGuiClosed()
             yzyGui?.onGuiClosed()
+            nextGenGui?.onGuiClosed()
             neverloseGui = null
         } catch (e: Exception) {
             println("Error during GUI cleanup: ${e.message}")
         }
         fdpDropdownGui = null
         yzyGui = null
+        nextGenGui = null
     }
 
     private fun updateStyle() {

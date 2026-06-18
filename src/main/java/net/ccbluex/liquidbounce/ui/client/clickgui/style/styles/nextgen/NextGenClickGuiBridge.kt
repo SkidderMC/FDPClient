@@ -1,0 +1,573 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen
+
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonNull
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
+import com.google.gson.JsonPrimitive
+import net.ccbluex.liquidbounce.FDPClient
+import net.ccbluex.liquidbounce.config.BlockValue
+import net.ccbluex.liquidbounce.config.BoolValue
+import net.ccbluex.liquidbounce.config.ColorValue
+import net.ccbluex.liquidbounce.config.FloatRangeValue
+import net.ccbluex.liquidbounce.config.FloatValue
+import net.ccbluex.liquidbounce.config.FontValue
+import net.ccbluex.liquidbounce.config.IntRangeValue
+import net.ccbluex.liquidbounce.config.IntValue
+import net.ccbluex.liquidbounce.config.KeyBindValue
+import net.ccbluex.liquidbounce.config.ListValue
+import net.ccbluex.liquidbounce.config.MultiSelectValue
+import net.ccbluex.liquidbounce.config.TextValue
+import net.ccbluex.liquidbounce.config.Value
+import net.ccbluex.liquidbounce.config.Vec3Value
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.ModuleManager
+import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
+import net.ccbluex.liquidbounce.features.module.modules.client.SpotifyModule
+import net.ccbluex.liquidbounce.file.FileManager
+import net.ccbluex.liquidbounce.file.SettingsFiles
+import net.ccbluex.liquidbounce.ui.client.gui.GuiUpdate
+import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
+import net.ccbluex.liquidbounce.ui.font.fontmanager.GuiFontManager
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
+import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.io.MiscUtils
+import net.minecraft.client.Minecraft
+import net.minecraft.client.gui.ScaledResolution
+import org.lwjgl.input.Keyboard
+import java.awt.Desktop
+import java.awt.Color
+import java.io.File
+import java.util.Locale
+import java.util.concurrent.TimeUnit
+
+object NextGenClickGuiBridge : MinecraftInstance {
+
+    private val parser = JsonParser()
+    private val storageFile = File(FileManager.guiLayoutsDir, "nextgen-clickgui-storage.json")
+
+    fun modules(): JsonArray = JsonArray().apply {
+        ModuleManager.forEach { add(moduleJson(it)) }
+    }
+
+    fun module(name: String): JsonObject =
+        ModuleManager[name]?.let(::moduleJson) ?: JsonObject()
+
+    fun moduleSettings(name: String): JsonObject {
+        val module = ModuleManager[name]
+
+        return configurable(
+            name = module?.name ?: name,
+            values = module?.values?.mapNotNull(::settingJson).orEmpty()
+        )
+    }
+
+    fun applyModuleSettings(name: String, body: String) {
+        val module = ModuleManager[name] ?: return
+        val root = runCatching { parser.parse(body).asJsonObject }.getOrNull() ?: return
+        val settings = root.getAsJsonArray("value") ?: return
+
+        runOnMinecraftThread {
+            for (setting in settings) {
+                val settingObject = setting.asJsonObject
+                val valueName = settingObject.get("name")?.asString ?: continue
+                val value = module.getValue(valueName) ?: continue
+                applyValue(value, settingObject.get("value") ?: continue)
+            }
+        }
+    }
+
+    fun setModuleEnabled(body: String) {
+        val json = runCatching { parser.parse(body).asJsonObject }.getOrNull() ?: return
+        val name = json.get("name")?.asString ?: return
+        val enabled = json.get("enabled")?.asBoolean ?: return
+        val module = ModuleManager[name] ?: return
+
+        runOnMinecraftThread {
+            module.state = enabled
+        }
+    }
+
+    fun localStorage(): JsonObject {
+        if (!storageFile.exists()) {
+            return JsonObject().apply { add("items", JsonArray()) }
+        }
+
+        return runCatching {
+            parser.parse(storageFile.reader(Charsets.UTF_8)).asJsonObject
+        }.getOrElse {
+            JsonObject().apply { add("items", JsonArray()) }
+        }
+    }
+
+    fun saveLocalStorage(body: String) {
+        val json = runCatching { parser.parse(body).asJsonObject }.getOrNull() ?: return
+        if (!storageFile.parentFile.exists()) {
+            storageFile.parentFile.mkdirs()
+        }
+
+        storageFile.writeText(FileManager.PRETTY_GSON.toJson(json), Charsets.UTF_8)
+    }
+
+    fun gameWindow(): JsonObject {
+        val resolution = ScaledResolution(mc)
+
+        return JsonObject().apply {
+            addProperty("width", mc.displayWidth)
+            addProperty("height", mc.displayHeight)
+            addProperty("scaledWidth", resolution.scaledWidth)
+            addProperty("scaledHeight", resolution.scaledHeight)
+            addProperty("scaleFactor", resolution.scaleFactor)
+            addProperty("guiScale", mc.gameSettings.guiScale)
+        }
+    }
+
+    fun clientInfo(): JsonObject {
+        return JsonObject().apply {
+            addProperty("os", osName())
+            addProperty("gameVersion", "1.8.9")
+            addProperty("clientVersion", FDPClient.clientVersionText)
+            addProperty("clientName", FDPClient.CLIENT_NAME)
+            addProperty("development", FDPClient.IN_DEV)
+            addProperty("fps", Minecraft.getDebugFPS())
+            addProperty("gameDir", mc.mcDataDir.absolutePath)
+            addProperty("clientDir", FileManager.dir.absolutePath)
+            addProperty("inGame", mc.theWorld != null && mc.thePlayer != null)
+            addProperty("viaFabricPlus", false)
+            addProperty("hasProtocolHack", false)
+        }
+    }
+
+    fun theme(id: String): JsonObject {
+        val accent = ClientThemesUtils.getColor()
+        val tint = ClientThemesUtils.getBackgroundColor(0, 255)
+
+        return JsonObject().apply {
+            addProperty("name", "FDPClient NextGen")
+            addProperty("id", id)
+            add("colors", JsonObject().apply {
+                addProperty("accent", accent.rgb)
+                addProperty("tint", tint.rgb)
+            })
+            add("settings", JsonObject())
+        }
+    }
+
+    fun globalSettings(): JsonObject = configurable(
+        "Settings",
+        listOf(
+            configurable(
+                "Shortcuts",
+                listOf(
+                    button("HUD Designer", "hud-designer"),
+                    button("Spotify Player", "spotify-player"),
+                    button("Spotify Settings", "spotify-settings"),
+                    button("Keybind Manager", "keybind-manager"),
+                    button("Font Manager", "font-manager"),
+                    button("Check Update", "check-update"),
+                    button("Save Config", "save-config"),
+                    button("Reload Config", "reload-config"),
+                    button("Open Configs Folder", "open-configs-folder"),
+                    button("Open Themes Folder", "open-themes-folder"),
+                    button("GitHub", "github"),
+                    button("Discord", "discord"),
+                    button("Support", "support")
+                )
+            ),
+            configurable(
+                "ClickGUI",
+                ClickGUIModule.values.mapNotNull(::settingJson)
+            ),
+            configurable(
+                "Theme",
+                listOf(
+                    choose("Theme Mode", displayChoice(ClientThemesUtils.ClientColorMode, THEME_MODES), THEME_MODES),
+                    choose("Background Mode", displayChoice(ClientThemesUtils.BackgroundMode, BACKGROUND_MODES), BACKGROUND_MODES),
+                    intSetting("Theme Fade Speed", ClientThemesUtils.ThemeFadeSpeed, 1, 10),
+                    booleanSetting("Reverse Fade", ClientThemesUtils.updown)
+                )
+            )
+        )
+    )
+
+    fun applyGlobalSettings(body: String) {
+        val root = runCatching { parser.parse(body).asJsonObject }.getOrNull() ?: return
+        val groups = root.getAsJsonArray("value") ?: return
+
+        runOnMinecraftThread {
+            for (group in groups) {
+                val groupObject = group.asJsonObject
+                val groupName = groupObject.get("name")?.asString ?: continue
+                val values = groupObject.getAsJsonArray("value") ?: continue
+
+                when (groupName.lowercase(Locale.ROOT)) {
+                    "clickgui" -> applyValues(ClickGUIModule.values, values)
+                    "theme" -> applyThemeSettings(values)
+                }
+            }
+
+            FileManager.saveConfig(FileManager.valuesConfig)
+            FileManager.saveConfig(FileManager.colorThemeConfig)
+        }
+    }
+
+    fun runAction(body: String) {
+        val action = runCatching { parser.parse(body).asJsonObject.get("action").asString }.getOrNull() ?: return
+
+        runOnMinecraftThread {
+            when (action) {
+                "hud-designer" -> mc.displayGuiScreen(GuiHudDesigner())
+                "spotify-player" -> SpotifyModule.openPlayerScreen()
+                "spotify-settings" -> SpotifyModule.openConfigScreen()
+                "keybind-manager" -> mc.displayGuiScreen(KeyBindManager)
+                "font-manager" -> mc.displayGuiScreen(GuiFontManager(mc.currentScreen))
+                "check-update" -> mc.displayGuiScreen(GuiUpdate())
+                "save-config" -> FileManager.saveAllConfigs()
+                "reload-config" -> FileManager.load(FileManager.nowConfig, save = false)
+                "open-configs-folder" -> openFolder(FileManager.settingsDir)
+                "open-themes-folder" -> openFolder(FileManager.themesDir)
+                "github" -> MiscUtils.showURL(FDPClient.CLIENT_GITHUB)
+                "discord" -> MiscUtils.showURL("https://discord.com/invite/3XRFGeqEYD")
+                "support" -> MiscUtils.showURL("https://github.com/opZywl/fdpclient/issues")
+            }
+        }
+    }
+
+    fun virtualScreen(): JsonObject = JsonObject().apply {
+        addProperty("name", "clickgui")
+    }
+
+    fun printableKey(key: String): JsonObject = JsonObject().apply {
+        addProperty("translationKey", key)
+        addProperty("localized", printableKeyName(key))
+    }
+
+    private fun moduleJson(module: Module): JsonObject = JsonObject().apply {
+        addProperty("name", module.name)
+        addProperty("category", categoryName(module.category))
+        add("keyBind", inputBind(module.keyBind))
+        addProperty("enabled", module.state)
+        addProperty("description", runCatching { module.description }.getOrDefault(""))
+        addProperty("hidden", module.isHidden)
+        add("aliases", JsonArray())
+        module.tag?.let { addProperty("tag", it) } ?: add("tag", JsonNull.INSTANCE)
+    }
+
+    private fun categoryName(category: Category): String = when (category) {
+        Category.VISUAL -> "Render"
+        Category.OTHER -> "Misc"
+        else -> category.displayName
+    }
+
+    private fun configurable(name: String, values: List<JsonObject>): JsonObject = settingBase("CONFIGURABLE", name).apply {
+        add("value", JsonArray().apply { values.forEach(::add) })
+    }
+
+    private fun button(label: String, action: String): JsonObject = settingBase("BUTTON", label).apply {
+        addProperty("value", label)
+        addProperty("action", action)
+    }
+
+    private fun choose(name: String, value: String, choices: Array<String>): JsonObject = settingBase("CHOOSE", name).apply {
+        addProperty("value", value)
+        add("choices", JsonArray().apply {
+            choices.forEach { add(JsonPrimitive(it)) }
+        })
+    }
+
+    private fun intSetting(name: String, value: Int, min: Int, max: Int): JsonObject = settingBase("INT", name).apply {
+        addProperty("value", value)
+        add("range", range(min, max))
+        addProperty("suffix", "")
+    }
+
+    private fun booleanSetting(name: String, value: Boolean): JsonObject = settingBase("BOOLEAN", name).apply {
+        addProperty("value", value)
+    }
+
+    private fun settingJson(value: Value<*>): JsonObject? {
+        if (!value.shouldRender()) {
+            return null
+        }
+
+        return when (value) {
+            is BoolValue -> settingBase("BOOLEAN", value.name).apply {
+                addProperty("value", value.get())
+            }
+
+            is IntValue -> settingBase("INT", value.name).apply {
+                addProperty("value", value.get())
+                add("range", range(value.minimum, value.maximum))
+                addProperty("suffix", value.suffix ?: "")
+            }
+
+            is BlockValue -> settingBase("INT", value.name).apply {
+                addProperty("value", value.get())
+                add("range", range(value.minimum, value.maximum))
+                addProperty("suffix", value.suffix ?: "")
+            }
+
+            is IntRangeValue -> settingBase("INT_RANGE", value.name).apply {
+                add("value", range(value.get().first, value.get().last))
+                add("range", range(value.minimum, value.maximum))
+                addProperty("suffix", value.suffix ?: "")
+            }
+
+            is FloatValue -> settingBase("FLOAT", value.name).apply {
+                addProperty("value", value.get())
+                add("range", range(value.minimum, value.maximum))
+                addProperty("suffix", value.suffix ?: "")
+            }
+
+            is FloatRangeValue -> settingBase("FLOAT_RANGE", value.name).apply {
+                add("value", range(value.get().start, value.get().endInclusive))
+                add("range", range(value.minimum, value.maximum))
+                addProperty("suffix", value.suffix ?: "")
+            }
+
+            is ListValue -> settingBase("CHOOSE", value.name).apply {
+                addProperty("value", value.get())
+                add("choices", JsonArray().apply {
+                    value.values.forEach { add(JsonPrimitive(it)) }
+                })
+            }
+
+            is MultiSelectValue -> settingBase("MULTI_CHOOSE", value.name).apply {
+                add("value", JsonArray().apply {
+                    value.get().forEach { add(JsonPrimitive(it)) }
+                })
+                add("choices", JsonArray().apply {
+                    value.choices.forEach { add(JsonPrimitive(it)) }
+                })
+                addProperty("canBeNone", true)
+                addProperty("isOrderSensitive", false)
+            }
+
+            is ColorValue -> settingBase("COLOR", value.name).apply {
+                addProperty("value", value.get().rgb)
+            }
+
+            is TextValue -> settingBase("TEXT", value.name).apply {
+                addProperty("value", value.get())
+            }
+
+            is FontValue -> settingBase("TEXT", value.name).apply {
+                addProperty("value", value.displayName)
+            }
+
+            is KeyBindValue -> settingBase("KEY", value.name).apply {
+                addProperty("value", toMinecraftKey(value.get()))
+            }
+
+            is Vec3Value -> settingBase("VECTOR3_D", value.name).apply {
+                val vec = value.get()
+                add("value", JsonObject().apply {
+                    addProperty("x", vec[0])
+                    addProperty("y", vec[1])
+                    addProperty("z", vec[2])
+                })
+                addProperty("useLocateButton", false)
+            }
+
+            else -> settingBase("TEXT", value.name).apply {
+                addProperty("value", value.toText())
+            }
+        }
+    }
+
+    private fun settingBase(type: String, name: String): JsonObject = JsonObject().apply {
+        addProperty("valueType", type)
+        addProperty("name", name)
+        add("description", JsonNull.INSTANCE)
+        add("key", JsonNull.INSTANCE)
+    }
+
+    private fun range(from: Number, to: Number): JsonObject = JsonObject().apply {
+        addProperty("from", from)
+        addProperty("to", to)
+    }
+
+    private fun inputBind(key: Int): JsonObject = JsonObject().apply {
+        addProperty("boundKey", toMinecraftKey(key))
+        addProperty("action", "Toggle")
+        add("modifiers", JsonArray())
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun applyValue(value: Value<*>, element: JsonElement) {
+        runCatching {
+            when (value) {
+                is BoolValue -> value.set(element.asBoolean)
+                is IntValue -> value.set(element.asInt)
+                is BlockValue -> value.set(element.asInt)
+                is IntRangeValue -> value.set(element.asJsonObject.get("from").asInt..element.asJsonObject.get("to").asInt)
+                is FloatValue -> value.set(element.asFloat)
+                is FloatRangeValue -> value.set(element.asJsonObject.get("from").asFloat..element.asJsonObject.get("to").asFloat)
+                is ListValue -> value.set(element.asString)
+                is MultiSelectValue -> value.set(element.asJsonArray.mapNotNull { it.asString }.toSet())
+                is ColorValue -> value.set(Color(element.asInt, true))
+                is TextValue -> value.set(element.asString)
+                is KeyBindValue -> value.set(fromMinecraftKey(element.asString))
+                is Vec3Value -> {
+                    val vector = element.asJsonObject
+                    value.set(doubleArrayOf(
+                        vector.get("x").asDouble,
+                        vector.get("y").asDouble,
+                        vector.get("z").asDouble
+                    ))
+                }
+                else -> Unit
+            }
+        }
+    }
+
+    private fun applyValues(values: List<Value<*>>, settings: JsonArray) {
+        for (setting in settings) {
+            val settingObject = setting.asJsonObject
+            val valueName = settingObject.get("name")?.asString ?: continue
+            val value = values.firstOrNull { it.name == valueName } ?: continue
+            applyValue(value, settingObject.get("value") ?: continue)
+        }
+    }
+
+    private fun applyThemeSettings(settings: JsonArray) {
+        for (setting in settings) {
+            val settingObject = setting.asJsonObject
+            val name = settingObject.get("name")?.asString ?: continue
+            val value = settingObject.get("value") ?: continue
+
+            when (name) {
+                "Theme Mode" -> ClientThemesUtils.ClientColorMode = value.asString
+                "Background Mode" -> ClientThemesUtils.BackgroundMode = value.asString
+                "Theme Fade Speed" -> ClientThemesUtils.ThemeFadeSpeed = value.asInt
+                "Reverse Fade" -> ClientThemesUtils.updown = value.asBoolean
+            }
+        }
+    }
+
+    private fun openFolder(folder: File) {
+        runCatching {
+            if (!folder.exists()) {
+                folder.mkdirs()
+            }
+            Desktop.getDesktop().open(folder)
+        }.onFailure {
+            LOGGER.error("[NextGen] Failed to open folder ${folder.absolutePath}", it)
+        }
+    }
+
+    private fun displayChoice(value: String, choices: Array<String>): String =
+        choices.firstOrNull { it.equals(value, ignoreCase = true) } ?: choices.first()
+
+    private fun runOnMinecraftThread(action: () -> Unit) {
+        if (mc.isCallingFromMinecraftThread) {
+            action()
+            return
+        }
+
+        mc.addScheduledTask { action() }.get(2, TimeUnit.SECONDS)
+    }
+
+    private fun osName(): String {
+        val os = System.getProperty("os.name", "unknown").lowercase(Locale.ROOT)
+        return when {
+            "win" in os -> "windows"
+            "mac" in os -> "mac"
+            "linux" in os -> "linux"
+            "sunos" in os || "solaris" in os -> "solaris"
+            else -> "unknown"
+        }
+    }
+
+    private fun toMinecraftKey(key: Int): String {
+        if (key == Keyboard.KEY_NONE) {
+            return UNKNOWN_KEY
+        }
+
+        val keyName = Keyboard.getKeyName(key)?.lowercase(Locale.ROOT) ?: return UNKNOWN_KEY
+
+        return KEY_TO_MINECRAFT[keyName] ?: when {
+            keyName.length == 1 && keyName[0].isLetterOrDigit() -> "key.keyboard.$keyName"
+            keyName.matches(Regex("f\\d{1,2}")) -> "key.keyboard.$keyName"
+            else -> "key.keyboard.${keyName.replace('_', '.')}"
+        }
+    }
+
+    private fun fromMinecraftKey(key: String): Int {
+        if (key == UNKNOWN_KEY) {
+            return Keyboard.KEY_NONE
+        }
+
+        val mapped = MINECRAFT_TO_KEY[key]
+        if (mapped != null) {
+            return Keyboard.getKeyIndex(mapped)
+        }
+
+        val raw = key.removePrefix("key.keyboard.").replace('.', '_').uppercase(Locale.ROOT)
+        return Keyboard.getKeyIndex(raw).takeIf { it != Keyboard.KEY_NONE } ?: Keyboard.KEY_NONE
+    }
+
+    private fun printableKeyName(key: String): String {
+        if (key == UNKNOWN_KEY) {
+            return "None"
+        }
+
+        return key
+            .removePrefix("key.keyboard.")
+            .removePrefix("key.mouse.")
+            .split('.', '_')
+            .filter { it.isNotBlank() }
+            .joinToString(" ") { it.replaceFirstChar { char -> char.uppercase(Locale.ROOT) } }
+    }
+
+    private const val UNKNOWN_KEY = "key.keyboard.unknown"
+
+    private val KEY_TO_MINECRAFT = mapOf(
+        "escape" to "key.keyboard.escape",
+        "return" to "key.keyboard.enter",
+        "space" to "key.keyboard.space",
+        "back" to "key.keyboard.backspace",
+        "tab" to "key.keyboard.tab",
+        "lshift" to "key.keyboard.left.shift",
+        "rshift" to "key.keyboard.right.shift",
+        "lcontrol" to "key.keyboard.left.control",
+        "rcontrol" to "key.keyboard.right.control",
+        "lmenu" to "key.keyboard.left.alt",
+        "rmenu" to "key.keyboard.right.alt",
+        "left" to "key.keyboard.left",
+        "right" to "key.keyboard.right",
+        "up" to "key.keyboard.up",
+        "down" to "key.keyboard.down",
+        "delete" to "key.keyboard.delete",
+        "insert" to "key.keyboard.insert",
+        "home" to "key.keyboard.home",
+        "end" to "key.keyboard.end",
+        "prior" to "key.keyboard.page.up",
+        "next" to "key.keyboard.page.down",
+        "capital" to "key.keyboard.caps.lock",
+        "numlock" to "key.keyboard.num.lock"
+    )
+
+    private val MINECRAFT_TO_KEY = KEY_TO_MINECRAFT.entries.associate { it.value to it.key.uppercase(Locale.ROOT) }
+
+    private val THEME_MODES = arrayOf(
+        "Zywl", "Water", "Magic", "DarkNight", "Sun", "Flower", "Tree", "Loyoi", "FDP", "May",
+        "Mint", "Cero", "Azure", "Pumpkin", "Polarized", "Sundae", "Terminal", "Coral", "Fire",
+        "Aqua", "Peony", "Vergren", "EveningSunshine", "LightOrange", "Reef", "Amin", "Magics",
+        "MangoPulp", "MoonPurple", "Aqualicious", "Stripe", "Shifter", "Quepal", "Orca",
+        "SublimeVivid", "MoonAsteroid", "SummerDog", "PinkFlavour", "SinCityRed", "Timber",
+        "PinotNoir", "DirtyFog", "Piglet", "LittleLeaf", "Nelson", "TurquoiseFlow", "Purplin",
+        "Martini", "SoundCloud", "Inbox", "Amethyst", "Blush", "MochaRose", "Astolfo", "Rainbow"
+    )
+
+    private val BACKGROUND_MODES = arrayOf("Synced", "Dark", "Custom", "NeverLose", "None")
+}
