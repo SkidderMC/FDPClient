@@ -107,7 +107,11 @@ object NextGenBrowserRuntime {
             val instance = proxyClass.getDeclaredConstructor().newInstance()
 
             MCEF::class.java.getField("PROXY").set(null, instance)
-            proxyClass.getMethod("onInit").invoke(instance)
+
+            // onInit can throw late on 1.8.9 (its shutdown-hook patcher targets a method that no longer
+            // matches) AFTER CEF is already initialized, so tolerate it and continue if the CefApp came up.
+            runCatching { proxyClass.getMethod("onInit").invoke(instance) }
+                .onFailure { LOGGER.warn("[NextGen] onInit reported an error; continuing if CEF initialized", it) }
 
             val virtual = proxyClass.getField("VIRTUAL").getBoolean(null)
             if (virtual) {
@@ -117,8 +121,13 @@ object NextGenBrowserRuntime {
             }
 
             val app = proxyClass.getMethod("getCefApp").invoke(instance)
+            if (app == null) {
+                state = State.FAILED
+                detail = "In-game browser failed to start."
+                return
+            }
             cefApp = app
-            doMessageLoopWork = app?.javaClass?.getMethod("doMessageLoopWork", Long::class.javaPrimitiveType)
+            doMessageLoopWork = app.javaClass.getMethod("doMessageLoopWork", Long::class.javaPrimitiveType)
 
             state = State.READY
             detail = "In-game browser ready."
