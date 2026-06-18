@@ -28,7 +28,32 @@ import org.lwjgl.input.Mouse
 import java.awt.Color
 import javax.vecmath.Vector2f
 import kotlin.math.roundToInt
+import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
+
+/**
+ * Shared validation for numeric values: keep [newValue] untouched while unlimited values are
+ * active, otherwise restrict it to the allowed range via [coerce].
+ */
+private inline fun <T> coerceUnlessUnlimited(newValue: T, coerce: (T) -> T): T =
+    if (UnlimitedValues.handleEvents() && UnlimitedValues.removeLimits) newValue else coerce(newValue)
+
+/**
+ * Slider selection that is automatically released (set back to null) once the primary
+ * mouse button is no longer held. Shared by the value types that expose a draggable slider.
+ */
+private class MouseHeldSlider<T> : ReadWriteProperty<Any?, T?> {
+    private var current: T? = null
+
+    override fun getValue(thisRef: Any?, property: KProperty<*>): T? {
+        if (!Mouse.isButtonDown(0)) current = null
+        return current
+    }
+
+    override fun setValue(thisRef: Any?, property: KProperty<*>, value: T?) {
+        current = value
+    }
+}
 
 /**
  * Bool value represents a value with a boolean
@@ -69,13 +94,7 @@ class IntValue(
     suffix: String? = null,
 ) : Value<Int>(name, value, suffix) {
 
-    override fun validate(newValue: Int): Int {
-        return if (UnlimitedValues.handleEvents() && UnlimitedValues.removeLimits) {
-            newValue
-        } else {
-            newValue.coerceIn(range)
-        }
-    }
+    override fun validate(newValue: Int): Int = coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
 
     override fun toJson() = JsonPrimitive(value)
 
@@ -97,19 +116,9 @@ class IntRangeValue(
     suffix: String? = null,
 ) : Value<IntRange>(name, value, suffix) {
 
-    override fun validate(newValue: IntRange): IntRange {
-        return if (UnlimitedValues.handleEvents() && UnlimitedValues.removeLimits) {
-            newValue
-        } else {
-            newValue.coerceIn(range)
-        }
-    }
+    override fun validate(newValue: IntRange): IntRange = coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
 
-    var lastChosenSlider: RangeSlider? = null
-        get() {
-            if (!Mouse.isButtonDown(0)) field = null
-            return field
-        }
+    var lastChosenSlider: RangeSlider? by MouseHeldSlider()
 
     fun setFirst(newValue: Int, immediate: Boolean = true) = set(newValue..value.last, immediate)
     fun setLast(newValue: Int, immediate: Boolean = true) = set(value.first..newValue, immediate)
@@ -149,13 +158,7 @@ class FloatValue(
     suffix: String? = null,
 ) : Value<Float>(name, value, suffix) {
 
-    override fun validate(newValue: Float): Float {
-        return if (UnlimitedValues.handleEvents() && UnlimitedValues.removeLimits) {
-            newValue
-        } else {
-            newValue.coerceIn(range)
-        }
-    }
+    override fun validate(newValue: Float): Float = coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
 
     fun set(newValue: Number) = set(newValue.toFloat())
 
@@ -179,19 +182,10 @@ class FloatRangeValue(
     suffix: String? = null,
 ) : Value<ClosedFloatingPointRange<Float>>(name, value, suffix) {
 
-    override fun validate(newValue: ClosedFloatingPointRange<Float>): ClosedFloatingPointRange<Float> {
-        return if (UnlimitedValues.handleEvents() && UnlimitedValues.removeLimits) {
-            newValue
-        } else {
-            newValue.coerceIn(range)
-        }
-    }
+    override fun validate(newValue: ClosedFloatingPointRange<Float>): ClosedFloatingPointRange<Float> =
+        coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
 
-    var lastChosenSlider: RangeSlider? = null
-        get() {
-            if (!Mouse.isButtonDown(0)) field = null
-            return field
-        }
+    var lastChosenSlider: RangeSlider? by MouseHeldSlider()
 
     fun setFirst(newValue: Float, immediate: Boolean = true) = set(newValue..value.endInclusive, immediate)
     fun setLast(newValue: Float, immediate: Boolean = true) = set(value.start..newValue, immediate)
@@ -302,13 +296,7 @@ class BlockValue(
     name: String, value: Int, val range: IntRange = 1..197
 ) : Value<Int>(name, value, suffix = null) {
 
-    override fun validate(newValue: Int): Int {
-        return if (UnlimitedValues.handleEvents() && UnlimitedValues.removeLimits) {
-            newValue
-        } else {
-            newValue.coerceIn(range)
-        }
-    }
+    override fun validate(newValue: Int): Int = coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
 
     override fun toJson() = JsonPrimitive(value)
 
@@ -369,11 +357,7 @@ class ColorValue(
 
     var rgbaIndex = 0
 
-    var lastChosenSlider: SliderType? = null
-        get() {
-            if (!Mouse.isButtonDown(0)) field = null
-            return field
-        }
+    var lastChosenSlider: SliderType? by MouseHeldSlider()
 
     init {
         setupSliders(defaultColor)
