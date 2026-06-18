@@ -240,31 +240,9 @@ object RenderUtils : MinecraftInstance {
         resetCaps()
     }
 
-    fun drawSelectionBoundingBox(boundingBox: AxisAlignedBB) = drawWithTessellatorWorldRenderer {
-        begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION)
-
-        // Lower Rectangle
-        pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex()
-        pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).endVertex()
-        pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).endVertex()
-        pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).endVertex()
-        pos(boundingBox.minX, boundingBox.minY, boundingBox.minZ).endVertex()
-
-        // Upper Rectangle
-        pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex()
-        pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).endVertex()
-        pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).endVertex()
-        pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).endVertex()
-        pos(boundingBox.minX, boundingBox.maxY, boundingBox.minZ).endVertex()
-
-        // Upper Rectangle
-        pos(boundingBox.minX, boundingBox.maxY, boundingBox.maxZ).endVertex()
-        pos(boundingBox.minX, boundingBox.minY, boundingBox.maxZ).endVertex()
-        pos(boundingBox.maxX, boundingBox.minY, boundingBox.maxZ).endVertex()
-        pos(boundingBox.maxX, boundingBox.maxY, boundingBox.maxZ).endVertex()
-        pos(boundingBox.maxX, boundingBox.maxY, boundingBox.minZ).endVertex()
-        pos(boundingBox.maxX, boundingBox.minY, boundingBox.minZ).endVertex()
-    }
+    @Deprecated("Use Render3D.drawSelectionBoundingBox", ReplaceWith("Render3D.drawSelectionBoundingBox(boundingBox)"))
+    fun drawSelectionBoundingBox(boundingBox: AxisAlignedBB) =
+        Render3D.drawSelectionBoundingBox(boundingBox)
 
     fun drawCircle(
         entity: EntityLivingBase,
@@ -1167,28 +1145,9 @@ object RenderUtils : MinecraftInstance {
         glPopMatrix()
     }
 
-    fun drawRect(x: Int, y: Int, x2: Int, y2: Int, color: Int) {
-        glPushMatrix()
-        glEnable(GL_BLEND)
-        glDisable(GL_TEXTURE_2D)
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        glEnable(GL_LINE_SMOOTH)
-        glColor(color)
-
-        drawWithTessellatorWorldRenderer {
-            begin(GL_QUADS, DefaultVertexFormats.POSITION)
-            pos(x2.toDouble(), y.toDouble(), 0.0).endVertex()
-            pos(x.toDouble(), y.toDouble(), 0.0).endVertex()
-            pos(x.toDouble(), y2.toDouble(), 0.0).endVertex()
-            pos(x2.toDouble(), y2.toDouble(), 0.0).endVertex()
-        }
-
-        glColor(Color.WHITE)
-        glEnable(GL_TEXTURE_2D)
-        glDisable(GL_BLEND)
-        glDisable(GL_LINE_SMOOTH)
-        glPopMatrix()
-    }
+    @Deprecated("Use RenderPrimitives.drawRect", ReplaceWith("RenderPrimitives.drawRect(x, y, x2, y2, color)"))
+    fun drawRect(x: Int, y: Int, x2: Int, y2: Int, color: Int) =
+        RenderPrimitives.drawRect(x, y, x2, y2, color)
 
     fun drawExhiRect(x: Float, y: Float, x2: Float, y2: Float, alpha: Float) {
         drawRect(x - 3.5f, y - 3.5f, x2 + 3.5f, y2 + 3.5f, Color(0f, 0f, 0f, alpha).rgb)
