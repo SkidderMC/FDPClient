@@ -41,6 +41,10 @@ Thumbs.db
 .claude/
 .vscode/
 
+# jvm crash logs
+hs_err_pid*.log
+replay_pid*.log
+
 # local generated artifacts
 CLAUDE.md
 nul
