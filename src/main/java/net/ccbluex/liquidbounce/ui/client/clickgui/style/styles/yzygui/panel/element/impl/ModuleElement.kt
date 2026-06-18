@@ -22,6 +22,9 @@ import net.ccbluex.liquidbounce.config.BlockValue
 import net.ccbluex.liquidbounce.config.FontValue
 import net.ccbluex.liquidbounce.config.IntRangeValue
 import net.ccbluex.liquidbounce.config.FloatRangeValue
+import net.ccbluex.liquidbounce.config.MultiSelectValue
+import net.ccbluex.liquidbounce.config.KeyBindValue
+import net.ccbluex.liquidbounce.config.Vec3Value
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
@@ -60,6 +63,9 @@ class ModuleElement(
                 is TextValue -> TextElement(this, value, parent, x + 4, y, width - 8, 12)
                 is BlockValue -> BlockElement(this, value, parent, x + 4, y, width - 8, 12)
                 is FontValue -> FontElement(this, value, parent, x + 4, y, width - 8, 12)
+                is MultiSelectValue -> MultiSelectElement(this, value, parent, x + 4, y, width - 8, 12)
+                is KeyBindValue -> KeyBindElement(this, value, parent, x + 4, y, width - 8, 12)
+                is Vec3Value -> Vec3Element(this, value, parent, x + 4, y, width - 8, 12)
                 else -> null
             }
             element?.let { elements.add(it) }
@@ -72,10 +78,10 @@ class ModuleElement(
         elements.forEach { element ->
             element.x = x + 4
             element.y = elementY
-            val actualHeight = if (element is ColorElement) {
-                element.getActualHeight()
-            } else {
-                element.height
+            val actualHeight = when (element) {
+                is ColorElement -> element.getActualHeight()
+                is MultiSelectElement -> element.getActualHeight()
+                else -> element.height
             }
             elementY += actualHeight
         }
@@ -84,10 +90,10 @@ class ModuleElement(
     fun getExtendedHeight(): Float {
         return if (isExtended) {
             val totalHeight = elements.sumOf { element ->
-                if (element is ColorElement) {
-                    element.getActualHeight().toDouble()
-                } else {
-                    element.height.toDouble()
+                when (element) {
+                    is ColorElement -> element.getActualHeight().toDouble()
+                    is MultiSelectElement -> element.getActualHeight().toDouble()
+                    else -> element.height.toDouble()
                 }
             }.toFloat() + 2
             totalHeight
@@ -103,10 +109,10 @@ class ModuleElement(
 
         if (isExtended) {
             moduleHeight += elements.sumOf { element ->
-                if (element is ColorElement) {
-                    element.getActualHeight()
-                } else {
-                    element.height
+                when (element) {
+                    is ColorElement -> element.getActualHeight()
+                    is MultiSelectElement -> element.getActualHeight()
+                    else -> element.height
                 }
             } + 2
         }

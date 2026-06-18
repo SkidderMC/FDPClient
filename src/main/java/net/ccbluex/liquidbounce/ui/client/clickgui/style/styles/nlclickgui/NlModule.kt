@@ -26,6 +26,9 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.setti
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.RangeSetting
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.StringsSetting
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.TextSetting
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.MultiSelectSetting
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.KeyBindSetting
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.Vec3Setting
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import java.awt.Color
 import java.util.function.Consumer
@@ -85,6 +88,15 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
             }
             if (setting is FontValue) {
                 this.downwards.add(FontSetting(setting, this))
+            }
+            if (setting is MultiSelectValue) {
+                this.downwards.add(MultiSelectSetting(setting, this))
+            }
+            if (setting is KeyBindValue) {
+                this.downwards.add(KeyBindSetting(setting, this))
+            }
+            if (setting is Vec3Value) {
+                this.downwards.add(Vec3Setting(setting, this))
             }
         }
     }

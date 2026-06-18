@@ -24,6 +24,7 @@ import net.ccbluex.liquidbounce.utils.kotlin.coerceIn
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.features.module.modules.other.UnlimitedValues
 import net.minecraft.client.gui.FontRenderer
+import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import java.awt.Color
 import javax.vecmath.Vector2f
@@ -453,6 +454,122 @@ class ColorValue(
 
     enum class SliderType {
         COLOR, HUE, OPACITY
+    }
+}
+
+/**
+ * Multi select value represents a set of chosen options out of a fixed list of [choices].
+ */
+class MultiSelectValue(
+    name: String,
+    value: Set<String>,
+    val choices: Array<String>,
+) : Value<Set<String>>(name, value) {
+
+    var openList = false
+
+    override fun validate(newValue: Set<String>): Set<String> =
+        newValue.mapNotNull { selected -> choices.find { it.equals(selected, true) } }.toSet()
+
+    fun isSelected(choice: String) = value.any { it.equals(choice, true) }
+
+    fun toggle(choice: String) {
+        val known = choices.find { it.equals(choice, true) } ?: return
+        val updated = if (isSelected(known)) {
+            value.filterNot { it.equals(known, true) }.toSet()
+        } else {
+            value + known
+        }
+        set(updated)
+    }
+
+    override fun toJson(): JsonElement = jsonArray {
+        for (selected in value) {
+            +JsonPrimitive(selected)
+        }
+    }
+
+    override fun fromJsonF(element: JsonElement): Set<String>? {
+        val array = element as? JsonArray ?: return null
+        return array.mapNotNull { it.asStringOrNull() }.toSet()
+    }
+
+    override fun toText(): String = value.joinToString(",")
+
+    override fun fromTextF(text: String): Set<String> =
+        validate(text.split(",").map { it.trim() }.filter { it.isNotEmpty() }.toSet())
+}
+
+/**
+ * Key bind value represents a single bound keyboard key.
+ */
+class KeyBindValue(
+    name: String,
+    value: Int = Keyboard.KEY_NONE,
+) : Value<Int>(name, value) {
+
+    val keyName: String
+        get() = Keyboard.getKeyName(value) ?: "None"
+
+    override fun toJson(): JsonElement = JsonPrimitive(value)
+
+    override fun fromJsonF(element: JsonElement): Int? = element.asIntOrNull()
+
+    override fun toText(): String = keyName
+
+    override fun fromTextF(text: String): Int? {
+        if (text.equals("None", true)) return Keyboard.KEY_NONE
+        val index = Keyboard.getKeyIndex(text.uppercase())
+        return if (index != Keyboard.KEY_NONE) index else null
+    }
+}
+
+/**
+ * Vec3 value represents three doubles (x, y, z).
+ */
+class Vec3Value(
+    name: String,
+    value: DoubleArray,
+) : Value<DoubleArray>(name, value) {
+
+    init {
+        require(value.size == 3) { "Vec3Value requires exactly 3 components" }
+    }
+
+    override fun validate(newValue: DoubleArray): DoubleArray =
+        if (newValue.size == 3) newValue else value
+
+    var x: Double
+        get() = value[0]
+        set(new) { set(doubleArrayOf(new, value[1], value[2])) }
+
+    var y: Double
+        get() = value[1]
+        set(new) { set(doubleArrayOf(value[0], new, value[2])) }
+
+    var z: Double
+        get() = value[2]
+        set(new) { set(doubleArrayOf(value[0], value[1], new)) }
+
+    override fun toJson(): JsonElement = jsonArray {
+        +JsonPrimitive(value[0])
+        +JsonPrimitive(value[1])
+        +JsonPrimitive(value[2])
+    }
+
+    override fun fromJsonF(element: JsonElement): DoubleArray? {
+        val array = (element as? JsonArray)?.takeIf { it.size() == 3 } ?: return null
+        return doubleArrayOf(array[0].asDouble, array[1].asDouble, array[2].asDouble)
+    }
+
+    override fun toText(): String = "${value[0]},${value[1]},${value[2]}"
+
+    override fun fromTextF(text: String): DoubleArray? {
+        val parts = text.split(",").map { it.trim() }.takeIf { it.size == 3 } ?: return null
+        val x = parts[0].toDoubleOrNull() ?: return null
+        val y = parts[1].toDoubleOrNull() ?: return null
+        val z = parts[2].toDoubleOrNull() ?: return null
+        return doubleArrayOf(x, y, z)
     }
 }
 

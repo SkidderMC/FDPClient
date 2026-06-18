@@ -60,6 +60,10 @@ class SettingComponents(private val module: Module) : Component() {
     private val fontValueMap = HashMap<FontValue, Float>()
     private val fontValueAnimMap = HashMap<FontValue, Array<Animation>>()
     private var binding: Module? = null
+    private var bindingKeyValue: KeyBindValue? = null
+    private var editingVec3: Vec3Value? = null
+    private var editingVec3Component: Int = 0
+    private var vec3Buffer: String = ""
     private var draggingNumber: Value<*>? = null
     var x: Float = 0f
     var y: Float = 0f
@@ -165,6 +169,34 @@ class SettingComponents(private val module: Module) : Component() {
                 binding!!.keyBind = keyCode
             }
             binding = null
+            return
+        }
+
+        if (bindingKeyValue != null) {
+            if (keyCode == Keyboard.KEY_SPACE || keyCode == Keyboard.KEY_ESCAPE || keyCode == Keyboard.KEY_DELETE) {
+                bindingKeyValue!!.set(Keyboard.KEY_NONE)
+            } else {
+                bindingKeyValue!!.set(keyCode)
+            }
+            bindingKeyValue = null
+            return
+        }
+
+        if (editingVec3 != null) {
+            when (keyCode) {
+                Keyboard.KEY_ESCAPE, Keyboard.KEY_RETURN -> {
+                    commitVec3()
+                    editingVec3 = null
+                }
+                Keyboard.KEY_BACK -> {
+                    if (vec3Buffer.isNotEmpty()) vec3Buffer = vec3Buffer.dropLast(1)
+                }
+                else -> {
+                    if (!typedChar.isISOControl() && (typedChar.isDigit() || typedChar == '.' || typedChar == '-')) {
+                        vec3Buffer += typedChar
+                    }
+                }
+            }
             return
         }
 
@@ -1186,6 +1218,149 @@ class SettingComponents(private val module: Module) : Component() {
                 count += 0.5
             }
 
+            // ----- MultiSelectValue -----
+            if (setting is MultiSelectValue) {
+                Fonts.InterMedium_18.drawString(
+                    setting.name,
+                    roundToHalf((x + 4).toDouble()).toInt().toFloat(),
+                    settingY + 5,
+                    textColor.rgb
+                )
+                count += 0.5
+
+                for (choice in setting.choices) {
+                    val rowY = roundToHalf(y + (count * rectHeight)).toFloat()
+                    val selected = setting.isSelected(choice)
+
+                    val hoveringRow = isClickable(rowY + 2)
+                            && RenderUtils.isHovering(x + 5, rowY + 2, width - 10, rectHeight - 1, mouseX, mouseY)
+
+                    if (hoveringRow) {
+                        drawCustomShapeWithRadius(
+                            x + 5, rowY + 2, width - 10, rectHeight - 1, 2f,
+                            RenderUtils.applyOpacity(textColor, .15f)
+                        )
+                    }
+
+                    if (type == GuiEvents.CLICK && hoveringRow && button == 0) {
+                        setting.toggle(choice)
+                    }
+
+                    val boxSize = 6f
+                    val boxX = x + width - (boxSize + 6)
+                    val boxY = rowY + (rectHeight - boxSize) / 2f
+                    drawCustomShapeWithRadius(
+                        boxX, boxY, boxSize, boxSize, 1.5f,
+                        if (selected) (if (accent) accentedColor2 else textColor)
+                        else RenderUtils.applyOpacity(darkRectHover, .5f)
+                    )
+
+                    Fonts.InterMedium_18.drawString(
+                        choice,
+                        x + 13,
+                        rowY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight) / 2f,
+                        textColor.rgb
+                    )
+
+                    count += 0.5
+                }
+            }
+
+            // ----- KeyBindValue -----
+            if (setting is KeyBindValue) {
+                val displayKey = if (bindingKeyValue === setting) "..." else setting.keyName
+                val label = "${setting.name}: "
+
+                Fonts.InterMedium_18.drawString(
+                    label,
+                    x + 5,
+                    settingY + Fonts.InterMedium_18.getMiddleOfBox(rectHeight) / 2f,
+                    textColor.rgb
+                )
+
+                val keyWidth = Fonts.InterBold_18.stringWidth(displayKey).toFloat()
+                val keyBoxWidth = keyWidth + 10f
+                val keyBoxX = x + width - (keyBoxWidth + 5)
+                val keyBoxY = settingY + 3f
+                val keyBoxHeight = Fonts.InterBold_18.height + 4f
+
+                val hoveringKey = isClickable(keyBoxY)
+                        && RenderUtils.isHovering(keyBoxX, keyBoxY, keyBoxWidth, keyBoxHeight, mouseX, mouseY)
+
+                drawCustomShapeWithRadius(
+                    keyBoxX, keyBoxY, keyBoxWidth, keyBoxHeight, 2f,
+                    RenderUtils.applyOpacity(darkRectHover, if (hoveringKey || bindingKeyValue === setting) .6f else .4f)
+                )
+
+                Fonts.InterBold_18.drawString(
+                    displayKey,
+                    keyBoxX + 5,
+                    keyBoxY + 3,
+                    if (accent) accentedColor2.rgb else textColor.rgb
+                )
+
+                if (type == GuiEvents.CLICK && hoveringKey && button == 0) {
+                    bindingKeyValue = setting
+                    return
+                }
+
+                count += 0.5
+            }
+
+            // ----- Vec3Value -----
+            if (setting is Vec3Value) {
+                Fonts.InterMedium_18.drawString(
+                    setting.name,
+                    x + 5,
+                    settingY + 5,
+                    textColor.rgb
+                )
+
+                val labels = arrayOf("X", "Y", "Z")
+                val fieldWidth = (width - 10 - 8) / 3f
+                val fieldY = settingY + 16f
+                val fieldHeight = Fonts.InterMedium_18.height + 4f
+
+                for (i in 0 until 3) {
+                    val fieldX = x + 5 + i * (fieldWidth + 4)
+                    val editingThis = editingVec3 === setting && editingVec3Component == i
+                    val componentText = if (editingThis) vec3Buffer
+                        else round(setting.value[i], 0.01).toString()
+
+                    val hoveringField = isClickable(fieldY)
+                            && RenderUtils.isHovering(fieldX, fieldY, fieldWidth, fieldHeight, mouseX, mouseY)
+
+                    if (type == GuiEvents.CLICK && hoveringField && button == 0) {
+                        commitVec3()
+                        editingVec3 = setting
+                        editingVec3Component = i
+                        vec3Buffer = round(setting.value[i], 0.01).toString()
+                    }
+
+                    drawCustomShapeWithRadius(
+                        fieldX, fieldY, fieldWidth, fieldHeight, 2f,
+                        RenderUtils.applyOpacity(darkRectHover, if (editingThis) .6f else .4f)
+                    )
+
+                    Fonts.InterMedium_18.drawString(
+                        labels[i],
+                        fieldX + 3,
+                        fieldY + 3,
+                        RenderUtils.applyOpacity(textColor, .6f).rgb
+                    )
+
+                    val displayText = if (editingThis) "$componentText|" else componentText
+                    Fonts.InterMedium_18.drawString(
+                        displayText,
+                        fieldX + 11,
+                        fieldY + 3,
+                        textColor.rgb
+                    )
+                }
+
+                count += 1
+            }
+
             // Render the key bind
             val bind = Keyboard.getKeyName(module.keyBind)
             val hoveringBindRect = isClickable(
@@ -1252,6 +1427,16 @@ class SettingComponents(private val module: Module) : Component() {
 
     private fun withDelayedSave(block: () -> Unit) {
         block()
+    }
+
+    private fun commitVec3() {
+        val target = editingVec3 ?: return
+        val parsed = vec3Buffer.toDoubleOrNull() ?: return
+        when (editingVec3Component) {
+            0 -> target.x = parsed
+            1 -> target.y = parsed
+            2 -> target.z = parsed
+        }
     }
 
     private fun isClickable(y: Float): Boolean {

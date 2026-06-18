@@ -129,4 +129,22 @@ open class Configurable(
     fun color(
         name: String, value: Int, rainbow: Boolean = false, isSupported: (() -> Boolean)? = null
     ) = color(name, Color(value, true), rainbow, isSupported)
+
+    fun multiSelect(
+        name: String, choices: Array<String>, default: Set<String> = emptySet(), isSupported: (() -> Boolean)? = null
+    ) = +MultiSelectValue(name, default, choices).apply {
+        if (isSupported != null) setSupport { isSupported.invoke() }
+    }
+
+    fun keybind(
+        name: String, default: Int = org.lwjgl.input.Keyboard.KEY_NONE, isSupported: (() -> Boolean)? = null
+    ) = +KeyBindValue(name, default).apply {
+        if (isSupported != null) setSupport { isSupported.invoke() }
+    }
+
+    fun vec3(
+        name: String, x: Double, y: Double, z: Double, isSupported: (() -> Boolean)? = null
+    ) = +Vec3Value(name, doubleArrayOf(x, y, z)).apply {
+        if (isSupported != null) setSupport { isSupported.invoke() }
+    }
 }
