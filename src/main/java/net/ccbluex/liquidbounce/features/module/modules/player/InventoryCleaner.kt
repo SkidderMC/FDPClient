@@ -53,7 +53,13 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
         5,
         0..36,
     ) { limitStackCounts }.subjective()
+    // Keep up to this many arrows total, clean the rest. Default keeps every arrow (current behavior).
+    private val maxArrows by int("MaxArrows", 2304, 0..2304) { limitStackCounts }.subjective()
     // TODO: max potion, vehicle, ..., stacks?
+
+    // When enabled, keep items up to the configured limits (current behavior).
+    // When disabled, clean more aggressively by keeping only the single best of each limited type.
+    private val greedy by boolean("Greedy", true).subjective()
 
     private val maxFishingRodStacks by int("MaxFishingRodStacks", 1, 1..10).subjective()
 
@@ -464,6 +470,8 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
         val item = stack?.item ?: return false
 
         return when (item) {
+            Items.arrow -> isUsefulArrow(stack, stacks, noLimits, strictlyBest)
+
             in ITEMS_WHITELIST -> true
 
             is ItemEnderPearl, is ItemEnchantedBook, is ItemBed -> true
@@ -560,7 +568,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
         if (ignoreLimits || !limitStackCounts) {
             if (!strictlyBest)
                 return true
-        } else if (maxPotionStacks == 0)
+        } else if (effectiveLimit(maxPotionStacks) == 0)
             return false
 
         val value = potionValue(stack)
@@ -619,7 +627,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
         }
 
         // If sorting is checking if item is strictly the best option, only return true for items that have no better alternatives
-        return if (strictlyBest) betterCount == 0 else betterCount < maxPotionStacks
+        return if (strictlyBest) betterCount == 0 else betterCount < effectiveLimit(maxPotionStacks)
     }
 
     // Higher = stronger: sum of (amplifier + 1) * duration in seconds, splash slightly preferred
@@ -690,7 +698,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
             if (!strictlyBest)
                 return true
             // Skip checks if limit is set to 0
-        } else if (maxFoodStacks == 0)
+        } else if (effectiveLimit(maxFoodStacks) == 0)
             return false
 
         val stackSaturation = item.getSaturationModifier(stack) * stack.stackSize
@@ -746,7 +754,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
         }
 
         // If sorting is checking if item is strictly the best option, only return true for items that have no better alternatives
-        return if (strictlyBest) betterCount == 0 else betterCount < maxFoodStacks
+        return if (strictlyBest) betterCount == 0 else betterCount < effectiveLimit(maxFoodStacks)
     }
 
     private fun isUsefulBlock(
@@ -760,7 +768,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
             if (!strictlyBest)
                 return true
             // Skip checks if limit is set to 0
-        } else if (maxBlockStacks == 0)
+        } else if (effectiveLimit(maxBlockStacks) == 0)
             return false
 
         val index = stacks.indexOf(stack)
@@ -807,7 +815,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
         }
 
         // If sorting is checking if item is strictly the best option, only return true for items that have no better alternatives
-        return if (strictlyBest) betterCount == 0 else betterCount < maxBlockStacks
+        return if (strictlyBest) betterCount == 0 else betterCount < effectiveLimit(maxBlockStacks)
     }
 
     private fun isUsefulThrowable(
@@ -823,7 +831,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
             if (!strictlyBest)
                 return true
             // Skip checks if limit is set to 0
-        } else if (maxBlockStacks == 0)
+        } else if (effectiveLimit(maxThrowableStacks) == 0)
             return false
 
         val index = stacks.indexOf(stack)
@@ -874,7 +882,48 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
         }
 
         // If sorting is checking if item is strictly the best option, only return true for items that have no better alternatives
-        return if (strictlyBest) betterCount == 0 else betterCount < maxThrowableStacks
+        return if (strictlyBest) betterCount == 0 else betterCount < effectiveLimit(maxThrowableStacks)
+    }
+
+    // Keep arrows up to maxArrows total items, drop the surplus. Prioritises stacks that are
+    // sorted or higher in the inventory so the kept arrows stay where they should.
+    private fun isUsefulArrow(
+        stack: ItemStack?, stacks: List<ItemStack?>, ignoreLimits: Boolean, strictlyBest: Boolean,
+    ): Boolean {
+        val item = stack?.item ?: return false
+
+        if (item != Items.arrow) return false
+
+        // Skip the limit when there is none set, or when not strictly searching for the best slot
+        if (ignoreLimits || !limitStackCounts) {
+            if (!strictlyBest)
+                return true
+        } else if (effectiveLimit(maxArrows) == 0)
+            return false
+
+        val index = stacks.indexOf(stack)
+
+        val isSorted = canBeSortedTo(index, item, stacks.size)
+
+        // Count arrow items in stacks that take priority over this one
+        val betterCount = stacks.withIndex().sumOf { (otherIndex, otherStack) ->
+            if (otherStack == stack || otherStack?.item != Items.arrow)
+                return@sumOf 0
+
+            val isOtherSorted = canBeSortedTo(otherIndex, otherStack.item, stacks.size)
+
+            // A different stack takes priority when it's sorted (and this one isn't) or sits lower in the inventory
+            if ((isOtherSorted && !isSorted) || (isOtherSorted == isSorted && otherIndex < index))
+                otherStack.stackSize
+            else
+                0
+        }
+
+        // When searching strictly best, only the highest-priority arrow stack qualifies
+        if (strictlyBest) return betterCount == 0
+
+        // Keep this stack only while the running arrow total stays within the limit
+        return betterCount < effectiveLimit(maxArrows)
     }
 
     // Limit buckets to max 1 per type
@@ -989,6 +1038,10 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
 
         return true
     }
+
+    // Greedy keeps items up to the configured limit. When greedy is off, clamp the limit so only
+    // the single best item of that type survives, giving a stricter clean.
+    private fun effectiveLimit(limit: Int) = if (greedy) limit else limit.coerceAtMost(1)
 
     @Suppress("DEPRECATION")
     private fun isSuitableBlock(stack: ItemStack?): Boolean {
