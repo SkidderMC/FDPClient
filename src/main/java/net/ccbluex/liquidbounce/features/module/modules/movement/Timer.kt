@@ -17,22 +17,61 @@ object Timer : Module("Timer", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     private val mode by choices("Mode", arrayOf("OnMove", "NoMove", "Always"), "OnMove")
     private val speed by float("Speed", 2F, 0.1F..10F)
 
+    private val allowNegative by boolean("AllowNegative", true)
+
+    private val boostTicks by int("BoostTicks", 0, 0..200, "ticks")
+    private val boostSpeed by float("BoostSpeed", 2F, 0.1F..10F) { boostTicks > 0 }
+    private val normalTicks by int("NormalTicks", 20, 1..200, "ticks") { boostTicks > 0 }
+
+    private var inBoost = false
+    private var phaseTicks = 0
+
+    private fun resetCycle() {
+        inBoost = false
+        phaseTicks = 0
+    }
+
+    private fun clampSpeed(value: Float) = if (allowNegative) value else value.coerceAtLeast(1F)
+
+    override fun onEnable() {
+        resetCycle()
+    }
+
     override fun onDisable() {
+        resetCycle()
+
         if (mc.thePlayer == null)
             return
 
         mc.timer.timerSpeed = 1F
     }
-    
+
     val onUpdate = handler<UpdateEvent> {
         val player = mc.thePlayer ?: return@handler
 
-        if (mode == "Always" || mode == "OnMove" && player.isMoving || mode == "NoMove" && !player.isMoving) {
-            mc.timer.timerSpeed = speed
+        val active = mode == "Always" || mode == "OnMove" && player.isMoving ||
+            mode == "NoMove" && !player.isMoving
+
+        if (!active) {
+            resetCycle()
+            mc.timer.timerSpeed = 1F
             return@handler
         }
 
-        mc.timer.timerSpeed = 1F
+        if (boostTicks <= 0) {
+            resetCycle()
+            mc.timer.timerSpeed = clampSpeed(speed)
+            return@handler
+        }
+
+        val limit = if (inBoost) boostTicks else normalTicks
+        if (phaseTicks >= limit) {
+            inBoost = !inBoost
+            phaseTicks = 0
+        }
+
+        mc.timer.timerSpeed = clampSpeed(if (inBoost) boostSpeed else speed)
+        phaseTicks++
     }
 
        val onWorld = handler<WorldEvent> { event ->
