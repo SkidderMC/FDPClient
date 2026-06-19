@@ -23,6 +23,7 @@ import net.minecraft.client.settings.KeyBinding
 import net.minecraft.item.EnumAction
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.Entity
+import net.minecraft.entity.player.EntityPlayer
 import net.ccbluex.liquidbounce.utils.timing.TimeUtils.randomClickDelay
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextBoolean
@@ -53,10 +54,19 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
 
     private val onlyBlocks by boolean("OnlyBlocks", true) { right }
 
+    private val delayStart by int("DelayStart", 0, 0..2000, suffix = "ms")
+    private val onlyBlock by boolean("OnlyBlock", false) { left }
+    private val onItemUse by boolean("OnItemUse", true)
+    private val delayPostStopUse by int("DelayPostStopUse", 0, 0..2000, suffix = "ms") { !onItemUse }
+
     private var rightDelay = generateNewClickTime()
     private var rightLastSwing = 0L
     private var leftDelay = generateNewClickTime()
     private var leftLastSwing = 0L
+
+    private var rightHeldSince = 0L
+    private var leftHeldSince = 0L
+    private var lastUsingItem = 0L
 
     private var lastBlocking = 0L
 
@@ -70,6 +80,9 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
     override fun onDisable() {
         rightLastSwing = 0L
         leftLastSwing = 0L
+        rightHeldSince = 0L
+        leftHeldSince = 0L
+        lastUsingItem = 0L
         lastBlocking = 0L
         target = null
     }
@@ -84,20 +97,44 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
             val time = System.currentTimeMillis()
             val doubleClick = if (simulateDoubleClicking) RandomUtils.nextInt(-1, 1) else 0
 
+            rightHeldSince = if (mc.gameSettings.keyBindUseItem.isKeyDown) {
+                if (rightHeldSince == 0L) time else rightHeldSince
+            } else 0L
+
+            leftHeldSince = if (mc.gameSettings.keyBindAttack.isKeyDown) {
+                if (leftHeldSince == 0L) time else leftHeldSince
+            } else 0L
+
+            if (thePlayer.isUsingItem) lastUsingItem = time
+
             if (right && mc.gameSettings.keyBindUseItem.isKeyDown && time - rightLastSwing >= rightDelay
-                && (!onlyBlocks || thePlayer.heldItem?.item is ItemBlock)) {
+                && (!onlyBlocks || thePlayer.heldItem?.item is ItemBlock)
+                && heldLongEnough(rightHeldSince, time) && canClickWhileUsing(thePlayer, time)) {
                 handleRightClick(time, doubleClick)
             }
 
-            if (requiresNoInput && left && canClick && time - leftLastSwing >= leftDelay) {
+            if (requiresNoInput && left && canClick && time - leftLastSwing >= leftDelay
+                && (!onlyBlock || mc.objectMouseOver.typeOfHit.isBlock)
+                && heldLongEnough(leftHeldSince, time) && canClickWhileUsing(thePlayer, time)) {
                 val nearbyEntity = getNearestEntityInRange() ?: return@handler
                 if (!thePlayer.isLookingOnEntity(nearbyEntity, maxAngleDifference.toDouble())) return@handler
 
                 handleLeftClick(time, doubleClick)
-            } else if (left && mc.gameSettings.keyBindAttack.isKeyDown && !mc.gameSettings.keyBindUseItem.isKeyDown && canClick && time - leftLastSwing >= leftDelay) {
+            } else if (left && mc.gameSettings.keyBindAttack.isKeyDown && !mc.gameSettings.keyBindUseItem.isKeyDown && canClick && time - leftLastSwing >= leftDelay
+                && (!onlyBlock || mc.objectMouseOver.typeOfHit.isBlock)
+                && heldLongEnough(leftHeldSince, time) && canClickWhileUsing(thePlayer, time)) {
                 handleLeftClick(time, doubleClick)
             }
         }
+    }
+
+    private fun heldLongEnough(heldSince: Long, time: Long) =
+        delayStart <= 0 || (heldSince != 0L && time - heldSince >= delayStart)
+
+    private fun canClickWhileUsing(thePlayer: EntityLivingBase, time: Long): Boolean {
+        if (onItemUse) return true
+        if ((thePlayer as? EntityPlayer)?.isUsingItem == true) return false
+        return delayPostStopUse <= 0 || time - lastUsingItem >= delayPostStopUse
     }
 
     val onUpdate = handler<UpdateEvent> {
