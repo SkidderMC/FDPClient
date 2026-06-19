@@ -19,10 +19,7 @@ import org.lwjgl.opengl.GL11
 
 class NextGenClickGuiScreen : GuiScreen() {
 
-    private var browser: IBrowser? = null
     private var currentUrl = ""
-    private var browserCreatedAt = 0L
-    private var browserTextureFrames = 0
 
     /** When true, the GUI is opened in the user's external browser instead of being rendered in-game. */
     private var browserMode = false
@@ -35,8 +32,6 @@ class NextGenClickGuiScreen : GuiScreen() {
 
     override fun initGui() {
         Keyboard.enableRepeatEvents(true)
-        browserCreatedAt = 0L
-        browserTextureFrames = 0
         pressedButtonMask = 0
         focusApplied = false
         currentUrl = NextGenClickGuiServer.start()
@@ -48,9 +43,7 @@ class NextGenClickGuiScreen : GuiScreen() {
             return
         }
 
-        NextGenBrowserRuntime.ensureStarted()
-        ensureBrowser()
-        browser?.resize(mc.displayWidth, mc.displayHeight)
+        NextGenBrowserRuntime.attach(currentUrl)
     }
 
     private fun layoutButtons() {
@@ -62,9 +55,9 @@ class NextGenClickGuiScreen : GuiScreen() {
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
-        val browser = browser
-        if (!browserMode && browser != null) {
-            val rendered = if (canDrawBrowserTexture(browser)) {
+        if (!browserMode && NextGenBrowserRuntime.state != NextGenBrowserRuntime.State.FAILED) {
+            val browser = NextGenBrowserRuntime.browser()
+            val rendered = if (browser != null && NextGenBrowserRuntime.isBrowserReady()) {
                 runCatching { drawBrowserTexture(browser) }.getOrElse {
                     LOGGER.error("[NextGen] In-game browser draw failed", it)
                     false
@@ -106,15 +99,6 @@ class NextGenClickGuiScreen : GuiScreen() {
         drawCenteredString(fontRendererObj, "Loading...", width / 2, height / 2 + 8, 0xd0d0d0)
     }
 
-    private fun canDrawBrowserTexture(browser: IBrowser): Boolean {
-        if (browser.getTextureID() <= 0) {
-            return false
-        }
-
-        return System.currentTimeMillis() - browserCreatedAt >= BROWSER_WARMUP_MILLIS &&
-            browserTextureFrames >= BROWSER_WARMUP_FRAMES
-    }
-
     /** Render the embedded browser's texture with 1.8.9 GL calls. Returns false until the texture exists. */
     private fun drawBrowserTexture(browser: IBrowser): Boolean {
         val textureId = browser.getTextureID()
@@ -149,25 +133,15 @@ class NextGenClickGuiScreen : GuiScreen() {
             return
         }
 
-        NextGenBrowserRuntime.pump()
-
-        val current = browser
-        if (current == null) {
-            ensureBrowser()
-        } else {
-            NextGenBrowserRuntime.updateBrowser(current)
-            if (current.getTextureID() > 0) {
-                browserTextureFrames++
-                if (!focusApplied) {
-                    NextGenBrowserRuntime.focus(current, true)
-                    focusApplied = true
-                }
-            }
+        NextGenBrowserRuntime.resizePersistent(mc.displayWidth, mc.displayHeight)
+        if (NextGenBrowserRuntime.isBrowserReady() && !focusApplied) {
+            NextGenBrowserRuntime.ensureFocused()
+            focusApplied = true
         }
     }
 
     override fun handleInput() {
-        if (!browserMode && browser != null) {
+        if (!browserMode && NextGenBrowserRuntime.browser() != null) {
             dispatchKeyboardToBrowser()
             dispatchMouseToBrowser()
             return
@@ -202,8 +176,7 @@ class NextGenClickGuiScreen : GuiScreen() {
     }
 
     override fun onGuiClosed() {
-        browser?.close()
-        browser = null
+        NextGenBrowserRuntime.detach()
         Keyboard.enableRepeatEvents(false)
         if (ClickGUIModule.lastScale > 0) {
             mc.gameSettings.guiScale = ClickGUIModule.lastScale
@@ -211,26 +184,6 @@ class NextGenClickGuiScreen : GuiScreen() {
     }
 
     override fun doesGuiPauseGame() = false
-
-    private fun ensureBrowser() {
-        if (browserMode || browser != null) {
-            return
-        }
-
-        val api = NextGenBrowserRuntime.readyApi() ?: return
-
-        browser = runCatching {
-            api.createBrowser(currentUrl, true).also {
-                browserCreatedAt = System.currentTimeMillis()
-                browserTextureFrames = 0
-                it.resize(mc.displayWidth, mc.displayHeight)
-                it.loadURL(currentUrl)
-            }
-        }.getOrElse {
-            LOGGER.error("[NextGen] Could not create the in-game browser", it)
-            null
-        }
-    }
 
     /** Open the local web ClickGUI in the user's default browser. */
     private fun openExternally() {
@@ -252,7 +205,7 @@ class NextGenClickGuiScreen : GuiScreen() {
                 return
             }
 
-            val browser = browser ?: continue
+            val browser = NextGenBrowserRuntime.browser() ?: continue
             val modifiers = keyboardModifiers()
 
             if (pressed) {
@@ -268,7 +221,7 @@ class NextGenClickGuiScreen : GuiScreen() {
 
     private fun dispatchMouseToBrowser() {
         while (Mouse.next()) {
-            val browser = browser ?: continue
+            val browser = NextGenBrowserRuntime.browser() ?: continue
             if (mc.displayWidth == 0 || mc.displayHeight == 0) {
                 continue
             }
@@ -325,10 +278,5 @@ class NextGenClickGuiScreen : GuiScreen() {
 
     private data class Rect(val x: Int = 0, val y: Int = 0, val w: Int = 0, val h: Int = 0) {
         fun contains(px: Int, py: Int) = px >= x && px <= x + w && py >= y && py <= y + h
-    }
-
-    private companion object {
-        private const val BROWSER_WARMUP_MILLIS = 450L
-        private const val BROWSER_WARMUP_FRAMES = 3
     }
 }

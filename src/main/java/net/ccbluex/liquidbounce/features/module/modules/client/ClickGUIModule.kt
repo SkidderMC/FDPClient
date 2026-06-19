@@ -14,6 +14,8 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.ClickGui
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.BlackStyle
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.FDPDropdownClickGUI
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen.NextGenBrowserRuntime
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen.NextGenClickGuiServer
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen.NextGenClickGuiScreen
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.YzYGui
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
@@ -34,9 +36,12 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
         "Style",
         arrayOf("Black", "Zywl", "Dropdown", "FDP", "NextGen"),
         "FDP"
-    ).onChanged {
+    ).onChanged { newStyle ->
         updateStyle()
         resetGuiInstances()
+        if (newStyle.equals("NextGen", ignoreCase = true)) {
+            warmupNextGenClickGui()
+        }
     }
 
     private val color by choices(
@@ -63,7 +68,13 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
     val colormode by choices("Setting Accent", arrayOf("White", "Color"), "Color") { style == "Dropdown" }
     val clickHeight by int("Tab Height", 250, 100.. 500) { style == "Dropdown" }
 
-    val nextGenInBrowser by boolean("Open In Browser", false) { style == "NextGen" }
+    val nextGenInBrowser by boolean("Open In Browser", false) { style == "NextGen" }.onChanged { openInBrowser ->
+        if (openInBrowser) {
+            NextGenBrowserRuntime.releasePersistentBrowser()
+        } else {
+            warmupNextGenClickGui()
+        }
+    }
 
     override fun onEnable() {
         try {
@@ -128,12 +139,21 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
             yzyGui?.onGuiClosed()
             nextGenGui?.onGuiClosed()
             neverloseGui = null
+            NextGenBrowserRuntime.releasePersistentBrowser()
         } catch (e: Exception) {
             println("Error during GUI cleanup: ${e.message}")
         }
         fdpDropdownGui = null
         yzyGui = null
         nextGenGui = null
+    }
+
+    fun warmupNextGenClickGui() {
+        if (!style.equals("NextGen", ignoreCase = true) || nextGenInBrowser) {
+            return
+        }
+
+        NextGenBrowserRuntime.preload(NextGenClickGuiServer.start())
     }
 
     private fun updateStyle() {

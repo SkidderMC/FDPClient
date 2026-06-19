@@ -5,7 +5,12 @@
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen
 
+import net.ccbluex.liquidbounce.event.ClientShutdownEvent
+import net.ccbluex.liquidbounce.event.GameLoopEvent
+import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.client.Minecraft
 import net.montoyo.mcef.MCEF
 import net.montoyo.mcef.api.API
@@ -25,7 +30,7 @@ import java.lang.reflect.Proxy
  * single-threaded with a manual message loop, so it is initialized, pumped and uploaded all on the
  * render thread.
  */
-object NextGenBrowserRuntime {
+object NextGenBrowserRuntime : MinecraftInstance, Listenable {
 
     enum class State { IDLE, INITIALIZING, READY, FAILED }
 
@@ -45,6 +50,28 @@ object NextGenBrowserRuntime {
     private var doMessageLoopWork: Method? = null
     private var mcefUpdate: Method? = null
     private var setFocus: Method? = null
+
+    private var persistentBrowser: IBrowser? = null
+    private var persistentUrl = ""
+    private var persistentRequested = false
+    private var persistentVisible = false
+    private var persistentFocused = false
+    private var browserCreatedAt = 0L
+    private var browserTextureFrames = 0
+    private var browserReady = false
+    private var lastTextureId = 0
+    private var lastResizeWidth = 0
+    private var lastResizeHeight = 0
+    private var lastHiddenPump = 0L
+    private var loggedCreateFailure = false
+
+    private val onGameLoop = handler<GameLoopEvent>(always = true, priority = Byte.MIN_VALUE) {
+        tickPersistentBrowser()
+    }
+
+    private val onShutdown = handler<ClientShutdownEvent>(always = true) {
+        closePersistentBrowser()
+    }
 
     @Synchronized
     fun ensureStarted() {
@@ -139,6 +166,61 @@ object NextGenBrowserRuntime {
         }
     }
 
+    fun preload(url: String = NextGenClickGuiServer.start()) {
+        if (url.isBlank()) {
+            return
+        }
+
+        persistentRequested = true
+        persistentUrl = url
+        ensureStarted()
+    }
+
+    fun attach(url: String) {
+        preload(url)
+        persistentVisible = true
+        resizePersistent(mc.displayWidth, mc.displayHeight)
+    }
+
+    fun detach() {
+        persistentVisible = false
+        persistentFocused = false
+        persistentBrowser?.let { focus(it, false) }
+    }
+
+    fun browser(): IBrowser? = persistentBrowser
+
+    fun isBrowserReady(): Boolean {
+        val browser = persistentBrowser ?: return false
+        return isBrowserReady(browser)
+    }
+
+    fun resizePersistent(width: Int, height: Int) {
+        if (width <= 0 || height <= 0) {
+            return
+        }
+
+        lastResizeWidth = width
+        lastResizeHeight = height
+        persistentBrowser?.let { browser ->
+            runCatching { browser.resize(width, height) }
+                .onFailure { LOGGER.error("[NextGen] Browser resize failed", it) }
+        }
+    }
+
+    fun ensureFocused() {
+        val browser = persistentBrowser ?: return
+        if (!persistentFocused) {
+            focus(browser, true)
+            persistentFocused = true
+        }
+    }
+
+    fun releasePersistentBrowser() {
+        persistentRequested = false
+        closePersistentBrowser()
+    }
+
     fun readyApi(): API? =
         if (state == State.READY) runCatching { MCEFApi.getAPI() }.getOrNull() else null
 
@@ -173,4 +255,106 @@ object NextGenBrowserRuntime {
         runCatching { method.invoke(browser, focused) }
             .onFailure { LOGGER.error("[NextGen] Browser focus failed", it) }
     }
+
+    private fun tickPersistentBrowser() {
+        if (!persistentRequested || state != State.READY) {
+            return
+        }
+
+        val now = System.currentTimeMillis()
+        if (!persistentVisible && browserReady && now - lastHiddenPump < HIDDEN_PUMP_INTERVAL_MILLIS) {
+            return
+        }
+        lastHiddenPump = now
+
+        pump()
+        ensurePersistentBrowser()
+
+        val browser = persistentBrowser ?: return
+        updateBrowser(browser)
+        updateReadyState(browser)
+    }
+
+    private fun ensurePersistentBrowser() {
+        if (persistentUrl.isBlank() || persistentBrowser != null) {
+            return
+        }
+
+        val api = readyApi() ?: return
+        persistentBrowser = runCatching {
+            api.createBrowser(persistentUrl, true).also { browser ->
+                browserCreatedAt = System.currentTimeMillis()
+                browserTextureFrames = 0
+                browserReady = false
+                lastTextureId = 0
+                loggedCreateFailure = false
+
+                val resizeWidth = lastResizeWidth.takeIf { it > 0 } ?: mc.displayWidth
+                val resizeHeight = lastResizeHeight.takeIf { it > 0 } ?: mc.displayHeight
+                browser.resize(resizeWidth, resizeHeight)
+            }
+        }.getOrElse {
+            if (!loggedCreateFailure) {
+                LOGGER.error("[NextGen] Could not create the persistent in-game browser", it)
+                loggedCreateFailure = true
+            }
+            null
+        }
+    }
+
+    private fun updateReadyState(browser: IBrowser) {
+        val textureId = runCatching { browser.getTextureID() }.getOrElse {
+            LOGGER.error("[NextGen] Browser texture query failed", it)
+            closePersistentBrowser()
+            return
+        }
+
+        if (textureId <= 0) {
+            return
+        }
+
+        if (textureId != lastTextureId) {
+            lastTextureId = textureId
+            browserTextureFrames = 0
+            browserReady = false
+        }
+
+        browserTextureFrames++
+        if (!browserReady && isBrowserReady(browser)) {
+            browserReady = true
+            LOGGER.info("[NextGen] Persistent browser warmed up.")
+        }
+    }
+
+    private fun isBrowserReady(browser: IBrowser): Boolean {
+        val textureReady = runCatching { browser.getTextureID() > 0 }.getOrDefault(false)
+        if (!textureReady) {
+            return false
+        }
+
+        val warmEnough = System.currentTimeMillis() - browserCreatedAt >= BROWSER_WARMUP_MILLIS &&
+            browserTextureFrames >= BROWSER_WARMUP_FRAMES
+        if (!warmEnough) {
+            return false
+        }
+
+        return !runCatching { browser.isPageLoading }.getOrDefault(false)
+    }
+
+    private fun closePersistentBrowser() {
+        persistentFocused = false
+        persistentBrowser?.let { browser ->
+            runCatching { browser.close() }
+                .onFailure { LOGGER.error("[NextGen] Browser close failed", it) }
+        }
+        persistentBrowser = null
+        browserCreatedAt = 0L
+        browserTextureFrames = 0
+        browserReady = false
+        lastTextureId = 0
+    }
+
+    private const val BROWSER_WARMUP_MILLIS = 450L
+    private const val BROWSER_WARMUP_FRAMES = 3
+    private const val HIDDEN_PUMP_INTERVAL_MILLIS = 250L
 }
