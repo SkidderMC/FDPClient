@@ -14,11 +14,17 @@ import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
 import net.ccbluex.liquidbounce.utils.extensions.*
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.render.renderWorldText
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.minecraft.entity.item.EntityItem
+import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.Vec3
+import org.lwjgl.opengl.GL11.*
 import java.awt.Color
+import kotlin.math.pow
 
 object ItemESP : Module("ItemESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     private val mode by choices("Mode", arrayOf("Box", "OtherBox", "Glow"), "Box")
@@ -29,21 +35,36 @@ object ItemESP : Module("ItemESP", Category.VISUAL, Category.SubCategory.RENDER_
 
     private val color by color("Color", Color.GREEN)
 
+    private val maxDistance by float("MaxDistance", 256F, 1F..512F)
+
+    private val showTracers by boolean("Tracers", false)
+    private val tracerThickness by float("TracerThickness", 2F, 1F..5F) { showTracers }
+
+    private val mergeIntersecting by boolean("MergeIntersecting", false) { mode != "Glow" }
+
     private val renderFilters = RenderFilterSettings(50, 1..200).also { addValues(it.values) }
 
     private val scale by float("Scale", 3F, 1F..5F) { itemText }
     private val itemCounts by boolean("ItemCounts", true) { itemText }
     private val font by font("Font", Fonts.fontSemibold40) { itemText }
     private val fontShadow by boolean("Shadow", true) { itemText }
+    private val yOffset by float("YOffset", 0F, -2F..2F) { itemText }
+    private val backgroundAlpha by int("BackgroundAlpha", 0, 0..255) { itemText }
+
+    private val maxDistanceSq
+        get() = maxDistance.toDouble().pow(2.0)
 
     private val itemEntities by EntityLookup<EntityItem>()
         .filter { renderFilters.withinDistance(mc.thePlayer.getDistanceSqToEntity(it)) }
+        .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxDistanceSq }
         .filter { !renderFilters.onLook || mc.thePlayer.isLookingOnEntity(it, renderFilters.maxAngleDifference.toDouble()) }
         .filter { renderFilters.thruBlocks || isEntityHeightVisible(it) }
 
     val onRender3D = handler<Render3DEvent> {
         if (mc.theWorld == null || mc.thePlayer == null)
             return@handler
+
+        val drawnBoxes = if (mergeIntersecting) mutableListOf<AxisAlignedBB>() else null
 
         for (entityItem in itemEntities) {
             val isUseful =
@@ -53,16 +74,30 @@ object ItemESP : Module("ItemESP", Category.VISUAL, Category.SubCategory.RENDER_
                     mapOf(entityItem.entityItem to entityItem)
                 )
 
+            val renderColor = if (isUseful) Color.green else color
+
             if (itemText) {
-                renderEntityText(entityItem, if (isUseful) Color.green else color)
+                renderEntityText(entityItem, renderColor)
             }
 
             if (mode == "Glow")
                 continue
 
-            // Only render green boxes on useful items, if ItemESP is enabled, render boxes of ItemESP.color on useless items as well
-            drawEntityBox(entityItem, if (isUseful) Color.green else color, mode == "Box")
+            // Skip boxes that overlap one already drawn this frame to avoid stacked labels
+            if (drawnBoxes != null) {
+                val box = entityItem.hitBox
+                if (drawnBoxes.any { it.intersectsWith(box) })
+                    continue
+
+                drawnBoxes += box
+            }
+
+            // Only render green boxes on useful items, if enabled, render boxes of the configured color on useless items as well
+            drawEntityBox(entityItem, renderColor, mode == "Box")
         }
+
+        if (showTracers)
+            renderTracers()
     }
 
     val onRender2D = handler<Render2DEvent> { event ->
@@ -88,7 +123,94 @@ object ItemESP : Module("ItemESP", Category.VISUAL, Category.SubCategory.RENDER_
         val itemStack = entity.entityItem
         val text = itemStack.displayName + if (itemCounts) " (${itemStack.stackSize})" else ""
 
-        renderWorldText(entity, text, fontRenderer, color.rgb, fontShadow, scale)
+        if (backgroundAlpha > 0)
+            renderTextBackground(entity, fontRenderer.getStringWidth(text) * 0.5f, fontRenderer.FONT_HEIGHT * 0.5f)
+
+        renderWorldText(entity, text, fontRenderer, color.rgb, fontShadow, scale, yOffset.toDouble())
+    }
+
+    // Replicates the world-text transform so the background quad aligns with renderWorldText output
+    private fun renderTextBackground(entity: EntityItem, halfWidth: Float, halfHeight: Float) {
+        val player = mc.thePlayer ?: return
+        val renderManager = mc.renderManager
+        val rotateX = if (mc.gameSettings.thirdPersonView == 2) -1.0f else 1.0f
+
+        glPushAttrib(GL_ENABLE_BIT)
+        glPushMatrix()
+
+        val pos = entity.interpolatedPosition(entity.lastTickPos) - renderManager.renderPos
+
+        glTranslated(pos.xCoord, pos.yCoord + yOffset.toDouble(), pos.zCoord)
+        glRotatef(-renderManager.playerViewY, 0F, 1F, 0F)
+        glRotatef(renderManager.playerViewX * rotateX, 1F, 0F, 0F)
+
+        RenderUtils.disableGlCap(GL_LIGHTING, GL_DEPTH_TEST, GL_TEXTURE_2D)
+        RenderUtils.enableGlCap(GL_BLEND)
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+
+        val scaledDistance = ((player.getDistanceToEntity(entity) / 4F).coerceAtLeast(1F) / 150F) * scale
+        glScalef(-scaledDistance, -scaledDistance, scaledDistance)
+
+        val padding = 1f
+        RenderUtils.drawRect(
+            -halfWidth - padding,
+            -padding,
+            halfWidth + padding,
+            halfHeight * 2 + padding,
+            Color(0, 0, 0, backgroundAlpha).rgb
+        )
+
+        RenderUtils.resetCaps()
+        glPopMatrix()
+        glPopAttrib()
+    }
+
+    private fun renderTracers() {
+        val player = mc.thePlayer ?: return
+
+        val originalViewBobbing = mc.gameSettings.viewBobbing
+        mc.gameSettings.viewBobbing = false
+        mc.entityRenderer.setupCameraTransform(mc.timer.renderPartialTicks, 0)
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_BLEND)
+        glEnable(GL_LINE_SMOOTH)
+        glLineWidth(tracerThickness)
+        glDisable(GL_TEXTURE_2D)
+        glDisable(GL_DEPTH_TEST)
+        glDepthMask(false)
+
+        glBegin(GL_LINES)
+
+        val yaw = (player.prevRotationYaw..player.rotationYaw).lerpWith(mc.timer.renderPartialTicks)
+        val pitch = (player.prevRotationPitch..player.rotationPitch).lerpWith(mc.timer.renderPartialTicks)
+        val eyeVector = Vec3(0.0, 0.0, 1.0).rotatePitch(-pitch.toRadians()).rotateYaw(-yaw.toRadians())
+
+        for (entityItem in itemEntities) {
+            val isUseful =
+                InventoryCleaner.handleEvents() && InventoryCleaner.highlightUseful && InventoryCleaner.isStackUseful(
+                    entityItem.entityItem,
+                    mc.thePlayer.openContainer.inventory,
+                    mapOf(entityItem.entityItem to entityItem)
+                )
+
+            val (x, y, z) = entityItem.interpolatedPosition(entityItem.lastTickPos) - mc.renderManager.renderPos
+
+            glColor(if (isUseful) Color.green else color)
+            glVertex3d(eyeVector.xCoord, player.getEyeHeight() + eyeVector.yCoord, eyeVector.zCoord)
+            glVertex3d(x, y, z)
+        }
+
+        glEnd()
+
+        mc.gameSettings.viewBobbing = originalViewBobbing
+
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_LINE_SMOOTH)
+        glEnable(GL_DEPTH_TEST)
+        glDepthMask(true)
+        glDisable(GL_BLEND)
+        glColor4f(1f, 1f, 1f, 1f)
     }
 
     override fun handleEvents() =
