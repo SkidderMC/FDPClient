@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam;
+import net.ccbluex.liquidbounce.features.module.modules.visual.EntityVisibilityFilter;
 import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity;
 import net.ccbluex.liquidbounce.utils.client.PacketUtilsKt;
 import net.minecraft.client.renderer.RenderGlobal;
@@ -33,6 +34,10 @@ public class MixinRenderGlobal {
             if (iEntity.getTruePos()) {
                 PacketUtilsKt.interpolatePosition(iEntity);
             }
+        }
+
+        if (EntityVisibilityFilter.shouldHideFromRender(entity)) {
+            return false;
         }
 
         return FreeCam.INSTANCE.handleEvents() || instance.shouldRender(entity, camera, x, y, z);

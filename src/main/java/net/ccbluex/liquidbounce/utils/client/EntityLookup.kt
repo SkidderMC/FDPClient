@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.utils.client
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.features.module.modules.visual.EntityVisibilityFilter
 import net.minecraft.entity.Entity
 import java.util.function.Predicate
 import kotlin.reflect.KProperty
@@ -43,6 +44,7 @@ class EntityLookup<T : Entity>(
         entities = mc.theWorld?.loadedEntityList
             ?.filter { entity ->
                 entityClass.isAssignableFrom(entity.javaClass)
+                        && !EntityVisibilityFilter.shouldHideFromRender(entity)
                         && predicates.all { it.test(entity as T) }
             } as? Collection<T> ?: emptyList()
     }

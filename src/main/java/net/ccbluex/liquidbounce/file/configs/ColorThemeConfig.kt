@@ -34,6 +34,9 @@ class ColorThemeConfig(file: File) : FileConfig(file) {
             if (json.has("Fade-Type")) {
                 ClientThemesUtils.updown = json["Fade-Type"].asBoolean
             }
+            if (json.has("Background")) {
+                ClientThemesUtils.BackgroundMode = json["Background"].asString
+            }
         } catch (e: Exception) {
             println("Error loading Color Theme Client: ${e.message}")
         }
@@ -45,6 +48,7 @@ class ColorThemeConfig(file: File) : FileConfig(file) {
             json.addProperty("Theme", ClientThemesUtils.ClientColorMode)
             json.addProperty("Fade-Speed", ClientThemesUtils.ThemeFadeSpeed)
             json.addProperty("Fade-Type", ClientThemesUtils.updown)
+            json.addProperty("Background", ClientThemesUtils.BackgroundMode)
 
             file.writeText(FileManager.PRETTY_GSON.toJson(json), Charsets.UTF_8)
         } catch (e: Exception) {

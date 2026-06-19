@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.visual
 
-import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetFocus
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.entity.Entity
 
@@ -17,11 +17,15 @@ object EntityVisibilityFilter : MinecraftInstance {
             return false
         }
 
-        if (TargetModule.isManagingVisibility()) {
-            return TargetModule.shouldHideEntity(entity)
+        if (HideClans.shouldHideEntity(entity)) {
+            return true
         }
 
-        return HideClans.shouldHideEntity(entity)
+        if (TargetFocus.isManagingVisibility()) {
+            return TargetFocus.shouldHideEntity(entity)
+        }
+
+        return false
     }
 
     @JvmStatic
@@ -31,6 +35,6 @@ object EntityVisibilityFilter : MinecraftInstance {
 
     @JvmStatic
     fun shouldForceRender(entity: Entity?): Boolean {
-        return TargetModule.shouldForceRender(entity)
+        return TargetFocus.shouldForceRender(entity)
     }
 }

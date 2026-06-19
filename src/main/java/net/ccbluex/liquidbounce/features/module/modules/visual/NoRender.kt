@@ -115,6 +115,9 @@ object NoRender : Module("NoRender", Category.VISUAL, Category.SubCategory.RENDE
 
 	// Function to determine if an entity should stop rendering
 	fun shouldStopRender(entity: Entity): Boolean {
+		if (EntityVisibilityFilter.shouldForceRender(entity))
+			return false
+
 		return (allEntitiesValue
 				||(itemsValue && entity is EntityItem)
 				|| (playersValue && entity is EntityPlayer)

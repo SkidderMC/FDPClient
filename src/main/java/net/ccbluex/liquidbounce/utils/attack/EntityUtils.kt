@@ -11,7 +11,9 @@ import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.dead
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.invisibleValue
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.mobValue
 import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.playerValue
+import net.ccbluex.liquidbounce.features.module.modules.client.TargetFocus
 import net.ccbluex.liquidbounce.features.module.modules.client.Teams
+import net.ccbluex.liquidbounce.features.module.modules.visual.HideClans
 import net.ccbluex.liquidbounce.handler.combat.CombatManager.isFocusEntity
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer.Companion.getColorIndex
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
@@ -41,6 +43,14 @@ object EntityUtils : MinecraftInstance {
                             return false
 
                         if (entity.isSpectator) return false
+
+                        if (HideClans.handleEvents() && HideClans.isAlly(entity)) {
+                            return false
+                        }
+
+                        if (TargetFocus.isManagingVisibility() && !TargetFocus.isSelectedTarget(entity)) {
+                            return false
+                        }
 
                         if (!isFocusEntity(entity)) {
                             return false

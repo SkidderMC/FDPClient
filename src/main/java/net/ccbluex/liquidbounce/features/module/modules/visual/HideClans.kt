@@ -9,7 +9,6 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.extensions.isClientFriend
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
@@ -64,10 +63,6 @@ object HideClans : Module("HideClans", Category.VISUAL, Category.SubCategory.REN
             return false
         }
 
-        if (entity.isClientFriend()) {
-            return true
-        }
-
         val localTeam = localPlayer.team
         val entityTeam = entity.team
 
@@ -90,7 +85,7 @@ object HideClans : Module("HideClans", Category.VISUAL, Category.SubCategory.REN
             return true
         }
 
-        return isAllyColor(localPlayer.displayName?.formattedText) && isAllyColor(entity.displayName?.formattedText)
+        return isAllyColor(entity.displayName?.formattedText) || isAllyColor(entity.name)
     }
 
     @JvmStatic
@@ -109,7 +104,9 @@ object HideClans : Module("HideClans", Category.VISUAL, Category.SubCategory.REN
         val localPlayer = mc.thePlayer ?: return clearState()
         val world = mc.theWorld ?: return clearState()
 
-        if (!showAllies || !lastShowAllies || lastShowAlliesMode != showAlliesMode) {
+        // Only reset the SemiAuto lock on the enabled->disabled edge (and on mode change),
+        // not every tick while disabled nor on the first tick after enabling.
+        if ((lastShowAllies && !showAllies) || lastShowAlliesMode != showAlliesMode) {
             semiAutoVisibleAllies.clear()
         }
 
@@ -162,7 +159,20 @@ object HideClans : Module("HideClans", Category.VISUAL, Category.SubCategory.REN
     }
 
     private fun clanTag(entity: EntityPlayer): String {
-        return normalizeTag(entity.displayName?.formattedText?.replace(entity.name, ""))
+        // Resolve the clan tag: prefer the scoreboard team color suffix/prefix (where clan tags
+        // usually live), each with a >=2 length floor, and only fall back to display-name minus name.
+        val team = entity.team as? net.minecraft.scoreboard.ScorePlayerTeam
+        if (team != null) {
+            val suffix = normalizeTag(team.colorSuffix)
+            if (suffix.length >= 2) return suffix
+            val prefix = normalizeTag(team.colorPrefix)
+            if (prefix.length >= 2) return prefix
+        }
+
+        val plainName = stripColor(entity.name.orEmpty())
+        val plainDisplay = stripColor(entity.displayName?.formattedText.orEmpty())
+        val cleaned = normalizeTag(plainDisplay.replaceFirst(plainName, ""))
+        return if (cleaned.length >= 2) cleaned else ""
     }
 
     private fun isAllyColor(formattedName: String?): Boolean {

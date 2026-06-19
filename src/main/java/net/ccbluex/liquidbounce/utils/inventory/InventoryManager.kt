@@ -11,6 +11,8 @@ import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoArmor
+import net.ccbluex.liquidbounce.features.module.modules.combat.ArmorFilter
+import net.ccbluex.liquidbounce.features.module.modules.combat.ArmorSwap
 import net.ccbluex.liquidbounce.features.module.modules.player.InventoryCleaner
 import net.ccbluex.liquidbounce.features.module.modules.other.ChestStealer
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
@@ -84,6 +86,16 @@ object InventoryManager : Configurable("InventoryManager"), MinecraftInstance, L
 		 * ChestStealer actions
 		 */
 		ChestStealer.stealFromChest()
+
+		if (ArmorFilter.dropLowDurabilityArmor()) {
+			delay(50)
+			return@loopSequence
+		}
+
+		if (ArmorSwap.runSwap()) {
+			delay(50)
+			return@loopSequence
+		}
 
 		/**
 		 * AutoArmor actions

@@ -7,6 +7,13 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.canClickInventory
+import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.hasScheduledInLastLoop
+import net.ccbluex.liquidbounce.utils.inventory.InventoryManager.passedPostInventoryCloseDelay
+import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenInventory
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.clickNextTick
+import net.ccbluex.liquidbounce.utils.timing.TickedActions.isTicked
+import net.minecraft.client.gui.inventory.GuiInventory
 import net.ccbluex.liquidbounce.utils.inventory.ArmorComparator
 import net.ccbluex.liquidbounce.utils.inventory.ArmorSet
 import net.ccbluex.liquidbounce.utils.inventory.durability
@@ -23,10 +30,78 @@ object ArmorFilter : Module("ArmorFilter", Category.COMBAT, Category.SubCategory
     private val priority by choices("Priority", arrayOf("Balanced", "Defense", "Durability", "Enchantments"), "Balanced")
     private val keepBackups by int("KeepBackups", 0, 0..3)
 
+    private val dropLowDurability by boolean("DropLowDurability", true)
+    private val dropDelay by int("DropDelay", 40, 10..500, suffix = "ms") { dropLowDurability }
+    private val dropDurabilityPercent by int("DropDurability", 50, 0..100, suffix = "%") { dropLowDurability }
+
     private val minMaterial by choices("MinMaterial", arrayOf("Any", "Leather", "Gold", "Chain", "Iron", "Diamond"), "Any")
     private val minDurabilityPercent by int("MinDurabilityPercent", 10, 0..100)
     private val minProtectionLevel by int("MinProtectionLevel", 0, 0..4)
     private val minEnchantmentSum by int("MinEnchantmentSum", 0, 0..12)
+
+    private var lastDropTime = 0L
+
+    override val tag: String?
+        get() = if (dropLowDurability) "${dropDelay}ms | ${dropDurabilityPercent}%" else priority
+
+    suspend fun dropLowDurabilityArmor(): Boolean {
+        if (!handleEvents() || !dropLowDurability) {
+            return false
+        }
+
+        if (!passedPostInventoryCloseDelay) {
+            return false
+        }
+
+        if (mc.playerController?.currentGameType?.isSurvivalOrAdventure != true) {
+            return false
+        }
+
+        val player = mc.thePlayer ?: return false
+        val container = player.openContainer
+        if (container == null || container.windowId != 0) {
+            return false
+        }
+
+        if (!canClickInventory(closeWhenViolating = true)) {
+            return false
+        }
+
+        val now = System.currentTimeMillis()
+        if (now - lastDropTime < dropDelay) {
+            return false
+        }
+
+        val threshold = dropDurabilityPercent.coerceIn(0, 100)
+        val openGui = mc.currentScreen is GuiInventory
+
+        for (slot in 9..44) {
+            if (isTicked(slot)) {
+                continue
+            }
+
+            val stack = container.getSlot(slot)?.stack ?: continue
+            if (stack.item !is ItemArmor || stack.maxDamage <= 0) {
+                continue
+            }
+
+            val percentage = stack.durability.coerceAtLeast(0) * 100 / stack.maxDamage
+            if (percentage > threshold) {
+                continue
+            }
+
+            if (!openGui) {
+                serverOpenInventory = true
+            }
+
+            clickNextTick(slot, 1, 4)
+            hasScheduledInLastLoop = true
+            lastDropTime = now
+            return true
+        }
+
+        return false
+    }
 
     fun selectBestArmorSet(stacks: List<ItemStack?>, entityStacksMap: Map<ItemStack, EntityItem>? = null): ArmorSet? {
         if (!handleEvents()) {

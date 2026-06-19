@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.utils.rotation
 
 import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack
 import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack.loopThroughBacktrackData
+import net.ccbluex.liquidbounce.features.module.modules.visual.EntityVisibilityFilter
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isVisible
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.serverRotation
@@ -45,7 +46,7 @@ object RaycastUtils : MinecraftInstance {
         val vec = eyePosition + (entityLook * blockReachDistance)
 
         val entityList = mc.theWorld.getEntities(Entity::class.java) {
-            it != null && (it is EntityLivingBase || it is EntityLargeFireball) && (it !is EntityPlayer || !it.isSpectator) && it.canBeCollidedWith() && it != renderViewEntity
+            it != null && (it is EntityLivingBase || it is EntityLargeFireball) && (it !is EntityPlayer || !it.isSpectator) && it.canBeCollidedWith() && it != renderViewEntity && !EntityVisibilityFilter.shouldSkipMouseOver(it)
         }
 
         var pointedEntity: Entity? = null
@@ -130,7 +131,7 @@ object RaycastUtils : MinecraftInstance {
             var vec33: Vec3? = null
 
             val list = mc.theWorld.getEntities(EntityLivingBase::class.java) {
-                it != null && (it !is EntityPlayer || !it.isSpectator) && it.canBeCollidedWith() && it != entity
+                it != null && (it !is EntityPlayer || !it.isSpectator) && it.canBeCollidedWith() && it != entity && !EntityVisibilityFilter.shouldSkipMouseOver(it)
             }
 
             var d2 = d1
