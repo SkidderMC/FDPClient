@@ -32,6 +32,12 @@ object Notifier : Module("Notifier", Category.OTHER, Category.SubCategory.MISCEL
     private val onHeldExplosive by boolean("HeldExplosive", true)
     private val onPlayerTool by boolean("HeldTools", false)
 
+    private val joinMessages by boolean("Join Messages", false)
+    private val leaveMessages by boolean("Leave Messages", false)
+    private val heldItemMessages by boolean("Held Item Messages", false)
+    private val itemConsumptionMessages by boolean("Item Consumption Messages", false)
+    private val gameModeMessages by boolean("Game Mode Messages", false)
+
     private val bedWarsHelp by boolean("BedWarsHelp", true)
 
     private val itemChecker by boolean("Item-Checker", true) { bedWarsHelp }
@@ -72,6 +78,11 @@ object Notifier : Module("Notifier", Category.OTHER, Category.SubCategory.MISCEL
 
     private var wasPlayerInvisible = false
     private val invisiblePlayers = mutableSetOf<String>()
+
+    private var lastHeldSlot = -1
+    private var wasConsuming = false
+    private var lastConsumedName: String? = null
+    private var lastGameType: String? = null
 
     private data class ItemInfo(
         val name: String,
@@ -182,6 +193,49 @@ object Notifier : Module("Notifier", Category.OTHER, Category.SubCategory.MISCEL
 
         recentlyWarned.entries.removeIf { (_, timestamp) -> currentTime - timestamp > warnDelay * 2 }
 
+        if (heldItemMessages) {
+            val slot = player.inventory.currentItem
+            if (lastHeldSlot == -1) {
+                lastHeldSlot = slot
+            } else if (slot != lastHeldSlot) {
+                lastHeldSlot = slot
+                val held = player.heldItem
+                val itemName = held?.displayName ?: "empty hand"
+                chat("§7Now holding §b$itemName")
+            }
+        } else {
+            lastHeldSlot = player.inventory.currentItem
+        }
+
+        if (itemConsumptionMessages) {
+            val consuming = player.isUsingItem &&
+                    (player.heldItem?.item is ItemFood || player.heldItem?.item is ItemPotion || player.heldItem?.item is ItemBucketMilk)
+            if (consuming) {
+                wasConsuming = true
+                lastConsumedName = player.heldItem?.displayName
+            } else if (wasConsuming) {
+                wasConsuming = false
+                val itemName = lastConsumedName ?: "item"
+                chat("§7Finished consuming §b$itemName")
+                lastConsumedName = null
+            }
+        } else {
+            wasConsuming = false
+            lastConsumedName = null
+        }
+
+        if (gameModeMessages) {
+            val gameType = mc.playerController?.currentGameType?.name
+            if (lastGameType == null) {
+                lastGameType = gameType
+            } else if (gameType != null && gameType != lastGameType) {
+                lastGameType = gameType
+                chat("§7Game mode changed to §b${gameType.lowercase()}")
+            }
+        } else {
+            lastGameType = mc.playerController?.currentGameType?.name
+        }
+
         val onlinePlayers = world.playerEntities.mapTo(mutableSetOf()) { it.name }
         invisiblePlayers.retainAll(onlinePlayers)
 
@@ -270,18 +324,20 @@ object Notifier : Module("Notifier", Category.OTHER, Category.SubCategory.MISCEL
 
         when (val packet = event.packet) {
             is S38PacketPlayerListItem -> {
-                if (onPlayerJoin && packet.action == Action.ADD_PLAYER) {
+                if ((onPlayerJoin || joinMessages) && packet.action == Action.ADD_PLAYER) {
                     for (playerData in packet.entries) {
                         val profile = playerData.profile ?: continue
                         if (profile.id == player.uniqueID || profile.id in AntiBot.botList) continue
-                        chat("§7${profile.name} §ajoined the game.")
+                        if (onPlayerJoin) chat("§7${profile.name} §ajoined the game.")
+                        if (joinMessages) chat("§7[§a+§7] §a${profile.name}")
                     }
                 }
-                if (onPlayerLeft && packet.action == Action.REMOVE_PLAYER) {
+                if ((onPlayerLeft || leaveMessages) && packet.action == Action.REMOVE_PLAYER) {
                     for (playerData in packet.entries) {
                         val profile = world.getPlayerEntityByUUID(playerData?.profile?.id)?.gameProfile ?: continue
                         if (profile.id == player.uniqueID || profile.id in AntiBot.botList) continue
-                        chat("§7${profile.name} §cleft the game.")
+                        if (onPlayerLeft) chat("§7${profile.name} §cleft the game.")
+                        if (leaveMessages) chat("§7[§c-§7] §c${profile.name}")
                     }
                 }
             }
@@ -353,5 +409,9 @@ object Notifier : Module("Notifier", Category.OTHER, Category.SubCategory.MISCEL
         recentlyWarned.clear()
         trackedItems.forEach { it.playerList.clear() }
         clearDrinkers()
+        lastHeldSlot = -1
+        wasConsuming = false
+        lastConsumedName = null
+        lastGameType = null
     }
 }
