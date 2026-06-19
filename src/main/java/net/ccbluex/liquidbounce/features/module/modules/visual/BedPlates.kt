@@ -60,7 +60,15 @@ object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.REN
         }
 
     private val maxLayers by int("MaxLayers", 5, 1..10)
+    private val maxCount by int("MaxCount", 64, 1..64)
     private val scale by float("Scale", 3F, 1F..5F)
+
+    private val compact by boolean("Compact", false)
+    private val showBed by boolean("ShowBed", true)
+    private val highlightUnbreakable by boolean("HighlightUnbreakable", false)
+    private val ignoreAdjacent by boolean("IgnoreAdjacent", false)
+    private val preventOverlap by boolean("PreventOverlap", false)
+    private val outline by boolean("Outline", false)
 
     private val textMode by choices("Text-ColorMode", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
     private val textColors = ColorSettingsInteger(this, "TextColor", applyMax = true) { textMode == "Custom" }
@@ -75,7 +83,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.REN
     private val roundedRectRadius by float("Rounded-Radius", 3F, 0F..5F)
 
     private val backgroundMode by choices("Background-Mode", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
-    private val bgColors = ColorSettingsInteger(this, "BackgroundColor") { backgroundMode == "Custom" }.with(a = 100)
+    private val backgroundColor by color("BackgroundColor", java.awt.Color(255, 255, 255, 100)) { backgroundMode == "Custom" }
 
     private val gradientBackgroundSpeed by float("Background-Gradient-Speed", 1f, 0.5f..10f)
     { backgroundMode == "Gradient" }
@@ -183,9 +191,30 @@ object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.REN
     }
 
     val onRender3D = handler<Render3DEvent> {
-        if (mc.thePlayer == null || mc.theWorld == null || bedStates.isEmpty()) return@handler
+        val player = mc.thePlayer ?: return@handler
+        if (mc.theWorld == null || bedStates.isEmpty()) return@handler
 
-        bedStates.values.forEach(::drawPlate)
+        val positions = bedStates.keys.toList()
+
+        // Closest beds first so MaxCount keeps the nearest ones
+        val ordered = positions.sortedBy { bedStates[it]?.pos?.squareDistanceTo(player.positionVector) ?: Double.MAX_VALUE }
+
+        val drawn = ArrayList<Vec3>()
+        var count = 0
+
+        for (pos in ordered) {
+            if (count >= maxCount) break
+
+            val state = bedStates[pos] ?: continue
+
+            if (ignoreAdjacent && positions.any { it != pos && it.distanceSq(pos) <= 1.0 }) continue
+
+            if (preventOverlap && drawn.any { it.squareDistanceTo(state.pos) <= 1.0 }) continue
+
+            drawPlate(state)
+            drawn += state.pos
+            count++
+        }
     }
 
     private fun drawPlate(bedState: BedState) {
@@ -223,17 +252,29 @@ object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.REN
         glRotatef(renderManager.playerViewX * rotateX, 1F, 0F, 0F)
         glScalef(-scale.toFloat(), -scale.toFloat(), scale.toFloat())
 
-        // TODO: replace with layer blocks
-        val blocks = bedState.surrounding.mapTo(linkedSetOf()) { it.block }
+        val blocks = bedState.surrounding
+            .asSequence()
+            .map { it.block }
+            .filter { showBed || it != Blocks.bed }
+            .distinct()
+            .toCollection(linkedSetOf())
         val text = "Bed (${distance.roundToInt()}m)"
 
-        var offset = (blocks.size * -13) / 2
+        val iconSize = if (compact) 10 else 12
+        val iconStep = if (compact) 11 else 13
+
+        var offset = (blocks.size * -iconStep) / 2
 
         val textWidth = textFont.getStringWidth(text)
         val textHeight = textFont.FONT_HEIGHT
 
         val rectWidth = max(30.0, textWidth.toDouble() + offset / 2)
         val rectHeight = max(26.5, textHeight.toDouble())
+
+        val rectLeft = (-rectWidth / 1.5 + scale + (offset / 2)).toFloat()
+        val rectTop = (-rectHeight / 3 - scale).toFloat()
+        val rectRight = (rectWidth / 1.5 - scale - (offset / 2)).toFloat()
+        val rectBottom = (rectHeight / 1.05 + scale).toFloat()
 
         // Render rect background
         GradientShader.begin(
@@ -246,18 +287,30 @@ object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.REN
         ).use {
             RainbowShader.begin(backgroundMode == "Rainbow", rainbowX, rainbowY, rainbowOffset).use {
                 drawRoundedRect(
-                    (-rectWidth / 1.5 + scale + (offset / 2)).toFloat(),
-                    (-rectHeight / 3 - scale).toFloat(),
-                    (rectWidth / 1.5 - scale - (offset / 2)).toFloat(),
-                    (rectHeight / 1.05 + scale).toFloat(),
+                    rectLeft,
+                    rectTop,
+                    rectRight,
+                    rectBottom,
                     when (backgroundMode) {
                         "Gradient" -> 0
                         "Rainbow" -> 0
-                        else -> bgColors.color().rgb
+                        else -> backgroundColor.rgb
                     },
                     roundedRectRadius
                 )
             }
+        }
+
+        if (outline) {
+            glLineWidth(1.5F)
+            glBegin(GL_LINE_LOOP)
+            glColor4f(1F, 1F, 1F, 1F)
+            glVertex2f(rectLeft, rectTop)
+            glVertex2f(rectRight, rectTop)
+            glVertex2f(rectRight, rectBottom)
+            glVertex2f(rectLeft, rectBottom)
+            glEnd()
+            resetColor()
         }
 
         // Render distance text
@@ -284,20 +337,26 @@ object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.REN
             }
         }
 
-        // TODO: replace with item stack rendering
         blocks.forEach { block ->
             val texture = getBlockTexture(block)
             mc.textureManager.bindTexture(texture)
+
+            if (highlightUnbreakable && (block == Blocks.obsidian || block == Blocks.end_stone)) {
+                glColor4f(1F, 0.25F, 0.25F, 1F)
+            } else {
+                glColor4f(1F, 1F, 1F, 1F)
+            }
 
             Gui.drawModalRectWithCustomSizedTexture(
                 offset,
                 10,
                 0f, 0f,
-                12, 12,
-                12F, 12F
+                iconSize, iconSize,
+                iconSize.toFloat(), iconSize.toFloat()
             )
-            offset += 13 + scale.toInt()
+            offset += iconStep + scale.toInt()
         }
+        resetColor()
 
         glEnable(GL_DEPTH_TEST)
         glDisable(GL_LINE_SMOOTH)
