@@ -50,6 +50,7 @@
     "notification.moduleEnabled": "Enabled %s",
     "notification.moduleDisabled": "Disabled %s",
     "module.aimbot.description": "Automatically faces selected entities around you.",
+    "module.crosshair.description": "Renders a customizable static crosshair.",
     "module.autoArmor.description": "Automatically equips the best armor in your inventory.",
     "module.autoBow.description": "Automatically shoots an arrow whenever your bow is fully loaded.",
     "module.autoClicker.description": "Constantly clicks when holding down a mouse button.",

@@ -13,6 +13,7 @@
     "notification.moduleEnabled": "Ativado %s",
     "notification.moduleDisabled": "Desativado %s",
     "module.aimbot.description": "Automaticamente mira nas entidades selecionadas ao seu redor.",
+    "module.crosshair.description": "Renderiza uma mira estatica customizavel.",
     "module.autoArmor.description": "Equipa automaticamente a melhor armadura do seu inventário.",
     "module.autoBow.description": "Atira automaticamente uma flecha quando seu arco está totalmente carregado.",
     "module.autoClicker.description": "Clica constantemente enquanto o botão do mouse está pressionado.",

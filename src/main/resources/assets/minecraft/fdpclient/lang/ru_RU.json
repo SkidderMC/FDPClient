@@ -12,6 +12,7 @@
         "notification.moduleEnabled": "Включен %s",
         "notification.moduleDisabled": "Выключен %s",
         "module.aimbot.description": "Автоматически наводится на игроков",
+    "module.crosshair.description": "Отрисовывает настраиваемый прицел.",
         "module.autoArmor.description": "Автоматически одевает лучшую броню из инвентаря.",
         "module.autoBow.description": "Автоматически выпускает стрелу когда лук натянут.",
         "module.autoClicker.description": "Кликает за вас при удержании левой кнопки",
