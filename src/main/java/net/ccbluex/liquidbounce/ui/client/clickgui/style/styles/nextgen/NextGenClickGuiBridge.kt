@@ -19,6 +19,9 @@ import net.ccbluex.liquidbounce.config.FloatRangeValue
 import net.ccbluex.liquidbounce.config.FloatValue
 import net.ccbluex.liquidbounce.config.FontValue
 import net.ccbluex.liquidbounce.config.IntRangeValue
+import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
+import net.minecraft.client.gui.FontRenderer
 import net.ccbluex.liquidbounce.config.IntValue
 import net.ccbluex.liquidbounce.config.KeyBindValue
 import net.ccbluex.liquidbounce.config.ListValue
@@ -360,8 +363,11 @@ object NextGenClickGuiBridge : MinecraftInstance {
                 addProperty("value", value.get())
             }
 
-            is FontValue -> settingBase("TEXT", value.name).apply {
-                addProperty("value", value.displayName)
+            is FontValue -> settingBase("CHOOSE", value.name).apply {
+                addProperty("value", fontLabel(value.get()))
+                add("choices", JsonArray().apply {
+                    Fonts.fonts.forEach { add(JsonPrimitive(fontLabel(it))) }
+                })
             }
 
             is KeyBindValue -> settingBase("KEY", value.name).apply {
@@ -396,6 +402,15 @@ object NextGenClickGuiBridge : MinecraftInstance {
         addProperty("to", to)
     }
 
+    /** Label for a font, matching FontValue's own naming, used as the CHOOSE option key. */
+    private fun fontLabel(font: FontRenderer): String = when {
+        font is GameFontRenderer -> "${font.defaultFont.font.name} - ${font.defaultFont.font.size}"
+        font === Fonts.minecraftFont -> "Minecraft"
+        else -> Fonts.getFontDetails(font)?.let {
+            "${it.name}${if (it.size != -1) " - ${it.size}" else ""}"
+        } ?: "Unknown"
+    }
+
     private fun inputBind(key: Int): JsonObject = JsonObject().apply {
         addProperty("boundKey", toMinecraftKey(key))
         addProperty("action", "Toggle")
@@ -425,6 +440,7 @@ object NextGenClickGuiBridge : MinecraftInstance {
                         vector.get("z").asDouble
                     ))
                 }
+                is FontValue -> Fonts.fonts.firstOrNull { fontLabel(it) == element.asString }?.let { value.set(it) }
                 else -> Unit
             }
         }
