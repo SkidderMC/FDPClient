@@ -103,14 +103,23 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
 
     /** Replicates the proxy's native-download step (load manifest, mark missing, download). Background only. */
     private fun downloadNatives() {
+        val proxyClass = Class.forName(PROXY_CLASS)
+        val root = mc.mcDataDir.absolutePath.replace("\\", "/").trimEnd('.', '/')
+        proxyClass.getField("ROOT").set(null, root)
+
         val remoteConfigClass = Class.forName(REMOTE_CONFIG_CLASS)
         val remoteConfig = remoteConfigClass.getDeclaredConstructor().newInstance()
         remoteConfigClass.getMethod("load").invoke(remoteConfig)
 
         val updateFileListing =
             remoteConfigClass.getMethod("updateFileListing", File::class.java, Boolean::class.javaPrimitiveType)
-        (remoteConfigClass.getMethod("getResourceArray").invoke(remoteConfig) as? Array<*>)?.forEach { resource ->
-            (resource as? File)?.let { updateFileListing.invoke(remoteConfig, it, false) }
+        val configDirectory = File(File(root), "config")
+        if (!configDirectory.exists()) {
+            configDirectory.mkdirs()
+        }
+
+        if (updateFileListing.invoke(remoteConfig, configDirectory, false) != true) {
+            LOGGER.warn("[NextGen] MCEF file listing could not be established; continuing with resource check.")
         }
 
         val listenerClass = Class.forName(PROGRESS_LISTENER_CLASS)
@@ -126,6 +135,7 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
             null
         }
         remoteConfigClass.getMethod("downloadMissing", listenerClass).invoke(remoteConfig, listener)
+        updateFileListing.invoke(remoteConfig, configDirectory, true)
     }
 
     private fun initOnRenderThread() {
@@ -135,9 +145,9 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
 
             MCEF::class.java.getField("PROXY").set(null, instance)
 
-            // onInit can throw late on 1.8.9 (its shutdown-hook patcher targets a method that no longer
-            // matches) AFTER CEF is already initialized, so tolerate it and continue if the CefApp came up.
-            runCatching { proxyClass.getMethod("onInit").invoke(instance) }
+            // MCEF is being initialized after Forge's mod-loading phase. Keep a temporary active
+            // container around its EventBus registration so Forge does not log a bogus critical error.
+            runCatching { invokeMcefOnInit(proxyClass, instance) }
                 .onFailure { LOGGER.warn("[NextGen] onInit reported an error; continuing if CEF initialized", it) }
 
             val virtual = proxyClass.getField("VIRTUAL").getBoolean(null)
@@ -163,6 +173,27 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
             state = State.FAILED
             detail = "In-game browser failed to start."
             LOGGER.error("[NextGen] Failed to initialize the in-game browser runtime", throwable)
+        }
+    }
+
+    private fun invokeMcefOnInit(proxyClass: Class<*>, instance: Any) {
+        val loaderClass = Class.forName("net.minecraftforge.fml.common.Loader")
+        val loadControllerClass = Class.forName("net.minecraftforge.fml.common.LoadController")
+        val loader = loaderClass.getMethod("instance").invoke(null)
+        val controller = loaderClass.getDeclaredField("modController").apply { isAccessible = true }.get(loader)
+        val activeContainer = loadControllerClass.getDeclaredField("activeContainer").apply { isAccessible = true }
+        val previousContainer = controller?.let { activeContainer.get(it) }
+
+        if (controller != null && previousContainer == null) {
+            activeContainer.set(controller, loaderClass.getMethod("getMinecraftModContainer").invoke(loader))
+        }
+
+        try {
+            proxyClass.getMethod("onInit").invoke(instance)
+        } finally {
+            if (controller != null && previousContainer == null) {
+                activeContainer.set(controller, null)
+            }
         }
     }
 
