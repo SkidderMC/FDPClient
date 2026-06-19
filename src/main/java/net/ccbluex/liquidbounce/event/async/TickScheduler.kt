@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.function.BooleanSupplier
 import kotlin.coroutines.RestrictsSuspension
 
@@ -29,16 +30,19 @@ import kotlin.coroutines.RestrictsSuspension
  */
 object TickScheduler : Listenable, MinecraftInstance {
 
-    private const val MAX_SCHEDULED_TASKS = 100
+    private const val MAX_SCHEDULED_TASKS = 8192
 
     private val currentTickTasks = arrayListOf<BooleanSupplier>()
     private val nextTickTasks = arrayListOf<BooleanSupplier>()
+    private val pendingTickTasks = ConcurrentLinkedQueue<BooleanSupplier>()
 
     init {
         handler<GameTickEvent>(priority = Byte.MAX_VALUE) {
+            drainPendingTasks()
             currentTickTasks.removeIf { it.asBoolean }
             currentTickTasks += nextTickTasks
             nextTickTasks.clear()
+            drainPendingTasks()
         }
     }
 
@@ -48,11 +52,16 @@ object TickScheduler : Listenable, MinecraftInstance {
      * @param breakLoop Stop tick the body when it returns `true`
      */
     fun schedule(breakLoop: BooleanSupplier) {
-        if (currentTickTasks.size + nextTickTasks.size < MAX_SCHEDULED_TASKS) {
-            // Prevent modification in removeIf (Continuation.resume)
-            mc.addScheduledTask { nextTickTasks += breakLoop }
+        if (currentTickTasks.size + nextTickTasks.size + pendingTickTasks.size < MAX_SCHEDULED_TASKS) {
+            pendingTickTasks += breakLoop
         } else {
             ClientUtils.LOGGER.warn("[TickScheduler] Task queue full, dropping task")
+        }
+    }
+
+    private fun drainPendingTasks() {
+        while (true) {
+            nextTickTasks += pendingTickTasks.poll() ?: break
         }
     }
 }
