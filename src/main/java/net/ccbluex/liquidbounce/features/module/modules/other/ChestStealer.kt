@@ -82,6 +82,14 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
 
     private val simulateShortStop by boolean("SimulateShortStop", false)
 
+    private val autoClose by boolean("AutoClose", true)
+
+    private val order by choices("Order", arrayOf("TopToBottom", "BottomToTop"), "TopToBottom")
+
+    private val quickSwaps by boolean("QuickSwaps", false)
+
+    private val onFull by choices("OnFull", arrayOf("Stop", "Continue"), "Stop")
+
     private val delay by intRange("Delay", 50..50, 0..500) { !smartDelay }
     private val startDelay by intRange("StartDelay", 50..100, 0..500)
     private val closeDelay by intRange("CloseDelay", 50..100, 0..500)
@@ -197,6 +205,18 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
         return true
     }
 
+    private fun firstEmptyHotbarSlot(): Int? {
+        val inventory = mc.thePlayer?.inventory ?: return null
+
+        // Hotbar occupies the first 9 slots of the main inventory
+        for (hotbarIndex in 0..8) {
+            if (inventory.getStackInSlot(hotbarIndex) == null)
+                return hotbarIndex
+        }
+
+        return null
+    }
+
     private fun canTakeStack(stack: ItemStack): Boolean {
         if (hasSpaceInInventory()) {
             return true
@@ -309,6 +329,12 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
                     }
 
                     if (!canTakeStack(stack)) {
+                        // Inventory can't hold this stack
+                        if (onFull == "Continue") {
+                            // Skip this item and keep trying the remaining ones
+                            return@forEachIndexed
+                        }
+
                         resetStealState()
                         return@scheduler
                     }
@@ -317,6 +343,9 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
 
                     // Set current slot being stolen for highlighting
                     chestStealerCurrentSlot = slot
+
+                    // If enabled, prefer a hotbar swap into a free hotbar slot for faster, single-action steals
+                    val quickSwapTo = if (quickSwaps && sortableTo == null) firstEmptyHotbarSlot() else null
 
                     val stealingDelay = if (smartDelay && index + 1 < itemsToSteal.size) {
                         val dist = squaredDistanceOfSlots(slot, itemsToSteal[index + 1].index)
@@ -328,8 +357,10 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
 
                     if (itemStolenDebug) debug("item: ${stack.displayName.lowercase()} | slot: $slot | delay: ${stealingDelay}ms")
 
+                    // Resolve the click: hotbar swap when sorting or quick-swapping, else shift + left-click
+                    val swapButton = sortableTo ?: quickSwapTo
                     // If target is sortable to a hotbar slot, steal and sort it at the same time, else shift + left-click
-                    clickNextTick(slot, sortableTo ?: 0, if (sortableTo != null) 2 else 1) {
+                    clickNextTick(slot, swapButton ?: 0, if (swapButton != null) 2 else 1) {
                         progress = (index + 1) / itemsToSteal.size.toFloat()
 
                         if (!AutoArmor.canEquipFromChest())
@@ -384,10 +415,13 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
         // Wait before the chest gets closed (if it gets closed out of tick loop it could throw npe)
         nextTick {
             resetStealState()
-            thePlayer.closeScreen()
-            progress = null
 
-            debug("Chest closed")
+            if (autoClose) {
+                thePlayer.closeScreen()
+                debug("Chest closed")
+            }
+
+            progress = null
         }
 
         awaitTicked()
@@ -474,7 +508,11 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
                 if (!canFullyMerge) spaceInInventory--
 
                 ItemTakeRecord(index, stack, sortableTo)
-            }.also { it -> if (randomSlot) it.shuffle()
+            }.also { it ->
+                // Base slot order (TopToBottom keeps the natural ascending order)
+                if (order == "BottomToTop") it.sortByDescending { record -> record.index }
+
+                if (randomSlot) it.shuffle()
 
                 // Prioritise armor pieces with lower priority, so that as many pieces can get equipped from hotbar after chest gets closed
                 it.sortByDescending { it.stack.item is ItemArmor }
