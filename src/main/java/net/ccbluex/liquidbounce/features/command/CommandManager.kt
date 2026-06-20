@@ -57,7 +57,12 @@ object CommandManager {
      * @param input text that should be used to check for auto completions.
      */
     fun autoComplete(input: String): Boolean {
-        latestAutoComplete = getCompletions(input) ?: emptyArray()
+        latestAutoComplete = try {
+            getCompletions(input) ?: emptyArray()
+        } catch (throwable: Throwable) {
+            LOGGER.error("Auto-complete failed for input '$input'", throwable)
+            emptyArray()
+        }
         return input.startsWith(prefix) && latestAutoComplete.isNotEmpty()
     }
 
@@ -77,7 +82,12 @@ object CommandManager {
 
         return if (args.size > 1) {
             val command = getCommand(args[0])
-            val tabCompletions = command?.tabComplete(args.copyOfRange(1, args.size))
+            val tabCompletions = try {
+                command?.tabComplete(args.copyOfRange(1, args.size))
+            } catch (throwable: Throwable) {
+                LOGGER.error("Tab-complete failed for command '${args[0]}'", throwable)
+                null
+            }
 
             tabCompletions?.toTypedArray()
         } else {
