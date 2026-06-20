@@ -25,6 +25,8 @@ object DamageParticle : Module("DamageParticle", Category.VISUAL, Category.SubCa
 
     private val aliveTicks by int("AliveTicks", 50, 10..50)
     private val size by int("Size", 3, 1..7)
+    private val offsetDistance by float("OffsetDistance", 0.5f, 0f..2f)
+    private val randomRotation by boolean("RandomRotation", false)
     private val colorMode by choices("ColourType", arrayOf("Damage", "Custom", "Client"), "Damage")
     private val customColor by color("Color", Color.WHITE) { colorMode == "Custom" }
     private val shadowMode by choices("Shadow", arrayOf("Normal", "Default", "Vanilla", "Outline", "None"), "Outline") { colorMode != "Damage" }
@@ -70,9 +72,10 @@ object DamageParticle : Module("DamageParticle", Category.VISUAL, Category.SubCa
                         particles.add(
                             SingleParticle(
                                 colorPrefix + prefix + damageAmount,
-                                entity.posX - 0.5 + Random.nextInt(5).toDouble() * 0.1,
+                                entity.posX - offsetDistance + Random.nextInt(5).toDouble() * 0.1,
                                 entity.entityBoundingBox.minY + (entity.entityBoundingBox.maxY - entity.entityBoundingBox.minY) / 2.0,
-                                entity.posZ - 0.5 + Random(1).nextInt(5).toDouble() * 0.1
+                                entity.posZ - offsetDistance + Random(1).nextInt(5).toDouble() * 0.1,
+                                if (randomRotation) Random.nextInt(360).toFloat() else 0.0f
                             )
                         )
                     }
@@ -113,6 +116,7 @@ object DamageParticle : Module("DamageParticle", Category.VISUAL, Category.SubCa
 
                 val textY = if (mc.gameSettings.thirdPersonView == 2) -1.0f else 1.0f
                 rotate(renderManager.playerViewX, textY, 0.0f, 0.0f)
+                if (particle.roll != 0.0f) rotate(particle.roll, 0.0f, 0.0f, 1.0f)
                 scale(-particleSize, -particleSize, particleSize)
                 glDepthMask(false)
 
@@ -157,7 +161,7 @@ object DamageParticle : Module("DamageParticle", Category.VISUAL, Category.SubCa
         healthData.clear()
     }
 
-    class SingleParticle(val str: String, val posX: Double, val posY: Double, val posZ: Double) {
+    class SingleParticle(val str: String, val posX: Double, val posY: Double, val posZ: Double, val roll: Float = 0.0f) {
         var ticks = 0
     }
 }
