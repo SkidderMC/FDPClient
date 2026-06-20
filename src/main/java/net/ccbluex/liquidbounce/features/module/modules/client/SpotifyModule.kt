@@ -31,6 +31,7 @@ import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyState
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyStateChangedEvent
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.chat
+import net.ccbluex.liquidbounce.utils.kotlin.clientCoroutineExceptionHandler
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.CompletableFuture
@@ -42,7 +43,7 @@ import java.util.EnumMap
  */
 object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, defaultState = false) {
 
-    private val moduleScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val moduleScope = CoroutineScope(SupervisorJob() + Dispatchers.IO + clientCoroutineExceptionHandler)
     private val service: SpotifyService
         get() = SpotifyIntegration.service
     private var workerJob: Job? = null

@@ -13,6 +13,7 @@ import kotlinx.coroutines.cancel
 import net.ccbluex.liquidbounce.config.ColorValue
 import net.ccbluex.liquidbounce.config.TextValue
 import net.ccbluex.liquidbounce.config.Value
+import net.ccbluex.liquidbounce.utils.kotlin.clientCoroutineExceptionHandler
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.gui.GuiButton
@@ -25,7 +26,7 @@ import java.awt.Color
 
 abstract class AbstractScreen : GuiScreen() {
 
-    val screenScope = CoroutineScope(Dispatchers.Main + SupervisorJob() + CoroutineName(this::class.java.simpleName))
+    val screenScope = CoroutineScope(Dispatchers.Main + SupervisorJob() + clientCoroutineExceptionHandler + CoroutineName(this::class.java.simpleName))
 
     protected val textFields = arrayListOf<GuiTextField>()
 

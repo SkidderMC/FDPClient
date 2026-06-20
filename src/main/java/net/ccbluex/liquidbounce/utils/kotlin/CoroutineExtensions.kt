@@ -7,17 +7,22 @@ package net.ccbluex.liquidbounce.utils.kotlin
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.test.setMain
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.minecraft.client.Minecraft
 import net.minecraft.util.IThreadListener
 import kotlin.coroutines.CoroutineContext
 
+val clientCoroutineExceptionHandler = CoroutineExceptionHandler { context, throwable ->
+    LOGGER.error("Unhandled client coroutine exception in $context", throwable)
+}
+
 object SharedScopes {
 
     @JvmField
-    val Default = CoroutineScope(Dispatchers.Default + SupervisorJob())
+    val Default = CoroutineScope(Dispatchers.Default + SupervisorJob() + clientCoroutineExceptionHandler)
 
     @JvmField
-    val IO = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    val IO = CoroutineScope(Dispatchers.IO + SupervisorJob() + clientCoroutineExceptionHandler)
 
     init {
         // Set dispatcher for Dispatchers.Main
