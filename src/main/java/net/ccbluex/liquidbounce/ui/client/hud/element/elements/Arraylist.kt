@@ -148,6 +148,9 @@ class Arraylist(
     private val animation by choices("Animation", arrayOf("Slide", "Smooth"), "Smooth") { tags }
     private val animationSpeed by float("AnimationSpeed", 0.2F, 0.01F..1F) { animation == "Smooth" }
 
+    private val spaceSeparatedNames by float("SpaceSeparatedNames", 0F, 0F..10F)
+    private val alphaBlendRange by float("AlphaBlendRange", 0F, 0F..1F) { backgroundMode != "Gradient" && backgroundMode != "Rainbow" }
+
     companion object : Configurable("StandaloneArraylist") {
         val spacedModulesValue = boolean("SpacedModules", false)
     }
@@ -253,7 +256,7 @@ class Arraylist(
             val textCustomColor = textColors.color().rgb
             val rectCustomColor = rectColors.color().rgb
             val backgroundCustomColor = bgColors.color().rgb
-            val textSpacer = textHeight + space
+            val textSpacer = textHeight + space + spaceSeparatedNames
 
             val rainbowOffset = System.currentTimeMillis() % 10000 / 10000F
             val rainbowX = 1f safeDiv rainbowX
@@ -272,6 +275,15 @@ class Arraylist(
                     yPos = module.yAnim
                 }
                 val moduleColor = Color.getHSBColor(module.hue, saturation, brightness).rgb
+
+                val bgAlphaFactor = if (alphaBlendRange <= 0f || modules.lastIndex <= 0) 1f
+                else 1f - alphaBlendRange * (index.toFloat() / modules.lastIndex.toFloat())
+
+                fun applyBgAlpha(rgb: Int): Int {
+                    if (bgAlphaFactor >= 1f) return rgb
+                    val base = Color(rgb, true)
+                    return base.withAlpha((base.alpha * bgAlphaFactor).toInt().coerceIn(0, 255)).rgb
+                }
 
                 val textFadeColor = fade(textFadeColors, index * textFadeDistance, 100).rgb
                 val bgFadeColor = fade(bgFadeColors, index * bgFadeDistance, 100).rgb
@@ -304,14 +316,14 @@ class Arraylist(
                                     yPos,
                                     if (rectMode == "Right") -3F else -1F,
                                     yPos + textSpacer,
-                                    when (backgroundMode) {
+                                    applyBgAlpha(when (backgroundMode) {
                                         "Gradient" -> 0
                                         "Rainbow" -> 0
                                         "Random" -> moduleColor
                                         "Fade" -> bgFadeColor
                                         "Theme" -> themeColor
                                         else -> backgroundCustomColor
-                                    },
+                                    }),
                                     roundedBackgroundRadius,
                                     if (rectMode == "Left") {
                                         RenderUtils.RoundedCorners.NONE
@@ -461,14 +473,14 @@ class Arraylist(
                                     yPos,
                                     xPos + width + if (rectMode == "Right") 4 else 1,
                                     yPos + textSpacer,
-                                    when (backgroundMode) {
+                                    applyBgAlpha(when (backgroundMode) {
                                         "Gradient" -> 0
                                         "Rainbow" -> 0
                                         "Random" -> moduleColor
                                         "Fade" -> bgFadeColor
                                         "Theme" -> themeColor
                                         else -> backgroundCustomColor
-                                    },
+                                    }),
                                     roundedBackgroundRadius,
                                     if (rectMode == "Right") {
                                         RenderUtils.RoundedCorners.NONE
