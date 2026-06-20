@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.performAngleChange
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.searchCenter
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
+import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.entity.Entity
@@ -83,6 +84,14 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
     private val headLock by boolean("Headlock", false) { center && lock }
     private val headLockBlockHeight by float("HeadBlockHeight", -1f, -2f..0f) { headLock && center && lock }
     private val breakBlocks by boolean("BreakBlocks", true)
+
+    private val rotationOptions = RotationSettings(this) { horizontalAim || verticalAim }.apply {
+        rotationsValue.excludeWithState(true)
+        applyServerSideValue.excludeWithState(false)
+        strafeValue.excludeWithState(false)
+        keepRotationValue.excludeWithState(false)
+        resetTicksValue.excludeWithState(1)
+    }
 
     private val clickTimer = MSTimer()
 
@@ -199,15 +208,19 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
 
         val realisticTurnSpeed = rotationDiff * ((supposedTurnSpeed + (gaussian - 0.5)) / 180)
 
-        // Directly access performAngleChange since this module does not use RotationSettings
-        val rotation = performAngleChange(
-            player.rotation,
-            destinationRotation,
-            realisticTurnSpeed.toFloat(),
-            legitimize = legitimize,
-            minRotationDiff = minRotationDifference,
-            minRotationDiffResetTiming = minRotationDifferenceResetTiming,
-        )
+        val rotation = if (rotationOptions.useModernRotations) {
+            RotationUtils.performAngleChange(player.rotation, destinationRotation, rotationOptions)
+        } else {
+            // Directly access performAngleChange since this module changes the real client look rotation.
+            performAngleChange(
+                player.rotation,
+                destinationRotation,
+                realisticTurnSpeed.toFloat(),
+                legitimize = legitimize,
+                minRotationDiff = minRotationDifference,
+                minRotationDiffResetTiming = minRotationDifferenceResetTiming,
+            )
+        }
 
         rotation.toPlayer(player, horizontalAim, verticalAim)
 

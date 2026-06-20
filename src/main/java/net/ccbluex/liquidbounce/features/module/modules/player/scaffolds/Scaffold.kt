@@ -22,6 +22,7 @@ import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.rotation.PlaceRotation
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
+import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettingsWithRotationModes
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.canUpdateRotation
@@ -39,6 +40,7 @@ import net.minecraft.item.ItemBlock
 import net.minecraft.item.ItemStack
 import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.client.C0BPacketEntityAction
+import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.util.*
 import net.minecraft.world.WorldSettings
 import net.minecraftforge.event.ForgeEventFactory
@@ -159,12 +161,18 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     private val modeList =
         choices(
             "Rotations",
-            arrayOf("Off", "Normal", "Stabilized", "ReverseYaw", "AAC", "Custom", "Advanced", "Backwards", "GodBridge"),
+            arrayOf(
+                "Off", "Normal", "Stabilized", "NearestRotation", "ReverseYaw", "AAC", "Custom", "Advanced",
+                "Backwards", "GodBridge"
+            ),
             "Normal"
         )
     private val jumpRotationMode by choices(
         "JumpRotations",
-        arrayOf("Same", "Off", "Normal", "Stabilized", "ReverseYaw", "AAC", "Custom", "Advanced", "Backwards", "GodBridge"),
+        arrayOf(
+            "Same", "Off", "Normal", "Stabilized", "NearestRotation", "ReverseYaw", "AAC", "Custom", "Advanced",
+            "Backwards", "GodBridge"
+        ),
         "Same"
     )
     private val aacYawOffset by int("AACYawOffset", 0, -180..180) { supportsAacRotations }
@@ -200,8 +208,17 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     private val options: RotationSettingsWithRotationModes = RotationSettingsWithRotationModes(this, modeList).apply {
         strictValue.excludeWithState()
         resetTicksValue.setSupport { it && scaffoldMode != "Telly" }
+        withRequestPriority(RotationPriority.HIGH)
         rotationModeProvider = { this@Scaffold.activeRotationMode }
         rotationsActiveProvider = { this@Scaffold.hasConfiguredRotations }
+    }
+
+    private val rotationConsiderInventory by boolean("ConsiderInventory", false) {
+        options.useModernRotations
+    }
+
+    private val rotationTiming by choices("RotationTiming", arrayOf("Normal", "OnTick", "OnTickSnap"), "Normal") {
+        options.useModernRotations
     }
 
     // Search options
@@ -543,14 +560,14 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             launchY = player.posY.roundToInt()
         }
 
-        val rotation = RotationUtils.currentRotation
-
         update()
 
-        val ticks = if (options.keepRotation) {
+        val ticks = if (options.useModernRotations) {
+            options.effectiveResetTicks
+        } else if (options.keepRotation) {
             if (scaffoldMode == "Telly") 1 else options.resetTicks
         } else {
-            if (shouldUseGodBridgeRotations) options.resetTicks else RotationUtils.resetTicks
+            if (shouldUseGodBridgeRotations) options.resetTicks else RotationUtils.resetTicks.coerceAtLeast(1)
         }
 
         if (!Tower.isTowering && shouldUseGodBridgeRotations && currentRotationsActive) {
@@ -559,12 +576,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             return@handler
         }
 
-        if (currentRotationsActive && rotation != null) {
-            val placeRotation = this.placeRotation?.rotation ?: rotation
-
-            if (RotationUtils.resetTicks != 0 || options.keepRotation) {
-                setRotation(placeRotation, ticks)
-            }
+        if (currentRotationsActive) {
+            this.placeRotation?.rotation?.let { setRotation(it, ticks) }
         }
     }
 
@@ -579,7 +592,19 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
          *
          * @see net.minecraft.client.Minecraft.runTick Line 1345
          */
-        val raycast = performBlockRaytrace(currRotation, mc.playerController.blockReachDistance)
+        if (shouldUseModernOnTickRotation && rotationConsiderInventory &&
+            (InventoryUtils.serverOpenContainer || InventoryUtils.serverOpenInventory)) {
+            return@handler
+        }
+
+        val onTickRotation = if (shouldUseModernOnTickRotation && target != null) {
+            placeRotation?.rotation?.copy()?.fixedSensitivity()
+        } else {
+            null
+        }
+
+        val raycastRotation = onTickRotation ?: currRotation
+        val raycast = performBlockRaytrace(raycastRotation, mc.playerController.blockReachDistance)
 
         var alreadyPlaced = false
 
@@ -615,7 +640,15 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
                     target
                 }
 
+                if (onTickRotation != null && !applyModernOnTickRotation(onTickRotation)) {
+                    return@handler
+                }
+
                 place(result)
+
+                if (onTickRotation != null && rotationTiming == "OnTick") {
+                    restoreModernOnTickRotation()
+                }
             }
         }
     }
@@ -692,13 +725,74 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     private fun setRotation(rotation: Rotation, ticks: Int) {
         val player = mc.thePlayer ?: return
 
+        if (options.useModernRotations && rotationConsiderInventory &&
+            (InventoryUtils.serverOpenContainer || InventoryUtils.serverOpenInventory)) {
+            return
+        }
+
         if (scaffoldMode == "Telly" && player.isMoving) {
             if (player.airTicks < ticksUntilRotation.random() && ticksUntilJump >= jumpTicks) {
                 return
             }
         }
 
+        if (shouldUseModernOnTickRotation) {
+            return
+        }
+
         setTargetRotation(rotation, options, ticks)
+    }
+
+    private val shouldUseModernOnTickRotation: Boolean
+        get() = options.useModernRotations && rotationTiming != "Normal"
+
+    private fun applyModernOnTickRotation(rotation: Rotation): Boolean {
+        val player = mc.thePlayer ?: return false
+
+        if (!RotationUtils.canRequestRotation(options)) {
+            return false
+        }
+
+        if (rotationDifference(rotation, RotationUtils.serverRotation) > getFixedAngleDelta()) {
+            sendPacket(
+                C06PacketPlayerPosLook(
+                    player.posX, player.posY, player.posZ,
+                    rotation.yaw, rotation.pitch,
+                    player.onGround
+                ),
+                false
+            )
+            RotationUtils.serverRotation = rotation
+        }
+
+        if (rotationTiming == "OnTickSnap") {
+            if (!setTargetRotation(rotation, options, options.effectiveResetTicks)) {
+                return false
+            }
+
+            RotationUtils.currentRotation = rotation.copy()
+        }
+
+        return true
+    }
+
+    private fun restoreModernOnTickRotation() {
+        val player = mc.thePlayer ?: return
+        val rotation = player.rotation.fixedSensitivity()
+
+        if (rotationDifference(rotation, RotationUtils.serverRotation) <= getFixedAngleDelta()) {
+            return
+        }
+
+        sendPacket(
+            C06PacketPlayerPosLook(
+                player.posX, player.posY, player.posZ,
+                rotation.yaw, rotation.pitch,
+                player.onGround
+            ),
+            false
+        )
+        RotationUtils.serverRotation = rotation
     }
 
     // Search for new target block
@@ -859,6 +953,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
     // Disabling module
     override fun onDisable() {
+        RotationUtils.cancelTargetRotation(options, immediate = true)
+
         val player = mc.thePlayer ?: return
 
         if (!GameSettings.isKeyDown(mc.gameSettings.keyBindSneak)) {
@@ -1388,7 +1484,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     }
 
     /**
-     * God-bridge rotation generation method from Nextgen
+     * God-bridge rotation generation method.
      *
      * Credits to @opZywl
      */

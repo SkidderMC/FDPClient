@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.extensions.rotation
 import net.ccbluex.liquidbounce.utils.rotation.AlwaysRotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
+import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
@@ -25,6 +26,7 @@ object NoRotateSet : Module("NoRotateSet", Category.OTHER, Category.SubCategory.
 
     private val options = AlwaysRotationSettings(this) { affectRotation }.apply {
         withoutKeepRotation()
+        withRequestPriority(RotationPriority.CRITICAL)
         applyServerSideValue.hideWithState(true)
         resetTicksValue.excludeWithState(1)
     }

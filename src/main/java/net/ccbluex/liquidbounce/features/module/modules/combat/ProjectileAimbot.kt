@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.inventory.isEmpty
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.ccbluex.liquidbounce.utils.rotation.RandomizationSettings
+import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.faceTrajectory
@@ -50,7 +51,7 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, Category.S
     private val predictSize by float("PredictSize", 2F, 0.1F..5F)
     { predict && gravityType == "Projectile" }
 
-    private val options = RotationSettings(this).withoutKeepRotation()
+    private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.HIGH)
 
     private val randomization = RandomizationSettings(this) { options.rotationsActive }
 

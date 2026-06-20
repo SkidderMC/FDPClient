@@ -102,7 +102,7 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
     private val pathRenderValue by boolean("PathRender", true)
     private val renderPathColor by color("PathColor", Color.GREEN) { pathRenderValue }.subjective()
 
-    private val options = RotationSettings(this).withoutKeepRotation()
+    private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.HIGH)
     private val randomization = RandomizationSettings(this) { options.rotationsActive }
 
     private val highestBodyPointToTargetValue = choices(

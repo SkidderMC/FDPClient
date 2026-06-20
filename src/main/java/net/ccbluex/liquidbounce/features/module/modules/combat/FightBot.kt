@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.utils.attack.EntityUtils
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.pathfinding.PathUtils
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
+import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.minecraft.entity.EntityLivingBase
@@ -42,6 +43,8 @@ object FightBot : Module("FightBot", Category.COMBAT, Category.SubCategory.COMBA
     private val blockMode by choices("blockMode", arrayOf("Skill", "Always", "Manual"), "Manual")
     private val findWay by choices("findWay", arrayOf("None", "Point", "Entity"), "Point")
     private val workReach by float("workReach", 10f, 1f..50f)
+    private val rotationOptions = RotationSettings(this) { silentValue }
+        .withRequestPriority(RotationPriority.HIGH)
 
     private val mainPos: FloatArray = floatArrayOf(0f, 0f, 0f)
     private var entity: EntityLivingBase? = null
@@ -299,7 +302,7 @@ object FightBot : Module("FightBot", Category.COMBAT, Category.SubCategory.COMBA
             mc.thePlayer.isSprinting = true
             if (mc.thePlayer.onGround) {
                 if (mc.gameSettings.keyBindForward.pressed) mc.gameSettings.keyBindForward.pressed = false
-                RotationUtils.setTargetRotation(Rotation(yaw[0], yaw[1]), RotationSettings(this))
+                RotationUtils.setTargetRotation(Rotation(yaw[0], yaw[1]), rotationOptions)
                 val strafe = mc.thePlayer.movementInput.moveStrafe.toDouble()
                 val cos = cos(Math.toRadians((yaw[0] + 90.0f).toDouble()))
                 val sin = sin(Math.toRadians((yaw[0] + 90.0f).toDouble()))

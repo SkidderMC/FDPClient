@@ -243,7 +243,7 @@ object Tower : Configurable("Tower"), MinecraftInstance, Listenable {
                 }
             }
 
-            // Credit: @localpthebest / Nextgen
+            // Credit: @localpthebest
             "vulcan2.9.0" -> {
                 if (player.ticksExisted % 10 == 0) {
                     // Prevent Flight Flag
