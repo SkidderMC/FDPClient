@@ -603,7 +603,14 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             null
         }
 
-        val raycastRotation = onTickRotation ?: currRotation
+        // Gate the placement raycast on the resolved target rotation instead of the live (possibly
+        // still-interpolating) rotation. When smoothing is active the live rotation lags behind the
+        // target for several ticks, so a raycast from it misses the target block and the place never
+        // fires. Using the target rotation here keeps placement reliable while the server-side
+        // rotation is still driven through the normal smoothed setRotation path.
+        val raycastRotation = onTickRotation
+            ?: (placeRotation?.rotation?.copy()?.fixedSensitivity()?.takeIf { raycastProperly && target != null })
+            ?: currRotation
         val raycast = performBlockRaytrace(raycastRotation, mc.playerController.blockReachDistance)
 
         var alreadyPlaced = false
@@ -1201,15 +1208,8 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
         val distance = eyes.distanceTo(vec)
 
-        if (raycast) {
-            if (distance > maxReach) {
-                return null
-            }
-
-            val visibilityTrace = world.rayTraceBlocks(eyes, vec, false, false, true)
-            if (visibilityTrace != null && (!visibilityTrace.typeOfHit.isBlock || visibilityTrace.blockPos != offsetPos || visibilityTrace.sideHit != side.opposite)) {
-                return null
-            }
+        if (raycast && (distance > maxReach || world.rayTraceBlocks(eyes, vec, false, true, false) != null)) {
+            return null
         }
 
         val diff = vec - eyes
