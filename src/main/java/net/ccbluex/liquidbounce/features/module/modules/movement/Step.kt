@@ -53,6 +53,8 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
     { mode == "Jump" }
 
     private val delay by int("Delay", 0, 0..500)
+    private val extraDelay by int("ExtraDelay", 0, 0..1000)
+    private val simulateJump by boolean("SimulateJump", false)
     private val timerValue by float("Timer", 1F, 0.05F..1F) {
         mode !in arrayOf("Matrix6.7.0", "Verus")
     }
@@ -249,7 +251,7 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
         }
 
         // Set step to default in some cases
-        if (!thePlayer.onGround || !timer.hasTimePassed(delay) ||
+        if (!thePlayer.onGround || !timer.hasTimePassed(delay + extraDelay) ||
             mode in arrayOf("Jump", "MotionNCP", "LAAC", "AAC3.3.4", "BlocksMCTimer")
         ) {
             thePlayer.stepHeight = 0.6F
@@ -278,6 +280,9 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
             return@handler
 
         if (thePlayer.entityBoundingBox.minY - stepY > 0.6) { // Check if full block step
+            if (simulateJump)
+                thePlayer.tryJump()
+
             if (timerValue < 1.0f) {
                 wasTimer = true
                 mc.timer.timerSpeed = timerValue
