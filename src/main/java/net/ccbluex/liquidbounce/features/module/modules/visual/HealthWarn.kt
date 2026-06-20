@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.event.handler
 object HealthWarn: Module("HealthWarn", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val healthValue by int("Health", 7, 1.. 20)
+    private val notificationDuration by int("Duration", 3000, 1000..10000)
 
     private var canWarn = true
 
@@ -31,7 +32,7 @@ object HealthWarn: Module("HealthWarn", Category.VISUAL, Category.SubCategory.RE
     val onUpdate = handler<UpdateEvent> {
         if (mc.thePlayer.health <= healthValue) {
             if (canWarn) {
-                addNotification(Notification("HP Warning","YOU ARE AT LOW HP!", Type.ERROR, 3000))
+                addNotification(Notification("HP Warning","YOU ARE AT LOW HP!", Type.ERROR, notificationDuration))
 
                 canWarn = false
             }
