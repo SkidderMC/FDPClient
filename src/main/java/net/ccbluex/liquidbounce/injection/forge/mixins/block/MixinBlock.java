@@ -75,7 +75,7 @@ public abstract class MixinBlock {
     @Inject(method = "shouldSideBeRendered", at = @At("HEAD"), cancellable = true)
     private void shouldSideBeRendered(IBlockAccess p_shouldSideBeRendered_1_, BlockPos p_shouldSideBeRendered_2_, EnumFacing p_shouldSideBeRendered_3_, CallbackInfoReturnable<Boolean> cir) {
         if (XRay.INSTANCE.handleEvents()) {
-            cir.setReturnValue(XRay.INSTANCE.getXrayBlocks().contains((Block) (Object) this));
+            cir.setReturnValue(XRay.INSTANCE.shouldRender(p_shouldSideBeRendered_1_, p_shouldSideBeRendered_2_, (Block) (Object) this));
         }
     }
 

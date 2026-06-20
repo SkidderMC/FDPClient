@@ -7,9 +7,16 @@ package net.ccbluex.liquidbounce.features.module.modules.visual
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.minecraft.block.Block
 import net.minecraft.init.Blocks
+import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumFacing
+import net.minecraft.world.IBlockAccess
 
 object XRay : Module("XRay", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
+
+    private val exposedOnly by boolean("ExposedOnly", false)
+    private val fullBright by boolean("FullBright", false)
 
     val xrayBlocks = mutableListOf(
         Blocks.coal_ore,
@@ -51,6 +58,9 @@ object XRay : Module("XRay", Category.VISUAL, Category.SubCategory.RENDER_OVERLA
 
     override fun onEnable() {
         prevGammaLevel = mc.gameSettings.gammaSetting
+
+        if (fullBright)
+            mc.gameSettings.gammaSetting = 100000f
     }
 
     override fun onToggle(state: Boolean) {
@@ -59,5 +69,15 @@ object XRay : Module("XRay", Category.VISUAL, Category.SubCategory.RENDER_OVERLA
 
     override fun onDisable() {
         mc.gameSettings.gammaSetting = prevGammaLevel
+    }
+
+    fun shouldRender(world: IBlockAccess, pos: BlockPos, block: Block): Boolean {
+        if (block !in xrayBlocks)
+            return false
+
+        if (!exposedOnly)
+            return true
+
+        return EnumFacing.values().any { !world.getBlockState(pos.offset(it)).block.isOpaqueCube }
     }
 }
