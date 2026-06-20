@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.WorldEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawAxisAlignedBB
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.renderNameTag
 import net.minecraft.util.AxisAlignedBB
@@ -20,6 +21,7 @@ object LogoffSpot : Module("LogoffSpot", Category.VISUAL, Category.SubCategory.R
 
     private val maxTrackDistance by float("MaxTrackDistance", 64F, 8F..256F)
     private val clearDistance by float("ClearDistance", 4F, 1F..16F)
+    private val sendInChat by boolean("SendInChat", false)
     private val color by color("Color", Color(255, 170, 0))
 
     private data class Spot(val name: String, val x: Double, val y: Double, val z: Double)
@@ -55,13 +57,21 @@ object LogoffSpot : Module("LogoffSpot", Category.VISUAL, Category.SubCategory.R
 
         // Players that disappeared since last tick become a logoff spot
         for ((name, pos) in lastSeen) {
-            if (!current.containsKey(name) && !spots.containsKey(name))
+            if (!current.containsKey(name) && !spots.containsKey(name)) {
                 spots[name] = Spot(name, pos.first, pos.second, pos.third)
+                if (sendInChat)
+                    ClientUtils.displayChatMessage(
+                        "$name disappeared at X:${pos.first.toInt()} Y:${pos.second.toInt()} Z:${pos.third.toInt()}"
+                    )
+            }
         }
 
         // Player reappeared -> drop their spot
-        for (name in current.keys)
+        for (name in current.keys) {
+            if (sendInChat && spots.containsKey(name))
+                ClientUtils.displayChatMessage("$name reappeared")
             spots.remove(name)
+        }
 
         // Reached the spot -> drop it
         val iterator = spots.values.iterator()
