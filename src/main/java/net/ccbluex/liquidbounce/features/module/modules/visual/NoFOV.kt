@@ -9,5 +9,11 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 
 object NoFOV : Module("NoFOV", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
-    val fov by float("FOV", 1f, 0f..1.5f)
+    private val baseFov by float("FOV", 1f, 0f..1.5f)
+    private val multiplier by float("Multiplier", 1f, 0.1f..1.5f)
+    private val offset by float("Offset", 0f, 0f..1.5f)
+    private val limit by float("Limit", 1.5f, 0f..1.5f)
+
+    val fov: Float
+        get() = (baseFov * multiplier + offset).coerceIn(0f, limit)
 }
