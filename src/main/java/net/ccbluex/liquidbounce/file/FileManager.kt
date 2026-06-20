@@ -275,13 +275,20 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
             val configFile = SettingsFiles.clientConfigFile(name)
 
             val json = if (configFile.exists() && configFile.length() > 0) {
-                JsonParser().parse(configFile.reader(Charsets.UTF_8)).asJsonObject
+                try {
+                    val parsed = JsonParser().parse(configFile.reader(Charsets.UTF_8))
+                    if (parsed != null && parsed.isJsonObject) parsed.asJsonObject else JsonObject()
+                } catch (t: Throwable) {
+                    LOGGER.error("[FileManager] Malformed config profile: ${configFile.name}, loading defaults.", t)
+                    JsonObject()
+                }
             } else {
                 JsonObject()
             }
 
             for (section in sections) {
-                section.load(if (json.has(section.sectionName)) json.getAsJsonObject(section.sectionName) else JsonObject())
+                val element = json.get(section.sectionName)
+                section.load(if (element != null && element.isJsonObject) element.asJsonObject else JsonObject())
             }
 
             if (!configFile.exists() || save) {
