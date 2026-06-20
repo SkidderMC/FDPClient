@@ -9,6 +9,9 @@ import net.ccbluex.liquidbounce.event.*
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler
+import net.ccbluex.liquidbounce.ui.client.hud.HUD.addNotification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.extensions.*
@@ -49,6 +52,9 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
     private val rubberbandThreshold by float("RubberBandThreshold", 5.0f, 0.05f..10.0f)
     { rubberbandCheck }
 
+    private val chatMessage by boolean("ChatMessage", true)
+    private val notification by boolean("Notification", false)
+
     // Memory leak fix: Limit flag history tracking
     private const val MAX_BLOCK_PLACEMENT_ATTEMPTS = 100
 
@@ -66,6 +72,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
     private val scale by float("Scale", 1F, 1F..6F) { renderServerPos == "Box" }
     private val font by font("Font", Fonts.fontSemibold40) { renderServerPos == "Box" }
     private val fontShadow by boolean("Shadow", true) { renderServerPos == "Box" }
+    private val notInFirstPerson by boolean("NotInFirstPerson", false) { renderServerPos == "Box" }
 
     private var lastCheckTime = 0L
 
@@ -125,7 +132,11 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
             if (deltaYaw > 90 || deltaPitch > 90) {
                 forceRotateDetected = true
                 flagCount++
-                chat("§dDetected §3Force-Rotate §e(${deltaYaw.roundToLong()}° | ${deltaPitch.roundToLong()}°) §b(§c${flagCount}x§b)")
+                reportFlag(
+                    "§dDetected §3Force-Rotate §e(${deltaYaw.roundToLong()}° | ${deltaPitch.roundToLong()}°) §b(§c${flagCount}x§b)",
+                    "Force-Rotate",
+                    "${deltaYaw.roundToLong()}° | ${deltaPitch.roundToLong()}°"
+                )
             } else {
                 forceRotateDetected = false
             }
@@ -133,7 +144,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
             if (!forceRotateDetected) {
                 lagbackDetected = true
                 flagCount++
-                chat("§dDetected §3Lagback §b(§c${flagCount}x§b)")
+                reportFlag("§dDetected §3Lagback §b(§c${flagCount}x§b)", "Lagback", "")
             }
 
             if (player.ticksExisted % 3 == 0) {
@@ -176,6 +187,16 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
     }
 
     /**
+     * Routes a flag detection to the enabled output channels (chat and/or HUD notification).
+     * [chatText] keeps the original colored chat formatting, while [type] and [content] feed
+     * the on-screen notification.
+     */
+    private fun reportFlag(chatText: String, type: String, content: String) {
+        if (chatMessage) chat(chatText)
+        if (notification) addNotification(Notification("FlagCheck", "$type §8(§c${flagCount}x§8) §7$content".trim(), Type.WARNING))
+    }
+
+    /**
      * Rubberband, Invalid Health/Hunger & GhostBlock Checks
      */
     val onUpdate = handler<UpdateEvent> {
@@ -206,7 +227,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
 
                         if (block == Blocks.air && successfulPlacements.contains(blockPos)) {
                             flagCount++
-                            chat("§dDetected §3GhostBlock §b(§c${flagCount}x§b)")
+                            reportFlag("§dDetected §3GhostBlock §b(§c${flagCount}x§b)", "GhostBlock", "")
                             successfulPlacements.clear()
                             return@removeIf true
                         }
@@ -224,7 +245,11 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
         if (invalidReason.isNotEmpty()) {
             flagCount++
             val reasonString = invalidReason.joinToString(" §8|§e ")
-            chat("§dDetected §3Invalid §e$reasonString §b(§c${flagCount}x§b)")
+            reportFlag(
+                "§dDetected §3Invalid §e$reasonString §b(§c${flagCount}x§b)",
+                "Invalid",
+                invalidReason.joinToString(" | ")
+            )
             invalidReason.clear()
         }
 
@@ -257,7 +282,11 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
         if (rubberbandReason.isNotEmpty()) {
             flagCount++
             val reasonString = rubberbandReason.joinToString(" §8|§e ")
-            chat("§dDetected §3Rubberband §8(§e$reasonString§8) §b(§c${flagCount}x§b)")
+            reportFlag(
+                "§dDetected §3Rubberband §8(§e$reasonString§8) §b(§c${flagCount}x§b)",
+                "Rubberband",
+                rubberbandReason.joinToString(" | ")
+            )
             rubberbandReason.clear()
         }
 
@@ -277,6 +306,8 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
         val pos = lastServerPos ?: return@handler
 
         if (renderServerPos != "Box") return@handler
+
+        if (notInFirstPerson && mc.gameSettings.thirdPersonView == 0) return@handler
 
         val remainingTime = ((6000 - (System.currentTimeMillis() - serverPosTime)) / 1000).coerceAtLeast(0)
         val text = "Last Position: ${remainingTime}sec"
