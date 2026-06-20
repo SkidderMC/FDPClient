@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.chat
+import net.ccbluex.liquidbounce.utils.timing.MSTimer
 
 /**
  * Leaves the current server automatically when a danger condition is met
@@ -26,13 +27,25 @@ object AutoLeave : Module("AutoLeave", Category.PLAYER, Category.SubCategory.PLA
 
     private val notify by boolean("Notify", true)
 
+    private val mode by choices("Mode", arrayOf("Disconnect", "Command"), "Disconnect")
+    private val command by text("Command", "/lobby") { mode == "Command" }
+    private val delay by int("Delay", 0, 0..10000)
+
     private var triggered = false
+    private var pending = false
+    private var pendingReason: String? = null
+    private val delayTimer = MSTimer()
 
     val onUpdate = handler<UpdateEvent> {
         val player = mc.thePlayer ?: return@handler
         val world = mc.theWorld ?: return@handler
 
         if (triggered) return@handler
+
+        if (pending) {
+            if (delayTimer.hasTimePassed(delay)) leave(pendingReason)
+            return@handler
+        }
 
         var reason: String? = null
 
@@ -46,8 +59,25 @@ object AutoLeave : Module("AutoLeave", Category.PLAYER, Category.SubCategory.PLA
         }
 
         if (reason != null) {
-            triggered = true
-            if (notify) chat("§8[§9§lAutoLeave§8] §3Leaving server: $reason")
+            if (delay > 0) {
+                pending = true
+                pendingReason = reason
+                delayTimer.reset()
+            } else {
+                leave(reason)
+            }
+        }
+    }
+
+    private fun leave(reason: String?) {
+        val player = mc.thePlayer ?: return
+        val world = mc.theWorld ?: return
+        triggered = true
+        pending = false
+        if (notify) chat("§8[§9§lAutoLeave§8] §3Leaving server: $reason")
+        if (mode == "Command") {
+            player.sendChatMessage(command)
+        } else {
             world.sendQuittingDisconnectingPacket()
             mc.displayGuiScreen(null)
         }
@@ -55,6 +85,8 @@ object AutoLeave : Module("AutoLeave", Category.PLAYER, Category.SubCategory.PLA
 
     override fun onEnable() {
         triggered = false
+        pending = false
+        pendingReason = null
         super.onEnable()
     }
 }
