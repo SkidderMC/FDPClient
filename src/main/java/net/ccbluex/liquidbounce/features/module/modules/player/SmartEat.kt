@@ -49,8 +49,18 @@ object SmartEat : Module(
     private val eatGoldenApples by boolean("EatGoldenApples", false)
     private val eatNotchApples by boolean("EatNotchApples", false) { eatGoldenApples }
 
+    // When health drops to/below this value, prefer a (notch) golden apple over the
+    // most-saturating regular food. 0 keeps the plain saturation-based pick.
+    private val preferGappleHealth by float("PreferGoldenAppleHealth", 0f, 0f..20f) { eatGoldenApples }
+    private val preferNotchHealth by float("PreferNotchAppleHealth", 0f, 0f..20f) { eatGoldenApples && eatNotchApples }
+
     private val silent by boolean("Silent", true)
+    // How long (in ticks) to keep the silent slot before swapping back. 0 = immediate.
+    private val swapBackDelay by int("SwapBackDelay", 0, 0..40, "ticks") { silent }
     private val swapBack by boolean("SwapBack", true) { !silent }
+
+    // Safety cap for the eat animation; a vanilla food item finishes in 32 ticks.
+    private val maxEatTicks by int("MaxEatTicks", 40, 32..60, "ticks")
 
     private var prevSlot = -1
     private var eatingSlot = -1
@@ -86,12 +96,43 @@ object SmartEat : Module(
         return true
     }
 
+    private fun isGoldenApple(stack: ItemStack, notch: Boolean): Boolean {
+        val item = stack.item
+        if (item !is ItemAppleGold) return false
+        return if (notch) stack.metadata > 0 else stack.metadata == 0
+    }
+
+    private fun findGoldenAppleSlot(notch: Boolean): Int {
+        val player = mc.thePlayer ?: return -1
+
+        for (slot in 0..8) {
+            val stack = player.inventory.getStackInSlot(slot) ?: continue
+            if (!isEdible(stack)) continue
+            if (isGoldenApple(stack, notch)) return slot
+        }
+
+        return -1
+    }
+
     /**
      * Picks the hotbar slot (0..8) holding the food that restores the most
      * saturation, ignoring golden/notch apples unless configured.
+     *
+     * When health is low enough, a (notch) golden apple is preferred over the
+     * saturation pick to favour the regeneration/absorption it grants.
      */
     private fun findBestFood(): Int {
         val player = mc.thePlayer ?: return -1
+
+        // Health-based preference: more urgent (lower) threshold wins first.
+        if (eatGoldenApples && eatNotchApples && preferNotchHealth > 0f && player.health <= preferNotchHealth) {
+            val notchSlot = findGoldenAppleSlot(true)
+            if (notchSlot != -1) return notchSlot
+        }
+        if (eatGoldenApples && preferGappleHealth > 0f && player.health <= preferGappleHealth) {
+            val gappleSlot = findGoldenAppleSlot(false)
+            if (gappleSlot != -1) return gappleSlot
+        }
 
         var bestSlot = -1
         var bestSaturation = -1f
@@ -149,7 +190,8 @@ object SmartEat : Module(
 
         if (silent) {
             prevSlot = -1
-            SilentHotbar.selectSlotSilently(this, slot, null, immediate = true)
+            val ticksUntilReset = if (swapBackDelay > 0) swapBackDelay else null
+            SilentHotbar.selectSlotSilently(this, slot, ticksUntilReset, immediate = true)
         } else {
             if (prevSlot == -1)
                 prevSlot = player.inventory.currentItem
@@ -204,7 +246,7 @@ object SmartEat : Module(
             eatTicks++
 
             // Safety cap: a vanilla food item finishes in 32 ticks.
-            if (eatTicks > 40)
+            if (eatTicks > maxEatTicks)
                 finishEating()
 
             return@handler
