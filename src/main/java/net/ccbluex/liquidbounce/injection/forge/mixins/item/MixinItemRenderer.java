@@ -110,14 +110,17 @@ public abstract class MixinItemRenderer {
             float scale = animations.getHandItemScale();
             float x = animations.getHandX();
             float y = animations.getHandY();
+            float z = animations.getHandZ();
+            float itemScale = animations.getHandScale();
             float rotX = animations.getHandPosX();
             float rotY = animations.getHandPosY();
             float rotZ = animations.getHandPosZ();
 
-            translate(x, y, scale);
+            translate(x, y, scale + z);
             rotate(rotX, 1f, 0f, 0f);
             rotate(rotY, 0f, 1f, 0f);
             rotate(rotZ, 0f, 0f, 1f);
+            GlStateManager.scale(itemScale, itemScale, itemScale);
         }
 
         if (itemToRender != null) {
