@@ -34,9 +34,11 @@ class Script(val scriptFile: File) : MinecraftInstance {
     private val scriptText = scriptFile.readText()
 
     // Script information
-    lateinit var scriptName: String
-    lateinit var scriptVersion: String
-    lateinit var scriptAuthors: Array<String>
+    // Defaults derived from the file so a failed/partial load still has a usable
+    // name instead of leaving these uninitialized and crashing the scripts list.
+    var scriptName: String = scriptFile.nameWithoutExtension
+    var scriptVersion: String = "0.0.0"
+    var scriptAuthors: Array<String> = emptyArray()
 
     private var state = false
 
