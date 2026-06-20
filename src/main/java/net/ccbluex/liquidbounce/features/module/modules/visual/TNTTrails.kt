@@ -21,6 +21,8 @@ object TNTTrails : Module("TNTTrails", Category.VISUAL, Category.SubCategory.REN
 
     private val renderMode by choices("Mode", arrayOf("Line", "Area", "Particles"), "Line")
     private val activeColor by color("ActiveColor", Color.WHITE)
+    private val completedColor by color("CompletedColor", Color(0, 0, 0))
+    private val lineThickness by float("LineThickness", 2.0f, 1.0f..5.0f) { renderMode == "Line" }
     private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200)
     private var maxRenderDistanceSq = maxRenderDistance.toDouble().pow(2)
         set(value) { field = if (value <= 0.0) maxRenderDistance.toDouble().pow(2) else value }
@@ -52,7 +54,7 @@ object TNTTrails : Module("TNTTrails", Category.VISUAL, Category.SubCategory.REN
                         glEnd()
                     }
                 }
-                glColor3f(0f, 0f, 0f)
+                glColor3f(completedColor.red / 255f, completedColor.green / 255f, completedColor.blue / 255f)
                 completedTrails.forEach { scribbleList ->
                     scribbleList.forEach { scribble ->
                         glBegin(GL_POINTS)
@@ -72,7 +74,7 @@ object TNTTrails : Module("TNTTrails", Category.VISUAL, Category.SubCategory.REN
             else -> {
                 glPushAttrib(GL_ENABLE_BIT)
                 pushMatrix()
-                if (renderMode == "Line") glLineWidth(2.0f)
+                if (renderMode == "Line") glLineWidth(lineThickness)
                 glColor3f(activeColor.red / 255f, activeColor.green / 255f, activeColor.blue / 255f)
                 activeTrails.values.forEach { scribbleList ->
                     scribbleList.forEach { scribble ->
@@ -87,7 +89,7 @@ object TNTTrails : Module("TNTTrails", Category.VISUAL, Category.SubCategory.REN
                         glEnd()
                     }
                 }
-                glColor3f(0f, 0f, 0f)
+                glColor3f(completedColor.red / 255f, completedColor.green / 255f, completedColor.blue / 255f)
                 completedTrails.forEach { scribbleList ->
                     scribbleList.forEach { scribble ->
                         glBegin(GL_LINE_STRIP)
