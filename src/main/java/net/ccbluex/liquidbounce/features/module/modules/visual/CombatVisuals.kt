@@ -14,6 +14,8 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.modules.combat.Criticals
 import net.ccbluex.liquidbounce.handler.combat.CombatManager
+import net.ccbluex.liquidbounce.utils.extensions.isAnimal
+import net.ccbluex.liquidbounce.utils.extensions.isMob
 import net.ccbluex.liquidbounce.utils.extensions.withAlpha
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.rainbow
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCircle
@@ -32,6 +34,7 @@ import net.minecraft.block.Block
 import net.minecraft.enchantment.EnchantmentHelper
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.effect.EntityLightningBolt
+import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.server.S2CPacketSpawnGlobalEntity
 import net.minecraft.potion.Potion
@@ -105,6 +108,12 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCate
         suffix = "Seconds"
     ) { animateCircleY || animateHeight }.subjective()
 
+    private val filterEntityType by choices(
+        "FilterEntityType",
+        arrayOf("All", "Players", "Mobs", "Animals"),
+        "All"
+    )
+
     private val rainbow by boolean("Mark-RainBow", false) { isMarkMode }
     private val hurt by boolean("Mark-HurtTime", true) { isMarkMode }
     private val boxOutline by boolean("Outline", true) { markValue == "Box" }.subjective()
@@ -141,6 +150,7 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCate
         val color: Color = if (rainbow) rainbow() else colorPrimary.withAlpha(255)
         val renderManager = mc.renderManager
         val entityLivingBase = combat.target ?: return@handler
+        if (!matchesEntityFilter(entityLivingBase)) return@handler
         (entityLivingBase.lastTickPosX + (entityLivingBase.posX - entityLivingBase.lastTickPosX) * mc.timer.renderPartialTicks
                 - renderManager.renderPosX)
         (entityLivingBase.lastTickPosY + (entityLivingBase.posY - entityLivingBase.lastTickPosY) * mc.timer.renderPartialTicks
@@ -259,6 +269,15 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCate
 
         doSound()
         attackEntity(target)
+    }
+
+    private fun matchesEntityFilter(entity: EntityLivingBase): Boolean {
+        return when (filterEntityType) {
+            "Players" -> entity is EntityPlayer
+            "Mobs" -> entity.isMob()
+            "Animals" -> entity.isAnimal()
+            else -> true
+        }
     }
 
     private fun attackEntity(entity: EntityLivingBase) {
