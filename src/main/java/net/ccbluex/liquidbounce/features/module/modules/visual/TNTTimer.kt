@@ -19,6 +19,8 @@ import java.awt.Color
 object TNTTimer : Module("TNTTimer", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, spacedName = "TNT Timer") {
 
     private val scale by float("Scale", 3F, 1F..4F)
+    private val renderY by float("RenderY", 1.5F, 0F..3F)
+    private val timeUnit by choices("TimeUnit", arrayOf("Ticks", "Seconds"), "Ticks")
     private val font by font("Font", Fonts.fontSemibold40)
     private val fontShadow by boolean("Shadow", true)
 
@@ -34,13 +36,14 @@ object TNTTimer : Module("TNTTimer", Category.VISUAL, Category.SubCategory.RENDE
 
     val onRender3D = handler<Render3DEvent> {
         for (entity in tntEntities) {
-            renderTNTTimer(entity, entity.fuse / 5)
+            val timeRemaining = if (timeUnit == "Seconds") entity.fuse / 20 else entity.fuse / 5
+            renderTNTTimer(entity, timeRemaining)
         }
     }
 
     private fun renderTNTTimer(tnt: EntityTNTPrimed, timeRemaining: Int) {
         val text = "TNT Explodes in: $timeRemaining"
-        renderWorldText(tnt, text, font, color.rgb, fontShadow, scale, yOffset = 1.5)
+        renderWorldText(tnt, text, font, color.rgb, fontShadow, scale, yOffset = renderY.toDouble())
     }
 
 }
