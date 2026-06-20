@@ -37,7 +37,7 @@ import org.lwjgl.opengl.GL11.glTranslatef
  *
  * If another variables from the renderItemInFirstPerson method are needed, please let me know or pass them by yourself.
  *
- * @author CCBlueX
+ *
  */
 object Animations : Module("Animations", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false) {
 
@@ -62,6 +62,8 @@ object Animations : Module("Animations", Category.CLIENT, Category.SubCategory.C
     val handItemScale by float("ItemScale", 0f, -5f..5f)
     val handX by float("X", 0f, -5f..5f)
     val handY by float("Y", 0f, -5f..5f)
+    val handZ by float("Z", 0f, -5f..5f)
+    val handScale by float("Scale", 1f, 0.1f..3f)
     val handPosX by float("PositionRotationX", 0f, -50f..50f)
     val handPosY by float("PositionRotationY", 0f, -50f..50f)
     val handPosZ by float("PositionRotationZ", 0f, -50f..50f)
@@ -116,7 +118,7 @@ fun itemRenderRotate() {
  * This class allows you to create your own animation.
  * It transforms the item in the hand and the known functions from Mojang are directly accessible as well.
  *
- * @author CCBlueX
+ *
  */
 abstract class Animation(val name: String) : MinecraftInstance {
     abstract fun transform(f1: Float, f: Float, clientPlayer: AbstractClientPlayer)
@@ -161,7 +163,7 @@ abstract class Animation(val name: String) : MinecraftInstance {
 /**
  * OneSeven animation (default). Similar to the 1.7 blocking animation.
  *
- * @author CCBlueX
+ *
  */
 class OneSevenAnimation : Animation("OneSeven") {
     override fun transform(f1: Float, f: Float, clientPlayer: AbstractClientPlayer) {
