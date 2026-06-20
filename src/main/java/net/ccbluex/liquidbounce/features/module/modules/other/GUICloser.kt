@@ -9,6 +9,8 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.client.chat
+import net.minecraft.client.gui.inventory.GuiChest
 import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.gui.inventory.GuiInventory
 
@@ -20,6 +22,7 @@ object GUICloser : Module("GUICloser", Category.OTHER, Category.SubCategory.MISC
 
     private val delay by int("Delay", 200, 0..5000)
     private val includeInventory by boolean("IncludeInventory", false)
+    private val printScreenTitle by boolean("PrintScreenTitle", false)
 
     private var openAt = -1L
 
@@ -37,6 +40,10 @@ object GUICloser : Module("GUICloser", Category.OTHER, Category.SubCategory.MISC
         if (openAt < 0L) {
             openAt = System.currentTimeMillis()
         } else if (System.currentTimeMillis() - openAt >= delay) {
+            if (printScreenTitle) {
+                val title = if (screen is GuiChest) screen.lowerChestInventory?.name else screen.javaClass.simpleName
+                chat("§3Closed screen: §7${title ?: screen.javaClass.simpleName}")
+            }
             mc.displayGuiScreen(null)
             openAt = -1L
         }
