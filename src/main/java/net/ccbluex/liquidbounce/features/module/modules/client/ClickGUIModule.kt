@@ -69,7 +69,10 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
     val clickHeight by int("Tab Height", 250, 100.. 500) { style == "Dropdown" }
 
     val nextGenInBrowser by boolean("Open In Browser", false) { style == "NextGen" }.onChanged { openInBrowser ->
-        if (openInBrowser) {
+        val activeScreen = nextGenGui?.takeIf { mc.currentScreen === it }
+        if (activeScreen != null) {
+            activeScreen.setBrowserMode(openInBrowser)
+        } else if (openInBrowser) {
             NextGenBrowserRuntime.releasePersistentBrowser()
         } else {
             warmupNextGenClickGui()
@@ -137,7 +140,11 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
         try {
             fdpDropdownGui?.onGuiClosed()
             yzyGui?.onGuiClosed()
-            nextGenGui?.onGuiClosed()
+            if (mc.currentScreen === nextGenGui) {
+                mc.displayGuiScreen(null)
+            } else {
+                nextGenGui?.onGuiClosed()
+            }
             neverloseGui = null
             NextGenBrowserRuntime.releasePersistentBrowser()
         } catch (e: Exception) {

@@ -46,6 +46,24 @@ class NextGenClickGuiScreen : GuiScreen() {
         NextGenBrowserRuntime.attach(currentUrl)
     }
 
+    fun setBrowserMode(openInBrowser: Boolean) {
+        if (browserMode == openInBrowser) {
+            return
+        }
+
+        browserMode = openInBrowser
+        pressedButtonMask = 0
+        focusApplied = false
+
+        if (openInBrowser) {
+            NextGenBrowserRuntime.detach()
+            NextGenBrowserRuntime.releasePersistentBrowser()
+            openExternally()
+        } else {
+            NextGenBrowserRuntime.attach(currentUrl)
+        }
+    }
+
     private fun layoutButtons() {
         val buttonWidth = 190
         val buttonHeight = 20

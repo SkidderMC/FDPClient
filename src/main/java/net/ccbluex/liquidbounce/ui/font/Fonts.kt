@@ -464,13 +464,26 @@ object Fonts : MinecraftInstance {
         }
     }
 
-    private fun getFontFromFileOrNull(file: String, size: Int): Font? = try {
-        File(fontsDir, file).inputStream().use { inputStream ->
-            Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(Font.PLAIN, size.toFloat())
+    private val fontFileFallbacks = mapOf(
+        "Roboto-Medium.ttf" to "Inter_Medium.ttf",
+        "Roboto-Bold.ttf" to "Inter_Bold.ttf",
+        "MuseoSans_900.ttf" to "MuseoSans-Bold.ttf"
+    )
+
+    private fun getFontFromFileOrNull(file: String, size: Int): Font? {
+        val requestedFile = File(fontsDir, file)
+        val sourceFile = requestedFile.takeIf(File::isFile)
+            ?: fontFileFallbacks[file]?.let { fallback -> File(fontsDir, fallback).takeIf(File::isFile) }
+            ?: return null
+
+        return try {
+            sourceFile.inputStream().use { inputStream ->
+                Font.createFont(Font.TRUETYPE_FONT, inputStream).deriveFont(Font.PLAIN, size.toFloat())
+            }
+        } catch (e: Exception) {
+            LOGGER.warn("Exception during loading font[name=${sourceFile.name}, size=${size}]", e)
+            null
         }
-    } catch (e: Exception) {
-        LOGGER.warn("Exception during loading font[name=${file}, size=${size}]", e)
-        null
     }
 
     private fun getFontFromFile(file: String, size: Int): Font =

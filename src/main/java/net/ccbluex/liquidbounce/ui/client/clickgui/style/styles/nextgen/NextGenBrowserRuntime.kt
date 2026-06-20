@@ -46,10 +46,8 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
     private const val REMOTE_CONFIG_CLASS = "net.montoyo.mcef.remote.RemoteConfig"
     private const val PROGRESS_LISTENER_CLASS = "net.montoyo.mcef.utilities.IProgressListener"
 
-    private var cefApp: Any? = null
-    private var doMessageLoopWork: Method? = null
-    private var mcefUpdate: Method? = null
     private var setFocus: Method? = null
+    private var initializationAttempted = false
 
     private var persistentBrowser: IBrowser? = null
     private var persistentUrl = ""
@@ -75,7 +73,13 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
 
     @Synchronized
     fun ensureStarted() {
-        if (state != State.IDLE) {
+        if (state == State.READY || state == State.INITIALIZING) {
+            return
+        }
+        if (adoptExistingRuntime()) {
+            return
+        }
+        if (state == State.FAILED || initializationAttempted) {
             return
         }
 
@@ -84,15 +88,22 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
 
         Thread({
             try {
+                MCEF.ENABLE_EXAMPLE = false
                 MCEF.SKIP_UPDATES = false
                 MCEF.WARN_UPDATES = false
+                MCEF.USE_FORGE_SPLASH = false
+                if (hasNativeRuntime()) {
+                    detail = "Starting in-game browser..."
+                } else {
+                    downloadNatives()
+                    Thread.sleep(250L)
+                }
 
-                // Phase 1 (background): fetch the native runtime so the render thread never blocks.
-                downloadNatives()
-
-                // Phase 2 (render thread): CEF must be initialized on the same thread that later
-                // pumps the message loop and uploads its texture.
-                Minecraft.getMinecraft().addScheduledTask { initOnRenderThread() }
+                Minecraft.getMinecraft().addScheduledTask {
+                    if (state == State.INITIALIZING) {
+                        initOnRenderThread()
+                    }
+                }
             } catch (throwable: Throwable) {
                 state = State.FAILED
                 detail = "In-game browser failed to download."
@@ -101,6 +112,8 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         }, "NextGen-Browser-Init").apply { isDaemon = true }.start()
     }
 
+    private fun hasNativeRuntime(): Boolean =
+        REQUIRED_NATIVE_FILES.all { fileName -> File(mc.mcDataDir, fileName).isFile }
     /** Replicates the proxy's native-download step (load manifest, mark missing, download). Background only. */
     private fun downloadNatives() {
         val proxyClass = Class.forName(PROXY_CLASS)
@@ -139,36 +152,39 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
     }
 
     private fun initOnRenderThread() {
+        if (state != State.INITIALIZING || adoptExistingRuntime()) {
+            return
+        }
+        if (initializationAttempted) {
+            state = State.FAILED
+            detail = "In-game browser initialization was already attempted."
+            return
+        }
+
+        initializationAttempted = true
+
         try {
             val proxyClass = Class.forName(PROXY_CLASS)
             val instance = proxyClass.getDeclaredConstructor().newInstance()
 
             MCEF::class.java.getField("PROXY").set(null, instance)
 
-            // MCEF is being initialized after Forge's mod-loading phase. Keep a temporary active
-            // container around its EventBus registration so Forge does not log a bogus critical error.
-            runCatching { invokeMcefOnInit(proxyClass, instance) }
-                .onFailure { LOGGER.warn("[NextGen] onInit reported an error; continuing if CEF initialized", it) }
+            // Late initialization still needs a temporary active Forge container.
+            invokeMcefOnInit(proxyClass, instance)
 
             val virtual = proxyClass.getField("VIRTUAL").getBoolean(null)
-            if (virtual) {
-                state = State.FAILED
-                detail = "In-game browser unavailable (virtual mode)."
-                return
-            }
-
             val app = proxyClass.getMethod("getCefApp").invoke(instance)
-            if (app == null) {
+            if (virtual || app == null) {
                 state = State.FAILED
-                detail = "In-game browser failed to start."
+                detail = if (virtual) {
+                    "In-game browser unavailable (virtual mode)."
+                } else {
+                    "In-game browser failed to start."
+                }
                 return
             }
-            cefApp = app
-            doMessageLoopWork = app.javaClass.getMethod("doMessageLoopWork", Long::class.javaPrimitiveType)
 
-            state = State.READY
-            detail = "In-game browser ready."
-            LOGGER.info("[NextGen] In-game browser runtime ready (render thread).")
+            markRuntimeReady("initialized")
         } catch (throwable: Throwable) {
             state = State.FAILED
             detail = "In-game browser failed to start."
@@ -176,6 +192,28 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         }
     }
 
+    private fun adoptExistingRuntime(): Boolean {
+        val proxy = runCatching { MCEF.PROXY }.getOrNull() ?: return false
+        val virtual = runCatching {
+            proxy.javaClass.getMethod("isVirtual").invoke(proxy) as? Boolean
+        }.getOrNull() == true
+        if (virtual) {
+            return false
+        }
+
+        runCatching {
+            proxy.javaClass.getMethod("getCefApp").invoke(proxy)
+        }.getOrNull() ?: return false
+
+        markRuntimeReady("adopted")
+        return true
+    }
+
+    private fun markRuntimeReady(source: String) {
+        state = State.READY
+        detail = "In-game browser ready."
+        LOGGER.info("[NextGen] In-game browser runtime ready ($source).")
+    }
     private fun invokeMcefOnInit(proxyClass: Class<*>, instance: Any) {
         val loaderClass = Class.forName("net.minecraftforge.fml.common.Loader")
         val loadControllerClass = Class.forName("net.minecraftforge.fml.common.LoadController")
@@ -255,28 +293,6 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
     fun readyApi(): API? =
         if (state == State.READY) runCatching { MCEFApi.getAPI() }.getOrNull() else null
 
-    /** Drive the CEF message loop one frame. MUST run on the render thread. No-op until ready. */
-    fun pump() {
-        if (state != State.READY) {
-            return
-        }
-        val app = cefApp ?: return
-        val method = doMessageLoopWork ?: return
-        runCatching { method.invoke(app, 0L) }
-            .onFailure { LOGGER.error("[NextGen] Browser message-loop pump failed", it) }
-    }
-
-    /** Upload the latest painted frame of [browser] into its OpenGL texture. Render thread only. */
-    fun updateBrowser(browser: IBrowser) {
-        if (state != State.READY) {
-            return
-        }
-        val method = mcefUpdate ?: runCatching { browser.javaClass.getMethod("mcefUpdate") }.getOrNull()
-            ?.also { mcefUpdate = it } ?: return
-        runCatching { method.invoke(browser) }
-            .onFailure { LOGGER.error("[NextGen] Browser texture update failed", it) }
-    }
-
     /** Give (or remove) keyboard focus from the browser. The off-screen browser ignores typed keys
      *  until it is focused; [IBrowser] doesn't expose this, so reach the backing browser reflectively. */
     fun focus(browser: IBrowser, focused: Boolean) {
@@ -298,11 +314,9 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         }
         lastHiddenPump = now
 
-        pump()
         ensurePersistentBrowser()
 
         val browser = persistentBrowser ?: return
-        updateBrowser(browser)
         updateReadyState(browser)
     }
 
@@ -384,6 +398,15 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         browserReady = false
         lastTextureId = 0
     }
+
+    private val REQUIRED_NATIVE_FILES = arrayOf(
+        "jcef.dll",
+        "libcef.dll",
+        "icudtl.dat",
+        "cef.pak",
+        "natives_blob.bin",
+        "snapshot_blob.bin"
+    )
 
     private const val BROWSER_WARMUP_MILLIS = 450L
     private const val BROWSER_WARMUP_FRAMES = 3

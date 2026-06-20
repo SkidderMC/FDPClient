@@ -26,7 +26,7 @@ object NextGenClickGuiServer {
         get() = serverPort
 
     val url: String
-        get() = "http://localhost:$serverPort/#/clickgui?port=$serverPort"
+        get() = "http://localhost:$serverPort/?port=$serverPort&static#/clickgui"
 
     @Synchronized
     fun start(): String {
