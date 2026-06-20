@@ -19,6 +19,7 @@ import net.minecraft.util.BlockPos
 object HighJump : Module("HighJump", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
     private val mode by choices("Mode", arrayOf("Vanilla", "Damage", "AACv3", "DAC", "Mineplex"), "Vanilla")
     private val height by float("Height", 2f, 1.1f..5f) { mode in arrayOf("Vanilla", "Damage") }
+    private val motion by float("Motion", 0.42f, 0.1f..1f) { mode == "Damage" }
 
     private val glass by boolean("OnlyGlassPane", false)
 
@@ -29,7 +30,7 @@ object HighJump : Module("HighJump", Category.MOVEMENT, Category.SubCategory.MOV
             return@handler
 
         when (mode.lowercase()) {
-            "damage" -> if (thePlayer.hurtTime > 0 && thePlayer.onGround) thePlayer.motionY += 0.42f * height
+            "damage" -> if (thePlayer.hurtTime > 0 && thePlayer.onGround) thePlayer.motionY += motion * height
             "aacv3" -> if (!thePlayer.onGround) thePlayer.motionY += 0.059
             "dac" -> if (!thePlayer.onGround) thePlayer.motionY += 0.049999
             "mineplex" -> if (!thePlayer.onGround) strafe(0.35f)
