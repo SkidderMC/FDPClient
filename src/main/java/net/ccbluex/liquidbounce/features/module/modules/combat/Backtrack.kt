@@ -168,8 +168,16 @@ object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COM
                 if (isPacketQueueEmpty && areQueuedPacketsEmpty && !shouldBacktrack()) return@handler
 
                 when (packet) {
-                    // Ignore server related packets
-                    is C00Handshake, is C00PacketServerQuery, is S02PacketChat, is S01PacketPong -> return@handler
+                    // Never delay connection or player lifecycle packets. Minecraft requires player-list
+                    // data to exist before handling the matching spawn packet.
+                    is C00Handshake, is C00PacketServerQuery, is S02PacketChat, is S01PacketPong,
+                    is S0CPacketSpawnPlayer, is S38PacketPlayerListItem -> return@handler
+
+                    is S01PacketJoinGame, is S07PacketRespawn -> {
+                        clearPackets(handlePackets = false)
+                        reset()
+                        return@handler
+                    }
 
                     is S29PacketSoundEffect -> if (nonDelayedSoundSubstrings in packet.soundName) return@handler
 
@@ -179,9 +187,11 @@ object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COM
                         return@handler
                     }
 
-                    is S13PacketDestroyEntities -> if (target != null && target!!.entityId in packet.entityIDs) {
-                        clearPackets()
-                        reset()
+                    is S13PacketDestroyEntities -> {
+                        if (target != null && target!!.entityId in packet.entityIDs) {
+                            clearPackets(handlePackets = false)
+                            reset()
+                        }
                         return@handler
                     }
 
@@ -231,9 +241,10 @@ object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COM
 
                     event.cancelEvent()
 
-                    // Memory leak fix: Limit packet queue size
+                    // Preserve protocol ordering when capping the local queue. Dropping the oldest
+                    // packet can remove state required by a later packet.
                     if (packetQueue.size >= MAX_PACKET_QUEUE_SIZE) {
-                        packetQueue.poll() // Remove oldest
+                        packetQueue.poll()?.let { PacketUtils.schedulePacketProcess(it.packet) }
                     }
                     packetQueue += QueueData(packet, System.currentTimeMillis())
                 }
