@@ -120,7 +120,7 @@ object TabCompleteUtils {
     fun keys(prefix: String): List<String> {
         val names = sequence {
             yield("NONE")
-            for (key in 1..Keyboard.KEYBOARD_SIZE) {
+            for (key in 1 until Keyboard.KEYBOARD_SIZE) {
                 val name = Keyboard.getKeyName(key)
                 if (!name.isNullOrEmpty()) yield(name)
             }
