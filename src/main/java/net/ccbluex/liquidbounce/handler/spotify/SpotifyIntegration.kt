@@ -46,10 +46,15 @@ object SpotifyIntegration : MinecraftInstance {
     private val callbackPort = SpotifyDefaults.authorizationRedirectPort
     private val redirectUri = "http://127.0.0.1:$callbackPort$callbackPath"
 
+    // Construct the service without touching SSL/keystore (its HTTP client is built lazily), so the
+    // object initializer can never throw and crash client startup. Any later HTTP failure is handled
+    // by the callers, leaving the feature inert for the session instead of fatal.
     val service: SpotifyService = SpotifyService()
 
     init {
-        LOGGER.info("[Spotify] Spotify integration handler initialized (redirectUri=$redirectUri)")
+        runCatching {
+            LOGGER.info("[Spotify] Spotify integration handler initialized (redirectUri=$redirectUri)")
+        }.onFailure { LOGGER.error("[Spotify] Spotify integration handler initialization failed", it) }
     }
 
     fun authorizeInBrowser(clientId: String, clientSecret: String?, flow: SpotifyAuthFlow): CompletableFuture<SpotifyAccessToken> {

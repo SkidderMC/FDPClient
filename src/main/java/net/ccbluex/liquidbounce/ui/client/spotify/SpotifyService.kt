@@ -27,12 +27,19 @@ import java.util.concurrent.TimeUnit
  * Handles the Spotify Web API HTTP calls.
  */
 class SpotifyService(
-    private val httpClient: OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(SpotifyDefaults.httpTimeoutMillis, TimeUnit.MILLISECONDS)
-        .readTimeout(SpotifyDefaults.httpTimeoutMillis, TimeUnit.MILLISECONDS)
-        .writeTimeout(SpotifyDefaults.httpTimeoutMillis, TimeUnit.MILLISECONDS)
-        .build(),
+    httpClientProvider: () -> OkHttpClient = {
+        OkHttpClient.Builder()
+            .connectTimeout(SpotifyDefaults.httpTimeoutMillis, TimeUnit.MILLISECONDS)
+            .readTimeout(SpotifyDefaults.httpTimeoutMillis, TimeUnit.MILLISECONDS)
+            .writeTimeout(SpotifyDefaults.httpTimeoutMillis, TimeUnit.MILLISECONDS)
+            .build()
+    },
 ) {
+
+    // The OkHttpClient touches the JVM trust store/SSL platform on creation, which can throw on
+    // broken environments. Build it lazily so merely constructing the service never fails; any
+    // failure surfaces only when an HTTP call is actually attempted (already guarded by callers).
+    private val httpClient: OkHttpClient by lazy(httpClientProvider)
 
     suspend fun refreshAccessToken(credentials: SpotifyCredentials): SpotifyAccessToken = withContext(Dispatchers.IO) {
         LOGGER.info(
