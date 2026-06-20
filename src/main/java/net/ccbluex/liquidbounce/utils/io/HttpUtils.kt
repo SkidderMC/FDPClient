@@ -162,70 +162,111 @@ fun OkHttpClient.Builder.applyBypassHttps() = this
 
 object Downloader {
 
+    /**
+     * Downloads [url] into [targetFile].
+     *
+     * Network failures (timeouts, DNS errors, broken streams, non-2xx responses, ...) are caught
+     * and logged instead of being propagated, so a download that happens during startup can never
+     * crash the client. On failure the target file is left absent/unchanged and the caller is
+     * expected to fall back to the bundled resource. Returns `true` when the file was downloaded
+     * successfully, `false` otherwise.
+     */
     suspend fun download(
         url: String,
         targetFile: File,
         parallelism: Int = 4,
         chunkSize: Long = 2 * 1024 * 1024
-    ) = withContext(Dispatchers.IO) {
+    ): Boolean = withContext(Dispatchers.IO) {
         require(parallelism > 0)
         require(chunkSize >= 1024)
 
-        if (parallelism == 1) {
-            downloadWholeFile(url, targetFile)
-            return@withContext
-        }
-
-        val (fileSize, supportsRange) = getFileSizeAndRangeSupport(url)
-
-        if (fileSize <= 0 || !supportsRange) {
-            downloadWholeFile(url, targetFile)
-            return@withContext
-        }
-
-        val maxConcurrency = ((fileSize + chunkSize - 1) / chunkSize).toInt()
-
-        val semaphore = Semaphore(parallelism)
-
-        ClientUtils.LOGGER.info(
-            "[HTTP] Starting ${
-                minOf(
-                    parallelism,
-                    maxConcurrency
-                )
-            } tasks for downloading $url to $targetFile"
-        )
-
-        val tempFiles = List(maxConcurrency) { chunkIndex ->
-            async {
-                semaphore.withPermit {
-                    val start = chunkIndex * chunkSize
-                    val end = minOf((chunkIndex + 1) * chunkSize - 1, fileSize - 1)
-                    val tempFile = File(targetFile.parent, "chunk_$chunkIndex.tmp")
-
-                    downloadChunk(url, start, end, tempFile)
-                    tempFile
-                }
+        try {
+            if (parallelism == 1) {
+                downloadWholeFile(url, targetFile)
+                return@withContext true
             }
-        }.awaitAll()
 
-        mergeChunks(tempFiles, targetFile)
+            val (fileSize, supportsRange) = getFileSizeAndRangeSupport(url)
+
+            if (fileSize <= 0 || !supportsRange) {
+                downloadWholeFile(url, targetFile)
+                return@withContext true
+            }
+
+            val maxConcurrency = ((fileSize + chunkSize - 1) / chunkSize).toInt()
+
+            val semaphore = Semaphore(parallelism)
+
+            ClientUtils.LOGGER.info(
+                "[HTTP] Starting ${
+                    minOf(
+                        parallelism,
+                        maxConcurrency
+                    )
+                } tasks for downloading $url to $targetFile"
+            )
+
+            val tempFiles = List(maxConcurrency) { chunkIndex ->
+                async {
+                    semaphore.withPermit {
+                        val start = chunkIndex * chunkSize
+                        val end = minOf((chunkIndex + 1) * chunkSize - 1, fileSize - 1)
+                        val tempFile = File(targetFile.parent, "chunk_$chunkIndex.tmp")
+
+                        downloadChunk(url, start, end, tempFile)
+                        tempFile
+                    }
+                }
+            }.awaitAll()
+
+            mergeChunks(tempFiles, targetFile)
+            true
+        } catch (throwable: Throwable) {
+            ClientUtils.LOGGER.error(
+                "[HTTP] Failed to download $url to $targetFile, falling back to the bundled resource",
+                throwable
+            )
+            false
+        }
     }
 
     private fun getFileSizeAndRangeSupport(url: String): Pair<Long, Boolean> =
-        HttpClient.head(url).use { response ->
-            if (!response.isSuccessful) return Pair(-1, false)
+        runCatching {
+            HttpClient.head(url).use { response ->
+                if (!response.isSuccessful) return@runCatching Pair(-1L, false)
 
-            val contentLength = response.header("Content-Length")?.toLongOrNull() ?: -1
-            val acceptRanges = response.header("Accept-Ranges")
-            val supportsRange = acceptRanges == "bytes"
+                val contentLength = response.header("Content-Length")?.toLongOrNull() ?: -1
+                val acceptRanges = response.header("Accept-Ranges")
+                val supportsRange = acceptRanges == "bytes"
 
-            Pair(contentLength, supportsRange)
+                Pair(contentLength, supportsRange)
+            }
+        }.getOrElse { throwable ->
+            ClientUtils.LOGGER.warn(
+                "[HTTP] Failed to probe size/range support for $url, falling back to whole-file download",
+                throwable
+            )
+            Pair(-1L, false)
         }
 
-    fun downloadWholeFile(url: String, targetFile: File) {
-        HttpClient.get(url).toFile(targetFile)
-    }
+    /**
+     * Downloads the whole [url] into [targetFile].
+     *
+     * Any failure is caught and logged so a startup download can never crash the client; the caller
+     * is expected to detect the missing file and fall back to the bundled resource. Returns `true`
+     * on success, `false` otherwise.
+     */
+    fun downloadWholeFile(url: String, targetFile: File): Boolean =
+        runCatching {
+            HttpClient.get(url).toFile(targetFile)
+            true
+        }.getOrElse { throwable ->
+            ClientUtils.LOGGER.error(
+                "[HTTP] Failed to download $url to $targetFile, falling back to the bundled resource",
+                throwable
+            )
+            false
+        }
 
     private fun downloadChunk(url: String, start: Long, end: Long, tempFile: File) {
         try {
