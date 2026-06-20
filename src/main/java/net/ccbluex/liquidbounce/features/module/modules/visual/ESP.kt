@@ -47,6 +47,9 @@ object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY)
 
     private val espColor = ColorSettingsInteger(this, "ESPColor").with(255, 255, 255)
 
+    private val friendColor by color("Friend Color", Color.BLUE)
+    private val invisibleColor by color("Invisible Color", Color(255, 255, 255))
+
     private val renderFilters = RenderFilterSettings(50, 1..200).also { addValues(it.values) }
 
     private val colorTeam by boolean("TeamColor", false)
@@ -178,8 +181,11 @@ object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY)
             if (entity.hurtTime > 0)
                 return Color.RED
 
+            if (entity.isInvisible)
+                return invisibleColor
+
             if (entity is EntityPlayer && entity.isClientFriend())
-                return Color.BLUE
+                return friendColor
 
             if (colorTeam) {
                 entity.colorFromDisplayName()?.let {
