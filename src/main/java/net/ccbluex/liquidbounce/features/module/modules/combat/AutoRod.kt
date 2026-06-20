@@ -32,7 +32,10 @@ object AutoRod : Module("AutoRod", Category.COMBAT, Category.SubCategory.COMBAT_
     private val absorption by boolean("Absorption", false) { facingEnemy && ignoreOnEnemyLowHealth }
 
     private val activationDistance by float("ActivationDistance", 8f, 1f..20f)
+    private val scanExtraRange by float("ScanExtraRange", 0f, 0f..5f)
     private val enemiesNearby by int("EnemiesNearby", 1, 1..5)
+
+    private val minTargetHealth by float("MinTargetHealth", 0f, 0f..20f) { facingEnemy }
 
     // Improve health check customization
     private val playerHealthThreshold by int("PlayerHealthThreshold", 5, 1..20)
@@ -45,11 +48,14 @@ object AutoRod : Module("AutoRod", Category.COMBAT, Category.SubCategory.COMBAT_
 
     private val pushDelay by int("PushDelay", 100, 50..1000)
     private val pullbackDelay by int("PullbackDelay", 500, 50..1000)
+    private val cooldown by int("Cooldown", 0, 0..2000)
+    private val hitTimeout by int("HitTimeout", 5000, 100..5000)
 
     private val onUsingItem by boolean("OnUsingItem", false)
 
     private val pushTimer = MSTimer()
     private val rodPullTimer = MSTimer()
+    private val castTimer = MSTimer()
 
     private var rodInUse = false
     private var switchBack = -1
@@ -59,10 +65,15 @@ object AutoRod : Module("AutoRod", Category.COMBAT, Category.SubCategory.COMBAT_
         val usingRod = (mc.thePlayer.isUsingItem && mc.thePlayer.heldItem?.item == Items.fishing_rod) || rodInUse
 
         if (usingRod) {
-            // Check if rod pull timer has reached delay
-            // mc.thePlayer.fishEntity?.caughtEntity != null is always null
+            // Check if rod pull timer has reached delay.
+            // The hooked entity is not reliable client-side, so a bite is detected
+            // from the bobber's vertical-only motion (same signal used for fishing).
+            val fishEntity = mc.thePlayer?.fishEntity
+            val bobberBite = fishEntity != null &&
+                fishEntity.motionX == 0.0 && fishEntity.motionZ == 0.0 && fishEntity.motionY != 0.0
+            val hitTimedOut = rodPullTimer.hasTimePassed(hitTimeout)
 
-            if (rodPullTimer.hasTimePassed(pullbackDelay)) {
+            if (rodPullTimer.hasTimePassed(pullbackDelay) || bobberBite || hitTimedOut) {
                 if (switchBack != -1 && mc.thePlayer.inventory.currentItem != switchBack) {
                     // Switch back to previous item
                     mc.thePlayer.inventory.currentItem = switchBack
@@ -87,7 +98,8 @@ object AutoRod : Module("AutoRod", Category.COMBAT, Category.SubCategory.COMBAT_
 
                 if (facingEntity == null) {
                     // Check if player is looking at enemy.
-                    facingEntity = RaycastUtils.raycastEntity(activationDistance.toDouble()) { isSelected(it, true) }
+                    facingEntity =
+                        RaycastUtils.raycastEntity((activationDistance + scanExtraRange).toDouble()) { isSelected(it, true) }
                 }
 
                 // Check whether player is using items/blocking.
@@ -97,7 +109,9 @@ object AutoRod : Module("AutoRod", Category.COMBAT, Category.SubCategory.COMBAT_
                     }
                 }
 
-                if (isSelected(facingEntity, true)) {
+                if (isSelected(facingEntity, true) &&
+                    getHealth(facingEntity as EntityLivingBase, healthFromScoreboard, absorption) >= minTargetHealth
+                ) {
                     // Checks how many enemy is nearby, if <= then should rod.
                     if (nearbyEnemies.size <= enemiesNearby) {
 
@@ -124,7 +138,7 @@ object AutoRod : Module("AutoRod", Category.COMBAT, Category.SubCategory.COMBAT_
                 rod = true
             }
 
-            if (rod && pushTimer.hasTimePassed(pushDelay)) {
+            if (rod && pushTimer.hasTimePassed(pushDelay) && castTimer.hasTimePassed(cooldown)) {
                 // Check if player has rod in hand
                 if (mc.thePlayer.heldItem?.item != Items.fishing_rod) {
                     // Check if player has rod in hotbar
@@ -159,6 +173,7 @@ object AutoRod : Module("AutoRod", Category.COMBAT, Category.SubCategory.COMBAT_
 
         rodInUse = true
         rodPullTimer.reset()
+        castTimer.reset()
     }
 
     /**
@@ -178,7 +193,7 @@ object AutoRod : Module("AutoRod", Category.COMBAT, Category.SubCategory.COMBAT_
         val player = mc.thePlayer ?: return emptyList()
 
         return mc.theWorld.loadedEntityList.filter {
-            isSelected(it, true) && player.getDistanceToEntityBox(it) < activationDistance
+            isSelected(it, true) && player.getDistanceToEntityBox(it) < activationDistance + scanExtraRange
         }
     }
 
