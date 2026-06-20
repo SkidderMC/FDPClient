@@ -27,6 +27,9 @@ object ProphuntESP : Module("ProphuntESP", Category.VISUAL, Category.SubCategory
 
     private val color by color("Color", Color(0, 90, 255))
 
+    private val blockFadeTime by int("BlockFadeTime", 2000, 100..10000, "ms")
+    private val fadeOutBlocks by boolean("FadeOutBlocks", false)
+
     private val renderFilters = RenderFilterSettings(50, 1..200).also { addValues(it.values) }
 
     private val blocks = ConcurrentHashMap<BlockPos, Long>()
@@ -54,17 +57,28 @@ object ProphuntESP : Module("ProphuntESP", Category.VISUAL, Category.SubCategory
 
     val handleUpdateBlocks = handler<Render3DEvent> {
         val now = System.currentTimeMillis()
+        val lifetime = blockFadeTime.toLong()
 
         with(blocks.entries.iterator()) {
             while (hasNext()) {
                 val (pos, time) = next()
 
-                if (now - time > 2000L) {
+                val elapsed = now - time
+
+                if (elapsed > lifetime) {
                     remove()
                     continue
                 }
 
-                drawBlockBox(pos, color, mode == "Box")
+                val renderColor = if (fadeOutBlocks && lifetime > 0L) {
+                    val progress = elapsed.toFloat() / lifetime.toFloat()
+                    val fadedAlpha = (color.alpha * (1f - progress)).toInt().coerceIn(0, 255)
+                    Color(color.red, color.green, color.blue, fadedAlpha)
+                } else {
+                    color
+                }
+
+                drawBlockBox(pos, renderColor, mode == "Box")
             }
         }
     }
