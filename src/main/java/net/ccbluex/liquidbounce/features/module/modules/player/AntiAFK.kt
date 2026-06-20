@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.event.handler
+import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.settings.GameSettings
 
 object AntiAFK : Module("AntiAFK", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
@@ -31,6 +32,8 @@ object AntiAFK : Module("AntiAFK", Category.PLAYER, Category.SubCategory.PLAYER_
     private val jump by boolean("Jump", true) { mode == "Custom" }
     private val move by boolean("Move", true) { mode == "Custom" }
 
+    private val ignoreOpenInventory by boolean("IgnoreOpenInventory", false)
+
     private var shouldMove = false
     private var randomTimerDelay = 500L
 
@@ -40,6 +43,8 @@ object AntiAFK : Module("AntiAFK", Category.PLAYER, Category.SubCategory.PLAYER_
 
     val onUpdate = handler<UpdateEvent> {
         val thePlayer = mc.thePlayer ?: return@handler
+
+        if (ignoreOpenInventory && mc.currentScreen is GuiContainer) return@handler
 
         when (mode.lowercase()) {
             "old" -> {
