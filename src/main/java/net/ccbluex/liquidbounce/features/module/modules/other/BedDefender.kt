@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.inventory.inventorySlot
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
+import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotation
@@ -57,7 +58,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, Category.SubCategory.
     ) { options.rotationsActive }
     private val scannerMode by choices("Scanner", arrayOf("Nearest", "Random"), "Nearest")
 
-    private val options = RotationSettings(this)
+    private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 
     private val onSneakOnly by boolean("OnSneakOnly", true)
     private val autoSneak by choices("AutoSneak", arrayOf("Off", "Normal", "Packet"), "Off") { !onSneakOnly }

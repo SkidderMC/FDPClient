@@ -23,6 +23,7 @@ import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.vulca
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.vulcan.OldVulcan
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlock
 import net.ccbluex.liquidbounce.utils.rotation.AlwaysRotationSettings
+import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.minecraft.block.BlockLiquid
 import net.minecraft.util.AxisAlignedBB.fromBounds
 import net.minecraft.util.BlockPos
@@ -110,6 +111,7 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
     val swing by boolean("Swing", true) { mode == "MLG" }
 
     val options = AlwaysRotationSettings(this) { mode == "MLG" }
+        .withRequestPriority(RotationPriority.CRITICAL)
     val matrixSafe by boolean("SafeNoFall", true) { mode == "Matrix6.6.3" }
     val motionFlagSpeed by float("MotionFlag-MotionSpeed", -0.01f, -5f..5f) { mode == "MotionFlag" }
     val phaseOffset by int("PhaseOffset", 1, 0..5) { mode == "Phase" }

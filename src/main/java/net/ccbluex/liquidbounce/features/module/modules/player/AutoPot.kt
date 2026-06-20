@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.utils.inventory.isSplashPotion
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.movement.FallingPlayer
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
+import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
@@ -55,6 +56,7 @@ object AutoPot : Module("AutoPot", Category.PLAYER, Category.SubCategory.PLAYER_
     private val options = RotationSettings(this).withoutKeepRotation().apply {
         resetTicksValue.excludeWithState()
 
+        withRequestPriority(RotationPriority.CRITICAL)
         immediate = true
     }
 

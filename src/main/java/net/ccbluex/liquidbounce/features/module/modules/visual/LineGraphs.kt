@@ -29,9 +29,6 @@ import java.util.Random
 
 object LineGraphs : Module("LineGlyphs", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
-    init {
-        state = true
-    }
 
     val slowSpeed by boolean("Slow Speed", false)
     private val glyphCount by int("Glyphs Count", 70, 0..200)

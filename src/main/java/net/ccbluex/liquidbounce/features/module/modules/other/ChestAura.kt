@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.utils.client.realZ
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.serverOpenContainer
 import net.ccbluex.liquidbounce.utils.kotlin.StringUtils.contains
+import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotation
@@ -79,7 +80,7 @@ object ChestAura : Module("ChestAura", Category.OTHER, Category.SubCategory.MISC
     private val ignoreLooted by boolean("IgnoreLootedChests", true)
     private val detectRefill by boolean("DetectChestRefill", true)
 
-    private val options = RotationSettings(this).withoutKeepRotation()
+    private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.LOW)
 
     private val openInfo by choices("OpenInfo", arrayOf("Off", "Self", "Other", "Everyone"), "Off")
 

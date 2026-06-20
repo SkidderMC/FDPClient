@@ -17,6 +17,10 @@ object EntityVisibilityFilter : MinecraftInstance {
             return false
         }
 
+        if (TargetFocus.shouldForceRender(entity)) {
+            return false
+        }
+
         if (HideClans.shouldHideEntity(entity)) {
             return true
         }

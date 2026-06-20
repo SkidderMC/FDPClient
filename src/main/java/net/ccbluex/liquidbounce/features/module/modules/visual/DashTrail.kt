@@ -39,10 +39,6 @@ import kotlin.math.*
 
 object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
-    init {
-        state = true
-    }
-
     private val renderSelf by boolean("RenderSelf", true)
     private val renderPlayers by boolean("Render Players", true)
     private val showDashSegments by boolean("Dash Segments", false)

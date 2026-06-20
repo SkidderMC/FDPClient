@@ -33,9 +33,11 @@ object FakePlayer : Module("FakePlayer", Category.OTHER, Category.SubCategory.MI
     private val sprintKnockbackValue by float("SprintKnockback", 0.4F, 0F..2F)
     private val criticalParticles by boolean("CriticalParticles", true)
     private val removeOnDeath by boolean("RemoveOnDeath", true)
+    private val deathDelayTicks by int("DeathDelayTicks", 20, 0..40, suffix = "Ticks") { removeOnDeath }
 
     private var fakePlayer: EntityOtherPlayerMP? = null
     private var fakeHealth = 20F
+    private var deathTicks = 0
 
     override val tag: String?
         get() = fakePlayer?.let { "%.1f HP".format(fakeHealth) }
@@ -50,7 +52,7 @@ object FakePlayer : Module("FakePlayer", Category.OTHER, Category.SubCategory.MI
 
         event.cancelEvent()
 
-        if (fake.isDead || fakeHealth <= 0F || fake.hurtResistantTime > invulnerabilityTicks) {
+        if (fake.isDead || fakeHealth <= 0F || fake.hurtResistantTime > 0) {
             return@handler
         }
 
@@ -60,9 +62,21 @@ object FakePlayer : Module("FakePlayer", Category.OTHER, Category.SubCategory.MI
     val onUpdate = handler<UpdateEvent> {
         val fake = fakePlayer ?: return@handler
 
-        if (fake.isDead || fake.worldObj !== mc.theWorld) {
+        if (fake.worldObj !== mc.theWorld) {
             fakePlayer = null
             fakeHealth = 0F
+            deathTicks = 0
+            return@handler
+        }
+
+        fakeHealth = fake.health.coerceAtLeast(0F)
+
+        if (fakeHealth <= 0F) {
+            deathTicks++
+            fake.deathTime = deathTicks.coerceAtMost(20)
+            if (removeOnDeath && deathTicks > deathDelayTicks) {
+                removeFakePlayer()
+            }
             return@handler
         }
 
@@ -73,17 +87,12 @@ object FakePlayer : Module("FakePlayer", Category.OTHER, Category.SubCategory.MI
         val friction = if (fake.onGround) 0.6 * 0.91 else 0.91
         fake.motionX *= friction
         fake.motionZ *= friction
-
-        fakeHealth = fake.health.coerceAtLeast(0F)
-
-        if (fakeHealth <= 0F && removeOnDeath) {
-            removeFakePlayer()
-        }
     }
 
     val onWorld = handler<WorldEvent>(always = true) {
         fakePlayer = null
         fakeHealth = 0F
+        deathTicks = 0
     }
 
     override fun onEnable() {
@@ -93,6 +102,7 @@ object FakePlayer : Module("FakePlayer", Category.OTHER, Category.SubCategory.MI
         removeFakePlayer()
 
         fakeHealth = healthValue
+        deathTicks = 0
         fakePlayer = EntityOtherPlayerMP(world, player.gameProfile).apply {
             clonePlayer(player, true)
             rotationYawHead = player.rotationYawHead
@@ -106,7 +116,7 @@ object FakePlayer : Module("FakePlayer", Category.OTHER, Category.SubCategory.MI
             deathTime = 0
         }
 
-        world.addEntityToWorld(FAKE_PLAYER_ID, fakePlayer)
+        world.addEntityToWorld(nextFakePlayerId(), fakePlayer)
     }
 
     override fun onDisable() {
@@ -125,7 +135,7 @@ object FakePlayer : Module("FakePlayer", Category.OTHER, Category.SubCategory.MI
         fakeHealth = fake.health.coerceAtLeast(0F)
         fake.hurtTime = 10
         fake.maxHurtTime = 10
-        fake.hurtResistantTime = 20
+        fake.hurtResistantTime = invulnerabilityTicks
         fake.attackedAtYaw = player.rotationYaw - fake.rotationYaw
 
         applyKnockback(fake)
@@ -141,9 +151,12 @@ object FakePlayer : Module("FakePlayer", Category.OTHER, Category.SubCategory.MI
 
         if (fakeHealth <= 0F || fake.isDead) {
             fakeHealth = 0F
-            fake.deathTime = 20
+            fake.health = 0F
+            fake.isDead = false
+            deathTicks = 0
+            fake.deathTime = 1
 
-            if (removeOnDeath) {
+            if (removeOnDeath && deathDelayTicks == 0) {
                 removeFakePlayer()
             }
         }
@@ -216,7 +229,17 @@ object FakePlayer : Module("FakePlayer", Category.OTHER, Category.SubCategory.MI
 
         fakePlayer = null
         fakeHealth = 0F
+        deathTicks = 0
     }
 
-    private const val FAKE_PLAYER_ID = -1000
+    private fun nextFakePlayerId(): Int {
+        val world = mc.theWorld ?: return DEFAULT_FAKE_PLAYER_ID
+        var entityId = DEFAULT_FAKE_PLAYER_ID
+        while (world.getEntityByID(entityId) != null) {
+            entityId--
+        }
+        return entityId
     }
+
+    private const val DEFAULT_FAKE_PLAYER_ID = -1000
+}

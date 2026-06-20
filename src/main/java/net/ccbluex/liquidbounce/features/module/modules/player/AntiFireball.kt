@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isRotationFaced
@@ -37,7 +38,7 @@ object AntiFireball : Module("AntiFireball", Category.PLAYER, Category.SubCatego
     private val indicators by boolean("Indicator", true)
     private val range by float("Range", 4.5f, 3f..8f)
     private val swing by choices("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
-    private val options = RotationSettings(this).withoutKeepRotation()
+    private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.CRITICAL)
     private val fireballTickCheck by boolean("FireballTickCheck", true)
     private val minFireballTick by int("MinFireballTick", 10, 1..20) { fireballTickCheck }
     private val scale by float("Size", 0.7f, 0.65f..1.25f) { indicators }

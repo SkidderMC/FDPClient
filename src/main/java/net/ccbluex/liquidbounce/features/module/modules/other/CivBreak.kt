@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPackets
+import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.faceBlock
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
@@ -31,7 +32,7 @@ object CivBreak : Module("CivBreak", Category.OTHER, Category.SubCategory.MISCEL
     private val range by float("Range", 5F, 1F..6F)
     private val visualSwing by boolean("VisualSwing", true).subjective()
 
-    private val options = RotationSettings(this).withoutKeepRotation()
+    private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.NORMAL)
 
     private var blockPos: BlockPos? = null
     private var enumFacing: EnumFacing? = null

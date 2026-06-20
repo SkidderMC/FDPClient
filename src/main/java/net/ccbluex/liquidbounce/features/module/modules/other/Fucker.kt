@@ -23,6 +23,7 @@ import net.ccbluex.liquidbounce.utils.extensions.rotation
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockDamageText
+import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.faceBlock
@@ -67,7 +68,7 @@ object Fucker : Module("Fucker", Category.OTHER, Category.SubCategory.MISCELLANE
     private val ignoreOpenInventory by boolean("IgnoreOpenInventory", false)
     private val ignoreUsingItem by boolean("IgnoreUsingItem", false)
 
-    private val options = RotationSettings(this).withoutKeepRotation()
+    private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.NORMAL)
 
     private val blockProgress by boolean("BlockProgress", true).subjective()
 

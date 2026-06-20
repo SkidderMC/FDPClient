@@ -36,6 +36,7 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vulcan
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vulcan.VulcanGhost
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vulcan.VulcanOld
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
+import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.extensions.stop
 import net.ccbluex.liquidbounce.utils.extensions.stopXZ
@@ -217,6 +218,7 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     ) { fireBallThrowMode == "Edge" && mode == "Fireball" }
 
     val options = RotationSettings(this) { mode == "Fireball" }
+        .withRequestPriority(RotationPriority.HIGH)
 
     val autoJump by boolean("AutoJump", true) { mode == "Fireball" }
 

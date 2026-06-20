@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.utils.extensions.onPlayerRightClick
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.hasSpaceInInventory
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
+import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.faceBlock
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
@@ -66,6 +67,7 @@ object AutoFarm : Module(
     private val rotations by rotationsValue
 
     private val rotationSettings = RotationSettings(this) { rotations }.apply {
+        withRequestPriority(RotationPriority.LOW)
         immediate = true
 
         resetTicksValue.excludeWithState()

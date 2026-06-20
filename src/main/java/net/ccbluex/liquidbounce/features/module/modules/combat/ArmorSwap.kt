@@ -24,6 +24,7 @@ import net.ccbluex.liquidbounce.utils.timing.TickedActions.isTicked
 import net.minecraft.client.gui.inventory.GuiInventory
 import net.minecraft.item.ItemArmor
 import net.minecraft.item.ItemStack
+import kotlin.math.roundToLong
 
 object ArmorSwap : Module("ArmorSwap", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
     private enum class State {
@@ -122,7 +123,9 @@ object ArmorSwap : Module("ArmorSwap", Category.COMBAT, Category.SubCategory.COM
 
         val armorInfo = Array(4) { type ->
             val equipped = stacks.getOrNull(5 + type)
-            ArmorInfo(equipped, thresholdFor(type), getArmorValue(equipped))
+            val threshold = thresholdFor(type)
+            val needsReplacement = equipped == null || durabilityPercent(equipped) <= threshold
+            ArmorInfo(equipped, threshold, if (needsReplacement) Long.MIN_VALUE else getArmorValue(equipped))
         }
 
         var missingAnyPiece = false
@@ -143,6 +146,10 @@ object ArmorSwap : Module("ArmorSwap", Category.COMBAT, Category.SubCategory.COM
                 }
 
                 hasAnyArmorInInventory = true
+                if (ArmorFilter.handleEvents() && !ArmorFilter.isArmorAllowed(stack)) {
+                    continue
+                }
+
                 val durability = durabilityPercent(stack)
                 if (durability > info.threshold) {
                     hasNewArmorInInventory = true
@@ -239,8 +246,7 @@ object ArmorSwap : Module("ArmorSwap", Category.COMBAT, Category.SubCategory.COM
                 continue
             }
 
-            val current = stacks.getOrNull(5 + type)
-            val replacementSlot = findBestReplacementSlot(type, current, stacks)
+            val replacementSlot = findBestReplacementSlot(type, stacks)
             if (replacementSlot == -1) {
                 toReplace[type] = false
                 continue
@@ -301,10 +307,10 @@ object ArmorSwap : Module("ArmorSwap", Category.COMBAT, Category.SubCategory.COM
                 continue
             }
 
-            val sourceSlot = (9..35).firstOrNull { slot ->
-                val stack = stacks.getOrNull(slot) ?: return@firstOrNull false
-                (stack.item as? ItemArmor)?.armorType == type
-            } ?: continue
+            val sourceSlot = findBestInRange(type, stacks, 9..35)
+            if (sourceSlot == -1) {
+                continue
+            }
 
             if (isTicked(sourceSlot) || isTicked(targetSlot)) {
                 continue
@@ -366,23 +372,26 @@ object ArmorSwap : Module("ArmorSwap", Category.COMBAT, Category.SubCategory.COM
         return canClickInventory(closeWhenViolating = true)
     }
 
-    private fun findBestReplacementSlot(armorType: Int, current: ItemStack?, stacks: List<ItemStack?>): Int {
+    private fun findBestReplacementSlot(armorType: Int, stacks: List<ItemStack?>): Int {
         if (inventoryOrganizer) {
-            findBestInRange(armorType, current, stacks, 36..44).takeIf { it != -1 }?.let { return it }
-            return findBestInRange(armorType, current, stacks, 9..35)
+            findBestInRange(armorType, stacks, 36..44).takeIf { it != -1 }?.let { return it }
+            return findBestInRange(armorType, stacks, 9..35)
         }
 
-        return findBestInRange(armorType, current, stacks, 9..44)
+        return findBestInRange(armorType, stacks, 9..44)
     }
 
-    private fun findBestInRange(armorType: Int, current: ItemStack?, stacks: List<ItemStack?>, range: IntRange): Int {
+    private fun findBestInRange(armorType: Int, stacks: List<ItemStack?>, range: IntRange): Int {
         var bestSlot = -1
-        var bestValue = getArmorValue(current)
+        var bestValue = Long.MIN_VALUE
 
         for (slot in range) {
             val stack = stacks.getOrNull(slot) ?: continue
             val armor = stack.item as? ItemArmor ?: continue
             if (armor.armorType != armorType) {
+                continue
+            }
+            if (ArmorFilter.handleEvents() && !ArmorFilter.isArmorAllowed(stack)) {
                 continue
             }
 
@@ -426,6 +435,10 @@ object ArmorSwap : Module("ArmorSwap", Category.COMBAT, Category.SubCategory.COM
 
     private fun getArmorValue(stack: ItemStack?): Long {
         val armor = stack?.item as? ItemArmor ?: return -1L
+        if (ArmorFilter.handleEvents()) {
+            return (ArmorFilter.scoreArmorStack(stack) * 1000.0).roundToLong()
+        }
+
         val armorValue = armor.armorMaterial.getDamageReductionAmount(armor.armorType)
         return armorValue.toLong() * 1000L + durabilityPercent(stack)
     }

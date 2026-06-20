@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.extensions.isClientFriend
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.stripColor
 import net.minecraft.entity.Entity
 import net.minecraft.entity.player.EntityPlayer
@@ -16,6 +17,7 @@ import java.util.Locale
 
 object HideClans : Module("HideClans", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
+    private val friendsAsAllies by boolean("FriendsAsAllies", true)
     private val showAllies by boolean("ShowAllies", false)
     private val showAlliesMode by choices("ShowAlliesMode", arrayOf("Nearest", "SemiAuto", "Manual"), "Nearest") { showAllies }
     private val showAlliesCount by int("ShowAlliesCount", 5, 1..14) { showAllies && showAlliesMode != "Manual" }
@@ -61,6 +63,10 @@ object HideClans : Module("HideClans", Category.VISUAL, Category.SubCategory.REN
         val localPlayer = mc.thePlayer ?: return false
         if (entity == localPlayer) {
             return false
+        }
+
+        if (friendsAsAllies && entity.isClientFriend()) {
+            return true
         }
 
         val localTeam = localPlayer.team
