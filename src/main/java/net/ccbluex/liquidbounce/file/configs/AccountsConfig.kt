@@ -16,6 +16,7 @@ import me.liuli.elixir.manage.AccountSerializer.toJson
 import net.ccbluex.liquidbounce.file.FileConfig
 import net.ccbluex.liquidbounce.file.FileManager.PRETTY_GSON
 import net.ccbluex.liquidbounce.utils.io.readJson
+import net.ccbluex.liquidbounce.utils.io.writeTextAtomic
 import java.io.*
 
 class AccountsConfig(file: File) : FileConfig(file) {
@@ -57,7 +58,7 @@ class AccountsConfig(file: File) : FileConfig(file) {
         for (minecraftAccount in accounts)
             jsonArray.add(toJson(minecraftAccount))
 
-        file.writeText(PRETTY_GSON.toJson(jsonArray))
+        file.writeTextAtomic(PRETTY_GSON.toJson(jsonArray))
         restrictAccountFilePermissions()
     }
 

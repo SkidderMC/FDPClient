@@ -10,6 +10,7 @@ import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.file.FileConfig
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
+import net.ccbluex.liquidbounce.utils.io.writeTextAtomic
 import java.io.File
 
 class ColorThemeConfig(file: File) : FileConfig(file) {
@@ -50,7 +51,7 @@ class ColorThemeConfig(file: File) : FileConfig(file) {
             json.addProperty("Fade-Type", ClientThemesUtils.updown)
             json.addProperty("Background", ClientThemesUtils.BackgroundMode)
 
-            file.writeText(FileManager.PRETTY_GSON.toJson(json), Charsets.UTF_8)
+            file.writeTextAtomic(FileManager.PRETTY_GSON.toJson(json), Charsets.UTF_8)
         } catch (e: Exception) {
             println("Error saving Color Theme Config: ${e.message}")
         }

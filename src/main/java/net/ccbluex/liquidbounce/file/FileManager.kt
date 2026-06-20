@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.file.configs.section.MacrosSection
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.shader.Background
+import net.ccbluex.liquidbounce.utils.io.writeTextAtomic
 import net.ccbluex.liquidbounce.utils.io.zipFilesTo
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
@@ -227,12 +228,15 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
         val jsonObject = JsonObject()
 
         for (section in sections) {
-            jsonObject.add(section.sectionName, section.save())
+            try {
+                jsonObject.add(section.sectionName, section.save())
+            } catch (t: Throwable) {
+                LOGGER.error("[FileManager] Failed to save config section: ${section.sectionName}.", t)
+            }
         }
 
         try {
-            if (!configFile.parentFile.exists()) configFile.parentFile.mkdirs()
-            configFile.writeText(PRETTY_GSON.toJson(jsonObject))
+            configFile.writeTextAtomic(PRETTY_GSON.toJson(jsonObject))
             LOGGER.info("[FileManager] Saved config profile: ${configFile.name}.")
         } catch (t: Throwable) {
             LOGGER.error("[FileManager] Failed to save config profile: ${configFile.name}.", t)

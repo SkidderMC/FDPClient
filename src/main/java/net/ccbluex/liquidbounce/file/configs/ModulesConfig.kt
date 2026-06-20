@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.file.gson.asIntOrNull
 import net.ccbluex.liquidbounce.file.gson.json
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.io.readJson
+import net.ccbluex.liquidbounce.utils.io.writeTextAtomic
 import java.io.*
 
 class ModulesConfig(file: File) : FileConfig(file) {
@@ -53,6 +54,6 @@ class ModulesConfig(file: File) : FileConfig(file) {
                 }
             }
         }
-        file.writeText(PRETTY_GSON.toJson(jsonObject))
+        file.writeTextAtomic(PRETTY_GSON.toJson(jsonObject))
     }
 }

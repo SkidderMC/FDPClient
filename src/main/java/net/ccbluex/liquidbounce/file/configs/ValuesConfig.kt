@@ -23,6 +23,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.TargetModule.play
 import net.ccbluex.liquidbounce.handler.payload.ClientFixes
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.io.readJson
+import net.ccbluex.liquidbounce.utils.io.writeTextAtomic
 import java.io.File
 import java.io.IOException
 
@@ -157,6 +158,6 @@ class ValuesConfig(file: File) : FileConfig(file) {
             jsonObject.add(module.name, jsonModule)
         }
 
-        file.writeText(PRETTY_GSON.toJson(jsonObject))
+        file.writeTextAtomic(PRETTY_GSON.toJson(jsonObject))
     }
 }
