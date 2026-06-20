@@ -120,12 +120,14 @@ object Tower : Configurable("Tower"), MinecraftInstance, Listenable {
 
     // Handle jump events
     val onJump = handler<JumpEvent> { event ->
+        val player = mc.thePlayer ?: return@handler
+
         if (onJumpValues.get()) {
             if (Scaffold.scaffoldMode == "GodBridge" && (Scaffold.jumpAutomatically) || !Scaffold.shouldJumpOnInput)
                 return@handler
             if (towerModeValues.get() == "None" || towerModeValues.get() == "Jump")
                 return@handler
-            if (notOnMoveValues.get() && mc.thePlayer.isMoving)
+            if (notOnMoveValues.get() && player.isMoving)
                 return@handler
             if (Speed.state || Flight.state)
                 return@handler

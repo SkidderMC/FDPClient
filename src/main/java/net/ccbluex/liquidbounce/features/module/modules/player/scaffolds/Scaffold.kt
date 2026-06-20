@@ -862,25 +862,42 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
         var stack = player.hotBarSlot(currentSlot).stack
 
-        if (!isUsableBlockStack(stack) || sortByHighestAmount || earlySwitch) {
+        // Determine whether the slot the block is held in must be (re)selected before placing.
+        // When AutoBlock is active we must guarantee the held block slot is actually selected, otherwise
+        // the placement happens with the wrong/empty hand and gets flagged. The currently held stack being a
+        // usable block is not enough on its own: if no AutoBlock state is enforced yet for this module, the
+        // slot still has to be asserted so the server-side held item matches the placement packet.
+        val needsSlotSelection = !isUsableBlockStack(stack) || sortByHighestAmount || earlySwitch ||
+                (autoBlock != "Off" && !SilentHotbar.isSlotModified(this))
+
+        if (needsSlotSelection) {
             val blockSlot = if (sortByHighestAmount) {
                 InventoryUtils.findLargestBlockStackInHotbar() ?: return
             } else if (earlySwitch) {
                 InventoryUtils.findBlockStackInHotbarGreaterThan(amountBeforeSwitch)
                     ?: InventoryUtils.findBlockInHotbar() ?: return
+            } else if (isUsableBlockStack(stack)) {
+                // Already holding a usable block: keep this slot, just (re)assert it.
+                currentSlot
             } else {
                 InventoryUtils.findBlockInHotbar() ?: return
             }
 
-            stack = player.hotBarSlot(blockSlot).stack
+            val blockStack = player.hotBarSlot(blockSlot).stack ?: return
+
+            if (!isUsableBlockStack(blockStack)) {
+                return
+            }
 
             // Check if block is placeable on target side before switching slots
-            if ((stack.item as? ItemBlock)?.canPlaceBlockOnSide(
-                    world, placeInfo.blockPos, placeInfo.enumFacing, player, stack
+            if ((blockStack.item as? ItemBlock)?.canPlaceBlockOnSide(
+                    world, placeInfo.blockPos, placeInfo.enumFacing, player, blockStack
                 ) == false
             ) {
                 return
             }
+
+            stack = blockStack
 
             if (autoBlock != "Off") {
                 SilentHotbar.selectSlotSilently(
@@ -893,12 +910,20 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             }
         }
 
-        tryToPlaceBlock(stack, placeInfo.blockPos, placeInfo.enumFacing, placeInfo.vec3)
+        // Never place with an empty/non-block hand: this is the case the issue describes where Spoof
+        // silently fails to switch and the placement happens with the wrong item -> anticheat flag.
+        val placeStack = stack ?: return
+
+        if (!isUsableBlockStack(placeStack)) {
+            return
+        }
+
+        tryToPlaceBlock(placeStack, placeInfo.blockPos, placeInfo.enumFacing, placeInfo.vec3)
 
         if (autoBlock == "Switch") SilentHotbar.resetSlot(this, true)
 
         // Since we violate vanilla slot switch logic if we send the packets now, we arrange them for the next tick
-        findBlockToSwitchNextTick(stack)
+        findBlockToSwitchNextTick(placeStack)
 
         if (trackCPS) {
             CPSCounter.registerClick(CPSCounter.MouseButton.RIGHT)
