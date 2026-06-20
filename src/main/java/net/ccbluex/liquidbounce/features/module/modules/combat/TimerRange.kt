@@ -88,6 +88,13 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
 
     private val maxAngleDifference by float("MaxAngleDifference", 5f, 5f..90f) { timerBoostMode == "Modern" }
 
+    // Distance-gated speed scaling (layered on top of the tick progression)
+    // Defaults keep the effective timer identical to the existing behavior.
+    private val distanceToStartWorking by float("DistanceToStartWorking", 100f, 0f..500f)
+    private val distanceToSpeedUp by float("DistanceToSpeedUp", 100f, 0f..500f)
+    private val inRangeSpeed by float("InRangeSpeed", 1f, 0.1f..10f)
+    private val normalSpeed by float("NormalSpeed", 1f, 0.1f..10f)
+
     // Mark Option
     private val markMode by choices("Mark", arrayOf("Off", "Box", "Platform"), "Off") { timerBoostMode == "Modern" }
     private val outline by boolean("Outline", false) { timerBoostMode == "Modern" && markMode == "Box" }
@@ -290,7 +297,12 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
             randomRange = range.random()
         }
 
-        if (playerTicks <= 0 || confirmStop) {
+        // Distance gate: only apply the timer effect when a target is within working range.
+        // Default working range is large, so by default this never suppresses the effect.
+        val player = mc.thePlayer
+        val targetDistance = player?.let { p -> getNearestEntityInRange()?.let { p.getDistanceToEntityBox(it) } }
+
+        if (playerTicks <= 0 || confirmStop || (targetDistance != null && targetDistance > distanceToStartWorking)) {
             shouldResetTimer()
 
             if (blink && blinked) {
@@ -308,7 +320,15 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
             else -> 1f
         }
 
-        val speedAdjustment = if (playerSpeed >= 0) playerSpeed else 1f + ticksValue - playerTicks
+        // Distance-based speed scale: closer than DistanceToSpeedUp uses InRangeSpeed,
+        // otherwise NormalSpeed. Both default to 1.0, so the effective speed is unchanged.
+        val distanceScale = when {
+            targetDistance == null -> 1f
+            targetDistance <= distanceToSpeedUp -> inRangeSpeed
+            else -> normalSpeed
+        }
+
+        val speedAdjustment = if (playerSpeed >= 0) playerSpeed * distanceScale else 1f + ticksValue - playerTicks
         val adjustedTimerSpeed = maxOf(speedAdjustment, 0f)
 
         mc.timer.timerSpeed = adjustedTimerSpeed
@@ -383,7 +403,6 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
     }
 
     /**
-     * Lagback Reset is Inspired from Nextgen TimerRange
      * Reset Timer on Lagback & Knockback.
      */
     val onPacket = handler<PacketEvent> { event ->
