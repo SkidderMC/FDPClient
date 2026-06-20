@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.ui.font.fontmanager.impl
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontFamily
 import net.ccbluex.liquidbounce.ui.font.fontmanager.api.FontManager
-import net.ccbluex.liquidbounce.ui.font.fontmanager.util.SneakyThrowing
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.kotlin.LruCache
 import java.awt.Font
 import java.awt.FontFormatException
@@ -57,27 +57,36 @@ class SimpleFontManager private constructor() : FontManager {
          */
         fun fontFamily(name: String): FontFamily {
             return cache.getOrPut(name) {
-                try {
-                    SimpleFontFamily.create(name, readFontFromLocal(name))
-                } catch (e: IOException) {
-                    throw SneakyThrowing.sneakyThrow(e)
-                }
+                SimpleFontFamily.create(name, readFontFromLocal(name))
             }
         }
 
         /**
          * Reads a `.ttf` file from [FileManager.fontsDir] corresponding to the given [fontType].
+         *
+         * If the file is missing or cannot be read, logs the problem and falls back to a
+         * default AWT font so rendering can continue with a substitute instead of crashing.
          */
-        @Throws(IOException::class)
         private fun readFontFromLocal(name: String): Font {
             val fontFile = File(FileManager.fontsDir, name)
             if (!fontFile.exists()) {
-                throw IOException("Couldn't find local font file: ${fontFile.absolutePath}")
+                LOGGER.warn("Couldn't find local font file: ${fontFile.absolutePath}, falling back to default font.")
+                return fallbackFont()
             }
-            FileInputStream(fontFile).use { fis ->
-                return readFont(fis)
+            return try {
+                FileInputStream(fontFile).use { fis ->
+                    readFont(fis)
+                }
+            } catch (e: IOException) {
+                LOGGER.error("Couldn't read local font file: ${fontFile.absolutePath}, falling back to default font.", e)
+                fallbackFont()
             }
         }
+
+        /**
+         * Returns a default AWT font used as a substitute when a local font cannot be loaded.
+         */
+        private fun fallbackFont(): Font = Font(Font.SANS_SERIF, Font.PLAIN, 1)
 
         /**
          * Creates a [Font] from the [resource] (TTF data).
