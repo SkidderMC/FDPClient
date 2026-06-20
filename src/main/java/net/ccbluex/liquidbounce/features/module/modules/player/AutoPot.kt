@@ -5,10 +5,12 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
+import net.ccbluex.liquidbounce.event.AttackEvent
 import net.ccbluex.liquidbounce.event.RotationUpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.utils.extensions.sendUseItem
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
 import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
@@ -47,6 +49,9 @@ object AutoPot : Module("AutoPot", Category.PLAYER, Category.SubCategory.PLAYER_
     private val groundDistance by float("GroundDistance", 2F, 0F..5F)
     private val mode by choices("Mode", arrayOf("Normal", "Jump", "Port"), "Normal")
 
+    private val notDuringCombat by boolean("NotDuringCombat", false)
+    private val combatPauseTime by int("CombatPauseTime", 0, 0..2000, "ms") { notDuringCombat }
+
     private val options = RotationSettings(this).withoutKeepRotation().apply {
         resetTicksValue.excludeWithState()
 
@@ -54,10 +59,19 @@ object AutoPot : Module("AutoPot", Category.PLAYER, Category.SubCategory.PLAYER_
     }
 
     private val msTimer = MSTimer()
+    private val combatTimer = MSTimer()
     private var potion = -1
+
+    val onAttack = handler<AttackEvent> {
+        combatTimer.reset()
+    }
 
     val onRotationUpdate = handler<RotationUpdateEvent> {
         if (!msTimer.hasTimePassed(delay) || mc.playerController.isInCreativeMode)
+            return@handler
+
+        // Skip potting while fighting, plus an optional cooldown after the last hit.
+        if (notDuringCombat && (CombatManager.inCombatState || !combatTimer.hasTimePassed(combatPauseTime)))
             return@handler
 
         val player = mc.thePlayer ?: return@handler
