@@ -19,11 +19,28 @@ import net.ccbluex.liquidbounce.utils.extensions.component1
 import net.ccbluex.liquidbounce.utils.extensions.component2
 import net.ccbluex.liquidbounce.utils.extensions.component3
 import net.ccbluex.liquidbounce.utils.extensions.eyes
+import net.ccbluex.liquidbounce.utils.extensions.renderPos
+import net.ccbluex.liquidbounce.utils.render.Render3D
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.disableGlCap
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.draw2D
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.enableGlCap
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetCaps
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetColor
 import net.minecraft.block.Block
 import net.minecraft.init.Blocks.air
+import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
+import org.lwjgl.opengl.GL11.GL_BLEND
+import org.lwjgl.opengl.GL11.GL_DEPTH_TEST
+import org.lwjgl.opengl.GL11.GL_LINE_SMOOTH
+import org.lwjgl.opengl.GL11.GL_ONE_MINUS_SRC_ALPHA
+import org.lwjgl.opengl.GL11.GL_SRC_ALPHA
+import org.lwjgl.opengl.GL11.GL_TEXTURE_2D
+import org.lwjgl.opengl.GL11.glBlendFunc
+import org.lwjgl.opengl.GL11.glDepthMask
+import org.lwjgl.opengl.GL11.glLineWidth
 import java.awt.Color
 import java.util.concurrent.ConcurrentHashMap
 
@@ -32,6 +49,9 @@ object BlockESP : Module("BlockESP", Category.VISUAL, Category.SubCategory.RENDE
     private val block by block("Block", 168)
     private val radius by int("Radius", 40, 5..120)
     private val blockLimit by int("BlockLimit", 256, 0..2056)
+
+    private val outline by boolean("Outline", true) { mode == "Box" }
+    private val mergeAdjacent by boolean("MergeAdjacent", false) { mode == "Box" }
 
     private val color by color("Color", Color(255, 179, 72))
 
@@ -67,9 +87,115 @@ object BlockESP : Module("BlockESP", Category.VISUAL, Category.SubCategory.RENDE
 
     val onRender3D = handler<Render3DEvent> {
         when (mode) {
-            "Box" -> posList.forEach { drawBlockBox(it, color, true) }
+            "Box" -> if (mergeAdjacent) {
+                drawMergedBoxes()
+            } else {
+                posList.forEach { drawBlockBox(it, color, outline) }
+            }
             "2D" -> posList.forEach { draw2D(it, color.rgb, Color.BLACK.rgb) }
         }
+    }
+
+    private fun drawMergedBoxes() {
+        val boxes = mergeBoxes(posList) ?: return
+        val renderPos = mc.renderManager.renderPos
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        enableGlCap(GL_BLEND)
+        disableGlCap(GL_TEXTURE_2D, GL_DEPTH_TEST)
+        glDepthMask(false)
+
+        for (box in boxes) {
+            val rendered = box.offset(-renderPos.xCoord, -renderPos.yCoord, -renderPos.zCoord)
+
+            glColor(color.red, color.green, color.blue, if (color.alpha != 255) color.alpha else if (outline) 26 else 35)
+            Render3D.drawFilledBox(rendered)
+
+            if (outline) {
+                glLineWidth(1f)
+                enableGlCap(GL_LINE_SMOOTH)
+                glColor(color)
+                Render3D.drawSelectionBoundingBox(rendered)
+            }
+        }
+
+        resetColor()
+        glDepthMask(true)
+        resetCaps()
+    }
+
+    private fun mergeBoxes(positions: Collection<BlockPos>): List<AxisAlignedBB>? {
+        if (positions.isEmpty()) {
+            return null
+        }
+
+        val remaining = HashSet(positions)
+        val result = ArrayList<AxisAlignedBB>()
+
+        while (remaining.isNotEmpty()) {
+            val start = remaining.first()
+            var minX = start.x
+            var minY = start.y
+            var minZ = start.z
+            var maxX = start.x
+            var maxY = start.y
+            var maxZ = start.z
+            remaining -= start
+
+            var grown = true
+            while (grown) {
+                grown = false
+
+                if (tryGrow(remaining, minX - 1, minX - 1, minY, maxY, minZ, maxZ)) {
+                    minX--; grown = true
+                }
+                if (tryGrow(remaining, maxX + 1, maxX + 1, minY, maxY, minZ, maxZ)) {
+                    maxX++; grown = true
+                }
+                if (tryGrow(remaining, minX, maxX, minY - 1, minY - 1, minZ, maxZ)) {
+                    minY--; grown = true
+                }
+                if (tryGrow(remaining, minX, maxX, maxY + 1, maxY + 1, minZ, maxZ)) {
+                    maxY++; grown = true
+                }
+                if (tryGrow(remaining, minX, maxX, minY, maxY, minZ - 1, minZ - 1)) {
+                    minZ--; grown = true
+                }
+                if (tryGrow(remaining, minX, maxX, minY, maxY, maxZ + 1, maxZ + 1)) {
+                    maxZ++; grown = true
+                }
+            }
+
+            result += AxisAlignedBB.fromBounds(
+                minX.toDouble(), minY.toDouble(), minZ.toDouble(),
+                (maxX + 1).toDouble(), (maxY + 1).toDouble(), (maxZ + 1).toDouble()
+            )
+        }
+
+        return result
+    }
+
+    private fun tryGrow(
+        remaining: HashSet<BlockPos>,
+        minX: Int, maxX: Int, minY: Int, maxY: Int, minZ: Int, maxZ: Int
+    ): Boolean {
+        for (bx in minX..maxX) {
+            for (by in minY..maxY) {
+                for (bz in minZ..maxZ) {
+                    if (BlockPos(bx, by, bz) !in remaining) {
+                        return false
+                    }
+                }
+            }
+        }
+        for (bx in minX..maxX) {
+            for (by in minY..maxY) {
+                for (bz in minZ..maxZ) {
+                    remaining -= BlockPos(bx, by, bz)
+                }
+            }
+        }
+        return true
     }
 
     override val tag
