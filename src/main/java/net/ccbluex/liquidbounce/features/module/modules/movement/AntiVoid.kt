@@ -51,6 +51,8 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, Category.SubCategory.MOV
     private val blinkDelay by int("BlinkDelay", 10, 1..20) { mode == "Blink" }
     private val onScaffold by boolean("OnScaffold", false) { mode == "Blink" }
     private val ticksToDelay by int("TicksDelay", 5, 1..20) { mode == "Blink" && !onScaffold }
+    private val predictTicks by int("PredictTicks", 60, 5..120) { mode != "Blink" }
+    private val simulationTicks by int("SimulationTicks", 20, 5..60) { mode == "Blink" }
     private val indicator by boolean("Indicator", true).subjective()
 
     private var detectedLocation: BlockPos? = null
@@ -89,7 +91,7 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, Category.SubCategory.MOV
         if (!thePlayer.onGround && !thePlayer.isOnLadder && !thePlayer.isInWater) {
             val fallingPlayer = FallingPlayer(thePlayer)
 
-            detectedLocation = fallingPlayer.findCollision(60)?.pos
+            detectedLocation = fallingPlayer.findCollision(predictTicks)?.pos
 
             if (detectedLocation != null && abs(thePlayer.posY - detectedLocation!!.y) +
                 thePlayer.fallDistance <= maxFallDistance
@@ -129,7 +131,7 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, Category.SubCategory.MOV
         if (mode == "Blink") {
             val simPlayer = SimulatedPlayer.fromClientPlayer(thePlayer.movementInput)
 
-            repeat(20) {
+            repeat(simulationTicks) {
                 simPlayer.tick()
             }
 
