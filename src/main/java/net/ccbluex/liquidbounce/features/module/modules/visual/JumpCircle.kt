@@ -43,6 +43,7 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL, Category.SubCategory.R
     private val outerColor = color("OuterColor", Color(0, 111, 255, 255)) { colorMode == "Custom" }
     private val hueOffsetAnim by int("HueOffsetAnim", 63, -360..360)
     private val lifeTime by int("LifeTime", 20, 1..50, "Ticks")
+    private val animationSpeed by float("AnimationSpeed", 1.0f, 0.2f..2.0f)
     private val blackHole by boolean("BlackHole", false)
     private val useTexture by boolean("UseTexture", true)
     private val texture by choices("Texture", arrayOf("Supernatural", "Aurora", "Leeches", "Circle"), "Leeches") { useTexture }
@@ -144,7 +145,7 @@ object JumpCircle : Module("JumpCircle", Category.VISUAL, Category.SubCategory.R
         GlStateManager.disableLighting()
         setupDrawCircles {
             circles.removeIf { it ->
-                val progress = ((runTimeTicks + partialTick) - it.endTime) / lifeTime
+                val progress = ((runTimeTicks + partialTick) - it.endTime) / lifeTime * animationSpeed
                 val radius = circleRadius.lerpWith(progress)
                 if(useTexture){
                     renderTexturedCircle(
