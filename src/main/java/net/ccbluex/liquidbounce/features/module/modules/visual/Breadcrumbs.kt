@@ -13,25 +13,41 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.kotlin.removeEach
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
+import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
+import net.minecraft.entity.Entity
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
 object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     val colors = ColorSettingsInteger(this, "Color").with(132, 102, 255)
+    private val rainbow by boolean("Rainbow", false)
     private val lineHeight by float("LineHeight", 0.25F, 0.25F..2F)
+    private val onlyOwn by boolean("OnlyOwn", true)
+    private val aliveOnly by boolean("AliveOnly", false)
     private val temporary by boolean("Temporary", true)
     private val fade by boolean("Fade", true) { temporary }
     private val lifeTime by float("LifeTime", 1F, 0F..10F) { temporary }
 
     private const val MAX_BREADCRUMB_POSITIONS = 500
-    private val positions = ArrayDeque<PositionData>()
+    private val trails = LinkedHashMap<Entity, ArrayDeque<PositionData>>()
 
     val onRender3D = handler<Render3DEvent> {
         val player = mc.thePlayer ?: return@handler
 
-        if (positions.isEmpty() && !player.isMoving) {
+        val tracked = ArrayList<Entity>()
+        tracked += player
+        if (!onlyOwn) {
+            mc.theWorld?.playerEntities?.forEach { other ->
+                if (other != null && other !== player) tracked += other
+            }
+        }
+
+        // Drop trails belonging to entities we no longer track
+        trails.keys.retainAll(tracked.toHashSet())
+
+        if (trails.isEmpty() && !player.isMoving) {
             return@handler
         }
 
@@ -50,16 +66,19 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, Category.SubCategory
         glEnable(GL_ALPHA_TEST)
         glAlphaFunc(GL_GREATER, 0.0f)
 
-        player.interpolatedPosition(player.prevPos).let { pos ->
-            val data = PositionData(pos.toDoubleArray(), currentTime)
+        for (entity in tracked) {
+            val positions = trails.getOrPut(entity) { ArrayDeque() }
+            entity.interpolatedPosition(entity.prevPos).let { pos ->
+                val data = PositionData(pos.toDoubleArray(), currentTime)
 
-            val lastData = positions.lastOrNull()?.array
+                val lastData = positions.lastOrNull()?.array
 
-            if (lastData == null || !lastData.contentEquals(data.array)) {
-                if (!temporary && positions.size > MAX_BREADCRUMB_POSITIONS) {
-                    positions.removeFirst()
+                if (lastData == null || !lastData.contentEquals(data.array)) {
+                    if (!temporary && positions.size > MAX_BREADCRUMB_POSITIONS) {
+                        positions.removeFirst()
+                    }
+                    positions += data
                 }
-                positions += data
             }
         }
 
@@ -71,25 +90,35 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, Category.SubCategory
         val renderPosY = mc.renderManager.viewerPosY
         val renderPosZ = mc.renderManager.viewerPosZ
 
-        positions.removeEach {
-            val timestamp = System.currentTimeMillis() - it.time
-            val transparency = if (fade) {
-                (0f..150f).lerpWith(1 - (timestamp / fadeSeconds).coerceAtMost(1.0F))
-            } else 150f
+        val baseColor = if (rainbow) ColorUtils.rainbow() else colors.color()
 
-            val startPos = it.array
-            val endPos = positions.getOrNull(positions.indexOf(it) + 1)?.array
-                ?: return@removeEach temporary && timestamp > fadeSeconds
+        for ((entity, positions) in trails) {
+            val drawThis = !aliveOnly || entity.isEntityAlive
 
-            glColor(colors.color().withAlpha(transparency.toInt()))
+            positions.removeEach {
+                val timestamp = System.currentTimeMillis() - it.time
+                val transparency = if (fade) {
+                    (0f..150f).lerpWith(1 - (timestamp / fadeSeconds).coerceAtMost(1.0F))
+                } else 150f
 
-            glVertex3d(startPos[0] - renderPosX, startPos[1] - renderPosY, startPos[2] - renderPosZ)
-            glVertex3d(startPos[0] - renderPosX, startPos[1] - renderPosY + lineHeight, startPos[2] - renderPosZ)
-            glVertex3d(endPos[0] - renderPosX, endPos[1] - renderPosY + lineHeight, endPos[2] - renderPosZ)
-            glVertex3d(endPos[0] - renderPosX, endPos[1] - renderPosY, endPos[2] - renderPosZ)
+                val startPos = it.array
+                val endPos = positions.getOrNull(positions.indexOf(it) + 1)?.array
+                    ?: return@removeEach temporary && timestamp > fadeSeconds
 
-            temporary && timestamp > fadeSeconds
+                if (drawThis) {
+                    glColor(baseColor.withAlpha(transparency.toInt()))
+
+                    glVertex3d(startPos[0] - renderPosX, startPos[1] - renderPosY, startPos[2] - renderPosZ)
+                    glVertex3d(startPos[0] - renderPosX, startPos[1] - renderPosY + lineHeight, startPos[2] - renderPosZ)
+                    glVertex3d(endPos[0] - renderPosX, endPos[1] - renderPosY + lineHeight, endPos[2] - renderPosZ)
+                    glVertex3d(endPos[0] - renderPosX, endPos[1] - renderPosY, endPos[2] - renderPosZ)
+                }
+
+                temporary && timestamp > fadeSeconds
+            }
         }
+
+        trails.values.removeIf { it.isEmpty() }
 
         glEnd()
 
@@ -105,11 +134,11 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, Category.SubCategory
     }
 
     val onWorld = handler<WorldEvent> {
-        positions.clear()
+        trails.clear()
     }
 
     override fun onDisable() {
-        positions.clear()
+        trails.clear()
     }
 }
 
