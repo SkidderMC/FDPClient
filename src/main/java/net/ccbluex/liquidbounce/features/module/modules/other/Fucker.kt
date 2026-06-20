@@ -32,6 +32,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
 import net.minecraft.block.Block
+import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.init.Blocks
 import net.minecraft.network.play.client.C07PacketPlayerDigging
@@ -62,6 +63,10 @@ object Fucker : Module("Fucker", Category.OTHER, Category.SubCategory.MISCELLANE
     private val swing by boolean("Swing", true)
     val noHit by boolean("NoHit", false)
 
+    private val delay by int("Delay", 0, 0..1000)
+    private val ignoreOpenInventory by boolean("IgnoreOpenInventory", false)
+    private val ignoreUsingItem by boolean("IgnoreUsingItem", false)
+
     private val options = RotationSettings(this).withoutKeepRotation()
 
     private val blockProgress by boolean("BlockProgress", true).subjective()
@@ -90,6 +95,7 @@ object Fucker : Module("Fucker", Category.OTHER, Category.SubCategory.MISCELLANE
     private var oldPos: BlockPos? = null
     private var blockHitDelay = 0
     private val switchTimer = MSTimer()
+    private val delayTimer = MSTimer()
     var currentDamage = 0F
     var isOwnBed = false
     private var damageAnim = 0F
@@ -227,6 +233,10 @@ object Fucker : Module("Fucker", Category.OTHER, Category.SubCategory.MISCELLANE
         val player = mc.thePlayer ?: return@handler
         val world = mc.theWorld ?: return@handler
         val controller = mc.playerController ?: return@handler
+
+        if (ignoreOpenInventory && mc.currentScreen is GuiContainer) return@handler
+        if (ignoreUsingItem && player.isUsingItem) return@handler
+        if (!delayTimer.hasTimePassed(delay)) return@handler
 
         var currentPos = pos ?: return@handler
         if (obstructingPos != null) {
@@ -393,6 +403,7 @@ object Fucker : Module("Fucker", Category.OTHER, Category.SubCategory.MISCELLANE
         }
         areSurroundings = false
         currentDamage = 0F
+        delayTimer.reset()
     }
 
     override val tag
