@@ -11,12 +11,22 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.other.Fucker
 import net.ccbluex.liquidbounce.features.module.modules.other.Nuker
+import net.minecraft.item.ItemShears
+import net.minecraft.item.ItemSword
+import net.minecraft.item.ItemTool
 
 object FastBreak : Module("FastBreak", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS) {
 
     private val breakDamage by float("BreakDamage", 0.8F, 0.1F..1F)
+    private val onlyTool by boolean("OnlyTool", false)
 
     val onUpdate = handler<UpdateEvent> {
+        if (onlyTool) {
+            val item = mc.thePlayer?.heldItem?.item
+            if (item !is ItemTool && item !is ItemSword && item !is ItemShears)
+                return@handler
+        }
+
         mc.playerController.blockHitDelay = 0
 
         if (mc.playerController.curBlockDamageMP > breakDamage)
