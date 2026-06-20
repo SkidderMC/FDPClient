@@ -4,6 +4,7 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.config
+import net.ccbluex.liquidbounce.utils.input.safeKeyName
 
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.handler.api.ClientApi
@@ -19,7 +20,7 @@ import org.lwjgl.input.Keyboard
 import kotlin.reflect.KMutableProperty0
 
 /**
- * Utility class for handling settings and scripts in LiquidBounce.
+ * Utility class for handling settings and scripts in FDPClient.
  */
 object SettingsUtils {
 
@@ -135,9 +136,7 @@ object SettingsUtils {
         module.keyBind = Keyboard.getKeyIndex(value)
         chat(
             "§7[§3§lAutoSettings§7] §a§l${module.getName()} §7was bound to §c§l${
-                Keyboard.getKeyName(
-                    module.keyBind
-                )
+                safeKeyName(module.keyBind) ?: "None"
             }§7."
         )
     }
@@ -189,7 +188,7 @@ object SettingsUtils {
                     }
 
                     if (binds) {
-                        appendLine("${module.name} bind ${Keyboard.getKeyName(module.keyBind)}")
+                        appendLine("${module.name} bind ${(safeKeyName(module.keyBind) ?: "None")}")
                     }
                 }
             }

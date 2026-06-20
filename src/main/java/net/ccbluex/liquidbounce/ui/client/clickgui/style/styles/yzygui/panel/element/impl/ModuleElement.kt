@@ -4,6 +4,7 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.panel.element.impl
+import net.ccbluex.liquidbounce.utils.input.safeKeyName
 
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.features.module.Module
@@ -154,7 +155,7 @@ class ModuleElement(
         if (isBindingSelection) {
             text = "Select bind for ${module.name}..."
         } else if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && module.keyBind != Keyboard.KEY_GRAVE) {
-            text += " [${Keyboard.getKeyName(module.keyBind).uppercase()}]"
+            text += " [${(safeKeyName(module.keyBind) ?: "None").uppercase()}]"
         } else if (isBinding) {
             text = "binding..."
         }

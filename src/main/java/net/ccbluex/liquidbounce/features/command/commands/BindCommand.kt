@@ -4,6 +4,7 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.command.commands
+import net.ccbluex.liquidbounce.utils.input.safeKeyName
 
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.command.Command
@@ -31,8 +32,8 @@ object BindCommand : Command("bind") {
             module.keyBind = key
 
             // Response to user
-            chat("Bound module §a§l${module.getName()}§3 to key §a§l${Keyboard.getKeyName(key)}§3.")
-            addNotification(Notification("Bound ${module.getName()} to ${Keyboard.getKeyName(key)}", "SUCESS", Type.SUCCESS))
+            chat("Bound module §a§l${module.getName()}§3 to key §a§l${(safeKeyName(key) ?: "None")}§3.")
+            addNotification(Notification("Bound ${module.getName()} to ${(safeKeyName(key) ?: "None")}", "SUCESS", Type.SUCCESS))
             playEdit()
             return
         }

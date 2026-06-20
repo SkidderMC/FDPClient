@@ -4,6 +4,7 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.hud.element.elements
+import net.ccbluex.liquidbounce.utils.input.safeKeyName
 
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.ui.client.hud.element.Border
@@ -88,7 +89,7 @@ class HotKeys(
             for (module in moduleManager) {
                 if (module.keyBind == Keyboard.KEY_NONE) continue
                 val nameText = module.name
-                val bindText = "[${Keyboard.getKeyName(module.keyBind)}]"
+                val bindText = "[${(safeKeyName(module.keyBind) ?: "None")}]"
                 val nameWidth = Fonts.InterMedium_13.stringWidth(nameText)
                 val bindWidth = Fonts.InterMedium_13.stringWidth(bindText)
                 val totalWidth = nameWidth + bindWidth + (padding * 3f)

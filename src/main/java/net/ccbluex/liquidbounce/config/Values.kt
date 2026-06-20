@@ -4,6 +4,7 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.config
+import net.ccbluex.liquidbounce.utils.input.safeKeyName
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
@@ -509,7 +510,7 @@ class KeyBindValue(
 ) : Value<Int>(name, value) {
 
     val keyName: String
-        get() = Keyboard.getKeyName(value) ?: "None"
+        get() = (safeKeyName(value) ?: "None") ?: "None"
 
     override fun toJson(): JsonElement = JsonPrimitive(value)
 

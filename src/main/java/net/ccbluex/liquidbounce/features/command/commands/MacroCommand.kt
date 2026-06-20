@@ -4,6 +4,7 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.command.commands
+import net.ccbluex.liquidbounce.utils.input.safeKeyName
 
 import net.ccbluex.liquidbounce.features.command.Command
 import net.ccbluex.liquidbounce.features.command.TabCompleteUtils
@@ -27,7 +28,7 @@ object MacroCommand : Command("macro", "m") {
                             var comm = StringUtils.toCompleteString(args, 3)
                             if (!comm.startsWith(".")) comm = ".$comm"
                             MacroManager.macros.add(Macro(key, comm))
-                            alert("Bound macro $comm to key ${Keyboard.getKeyName(key)}.")
+                            alert("Bound macro $comm to key ${(safeKeyName(key) ?: "None")}.")
                         } else {
                             alert("Unknown key to bind macro.")
                         }
@@ -57,7 +58,7 @@ object MacroCommand : Command("macro", "m") {
                 "list" -> {
                     alert("Macros:")
                     MacroManager.macros.forEach {
-                        alert("key=${Keyboard.getKeyName(it.key)}, command=${it.command}")
+                        alert("key=${(safeKeyName(it.key) ?: "None")}, command=${it.command}")
                     }
                 }
 
@@ -77,7 +78,7 @@ object MacroCommand : Command("macro", "m") {
                 "add" -> TabCompleteUtils.keys(args[1])
                 "remove" -> {
                     val keyNames = MacroManager.macros
-                        .mapNotNull { Keyboard.getKeyName(it.key) }
+                        .mapNotNull { (safeKeyName(it.key) ?: "None") }
                     TabCompleteUtils.match(args[1], keyNames)
                 }
                 else -> emptyList()

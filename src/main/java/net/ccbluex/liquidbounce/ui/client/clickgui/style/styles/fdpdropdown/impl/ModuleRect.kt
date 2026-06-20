@@ -4,6 +4,7 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl
+import net.ccbluex.liquidbounce.utils.input.safeKeyName
 
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.backback
@@ -96,7 +97,7 @@ class ModuleRect(val module: Module) : Component() {
         )
 
         if (Keyboard.isKeyDown(Keyboard.KEY_TAB) && module.keyBind != 0) {
-            val keyName = Keyboard.getKeyName(module.keyBind)
+            val keyName = (safeKeyName(module.keyBind) ?: "None")
             Fonts.InterMedium_20.drawString(
                 keyName,
                 x + width - Fonts.InterMedium_20.stringWidth(keyName) - 5,

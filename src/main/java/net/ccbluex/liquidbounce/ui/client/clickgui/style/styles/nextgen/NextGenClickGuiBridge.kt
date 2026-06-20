@@ -4,6 +4,7 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen
+import net.ccbluex.liquidbounce.utils.input.safeKeyName
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
@@ -509,7 +510,7 @@ object NextGenClickGuiBridge : MinecraftInstance {
             return UNKNOWN_KEY
         }
 
-        val keyName = Keyboard.getKeyName(key)?.lowercase(Locale.ROOT) ?: return UNKNOWN_KEY
+        val keyName = (safeKeyName(key) ?: "None")?.lowercase(Locale.ROOT) ?: return UNKNOWN_KEY
 
         return KEY_TO_MINECRAFT[keyName] ?: when {
             keyName.length == 1 && keyName[0].isLetterOrDigit() -> "key.keyboard.$keyName"

@@ -4,6 +4,7 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.impl
+import net.ccbluex.liquidbounce.utils.input.safeKeyName
 
 import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.features.module.Module
@@ -1353,7 +1354,7 @@ class SettingComponents(private val module: Module) : Component() {
             }
 
             // Render the key bind
-            val bind = Keyboard.getKeyName(module.keyBind)
+            val bind = (safeKeyName(module.keyBind) ?: "None")
             val hoveringBindRect = isClickable(
                 y + Fonts.InterBold_18.getMiddleOfBox(rectHeight) - 1
             ) && RenderUtils.isHovering(

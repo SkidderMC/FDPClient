@@ -4,6 +4,7 @@
  * https://github.com/SkidderMC/FDPClient/
  */
 package net.ccbluex.liquidbounce.features.command.commands
+import net.ccbluex.liquidbounce.utils.input.safeKeyName
 
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
 import net.ccbluex.liquidbounce.features.command.Command
@@ -28,7 +29,7 @@ object BindsCommand : Command("binds") {
         chat("§c§lBinds")
         moduleManager.forEach {
             if (it.keyBind != Keyboard.KEY_NONE)
-                chat("§6> §c${it.getName()}: §a§l${Keyboard.getKeyName(it.keyBind)}")
+                chat("§6> §c${it.getName()}: §a§l${(safeKeyName(it.keyBind) ?: "None")}")
         }
         chatSyntax("binds clear")
     }
