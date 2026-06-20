@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 
 object NoClip : Module("NoClip", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
     val speed by float("Speed", 0.5f, 0f..10f)
+    private val onlyInVehicle by boolean("OnlyInVehicle", false)
 
     override fun onDisable() {
         mc.thePlayer?.noClip = false
@@ -20,6 +21,11 @@ object NoClip : Module("NoClip", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
     val onMove = handler<MoveEvent> { event ->
         val thePlayer = mc.thePlayer ?: return@handler
+
+        if (onlyInVehicle && thePlayer.ridingEntity == null) {
+            thePlayer.noClip = false
+            return@handler
+        }
 
         strafe(speed, stopWhenNoInput = true, event)
 
