@@ -51,9 +51,11 @@ object LongJump : Module("LongJump", Category.MOVEMENT, Category.SubCategory.MOV
     val mode by choices("Mode", longJumpModes.modeNames(), "NCP")
     val ncpBoost by float("NCPBoost", 4.25f, 1f..10f) { mode == "NCP" }
     val autoJumpValue by boolean("AutoJump", true)
+    val autoJumpNotWhileUsingItemValue by boolean("AutoJumpNotWhileUsingItem", false) { autoJumpValue }
     val autoDisableValue by boolean("AutoDisable", true)
     val timerValue by float("GlobalTimer", 1f, 0.1f..2f)
     val onlyAirValue by boolean("TimerOnlyAir", true)
+    val resetTimerOnGroundValue by boolean("ResetTimerOnGround", false)
     val legacyWarningValue by boolean("LegacyWarn", true)
 
     val boostSpeed by float("Boost-Speed", 0.48f, 0f..3f) { mode == "Boost" }
@@ -95,6 +97,8 @@ object LongJump : Module("LongJump", Category.MOVEMENT, Category.SubCategory.MOV
 
         if ((!onlyAirValue || !player.onGround) && !noTimerModify) {
             mc.timer.timerSpeed = timerValue
+        } else if (resetTimerOnGroundValue && player.onGround) {
+            mc.timer.timerSpeed = 1f
         }
 
         if (!player.onGround) {
@@ -119,6 +123,10 @@ object LongJump : Module("LongJump", Category.MOVEMENT, Category.SubCategory.MOV
         modeModule.onUpdate()
 
         if (autoJumpValue && player.onGround && player.isMoving && airTick < 2) {
+            if (autoJumpNotWhileUsingItemValue && player.isUsingItem) {
+                return@handler
+            }
+
             if (mode == "VerusDamage" && !damaged) {
                 return@handler
             }
