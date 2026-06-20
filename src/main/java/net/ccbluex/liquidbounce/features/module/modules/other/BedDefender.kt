@@ -26,7 +26,10 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotatio
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
+import net.minecraft.block.Block
 import net.minecraft.block.BlockBush
+import net.minecraft.block.BlockChest
+import net.minecraft.block.BlockEnderChest
 import net.minecraft.client.settings.GameSettings
 import net.minecraft.init.Blocks
 import net.minecraft.item.ItemBlock
@@ -45,6 +48,8 @@ object BedDefender : Module("BedDefender", Category.OTHER, Category.SubCategory.
     private val autoBlock by choices("AutoBlock", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof")
     private val swing by boolean("Swing", true)
     private val placeDelay by int("PlaceDelay", 500, 0..1000)
+    private val maxLayers by int("MaxLayers", 1, 1..5)
+    private val allowChests by boolean("AllowChests", false)
     private val raycastMode by choices(
         "Raycast",
         arrayOf("None", "Normal", "Around"),
@@ -88,7 +93,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, Category.SubCategory.
             return@handler
         }
 
-        val radius = 4
+        val radius = 4 + (maxLayers - 1)
         val posX = player.posX.toInt()
         val posY = player.posY.toInt()
         val posZ = player.posZ.toInt()
@@ -161,20 +166,33 @@ object BedDefender : Module("BedDefender", Category.OTHER, Category.SubCategory.
     }
 
     private fun addDefenceBlocks(bedPositions: List<BlockPos>) {
-        for (bedPos in bedPositions) {
-            val surroundingPositions = listOf(
-                bedPos.up(),
-                bedPos.north(),
-                bedPos.south(),
-                bedPos.east(),
-                bedPos.west()
-            )
+        var frontier = bedPositions
 
-            for (pos in surroundingPositions) {
-                if (pos !in bedTopPositions && pos !in bedBottomPositions && mc.theWorld.isAirBlock(pos)) {
-                    defenceBlocks.add(pos)
+        repeat(maxLayers) {
+            val nextFrontier = mutableListOf<BlockPos>()
+
+            for (basePos in frontier) {
+                val surroundingPositions = listOf(
+                    basePos.up(),
+                    basePos.north(),
+                    basePos.south(),
+                    basePos.east(),
+                    basePos.west()
+                )
+
+                for (pos in surroundingPositions) {
+                    if (pos in bedTopPositions || pos in bedBottomPositions || pos in defenceBlocks) {
+                        continue
+                    }
+
+                    if (mc.theWorld.isAirBlock(pos)) {
+                        defenceBlocks.add(pos)
+                        nextFrontier.add(pos)
+                    }
                 }
             }
+
+            frontier = nextFrontier
         }
     }
 
@@ -183,10 +201,8 @@ object BedDefender : Module("BedDefender", Category.OTHER, Category.SubCategory.
 
         var stack = player.inventorySlot(SilentHotbar.currentSlot + 36).stack ?: return
 
-        if (stack.item !is ItemBlock || (stack.item as ItemBlock).block is BlockBush
-            || InventoryUtils.BLOCK_BLACKLIST.contains((stack.item as ItemBlock).block) || stack.stackSize <= 0
-        ) {
-            val blockSlot = InventoryUtils.findBlockInHotbar() ?: return
+        if (!isValidDefenceStack(stack)) {
+            val blockSlot = findDefenceBlockInHotbar() ?: return
 
             if (autoBlock != "Off") {
                 SilentHotbar.selectSlotSilently(
@@ -212,6 +228,34 @@ object BedDefender : Module("BedDefender", Category.OTHER, Category.SubCategory.
         if (trackCPS) {
             CPSCounter.registerClick(CPSCounter.MouseButton.RIGHT)
         }
+    }
+
+    private fun isChestBlock(block: Block) = block is BlockChest || block is BlockEnderChest
+
+    private fun isValidDefenceStack(stack: ItemStack): Boolean {
+        val item = stack.item
+        if (item !is ItemBlock || stack.stackSize <= 0) return false
+
+        val block = item.block
+        if (block is BlockBush) return false
+
+        if (block in InventoryUtils.BLOCK_BLACKLIST) {
+            return allowChests && isChestBlock(block)
+        }
+
+        return true
+    }
+
+    private fun findDefenceBlockInHotbar(): Int? {
+        val player = mc.thePlayer ?: return null
+        val inventory = player.openContainer
+
+        return (36..44).filter {
+            val stack = inventory.getSlot(it).stack ?: return@filter false
+            isValidDefenceStack(stack)
+        }.minByOrNull {
+            (inventory.getSlot(it).stack.item as ItemBlock).block.isFullCube
+        }?.minus(36)
     }
 
     private fun tryToPlaceBlock(
@@ -266,7 +310,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, Category.SubCategory.
         if (autoBlock in arrayOf("Off", "Switch") || stack.stackSize > 0)
             return
 
-        val switchSlot = InventoryUtils.findBlockInHotbar() ?: return
+        val switchSlot = findDefenceBlockInHotbar() ?: return
 
         nextTick {
             if (autoBlock != "Off") {
