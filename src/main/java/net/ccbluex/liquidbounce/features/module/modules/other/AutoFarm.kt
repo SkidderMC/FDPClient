@@ -17,6 +17,7 @@ import net.ccbluex.liquidbounce.utils.block.state
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.extensions.eyes
 import net.ccbluex.liquidbounce.utils.extensions.onPlayerRightClick
+import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils.hasSpaceInInventory
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
@@ -51,11 +52,15 @@ object AutoFarm : Module(
 
     private val radius by float("Radius", 4.5F, 1F..6F)
     private val throughWalls by boolean("ThroughWalls", false)
+    private val wallRange by float("WallRange", 6F, 0F..6F) { throughWalls }
 
     private val replant by boolean("Replant", true)
     private val bonemeal by boolean("Bonemeal", false)
 
     private val delay by int("Delay", 200, 0..2000)
+    private val swapBackDelay by int("SwapBackDelay", 1, 1..20, "ticks")
+
+    private val disableOnFullInventory by boolean("DisableOnFullInventory", false)
 
     private val rotationsValue = boolean("Rotations", true)
     private val rotations by rotationsValue
@@ -83,6 +88,12 @@ object AutoFarm : Module(
 
         renderBlock = null
 
+        // Auto-disable when the inventory has no free slot left
+        if (disableOnFullInventory && !hasSpaceInInventory()) {
+            state = false
+            return@handler
+        }
+
         if (System.currentTimeMillis() - lastActionTime < delay) {
             return@handler
         }
@@ -96,8 +107,11 @@ object AutoFarm : Module(
                 return@searchBlocks false
             }
 
-            // ThroughWalls: only target crops in line of sight unless disabled
-            throughWalls || world.rayTraceBlocks(eyes, pos.center, false, true, false)?.blockPos == pos
+            val inLineOfSight = world.rayTraceBlocks(eyes, pos.center, false, true, false)?.blockPos == pos
+
+            // Line-of-sight crops use the full radius; crops behind walls are only
+            // allowed (when ThroughWalls is on) within the reduced wall range
+            inLineOfSight || (throughWalls && getCenterDistance(pos) <= wallRange)
         }
 
         if (crops.isEmpty()) {
@@ -236,7 +250,7 @@ object AutoFarm : Module(
     private fun placeSilently(slot: Int, clickPos: BlockPos, side: EnumFacing, hitVec: Vec3): Boolean {
         val player = mc.thePlayer ?: return false
 
-        SilentHotbar.selectSlotSilently(this, slot, ticksUntilReset = 1, immediate = true, render = false)
+        SilentHotbar.selectSlotSilently(this, slot, ticksUntilReset = swapBackDelay, immediate = true, render = false)
 
         val stack = player.inventory.mainInventory[slot] ?: return false
         val success = player.onPlayerRightClick(clickPos, side, hitVec, stack)
