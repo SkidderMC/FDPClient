@@ -13,9 +13,11 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawAxisAlignedBB
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.renderNameTag
 import net.minecraft.entity.item.EntityEnderEye
 import net.minecraft.util.AxisAlignedBB
+import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 import kotlin.math.abs
 import kotlin.math.atan2
@@ -26,9 +28,17 @@ object StrongholdFinder : Module("StrongholdFinder", Category.OTHER, Category.Su
     private val color by color("Color", Color(0, 200, 255))
     private val minAngleDifference by float("MinAngleDifference", 2F, 0.5F..20F)
 
+    private val renderRays by boolean("RenderRays", false)
+    private val renderTopChunks by boolean("RenderTopChunks", true)
+    private val resetOnWorldChange by boolean("ResetOnWorldChange", true)
+    private val announcePrediction by boolean("AnnouncePrediction", true)
+
+    private val rayLength = 2048.0
+
     private data class EyeThrow(val x: Double, val z: Double, val dx: Double, val dz: Double)
 
     private val knownEyes = HashSet<Int>()
+    private val throws = ArrayList<EyeThrow>()
     private var prevThrow: EyeThrow? = null
     private var lastThrow: EyeThrow? = null
     private var resultX: Double? = null
@@ -39,13 +49,14 @@ object StrongholdFinder : Module("StrongholdFinder", Category.OTHER, Category.Su
 
     private fun reset() {
         knownEyes.clear()
+        throws.clear()
         prevThrow = null
         lastThrow = null
         resultX = null
         resultZ = null
     }
 
-    val onWorld = handler<WorldEvent> { reset() }
+    val onWorld = handler<WorldEvent> { if (resetOnWorldChange) reset() }
 
     val onUpdate = handler<UpdateEvent> {
         val world = mc.theWorld ?: return@handler
@@ -60,6 +71,7 @@ object StrongholdFinder : Module("StrongholdFinder", Category.OTHER, Category.Su
 
             prevThrow = lastThrow
             lastThrow = EyeThrow(entity.posX, entity.posZ, dx, dz)
+            throws.add(lastThrow!!)
             triangulate()
         }
     }
@@ -86,28 +98,70 @@ object StrongholdFinder : Module("StrongholdFinder", Category.OTHER, Category.Su
         resultX = x
         resultZ = z
 
-        val self = mc.thePlayer
-        val distance = if (self != null) sqrt((x - self.posX) * (x - self.posX) + (z - self.posZ) * (z - self.posZ)).toInt() else 0
-        chat("§b[StrongholdFinder] §aStronghold at X §f${x.toInt()} §aZ §f${z.toInt()} §7(~${distance}m)")
+        if (announcePrediction) {
+            val self = mc.thePlayer
+            val distance = if (self != null) sqrt((x - self.posX) * (x - self.posX) + (z - self.posZ) * (z - self.posZ)).toInt() else 0
+            chat("§b[StrongholdFinder] §aStronghold at X §f${x.toInt()} §aZ §f${z.toInt()} §7(~${distance}m)")
+        }
     }
 
     val onRender3D = handler<Render3DEvent> {
-        val x = resultX ?: return@handler
-        val z = resultZ ?: return@handler
         val self = mc.thePlayer ?: return@handler
         val renderManager = mc.renderManager
 
-        val baseY = self.posY - 2.0
-        val topY = self.posY + 60.0
+        if (renderRays && throws.isNotEmpty()) {
+            drawRays(renderManager.renderPosX, self.posY - renderManager.renderPosY, renderManager.renderPosZ)
+        }
 
-        drawAxisAlignedBB(
-            AxisAlignedBB.fromBounds(
-                x - 0.5 - renderManager.renderPosX, baseY - renderManager.renderPosY, z - 0.5 - renderManager.renderPosZ,
-                x + 0.5 - renderManager.renderPosX, topY - renderManager.renderPosY, z + 0.5 - renderManager.renderPosZ
-            ), color
-        )
+        val x = resultX ?: return@handler
+        val z = resultZ ?: return@handler
 
-        val distance = sqrt((x - self.posX) * (x - self.posX) + (z - self.posZ) * (z - self.posZ)).toInt()
-        renderNameTag("Stronghold [${distance}m]", x, self.posY + 2.0, z)
+        if (renderTopChunks) {
+            val baseY = self.posY - 2.0
+            val topY = self.posY + 60.0
+
+            drawAxisAlignedBB(
+                AxisAlignedBB.fromBounds(
+                    x - 0.5 - renderManager.renderPosX, baseY - renderManager.renderPosY, z - 0.5 - renderManager.renderPosZ,
+                    x + 0.5 - renderManager.renderPosX, topY - renderManager.renderPosY, z + 0.5 - renderManager.renderPosZ
+                ), color
+            )
+
+            val distance = sqrt((x - self.posX) * (x - self.posX) + (z - self.posZ) * (z - self.posZ)).toInt()
+            renderNameTag("Stronghold [${distance}m]", x, self.posY + 2.0, z)
+        }
+    }
+
+    private fun drawRays(renderPosX: Double, y: Double, renderPosZ: Double) {
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        glEnable(GL_BLEND)
+        glEnable(GL_LINE_SMOOTH)
+        glLineWidth(1.5F)
+        glDisable(GL_TEXTURE_2D)
+        glDisable(GL_DEPTH_TEST)
+        glDepthMask(false)
+
+        glBegin(GL_LINES)
+        glColor(color.red, color.green, color.blue, 170)
+
+        for (t in throws) {
+            val len = sqrt(t.dx * t.dx + t.dz * t.dz)
+            if (len < 1e-6) continue
+            val nx = t.dx / len
+            val nz = t.dz / len
+
+            val sx = t.x - renderPosX
+            val sz = t.z - renderPosZ
+            glVertex3d(sx, y, sz)
+            glVertex3d(sx + nx * rayLength, y, sz + nz * rayLength)
+        }
+        glEnd()
+
+        glEnable(GL_TEXTURE_2D)
+        glDisable(GL_LINE_SMOOTH)
+        glEnable(GL_DEPTH_TEST)
+        glDepthMask(true)
+        glDisable(GL_BLEND)
+        glColor4f(1F, 1F, 1F, 1F)
     }
 }
