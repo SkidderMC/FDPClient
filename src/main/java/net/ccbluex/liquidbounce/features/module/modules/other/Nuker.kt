@@ -25,10 +25,12 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.timing.TickTimer
 import net.minecraft.block.Block
 import net.minecraft.block.BlockLiquid
+import net.minecraft.client.gui.inventory.GuiContainer
 import net.minecraft.init.Blocks.air
 import net.minecraft.init.Blocks.bedrock
 import net.minecraft.item.ItemSword
 import net.minecraft.network.play.client.C07PacketPlayerDigging
+import net.minecraft.network.play.client.C0APacketAnimation
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.START_DESTROY_BLOCK
 import net.minecraft.network.play.client.C07PacketPlayerDigging.Action.STOP_DESTROY_BLOCK
 import net.minecraft.util.BlockPos
@@ -61,6 +63,9 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
     private val nuke by int("Nuke", 1, 1..20)
     private val nukeDelay by int("NukeDelay", 1, 1..20)
 
+    private val swingMode by choices("SwingMode", arrayOf("Normal", "Packet", "None"), "Normal")
+    private val ignoreOpenInventory by boolean("IgnoreOpenInventory", true)
+
     private val blockProgress by boolean("BlockProgress", true).subjective()
 
     private val scale by float("Scale", 2F, 1F..6F) { blockProgress }.subjective()
@@ -83,6 +88,11 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
     var currentDamage = 0F
 
     val onUpdate = handler<UpdateEvent> {
+        // Pause breaking while a container GUI is open
+        if (!ignoreOpenInventory && mc.currentScreen is GuiContainer) {
+            return@handler
+        }
+
         // Block hit delay
         if (blockHitDelay > 0 && !FastBreak.handleEvents()) {
             blockHitDelay--
@@ -171,7 +181,7 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
                     // End block break if able to break instant
                     if (block.getPlayerRelativeBlockHardness(player, world, blockPos) >= 1F) {
                         currentDamage = 0F
-                        player.swingItem()
+                        swing()
                         mc.playerController.onPlayerDestroyBlock(blockPos, EnumFacing.DOWN)
                         blockHitDelay = hitDelay
                         validBlocks -= blockPos
@@ -181,7 +191,7 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
                 }
 
                 // Break block
-                player.swingItem()
+                swing()
                 currentDamage += block.getPlayerRelativeBlockHardness(player, world, blockPos)
                 world.sendBlockBreakProgress(player.entityId, blockPos, (currentDamage * 10F).toInt() - 1)
 
@@ -216,7 +226,7 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
                     if (isVisible) {
                         // Instant break block
                         sendPacket(C07PacketPlayerDigging(START_DESTROY_BLOCK, pos, EnumFacing.DOWN))
-                        player.swingItem()
+                        swing()
                         sendPacket(C07PacketPlayerDigging(STOP_DESTROY_BLOCK, pos, EnumFacing.DOWN))
                         attackedBlocks += pos
                     }
@@ -261,5 +271,15 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
      * Check if [block] is a valid block to break
      */
     private fun validBlock(block: Block) = block != air && block !is BlockLiquid && block != bedrock
+
+    /**
+     * Swing the hand according to the selected [swingMode]
+     */
+    private fun swing() {
+        when (swingMode.lowercase()) {
+            "normal" -> mc.thePlayer?.swingItem()
+            "packet" -> sendPacket(C0APacketAnimation())
+        }
+    }
 
 }
