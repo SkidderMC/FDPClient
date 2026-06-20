@@ -46,6 +46,7 @@ object AutoPearl : Module("AutoPearl", Category.PLAYER, Category.SubCategory.PLA
     private val pitchStep by float("PitchStep", 1F, 0.25F..5F)
 
     private val maxLandingError by float("MaxLandingError", 3F, 0.5F..10F)
+    private val yawOffset by float("YawOffset", 0F, -180F..180F)
     private val silent by boolean("Silent", true)
 
     // Ender pearl behaves as a thrown item in 1.8.9: launch speed 1.5, gravity 0.03 per tick,
@@ -75,7 +76,7 @@ object AutoPearl : Module("AutoPearl", Category.PLAYER, Category.SubCategory.PLA
         // Yaw straight toward the target; only the launch pitch needs solving.
         val diffX = aimPoint.xCoord - eyes.xCoord
         val diffZ = aimPoint.zCoord - eyes.zCoord
-        val yaw = MathHelper.wrapAngleTo180_float(atan2(diffZ, diffX).toDegreesF() - 90F)
+        val yaw = MathHelper.wrapAngleTo180_float(atan2(diffZ, diffX).toDegreesF() - 90F + yawOffset)
 
         var bestPitch: Float? = null
         var bestError = Double.MAX_VALUE
