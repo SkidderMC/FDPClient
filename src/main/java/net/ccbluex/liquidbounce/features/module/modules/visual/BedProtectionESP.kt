@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.searchBlocks
 import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.block.id
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.minecraft.block.Block
 import net.minecraft.init.Blocks.*
@@ -29,6 +30,8 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, Category.S
     private val blockLimit by int("BlockLimit", 256, 0..1024)
     private val down by boolean("BlocksUnderTarget", false)
     private val renderTargetBlocks by boolean("RenderTargetBlocks", true)
+    private val outline by boolean("Outline", false)
+    private val thickness by float("Thickness", 2.0f, 1.0f..5.0f) { outline }
 
     private val color by color("Color", Color(96, 96, 96))
 
@@ -129,15 +132,27 @@ object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, Category.S
         delay(1000)
     }
 
+    private fun renderBlock(blockPos: BlockPos, blockColor: Color) {
+        if (outline) {
+            val renderManager = mc.renderManager
+            val renderX = blockPos.x - renderManager.renderPosX + 0.5
+            val renderY = blockPos.y - renderManager.renderPosY - 0.5
+            val renderZ = blockPos.z - renderManager.renderPosZ + 0.5
+            RenderUtils.renderOutlines(renderX, renderY, renderZ, 1.0f, 1.0f, blockColor, thickness)
+        } else {
+            drawBlockBox(blockPos, blockColor, true)
+        }
+    }
+
     val onRender3D = handler<Render3DEvent> {
         if (renderTargetBlocks) {
             for (blockPos in targetBlocks) {
-                drawBlockBox(blockPos, Color.RED, true)
+                renderBlock(blockPos, Color.RED)
             }
         }
 
         for (blockPos in blocksToRender) {
-            drawBlockBox(blockPos, color, true)
+            renderBlock(blockPos, color)
         }
     }
 
