@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.injection.forge.mixins.entity;
 
 import net.ccbluex.liquidbounce.event.EventManager;
+import net.ccbluex.liquidbounce.event.MouseRotationEvent;
 import net.ccbluex.liquidbounce.event.RotationSetEvent;
 import net.ccbluex.liquidbounce.event.StrafeEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.HitBox;
@@ -281,7 +282,19 @@ public abstract class MixinEntity implements IMixinEntity {
         if ((Object) this != mc.thePlayer)
             return;
 
-        RotationSetEvent event = new RotationSetEvent((float) (yaw * 0.15), (float) (pitch * 0.15));
+        MouseRotationEvent mouseEvent = new MouseRotationEvent(yaw, pitch);
+
+        EventManager.INSTANCE.call(mouseEvent);
+
+        if (mouseEvent.isCancelled()) {
+            ci.cancel();
+            return;
+        }
+
+        RotationSetEvent event = new RotationSetEvent(
+                (float) (mouseEvent.getCursorDeltaX() * 0.15),
+                (float) (mouseEvent.getCursorDeltaY() * 0.15)
+        );
 
         EventManager.INSTANCE.call(event);
 

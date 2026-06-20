@@ -5,9 +5,11 @@
  */
 package net.ccbluex.liquidbounce.event
 
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import net.ccbluex.liquidbounce.event.async.TickScheduler
+import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -39,7 +41,11 @@ internal inline fun <T : Any> createEventMap(valueSelector: (Class<out Event>) -
 /**
  * @author MukjepScarlet
  */
-object EventManager : CoroutineScope by CoroutineScope(SupervisorJob()) {
+private val eventCoroutineExceptionHandler = CoroutineExceptionHandler { context, throwable ->
+    LOGGER.error("Unhandled event coroutine exception in $context", throwable)
+}
+
+object EventManager : CoroutineScope by CoroutineScope(SupervisorJob() + eventCoroutineExceptionHandler) {
     /**
      * All normal handlers (except of scripts) should be initialized at startup on the main thread
      */

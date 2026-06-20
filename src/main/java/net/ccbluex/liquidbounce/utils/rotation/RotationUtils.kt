@@ -6,6 +6,7 @@
 package net.ccbluex.liquidbounce.utils.rotation
 
 import net.ccbluex.liquidbounce.event.*
+import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.combat.FastBow
 import net.ccbluex.liquidbounce.features.module.modules.other.NoRotateSet
 import net.ccbluex.liquidbounce.features.module.modules.client.Rotations
@@ -29,6 +30,8 @@ import kotlin.math.*
 
 object RotationUtils : MinecraftInstance, Listenable {
 
+    private val requestArbiter = RotationRequestArbiter()
+
     /**
      * Our final rotation point, which [currentRotation] follows.
      */
@@ -45,7 +48,11 @@ object RotationUtils : MinecraftInstance, Listenable {
     var serverRotation: Rotation
         get() = lastRotations[0]
         set(value) {
-            lastRotations = lastRotations.toMutableList().apply { set(0, value) }
+            val previousRotations = lastRotations
+
+            lastRotations = MutableList(MAX_CAPTURE_TICKS) { tick ->
+                if (tick == 0) value.copy() else previousRotations[tick - 1].copy()
+            }
         }
 
     private const val MAX_CAPTURE_TICKS = 3
@@ -55,21 +62,16 @@ object RotationUtils : MinecraftInstance, Listenable {
     /**
      * A list that stores the last rotations captured from 0 up to [MAX_CAPTURE_TICKS] previous ticks.
      */
-    var lastRotations = MutableList(MAX_CAPTURE_TICKS) { Rotation.ZERO }
-        set(value) {
-            val updatedList = MutableList(lastRotations.size) { Rotation.ZERO }
-
-            for (tick in 0 until MAX_CAPTURE_TICKS) {
-                updatedList[tick] = if (tick == 0) value[0] else field[tick - 1]
-            }
-
-            field = updatedList
-        }
+    var lastRotations = MutableList(MAX_CAPTURE_TICKS) { Rotation(0f, 0f) }
+        private set
 
     /**
      * The currently in-use rotation settings, which are used to determine how the rotations will move.
      */
     var activeSettings: RotationSettings? = null
+
+    val activeRequestPriority
+        get() = requestArbiter.activeRequest?.priority
 
     var resetTicks = 0
 
@@ -322,11 +324,15 @@ object RotationUtils : MinecraftInstance, Listenable {
      * @return difference between rotation
      */
     fun rotationDifference(a: Rotation, b: Rotation = serverRotation) =
-        hypot(angleDifference(a.yaw, b.yaw), a.pitch - b.pitch)
+        RotationMath.rotationDifference(a.yaw, a.pitch, b.yaw, b.pitch)
 
     private fun limitAngleChange(
-        currentRotation: Rotation, targetRotation: Rotation, settings: RotationSettings
+        currentRotation: Rotation, targetRotation: Rotation, settings: RotationSettings, resetting: Boolean = false
     ): Rotation {
+        if (settings.useModernRotations) {
+            return ModernRotationEngine.process(currentRotation, targetRotation, settings, resetting)
+        }
+
         val (hSpeed, vSpeed) = if (settings.instant) {
             180f to 180f
         } else settings.horizontalSpeed to settings.verticalSpeed
@@ -341,6 +347,13 @@ object RotationUtils : MinecraftInstance, Listenable {
             settings.minRotationDifferenceResetTiming
         )
     }
+
+    fun performAngleChange(
+        currentRotation: Rotation,
+        targetRotation: Rotation,
+        settings: RotationSettings,
+        resetting: Boolean = false,
+    ) = limitAngleChange(currentRotation, targetRotation, settings, resetting)
 
     fun performAngleChange(
         currentRotation: Rotation,
@@ -466,7 +479,7 @@ object RotationUtils : MinecraftInstance, Listenable {
      * @param b angle point
      * @return difference between angle points
      */
-    fun angleDifference(a: Float, b: Float) = MathHelper.wrapAngleTo180_float(a - b)
+    fun angleDifference(a: Float, b: Float) = RotationMath.angleDifference(a, b)
 
     /**
      * Returns a 2-parameter vector with the calculated angle differences between [target] and [current] rotations
@@ -544,13 +557,18 @@ object RotationUtils : MinecraftInstance, Listenable {
      *
      * @param rotation your target rotation
      */
-    fun setTargetRotation(rotation: Rotation, options: RotationSettings, ticks: Int = options.resetTicks) {
-        if (rotation.yaw.isNaN() || rotation.pitch.isNaN() || rotation.pitch > 90 || rotation.pitch < -90) {
-            return
+    fun canRequestRotation(options: RotationSettings) =
+        requestArbiter.canAcquire(options, options.effectiveRequestPriority)
+
+    fun setTargetRotation(rotation: Rotation, options: RotationSettings, ticks: Int = options.resetTicks): Boolean {
+        if (!RotationMath.isValid(rotation.yaw, rotation.pitch)) {
+            return false
         }
 
-        if (!options.prioritizeRequest && activeSettings?.prioritizeRequest == true) {
-            return
+        val requestPriority = options.effectiveRequestPriority
+
+        if (!requestArbiter.canAcquire(options, requestPriority)) {
+            return false
         }
 
         if (!options.applyServerSide) {
@@ -562,18 +580,48 @@ object RotationUtils : MinecraftInstance, Listenable {
             resetRotation()
         }
 
-        targetRotation = rotation
+        requestArbiter.tryAcquire(options, requestPriority)
 
-        resetTicks = if (!options.applyServerSide || !options.resetTicksValue.isSupported()) 1 else ticks
+        targetRotation = rotation.copy()
+
+        val requestedResetTicks = if (options.useModernRotations) options.effectiveResetTicks else ticks
+        val resetTicksSupported = if (options.useModernRotations) {
+            options.modernTicksUntilResetValue.isSupported()
+        } else {
+            options.resetTicksValue.isSupported()
+        }
+
+        resetTicks = if (!options.applyServerSide || !resetTicksSupported) 1 else requestedResetTicks
 
         activeSettings = options
 
         if (options.immediate) {
             update()
         }
+
+        return true
     }
 
-    private fun resetRotation() {
+    fun cancelTargetRotation(options: RotationSettings, immediate: Boolean = false): Boolean {
+        if (!requestArbiter.release(options)) return false
+
+        targetRotation = null
+        resetTicks = 0
+
+        if (immediate || currentRotation == null) {
+            resetRotation()
+        }
+
+        return true
+    }
+
+    fun cancelTargetRotation(owner: Module, immediate: Boolean = false): Boolean {
+        val settings = activeSettings?.takeIf { it.moduleOwner === owner } ?: return false
+
+        return cancelTargetRotation(settings, immediate)
+    }
+
+    private fun resetRotation(resetHistory: Boolean = false) {
         resetTicks = 0
         currentRotation?.let { (yaw, _) ->
             mc.thePlayer?.let {
@@ -584,19 +632,27 @@ object RotationUtils : MinecraftInstance, Listenable {
         targetRotation = null
         currentRotation = null
         activeSettings = null
+        requestArbiter.clear()
+        ModernRotationEngine.reset()
+
+        if (resetHistory) {
+            val rotation = mc.thePlayer?.rotation ?: Rotation(0f, 0f)
+            lastRotations = MutableList(MAX_CAPTURE_TICKS) { rotation.copy() }
+            modifiedInput = MovementInput()
+        }
     }
 
     /**
      * Returns the smallest angle difference possible with a specific sensitivity ("gcd")
      */
     fun getFixedAngleDelta(sensitivity: Float = mc.gameSettings.mouseSensitivity) =
-        (sensitivity * 0.6f + 0.2f).pow(3) * 1.2f
+        RotationMath.fixedAngleDelta(sensitivity)
 
     /**
      * Returns angle that is legitimately accomplishable with player's current sensitivity
      */
     fun getFixedSensitivityAngle(targetAngle: Float, startAngle: Float = 0f, gcd: Float = getFixedAngleDelta()) =
-        startAngle + ((targetAngle - startAngle) / gcd).roundToInt() * gcd
+        RotationMath.fixedSensitivityAngle(targetAngle, startAngle, gcd)
 
     /**
      * Creates a raytrace even when the target [blockPos] is not visible
@@ -651,7 +707,7 @@ object RotationUtils : MinecraftInstance, Listenable {
             }
 
             currentRotation = limitAngleChange(
-                serverRotation, playerRotation, settings
+                serverRotation, playerRotation, settings, resetting = true
             ).fixedSensitivity()
             return
         }
@@ -662,6 +718,9 @@ object RotationUtils : MinecraftInstance, Listenable {
                     rotation.toPlayer(player)
                 } else {
                     currentRotation = rotation.fixedSensitivity()
+                    if (settings.useModernRotations && settings.modernMovementCorrection == "ChangeLook") {
+                        currentRotation?.toPlayer(player)
+                    }
                 }
             }
         }
@@ -675,6 +734,11 @@ object RotationUtils : MinecraftInstance, Listenable {
         curr: Rotation, target: Rotation, options: RotationSettings
     ): Boolean {
         if (!options.applyServerSide) return true
+
+        if (options.useModernRotations) {
+            return options.modernMovementCorrection == "ChangeLook" ||
+                rotationDifference(target, curr) <= options.modernResetThreshold
+        }
 
         if (rotationDifference(target, curr) > options.angleResetDifference) return false
 
@@ -708,6 +772,10 @@ object RotationUtils : MinecraftInstance, Listenable {
         return rotationDifference(target, current).withGCD() > smallestAnglePossible * multiplier
     }
 
+    val onWorld = handler<WorldEvent>(always = true) {
+        resetRotation(resetHistory = true)
+    }
+
     /**
      * Handle rotation update
      */
@@ -729,6 +797,20 @@ object RotationUtils : MinecraftInstance, Listenable {
     val onStrafe = handler<StrafeEvent> { event ->
         val data = activeSettings ?: return@handler
 
+        if (data.useModernRotations) {
+            val strict = when (data.modernMovementCorrection) {
+                "Strict" -> true
+                "Silent" -> false
+                else -> return@handler
+            }
+
+            currentRotation?.let {
+                it.applyStrafeToPlayer(event, strict)
+                event.cancelEvent()
+            }
+            return@handler
+        }
+
         if (!data.strafe) {
             return@handler
         }
@@ -737,6 +819,22 @@ object RotationUtils : MinecraftInstance, Listenable {
             it.applyStrafeToPlayer(event, data.strict)
             event.cancelEvent()
         }
+    }
+
+    /**
+     * Mouse correction path applied when the Modern engine runs ChangeLook movement correction.
+     */
+    val onRotationSet = handler<RotationSetEvent> { event ->
+        val data = activeSettings ?: return@handler
+
+        if (!data.useModernRotations || data.modernMovementCorrection != "ChangeLook") {
+            return@handler
+        }
+
+        val mouseDelta = Rotation(event.yawDiff, -event.pitchDiff)
+
+        currentRotation = currentRotation?.plus(mouseDelta)?.withLimitedPitch()
+        targetRotation = targetRotation?.plus(mouseDelta)?.withLimitedPitch()
     }
 
     /**

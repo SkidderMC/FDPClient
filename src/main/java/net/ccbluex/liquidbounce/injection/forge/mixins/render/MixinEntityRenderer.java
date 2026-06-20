@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.render;
 import com.google.common.base.Predicates;
 import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.event.Render3DEvent;
+import net.ccbluex.liquidbounce.event.WorldRenderEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;
 import net.ccbluex.liquidbounce.features.module.modules.combat.ForwardTrack;
 import net.ccbluex.liquidbounce.features.module.modules.other.OverrideRaycast;
@@ -96,6 +97,7 @@ public abstract class MixinEntityRenderer {
             FreeLook.INSTANCE.runWithoutSavingRotations(() -> {
                 FreeLook.INSTANCE.restoreOriginalRotation();
                 EventManager.INSTANCE.call(new Render3DEvent(partialTicks));
+                EventManager.INSTANCE.call(new WorldRenderEvent(partialTicks));
                 FreeLook.INSTANCE.useModifiedRotation();
                 return null;
             });
@@ -140,7 +142,7 @@ public abstract class MixinEntityRenderer {
     }
 
     /**
-     * @author CCBlueX
+     *
      */
     @Inject(method = "getMouseOver", at = @At("HEAD"), cancellable = true)
     private void getMouseOver(float p_getMouseOver_1_, CallbackInfo ci) {

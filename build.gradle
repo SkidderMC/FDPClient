@@ -121,6 +121,16 @@ dependencies {
     implementation "org.apache.logging.log4j:log4j-api:2.0-beta9"
 }
 
+tasks.register("verifyRotations", JavaExec) {
+    group = "verification"
+    description = "Runs deterministic rotation math and request arbitration checks."
+    dependsOn(testClasses)
+    classpath = sourceSets.test.runtimeClasspath
+    main = "net.ccbluex.liquidbounce.utils.rotation.RotationVerification"
+}
+
+check.dependsOn("verifyRotations")
+
 shadowJar {
     archiveClassifier.set("")
     duplicatesStrategy DuplicatesStrategy.EXCLUDE

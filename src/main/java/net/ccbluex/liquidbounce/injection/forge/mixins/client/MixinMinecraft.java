@@ -300,6 +300,7 @@ public abstract class MixinMinecraft {
         }
 
         EventManager.INSTANCE.call(new WorldEvent(p_loadWorld_1_));
+        EventManager.INSTANCE.call(new WorldChangeEvent(p_loadWorld_1_));
     }
 
 
@@ -335,7 +336,7 @@ public abstract class MixinMinecraft {
     }
 
     /**
-     * @author CCBlueX
+     *
      */
     @ModifyConstant(method = "getLimitFramerate", constant = @Constant(intValue = 30))
     public int getLimitFramerate(int constant) {

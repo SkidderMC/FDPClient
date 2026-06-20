@@ -21,7 +21,7 @@ class AlwaysRotationSettings(owner: Module, generalApply: () -> Boolean = { true
 }
 
 @Suppress("MemberVisibilityCanBePrivate")
-open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true }) : Configurable("RotationSettings") {
+open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean = { true }) : Configurable("RotationSettings") {
 
     open val rotationsValue = boolean("Rotations", true) { generalApply() }
     open val applyServerSideValue = boolean("ApplyServerSide", true) { rotationsActive && generalApply() }
@@ -56,6 +56,134 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
         "MinRotationDifferenceResetTiming", arrayOf("OnStart", "OnSlowDown", "Always"), "OnStart"
     ) { rotationsActive && generalApply() }
 
+    open val rotationEngineValue = choices(
+        "Engine", arrayOf("Legacy", "Modern"), "Legacy"
+    ) { rotationsActive && generalApply() }
+
+    open val modernAngleSmoothValue = choices(
+        "AngleSmooth", arrayOf("None", "Linear", "Sigmoid", "Interpolation", "Acceleration", "AI"), "Linear"
+    ) { useModernRotations && generalApply() }
+
+    open val modernMovementCorrectionValue = choices(
+        "MovementCorrection", arrayOf("Off", "Strict", "Silent", "ChangeLook"), "Silent"
+    ) { useModernRotations && applyServerSide && generalApply() }
+
+    open val modernResetThresholdValue = float("ResetThreshold", 2f, 1f..180f) {
+        useModernRotations && applyServerSide && generalApply()
+    }
+
+    open val modernTicksUntilResetValue = int("TicksUntilReset", 5, 1..30, "ticks") {
+        useModernRotations && applyServerSide && generalApply()
+    }
+
+    open val modernHorizontalTurnSpeedValue = floatRange(
+        "HorizontalTurnSpeed", 180f..180f, 0f..180f
+    ) { useModernRotations && modernAngleSmooth in arrayOf("Linear", "Sigmoid") && generalApply() }
+
+    open val modernVerticalTurnSpeedValue = floatRange(
+        "VerticalTurnSpeed", 180f..180f, 0f..180f
+    ) { useModernRotations && modernAngleSmooth in arrayOf("Linear", "Sigmoid") && generalApply() }
+
+    open val modernSigmoidSteepnessValue = float("SigmoidSteepness", 10f, 0f..20f) {
+        useModernRotations && modernAngleSmooth == "Sigmoid" && generalApply()
+    }
+
+    open val modernSigmoidMidpointValue = float("SigmoidMidpoint", 0.3f, 0f..1f) {
+        useModernRotations && modernAngleSmooth == "Sigmoid" && generalApply()
+    }
+
+    open val modernInterpolationHorizontalSpeedValue = intRange(
+        "InterpolationHorizontalSpeed", 80..85, 1..100, "%"
+    ) { useModernRotations && modernAngleSmooth in arrayOf("Interpolation", "AI") && generalApply() }
+
+    open val modernInterpolationVerticalSpeedValue = intRange(
+        "InterpolationVerticalSpeed", 20..25, 1..100, "%"
+    ) { useModernRotations && modernAngleSmooth in arrayOf("Interpolation", "AI") && generalApply() }
+
+    open val modernInterpolationDirectionChangeFactorValue = intRange(
+        "InterpolationDirectionChangeFactor", 95..100, 0..100, "%"
+    ) { useModernRotations && modernAngleSmooth in arrayOf("Interpolation", "AI") && generalApply() }
+
+    open val modernInterpolationMidpointValue = float("InterpolationMidpoint", 0.35f, 0f..1f) {
+        useModernRotations && modernAngleSmooth in arrayOf("Interpolation", "AI") && generalApply()
+    }
+
+    open val modernYawAccelerationValue = floatRange(
+        "YawAcceleration", 20f..25f, 1f..180f
+    ) { useModernRotations && modernAngleSmooth == "Acceleration" && generalApply() }
+
+    open val modernPitchAccelerationValue = floatRange(
+        "PitchAcceleration", 20f..25f, 1f..180f
+    ) { useModernRotations && modernAngleSmooth == "Acceleration" && generalApply() }
+
+    open val modernAccelerationErrorValue = boolean("AccelerationError", true) {
+        useModernRotations && modernAngleSmooth == "Acceleration" && generalApply()
+    }
+
+    open val modernYawAccelerationErrorValue = float("YawAccelError", 0.1f, 0.01f..1f) {
+        useModernRotations && modernAngleSmooth == "Acceleration" && modernAccelerationError && generalApply()
+    }
+
+    open val modernPitchAccelerationErrorValue = float("PitchAccelError", 0.1f, 0.01f..1f) {
+        useModernRotations && modernAngleSmooth == "Acceleration" && modernAccelerationError && generalApply()
+    }
+
+    open val modernConstantErrorValue = boolean("ConstantError", true) {
+        useModernRotations && modernAngleSmooth == "Acceleration" && generalApply()
+    }
+
+    open val modernYawConstantErrorValue = float("YawConstantError", 0.1f, 0.01f..1f) {
+        useModernRotations && modernAngleSmooth == "Acceleration" && modernConstantError && generalApply()
+    }
+
+    open val modernPitchConstantErrorValue = float("PitchConstantError", 0.1f, 0.01f..1f) {
+        useModernRotations && modernAngleSmooth == "Acceleration" && modernConstantError && generalApply()
+    }
+
+    open val modernSigmoidDecelerationValue = boolean("SigmoidDeceleration", false) {
+        useModernRotations && modernAngleSmooth == "Acceleration" && generalApply()
+    }
+
+    open val modernSigmoidDecelerationSteepnessValue = float("DecelerationSteepness", 10f, 0f..20f) {
+        useModernRotations && modernAngleSmooth == "Acceleration" && modernSigmoidDeceleration && generalApply()
+    }
+
+    open val modernSigmoidDecelerationMidpointValue = float("DecelerationMidpoint", 0.3f, 0f..1f) {
+        useModernRotations && modernAngleSmooth == "Acceleration" && modernSigmoidDeceleration && generalApply()
+    }
+
+    open val modernShortStopValue = boolean("ShortStop", false) {
+        useModernRotations && generalApply()
+    }
+
+    open val modernShortStopRateValue = int("ShortStopRate", 3, 1..25, "%") {
+        useModernRotations && modernShortStop && generalApply()
+    }
+
+    open val modernFailValue = boolean("Fail", false) {
+        useModernRotations && generalApply()
+    }
+
+    open val modernFailRateValue = int("FailRate", 3, 1..100, "%") {
+        useModernRotations && modernFail && generalApply()
+    }
+
+    open val modernFailFactorValue = float("FailFactor", 0.04f, 0.01f..0.99f) {
+        useModernRotations && modernFail && generalApply()
+    }
+
+    open val modernFailStrengthHorizontalValue = floatRange("FailStrengthHorizontal", 5f..10f, 1f..90f, "deg") {
+        useModernRotations && modernFail && generalApply()
+    }
+
+    open val modernFailStrengthVerticalValue = floatRange("FailStrengthVertical", 0f..2f, 0f..90f, "deg") {
+        useModernRotations && modernFail && generalApply()
+    }
+
+    open val modernFailTransitionDurationValue = intRange("FailTransitionInDuration", 1..4, 0..20, "ticks") {
+        useModernRotations && modernFail && generalApply()
+    }
+
     // Variables for easier access
     val rotations by rotationsValue
     val applyServerSide by applyServerSideValue
@@ -73,8 +201,41 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
     val angleResetDifference by angleResetDifferenceValue
     val minRotationDifference by minRotationDifferenceValue
     val minRotationDifferenceResetTiming by minRotationDifferenceResetTimingValue
+    val rotationEngine by rotationEngineValue
+    val modernAngleSmooth by modernAngleSmoothValue
+    val modernMovementCorrection by modernMovementCorrectionValue
+    val modernResetThreshold by modernResetThresholdValue
+    val modernTicksUntilReset by modernTicksUntilResetValue
+    val modernHorizontalTurnSpeed by modernHorizontalTurnSpeedValue
+    val modernVerticalTurnSpeed by modernVerticalTurnSpeedValue
+    val modernSigmoidSteepness by modernSigmoidSteepnessValue
+    val modernSigmoidMidpoint by modernSigmoidMidpointValue
+    val modernInterpolationHorizontalSpeed by modernInterpolationHorizontalSpeedValue
+    val modernInterpolationVerticalSpeed by modernInterpolationVerticalSpeedValue
+    val modernInterpolationDirectionChangeFactor by modernInterpolationDirectionChangeFactorValue
+    val modernInterpolationMidpoint by modernInterpolationMidpointValue
+    val modernYawAcceleration by modernYawAccelerationValue
+    val modernPitchAcceleration by modernPitchAccelerationValue
+    val modernAccelerationError by modernAccelerationErrorValue
+    val modernYawAccelerationError by modernYawAccelerationErrorValue
+    val modernPitchAccelerationError by modernPitchAccelerationErrorValue
+    val modernConstantError by modernConstantErrorValue
+    val modernYawConstantError by modernYawConstantErrorValue
+    val modernPitchConstantError by modernPitchConstantErrorValue
+    val modernSigmoidDeceleration by modernSigmoidDecelerationValue
+    val modernSigmoidDecelerationSteepness by modernSigmoidDecelerationSteepnessValue
+    val modernSigmoidDecelerationMidpoint by modernSigmoidDecelerationMidpointValue
+    val modernShortStop by modernShortStopValue
+    val modernShortStopRate by modernShortStopRateValue
+    val modernFail by modernFailValue
+    val modernFailRate by modernFailRateValue
+    val modernFailFactor by modernFailFactorValue
+    val modernFailStrengthHorizontal by modernFailStrengthHorizontalValue
+    val modernFailStrengthVertical by modernFailStrengthVerticalValue
+    val modernFailTransitionDuration by modernFailTransitionDurationValue
 
     var prioritizeRequest = false
+    var requestPriority = RotationPriority.NORMAL
     var immediate = false
     var instant = false
 
@@ -84,6 +245,15 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
     open val rotationsActive
         get() = rotations
 
+    val useModernRotations
+        get() = rotationEngine == "Modern"
+
+    val effectiveResetTicks
+        get() = if (useModernRotations) modernTicksUntilReset else resetTicks
+
+    val effectiveRequestPriority
+        get() = if (prioritizeRequest) RotationPriority.CRITICAL.level else requestPriority.level
+
     val horizontalSpeed
         get() = horizontalAngleChange.random()
 
@@ -92,6 +262,10 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
 
     fun withoutKeepRotation() = apply {
         keepRotationValue.excludeWithState()
+    }
+
+    fun withRequestPriority(priority: RotationPriority) = apply {
+        requestPriority = priority
     }
 
     fun updateSimulateShortStopData(diff: Float) {
@@ -115,7 +289,7 @@ open class RotationSettings(owner: Module, generalApply: () -> Boolean = { true 
     }
 
     init {
-        owner.addValues(this.values)
+        moduleOwner.addValues(this.values)
     }
 }
 

@@ -225,6 +225,32 @@ object RotationUpdateEvent : Event()
 
 class RotationSetEvent(var yawDiff: Float, var pitchDiff: Float) : CancellableEvent()
 
+/**
+ * Compatibility event fired by callers that want raw mouse-rotation deltas.
+ * FDP's 1.8.9 mixin currently emits [RotationSetEvent]; this event is provided for future ports.
+ */
+class MouseRotationEvent(var cursorDeltaX: Double, var cursorDeltaY: Double) : CancellableEvent()
+
+/**
+ * Compatibility event for velocity-based movement correction.
+ * Existing 1.8.9 modules normally use [StrafeEvent].
+ */
+class PlayerVelocityStrafeEvent(
+    val movementInput: MovementInput,
+    val speed: Float,
+    var velocity: Vec3,
+) : Event()
+
+/**
+ * Compatibility event name for world rendering.
+ */
+class WorldRenderEvent(val partialTicks: Float) : Event()
+
+/**
+ * Compatibility world-change event.
+ */
+class WorldChangeEvent(val worldClient: WorldClient?) : Event()
+
 class CameraPositionEvent(
     private val currPos: Vec3, private val prevPos: Vec3, private val lastTickPos: Vec3,
     var result: FreeCam.PositionPair? = null,
@@ -282,6 +308,10 @@ internal val ALL_EVENT_CLASSES = arrayOf(
     ClickBlockEvent::class.java,
     UpdateEvent::class.java,
     RotationSetEvent::class.java,
+    MouseRotationEvent::class.java,
+    PlayerVelocityStrafeEvent::class.java,
+    WorldRenderEvent::class.java,
+    WorldChangeEvent::class.java,
     EntityMovementEvent::class.java,
     ClientSlotChangeEvent::class.java,
     PacketEvent::class.java,
