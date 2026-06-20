@@ -20,6 +20,10 @@ object FastUse : Module("FastUse", Category.PLAYER, Category.SubCategory.PLAYER_
 
     private val mode by choices("Mode", arrayOf("Instant", "NCP", "AAC", "Custom"), "NCP")
 
+    private val speed by int("Speed", 20, 1..35) { mode == "Instant" || mode == "NCP" }
+    private val tickCooldown by int("TickCooldown", 0, 0..20, "ticks") { mode == "Instant" || mode == "NCP" }
+    private val stopInput by boolean("StopInput", false) { mode == "Instant" || mode == "NCP" }
+
     private val delay by int("CustomDelay", 0, 0..300) { mode == "Custom" }
     private val customSpeed by int("CustomSpeed", 2, 1..35) { mode == "Custom" }
     private val customTimer by float("CustomTimer", 1.1f, 0.5f..2f) { mode == "Custom" }
@@ -28,6 +32,7 @@ object FastUse : Module("FastUse", Category.PLAYER, Category.SubCategory.PLAYER_
 
     private val msTimer = MSTimer()
     private var usedTimer = false
+    private var tickCounter = 0
 
 
     val onUpdate = handler<UpdateEvent> {
@@ -40,24 +45,39 @@ object FastUse : Module("FastUse", Category.PLAYER, Category.SubCategory.PLAYER_
 
         if (!isConsumingItem()) {
             msTimer.reset()
+            tickCounter = 0
             return@handler
         }
 
         when (mode.lowercase()) {
             "instant" -> {
-                repeat(35) {
+                if (tickCounter++ < tickCooldown)
+                    return@handler
+                tickCounter = 0
+
+                repeat(speed) {
                     sendPacket(C03PacketPlayer(serverOnGround))
                 }
 
                 mc.playerController.onStoppedUsingItem(thePlayer)
+
+                if (stopInput)
+                    mc.gameSettings.keyBindUseItem.pressed = false
             }
 
             "ncp" -> if (thePlayer.itemInUseDuration > 14) {
-                repeat(20) {
+                if (tickCounter++ < tickCooldown)
+                    return@handler
+                tickCounter = 0
+
+                repeat(speed) {
                     sendPacket(C03PacketPlayer(serverOnGround))
                 }
 
                 mc.playerController.onStoppedUsingItem(thePlayer)
+
+                if (stopInput)
+                    mc.gameSettings.keyBindUseItem.pressed = false
             }
 
             "aac" -> {
