@@ -79,6 +79,9 @@ object NameTags : Module("NameTags", Category.VISUAL, Category.SubCategory.RENDE
     private val border by boolean("Border", false)
     private val borderColor by color("BorderColor", Color.BLACK.withAlpha(100)) { border }
 
+    private val borderWidth by float("Border Width", 0F, 0F..8F) { background }
+    private val backgroundRadius by float("Background Radius", 0F, 0F..16F) { background }
+
     private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200).onChanged { value ->
         maxRenderDistanceSq = value.toDouble().pow(2)
     }
@@ -203,7 +206,24 @@ object NameTags : Module("NameTags", Category.VISUAL, Category.SubCategory.RENDE
         val text = distanceText + bot + tag + healthText + hp
         val stringWidth = fontRenderer.getStringWidth(text) / 2
         if (background) {
-            Gui.drawRect((-stringWidth - 1), -14, (stringWidth + 1), -4, Integer.MIN_VALUE)
+            if (backgroundRadius > 0F || borderWidth > 0F) {
+                val bx1 = (-stringWidth - 1).toFloat()
+                val by1 = -14F
+                val bx2 = (stringWidth + 1).toFloat()
+                val by2 = -4F
+                RenderUtils.drawRoundedRect(
+                    bx1,
+                    by1,
+                    bx2 - bx1,
+                    by2 - by1,
+                    backgroundRadius,
+                    Integer.MIN_VALUE,
+                    borderWidth,
+                    (if (border) borderColor.rgb else Integer.MIN_VALUE)
+                )
+            } else {
+                Gui.drawRect((-stringWidth - 1), -14, (stringWidth + 1), -4, Integer.MIN_VALUE)
+            }
         }
         fontRenderer.drawString(text, (-stringWidth).toFloat(), (fontRenderer.FONT_HEIGHT - 22).toFloat(), 16777215, fontShadow)
         RenderUtils.revertAllCaps()
@@ -284,17 +304,33 @@ object NameTags : Module("NameTags", Category.VISUAL, Category.SubCategory.RENDE
             Color(0, 0, 0, 0)
         }
 
-        if (border) quickDrawBorderedRect(
-            -width - 2F,
-            -2F,
-            width + 4F,
-            fontRenderer.FONT_HEIGHT + 2F + if (healthBar) 2F else 0F,
+        val bgX1 = -width - 2F
+        val bgY1 = -2F
+        val bgX2 = width + 4F
+        val bgY2 = fontRenderer.FONT_HEIGHT + 2F + if (healthBar) 2F else 0F
+
+        if (backgroundRadius > 0F || borderWidth > 0F) {
+            RenderUtils.drawRoundedRect(
+                bgX1,
+                bgY1,
+                bgX2 - bgX1,
+                bgY2 - bgY1,
+                backgroundRadius,
+                bgColor.rgb,
+                borderWidth,
+                (if (border) borderColor else bgColor).rgb
+            )
+        } else if (border) quickDrawBorderedRect(
+            bgX1,
+            bgY1,
+            bgX2,
+            bgY2,
             2F,
             borderColor.rgb,
             bgColor.rgb
         )
         else quickDrawRect(
-            -width - 2F, -2F, width + 4F, fontRenderer.FONT_HEIGHT + 2F + if (healthBar) 2F else 0F, bgColor.rgb
+            bgX1, bgY1, bgX2, bgY2, bgColor.rgb
         )
 
         if (healthBar) {
