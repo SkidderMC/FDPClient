@@ -264,6 +264,9 @@
     "module.wings.description": "Adiciona um visual de asas.",
     "module.targetModule.description": "Ativa ou Desativa o Ataque ao Alvo.",
     "module.drinkingAlert.description": "Avisa jogadores se estiverem bebendo poções.",
-    "module.freeLook.description": "Permite que você olhe ao redor livremente sem alterar a direção real do seu personagem."
+    "module.freeLook.description": "Permite que você olhe ao redor livremente sem alterar a direção real do seu personagem.",
+    "module.anchor.description": "Trava voce na posicao atual cancelando o movimento horizontal.",
+    "module.noPush.description": "Impede que voce seja empurrado por blocos e liquidos.",
+    "module.swordBlock.description": "Mantem a animacao de bloqueio da espada ativa ao atacar."
   }
 }

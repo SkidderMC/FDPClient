@@ -302,6 +302,9 @@
     "module.cameraView.description": "Allows you to modify your camera-Y position.",
     "module.notifier.description": "Notifies you about all events.",
     "module.fireFlies.description": "Displays firefly visual effects around the player.",
-    "module.hitBubbles.description": "Displays visual bubbles"
+    "module.hitBubbles.description": "Displays visual bubbles",
+    "module.anchor.description": "Locks you to your current position by cancelling horizontal motion.",
+    "module.noPush.description": "Prevents you from being pushed by blocks and liquids.",
+    "module.swordBlock.description": "Keeps the sword blocking animation active while attacking."
   }
 }

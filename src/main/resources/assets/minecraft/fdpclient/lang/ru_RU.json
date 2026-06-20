@@ -258,6 +258,9 @@
         "module.tNTTimer.description": "отображает таймер, показывающий, сколько времени осталось до взрыва близлежащего TNT.",
         "module.tNTTrails.description": "Показывает трасера TNT.",
         "module.antiBounce.description": "Предотвращает подпрыгивание на блоках.",
-        "module.jesus.description": "Позволяет быстро передвигаться сверху на воде имитируя иисуса"
+        "module.jesus.description": "Позволяет быстро передвигаться сверху на воде имитируя иисуса",
+    "module.anchor.description": "Фиксирует вас на текущей позиции, отменяя горизонтальное движение.",
+    "module.noPush.description": "Не даёт блокам и жидкостям отталкивать вас.",
+    "module.swordBlock.description": "Сохраняет анимацию блока мечом во время атаки."
     }
 }
