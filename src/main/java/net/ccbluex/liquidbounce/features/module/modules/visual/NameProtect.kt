@@ -22,6 +22,7 @@ object NameProtect : Module("NameProtect", Category.VISUAL, Category.SubCategory
 
     val skinProtect by boolean("SkinProtect", true)
     private val fakeName by text("FakeName", "&cMe")
+    private val replacement by text("Replacement", "Protected User") { allPlayers && !randomNames }
 
     private val randomNames by boolean("RandomNames", false) { allPlayers }
     private val randomNameLength by boolean("RandomNameLength", false) { allPlayers && randomNames }
@@ -156,7 +157,7 @@ object NameProtect : Module("NameProtect", Category.VISUAL, Category.SubCategory
 
                 } else {
                     // Default
-                    newText = newText.replace(playerInfo.gameProfile.name, "Protected User")
+                    newText = newText.replace(playerInfo.gameProfile.name, replacement)
                 }
             }
         }
