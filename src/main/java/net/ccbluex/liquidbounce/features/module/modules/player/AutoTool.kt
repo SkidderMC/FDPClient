@@ -10,28 +10,42 @@ import net.ccbluex.liquidbounce.event.ClickBlockEvent
 import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.handler.combat.CombatManager
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar
+import net.ccbluex.liquidbounce.utils.inventory.durability
 import net.ccbluex.liquidbounce.event.handler
 
 object AutoTool : Module("AutoTool", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, subjective = true, gameDetecting = false) {
 
     private val switchBack by boolean("SwitchBack", false)
     private val onlySneaking by boolean("OnlySneaking", false)
+    private val notDuringCombat by boolean("NotDuringCombat", false)
+    private val ignoreDurability by boolean("IgnoreDurability", true)
+    private val distance by float("Distance", 64f, 1f..64f)
+    private val swapPreviousDelay by int("SwapPreviousDelay", 0, 0..100, "ticks")
 
 
     val onGameTick = handler<GameTickEvent> {
-        if (!switchBack || mc.gameSettings.keyBindAttack.isKeyDown)
+        if (!switchBack || swapPreviousDelay > 0 || mc.gameSettings.keyBindAttack.isKeyDown)
             return@handler
 
         SilentHotbar.resetSlot(this)
     }
-    
+
     val onClick = handler<ClickBlockEvent> { event ->
         val player = mc.thePlayer ?: return@handler
 
-        val block = mc.theWorld.getBlockState(event.clickedBlock ?: return@handler).block
+        val clickedBlock = event.clickedBlock ?: return@handler
 
-        if (onlySneaking && !player.isSneaking || block.getBlockHardness(mc.theWorld, event.clickedBlock) == 0f)
+        val block = mc.theWorld.getBlockState(clickedBlock).block
+
+        if (onlySneaking && !player.isSneaking || block.getBlockHardness(mc.theWorld, clickedBlock) == 0f)
+            return@handler
+
+        if (notDuringCombat && CombatManager.inCombatState)
+            return@handler
+
+        if (player.getDistanceSq(clickedBlock) > distance.toDouble() * distance.toDouble())
             return@handler
 
         var fastest = 1f
@@ -39,13 +53,20 @@ object AutoTool : Module("AutoTool", Category.PLAYER, Category.SubCategory.PLAYE
         val slot = (0..8).maxByOrNull {
             val item = player.inventory.getStackInSlot(it) ?: return@maxByOrNull 1f
 
+            if (!ignoreDurability && item.isItemStackDamageable && item.maxDamage > 0 && item.durability <= 1)
+                return@maxByOrNull 1f
+
             item.getStrVsBlock(block).also { speed -> fastest = fastest.coerceAtLeast(speed) }
         } ?: return@handler
 
         if (fastest == (player.currentEquippedItem?.getStrVsBlock(block) ?: 1f))
             return@handler
 
-        SilentHotbar.selectSlotSilently(this, slot, render = false, resetManually = true)
+        if (swapPreviousDelay > 0) {
+            SilentHotbar.selectSlotSilently(this, slot, ticksUntilReset = swapPreviousDelay, render = false)
+        } else {
+            SilentHotbar.selectSlotSilently(this, slot, render = false, resetManually = true)
+        }
     }
 
 }
