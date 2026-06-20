@@ -686,10 +686,14 @@ class SettingComponents(private val module: Module) : Component() {
 
             // ----- BoolValue -----
             if (setting is BoolValue) {
-                val toggleAnim =
-                    toggleAnimation[setting]!![0]
-                val hoverAnim =
-                    toggleAnimation[setting]!![1]
+                val toggleAnims = toggleAnimation.getOrPut(setting) {
+                    arrayOf(
+                        DecelerateAnimation(225, 1.0, Direction.BACKWARDS),
+                        DecelerateAnimation(200, 1.0, Direction.BACKWARDS)
+                    )
+                }
+                val toggleAnim = toggleAnims[0]
+                val hoverAnim = toggleAnims[1]
 
                 RenderUtils.resetColor()
                 OpenGlHelper.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_ONE, GL11.GL_ZERO)
