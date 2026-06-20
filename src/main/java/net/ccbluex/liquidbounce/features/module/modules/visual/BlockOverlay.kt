@@ -34,6 +34,9 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, Category.SubCatego
 
     private val color by color("Color", Color(68, 117, 255, 100))
 
+    private val separateOutlineColor by boolean("SeparateOutlineColor", false)
+    private val outlineColor by color("OutlineColor", Color(68, 117, 255, 150)) { separateOutlineColor }
+
     val currentBlock: BlockPos?
         get() {
             val world = mc.theWorld ?: return null
@@ -77,8 +80,10 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, Category.SubCatego
 
         if (mode.lowercase() in arrayOf("box", "otherbox"))
             drawFilledBox(axisAlignedBB)
-        if (mode.lowercase() in arrayOf("box", "outline"))
+        if (mode.lowercase() in arrayOf("box", "outline")) {
+            if (separateOutlineColor) glColor(outlineColor)
             drawSelectionBoundingBox(axisAlignedBB)
+        }
 
         if (depth3D) glEnable(GL_DEPTH_TEST)
         glEnable(GL_TEXTURE_2D)
