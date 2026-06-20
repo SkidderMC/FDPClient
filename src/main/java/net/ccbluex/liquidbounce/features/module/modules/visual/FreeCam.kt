@@ -22,6 +22,9 @@ object FreeCam : Module("FreeCam", Category.VISUAL, Category.SubCategory.RENDER_
     private val allowCameraInteract by boolean("AllowCameraInteract", true)
     private val allowRotationChange by boolean("AllowRotationChange", true)
 
+    private val keepSneaking by boolean("KeepSneaking", false)
+    private val lookAt by boolean("LookAt", false)
+
     data class PositionPair(var pos: Vec3, var lastPos: Vec3, var extraPos: Vec3 = lastPos) {
         operator fun plusAssign(velocity: Vec3) {
             extraPos = pos
@@ -64,6 +67,29 @@ object FreeCam : Module("FreeCam", Category.VISUAL, Category.SubCategory.RENDER_
         updatePosition(velocity)
 
         event.originalInput.reset()
+
+        if (keepSneaking) {
+            event.originalInput.sneak = true
+        }
+
+        if (lookAt) {
+            lookRealPlayerAtCamera()
+        }
+    }
+
+    private fun lookRealPlayerAtCamera() {
+        val player = mc.thePlayer ?: return
+        val cameraPos = pos?.interpolate(1f) ?: return
+
+        val diff = cameraPos.subtract(player.eyes)
+        val dist = Math.sqrt(diff.xCoord * diff.xCoord + diff.zCoord * diff.zCoord)
+        if (dist < 1.0E-4) return
+
+        val yaw = (Math.toDegrees(Math.atan2(diff.zCoord, diff.xCoord)) - 90.0).toFloat()
+        val pitch = (-Math.toDegrees(Math.atan2(diff.yCoord, dist))).toFloat()
+
+        player.rotationYaw = yaw
+        player.rotationPitch = pitch.coerceIn(-90f, 90f)
     }
 
     private var originalPos: PositionPair? = null
