@@ -27,6 +27,7 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.MathHelper
 import net.minecraft.util.ResourceLocation
 import net.minecraft.util.Vec3
+import java.awt.Color
 import org.lwjgl.opengl.GL11.*
 import kotlin.math.cos
 import kotlin.math.sin
@@ -35,13 +36,12 @@ import kotlin.math.sqrt
 // made by opZywl
 object FireFlies : Module("FireFlies", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
-    init {
-        state = true
-    }
-
     private val darkImprint by boolean("DarkImprint", false)
     private val lighting by boolean("Lighting", false)
     private val spawnDelay by float("SpawnDelay", 3.0f, 1.0f..10.0f)
+    private val customColor by boolean("CustomColor", false)
+    private val color by color("Color", Color(255, 200, 0)) { customColor }
+    private val particleSize by float("ParticleSize", 1.0f, 0.5f..2.0f)
 
     private const val MAX_FIREFLIES = 20
     private val partList = ArrayList<FirePart>()
@@ -54,7 +54,7 @@ object FireFlies : Module("FireFlies", Category.VISUAL, Category.SubCategory.REN
         get() = 6000L
 
     private val partColor: Int
-        get() = ClientThemesUtils.getColor().rgb
+        get() = if (customColor) color.rgb else ClientThemesUtils.getColor().rgb
 
     private fun getRandom(min: Double, max: Double): Float {
         return randomizeDouble(min, max).toFloat()
@@ -151,7 +151,7 @@ object FireFlies : Module("FireFlies", Category.VISUAL, Category.SubCategory.REN
         )
         glScaled(-0.1, -0.1, 0.1)
 
-        val scale = 7.0f
+        val scale = 7.0f * particleSize
 
         drawBindedTexture(-scale / 2.0f, -scale / 2.0f, scale / 2.0f, scale / 2.0f, color)
 
