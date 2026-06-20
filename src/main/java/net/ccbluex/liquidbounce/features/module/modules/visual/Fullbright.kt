@@ -15,6 +15,7 @@ import net.minecraft.potion.PotionEffect
 
 object Fullbright : Module("Fullbright", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
     private val mode by choices("Mode", arrayOf("Gamma", "NightVision"), "Gamma")
+    private val brightness by int("Brightness", 100, 0..100) { mode.equals("Gamma", ignoreCase = true) }
     private var prevGamma = -1f
 
     override fun onEnable() {
@@ -34,8 +35,14 @@ object Fullbright : Module("Fullbright", Category.VISUAL, Category.SubCategory.R
     val onUpdate = handler<UpdateEvent>(always = true) {
         if (state || XRay.handleEvents()) {
             when (mode.lowercase()) {
-                "gamma" -> when {
-                    mc.gameSettings.gammaSetting <= 100f -> mc.gameSettings.gammaSetting++
+                "gamma" -> {
+                    val target = brightness.toFloat()
+                    when {
+                        mc.gameSettings.gammaSetting < target -> mc.gameSettings.gammaSetting =
+                            (mc.gameSettings.gammaSetting + 1f).coerceAtMost(target)
+
+                        mc.gameSettings.gammaSetting > target -> mc.gameSettings.gammaSetting = target
+                    }
                 }
 
                 "nightvision" -> mc.thePlayer?.addPotionEffect(PotionEffect(Potion.nightVision.id, 1337, 1))
