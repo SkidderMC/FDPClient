@@ -73,6 +73,7 @@
     "tweaks.MixinAnvilChunkLoader",
     "tweaks.MixinMinecraftServer",
     "world.MixinChunk",
+    "world.MixinScoreboard",
     "world.MixinWorld",
     "world.MixinWorldClient"
   ],
