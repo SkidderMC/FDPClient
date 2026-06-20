@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.visual.Breadcrumbs
 import net.ccbluex.liquidbounce.utils.client.BlinkUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
+import net.minecraft.network.play.client.C02PacketUseEntity
 import org.lwjgl.opengl.GL11.*
 
 object Blink : Module("Blink", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
@@ -23,10 +24,20 @@ object Blink : Module("Blink", Category.PLAYER, Category.SubCategory.PLAYER_ASSI
 
     private val fakePlayerMenu by boolean("FakePlayer", true)
 
+    private val action by choices("Action", arrayOf("Release", "Reset"), "Release")
+
+    private val ambush by boolean("Ambush", false)
+
+    private val autoDisable by boolean("AutoDisable", false)
+    private val resetAfter by int("ResetAfter", 100, 1..1000) { autoDisable }
+
     private val pulseTimer = MSTimer()
+
+    private var tickCounter = 0
 
     override fun onEnable() {
         pulseTimer.reset()
+        tickCounter = 0
 
         if (fakePlayerMenu)
             BlinkUtils.addFakePlayer()
@@ -36,7 +47,10 @@ object Blink : Module("Blink", Category.PLAYER, Category.SubCategory.PLAYER_ASSI
         if (mc.thePlayer == null)
             return
 
-        BlinkUtils.unblink()
+        when (action.lowercase()) {
+            "reset" -> BlinkUtils.cancel()
+            else -> BlinkUtils.unblink()
+        }
     }
 
     val onPacket = handler<PacketEvent> { event ->
@@ -44,6 +58,14 @@ object Blink : Module("Blink", Category.PLAYER, Category.SubCategory.PLAYER_ASSI
 
         if (mc.thePlayer == null || mc.thePlayer.isDead)
             return@handler
+
+        if (ambush && packet is C02PacketUseEntity && packet.action == C02PacketUseEntity.Action.ATTACK) {
+            BlinkUtils.unblink()
+            if (fakePlayerMenu)
+                BlinkUtils.addFakePlayer()
+            tickCounter = 0
+            return@handler
+        }
 
         when (mode.lowercase()) {
             "sent" -> {
@@ -84,6 +106,14 @@ object Blink : Module("Blink", Category.PLAYER, Category.SubCategory.PLAYER_ASSI
                     BlinkUtils.addFakePlayer()
                 }
                 pulseTimer.reset()
+            }
+
+            if (autoDisable) {
+                tickCounter++
+                if (tickCounter >= resetAfter) {
+                    tickCounter = 0
+                    state = false
+                }
             }
         }
     }
