@@ -42,6 +42,7 @@ import kotlin.math.sqrt
 
 object Projectiles : Module("Projectiles", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
     private val maxTrailSize by int("MaxTrailSize", 20, 1..100)
+    private val trailThickness by float("TrailThickness", 2.0f, 0.5f..5.0f)
 
     private val colorMode by choices("ColorMode", arrayOf("Custom", "BowPower"), "Custom")
     private val color by color("Color", Color(0, 160, 255)) { colorMode == "Custom" }
@@ -159,7 +160,7 @@ object Projectiles : Module("Projectiles", Category.VISUAL, Category.SubCategory
                     else -> color
                 }
             )
-            glLineWidth(2f)
+            glLineWidth(trailThickness)
 
             worldRenderer.begin(GL_LINE_STRIP, DefaultVertexFormats.POSITION)
 
@@ -308,7 +309,7 @@ object Projectiles : Module("Projectiles", Category.VISUAL, Category.SubCategory
         glEnable(GL_LINE_SMOOTH)
         glDisable(GL_DEPTH_TEST)
         glDisable(GL_LIGHTING)
-        glLineWidth(2.0f)
+        glLineWidth(trailThickness)
 
         for ((entity, positions) in trailPositions) {
             if (positions.isEmpty()) continue
