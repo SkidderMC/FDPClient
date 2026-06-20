@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.event.async.loopSequence
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextBoolean
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextInt
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomString
@@ -22,14 +23,48 @@ object Spammer : Module("Spammer", Category.OTHER, Category.SubCategory.MISCELLA
 
     private val custom by boolean("Custom", false)
 
+    private val converter by choices("Converter", arrayOf("None", "Leet", "RandomCase", "RandomSpace"), "None")
+
     val onUpdate = loopSequence {
         mc.thePlayer?.sendChatMessage(
-            if (custom) replace(message)
-            else message + " >" + randomString(nextInt(5, 11)) + "<"
+            convert(
+                if (custom) replace(message)
+                else message + " >" + randomString(nextInt(5, 11)) + "<"
+            )
         )
 
         delay(delay.random().toLong())
     }
+
+    private fun convert(text: String): String =
+        when (converter) {
+            "Leet" -> text.map { char ->
+                when (char) {
+                    'o', 'O' -> '0'
+                    'l', 'L' -> '1'
+                    'e', 'E' -> '3'
+                    'a', 'A' -> '4'
+                    't', 'T' -> '7'
+                    's', 'S' -> 'Z'
+                    else -> char
+                }
+            }.joinToString("")
+
+            "RandomCase" -> text.map { char ->
+                if (nextBoolean()) char.uppercaseChar() else char.lowercaseChar()
+            }.joinToString("")
+
+            "RandomSpace" -> buildString(text.length * 2) {
+                for (char in text) {
+                    append(char)
+                    if (nextBoolean()) {
+                        append(' ')
+                    }
+                }
+            }
+
+            else -> text
+        }
 
     private fun replace(text: String): String {
         var replacedStr = text
