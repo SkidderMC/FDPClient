@@ -32,6 +32,10 @@ object AutoAccount :
     private val register by boolean("AutoRegister", true)
     private val login by boolean("AutoLogin", true)
 
+    // Configurable command templates (defaults keep the original behavior)
+    private val registerCommand by text("RegisterCommand", "/register") { register }
+    private val loginCommand by text("LoginCommand", "/login") { login }
+
     private const val DEFAULT_PASSWORD = "zywl1337#"
 
     // Gamster requires 8 chars+
@@ -112,7 +116,7 @@ object AutoAccount :
             addNotification(Notification("Trying to register.", "Trying to Register", Type.INFO))
             launchSequence(Dispatchers.IO) {
                 delay(sendDelay.random().toLong())
-                mc.thePlayer.sendChatMessage("/register $password $password")
+                mc.thePlayer.sendChatMessage("$registerCommand $password $password")
             }
             true
         }
@@ -121,7 +125,7 @@ object AutoAccount :
             addNotification(Notification("Trying to log in.", "Trying to log in.", Type.INFO))
             launchSequence(Dispatchers.IO) {
                 delay(sendDelay.random().toLong())
-                mc.thePlayer.sendChatMessage("/login $password")
+                mc.thePlayer.sendChatMessage("$loginCommand $password")
             }
             true
         }
