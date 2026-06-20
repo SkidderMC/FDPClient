@@ -71,8 +71,34 @@ object RenderUtils : MinecraftInstance {
 
     @Deprecated("Use RenderGL.glCapMap", ReplaceWith("RenderGL"))
     private val glCapMap = mutableMapOf<Int, Boolean>()
-    private val DISPLAY_LISTS_2D = IntArray(4) {
-        glGenLists(1)
+    // Allocated and compiled on first use so the OpenGL context is guaranteed to exist
+    private val DISPLAY_LISTS_2D by lazy {
+        val lists = IntArray(4) { glGenLists(1) }
+        glNewList(lists[0], GL_COMPILE)
+        quickDrawRect(-7f, 2f, -4f, 3f)
+        quickDrawRect(4f, 2f, 7f, 3f)
+        quickDrawRect(-7f, 0.5f, -6f, 3f)
+        quickDrawRect(6f, 0.5f, 7f, 3f)
+        glEndList()
+        glNewList(lists[1], GL_COMPILE)
+        quickDrawRect(-7f, 3f, -4f, 3.3f)
+        quickDrawRect(4f, 3f, 7f, 3.3f)
+        quickDrawRect(-7.3f, 0.5f, -7f, 3.3f)
+        quickDrawRect(7f, 0.5f, 7.3f, 3.3f)
+        glEndList()
+        glNewList(lists[2], GL_COMPILE)
+        quickDrawRect(4f, -20f, 7f, -19f)
+        quickDrawRect(-7f, -20f, -4f, -19f)
+        quickDrawRect(6f, -20f, 7f, -17.5f)
+        quickDrawRect(-7f, -20f, -6f, -17.5f)
+        glEndList()
+        glNewList(lists[3], GL_COMPILE)
+        quickDrawRect(7f, -20f, 7.3f, -17.5f)
+        quickDrawRect(-7.3f, -20f, -7f, -17.5f)
+        quickDrawRect(4f, -20.3f, 7.3f, -20f)
+        quickDrawRect(-7.3f, -20.3f, -4f, -20f)
+        glEndList()
+        lists
     }
     var deltaTime = 0
 
@@ -165,32 +191,6 @@ object RenderUtils : MinecraftInstance {
         glPopAttrib()
     }
 
-    init {
-        glNewList(DISPLAY_LISTS_2D[0], GL_COMPILE)
-        quickDrawRect(-7f, 2f, -4f, 3f)
-        quickDrawRect(4f, 2f, 7f, 3f)
-        quickDrawRect(-7f, 0.5f, -6f, 3f)
-        quickDrawRect(6f, 0.5f, 7f, 3f)
-        glEndList()
-        glNewList(DISPLAY_LISTS_2D[1], GL_COMPILE)
-        quickDrawRect(-7f, 3f, -4f, 3.3f)
-        quickDrawRect(4f, 3f, 7f, 3.3f)
-        quickDrawRect(-7.3f, 0.5f, -7f, 3.3f)
-        quickDrawRect(7f, 0.5f, 7.3f, 3.3f)
-        glEndList()
-        glNewList(DISPLAY_LISTS_2D[2], GL_COMPILE)
-        quickDrawRect(4f, -20f, 7f, -19f)
-        quickDrawRect(-7f, -20f, -4f, -19f)
-        quickDrawRect(6f, -20f, 7f, -17.5f)
-        quickDrawRect(-7f, -20f, -6f, -17.5f)
-        glEndList()
-        glNewList(DISPLAY_LISTS_2D[3], GL_COMPILE)
-        quickDrawRect(7f, -20f, 7.3f, -17.5f)
-        quickDrawRect(-7.3f, -20f, -7f, -17.5f)
-        quickDrawRect(4f, -20.3f, 7.3f, -20f)
-        quickDrawRect(-7.3f, -20.3f, -4f, -20f)
-        glEndList()
-    }
 
     @JvmStatic
     @Deprecated("Use RenderText.drawBlockDamageText", ReplaceWith("RenderText.run { drawBlockDamageText(currentDamage, font, fontShadow, color, scale) }"))
