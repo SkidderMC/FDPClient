@@ -23,6 +23,7 @@ object Sneak : Module("Sneak", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
 
     val mode by choices("Mode", arrayOf("Legit", "Vanilla", "Switch", "MineSecure"), "MineSecure")
     val stopMove by boolean("StopMove", false)
+    val notDuringMove by boolean("NotDuringMove", false)
 
     private var sneaking = false
 
@@ -32,6 +33,9 @@ object Sneak : Module("Sneak", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
                 onDisable()
             return@handler
         }
+
+        if (notDuringMove && mc.thePlayer.isMoving)
+            return@handler
 
         when (mode.lowercase()) {
             "legit" -> mc.gameSettings.keyBindSneak.pressed = true
