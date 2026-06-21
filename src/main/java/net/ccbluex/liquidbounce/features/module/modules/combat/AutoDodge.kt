@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.MoveEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.utils.simulation.SimulatedArrow
 import net.minecraft.entity.projectile.EntityArrow
 import kotlin.math.sqrt
 
@@ -21,6 +22,8 @@ object AutoDodge : Module("AutoDodge", Category.COMBAT, Category.SubCategory.COM
 
     private val range by float("Range", 5f, 1f..16f)
     private val strength by float("Strength", 0.4f, 0.05f..1f)
+    private val lookahead by int("Lookahead", 30, 5..60)
+    private val hitRadius by float("HitRadius", 1.2f, 0.5f..3f)
 
     val onMove = handler<MoveEvent> { event ->
         val player = mc.thePlayer ?: return@handler
@@ -31,7 +34,8 @@ object AutoDodge : Module("AutoDodge", Category.COMBAT, Category.SubCategory.COM
             .filter { arrow ->
                 (arrow.motionX != 0.0 || arrow.motionY != 0.0 || arrow.motionZ != 0.0) &&
                     player.getDistanceToEntity(arrow) <= range &&
-                    isApproaching(arrow)
+                    isApproaching(arrow) &&
+                    SimulatedArrow.willHit(arrow, player, lookahead, hitRadius.toDouble())
             }
             .minByOrNull { player.getDistanceToEntity(it) } ?: return@handler
 
