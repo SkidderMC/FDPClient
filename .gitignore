@@ -54,3 +54,5 @@ run.cmd
 validate-run.cmd
 tmp_*.py
 tmp_*/
+tmp.*/
+libs-test/
