@@ -18,6 +18,10 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.inta
 import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.intave.IntaveOld
 import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.other.None
 import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.other.Rewi
+import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.grim.NewGrim
+import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.vulcan.Vulcan
+import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.verus.Verus
+import net.ccbluex.liquidbounce.features.module.modules.movement.nowebmodes.matrix.Matrix
 
 object NoWeb : Module("NoWeb", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
 
@@ -34,6 +38,16 @@ object NoWeb : Module("NoWeb", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
 
         // Grim
         OldGrim,
+        NewGrim,
+
+        // Vulcan
+        Vulcan,
+
+        // Verus
+        Verus,
+
+        // Matrix
+        Matrix,
 
         // Other
         Rewi,
