@@ -10,6 +10,9 @@ import net.ccbluex.liquidbounce.event.GameLoopEvent
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.ui.client.hud.HUD
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.minecraft.client.Minecraft
 import net.montoyo.mcef.MCEF
@@ -40,6 +43,11 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
 
     @Volatile
     var detail: String = ""
+        private set
+
+    /** Download progress in 0..100, or -1 when no measurable download is in progress. */
+    @Volatile
+    var progress: Double = -1.0
         private set
 
     private const val PROXY_CLASS = "net.montoyo.mcef.client.ClientProxy"
@@ -95,6 +103,16 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
                 if (hasNativeRuntime()) {
                     detail = "Starting in-game browser..."
                 } else {
+                    Minecraft.getMinecraft().addScheduledTask {
+                        HUD.addNotification(
+                            Notification(
+                                "NextGen ClickGUI",
+                                "Downloading in-game browser (~160MB) in background",
+                                Type.INFO,
+                                time = 4000
+                            )
+                        )
+                    }
                     downloadNatives()
                     Thread.sleep(250L)
                 }
@@ -108,6 +126,11 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
                 state = State.FAILED
                 detail = "In-game browser failed to download."
                 LOGGER.error("[NextGen] Failed to prepare the in-game browser runtime", throwable)
+                Minecraft.getMinecraft().addScheduledTask {
+                    HUD.addNotification(
+                        Notification("NextGen ClickGUI", "In-game browser download failed", Type.ERROR)
+                    )
+                }
             }
         }, "NextGen-Browser-Init").apply { isDaemon = true }.start()
     }
@@ -141,9 +164,15 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
                 "onTaskChanged" -> detail = "Downloading in-game browser: ${args?.getOrNull(0)}"
                 "onProgressed" -> {
                     val pct = (args?.getOrNull(0) as? Double)?.takeIf { it in 0.0..100.0 }
-                    if (pct != null) detail = "Downloading in-game browser: ${pct.toInt()}%"
+                    if (pct != null) {
+                        progress = pct
+                        detail = "Downloading in-game browser: ${pct.toInt()}%"
+                    }
                 }
-                "onProgressEnd" -> detail = "Starting in-game browser..."
+                "onProgressEnd" -> {
+                    progress = 100.0
+                    detail = "Starting in-game browser..."
+                }
             }
             null
         }
@@ -213,6 +242,14 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         state = State.READY
         detail = "In-game browser ready."
         LOGGER.info("[NextGen] In-game browser runtime ready ($source).")
+        if (progress >= 0.0) {
+            progress = -1.0
+            Minecraft.getMinecraft().addScheduledTask {
+                HUD.addNotification(
+                    Notification("NextGen ClickGUI", "In-game browser ready", Type.SUCCESS)
+                )
+            }
+        }
     }
     private fun invokeMcefOnInit(proxyClass: Class<*>, instance: Any) {
         val loaderClass = Class.forName("net.minecraftforge.fml.common.Loader")

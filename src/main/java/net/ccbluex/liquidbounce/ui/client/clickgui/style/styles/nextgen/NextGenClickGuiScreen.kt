@@ -113,8 +113,26 @@ class NextGenClickGuiScreen : GuiScreen() {
     }
 
     private fun drawBrowserLoading() {
-        drawCenteredString(fontRendererObj, "NextGen ClickGUI", width / 2, height / 2 - 6, 0xffffff)
-        drawCenteredString(fontRendererObj, "Loading...", width / 2, height / 2 + 8, 0xd0d0d0)
+        val status = NextGenBrowserRuntime.detail.ifEmpty { "Preparing in-game browser (one-time ~160MB download)..." }
+        drawCenteredString(fontRendererObj, "NextGen ClickGUI", width / 2, height / 2 - 22, 0xffffff)
+        drawCenteredString(fontRendererObj, status, width / 2, height / 2 - 4, 0xd0d0d0)
+
+        val pct = NextGenBrowserRuntime.progress
+        if (pct in 0.0..100.0) {
+            val barWidth = 220
+            val barHeight = 6
+            val barX = width / 2 - barWidth / 2
+            val barY = height / 2 + 12
+            drawRect(barX, barY, barX + barWidth, barY + barHeight, 0xC0202024.toInt())
+            val filled = (barWidth * (pct / 100.0)).toInt()
+            if (filled > 0) drawRect(barX, barY, barX + filled, barY + barHeight, 0xFF3A8BFF.toInt())
+            drawRect(barX, barY, barX + barWidth, barY + 1, 0x40FFFFFF)
+        }
+        drawCenteredString(
+            fontRendererObj,
+            "Downloads in the background - you can close this and keep playing.",
+            width / 2, height / 2 + 26, 0x808080
+        )
     }
 
     /** Render the embedded browser's texture with 1.8.9 GL calls. Returns false until the texture exists. */
