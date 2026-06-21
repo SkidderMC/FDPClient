@@ -316,5 +316,8 @@
     "module.replenish.description": "Automatically refills the held item from a matching stack in your inventory.",
     "module.autoShoot.description": "Automatically charges and releases a bow at nearby targets.",
     "module.blockBounce.description": "Bounces you upward when standing on blocks.",
-    "module.portalMenu.description": "Lets you open inventory/GUI screens while inside a nether portal."
+    "module.portalMenu.description": "Lets you open inventory/GUI screens while inside a nether portal.",
+    "module.noBlockInteract.description": "Prevents interacting with blocks like chests, doors, buttons and levers.",
+    "module.liquidFiller.description": "Fills nearby water and lava source blocks with solid blocks.",
+    "module.liquidPlace.description": "Lets you place blocks against liquid surfaces as if they were solid."
 }

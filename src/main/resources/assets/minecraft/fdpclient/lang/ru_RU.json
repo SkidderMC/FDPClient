@@ -271,5 +271,8 @@
     "module.replenish.description": "Автоматически пополняет предмет в руке из подходящего стака в инвентаре.",
     "module.autoShoot.description": "Автоматически натягивает и отпускает лук по ближайшим целям.",
     "module.blockBounce.description": "Подбрасывает вас вверх, когда вы стоите на блоках.",
-    "module.portalMenu.description": "Позволяет открывать инвентарь/GUI, находясь в портале Нижнего мира."
+    "module.portalMenu.description": "Позволяет открывать инвентарь/GUI, находясь в портале Нижнего мира.",
+    "module.noBlockInteract.description": "Запрещает взаимодействие с блоками: сундуками, дверями, кнопками и рычагами.",
+    "module.liquidFiller.description": "Заполняет ближайшие источники воды и лавы твёрдыми блоками.",
+    "module.liquidPlace.description": "Позволяет ставить блоки на поверхность жидкости, как на твёрдую."
 }

@@ -277,5 +277,8 @@
     "module.replenish.description": "Reabastece automaticamente o item na mao a partir de um stack igual no inventario.",
     "module.autoShoot.description": "Carrega e solta o arco automaticamente em alvos proximos.",
     "module.blockBounce.description": "Te impulsiona pra cima ao ficar sobre blocos.",
-    "module.portalMenu.description": "Permite abrir telas de inventario/GUI dentro de um portal do nether."
+    "module.portalMenu.description": "Permite abrir telas de inventario/GUI dentro de um portal do nether.",
+    "module.noBlockInteract.description": "Impede interagir com blocos como bau, portas, botoes e alavancas.",
+    "module.liquidFiller.description": "Preenche fontes de agua e lava proximas com blocos solidos.",
+    "module.liquidPlace.description": "Permite colocar blocos contra superficies de liquido como se fossem solidas."
 }
