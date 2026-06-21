@@ -61,9 +61,8 @@ object BlinkUtils : MinecraftInstance, Listenable {
                     packets += packet
                 }
                 if (packet is C03PacketPlayer && packet.isMoving) {
-                    val packetPos = Vec3(packet.x, packet.y, packet.z)
                     synchronized(positions) {
-                        positions += packetPos
+                        positions += packet.pos
                     }
                 }
             }
@@ -81,9 +80,8 @@ object BlinkUtils : MinecraftInstance, Listenable {
                     sendPackets(*packets.toTypedArray(), triggerEvents = false)
                 }
                 if (packet is C03PacketPlayer && packet.isMoving) {
-                    val packetPos = Vec3(packet.x, packet.y, packet.z)
                     synchronized(positions) {
-                        positions += packetPos
+                        positions += packet.pos
                     }
                 }
                 packets.clear()
@@ -103,9 +101,8 @@ object BlinkUtils : MinecraftInstance, Listenable {
                     packets += packet
                 }
                 if (packet is C03PacketPlayer && packet.isMoving) {
-                    val packetPos = Vec3(packet.x, packet.y, packet.z)
                     synchronized(positions) {
-                        positions += packetPos
+                        positions += packet.pos
                     }
                 }
             }
@@ -142,16 +139,13 @@ object BlinkUtils : MinecraftInstance, Listenable {
 
         player.setPositionAndUpdate(firstPosition.xCoord, firstPosition.yCoord, firstPosition.zCoord)
 
-        synchronized(packets) {
-            val iterator = packets.iterator()
-            while (iterator.hasNext()) {
-                val packet = iterator.next()
-                if (packet is C03PacketPlayer) {
-                    iterator.remove()
-                } else {
-                    sendPacket(packet)
-                    iterator.remove()
-                }
+        val copy = synchronized(packets) {
+            packets.toTypedArray().also { packets.clear() }
+        }
+
+        for (packet in copy) {
+            if (packet !is C03PacketPlayer) {
+                sendPacket(packet)
             }
         }
 

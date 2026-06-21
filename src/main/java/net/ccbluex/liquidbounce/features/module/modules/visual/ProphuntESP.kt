@@ -59,27 +59,23 @@ object ProphuntESP : Module("ProphuntESP", Category.VISUAL, Category.SubCategory
         val now = System.currentTimeMillis()
         val lifetime = blockFadeTime.toLong()
 
-        with(blocks.entries.iterator()) {
-            while (hasNext()) {
-                val (pos, time) = next()
+        blocks.entries.removeIf { (pos, time) ->
+            val elapsed = now - time
 
-                val elapsed = now - time
-
-                if (elapsed > lifetime) {
-                    remove()
-                    continue
-                }
-
-                val renderColor = if (fadeOutBlocks && lifetime > 0L) {
-                    val progress = elapsed.toFloat() / lifetime.toFloat()
-                    val fadedAlpha = (color.alpha * (1f - progress)).toInt().coerceIn(0, 255)
-                    Color(color.red, color.green, color.blue, fadedAlpha)
-                } else {
-                    color
-                }
-
-                drawBlockBox(pos, renderColor, mode == "Box")
+            if (elapsed > lifetime) {
+                return@removeIf true
             }
+
+            val renderColor = if (fadeOutBlocks && lifetime > 0L) {
+                val progress = elapsed.toFloat() / lifetime.toFloat()
+                val fadedAlpha = (color.alpha * (1f - progress)).toInt().coerceIn(0, 255)
+                Color(color.red, color.green, color.blue, fadedAlpha)
+            } else {
+                color
+            }
+
+            drawBlockBox(pos, renderColor, mode == "Box")
+            false
         }
     }
 

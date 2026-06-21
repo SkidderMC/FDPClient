@@ -74,11 +74,8 @@ object LogoffSpot : Module("LogoffSpot", Category.VISUAL, Category.SubCategory.R
         }
 
         // Reached the spot -> drop it
-        val iterator = spots.values.iterator()
-        while (iterator.hasNext()) {
-            val spot = iterator.next()
-            if (self.getDistance(spot.x, spot.y, spot.z) <= clearDistance)
-                iterator.remove()
+        spots.entries.removeIf { (_, spot) ->
+            self.getDistanceSq(spot.x, spot.y, spot.z) <= clearDistance * clearDistance
         }
 
         lastSeen.clear()

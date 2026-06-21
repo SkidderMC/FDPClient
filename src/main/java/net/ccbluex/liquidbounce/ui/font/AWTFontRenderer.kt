@@ -366,14 +366,13 @@ class AWTFontRenderer(
     private fun collectGarbage() {
         val now = System.currentTimeMillis()
 
-        with(cachedStringFonts.entries.iterator()) {
-            while (hasNext()) {
-                val cached = next().value
-                if (!cached.deleted && (now - cached.lastUsage) > CACHED_FONT_REMOVAL_TIME) {
-                    glDeleteLists(cached.displayList, 1)
-                    cached.deleted = true
-                    remove()
-                }
+        cachedStringFonts.entries.removeIf { (_, cached) ->
+            if (!cached.deleted && (now - cached.lastUsage) > CACHED_FONT_REMOVAL_TIME) {
+                glDeleteLists(cached.displayList, 1)
+                cached.deleted = true
+                true
+            } else {
+                false
             }
         }
     }
