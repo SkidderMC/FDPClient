@@ -101,6 +101,9 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     private val scanRange by float("ScanRange", 2f, 0f..10f)
     private val throughWallsRange by float("ThroughWallsRange", 3f, 0f..8f)
     private val rangeSprintReduction by float("RangeSprintReduction", 0f, 0f..0.4f)
+    private val rangeChance by int("RangeChance", 100, 1..100, "%")
+    private var rolledRange = -1f
+    private var rangeRollCounter = 0
 
     // Modes
     private val priority by choices(
@@ -950,6 +953,15 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     /**
      * Check if enemy is hittable with current rotations
      */
+private fun rolledRangeFor(): Float {
+    if (rangeChance >= 100) return range
+    if (rolledRange < 0f || --rangeRollCounter <= 0) {
+        rolledRange = if (Math.random() * 100.0 < rangeChance) range else minOf(range, 3f)
+        rangeRollCounter = 10
+    }
+    return minOf(rolledRange, range)
+}
+
 private fun updateHittable() {
     val player = mc.thePlayer ?: return
     val target = this.target ?: run {
@@ -957,13 +969,15 @@ private fun updateHittable() {
         return
     }
 
+    val effRange = rolledRangeFor()
+
     if (shouldPrioritize()) {
         hittable = false
         return
     }
     
     if (!options.rotationsActive) {
-        hittable = player.getDistanceToEntityBox(target) <= range
+        hittable = player.getDistanceToEntityBox(target) <= effRange
         return
     }
     
@@ -972,7 +986,7 @@ private fun updateHittable() {
     val lookVec = getVectorForRotation(rotation)
     val distance = player.getDistanceToEntityBox(target)
     
-    if (distance > range) {
+    if (distance > effRange) {
         hittable = false
         return
     }
@@ -993,7 +1007,7 @@ private fun updateHittable() {
     
     if (raycast) {
         val raycastEntity = raycastEntity(
-            range.toDouble(), rotation.yaw, rotation.pitch
+            effRange.toDouble(), rotation.yaw, rotation.pitch
         ) { entity -> !livingRaycast || entity is EntityLivingBase && entity !is EntityArmorStand }
         
         if (raycastEntity != null && raycastEntity is EntityLivingBase && (!(raycastEntity is EntityPlayer && raycastEntity.isClientFriend()))) {
