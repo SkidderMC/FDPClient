@@ -342,5 +342,6 @@
     "module.itemTags.description": "Renders info tags above dropped item entities.",
     "module.protectionZones.description": "Renders configured protection/region boxes in the world.",
     "module.autoCrafter.description": "Automatically crafts a configured item using the crafting grid.",
-    "module.smoothCamera.description": "Enables the vanilla cinematic camera so look movement is eased instead of snapping."
+    "module.smoothCamera.description": "Enables the vanilla cinematic camera so look movement is eased instead of snapping.",
+    "module.itemScroller.description": "Hold a mouse button and drag across slots to shift-move each stack you pass over."
 }

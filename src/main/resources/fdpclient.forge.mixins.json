@@ -81,6 +81,7 @@
     "block.MixinBlockSlime",
     "gui.MixinGuiAchievement",
     "gui.MixinGuiContainer",
+    "gui.MixinGuiContainerAccessor",
     "gui.MixinGuiTextField",
     "render.MixinItemRenderer",
     "render.MixinRenderGlobal",

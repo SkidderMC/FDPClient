@@ -301,5 +301,6 @@
     "module.itemTags.description": "Renderiza tags de info acima de itens dropados.",
     "module.protectionZones.description": "Renderiza caixas de regiao/protecao configuradas no mundo.",
     "module.autoCrafter.description": "Cria automaticamente um item configurado usando a grade de criacao.",
-    "module.smoothCamera.description": "Ativa a camera cinematica padrao para suavizar o movimento da mira."
+    "module.smoothCamera.description": "Ativa a camera cinematica padrao para suavizar o movimento da mira.",
+    "module.itemScroller.description": "Segure um botao do mouse e arraste pelos slots para mover cada pilha que passar."
 }
