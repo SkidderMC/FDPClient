@@ -25,6 +25,11 @@ import net.montoyo.mcef.api.MCEFApi
 import java.io.File
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
+import java.security.KeyStore
+import java.security.cert.CertificateFactory
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManagerFactory
+import javax.net.ssl.X509TrustManager
 
 /**
  * Boots the embedded browser runtime on demand and drives its per-frame work so the web
@@ -140,6 +145,7 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
                 MCEF.SKIP_UPDATES = false
                 MCEF.WARN_UPDATES = false
                 MCEF.USE_FORGE_SPLASH = false
+                installDownloadTrustStore()
                 if (hasNativeRuntime()) {
                     detail = "Starting in-game browser..."
                 } else {
@@ -167,6 +173,52 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
 
     private fun hasNativeRuntime(): Boolean =
         REQUIRED_NATIVE_FILES.all { fileName -> File(mc.mcDataDir, fileName).isFile }
+
+    /**
+     * Teaches the runtime how to download its natives over HTTPS on the JVMs that ship with most
+     * launchers. We boot the browser by calling the proxy directly, so the mod's normal pre-init
+     * (which installs an SSL factory) never runs and the factory stays null. The download mirror
+     * serves a Let's Encrypt certificate that chains to ISRG Root X1, which the old Java 8 runtimes
+     * bundled by launchers do not trust, so the handshake fails and the runtime falls into virtual
+     * mode. Here we build a trust store from the JVM defaults plus the bundled ISRG roots so the
+     * download succeeds everywhere; in dev (modern JDK) the roots are already trusted, so this is a
+     * no-op. [MCEF.SECURE_MIRRORS_ONLY] is cleared so the plain-HTTP mirror can still serve as a
+     * last resort.
+     */
+    private fun installDownloadTrustStore() {
+        MCEF.SECURE_MIRRORS_ONLY = false
+
+        if (MCEF.SSL_SOCKET_FACTORY != null) {
+            return
+        }
+
+        runCatching {
+            val keyStore = KeyStore.getInstance(KeyStore.getDefaultType()).apply { load(null, null) }
+            var index = 0
+
+            val systemTrustManager = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                .apply { init(null as KeyStore?) }
+                .trustManagers.filterIsInstance<X509TrustManager>().firstOrNull()
+            systemTrustManager?.acceptedIssuers?.forEach { keyStore.setCertificateEntry("system-${index++}", it) }
+
+            val certificateFactory = CertificateFactory.getInstance("X.509")
+            BUNDLED_ROOTS.forEach { resource ->
+                javaClass.getResourceAsStream(resource)?.use { stream ->
+                    runCatching { keyStore.setCertificateEntry("root-${index++}", certificateFactory.generateCertificate(stream)) }
+                }
+            }
+
+            val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+                .apply { init(keyStore) }
+            MCEF.SSL_SOCKET_FACTORY = SSLContext.getInstance("TLS")
+                .apply { init(null, trustManagerFactory.trustManagers, null) }
+                .socketFactory
+            LOGGER.info("[NextGen] Installed in-game browser download trust store.")
+        }.onFailure {
+            LOGGER.warn("[NextGen] Could not install the in-game browser download trust store; HTTPS may fail on old runtimes.", it)
+        }
+    }
+
     /** Replicates the proxy's native-download step (load manifest, mark missing, download). Background only. */
     private fun downloadNatives() {
         val proxyClass = Class.forName(PROXY_CLASS)
@@ -473,6 +525,11 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         "cef.pak",
         "natives_blob.bin",
         "snapshot_blob.bin"
+    )
+
+    private val BUNDLED_ROOTS = arrayOf(
+        "/assets/minecraft/fdpclient/mcef/isrgrootx1.pem",
+        "/assets/minecraft/fdpclient/mcef/isrg-root-x2.pem"
     )
 
     private const val BROWSER_WARMUP_MILLIS = 450L
