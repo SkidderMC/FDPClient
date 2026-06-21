@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.minecraft.util.EnumParticleTypes
+import kotlin.random.Random
 
 object JumpEffect : Module("JumpEffect", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
@@ -32,12 +33,12 @@ object JumpEffect : Module("JumpEffect", Category.VISUAL, Category.SubCategory.R
         repeat(amount) {
             world.spawnParticle(
                 type,
-                player.posX + (Math.random() - 0.5) * 0.6,
+                player.posX + (Random.nextDouble() - 0.5) * 0.6,
                 player.posY + 0.05,
-                player.posZ + (Math.random() - 0.5) * 0.6,
-                (Math.random() - 0.5) * 0.2,
+                player.posZ + (Random.nextDouble() - 0.5) * 0.6,
+                (Random.nextDouble() - 0.5) * 0.2,
                 0.0,
-                (Math.random() - 0.5) * 0.2
+                (Random.nextDouble() - 0.5) * 0.2
             )
         }
     }

@@ -21,6 +21,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C03PacketPlayer.C06PacketPlayerPosLook
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.network.play.client.C0BPacketEntityAction
+import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.floor
 
 object VerusDamage : FlyMode("VerusDamage") {
@@ -44,7 +45,7 @@ object VerusDamage : FlyMode("VerusDamage") {
                         1,
                         ItemStack(Blocks.stone.getItem(mc.theWorld, pos)),
                         0.0F,
-                        0.5F + Math.random().toFloat() * 0.44F,
+                        ThreadLocalRandom.current().nextDouble(0.5, 0.94).toFloat(),
                         0.0F
                     ),
                     false
@@ -81,7 +82,7 @@ object VerusDamage : FlyMode("VerusDamage") {
                             1,
                             ItemStack(Blocks.stone.getItem(mc.theWorld, pos)),
                             0.0F,
-                            0.5F + Math.random().toFloat() * 0.44F,
+                            ThreadLocalRandom.current().nextDouble(0.5, 0.94).toFloat(),
                             0.0F
                         ),
                         false
@@ -91,7 +92,7 @@ object VerusDamage : FlyMode("VerusDamage") {
                     val y = player.posY
                     val z = player.posZ
 
-                    sendPacket(C06PacketPlayerPosLook(x, y + 3 + Math.random() * 0.07, z, player.rotationYaw, player.rotationPitch, false), false)
+                    sendPacket(C06PacketPlayerPosLook(x, y + ThreadLocalRandom.current().nextDouble(3.0, 3.07), z, player.rotationYaw, player.rotationPitch, false), false)
                     sendPacket(C06PacketPlayerPosLook(x, y, z, player.rotationYaw, player.rotationPitch, false), false)
                     sendPacket(C06PacketPlayerPosLook(x, y, z, player.rotationYaw, player.rotationPitch, true), false)
                     mc.timer.timerSpeed = 0.25f

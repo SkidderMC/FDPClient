@@ -12,7 +12,6 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.extensions.lerp
-import net.ccbluex.liquidbounce.utils.extensions.randomizeDouble
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.applyOpacity
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.darker
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.getAlphaFromColor
@@ -32,6 +31,7 @@ import org.lwjgl.opengl.GL11.*
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 // made by opZywl
 object FireFlies : Module("FireFlies", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
@@ -57,7 +57,7 @@ object FireFlies : Module("FireFlies", Category.VISUAL, Category.SubCategory.REN
         get() = if (customColor) color.rgb else ClientThemesUtils.getColor().rgb
 
     private fun getRandom(min: Double, max: Double): Float {
-        return randomizeDouble(min, max).toFloat()
+        return Random.nextDouble(min, max).toFloat()
     }
 
     private fun generateVecForPart(rangeXZ: Double, rangeY: Double): Vec3 {
@@ -438,9 +438,9 @@ object FireFlies : Module("FireFlies", Category.VISUAL, Category.SubCategory.REN
         var prevPosX: Double = posX
         var prevPosY: Double = posY
         var prevPosZ: Double = posZ
-        var speed: Double = Math.random() / 30.0
-        var radianYaw: Double = Math.random() * 360.0
-        var radianPitch: Double = -90.0 + Math.random() * 180.0
+        var speed: Double = Random.nextDouble(0.0, 1.0) / 30.0
+        var radianYaw: Double = Random.nextDouble(0.0, 360.0)
+        var radianPitch: Double = Random.nextDouble(-90.0, 90.0)
         var startTime: Long = System.currentTimeMillis()
 
         fun timePC(): Double {

@@ -34,6 +34,7 @@ import org.lwjgl.opengl.GL11
 import java.awt.Color
 import java.awt.image.BufferedImage
 import java.util.*
+import java.util.concurrent.ThreadLocalRandom
 import javax.imageio.ImageIO
 import kotlin.math.*
 
@@ -179,6 +180,7 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
 
     private fun getFilteredDashCubics(): List<DashCubic> = dashCubics
     private fun getAnimationDurationTime(): Int = animationDuration
+    private fun randomDouble(): Double = ThreadLocalRandom.current().nextDouble()
 
     val onUpdate = handler<UpdateEvent> {
         val player = mc.thePlayer
@@ -464,7 +466,7 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
 
         init {
             if (sqrt(base.motionX * base.motionX + base.motionZ * base.motionZ) < 5.0E-4) {
-                rotationAngles[0] = (360.0 * Math.random()).toFloat()
+                rotationAngles[0] = (360.0 * randomDouble()).toFloat()
                 rotationAngles[1] = mc.renderManager.playerViewX
             } else {
                 val motionYaw = base.getMotionYaw()
@@ -537,9 +539,9 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
         var motionX: Double = calculateMotionX()
         var motionY: Double = calculateMotionY()
         var motionZ: Double = calculateMotionZ()
-        var posX: Double = entity.lastTickPosX - motionX * offsetTickPercentage + ( -POSITION_OFFSET_BASE + POSITION_OFFSET_RANGE * Math.random() )
-        var posY: Double = entity.lastTickPosY - motionY * offsetTickPercentage + (entity.height / 3.0 + entity.height / 4.0 * Math.random() * Y_OFFSET_MULTIPLIER)
-        var posZ: Double = entity.lastTickPosZ - motionZ * offsetTickPercentage + ( -POSITION_OFFSET_BASE + POSITION_OFFSET_RANGE * Math.random() )
+        var posX: Double = entity.lastTickPosX - motionX * offsetTickPercentage + (-POSITION_OFFSET_BASE + POSITION_OFFSET_RANGE * randomDouble())
+        var posY: Double = entity.lastTickPosY - motionY * offsetTickPercentage + (entity.height / 3.0 + entity.height / 4.0 * randomDouble() * Y_OFFSET_MULTIPLIER)
+        var posZ: Double = entity.lastTickPosZ - motionZ * offsetTickPercentage + (-POSITION_OFFSET_BASE + POSITION_OFFSET_RANGE * randomDouble())
         var prevPosX: Double = posX
         var prevPosY: Double = posY
         var prevPosZ: Double = posZ
@@ -598,9 +600,9 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
         var prevPosX: Double = 0.0
         var prevPosY: Double = 0.0
         var prevPosZ: Double = 0.0
-        var speed: Double = Math.random() / 50.0
-        var radianYaw: Double = Math.random() * 360.0
-        var radianPitch: Double = -90.0 + Math.random() * 180.0
+        var speed: Double = randomDouble() / 50.0
+        var radianYaw: Double = randomDouble() * 360.0
+        var radianPitch: Double = -90.0 + randomDouble() * 180.0
 
         fun processMotion() {
             val radYaw = Math.toRadians(radianYaw)

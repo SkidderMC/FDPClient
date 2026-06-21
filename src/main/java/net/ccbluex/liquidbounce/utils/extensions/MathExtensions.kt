@@ -20,6 +20,7 @@ import net.minecraft.util.*
 import java.math.BigDecimal
 import javax.vecmath.Vector2f
 import kotlin.math.*
+import kotlin.random.Random
 
 /**
  * Provides:
@@ -163,7 +164,7 @@ infix fun ClosedFloatingPointRange<Double>.step(step: Double) = RangeIterator(th
 fun ClosedFloatingPointRange<Float>.random(): Float {
     require(start.isFinite())
     require(endInclusive.isFinite())
-    return (start + (endInclusive - start) * Math.random()).toFloat()
+    return if (start >= endInclusive) start else Random.nextDouble(start.toDouble(), endInclusive.toDouble()).toFloat()
 }
 
 /**
@@ -286,16 +287,11 @@ fun roundX(value: Double, inc: Double): Double {
     }
 }
 
-fun randomizeDouble(min: Double, max: Double): Double {
-    return Math.random() * (max - min) + min
-}
-
 fun lerp(min: Float, max: Float, delta: Float): Float {
     return min + (max - min) * delta
 }
 
 fun calculateGaussianValue(x: Float, sigma: Float): Float {
-    val PI = 3.141592653
     val output = 1.0 / sqrt(2.0 * PI * (sigma * sigma))
     return (output * exp(-(x * x) / (2.0 * (sigma * sigma)))).toFloat()
 }
