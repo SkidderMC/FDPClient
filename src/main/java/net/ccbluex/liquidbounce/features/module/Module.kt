@@ -173,7 +173,7 @@ open class Module(
     /**
      * Get value by [valueName]
      */
-    fun getValue(valueName: String) = values.find { it.name.equals(valueName, ignoreCase = true) }
+    fun getValue(valueName: String) = values.find { it.matchesKey(valueName) }
 
     /**
      * Get value via `module[valueName]`

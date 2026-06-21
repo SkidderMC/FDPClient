@@ -52,7 +52,7 @@ open class Configurable(
         val values = get()
         // Set all sub values from the JSON object
         for ((valueName, value) in element.entrySet()) {
-            values.find { it.name.equals(valueName, true) }?.fromJson(value)
+            values.find { it.matchesKey(valueName) }?.fromJson(value)
         }
 
         return values

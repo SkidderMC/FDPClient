@@ -63,8 +63,10 @@ class HudConfig(file: File) : FileConfig(file) {
                     )
 
                     for (value in element.values) {
-                        if (jsonObject.has(value.name))
-                            value.fromJson(jsonObject[value.name])
+                        val hudKey = if (jsonObject.has(value.name)) value.name
+                        else value.aliases.firstOrNull { jsonObject.has(it) }
+                        if (hudKey != null)
+                            value.fromJson(jsonObject[hudKey])
                     }
 
                     // Support for old HUD files

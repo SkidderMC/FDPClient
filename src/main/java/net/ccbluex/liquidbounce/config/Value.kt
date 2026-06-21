@@ -40,6 +40,14 @@ sealed class Value<T>(
 
     fun hide() = apply { hidden = true }
 
+    var aliases: List<String> = emptyList()
+        private set
+
+    fun aliases(vararg names: String) = apply { aliases = names.toList() }
+
+    fun matchesKey(key: String): Boolean =
+        name.equals(key, true) || aliases.any { it.equals(key, true) }
+
     var excluded: Boolean = false
         private set(value) {
             if (value) {

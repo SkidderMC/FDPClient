@@ -97,7 +97,7 @@ class ValuesConfig(file: File) : FileConfig(file) {
                     val jsonModule = value as? JsonObject ?: return@runCatching
                     val module = moduleManager[key] ?: return@runCatching
                     for (moduleValue in module.values) {
-                        jsonModule[moduleValue.name]?.let { element ->
+                        (jsonModule[moduleValue.name] ?: moduleValue.aliases.mapNotNull { jsonModule[it] }.firstOrNull())?.let { element ->
                             runCatching { moduleValue.fromJson(element) }
                                 .onFailure { LOGGER.warn("[Cfg] ${module.name}.${moduleValue.name} skipped: ${it.message}") }
                         }
