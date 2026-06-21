@@ -267,5 +267,9 @@
     "module.airPlace.description": "Позволяет ставить блоки в воздухе без опорного блока.",
     "module.holeFiller.description": "Автоматически заполняет открытые стороны ямы, в которой вы стоите.",
     "module.blockTrap.description": "Ловит цель, расставляя блоки вокруг неё.",
-    "module.blockIn.description": "Окружает цель, ставя блоки со всех открытых сторон."
+    "module.blockIn.description": "Окружает цель, ставя блоки со всех открытых сторон.",
+    "module.replenish.description": "Автоматически пополняет предмет в руке из подходящего стака в инвентаре.",
+    "module.autoShoot.description": "Автоматически натягивает и отпускает лук по ближайшим целям.",
+    "module.blockBounce.description": "Подбрасывает вас вверх, когда вы стоите на блоках.",
+    "module.portalMenu.description": "Позволяет открывать инвентарь/GUI, находясь в портале Нижнего мира."
 }

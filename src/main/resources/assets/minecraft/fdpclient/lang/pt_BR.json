@@ -273,5 +273,9 @@
     "module.airPlace.description": "Permite colocar blocos no ar sem um bloco de suporte.",
     "module.holeFiller.description": "Preenche automaticamente os lados abertos do buraco onde voce esta.",
     "module.blockTrap.description": "Prende o alvo colocando blocos ao redor dele.",
-    "module.blockIn.description": "Encurrala o alvo colocando blocos em cada lado aberto."
+    "module.blockIn.description": "Encurrala o alvo colocando blocos em cada lado aberto.",
+    "module.replenish.description": "Reabastece automaticamente o item na mao a partir de um stack igual no inventario.",
+    "module.autoShoot.description": "Carrega e solta o arco automaticamente em alvos proximos.",
+    "module.blockBounce.description": "Te impulsiona pra cima ao ficar sobre blocos.",
+    "module.portalMenu.description": "Permite abrir telas de inventario/GUI dentro de um portal do nether."
 }

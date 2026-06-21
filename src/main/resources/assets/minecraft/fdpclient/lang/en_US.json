@@ -311,5 +311,9 @@
     "module.airPlace.description": "Lets you place blocks in mid-air without a supporting block.",
     "module.holeFiller.description": "Automatically fills the open sides of the hole you are standing in.",
     "module.blockTrap.description": "Traps your target by placing blocks around them.",
-    "module.blockIn.description": "Encloses your target by placing blocks on every open side."
+    "module.blockIn.description": "Encloses your target by placing blocks on every open side.",
+    "module.replenish.description": "Automatically refills the held item from a matching stack in your inventory.",
+    "module.autoShoot.description": "Automatically charges and releases a bow at nearby targets.",
+    "module.blockBounce.description": "Bounces you upward when standing on blocks.",
+    "module.portalMenu.description": "Lets you open inventory/GUI screens while inside a nether portal."
 }
