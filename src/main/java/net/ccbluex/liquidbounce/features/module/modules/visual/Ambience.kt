@@ -17,7 +17,7 @@ import java.awt.Color
 
 object Ambience : Module("Ambience", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
-    private val timeMode by choices("Mode", arrayOf("None", "Normal", "Custom", "Day", "Dusk", "Night", "Dynamic"), "Custom")
+    private val timeMode by choices("Mode", arrayOf("None", "Normal", "Custom", "Dawn", "Day", "Noon", "Dusk", "Night", "Midnight", "Dynamic"), "Custom")
         private val customWorldTime by int("Time", 6, 0..24) { timeMode == "Custom" }
         private val changeWorldTimeSpeed by int("TimeSpeed", 150, 10..500) { timeMode == "Normal" }
         private val dynamicSpeed by int("DynamicSpeed", 20, 1.. 50) { timeMode =="Dynamic" }
@@ -46,14 +46,23 @@ object Ambience : Module("Ambience", Category.VISUAL, Category.SubCategory.RENDE
             "custom" -> {
                 mc.theWorld.worldTime = customWorldTime.toLong() * 1000
             }
+            "dawn" -> {
+                mc.theWorld.worldTime = 23041
+            }
             "day" -> {
                 mc.theWorld.worldTime = 2000
+            }
+            "noon" -> {
+                mc.theWorld.worldTime = 6000
             }
             "dusk" -> {
                 mc.theWorld.worldTime = 13050
             }
             "night" -> {
                 mc.theWorld.worldTime = 16000
+            }
+            "midnight" -> {
+                mc.theWorld.worldTime = 18000
             }
             "dynamic" -> {
                 if (i < 24000) {

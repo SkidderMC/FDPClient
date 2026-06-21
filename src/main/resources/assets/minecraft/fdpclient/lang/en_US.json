@@ -349,5 +349,7 @@
     "module.textFieldProtect.description": "Masks text matching configured patterns inside text fields so it cannot be read.",
     "module.sleepWalker.description": "Maintains activity and closes blocking screens so AFK detection never kicks you.",
     "module.dankBobbing.description": "Cranks up the view bobbing motion for an exaggerated, stylized bob.",
-    "module.quickPerspectiveSwap.description": "Instantly switches the camera to third person while enabled, with an optional rear view."
+    "module.quickPerspectiveSwap.description": "Instantly switches the camera to third person while enabled, with an optional rear view.",
+    "module.mobOwners.description": "Shows which player owns a tamed mob or projectile.",
+    "module.newChunks.description": "Highlights chunks that were likely freshly generated."
 }

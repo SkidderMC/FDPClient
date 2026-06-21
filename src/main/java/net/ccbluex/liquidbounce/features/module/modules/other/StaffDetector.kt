@@ -56,6 +56,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, Category.SubCateg
     private val packet by boolean("Packet", true)
     private val velocity by boolean("Velocity", true)
     private val vanish by boolean("Vanish", true)
+    private val showInTabList by boolean("ShowInTabList", true)
 
     private val autoLeave by choices("AutoLeave", arrayOf("Off", "Leave", "Lobby", "Quit"), "Off") { tab || packet }
 
@@ -91,6 +92,14 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, Category.SubCateg
 
     private fun isStaff(player: String): Boolean =
         staffList.values.any { staffNames -> staffNames.any { player.contains(it) } }
+
+    fun shouldShowAsStaffOnTab(username: String): Boolean {
+        if (!state || !showInTabList) {
+            return false
+        }
+
+        return isStaff(username)
+    }
 
     /**
      * Reset on World Change

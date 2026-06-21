@@ -308,5 +308,7 @@
     "module.textFieldProtect.description": "Mascara textos que correspondem aos padroes configurados nos campos de texto para nao serem lidos.",
     "module.sleepWalker.description": "Mantem atividade e fecha telas para que a deteccao de inatividade nao te expulse.",
     "module.dankBobbing.description": "Aumenta a oscilacao da camera para um balanco exagerado e estilizado.",
-    "module.quickPerspectiveSwap.description": "Troca a camera para terceira pessoa enquanto ativo, com visao traseira opcional."
+    "module.quickPerspectiveSwap.description": "Troca a camera para terceira pessoa enquanto ativo, com visao traseira opcional.",
+    "module.mobOwners.description": "Mostra a qual jogador pertence um mob domado ou projetil.",
+    "module.newChunks.description": "Destaca chunks que provavelmente foram recem-gerados."
 }

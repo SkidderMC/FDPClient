@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.gui;
 import com.google.common.collect.Ordering;
 import net.ccbluex.liquidbounce.features.module.modules.client.TabGUIModule;
 import net.ccbluex.liquidbounce.features.module.modules.client.Teams;
+import net.ccbluex.liquidbounce.features.module.modules.other.StaffDetector;
 import net.ccbluex.liquidbounce.file.FileManager;
 import net.ccbluex.liquidbounce.handler.combat.CombatManager;
 import net.minecraft.client.gui.GuiPlayerTabOverlay;
@@ -181,6 +182,8 @@ public class MixinGuiPlayerTabOverlay {
 
             if (TabGUIModule.INSTANCE.getTabMoveSelfToTop() && playerName.equals(mc.thePlayer.getName())) {
                 cir.setReturnValue("♛ " + base + healthText);
+            } else if (StaffDetector.INSTANCE.shouldShowAsStaffOnTab(playerName)) {
+                cir.setReturnValue("§4♜ " + base + healthText);
             } else if (TabGUIModule.INSTANCE.getTabShowEnemies() && fdp$isFocusedEnemy(playerName)) {
                 cir.setReturnValue("§c✱ " + base + healthText);
             } else if (TabGUIModule.INSTANCE.getTabShowFriends() && fdp$isFriendOrTeammate(playerName)) {
