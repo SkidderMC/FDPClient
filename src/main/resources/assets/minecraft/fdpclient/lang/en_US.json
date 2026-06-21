@@ -332,5 +332,6 @@
     "module.noEntityInteract.description": "Prevents interacting with entities like villagers and item frames.",
     "module.twerk.description": "Rapidly toggles sneak for a twerking animation.",
     "module.vomit.description": "Spews particles from your mouth for a vomit effect.",
-    "module.jumpEffect.description": "Spawns particles when you jump."
+    "module.jumpEffect.description": "Spawns particles when you jump.",
+    "module.nameCollector.description": "Collects player names seen in the tab list and saves them to a file."
 }

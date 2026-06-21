@@ -291,5 +291,6 @@
     "module.noEntityInteract.description": "Impede interagir com entidades como aldeoes e quadros.",
     "module.twerk.description": "Alterna o sneak rapidamente pra uma animacao de twerk.",
     "module.vomit.description": "Cospe particulas da boca pra um efeito de vomito.",
-    "module.jumpEffect.description": "Solta particulas quando voce pula."
+    "module.jumpEffect.description": "Solta particulas quando voce pula.",
+    "module.nameCollector.description": "Coleta nomes de jogadores vistos na tab list e salva num arquivo."
 }
