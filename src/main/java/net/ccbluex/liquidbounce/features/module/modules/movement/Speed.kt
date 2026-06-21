@@ -33,6 +33,12 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulc
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanLowHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanSpeeds
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.grim.GrimBHop
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.grim.GrimLowHop
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.sentinel.SentinelSpeed
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.hylex.HylexGround
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.hylex.HylexLowHop
+import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.polar.PolarSpeed
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 
 object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
@@ -85,6 +91,20 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
         // Intave
         IntaveHop14,
         IntaveTimer14,
+
+        // Grim
+        GrimBHop,
+        GrimLowHop,
+
+        // Sentinel
+        SentinelSpeed,
+
+        // Hylex
+        HylexGround,
+        HylexLowHop,
+
+        // Polar
+        PolarSpeed,
 
         // Server specific
         TeleportCubeCraft,

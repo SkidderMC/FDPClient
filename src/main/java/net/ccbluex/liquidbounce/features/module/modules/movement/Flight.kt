@@ -35,6 +35,9 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.verus.
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vulcan.Vulcan
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vulcan.VulcanGhost
 import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.vulcan.VulcanOld
+import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.grim.GrimFly
+import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.polar.PolarFly
+import net.ccbluex.liquidbounce.features.module.modules.movement.flymodes.sentinel.SentinelFly
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
@@ -75,6 +78,15 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
         // Verus
         Verus, VerusDamage, VerusGlide,
+
+        // Grim
+        GrimFly,
+
+        // Polar
+        PolarFly,
+
+        // Sentinel
+        SentinelFly,
 
         // Other anti-cheats
         MineSecure, HawkEye, HAC, WatchCat,
