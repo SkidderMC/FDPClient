@@ -280,5 +280,13 @@
     "module.portalMenu.description": "Permite abrir telas de inventario/GUI dentro de um portal do nether.",
     "module.noBlockInteract.description": "Impede interagir com blocos como bau, portas, botoes e alavancas.",
     "module.liquidFiller.description": "Preenche fontes de agua e lava proximas com blocos solidos.",
-    "module.liquidPlace.description": "Permite colocar blocos contra superficies de liquido como se fossem solidas."
+    "module.liquidPlace.description": "Permite colocar blocos contra superficies de liquido como se fossem solidas.",
+    "module.targetLock.description": "Trava no seu alvo de combate atual e o mantem selecionado.",
+    "module.holeESP.description": "Destaca buracos 1x1 seguros (bedrock/obsidiana) perto de voce.",
+    "module.autoBuild.description": "Constroi automaticamente um padrao de blocos ao seu redor.",
+    "module.extinguish.description": "Apaga automaticamente blocos de fogo proximos.",
+    "module.packetMine.description": "Mina o bloco mirado usando packets de inicio/fim de quebra.",
+    "module.clickTp.description": "Teleporta pro bloco que voce esta olhando com uma tecla.",
+    "module.noInterpolation.description": "Desativa a interpolacao de posicao de outras entidades, fazendo elas pularem pras posicoes do servidor.",
+    "module.noEntityInteract.description": "Impede interagir com entidades como aldeoes e quadros."
 }

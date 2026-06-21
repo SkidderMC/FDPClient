@@ -274,5 +274,13 @@
     "module.portalMenu.description": "Позволяет открывать инвентарь/GUI, находясь в портале Нижнего мира.",
     "module.noBlockInteract.description": "Запрещает взаимодействие с блоками: сундуками, дверями, кнопками и рычагами.",
     "module.liquidFiller.description": "Заполняет ближайшие источники воды и лавы твёрдыми блоками.",
-    "module.liquidPlace.description": "Позволяет ставить блоки на поверхность жидкости, как на твёрдую."
+    "module.liquidPlace.description": "Позволяет ставить блоки на поверхность жидкости, как на твёрдую.",
+    "module.targetLock.description": "Фиксируется на текущей боевой цели и удерживает её.",
+    "module.holeESP.description": "Подсвечивает безопасные ямы 1x1 (бедрок/обсидиан) рядом с вами.",
+    "module.autoBuild.description": "Автоматически строит заданный шаблон из блоков вокруг вас.",
+    "module.extinguish.description": "Автоматически тушит ближайшие блоки огня.",
+    "module.packetMine.description": "Ломает выбранный блок пакетами начала и конца копания.",
+    "module.clickTp.description": "Телепортирует к блоку, на который вы смотрите, по клавише.",
+    "module.noInterpolation.description": "Отключает интерполяцию позиций других сущностей — они встают на серверные позиции.",
+    "module.noEntityInteract.description": "Запрещает взаимодействие с сущностями: жителями, рамками и подобными."
 }
