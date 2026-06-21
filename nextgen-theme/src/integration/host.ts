@@ -1,8 +1,9 @@
 import {getHashParams} from './util';
 
+const queryParams = new URLSearchParams(window.location.search);
 const hashParams = getHashParams();
-const portParam = hashParams.get('port');
-export const isStatic = hashParams.has('static');
+const portParam = queryParams.get('port') ?? hashParams.get('port');
+export const isStatic = queryParams.has('static') || hashParams.has('static');
 
 export const REST_BASE = portParam
     ? `http://localhost:${portParam}`

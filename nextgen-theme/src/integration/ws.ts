@@ -1,8 +1,6 @@
-import {WS_BASE} from "./host";
+import {isStatic, WS_BASE} from "./host";
 import type {EventMap} from "./events";
 import {onDestroy} from "svelte";
-
-console.log("Connecting to server at: ", WS_BASE);
 
 let ws: WebSocket;
 let reconnectAttempts = 0;
@@ -129,4 +127,7 @@ setInterval(() => {
     }));
 }, 5000);
 
-connect();
+if (!isStatic) {
+    console.log("Connecting to server at: ", WS_BASE);
+    connect();
+}
