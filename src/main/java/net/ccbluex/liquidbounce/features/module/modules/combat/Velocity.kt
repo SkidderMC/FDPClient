@@ -67,7 +67,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
             "IntaveReduce", "Intave", "Delay", "Delayed", "Grim", "GrimC03", "Grim1.17", "GrimC07", "GrimDamage",
             "Hypixel", "HypixelAir", "HypixelBoost",
             "Click", "BlocksMC", "GrimVertical", "AttackReduce", "Spoof", "Tick", "AAC4Reduce", "AAC5Reduce",
-            "AAC5.2.0", "AAC5.2.0Combat", "Cancel", "Minemen", "Phase", "SideStrafe"
+            "AAC5.2.0", "AAC5.2.0Combat", "Cancel", "Minemen", "Phase", "SideStrafe", "Polar", "Sentinel"
         ), "Simple"
     )
 
@@ -518,6 +518,21 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
                 if (velocityInput && (thePlayer.hurtTime < 5 || thePlayer.onGround) && velocityTimer.hasTimePassed(120L)) {
                     velocityInput = false
+                }
+            }
+
+            "polar" -> {
+                if (thePlayer.hurtTime == 9) {
+                    thePlayer.motionX *= 0.6
+                    thePlayer.motionZ *= 0.6
+                }
+            }
+
+            "sentinel" -> {
+                if (thePlayer.hurtTime == 9) {
+                    thePlayer.motionX *= 0.5
+                    thePlayer.motionZ *= 0.5
+                    thePlayer.motionY *= 0.8
                 }
             }
 
