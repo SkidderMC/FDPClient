@@ -9,6 +9,9 @@ import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.GameLoopEvent
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.event.Render2DEvent
+import net.ccbluex.liquidbounce.utils.render.RenderUtils
+import net.minecraft.client.gui.ScaledResolution
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.ui.client.hud.HUD
 import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
@@ -79,6 +82,43 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         closePersistentBrowser()
     }
 
+    /**
+     * Persistent on-screen download status. Stays visible the whole time the browser runtime is
+     * being prepared/downloaded (does NOT fade like a notification) and disappears only once the
+     * download finishes (state leaves INITIALIZING).
+     */
+    private val onRenderOverlay = handler<Render2DEvent>(always = true) {
+        if (state != State.INITIALIZING) {
+            return@handler
+        }
+
+        val font = mc.fontRendererObj ?: return@handler
+        val sr = ScaledResolution(mc)
+        val text = detail.ifEmpty { "Preparing in-game browser (one-time ~160MB download)..." }
+        val pct = progress
+        val hasBar = pct in 0.0..100.0
+
+        val boxW = (font.getStringWidth(text) + 16).coerceAtLeast(200)
+        val boxH = if (hasBar) 30 else 20
+        val x = (sr.scaledWidth - boxW) / 2
+        val y = 6
+
+        RenderUtils.drawRect(x.toFloat(), y.toFloat(), (x + boxW).toFloat(), (y + boxH).toFloat(), 0xC8101014.toInt())
+        RenderUtils.drawRect(x.toFloat(), y.toFloat(), (x + boxW).toFloat(), (y + 1).toFloat(), 0x40FFFFFF)
+        font.drawStringWithShadow(text, (x + 8).toFloat(), (y + 6).toFloat(), 0xFFFFFF)
+
+        if (hasBar) {
+            val barX = x + 8
+            val barY = y + 20
+            val barW = boxW - 16
+            RenderUtils.drawRect(barX.toFloat(), barY.toFloat(), (barX + barW).toFloat(), (barY + 4).toFloat(), 0xC0202024.toInt())
+            val filled = (barW * (pct / 100.0)).toInt()
+            if (filled > 0) {
+                RenderUtils.drawRect(barX.toFloat(), barY.toFloat(), (barX + filled).toFloat(), (barY + 4).toFloat(), 0xFF3A8BFF.toInt())
+            }
+        }
+    }
+
     @Synchronized
     fun ensureStarted() {
         if (state == State.READY || state == State.INITIALIZING) {
@@ -103,16 +143,6 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
                 if (hasNativeRuntime()) {
                     detail = "Starting in-game browser..."
                 } else {
-                    Minecraft.getMinecraft().addScheduledTask {
-                        HUD.addNotification(
-                            Notification(
-                                "NextGen ClickGUI",
-                                "Downloading in-game browser (~160MB) in background",
-                                Type.INFO,
-                                time = 4000
-                            )
-                        )
-                    }
                     downloadNatives()
                     Thread.sleep(250L)
                 }
