@@ -21,6 +21,9 @@ import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.packe
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.verus.Verus
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.vulcan.LatestVulcan
 import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.vulcan.OldVulcan
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.polar.Polar
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.sentinel.Sentinel
+import net.ccbluex.liquidbounce.features.module.modules.player.nofallmodes.intave.Intave
 import net.ccbluex.liquidbounce.utils.block.BlockUtils.collideBlock
 import net.ccbluex.liquidbounce.utils.rotation.AlwaysRotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
@@ -82,6 +85,15 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
 
         // Grim
         Grim2371,
+
+        // Polar
+        Polar,
+
+        // Sentinel
+        Sentinel,
+
+        // Intave
+        Intave,
 
         // Other Server
         Verus,
