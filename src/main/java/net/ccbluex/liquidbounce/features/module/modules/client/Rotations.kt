@@ -23,7 +23,7 @@ object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLI
      * forces every rotation through the modern engine; "Legacy" forces the classic one. This is how
      * you make the modern engine definitive across the whole client from one place.
      */
-    val engine by choices("Engine", arrayOf("Per-Module", "Modern", "Legacy"), "Per-Module")
+    val engine by choices("Engine", arrayOf("Per-Module", "Modern", "Legacy"), "Modern")
 
     private val realistic by boolean("Realistic", true)
     private val body by boolean("Body", true) { !realistic }
@@ -31,7 +31,7 @@ object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLI
     private val smoothRotations by boolean("SmoothRotations", false)
     private val smoothingFactor by float("SmoothFactor", 0.15f, 0.1f..0.9f) { smoothRotations }
 
-    val ghost by boolean("Ghost", true)
+    val ghost by boolean("Ghost", false)
 
     val color by color("Color", Color(110, 0, 120)) { ghost }
 
