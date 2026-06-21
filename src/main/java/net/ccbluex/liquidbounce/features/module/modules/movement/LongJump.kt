@@ -25,6 +25,9 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.o
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.other.VerusDamage
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.other.VerusDamage.damaged
 import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.vulcan.VulcanLongJumpMode
+import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.grim.Grim
+import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.hypixel.Hypixel
+import net.ccbluex.liquidbounce.features.module.modules.movement.longjumpmodes.spartan.Spartan
 import net.ccbluex.liquidbounce.utils.client.chat
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 import net.ccbluex.liquidbounce.utils.extensions.tryJump
@@ -45,7 +48,16 @@ object LongJump : Module("LongJump", Category.MOVEMENT, Category.SubCategory.MOV
         Boost, Redesky, Hycraft, Buzz, VerusDamage,
 
         // Vulcan
-        VulcanLongJumpMode
+        VulcanLongJumpMode,
+
+        // Grim
+        Grim,
+
+        // Hypixel
+        Hypixel,
+
+        // Spartan
+        Spartan
     )
 
     val mode by choices("Mode", longJumpModes.modeNames(), "NCP")
