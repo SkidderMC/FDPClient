@@ -115,12 +115,21 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
         startWorker()
         if (!hasCredentials()) {
             val mode = authMode
-            if (mode == SpotifyAuthMode.QUICK) {
-                chat("§eSpotify quick connect needs a browser authorization. Open the module screen to get started.")
+            if (mode == SpotifyAuthMode.QUICK && supportsQuickConnect()) {
+                // One-tap connect: open the browser authorization immediately. The user just approves
+                // (instant if already logged into Spotify) — no settings to fill in.
+                chat("§aOpening Spotify authorization in your browser — just approve to connect.")
+                beginBrowserAuthorization { status, message ->
+                    when (status) {
+                        BrowserAuthStatus.SUCCESS -> chat("§aSpotify connected.")
+                        BrowserAuthStatus.ERROR -> chat("§c$message")
+                        else -> {}
+                    }
+                }
             } else {
                 chat("§cSpotify credentials are missing. Open the configuration screen to enter them.")
+                mc.displayGuiScreen(GuiSpotify(mc.currentScreen))
             }
-            mc.displayGuiScreen(GuiSpotify(mc.currentScreen))
         }
     }
 
