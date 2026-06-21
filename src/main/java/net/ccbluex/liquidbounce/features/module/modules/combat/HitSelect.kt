@@ -89,11 +89,18 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
         val thePlayer = mc.thePlayer ?: return@handler
         val theTarget = mc.objectMouseOver?.entityHit as? EntityLivingBase ?: return@handler
 
-        // Detect when player gets hit (hurtTime goes from 0 to max)
-        // Or what when target is afk or something?
-        if ((thePlayer.hurtTime > lastPlayerHurtTime && lastPlayerHurtTime == 0)
-            || !theTarget.isAttackingEntity(thePlayer, 30.0, 3.5)) {
+        // Rising edge of hurtTime: the player just took a hit and therefore knockback.
+        val tookKnockback = thePlayer.hurtTime > lastPlayerHurtTime && lastPlayerHurtTime == 0
+
+        // "Wait for first hit" may release once we have been hit, or the target clearly isn't fighting back.
+        if (tookKnockback || !theTarget.isAttackingEntity(thePlayer, 30.0, 3.5)) {
             wasHitFirst = true
+        }
+
+        // "Hit later in trades" must only engage right after taking knockback from the opponent — a real
+        // trade. Previously the trade timer also reset whenever the target wasn't attacking, which is the
+        // normal state while approaching or clicking at air, so the delay leaked outside of trades.
+        if (tookKnockback) {
             tradeTimer.reset()
         }
 
