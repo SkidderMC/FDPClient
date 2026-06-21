@@ -287,5 +287,11 @@
     "module.vomit.description": "Извергает частицы изо рта для эффекта рвоты.",
     "module.jumpEffect.description": "Создаёт частицы, когда вы прыгаете.",
     "module.nameCollector.description": "Собирает имена игроков из списка игроков и сохраняет их в файл.",
-    "module.autoTrap.description": "Ловит вашу боевую цель, ставя паутину ей под ноги."
+    "module.autoTrap.description": "Ловит вашу боевую цель, ставя паутину ей под ноги.",
+    "module.resetVL.description": "Сбрасывает ваш уровень нарушений анти-чита пакетным трюком.",
+    "module.autoShop.description": "Автоматически покупает заданные предметы из GUI магазина сервера.",
+    "module.inventoryTracker.description": "Отслеживает и показывает недавние изменения слотов инвентаря.",
+    "module.notebot.description": "Проигрывает песни нот-блоков из файлов в папке FDPCLIENT/songs.",
+    "module.itemTags.description": "Рисует информационные метки над выброшенными предметами.",
+    "module.protectionZones.description": "Рисует заданные зоны защиты в мире."
 }

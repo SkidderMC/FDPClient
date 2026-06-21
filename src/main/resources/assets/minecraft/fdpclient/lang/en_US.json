@@ -334,5 +334,11 @@
     "module.vomit.description": "Spews particles from your mouth for a vomit effect.",
     "module.jumpEffect.description": "Spawns particles when you jump.",
     "module.nameCollector.description": "Collects player names seen in the tab list and saves them to a file.",
-    "module.autoTrap.description": "Traps your combat target by placing cobweb at their feet."
+    "module.autoTrap.description": "Traps your combat target by placing cobweb at their feet.",
+    "module.resetVL.description": "Resets your anticheat violation level using a packet trick.",
+    "module.autoShop.description": "Automatically buys configured items from a server shop GUI.",
+    "module.inventoryTracker.description": "Tracks and displays recent inventory slot changes.",
+    "module.notebot.description": "Plays note-block songs from files in the FDPCLIENT/songs folder.",
+    "module.itemTags.description": "Renders info tags above dropped item entities.",
+    "module.protectionZones.description": "Renders configured protection/region boxes in the world."
 }

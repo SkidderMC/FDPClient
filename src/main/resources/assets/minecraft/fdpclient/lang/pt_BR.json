@@ -293,5 +293,11 @@
     "module.vomit.description": "Cospe particulas da boca pra um efeito de vomito.",
     "module.jumpEffect.description": "Solta particulas quando voce pula.",
     "module.nameCollector.description": "Coleta nomes de jogadores vistos na tab list e salva num arquivo.",
-    "module.autoTrap.description": "Prende o alvo de combate colocando teia nos pes dele."
+    "module.autoTrap.description": "Prende o alvo de combate colocando teia nos pes dele.",
+    "module.resetVL.description": "Reseta seu nivel de violacao do anticheat com um truque de packet.",
+    "module.autoShop.description": "Compra automaticamente itens configurados de uma GUI de loja do servidor.",
+    "module.inventoryTracker.description": "Rastreia e mostra mudancas recentes nos slots do inventario.",
+    "module.notebot.description": "Toca musicas de noteblock a partir de arquivos na pasta FDPCLIENT/songs.",
+    "module.itemTags.description": "Renderiza tags de info acima de itens dropados.",
+    "module.protectionZones.description": "Renderiza caixas de regiao/protecao configuradas no mundo."
 }
