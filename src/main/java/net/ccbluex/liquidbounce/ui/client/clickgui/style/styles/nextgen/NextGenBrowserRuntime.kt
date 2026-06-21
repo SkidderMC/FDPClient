@@ -27,7 +27,9 @@ import java.lang.reflect.Method
 import java.lang.reflect.Proxy
 import java.security.KeyStore
 import java.security.cert.CertificateFactory
+import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
 import javax.net.ssl.TrustManagerFactory
 import javax.net.ssl.X509TrustManager
 
@@ -182,44 +184,33 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
      * so the HTTPS handshake fails and a fresh install falls into virtual mode.
      *
      * Two layers fix this, in order of preference:
-     *  1. Install a trust store of the JVM defaults plus the ISRG roots (embedded inline so it can
-     *     never be lost to classpath/repackaging quirks). HTTPS then works and stays secure.
+     *  1. Build a trust store of the JVM defaults plus the ISRG roots (embedded inline so it can
+     *     never be lost to classpath/repackaging quirks) and install it BOTH on MCEF and as the
+     *     process-wide default HTTPS factory. The default override matters: MCEF only swaps its own
+     *     factory in for connections it tags as Let's Encrypt, and the connection that actually
+     *     fails on old JVMs uses the JVM default instead — so overriding the default is what makes
+     *     the real download validate. HTTPS then works and stays secure.
      *  2. If HTTPS still cannot connect (truly ancient runtime, exotic TLS, broken cert path), probe
      *     the mirror and, on failure, force the plain-HTTP mirror so the download always succeeds.
-     * Both [MCEF.SECURE_MIRRORS_ONLY] is cleared and the probe runs before any download. On a modern
-     * JDK the roots are already trusted, so HTTPS is used and the fallback never triggers.
+     * [MCEF.SECURE_MIRRORS_ONLY] is cleared and everything runs before any download. On a modern JDK
+     * the roots are already trusted, so HTTPS is used and the fallback never triggers.
      */
     private fun installDownloadTrustStore() {
         MCEF.SECURE_MIRRORS_ONLY = false
 
-        if (MCEF.SSL_SOCKET_FACTORY == null) {
-            runCatching {
-                val keyStore = KeyStore.getInstance(KeyStore.getDefaultType()).apply { load(null, null) }
-                var index = 0
-
-                val systemTrustManager = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
-                    .apply { init(null as KeyStore?) }
-                    .trustManagers.filterIsInstance<X509TrustManager>().firstOrNull()
-                systemTrustManager?.acceptedIssuers?.forEach { keyStore.setCertificateEntry("system-${index++}", it) }
-
-                val certificateFactory = CertificateFactory.getInstance("X.509")
-                var roots = 0
-                BUNDLED_ROOTS.forEach { pem ->
-                    runCatching {
-                        pem.byteInputStream().use { keyStore.setCertificateEntry("root-${index++}", certificateFactory.generateCertificate(it)) }
-                        roots++
-                    }.onFailure { LOGGER.warn("[NextGen] Could not parse a bundled download root certificate.", it) }
-                }
-
-                val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
-                    .apply { init(keyStore) }
-                MCEF.SSL_SOCKET_FACTORY = SSLContext.getInstance("TLS")
-                    .apply { init(null, trustManagerFactory.trustManagers, null) }
-                    .socketFactory
-                LOGGER.info("[NextGen] Installed in-game browser download trust store ($roots bundled roots).")
-            }.onFailure {
-                LOGGER.warn("[NextGen] Could not install the in-game browser download trust store; HTTPS may fail on old runtimes.", it)
-            }
+        val factory = (MCEF.SSL_SOCKET_FACTORY ?: runCatching { buildTrustingFactory() }.getOrNull())
+        if (factory != null) {
+            MCEF.SSL_SOCKET_FACTORY = factory
+            // MCEF only swaps its own factory in for connections it tags as Let's Encrypt; the one
+            // that actually fails on old JVMs falls back to the JVM default trust store (no ISRG
+            // root there). Override the process-wide default too so EVERY https connection trusts
+            // our roots, no matter how MCEF builds it. Our factory is a superset of the defaults,
+            // so this never weakens other connections.
+            runCatching { HttpsURLConnection.setDefaultSSLSocketFactory(factory) }
+                .onFailure { LOGGER.warn("[NextGen] Could not set the default HTTPS factory.", it) }
+            LOGGER.info("[NextGen] In-game browser download trust store active (process-wide HTTPS).")
+        } else {
+            LOGGER.warn("[NextGen] Could not build the in-game browser download trust store; HTTPS may fail on old runtimes.")
         }
 
         if (isHttpsMirrorReachable()) {
@@ -230,9 +221,36 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         }
     }
 
+    /** Builds an SSL factory trusting the JVM defaults plus the inline ISRG roots the mirror uses. */
+    private fun buildTrustingFactory(): SSLSocketFactory {
+        val keyStore = KeyStore.getInstance(KeyStore.getDefaultType()).apply { load(null, null) }
+        var index = 0
+
+        val systemTrustManager = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+            .apply { init(null as KeyStore?) }
+            .trustManagers.filterIsInstance<X509TrustManager>().firstOrNull()
+        systemTrustManager?.acceptedIssuers?.forEach { keyStore.setCertificateEntry("system-${index++}", it) }
+
+        val certificateFactory = CertificateFactory.getInstance("X.509")
+        var roots = 0
+        BUNDLED_ROOTS.forEach { pem ->
+            runCatching {
+                pem.byteInputStream().use { keyStore.setCertificateEntry("root-${index++}", certificateFactory.generateCertificate(it)) }
+                roots++
+            }.onFailure { LOGGER.warn("[NextGen] Could not parse a bundled download root certificate.", it) }
+        }
+        LOGGER.info("[NextGen] Download trust store built with $roots bundled roots.")
+
+        val trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm())
+            .apply { init(keyStore) }
+        return SSLContext.getInstance("TLS")
+            .apply { init(null, trustManagerFactory.trustManagers, null) }
+            .socketFactory
+    }
+
     /** Quick liveness check against the HTTPS mirror using the trust store we just installed. */
     private fun isHttpsMirrorReachable(): Boolean = runCatching {
-        val connection = (java.net.URL("$HTTPS_MIRROR/config2.json").openConnection() as javax.net.ssl.HttpsURLConnection).apply {
+        val connection = (java.net.URL("$HTTPS_MIRROR/config2.json").openConnection() as HttpsURLConnection).apply {
             MCEF.SSL_SOCKET_FACTORY?.let { sslSocketFactory = it }
             connectTimeout = 8000
             readTimeout = 8000
