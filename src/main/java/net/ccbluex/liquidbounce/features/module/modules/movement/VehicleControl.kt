@@ -9,7 +9,7 @@ import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
-import net.ccbluex.liquidbounce.utils.movement.MovementUtils
+import net.ccbluex.liquidbounce.utils.movement.DirectionalInput
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -35,12 +35,12 @@ object VehicleControl : Module("VehicleControl", Category.MOVEMENT, Category.Sub
             else -> glide.toDouble()
         }
 
-        val input = player.movementInput
-        if (input.moveForward == 0f && input.moveStrafe == 0f) {
+        val input = DirectionalInput(player.movementInput.moveForward, player.movementInput.moveStrafe)
+        if (!input.isMoving) {
             vehicle.motionX = 0.0
             vehicle.motionZ = 0.0
         } else {
-            val yaw = MovementUtils.direction
+            val yaw = Math.toRadians(input.movementYaw(player.rotationYaw).toDouble())
             vehicle.motionX = -sin(yaw) * horizontalSpeed
             vehicle.motionZ = cos(yaw) * horizontalSpeed
         }
