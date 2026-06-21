@@ -340,8 +340,9 @@ class SettingComponents(private val module: Module) : Component() {
                     setting.set(newValue)
                 }
 
-                val sliderMath = ((currentValue - setting.minimum)
-                        / (setting.maximum - setting.minimum)).toFloat()
+                val sliderMath = SliderMath.percentOf(
+                    currentValue, setting.minimum.toDouble(), setting.maximum.toDouble()
+                )
 
                 // Animate the slider position
                 val oldSlider = sliderfloatMap[setting]!!
@@ -493,8 +494,9 @@ class SettingComponents(private val module: Module) : Component() {
                     setting.set(newValue)
                 }
 
-                val sliderMath = ((currentValue - setting.minimum)
-                        / (setting.maximum - setting.minimum)).toFloat()
+                val sliderMath = SliderMath.percentOf(
+                    currentValue, setting.minimum.toDouble(), setting.maximum.toDouble()
+                )
 
                 // Animate the slider position
                 val oldSlider = sliderintMap[setting]!!
@@ -568,8 +570,9 @@ class SettingComponents(private val module: Module) : Component() {
                     setting.set(newValue)
                 }
 
-                val sliderMath = ((currentValue - setting.minimum)
-                        / (setting.maximum - setting.minimum)).toFloat()
+                val sliderMath = SliderMath.percentOf(
+                    currentValue, setting.minimum.toDouble(), setting.maximum.toDouble()
+                )
 
                 // Animate the slider position
                 val oldSlider = sliderBlockMap[setting]!!
