@@ -300,5 +300,6 @@
     "module.notebot.description": "Toca musicas de noteblock a partir de arquivos na pasta FDPCLIENT/songs.",
     "module.itemTags.description": "Renderiza tags de info acima de itens dropados.",
     "module.protectionZones.description": "Renderiza caixas de regiao/protecao configuradas no mundo.",
-    "module.autoCrafter.description": "Cria automaticamente um item configurado usando a grade de criacao."
+    "module.autoCrafter.description": "Cria automaticamente um item configurado usando a grade de criacao.",
+    "module.smoothCamera.description": "Ativa a camera cinematica padrao para suavizar o movimento da mira."
 }

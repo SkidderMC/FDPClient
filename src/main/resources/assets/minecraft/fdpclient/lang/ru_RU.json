@@ -294,5 +294,6 @@
     "module.notebot.description": "Проигрывает песни нот-блоков из файлов в папке FDPCLIENT/songs.",
     "module.itemTags.description": "Рисует информационные метки над выброшенными предметами.",
     "module.protectionZones.description": "Рисует заданные зоны защиты в мире.",
-    "module.autoCrafter.description": "Автоматически крафтит заданный предмет, используя сетку крафта."
+    "module.autoCrafter.description": "Автоматически крафтит заданный предмет, используя сетку крафта.",
+    "module.smoothCamera.description": "Включает ванильную кинематографическую камеру, чтобы движение обзора сглаживалось."
 }

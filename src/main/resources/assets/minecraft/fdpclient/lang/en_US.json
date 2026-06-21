@@ -341,5 +341,6 @@
     "module.notebot.description": "Plays note-block songs from files in the FDPCLIENT/songs folder.",
     "module.itemTags.description": "Renders info tags above dropped item entities.",
     "module.protectionZones.description": "Renders configured protection/region boxes in the world.",
-    "module.autoCrafter.description": "Automatically crafts a configured item using the crafting grid."
+    "module.autoCrafter.description": "Automatically crafts a configured item using the crafting grid.",
+    "module.smoothCamera.description": "Enables the vanilla cinematic camera so look movement is eased instead of snapping."
 }
