@@ -355,5 +355,9 @@
     "module.trajectories.description": "Shows where projectile items will land.",
     "module.particles.description": "Displays particles when you attack an entity.",
     "module.skinChanger.description": "Changes your visible skin to another player's skin or a local image file.",
-    "module.chestCleaner.description": "Automatically drops unwanted items out of an opened chest."
+    "module.chestCleaner.description": "Automatically drops unwanted items out of an opened chest.",
+    "module.murderMystery.description": "Detects and highlights the murderer and detective in Murder Mystery games.",
+    "module.autoConfig.description": "Automatically downloads and applies a config for the server you join.",
+    "module.reportHelper.description": "Auto-reports players who are mentioned alongside your name in chat.",
+    "module.combineMobs.description": "Hides same-type entities crammed into one spot and shows a single one with a count."
 }

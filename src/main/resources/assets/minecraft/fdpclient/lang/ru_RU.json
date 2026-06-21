@@ -308,5 +308,9 @@
     "module.trajectories.description": "Показывает, куда упадут метательные предметы.",
     "module.particles.description": "Отображает частицы при атаке по сущности.",
     "module.skinChanger.description": "Меняет ваш видимый скин на скин другого игрока или локальный файл изображения.",
-    "module.chestCleaner.description": "Автоматически выбрасывает ненужные предметы из открытого сундука."
+    "module.chestCleaner.description": "Автоматически выбрасывает ненужные предметы из открытого сундука.",
+    "module.murderMystery.description": "Обнаруживает и подсвечивает убийцу и детектива в играх Murder Mystery.",
+    "module.autoConfig.description": "Автоматически загружает и применяет конфиг для сервера, на который вы заходите.",
+    "module.reportHelper.description": "Автоматически репортит игроков, упомянутых вместе с вашим именем в чате.",
+    "module.combineMobs.description": "Скрывает существ одного типа, скучившихся в одном месте, и показывает одно со счётчиком."
 }

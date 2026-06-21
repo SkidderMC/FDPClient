@@ -314,5 +314,9 @@
     "module.trajectories.description": "Mostra onde os projeteis vao cair.",
     "module.particles.description": "Exibe particulas quando voce ataca uma entidade.",
     "module.skinChanger.description": "Troca a sua skin visivel pela de outro jogador ou por um arquivo de imagem local.",
-    "module.chestCleaner.description": "Descarta automaticamente itens indesejados de um bau aberto."
+    "module.chestCleaner.description": "Descarta automaticamente itens indesejados de um bau aberto.",
+    "module.murderMystery.description": "Detecta e destaca o assassino e o detetive em jogos de Murder Mystery.",
+    "module.autoConfig.description": "Baixa e aplica automaticamente uma config para o servidor em que voce entra.",
+    "module.reportHelper.description": "Reporta automaticamente jogadores citados junto com seu nome no chat.",
+    "module.combineMobs.description": "Esconde entidades do mesmo tipo amontoadas no mesmo lugar e mostra apenas uma com a contagem."
 }
