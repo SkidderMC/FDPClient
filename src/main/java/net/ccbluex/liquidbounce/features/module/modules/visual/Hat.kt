@@ -18,25 +18,41 @@ import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawCone
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawConesForEntities
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glStateManagerColor
+import net.ccbluex.liquidbounce.utils.render.drawWithTessellatorWorldRenderer
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
 import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.player.EntityPlayer
+import org.lwjgl.opengl.GL11
 import java.awt.Color
+import kotlin.math.cos
+import kotlin.math.sin
 
 object ChineseHat : Module("ChineseHat", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
-    private val useChineseHatTexture by boolean("UseChineseHatTexture", false)
+    private val shape by choices("Shape", arrayOf("Cone", "Halo", "Orbs"), "Cone")
+
+    private val useChineseHatTexture by boolean("UseChineseHatTexture", false) { shape == "Cone" }
 
     private val colorMode by choices("Color", arrayOf("Custom", "DistanceColor"), "Custom")
     private val colors = ColorSettingsInteger(this) { colorMode == "Custom" }.with(0, 160, 255, 150)
 
     private val playerHeight by float("PlayerHeight", 0.5f, 0.25f..2f)
 
-    private val coneWidth by float("ConeWidth", 0.5f, 0f..2f)
-    private val coneHeight by float("ConeHeight", 0.5f, 0.1f..2f)
+    private val coneWidth by float("ConeWidth", 0.5f, 0f..2f) { shape == "Cone" }
+    private val coneHeight by float("ConeHeight", 0.5f, 0.1f..2f) { shape == "Cone" }
+
+    private val haloRadius by float("HaloRadius", 0.4f, 0.1f..2f) { shape == "Halo" }
+    private val haloThickness by float("HaloThickness", 0.06f, 0.01f..0.5f) { shape == "Halo" }
+
+    private val orbsRadius by float("OrbsRadius", 0.5f, 0.1f..2f) { shape == "Orbs" }
+    private val orbsSize by float("OrbsSize", 0.1f, 0.02f..0.5f) { shape == "Orbs" }
+    private val orbsCount by int("OrbsCount", 6, 1..16) { shape == "Orbs" }
+    private val orbsSpinSpeed by float("OrbsSpinSpeed", 2f, -10f..10f) { shape == "Orbs" }
 
     private val renderSelf by boolean("RenderSelf", false)
 
@@ -78,15 +94,122 @@ object ChineseHat : Module("ChineseHat", Category.VISUAL, Category.SubCategory.R
                 GlStateManager.pushMatrix()
                 GlStateManager.translate(x, y, z)
 
-                glStateManagerColor(figureOutColor(entity))
+                val color = figureOutColor(entity)
+                glStateManagerColor(color)
 
-                drawCone(coneWidth, coneHeight, useChineseHatTexture)
+                when (shape) {
+                    "Halo" -> drawHalo(color)
+                    "Orbs" -> drawOrbs(color)
+                    else -> drawCone(coneWidth, coneHeight, useChineseHatTexture)
+                }
 
                 GlStateManager.popMatrix()
 
                 if (isRenderingSelf) {
                     FreeCam.useModifiedPosition()
                 }
+            }
+        }
+    }
+
+    private fun drawHalo(color: Color) {
+        glColor(color)
+
+        val outerSegments = 96
+        val innerSegments = 10
+        val outer = haloRadius
+        val inner = haloThickness
+
+        drawWithTessellatorWorldRenderer {
+            begin(GL11.GL_TRIANGLES, DefaultVertexFormats.POSITION)
+
+            for (o in 0 until outerSegments) {
+                val a0 = 2.0 * Math.PI * o / outerSegments
+                val a1 = 2.0 * Math.PI * (o + 1) / outerSegments
+                val s0 = sin(a0)
+                val c0 = cos(a0)
+                val s1 = sin(a1)
+                val c1 = cos(a1)
+
+                for (i in 0 until innerSegments) {
+                    val b0 = 2.0 * Math.PI * i / innerSegments
+                    val b1 = 2.0 * Math.PI * (i + 1) / innerSegments
+                    val ty0 = inner * sin(b0)
+                    val ty1 = inner * sin(b1)
+                    val to0 = inner * cos(b0)
+                    val to1 = inner * cos(b1)
+
+                    val r00 = outer + to0
+                    val r01 = outer + to1
+
+                    val p1x = r00 * s0; val p1z = r00 * c0
+                    val p2x = r01 * s0; val p2z = r01 * c0
+                    val p3x = r00 * s1; val p3z = r00 * c1
+                    val p4x = r01 * s1; val p4z = r01 * c1
+
+                    pos(p1x, ty0, p1z).endVertex()
+                    pos(p2x, ty1, p2z).endVertex()
+                    pos(p3x, ty0, p3z).endVertex()
+                    pos(p2x, ty1, p2z).endVertex()
+                    pos(p4x, ty1, p4z).endVertex()
+                    pos(p3x, ty0, p3z).endVertex()
+                }
+            }
+        }
+    }
+
+    private fun drawOrbs(color: Color) {
+        glColor(color)
+
+        val count = orbsCount
+        val radius = orbsRadius.toDouble()
+        val size = orbsSize.toDouble()
+        val spin = (System.currentTimeMillis() % 360000L) * 0.001 * orbsSpinSpeed
+
+        drawWithTessellatorWorldRenderer {
+            begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION)
+
+            for (i in 0 until count) {
+                val angle = 2.0 * Math.PI * i / count + spin
+                val cx = sin(angle) * radius
+                val cz = cos(angle) * radius
+
+                val minX = cx - size
+                val maxX = cx + size
+                val minY = -size
+                val maxY = size
+                val minZ = cz - size
+                val maxZ = cz + size
+
+                pos(minX, minY, minZ).endVertex()
+                pos(maxX, minY, minZ).endVertex()
+                pos(maxX, maxY, minZ).endVertex()
+                pos(minX, maxY, minZ).endVertex()
+
+                pos(minX, minY, maxZ).endVertex()
+                pos(minX, maxY, maxZ).endVertex()
+                pos(maxX, maxY, maxZ).endVertex()
+                pos(maxX, minY, maxZ).endVertex()
+
+                pos(minX, minY, minZ).endVertex()
+                pos(minX, maxY, minZ).endVertex()
+                pos(minX, maxY, maxZ).endVertex()
+                pos(minX, minY, maxZ).endVertex()
+
+                pos(maxX, minY, minZ).endVertex()
+                pos(maxX, minY, maxZ).endVertex()
+                pos(maxX, maxY, maxZ).endVertex()
+                pos(maxX, maxY, minZ).endVertex()
+
+                pos(minX, maxY, minZ).endVertex()
+                pos(maxX, maxY, minZ).endVertex()
+                pos(maxX, maxY, maxZ).endVertex()
+                pos(minX, maxY, maxZ).endVertex()
+
+                pos(minX, minY, minZ).endVertex()
+                pos(minX, minY, maxZ).endVertex()
+                pos(maxX, minY, maxZ).endVertex()
+                pos(maxX, minY, minZ).endVertex()
             }
         }
     }

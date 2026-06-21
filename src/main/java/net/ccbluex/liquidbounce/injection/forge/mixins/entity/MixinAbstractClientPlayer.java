@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.handler.cape.CapeAPI;
 import net.ccbluex.liquidbounce.handler.cape.CapeInfo;
 import net.ccbluex.liquidbounce.features.module.modules.visual.NameProtect;
 import net.ccbluex.liquidbounce.features.module.modules.visual.NoFOV;
+import net.ccbluex.liquidbounce.features.module.modules.visual.SkinChanger;
 import net.ccbluex.liquidbounce.ui.client.gui.GuiCapeManager;
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance;
 import net.minecraft.client.entity.AbstractClientPlayer;
@@ -75,6 +76,17 @@ public abstract class MixinAbstractClientPlayer extends MixinEntityPlayer {
 
     @Inject(method = "getLocationSkin()Lnet/minecraft/util/ResourceLocation;", at = @At("HEAD"), cancellable = true)
     private void getSkin(CallbackInfoReturnable<ResourceLocation> callbackInfoReturnable) {
+        final SkinChanger skinChanger = SkinChanger.INSTANCE;
+
+        if (skinChanger.handleEvents()
+                && Objects.equals(getGameProfile().getName(), mc.thePlayer.getGameProfile().getName())) {
+            ResourceLocation customSkin = skinChanger.getSkinLocation();
+            if (customSkin != null) {
+                callbackInfoReturnable.setReturnValue(customSkin);
+                return;
+            }
+        }
+
         final NameProtect nameProtect = NameProtect.INSTANCE;
 
         if (nameProtect.handleEvents() && nameProtect.getSkinProtect()) {

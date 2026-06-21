@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import net.ccbluex.liquidbounce.utils.animations.AnimationUtil
 import net.ccbluex.liquidbounce.utils.block.block
 import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorderedRect
@@ -21,12 +22,15 @@ import net.minecraft.block.Block
 import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.client.renderer.GlStateManager.resetColor
 import net.minecraft.init.Blocks
+import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumFacing
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
 object BlockOverlay : Module("BlockOverlay", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
     private val mode by choices("Mode", arrayOf("Box", "OtherBox", "Outline"), "Box")
+    private val sideOnly by boolean("SideOnly", false)
     private val depth3D by boolean("Depth3D", false)
     private val thickness by float("Thickness", 2F, 1F..5F)
 
@@ -36,6 +40,14 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, Category.SubCatego
 
     private val separateOutlineColor by boolean("SeparateOutlineColor", false)
     private val outlineColor by color("OutlineColor", Color(68, 117, 255, 150)) { separateOutlineColor }
+
+    private val slideAnim by boolean("Slide", false)
+    private val slideEasing by choices("SlideEasing", arrayOf("Linear", "Quad", "Expo"), "Linear") { slideAnim }
+    private val slideTime by int("SlideTime", 150, 1..1000) { slideAnim }
+
+    private var currentBox: AxisAlignedBB? = null
+    private var previousBox: AxisAlignedBB? = null
+    private var lastChange = 0L
 
     val currentBlock: BlockPos?
         get() {
@@ -76,7 +88,26 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, Category.SubCatego
 
         val f = 0.002F.toDouble()
 
-        val axisAlignedBB = block.getSelectedBoundingBox(mc.theWorld, blockPos).expand(f, f, f).offset(-pos)
+        var worldBox = block.getSelectedBoundingBox(mc.theWorld, blockPos).expand(f, f, f)
+
+        if (sideOnly) {
+            val side = mc.objectMouseOver?.sideHit
+            if (side != null) worldBox = flatBox(worldBox, side)
+        }
+
+        if (worldBox != currentBox) {
+            previousBox = currentBox
+            currentBox = worldBox
+            lastChange = System.currentTimeMillis()
+        }
+
+        val renderBox = if (slideAnim && previousBox != null) {
+            lerpBox(previousBox!!, worldBox, slideFactor())
+        } else {
+            worldBox
+        }
+
+        val axisAlignedBB = renderBox.offset(-pos)
 
         if (mode.lowercase() in arrayOf("box", "otherbox"))
             drawFilledBox(axisAlignedBB)
@@ -112,5 +143,32 @@ object BlockOverlay : Module("BlockOverlay", Category.VISUAL, Category.SubCatego
 
         resetColor()
         Fonts.fontSemibold40.drawString(info, width / 2f, height / 2f + 7f, Color.WHITE.rgb, false)
+    }
+
+    private fun slideFactor(): Double {
+        val raw = ((System.currentTimeMillis() - lastChange).toDouble() / slideTime).coerceIn(0.0, 1.0)
+        return when (slideEasing.lowercase()) {
+            "quad" -> AnimationUtil.easeInOutQuadX(raw)
+            "expo" -> AnimationUtil.easeInOutExpo(raw)
+            else -> raw
+        }.coerceIn(0.0, 1.0)
+    }
+
+    private fun lerpBox(from: AxisAlignedBB, to: AxisAlignedBB, factor: Double) = AxisAlignedBB(
+        from.minX + (to.minX - from.minX) * factor,
+        from.minY + (to.minY - from.minY) * factor,
+        from.minZ + (to.minZ - from.minZ) * factor,
+        from.maxX + (to.maxX - from.maxX) * factor,
+        from.maxY + (to.maxY - from.maxY) * factor,
+        from.maxZ + (to.maxZ - from.maxZ) * factor
+    )
+
+    private fun flatBox(box: AxisAlignedBB, side: EnumFacing) = when (side) {
+        EnumFacing.UP -> AxisAlignedBB(box.minX, box.maxY, box.minZ, box.maxX, box.maxY, box.maxZ)
+        EnumFacing.DOWN -> AxisAlignedBB(box.minX, box.minY, box.minZ, box.maxX, box.minY, box.maxZ)
+        EnumFacing.NORTH -> AxisAlignedBB(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.minZ)
+        EnumFacing.SOUTH -> AxisAlignedBB(box.minX, box.minY, box.maxZ, box.maxX, box.maxY, box.maxZ)
+        EnumFacing.WEST -> AxisAlignedBB(box.minX, box.minY, box.minZ, box.minX, box.maxY, box.maxZ)
+        EnumFacing.EAST -> AxisAlignedBB(box.maxX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ)
     }
 }

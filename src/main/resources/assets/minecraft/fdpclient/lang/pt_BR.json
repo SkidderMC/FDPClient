@@ -310,5 +310,9 @@
     "module.dankBobbing.description": "Aumenta a oscilacao da camera para um balanco exagerado e estilizado.",
     "module.quickPerspectiveSwap.description": "Troca a camera para terceira pessoa enquanto ativo, com visao traseira opcional.",
     "module.mobOwners.description": "Mostra a qual jogador pertence um mob domado ou projetil.",
-    "module.newChunks.description": "Destaca chunks que provavelmente foram recem-gerados."
+    "module.newChunks.description": "Destaca chunks que provavelmente foram recem-gerados.",
+    "module.trajectories.description": "Mostra onde os projeteis vao cair.",
+    "module.particles.description": "Exibe particulas quando voce ataca uma entidade.",
+    "module.skinChanger.description": "Troca a sua skin visivel pela de outro jogador ou por um arquivo de imagem local.",
+    "module.chestCleaner.description": "Descarta automaticamente itens indesejados de um bau aberto."
 }
