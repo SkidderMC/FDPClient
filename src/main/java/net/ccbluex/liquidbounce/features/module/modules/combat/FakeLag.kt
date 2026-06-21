@@ -54,6 +54,8 @@ object FakeLag : Module("FakeLag", Category.COMBAT, Category.SubCategory.COMBAT_
     private val lineColor by color("LineColor", Color.GREEN) { line }.subjective()
 
     private val renderModel by boolean("RenderModel", true).subjective()
+    private val serverPosBox by boolean("ServerPosBox", true).subjective()
+    private val serverPosBoxColor by color("ServerPosBoxColor", Color(0, 160, 255, 130)) { serverPosBox }
 
     private val packetQueue = Queues.newArrayDeque<QueueData>()
     private val positions = Queues.newArrayDeque<PositionData>()
@@ -251,6 +253,14 @@ object FakeLag : Module("FakeLag", Category.COMBAT, Category.SubCategory.COMBAT_
             glDisable(GL_BLEND)
             glEnable(GL_TEXTURE_2D)
             glPopMatrix()
+        }
+
+        // Draw a clear outlined box at the position the server currently sees you at, so you can
+        // see exactly where your server-side hitbox is while lagging.
+        if (serverPosBox) {
+            positions.firstOrNull()?.pos?.let { serverPos ->
+                RenderUtils.drawAxisAlignedBB(player.hitBox.offset(serverPos - player.positionVector), serverPosBoxColor)
+            }
         }
 
         // A pretty basic model render process. Position and rotation interpolation is applied to look visually appealing to the user.
