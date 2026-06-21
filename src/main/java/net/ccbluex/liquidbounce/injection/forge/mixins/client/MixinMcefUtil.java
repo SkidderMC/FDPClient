@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.io.File;
+import java.io.FileInputStream;
 
 /**
  * The bundled in-game browser engine unconditionally probes its remote mirror for the "mcef2.new"
@@ -28,7 +29,18 @@ public class MixinMcefUtil {
     private static void fdp$skipDeadMirror(String url, String name, CallbackInfoReturnable<SizedInputStream> cir) {
         try {
             File dir = Minecraft.getMinecraft().mcDataDir;
-            if (new File(dir, "libcef.dll").isFile() && new File(dir, "mcef2.json").isFile()) {
+            File localConfig = new File(dir, "mcef2.json");
+            if (!new File(dir, "libcef.dll").isFile() || !localConfig.isFile()) {
+                return;
+            }
+
+            // The only remote fetch performed once the runtime is on disk is the config manifest.
+            // Serve the local copy so the engine reads it as a normal success (no dead-mirror probe,
+            // no SSL/PKIX spam, not even the local-fallback warning). Anything else yields null, which
+            // is exactly what a failed download returns, since every resource is already present.
+            if (name != null && name.contains("mcef2")) {
+                cir.setReturnValue(new SizedInputStream(new FileInputStream(localConfig), localConfig.length()));
+            } else {
                 cir.setReturnValue(null);
             }
         } catch (Throwable ignored) {
