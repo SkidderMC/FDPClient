@@ -284,5 +284,6 @@
     "module.noInterpolation.description": "Отключает интерполяцию позиций других сущностей — они встают на серверные позиции.",
     "module.noEntityInteract.description": "Запрещает взаимодействие с сущностями: жителями, рамками и подобными.",
     "module.twerk.description": "Быстро переключает приседание для анимации тверка.",
-    "module.vomit.description": "Извергает частицы изо рта для эффекта рвоты."
+    "module.vomit.description": "Извергает частицы изо рта для эффекта рвоты.",
+    "module.jumpEffect.description": "Создаёт частицы, когда вы прыгаете."
 }

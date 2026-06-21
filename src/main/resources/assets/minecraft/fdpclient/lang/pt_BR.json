@@ -290,5 +290,6 @@
     "module.noInterpolation.description": "Desativa a interpolacao de posicao de outras entidades, fazendo elas pularem pras posicoes do servidor.",
     "module.noEntityInteract.description": "Impede interagir com entidades como aldeoes e quadros.",
     "module.twerk.description": "Alterna o sneak rapidamente pra uma animacao de twerk.",
-    "module.vomit.description": "Cospe particulas da boca pra um efeito de vomito."
+    "module.vomit.description": "Cospe particulas da boca pra um efeito de vomito.",
+    "module.jumpEffect.description": "Solta particulas quando voce pula."
 }
