@@ -213,6 +213,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         "RayCastIgnored", false
     ) { raycastValue.isActive() && options.rotationsActive }
     private val livingRaycast by boolean("LivingRayCast", true) { raycastValue.isActive() && options.rotationsActive }
+    private val raytraceMode by choices("Raytrace", arrayOf("Normal", "Strict"), "Normal") { raycastValue.isActive() && options.rotationsActive }
 
     // Hit delay
     private val useHitDelay by boolean("UseHitDelay", false)
@@ -1005,6 +1006,12 @@ private fun updateHittable() {
         }
         
         hittable = false
+
+        // Strict: the raytrace is the final word — only attack when the ray actually lands on the
+        // target. Skip the lenient through-walls/intercept fallback below. Normal keeps that fallback.
+        if (raytraceMode == "Strict") {
+            return
+        }
     } else {
         hittable = isRotationFaced(target, range.toDouble(), rotation)
         
