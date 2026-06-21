@@ -18,6 +18,13 @@ import java.awt.Color
 
 object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false) {
 
+    /**
+     * Global rotation engine override. "Per-Module" keeps each module's own Engine choice; "Modern"
+     * forces every rotation through the modern engine; "Legacy" forces the classic one. This is how
+     * you make the modern engine definitive across the whole client from one place.
+     */
+    val engine by choices("Engine", arrayOf("Per-Module", "Modern", "Legacy"), "Per-Module")
+
     private val realistic by boolean("Realistic", true)
     private val body by boolean("Body", true) { !realistic }
 

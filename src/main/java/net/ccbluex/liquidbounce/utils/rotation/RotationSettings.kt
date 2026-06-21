@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.utils.rotation
 import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.config.ListValue
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.modules.client.Rotations
 import net.ccbluex.liquidbounce.utils.extensions.random
 import net.ccbluex.liquidbounce.utils.extensions.withGCD
 import kotlin.math.abs
@@ -246,7 +247,11 @@ open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean
         get() = rotations
 
     val useModernRotations
-        get() = rotationEngine == "Modern"
+        get() = when (Rotations.engine) {
+            "Modern" -> true
+            "Legacy" -> false
+            else -> rotationEngine == "Modern"
+        }
 
     val effectiveResetTicks
         get() = if (useModernRotations) modernTicksUntilReset else resetTicks
