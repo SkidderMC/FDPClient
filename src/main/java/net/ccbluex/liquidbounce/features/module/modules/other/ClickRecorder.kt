@@ -37,17 +37,17 @@ object ClickRecorder : ChartRecorderModule("ClickRecorder") {
                 yAxisTitle = "Clicks"
 
                 addSeries("Left Clicks", ticks, leftClicks).apply {
-                    xySeriesRenderStyle = XYSeries.XYSeriesRenderStyle.Line
+                    setXYSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line)
                     lineColor = java.awt.Color.RED
                     isSmooth = true
                 }
                 addSeries("Right Clicks", ticks, rightClicks).apply {
-                    xySeriesRenderStyle = XYSeries.XYSeriesRenderStyle.Line
+                    setXYSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line)
                     lineColor = java.awt.Color.BLUE
                     isSmooth = true
                 }
                 addSeries("Middle Clicks", ticks, middleClicks).apply {
-                    xySeriesRenderStyle = XYSeries.XYSeriesRenderStyle.Line
+                    setXYSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line)
                     lineColor = java.awt.Color.GREEN
                     isSmooth = true
                 }

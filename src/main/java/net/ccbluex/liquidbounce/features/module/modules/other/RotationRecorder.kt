@@ -39,13 +39,13 @@ object RotationRecorder : ChartRecorderModule("RotationRecorder") {
                 yAxisTitle = "Differences (degrees)"
 
                 addSeries("Yaw Differences", ticks.toDoubleArray(), yawDiffs.toDoubleArray()).apply {
-                    xySeriesRenderStyle = XYSeries.XYSeriesRenderStyle.Line
+                    setXYSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line)
                     lineColor = java.awt.Color.BLUE
                     isSmooth = true
                 }
 
                 addSeries("Pitch Differences", ticks.toDoubleArray(), pitchDiffs.toDoubleArray()).apply {
-                    xySeriesRenderStyle = XYSeries.XYSeriesRenderStyle.Line
+                    setXYSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Line)
                     lineColor = java.awt.Color.RED
                     isSmooth = true
                 }
