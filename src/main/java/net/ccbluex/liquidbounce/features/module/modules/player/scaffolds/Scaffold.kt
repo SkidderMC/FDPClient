@@ -647,6 +647,27 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
                     target
                 }
 
+                // Ensure the server sees the placement rotation on this exact tick. The smoothed/arbitrated
+                // rotation path can leave the server-side rotation lagging behind the target, which makes the
+                // server silently reject the placement (the block "tries" to place but never appears). Syncing
+                // the server rotation here keeps placement reliable while the visual rotation stays smoothed.
+                if (onTickRotation == null && currentRotationsActive) {
+                    mc.thePlayer?.let { syncPlayer ->
+                        placeRotation?.rotation?.fixedSensitivity()?.let { placeRot ->
+                            if (rotationDifference(placeRot, RotationUtils.serverRotation) > getFixedAngleDelta()) {
+                                sendPacket(
+                                    C06PacketPlayerPosLook(
+                                        syncPlayer.posX, syncPlayer.posY, syncPlayer.posZ,
+                                        placeRot.yaw, placeRot.pitch, syncPlayer.onGround
+                                    ),
+                                    false
+                                )
+                                RotationUtils.serverRotation = placeRot
+                            }
+                        }
+                    }
+                }
+
                 if (onTickRotation != null && !applyModernOnTickRotation(onTickRotation)) {
                     return@handler
                 }
