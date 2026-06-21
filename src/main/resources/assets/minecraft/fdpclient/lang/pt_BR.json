@@ -302,5 +302,11 @@
     "module.protectionZones.description": "Renderiza caixas de regiao/protecao configuradas no mundo.",
     "module.autoCrafter.description": "Cria automaticamente um item configurado usando a grade de criacao.",
     "module.smoothCamera.description": "Ativa a camera cinematica padrao para suavizar o movimento da mira.",
-    "module.itemScroller.description": "Segure um botao do mouse e arraste pelos slots para mover cada pilha que passar."
+    "module.itemScroller.description": "Segure um botao do mouse e arraste pelos slots para mover cada pilha que passar.",
+    "module.autoChatGame.description": "Responde automaticamente minigames do chat (contas, anagramas) para ganhar recompensas.",
+    "module.middleClickAction.description": "Vincula o botao do meio do mouse a uma acao: marcar um amigo sob o cursor ou jogar uma perola.",
+    "module.textFieldProtect.description": "Mascara textos que correspondem aos padroes configurados nos campos de texto para nao serem lidos.",
+    "module.sleepWalker.description": "Mantem atividade e fecha telas para que a deteccao de inatividade nao te expulse.",
+    "module.dankBobbing.description": "Aumenta a oscilacao da camera para um balanco exagerado e estilizado.",
+    "module.quickPerspectiveSwap.description": "Troca a camera para terceira pessoa enquanto ativo, com visao traseira opcional."
 }
