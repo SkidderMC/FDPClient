@@ -262,5 +262,10 @@
     "module.anchor.description": "Фиксирует вас на текущей позиции, отменяя горизонтальное движение.",
     "module.noPush.description": "Не даёт блокам и жидкостям отталкивать вас.",
     "module.swordBlock.description": "Сохраняет анимацию блока мечом во время атаки."
-    }
+    },
+    "module.surround.description": "Окружает вас блоками со всех открытых сторон для защиты.",
+    "module.airPlace.description": "Позволяет ставить блоки в воздухе без опорного блока.",
+    "module.holeFiller.description": "Автоматически заполняет открытые стороны ямы, в которой вы стоите.",
+    "module.blockTrap.description": "Ловит цель, расставляя блоки вокруг неё.",
+    "module.blockIn.description": "Окружает цель, ставя блоки со всех открытых сторон."
 }

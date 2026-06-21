@@ -268,5 +268,10 @@
     "module.anchor.description": "Trava voce na posicao atual cancelando o movimento horizontal.",
     "module.noPush.description": "Impede que voce seja empurrado por blocos e liquidos.",
     "module.swordBlock.description": "Mantem a animacao de bloqueio da espada ativa ao atacar."
-  }
+  },
+    "module.surround.description": "Cerca voce com blocos em todos os lados abertos para protecao.",
+    "module.airPlace.description": "Permite colocar blocos no ar sem um bloco de suporte.",
+    "module.holeFiller.description": "Preenche automaticamente os lados abertos do buraco onde voce esta.",
+    "module.blockTrap.description": "Prende o alvo colocando blocos ao redor dele.",
+    "module.blockIn.description": "Encurrala o alvo colocando blocos em cada lado aberto."
 }

@@ -306,5 +306,10 @@
     "module.anchor.description": "Locks you to your current position by cancelling horizontal motion.",
     "module.noPush.description": "Prevents you from being pushed by blocks and liquids.",
     "module.swordBlock.description": "Keeps the sword blocking animation active while attacking."
-  }
+  },
+    "module.surround.description": "Surrounds you with blocks on all open sides for protection.",
+    "module.airPlace.description": "Lets you place blocks in mid-air without a supporting block.",
+    "module.holeFiller.description": "Automatically fills the open sides of the hole you are standing in.",
+    "module.blockTrap.description": "Traps your target by placing blocks around them.",
+    "module.blockIn.description": "Encloses your target by placing blocks on every open side."
 }
