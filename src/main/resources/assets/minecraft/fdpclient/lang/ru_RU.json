@@ -286,5 +286,6 @@
     "module.twerk.description": "Быстро переключает приседание для анимации тверка.",
     "module.vomit.description": "Извергает частицы изо рта для эффекта рвоты.",
     "module.jumpEffect.description": "Создаёт частицы, когда вы прыгаете.",
-    "module.nameCollector.description": "Собирает имена игроков из списка игроков и сохраняет их в файл."
+    "module.nameCollector.description": "Собирает имена игроков из списка игроков и сохраняет их в файл.",
+    "module.autoTrap.description": "Ловит вашу боевую цель, ставя паутину ей под ноги."
 }

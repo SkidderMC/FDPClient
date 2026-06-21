@@ -292,5 +292,6 @@
     "module.twerk.description": "Alterna o sneak rapidamente pra uma animacao de twerk.",
     "module.vomit.description": "Cospe particulas da boca pra um efeito de vomito.",
     "module.jumpEffect.description": "Solta particulas quando voce pula.",
-    "module.nameCollector.description": "Coleta nomes de jogadores vistos na tab list e salva num arquivo."
+    "module.nameCollector.description": "Coleta nomes de jogadores vistos na tab list e salva num arquivo.",
+    "module.autoTrap.description": "Prende o alvo de combate colocando teia nos pes dele."
 }
