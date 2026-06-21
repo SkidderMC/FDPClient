@@ -20,6 +20,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.potion.Potion;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.EnumFacing;
@@ -108,6 +109,26 @@ public abstract class MixinBlock {
 
             if (delayRemover.getAir() && !playerIn.onGround) {
                 f *= 5f;
+            }
+
+            if (delayRemover.getMiningFatigue() && playerIn.isPotionActive(Potion.digSlowdown)) {
+                final int amplifier = playerIn.getActivePotionEffect(Potion.digSlowdown).getAmplifier();
+                final float slowdown;
+                switch (amplifier) {
+                    case 0:
+                        slowdown = 0.3f;
+                        break;
+                    case 1:
+                        slowdown = 0.09f;
+                        break;
+                    case 2:
+                        slowdown = 0.0027f;
+                        break;
+                    default:
+                        slowdown = 0.00081f;
+                        break;
+                }
+                f /= slowdown;
             }
         } else if (playerIn.onGround) { // NoGround
             final NoFall noFall = NoFall.INSTANCE;

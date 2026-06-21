@@ -318,5 +318,10 @@
     "module.murderMystery.description": "Detecta e destaca o assassino e o detetive em jogos de Murder Mystery.",
     "module.autoConfig.description": "Baixa e aplica automaticamente uma config para o servidor em que voce entra.",
     "module.reportHelper.description": "Reporta automaticamente jogadores citados junto com seu nome no chat.",
-    "module.combineMobs.description": "Esconde entidades do mesmo tipo amontoadas no mesmo lugar e mostra apenas uma com a contagem."
+    "module.combineMobs.description": "Esconde entidades do mesmo tipo amontoadas no mesmo lugar e mostra apenas uma com a contagem.",
+    "module.aspect.description": "Ajusta a proporcao de tela renderizada para esticar ou comprimir a sua visao.",
+    "module.autoMobHeal.description": "Alimenta automaticamente golens, animais domados e cavalos por perto para cura-los.",
+    "module.betterInventory.description": "Melhora a tela de inventario com ajustes como destacar o slot clicado.",
+    "module.betterTitle.description": "Personaliza como titulos e subtitulos do servidor sao exibidos, incluindo o tempo.",
+    "module.hitFX.description": "Gera efeitos de particula nativos na entidade que voce acerta."
 }

@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.event.Render3DEvent;
 import net.ccbluex.liquidbounce.event.WorldRenderEvent;
 import net.ccbluex.liquidbounce.features.module.modules.combat.Backtrack;
 import net.ccbluex.liquidbounce.features.module.modules.combat.ForwardTrack;
+import net.ccbluex.liquidbounce.features.module.modules.other.Aspect;
 import net.ccbluex.liquidbounce.features.module.modules.other.OverrideRaycast;
 import net.ccbluex.liquidbounce.features.module.modules.player.Reach;
 import net.ccbluex.liquidbounce.features.module.modules.visual.*;
@@ -388,6 +389,9 @@ public abstract class MixinEntityRenderer {
             if (mc != null && mc.gameSettings.thirdPersonView != 0
                     && CameraView.INSTANCE.shouldLowerThirdPersonFov()) {
                 fov = CameraView.INSTANCE.thirdPersonFovValue();
+            }
+            if (Aspect.INSTANCE.handleEvents()) {
+                aspect /= Aspect.INSTANCE.ratioMultiplier();
             }
         } catch (Throwable ignored) {
         }

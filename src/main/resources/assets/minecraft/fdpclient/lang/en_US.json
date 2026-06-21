@@ -359,5 +359,10 @@
     "module.murderMystery.description": "Detects and highlights the murderer and detective in Murder Mystery games.",
     "module.autoConfig.description": "Automatically downloads and applies a config for the server you join.",
     "module.reportHelper.description": "Auto-reports players who are mentioned alongside your name in chat.",
-    "module.combineMobs.description": "Hides same-type entities crammed into one spot and shows a single one with a count."
+    "module.combineMobs.description": "Hides same-type entities crammed into one spot and shows a single one with a count.",
+    "module.aspect.description": "Scales the rendered aspect ratio to stretch or squish your view.",
+    "module.autoMobHeal.description": "Automatically feeds nearby golems, tamed animals, and horses to heal them.",
+    "module.betterInventory.description": "Improves the inventory screen with tweaks like highlighting the clicked slot.",
+    "module.betterTitle.description": "Customizes how server titles and subtitles are displayed, including their timing.",
+    "module.hitFX.description": "Spawns native particle effects on the entity you hit."
 }

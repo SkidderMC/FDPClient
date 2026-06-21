@@ -82,6 +82,7 @@
     "gui.MixinGuiAchievement",
     "gui.MixinGuiContainer",
     "gui.MixinGuiContainerAccessor",
+    "gui.MixinGuiContainerHighlight",
     "gui.MixinGuiTextField",
     "render.MixinItemRenderer",
     "render.MixinRenderGlobal",
