@@ -288,5 +288,7 @@
     "module.packetMine.description": "Mina o bloco mirado usando packets de inicio/fim de quebra.",
     "module.clickTp.description": "Teleporta pro bloco que voce esta olhando com uma tecla.",
     "module.noInterpolation.description": "Desativa a interpolacao de posicao de outras entidades, fazendo elas pularem pras posicoes do servidor.",
-    "module.noEntityInteract.description": "Impede interagir com entidades como aldeoes e quadros."
+    "module.noEntityInteract.description": "Impede interagir com entidades como aldeoes e quadros.",
+    "module.twerk.description": "Alterna o sneak rapidamente pra uma animacao de twerk.",
+    "module.vomit.description": "Cospe particulas da boca pra um efeito de vomito."
 }
