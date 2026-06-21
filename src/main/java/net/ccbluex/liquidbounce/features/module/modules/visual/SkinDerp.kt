@@ -1,0 +1,74 @@
+/*
+ * FDPClient Hacked Client
+ * A free open source mixin-based injection hacked client for Minecraft using Minecraft Forge.
+ * https://github.com/SkidderMC/FDPClient/
+ */
+package net.ccbluex.liquidbounce.features.module.modules.visual
+
+import net.ccbluex.liquidbounce.event.UpdateEvent
+import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.features.module.Category
+import net.ccbluex.liquidbounce.features.module.Module
+import net.minecraft.entity.player.EnumPlayerModelParts
+
+object SkinDerp : Module("SkinDerp", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
+
+    private val sync by boolean("Sync", false)
+    private val delay by int("Delay", 0, 0..20, "ticks")
+
+    private val hat by boolean("Hat", true)
+    private val jacket by boolean("Jacket", true)
+    private val leftPants by boolean("LeftPants", true)
+    private val rightPants by boolean("RightPants", true)
+    private val leftSleeve by boolean("LeftSleeve", true)
+    private val rightSleeve by boolean("RightSleeve", true)
+    private val cape by boolean("Cape", true)
+
+    private var savedParts = emptySet<EnumPlayerModelParts>()
+    private var tickCounter = 0
+
+    override fun onEnable() {
+        savedParts = HashSet(mc.gameSettings.modelParts)
+        tickCounter = 0
+    }
+
+    override fun onDisable() {
+        for (part in EnumPlayerModelParts.values()) {
+            mc.gameSettings.setModelPartEnabled(part, false)
+        }
+        for (part in savedParts) {
+            mc.gameSettings.setModelPartEnabled(part, true)
+        }
+        super.onDisable()
+    }
+
+    val onUpdate = handler<UpdateEvent> {
+        if (delay > 0) {
+            tickCounter++
+            if (tickCounter < delay) {
+                return@handler
+            }
+            tickCounter = 0
+        }
+
+        for (part in selectedParts()) {
+            if (sync) {
+                mc.gameSettings.switchModelPartEnabled(part)
+            } else {
+                mc.gameSettings.setModelPartEnabled(part, Math.random() < 0.5)
+            }
+        }
+    }
+
+    private fun selectedParts(): List<EnumPlayerModelParts> {
+        val parts = ArrayList<EnumPlayerModelParts>()
+        if (hat) parts.add(EnumPlayerModelParts.HAT)
+        if (jacket) parts.add(EnumPlayerModelParts.JACKET)
+        if (leftPants) parts.add(EnumPlayerModelParts.LEFT_PANTS_LEG)
+        if (rightPants) parts.add(EnumPlayerModelParts.RIGHT_PANTS_LEG)
+        if (leftSleeve) parts.add(EnumPlayerModelParts.LEFT_SLEEVE)
+        if (rightSleeve) parts.add(EnumPlayerModelParts.RIGHT_SLEEVE)
+        if (cape) parts.add(EnumPlayerModelParts.CAPE)
+        return parts
+    }
+}
