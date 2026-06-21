@@ -64,7 +64,9 @@ object SpotifyIntegration : MinecraftInstance {
             val pkce = if (flow == SpotifyAuthFlow.PKCE) generatePkceChallenge() else null
             val authorizationUrl = buildAuthorizeUrl(clientId, redirectUri, state, pkce?.challenge)
             openBrowser(authorizationUrl)
-            val code = awaitAuthorizationCode(state)
+            // Cap the wait so abandoning the browser tab tears down the callback server and frees the
+            // port instead of leaving the flow stuck forever (which blocked any retry).
+            val code = kotlinx.coroutines.withTimeout(180_000L) { awaitAuthorizationCode(state) }
             LOGGER.info("[Spotify][Browser] Authorization code received, exchanging for tokens")
             service.exchangeAuthorizationCode(clientId, clientSecret, code, redirectUri, pkce?.verifier)
         }

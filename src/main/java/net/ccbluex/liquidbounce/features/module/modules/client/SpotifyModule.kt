@@ -378,6 +378,14 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
         return runCatching { service.refreshAccessToken(credentials) }
             .onSuccess {
                 cachedTokens[mode] = it
+                // Spotify rotates refresh tokens (especially for the PKCE/Quick flow); persist the new
+                // one or the next refresh after the cached access token expires would use a stale token.
+                it.refreshToken?.takeIf { rt -> rt.isNotBlank() }?.let { rt ->
+                    when (mode) {
+                        SpotifyAuthMode.QUICK -> quickRefreshTokenValue.set(rt)
+                        SpotifyAuthMode.MANUAL -> refreshTokenValue.set(rt)
+                    }
+                }
                 persistCredentials()
                 updateConnection(SpotifyConnectionState.CONNECTED, null)
             }

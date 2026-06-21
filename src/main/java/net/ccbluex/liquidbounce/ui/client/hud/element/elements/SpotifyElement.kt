@@ -156,9 +156,11 @@ class SpotifyElement(
     }
 
     private fun computeProgress(state: SpotifyState): Int {
-        val elapsed = if (state.isPlaying) (System.currentTimeMillis() - state.updatedAt).toInt() else 0
-        val trackDuration = state.track?.durationMs ?: Int.MAX_VALUE
-        return min(trackDuration, max(0, state.progressMs + elapsed))
+        // Do the arithmetic in Long: a stale state can make elapsed large enough that
+        // progressMs + elapsed overflows Int and wraps negative, defeating the min ceiling.
+        val elapsed = if (state.isPlaying) (System.currentTimeMillis() - state.updatedAt).coerceAtLeast(0L) else 0L
+        val duration = (state.track?.durationMs ?: Int.MAX_VALUE).toLong()
+        return (state.progressMs.toLong() + elapsed).coerceIn(0L, duration).toInt()
     }
 
     private fun formatTime(ms: Int): String {

@@ -109,7 +109,8 @@ class GuiSpotifyPlayer(private val prevScreen: GuiScreen?) : AbstractScreen(), L
         playbackState = event.state
         shuffleEnabled = event.state?.shuffleEnabled ?: false
         repeatMode = event.state?.repeatMode ?: SpotifyRepeatMode.OFF
-        event.state?.volumePercent?.let { volumePercent = it }
+        // Don't let a playback refresh snap the slider back while the user is dragging it.
+        event.state?.volumePercent?.let { if (!adjustingVolume) volumePercent = it }
     }
 
     private val connectionHandler = handler<SpotifyConnectionChangedEvent>(always = true) { event ->
@@ -390,7 +391,9 @@ class GuiSpotifyPlayer(private val prevScreen: GuiScreen?) : AbstractScreen(), L
 
         val duration = track.durationMs.coerceAtLeast(1)
         val progress = playbackState?.progressMs ?: 0
-        val ratio = progress.toFloat() / duration
+        // Spotify can report progressMs slightly past durationMs at a boundary; clamp so the fill
+        // never overshoots into the time text.
+        val ratio = (progress.toFloat() / duration).coerceIn(0f, 1f)
         val progressLeft = textX
         val progressRight = max(progressLeft + 80, width - 220)
         val progressTop = artY + artSize + 6
@@ -607,7 +610,8 @@ class GuiSpotifyPlayer(private val prevScreen: GuiScreen?) : AbstractScreen(), L
 
     private fun handlePlaylistClick(mouseY: Int) {
         val area = playlistArea()
-        val relativeY = mouseY - area.top + playlistScroll
+        // Match the 4px top padding used when drawing the rows, otherwise clicks land on the wrong row.
+        val relativeY = mouseY - (area.top + 4) + playlistScroll
         if (relativeY < 0) {
             return
         }
@@ -629,7 +633,8 @@ class GuiSpotifyPlayer(private val prevScreen: GuiScreen?) : AbstractScreen(), L
             return
         }
         val area = trackArea()
-        val relativeY = mouseY - area.top + trackScroll
+        // Match the 4px top padding used when drawing the rows, otherwise clicks land on the wrong row.
+        val relativeY = mouseY - (area.top + 4) + trackScroll
         if (relativeY < 0) {
             return
         }

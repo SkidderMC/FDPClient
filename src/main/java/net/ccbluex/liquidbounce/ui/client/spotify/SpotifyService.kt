@@ -12,6 +12,7 @@ import com.google.gson.JsonPrimitive
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.io.applyBypassHttps
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -32,6 +33,10 @@ class SpotifyService(
             .connectTimeout(SpotifyDefaults.httpTimeoutMillis, TimeUnit.MILLISECONDS)
             .readTimeout(SpotifyDefaults.httpTimeoutMillis, TimeUnit.MILLISECONDS)
             .writeTimeout(SpotifyDefaults.httpTimeoutMillis, TimeUnit.MILLISECONDS)
+            // Old Java 8 launchers lack the modern CA roots Spotify's certificates chain to, so the
+            // default trust store fails the TLS handshake (PKIX). Bypass verification here so the
+            // Web API calls connect instead of failing on SSL.
+            .applyBypassHttps()
             .build()
     },
 ) {
@@ -85,13 +90,13 @@ class SpotifyService(
             }
 
             val json = parseJson(body)
-            val token = json.get("access_token")?.asString
+            val token = json.getString("access_token")
                 ?: throw IOException("Spotify token response did not contain an access token")
-            val expiresIn = json.get("expires_in")?.asLong ?: DEFAULT_TOKEN_EXPIRY
+            val expiresIn = json.getInt("expires_in")?.toLong() ?: DEFAULT_TOKEN_EXPIRY
 
             logTokenResponse(json, token)
 
-            val refreshToken = json.get("refresh_token")?.asString
+            val refreshToken = json.getString("refresh_token")
             SpotifyAccessToken(
                 value = token,
                 expiresAtMillis = System.currentTimeMillis() + TimeUnit.SECONDS.toMillis(expiresIn - 5),
@@ -151,11 +156,11 @@ class SpotifyService(
             }
 
             val json = parseJson(body)
-            val token = json.get("access_token")?.asString
+            val token = json.getString("access_token")
                 ?: throw IOException("Spotify authorization response missing access token")
-            val refreshToken = json.get("refresh_token")?.asString
+            val refreshToken = json.getString("refresh_token")
                 ?: throw IOException("Spotify authorization response missing refresh token")
-            val expiresIn = json.get("expires_in")?.asLong ?: DEFAULT_TOKEN_EXPIRY
+            val expiresIn = json.getInt("expires_in")?.toLong() ?: DEFAULT_TOKEN_EXPIRY
 
             logTokenResponse(json, token)
 
@@ -426,31 +431,30 @@ class SpotifyService(
             }
             val json = parseJson(body)
             val items = json.get("items")?.takeIf { it.isJsonArray }?.asJsonArray
-                ?: return@use SpotifyTrackPage(emptyList(), json.get("total")?.asInt ?: 0)
+                ?: return@use SpotifyTrackPage(emptyList(), json.getInt("total") ?: 0)
             val tracks = items.mapNotNull { element ->
                 val wrapper = element.takeIf { it.isJsonObject }?.asJsonObject ?: return@mapNotNull null
                 val trackObj = wrapper.get("track")?.takeIf { it.isJsonObject }?.asJsonObject ?: wrapper
                 parseTrack(trackObj)
             }
-            val total = json.get("total")?.asInt ?: tracks.size
+            val total = json.getInt("total") ?: tracks.size
             SpotifyTrackPage(tracks, total)
         }
     }
 
     private fun parsePlaylistSummary(obj: JsonObject): SpotifyPlaylistSummary? {
-        val id = obj.get("id")?.asString ?: return null
-        val name = obj.get("name")?.asString ?: "Untitled"
-        val description = obj.get("description")?.asString
-        val owner = obj.get("owner")?.takeIf { it.isJsonObject }?.asJsonObject?.get("display_name")?.asString
-        val trackCount = obj.get("tracks")?.takeIf { it.isJsonObject }?.asJsonObject?.get("total")?.asInt
-            ?: obj.get("total")?.asInt
+        val id = obj.getString("id") ?: return null
+        val name = obj.getString("name") ?: "Untitled"
+        val description = obj.getString("description")
+        val owner = obj.get("owner")?.takeIf { it.isJsonObject }?.asJsonObject?.getString("display_name")
+        val trackCount = obj.get("tracks")?.takeIf { it.isJsonObject }?.asJsonObject?.getInt("total")
+            ?: obj.getInt("total")
             ?: 0
         val imageUrl = obj.get("images")?.takeIf { it.isJsonArray }?.asJsonArray
             ?.firstOrNull { it.isJsonObject }
             ?.asJsonObject
-            ?.get("url")
-            ?.asString
-        val uri = obj.get("uri")?.asString
+            ?.getString("url")
+        val uri = obj.getString("uri")
         return SpotifyPlaylistSummary(id, name, description, owner, trackCount, imageUrl, uri)
     }
 
@@ -537,12 +541,12 @@ class SpotifyService(
         for ((key, value) in json.entrySet()) {
             when (key) {
                 "access_token" -> sanitized.addProperty(key, mask(token))
-                "refresh_token" -> sanitized.addProperty(key, mask(value.asString))
+                "refresh_token" -> sanitized.addProperty(key, mask(value.takeIf { it.isJsonPrimitive }?.asString ?: ""))
                 else -> sanitized.add(key, value)
             }
         }
         LOGGER.info("[Spotify][HTTP] Token response body=$sanitized")
-        val expiresIn = json.get("expires_in")?.asLong ?: DEFAULT_TOKEN_EXPIRY
+        val expiresIn = json.getInt("expires_in")?.toLong() ?: DEFAULT_TOKEN_EXPIRY
         LOGGER.info("[Spotify] Access token refreshed (expires in ${expiresIn}s)")
     }
 

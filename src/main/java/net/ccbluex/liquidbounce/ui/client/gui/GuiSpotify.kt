@@ -393,7 +393,8 @@ class GuiSpotify(private val prevGui: GuiScreen?) : AbstractScreen(), Listenable
             val barWidth = textWidth
             val barY = coverY + 50
             drawRect(textX, barY, textX + barWidth, barY + 4, 0x33000000)
-            val fillWidth = (barWidth * progress) / duration
+            // Promote to Long so long tracks (≥2h) don't overflow barWidth*progress into a negative bar.
+            val fillWidth = ((barWidth.toLong() * progress) / duration).toInt().coerceIn(0, barWidth)
             drawRect(textX, barY, textX + fillWidth, barY + 4, 0xFF1DB954.toInt())
             val timeText = "${formatDuration(progress)} / ${formatDuration(duration)}"
             mc.fontRendererObj.drawString(timeText, textX, barY + 8, 0xFF9EA3AD.toInt())
@@ -423,9 +424,8 @@ class GuiSpotify(private val prevGui: GuiScreen?) : AbstractScreen(), Listenable
             "Auto reconnect: ${if (SpotifyModule.autoReconnect) "ON" else "OFF"}",
             "Poll interval: ${SpotifyModule.pollIntervalSeconds}s",
         )
-        if (connectionState == SpotifyConnectionState.ERROR && !connectionError.isNullOrBlank()) {
-            infoLines += "Last error: ${connectionError!!.take(64)}"
-        }
+        connectionError?.takeIf { connectionState == SpotifyConnectionState.ERROR && it.isNotBlank() }
+            ?.let { infoLines += "Last error: ${it.take(64)}" }
         if (SpotifyModule.supportsQuickConnect()) {
             infoLines += "Quick connect: Available"
         }
