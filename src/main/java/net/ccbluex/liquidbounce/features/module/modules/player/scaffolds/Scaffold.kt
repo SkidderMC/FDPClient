@@ -71,7 +71,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     // -->
 
     val scaffoldMode by choices(
-        "ScaffoldMode", arrayOf("Normal", "Rewinside", "Expand", "Telly", "GodBridge", "Sprint", "Breezily"), "Normal"
+        "ScaffoldMode", arrayOf("Normal", "Rewinside", "Expand", "Telly", "GodBridge", "Sprint", "Breezily", "Jump", "Sneak"), "Normal"
     )
 
     // Breezily
@@ -559,6 +559,11 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         if (scaffoldMode == "Sprint" && player.onGround && player.isMoving) {
             player.isSprinting = true
         }
+
+        // Jump: hop along the bridge for a higher, faster line.
+        if (scaffoldMode == "Jump" && player.onGround && player.isMoving && !shouldGoDown) {
+            player.tryJump()
+        }
     }
 
     val onRotationUpdate = handler<RotationUpdateEvent> {
@@ -700,6 +705,14 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
     val onMovementInput = handler<MovementInputEvent> { event ->
         val player = mc.thePlayer ?: return@handler
+
+        // Sneak: hold sneak on the ground so you never walk off the edge while bridging.
+        if (scaffoldMode == "Sneak") {
+            if (player.onGround) {
+                event.originalInput.sneak = true
+            }
+            return@handler
+        }
 
         // Breezily: sneak as you reach the leading edge of the block so the next block places
         // at extended reach. Use with Eagle off so the two don't fight over the sneak key.
