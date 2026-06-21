@@ -136,12 +136,16 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
 
         Thread({
             try {
+                val nativesPresent = hasNativeRuntime()
                 MCEF.ENABLE_EXAMPLE = false
-                MCEF.SKIP_UPDATES = false
+                // The montoyo mirror is frequently unreachable, and a failed remote update check forces
+                // MCEF into virtual mode even when valid native files are already on disk. When the
+                // runtime is present locally, skip the remote check entirely and load it directly.
+                MCEF.SKIP_UPDATES = nativesPresent
                 MCEF.WARN_UPDATES = false
                 MCEF.USE_FORGE_SPLASH = false
                 configureMcefDownload()
-                if (hasNativeRuntime()) {
+                if (nativesPresent) {
                     detail = "Starting in-game browser..."
                 } else {
                     downloadNatives()
