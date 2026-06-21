@@ -299,5 +299,6 @@
     "module.inventoryTracker.description": "Rastreia e mostra mudancas recentes nos slots do inventario.",
     "module.notebot.description": "Toca musicas de noteblock a partir de arquivos na pasta FDPCLIENT/songs.",
     "module.itemTags.description": "Renderiza tags de info acima de itens dropados.",
-    "module.protectionZones.description": "Renderiza caixas de regiao/protecao configuradas no mundo."
+    "module.protectionZones.description": "Renderiza caixas de regiao/protecao configuradas no mundo.",
+    "module.autoCrafter.description": "Cria automaticamente um item configurado usando a grade de criacao."
 }

@@ -340,5 +340,6 @@
     "module.inventoryTracker.description": "Tracks and displays recent inventory slot changes.",
     "module.notebot.description": "Plays note-block songs from files in the FDPCLIENT/songs folder.",
     "module.itemTags.description": "Renders info tags above dropped item entities.",
-    "module.protectionZones.description": "Renders configured protection/region boxes in the world."
+    "module.protectionZones.description": "Renders configured protection/region boxes in the world.",
+    "module.autoCrafter.description": "Automatically crafts a configured item using the crafting grid."
 }
