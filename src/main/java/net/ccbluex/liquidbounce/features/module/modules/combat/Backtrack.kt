@@ -164,8 +164,9 @@ object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COM
                     return@handler
                 }
 
-                // Prevent cancelling packets when not needed
-                if (isPacketQueueEmpty && areQueuedPacketsEmpty && !shouldBacktrack()) return@handler
+                // Only this module's own queue may keep interception active. PacketUtils is shared by
+                // other modules and must not make Backtrack start delaying unrelated traffic.
+                if (isPacketQueueEmpty && !shouldBacktrack()) return@handler
 
                 when (packet) {
                     // Never delay connection or player lifecycle packets. Minecraft requires player-list

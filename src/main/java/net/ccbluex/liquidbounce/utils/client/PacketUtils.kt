@@ -22,6 +22,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.network.play.server.*
 import net.minecraft.util.BlockPos
 import net.minecraft.util.Vec3
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.collections.ArrayDeque
 import kotlin.concurrent.withLock
@@ -30,8 +31,12 @@ import kotlin.math.roundToInt
 
 object PacketUtils : MinecraftInstance, Listenable {
 
+    private const val PLAYER_SPAWN_TIMEOUT_MS = 1500L
+    private const val MAX_PENDING_PLAYER_SPAWNS = 128
+
     private val queuedPackets = ArrayDeque<Packet<*>>()
     private val queueLock = ReentrantLock()
+    private val pendingPlayerSpawns = ConcurrentLinkedQueue<PendingPlayerSpawn>()
 
     fun schedulePacketProcess(elements: Collection<Packet<*>>): Boolean = queueLock.withLock {
         queuedPackets.addAll(elements)
@@ -55,6 +60,19 @@ object PacketUtils : MinecraftInstance, Listenable {
                 }
             }
         }
+    }
+
+    val onPlayerSpawnPacket = handler<PacketEvent>(priority = Byte.MAX_VALUE) { event ->
+        val packet = event.packet as? S0CPacketSpawnPlayer ?: return@handler
+        if (event.eventType != EventState.RECEIVE) return@handler
+
+        // The server can send ADD/REMOVE_PLAYER and SPAWN_PLAYER in the same network burst.
+        // Defer spawn processing until vanilla has applied the preceding tab-list tasks.
+        event.cancelEvent()
+        if (pendingPlayerSpawns.size >= MAX_PENDING_PLAYER_SPAWNS) {
+            pendingPlayerSpawns.poll()
+        }
+        pendingPlayerSpawns += PendingPlayerSpawn(packet, System.currentTimeMillis())
     }
 
     val onPacket = handler<PacketEvent>(dispatcher = Dispatchers.Main, priority = 2) { event ->
@@ -91,6 +109,8 @@ object PacketUtils : MinecraftInstance, Listenable {
     }
 
     val onGameLoop = handler<GameLoopEvent>(priority = -5) {
+        processPendingPlayerSpawns()
+
         if (EventManager.call(DelayedPacketProcessEvent()).isCancelled) {
             return@handler
         }
@@ -109,8 +129,32 @@ object PacketUtils : MinecraftInstance, Listenable {
 
     val onWorld = handler<WorldEvent>(priority = -1) { event ->
         if (event.worldClient == null) {
+            pendingPlayerSpawns.clear()
             queueLock.withLock {
                 queuedPackets.clear()
+            }
+        }
+    }
+
+    private fun processPendingPlayerSpawns() {
+        val netHandler = mc.netHandler ?: return
+        val now = System.currentTimeMillis()
+        val iterator = pendingPlayerSpawns.iterator()
+
+        while (iterator.hasNext()) {
+            val pending = iterator.next()
+            when {
+                netHandler.getPlayerInfo(pending.packet.player) != null -> {
+                    iterator.remove()
+                    handlePacket(pending.packet)
+                }
+
+                now - pending.queuedAt >= PLAYER_SPAWN_TIMEOUT_MS -> {
+                    iterator.remove()
+                    ClientUtils.LOGGER.warn(
+                        "[PacketUtils] Dropped player spawn without tab-list entry: ${pending.packet.player}"
+                    )
+                }
             }
         }
     }
@@ -149,6 +193,10 @@ object PacketUtils : MinecraftInstance, Listenable {
             PPSCounter.registerType(PPSCounter.PacketType.RECEIVED)
         }
     }
+    private data class PendingPlayerSpawn(
+        val packet: S0CPacketSpawnPlayer,
+        val queuedAt: Long
+    )
 }
 
 fun IMixinEntity.updateSpawnPosition(target: Vec3, ignoreInterpolation: Boolean = false) {
