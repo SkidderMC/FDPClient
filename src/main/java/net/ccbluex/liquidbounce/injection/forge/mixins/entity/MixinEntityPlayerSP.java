@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.*;
 import net.ccbluex.liquidbounce.features.module.modules.combat.KillAura;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.AntiHunger;
 import net.ccbluex.liquidbounce.features.module.modules.exploit.Disabler;
+import net.ccbluex.liquidbounce.features.module.modules.exploit.PortalMenu;
 import net.ccbluex.liquidbounce.features.module.modules.movement.*;
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam;
 import net.ccbluex.liquidbounce.features.module.modules.visual.NoSwing;
@@ -299,7 +300,7 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
         prevTimeInPortal = timeInPortal;
 
         if (inPortal) {
-            if (mc.currentScreen != null && !mc.currentScreen.doesGuiPauseGame()) {
+            if (!PortalMenu.INSTANCE.handleEvents() && mc.currentScreen != null && !mc.currentScreen.doesGuiPauseGame()) {
                 mc.displayGuiScreen(null);
             }
 
