@@ -11,7 +11,6 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.kotlin.removeEach
 import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
@@ -95,7 +94,7 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, Category.SubCategory
         for ((entity, positions) in trails) {
             val drawThis = !aliveOnly || entity.isEntityAlive
 
-            positions.removeEach {
+            positions.removeIf {
                 val timestamp = System.currentTimeMillis() - it.time
                 val transparency = if (fade) {
                     (0f..150f).lerpWith(1 - (timestamp / fadeSeconds).coerceAtMost(1.0F))
@@ -103,7 +102,7 @@ object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, Category.SubCategory
 
                 val startPos = it.array
                 val endPos = positions.getOrNull(positions.indexOf(it) + 1)?.array
-                    ?: return@removeEach temporary && timestamp > fadeSeconds
+                    ?: return@removeIf temporary && timestamp > fadeSeconds
 
                 if (drawThis) {
                     glColor(baseColor.withAlpha(transparency.toInt()))

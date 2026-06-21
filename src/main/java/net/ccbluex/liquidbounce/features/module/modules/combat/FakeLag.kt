@@ -16,7 +16,6 @@ import net.ccbluex.liquidbounce.injection.implementations.IMixinEntity
 import net.ccbluex.liquidbounce.utils.client.PacketUtils.sendPacket
 import net.ccbluex.liquidbounce.utils.client.pos
 import net.ccbluex.liquidbounce.utils.extensions.*
-import net.ccbluex.liquidbounce.utils.kotlin.removeEach
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.glColor
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
@@ -295,7 +294,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, Category.SubCategory.COMBAT_
 
     private fun handlePackets(clear: Boolean = false) {
         synchronized(packetQueue) {
-            packetQueue.removeEach { (packet, timestamp) ->
+            packetQueue.removeIf { (packet, timestamp) ->
                 if (timestamp <= System.currentTimeMillis() - delay || clear) {
                     sendPacket(packet, false)
                     true
@@ -304,7 +303,7 @@ object FakeLag : Module("FakeLag", Category.COMBAT, Category.SubCategory.COMBAT_
         }
 
         synchronized(positions) {
-            positions.removeEach { (_, timestamp) -> timestamp <= System.currentTimeMillis() - delay || clear }
+            positions.removeIf { (_, timestamp) -> timestamp <= System.currentTimeMillis() - delay || clear }
         }
     }
 

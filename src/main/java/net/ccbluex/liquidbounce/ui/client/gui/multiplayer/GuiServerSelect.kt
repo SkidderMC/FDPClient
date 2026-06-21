@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.ui.client.gui.multiplayer
 
+import kotlinx.coroutines.launch
 import net.ccbluex.liquidbounce.FDPClient.CLIENT_NAME
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
 import net.ccbluex.liquidbounce.ui.client.gui.GuiClientConfiguration
@@ -13,6 +14,7 @@ import net.ccbluex.liquidbounce.ui.font.Fonts
 import net.ccbluex.liquidbounce.ui.font.GameFontRenderer
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils
+import net.ccbluex.liquidbounce.utils.kotlin.SharedScopes
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.ui.AbstractScreen
 import net.minecraft.client.Minecraft
@@ -364,7 +366,7 @@ class GuiServerSelect(private val prevGui: GuiScreen) : AbstractScreen() {
             data.pingToServer = -2L
             data.serverMOTD = "${EnumChatFormatting.GRAY}Pinging..."
             data.populationInfo = ""
-            Thread({
+            SharedScopes.IO.launch {
                 try {
                     pingServer(data, generation)
                 } catch (e: Exception) {
@@ -373,7 +375,7 @@ class GuiServerSelect(private val prevGui: GuiScreen) : AbstractScreen() {
                         data.serverMOTD = "${EnumChatFormatting.RED}Can't connect to server"
                     }
                 }
-            }, "FDP Server Pinger #$i").apply { isDaemon = true }.start()
+            }
         }
     }
 
@@ -503,12 +505,15 @@ class GuiServerSelect(private val prevGui: GuiScreen) : AbstractScreen() {
     }
 
     private fun clearPendingPings() {
-        synchronized(pingManagers) {
-            val iterator = pingManagers.iterator()
-            while (iterator.hasNext()) {
-                val manager = iterator.next().manager
-                iterator.remove()
-                if (manager.isChannelOpen) manager.closeChannel(ChatComponentText("Cancelled"))
+        val copy = synchronized(pingManagers) {
+            pingManagers.toTypedArray().also {
+                pingManagers.clear()
+            }
+        }
+        for (it in copy) {
+            val manager = it.manager
+            if (manager.isChannelOpen) {
+                manager.closeChannel(ChatComponentText("Cancelled"))
             }
         }
     }
