@@ -306,7 +306,9 @@
     "module.anchor.description": "Locks you to your current position by cancelling horizontal motion.",
     "module.noPush.description": "Prevents you from being pushed by blocks and liquids.",
     "module.swordBlock.description": "Keeps the sword blocking animation active while attacking.",
-    "module.vehicleControl.description": "Lets you freely steer and fly the vehicle you are riding."
+    "module.vehicleControl.description": "Lets you freely steer and fly the vehicle you are riding.",
+    "module.autoDodge.description": "Nudges you out of the path of incoming arrows.",
+    "module.macros.description": "Runs a chat message or command when you press a chosen key."
   },
     "module.surround.description": "Surrounds you with blocks on all open sides for protection.",
     "module.airPlace.description": "Lets you place blocks in mid-air without a supporting block.",
