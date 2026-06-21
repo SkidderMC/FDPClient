@@ -84,6 +84,8 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
 
     private val distValue by int("Distance", 30, 20..100)
     private val moveDistanceValue by float("MoveDistance", 5f, 2f..15f)
+    private val allowDiagonal by boolean("AllowDiagonal", false)
+    private val maxPathSearch by int("MaxPathSearch", 3000, 500..8000)
 
     private val fov by float("FOV", 180f, 0f..180f)
 
@@ -256,7 +258,7 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
         updateRotations(entity)
 
         val path = withContext(coroutineContext) {
-            PathUtils.findBlinkPath(entity.posX, entity.posY, entity.posZ, moveDistanceValue.toDouble())
+            PathUtils.findBlinkPath(entity.posX, entity.posY, entity.posZ, moveDistanceValue.toDouble(), allowDiagonal, maxPathSearch)
         }
 
         if (path.isEmpty()) return false

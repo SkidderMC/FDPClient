@@ -60,14 +60,36 @@ object PathUtils : MinecraftInstance {
         tpY: Double,
         tpZ: Double,
         dashDistance: Double
+    ): List<Vec3> = findBlinkPath(curX, curY, curZ, tpX, tpY, tpZ, dashDistance, diagonal = false, maxLoops = 3000)
+
+    /**
+     * Player-relative variant. [diagonal] swaps the 6-way neighbour set for the 14-way one so paths
+     * may cut corners, and [maxLoops] caps the A* search budget.
+     */
+    fun findBlinkPath(
+        tpX: Double, tpY: Double, tpZ: Double, dist: Double, diagonal: Boolean, maxLoops: Int = 3000
+    ): List<Vec3> = findBlinkPath(
+        mc.thePlayer.posX, mc.thePlayer.posY, mc.thePlayer.posZ, tpX, tpY, tpZ, dist, diagonal, maxLoops
+    )
+
+    fun findBlinkPath(
+        curX: Double,
+        curY: Double,
+        curZ: Double,
+        tpX: Double,
+        tpY: Double,
+        tpZ: Double,
+        dashDistance: Double,
+        diagonal: Boolean,
+        maxLoops: Int = 3000
     ): List<Vec3> {
         val worldProvider = MinecraftWorldProvider(mc.theWorld)
         val pathfinder = Pathfinder(
             Cell(curX.toInt(), curY.toInt(), curZ.toInt()), Cell(tpX.toInt(), tpY.toInt(), tpZ.toInt()),
-            Pathfinder.COMMON_NEIGHBORS, worldProvider
+            if (diagonal) Pathfinder.DIAGONAL_NEIGHBORS else Pathfinder.COMMON_NEIGHBORS, worldProvider
         )
 
-        return simplifyPath(pathfinder.findPath(3000), dashDistance, worldProvider)
+        return simplifyPath(pathfinder.findPath(maxLoops), dashDistance, worldProvider)
     }
 
     fun findPath(tpX: Double, tpY: Double, tpZ: Double, offset: Double): List<Vector3d> {
@@ -101,6 +123,7 @@ object PathUtils : MinecraftInstance {
         worldProvider: MinecraftWorldProvider
     ): ArrayList<Vec3> {
         val finalPath = ArrayList<Vec3>()
+        if (path.isEmpty()) return finalPath
 
         var cell = path[0]
         var vec3: Vec3
