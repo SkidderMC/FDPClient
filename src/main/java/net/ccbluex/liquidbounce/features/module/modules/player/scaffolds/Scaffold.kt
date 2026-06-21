@@ -71,8 +71,11 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     // -->
 
     val scaffoldMode by choices(
-        "ScaffoldMode", arrayOf("Normal", "Rewinside", "Expand", "Telly", "GodBridge"), "Normal"
+        "ScaffoldMode", arrayOf("Normal", "Rewinside", "Expand", "Telly", "GodBridge", "Sprint", "Breezily"), "Normal"
     )
+
+    // Breezily
+    private val breezilyEdge by float("BreezilyEdge", 0.22f, 0.05f..0.45f) { scaffoldMode == "Breezily" }
 
     // Expand
     private val omniDirectionalExpand by boolean("OmniDirectionalExpand", false) { scaffoldMode == "Expand" }
@@ -551,6 +554,11 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             ticksUntilJump = 0
             jumpTicks = jumpTicksRange.random()
         }
+
+        // Sprint: keep momentum up while bridging forwards.
+        if (scaffoldMode == "Sprint" && player.onGround && player.isMoving) {
+            player.isSprinting = true
+        }
     }
 
     val onRotationUpdate = handler<RotationUpdateEvent> {
@@ -692,6 +700,20 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
 
     val onMovementInput = handler<MovementInputEvent> { event ->
         val player = mc.thePlayer ?: return@handler
+
+        // Breezily: sneak as you reach the leading edge of the block so the next block places
+        // at extended reach. Use with Eagle off so the two don't fight over the sneak key.
+        if (scaffoldMode == "Breezily") {
+            if (player.onGround && player.isMoving) {
+                val edge = breezilyEdge.toDouble()
+                val fracX = player.posX - Math.floor(player.posX)
+                val fracZ = player.posZ - Math.floor(player.posZ)
+                if (fracX < edge || fracX > 1.0 - edge || fracZ < edge || fracZ > 1.0 - edge) {
+                    event.originalInput.sneak = true
+                }
+            }
+            return@handler
+        }
 
         if (!isGodBridgeBehaviorEnabled || !player.onGround) return@handler
 
