@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawAxisAlignedBB
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.renderNameTag
 import net.minecraft.util.AxisAlignedBB
+import net.minecraft.util.Vec3
 import java.awt.Color
 
 object LogoffSpot : Module("LogoffSpot", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false, spacedName = "Logoff Spot") {
@@ -26,7 +27,7 @@ object LogoffSpot : Module("LogoffSpot", Category.VISUAL, Category.SubCategory.R
 
     private data class Spot(val name: String, val x: Double, val y: Double, val z: Double)
 
-    private val lastSeen = HashMap<String, Triple<Double, Double, Double>>()
+    private val lastSeen = HashMap<String, Vec3>()
     private val spots = HashMap<String, Spot>()
 
     override fun onEnable() {
@@ -48,20 +49,20 @@ object LogoffSpot : Module("LogoffSpot", Category.VISUAL, Category.SubCategory.R
         val world = mc.theWorld ?: return@handler
         val self = mc.thePlayer ?: return@handler
 
-        val current = HashMap<String, Triple<Double, Double, Double>>()
+        val current = HashMap<String, Vec3>()
         for (entity in world.playerEntities) {
             if (entity === self) continue
             if (self.getDistanceToEntity(entity) > maxTrackDistance) continue
-            current[entity.name] = Triple(entity.posX, entity.posY, entity.posZ)
+            current[entity.name] = entity.positionVector
         }
 
         // Players that disappeared since last tick become a logoff spot
         for ((name, pos) in lastSeen) {
             if (!current.containsKey(name) && !spots.containsKey(name)) {
-                spots[name] = Spot(name, pos.first, pos.second, pos.third)
+                spots[name] = Spot(name, pos.xCoord, pos.yCoord, pos.zCoord)
                 if (sendInChat)
                     ClientUtils.displayChatMessage(
-                        "$name disappeared at X:${pos.first.toInt()} Y:${pos.second.toInt()} Z:${pos.third.toInt()}"
+                        "$name disappeared at X:${pos.xCoord.toInt()} Y:${pos.yCoord.toInt()} Z:${pos.zCoord.toInt()}"
                     )
             }
         }

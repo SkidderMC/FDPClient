@@ -30,6 +30,7 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
+import kotlin.random.Random
 
 @ElementInfo(name = "Effects")
 class Effects(
@@ -359,7 +360,7 @@ class Effects(
             "Custom" -> textColors.color().rgb
             "Fade" -> ColorUtils.fade(textFadeColors.color(), index * fadeDistance, 100).rgb
             "Theme" -> getColor(index).rgb
-            "Random" -> Color.getHSBColor(Math.random().toFloat(), 0.9f, 1f).rgb
+            "Random" -> Color.getHSBColor(Random.nextFloat(), 0.9f, 1f).rgb
             "Rainbow" -> getRainbowColor(index)
             "Gradient" -> textColors.color().rgb
             else -> textColors.color().rgb

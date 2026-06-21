@@ -17,6 +17,7 @@ import net.minecraft.block.BlockLadder
 import net.minecraft.network.play.client.C03PacketPlayer
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
+import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.cos
 import kotlin.math.floor
 import kotlin.math.sin
@@ -197,7 +198,7 @@ object Spider : Module("Spider", Category.MOVEMENT, Category.SubCategory.MOVEMEN
             when (ticks) {
                 3 -> {
                     val yaw = MovementUtils.direction.toFloat()
-                    val randomOffset = Math.random() * 0.03 + 0.22
+                    val randomOffset = ThreadLocalRandom.current().nextDouble(0.22, 0.25)
                     packet.y -= 0.1
                     packet.x += sin(yaw) * randomOffset
                     packet.z -= cos(yaw) * randomOffset

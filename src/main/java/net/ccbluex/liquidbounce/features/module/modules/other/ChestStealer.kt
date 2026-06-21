@@ -73,6 +73,7 @@ import org.lwjgl.opengl.GL11.glPopAttrib
 import org.lwjgl.opengl.GL11.glPushAttrib
 import java.awt.Color
 import kotlin.math.sqrt
+import kotlin.random.Random
 
 object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
@@ -386,7 +387,7 @@ object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategor
 
                     delay(stealingDelay.toLong())
 
-                    if (simulateShortStop && Math.random() > 0.75) {
+                    if (simulateShortStop && Random.nextFloat() > 0.75F) {
                         val minDelays = randomDelay(150, 300)
                         val maxDelays = randomDelay(minDelays, 500)
                         val randomDelay = randomDelay(minDelays, maxDelays).toLong()

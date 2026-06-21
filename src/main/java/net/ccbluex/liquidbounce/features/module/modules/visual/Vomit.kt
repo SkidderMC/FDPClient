@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.minecraft.util.EnumParticleTypes
+import kotlin.random.Random
 
 object Vomit : Module("Vomit", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
@@ -32,9 +33,9 @@ object Vomit : Module("Vomit", Category.VISUAL, Category.SubCategory.RENDER_SELF
         repeat(amount) {
             world.spawnParticle(
                 EnumParticleTypes.SLIME,
-                baseX + (Math.random() - 0.5) * 0.3,
-                baseY + (Math.random() - 0.5) * 0.2,
-                baseZ + (Math.random() - 0.5) * 0.3,
+                baseX + (Random.nextDouble() - 0.5) * 0.3,
+                baseY + (Random.nextDouble() - 0.5) * 0.2,
+                baseZ + (Random.nextDouble() - 0.5) * 0.3,
                 look.xCoord * 0.35,
                 -0.15,
                 look.zCoord * 0.35

@@ -15,13 +15,13 @@ import kotlin.random.Random
 
 object RandomUtils {
     fun nextInt(startInclusive: Int = 0, endExclusive: Int = Int.MAX_VALUE) =
-        if (endExclusive - startInclusive <= 0) startInclusive else startInclusive + Random.nextInt(endExclusive - startInclusive)
+        if (endExclusive <= startInclusive) startInclusive else Random.nextInt(startInclusive, endExclusive)
 
     fun nextDouble(startInclusive: Double = 0.0, endInclusive: Double = 1.0) =
-        if (startInclusive == endInclusive || endInclusive - startInclusive <= 0.0) startInclusive else startInclusive + (endInclusive - startInclusive) * Math.random()
+        if (startInclusive >= endInclusive) startInclusive else Random.nextDouble(startInclusive, endInclusive)
 
     fun nextFloat(startInclusive: Float = 0f, endInclusive: Float = 1f) =
-        if (startInclusive == endInclusive || endInclusive - startInclusive <= 0f) startInclusive else (startInclusive + (endInclusive - startInclusive) * Math.random()).toFloat()
+        if (startInclusive >= endInclusive) startInclusive else Random.nextDouble(startInclusive.toDouble(), endInclusive.toDouble()).toFloat()
 
     fun nextBoolean() = Random.nextBoolean()
 
@@ -33,7 +33,7 @@ object RandomUtils {
 
     fun random(length: Int, chars: CharArray): String = buildString(length) {
         repeat(length) {
-            append(chars[Random.nextInt(chars.size)])
+            append(chars.random())
         }
     }
 

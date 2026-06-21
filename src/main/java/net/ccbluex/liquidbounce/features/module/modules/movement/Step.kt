@@ -26,6 +26,7 @@ import net.minecraft.network.play.client.C03PacketPlayer.C04PacketPlayerPosition
 import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 import net.minecraft.stats.StatList
 import net.minecraft.item.ItemStack
+import java.util.concurrent.ThreadLocalRandom
 import kotlin.math.ceil
 import kotlin.math.cos
 import kotlin.math.sin
@@ -573,7 +574,7 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
                             1,
                             ItemStack(stone.getItem(mc.theWorld, pos)),
                             0.0F,
-                            0.5F + Math.random().toFloat() * 0.44F,
+                            ThreadLocalRandom.current().nextDouble(0.5, 0.94).toFloat(),
                             0.0F
                         )
                     )

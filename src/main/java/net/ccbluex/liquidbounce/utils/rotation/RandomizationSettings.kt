@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.lastRotations
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import kotlin.math.sign
+import kotlin.random.Random
 
 class RandomizationSettings(owner: Module, val generalApply: () -> Boolean = { true }) : Configurable("Randomization") {
 
@@ -59,7 +60,7 @@ class RandomizationSettings(owner: Module, val generalApply: () -> Boolean = { t
 
         val yawSign = yawMovement.sign.takeIf { it != 0f } ?: arrayOf(-1f, 1f).random()
 
-        val yawIncrease = if (Math.random() > yawRandomizationChance.random()) {
+        val yawIncrease = if (Random.nextFloat() > yawRandomizationChance.random()) {
             if (!isZizZagActive) {
                 yawSpeedIncreaseMultiplier.random() / 100f * yawMovement
             } else {
@@ -67,7 +68,7 @@ class RandomizationSettings(owner: Module, val generalApply: () -> Boolean = { t
             }
         } else 0f
 
-        val pitchIncrease = if (Math.random() > pitchRandomizationChance.random()) {
+        val pitchIncrease = if (Random.nextFloat() > pitchRandomizationChance.random()) {
             if (!isZizZagActive) {
                 pitchRandomizationRange.random() + pitchMovement
             } else {

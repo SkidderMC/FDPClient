@@ -6,7 +6,7 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
 import static net.ccbluex.liquidbounce.utils.render.RenderUtils.connectPoints;
@@ -25,8 +25,8 @@ public class Particle {
     public float x;
     public float y;
     public final float size;
-    private final float ySpeed = new Random().nextInt(5);
-    private final float xSpeed = new Random().nextInt(5);
+    private final float ySpeed = ThreadLocalRandom.current().nextInt(5);
+    private final float xSpeed = ThreadLocalRandom.current().nextInt(5);
     private int height;
     private int width;
 
@@ -121,7 +121,7 @@ public class Particle {
     }
 
     private float genRandom() {
-        return (float) (0.3f + Math.random() * (0.6f - 0.3f + 1f));
+        return (0.3f + ThreadLocalRandom.current().nextFloat() * (0.6f - 0.3f + 1f));
     }
 }
 
