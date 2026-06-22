@@ -44,27 +44,33 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
     private val renderPlayers by boolean("Render Players", true)
     private val showDashSegments by boolean("Dash Segments", false)
     private val showDashDots by boolean("Dash Dots", true)
-    private val animationTime by int("Anim Time", 20, 100..500)
-    private val animationDuration by int("Time", 400, 100..2000)
+    private val bloom by boolean("Bloom", true)
+    private val animationTime by int("Anim Time", 120, 10..1000)
+    private val animationDuration by int("Time", 600, 100..3000)
 
-    private val colorModeOption by choices("Color", arrayOf("Custom", "Theme"), "Custom")
+    // Trail shaping
+    private val sizeScale by float("Scale", 1.0f, 0.2f..5.0f)
+    private val densityMultiplier by float("Density", 1.5f, 0.5f..5.0f)
+    private val maxDashCount by int("MaxDashPerTick", 24, 1..64)
+    private val maxCubics by int("MaxCubics", 400, 50..1500)
+    private val opacity by int("Opacity", 255, 0..255)
+
+    private val colorModeOption by choices("Color", arrayOf("Custom", "Theme", "Rainbow"), "Custom")
     private val outerColorOption = color("OuterColor", Color(0, 111, 255, 255)) { colorModeOption == "Custom" }
+    private val rainbowSpread by float("RainbowSpread", 1.0f, 0.0f..5.0f) { colorModeOption == "Rainbow" }
 
     private val renderOnLook by boolean("OnLook", false)
     private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { renderOnLook }
     private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200)
-    private var maxRenderDistanceSq = maxRenderDistance.toDouble().pow(2)
+    // Recompute lazily so changing the slider takes effect immediately.
+    private val maxRenderDistanceSq get() = maxRenderDistance.toDouble().pow(2)
 
     private const val MIN_ENTITY_SPEED = 0.04
     private const val SPEED_DIVISOR = 0.045
     private const val MIN_DASH_COUNT = 1
-    private const val MAX_DASH_COUNT = 16
     private const val POSITION_OFFSET_BASE = 0.0875f
     private const val POSITION_OFFSET_RANGE = 0.175f
     private const val Y_OFFSET_MULTIPLIER = 0.7f
-
-    // Memory leak fix: Limit maximum dash cubics to prevent unbounded growth
-    private const val MAX_DASH_CUBICS = 200
 
     private val DASH_CUBIC_BLOOM_TEXTURE = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/dashtrail/dashbloomsample.png")
     private val dashCubicTextures: MutableList<TextureResource> = ArrayList()
@@ -111,15 +117,16 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
     }
 
     private fun animateColor(baseColor: Color, progress: Float): Color {
-        val newAlpha = (baseColor.alpha * (1 - progress)).toInt().coerceIn(0, 255)
+        val newAlpha = (baseColor.alpha * (1 - progress) * (opacity / 255f)).toInt().coerceIn(0, 255)
         return baseColor.withAlpha(newAlpha)
     }
 
     private fun getDashCubicColor(dashCubic: DashCubic, alpha: Int): Int {
-        val finalAlpha = (dashCubic.animation.output * alpha).toInt().coerceIn(0, 255)
+        val finalAlpha = (dashCubic.animation.output * alpha * (opacity / 255f)).toInt().coerceIn(0, 255)
         return when (colorModeOption) {
             "Theme" -> ClientThemesUtils.getColorWithAlpha(0, finalAlpha).rgb
-            else -> animateColor(outerColorOption.selectedColor(), ((1f - dashCubic.animation.output).toFloat())).rgb
+            "Rainbow" -> ColorUtils.rainbow((dashCubic.hueOffset * rainbowSpread * 1.0E10).toLong(), finalAlpha).rgb
+            else -> animateColor(outerColorOption.selectedColor(), (1f - dashCubic.animation.output).toFloat()).rgb
         }
     }
 
@@ -192,14 +199,14 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
             val dashCount = if (entitySpeed < MIN_ENTITY_SPEED) {
                 MIN_DASH_COUNT
             } else {
-                MathHelper.clamp_float((entitySpeed / SPEED_DIVISOR).toInt().toFloat(), MIN_DASH_COUNT.toFloat(), MAX_DASH_COUNT.toFloat()).toInt()
+                MathHelper.clamp_float(((entitySpeed / SPEED_DIVISOR) * densityMultiplier).toInt().toFloat(), MIN_DASH_COUNT.toFloat(), maxDashCount.toFloat()).toInt()
             }
             val renderOptions = getDashRenderOptions()
 
             // Memory leak fix: Check limit before adding
-            if (dashCubics.size < MAX_DASH_CUBICS) {
+            if (dashCubics.size < maxCubics) {
                 for (i in 0 until dashCount) {
-                    if (dashCubics.size >= MAX_DASH_CUBICS) break
+                    if (dashCubics.size >= maxCubics) break
                     dashCubics.add(
                         DashCubic(
                             DashBase(
@@ -219,8 +226,8 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
         dashCubics.removeIf { it.animation.finished(Direction.BACKWARDS) }
 
         // Memory leak fix: Aggressive cleanup if over limit
-        if (dashCubics.size > MAX_DASH_CUBICS) {
-            dashCubics.subList(0, dashCubics.size - MAX_DASH_CUBICS).clear()
+        if (dashCubics.size > maxCubics) {
+            dashCubics.subList(0, dashCubics.size - maxCubics).clear()
         }
 
         dashCubics.forEach { it.processMotion(null) }
@@ -251,12 +258,12 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
 
         val animated = true
         val renderOptions = getDashRenderOptions()
-        val dashCount = MathHelper.clamp_float((entitySpeed / SPEED_DIVISOR).toInt().toFloat(), MIN_DASH_COUNT.toFloat(), MAX_DASH_COUNT.toFloat()).toInt()
+        val dashCount = MathHelper.clamp_float(((entitySpeed / SPEED_DIVISOR) * densityMultiplier).toInt().toFloat(), MIN_DASH_COUNT.toFloat(), maxDashCount.toFloat()).toInt()
 
         // Memory leak fix: Check limit before adding
-        if (dashCubics.size < MAX_DASH_CUBICS) {
+        if (dashCubics.size < maxCubics) {
             for (i in 0 until dashCount) {
-                if (dashCubics.size >= MAX_DASH_CUBICS) break
+                if (dashCubics.size >= maxCubics) break
                 dashCubics.add(
                     DashCubic(
                         DashBase(
@@ -385,9 +392,11 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
                 filteredCubics.forEach { dashCubic ->
                     dashCubic.drawDash(partialTicks, isBloomRenderer = false)
                 }
-                bindResource(DASH_CUBIC_BLOOM_TEXTURE)
-                filteredCubics.forEach { dashCubic ->
-                    dashCubic.drawDash(partialTicks, isBloomRenderer = true)
+                if (bloom) {
+                    bindResource(DASH_CUBIC_BLOOM_TEXTURE)
+                    filteredCubics.forEach { dashCubic ->
+                        dashCubic.drawDash(partialTicks, isBloomRenderer = true)
+                    }
                 }
             }, useTexture2D = true, bloom = true)
         }
@@ -461,6 +470,7 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
 
     private class DashCubic(val base: DashBase, val addExtras: Boolean) {
         var animation: SmoothStepAnimation = SmoothStepAnimation(animationTime, 1.0, Direction.FORWARDS)
+        val hueOffset: Float = randomDouble().toFloat()
         private val rotationAngles = floatArrayOf(0.0f, 0.0f)
         val dashSparks: MutableList<DashSpark> = ArrayList()
 
@@ -500,7 +510,7 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
 
         fun drawDash(partialTicks: Float, isBloomRenderer: Boolean) {
             val textureResource = base.dashTexture.getResourceWithSizes()
-            val scale = 0.02f * animation.output
+            val scale = 0.02f * sizeScale * animation.output
             val extX = textureResource.resolution[0] * scale
             val extY = textureResource.resolution[1] * scale
             val renderPos = doubleArrayOf(
