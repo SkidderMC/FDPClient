@@ -5,8 +5,14 @@
  */
 package net.ccbluex.liquidbounce.ui.client.spotify
 
+import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import net.ccbluex.liquidbounce.utils.io.applyBypassHttps
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.net.URLEncoder
 import java.util.Base64
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
 
 /**
@@ -19,9 +25,22 @@ object SpotifyLocalSource {
 
     private val isWindows = System.getProperty("os.name", "").contains("Windows", ignoreCase = true)
 
+    // Album art for the zero-setup source: the OS media session does not expose a readable thumbnail
+    // from PowerShell, so we look the cover up by artist + title and embed it as a data URI (which
+    // always renders in the in-game browser, unlike an external URL). Fetched off-thread, cached per track.
+    private val coverCache = ConcurrentHashMap<String, String>()
+    private val http by lazy {
+        OkHttpClient.Builder()
+            .connectTimeout(4, TimeUnit.SECONDS)
+            .readTimeout(5, TimeUnit.SECONDS)
+            .applyBypassHttps()
+            .build()
+    }
+
     // PowerShell prologue: load the WinRT media-session API and resolve the active Spotify session.
     private val PREFIX = """
         ${'$'}ProgressPreference='SilentlyContinue'
+        [Console]::OutputEncoding=[System.Text.Encoding]::UTF8
         Add-Type -AssemblyName System.Runtime.WindowsRuntime
         ${'$'}g=([System.WindowsRuntimeSystemExtensions].GetMethods()|?{${'$'}_.Name -eq 'AsTask' -and ${'$'}_.GetParameters().Count -eq 1 -and ${'$'}_.GetParameters()[0].ParameterType.Name -eq 'IAsyncOperation`1'})[0]
         function A(${'$'}t,${'$'}rt){${'$'}x=${'$'}g.MakeGenericMethod(${'$'}rt).Invoke(${'$'}null,@(${'$'}t));${'$'}x.Wait(-1)|Out-Null;${'$'}x.Result}
@@ -110,7 +129,7 @@ object SpotifyLocalSource {
         if (title.isBlank()) {
             return null
         }
-        val cover = parts.getOrNull(5)?.takeIf { it.startsWith("data:") }
+        val cover = resolveCover(parts[1], title)
         val track = SpotifyTrack(
             id = "local:${parts[1]}:$title",
             title = title,
@@ -127,6 +146,47 @@ object SpotifyLocalSource {
             repeatMode = SpotifyRepeatMode.OFF,
         )
     }
+
+    private fun resolveCover(artist: String, title: String): String? {
+        if (title.isBlank()) return null
+        val key = "$artist|$title".lowercase()
+        val cached = coverCache[key]
+        if (cached != null) return cached.ifBlank { null }
+        // Not cached: fetch off-thread so we never delay the now-playing text. Mark in-flight (empty)
+        // to avoid duplicate fetches; the next poll picks up the result once it lands.
+        coverCache[key] = ""
+        Thread {
+            val uri = fetchCoverDataUri(artist, title) ?: ""
+            if (coverCache.size > 48) coverCache.clear()
+            coverCache[key] = uri
+        }.apply { isDaemon = true; name = "spotify-cover" }.start()
+        return null
+    }
+
+    private fun fetchCoverDataUri(artist: String, title: String): String? = runCatching {
+        val term = URLEncoder.encode(
+            listOf(artist, title).filter { it.isNotBlank() }.joinToString(" "), "UTF-8",
+        )
+        val artUrl = http.newCall(
+            Request.Builder()
+                .url("https://itunes.apple.com/search?term=$term&entity=song&limit=1")
+                .header("User-Agent", "Mozilla/5.0")
+                .build(),
+        ).execute().use { resp ->
+            if (!resp.isSuccessful) return@runCatching null
+            val body = resp.body?.string()
+            if (body.isNullOrBlank()) return@runCatching null
+            val results = JsonParser().parse(body).asJsonObject.getAsJsonArray("results")
+            if (results == null || results.size() == 0) return@runCatching null
+            val raw = results[0].asJsonObject.get("artworkUrl100")?.asString ?: return@runCatching null
+            raw.replace("100x100bb", "300x300bb")
+        }
+        http.newCall(Request.Builder().url(artUrl).build()).execute().use { resp ->
+            if (!resp.isSuccessful) return@runCatching null
+            val bytes = resp.body?.bytes() ?: return@runCatching null
+            "data:image/jpeg;base64," + Base64.getEncoder().encodeToString(bytes)
+        }
+    }.getOrNull()
 
     private fun encode(script: String): String =
         Base64.getEncoder().encodeToString(script.toByteArray(Charsets.UTF_16LE))
