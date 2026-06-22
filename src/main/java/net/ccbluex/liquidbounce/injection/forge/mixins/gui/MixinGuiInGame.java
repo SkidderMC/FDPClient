@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.event.Render2DEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.SnakeGame;
 import net.ccbluex.liquidbounce.features.module.modules.visual.AntiBlind;
+import net.ccbluex.liquidbounce.features.module.modules.visual.Crosshair;
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule;
 import net.ccbluex.liquidbounce.features.module.modules.visual.SilentHotbarModule;
 import net.ccbluex.liquidbounce.ui.font.AWTFontRenderer;
@@ -55,10 +56,10 @@ public abstract class MixinGuiInGame extends Gui {
 
     @Inject(method = "showCrosshair", at = @At("HEAD"), cancellable = true)
     private void showCrosshair(CallbackInfoReturnable<Boolean> callbackInfoReturnable) {
-        final HUDModule hud = HUDModule.INSTANCE;
+        final Crosshair crosshair = Crosshair.INSTANCE;
         final SnakeGame snakeGame = SnakeGame.INSTANCE;
 
-        if (snakeGame.getState() || hud.handleEvents() && hud.getCsgoCrosshairValue() || mc.gameSettings.thirdPersonView != 0)
+        if (snakeGame.getState() || (crosshair.handleEvents() && crosshair.getHideVanilla()) || mc.gameSettings.thirdPersonView != 0)
             callbackInfoReturnable.setReturnValue(false);
     }
 

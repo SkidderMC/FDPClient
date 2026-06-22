@@ -14,11 +14,7 @@ import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.hud.element.Element.Companion.MAX_GRADIENT_COLORS
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.render.*
-import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRectWithBorder
-import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.Gui
 import net.minecraft.client.gui.GuiChat
-import net.minecraft.client.gui.ScaledResolution
 import net.minecraft.util.ResourceLocation
 import java.awt.Color
 
@@ -50,9 +46,6 @@ object HUDModule : Module("HUD", Category.CLIENT, Category.SubCategory.CLIENT_GE
     val rainbowY by float("Rainbow-Y", -1000F, -2000F..2000F) { customHotbar && hotbarMode == "Rainbow" }
     val gradientX by float("Gradient-X", -1000F, -2000F..2000F) { customHotbar && hotbarMode == "Gradient" }
     val gradientY by float("Gradient-Y", -1000F, -2000F..2000F) { customHotbar && hotbarMode == "Gradient" }
-
-    // CROSSHAIR
-    val csgoCrosshairValue by boolean("CSGO-Crosshair", true)
 
     // UI EFFECT
     val uiEffectValue by boolean("UIEffect", true)
@@ -97,77 +90,6 @@ object HUDModule : Module("HUD", Category.CLIENT, Category.SubCategory.CLIENT_GE
             return@handler
 
         hud.render(false)
-
-        if (csgoCrosshairValue) {
-            val screenWidth = getWindowWidth()
-            val screenHeight = getWindowHeight()
-
-            if (mc.thePlayer.isSprinting) {
-                drawSprintingCrosshair(screenWidth, screenHeight)
-            } else {
-                drawNormalCrosshair(screenWidth, screenHeight)
-            }
-        }
-    }
-
-    private fun drawSprintingCrosshair(screenWidth: Int, screenHeight: Int) {
-        val whiteColor = Color(255, 255, 255, 255).rgb
-        val borderColor = Color(0, 0, 0, 255).rgb
-        val accentColor = Color(255, 190, 255, 0).rgb
-
-        // Left part
-        Gui.drawRect(screenWidth / 2 - 6, screenHeight / 2, screenWidth / 2 - 2, screenHeight / 2 + 1, whiteColor)
-        drawRectWithBorder((screenWidth / 2 - 6).toFloat(), (screenHeight / 2).toFloat(), (screenWidth / 2 - 2).toFloat(), (screenHeight / 2 + 1).toFloat(), 0.7582394f, borderColor, accentColor)
-
-        // Right part
-        Gui.drawRect(screenWidth / 2 + 3, screenHeight / 2, screenWidth / 2 + 7, screenHeight / 2 + 1, whiteColor)
-        drawRectWithBorder((screenWidth / 2 + 3).toFloat(), (screenHeight / 2).toFloat(), (screenWidth / 2 + 7).toFloat(), (screenHeight / 2 + 1).toFloat(), 0.7635231f, borderColor, accentColor)
-
-        // Top part
-        Gui.drawRect(screenWidth / 2, screenHeight / 2 - 6, screenWidth / 2 + 1, screenHeight / 2 - 2, whiteColor)
-        drawRectWithBorder((screenWidth / 2).toFloat(), (screenHeight / 2 - 6).toFloat(), (screenWidth / 2 + 1).toFloat(), (screenHeight / 2 - 2).toFloat(), 0.7572856f, borderColor, accentColor)
-
-        // Bottom part
-        Gui.drawRect(screenWidth / 2, screenHeight / 2 + 3, screenWidth / 2 + 1, screenHeight / 2 + 7, whiteColor)
-        drawRectWithBorder((screenWidth / 2).toFloat(), (screenHeight / 2 + 3).toFloat(), (screenWidth / 2 + 1).toFloat(), (screenHeight / 2 + 7).toFloat(), 0.75438696f, borderColor, accentColor)
-
-        // Center part
-        Gui.drawRect(screenWidth / 2, screenHeight / 2, screenWidth / 2 + 1, screenHeight / 2 + 1, whiteColor)
-        drawRectWithBorder((screenWidth / 2).toFloat(), (screenHeight / 2).toFloat(), (screenWidth / 2 + 1).toFloat(), (screenHeight / 2 + 1).toFloat(), 0.75438696f, borderColor, accentColor)
-    }
-
-    private fun drawNormalCrosshair(screenWidth: Int, screenHeight: Int) {
-        val whiteColor = Color(255, 255, 255, 255).rgb
-        val borderColor = Color(0, 0, 0, 255).rgb
-        val accentColor = Color(255, 190, 255, 0).rgb
-
-        // Left part
-        Gui.drawRect(screenWidth / 2 - 9, screenHeight / 2, screenWidth / 2 - 5, screenHeight / 2 + 1, whiteColor)
-        drawRectWithBorder((screenWidth / 2 - 9).toFloat(), (screenHeight / 2).toFloat(), (screenWidth / 2 - 5).toFloat(), (screenHeight / 2 + 1).toFloat(), 0.7582394f, borderColor, accentColor)
-
-        // Right part
-        Gui.drawRect(screenWidth / 2 + 6, screenHeight / 2, screenWidth / 2 + 10, screenHeight / 2 + 1, whiteColor)
-        drawRectWithBorder((screenWidth / 2 + 6).toFloat(), (screenHeight / 2).toFloat(), (screenWidth / 2 + 10).toFloat(), (screenHeight / 2 + 1).toFloat(), 0.7635231f, borderColor, accentColor)
-
-        // Top part
-        Gui.drawRect(screenWidth / 2, screenHeight / 2 - 9, screenWidth / 2 + 1, screenHeight / 2 - 5, whiteColor)
-        drawRectWithBorder((screenWidth / 2).toFloat(), (screenHeight / 2 - 9).toFloat(), (screenWidth / 2 + 1).toFloat(), (screenHeight / 2 - 5).toFloat(), 0.7572856f, borderColor, accentColor)
-
-        // Bottom part
-        Gui.drawRect(screenWidth / 2, screenHeight / 2 + 7, screenWidth / 2 + 1, screenHeight / 2 + 10, whiteColor)
-        drawRectWithBorder((screenWidth / 2).toFloat(), (screenHeight / 2 + 7).toFloat(), (screenWidth / 2 + 1).toFloat(), (screenHeight / 2 + 10).toFloat(), 0.75438696f, borderColor, accentColor)
-
-        // Center part
-        Gui.drawRect(screenWidth / 2, screenHeight / 2, screenWidth / 2 + 1, screenHeight / 2 + 1, whiteColor)
-        drawRectWithBorder((screenWidth / 2).toFloat(), (screenHeight / 2).toFloat(), (screenWidth / 2 + 1).toFloat(), (screenHeight / 2 + 1).toFloat(), 0.75438696f, borderColor, accentColor)
-    }
-
-    private fun getWindowWidth(): Int {
-        return ScaledResolution(Minecraft.getMinecraft()).scaledWidth
-    }
-
-    private fun getWindowHeight(): Int {
-        return ScaledResolution(Minecraft.getMinecraft()).scaledHeight
     }
 
     val onUpdate = handler<UpdateEvent> {

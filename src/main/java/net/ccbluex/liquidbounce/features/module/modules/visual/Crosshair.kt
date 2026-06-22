@@ -11,19 +11,39 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.minecraft.client.gui.ScaledResolution
+import net.minecraft.client.renderer.GlStateManager
+import org.lwjgl.opengl.GL11
 import java.awt.Color
+import kotlin.math.cos
+import kotlin.math.sin
 
 object Crosshair : Module("Crosshair", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
-    private val size by float("Size", 5f, 1f..20f)
-    private val gap by float("Gap", 3f, 0f..15f)
-    private val thickness by float("Thickness", 1f, 1f..6f)
-    private val dot by boolean("Dot", false)
+    private val style by choices("Style", arrayOf("Cross", "CSGO", "Dot", "Circle"), "Cross")
+
+    // When on, the vanilla game crosshair is hidden so only this module's crosshair shows.
+    val hideVanilla by boolean("HideVanilla", true)
+
+    private val size by float("Size", 5f, 1f..20f) { style == "Cross" || style == "CSGO" }
+    private val gap by float("Gap", 3f, 0f..15f) { style == "Cross" || style == "CSGO" }
+    private val thickness by float("Thickness", 1f, 1f..6f) { style == "Cross" || style == "CSGO" }
+    private val centerDot by boolean("CenterDot", false) { style == "Cross" }
     private val outline by boolean("Outline", true)
-    private val crosshairColor by color("Color", Color(255, 255, 255))
+
+    // CSGO dynamic spread: the gap shrinks/expands while sprinting just like in-game.
+    private val dynamicGap by boolean("DynamicGap", true) { style == "CSGO" }
+    private val sprintGap by float("SprintGap", 2f, 0f..15f) { style == "CSGO" && dynamicGap }
+
+    private val dotRadius by float("DotRadius", 2.5f, 0.5f..10f) { style == "Dot" }
+
+    private val filled by boolean("Filled", false) { style == "Circle" }
+    private val radius by float("Radius", 6f, 1f..30f) { style == "Circle" }
+    private val circleWidth by float("CircleWidth", 1.5f, 0.5f..6f) { style == "Circle" && !filled }
+
+    private val crosshairColor by color("Color", Color(255, 255, 255), rainbow = true)
 
     val onRender2D = handler<Render2DEvent> {
-        // Only draw the static crosshair in first person while actually in the world.
+        // Only draw in first person while actually in the world.
         if (mc.gameSettings.thirdPersonView != 0 || mc.currentScreen != null || mc.thePlayer == null) {
             return@handler
         }
@@ -31,28 +51,85 @@ object Crosshair : Module("Crosshair", Category.VISUAL, Category.SubCategory.REN
         val sr = ScaledResolution(mc)
         val centerX = sr.scaledWidth / 2f
         val centerY = sr.scaledHeight / 2f
+
+        when (style) {
+            "Cross" -> drawCross(centerX, centerY, gap, centerDot)
+            "CSGO" -> {
+                val effGap = if (dynamicGap && mc.thePlayer.isSprinting) sprintGap else gap
+                drawCross(centerX, centerY, effGap, true)
+            }
+            "Dot" -> drawDot(centerX, centerY)
+            "Circle" -> drawCircleStyle(centerX, centerY)
+        }
+    }
+
+    private fun drawCross(centerX: Float, centerY: Float, gapValue: Float, withDot: Boolean) {
         val color = crosshairColor.rgb
         val half = thickness / 2f
 
         if (outline) {
             val outlineColor = Color(0, 0, 0, crosshairColor.alpha).rgb
-            drawArm(centerX, centerY, half + 0.5f, outlineColor)
-            if (dot) {
+            drawArms(centerX, centerY, gapValue, half + 0.5f, outlineColor)
+            if (withDot) {
                 RenderUtils.drawRect(centerX - half - 0.5f, centerY - half - 0.5f, centerX + half + 0.5f, centerY + half + 0.5f, outlineColor)
             }
         }
 
-        drawArm(centerX, centerY, half, color)
-        if (dot) {
+        drawArms(centerX, centerY, gapValue, half, color)
+        if (withDot) {
             RenderUtils.drawRect(centerX - half, centerY - half, centerX + half, centerY + half, color)
         }
     }
 
-    private fun drawArm(centerX: Float, centerY: Float, half: Float, color: Int) {
+    private fun drawArms(centerX: Float, centerY: Float, gapValue: Float, half: Float, color: Int) {
         // right, left, bottom, top
-        RenderUtils.drawRect(centerX + gap, centerY - half, centerX + gap + size, centerY + half, color)
-        RenderUtils.drawRect(centerX - gap - size, centerY - half, centerX - gap, centerY + half, color)
-        RenderUtils.drawRect(centerX - half, centerY + gap, centerX + half, centerY + gap + size, color)
-        RenderUtils.drawRect(centerX - half, centerY - gap - size, centerX + half, centerY - gap, color)
+        RenderUtils.drawRect(centerX + gapValue, centerY - half, centerX + gapValue + size, centerY + half, color)
+        RenderUtils.drawRect(centerX - gapValue - size, centerY - half, centerX - gapValue, centerY + half, color)
+        RenderUtils.drawRect(centerX - half, centerY + gapValue, centerX + half, centerY + gapValue + size, color)
+        RenderUtils.drawRect(centerX - half, centerY - gapValue - size, centerX + half, centerY - gapValue, color)
+    }
+
+    private fun drawDot(centerX: Float, centerY: Float) {
+        if (outline) {
+            RenderUtils.drawFilledCircle(centerX.toInt(), centerY.toInt(), dotRadius + 0.6f, Color(0, 0, 0, crosshairColor.alpha))
+        }
+        RenderUtils.drawFilledCircle(centerX.toInt(), centerY.toInt(), dotRadius, crosshairColor)
+    }
+
+    private fun drawCircleStyle(centerX: Float, centerY: Float) {
+        if (filled) {
+            if (outline) {
+                RenderUtils.drawFilledCircle(centerX.toInt(), centerY.toInt(), radius + 0.6f, Color(0, 0, 0, crosshairColor.alpha))
+            }
+            RenderUtils.drawFilledCircle(centerX.toInt(), centerY.toInt(), radius, crosshairColor)
+        } else {
+            if (outline) {
+                drawRing(centerX, centerY, radius, circleWidth + 1f, Color(0, 0, 0, crosshairColor.alpha))
+            }
+            drawRing(centerX, centerY, radius, circleWidth, crosshairColor)
+        }
+    }
+
+    private fun drawRing(cx: Float, cy: Float, r: Float, width: Float, color: Color) {
+        GL11.glPushMatrix()
+        GL11.glEnable(GL11.GL_BLEND)
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
+        GL11.glEnable(GL11.GL_LINE_SMOOTH)
+        GL11.glLineWidth(width)
+        GL11.glColor4f(color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f)
+        GL11.glBegin(GL11.GL_LINE_LOOP)
+        var i = 0
+        while (i < 360) {
+            val rad = Math.toRadians(i.toDouble())
+            GL11.glVertex2d(cx + cos(rad) * r, cy + sin(rad) * r)
+            i += 4
+        }
+        GL11.glEnd()
+        GL11.glDisable(GL11.GL_LINE_SMOOTH)
+        GL11.glEnable(GL11.GL_TEXTURE_2D)
+        GL11.glDisable(GL11.GL_BLEND)
+        GlStateManager.resetColor()
+        GL11.glPopMatrix()
     }
 }
