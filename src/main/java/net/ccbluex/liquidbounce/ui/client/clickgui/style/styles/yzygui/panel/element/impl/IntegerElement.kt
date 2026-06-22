@@ -29,6 +29,9 @@ class IntegerElement(
     override val currentValue: Float
         get() = setting.get().toFloat()
 
+    override val suffix: String
+        get() = setting.suffix ?: ""
+
     override fun setValue(value: Float) {
         setting.set(value.toInt())
     }

@@ -45,6 +45,15 @@ sealed class Value<T>(
 
     fun aliases(vararg names: String) = apply { aliases = names.toList() }
 
+    /**
+     * Optional human-readable help text shown as a hover tooltip in the ClickGUI styles that
+     * support it. Mirrors the reference client's per-value descriptions.
+     */
+    var description: String? = null
+        private set
+
+    fun describe(text: String) = apply { description = text }
+
     fun matchesKey(key: String): Boolean =
         name.equals(key, true) || aliases.any { it.equals(key, true) }
 

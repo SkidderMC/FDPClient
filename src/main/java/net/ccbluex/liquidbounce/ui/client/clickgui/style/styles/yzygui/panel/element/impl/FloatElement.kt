@@ -34,11 +34,28 @@ class FloatElement(
     override val currentValue: Float
         get() = setting.get()
 
+    override val suffix: String
+        get() = setting.suffix ?: ""
+
+    /** Drag granularity adapts to the range so fractional sliders stay usable. */
+    private val step: Float
+        get() = when (val span = maximum - minimum) {
+            in 0f..5f -> 0.01f
+            in 5f..50f -> 0.1f
+            else -> if (span <= 0f) 0.01f else 1f
+        }
+
     override fun setValue(value: Float) {
         setting.set(value)
     }
 
-    override fun formatValue(value: Float) = round(value).toInt().toString()
+    override fun formatValue(value: Float): String {
+        val rounded = round(value * 100f) / 100f
+        return if (rounded == rounded.toLong().toFloat()) rounded.toLong().toString() else rounded.toString()
+    }
 
-    override fun normalizeDraggedValue(value: Float) = round(value)
+    override fun normalizeDraggedValue(value: Float): Float {
+        val s = step
+        return if (s > 0f) round(value / s) * s else value
+    }
 }

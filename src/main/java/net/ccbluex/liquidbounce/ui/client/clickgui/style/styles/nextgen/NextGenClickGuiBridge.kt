@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.config.BlockValue
 import net.ccbluex.liquidbounce.config.BoolValue
 import net.ccbluex.liquidbounce.config.ColorValue
+import net.ccbluex.liquidbounce.config.CurveValue
 import net.ccbluex.liquidbounce.config.FileValue
 import net.ccbluex.liquidbounce.config.FloatRangeValue
 import net.ccbluex.liquidbounce.config.FloatValue
@@ -338,7 +339,7 @@ object NextGenClickGuiBridge : MinecraftInstance {
             return null
         }
 
-        return when (value) {
+        val json = when (value) {
             is BoolValue -> settingBase("BOOLEAN", value.name).apply {
                 addProperty("value", value.get())
             }
@@ -425,10 +426,35 @@ object NextGenClickGuiBridge : MinecraftInstance {
                 addProperty("useLocateButton", false)
             }
 
+            is CurveValue -> settingBase("CURVE", value.name).apply {
+                val points = value.get()
+                add("value", JsonArray().apply {
+                    val last = points.size - 1
+                    points.forEachIndexed { index, y ->
+                        add(JsonObject().apply {
+                            addProperty("x", if (last <= 0) 0.0 else index.toDouble() / last)
+                            addProperty("y", y)
+                        })
+                    }
+                })
+                add("xAxis", curveAxis("X"))
+                add("yAxis", curveAxis("Y"))
+                addProperty("tension", 0.0)
+            }
+
             else -> settingBase("TEXT", value.name).apply {
                 addProperty("value", value.toText())
             }
         }
+
+        value.description?.let { json.addProperty("description", it) }
+        return json
+    }
+
+    /** Axis descriptor for a CURVE setting; both axes span 0..1 for our normalized curve points. */
+    private fun curveAxis(label: String): JsonObject = JsonObject().apply {
+        addProperty("label", label)
+        add("range", range(0.0, 1.0))
     }
 
     private fun settingBase(type: String, name: String): JsonObject = JsonObject().apply {
@@ -483,6 +509,17 @@ object NextGenClickGuiBridge : MinecraftInstance {
                     ))
                 }
                 is FontValue -> Fonts.fonts.firstOrNull { fontLabel(it) == element.asString }?.let { value.set(it) }
+                is CurveValue -> {
+                    val points = element.asJsonArray.mapNotNull { entry ->
+                        val point = entry.asJsonObject
+                        val x = point.get("x")?.asDouble ?: return@mapNotNull null
+                        val y = point.get("y")?.asDouble ?: return@mapNotNull null
+                        x to y
+                    }.sortedBy { it.first }
+                    if (points.size >= 2) {
+                        value.set(DoubleArray(points.size) { points[it].second.coerceIn(0.0, 1.0) })
+                    }
+                }
                 else -> Unit
             }
         }

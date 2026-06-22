@@ -125,7 +125,7 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
             GL11.glTranslatef(0.0f, 0.0f, 2.0f)
         }
 
-        val displayString = if (isset) "${finalvalue ?: ""}_" else formatNumber(current)
+        val displayString = if (isset) "${finalvalue ?: ""}_" else formatNumber(current) + suffixText()
 
         val stringWidth = Fonts.Nl_15.stringWidth(displayString) + 4
 
@@ -171,7 +171,7 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
             }
         }
 
-        val displayString = if (isset) "${finalvalue ?: ""}_" else formatNumber(current)
+        val displayString = if (isset) "${finalvalue ?: ""}_" else formatNumber(current) + suffixText()
         val stringWidth = Fonts.Nl_15.stringWidth(displayString) + 4
 
         if (RenderUtil.isHovering(
@@ -255,6 +255,13 @@ class Numbersetting(s: Value<*>, moduleRender: NlModule) : Downward<Value<*>>(s,
         } else {
             decimalFormat.format(value)
         }
+    }
+
+    /** Trailing unit (e.g. " ms") shown after the value, never folded into the editable buffer. */
+    private fun suffixText(): String = when (val s = setting) {
+        is IntValue -> s.suffix?.let { " $it" } ?: ""
+        is FloatValue -> s.suffix?.let { " $it" } ?: ""
+        else -> ""
     }
 
     private fun abbreviate(value: String): Pair<String, Boolean> {

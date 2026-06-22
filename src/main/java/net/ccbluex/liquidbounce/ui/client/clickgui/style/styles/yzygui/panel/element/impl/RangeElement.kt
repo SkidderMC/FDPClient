@@ -31,18 +31,19 @@ class RangeElement private constructor(
     private val setLow: (Float) -> Unit,
     private val setHigh: (Float) -> Unit,
     private val isInt: Boolean,
+    private val suffix: String,
 ) : PanelElement(parent, x, y, width, height) {
 
     constructor(setting: IntRangeValue, parent: Panel, x: Int, y: Int, width: Int, height: Int) : this(
         setting.name, setting.minimum.toFloat(), setting.maximum.toFloat(), parent, x, y, width, height,
         { setting.get().first.toFloat() }, { setting.get().last.toFloat() },
-        { setting.setFirst(round(it).toInt()) }, { setting.setLast(round(it).toInt()) }, true
+        { setting.setFirst(round(it).toInt()) }, { setting.setLast(round(it).toInt()) }, true, setting.suffix ?: ""
     )
 
     constructor(setting: FloatRangeValue, parent: Panel, x: Int, y: Int, width: Int, height: Int) : this(
         setting.name, setting.minimum, setting.maximum, parent, x, y, width, height,
         { setting.get().start }, { setting.get().endInclusive },
-        { setting.setFirst(it) }, { setting.setLast(it) }, false
+        { setting.setFirst(it) }, { setting.setLast(it) }, false, setting.suffix ?: ""
     )
 
     private var draggingLow = false
@@ -86,7 +87,7 @@ class RangeElement private constructor(
         val font = FDPClient.customFontManager["lato-bold-15"]
         font?.drawString(label, (x + 1).toFloat(), y + (height / 4.0f) + 0.5f, -1)
 
-        val renderedValue = format(low) + " - " + format(high)
+        val renderedValue = format(low) + " - " + format(high) + if (suffix.isNotEmpty()) " $suffix" else ""
         font?.drawString(
             renderedValue,
             (x + width - 3 - font.getWidth(renderedValue)).toFloat(),

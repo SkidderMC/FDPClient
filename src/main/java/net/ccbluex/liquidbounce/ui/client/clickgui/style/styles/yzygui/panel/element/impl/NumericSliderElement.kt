@@ -28,6 +28,9 @@ abstract class NumericSliderElement(
     protected abstract val maximum: Float
     protected abstract val currentValue: Float
 
+    /** Optional unit shown after the value (e.g. "ms", "%", "blocks"). */
+    protected open val suffix: String get() = ""
+
     protected abstract fun setValue(value: Float)
     protected abstract fun formatValue(value: Float): String
     protected open fun normalizeDraggedValue(value: Float) = value
@@ -68,7 +71,7 @@ abstract class NumericSliderElement(
             -1,
         )
 
-        val renderedValue = formatValue(currentValue)
+        val renderedValue = formatValue(currentValue) + if (suffix.isNotEmpty()) " $suffix" else ""
         font?.drawString(
             renderedValue,
             (x + width - 3 - font.getWidth(renderedValue)).toFloat(),

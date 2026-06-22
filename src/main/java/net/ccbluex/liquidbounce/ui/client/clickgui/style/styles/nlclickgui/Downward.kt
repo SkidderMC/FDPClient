@@ -19,6 +19,12 @@ abstract class Downward<V : Value<*>>(var setting: V, var moduleRender: NlModule
 
     abstract fun mouseReleased(mouseX: Int, mouseY: Int, state: Int)
 
+    /**
+     * Vertical space (px) this setting occupies in the module card. Most settings fit one 20px
+     * row; taller controls (e.g. the curve editor) override this.
+     */
+    open fun rowHeight(): Int = 20
+
     fun getHeight(): Int = height
 
     fun getWidth(): Int = width

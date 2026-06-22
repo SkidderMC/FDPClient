@@ -26,6 +26,7 @@ import net.ccbluex.liquidbounce.utils.render.RenderUtils.resetColor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.scissor
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawClickGuiArrow
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.fdpdropdown.utils.render.GuiEvents
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.CurveEditor
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.KeyCapture
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.RangeController
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.SliderMath
@@ -69,6 +70,7 @@ class SettingComponents(private val module: Module) : Component() {
     private var editingVec3Component: Int = 0
     private var vec3Buffer: String = ""
     private var draggingNumber: Value<*>? = null
+    private var draggingCurve: CurveValue? = null
     var x: Float = 0f
     var y: Float = 0f
     var width: Float = 0f
@@ -303,7 +305,8 @@ class SettingComponents(private val module: Module) : Component() {
             // ----- FloatValue -----
             if (setting is FloatValue) {
 
-                val value = round(setting.value.toDouble(), 0.01).toFloat().toString()
+                val value = round(setting.value.toDouble(), 0.01).toFloat().toString() +
+                        (setting.suffix?.let { " $it" } ?: "")
                 val regularFontWidth = Fonts.InterMedium_18.stringWidth(setting.name + ": ").toFloat()
                 val valueFontWidth = Fonts.InterMedium_18.stringWidth(value).toFloat()
 
@@ -379,7 +382,8 @@ class SettingComponents(private val module: Module) : Component() {
                 val slider1 = setting.get().start
                 val slider2 = setting.get().endInclusive
 
-                val text = "${setting.name}: ${round(slider1)} - ${round(slider2)}"
+                val text = "${setting.name}: ${round(slider1)} - ${round(slider2)}" +
+                        (setting.suffix?.let { " $it" } ?: "")
                 val regularFontWidth = Fonts.InterMedium_18.stringWidth(text).toFloat()
 
                 val titleX = x + width / 2f - regularFontWidth / 2f
@@ -456,7 +460,8 @@ class SettingComponents(private val module: Module) : Component() {
 
             // ----- IntValue -----
             if (setting is IntValue) {
-                val value = roundX(setting.value.toDouble(), 1.0).toFloat().toString()
+                val value = roundX(setting.value.toDouble(), 1.0).toFloat().toString() +
+                        (setting.suffix?.let { " $it" } ?: "")
 
                 val regularFontWidth = Fonts.InterMedium_18.stringWidth(setting.name + ": ").toFloat()
                 val valueFontWidth = Fonts.InterMedium_18.stringWidth(value).toFloat()
@@ -609,7 +614,8 @@ class SettingComponents(private val module: Module) : Component() {
                 val slider1 = setting.get().first
                 val slider2 = setting.get().last
 
-                val text = "${setting.name}: $slider1 - $slider2"
+                val text = "${setting.name}: $slider1 - $slider2" +
+                        (setting.suffix?.let { " $it" } ?: "")
                 val regularFontWidth = Fonts.InterMedium_18.stringWidth(text).toFloat()
                 val color = if (accent) accentedColor2 else textColor
 
@@ -1388,6 +1394,61 @@ class SettingComponents(private val module: Module) : Component() {
                 }
 
                 count += 1
+            }
+
+            // ----- CurveValue -----
+            if (setting is CurveValue) {
+                Fonts.InterMedium_18.drawString(setting.name, x + 5, settingY + 5, textColor.rgb)
+
+                val graphRows = 3f
+                val gx = x + 5
+                val gy = settingY + 16f
+                val gw = width - 10
+                val gh = rectHeight * graphRows - 4f
+                val pointCount = setting.pointCount
+
+                drawCustomShapeWithRadius(
+                    gx, gy, gw, gh, 2f, RenderUtils.applyOpacity(darkRectHover, .4f)
+                )
+
+                val hoveringGraph = isClickable(gy)
+                        && RenderUtils.isHovering(gx, gy, gw, gh, mouseX, mouseY)
+
+                if (type == GuiEvents.RELEASE) {
+                    draggingCurve = null
+                }
+                if (type == GuiEvents.CLICK && hoveringGraph && button == 0) {
+                    draggingCurve = setting
+                }
+                if (draggingCurve === setting) {
+                    val idx = CurveEditor.nearestIndex(mouseX.toFloat(), pointCount, gx, gw)
+                    setting.setPoint(idx, CurveEditor.valueFromY(mouseY.toFloat(), gy, gh))
+                }
+
+                val curveColor = if (accent) accentedColor2 else textColor
+                GlStateManager.color(
+                    curveColor.red / 255f, curveColor.green / 255f, curveColor.blue / 255f, 1f
+                )
+                for (i in 0 until pointCount - 1) {
+                    RenderUtils.drawLine(
+                        CurveEditor.pointX(i, pointCount, gx, gw).toDouble(),
+                        CurveEditor.pointY(setting.getPoint(i), gy, gh).toDouble(),
+                        CurveEditor.pointX(i + 1, pointCount, gx, gw).toDouble(),
+                        CurveEditor.pointY(setting.getPoint(i + 1), gy, gh).toDouble(),
+                        1.5f
+                    )
+                }
+                RenderUtils.resetColor()
+
+                for (i in 0 until pointCount) {
+                    RenderUtils.drawGoodCircle(
+                        CurveEditor.pointX(i, pointCount, gx, gw).toDouble(),
+                        CurveEditor.pointY(setting.getPoint(i), gy, gh).toDouble(),
+                        3f, curveColor.rgb
+                    )
+                }
+
+                count += graphRows
             }
 
             // Render the key bind

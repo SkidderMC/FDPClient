@@ -51,11 +51,17 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
     private val customColorSetting by color("CustomColor", Color(255, 255, 255)) { color == "Custom" || color == "Fade" }
 
     var scale by float("Scale", 1.0f, 0.5f..1.5f)
+        .describe("Overall size of the ClickGUI.")
     val maxElements by int("MaxElements", 15, 1..30)
+        .describe("Maximum number of modules shown per category before scrolling.")
     val fadeSpeed by float("FadeSpeed", 1f, 0.5f..4f)
+        .describe("Speed of the GUI fade/open animations.")
     val scrolls by boolean("Scrolls", true)
+        .describe("Allow scrolling through long category lists.")
     val spacedModules by boolean("SpacedModules", false)
+        .describe("Add vertical spacing between modules.")
     val panelsForcedInBoundaries by boolean("PanelsForcedInBoundaries", false)
+        .describe("Keep dragged panels inside the screen bounds.")
 
     val headerColor by boolean("Header Color", true) { style == "Dropdown" }
 

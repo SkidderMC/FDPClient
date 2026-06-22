@@ -29,6 +29,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.setti
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.MultiSelectSetting
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.KeyBindSetting
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.Vec3Setting
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.CurveSetting
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import java.awt.Color
 import java.util.function.Consumer
@@ -102,15 +103,19 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
             if (setting is Vec3Value) {
                 this.downwards.add(Vec3Setting(setting, this))
             }
+            if (setting is CurveValue) {
+                this.downwards.add(CurveSetting(setting, this))
+            }
         }
     }
 
 
     fun calcHeight(): Int {
         var h = 30
-        for (s in module.values.stream().filter { obj: Value<*>? -> obj!!.shouldRender() }
-            .collect(Collectors.toList())) {
-            h += 20
+        for (downward in downwards) {
+            if (downward.setting.shouldRender()) {
+                h += downward.rowHeight()
+            }
         }
         if (module.values.isEmpty()) {
             h += 20
@@ -185,7 +190,7 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
             .collect(Collectors.toList())) {
             downward.setX(posx)
             downward.setY(calcY() + cheigt)
-            cheigt += 20
+            cheigt += downward.rowHeight()
 
             downward.draw(mx, my)
         }

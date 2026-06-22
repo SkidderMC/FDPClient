@@ -28,6 +28,7 @@ import net.ccbluex.liquidbounce.config.FloatRangeValue
 import net.ccbluex.liquidbounce.config.MultiSelectValue
 import net.ccbluex.liquidbounce.config.KeyBindValue
 import net.ccbluex.liquidbounce.config.Vec3Value
+import net.ccbluex.liquidbounce.config.CurveValue
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
@@ -70,6 +71,7 @@ class ModuleElement(
                 is MultiSelectValue -> MultiSelectElement(this, value, parent, x + 4, y, width - 8, 12)
                 is KeyBindValue -> KeyBindElement(this, value, parent, x + 4, y, width - 8, 12)
                 is Vec3Value -> Vec3Element(this, value, parent, x + 4, y, width - 8, 12)
+                is CurveValue -> CurveElement(this, value, parent, x + 4, y, width - 8, 56)
                 else -> null
             }
             element?.let { elements.add(it) }
