@@ -43,17 +43,22 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
     ).subjective()
 
     private val resetFlagCounterTicks by int("ResetCounterTicks", 5000, 1000..10000)
+        .describe("Ticks before the flag counter resets to zero.")
 
     private val ghostBlockCheck by boolean("GhostBlock-Check", true)
+        .describe("Detect blocks that failed to place server-side.")
     private val ghostBlockDelay by int("GhostBlockDelay", 750, 500..1000)
     { ghostBlockCheck }
 
     private val rubberbandCheck by boolean("Rubberband-Check", false)
+        .describe("Detect sudden position or motion corrections.")
     private val rubberbandThreshold by float("RubberBandThreshold", 5.0f, 0.05f..10.0f)
     { rubberbandCheck }
 
     private val chatMessage by boolean("ChatMessage", true)
+        .describe("Print detected flags to chat.")
     private val notification by boolean("Notification", false)
+        .describe("Show detected flags as HUD notifications.")
 
     // Memory leak fix: Limit flag history tracking
     private const val MAX_BLOCK_PLACEMENT_ATTEMPTS = 100
@@ -70,9 +75,13 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
     ) { renderServerPos == "Box" }.with(r = 255, g = 255)
 
     private val scale by float("Scale", 1F, 1F..6F) { renderServerPos == "Box" }
+        .describe("Scale of the server-position text.")
     private val font by font("Font", Fonts.fontSemibold40) { renderServerPos == "Box" }
+        .describe("Font used for the server-position text.")
     private val fontShadow by boolean("Shadow", true) { renderServerPos == "Box" }
+        .describe("Draw a shadow behind the server-position text.")
     private val notInFirstPerson by boolean("NotInFirstPerson", false) { renderServerPos == "Box" }
+        .describe("Hide the server-position box in first person.")
 
     private var lastCheckTime = 0L
 

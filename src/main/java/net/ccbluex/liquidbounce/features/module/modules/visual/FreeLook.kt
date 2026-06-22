@@ -17,6 +17,7 @@ import org.lwjgl.opengl.Display
 object FreeLook : Module("FreeLook", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
     private val autoF5 by boolean("AutoF5", true).subjective()
+        .describe("Automatically switch to third-person while active.")
 
     // The module's rotations
     private var currRotation = Rotation.ZERO

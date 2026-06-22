@@ -46,50 +46,82 @@ import kotlin.math.roundToInt
 object NameTags : Module("NameTags", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
 
     private val typeValue = choices("Mode", arrayOf("3DTag", "2DTag"), "2DTag")
+        .describe("Style of name tag rendering to use.")
 
     private val renderSelf by boolean("RenderSelf", false)
+        .describe("Show a name tag above your own player.")
     private val health by boolean("Health", true)
+        .describe("Display entity health on the name tag.")
     private val healthFromScoreboard by boolean("HealthFromScoreboard", false) { health }
+        .describe("Read health from the scoreboard instead.")
     private val absorption by boolean("Absorption", false) { health || healthBar }
+        .describe("Include absorption hearts in the health value.")
     private val roundedHealth by boolean("RoundedHealth", true) { health }
+        .describe("Round the displayed health to whole numbers.")
 
     private val healthPrefix by boolean("HealthPrefix", false) { health }
+        .describe("Show text before the health value.")
     private val healthPrefixText by text("HealthPrefixText", "") { health && healthPrefix }
+        .describe("Text placed before the health value.")
 
     private val healthSuffix by boolean("HealthSuffix", true) { health }
+        .describe("Show text after the health value.")
     private val healthSuffixText by text("HealthSuffixText", " ❤") { health && healthSuffix }
+        .describe("Text placed after the health value.")
 
     private val indicator by boolean("Indicator", false)
+        .describe("Show a friend or enemy indicator symbol.")
     private val ping by boolean("Ping", false)
+        .describe("Display each player ping on the name tag.")
     private val healthBar by boolean("Bar", false)
+        .describe("Draw a colored health bar under the tag.")
     private val distance by boolean("Distance", false)
+        .describe("Display the distance to the entity.")
     private val armor by boolean("Armor", true)
+        .describe("Render the entity worn armor items.")
     private val showArmorDurability by choices("Armor Durability", arrayOf("None", "Value", "Percentage"), "None") { armor }
+        .describe("How to display armor durability.")
     private val enchant by boolean("Enchant", true) { armor }
+        .describe("Show enchantment levels on armor items.")
     private val bot by boolean("Bots", true)
+        .describe("Also render name tags for detected bots.")
     private val potion by boolean("Potions", true)
+        .describe("Show active potion effect icons.")
     private val clearNames by boolean("ClearNames", false)
+        .describe("Strip color codes from displayed names.")
     private val font by font("Font", Fonts.fontSemibold40)
+        .describe("Font used to render the name tag text.")
     private val scale by float("Scale", 1F, 1F..4F)
+        .describe("Size multiplier for the name tags.")
     private val fontShadow by boolean("Shadow", true)
+        .describe("Draw a shadow behind the tag text.")
 
     private val background by boolean("Background", true)
+        .describe("Draw a filled background behind the tag.")
     private val backgroundColor by color("BackgroundColor", Color.BLACK.withAlpha(70)) { background }
+        .describe("Color of the name tag background.")
 
     private val border by boolean("Border", false)
+        .describe("Draw an outline around the tag background.")
     private val borderColor by color("BorderColor", Color.BLACK.withAlpha(100)) { border }
+        .describe("Color of the name tag border.")
 
     private val borderWidth by float("Border Width", 0F, 0F..8F) { background }
+        .describe("Thickness of the background border.")
     private val backgroundRadius by float("Background Radius", 0F, 0F..16F) { background }
+        .describe("Corner rounding of the tag background.")
 
     private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200).onChanged { value ->
         maxRenderDistanceSq = value.toDouble().pow(2)
     }
 
     private val onLook by boolean("OnLook", false)
+        .describe("Only show tags for entities you look at.")
     private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
+        .describe("Max angle from your aim to show a tag.")
 
     private val thruBlocks by boolean("ThruBlocks", true)
+        .describe("Show tags even when blocked by terrain.")
 
     private var maxRenderDistanceSq = 0.0
         set(value) {

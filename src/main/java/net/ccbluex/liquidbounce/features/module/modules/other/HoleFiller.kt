@@ -47,23 +47,32 @@ import java.awt.Color
 object HoleFiller : Module("HoleFiller", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val autoBlock by choices("AutoBlock", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof")
+        .describe("How to switch to a block before placing.")
     private val swing by boolean("Swing", true)
+        .describe("Swing the arm when placing a block.")
     private val placeDelay by int("PlaceDelay", 250, 0..1000)
+        .describe("Minimum delay between placements in milliseconds.")
 
     // The horizontal radius (in blocks) around the player's feet that is scanned for the hole.
     private val area by int("Area", 1, 1..3)
+        .describe("Horizontal radius scanned around the feet.")
 
     // How many blocks may be filled within a single tick.
     private val maxPlacements by int("MaxPlacements", 1, 1..4)
+        .describe("Maximum blocks filled within a single tick.")
 
     // Only operate when you're actually standing inside a hole.
     private val onlyWhenInHole by boolean("OnlyWhenInHole", true)
+        .describe("Only fill while standing inside a hole.")
 
     // Verify the candidate spot is reachable by raytrace before placing.
     private val raycast by boolean("Raycast", true) { options.rotationsActive }
+        .describe("Verify the spot is reachable by raytrace before placing.")
 
     private val trackCPS by boolean("TrackCPS", false)
+        .describe("Count each placement toward the CPS counter.")
     private val mark by boolean("Mark", false)
+        .describe("Render a box around each fill position.")
 
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 

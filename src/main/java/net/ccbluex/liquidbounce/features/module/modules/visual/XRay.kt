@@ -16,7 +16,9 @@ import net.minecraft.world.IBlockAccess
 object XRay : Module("XRay", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val exposedOnly by boolean("ExposedOnly", false)
+        .describe("Only show ores exposed to air.")
     private val fullBright by boolean("FullBright", false)
+        .describe("Brighten the world while XRay is active.")
 
     val xrayBlocks = mutableListOf(
         Blocks.coal_ore,

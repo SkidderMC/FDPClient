@@ -35,19 +35,29 @@ import net.minecraft.util.BlockPos
 object NoRender : Module("NoRender", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
 	private val allEntitiesValue by boolean("AllEntities", true)
+		.describe("Hide every entity in the world.")
 	private val itemsValue by boolean("Items", true) { !allEntitiesValue }
+		.describe("Hide dropped item entities.")
 	private val playersValue by boolean("Players", true)
+		.describe("Hide other player entities.")
 	private val mobsValue by boolean("Mobs", true)
+		.describe("Hide hostile mob entities.")
 	private val animalsValue by boolean("Animals", true) { !allEntitiesValue }
+		.describe("Hide passive animal entities.")
 	private val armorStandValue by boolean("ArmorStand", true) { !allEntitiesValue }
+		.describe("Hide armor stand entities.")
 	private val autoResetValue by boolean("AutoReset", true)
+		.describe("Restore rendering for entities back in range.")
 	private val maxRenderRange by float("MaxRenderRange", 4F, 0F..16F)
+		.describe("Only hide entities beyond this distance.")
 
 	// Option to enable or disable specific block rendering
 	private val useSpecificBlock by boolean("Block", true)
+		.describe("Enable hiding a chosen block type.")
 
 	// The specific block selected by its ID
 	private val specificBlockValue by block("SpecificBlock", 1)
+		.describe("The block type to hide from view.")
 
 	// Stores hidden blocks and their original states
 	private val hiddenBlocks: MutableMap<BlockPos, IBlockState> = mutableMapOf()

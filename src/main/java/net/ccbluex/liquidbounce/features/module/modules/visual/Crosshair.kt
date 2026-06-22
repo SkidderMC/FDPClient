@@ -20,27 +20,41 @@ import kotlin.math.sin
 object Crosshair : Module("Crosshair", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val style by choices("Style", arrayOf("Cross", "CSGO", "Dot", "Circle"), "Cross")
+        .describe("Shape style of the crosshair.")
 
     // When on, the vanilla game crosshair is hidden so only this module's crosshair shows.
     val hideVanilla by boolean("HideVanilla", true)
+        .describe("Hide the default vanilla crosshair.")
 
     private val size by float("Size", 5f, 1f..20f) { style == "Cross" || style == "CSGO" }
+        .describe("Length of the crosshair arms.")
     private val gap by float("Gap", 3f, 0f..15f) { style == "Cross" || style == "CSGO" }
+        .describe("Gap between the center and the arms.")
     private val thickness by float("Thickness", 1f, 1f..6f) { style == "Cross" || style == "CSGO" }
+        .describe("Thickness of the crosshair arms.")
     private val centerDot by boolean("CenterDot", false) { style == "Cross" }
+        .describe("Draw a dot in the center of the cross.")
     private val outline by boolean("Outline", true)
+        .describe("Draw a black outline around the crosshair.")
 
     // CSGO dynamic spread: the gap shrinks/expands while sprinting just like in-game.
     private val dynamicGap by boolean("DynamicGap", true) { style == "CSGO" }
+        .describe("Expand the gap while sprinting.")
     private val sprintGap by float("SprintGap", 2f, 0f..15f) { style == "CSGO" && dynamicGap }
+        .describe("Gap size to use while sprinting.")
 
     private val dotRadius by float("DotRadius", 2.5f, 0.5f..10f) { style == "Dot" }
+        .describe("Radius of the dot crosshair.")
 
     private val filled by boolean("Filled", false) { style == "Circle" }
+        .describe("Fill the circle instead of a ring.")
     private val radius by float("Radius", 6f, 1f..30f) { style == "Circle" }
+        .describe("Radius of the circle crosshair.")
     private val circleWidth by float("CircleWidth", 1.5f, 0.5f..6f) { style == "Circle" && !filled }
+        .describe("Line width of the circle ring.")
 
     private val crosshairColor by color("Color", Color(255, 255, 255), rainbow = true)
+        .describe("Color of the crosshair.")
 
     val onRender2D = handler<Render2DEvent> {
         // Only draw in first person while actually in the world.

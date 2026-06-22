@@ -26,8 +26,10 @@ object MiddleClickAction : Module(
 ) {
 
     private val mode by choices("Mode", arrayOf("FriendClicker", "Pearl"), "FriendClicker")
+        .describe("What the middle mouse button does when clicked.")
 
     private val slotResetDelay by int("SlotResetDelay", 1, 0..10) { mode == "Pearl" }
+        .describe("Ticks before resetting the silent pearl slot.")
 
     private var wasDown = false
     private var pearlPressed = false

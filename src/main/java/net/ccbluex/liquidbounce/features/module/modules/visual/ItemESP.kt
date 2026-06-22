@@ -28,28 +28,41 @@ import kotlin.math.pow
 
 object ItemESP : Module("ItemESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     private val mode by choices("Mode", arrayOf("Box", "OtherBox", "Glow"), "Box")
+        .describe("How dropped items are highlighted.")
 
     private val itemText by boolean("ItemText", false)
+        .describe("Show item names above dropped items.")
 
     private val glowSettings = GlowRenderSettings(isSupported = { mode == "Glow" }).also { addValues(it.values) }
 
     private val color by color("Color", Color.GREEN)
+        .describe("Color used to highlight items.")
 
     private val maxDistance by float("MaxDistance", 256F, 1F..512F)
+        .describe("Maximum distance to render items.")
 
     private val showTracers by boolean("Tracers", false)
+        .describe("Draw lines pointing to dropped items.")
     private val tracerThickness by float("TracerThickness", 2F, 1F..5F) { showTracers }
+        .describe("Line thickness of item tracers.")
 
     private val mergeIntersecting by boolean("MergeIntersecting", false) { mode != "Glow" }
+        .describe("Skip boxes overlapping one already drawn.")
 
     private val renderFilters = RenderFilterSettings(50, 1..200).also { addValues(it.values) }
 
     private val scale by float("Scale", 3F, 1F..5F) { itemText }
+        .describe("Size of the item name text.")
     private val itemCounts by boolean("ItemCounts", true) { itemText }
+        .describe("Show stack size next to item names.")
     private val font by font("Font", Fonts.fontSemibold40) { itemText }
+        .describe("Font used for item name text.")
     private val fontShadow by boolean("Shadow", true) { itemText }
+        .describe("Draw a shadow behind item text.")
     private val yOffset by float("YOffset", 0F, -2F..2F) { itemText }
+        .describe("Vertical offset of the item text.")
     private val backgroundAlpha by int("BackgroundAlpha", 0, 0..255) { itemText }
+        .describe("Opacity of the text background.")
 
     private val maxDistanceSq
         get() = maxDistance.toDouble().pow(2.0)

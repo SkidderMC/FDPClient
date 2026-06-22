@@ -20,10 +20,14 @@ object FreeCam : Module("FreeCam", Category.VISUAL, Category.SubCategory.RENDER_
     private val speed by FloatValue("Speed", 0.8f, 0.1f..2f)
 
     private val allowCameraInteract by boolean("AllowCameraInteract", true)
+        .describe("Let the free camera position interact with blocks.")
     private val allowRotationChange by boolean("AllowRotationChange", true)
+        .describe("Allow your rotation to change while in free camera.")
 
     private val keepSneaking by boolean("KeepSneaking", false)
+        .describe("Keep your real player sneaking while flying around.")
     private val lookAt by boolean("LookAt", false)
+        .describe("Make your real player look toward the camera.")
 
     data class PositionPair(var pos: Vec3, var lastPos: Vec3, var extraPos: Vec3 = lastPos) {
         operator fun plusAssign(velocity: Vec3) {

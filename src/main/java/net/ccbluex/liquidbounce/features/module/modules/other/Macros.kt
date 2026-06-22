@@ -19,11 +19,17 @@ import org.lwjgl.input.Keyboard
 object Macros : Module("Macros", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val key1 by int("Key1", 0, 0..255)
+        .describe("LWJGL key code that triggers macro slot one.")
     private val text1 by text("Text1", "/hub")
+        .describe("Chat message or command sent by macro slot one.")
     private val key2 by int("Key2", 0, 0..255)
+        .describe("LWJGL key code that triggers macro slot two.")
     private val text2 by text("Text2", "gg")
+        .describe("Chat message or command sent by macro slot two.")
     private val key3 by int("Key3", 0, 0..255)
+        .describe("LWJGL key code that triggers macro slot three.")
     private val text3 by text("Text3", "")
+        .describe("Chat message or command sent by macro slot three.")
 
     private val down = BooleanArray(3)
 

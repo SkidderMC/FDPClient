@@ -29,19 +29,31 @@ import kotlin.random.Random
 object Particles : Module("Particles", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val particleSize by float("Size", 1f, 0.5f..2f)
+        .describe("Size of each spawned particle.")
     private val minCount by int("MinCount", 2, 1..30)
+        .describe("Minimum particles spawned per hit.")
     private val maxCount by int("MaxCount", 10, 1..30)
+        .describe("Maximum particles spawned per hit.")
     private val randomRotation by boolean("RandomRotation", true)
+        .describe("Give each particle a random rotation.")
     private val shape by choices("Shape", arrayOf("Star", "Heart", "Rhombus", "Point", "Spark", "Line"), "Star")
+        .describe("Shape drawn for each particle.")
 
     private val motion by float("Motion", 15f, 1f..30f)
+        .describe("Speed of particle movement.")
     private val bounceX by float("BounceX", 0.8f, 0f..1f)
+        .describe("Bounce energy kept on the X axis.")
     private val bounceY by float("BounceY", 0.6f, 0f..1f)
+        .describe("Bounce energy kept on the Y axis.")
     private val bounceZ by float("BounceZ", 0.8f, 0f..1f)
+        .describe("Bounce energy kept on the Z axis.")
     private val drag by float("Drag", 0.99f, 0f..1f)
+        .describe("Air drag applied to particle velocity.")
     private val gravityFactor by float("GravityFactor", 0.8f, 0f..1f)
+        .describe("Strength of gravity pulling particles down.")
 
     private val color by color("Color", Color.RED)
+        .describe("Color of the spawned particles.")
 
     private const val MAX_PARTICLES = 200
     private val particles = mutableListOf<Particle>()

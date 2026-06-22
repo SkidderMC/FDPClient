@@ -78,48 +78,70 @@ import kotlin.random.Random
 object ChestStealer : Module("ChestStealer", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val smartDelay by boolean("SmartDelay", false)
+        .describe("Scale steal delay by the distance between slots.")
     private val multiplier by int("DelayMultiplier", 120, 0..500) { smartDelay }
+        .describe("Multiplier applied to the smart-delay distance.")
     private val smartOrder by boolean("SmartOrder", true) { smartDelay }
+        .describe("Steal slots along the shortest path between them.")
 
     private val simulateShortStop by boolean("SimulateShortStop", false)
+        .describe("Randomly pause briefly to look more human.")
 
     private val autoClose by boolean("AutoClose", true)
+        .describe("Close the chest after stealing is done.")
 
     private val order by choices("Order", arrayOf("TopToBottom", "BottomToTop"), "TopToBottom")
+        .describe("Direction to walk through chest slots.")
 
     private val quickSwaps by boolean("QuickSwaps", false)
+        .describe("Use hotbar swaps for faster single-action steals.")
 
     private val onFull by choices("OnFull", arrayOf("Stop", "Continue"), "Stop")
+        .describe("What to do when the inventory becomes full.")
 
     private val delay by intRange("Delay", 50..50, 0..500) { !smartDelay }
+        .describe("Random delay between steals in milliseconds.")
     private val startDelay by intRange("StartDelay", 50..100, 0..500)
+        .describe("Random delay before stealing starts.")
     private val closeDelay by intRange("CloseDelay", 50..100, 0..500)
+        .describe("Random delay before the chest is closed.")
 
     private val noMove by +InventoryManager.noMoveValue
     private val noMoveAir by +InventoryManager.noMoveAirValue
     private val noMoveGround by +InventoryManager.noMoveGroundValue
 
     private val chestTitle by boolean("ChestTitle", true)
+        .describe("Only steal from real chests, not custom GUIs.")
 
     private val randomSlot by boolean("RandomSlot", true)
+        .describe("Shuffle slot order to look less robotic.")
 
     private val progressBar by boolean("ProgressBar", true).subjective()
+        .describe("Show a progress bar while stealing.")
 
     val silentGUI by boolean("SilentGUI", false).subjective()
+        .describe("Steal without opening the chest screen visibly.")
 
     val silentView by boolean("SilentView", false)
+        .describe("Render the chest contents on screen silently.")
 
     private val furnace by boolean("Furnace", false)
+        .describe("Also steal from furnace GUIs.")
 
     val highlightSlot by boolean("Highlight-Slot", false) { !silentGUI }.subjective()
+        .describe("Highlight the slot currently being stolen.")
     val backgroundColor =
         color("BackgroundColor", Color(128, 128, 128)) { highlightSlot && !silentGUI }.subjective()
 
     val borderStrength by int("Border-Strength", 3, 1..5) { highlightSlot && !silentGUI }.subjective()
+        .describe("Thickness of the highlight border.")
     val borderColor = color("BorderColor", Color(128, 128, 128)) { highlightSlot && !silentGUI }.subjective()
+        .describe("Color of the highlight border.")
 
     private val chestDebug by choices("Chest-Debug", arrayOf("Off", "Text", "Notification"), "Off").subjective()
+        .describe("Where to print stealing debug messages.")
     private val itemStolenDebug by boolean("ItemStolen-Debug", false) { chestDebug != "Off" }.subjective()
+        .describe("Log each stolen item with its slot and delay.")
 
     private var progress: Float? = null
         set(value) {

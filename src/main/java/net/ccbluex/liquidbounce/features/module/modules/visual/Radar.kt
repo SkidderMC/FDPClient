@@ -30,9 +30,13 @@ import kotlin.math.sin
 object Radar : Module("Radar", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val range by int("Range", 40, 10..120)
+        .describe("World distance the radar covers.")
     private val size by int("Size", 80, 40..160)
+        .describe("On-screen diameter of the radar.")
     private val background by boolean("Background", true)
+        .describe("Draw a filled circle behind the radar.")
     private val dotColor by color("Dot Color", Color(255, 80, 80))
+        .describe("Color of the player dots on the radar.")
 
     val onRender2D = handler<Render2DEvent> {
         val player = mc.thePlayer ?: return@handler

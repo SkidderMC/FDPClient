@@ -42,14 +42,20 @@ object Extinguish : Module("Extinguish", Category.OTHER, Category.SubCategory.MI
      */
 
     private val range by float("Range", 4.5F, 1F..6F)
+        .describe("Maximum distance to search for fire blocks.")
     private val throughWalls by boolean("ThroughWalls", false)
+        .describe("Allow extinguishing fire hidden behind walls.")
     private val delay by int("Delay", 0, 0..20)
+        .describe("Delay between breaking fire blocks in ticks.")
 
     private val swingMode by choices("SwingMode", arrayOf("Normal", "Packet", "None"), "Normal")
+        .describe("How to swing the arm while extinguishing.")
 
     private val rotations by boolean("Rotations", true)
+        .describe("Rotate toward the fire before breaking it.")
 
     private val esp by boolean("ESP", true).subjective()
+        .describe("Render a box around nearby fire blocks.")
 
     private val options = RotationSettings(this).apply {
         withRequestPriority(RotationPriority.NORMAL)

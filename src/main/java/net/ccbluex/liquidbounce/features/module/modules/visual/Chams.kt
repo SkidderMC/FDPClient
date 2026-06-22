@@ -12,19 +12,30 @@ import java.awt.Color
 
 object Chams : Module("Chams", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     val targets by boolean("Targets", true)
+        .describe("Apply chams to combat targets.")
     val chests by boolean("Chests", true)
+        .describe("Apply chams to chests.")
     val items by boolean("Items", true)
+        .describe("Apply chams to dropped items.")
     private val handValue by boolean("Hand", false)
+        .describe("Apply chams to your own hand.")
 
     val localPlayerValue by boolean("LocalPlayer", true)
+        .describe("Apply chams to your own player.")
     val colorModeValue by choices("Color", arrayOf("Custom", "Fade"), "Custom") { !legacyMode }
+        .describe("Coloring style for the chams.")
 
     val texturedValue by boolean("Textured", true) { !legacyMode }
+        .describe("Keep entity textures under the chams.")
     val legacyMode by boolean("Legacy-Mode", false)
+        .describe("Use the legacy chams rendering.")
 
     val behindColorModeValue by choices("Behind-Color", arrayOf("Same", "Opposite", "Custom"), "Same") { !legacyMode }
+        .describe("Color used for parts hidden behind walls.")
     val color by color("Color", Color(0, 0, 120)) { !legacyMode && (colorModeValue == "Custom" || colorModeValue == "Fade") }
+        .describe("Main chams color.")
     val behindColor by color("Behind", Color(255, 0, 0)) { !legacyMode && (colorModeValue== "Custom" || colorModeValue== "Fade") && behindColorModeValue == "Custom" }
+        .describe("Custom color for parts behind walls.")
 
     fun preHandRender() {
         GL11.glDisable(3553)

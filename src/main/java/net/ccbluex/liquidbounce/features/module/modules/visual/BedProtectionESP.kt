@@ -24,16 +24,26 @@ import java.awt.Color
 
 object BedProtectionESP : Module("BedProtectionESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     private val targetBlock by choices("TargetBlock", arrayOf("Bed", "DragonEgg"), "Bed")
+        .describe("Which block to find protection layers around.")
     private val renderMode by choices("LayerRenderMode", arrayOf("Current", "All"), "Current")
+        .describe("Render only the outer layer or all layers.")
     private val radius by int("Radius", 8, 0..32)
+        .describe("Search radius for target blocks.")
     private val maxLayers by int("MaxProtectionLayers", 2, 1..6)
+        .describe("Maximum number of protection layers to scan.")
     private val blockLimit by int("BlockLimit", 256, 0..1024)
+        .describe("Maximum number of blocks to render.")
     private val down by boolean("BlocksUnderTarget", false)
+        .describe("Also include blocks below the target.")
     private val renderTargetBlocks by boolean("RenderTargetBlocks", true)
+        .describe("Highlight the target blocks themselves.")
     private val outline by boolean("Outline", false)
+        .describe("Render outlined boxes instead of filled.")
     private val thickness by float("Thickness", 2.0f, 1.0f..5.0f) { outline }
+        .describe("Line thickness of the outline.")
 
     private val color by color("Color", Color(96, 96, 96))
+        .describe("Color of the protection layer boxes.")
 
     @Volatile
     private var targetBlocks = emptySet<BlockPos>()

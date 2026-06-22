@@ -48,18 +48,25 @@ object AirPlace : Module("AirPlace", Category.OTHER, Category.SubCategory.MISCEL
 
     // Only act while the use-item key is held (closest to vanilla feel). When off, places continuously.
     private val onlyOnUseKey by boolean("OnlyOnUseKey", true)
+        .describe("Only place while the use-item key is held down.")
 
     // Allow placing into a position that is replaceable (tall grass, snow layer) as well as plain air.
     private val placeInReplaceable by boolean("PlaceInReplaceable", true)
+        .describe("Allow placing into replaceable blocks like tall grass.")
 
     // How far in front of the eyes the ghost block is targeted (capped by the reach distance).
     private val distance by float("Distance", 3f, 1f..5f)
+        .describe("How far in front of the eyes the ghost block is placed.")
 
     private val swing by boolean("Swing", true)
+        .describe("Swing the arm when placing a block.")
     private val placeDelay by int("PlaceDelay", 250, 0..1000)
+        .describe("Minimum delay between placements in milliseconds.")
 
     private val trackCPS by boolean("TrackCPS", false)
+        .describe("Count each placement toward the CPS counter.")
     private val mark by boolean("Mark", false)
+        .describe("Render a box around the targeted air position.")
 
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 

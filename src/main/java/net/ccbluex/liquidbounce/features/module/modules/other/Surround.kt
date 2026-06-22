@@ -47,20 +47,28 @@ import java.awt.Color
 object Surround : Module("Surround", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val autoBlock by choices("AutoBlock", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof")
+        .describe("How to switch to a block before placing.")
     private val swing by boolean("Swing", true)
+        .describe("Swing the hand visibly when placing blocks.")
     private val placeDelay by int("PlaceDelay", 100, 0..1000)
+        .describe("Millisecond delay between placement bursts.")
 
     // Place blocks below the feet as well, so the block under you cannot be mined out.
     private val down by boolean("Down", false)
+        .describe("Also place the block directly below your feet.")
 
     // How many blocks may be placed within a single tick.
     private val maxPlacements by int("MaxPlacements", 2, 1..6)
+        .describe("Maximum blocks placed in a single tick.")
 
     // Verify the candidate spot is reachable by raytrace before placing.
     private val raycast by boolean("Raycast", true) { options.rotationsActive }
+        .describe("Verify the spot is reachable by raytrace first.")
 
     private val trackCPS by boolean("TrackCPS", false)
+        .describe("Count surround placements as right-click CPS.")
     private val mark by boolean("Mark", false)
+        .describe("Render boxes around the surround positions.")
 
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 

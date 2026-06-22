@@ -26,18 +26,27 @@ import net.minecraft.client.gui.inventory.GuiChest
 object AutoShop : Module("AutoShop", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val slotsValue by text("Slots", "")
+        .describe("Comma-separated slot indices to click in the GUI.")
 
     private val clickButton by int("ClickButton", 0, 0..1)
+        .describe("Mouse button used for each click.")
     private val clickMode by int("ClickMode", 0, 0..6)
+        .describe("Container click mode passed to the server.")
     private val delay by int("Delay", 150, 0..1000, "ms")
+        .describe("Delay between slot clicks in milliseconds.")
 
     private val repeatCycles by boolean("Repeat", false)
+        .describe("Repeat the slot list multiple times.")
     private val maxCycles by int("MaxCycles", 1, 1..64) { repeatCycles }
+        .describe("Maximum number of passes over the slot list.")
 
     private val onlyWithTitle by boolean("TitleFilter", false)
+        .describe("Only act on GUIs whose title matches a filter.")
     private val titleContains by text("TitleContains", "Shop") { onlyWithTitle }
+        .describe("Text the GUI title must contain to activate.")
 
     private val autoClose by boolean("AutoClose", false)
+        .describe("Close the GUI once all clicks are done.")
 
     private val timer = MSTimer()
 

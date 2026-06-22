@@ -20,9 +20,12 @@ object NoRotateSet : Module("NoRotateSet", Category.OTHER, Category.SubCategory.
     var savedRotation = Rotation.ZERO
 
     private val ignoreOnSpawn by boolean("IgnoreOnSpawn", false)
+        .describe("Skip rotation reset right after you respawn.")
     val affectRotation by boolean("AffectRotation", true)
+        .describe("Restore your rotation after a silent rotation set.")
 
     private val ticksUntilStart = intRange("TicksUntilStart", 0..0, 0..20) { affectRotation }
+        .describe("Random tick delay before resetting rotation back.")
 
     private val options = AlwaysRotationSettings(this) { affectRotation }.apply {
         withoutKeepRotation()

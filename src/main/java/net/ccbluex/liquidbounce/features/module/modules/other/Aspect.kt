@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 object Aspect : Module("Aspect", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val ratio by int("Ratio", 100, 1..300, suffix = "%")
+        .describe("Fire Aspect knockback multiplier as a percentage.")
 
     fun ratioMultiplier(): Float = ratio.toFloat() / 100f
 }

@@ -25,10 +25,14 @@ object AutoDisable : Module("AutoDisable", Category.OTHER, Category.SubCategory.
     private val modulesList = hashSetOf(KillAura, Scaffold, Flight, Speed)
 
     private val onFlagged by boolean("onFlag", true)
+        .describe("Disable modules when the server flags movement.")
     private val onWorldChange by boolean("onWorldChange", false)
+        .describe("Disable modules when the world changes.")
     private val onDeath by boolean("onDeath", false)
+        .describe("Disable modules when the player dies.")
 
     private val warn by choices("Warn", arrayOf("Chat", "Notification"), "Chat")
+        .describe("How to warn when modules are disabled.")
 
     val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet

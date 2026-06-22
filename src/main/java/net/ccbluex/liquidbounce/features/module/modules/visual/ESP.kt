@@ -40,20 +40,26 @@ object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY)
     )
 
     val outlineWidth by float("Outline-Width", 3f, 0.5f..5f) { mode == "Outline" }
+        .describe("Line width of the outline mode.")
 
     val wireframeWidth by float("WireFrame-Width", 2f, 0.5f..5f) { mode == "WireFrame" }
+        .describe("Line width of the wireframe mode.")
 
     private val glowSettings = GlowRenderSettings(isSupported = { mode == "Glow" }).also { addValues(it.values) }
 
     private val espColor = ColorSettingsInteger(this, "ESPColor").with(255, 255, 255)
 
     private val friendColor by color("Friend Color", Color.BLUE)
+        .describe("Color used for friends.")
     private val invisibleColor by color("Invisible Color", Color(255, 255, 255))
+        .describe("Color used for invisible entities.")
 
     private val renderFilters = RenderFilterSettings(50, 1..200).also { addValues(it.values) }
 
     private val colorTeam by boolean("TeamColor", false)
+        .describe("Color entities by their team color.")
     private val bot by boolean("Bots", true)
+        .describe("Also render detected bots.")
 
     var renderNameTags = true
 

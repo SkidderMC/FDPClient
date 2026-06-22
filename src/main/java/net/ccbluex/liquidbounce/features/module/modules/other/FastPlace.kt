@@ -11,10 +11,15 @@ import net.ccbluex.liquidbounce.utils.timing.MSTimer
 
 object FastPlace : Module("FastPlace", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
     private val speedValue by int("Speed", 0, 0..4)
+        .describe("Right-click delay timer (lower is faster).")
     private val cooldown by int("Cooldown", 0, 0..1000, " ms")
+        .describe("Minimum cooldown between fast placements.")
     private val startDelay by int("StartDelay", 0, 0..1000, " ms")
+        .describe("Delay after holding use before fast placing.")
     val onlyBlocks by boolean("OnlyBlocks", true)
+        .describe("Only speed up placing actual blocks.")
     val facingBlocks by boolean("OnlyWhenFacingBlocks", true)
+        .describe("Only speed up while aiming at a block.")
 
     // Vanilla place-rate timer value applied after a successful right click
     private const val VANILLA_DELAY = 4

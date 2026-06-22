@@ -49,6 +49,7 @@ import kotlin.math.roundToInt
 
 object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     private val renderYOffset by float("RenderYOffset", 1f, -5f..5f)
+        .describe("Vertical offset of the plate above the bed.")
 
     private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200).onChanged { value ->
         maxRenderDistanceSq = value.toDouble().pow(2)
@@ -60,20 +61,31 @@ object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.REN
         }
 
     private val maxLayers by int("MaxLayers", 5, 1..10)
+        .describe("How many surrounding block layers to count.")
     private val maxCount by int("MaxCount", 64, 1..64)
+        .describe("Maximum number of beds to render at once.")
     private val scale by float("Scale", 3F, 1F..5F)
+        .describe("Overall size of the rendered plate.")
 
     private val compact by boolean("Compact", false)
+        .describe("Use a smaller, more compact plate layout.")
     private val showBed by boolean("ShowBed", true)
+        .describe("Show the bed icon on the plate.")
     private val highlightUnbreakable by boolean("HighlightUnbreakable", false)
+        .describe("Tint obsidian and end stone icons red.")
     private val ignoreAdjacent by boolean("IgnoreAdjacent", false)
+        .describe("Skip beds that are directly next to another.")
     private val preventOverlap by boolean("PreventOverlap", false)
+        .describe("Avoid drawing overlapping plates.")
     private val outline by boolean("Outline", false)
+        .describe("Draw an outline around the plate.")
 
     private val textMode by choices("Text-ColorMode", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
+        .describe("Coloring style for the plate text.")
     private val textColors = ColorSettingsInteger(this, "TextColor", applyMax = true) { textMode == "Custom" }
 
     private val gradientTextSpeed by float("Text-Gradient-Speed", 1f, 0.5f..10f) { textMode == "Gradient" }
+        .describe("Animation speed of the text gradient.")
 
     private val maxTextGradientColors by int("Max-Text-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS)
     { textMode == "Gradient" }
@@ -81,9 +93,12 @@ object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.REN
     { textMode == "Gradient" && it <= maxTextGradientColors }
 
     private val roundedRectRadius by float("Rounded-Radius", 3F, 0F..5F)
+        .describe("Corner radius of the plate background.")
 
     private val backgroundMode by choices("Background-Mode", arrayOf("Custom", "Rainbow", "Gradient"), "Custom")
+        .describe("Coloring style for the plate background.")
     private val backgroundColor by color("BackgroundColor", java.awt.Color(255, 255, 255, 100)) { backgroundMode == "Custom" }
+        .describe("Color of the plate background in Custom mode.")
 
     private val gradientBackgroundSpeed by float("Background-Gradient-Speed", 1f, 0.5f..10f)
     { backgroundMode == "Gradient" }
@@ -94,12 +109,18 @@ object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.REN
     { backgroundMode == "Gradient" && it <= maxBackgroundGradientColors }
 
     private val textFont by font("Font", Fonts.fontSemibold35)
+        .describe("Font used for the plate text.")
     private val textShadow by boolean("ShadowText", true)
+        .describe("Draw a shadow behind the plate text.")
 
     private val rainbowX by float("Rainbow-X", -1000F, -2000F..2000F) { backgroundMode == "Rainbow" }
+        .describe("Horizontal scale of the rainbow effect.")
     private val rainbowY by float("Rainbow-Y", -1000F, -2000F..2000F) { backgroundMode == "Rainbow" }
+        .describe("Vertical scale of the rainbow effect.")
     private val gradientX by float("Gradient-X", -1000F, -2000F..2000F) { backgroundMode == "Gradient" }
+        .describe("Horizontal scale of the gradient effect.")
     private val gradientY by float("Gradient-Y", -1000F, -2000F..2000F) { backgroundMode == "Gradient" }
+        .describe("Vertical scale of the gradient effect.")
 
     private val bedStates = ConcurrentHashMap<BlockPos, BedState>()
 

@@ -47,24 +47,39 @@ object StorageESP : Module("StorageESP", Category.VISUAL, Category.SubCategory.R
     private val glowSettings = GlowRenderSettings(isSupported = { mode == "Glow" }).also { addValues(it.values) }
 
     private val espColorMode by choices("ESP-Color", arrayOf("None", "Custom"), "None")
+        .describe("Use type-based colors or a single custom color.")
     private val boxColor by color("Color", Color(255, 179, 72)) { espColorMode == "Custom" }
+        .describe("Custom color used for storage highlights.")
 
     private val outline by boolean("Outline", true)
+        .describe("Draw an outline around highlighted storages.")
     private val mergeAdjacent by boolean("MergeAdjacent", false)
+        .describe("Merge touching storages into a single box.")
     private val tracers by boolean("Tracers", false)
+        .describe("Draw lines from your view to each storage.")
     private val tracerThickness by float("TracerThickness", 2F, 1F..5F) { tracers }
+        .describe("Line thickness of the tracers.")
     private val requiresChestStealer by boolean("RequiresChestStealer", false)
+        .describe("Only render while ChestStealer is active.")
 
     private val renderFilters = RenderFilterSettings(100, 1..500).also { addValues(it.values) }
 
     private val chest by boolean("Chest", true)
+        .describe("Highlight chests.")
     private val enderChest by boolean("EnderChest", true)
+        .describe("Highlight ender chests.")
     private val furnace by boolean("Furnace", true)
+        .describe("Highlight furnaces.")
     private val dispenser by boolean("Dispenser", true)
+        .describe("Highlight dispensers.")
     private val hopper by boolean("Hopper", true)
+        .describe("Highlight hoppers.")
     private val enchantmentTable by boolean("EnchantmentTable", false)
+        .describe("Highlight enchantment tables.")
     private val brewingStand by boolean("BrewingStand", false)
+        .describe("Highlight brewing stands.")
     private val sign by boolean("Sign", false)
+        .describe("Highlight signs.")
 
     private fun getColor(tileEntity: TileEntity): Color? {
         return if (espColorMode == "Custom") {

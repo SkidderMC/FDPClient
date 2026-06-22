@@ -37,11 +37,17 @@ import kotlin.random.Random
 object FireFlies : Module("FireFlies", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val darkImprint by boolean("DarkImprint", false)
+        .describe("Use a darker blend mode for the firefly imprint.")
     private val lighting by boolean("Lighting", false)
+        .describe("Add a soft glow halo around each firefly.")
     private val spawnDelay by float("SpawnDelay", 3.0f, 1.0f..10.0f)
+        .describe("Delay in ticks between firefly spawns.")
     private val customColor by boolean("CustomColor", false)
+        .describe("Use a custom color instead of the client theme.")
     private val color by color("Color", Color(255, 200, 0)) { customColor }
+        .describe("Custom color for the fireflies.")
     private val particleSize by float("ParticleSize", 1.0f, 0.5f..2.0f)
+        .describe("Size of each firefly particle.")
 
     private const val MAX_FIREFLIES = 20
     private val partList = ArrayList<FirePart>()

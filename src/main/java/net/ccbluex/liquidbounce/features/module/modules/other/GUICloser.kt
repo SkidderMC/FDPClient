@@ -21,8 +21,11 @@ import net.minecraft.client.gui.inventory.GuiInventory
 object GUICloser : Module("GUICloser", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val delay by int("Delay", 200, 0..5000)
+        .describe("Delay before closing a screen in milliseconds.")
     private val includeInventory by boolean("IncludeInventory", false)
+        .describe("Also close your own inventory screen.")
     private val printScreenTitle by boolean("PrintScreenTitle", false)
+        .describe("Print the title of each closed screen to chat.")
 
     private var openAt = -1L
 

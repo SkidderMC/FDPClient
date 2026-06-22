@@ -27,44 +27,74 @@ import java.util.concurrent.ConcurrentHashMap
 object Notifier : Module("Notifier", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val onPlayerJoin by boolean("Join", true)
+        .describe("Notify when a player joins the game.")
     private val onPlayerLeft by boolean("Left", true)
+        .describe("Notify when a player leaves the game.")
     private val onPlayerDeath by boolean("Death", true)
+        .describe("Notify when a nearby player dies.")
     private val onHeldExplosive by boolean("HeldExplosive", true)
+        .describe("Notify when a player holds a fireball or TNT.")
     private val onPlayerTool by boolean("HeldTools", false)
+        .describe("Notify when a player holds a tool.")
 
     private val joinMessages by boolean("Join Messages", false)
+        .describe("Show a compact plus marker on player join.")
     private val leaveMessages by boolean("Leave Messages", false)
+        .describe("Show a compact minus marker on player leave.")
     private val heldItemMessages by boolean("Held Item Messages", false)
+        .describe("Print your currently held item when you switch.")
     private val itemConsumptionMessages by boolean("Item Consumption Messages", false)
+        .describe("Print a message when you finish consuming an item.")
     private val gameModeMessages by boolean("Game Mode Messages", false)
+        .describe("Print a message when your game mode changes.")
 
     private val bedWarsHelp by boolean("BedWarsHelp", true)
+        .describe("Enable BedWars item and armor detection alerts.")
 
     private val itemChecker by boolean("Item-Checker", true) { bedWarsHelp }
+        .describe("Alert when players hold tracked weapons or items.")
 
     private val stoneSword by boolean("Stone-Sword", false) { itemChecker }
+        .describe("Alert when a player holds a stone sword.")
     private val ironSword by boolean("Iron-Sword", true) { itemChecker }
+        .describe("Alert when a player holds an iron sword.")
     private val diamondSword by boolean("Diamond-Sword", true) { itemChecker }
+        .describe("Alert when a player holds a diamond sword.")
 
     private val ironPickaxe by boolean("Iron-Pickaxe", true) { itemChecker }
+        .describe("Alert when a player holds an iron pickaxe.")
     private val diamondPickaxe by boolean("Diamond-Pickaxe", true) { itemChecker }
+        .describe("Alert when a player holds a diamond pickaxe.")
     private val goldPickaxe by boolean("Gold-Pickaxe", true) { itemChecker }
+        .describe("Alert when a player holds a gold pickaxe.")
 
     private val fireBallSword by boolean("FireBall", true) { itemChecker }
+        .describe("Alert when a player holds a fireball.")
     private val enderPearl by boolean("EnderPearl", true) { itemChecker }
+        .describe("Alert when a player holds an ender pearl.")
     private val tnt by boolean("TNT", true) { itemChecker }
+        .describe("Alert when a player holds TNT.")
     private val obsidian by boolean("Obsidian", true) { itemChecker }
+        .describe("Alert when a player holds obsidian.")
     private val invisibilityPotion by boolean("InvisibilityPotion", true) { itemChecker }
+        .describe("Alert when a player holds an invisibility potion.")
 
     private val diamondArmor by boolean("DiamondArmor", true) { bedWarsHelp }
+        .describe("Alert when a player wears diamond armor.")
     private val chainArmor by boolean("ChainArmor", true) { bedWarsHelp }
+        .describe("Alert when a player wears chain armor.")
     private val ironArmor by boolean("IronArmor", true) { bedWarsHelp }
+        .describe("Alert when a player wears iron armor.")
 
     private val enchantedArmor by boolean("EnchantedArmor", true) { bedWarsHelp }
+        .describe("Alert when a player wears enchanted armor.")
     private val enchantedSword by boolean("EnchantedSword", true) { itemChecker }
+        .describe("Alert when a player holds an enchanted sword.")
 
     private val invisibleCheck by boolean("InvisibleCheck", true) { bedWarsHelp }
+        .describe("Alert when a player turns invisible or visible.")
     private val potionInvis by boolean("PotionInvis", true) { bedWarsHelp }
+        .describe("Alert about your own invisibility potion timer.")
 
     private val warnDelay by int("WarnDelay", 5000, 1000..50000) {
         onPlayerDeath || onHeldExplosive || onPlayerTool || playerCombat || drinkAlert
@@ -72,7 +102,9 @@ object Notifier : Module("Notifier", Category.OTHER, Category.SubCategory.MISCEL
 
     private val recentlyWarned = ConcurrentHashMap<String, Long>()
     private val playerCombat by boolean("PlayerCombat", false)
+        .describe("Notify when one player attacks another.")
     private val drinkAlert by boolean("DrinkAlert", false)
+        .describe("Notify when a nearby player drinks a potion.")
     private val alertTimer = MSTimer()
     private val drinkers = arrayListOf<EntityLivingBase>()
 

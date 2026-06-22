@@ -30,20 +30,31 @@ import java.awt.Color
 
 object BlockOverlay : Module("BlockOverlay", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
     private val mode by choices("Mode", arrayOf("Box", "OtherBox", "Outline"), "Box")
+        .describe("Render style for the targeted block.")
     private val sideOnly by boolean("SideOnly", false)
+        .describe("Only highlight the face you are looking at.")
     private val depth3D by boolean("Depth3D", false)
+        .describe("Render the overlay through walls.")
     private val thickness by float("Thickness", 2F, 1F..5F)
+        .describe("Line thickness of the overlay.")
 
     val info by boolean("Info", false)
+        .describe("Show the block name and ID on screen.")
 
     private val color by color("Color", Color(68, 117, 255, 100))
+        .describe("Fill color of the block overlay.")
 
     private val separateOutlineColor by boolean("SeparateOutlineColor", false)
+        .describe("Use a separate color for the outline.")
     private val outlineColor by color("OutlineColor", Color(68, 117, 255, 150)) { separateOutlineColor }
+        .describe("Color of the overlay outline.")
 
     private val slideAnim by boolean("Slide", false)
+        .describe("Animate the overlay sliding between blocks.")
     private val slideEasing by choices("SlideEasing", arrayOf("Linear", "Quad", "Expo"), "Linear") { slideAnim }
+        .describe("Easing curve for the slide animation.")
     private val slideTime by int("SlideTime", 150, 1..1000) { slideAnim }
+        .describe("Duration of the slide animation in ms.")
 
     private var currentBox: AxisAlignedBB? = null
     private var previousBox: AxisAlignedBB? = null

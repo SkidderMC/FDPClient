@@ -25,15 +25,25 @@ import kotlin.math.sqrt
 object FakePlayer : Module("FakePlayer", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val healthValue by float("Health", 20F, 1F..40F, suffix = "HP")
+        .describe("Starting health of the fake player.")
     private val weaponDamage by boolean("WeaponDamage", true)
+        .describe("Use your held weapon damage instead of a base value.")
     private val baseDamage by float("BaseDamage", 1F, 0F..20F, suffix = "HP") { !weaponDamage }
+        .describe("Fixed damage dealt per hit when weapon damage is off.")
     private val damageMultiplier by float("DamageMultiplier", 1F, 0.1F..5F)
+        .describe("Multiplier applied to the dealt damage.")
     private val invulnerabilityTicks by int("InvulnerabilityTicks", 10, 0..20, suffix = "Ticks")
+        .describe("Ticks the fake player is immune after a hit.")
     private val knockbackValue by float("Knockback", 0.4F, 0F..2F)
+        .describe("Knockback strength applied on a hit.")
     private val sprintKnockbackValue by float("SprintKnockback", 0.4F, 0F..2F)
+        .describe("Extra knockback applied while sprinting.")
     private val criticalParticles by boolean("CriticalParticles", true)
+        .describe("Show critical-hit particles on the fake player.")
     private val removeOnDeath by boolean("RemoveOnDeath", true)
+        .describe("Remove the fake player when it dies.")
     private val deathDelayTicks by int("DeathDelayTicks", 20, 0..40, suffix = "Ticks") { removeOnDeath }
+        .describe("Ticks to wait before removing a dead fake player.")
 
     private var fakePlayer: EntityOtherPlayerMP? = null
     private var fakeHealth = 20F

@@ -38,9 +38,13 @@ import java.io.File
 object Notebot : Module("Notebot", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val song by text("Song", "song.txt")
+        .describe("File name of the song to play from the songs folder.")
     private val speed by float("Speed", 1.0f, 0.1f..5.0f)
+        .describe("Playback speed multiplier for the song.")
     private val volume by float("Volume", 1.0f, 0.1f..2.0f)
+        .describe("Volume of the played note sounds.")
     private val loop by boolean("Loop", false)
+        .describe("Restart the song from the beginning when it ends.")
 
     private val instrumentSounds = mapOf(
         "harp" to "note.harp",

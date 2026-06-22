@@ -18,12 +18,16 @@ import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.randomString
 object Spammer : Module("Spammer", Category.OTHER, Category.SubCategory.MISCELLANEOUS, subjective = true) {
 
     private val delay by intRange("Delay", 500..1000, 0..5000)
+        .describe("Random millisecond delay range between messages.")
 
     private val message by text("Message", "$CLIENT_NAME Client | fdpinfo.github(.io) | opZywl on GitHub")
+        .describe("The chat message to spam.")
 
     private val custom by boolean("Custom", false)
+        .describe("Use placeholder substitution in the message.")
 
     private val converter by choices("Converter", arrayOf("None", "Leet", "RandomCase", "RandomSpace"), "None")
+        .describe("Text transform applied to each sent message.")
 
     val onUpdate = loopSequence {
         mc.thePlayer?.sendChatMessage(

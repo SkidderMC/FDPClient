@@ -15,6 +15,7 @@ import java.io.File
 object NameCollector : Module("NameCollector", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val saveToFile by boolean("SaveToFile", true)
+        .describe("Write collected player names to a text file on disable.")
 
     private val collected = linkedSetOf<String>()
     private var lastCollect = 0L

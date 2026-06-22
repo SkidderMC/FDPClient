@@ -11,6 +11,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 object QuickPerspectiveSwap : Module("QuickPerspectiveSwap", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val rearView by boolean("RearView", false)
+        .describe("Swap to the rear third-person view instead.")
 
     private var previousView = 0
 

@@ -12,7 +12,9 @@ import net.ccbluex.liquidbounce.features.module.Module
 
 object TrueSight : Module("TrueSight", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     val barriers by boolean("Barriers", true)
+        .describe("Render otherwise invisible barrier blocks.")
     val entities by boolean("Entities", true)
+        .describe("Render otherwise invisible entities.")
 
     val onUpdate = handler<UpdateEvent> {
         if (barriers && mc.gameSettings.particleSetting == 2) {

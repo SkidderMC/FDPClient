@@ -41,27 +41,45 @@ import kotlin.math.*
 object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val renderSelf by boolean("RenderSelf", true)
+        .describe("Render the dash trail on your own player.")
     private val renderPlayers by boolean("Render Players", true)
+        .describe("Render dash trails on other players.")
     private val showDashSegments by boolean("Dash Segments", false)
+        .describe("Render the trail as solid segments.")
     private val showDashDots by boolean("Dash Dots", true)
+        .describe("Render the trail as scattered dots.")
     private val bloom by boolean("Bloom", true)
+        .describe("Add a glowing bloom to the trail.")
     private val animationTime by int("Anim Time", 120, 10..1000)
+        .describe("Animation step time of each trail piece.")
     private val animationDuration by int("Time", 600, 100..3000)
+        .describe("How long a trail piece lasts in ms.")
 
     // Trail shaping
     private val sizeScale by float("Scale", 1.0f, 0.2f..5.0f)
+        .describe("Overall size of the trail pieces.")
     private val densityMultiplier by float("Density", 1.5f, 0.5f..5.0f)
+        .describe("How densely trail pieces are spawned.")
     private val maxDashCount by int("MaxDashPerTick", 24, 1..64)
+        .describe("Maximum trail pieces spawned per tick.")
     private val maxCubics by int("MaxCubics", 400, 50..1500)
+        .describe("Maximum total trail pieces at once.")
     private val opacity by int("Opacity", 255, 0..255)
+        .describe("Overall opacity of the trail.")
 
     private val colorModeOption by choices("Color", arrayOf("Custom", "Theme", "Rainbow"), "Custom")
+        .describe("Coloring style for the trail.")
     private val outerColorOption = color("OuterColor", Color(0, 111, 255, 255)) { colorModeOption == "Custom" }
+        .describe("Custom color of the trail.")
     private val rainbowSpread by float("RainbowSpread", 1.0f, 0.0f..5.0f) { colorModeOption == "Rainbow" }
+        .describe("Spread of the rainbow across the trail.")
 
     private val renderOnLook by boolean("OnLook", false)
+        .describe("Only render trails of players you look at.")
     private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { renderOnLook }
+        .describe("Max look angle to count as looking at.")
     private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200)
+        .describe("Maximum distance to render trails.")
     // Recompute lazily so changing the slider takes effect immediately.
     private val maxRenderDistanceSq get() = maxRenderDistance.toDouble().pow(2)
 

@@ -34,17 +34,26 @@ import kotlin.math.pow
 object ItemTags : Module("ItemTags", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val showName by boolean("ShowName", true)
+        .describe("Show the item display name in the tag.")
     private val showCount by boolean("ShowCount", true)
+        .describe("Show the stack size in the tag.")
 
     private val scale by float("Scale", 0.5f, 0.1f..1f)
+        .describe("Size of the item tag text.")
     private val yOffset by float("YOffset", 0.6f, -1f..2f)
+        .describe("Vertical offset of the tag above the item.")
 
     private val maxDistance by float("MaxDistance", 64f, 1f..256f)
+        .describe("Maximum distance to render item tags.")
 
     private val background by boolean("Background", true)
+        .describe("Draw a background behind the tag text.")
     private val backgroundColor by color("BackgroundColor", Color(0, 0, 0, 120)) { background }
+        .describe("Color of the tag background.")
     private val textColor by color("TextColor", Color.WHITE)
+        .describe("Color of the tag text.")
     private val shadow by boolean("Shadow", true)
+        .describe("Draw a shadow behind the tag text.")
 
     private val viewport: IntBuffer = GLAllocation.createDirectIntBuffer(16)
     private val modelview: FloatBuffer = GLAllocation.createDirectFloatBuffer(16)

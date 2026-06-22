@@ -18,8 +18,11 @@ import net.ccbluex.liquidbounce.features.module.Module
 object Zoom : Module("Zoom", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
     private val zoom by float("Zoom", 3f, 1.5f..10f)
+        .describe("How far the camera zooms in.")
     private val speed by float("Speed", 100f, 1f..100f)
+        .describe("How fast the FOV transitions when zooming.")
     private val durationFactor by float("DurationFactor", 1f, 0.1f..5f, "x")
+        .describe("Multiplier stretching the zoom transition time.")
 
     private var savedFov = -1f
     private var currentFov = -1f

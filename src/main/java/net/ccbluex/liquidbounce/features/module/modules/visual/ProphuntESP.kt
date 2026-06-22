@@ -23,12 +23,16 @@ import java.util.concurrent.ConcurrentHashMap
 
 object ProphuntESP : Module("ProphuntESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
     private val mode by choices("Mode", arrayOf("Box", "OtherBox", "Glow"), "OtherBox")
+        .describe("Style used to highlight disguised blocks.")
     private val glowSettings = GlowRenderSettings(isSupported = { mode == "Glow" }).also { addValues(it.values) }
 
     private val color by color("Color", Color(0, 90, 255))
+        .describe("Color of the prophunt highlight boxes.")
 
     private val blockFadeTime by int("BlockFadeTime", 2000, 100..10000, "ms")
+        .describe("How long marked blocks stay highlighted.")
     private val fadeOutBlocks by boolean("FadeOutBlocks", false)
+        .describe("Fade marked blocks out over their lifetime.")
 
     private val renderFilters = RenderFilterSettings(50, 1..200).also { addValues(it.values) }
 

@@ -13,9 +13,13 @@ class GlowRenderSettings(
     defaultTargetAlpha: Float = 0f,
 ) : Configurable("GlowRenderSettings") {
     val renderScale by float("Glow-Renderscale", defaultScale, 0.5f..2f, isSupported = isSupported)
+        .describe("Resolution scale of the glow render pass.")
     val radius by int("Glow-Radius", defaultRadius, 1..5, isSupported = isSupported)
+        .describe("Blur radius of the glow effect.")
     val fade by int("Glow-Fade", defaultFade, 0..30, isSupported = isSupported)
+        .describe("How far the glow fades out from the edge.")
     val targetAlpha by float("Glow-Target-Alpha", defaultTargetAlpha, 0f..1f, isSupported = isSupported)
+        .describe("Opacity of the inner part of the glow.")
 }
 
 class RenderFilterSettings(
@@ -30,8 +34,11 @@ class RenderFilterSettings(
 
     val maxRenderDistance by maxRenderDistanceValue
     val onLook by boolean("OnLook", false)
+        .describe("Only render entities you are looking at.")
     val maxAngleDifference by float("MaxAngleDifference", defaultMaxAngleDifference.coerceAtLeast(5f), 5.0f..90f) { onLook }
+        .describe("Max angle from your view to count as looked at.")
     val thruBlocks by boolean("ThruBlocks", true) { includeThruBlocks }
+        .describe("Render entities hidden behind blocks.")
 
     private var maxRenderDistanceSq = defaultMaxRenderDistance.toDouble().pow(2)
 

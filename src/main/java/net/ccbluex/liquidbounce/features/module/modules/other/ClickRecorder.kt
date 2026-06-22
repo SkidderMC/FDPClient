@@ -16,7 +16,9 @@ import org.lwjgl.opengl.Display
 object ClickRecorder : ChartRecorderModule("ClickRecorder") {
 
     private val recordRightClick by boolean("RecordRightClick", false)
+        .describe("Include right clicks in the recorded chart.")
     private val recordMiddleClick by boolean("RecordMiddleClick", false)
+        .describe("Include middle clicks in the recorded chart.")
     private const val MAX_RECORDED_CLICKS = 1000
 
     private val ticks = mutableListOf<Int>()

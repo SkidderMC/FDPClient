@@ -25,10 +25,15 @@ import kotlin.math.pow
 object TNTTrails : Module("TNTTrails", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, spacedName = "TNT Trails") {
 
     private val renderMode by choices("Mode", arrayOf("Line", "Area", "Particles"), "Line")
+        .describe("How TNT trails are drawn.")
     private val activeColor by color("ActiveColor", Color.WHITE)
+        .describe("Color of trails for still-flying TNT.")
     private val completedColor by color("CompletedColor", Color(0, 0, 0))
+        .describe("Color of trails after the TNT is gone.")
     private val lineThickness by float("LineThickness", 2.0f, 1.0f..5.0f) { renderMode == "Line" }
+        .describe("Line thickness in Line mode.")
     private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200)
+        .describe("Maximum distance to render TNT trails.")
     private var maxRenderDistanceSq = maxRenderDistance.toDouble().pow(2)
         set(value) { field = if (value <= 0.0) maxRenderDistance.toDouble().pow(2) else value }
 

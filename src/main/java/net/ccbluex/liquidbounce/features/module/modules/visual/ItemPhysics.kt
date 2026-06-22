@@ -11,7 +11,10 @@ import net.ccbluex.liquidbounce.features.module.Category
 object ItemPhysics: Module("ItemPhysics", Category.VISUAL, Category.SubCategory.RENDER_SELF) {
 
     val realistic by boolean("Realistic", false)
+        .describe("Use more realistic item physics behavior.")
     val weight by float("Weight", 0.5F, 0.1F..3F)
+        .describe("How heavily dropped items fall and settle.")
     val rotationSpeed by float("RotationSpeed", 1.0F, 0.01F..3F)
+        .describe("Spin speed of dropped items.")
 
 }

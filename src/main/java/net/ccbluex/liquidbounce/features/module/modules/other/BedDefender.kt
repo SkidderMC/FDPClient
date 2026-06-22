@@ -47,23 +47,33 @@ import java.awt.Color
 object BedDefender : Module("BedDefender", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val autoBlock by choices("AutoBlock", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof")
+        .describe("How to switch to a block before placing.")
     private val swing by boolean("Swing", true)
+        .describe("Swing the arm when placing a block.")
     private val placeDelay by int("PlaceDelay", 500, 0..1000)
+        .describe("Minimum delay between placements in milliseconds.")
     private val maxLayers by int("MaxLayers", 1, 1..5)
+        .describe("How many layers of blocks to wrap the bed in.")
     private val allowChests by boolean("AllowChests", false)
+        .describe("Allow chests to be used as defence blocks.")
     private val raycastMode by choices(
         "Raycast",
         arrayOf("None", "Normal", "Around"),
         "Normal"
     ) { options.rotationsActive }
     private val scannerMode by choices("Scanner", arrayOf("Nearest", "Random"), "Nearest")
+        .describe("Choose the nearest or a random spot to fill.")
 
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 
     private val onSneakOnly by boolean("OnSneakOnly", true)
+        .describe("Only defend the bed while sneaking.")
     private val autoSneak by choices("AutoSneak", arrayOf("Off", "Normal", "Packet"), "Off") { !onSneakOnly }
+        .describe("Automatically sneak while placing blocks.")
     private val trackCPS by boolean("TrackCPS", false)
+        .describe("Count each placement toward the CPS counter.")
     private val mark by boolean("Mark", false)
+        .describe("Render a box around the targeted block.")
 
     private val defenceBlocks = mutableListOf<BlockPos>()
     private val bedTopPositions = mutableListOf<BlockPos>()

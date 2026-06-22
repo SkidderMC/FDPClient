@@ -22,8 +22,11 @@ object HitFX : Module("HitFX", Category.VISUAL, Category.SubCategory.RENDER_OVER
     )
 
     private val minAmount by int("MinAmount", 4, 1..40)
+        .describe("Minimum number of particles spawned on hit.")
     private val maxAmount by int("MaxAmount", 8, 1..40)
+        .describe("Maximum number of particles spawned on hit.")
     private val spread by float("Spread", 0.6f, 0f..2f)
+        .describe("How far the particles spread on hit.")
 
     private var lastSpawn = 0L
 

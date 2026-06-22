@@ -54,15 +54,19 @@ object ChestAura : Module("ChestAura", Category.OTHER, Category.SubCategory.MISC
     private const val CHEST_DATA_EXPIRY = 300000L
 
     private val chest by boolean("Chest", true)
+        .describe("Open nearby normal chests automatically.")
     private val enderChest by boolean("EnderChest", false)
+        .describe("Open nearby ender chests automatically.")
 
     private val range by float("Range", 5F, 1F..5F).onChanged { value ->
         rangeSq = value.pow(2)
         searchRadiusSq = (value + 1).pow(2)
     }
     private val delay by int("Delay", 200, 50..500)
+        .describe("Delay between chest clicks in milliseconds.")
 
     private val throughWalls by boolean("ThroughWalls", true)
+        .describe("Allow opening chests hidden behind walls.")
     private val wallsRange by float("ThroughWallsRange", 3F, 1F..5F) {
         throughWalls
     }.onChange { _, new ->
@@ -76,13 +80,17 @@ object ChestAura : Module("ChestAura", Category.OTHER, Category.SubCategory.MISC
     }
 
     private val visualSwing by boolean("VisualSwing", true).subjective()
+        .describe("Show a visible arm swing when opening chests.")
 
     private val ignoreLooted by boolean("IgnoreLootedChests", true)
+        .describe("Skip chests that have already been looted.")
     private val detectRefill by boolean("DetectChestRefill", true)
+        .describe("Reset looted chests when a refill is announced.")
 
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.LOW)
 
     private val openInfo by choices("OpenInfo", arrayOf("Off", "Self", "Other", "Everyone"), "Off")
+        .describe("Print who opens chests and how long it took.")
 
     var tileTarget: TileTarget? = null
     private val timer = MSTimer()

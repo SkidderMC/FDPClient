@@ -10,4 +10,5 @@ import net.ccbluex.liquidbounce.features.module.Category
 
 object NoSwing : Module("NoSwing", Category.VISUAL, Category.SubCategory.RENDER_SELF) {
     val serverSide by boolean("ServerSide", true)
+        .describe("Also hide the swing animation server-side.")
 }
