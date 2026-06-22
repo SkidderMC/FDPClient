@@ -924,6 +924,40 @@ class SettingComponents(private val module: Module) : Component() {
                 count++
             }
 
+            // ----- FileValue -----
+            if (setting is FileValue) {
+                val startText = setting.name + ": "
+                val valueText = setting.shortName
+                val titleX = x + 5f
+                val textY = settingY + 4f
+                val textX = titleX + Fonts.InterMedium_18.stringWidth(startText).toFloat()
+
+                val rowHovered = isClickable(textY - 2)
+                        && RenderUtils.isHovering(
+                    titleX,
+                    textY - 2,
+                    width - 10,
+                    Fonts.InterMedium_18.height + 4f,
+                    mouseX,
+                    mouseY
+                )
+
+                if (rowHovered) {
+                    drawCustomShapeWithRadius(
+                        titleX, textY - 2, width - 10, Fonts.InterMedium_18.height + 4f, 2f,
+                        RenderUtils.applyOpacity(textColor, .15f)
+                    )
+                }
+
+                if (type == GuiEvents.CLICK && rowHovered && button == 0) {
+                    setting.openDialog()
+                }
+
+                Fonts.InterMedium_18.drawString(startText, titleX, textY, textColor.rgb)
+                Fonts.InterMedium_18.drawString(valueText, textX, textY, textColor.rgb)
+                count++
+            }
+
             // ----- ColorValue -----
             if (setting is ColorValue) {
                 val currentColor = setting.selectedColor()

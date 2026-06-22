@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.config.IntValue
 import net.ccbluex.liquidbounce.config.ListValue
 import net.ccbluex.liquidbounce.config.ColorValue
 import net.ccbluex.liquidbounce.config.TextValue
+import net.ccbluex.liquidbounce.config.FileValue
 import net.ccbluex.liquidbounce.config.BlockValue
 import net.ccbluex.liquidbounce.config.FontValue
 import net.ccbluex.liquidbounce.config.IntRangeValue
@@ -63,6 +64,7 @@ class ModuleElement(
                 is ListValue -> ListElement(this, value, parent, x + 4, y, width - 8, 12)
                 is ColorValue -> ColorElement(this, value, parent, x + 4, y, width - 8, 12)
                 is TextValue -> TextElement(this, value, parent, x + 4, y, width - 8, 12)
+                is FileValue -> FileElement(this, value, parent, x + 4, y, width - 8, 12)
                 is BlockValue -> BlockElement(this, value, parent, x + 4, y, width - 8, 12)
                 is FontValue -> FontElement(this, value, parent, x + 4, y, width - 8, 12)
                 is MultiSelectValue -> MultiSelectElement(this, value, parent, x + 4, y, width - 8, 12)
@@ -265,4 +267,55 @@ class ModuleElement(
             elements.forEach { it.keyTyped(character, code) }
         }
     }
+}
+
+/**
+ * File Element - YZY GUI
+ * @author opZywl
+ */
+class FileElement(
+    private val element: ModuleElement,
+    private val setting: FileValue,
+    parent: Panel,
+    x: Int,
+    y: Int,
+    width: Int,
+    height: Int
+) : PanelElement(parent, x, y, width, height) {
+
+    override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
+        RenderUtils.yzyRectangle(
+            x.toFloat(), y.toFloat(),
+            width.toFloat(), height.toFloat(),
+            Color(26, 26, 26)
+        )
+
+        val font = FDPClient.customFontManager["lato-bold-15"]
+
+        font?.drawString(
+            setting.name,
+            (x + 1).toFloat(),
+            y + (height / 4.0f) + 0.5f,
+            -1
+        )
+
+        val displayText = setting.shortName
+        val textWidth = font?.getWidth(displayText) ?: 0
+        font?.drawString(
+            displayText,
+            (x + width - textWidth - 10).toFloat(),
+            y + (height / 4.0f) + 0.5f,
+            Color(0xD2D2D2).rgb
+        )
+    }
+
+    override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {
+        if (isHovering(mouseX, mouseY) && button == 0) {
+            setting.openDialog()
+        }
+    }
+
+    override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {}
+
+    override fun keyTyped(character: Char, code: Int) {}
 }

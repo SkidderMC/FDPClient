@@ -27,7 +27,7 @@ object SkinChanger : Module("SkinChanger", Category.VISUAL, Category.SubCategory
         invalidate()
     }
 
-    private val fileName by text("FileName", "skin.png") { mode == "File" }.onChanged {
+    private val fileName by fileValue("FileName", "skin.png", extensions = listOf("png")) { mode == "File" }.onChanged {
         invalidate()
     }
 

@@ -888,6 +888,22 @@ object BlackStyle : Style() {
                             yPos += spacing + rgbaOptionHeight
                         }
 
+                        is FileValue -> {
+                            val text = value.name + "§f: " + value.shortName
+
+                            moduleElement.settingsWidth = fontSemibold35.getStringWidth(text) + 8
+
+                            if (mouseButton == 0 && mouseX in minX..maxX && mouseY in yPos..yPos + 12) {
+                                value.openDialog()
+                                clickSound()
+                                return true
+                            }
+
+                            fontSemibold35.drawString(text, minX + 2, yPos + 2, Color.WHITE.rgb)
+
+                            yPos += 12
+                        }
+
                         else -> {
                             val startText = value.name + "§f: "
                             var valueText = "${value.get()}"

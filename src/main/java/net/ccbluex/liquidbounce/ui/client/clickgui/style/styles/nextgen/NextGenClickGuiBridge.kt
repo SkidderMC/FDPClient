@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.config.BlockValue
 import net.ccbluex.liquidbounce.config.BoolValue
 import net.ccbluex.liquidbounce.config.ColorValue
+import net.ccbluex.liquidbounce.config.FileValue
 import net.ccbluex.liquidbounce.config.FloatRangeValue
 import net.ccbluex.liquidbounce.config.FloatValue
 import net.ccbluex.liquidbounce.config.FontValue
@@ -398,6 +399,11 @@ object NextGenClickGuiBridge : MinecraftInstance {
                 addProperty("value", value.get())
             }
 
+            is FileValue -> settingBase("TEXT", value.name).apply {
+                addProperty("value", value.get())
+                addProperty("shortName", value.shortName)
+            }
+
             is FontValue -> settingBase("CHOOSE", value.name).apply {
                 addProperty("value", fontLabel(value.get()))
                 add("choices", JsonArray().apply {
@@ -466,6 +472,7 @@ object NextGenClickGuiBridge : MinecraftInstance {
                 is MultiSelectValue -> value.set(element.asJsonArray.mapNotNull { it.asString }.toSet())
                 is ColorValue -> value.set(Color(element.asInt, true))
                 is TextValue -> value.set(element.asString)
+                is FileValue -> value.set(element.asString)
                 is KeyBindValue -> value.set(fromMinecraftKey(element.asString))
                 is Vec3Value -> {
                     val vector = element.asJsonObject

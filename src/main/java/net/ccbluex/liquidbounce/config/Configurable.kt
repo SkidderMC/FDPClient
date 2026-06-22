@@ -101,6 +101,13 @@ open class Configurable(
         if (isSupported != null) setSupport { isSupported.invoke() }
     }
 
+    fun fileValue(
+        name: String, value: String = "", dialogMode: FileDialogMode = FileDialogMode.OPEN_FILE,
+        extensions: List<String> = emptyList(), isSupported: (() -> Boolean)? = null
+    ) = +FileValue(name, value, dialogMode, extensions).apply {
+        if (isSupported != null) setSupport { isSupported.invoke() }
+    }
+
     fun boolean(
         name: String, value: Boolean, isSupported: (() -> Boolean)? = null
     ) = +BoolValue(name, value).apply {
