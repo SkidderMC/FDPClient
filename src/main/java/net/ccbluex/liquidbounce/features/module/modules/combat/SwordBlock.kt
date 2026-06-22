@@ -16,7 +16,9 @@ import net.minecraft.item.ItemSword
 object SwordBlock : Module("SwordBlock", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT, gameDetecting = false) {
 
     private val mode by choices("Mode", arrayOf("Always", "WhileAttacking"), "WhileAttacking")
+        .describe("When to keep the sword block active.")
     private val keepWhileManualUse by boolean("KeepWhileManualUse", true)
+        .describe("Do not override a manual right-click hold.")
 
     private var forcedBlocking = false
 

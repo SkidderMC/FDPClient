@@ -18,8 +18,11 @@ import net.minecraft.util.BlockPos
 object Eagle : Module("Eagle", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST) {
 
     private val maxSneakTime by intRange("MaxSneakTime", 1..5, 0..20)
+        .describe("Random number of ticks to keep sneaking.")
     private val onlyWhenLookingDown by boolean("OnlyWhenLookingDown", false)
+        .describe("Only auto-sneak while looking downward.")
     private val lookDownThreshold by float("LookDownThreshold", 45f, 0f..90f) { onlyWhenLookingDown }
+        .describe("Minimum pitch to count as looking down.")
 
     private val sneakTimer = TickTimer()
 

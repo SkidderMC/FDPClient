@@ -16,7 +16,9 @@ import net.minecraft.network.play.client.C0BPacketEntityAction.Action.STOP_SLEEP
 object SleepWalker : Module("SleepWalker", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val notifyServer by boolean("NotifyServer", false)
+        .describe("Tell the server you stopped sleeping.")
     private val closeScreen by boolean("CloseScreen", true)
+        .describe("Close the sleeping screen automatically.")
 
     val onUpdate = handler<UpdateEvent> {
         val player = mc.thePlayer ?: return@handler

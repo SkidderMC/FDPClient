@@ -20,32 +20,42 @@ import net.minecraft.potion.Potion
 object GameDetector : Module("GameDetector", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false) {
     // Check if player's gamemode is Survival or Adventure
     private val gameMode by boolean("GameModeCheck", true)
+        .describe("Require survival or adventure mode to be in game.")
 
     // Check if player doesn't have unnatural capabilities
     private val capabilities by boolean("CapabilitiesCheck", true)
+        .describe("Require normal capabilities to be in game.")
 
     // Check if there are > 1 players in tablist
     private val tabList by boolean("TabListCheck", true)
+        .describe("Require more than one player in the tab list.")
 
     // Check if there are > 1 teams or if friendly fire is enabled
     private val teams by boolean("TeamsCheck", true)
+        .describe("Require multiple teams or friendly fire on.")
 
     // Check if player doesn't have infinite invisibility effect
     private val invisibility by boolean("InvisibilityCheck", true)
+        .describe("Require no infinite invisibility effect.")
 
     // Check if player has compass inside their inventory
     private val compass by boolean("CompassCheck", false)
+        .describe("Require a compass in the inventory to be in game.")
 
     // Check for compass inside inventory. If false, then it should only check for selected slot
     private val checkAllSlots by boolean("CheckAllSlots", true) { compass }
+        .describe("Search all slots instead of just the held slot.")
     private val slot by int("Slot", 1, 1..9) { compass && !checkAllSlots }
+        .describe("Hotbar slot to check for the compass.")
 
     // Check for any hub-like BossBar or ArmorStand entities
     private val entity by boolean("EntityCheck", false)
+        .describe("Require no hub-like boss bar or armor stands.")
 
     // Check for strings in scoreboard that could signify that the game is waiting for players or if you are in a lobby
     // Needed on Gamster
     private val scoreboard by boolean("ScoreboardCheck", false)
+        .describe("Detect lobby keywords in the scoreboard.")
 
     private val WHITELISTED_SUBSTRINGS = arrayOf(":", "Vazio!", "§6§lRumble Box", "§5§lDivine Drop")
 

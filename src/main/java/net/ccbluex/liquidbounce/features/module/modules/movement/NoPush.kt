@@ -14,7 +14,9 @@ import net.ccbluex.liquidbounce.features.module.Module
 object NoPush : Module("NoPush", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS, gameDetecting = false) {
 
     private val blocks by boolean("Blocks", true)
+        .describe("Prevent blocks from pushing the player.")
     private val sinking by boolean("Sinking", true)
+        .describe("Stop sinking downward in water or lava.")
 
     val onBlockPush = handler<BlockPushEvent> { event ->
         if (blocks) {

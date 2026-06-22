@@ -36,13 +36,20 @@ import org.lwjgl.opengl.GL11
 object AntiFireball : Module("AntiFireball", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
     private val indicators by boolean("Indicator", true)
+        .describe("Show on-screen indicators pointing to fireballs.")
     private val range by float("Range", 4.5f, 3f..8f)
+        .describe("Maximum distance to hit incoming fireballs.")
     private val swing by choices("Swing", arrayOf("Normal", "Packet", "None"), "Normal")
+        .describe("How to swing the arm when hitting a fireball.")
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.CRITICAL)
     private val fireballTickCheck by boolean("FireballTickCheck", true)
+        .describe("Only hit fireballs that have existed long enough.")
     private val minFireballTick by int("MinFireballTick", 10, 1..20) { fireballTickCheck }
+        .describe("Minimum ticks a fireball must exist before hitting.")
     private val scale by float("Size", 0.7f, 0.65f..1.25f) { indicators }
+        .describe("Scale of the fireball indicator icon.")
     private val radius by float("Radius", 50f, 15f..150f) { indicators }
+        .describe("Screen radius at which indicators are drawn.")
 
     private var target: Entity? = null
     var distance = 0f

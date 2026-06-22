@@ -19,6 +19,7 @@ import kotlin.math.sin
 object VehicleBoost : Module("VehicleBoost", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS) {
 
     private val strength by float("Strength", 1.5f, 0.2f..5f)
+        .describe("How strongly to push the ridden vehicle.")
 
     val onUpdate = handler<UpdateEvent> {
         val player = mc.thePlayer ?: return@handler

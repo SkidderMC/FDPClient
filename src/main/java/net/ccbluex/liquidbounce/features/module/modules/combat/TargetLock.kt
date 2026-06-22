@@ -29,11 +29,17 @@ import java.awt.Color
 object TargetLock : Module("TargetLock", Category.COMBAT, Category.SubCategory.COMBAT_RAGE, gameDetecting = false) {
 
     private val maxRange by float("MaxRange", 20F, 8F..40F)
+        .describe("Drop the lock if the target gets farther than this.")
     private val drawMarker by boolean("Marker", true)
+        .describe("Draw a marker on the locked entity.")
     private val rainbowColor by boolean("Rainbow", false) { drawMarker }
+        .describe("Use a rainbow color for the marker.")
     private val red by int("Red", 0, 0..255) { drawMarker && !rainbowColor }
+        .describe("Red component of the marker color.")
     private val green by int("Green", 200, 0..255) { drawMarker && !rainbowColor }
+        .describe("Green component of the marker color.")
     private val blue by int("Blue", 255, 0..255) { drawMarker && !rainbowColor }
+        .describe("Blue component of the marker color.")
 
     private var lockedEntity: EntityLivingBase? = null
 

@@ -28,13 +28,19 @@ import net.minecraft.item.ItemStack
 object Replenish : Module("Replenish", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val instant by boolean("Instant", false)
+        .describe("Replenish all slots in one tick.")
     private val delay by int("Delay", 50, 0..1000, "ms") { !instant }
+        .describe("Delay between replenish clicks in milliseconds.")
 
     private val itemThreshold by int("ItemThreshold", 8, 0..63)
+        .describe("Top up a stack when it drops to this count.")
     private val replenishEmpty by boolean("ReplenishEmpty", true)
+        .describe("Refill slots that have been fully emptied.")
     private val heldOnly by boolean("HeldOnly", false)
+        .describe("Only replenish the currently held slot.")
 
     private val silent by boolean("Silent", false)
+        .describe("Replenish without opening the real inventory.")
 
     // Last non-empty stack seen in each hotbar slot, used to restore emptied slots
     private val trackedItems = arrayOfNulls<ItemStack>(9)

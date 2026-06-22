@@ -21,6 +21,7 @@ import net.minecraft.network.play.client.C02PacketUseEntity
 object VehicleOneHit : Module("VehicleOneHit", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     private val hits by int("Hits", 20, 2..40)
+        .describe("Number of attack packets sent per hit.")
 
     private var bursting = false
 

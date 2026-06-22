@@ -54,23 +54,32 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
     private var confirmAttack = false
 
     private val timerBoostMode by choices("TimerMode", arrayOf("Normal", "Smart", "Modern"), "Modern")
+        .describe("Which timer-range algorithm to use.")
 
     private val ticksValue by int("Ticks", 10, 1..20)
+        .describe("How many ticks the timer effect lasts.")
 
     // Min & Max Boost Delay Settings
     private val timerBoostValue by float("TimerBoost", 1.5f, 0.01f..35f)
+        .describe("Timer speed during the boost phase.")
     private val boostDelay by floatRange("BoostDelay", 0.5f..0.55f, 0.1f..1f)
+        .describe("Progress fraction range for the boost phase.")
 
     // Min & Max Charged Delay Settings
     private val timerChargedValue by float("TimerCharged", 0.45f, 0.05f..5f)
+        .describe("Timer speed during the charged phase.")
     private val chargedDelay by floatRange("ChargedDelay", 0.75f..0.9f, 0.1f..1.0f)
+        .describe("Progress fraction range for the charged phase.")
 
     // Normal Mode Settings
     private val rangeValue by float("Range", 3.5f, 1f..5f) { timerBoostMode == "Normal" }
+        .describe("Attack range for Normal mode.")
     private val cooldownTickValue by int("CooldownTick", 10, 1..50) { timerBoostMode == "Normal" }
+        .describe("Cooldown ticks between boosts in Normal mode.")
 
     // Smart & Modern Mode Range
     private val range by floatRange("Range", 2.5f..3f, 2f..8f) { timerBoostMode != "Normal" }
+        .describe("Attack distance range for Smart and Modern modes.")
 
     private val scanRange by float("ScanRange", 8f, 2f..12f) { timerBoostMode != "Normal" }.onChange { _, new ->
         new.coerceAtLeast(range.endInclusive)
@@ -78,35 +87,53 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
 
     // Min & Max Tick Delay
     private val tickDelay by intRange("TickDelay", 30..60, 1..200) { timerBoostMode != "Normal" }
+        .describe("Tick delay range between timer effects.")
 
     // Blink Option
     private val blink by boolean("Blink", false)
+        .describe("Hold packets while the timer effect runs.")
 
     // Prediction Settings
     private val predictClientMovement by int("PredictClientMovement", 2, 0..5)
+        .describe("How many ticks of your movement to predict.")
     private val predictEnemyPosition by float("PredictEnemyPosition", 1.5f, -1f..2f)
+        .describe("How far ahead to predict the enemy position.")
 
     private val maxAngleDifference by float("MaxAngleDifference", 5f, 5f..90f) { timerBoostMode == "Modern" }
+        .describe("Max view angle off the target to still trigger.")
 
     // Distance-gated speed scaling (layered on top of the tick progression)
     // Defaults keep the effective timer identical to the existing behavior.
     private val distanceToStartWorking by float("DistanceToStartWorking", 100f, 0f..500f)
+        .describe("Only apply the timer when a target is within this.")
     private val distanceToSpeedUp by float("DistanceToSpeedUp", 100f, 0f..500f)
+        .describe("Use in-range speed when closer than this.")
     private val inRangeSpeed by float("InRangeSpeed", 1f, 0.1f..10f)
+        .describe("Timer speed scale when within speed-up distance.")
     private val normalSpeed by float("NormalSpeed", 1f, 0.1f..10f)
+        .describe("Timer speed scale when outside speed-up distance.")
 
     // Mark Option
     private val markMode by choices("Mark", arrayOf("Off", "Box", "Platform"), "Off") { timerBoostMode == "Modern" }
+        .describe("How to highlight the nearby target.")
     private val outline by boolean("Outline", false) { timerBoostMode == "Modern" && markMode == "Box" }
+        .describe("Draw an outline around the marker box.")
 
     // Optional
     private val onWeb by boolean("OnWeb", false)
+        .describe("Allow the timer effect while in cobwebs.")
     private val onLiquid by boolean("onLiquid", false)
+        .describe("Allow the timer effect while in liquid.")
     private val onForwardOnly by boolean("OnForwardOnly", true)
+        .describe("Only count as moving when going straight forward.")
     private val resetOnlagBack by boolean("ResetOnLagback", false)
+        .describe("Reset the timer when the server lags you back.")
     private val resetOnKnockback by boolean("ResetOnKnockback", false)
+        .describe("Reset the timer when you take knockback.")
     private val chatDebug by boolean("ChatDebug", true) { resetOnlagBack || resetOnKnockback }
+        .describe("Print timer reset events to chat.")
     private val notificationDebug by boolean("NotificationDebug", false) { resetOnlagBack || resetOnKnockback }
+        .describe("Show a notification on timer reset events.")
 
     private val entities by EntityLookup<EntityLivingBase>()
         .filter { isSelected(it, true) }

@@ -13,9 +13,13 @@ import net.minecraft.item.ItemArmor
 object Teams : Module("Teams", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false) {
 
     private val scoreboard by boolean("ScoreboardTeam", true)
+        .describe("Treat scoreboard teammates as your team.")
     private val nameColor by boolean("NameColor", true)
+        .describe("Treat players with your name color as teammates.")
     private val armorColor by boolean("ArmorColor", true)
+        .describe("Treat players with matching leather armor as team.")
     private val gommeSW by boolean("GommeSW", false)
+        .describe("Use GommeHD SkyWars team detection.")
 
     /**
      * Check if [entity] is in your own team using scoreboard, name/armor color or team prefix

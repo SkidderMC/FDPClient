@@ -56,22 +56,36 @@ object Animations : Module("Animations", Category.CLIENT, Category.SubCategory.C
     )
 
     private val animationMode by choices("Mode", animations.map { it.name }.toTypedArray(), "Pushdown")
+        .describe("Which hand blocking animation style to use.")
     val oddSwing by boolean("OddSwing", false)
+        .describe("Use an alternating odd swing animation.")
     val swingSpeed by int("SwingSpeed", 15, 0..20)
+        .describe("How fast the hand swing animation plays.")
 
     val handItemScale by float("ItemScale", 0f, -5f..5f)
+        .describe("Scale offset applied to the held item.")
     val handX by float("X", 0f, -5f..5f)
+        .describe("X position offset of the held item.")
     val handY by float("Y", 0f, -5f..5f)
+        .describe("Y position offset of the held item.")
     val handZ by float("Z", 0f, -5f..5f)
+        .describe("Z position offset of the held item.")
     val handScale by float("Scale", 1f, 0.1f..3f)
+        .describe("Overall scale of the held item.")
     val handPosX by float("PositionRotationX", 0f, -50f..50f)
+        .describe("X rotation position offset of the hand.")
     val handPosY by float("PositionRotationY", 0f, -50f..50f)
+        .describe("Y rotation position offset of the hand.")
     val handPosZ by float("PositionRotationZ", 0f, -50f..50f)
+        .describe("Z rotation position offset of the hand.")
 
 
     var itemRotate by boolean("ItemRotate", false)
+        .describe("Continuously rotate the held item.")
     val itemRotationMode by choices("ItemRotateMode", arrayOf("None", "Straight", "Forward", "Nano", "Uh"), "None") { itemRotate }
+        .describe("Axis pattern used to rotate the held item.")
     val itemRotateSpeed by float("RotateSpeed", 8f, 1f.. 15f)  { itemRotate }
+        .describe("How fast the held item rotates.")
 
     var delay = 0f
 

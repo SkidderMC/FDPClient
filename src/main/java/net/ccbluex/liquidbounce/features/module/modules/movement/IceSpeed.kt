@@ -22,6 +22,7 @@ import net.minecraft.util.BlockPos
 object IceSpeed : Module("IceSpeed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
 
     private val speed by float("Speed", 0.34f, 0.2f..0.6f)
+        .describe("Horizontal speed to drive while standing on ice.")
 
     val onMove = handler<MoveEvent> { event ->
         val player = mc.thePlayer ?: return@handler

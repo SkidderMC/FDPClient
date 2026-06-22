@@ -23,9 +23,12 @@ import net.minecraft.util.AxisAlignedBB
 object BlockBounce : Module("BlockBounce", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN, gameDetecting = false) {
 
     private val motion by float("Motion", 0.42f, 0.2f..2f)
+        .describe("Extra upward motion added when bouncing off a block.")
 
     private val slime by boolean("Slime", true)
+        .describe("Bounce when standing on slime blocks.")
     private val bed by boolean("Bed", true)
+        .describe("Bounce when standing on beds.")
 
     val onJump = handler<JumpEvent> { event ->
         if (standingOnBouncyBlock())

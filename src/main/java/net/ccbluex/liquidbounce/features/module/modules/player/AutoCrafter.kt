@@ -29,8 +29,11 @@ import net.minecraft.item.crafting.ShapelessRecipes
 object AutoCrafter : Module("AutoCrafter", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val target by text("Target", "minecraft:stick")
+        .describe("Item ID to automatically craft.")
     private val delay by int("Delay", 250, 0..2000)
+        .describe("Delay between craft actions in milliseconds.")
     private val craftAll by boolean("CraftAll", true)
+        .describe("Take the whole output stack instead of one item.")
 
     private const val WILDCARD = 32767
     private const val GRID_WIDTH = 3

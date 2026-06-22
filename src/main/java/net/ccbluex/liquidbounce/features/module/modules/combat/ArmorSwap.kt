@@ -43,20 +43,35 @@ object ArmorSwap : Module("ArmorSwap", Category.COMBAT, Category.SubCategory.COM
     )
 
     private val delayValue by int("Delay", 80, 1..500, suffix = "ms")
+        .describe("Delay between armor swap actions.")
     private val swapAll by boolean("SwapAll", false)
+        .describe("Use one threshold for all armor pieces.")
     private val percentage by int("Percentage", 25, 0..100, suffix = "%") { swapAll }
+        .describe("Durability below which all armor is swapped.")
     private val helmetPct by int("Helmet", 25, 0..100, suffix = "%") { !swapAll }
+        .describe("Durability below which the helmet is swapped.")
     private val chestPct by int("Chest", 25, 0..100, suffix = "%") { !swapAll }
+        .describe("Durability below which the chestplate is swapped.")
     private val legsPct by int("Legs", 25, 0..100, suffix = "%") { !swapAll }
+        .describe("Durability below which the leggings are swapped.")
     private val bootsPct by int("Boots", 25, 0..100, suffix = "%") { !swapAll }
+        .describe("Durability below which the boots are swapped.")
     private val autoDrop by boolean("AutoDrop", false)
+        .describe("Drop the old armor after swapping.")
     private val multiSwap by boolean("MultiSwap", false)
+        .describe("Swap multiple armor pieces in one pass.")
     private val openInventory by boolean("OpenInventory", true)
+        .describe("Open the inventory to perform the swap.")
     private val inventoryOrganizer by boolean("InventoryOrganizer", false)
+        .describe("Move spare armor into fixed hotbar slots.")
     private val helmetSlot by int("HelmetSlot", 1, 1..9) { inventoryOrganizer }
+        .describe("Hotbar slot used to store the helmet.")
     private val chestSlot by int("ChestSlot", 2, 1..9) { inventoryOrganizer }
+        .describe("Hotbar slot used to store the chestplate.")
     private val legsSlot by int("LegsSlot", 3, 1..9) { inventoryOrganizer }
+        .describe("Hotbar slot used to store the leggings.")
     private val bootsSlot by int("BootsSlot", 4, 1..9) { inventoryOrganizer }
+        .describe("Hotbar slot used to store the boots.")
 
     private val startDelay by +InventoryManager.startDelayValue
     private val closeDelay by +InventoryManager.closeDelayValue

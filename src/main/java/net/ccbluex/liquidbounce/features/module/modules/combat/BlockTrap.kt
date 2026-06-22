@@ -50,26 +50,36 @@ import kotlin.math.floor
 object BlockTrap : Module("BlockTrap", Category.COMBAT, Category.SubCategory.COMBAT_RAGE, gameDetecting = false) {
 
     private val autoBlock by choices("AutoBlock", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof")
+        .describe("How to switch to the block before placing.")
     private val swing by boolean("Swing", true)
+        .describe("Swing the arm when placing blocks.")
     private val placeDelay by int("PlaceDelay", 250, 0..1000)
+        .describe("Delay between block placements.")
 
     // The horizontal reach (in blocks) at which a target may be trapped.
     private val range by float("Range", 4.5f, 1f..6f)
+        .describe("Max distance to trap a target.")
 
     // How many blocks may be placed within a single tick.
     private val maxPlacements by int("MaxPlacements", 1, 1..4)
+        .describe("Max blocks placed in a single tick.")
 
     // Also place the ring of blocks one layer above the feet (the legs) so they can't simply step out.
     private val trapLegs by boolean("TrapLegs", true)
+        .describe("Also wall the block above the feet.")
 
     // Place two blocks above the target's head so they can't mine straight up and tower to escape.
     private val trapAbove by boolean("TrapAbove", false)
+        .describe("Place blocks above the head to stop towering.")
 
     // Verify the candidate spot is reachable by raytrace before placing.
     private val raycast by boolean("Raycast", true) { options.rotationsActive }
+        .describe("Verify the spot is reachable before placing.")
 
     private val trackCPS by boolean("TrackCPS", false)
+        .describe("Count placements toward the CPS counter.")
     private val mark by boolean("Mark", false)
+        .describe("Render boxes on planned trap positions.")
 
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 

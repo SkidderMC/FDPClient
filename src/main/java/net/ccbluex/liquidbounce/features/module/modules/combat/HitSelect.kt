@@ -37,25 +37,37 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
 
     // Main mode
     private val mode by choices("Mode", arrayOf("Burst", "Critical"), "Burst")
+        .describe("Click filtering strategy to use.")
 
     // General settings
     private val pauseDuration by int("PauseDuration", 500, 50..1000) { mode == "Burst" }
+        .describe("Pause length between attack bursts.")
     private val targetHurtTime by int("TargetHurtTime", 0, 0..10) { mode == "Critical" }
+        .describe("Only attack when target hurt-time is at or below this.")
     private val waitForFirstHit by boolean("WaitForFirstHit", true)
+        .describe("Wait until you are hit before attacking back.")
     private val useServerAttackTime by boolean("UseServerAttackTime", false)
+        .describe("Wait for server damage confirmation between hits.")
     private val fakeSwing by choices("FakeSwing", arrayOf("Off", "Client", "Server"), "Off")
+        .describe("Fake a swing when a combat click is canceled.")
 
     // Cancel rates
     private val cancelRateInCombat by int("CancelRate-InCombat", 100, 0..100)
+        .describe("Chance to cancel a filtered combat click.")
     private val cancelAirSwing by boolean("CancelAirSwing", true)
+        .describe("Filter out swings that miss into the air.")
     private val cancelRateMissedSwings by int("CancelRate-MissedSwings", 50, 0..100) { cancelAirSwing }
+        .describe("Chance to cancel a missed air swing.")
     private val fakeSwingAir by choices("FakeSwing-Air", arrayOf("Off", "Client", "Server"), "Off") { cancelAirSwing }
+        .describe("Fake a swing when an air click is canceled.")
 
     // Critical mode settings
     private val disableDuringKnockback by boolean("DisableDuringKnockback", false) { mode == "Critical" }
+        .describe("Stop waiting for crits while being knocked back.")
 
     // Burst mode settings
     private val hitLaterInTrades by int("HitLaterInTrades", 0, 0..500) { mode == "Burst" }
+        .describe("Delay attacks after taking knockback in a trade.")
 
     // State tracking
     private val pauseTimer = MSTimer()

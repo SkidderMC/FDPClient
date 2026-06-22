@@ -32,19 +32,26 @@ object Jesus : Module("Jesus", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
         "NCP"
     )
     private val aacFly by float("AACFlyMotion", 0.5f, 0.1f..1f) { mode == "AACFly" }
+        .describe("Upward motion while flying on water in AACFly mode.")
     private val jumpMotion by float("Jump-Motion", 0.5f, 0.1f..1f) { mode == "Jump" }
+        .describe("Upward motion used by the Jump mode.")
     private val silentYPortUp by float("SilentYPort-Up", 0.1f, 0f..0.5f) { mode == "SilentYPort" }
+        .describe("Upward Y teleport step for SilentYPort mode.")
     private val silentYPortDown by float("SilentYPort-Down", 0.1f, 0f..0.5f) { mode == "SilentYPort" }
+        .describe("Downward Y teleport step for SilentYPort mode.")
     private val silentYPortSpeedModify by float("SilentYPort-SpeedModify", 1.0f, 0f..1.5f) {
         mode == "SilentYPort"
     }
     private val silentYPortSpoofGround by boolean("SilentYPort-SpoofGround", false) { mode == "SilentYPort" }
+        .describe("Spoof being on the ground in SilentYPort mode.")
     private val silentYPortConvertGround by boolean("SilentYPort-ConvertGround", true) { mode == "SilentYPort" }
+        .describe("Periodically send a real ground packet to reset.")
     private val silentYPortConvertDelay by int("SilentYPort-ConvertDelay", 1000, 0..2000) {
         mode == "SilentYPort" && silentYPortConvertGround
     }
 
     private val noJump by boolean("NoJump", false)
+        .describe("Prevent jumping while standing on liquid.")
 
     private var nextTick = false
     private var silentYPortNextTick = false

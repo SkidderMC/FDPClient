@@ -21,11 +21,16 @@ import net.minecraft.network.play.client.C03PacketPlayer
 object AntiAim : Module("AntiAim", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val yawMode by choices("YawMode", arrayOf("None", "Backwards", "Spin", "Static", "Invert"), "Backwards")
+        .describe("How the faked yaw is generated.")
     private val staticYaw by float("StaticYaw", 180f, -180f..180f) { yawMode == "Static" }
+        .describe("Fixed yaw angle to send to the server.")
     private val spinSpeed by float("SpinSpeed", 20f, 1f..90f) { yawMode == "Spin" }
+        .describe("Degrees the spinning yaw advances per tick.")
 
     private val pitchMode by choices("PitchMode", arrayOf("None", "Up", "Down", "Static"), "None")
+        .describe("How the faked pitch is generated.")
     private val staticPitch by float("StaticPitch", 0f, -90f..90f) { pitchMode == "Static" }
+        .describe("Fixed pitch angle to send to the server.")
 
     private var spin = 0f
 

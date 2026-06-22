@@ -80,7 +80,9 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
      */
 
     private val simulateCooldown by boolean("SimulateCooldown", false)
+        .describe("Wait for the vanilla attack cooldown.")
     private val simulateDoubleClicking by boolean("SimulateDoubleClicking", false) { !simulateCooldown }
+        .describe("Occasionally click twice in a tick like a human.")
 
     // CPS - Attack speed
     private val cps by intRange("CPS", 5..8, 1..50) { !simulateCooldown }.onChanged {
@@ -88,11 +90,15 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     }
 
     private val hurtTime by int("HurtTime", 10, 0..10) { !simulateCooldown }
+        .describe("Only attack when target hurt-time is at or below this.")
 
     private val activationSlot by boolean("ActivationSlot", false)
+        .describe("Only run while a specific hotbar slot is held.")
     private val preferredSlot by int("PreferredSlot", 1, 1..9) { activationSlot }
+        .describe("Hotbar slot that activates the aura.")
 
     private val clickOnly by boolean("ClickOnly", false)
+        .describe("Only attack while the attack key is held.")
 
     // Range
     // TODO: Make block range independent from attack range
@@ -100,9 +106,13 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         blockRange = blockRange.coerceAtMost(it)
     }
     private val scanRange by float("ScanRange", 2f, 0f..10f)
+        .describe("Extra range used to search for the aim spot.")
     private val throughWallsRange by float("ThroughWallsRange", 3f, 0f..8f)
+        .describe("Max distance to attack targets through walls.")
     private val rangeSprintReduction by float("RangeSprintReduction", 0f, 0f..0.4f)
+        .describe("Range reduction applied while sprinting.")
     private val rangeChance by int("RangeChance", 100, 1..100, "%")
+        .describe("Chance to use the full range each roll.")
     private var rolledRange = -1f
     private var rangeRollCounter = 0
 
@@ -124,36 +134,55 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         ), "Armor"
     )
     private val targetMode by choices("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch")
+        .describe("How many targets to engage at once.")
     private val limitedMultiTargets by int("LimitedMultiTargets", 0, 0..50) { targetMode == "Multi" }
+        .describe("Max targets to hit in multi mode, 0 is no limit.")
     private val maxSwitchFOV by float("MaxSwitchFOV", 90f, 30f..180f) { targetMode == "Switch" }
+        .describe("Max angle to switch to another target.")
 
     // Delay
     private val switchDelay by int("SwitchDelay", 15, 1..1000) { targetMode == "Switch" }
+        .describe("Delay before switching targets.")
 
     // Bypass
     private val swing by boolean("Swing", true)
+        .describe("Swing the arm when attacking.")
     private val keepSprint by boolean("KeepSprint", true)
+        .describe("Keep sprinting after attacking.")
 
     // Settings
     private val autoF5 by boolean("AutoF5", false)
+        .describe("Switch to third person while a target exists.")
     private val onSwording by boolean("OnSwording", true)
+        .describe("Only attack while holding a sword.")
     private val onScaffold by boolean("OnScaffold", false)
+        .describe("Allow attacking while scaffolding.")
     private val onDestroyBlock by boolean("OnDestroyBlock", false)
+        .describe("Allow attacking while breaking blocks.")
 
     private val postRotationAttack by boolean("PostRotationAttack", false)
+        .describe("Attack only after the rotation reaches the target.")
     private val noScaffold by boolean("NoScaffold", false)
+        .describe("Disable the aura while Scaffold is on.")
     private val noFly by boolean("NoFly", false)
+        .describe("Disable the aura while Flight is on.")
     private val noEat by boolean("NoEat", false)
+        .describe("Disable the aura while eating or drinking.")
     private val noBlocking by boolean("NoBlocking", false)
+        .describe("Disable the aura while using a block item.")
     private val blinkCheck by boolean("BlinkCheck", false)
+        .describe("Disable the aura while Blink is on.")
 
     // AutoBlock
     val autoBlock by choices("AutoBlock", arrayOf("Off", "Packet", "Fake"), "Packet")
+        .describe("How to auto block with a sword.")
     private val blockMaxRange by float("BlockMaxRange", 3f, 0f..8f) { autoBlock == "Packet" }
+        .describe("Max distance at which auto block engages.")
     private val unblockMode by choices(
         "UnblockMode", arrayOf("Stop", "Switch", "Empty"), "Stop"
     ) { autoBlock == "Packet" }
     private val releaseAutoBlock by boolean("ReleaseAutoBlock", true) { autoBlock !in arrayOf("Off", "Fake") }
+        .describe("Release the block before each attack.")
     val forceBlockRender by boolean("ForceBlockRender", true) {
         autoBlock !in arrayOf(
             "Off", "Fake"
@@ -165,6 +194,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         ) && releaseAutoBlock
     }
     private val blockRate by int("BlockRate", 100, 1..100) { autoBlock !in arrayOf("Off", "Fake") && releaseAutoBlock }
+        .describe("Chance to actually block on each attack.")
 
     private val uncpAutoBlock by boolean("UpdatedNCPAutoBlock", false) {
         autoBlock !in arrayOf(
@@ -173,10 +203,13 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     }
 
     private val switchStartBlock by boolean("SwitchStartBlock", false) { autoBlock !in arrayOf("Off", "Fake") }
+        .describe("Switch slot when starting to block.")
 
     private val interactAutoBlock by boolean("InteractAutoBlock", true) { autoBlock !in arrayOf("Off", "Fake") }
+        .describe("Send an interact packet when starting to block.")
 
     val blinkAutoBlock by boolean("BlinkAutoBlock", false) { autoBlock !in arrayOf("Off", "Fake") }
+        .describe("Use blink while auto blocking.")
 
     private val blinkBlockTicks by int("BlinkBlockTicks", 3, 2..5) {
         autoBlock !in arrayOf(
@@ -186,12 +219,15 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
 
     // AutoBlock conditions
     private val smartAutoBlock by boolean("SmartAutoBlock", false) { autoBlock == "Packet" }
+        .describe("Only block when it is actually useful.")
 
     // Ignore all blocking conditions, except for block rate, when standing still
     private val forceBlock by boolean("ForceBlockWhenStill", true) { smartAutoBlock }
+        .describe("Always block when standing still.")
 
     // Don't block if target isn't holding a sword or an axe
     private val checkWeapon by boolean("CheckEnemyWeapon", true) { smartAutoBlock }
+        .describe("Only block when the target holds a sword or axe.")
 
     // TODO: Make block range independent from attack range
     private var blockRange: Float by float("BlockRange", range, 1f..8f) {
@@ -202,37 +238,50 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
 
     // Don't block when you can't get damaged
     private val maxOwnHurtTime by int("MaxOwnHurtTime", 3, 0..10) { smartAutoBlock }
+        .describe("Skip blocking when your hurt-time is above this.")
 
     // Don't block if target isn't looking at you
     private val maxDirectionDiff by float("MaxOpponentDirectionDiff", 60f, 30f..180f) { smartAutoBlock }
+        .describe("Skip blocking if the target is not facing you.")
 
     // Don't block if target is swinging an item and therefore cannot attack
     private val maxSwingProgress by int("MaxOpponentSwingProgress", 1, 0..5) { smartAutoBlock }
+        .describe("Skip blocking while the target is mid-swing.")
 
     // Rotations
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.HIGH)
 
     // Raycast
     private val raycastValue = boolean("RayCast", true) { options.rotationsActive }
+        .describe("Require a raycast hit to confirm the target.")
     private val raycast by raycastValue
     private val raycastIgnored by boolean(
         "RayCastIgnored", false
     ) { raycastValue.isActive() && options.rotationsActive }
     private val livingRaycast by boolean("LivingRayCast", true) { raycastValue.isActive() && options.rotationsActive }
+        .describe("Only count living entities for the raycast.")
     private val raytraceMode by choices("Raytrace", arrayOf("Normal", "Strict"), "Normal") { raycastValue.isActive() && options.rotationsActive }
+        .describe("How strictly the raycast must land on the target.")
 
     // Hit delay
     private val useHitDelay by boolean("UseHitDelay", false)
+        .describe("Delay hits after the raycast target type changes.")
     private val hitDelayTicks by int("HitDelayTicks", 1, 1..5) { useHitDelay }
+        .describe("Ticks to wait after a target type change.")
 
     private val generateClicksBasedOnDist by boolean("GenerateClicksBasedOnDistance", false)
+        .describe("Scale clicks by distance to the target.")
     private val cpsMultiplier by intRange("CPS-Multiplier", 1..2, 1..10) { generateClicksBasedOnDist }
+        .describe("Multiplier range for distance-based clicks.")
     private val distanceFactor by floatRange("DistanceFactor", 5F..10F, 1F..10F) { generateClicksBasedOnDist }
+        .describe("Distance divisor used to scale clicks.")
 
     private val generateSpotBasedOnDistance by boolean("GenerateSpotBasedOnDistance", false) { options.rotationsActive }
+        .describe("Pick aim spot scaled by distance to target.")
 
     private val randomization = RandomizationSettings(this) { options.rotationsActive }
     private val outBorder by boolean("OutBorder", false) { options.rotationsActive }
+        .describe("Aim at the edge of the hitbox at times.")
 
     private val highestBodyPointToTargetValue = choices(
         "HighestBodyPointToTarget", arrayOf("Head", "Body", "Feet"), "Head"
@@ -264,22 +313,28 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     ) { options.rotationsActive }
 
     private val fov by float("FOV", 180f, 0f..180f)
+        .describe("Field of view in which targets are valid.")
 
     // Prediction
     private val predictClientMovement by int("PredictClientMovement", 2, 0..5)
+        .describe("Ticks of your own movement to predict ahead.")
     private val predictOnlyWhenOutOfRange by boolean(
         "PredictOnlyWhenOutOfRange", false
     ) { predictClientMovement != 0 }
     private val predictEnemyPosition by float("PredictEnemyPosition", 1.5f, -1f..2f)
+        .describe("How far ahead to predict the enemy position.")
 
     private val forceFirstHit by boolean("ForceFirstHit", false) { !respectMissCooldown && !useHitDelay }
+        .describe("Force a click on the first hittable tick.")
 
     // Extra swing
     private val failSwing by boolean("FailSwing", true) { swing && options.rotationsActive }
+        .describe("Swing even when no target can be hit.")
     private val respectMissCooldown by boolean(
         "RespectMissCooldown", false
     ) { swing && failSwing && options.rotationsActive }
     private val swingOnlyInAir by boolean("SwingOnlyInAir", true) { swing && failSwing && options.rotationsActive }
+        .describe("Only fail-swing when the raycast misses.")
     private val maxRotationDifferenceToSwing by float(
         "MaxRotationDifferenceToSwing", 180f, 0f..180f
     ) { swing && failSwing && options.rotationsActive }
@@ -290,24 +345,33 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         "TicksLateToSwing", 4, 0..20
     ) { swing && failSwing && swingWhenTicksLate.isActive() && options.rotationsActive }
     private val renderBoxOnSwingFail by boolean("RenderBoxOnSwingFail", false) { failSwing }
+        .describe("Render a box where a fail swing happened.")
     private val renderBoxColor = ColorSettingsInteger(this, "RenderBoxColor") { renderBoxOnSwingFail }.with(Color.CYAN)
     private val renderBoxFadeSeconds by float("RenderBoxFadeSeconds", 1f, 0f..5f) { renderBoxOnSwingFail }
+        .describe("How long the fail-swing box stays visible.")
 
     // Inventory
     private val simulateClosingInventory by boolean("SimulateClosingInventory", false) { !noInventoryAttack }
+        .describe("Briefly close the inventory to attack.")
     private val noInventoryAttack by boolean("NoInvAttack", false)
+        .describe("Do not attack while an inventory is open.")
     private val noInventoryDelay by int("NoInvDelay", 200, 0..500) { noInventoryAttack }
+        .describe("Delay after closing an inventory before attacking.")
     private val noConsumeAttack by choices(
         "NoConsumeAttack", arrayOf("Off", "NoHits", "NoRotation"), "Off"
     ).subjective()
 
 
     private val displayDebug by boolean("Debug", false)
+        .describe("Show on-screen combat debug info.")
 
     // RenderAimPoint
     private val renderAimPointBox by boolean("RenderAimPointBox", false).subjective()
+        .describe("Render a box at the current aim point.")
     private val aimPointBoxColor by color("AimPointBoxColor", Color.CYAN) { renderAimPointBox }.subjective()
+        .describe("Color of the aim point box.")
     private val aimPointBoxSize by float("AimPointBoxSize", 0.1f, 0f..0.2F) { renderAimPointBox }.subjective()
+        .describe("Size of the aim point box.")
 
     /**
      * MODULE

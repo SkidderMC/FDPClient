@@ -29,14 +29,20 @@ import net.minecraft.init.Items
  */
 object Refill : Module("Refill", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
     private val instant by boolean("Instant", false)
+        .describe("Refill all matching items in one tick.")
     private val delay by int("Delay", 50, 50..500) { !instant }
-    
+        .describe("Delay between refill clicks in milliseconds.")
+
     private val silent by boolean("Silent", false)
+        .describe("Refill without opening the real inventory.")
 
     private val autoClose by boolean("AutoClose", false) { !silent }
+        .describe("Close the inventory after refilling.")
     private val autoCloseDelay by int("CloseDelay", 10, 0..20) { autoClose }
+        .describe("Ticks to wait before closing the inventory.")
 
     private val mode by choices("Mode", arrayOf("Soup", "Potion"), "Soup")
+        .describe("Which item type to refill into the hotbar.")
 
     private var shouldCloseInventory = false
     private val closeTimer = TickTimer()

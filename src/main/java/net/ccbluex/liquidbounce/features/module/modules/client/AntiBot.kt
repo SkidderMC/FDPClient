@@ -27,43 +27,72 @@ import kotlin.math.sqrt
 object AntiBot : Module("AntiBot", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL) {
 
     private val tab by boolean("Tab", true)
+        .describe("Flag players not present in the tab list as bots.")
     private val tabMode by choices("TabMode", arrayOf("Equals", "Contains"), "Contains") { tab }
+        .describe("How tab names are matched against the player.")
 
     private val entityID by boolean("EntityID", true)
+        .describe("Flag players with an out-of-range entity ID.")
     private val invalidUUID by boolean("InvalidUUID", true)
+        .describe("Flag players whose UUID is missing from tab.")
     private val color by boolean("Color", false)
+        .describe("Flag players with no color codes in their name.")
 
     private val livingTime by boolean("LivingTime", false)
+        .describe("Flag players that have existed too briefly.")
     private val livingTimeTicks by int("LivingTimeTicks", 40, 1..200) { livingTime }
+        .describe("Minimum ticks a player must exist to be trusted.")
 
     private val capabilities by boolean("Capabilities", true)
+        .describe("Flag players with invalid creative or fly flags.")
     private val ground by boolean("Ground", true)
+        .describe("Flag players never seen on the ground.")
     private val air by boolean("Air", false)
+        .describe("Flag players never seen in the air.")
     private val invalidGround by boolean("InvalidGround", true)
+        .describe("Flag players with impossible ground states.")
     private val invalidSpeed by boolean("InvalidSpeed", false)
+        .describe("Flag players moving at suspicious speeds.")
     private val swing by boolean("Swing", false)
+        .describe("Flag players never seen swinging their arm.")
     private val health by boolean("Health", false)
+        .describe("Flag players with out-of-range health values.")
     private val derp by boolean("Derp", true)
+        .describe("Flag players with impossible pitch rotations.")
     private val wasInvisible by boolean("WasInvisible", false)
+        .describe("Flag players that have been invisible.")
     private val armor by boolean("Armor", false)
+        .describe("Flag players wearing no armor at all.")
     private val ping by boolean("Ping", false)
+        .describe("Flag players reporting a ping of zero.")
     private val needHit by boolean("NeedHit", false)
+        .describe("Only trust players that you have hit.")
     private val duplicateInWorld by boolean("DuplicateInWorld", false)
+        .describe("Flag players with duplicate names in the world.")
     private val duplicateInTab by boolean("DuplicateInTab", false)
+        .describe("Flag players with duplicate names in the tab list.")
     private val duplicateProfile by boolean("DuplicateProfile", false)
+        .describe("Flag players sharing a name but differing UUID.")
     private val properties by boolean("Properties", false)
+        .describe("Flag players that never sent entity properties.")
 
     private val alwaysInRadius by boolean("AlwaysInRadius", false)
+        .describe("Flag players always staying within a radius.")
     private val alwaysRadius by float("AlwaysInRadiusBlocks", 20f, 3f..30f)
     { alwaysInRadius }
+        .describe("Radius in blocks for the always-in-radius check.")
     private val alwaysRadiusTick by int("AlwaysInRadiusTick", 50, 1..100)
     { alwaysInRadius }
+        .describe("Ticks within radius before a player is trusted.")
 
     private val alwaysBehind by boolean("AlwaysBehind", false)
+        .describe("Flag players that are always behind you.")
     private val alwaysBehindRadius by float("AlwaysBehindInRadiusBlocks", 10f, 3f..30f)
     { alwaysBehind }
+        .describe("Radius in blocks for the always-behind check.")
     private val behindRotDiffToIgnore by float("BehindRotationDiffToIgnore", 90f, 1f..180f)
     { alwaysBehind }
+        .describe("Angle difference above which a player counts as behind.")
 
     private val groundList = mutableSetOf<Int>()
     private val airList = mutableSetOf<Int>()

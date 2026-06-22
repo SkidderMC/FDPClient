@@ -37,6 +37,7 @@ object BrandSpoofer : Module("BrandSpoofer", Category.CLIENT, Category.SubCatego
     )
 
     val customValue = text("Custom-Brand", "WTF") { possibleBrands.get().equals("Custom", true) }
+        .describe("Custom client brand string to send.")
 
     private val buttonValue = choices(
         "Button",

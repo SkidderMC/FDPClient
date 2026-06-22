@@ -23,6 +23,7 @@ import org.lwjgl.input.Keyboard
 object SnapTap : Module("SnapTap", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS) {
 
     private val mode by choices("Mode", arrayOf("LastInput", "Neutral"), "LastInput")
+        .describe("How to resolve opposing key presses on an axis.")
 
     /**
      * Axis state tracks opposing keys on an axis (e.g., left/right or forward/back)

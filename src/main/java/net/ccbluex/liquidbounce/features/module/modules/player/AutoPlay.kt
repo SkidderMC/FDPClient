@@ -18,6 +18,7 @@ import net.minecraft.item.ItemStack
 object AutoPlay : Module("AutoPlay", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val mode by choices("Mode", arrayOf("Paper", "Hypixel"), "Paper")
+        .describe("Auto-play method to use.")
 
     // Hypixel Settings
     private val hypixelMode by choices("HypixelMode", arrayOf("Skywars", "Bedwars"), "Skywars") {
@@ -31,6 +32,7 @@ object AutoPlay : Module("AutoPlay", Category.PLAYER, Category.SubCategory.PLAYE
     }
 
     private val delay by int("Delay", 50, 0..200)
+        .describe("Delay between auto-play actions in ticks.")
 
     private var delayTick = 0
 

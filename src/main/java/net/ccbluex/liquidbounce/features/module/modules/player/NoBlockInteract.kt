@@ -48,11 +48,17 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 object NoBlockInteract : Module("NoBlockInteract", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val containers by boolean("Containers", true)
+        .describe("Block interaction with chests and containers.")
     private val doors by boolean("Doors", true)
+        .describe("Block interaction with doors and gates.")
     private val buttonsAndLevers by boolean("ButtonsAndLevers", true)
+        .describe("Block interaction with buttons and levers.")
     private val redstone by boolean("Redstone", true)
+        .describe("Block interaction with redstone components.")
     private val miscellaneous by boolean("Miscellaneous", true)
+        .describe("Block interaction with other misc blocks.")
     private val onlyWhenSneaking by boolean("OnlyWhenSneaking", false)
+        .describe("Only block interactions while sneaking.")
 
     private val handlePacket = handler<PacketEvent> { event ->
         val player = mc.thePlayer ?: return@handler

@@ -61,23 +61,39 @@ object LongJump : Module("LongJump", Category.MOVEMENT, Category.SubCategory.MOV
     )
 
     val mode by choices("Mode", longJumpModes.modeNames(), "NCP")
+        .describe("Anticheat bypass method used for the long jump.")
     val ncpBoost by float("NCPBoost", 4.25f, 1f..10f) { mode == "NCP" }
+        .describe("Forward boost strength for the NCP mode.")
     val autoJumpValue by boolean("AutoJump", true)
+        .describe("Automatically jump when moving on the ground.")
     val autoJumpNotWhileUsingItemValue by boolean("AutoJumpNotWhileUsingItem", false) { autoJumpValue }
+        .describe("Do not auto jump while using an item.")
     val autoDisableValue by boolean("AutoDisable", true)
+        .describe("Disable the module after landing.")
     val timerValue by float("GlobalTimer", 1f, 0.1f..2f)
+        .describe("Game timer speed applied during the jump.")
     val onlyAirValue by boolean("TimerOnlyAir", true)
+        .describe("Only change the timer while in the air.")
     val resetTimerOnGroundValue by boolean("ResetTimerOnGround", false)
+        .describe("Reset the timer to normal when on the ground.")
     val legacyWarningValue by boolean("LegacyWarn", true)
+        .describe("Warn when using a bypass for an outdated anticheat.")
 
     val boostSpeed by float("Boost-Speed", 0.48f, 0f..3f) { mode == "Boost" }
+        .describe("Forward speed for the Boost mode.")
     val boostJumpBoost by float("Boost-JumpBoost", 1.5f, 1f..3f) { mode == "Boost" }
+        .describe("Vertical boost factor for the Boost mode.")
     val boostStrafeBoost by float("Boost-StrafeBoost", 1.5f, 1f..3f) { mode == "Boost" }
+        .describe("Strafe boost factor for the Boost mode.")
 
     val ncpLatestBoost by float("NCPLatest-Boost", 10f, 1f..10f) { mode == "NCPLatest" }
+        .describe("Forward boost strength for the NCPLatest mode.")
     val ncpLatestBlink by boolean("NCPLatest-Blink", false) { mode == "NCPLatest" }
+        .describe("Use blinking during the NCPLatest jump.")
     val ncpLatestOldMMC by boolean("NCPLatest-OldMMC", false) { mode == "NCPLatest" }
+        .describe("Use the old MMC variant of the NCPLatest mode.")
     val ncpLatestWarn by boolean("NCPLatest-Warn", true) { mode == "NCPLatest" }
+        .describe("Warn that the NCPLatest bypass may be outdated.")
 
     val oldNcpDamageMode by choices("OldNCPDamage-Mode", arrayOf("Normal", "OldHypixel"), "Normal") {
         mode == "OldNCPDamage"
@@ -89,14 +105,21 @@ object LongJump : Module("LongJump", Category.MOVEMENT, Category.SubCategory.MOV
         mode == "OldNCPDamage" && oldNcpDamageMode == "Normal"
     }
     val oldNcpDamageInstant by boolean("OldNCPDamage-DamageInstant", false) { mode == "OldNCPDamage" }
+        .describe("Trigger the boost instantly on damage.")
 
     val oldMatrixHurtBoostSpeed by float("OldMatrixHurt-BoostSpeed", 0.416f, 0.1f..1f) { mode == "OldMatrixHurt" }
+        .describe("Boost speed for the OldMatrixHurt mode.")
     val oldMatrixHurtTicks by int("OldMatrixHurt-Ticks", 10, 5..20) { mode == "OldMatrixHurt" }
+        .describe("Number of ticks to boost in OldMatrixHurt mode.")
 
     val vulcanRepeatTimes by int("Vulcan-RepeatTimes", 2, 1..6) { mode == "Vulcan" }
+        .describe("How many times to repeat the Vulcan boost.")
     val vulcanDistance by float("Vulcan-Distance", 7f, 2f..8f) { mode == "Vulcan" }
+        .describe("Target jump distance for the Vulcan mode.")
     val vulcanOnlyDamage by boolean("Vulcan-OnlyDamage", true) { mode == "Vulcan" }
+        .describe("Only boost when taking damage in Vulcan mode.")
     val vulcanSelfDamage by boolean("Vulcan-SelfDamage", true) { mode == "Vulcan" }
+        .describe("Deal self damage to trigger the Vulcan boost.")
 
     var jumped = false
     var canBoost = false

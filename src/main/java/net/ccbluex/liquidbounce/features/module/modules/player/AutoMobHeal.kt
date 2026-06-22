@@ -24,14 +24,21 @@ import net.minecraft.network.play.client.C09PacketHeldItemChange
 object AutoMobHeal : Module("AutoMobHeal", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val golems by boolean("IronGolems", true)
+        .describe("Heal hurt iron golems with iron ingots.")
     private val tamed by boolean("TamedAnimals", true)
+        .describe("Heal hurt tamed wolves and cats.")
     private val horses by boolean("Horses", true)
+        .describe("Heal hurt tamed horses.")
 
     private val allowGolden by boolean("AllowGoldenFood", false) { horses }
+        .describe("Allow golden food when healing horses.")
 
     private val range by float("Range", 4.0f, 1.0f..6.0f)
+        .describe("Maximum distance to heal a mob.")
     private val healthThreshold by float("HealthThreshold", 75.0f, 1.0f..100.0f, "%")
+        .describe("Heal mobs below this health percentage.")
     private val delay by int("Delay", 200, 0..2000, "ms")
+        .describe("Delay between heal actions in milliseconds.")
 
     private val golemFood = arrayOf<Item>(Items.iron_ingot)
 

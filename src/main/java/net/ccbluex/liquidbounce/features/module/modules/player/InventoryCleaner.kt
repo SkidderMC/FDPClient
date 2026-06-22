@@ -39,15 +39,22 @@ import net.minecraft.potion.Potion
 
 object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST) {
     private val drop by boolean("Drop", true).subjective()
+        .describe("Drop items that are deemed useless.")
     val sort by boolean("Sort", true).subjective()
+        .describe("Sort useful items into the hotbar.")
 
     private val delay by intRange("Delay", 50..50, 0..1000)
+        .describe("Random delay between inventory clicks in ms.")
 
     private val minItemAge by int("MinItemAge", 0, 0..2000)
+        .describe("Minimum age before acting on a picked item.")
 
     private val limitStackCounts by boolean("LimitStackCounts", true).subjective()
+        .describe("Cap how many stacks of each type to keep.")
     private val maxBlockStacks by int("MaxBlockStacks", 5, 0..36) { limitStackCounts }.subjective()
+        .describe("Maximum block stacks to keep.")
     private val maxFoodStacks by int("MaxFoodStacks", 5, 0..36) { limitStackCounts }.subjective()
+        .describe("Maximum food stacks to keep.")
     private val maxThrowableStacks by int(
         "MaxThrowableStacks",
         5,
@@ -55,17 +62,22 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
     ) { limitStackCounts }.subjective()
     // Keep up to this many arrows total, clean the rest. Default keeps every arrow (current behavior).
     private val maxArrows by int("MaxArrows", 2304, 0..2304) { limitStackCounts }.subjective()
+        .describe("Maximum total arrows to keep.")
     // TODO: max potion, vehicle, ..., stacks?
 
     // When enabled, keep items up to the configured limits (current behavior).
     // When disabled, clean more aggressively by keeping only the single best of each limited type.
     private val greedy by boolean("Greedy", true).subjective()
+        .describe("Keep items up to limits instead of just the best.")
 
     private val maxFishingRodStacks by int("MaxFishingRodStacks", 1, 1..10).subjective()
+        .describe("Maximum fishing rods to keep.")
 
     private val mergeStacks by boolean("MergeStacks", true).subjective()
+        .describe("Combine partial stacks to free up space.")
 
     private val repairEquipment by boolean("RepairEquipment", true).subjective()
+        .describe("Repair tools by merging them in the grid.")
 
     private val invOpen by +InventoryManager.invOpenValue
     private val simulateInventory by +InventoryManager.simulateInventoryValue
@@ -80,10 +92,14 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
     private val noMoveGround by +InventoryManager.noMoveGroundValue
 
     private val randomSlot by boolean("RandomSlot", false)
+        .describe("Process slots in random order.")
     private val ignoreVehicles by boolean("IgnoreVehicles", false).subjective()
+        .describe("Drop boats and minecarts as useless.")
 
     private val onlyGoodPotions by boolean("OnlyGoodPotions", false).subjective()
+        .describe("Keep only beneficial potions.")
     private val maxPotionStacks by int("MaxPotionStacks", 36, 0..36) { limitStackCounts }.subjective()
+        .describe("Maximum potion stacks to keep.")
 
     val highlightSlot by +InventoryManager.highlightSlotValue
     val backgroundColor by +InventoryManager.borderColor
@@ -92,6 +108,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
     val borderColor by +InventoryManager.borderColor
 
     val highlightUseful by boolean("HighlightUseful", true).subjective()
+        .describe("Highlight useful items in the inventory.")
 
     private val slot1Value = sortChoice("Slot1", "Sword")
     private val slot2Value = sortChoice("Slot2", "Bow")

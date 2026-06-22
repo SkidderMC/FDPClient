@@ -13,6 +13,7 @@ import net.minecraft.network.play.client.C03PacketPlayer
 object Freeze : Module("Freeze", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS, gameDetecting = false) {
 
     private val noMotion by boolean("No Motion", true)
+        .describe("Zero horizontal motion while frozen.")
 
     val onPacket = handler<PacketEvent> { event ->
         if (mc.thePlayer == null)

@@ -31,6 +31,7 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, Category.SubCategory.CLI
 
     // Game state
     private val mode by choices("Mode", arrayOf("Easy", "Normal", "Hard"), "Easy")
+        .describe("Difficulty of the snake game.")
     private var obstacles = mutableListOf<Point2i>()
     private var snake = mutableListOf<Point2i>()
     private var lastKey = KEY_DOWN

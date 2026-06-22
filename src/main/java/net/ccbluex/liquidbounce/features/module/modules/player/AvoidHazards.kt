@@ -14,12 +14,19 @@ import net.minecraft.util.AxisAlignedBB
 
 object AvoidHazards : Module("AvoidHazards", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
     private val fire by boolean("Fire", true)
+        .describe("Avoid walking into fire blocks.")
     private val cobweb by boolean("Cobweb", true)
+        .describe("Avoid walking into cobwebs.")
     private val cactus by boolean("Cactus", true)
+        .describe("Avoid walking into cactus blocks.")
     private val lava by boolean("Lava", true)
+        .describe("Avoid walking into lava.")
     private val water by boolean("Water", true)
+        .describe("Avoid walking into water.")
     private val plate by boolean("PressurePlate", true)
+        .describe("Avoid stepping on pressure plates.")
     private val snow by boolean("Snow", true)
+        .describe("Avoid walking into snow layers.")
 
     val onBlockBB = handler<BlockBBEvent> { e ->
         val thePlayer = mc.thePlayer ?: return@handler

@@ -31,21 +31,32 @@ import kotlin.math.sin
 object TargetStrafe : Module("TargetStrafe", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN, gameDetecting = false) {
 
     private val thirdPersonViewValue by boolean("ThirdPersonView", false)
+        .describe("Switch to third-person while strafing.")
 
     private val radiusValue by float("Radius", 0.5f, 0.1f..5.0f)
+        .describe("Distance to keep from the target while strafing.")
     private val radiusModeValue by choices("RadiusMode", arrayOf("Normal", "Strict"), "Normal")
+        .describe("How strictly to hold the strafe radius.")
 
     private val ongroundValue by boolean("OnlyOnGround", false)
+        .describe("Only strafe while on the ground.")
     private val holdSpaceValue by boolean("HoldSpace", false)
+        .describe("Only strafe while holding jump.")
     private val onlySpeedValue by boolean("OnlySpeed", true)
+        .describe("Only strafe while Speed is active.")
 
     private val speedValue by float("Speed", 0.30f, 0.05f..3.0f)
+        .describe("Movement speed while circling the target.")
 
     private val pointsProperty by int("Points", 12, 1..18)
+        .describe("Number of path points around the target.")
     private val lineWidthValue by float("LineWidth", 1f, 1f..10f) { renderModeValue != "None" }
+        .describe("Line width of the strafe circle render.")
 
     private val renderModeValue by choices("RenderMode", arrayOf("Circle", "Polygon", "Zavz", "None"), "Zavz")
+        .describe("How to render the strafe circle.")
     private val zavzRender by choices("Mark", arrayOf("Circle", "Points"), "Points") { renderModeValue == "Zavz" }
+        .describe("Marker style for the Zavz render.")
 
     private val colorMode by choices(
         "Color-Mode",

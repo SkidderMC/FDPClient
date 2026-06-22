@@ -40,15 +40,23 @@ import kotlin.math.sqrt
 object AutoPearl : Module("AutoPearl", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST) {
 
     private val mode by choices("Mode", arrayOf("LookTarget", "NearestEnemy"), "NearestEnemy")
+        .describe("How to pick the target to throw the pearl at.")
     private val range by float("Range", 20F, 4F..60F)
+        .describe("Maximum distance to target with the pearl.")
 
     private val minPitch by float("MinPitch", -90F, -90F..0F)
+        .describe("Lowest launch pitch to try when aiming.")
     private val maxPitch by float("MaxPitch", 0F, -90F..90F)
+        .describe("Highest launch pitch to try when aiming.")
     private val pitchStep by float("PitchStep", 1F, 0.25F..5F)
+        .describe("Pitch increment used while solving the throw.")
 
     private val maxLandingError by float("MaxLandingError", 3F, 0.5F..10F)
+        .describe("Max allowed landing distance from the target.")
     private val yawOffset by float("YawOffset", 0F, -180F..180F)
+        .describe("Yaw offset applied to the throw direction.")
     private val silent by boolean("Silent", true)
+        .describe("Aim silently without moving the visible view.")
 
     // Ender pearl behaves as a thrown item in 1.8.9: launch speed 1.5, gravity 0.03 per tick,
     // air drag 0.99 per tick, water drag 0.6 per tick, collision size 0.25.

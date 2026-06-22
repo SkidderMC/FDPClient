@@ -22,11 +22,16 @@ import net.minecraft.util.BlockPos
 object SafeWalk : Module("SafeWalk", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS) {
 
     private val airSafe by boolean("AirSafe", false)
+        .describe("Keep safe-walk active while in the air.")
     private val maxFallDistanceValue = int("MaxFallDistance", 5, 0..100)
+        .describe("Only block edges above this drop height.")
 
     private val edgeSneak by boolean("EdgeSneak", false)
+        .describe("Automatically sneak near block edges.")
     private val edgeSneakDistance by float("EdgeSneakDistance", 0.7F, 0.1F..3F) { edgeSneak }
+        .describe("How close to an edge before auto-sneaking.")
     private val edgeSneakMode by choices("EdgeSneakMode", arrayOf("Normal", "Packet"), "Normal") { edgeSneak }
+        .describe("How to send the sneak when near edges.")
 
     private var lastGroundY: Double? = null
     private var lastCollisionY: Int? = null

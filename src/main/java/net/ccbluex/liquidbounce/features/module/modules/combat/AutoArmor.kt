@@ -40,8 +40,11 @@ private data class ManualArmorRequest(val armorType: Int)
 
 object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
     private val mode by choices("Mode", arrayOf("Fast", "Legit"), "Fast")
+        .describe("How armor is equipped, fast or legit.")
     private val delay by intRange("Delay", 50..50, 0..1000)
+        .describe("Random delay range between equip actions.")
     private val minItemAge by int("MinItemAge", 0, 0..2000)
+        .describe("Minimum age before an item can be equipped.")
 
     private val invOpen by +InventoryManager.invOpenValue
     private val simulateInventory by +InventoryManager.simulateInventoryValue
@@ -53,29 +56,38 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
 
     // Keeps armor coverage while preserving the old piece whenever possible.
     val smartSwap by boolean("SmartSwap", true)
+        .describe("Swap old armor back instead of dropping it.")
     private val dropOldArmor by boolean("DropOldArmor", false)
+        .describe("Drop the old armor when swapping.")
 
     private val noMove by +InventoryManager.noMoveValue
     private val noMoveAir by +InventoryManager.noMoveAirValue
     private val noMoveGround by +InventoryManager.noMoveGroundValue
 
     private val hotbar by boolean("Hotbar", true)
+        .describe("Equip armor directly from the hotbar.")
 
     // Sacrifices 1 tick speed for complete undetectability, needed to bypass Vulcan.
     private val delayedSlotSwitch by boolean("DelayedSlotSwitch", true) { hotbar }
+        .describe("Delay the slot switch by one tick to stay safe.")
 
     // Prevents AutoArmor from hotbar equipping while any screen is open.
     private val notInContainers by boolean("NotInContainers", false) { hotbar }
+        .describe("Do not hotbar equip while a screen is open.")
 
     private val manualSwap by boolean("ManualSwap", true)
+        .describe("Allow equipping armor with manual keybinds.")
     private val manualSelection by choices(
         "ManualSelection",
         arrayOf("First", "Best", "BestPercent", "Defense", "Enchantments"),
         "Best"
     ) { manualSwap }
     private val manualCycle by boolean("ManualCycle", false) { manualSwap }
+        .describe("Cycle through pieces on repeated key presses.")
     private val manualUseArmorFilter by boolean("ManualUseArmorFilter", false) { manualSwap }
+        .describe("Apply ArmorFilter rules to manual swaps.")
     private val manualIgnoreMinItemAge by boolean("ManualIgnoreMinItemAge", true) { manualSwap }
+        .describe("Ignore the minimum item age for manual swaps.")
 
     private val helmetBind by bindText("HelmetBind")
     private val chestplateBind by bindText("ChestplateBind")

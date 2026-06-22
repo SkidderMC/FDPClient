@@ -21,6 +21,7 @@ import org.lwjgl.input.Mouse
 object ItemScroller : Module("ItemScroller", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val button by choices("Button", arrayOf("Left", "Right", "Both"), "Both")
+        .describe("Mouse button that triggers item dragging.")
 
     private var lastSlot = -1
 

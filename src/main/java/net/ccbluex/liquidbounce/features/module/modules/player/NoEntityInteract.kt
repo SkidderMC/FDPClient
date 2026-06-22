@@ -28,10 +28,15 @@ import net.minecraft.network.play.client.C02PacketUseEntity.Action.INTERACT_AT
 object NoEntityInteract : Module("NoEntityInteract", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val villagers by boolean("Villagers", true)
+        .describe("Block interaction with villagers.")
     private val itemFrames by boolean("ItemFrames", true)
+        .describe("Block interaction with item frames.")
     private val armorStands by boolean("ArmorStands", true)
+        .describe("Block interaction with armor stands.")
     private val others by boolean("Others", false)
+        .describe("Block interaction with other entities.")
     private val onlyWhenSneaking by boolean("OnlyWhenSneaking", false)
+        .describe("Only block interactions while sneaking.")
 
     private val handlePacket = handler<PacketEvent> { event ->
         val world = mc.theWorld ?: return@handler

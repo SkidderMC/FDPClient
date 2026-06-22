@@ -47,19 +47,26 @@ import java.awt.Color
 object AutoTrap : Module("AutoTrap", Category.COMBAT, Category.SubCategory.COMBAT_RAGE, gameDetecting = false) {
 
     private val autoBlock by choices("AutoBlock", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof")
+        .describe("How to switch to the web before placing.")
     private val swing by boolean("Swing", true)
+        .describe("Swing the arm when placing webs.")
     private val placeDelay by int("PlaceDelay", 250, 0..1000)
+        .describe("Delay between web placements.")
 
     // The horizontal reach (in blocks) at which a target may be trapped.
     private val range by float("Range", 4.5f, 1f..6f)
+        .describe("Max distance to trap a target.")
 
     // Also web the layer above the feet so a tall target can't simply step out of a single web.
     private val trapLegs by boolean("TrapLegs", true)
+        .describe("Also web the block above the feet.")
 
     // Verify the candidate spot is reachable by raytrace before placing.
     private val raycast by boolean("Raycast", true) { options.rotationsActive }
+        .describe("Verify the spot is reachable before placing.")
 
     private val mark by boolean("Mark", false)
+        .describe("Render boxes on planned trap positions.")
 
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 

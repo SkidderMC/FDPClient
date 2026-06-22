@@ -44,6 +44,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     private val nextBacktrackDelay by int("NextBacktrackDelay", 0, 0..2000) { mode == "Modern" }
+        .describe("Cooldown before the next backtrack window.")
     private val maxDelay: Value<Int> = int("MaxDelay", 80, 0..2000).onChange { _, new ->
         new.coerceAtLeast(minDelay.get())
     }
@@ -65,8 +66,11 @@ object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COM
 
     // Modern
     private val style by choices("Style", arrayOf("Pulse", "Smooth"), "Smooth") { mode == "Modern" }
+        .describe("How packets are released, pulsed or smoothed.")
     private val distance by floatRange("Distance", 2f..3f, 0f..6f) { mode == "Modern" }
+        .describe("Distance range in which to apply backtrack.")
     private val smart by boolean("Smart", true) { mode == "Modern" }
+        .describe("Only backtrack when it gains you distance.")
 
     // ESP
     private val espMode by choices(
@@ -75,6 +79,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COM
         "Box"
     ) { mode == "Modern" }.subjective()
     private val wireframeWidth by float("WireFrame-Width", 1f, 0.5f..5f) { espMode == "WireFrame" }
+        .describe("Line width of the wireframe ESP.")
 
     private val espColor =
         ColorSettingsInteger(this, "ESPColor") { espMode != "Model" && mode == "Modern" }.with(0, 255, 0)
@@ -99,6 +104,7 @@ object Backtrack : Module("Backtrack", Category.COMBAT, Category.SubCategory.COM
 
     // Legacy
     private val maximumCachedPositions by int("MaxCachedPositions", 10, 1..20) { mode == "Legacy" }
+        .describe("Max past positions cached per player.")
 
     // Memory leak fix: Enforce strict limits on collections
     private const val MAX_PACKET_QUEUE_SIZE = 50

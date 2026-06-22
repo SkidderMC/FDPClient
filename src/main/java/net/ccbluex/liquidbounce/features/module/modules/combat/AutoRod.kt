@@ -23,35 +23,49 @@ import net.minecraft.init.Items
 object AutoRod : Module("AutoRod", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val facingEnemy by boolean("FacingEnemy", true)
+        .describe("Only rod when looking at an enemy.")
 
     private val ignoreOnEnemyLowHealth by boolean("IgnoreOnEnemyLowHealth", true) { facingEnemy }
+        .describe("Skip rodding when the enemy is low on health.")
     private val healthFromScoreboard by boolean(
         "HealthFromScoreboard",
         false
     ) { facingEnemy && ignoreOnEnemyLowHealth }
     private val absorption by boolean("Absorption", false) { facingEnemy && ignoreOnEnemyLowHealth }
+        .describe("Count absorption hearts toward target health.")
 
     private val activationDistance by float("ActivationDistance", 8f, 1f..20f)
+        .describe("Max distance to start rodding a target.")
     private val scanExtraRange by float("ScanExtraRange", 0f, 0f..5f)
+        .describe("Extra range added when scanning for enemies.")
     private val enemiesNearby by int("EnemiesNearby", 1, 1..5)
+        .describe("Max nearby enemies allowed before rodding.")
 
     private val minTargetHealth by float("MinTargetHealth", 0f, 0f..20f) { facingEnemy }
+        .describe("Minimum target health required to rod.")
 
     // Improve health check customization
     private val playerHealthThreshold by int("PlayerHealthThreshold", 5, 1..20)
+        .describe("Minimum own health required to rod offensively.")
     private val enemyHealthThreshold by int(
         "EnemyHealthThreshold",
         5,
         1..20
     ) { facingEnemy && ignoreOnEnemyLowHealth }
     private val escapeHealthThreshold by int("EscapeHealthThreshold", 10, 1..20)
+        .describe("Own health below which to rod for escaping.")
 
     private val pushDelay by int("PushDelay", 100, 50..1000)
+        .describe("Delay before casting the rod.")
     private val pullbackDelay by int("PullbackDelay", 500, 50..1000)
+        .describe("Delay before reeling the rod back in.")
     private val cooldown by int("Cooldown", 0, 0..2000)
+        .describe("Minimum time between rod casts.")
     private val hitTimeout by int("HitTimeout", 5000, 100..5000)
+        .describe("Max time to wait for a bite before reeling.")
 
     private val onUsingItem by boolean("OnUsingItem", false)
+        .describe("Allow rodding while using another item.")
 
     private val pushTimer = MSTimer()
     private val rodPullTimer = MSTimer()

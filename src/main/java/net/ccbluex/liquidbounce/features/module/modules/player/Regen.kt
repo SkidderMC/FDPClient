@@ -19,24 +19,39 @@ import net.minecraft.potion.Potion
 object Regen : Module("Regen", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
     private val mode by choices("Mode", arrayOf("Vanilla", "Spartan"), "Vanilla")
+        .describe("Regen exploit method to use.")
     private val speed by int("Speed", 100, 1..100) { mode == "Vanilla" }
+        .describe("Packets sent per tick in vanilla mode.")
     private val vanillaTimer by float("VanillaTimer", 1F, 0.1F..10F) { mode == "Vanilla" }
+        .describe("Game timer speed used in vanilla mode.")
 
     private val spartanPackets by int("SpartanPackets", 9, 1..50) { mode == "Spartan" }
+        .describe("Packets sent per burst in Spartan mode.")
     private val spartanTimer by float("SpartanTimer", 0.45F, 0.1F..2F) { mode == "Spartan" }
+        .describe("Game timer speed used in Spartan mode.")
 
     private val delay by int("Delay", 0, 0..10000)
+        .describe("Delay between regen bursts in milliseconds.")
     private val health by int("Health", 18, 0..20)
+        .describe("Only regen below this health level.")
     private val food by int("Food", 18, 0..20)
+        .describe("Only regen above this food level.")
 
     private val noAir by boolean("NoAir", false)
+        .describe("Pause regen while in the air.")
     private val noMove by boolean("NoMove", false)
+        .describe("Pause regen while moving.")
     private val pauseOnDamage by boolean("PauseOnDamage", false)
+        .describe("Pause regen while taking damage.")
     private val potionEffect by boolean("PotionEffect", false)
+        .describe("Only regen while regeneration is active.")
 
     private val fire by boolean("Fire", false)
+        .describe("Also speed regen while on fire.")
     private val badEffects by boolean("BadEffects", false)
+        .describe("Also speed regen with bad potion effects.")
     private val maximumSpeed by int("MaximumSpeed", 100, 5..200) { fire || badEffects }
+        .describe("Cap on packets sent for fire or bad effects.")
 
     private val timer = MSTimer()
 

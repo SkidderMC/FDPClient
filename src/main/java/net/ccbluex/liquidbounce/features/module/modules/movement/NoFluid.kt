@@ -20,8 +20,11 @@ import net.minecraft.util.EnumFacing
 object NoFluid : Module("NoFluid", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
 
     val waterValue by boolean("Water", true)
+        .describe("Ignore water flow physics.")
     val lavaValue by boolean("Lava", true)
+        .describe("Ignore lava flow physics.")
     private val oldGrim by boolean("OldGrim", false)
+        .describe("Use the old Grim bypass method.")
 
     val onUpdate = handler<UpdateEvent> {
         if ((waterValue || lavaValue) && oldGrim) {

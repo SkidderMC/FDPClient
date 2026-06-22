@@ -21,8 +21,11 @@ import java.util.concurrent.ThreadLocalRandom
 
 object TargetFocus : Module("TargetFocus", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false) {
     private val targetNameValue = text("Name", "")
+        .describe("Name of the player to focus on.")
     private val allEntities by boolean("AllEntities", true)
+        .describe("Hide all entities, not just players.")
     private val automatic by boolean("Automatic", false)
+        .describe("Automatically pick the target to focus.")
     private val mode by choices(
         "Mode",
         arrayOf("LowArmor", "BreakArmor", "Health", "Both", "BrowseAllPlayers", "SwitchVisibleHit", "SwitchVisibleTime"),
@@ -45,7 +48,9 @@ object TargetFocus : Module("TargetFocus", Category.CLIENT, Category.SubCategory
         automatic && mode == "BrowseAllPlayers"
     }
     private val bothHealthWeight by float("BothHealthWeight", 1F, 0.1F..5F) { automatic && mode == "Both" }
+        .describe("Weight given to health in the Both mode score.")
     private val bothArmorWeight by float("BothArmorWeight", 1F, 0.1F..5F) { automatic && mode == "Both" }
+        .describe("Weight given to armor in the Both mode score.")
     private val considerDurability by boolean("ConsiderDurability", true) {
         automatic && (mode == "BreakArmor" || mode == "Both")
     }

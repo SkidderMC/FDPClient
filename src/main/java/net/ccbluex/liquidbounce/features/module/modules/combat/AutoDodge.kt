@@ -21,9 +21,13 @@ import kotlin.math.sqrt
 object AutoDodge : Module("AutoDodge", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     private val range by float("Range", 5f, 1f..16f)
+        .describe("Max distance to react to incoming arrows.")
     private val strength by float("Strength", 0.4f, 0.05f..1f)
+        .describe("How hard to push sideways out of the path.")
     private val lookahead by int("Lookahead", 30, 5..60)
+        .describe("Ticks of arrow flight to simulate ahead.")
     private val hitRadius by float("HitRadius", 1.2f, 0.5f..3f)
+        .describe("Radius treated as a hit when predicting arrows.")
 
     val onMove = handler<MoveEvent> { event ->
         val player = mc.thePlayer ?: return@handler

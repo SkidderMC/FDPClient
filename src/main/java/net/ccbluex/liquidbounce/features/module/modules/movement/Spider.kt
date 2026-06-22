@@ -25,8 +25,11 @@ import kotlin.math.sin
 object Spider : Module("Spider", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
 
     private val modeValue by choices("Mode", arrayOf("Collide", "Motion", "AAC3.3.12", "AAC4", "Checker", "Vulcan", "Polar"), "Collide")
+        .describe("Anticheat bypass method for climbing walls.")
     private val motionValue by float("Motion", 0.42F, 0.1F..1F) { modeValue == "Motion" }
+        .describe("Upward motion applied in motion mode.")
     private val avoidLadderValue by boolean("AvoidLadder", false)
+        .describe("Do not climb when a ladder is above you.")
 
     private var groundHeight = 0.0
     private var glitch = false

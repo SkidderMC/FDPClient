@@ -65,7 +65,9 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
     private val refreshTokenValue = text("RefreshToken", SpotifyDefaults.refreshToken).apply { hide() }
     private val quickRefreshTokenValue = text("QuickRefreshToken", "").apply { hide() }
     private val pollIntervalValue = int("PollInterval", SpotifyDefaults.pollIntervalSeconds, 3..60, suffix = "s")
+        .describe("How often to poll Spotify for the current track.")
     private val autoReconnectValue = boolean("AutoReconnect", true)
+        .describe("Automatically reconnect to Spotify on errors.")
     private val openPlayerValue = boolean("OpenUI", false).apply {
         onChange { _, newValue ->
             if (newValue) {

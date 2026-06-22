@@ -19,16 +19,24 @@ import net.minecraft.network.play.client.C03PacketPlayer
 object FastUse : Module("FastUse", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
     private val mode by choices("Mode", arrayOf("Instant", "NCP", "AAC", "Custom"), "NCP")
+        .describe("Anti-cheat bypass method for fast item use.")
 
     private val speed by int("Speed", 20, 1..35) { mode == "Instant" || mode == "NCP" }
+        .describe("Number of packets sent to speed up use.")
     private val tickCooldown by int("TickCooldown", 0, 0..20, "ticks") { mode == "Instant" || mode == "NCP" }
+        .describe("Ticks to wait before speeding up use.")
     private val stopInput by boolean("StopInput", false) { mode == "Instant" || mode == "NCP" }
+        .describe("Release the use key once the item is used.")
 
     private val delay by int("CustomDelay", 0, 0..300) { mode == "Custom" }
+        .describe("Delay between custom-mode bursts in ms.")
     private val customSpeed by int("CustomSpeed", 2, 1..35) { mode == "Custom" }
+        .describe("Packets per burst in custom mode.")
     private val customTimer by float("CustomTimer", 1.1f, 0.5f..2f) { mode == "Custom" }
+        .describe("Game timer speed used in custom mode.")
 
     private val noMove by boolean("NoMove", false)
+        .describe("Stop movement while using an item.")
 
     private val msTimer = MSTimer()
     private var usedTimer = false

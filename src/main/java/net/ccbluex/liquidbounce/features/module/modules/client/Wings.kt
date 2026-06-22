@@ -14,11 +14,15 @@ import java.awt.Color
 
 object Wings : Module("Wings", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL) {
     private val onlyThirdPerson by boolean("OnlyThirdPerson", true)
+        .describe("Only show the wings in third person view.")
     val colorType by choices("Color Type", arrayOf("Custom", "Theme", "None"), "Custom")
+        .describe("Source of the wing color.")
 
     val color by color("Color", Color(0xFF0054)) { colorType == "Custom" }
+        .describe("Custom color of the wings.")
 
     val wingStyle by choices("Wing Style", arrayOf("Dragon", "Simple"), "Dragon")
+        .describe("Visual style of the wings.")
 
     val onRender3D = handler<Render3DEvent> { event ->
         if (onlyThirdPerson && mc.gameSettings.thirdPersonView == 0) return@handler

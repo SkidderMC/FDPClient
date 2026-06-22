@@ -28,16 +28,25 @@ import net.minecraft.item.ItemStack
 object ArmorFilter : Module("ArmorFilter", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val priority by choices("Priority", arrayOf("Balanced", "Defense", "Durability", "Enchantments"), "Balanced")
+        .describe("How armor pieces are ranked.")
     private val keepBackups by int("KeepBackups", 0, 0..3)
+        .describe("Number of backup pieces to keep per slot.")
 
     private val dropLowDurability by boolean("DropLowDurability", true)
+        .describe("Drop armor that falls below the durability limit.")
     private val dropDelay by int("DropDelay", 40, 10..500, suffix = "ms") { dropLowDurability }
+        .describe("Delay between dropping worn-out armor pieces.")
     private val dropDurabilityPercent by int("DropDurability", 50, 0..100, suffix = "%") { dropLowDurability }
+        .describe("Durability below which armor is dropped.")
 
     private val minMaterial by choices("MinMaterial", arrayOf("Any", "Leather", "Gold", "Chain", "Iron", "Diamond"), "Any")
+        .describe("Lowest armor material allowed.")
     private val minDurabilityPercent by int("MinDurabilityPercent", 10, 0..100)
+        .describe("Minimum durability for armor to be allowed.")
     private val minProtectionLevel by int("MinProtectionLevel", 0, 0..4)
+        .describe("Minimum protection enchant level allowed.")
     private val minEnchantmentSum by int("MinEnchantmentSum", 0, 0..12)
+        .describe("Minimum total enchant levels for allowed armor.")
 
     private var lastDropTime = 0L
 

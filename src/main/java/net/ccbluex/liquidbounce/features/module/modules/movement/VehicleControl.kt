@@ -21,8 +21,11 @@ import kotlin.math.sin
 object VehicleControl : Module("VehicleControl", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
 
     private val horizontalSpeed by float("HorizontalSpeed", 0.5f, 0.1f..5f)
+        .describe("Steering speed for the ridden vehicle.")
     private val verticalSpeed by float("VerticalSpeed", 0.5f, 0.1f..5f)
+        .describe("Rise and descend speed for the vehicle.")
     private val glide by float("Glide", 0f, -0.2f..0f)
+        .describe("Downward drift when no key is held.")
 
     val onUpdate = handler<UpdateEvent> {
         val player = mc.thePlayer ?: return@handler

@@ -18,7 +18,9 @@ import net.minecraft.item.ItemTool
 object FastBreak : Module("FastBreak", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS) {
 
     private val breakDamage by float("BreakDamage", 0.8F, 0.1F..1F)
+        .describe("Damage progress at which to instantly finish breaking.")
     private val onlyTool by boolean("OnlyTool", false)
+        .describe("Only speed up breaking while holding a tool.")
 
     val onUpdate = handler<UpdateEvent> {
         if (onlyTool) {

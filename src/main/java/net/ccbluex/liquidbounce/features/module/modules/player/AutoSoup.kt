@@ -35,18 +35,28 @@ import net.minecraft.util.EnumFacing
 object AutoSoup : Module("AutoSoup", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
     private val health by float("Health", 15f, 0f..20f)
+        .describe("Health threshold below which to eat soup.")
     private val delay by int("Delay", 150, 0..500)
+        .describe("Delay between soup actions in milliseconds.")
     private val dropOnNextTick by boolean("DropOnNextTick", true)
+        .describe("Drop the empty bowl on the following tick.")
 
     private val refill by boolean("Refill", true)
+        .describe("Move soup from inventory into the hotbar.")
     private val refillMode by choices("RefillMode", arrayOf("Normal", "Silent"), "Normal") { refill }
+        .describe("How to refill soup into the hotbar.")
 
     private val startDelay by int("StartDelay", 100, 0..1000) { refill && refillMode == "Normal" }
+        .describe("Delay before starting to refill soup.")
     private val autoClose by boolean("AutoClose", false) { refill && refillMode == "Normal" }
+        .describe("Close the inventory after refilling.")
     private val autoCloseNoSoup by boolean("AutoCloseNoSoup", true) { autoClose }
+        .describe("Also close when no soup is left to refill.")
     private val autoCloseDelay by int("CloseDelay", 500, 0..1000) { autoClose }
+        .describe("Delay before closing the inventory.")
 
     private val bowl by choices("Bowl", arrayOf("Drop", "Move"), "Drop")
+        .describe("What to do with the empty bowl after eating.")
 
     private val timer = MSTimer()
     private val startTimer = MSTimer()

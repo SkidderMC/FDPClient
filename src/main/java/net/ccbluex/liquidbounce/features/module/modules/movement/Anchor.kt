@@ -20,7 +20,9 @@ import net.ccbluex.liquidbounce.features.module.Module
 object Anchor : Module("Anchor", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS, gameDetecting = false) {
 
     private val allowVertical by boolean("AllowVertical", true)
+        .describe("Allow gravity and jumping while the anchor holds X and Z.")
     private val snapBack by boolean("SnapBack", true)
+        .describe("Snap the player back to the captured X and Z each tick.")
 
     private var anchorX = 0.0
     private var anchorZ = 0.0

@@ -54,8 +54,11 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
     { mode == "Jump" }
 
     private val delay by int("Delay", 0, 0..500)
+        .describe("Delay between steps in milliseconds.")
     private val extraDelay by int("ExtraDelay", 0, 0..1000)
+        .describe("Additional delay before stepping.")
     private val simulateJump by boolean("SimulateJump", false)
+        .describe("Trigger a real jump while stepping.")
     private val timerValue by float("Timer", 1F, 0.05F..1F) {
         mode !in arrayOf("Matrix6.7.0", "Verus")
     }

@@ -21,9 +21,12 @@ import net.minecraft.network.play.client.C02PacketUseEntity.Action.ATTACK
 object AutoWeapon : Module("AutoWeapon", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT, subjective = true) {
 
     private val onlySword by boolean("OnlySword", false)
+        .describe("Only switch to swords, ignore tools.")
 
     private val spoof by boolean("SpoofItem", false)
+        .describe("Silently spoof the weapon instead of switching.")
     private val spoofTicks by int("SpoofTicks", 10, 1..20) { spoof }
+        .describe("Ticks to keep the spoofed weapon selected.")
 
     private var attackEnemy = false
 

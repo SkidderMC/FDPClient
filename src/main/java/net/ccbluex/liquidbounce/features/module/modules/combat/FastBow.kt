@@ -23,6 +23,7 @@ import net.minecraft.util.EnumFacing
 object FastBow : Module("FastBow", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     private val packets by int("Packets", 20, 3..20)
+        .describe("Look packets sent to charge the bow instantly.")
 
     val onUpdate = handler<UpdateEvent> {
         val thePlayer = mc.thePlayer ?: return@handler

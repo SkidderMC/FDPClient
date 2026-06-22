@@ -23,9 +23,13 @@ import kotlin.math.sin
 object Strafe : Module("Strafe", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN, gameDetecting = false) {
 
     private val strength by float("Strength", 0.5F, 0F..1F)
+        .describe("How strongly to redirect motion to look direction.")
     private val noMoveStop by boolean("NoMoveStop", false)
+        .describe("Zero out motion when not moving.")
     private val onGroundStrafe by boolean("OnGroundStrafe", false)
+        .describe("Also strafe while on the ground.")
     private val allDirectionsJump by boolean("AllDirectionsJump", false)
+        .describe("Jump toward the movement direction.")
 
     private var wasDown = false
     private var jump = false

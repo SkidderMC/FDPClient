@@ -29,16 +29,27 @@ import java.util.*
 object Gapple : Module("Gapple", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
     private val modeValue by choices("Mode", arrayOf("Auto", "LegitAuto", "Legit", "Head"), "Auto")
+        .describe("How to eat the golden apple.")
     private val triggerMode by choices("TriggerMode", arrayOf("Percent", "Health"), "Percent")
+        .describe("Trigger by health percent or absolute health.")
     private val percent by float("HealthPercent", 75.0f, 1.0f..100.0f) { triggerMode == "Percent" }
+        .describe("Health percent below which to eat.")
     private val healthValue by float("Health", 10.0f, 1.0f..20.0f) { triggerMode == "Health" }
+        .describe("Health value below which to eat.")
     private val min by int("MinDelay", 75, 1.. 5000)
+        .describe("Minimum delay between eats in milliseconds.")
     private val max by int("MaxDelay", 125, 1.. 5000)
+        .describe("Maximum delay between eats in milliseconds.")
     private val regenSec by float("MinRegenSec", 4.6f, 0.0f.. 10.0f)
+        .describe("Skip eating if regen lasts at least this long.")
     private val groundCheck by boolean("OnlyOnGround", false)
+        .describe("Only eat while standing on the ground.")
     private val waitRegen by boolean("WaitRegen", true)
+        .describe("Wait for regeneration to run out before eating.")
     private val invCheck by boolean("InvCheck", false)
+        .describe("Do not eat while an inventory is open.")
     private val absorpCheck by boolean("NoAbsorption", true)
+        .describe("Do not eat while absorption hearts are active.")
     private val legitCompletion by choices("LegitCompletion", arrayOf("Current", "Legacy"), "Current") {
         modeValue == "LegitAuto" || modeValue == "Legit"
     }
@@ -46,6 +57,7 @@ object Gapple : Module("Gapple", Category.PLAYER, Category.SubCategory.PLAYER_CO
         legitCompletion == "Current" && (modeValue == "LegitAuto" || modeValue == "Legit")
     }
     private val eatDelayValue by int("FastEatDelay", 14, 0.. 35) { legitCompletion == "Current" && fastEatValue }
+        .describe("Ticks to wait before finishing fast eat.")
     val timer = MSTimer()
     private var eating = -1
     var delay = 0

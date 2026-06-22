@@ -48,9 +48,12 @@ import kotlin.math.sqrt
 object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, subCategory = Category.SubCategory.COMBAT_RAGE, spacedName = "Infinite Aura") {
 
     private val packetValue by choices("PacketMode", arrayOf("PacketPosition", "PacketPosLook"), "PacketPosition")
+        .describe("Which movement packet type to teleport with.")
     private val packetBack by boolean("DoTeleportBackPacket", false)
+        .describe("Send a packet to teleport back after hitting.")
 
     private val modeValue by choices("Mode", arrayOf("Aura", "Click"), "Aura")
+        .describe("Attack automatically or only while clicking.")
 
     private val priority by choices(
         "Priority", arrayOf(
@@ -70,39 +73,60 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
     )
 
     private val targetMode by choices("TargetMode", arrayOf("Single", "Switch", "Multi"), "Switch")
+        .describe("How many targets to engage at once.")
     private val limitedMultiTargets by int("LimitedMultiTargets", 0, 0..50) { targetMode == "Multi" }
+        .describe("Max targets to hit in multi mode, 0 is no limit.")
     private val maxSwitchFOV by float("MaxSwitchFOV", 90f, 30f..180f) { targetMode == "Switch" }
+        .describe("Max angle to switch to another target.")
     private val switchDelay by int("SwitchDelay", 15, 1..1000) { targetMode == "Switch" }
+        .describe("Delay before switching targets.")
 
     private val targetsValue by int("Targets", 3, 1..10) { modeValue == "Aura" }
+        .describe("Max number of targets to attack per loop.")
 
     private val cps by intRange("CPS", 5..8, 1..50).onChanged {
         attackDelay = randomClickDelay(it.first, it.last)
     }
 
     private val hurtTime by int("HurtTime", 10, 0..10)
+        .describe("Only attack when target hurt-time is at or below this.")
 
     private val distValue by int("Distance", 30, 20..100)
+        .describe("Max distance to teleport-attack a target.")
     private val moveDistanceValue by float("MoveDistance", 5f, 2f..15f)
+        .describe("How far to teleport per hit toward the target.")
     private val allowDiagonal by boolean("AllowDiagonal", false)
+        .describe("Allow diagonal moves in the teleport path.")
     private val maxPathSearch by int("MaxPathSearch", 3000, 500..8000)
+        .describe("Max nodes searched when finding a path.")
 
     private val fov by float("FOV", 180f, 0f..180f)
+        .describe("Field of view in which targets are valid.")
 
     private val swing by boolean("Swing", true)
+        .describe("Swing the arm when attacking.")
     private val swingValue by boolean("SwingAura", true) { modeValue == "Aura" }
+        .describe("Use a real swing in aura mode.")
 
     private val failSwing by boolean("FailSwing", true) { swing }
+        .describe("Swing even when no target can be hit.")
     private val maxRotationDifferenceToSwing by float("MaxRotationDifferenceToSwing", 180f, 0f..180f) { failSwing }
+        .describe("Max aim error allowed for a fail swing.")
     private val renderBoxOnSwingFail by boolean("RenderBoxOnSwingFail", false) { failSwing }
+        .describe("Render a box where a fail swing happened.")
     private val renderBoxColor = ColorSettingsInteger(this, "RenderBoxColor") { renderBoxOnSwingFail }.with(Color.CYAN)
     private val renderBoxFadeSeconds by float("RenderBoxFadeSeconds", 1f, 0f..5f) { renderBoxOnSwingFail }
+        .describe("How long the fail-swing box stays visible.")
 
     private val noRegenValue by boolean("NoRegen", true)
+        .describe("Cancel packets so the server does not regen you.")
     private val noLagBackValue by boolean("NoLagback", true)
+        .describe("Resist server position corrections.")
 
     private val pathRenderValue by boolean("PathRender", true)
+        .describe("Render the teleport path.")
     private val renderPathColor by color("PathColor", Color.GREEN) { pathRenderValue }.subjective()
+        .describe("Color of the rendered path.")
 
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.HIGH)
     private val randomization = RandomizationSettings(this) { options.rotationsActive }
@@ -118,16 +142,24 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
     private val lowestBodyPointToTarget: String by lowestBodyPointToTargetValue
 
     private val horizontalBodySearchRange by floatRange("HorizontalBodySearchRange", 0f..1f, 0f..1f) { options.rotationsActive }
+        .describe("Horizontal span of the target body to search.")
 
     private val predictClientMovement by int("PredictClientMovement", 2, 0..5)
+        .describe("Ticks of your own movement to predict ahead.")
     private val predictOnlyWhenOutOfRange by boolean("PredictOnlyWhenOutOfRange", false) { predictClientMovement != 0 }
+        .describe("Only predict movement when out of range.")
     private val predictEnemyPosition by float("PredictEnemyPosition", 1.5f, -1f..2f)
+        .describe("How far ahead to predict the enemy position.")
 
     private val renderAimPointBox by boolean("RenderAimPointBox", false).subjective()
+        .describe("Render a box at the current aim point.")
     private val aimPointBoxColor by color("AimPointBoxColor", Color.CYAN) { renderAimPointBox }.subjective()
+        .describe("Color of the aim point box.")
     private val aimPointBoxSize by float("AimPointBoxSize", 0.1f, 0f..0.2F) { renderAimPointBox }.subjective()
+        .describe("Size of the aim point box.")
 
     private val displayDebug by boolean("Debug", false)
+        .describe("Show on-screen target and reach debug info.")
 
     var target: EntityLivingBase? = null
     private var hittable = false

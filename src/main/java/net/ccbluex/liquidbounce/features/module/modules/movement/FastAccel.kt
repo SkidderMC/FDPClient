@@ -43,9 +43,11 @@ object FastAccel : Module("FastAccel", Category.MOVEMENT, Category.SubCategory.M
 
     // Boost percentage: 0 = vanilla, 100 = instant top speed
     private val boost by float("Boost", 50f, 0f..100f)
+        .describe("How fast to reach top speed, 0 vanilla to 100 instant.")
 
     // Conditions
     private val notDamaged by boolean("NotDamaged", false)
+        .describe("Only accelerate while the player is not hurt.")
 
     /**
      * Fires inside moveFlying, before vanilla acceleration is applied.
