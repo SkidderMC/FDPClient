@@ -88,7 +88,7 @@ open class Module(
         return@onChange false
     }
 
-    val description
+    override val description
         get() = forcedDescription ?: translation("module.${name.toLowerCamelCase()}.description")
 
     var slideStep = 0F

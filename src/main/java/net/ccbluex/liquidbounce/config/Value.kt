@@ -47,12 +47,15 @@ sealed class Value<T>(
 
     /**
      * Optional human-readable help text shown as a hover tooltip in the ClickGUI styles that
-     * support it. Mirrors the reference client's per-value descriptions.
+     * support it. Mirrors the reference client's per-value descriptions. Open so a [Configurable]
+     * subtype (e.g. a module) can override it with its own description source.
      */
-    var description: String? = null
-        private set
+    private var descriptionField: String? = null
 
-    fun describe(text: String) = apply { description = text }
+    open val description: String?
+        get() = descriptionField
+
+    fun describe(text: String) = apply { descriptionField = text }
 
     fun matchesKey(key: String): Boolean =
         name.equals(key, true) || aliases.any { it.equals(key, true) }
