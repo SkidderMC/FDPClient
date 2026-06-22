@@ -124,6 +124,14 @@ object NextGenClickGuiServer {
             method == "GET" && path == "/client/virtualScreen" ->
                 sendJson(exchange, NextGenClickGuiBridge.virtualScreen())
 
+            method == "GET" && path == "/client/spotify" ->
+                sendJson(exchange, NextGenClickGuiBridge.spotifyNowPlaying())
+
+            method == "POST" && path == "/client/spotify/control" -> {
+                NextGenClickGuiBridge.spotifyControl(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
             method == "POST" && path == "/client/typing" ->
                 sendNoContent(exchange)
 

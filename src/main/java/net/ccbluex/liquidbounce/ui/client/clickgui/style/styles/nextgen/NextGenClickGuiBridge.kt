@@ -246,6 +246,40 @@ object NextGenClickGuiBridge : MinecraftInstance {
         }
     }
 
+    /** Current Spotify playback for the web GUI to poll. Works for both the Local and Web API sources. */
+    fun spotifyNowPlaying(): JsonObject = JsonObject().apply {
+        val state = SpotifyModule.currentState
+        addProperty("connection", SpotifyModule.connectionState.name)
+        addProperty("local", SpotifyModule.usingLocalSource)
+        addProperty("isPlaying", state?.isPlaying ?: false)
+        addProperty("progressMs", state?.progressMs ?: 0)
+        addProperty("volumePercent", state?.volumePercent ?: -1)
+        addProperty("updatedAt", state?.updatedAt ?: 0L)
+        val track = state?.track
+        if (track == null) {
+            add("track", JsonNull.INSTANCE)
+        } else {
+            add("track", JsonObject().apply {
+                addProperty("id", track.id)
+                addProperty("title", track.title)
+                addProperty("artists", track.artists)
+                addProperty("album", track.album)
+                addProperty("coverUrl", track.coverUrl ?: "")
+                addProperty("durationMs", track.durationMs)
+            })
+        }
+    }
+
+    /** Playback control from the web GUI: {"action":"playPause"|"next"|"previous"}. */
+    fun spotifyControl(body: String) {
+        val action = runCatching { parser.parse(body).asJsonObject.get("action").asString }.getOrNull() ?: return
+        when (action.lowercase(Locale.ROOT)) {
+            "playpause", "toggle" -> SpotifyModule.togglePlayback()
+            "next" -> SpotifyModule.next()
+            "previous", "prev" -> SpotifyModule.previous()
+        }
+    }
+
     fun virtualScreen(): JsonObject = JsonObject().apply {
         addProperty("name", "clickgui")
     }
