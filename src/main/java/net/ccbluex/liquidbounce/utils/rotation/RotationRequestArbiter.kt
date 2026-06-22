@@ -19,7 +19,10 @@ enum class RotationPriority(val level: Int) {
  */
 class RotationRequestArbiter {
 
-    data class ActiveRequest(val owner: Any, val priority: Int, val sequence: Long)
+    data class ActiveRequest(val owner: Any, val priority: Int, val sequence: Long) {
+        /** Ticks elapsed since the owner last refreshed (re-acquired) this lease. */
+        var idleTicks: Int = 0
+    }
 
     var activeRequest: ActiveRequest? = null
         private set
@@ -46,6 +49,20 @@ class RotationRequestArbiter {
 
         activeRequest = null
         return true
+    }
+
+    /**
+     * Safety backstop: auto-releases a lease that has not been refreshed for more than [maxIdleTicks]
+     * ticks, so a request whose owner forgot to release it can never block lower-priority modules
+     * forever. Runs well after the normal ResetTicks countdown, so it never interferes with active aiming.
+     */
+    fun tick(maxIdleTicks: Int) {
+        val current = activeRequest ?: return
+
+        current.idleTicks++
+        if (current.idleTicks > maxIdleTicks) {
+            activeRequest = null
+        }
     }
 
     fun clear() {

@@ -57,6 +57,12 @@ object RotationUtils : MinecraftInstance, Listenable {
 
     private const val MAX_CAPTURE_TICKS = 3
 
+    /**
+     * Generous safety margin (in ticks) after which the arbiter force-releases an un-refreshed lease.
+     * Larger than any ResetTicks setting so it never fires during normal aiming.
+     */
+    private const val ARBITER_MAX_IDLE_TICKS = 60
+
     var modifiedInput = MovementInput()
 
     /**
@@ -633,6 +639,7 @@ object RotationUtils : MinecraftInstance, Listenable {
         currentRotation = null
         activeSettings = null
         requestArbiter.clear()
+        PostRotationExecutor.clear()
         ModernRotationEngine.reset()
 
         if (resetHistory) {
@@ -780,6 +787,11 @@ object RotationUtils : MinecraftInstance, Listenable {
      * Handle rotation update
      */
     val onRotationUpdate = handler<RotationUpdateEvent>(priority = -1) {
+        // Backstop so an abandoned lease can never block other modules forever, plus drain any
+        // post-rotation tasks scheduled for the next tick.
+        requestArbiter.tick(ARBITER_MAX_IDLE_TICKS)
+        PostRotationExecutor.tick()
+
         activeSettings?.let {
             // Was the rotation update immediate? Allow updates the next tick.
             if (it.immediate) {
@@ -852,7 +864,11 @@ object RotationUtils : MinecraftInstance, Listenable {
             return@handler
         }
 
-        currentRotation?.let { packet.rotation = it }
+        currentRotation?.let {
+            packet.rotation = it
+            // Our rotation just left for the server; fire any post-move actions directly behind it.
+            PostRotationExecutor.onRotationPacketSent()
+        }
 
         val diffs = angleDifferences(packet.rotation, serverRotation)
 
