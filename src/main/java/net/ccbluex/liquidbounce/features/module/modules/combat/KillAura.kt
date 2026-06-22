@@ -40,6 +40,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RaycastUtils.runWithModifiedRayca
 import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
+import net.ccbluex.liquidbounce.utils.rotation.PostRotationExecutor
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotation
@@ -138,6 +139,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
     private val onSwording by boolean("OnSwording", true)
     private val onScaffold by boolean("OnScaffold", false)
     private val onDestroyBlock by boolean("OnDestroyBlock", false)
+
+    private val postRotationAttack by boolean("PostRotationAttack", false)
     private val noScaffold by boolean("NoScaffold", false)
     private val noFly by boolean("NoFly", false)
     private val noEat by boolean("NoEat", false)
@@ -715,7 +718,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         blockStopInDead = false
 
         if (!multi) {
-            attackEntity(currentTarget, isLastClick)
+            dispatchAttack(currentTarget, isLastClick)
         } else {
             var targets = 0
 
@@ -723,7 +726,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
                 val distance = player.getDistanceToEntityBox(entity)
 
                 if (entity is EntityLivingBase && isSelected(entity, true) && distance <= getRange(entity)) {
-                    attackEntity(entity, isLastClick)
+                    dispatchAttack(entity, isLastClick)
 
                     targets += 1
 
@@ -867,6 +870,18 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         }
 
         resetLastAttackedTicks()
+    }
+
+    /**
+     * Dispatches the attack either inline or, when [postRotationAttack] is enabled, right after our
+     * rotation reaches the server (post-move) so the hit is processed with the synced rotation.
+     */
+    private fun dispatchAttack(entity: EntityLivingBase, isLastClick: Boolean) {
+        if (postRotationAttack) {
+            PostRotationExecutor.runPostMove { attackEntity(entity, isLastClick) }
+        } else {
+            attackEntity(entity, isLastClick)
+        }
     }
 
     /**
