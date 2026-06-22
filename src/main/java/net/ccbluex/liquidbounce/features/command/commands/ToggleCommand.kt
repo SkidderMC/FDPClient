@@ -5,56 +5,57 @@
  */
 package net.ccbluex.liquidbounce.features.command.commands
 
+import net.ccbluex.liquidbounce.FDPClient.commandManager
 import net.ccbluex.liquidbounce.FDPClient.moduleManager
-import net.ccbluex.liquidbounce.features.command.Command
+import net.ccbluex.liquidbounce.features.command.builder.BuilderCommand
+import net.ccbluex.liquidbounce.features.command.builder.CommandBuilder
+import net.ccbluex.liquidbounce.features.command.builder.ParameterBuilder
+import net.ccbluex.liquidbounce.utils.client.chat
 
-object ToggleCommand : Command("toggle", "t") {
-    /**
-     * Execute commands with provided [args]
-     */
-    override fun execute(args: Array<String>) {
-        val usedAlias = args[0].lowercase()
+object ToggleCommand : BuilderCommand(
+    CommandBuilder.begin("toggle")
+        .alias("t")
+        .description("Toggle a module on or off.")
+        .parameter(
+            ParameterBuilder.begin<String>("module")
+                .verifiedBy(ParameterBuilder.STRING_VALIDATOR)
+                .autocompletedWith { begin ->
+                    moduleManager
+                        .map { it.name }
+                        .filter { it.startsWith(begin, true) }
+                }
+                .required()
+                .build()
+        )
+        .parameter(
+            ParameterBuilder.begin<String>("on/off")
+                .verifiedBy(ParameterBuilder.STRING_VALIDATOR)
+                .autocompletedWith { begin -> listOf("on", "off").filter { it.startsWith(begin, true) } }
+                .optional()
+                .build()
+        )
+        .handler { _, args ->
+            val moduleName = args[0] as String
+            val module = moduleManager[moduleName]
 
-        if (args.size <= 1) {
-            chatSyntax("$usedAlias <module> [on/off]")
-            return
-        }
-
-        val module = moduleManager[args[1]]
-
-        if (module == null) {
-            chat("Module '${args[1]}' not found.")
-            return
-        }
-
-        if (args.size > 2) {
-            val newState = args[2].lowercase()
-
-            if (newState == "on" || newState == "off") {
-                module.state = newState == "on"
-            } else {
-                chatSyntax("$usedAlias <module> [on/off]")
+            if (module == null) {
+                chat("§3Module '$moduleName' not found.")
+                return@handler
             }
-        } else {
-            module.toggle()
+
+            val newState = args[1] as String?
+
+            if (newState != null) {
+                if (newState.lowercase() == "on" || newState.lowercase() == "off") {
+                    module.state = newState.lowercase() == "on"
+                } else {
+                    chat("§3Syntax: §7${commandManager.prefix}toggle <module> [on/off]")
+                }
+            } else {
+                module.toggle()
+            }
+
+            chat("§3${if (module.state) "Enabled" else "Disabled"} module §8${module.getName()}§3.")
         }
-
-        chat("${if (module.state) "Enabled" else "Disabled"} module §8${module.getName()}§3.")
-
-    }
-
-    override fun tabComplete(args: Array<String>): List<String> {
-        if (args.isEmpty()) return emptyList()
-
-        val moduleName = args[0]
-
-        return when (args.size) {
-            1 -> moduleManager
-                    .map { it.name }
-                    .filter { it.startsWith(moduleName, true) }
-                    .toList()
-            else -> emptyList()
-        }
-    }
-
-}
+        .build()
+)
