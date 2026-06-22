@@ -20,7 +20,9 @@ import net.ccbluex.liquidbounce.features.module.Module
 object AutoF5 : Module("AutoF5", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
     private val perspective by choices("Perspective", arrayOf("ThirdBack", "ThirdFront", "First"), "ThirdBack")
+        .describe("Camera perspective to force while enabled.")
     private val autoReturnOnAttack by boolean("AutoReturnOnAttack", true)
+        .describe("Snap to first person when swinging or attacking.")
 
     private var previousView = 0
 

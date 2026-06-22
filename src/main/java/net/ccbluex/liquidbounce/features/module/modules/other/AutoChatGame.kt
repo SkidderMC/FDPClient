@@ -26,15 +26,25 @@ import okhttp3.RequestBody.Companion.toRequestBody
 object AutoChatGame : Module("AutoChatGame", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val baseUrl by text("BaseUrl", "https://api.openai.com/v1")
+        .describe("Base URL of the chat completions API.")
     private val apiKey by text("ApiKey", "")
+        .describe("API key used to authenticate requests.")
     private val model by text("Model", "gpt-4o-mini")
+        .describe("Model name used to answer questions.")
     private val reactionTime by intRange("ReactionTime", 1000..5000, 0..10000)
+        .describe("Random delay range before sending the answer.")
     private val cooldownMinutes by int("Cooldown", 2, 0..60)
+        .describe("Minutes to wait between answering questions.")
     private val bufferTime by int("BufferTime", 200, 0..500)
+        .describe("How long to gather chat lines into one question.")
     private val triggerSentence by text("TriggerSentence", "Chat Game")
+        .describe("Phrase that starts collecting a new question.")
     private val includeTrigger by boolean("IncludeTrigger", true)
+        .describe("Include the trigger line as part of the question.")
     private val serverName by text("ServerName", "Minecraft")
+        .describe("Server name given to the model for context.")
     private val answerTemplate by text("AnswerTemplate", "%s")
+        .describe("Format applied to the answer before sending it.")
 
     private val defaultPrompt =
         ("You participate in a chat game in which you have to answer questions or do tasks. " +
@@ -50,6 +60,7 @@ object AutoChatGame : Module("AutoChatGame", Category.OTHER, Category.SubCategor
             "DO NOT SAY ANYTHING ELSE THAN THE ANSWER! If you do, you will be disqualified.")
 
     private val prompt by text("Prompt", defaultPrompt)
+        .describe("System prompt that instructs the model how to play.")
 
     private val chatBuffer = mutableListOf<String>()
     private val triggerTimer = MSTimer().apply { zero() }

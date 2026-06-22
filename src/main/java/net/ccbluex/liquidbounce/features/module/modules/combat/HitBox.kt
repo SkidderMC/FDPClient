@@ -18,16 +18,25 @@ import net.minecraft.entity.player.EntityPlayer
 object HitBox : Module("HitBox", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     private val targetPlayers by boolean("TargetPlayers", true)
+        .describe("Expand the hitbox of other players.")
     private val playerSize by float("PlayerSize", 0.4F, 0F..1F) { targetPlayers }
+        .describe("Extra hitbox size for regular players.")
     private val friendSize by float("FriendSize", 0.4F, 0F..1F) { targetPlayers }
+        .describe("Extra hitbox size for friends.")
     private val teamMateSize by float("TeamMateSize", 0.4F, 0F..1F) { targetPlayers }
+        .describe("Extra hitbox size for teammates.")
     private val botSize by float("BotSize", 0.4F, 0F..1F) { targetPlayers }
+        .describe("Extra hitbox size for bots.")
 
     private val targetMobs by boolean("TargetMobs", false)
+        .describe("Expand the hitbox of hostile mobs.")
     private val mobSize by float("MobSize", 0.4F, 0F..1F) { targetMobs }
+        .describe("Extra hitbox size for mobs.")
 
     private val targetAnimals by boolean("TargetAnimals", false)
+        .describe("Expand the hitbox of animals.")
     private val animalSize by float("AnimalSize", 0.4F, 0F..1F) { targetAnimals }
+        .describe("Extra hitbox size for animals.")
 
     fun determineSize(entity: Entity): Float {
         return when (entity) {

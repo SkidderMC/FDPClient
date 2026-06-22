@@ -18,10 +18,14 @@ import net.minecraft.util.BlockPos
 
 object HighJump : Module("HighJump", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
     private val mode by choices("Mode", arrayOf("Vanilla", "Damage", "AACv3", "DAC", "Mineplex"), "Vanilla")
+        .describe("Anticheat bypass method used for the high jump.")
     private val height by float("Height", 2f, 1.1f..5f) { mode in arrayOf("Vanilla", "Damage") }
+        .describe("Multiplier applied to the jump height.")
     private val motion by float("Motion", 0.42f, 0.1f..1f) { mode == "Damage" }
+        .describe("Upward motion added when boosting off damage.")
 
     private val glass by boolean("OnlyGlassPane", false)
+        .describe("Only high jump while standing on a glass pane.")
 
     val onUpdate = handler<UpdateEvent> {
         val thePlayer = mc.thePlayer

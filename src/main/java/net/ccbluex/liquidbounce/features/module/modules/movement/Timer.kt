@@ -15,13 +15,19 @@ import net.ccbluex.liquidbounce.event.handler
 object Timer : Module("Timer", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS, gameDetecting = false) {
 
     private val mode by choices("Mode", arrayOf("OnMove", "NoMove", "Always"), "OnMove")
+        .describe("When the timer modification applies.")
     private val speed by float("Speed", 2F, 0.1F..10F)
+        .describe("Game timer speed multiplier.")
 
     private val allowNegative by boolean("AllowNegative", true)
+        .describe("Allow timer speeds below normal.")
 
     private val boostTicks by int("BoostTicks", 0, 0..200, "ticks")
+        .describe("Ticks to apply the boost speed each cycle.")
     private val boostSpeed by float("BoostSpeed", 2F, 0.1F..10F) { boostTicks > 0 }
+        .describe("Timer speed used during the boost phase.")
     private val normalTicks by int("NormalTicks", 20, 1..200, "ticks") { boostTicks > 0 }
+        .describe("Ticks to apply the normal speed each cycle.")
 
     private var inBoost = false
     private var phaseTicks = 0

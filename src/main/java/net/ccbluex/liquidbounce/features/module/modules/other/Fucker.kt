@@ -51,41 +51,65 @@ object Fucker : Module("Fucker", Category.OTHER, Category.SubCategory.MISCELLANE
      * SETTINGS
      */
     private val hypixel by boolean("Hypixel", false)
+        .describe("Use Hypixel-specific bed breaking behavior.")
 
     private val block by block("Block", 26)
+        .describe("Block ID to target and break.")
     private val throughWalls by choices("ThroughWalls", arrayOf("None", "Raycast", "Around"), "None") { !hypixel }
+        .describe("How to allow breaking blocks behind walls.")
     private val range by float("Range", 5F, 1F..7F)
+        .describe("Maximum distance to target a block.")
 
     private val action by choices("Action", arrayOf("Destroy", "Use"), "Destroy")
+        .describe("Whether to break or right-click the block.")
     private val surroundings by boolean("Surroundings", true) { !hypixel }
+        .describe("Break blocks obstructing the target first.")
     private val instant by boolean("Instant", false) { (action == "Destroy" || surroundings) && !hypixel }
+        .describe("Break the target in a single packet burst.")
 
     private val switch by int("SwitchDelay", 250, 0..1000)
+        .describe("Delay before retargeting a new block.")
     private val swing by boolean("Swing", true)
+        .describe("Swing the arm while breaking or using.")
     val noHit by boolean("NoHit", false)
+        .describe("Pause breaking while KillAura has a target.")
 
     private val delay by int("Delay", 0, 0..1000)
+        .describe("Delay between break actions in milliseconds.")
     private val ignoreOpenInventory by boolean("IgnoreOpenInventory", false)
+        .describe("Keep breaking while an inventory GUI is open.")
     private val ignoreUsingItem by boolean("IgnoreUsingItem", false)
+        .describe("Keep breaking while using an item.")
 
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.NORMAL)
 
     private val blockProgress by boolean("BlockProgress", true).subjective()
+        .describe("Show break progress text on the block.")
 
     private val scale by float("Scale", 2F, 1F..6F) { blockProgress }.subjective()
+        .describe("Scale of the break progress text.")
     private val font by font("Font", Fonts.fontSemibold40) { blockProgress }.subjective()
+        .describe("Font used for the break progress text.")
     private val fontShadow by boolean("Shadow", true) { blockProgress }.subjective()
+        .describe("Draw a shadow behind the progress text.")
 
     private val color by color("Color", Color(200, 100, 0)) { blockProgress }.subjective()
+        .describe("Color of the break progress text.")
 
     private val ignoreOwnBed by boolean("IgnoreOwnBed", true)
+        .describe("Never break a bed close to your spawn.")
     private val ownBedDist by int("MaxBedDistance", 16, 1..32) { ignoreOwnBed }
+        .describe("Distance within which a bed counts as your own.")
 
     private val renderPos by boolean("Render-Pos", false)
+        .describe("Render an overlay box at the target position.")
     private val clientTheme by boolean("RenderPos Color", true) { renderPos }
+        .describe("Color the overlay box with the client theme.")
     private val posProcess by boolean("PosProcess", false) { renderPos }
+        .describe("Animate the overlay box with break progress.")
 
     private val posOutline by boolean("PosOutline", false)
+        .describe("Draw the overlay as an outline instead of a box.")
     /**
      * VALUES
      */

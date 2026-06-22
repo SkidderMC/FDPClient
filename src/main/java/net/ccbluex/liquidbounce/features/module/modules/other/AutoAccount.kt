@@ -30,11 +30,15 @@ object AutoAccount :
     Module("AutoAccount", Category.OTHER, Category.SubCategory.MISCELLANEOUS,  subjective = true, gameDetecting = false) {
 
     private val register by boolean("AutoRegister", true)
+        .describe("Automatically run the register command on join.")
     private val login by boolean("AutoLogin", true)
+        .describe("Automatically run the login command on join.")
 
     // Configurable command templates (defaults keep the original behavior)
     private val registerCommand by text("RegisterCommand", "/register") { register }
+        .describe("Command sent to register the account.")
     private val loginCommand by text("LoginCommand", "/login") { login }
+        .describe("Command sent to log into the account.")
 
     private const val DEFAULT_PASSWORD = "zywl1337#"
 
@@ -66,11 +70,16 @@ object AutoAccount :
 
     // Needed for Gamster
     private val sendDelay by intRange("SendDelay", 150..300, 0..500) { passwordValue.isSupported() }
+        .describe("Random delay range before sending the command.")
 
     private val autoSession by boolean("AutoSession", false)
+        .describe("Swap the game session to a random or alt account.")
     private val startupValue = boolean("RandomAccountOnStart", false) { autoSession }
+        .describe("Pick a random account when the client starts.")
     private val relogInvalidValue = boolean("RelogWhenPasswordInvalid", true) { autoSession }
+        .describe("Reconnect with a new account when the password fails.")
     private val relogKickedValue = boolean("RelogWhenKicked", false) { autoSession }
+        .describe("Reconnect with a new account after being kicked.")
 
     private val reconnectDelayValue = int("ReconnectDelay", 1000, 0..2500)
     { relogInvalidValue.isActive() || relogKickedValue.isActive() }

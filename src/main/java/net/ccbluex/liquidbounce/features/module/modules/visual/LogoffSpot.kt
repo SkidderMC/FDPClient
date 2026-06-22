@@ -21,9 +21,13 @@ import java.awt.Color
 object LogoffSpot : Module("LogoffSpot", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false, spacedName = "Logoff Spot") {
 
     private val maxTrackDistance by float("MaxTrackDistance", 64F, 8F..256F)
+        .describe("Maximum distance to track players for logoff spots.")
     private val clearDistance by float("ClearDistance", 4F, 1F..16F)
+        .describe("Remove a spot once you get this close to it.")
     private val sendInChat by boolean("SendInChat", false)
+        .describe("Announce logoff and reappear events in chat.")
     private val color by color("Color", Color(255, 170, 0))
+        .describe("Color of the logoff spot marker box.")
 
     private data class Spot(val name: String, val x: Double, val y: Double, val z: Double)
 

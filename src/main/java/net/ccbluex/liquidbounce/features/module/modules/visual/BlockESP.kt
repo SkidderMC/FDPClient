@@ -46,14 +46,21 @@ import java.util.concurrent.ConcurrentHashMap
 
 object BlockESP : Module("BlockESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     private val mode by choices("Mode", arrayOf("Box", "2D"), "Box")
+        .describe("Render style for highlighted blocks.")
     private val block by block("Block", 168)
+        .describe("Which block type to highlight.")
     private val radius by int("Radius", 40, 5..120)
+        .describe("Search radius for matching blocks.")
     private val blockLimit by int("BlockLimit", 256, 0..2056)
+        .describe("Maximum number of blocks to highlight.")
 
     private val outline by boolean("Outline", true) { mode == "Box" }
+        .describe("Draw an outline around each box.")
     private val mergeAdjacent by boolean("MergeAdjacent", false) { mode == "Box" }
+        .describe("Merge neighboring blocks into one box.")
 
     private val color by color("Color", Color(255, 179, 72))
+        .describe("Color of the highlighted blocks.")
 
     private val posList = ConcurrentHashMap.newKeySet<BlockPos>()
 

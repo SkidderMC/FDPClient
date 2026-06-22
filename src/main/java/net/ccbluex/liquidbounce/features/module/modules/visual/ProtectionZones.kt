@@ -41,12 +41,17 @@ import java.util.concurrent.CopyOnWriteArrayList
 object ProtectionZones : Module("ProtectionZones", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val fill by boolean("Fill", true)
+        .describe("Fill the protection zone boxes with color.")
     private val outline by boolean("Outline", true)
+        .describe("Draw an outline around the zone boxes.")
 
     private val fillColor by color("FillColor", Color(0, 255, 0, 51))
+        .describe("Color used to fill the zone boxes.")
     private val outlineColor by color("OutlineColor", Color(0, 255, 0, 255))
+        .describe("Color used for the zone outlines.")
 
     private val renderDistance by int("RenderDistance", 256, 16..1024)
+        .describe("Maximum distance to render zones.")
 
     /**
      * A protected region described by two inclusive block corners.

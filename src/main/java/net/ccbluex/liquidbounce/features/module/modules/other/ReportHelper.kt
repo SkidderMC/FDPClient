@@ -19,10 +19,15 @@ import net.minecraft.network.play.server.S02PacketChat
 object ReportHelper : Module("ReportHelper", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val delayTicks by intRange("Delay", 1..3, 0..20, "ticks")
+        .describe("Random tick delay before sending the report.")
     private val chance by int("Chance", 100, 1..100, "%")
+        .describe("Percent chance to report a matched player.")
     private val pattern by text("CommandPattern", "/report %s")
+        .describe("Command template where %s is the player name.")
     private val ignoreFriends by boolean("IgnoreFriends", true)
+        .describe("Never report players on your friends list.")
     private val onlyOnline by boolean("OnlyOnlinePlayers", true)
+        .describe("Only report players present in the tab list.")
 
     private val reported = sortedSetOf(String.CASE_INSENSITIVE_ORDER)
 

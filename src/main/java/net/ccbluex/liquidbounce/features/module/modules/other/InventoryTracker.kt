@@ -21,16 +21,25 @@ import java.awt.Color
 object InventoryTracker : Module("InventoryTracker", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val maxEntries by int("MaxEntries", 6, 1..20)
+        .describe("Maximum number of log lines shown at once.")
     private val lifetime by int("Lifetime", 5000, 1000..30000, "ms")
+        .describe("How long each log line stays visible.")
     private val fadeTime by int("FadeTime", 500, 0..3000, "ms")
+        .describe("Fade-out duration at the end of a line's life.")
     private val showSlot by boolean("ShowSlot", true)
+        .describe("Show the slot index for each change.")
     private val showCount by boolean("ShowCount", true)
+        .describe("Show item count changes in the log.")
 
     private val posX by int("X", 4, 0..400)
+        .describe("Horizontal position of the log on screen.")
     private val posY by int("Y", 60, 0..400)
+        .describe("Vertical position of the log on screen.")
 
     private val font by font("Font", Fonts.font20)
+        .describe("Font used to draw the log.")
     private val shadow by boolean("Shadow", true)
+        .describe("Draw a shadow behind the log text.")
 
     private class LogEntry(val text: String, val time: Long)
 

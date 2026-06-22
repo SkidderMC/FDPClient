@@ -20,6 +20,7 @@ import kotlin.math.absoluteValue
 object RotationRecorder : ChartRecorderModule("RotationRecorder") {
 
     private val captureNegativeNumbers by boolean("CaptureNegativeNumbers", false)
+        .describe("Record signed differences instead of absolute values.")
     private const val MAX_RECORDED_ROTATIONS = 1000
 
     private val ticks = mutableListOf<Double>()

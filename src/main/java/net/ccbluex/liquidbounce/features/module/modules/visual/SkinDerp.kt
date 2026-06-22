@@ -14,15 +14,24 @@ import net.minecraft.entity.player.EnumPlayerModelParts
 object SkinDerp : Module("SkinDerp", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
     private val sync by boolean("Sync", false)
+        .describe("Toggle all parts together instead of randomly.")
     private val delay by int("Delay", 0, 0..20, "ticks")
+        .describe("Ticks to wait between each part toggle.")
 
     private val hat by boolean("Hat", true)
+        .describe("Include the hat layer in the randomization.")
     private val jacket by boolean("Jacket", true)
+        .describe("Include the jacket layer in the randomization.")
     private val leftPants by boolean("LeftPants", true)
+        .describe("Include the left pants leg in the randomization.")
     private val rightPants by boolean("RightPants", true)
+        .describe("Include the right pants leg in the randomization.")
     private val leftSleeve by boolean("LeftSleeve", true)
+        .describe("Include the left sleeve in the randomization.")
     private val rightSleeve by boolean("RightSleeve", true)
+        .describe("Include the right sleeve in the randomization.")
     private val cape by boolean("Cape", true)
+        .describe("Include the cape in the randomization.")
 
     private var savedParts = emptySet<EnumPlayerModelParts>()
     private var tickCounter = 0

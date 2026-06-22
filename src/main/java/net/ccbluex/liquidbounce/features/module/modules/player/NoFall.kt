@@ -102,8 +102,10 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
     )
 
     val mode by choices("Mode", noFallModes.modeNames(), "MLG")
+        .describe("No-fall bypass method to use.")
 
     val minFallDistance by float("MinMLGHeight", 5f, 2f..50f) { mode == "MLG" }.subjective()
+        .describe("Minimum fall height before MLG triggers.")
 
     val retrieveDelay: Int by int("RetrieveDelayTicks", 5, 1..10) {
         mode == "MLG"
@@ -120,24 +122,34 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
     val maxRetrievalWaitingTime by maxRetrievalWaitingTimeValue
 
     val autoMLG by choices("AutoMLG", arrayOf("Off", "Pick", "Spoof"), "Spoof") { mode == "MLG" }
+        .describe("How to place a block to save yourself.")
     val swing by boolean("Swing", true) { mode == "MLG" }
+        .describe("Swing the arm when placing the MLG block.")
 
     val options = AlwaysRotationSettings(this) { mode == "MLG" }
         .withRequestPriority(RotationPriority.CRITICAL)
     val matrixSafe by boolean("SafeNoFall", true) { mode == "Matrix6.6.3" }
+        .describe("Use the safer Matrix no-fall variant.")
     val motionFlagSpeed by float("MotionFlag-MotionSpeed", -0.01f, -5f..5f) { mode == "MotionFlag" }
+        .describe("Vertical motion sent in MotionFlag mode.")
     val phaseOffset by int("PhaseOffset", 1, 0..5) { mode == "Phase" }
+        .describe("Offset used in Phase no-fall mode.")
     val hypixelBlinkIndicator by boolean("Indicator", true) { mode == "HypixelBlink" }
+        .describe("Show an indicator in HypixelBlink mode.")
 
     // Using too many times of simulatePlayer could result timer flag. Hence, why this is disabled by default.
     val checkFallDist by boolean("CheckFallDistance", false) { mode == "Blink" }.subjective()
+        .describe("Only blink within a fall-distance range.")
     val fallDist by floatRange("FallDistance", 2.5f..20f, 0f..100f) {
         mode == "Blink" && checkFallDist
     }.subjective()
 
     val autoOff by boolean("AutoOff", true) { mode == "Blink" }
+        .describe("Disable Blink no-fall after landing.")
     val simulateDebug by boolean("SimulationDebug", false) { mode == "Blink" }.subjective()
+        .describe("Render fall simulation debug visuals.")
     val fakePlayer by boolean("FakePlayer", true) { mode == "Blink" }.subjective()
+        .describe("Spawn a fake player while blinking.")
 
     var currentMlgBlock: BlockPos? = null
     var retrievingPos: Vec3? = null

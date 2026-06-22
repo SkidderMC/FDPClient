@@ -18,7 +18,9 @@ import net.ccbluex.liquidbounce.utils.extensions.isMoving
 object ReverseStep : Module("ReverseStep", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN, gameDetecting = false) {
 
     private val height by float("Height", 1f, 0.6f..10f)
+        .describe("Downward speed applied when stepping down.")
     private val maxFallDistance by float("MaxFallDistance", 3f, 0f..20f)
+        .describe("Skip reverse-step above this fall distance.")
 
     val onUpdate = handler<UpdateEvent> {
         val thePlayer = mc.thePlayer ?: return@handler

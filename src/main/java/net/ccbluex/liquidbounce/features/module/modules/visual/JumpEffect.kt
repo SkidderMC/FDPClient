@@ -15,7 +15,9 @@ import kotlin.random.Random
 object JumpEffect : Module("JumpEffect", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
     private val particleType by choices("Particle", arrayOf("Cloud", "Explosion", "Crit", "Slime", "Lava", "Heart"), "Cloud")
+        .describe("Particle type spawned when you jump.")
     private val amount by int("Amount", 12, 1..50)
+        .describe("Number of particles spawned per jump.")
 
     val onJump = handler<JumpEvent> {
         val player = mc.thePlayer ?: return@handler

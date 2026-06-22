@@ -21,18 +21,27 @@ import net.minecraft.client.settings.GameSettings
 object AntiAFK : Module("AntiAFK", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val mode by choices("Mode", arrayOf("Old", "Random", "Custom"), "Random")
+        .describe("Anti-AFK behavior style to use.")
 
     private val rotateValue = boolean("Rotate", true) { mode == "Custom" }
+        .describe("Rotate the view to avoid AFK detection.")
     private val rotationDelay by int("RotationDelay", 100, 0..1000) { rotateValue.isActive() }
+        .describe("Delay between view rotations in milliseconds.")
     private val rotationAngle by float("RotationAngle", 1f, -180F..180F) { rotateValue.isActive() }
+        .describe("Angle to rotate the view by each time.")
 
     private val swingValue = boolean("Swing", true) { mode == "Custom" }
+        .describe("Swing the arm to avoid AFK detection.")
     private val swingDelay by int("SwingDelay", 100, 0..1000) { swingValue.isActive() }
+        .describe("Delay between arm swings in milliseconds.")
 
     private val jump by boolean("Jump", true) { mode == "Custom" }
+        .describe("Jump occasionally to avoid AFK detection.")
     private val move by boolean("Move", true) { mode == "Custom" }
+        .describe("Move forward to avoid AFK detection.")
 
     private val ignoreOpenInventory by boolean("IgnoreOpenInventory", false)
+        .describe("Pause anti-AFK actions while an inventory is open.")
 
     private var shouldMove = false
     private var randomTimerDelay = 500L

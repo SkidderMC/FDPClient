@@ -16,10 +16,15 @@ import net.minecraft.network.play.server.S45PacketTitle
 object BetterTitle : Module("BetterTitle", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false) {
 
     private val keepTime by boolean("KeepTime", true)
+        .describe("Override the title display timing.")
     private val keepTicks by int("KeepTicks", 80, 20..400) { keepTime }
+        .describe("How many ticks the title stays on screen.")
     private val fadeIn by int("FadeIn", 5, 0..40) { keepTime }
+        .describe("Ticks the title takes to fade in.")
     private val fadeOut by int("FadeOut", 10, 0..40) { keepTime }
+        .describe("Ticks the title takes to fade out.")
     private val stripColors by boolean("StripColors", false)
+        .describe("Remove color codes from the title text.")
 
     val onPacket = handler<PacketEvent> { event ->
         if (event.eventType != EventState.RECEIVE) return@handler

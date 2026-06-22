@@ -18,7 +18,9 @@ import net.minecraft.util.AxisAlignedBB
 object BlockWalk : Module("BlockWalk", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN, gameDetecting = false) {
 
     private val water by boolean("Water", true)
+        .describe("Walk on top of water as if it were solid.")
     private val lava by boolean("Lava", true)
+        .describe("Walk on top of lava as if it were solid.")
 
     private fun matches(block: Block?): Boolean {
         if (block !is BlockLiquid) return false

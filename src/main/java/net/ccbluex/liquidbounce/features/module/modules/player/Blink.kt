@@ -18,18 +18,26 @@ import org.lwjgl.opengl.GL11.*
 object Blink : Module("Blink", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val mode by choices("Mode", arrayOf("Sent", "Received", "Both"), "Sent")
+        .describe("Which packets to hold back while blinking.")
 
     private val pulse by boolean("Pulse", false)
+        .describe("Periodically release held packets in bursts.")
     private val pulseDelay by int("PulseDelay", 1000, 500..5000) { pulse }
+        .describe("Delay between pulse releases in milliseconds.")
 
     private val fakePlayerMenu by boolean("FakePlayer", true)
+        .describe("Spawn a fake player at your last position.")
 
     private val action by choices("Action", arrayOf("Release", "Reset"), "Release")
+        .describe("What to do with held packets when disabling.")
 
     private val ambush by boolean("Ambush", false)
+        .describe("Release packets when you attack an entity.")
 
     private val autoDisable by boolean("AutoDisable", false)
+        .describe("Automatically disable after a number of ticks.")
     private val resetAfter by int("ResetAfter", 100, 1..1000) { autoDisable }
+        .describe("Ticks before auto-disabling blink.")
 
     private val pulseTimer = MSTimer()
 

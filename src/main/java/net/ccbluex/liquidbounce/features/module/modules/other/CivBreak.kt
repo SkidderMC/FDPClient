@@ -30,7 +30,9 @@ import java.awt.Color
 object CivBreak : Module("CivBreak", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val range by float("Range", 5F, 1F..6F)
+        .describe("Maximum distance to keep breaking a block.")
     private val visualSwing by boolean("VisualSwing", true).subjective()
+        .describe("Show a visible arm swing while breaking.")
 
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.NORMAL)
 

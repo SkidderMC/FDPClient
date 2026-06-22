@@ -30,16 +30,25 @@ import kotlin.math.atan
 object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val range by float("Range", 4.4F, 1F..8F)
+        .describe("Max distance to aim at a target.")
     private val horizontalAim by boolean("HorizontalAim", true)
+        .describe("Adjust yaw to track the target.")
     private val verticalAim by boolean("VerticalAim", true)
+        .describe("Adjust pitch to track the target.")
     private val legitimize by boolean("Legitimize", true) { horizontalAim || verticalAim }
+        .describe("Smooth rotations to look more human.")
     private val maxAngleChange by float("MaxAngleChange", 10f, 1F..180F) { horizontalAim || verticalAim }
+        .describe("Max degrees the view can turn per tick.")
     private val inViewMaxAngleChange by float("InViewMaxAngleChange", 35f, 1f..180f) { horizontalAim || verticalAim }
+        .describe("Max turn speed when target is already on screen.")
     private val generateSpotBasedOnDistance by boolean(
         "GenerateSpotBasedOnDistance", false
     ) { horizontalAim || verticalAim }
+        .describe("Pick aim spot scaled by distance to target.")
     private val predictClientMovement by int("PredictClientMovement", 2, 0..5)
+        .describe("Ticks of your own movement to predict ahead.")
     private val predictEnemyPosition by float("PredictEnemyPosition", 1.5f, -1f..2f)
+        .describe("How far ahead to predict the enemy position.")
 
     private val highestBodyPointToTargetValue = choices(
         "HighestBodyPointToTarget", arrayOf("Head", "Body", "Feet"), "Head"
@@ -68,22 +77,35 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
     private val lowestBodyPointToTarget: String by lowestBodyPointToTargetValue
 
     private val horizontalBodySearchRange by floatRange("HorizontalBodySearchRange", 0f..1f, 0f..1f) { horizontalAim }
+        .describe("Horizontal span of the target body to search.")
 
     private val minRotationDifference by float("MinRotationDifference", 0f, 0f..2f) { verticalAim || horizontalAim }
+        .describe("Minimum rotation change before turning.")
     private val minRotationDifferenceResetTiming by choices(
         "MinRotationDifferenceResetTiming", arrayOf("OnStart", "Always"), "OnStart"
     ) { verticalAim || horizontalAim }
+        .describe("When to reset the minimum rotation difference.")
 
     private val fov by float("FOV", 180F, 1F..180F)
+        .describe("Field of view in which targets are valid.")
     private val lock by boolean("Lock", true) { horizontalAim || verticalAim }
+        .describe("Keep locking onto the target instead of assisting.")
     private val onClick by boolean("OnClick", false) { horizontalAim || verticalAim }
+        .describe("Only aim while attacking.")
     private val jitter by boolean("Jitter", false)
+        .describe("Add small random shake to rotations.")
     private val yawJitterMultiplier by float("JitterYawMultiplier", 1f, 0.1f..2.5f)
+        .describe("Strength of the yaw jitter.")
     private val pitchJitterMultiplier by float("JitterPitchMultiplier", 1f, 0.1f..2.5f)
+        .describe("Strength of the pitch jitter.")
     private val center by boolean("Center", false)
+        .describe("Aim at the center of the target hitbox.")
     private val headLock by boolean("Headlock", false) { center && lock }
+        .describe("Lock aim onto the target head.")
     private val headLockBlockHeight by float("HeadBlockHeight", -1f, -2f..0f) { headLock && center && lock }
+        .describe("Vertical offset applied to the head lock.")
     private val breakBlocks by boolean("BreakBlocks", true)
+        .describe("Allow aiming while breaking blocks.")
 
     private val rotationOptions = RotationSettings(this) { horizontalAim || verticalAim }.apply {
         rotationsValue.excludeWithState(true)

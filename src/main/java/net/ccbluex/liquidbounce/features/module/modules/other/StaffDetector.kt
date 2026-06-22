@@ -53,18 +53,28 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, Category.SubCateg
     ).onChanged(::loadStaffData)
 
     private val tab by boolean("TAB", true)
+        .describe("Detect staff by their tab list latency.")
     private val packet by boolean("Packet", true)
+        .describe("Detect staff from incoming entity packets.")
     private val velocity by boolean("Velocity", true)
+        .describe("Warn when staff push you with velocity.")
     private val vanish by boolean("Vanish", true)
+        .describe("Warn when a player may be vanished.")
     private val showInTabList by boolean("ShowInTabList", true)
+        .describe("Mark detected staff in the tab list.")
 
     private val autoLeave by choices("AutoLeave", arrayOf("Off", "Leave", "Lobby", "Quit"), "Off") { tab || packet }
+        .describe("Action to take when staff are detected.")
 
     private val spectator by boolean("StaffSpectator", false) { tab || packet }
+        .describe("Warn when staff enter spectator mode.")
     private val otherSpectator by boolean("OtherSpectator", false) { tab || packet }
+        .describe("Warn when non-staff enter spectator mode.")
 
     private val inGame by boolean("InGame", true) { autoLeave != "Off" }
+        .describe("Skip auto-leave while you are in a game.")
     private val warn by choices("Warn", arrayOf("Chat", "Notification"), "Chat")
+        .describe("Where staff warnings are displayed.")
 
     // Memory leak fix: Limit detection history
     private const val MAX_DETECTION_HISTORY = 50

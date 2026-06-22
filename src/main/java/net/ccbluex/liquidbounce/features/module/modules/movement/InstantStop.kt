@@ -24,9 +24,13 @@ import org.lwjgl.input.Keyboard
 object InstantStop : Module("InstantStop", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS) {
 
     private val duration by int("Duration", 1, 1..5, " ticks")
+        .describe("Ticks to press the opposite key to stop momentum.")
     private val onlyOnGround by boolean("OnlyOnGround", true)
+        .describe("Only trigger the stop while on the ground.")
     private val horizontal by boolean("Horizontal", true)
+        .describe("Cancel left and right momentum.")
     private val vertical by boolean("Vertical", true)
+        .describe("Cancel forward and backward momentum.")
 
     // Track which opposite keys need to be held and for how long
     private var holdLeftTicks = 0

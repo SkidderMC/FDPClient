@@ -24,12 +24,19 @@ import kotlin.random.Random
 object DamageParticle : Module("DamageParticle", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
 
     private val aliveTicks by int("AliveTicks", 50, 10..50)
+        .describe("How many ticks a particle stays visible.")
     private val size by int("Size", 3, 1..7)
+        .describe("Size of the damage text particles.")
     private val offsetDistance by float("OffsetDistance", 0.5f, 0f..2f)
+        .describe("Random spawn offset from the entity.")
     private val randomRotation by boolean("RandomRotation", false)
+        .describe("Spawn particles at random rotations.")
     private val colorMode by choices("ColourType", arrayOf("Damage", "Custom", "Client"), "Damage")
+        .describe("How the particle text is colored.")
     private val customColor by color("Color", Color.WHITE) { colorMode == "Custom" }
+        .describe("Custom color for the particle text.")
     private val shadowMode by choices("Shadow", arrayOf("Normal", "Default", "Vanilla", "Outline", "None"), "Outline") { colorMode != "Damage" }
+        .describe("Shadow style for the particle text.")
 
     // Memory leak fix: Limit maximum particles to prevent unbounded growth
     private const val MAX_PARTICLES = 100

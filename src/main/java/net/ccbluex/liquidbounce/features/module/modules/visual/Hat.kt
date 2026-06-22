@@ -35,35 +35,54 @@ import kotlin.math.sin
 object ChineseHat : Module("ChineseHat", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
     private val shape by choices("Shape", arrayOf("Cone", "Halo", "Orbs"), "Cone")
+        .describe("Shape of the hat drawn above entities.")
 
     private val useChineseHatTexture by boolean("UseChineseHatTexture", false) { shape == "Cone" }
+        .describe("Apply the Chinese hat texture to the cone.")
 
     private val colorMode by choices("Color", arrayOf("Custom", "DistanceColor"), "Custom")
+        .describe("Color source: custom or by distance.")
     private val colors = ColorSettingsInteger(this) { colorMode == "Custom" }.with(0, 160, 255, 150)
 
     private val playerHeight by float("PlayerHeight", 0.5f, 0.25f..2f)
+        .describe("Height offset of the hat above the entity.")
 
     private val coneWidth by float("ConeWidth", 0.5f, 0f..2f) { shape == "Cone" }
+        .describe("Width of the cone hat.")
     private val coneHeight by float("ConeHeight", 0.5f, 0.1f..2f) { shape == "Cone" }
+        .describe("Height of the cone hat.")
 
     private val haloRadius by float("HaloRadius", 0.4f, 0.1f..2f) { shape == "Halo" }
+        .describe("Radius of the halo ring.")
     private val haloThickness by float("HaloThickness", 0.06f, 0.01f..0.5f) { shape == "Halo" }
+        .describe("Thickness of the halo ring.")
 
     private val orbsRadius by float("OrbsRadius", 0.5f, 0.1f..2f) { shape == "Orbs" }
+        .describe("Orbit radius of the orbs.")
     private val orbsSize by float("OrbsSize", 0.1f, 0.02f..0.5f) { shape == "Orbs" }
+        .describe("Size of each orb.")
     private val orbsCount by int("OrbsCount", 6, 1..16) { shape == "Orbs" }
+        .describe("Number of orbiting orbs.")
     private val orbsSpinSpeed by float("OrbsSpinSpeed", 2f, -10f..10f) { shape == "Orbs" }
+        .describe("Rotation speed of the orbs.")
 
     private val renderSelf by boolean("RenderSelf", false)
+        .describe("Also draw the hat on your own player.")
 
     private val maxRenderDistance by int("MaxRenderDistance", 100, 1..200)
+        .describe("Maximum distance to render hats.")
 
     private val onLook by boolean("OnLook", false)
+        .describe("Only render hats on entities you look at.")
     private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
+        .describe("Max angle from your view to render a hat.")
 
     private val bots by boolean("Bots", true)
+        .describe("Also render hats on detected bots.")
     private val teams by boolean("Teams", false)
+        .describe("Color teammates differently.")
     private val thruBlocks by boolean("ThruBlocks", true)
+        .describe("Render hats through walls.")
 
     private val entityLookup by EntityLookup<EntityLivingBase>()
         .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistance * maxRenderDistance }

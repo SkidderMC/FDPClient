@@ -18,11 +18,17 @@ import net.ccbluex.liquidbounce.event.handler
 object AutoTool : Module("AutoTool", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, subjective = true, gameDetecting = false) {
 
     private val switchBack by boolean("SwitchBack", false)
+        .describe("Switch back to the previous slot after mining.")
     private val onlySneaking by boolean("OnlySneaking", false)
+        .describe("Only switch tools while sneaking.")
     private val notDuringCombat by boolean("NotDuringCombat", false)
+        .describe("Avoid switching tools while in combat.")
     private val ignoreDurability by boolean("IgnoreDurability", true)
+        .describe("Use tools even if nearly broken.")
     private val distance by float("Distance", 64f, 1f..64f)
+        .describe("Max distance to the block to switch tools.")
     private val swapPreviousDelay by int("SwapPreviousDelay", 0, 0..100, "ticks")
+        .describe("Ticks before switching back to the old slot.")
 
 
     val onGameTick = handler<GameTickEvent> {

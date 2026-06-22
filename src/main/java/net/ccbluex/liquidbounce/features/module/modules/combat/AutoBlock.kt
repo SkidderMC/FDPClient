@@ -23,9 +23,13 @@ import net.minecraft.entity.EntityLivingBase
 object AutoBlock : Module("AutoBlock", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val delay by int("Delay", 300, 300..1000)
+        .describe("Minimum delay between auto blocks.")
     private val onlyWhenHurt by boolean("OnlyWhenHurt", false)
+        .describe("Only block while you are taking damage.")
     private val endOfLastBlock by boolean("EndOfLastBlock", true)
+        .describe("Reset the delay timer when a block ends.")
     private val maxHoldTicks by int("MaxHoldTicks", 2, 1..20)
+        .describe("Max ticks to hold the block before releasing.")
 
     private var timer = MSTimer()
     private var isBlocking = false

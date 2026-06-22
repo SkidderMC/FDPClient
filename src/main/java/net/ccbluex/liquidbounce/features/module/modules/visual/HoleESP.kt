@@ -27,22 +27,32 @@ import java.awt.Color
 object HoleESP : Module("HoleESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val horizontalRange by int("HorizontalRange", 16, 1..48)
+        .describe("Horizontal scan radius for holes in blocks.")
     private val verticalRange by int("VerticalRange", 4, 1..16)
+        .describe("Vertical scan radius for holes in blocks.")
 
     // Require the hole to be at least 2 blocks deep so the player can actually drop in.
     private val minDepth by int("MinDepth", 2, 1..3)
+        .describe("Minimum hole depth required to count as a spot.")
 
     // Detect 1x2 / 2x1 holes in addition to 1x1.
     private val detectDouble by boolean("Detect1x2", true)
+        .describe("Also detect 1x2 and 2x1 holes.")
 
     private val onlyBedrock by boolean("OnlyBedrock", false)
+        .describe("Only highlight holes surrounded by bedrock.")
     private val outline by boolean("Outline", true)
+        .describe("Draw an outline around each hole box.")
 
     private val color1by1 by color("Color1x1", Color(247, 56, 27, 120))
+        .describe("Color for 1x1 holes.")
     private val colorBedrock by color("ColorBedrock", Color(25, 193, 92, 120))
+        .describe("Color for bedrock-surrounded holes.")
     private val color1by2 by color("Color1x2", Color(53, 186, 204, 120))
+        .describe("Color for 1x2 holes.")
 
     private val maxHoles by int("MaxHoles", 128, 1..512)
+        .describe("Maximum number of holes to render at once.")
 
     private val horizontalFacings = EnumFacing.values().filter { it.axis != EnumFacing.Axis.Y }
 

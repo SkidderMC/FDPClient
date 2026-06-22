@@ -11,7 +11,9 @@ import net.ccbluex.liquidbounce.features.module.Module
 object TextFieldProtect : Module("TextFieldProtect", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val patterns by text("Patterns", "/register,/login,/email")
+        .describe("Comma-separated command prefixes to mask.")
     private val ignoreCase by boolean("IgnoreCase", true)
+        .describe("Match the patterns case-insensitively.")
 
     private const val MASK_CHAR = '*'
 

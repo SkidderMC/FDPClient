@@ -26,12 +26,18 @@ import kotlin.math.sqrt
 object StrongholdFinder : Module("StrongholdFinder", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false, spacedName = "Stronghold Finder") {
 
     private val color by color("Color", Color(0, 200, 255))
+        .describe("Color used for the rays and stronghold marker.")
     private val minAngleDifference by float("MinAngleDifference", 2F, 0.5F..20F)
+        .describe("Minimum throw angle gap needed to triangulate.")
 
     private val renderRays by boolean("RenderRays", false)
+        .describe("Draw the direction rays of thrown ender eyes.")
     private val renderTopChunks by boolean("RenderTopChunks", true)
+        .describe("Draw a box at the predicted stronghold location.")
     private val resetOnWorldChange by boolean("ResetOnWorldChange", true)
+        .describe("Clear recorded throws when the world changes.")
     private val announcePrediction by boolean("AnnouncePrediction", true)
+        .describe("Print the predicted stronghold coordinates in chat.")
 
     private val rayLength = 2048.0
 

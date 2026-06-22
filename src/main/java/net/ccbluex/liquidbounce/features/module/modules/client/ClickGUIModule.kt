@@ -49,6 +49,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
     ) { style == "Dropdown" }
 
     private val customColorSetting by color("CustomColor", Color(255, 255, 255)) { color == "Custom" || color == "Fade" }
+        .describe("Custom accent color for the ClickGUI.")
 
     var scale by float("Scale", 1.0f, 0.5f..1.5f)
         .describe("Overall size of the ClickGUI.")
@@ -64,15 +65,22 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
         .describe("Keep dragged panels inside the screen bounds.")
 
     val headerColor by boolean("Header Color", true) { style == "Dropdown" }
+        .describe("Color the dropdown category headers.")
 
     val categoryOutline by boolean("Outline", true) { style == "Dropdown" }
+        .describe("Draw an outline around dropdown categories.")
 
     val roundedRectRadius by float("RoundedRect-Radius", 0F, 0F..2F)  { style == "Dropdown" }
+        .describe("Corner radius of dropdown panels.")
 
     val backback by boolean("Background Accent", true) { style == "Dropdown" }
+        .describe("Use an accent color for the background.")
     val scrollMode by choices("Scroll Mode", arrayOf("Screen Height", "Value"), "Value")  { style == "Dropdown" }
+        .describe("How the dropdown tab height is determined.")
     val colormode by choices("Setting Accent", arrayOf("White", "Color"), "Color") { style == "Dropdown" }
+        .describe("Accent color used for settings.")
     val clickHeight by int("Tab Height", 250, 100.. 500) { style == "Dropdown" }
+        .describe("Fixed height of the dropdown tab.")
 
     val nextGenInBrowser by boolean("Open In Browser", false) { style == "NextGen" }.onChanged { openInBrowser ->
         val activeScreen = nextGenGui?.takeIf { mc.currentScreen === it }

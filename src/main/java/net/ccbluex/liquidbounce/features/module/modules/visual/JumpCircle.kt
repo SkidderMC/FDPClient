@@ -38,16 +38,27 @@ import java.awt.Color
 
 object JumpCircle : Module("JumpCircle", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
     private val colorMode by choices("Color", arrayOf("Custom", "Theme"), "Theme")
+        .describe("Circle color source: custom or client theme.")
     private val circleRadius by floatRange("CircleRadius", 0.15F..0.8F, 0F..3F)
+        .describe("Start and end radius of the jump circle.")
     private val innerColor = color("InnerColor", Color(0, 0, 0, 50)) { colorMode == "Custom" }
+        .describe("Inner color of the jump circle.")
     private val outerColor = color("OuterColor", Color(0, 111, 255, 255)) { colorMode == "Custom" }
+        .describe("Outer color of the jump circle.")
     private val hueOffsetAnim by int("HueOffsetAnim", 63, -360..360)
+        .describe("Hue shift applied as the circle animates.")
     private val lifeTime by int("LifeTime", 20, 1..50, "Ticks")
+        .describe("How long each circle lasts in ticks.")
     private val animationSpeed by float("AnimationSpeed", 1.0f, 0.2f..2.0f)
+        .describe("Speed of the circle expansion animation.")
     private val blackHole by boolean("BlackHole", false)
+        .describe("Use a collapsing black hole effect.")
     private val useTexture by boolean("UseTexture", true)
+        .describe("Render circles using a texture image.")
     private val texture by choices("Texture", arrayOf("Supernatural", "Aurora", "Leeches", "Circle"), "Leeches") { useTexture }
+        .describe("Texture used for the jump circle.")
     private val deepestLight by boolean("Deepest Light", true) { useTexture }
+        .describe("Add a vertical light beam to the circle.")
 
     // Memory leak fix: Limit maximum circles to prevent unbounded growth
     private const val MAX_CIRCLES = 30

@@ -16,7 +16,9 @@ import net.ccbluex.liquidbounce.event.handler
 object HealthWarn: Module("HealthWarn", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val healthValue by int("Health", 7, 1.. 20)
+        .describe("Warn when your health drops to this value.")
     private val notificationDuration by int("Duration", 3000, 1000..10000)
+        .describe("How long the warning notification stays on screen.")
 
     private var canWarn = true
 

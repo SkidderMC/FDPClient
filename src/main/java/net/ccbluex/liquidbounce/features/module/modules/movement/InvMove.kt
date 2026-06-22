@@ -30,10 +30,15 @@ import org.lwjgl.input.Mouse
 object InvMove : Module("InvMove", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS, gameDetecting = false) {
 
     private val notInChests by boolean("NotInChests", false)
+        .describe("Do not allow movement while a chest is open.")
     val aacAdditionPro by boolean("AACAdditionPro", false)
+        .describe("Use the AACAdditionPro bypass for moving in menus.")
     private val intave by boolean("Intave", false)
+        .describe("Use the Intave bypass for moving in menus.")
     private val saveC0E by boolean("SaveC0E", false)
+        .describe("Queue inventory click packets while moving.")
     private val noSprintWhenClosed by boolean("NoSprintWhenClosed", false) { saveC0E }
+        .describe("Stop sprinting while the inventory is closed.")
 
     private val isIntave = (mc.currentScreen is GuiInventory || mc.currentScreen is GuiChest) && intave
     private val clickWindowList = ArrayDeque<C0EPacketClickWindow>()
@@ -56,6 +61,7 @@ object InvMove : Module("InvMove", Category.MOVEMENT, Category.SubCategory.MOVEM
     ) { silentlyCloseAndReopen && noMove && (noMoveAir || noMoveGround) }
 
     private val inventoryMotion by float("InventoryMotion", 1F, 0F..2F)
+        .describe("Motion multiplier applied while in the inventory.")
 
     private val affectedBindings = arrayOf(
         mc.gameSettings.keyBindForward,

@@ -21,8 +21,11 @@ import java.awt.Color
 object MurderDetector : Module("MurderDetector", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val showText by boolean("ShowText", true)
+        .describe("Draw the detected murderers as on-screen text.")
     private val chatValue by boolean("Chat", true)
+        .describe("Print a chat message when a murderer is found.")
     private val notifyValue by boolean("Notification", true)
+        .describe("Show a HUD notification when a murderer is found.")
 
     private var murder1: EntityPlayer? = null
     private var murder2: EntityPlayer? = null

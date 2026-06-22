@@ -49,9 +49,13 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     )
 
     private val reblinkTicks by int("ReblinkTicks", 10, 1..20) { swordMode == "Blink" }
+        .describe("Ticks before re-applying the blink in blink mode.")
     private val antiSwitchItem by boolean("AntiSwitchItem", false)
+        .describe("Cancel server-forced item switches while using an item.")
     private val onlyGround by boolean("OnlyGround", false)
+        .describe("Only apply no-slow while on the ground.")
     private val onlyMove by boolean("OnlyMove", false)
+        .describe("Only apply no-slow while moving.")
     private val aac4C07 by boolean("AAC4-C07", true) {
         swordMode == "AAC4" || consumeMode == "AAC4" || bowPacket == "AAC4"
     }
@@ -63,7 +67,9 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     }
 
     private val blockForwardMultiplier by float("BlockForwardMultiplier", 1f, 0.2F..1f)
+        .describe("Forward speed multiplier while blocking with a sword.")
     private val blockStrafeMultiplier by float("BlockStrafeMultiplier", 1f, 0.2F..1f)
+        .describe("Strafe speed multiplier while blocking with a sword.")
 
     private val consumeMode by choices(
         "ConsumeMode",
@@ -75,7 +81,9 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     )
 
     private val consumeForwardMultiplier by float("ConsumeForwardMultiplier", 1f, 0.2F..1f)
+        .describe("Forward speed multiplier while eating or drinking.")
     private val consumeStrafeMultiplier by float("ConsumeStrafeMultiplier", 1f, 0.2F..1f)
+        .describe("Strafe speed multiplier while eating or drinking.")
     private val consumeFoodOnly by boolean(
         "ConsumeFood",
         true
@@ -95,16 +103,22 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     )
 
     private val bowForwardMultiplier by float("BowForwardMultiplier", 1f, 0.2F..1f)
+        .describe("Forward speed multiplier while drawing a bow.")
     private val bowStrafeMultiplier by float("BowStrafeMultiplier", 1f, 0.2F..1f)
+        .describe("Strafe speed multiplier while drawing a bow.")
 
     // Blocks
     val soulSand by boolean("SoulSand", true)
+        .describe("Ignore the slowdown from soul sand.")
     val liquidPush by boolean("LiquidPush", true)
+        .describe("Ignore the push from flowing liquids.")
     private val teleportValue by boolean("Teleport", false)
+        .describe("Keep momentum through server teleports.")
     private val teleportMode by choices("TeleportMode", arrayOf("Vanilla", "VanillaNoSetback", "Custom", "Decrease"), "Vanilla") {
         teleportValue
     }
     private val teleportNoApplyValue by boolean("TeleportNoApply", false) { teleportValue }
+        .describe("Do not send the teleport confirmation packet.")
     private val teleportCustomSpeedValue by float("Teleport-CustomSpeed", 0.13f, 0f..1f) {
         teleportValue && teleportMode == "Custom"
     }

@@ -22,12 +22,19 @@ import java.awt.Color
 object Breadcrumbs : Module("Breadcrumbs", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     val colors = ColorSettingsInteger(this, "Color").with(132, 102, 255)
     private val rainbow by boolean("Rainbow", false)
+        .describe("Animate the trail with rainbow colors.")
     private val lineHeight by float("LineHeight", 0.25F, 0.25F..2F)
+        .describe("Vertical height of the trail line.")
     private val onlyOwn by boolean("OnlyOwn", true)
+        .describe("Only draw a trail for your own player.")
     private val aliveOnly by boolean("AliveOnly", false)
+        .describe("Only draw trails for living entities.")
     private val temporary by boolean("Temporary", true)
+        .describe("Fade trails out over time.")
     private val fade by boolean("Fade", true) { temporary }
+        .describe("Fade the trail alpha as it ages.")
     private val lifeTime by float("LifeTime", 1F, 0F..10F) { temporary }
+        .describe("How long a trail segment lasts in seconds.")
 
     private const val MAX_BREADCRUMB_POSITIONS = 500
     private val trails = LinkedHashMap<Entity, ArrayDeque<PositionData>>()

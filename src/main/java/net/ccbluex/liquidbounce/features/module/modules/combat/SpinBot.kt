@@ -17,8 +17,11 @@ import net.ccbluex.liquidbounce.features.module.Module
 object SpinBot : Module("SpinBot", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val speed by float("Speed", 20f, 1f..180f)
+        .describe("Yaw degrees added to your view each tick.")
     private val lockPitch by boolean("LockPitch", false)
+        .describe("Hold the view pitch at a fixed value.")
     private val pitch by float("Pitch", 0f, -90f..90f) { lockPitch }
+        .describe("Fixed pitch angle to lock the view at.")
 
     val onUpdate = handler<UpdateEvent> {
         val player = mc.thePlayer ?: return@handler

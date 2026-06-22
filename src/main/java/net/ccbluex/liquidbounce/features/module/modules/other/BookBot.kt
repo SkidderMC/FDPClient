@@ -29,10 +29,15 @@ import net.minecraft.network.play.client.C17PacketCustomPayload
 object BookBot : Module("BookBot", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val text by text("Text", "FDPClient")
+        .describe("Text written onto every page of the book.")
     private val pageCount by int("Pages", 50, 1..100)
+        .describe("Number of pages to fill in the book.")
     private val sign by boolean("Sign", true)
+        .describe("Sign the book after writing it.")
     private val title by text("Title", "Book") { sign }
+        .describe("Title given to the signed book.")
     private val delay by int("Delay", 1000, 0..5000)
+        .describe("Delay before writing in milliseconds.")
 
     private val timer = MSTimer()
 

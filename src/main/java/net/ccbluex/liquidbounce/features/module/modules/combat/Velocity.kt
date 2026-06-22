@@ -72,18 +72,28 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     )
 
     private val horizontal by float("Horizontal", 0F, -1F..1F) { mode in arrayOf("Simple", "AAC", "Legit", "Tick") }
+        .describe("Horizontal knockback multiplier.")
     private val vertical by float("Vertical", 0F, -1F..1F) { mode in arrayOf("Simple", "Legit", "Tick") }
+        .describe("Vertical knockback multiplier.")
     private val onlyGround by boolean("OnlyGround", false)
+        .describe("Only modify knockback while on the ground.")
     private val onlyCombat by boolean("OnlyCombat", false)
+        .describe("Only modify knockback while in combat.")
     private val noFire by boolean("noFire", false)
+        .describe("Disable knockback modification while burning.")
     private val overrideDirection by choices("OverrideDirection", arrayOf("None", "Hard", "Offset"), "None")
+        .describe("Force knockback in a chosen direction.")
     private val overrideDirectionYaw by float("OverrideDirectionYaw", 0F, -180F..180F) { overrideDirection != "None" }
+        .describe("Yaw used by the direction override.")
 
     // Reverse
     private val reverseStrength by float("ReverseStrength", 1F, 0.1F..1F) { mode == "Reverse" }
+        .describe("Strength of the reverse knockback effect.")
     private val reverse2Strength by float("SmoothReverseStrength", 0.05F, 0.02F..0.1F) { mode == "SmoothReverse" }
+        .describe("Strength of the smooth reverse effect.")
 
     private val onLook by boolean("onLook", false) { mode in arrayOf("Reverse", "SmoothReverse") }
+        .describe("Only reverse while looking at the enemy.")
     private val range by float("Range", 3.0F, 1F..5.0F) {
         onLook && mode in arrayOf("Reverse", "SmoothReverse")
     }
@@ -93,18 +103,25 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
     // AAC Push
     private val aacPushXZReducer by float("AACPushXZReducer", 2F, 1F..3F) { mode == "AACPush" }
+        .describe("Horizontal motion divisor for AACPush.")
     private val aacPushYReducer by boolean("AACPushYReducer", true) { mode == "AACPush" }
+        .describe("Reduce vertical motion for AACPush.")
 
     // AAC v4
     private val aacv4MotionReducer by float("AACv4MotionReducer", 0.62F, 0F..1F) { mode == "AACv4" }
+        .describe("Motion multiplier for AACv4.")
     private val aac4ReduceAmount by float("AAC4ReduceAmount", 0.62f, 0f..1f) { mode == "AAC4Reduce" }
+        .describe("Motion multiplier for AAC4Reduce.")
     private val aac5ReduceAmount by float("AAC5ReduceAmount", 0.81f, 0f..1f) { mode == "AAC5Reduce" }
+        .describe("Motion multiplier for AAC5Reduce.")
 
     // Legit
     private val legitDisableInAir by boolean("DisableInAir", true) { mode == "Legit" }
+        .describe("Disable Legit mode while airborne.")
 
     // Chance
     private val chance by int("Chance", 100, 0..100) { mode == "Jump" || mode == "Legit" }
+        .describe("Percent chance to apply the effect.")
 
     // Jump
     private val jumpCooldownMode by choices("JumpCooldownMode", arrayOf("Ticks", "ReceivedHits"), "Ticks")
@@ -121,12 +138,16 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
     // AttackReduce
     private val attackReduceAmount by float("ReduceAmount", 0.8f, 0.3f..1f) { mode == "AttackReduce" }
+        .describe("Motion multiplier applied when you attack.")
 
     // Delay
     private val spoofDelay by int("SpoofDelay", 500, 0..5000) { mode == "Delay" }
+        .describe("How long to delay held velocity packets.")
     var delayMode = false
     private val delayedDelay by int("Delayed-Delay", 300, 50..1000) { mode == "Delayed" }
+        .describe("How long to delay velocity in Delayed mode.")
     private val delayedBlink by boolean("Delayed-Blink", true) { mode == "Delayed" }
+        .describe("Blink packets while delaying velocity.")
     private val delayedBlinkOutgoing by boolean("Delayed-BlinkOutgoing", true) {
         mode == "Delayed" && delayedBlink
     }
@@ -139,47 +160,79 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
     // IntaveReduce
     private val reduceFactor by float("Factor", 0.6f, 0.6f..1f) { mode == "IntaveReduce" }
+        .describe("Motion multiplier for IntaveReduce.")
     private val hurtTime by int("HurtTime", 9, 1..10) { mode == "IntaveReduce" }
+        .describe("Hurt-time at which IntaveReduce applies.")
 
     // Spoof
     private val spoofModifyTimer by boolean("ModifyTimer", true) { mode == "Spoof" }
+        .describe("Slow the game timer during Spoof mode.")
     private val spoofTimerValue by float("Timer", 0.6f, 0.1f..1f) { mode == "Spoof" && spoofModifyTimer }
+        .describe("Timer speed used by Spoof mode.")
     private val cancelHorizontal by boolean("CancelHorizontalVelocity", true) { mode == "Cancel" }
+        .describe("Cancel horizontal knockback in Cancel mode.")
     private val cancelVertical by boolean("CancelVerticalVelocity", true) { mode == "Cancel" }
+        .describe("Cancel vertical knockback in Cancel mode.")
     private val phaseHeight by float("PhaseHeight", 0.5f, 0f..1f) { mode == "Phase" }
+        .describe("How far down to phase in Phase mode.")
     private val phaseOnlyGround by boolean("PhaseOnlyGround", true) { mode == "Phase" }
+        .describe("Only phase while on the ground.")
     private val phaseMode by choices("PhaseMode", arrayOf("Normal", "Packet"), "Normal") { mode == "Phase" }
+        .describe("How Phase mode moves the player.")
     private val sideStrafeStrafe by boolean("SideStrafeStrafe", false) { mode == "SideStrafe" }
+        .describe("Strafe sideways during SideStrafe mode.")
     private val sideStrafeFace by boolean("SideStrafeFace", true) { mode == "SideStrafe" }
+        .describe("Face the saved position during SideStrafe.")
     private val grimC07Always by boolean("GrimC07-Always", true) { mode == "GrimC07" }
+        .describe("Always run the GrimC07 block trick.")
     private val grimC07OnlyBreakAir by boolean("GrimC07-OnlyBreakAir", true) { mode == "GrimC07" }
+        .describe("Only target air blocks for GrimC07.")
     private val grimC07BreakOnWorld by boolean("GrimC07-BreakOnWorld", false) { mode == "GrimC07" }
+        .describe("Also set the block to air client-side.")
     private val grimC07SendC03 by boolean("GrimC07-SendC03", false) { mode == "GrimC07" }
+        .describe("Send a position packet during GrimC07.")
     private val grimC07SendC06 by boolean("GrimC07-Send1.17C06", false) { mode == "GrimC07" && grimC07SendC03 }
+        .describe("Send a 1.17 pos-look packet during GrimC07.")
     private val grimC07FlagPauseTime by int("GrimC07-FlagPauseTime", 50, 0..5000) { mode == "GrimC07" }
+        .describe("Pause GrimC07 after a flag for this long.")
 
     // Tick
     private val velocityTickValue by int("VelocityTick", 1, 0..20) { mode == "Tick" }
+        .describe("Ticks to wait before reducing motion.")
     private val tickReductionAmount by float("TickReductionAmount", 1f, 0f..1f) { mode == "Tick" }
+        .describe("Fraction of motion removed in Tick mode.")
     private val tickResetMotionY by boolean("ResetMotionY", true) { mode == "Tick" }
+        .describe("Zero upward motion in Tick mode.")
     private val tickBypass by boolean("TickBypass", true) { mode == "Tick" }
+        .describe("Apply an air-movement bypass in Tick mode.")
 
     private val pauseOnExplosion by boolean("PauseOnExplosion", true)
+        .describe("Pause velocity handling after explosions.")
     private val ticksToPause by int("TicksToPause", 20, 1..50) { pauseOnExplosion }
+        .describe("How many ticks to pause after an explosion.")
 
     // TODO: Could this be useful in other modes? (Jump?)
     // Limits
     private val limitMaxMotionValue = boolean("LimitMaxMotion", false) { mode == "Simple" }
+        .describe("Cap maximum knockback motion in Simple mode.")
     private val maxXZMotion by float("MaxXZMotion", 0.4f, 0f..1.9f) { limitMaxMotionValue.isActive() }
+        .describe("Maximum horizontal knockback motion.")
     private val maxYMotion by float("MaxYMotion", 0.36f, 0f..0.46f) { limitMaxMotionValue.isActive() }
+        .describe("Maximum vertical knockback motion.")
 
     //Grim
     private val grimVerticalMode by choices("GrimVerticalMode", arrayOf("Reduce", "1.17", "Vertical"), "Reduce") { mode == "GrimVertical" }
+        .describe("Sub-mode for the GrimVertical bypass.")
     private val smartVelo by boolean("SmartVelo", true) { mode == "GrimVertical" && grimVerticalMode == "Vertical" }
+        .describe("Use adaptive motion scaling on the ground.")
     private val sendC0FValue by boolean("C0F", false) { mode == "GrimVertical" && grimVerticalMode == "Vertical" }
+        .describe("Send transaction packets during GrimVertical.")
     private val c0fPacketAmount by int("C0FPacketAmount", 0, 1..40) { mode == "GrimVertical" && grimVerticalMode == "Vertical" && sendC0FValue }
+        .describe("How many transaction packets to send.")
     private val callEvent by boolean("CallEvent", true) { mode == "GrimVertical" && grimVerticalMode == "Vertical" }
+        .describe("Also send a swing animation when attacking.")
     private val via by boolean("Via", true) { mode == "GrimVertical" && (grimVerticalMode == "Vertical" || grimVerticalMode == "Reduce") }
+        .describe("Send the attack before the swing animation.")
 
 
     //0.00075 is added silently
@@ -192,11 +245,17 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
     // 0.36075 (no sprint), 0.46075 (sprint)
 
     private val clicks by intRange("Clicks", 3..5, 1..20) { mode == "Click" }
+        .describe("Number of extra attacks per knockback.")
     private val hurtTimeToClick by int("HurtTimeToClick", 10, 0..10) { mode == "Click" }
+        .describe("Hurt-time at which Click mode fires.")
     private val whenFacingEnemyOnly by boolean("WhenFacingEnemyOnly", true) { mode == "Click" }
+        .describe("Only click when facing an enemy.")
     private val ignoreBlocking by boolean("IgnoreBlocking", false) { mode == "Click" }
+        .describe("Skip Click mode while blocking.")
     private val clickRange by float("ClickRange", 3f, 1f..6f) { mode == "Click" }
+        .describe("Reach used to find a target for Click mode.")
     private val swingMode by choices("SwingMode", arrayOf("Off", "Normal", "Packet"), "Normal") { mode == "Click" }
+        .describe("How to swing when clicking in Click mode.")
 
     /**
      * VALUES

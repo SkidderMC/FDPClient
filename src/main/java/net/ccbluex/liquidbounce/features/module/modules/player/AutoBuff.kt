@@ -21,11 +21,16 @@ import net.minecraft.potion.Potion
 object AutoBuff : Module("AutoBuff", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val strength by boolean("Strength", true)
+        .describe("Drink strength potions when not active.")
     private val speed by boolean("Speed", true)
+        .describe("Drink speed potions when not active.")
     private val regeneration by boolean("Regeneration", true)
+        .describe("Drink regeneration potions when not active.")
     private val fireResistance by boolean("FireResistance", true)
+        .describe("Drink fire resistance potions when not active.")
 
     private val delay by int("Delay", 500, 0..2000)
+        .describe("Delay between potion drinks in milliseconds.")
 
     private val timer = MSTimer()
 

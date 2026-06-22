@@ -26,23 +26,36 @@ import java.awt.Color
 object TickBase : Module("TickBase", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     private val mode by choices("Mode", arrayOf("Past", "Future"), "Past")
+        .describe("Shift ticks into the past or future.")
     private val onlyOnKillAura by boolean("OnlyOnKillAura", true)
+        .describe("Only shift ticks while KillAura has a target.")
 
     private val change by int("Changes", 100, 0..100)
+        .describe("Percent chance to perform a tick shift.")
 
     private val balanceMaxValue by int("BalanceMaxValue", 100, 1..1000)
+        .describe("Maximum stored tick balance to spend.")
     private val balanceRecoveryIncrement by float("BalanceRecoveryIncrement", 0.1f, 0.01f..10f)
+        .describe("Tick balance regained each move tick.")
     private val maxTicksAtATime by int("MaxTicksAtATime", 20, 1..100)
+        .describe("Maximum ticks to shift in one burst.")
 
     private val rangeToAttack by floatRange("RangeToAttack", 3f..5f, 0f..10f)
+        .describe("Distance range to shift into for attacking.")
 
     private val forceGround by boolean("ForceGround", false)
+        .describe("Only shift to ticks that land on the ground.")
     private val pauseAfterTick by int("PauseAfterTick", 0, 0..100)
+        .describe("Extra pause ticks after a tick shift.")
     private val recoilTime by int("RecoilTime", 0, 0..2000)
+        .describe("Cooldown before another tick shift can run.")
     private val pauseOnFlag by boolean("PauseOnFlag", true)
+        .describe("Reset tick balance when the server flags you.")
 
     private val line by boolean("Line", true).subjective()
+        .describe("Draw a line along the predicted tick path.")
     private val lineColor by color("LineColor", Color.GREEN) { line }.subjective()
+        .describe("Color of the predicted tick path line.")
 
     private var ticksToSkip = 0
     private var tickBalance = 0f

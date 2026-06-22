@@ -19,11 +19,15 @@ import net.minecraft.init.Items.snowball
 
 object AutoProjectile : Module("AutoProjectile", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
     private val facingEnemy by boolean("FacingEnemy", true)
+        .describe("Only throw when looking at an enemy.")
 
     private val range by float("Range", 8F, 1F..20F)
+        .describe("Max distance to target an enemy.")
     private val throwDelay by intRange("ThrowDelay", 1000..1500, 50..2000)
+        .describe("Random delay range between throws.")
 
     private val switchBackDelay by int("SwitchBackDelay", 500, 50..2000)
+        .describe("Delay before switching back to the old item.")
 
     private val throwTimer = MSTimer()
     private val projectilePullTimer = MSTimer()

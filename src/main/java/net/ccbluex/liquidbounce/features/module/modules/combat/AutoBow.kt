@@ -19,6 +19,7 @@ import net.minecraft.util.EnumFacing
 object AutoBow : Module("AutoBow", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT, subjective = true) {
 
     private val waitForBowAimbot by boolean("WaitForBowAimbot", true)
+        .describe("Wait for the bow aimbot to lock before firing.")
 
     val onUpdate = handler<UpdateEvent> {
         val thePlayer = mc.thePlayer

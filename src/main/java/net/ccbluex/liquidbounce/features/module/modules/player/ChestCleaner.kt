@@ -21,12 +21,18 @@ import net.minecraft.item.ItemStack
 object ChestCleaner : Module("ChestCleaner", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val filter by choices("Filter", arrayOf("Whitelist", "Blacklist"), "Whitelist")
+        .describe("Treat the item list as whitelist or blacklist.")
     private val items by text("Items", "")
+        .describe("Comma-separated item names to filter by.")
     private val autoClose by boolean("AutoClose", true)
+        .describe("Close the chest once cleaning is done.")
     private val chestTitle by boolean("ChestTitle", true)
+        .describe("Only clean containers titled as a chest.")
 
     private val delay by intRange("Delay", 50..100, 0..500)
+        .describe("Random delay between item moves in ms.")
     private val startDelay by intRange("StartDelay", 50..100, 0..500)
+        .describe("Random delay before cleaning starts in ms.")
 
     private val noMove by +InventoryManager.noMoveValue
     private val noMoveAir by +InventoryManager.noMoveAirValue

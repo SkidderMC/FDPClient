@@ -37,12 +37,19 @@ import kotlin.math.sqrt
 object FightBot : Module("FightBot", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     private val pathRenderValue by boolean("PathRender", true)
+        .describe("Render the pathfinding route.")
     private val jumpResetValue by boolean("JumpReset", true)
+        .describe("Jump when hurt to reset knockback.")
     private val autoJumpValue by boolean("AutoJump", false)
+        .describe("Jump automatically while moving to the target.")
     private val silentValue by boolean("Silent", false)
+        .describe("Move silently using server-side rotations.")
     private val blockMode by choices("blockMode", arrayOf("Skill", "Always", "Manual"), "Manual")
+        .describe("When to block while fighting.")
     private val findWay by choices("findWay", arrayOf("None", "Point", "Entity"), "Point")
+        .describe("How to choose the area to patrol.")
     private val workReach by float("workReach", 10f, 1f..50f)
+        .describe("Distance from the anchor to seek targets.")
     private val rotationOptions = RotationSettings(this) { silentValue }
         .withRequestPriority(RotationPriority.HIGH)
 

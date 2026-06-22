@@ -24,18 +24,26 @@ object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLI
      * you make the modern engine definitive across the whole client from one place.
      */
     val engine by choices("Engine", arrayOf("Per-Module", "Modern", "Legacy"), "Modern")
+        .describe("Which rotation engine modules use globally.")
 
     private val realistic by boolean("Realistic", true)
+        .describe("Mimic the game head and body rotation logic.")
     private val body by boolean("Body", true) { !realistic }
+        .describe("Rotate the body along with the head.")
 
     private val smoothRotations by boolean("SmoothRotations", false)
+        .describe("Interpolate rotations for smoother movement.")
     private val smoothingFactor by float("SmoothFactor", 0.15f, 0.1f..0.9f) { smoothRotations }
+        .describe("How quickly smoothed rotations reach the target.")
 
     val ghost by boolean("Ghost", false)
+        .describe("Render a ghost showing the server rotation.")
 
     val color by color("Color", Color(110, 0, 120)) { ghost }
+        .describe("Color of the rotation ghost.")
 
     val debugRotations by boolean("DebugRotations", false)
+        .describe("Print rotation debug information.")
 
     var prevHeadPitch = 0f
     var headPitch = 0f

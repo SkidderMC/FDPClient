@@ -37,30 +37,44 @@ object SmartEat : Module(
 ) {
 
     private val minHunger by int("MinHunger", 17, 1..20)
+        .describe("Eat when hunger drops to this level.")
 
     private val eatWhenLowHealth by boolean("EatWhenLowHealth", true)
+        .describe("Also eat when health gets low.")
     private val minHealth by float("MinHealth", 8f, 0f..20f) { eatWhenLowHealth }
+        .describe("Health threshold that triggers eating.")
 
     private val onlyWhenSafe by boolean("OnlyWhenSafe", true)
+        .describe("Only eat while standing safely on ground.")
 
     private val pauseOnCombat by boolean("PauseOnCombat", false)
+        .describe("Stop eating when an enemy is near.")
     private val combatRange by float("CombatRange", 8f, 1f..16f) { pauseOnCombat }
+        .describe("Range used to detect nearby enemies.")
 
     private val eatGoldenApples by boolean("EatGoldenApples", false)
+        .describe("Allow eating golden apples.")
     private val eatNotchApples by boolean("EatNotchApples", false) { eatGoldenApples }
+        .describe("Allow eating enchanted golden apples.")
 
     // When health drops to/below this value, prefer a (notch) golden apple over the
     // most-saturating regular food. 0 keeps the plain saturation-based pick.
     private val preferGappleHealth by float("PreferGoldenAppleHealth", 0f, 0f..20f) { eatGoldenApples }
+        .describe("Prefer a golden apple below this health.")
     private val preferNotchHealth by float("PreferNotchAppleHealth", 0f, 0f..20f) { eatGoldenApples && eatNotchApples }
+        .describe("Prefer a notch apple below this health.")
 
     private val silent by boolean("Silent", true)
+        .describe("Eat without moving the visible held slot.")
     // How long (in ticks) to keep the silent slot before swapping back. 0 = immediate.
     private val swapBackDelay by int("SwapBackDelay", 0, 0..40, "ticks") { silent }
+        .describe("Ticks to hold the silent slot before reverting.")
     private val swapBack by boolean("SwapBack", true) { !silent }
+        .describe("Switch back to the previous slot after eating.")
 
     // Safety cap for the eat animation; a vanilla food item finishes in 32 ticks.
     private val maxEatTicks by int("MaxEatTicks", 40, 32..60, "ticks")
+        .describe("Max ticks to spend on one eat animation.")
 
     private var prevSlot = -1
     private var eatingSlot = -1

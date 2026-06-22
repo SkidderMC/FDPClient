@@ -34,24 +34,38 @@ import net.minecraft.potion.Potion
 object AutoPot : Module("AutoPot", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
     private val health by float("Health", 15F, 1F..20F) { healPotion || regenerationPotion }
+        .describe("Health threshold to drink heal or regen potions.")
     private val delay by int("Delay", 500, 500..1000)
+        .describe("Delay between potion throws in milliseconds.")
 
     // Useful potion options
     private val healPotion by boolean("HealPotion", true)
+        .describe("Throw splash healing potions when low.")
     private val regenerationPotion by boolean("RegenPotion", true)
+        .describe("Throw splash regeneration potions when low.")
     private val fireResistancePotion by boolean("FireResPotion", true)
+        .describe("Throw splash fire resistance potions.")
     private val strengthPotion by boolean("StrengthPotion", true)
+        .describe("Throw splash strength potions.")
     private val jumpPotion by boolean("JumpPotion", true)
+        .describe("Throw splash jump boost potions.")
     private val speedPotion by boolean("SpeedPotion", true)
+        .describe("Throw splash speed potions.")
 
     private val openInventory by boolean("OpenInv", false)
+        .describe("Open the real inventory to move potions.")
     private val simulateInventory by boolean("SimulateInventory", true) { !openInventory }
+        .describe("Fake an open inventory to move potions.")
 
     private val groundDistance by float("GroundDistance", 2F, 0F..5F)
+        .describe("Max height above ground to throw potions.")
     private val mode by choices("Mode", arrayOf("Normal", "Jump", "Port"), "Normal")
+        .describe("Method used to throw the potion downward.")
 
     private val notDuringCombat by boolean("NotDuringCombat", false)
+        .describe("Avoid throwing potions while in combat.")
     private val combatPauseTime by int("CombatPauseTime", 0, 0..2000, "ms") { notDuringCombat }
+        .describe("Cooldown after last hit before throwing again.")
 
     private val options = RotationSettings(this).withoutKeepRotation().apply {
         resetTicksValue.excludeWithState()

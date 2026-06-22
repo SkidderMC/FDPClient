@@ -12,7 +12,9 @@ import kotlin.math.max
 object Reach : Module("Reach", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
 
     val combatReach by float("CombatReach", 3.5f, 3f..7f)
+        .describe("Attack range used when fighting entities.")
     val buildReach by float("BuildReach", 5f, 4.5f..7f)
+        .describe("Reach range used when placing blocks.")
 
     val maxRange
         get() = max(combatReach, buildReach)

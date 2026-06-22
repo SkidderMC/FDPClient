@@ -25,8 +25,11 @@ import kotlin.math.abs
 object SuperKnockback : Module("SuperKnockback", Category.COMBAT, Category.SubCategory.COMBAT_RAGE) {
 
     private val chance by int("Chance", 100, 0..100)
+        .describe("Percent chance to apply the knockback boost.")
     private val delay by int("Delay", 0, 0..500)
+        .describe("Minimum delay between knockback boosts.")
     private val hurtTime by int("HurtTime", 10, 0..10)
+        .describe("Only boost when target hurt-time is at or below this.")
 
     private val mode by choices(
         "Mode",
@@ -35,9 +38,12 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT, Category.SubCa
     )
 
     private val ticksUntilBlock by intRange("TicksUntilBlock", 0..2, 0..5) { mode == "WTap" }
+        .describe("Ticks to wait before blocking input on W-tap.")
     private val reSprintTicks by intRange("ReSprintTicks", 1..2, 1..5) { mode == "WTap" }
+        .describe("Ticks to wait before re-sprinting on W-tap.")
 
     private val targetDistance by int("TargetDistance", 3, 1..5) { mode == "WTap" }
+        .describe("Ideal target distance for W-tap timing.")
 
     private val stopTicks: Value<Int> = int("PressBackTicks", 1, 1..5) {
         mode == "SprintTap2"
@@ -51,11 +57,16 @@ object SuperKnockback : Module("SuperKnockback", Category.COMBAT, Category.SubCa
     }
 
     private val minEnemyRotDiffToIgnore by float("MinRotationDiffFromEnemyToIgnore", 180f, 0f..180f)
+        .describe("Skip when enemy facing differs by more than this.")
 
     private val onlyGround by boolean("OnlyGround", false)
+        .describe("Only boost knockback while on the ground.")
     val onlyMove by boolean("OnlyMove", true)
+        .describe("Only boost knockback while moving.")
     val onlyMoveForward by boolean("OnlyMoveForward", true) { onlyMove }
+        .describe("Only boost when moving straight forward.")
     private val onlyWhenTargetGoesBack by boolean("OnlyWhenTargetGoesBack", false)
+        .describe("Only boost when the target is moving away.")
 
     private var ticks = 0
     private var forceSprintState = 0

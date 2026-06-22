@@ -20,10 +20,15 @@ import org.lwjgl.opengl.GL11.*
 object CombineMobs : Module("CombineMobs", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val combineArmorStands by boolean("CombineArmorStands", false)
+        .describe("Also combine armor stands into groups.")
     private val babyGrouping by boolean("SeparateBabies", true)
+        .describe("Group baby mobs separately from adults.")
     private val showCount by boolean("ShowCount", true)
+        .describe("Show the group size above the mob.")
     private val minGroup by int("MinGroup", 2, 2..16)
+        .describe("Minimum mobs needed to form a group.")
     private val countScale by float("CountScale", 0.025f, 0.01f..0.05f)
+        .describe("Size of the count text above the mob.")
 
     private data class CombineKey(val type: Class<*>, val x: Int, val y: Int, val z: Int, val baby: Boolean)
 

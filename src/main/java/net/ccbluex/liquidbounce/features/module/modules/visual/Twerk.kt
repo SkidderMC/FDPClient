@@ -15,6 +15,7 @@ import net.minecraft.network.play.client.C0BPacketEntityAction
 object Twerk : Module("Twerk", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
     private val onlyOnGround by boolean("OnlyOnGround", true)
+        .describe("Only twerk while standing on the ground.")
 
     val onUpdate = handler<UpdateEvent> {
         val player = mc.thePlayer ?: return@handler

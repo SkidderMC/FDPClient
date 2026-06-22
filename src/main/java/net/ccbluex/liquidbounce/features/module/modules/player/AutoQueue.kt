@@ -19,9 +19,13 @@ import net.ccbluex.liquidbounce.utils.client.chat
 object AutoQueue : Module("AutoQueue", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val command by text("Command", "/play")
+        .describe("Command to send after joining a world.")
     private val delay by int("Delay", 1500, 0..15000)
+        .describe("Delay after joining before sending command.")
     private val repeatOnRejoin by boolean("RepeatOnRejoin", true)
+        .describe("Resend the command each time you rejoin.")
     private val notify by boolean("Notify", true)
+        .describe("Send a chat message when the command is sent.")
 
     private var joinTime = 0L
     private var pending = false

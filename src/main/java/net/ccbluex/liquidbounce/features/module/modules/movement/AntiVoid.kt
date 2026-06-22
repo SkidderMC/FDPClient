@@ -47,13 +47,21 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, Category.SubCategory.MOV
         "FlyFlag"
     )
     private val maxFallDistance by int("MaxFallDistance", 10, 2..255)
+        .describe("Trigger the void save once predicted fall reaches this.")
     private val maxDistanceWithoutGround by float("MaxDistanceToSetback", 2.5f, 1f..30f) { mode != "Blink" }
+        .describe("Fall distance with no ground before forcing a setback.")
     private val blinkDelay by int("BlinkDelay", 10, 1..20) { mode == "Blink" }
+        .describe("Ticks to wait before releasing the blink buffer.")
     private val onScaffold by boolean("OnScaffold", false) { mode == "Blink" }
+        .describe("Keep blinking while scaffolding instead of releasing.")
     private val ticksToDelay by int("TicksDelay", 5, 1..20) { mode == "Blink" && !onScaffold }
+        .describe("Ticks to pause sending after a block placement.")
     private val predictTicks by int("PredictTicks", 60, 5..120) { mode != "Blink" }
+        .describe("How many ticks ahead to predict the fall collision.")
     private val simulationTicks by int("SimulationTicks", 20, 5..60) { mode == "Blink" }
+        .describe("Ticks to simulate the player when checking the fall.")
     private val indicator by boolean("Indicator", true).subjective()
+        .describe("Render a marker at the predicted landing spot.")
 
     private var detectedLocation: BlockPos? = null
     private var lastFound = 0F

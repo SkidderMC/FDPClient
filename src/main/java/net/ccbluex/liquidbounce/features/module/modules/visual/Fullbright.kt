@@ -15,7 +15,9 @@ import net.minecraft.potion.PotionEffect
 
 object Fullbright : Module("Fullbright", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
     private val mode by choices("Mode", arrayOf("Gamma", "NightVision"), "Gamma")
+        .describe("How to brighten the world: gamma or night vision.")
     private val brightness by int("Brightness", 100, 0..100) { mode.equals("Gamma", ignoreCase = true) }
+        .describe("Target gamma brightness level.")
     private var prevGamma = -1f
 
     override fun onEnable() {

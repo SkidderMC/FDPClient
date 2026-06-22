@@ -54,13 +54,21 @@ import java.awt.Color
 object Trajectories : Module("Trajectories", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val maxSimulatedTicks by int("MaxSimulatedTicks", 240, 1..1000)
+        .describe("Maximum number of ticks to simulate per arc.")
     private val maxRenderDistance by float("MaxRenderDistance", 96F, 16F..512F)
+        .describe("Maximum distance to render a trajectory.")
     private val otherPlayers by boolean("OtherPlayers", false)
+        .describe("Also predict arcs for other players.")
     private val alwaysShowBow by boolean("AlwaysShowBow", false)
+        .describe("Show the bow arc even when not drawing.")
     private val lineWidth by float("LineWidth", 2F, 0.5F..5F)
+        .describe("Line thickness of the trajectory.")
     private val landingBox by boolean("LandingBox", true)
+        .describe("Draw a box at the predicted landing spot.")
     private val lineColor by color("LineColor", Color(255, 255, 255, 255))
+        .describe("Color of the trajectory line.")
     private val boxColor by color("BoxColor", Color(0, 160, 255, 150))
+        .describe("Color of the landing box.")
 
     private data class ProjectileType(val gravity: Float, val drag: Float, val velocity: Float)
 

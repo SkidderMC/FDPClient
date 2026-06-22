@@ -50,12 +50,16 @@ sealed class Value<T>(
      * support it. Mirrors the reference client's per-value descriptions. Open so a [Configurable]
      * subtype (e.g. a module) can override it with its own description source.
      */
-    private var descriptionField: String? = null
+    protected var descriptionField: String? = null
 
     open val description: String?
         get() = descriptionField
 
-    fun describe(text: String) = apply { descriptionField = text }
+    /**
+     * Sets the hover description. Concrete value types override this to return their own type so
+     * `val x = boolean(...).describe(...)` keeps the concrete type (and its members like toggle()).
+     */
+    open fun describe(text: String): Value<T> = apply { descriptionField = text }
 
     fun matchesKey(key: String): Boolean =
         name.equals(key, true) || aliases.any { it.equals(key, true) }

@@ -13,18 +13,26 @@ import net.ccbluex.liquidbounce.features.module.modules.player.scaffolds.Scaffol
 object CameraView : Module("CameraView", Category.VISUAL, Category.SubCategory.RENDER_SELF) {
 
     val clip by boolean("Clip", true)
+        .describe("Let the camera clip through blocks.")
 
     private val view by boolean("View", true)
+        .describe("Override the camera view position.")
 
     private val lowerThirdPersonFov by boolean("LowerThirdPersonFOV", false) { view }
+        .describe("Lower the FOV while in third person.")
     private val thirdPersonFov by float("ThirdPersonFOV", 50f, 10f..110f) { view && lowerThirdPersonFov }
+        .describe("FOV value used in third person.")
 
     //  val fovValue by float("FOV", 1f, 0f.. 30f)
 
     private val customY by float("CustomY", 0f, -10f..10f) { view }
+        .describe("Vertical offset applied to the camera.")
     private val saveLastGroundY by boolean("SaveLastGroundY", true)  { view }
+        .describe("Anchor the camera to the last ground height.")
     private val onScaffold by boolean("OnScaffold", true)  { view }
+        .describe("Apply the camera view while scaffolding.")
     private val onF5 by boolean("OnF5", true)  { view }
+        .describe("Apply the camera view in third person only.")
 
     private var launchY: Double? = null
 

@@ -31,7 +31,9 @@ object LineGraphs : Module("LineGlyphs", Category.VISUAL, Category.SubCategory.R
 
 
     val slowSpeed by boolean("Slow Speed", false)
+        .describe("Animate the glyph lines at a slower pace.")
     private val glyphCount by int("Glyphs Count", 70, 0..200)
+        .describe("How many animated line glyphs to display at once.")
 
     // Memory leak fix: Limit maximum glyph generators
     private const val MAX_GLYPH_GENERATORS = 200

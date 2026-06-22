@@ -13,11 +13,17 @@ import net.minecraft.network.play.server.S3FPacketCustomPayload
 
 object AntiBlind : Module("AntiBlind", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
     val confusionEffect by boolean("Confusion", true)
+        .describe("Remove the nausea screen distortion effect.")
     val pumpkinEffect by boolean("Pumpkin", true)
+        .describe("Remove the pumpkin head overlay.")
     val fireEffect by float("FireAlpha", 0.3f, 0f..1f)
+        .describe("Opacity of the fire overlay when burning.")
     val bossHealth by boolean("BossHealth", true)
+        .describe("Hide the boss health bar overlay.")
     private val bookPage by boolean("BookPage", true)
+        .describe("Block servers from force-opening books.")
     val achievements by boolean("Achievements", true)
+        .describe("Hide achievement and toast popups.")
 
     val onPacket = handler<PacketEvent> { event ->
         if (!bookPage) return@handler

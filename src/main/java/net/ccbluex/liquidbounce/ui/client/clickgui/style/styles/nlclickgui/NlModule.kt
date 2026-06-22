@@ -29,7 +29,6 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.setti
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.MultiSelectSetting
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.KeyBindSetting
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.Vec3Setting
-import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.CurveSetting
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import org.lwjgl.input.Mouse

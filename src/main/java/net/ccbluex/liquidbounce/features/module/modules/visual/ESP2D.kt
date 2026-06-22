@@ -64,33 +64,53 @@ import kotlin.random.Random
 object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
 
     val outline by boolean("Outline", true)
+        .describe("Draw a 2D box around entities.")
     val boxMode by choices("Mode", arrayOf("Box", "Corners"), "Box")
+        .describe("Full box or corner-only box style.")
 
     val healthBar by boolean("Health-bar", true)
+        .describe("Show a health bar next to entities.")
     val hpBarMode by choices("HBar-Mode", arrayOf("Dot", "Line"), "Dot")
+        .describe("Segmented or solid health bar style.")
 
     val absorption by boolean("Render-Absorption", true)
+        .describe("Include absorption hearts in the bar.")
 
     val armorBar by boolean("Armor-bar", true)
+        .describe("Show an armor bar next to entities.")
     val armorBarMode by choices("ABar-Mode", arrayOf("Total", "Items"), "Total")
+        .describe("Total armor or per-item armor display.")
 
     val healthNumber by boolean("HealthNumber", true)
+        .describe("Show the numeric health value.")
     val hpMode by choices("HP-Mode", arrayOf("Health", "Percent"), "Health")
+        .describe("Show health as a number or percent.")
 
     val armorNumber by boolean("ItemArmorNumber", true)
+        .describe("Show item durability numbers.")
     val armorItems by boolean("ArmorItems", true)
+        .describe("Render the entity armor item icons.")
     val armorDur by boolean("ArmorDurability", true)
+        .describe("Show durability under armor icons.")
 
     val hover by boolean("Details-HoverOnly", false)
+        .describe("Only show details for the centered entity.")
     val tags by boolean("Tags", true)
+        .describe("Show the entity name tag.")
     val tagsBG by boolean("Tags-Background", true)
+        .describe("Draw a background behind tags.")
     val itemTags by boolean("Item-Tags", true)
+        .describe("Show the held or dropped item name.")
 
     val outlineFont by boolean("OutlineFont", true)
+        .describe("Outline the text for readability.")
     val clearName by boolean("Use-Clear-Name", false)
+        .describe("Use the plain name without formatting.")
 
     val localPlayer by boolean("Local-Player", true)
+        .describe("Render your own player in third person.")
     val droppedItems by boolean("Dropped-Items", false)
+        .describe("Also render dropped item entities.")
 
     val colorMode by choices(
         "Color Mode",
@@ -98,9 +118,12 @@ object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVER
         "Custom"
     )
     private val color by color("Color", Color.WHITE)  { colorMode == "Custom" || colorMode == "Fade" }
+        .describe("Custom color for the ESP.")
 
     val fontScale by float("Font-Scale", 0.5f, 0f..1f)
+        .describe("Scale of the text rendered on entities.")
     val colorTeam by boolean("Team", false)
+        .describe("Color entities by their team color.")
 
     private val viewport: IntBuffer = GLAllocation.createDirectIntBuffer(16)
     private val modelview: FloatBuffer = GLAllocation.createDirectFloatBuffer(16)
@@ -108,7 +131,9 @@ object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVER
     private val vector: FloatBuffer = GLAllocation.createDirectFloatBuffer(4)
 
     private val background by boolean("Background", true)
+        .describe("Draw a background behind the bars.")
     private val backgroundColor by color("BackgroundColor", Color.BLACK.withAlpha(120)) { background }
+        .describe("Color of the bar background.")
 
     private val black: Int = Color.BLACK.rgb
 

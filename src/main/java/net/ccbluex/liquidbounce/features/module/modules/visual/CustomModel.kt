@@ -15,13 +15,20 @@ object CustomModel : Module("CustomModel", Category.VISUAL, Category.SubCategory
     }
 
     val mode by choices("Mode", arrayOf("Imposter", "Rabbit", "Freddy", "Female", "Invisible"), "Female")
+        .describe("Which custom player model to render.")
     val rotatePlayer by boolean("RotatePlayer", false)
+        .describe("Continuously rotate the player model.")
 
     val breastPhysics by boolean("BreastPhysics", true) { mode == "Female" }
+        .describe("Enable physics for the female model.")
     val breastGravity by float("BreastGravity", 0.10f, 0.1f..0.5f) { mode == "Female" }
+        .describe("Gravity strength of the physics.")
     val breastBounce by float("BreastBounce", 0.6f, 0.1f..1.0f) { mode == "Female" }
+        .describe("Bounciness of the physics.")
     val breastRotation by float("BreastRotation", 0f, 0f..10f) { mode == "Female" }
+        .describe("Rotation amount of the physics.")
     val breastNoArmor by boolean("NoRenderInArmor", false) { mode == "Female" }
+        .describe("Disable the effect while wearing armor.")
 
     override val tag: String
         get() = mode

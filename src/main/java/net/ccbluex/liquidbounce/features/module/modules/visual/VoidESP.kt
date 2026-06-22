@@ -25,12 +25,19 @@ import kotlin.math.sin
 object VoidESP : Module("VoidESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false, spacedName = "Void ESP") {
 
     private val players by boolean("Players", true)
+        .describe("Highlight players standing over the void.")
     private val otherEntities by boolean("OtherEntities", false)
+        .describe("Highlight non-player entities over the void.")
     private val selfWarning by boolean("SelfWarning", true)
+        .describe("Notify you when you are over the void.")
     private val yThreshold by int("YThreshold", 0, 0..64)
+        .describe("Y level below which a column counts as void.")
     private val rangeFacing by float("RangeFacing", 0f, 0f..16f)
+        .describe("Forward range to scan ahead for void.")
     private val rangeSide by float("RangeSide", 0f, 0f..16f)
+        .describe("Sideways range to scan for void.")
     private val color by color("Color", Color(255, 60, 60))
+        .describe("Box color for entities over the void.")
 
     private var wasOverVoid = false
 

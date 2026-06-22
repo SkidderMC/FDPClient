@@ -29,15 +29,23 @@ import java.util.UUID
 object MurderMystery : Module("MurderMystery", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val mode by choices("Mode", arrayOf("Classic", "Infection"), "Classic")
+        .describe("Game mode logic used to detect the murderer.")
 
     private val detectDetective by boolean("Detective", true)
+        .describe("Detect and highlight the bow-holding detective.")
     private val esp by boolean("ESP", true)
+        .describe("Highlight detected murderers and detectives.")
     private val box by boolean("Box", true) { esp }
+        .describe("Draw a solid box for highlighted players.")
     private val chatAlert by boolean("Chat", true)
+        .describe("Print a chat alert on role detection.")
     private val sound by boolean("Sound", true)
+        .describe("Play a sound on role detection.")
 
     private val murdererColor by color("MurdererColor", Color(203, 9, 9))
+        .describe("Highlight color used for the murderer.")
     private val detectiveColor by color("DetectiveColor", Color(0, 144, 255))
+        .describe("Highlight color used for the detective.")
 
     private val murdererPlayers = HashSet<UUID>()
     private val bowPlayers = HashSet<UUID>()

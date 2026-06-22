@@ -19,13 +19,19 @@ import java.util.*
 object NameProtect : Module("NameProtect", Category.VISUAL, Category.SubCategory.RENDER_SELF, subjective = true, gameDetecting = false) {
 
     val allPlayers by boolean("AllPlayers", false)
+        .describe("Protect every player name, not just your own.")
 
     val skinProtect by boolean("SkinProtect", true)
+        .describe("Also hide your own skin from view.")
     private val fakeName by text("FakeName", "&cMe")
+        .describe("Text to replace your own name with.")
     private val replacement by text("Replacement", "Protected User") { allPlayers && !randomNames }
+        .describe("Text to replace other player names with.")
 
     private val randomNames by boolean("RandomNames", false) { allPlayers }
+        .describe("Replace other names with random characters.")
     private val randomNameLength by boolean("RandomNameLength", false) { allPlayers && randomNames }
+        .describe("Randomize the length of generated names.")
 
     private var nameLength by int("NameLength", 6, 6..16) {
         randomNames && allPlayers && !randomNameLength

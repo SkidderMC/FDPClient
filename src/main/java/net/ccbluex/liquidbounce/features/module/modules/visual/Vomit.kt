@@ -15,7 +15,9 @@ import kotlin.random.Random
 object Vomit : Module("Vomit", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
     private val amount by int("Amount", 8, 1..40)
+        .describe("Number of slime particles spawned per tick.")
     private val onlySneaking by boolean("OnlySneaking", false)
+        .describe("Only spawn particles while sneaking.")
 
     val onUpdate = handler<UpdateEvent> {
         val player = mc.thePlayer ?: return@handler

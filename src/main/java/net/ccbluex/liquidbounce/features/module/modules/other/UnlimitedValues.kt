@@ -22,6 +22,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 object UnlimitedValues : Module("UnlimitedValues", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     val removeLimits by boolean("RemoveLimits", true)
+        .describe("Remove bounds checking from all module settings.")
 
     override val tag: String
         get() = if (removeLimits) "ON" else "OFF"

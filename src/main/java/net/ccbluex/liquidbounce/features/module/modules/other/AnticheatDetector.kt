@@ -21,6 +21,7 @@ import net.ccbluex.liquidbounce.utils.client.ServerUtils.remoteIp
 object AnticheatDetector : Module("AntiCheatDetector", Category.OTHER, Category.SubCategory.MISCELLANEOUS) {
 
     private val debug by boolean("Debug", true)
+        .describe("Print transaction action numbers to chat for debugging.")
     private val actionNumbers = mutableListOf<Int>()
     private var check = false
     private var ticksPassed = 0

@@ -52,18 +52,27 @@ object AutoFarm : Module(
      */
 
     private val radius by float("Radius", 4.5F, 1F..6F)
+        .describe("Maximum distance to search for crops.")
     private val throughWalls by boolean("ThroughWalls", false)
+        .describe("Allow farming crops hidden behind walls.")
     private val wallRange by float("WallRange", 6F, 0F..6F) { throughWalls }
+        .describe("Reduced reach used for crops behind walls.")
 
     private val replant by boolean("Replant", true)
+        .describe("Replant the matching seed after harvesting.")
     private val bonemeal by boolean("Bonemeal", false)
+        .describe("Apply bone meal to immature crops to grow them.")
 
     private val delay by int("Delay", 200, 0..2000)
+        .describe("Delay between farming actions in milliseconds.")
     private val swapBackDelay by int("SwapBackDelay", 1, 1..20, "ticks")
+        .describe("Ticks before switching back to the held item.")
 
     private val disableOnFullInventory by boolean("DisableOnFullInventory", false)
+        .describe("Turn off the module when the inventory is full.")
 
     private val rotationsValue = boolean("Rotations", true)
+        .describe("Rotate toward crops before harvesting them.")
     private val rotations by rotationsValue
 
     private val rotationSettings = RotationSettings(this) { rotations }.apply {
@@ -75,6 +84,7 @@ object AutoFarm : Module(
     }
 
     private val mark by boolean("Mark", false)
+        .describe("Render a box around the targeted crop.")
 
     /**
      * Set of bone meal dye metadata (white dye color index 15).

@@ -70,6 +70,8 @@ class BoolValue(
     value: Boolean,
 ) : Value<Boolean>(name, value) {
 
+    override fun describe(text: String): BoolValue = apply { descriptionField = text }
+
     override fun toJson() = JsonPrimitive(value)
 
     override fun fromJsonF(element: JsonElement) =
@@ -101,6 +103,8 @@ class IntValue(
     suffix: String? = null,
 ) : Value<Int>(name, value, suffix) {
 
+    override fun describe(text: String): IntValue = apply { descriptionField = text }
+
     override fun validate(newValue: Int): Int = coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
 
     override fun toJson() = JsonPrimitive(value)
@@ -122,6 +126,8 @@ class IntRangeValue(
     val range: IntRange,
     suffix: String? = null,
 ) : Value<IntRange>(name, value, suffix) {
+
+    override fun describe(text: String): IntRangeValue = apply { descriptionField = text }
 
     override fun validate(newValue: IntRange): IntRange = coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
 
@@ -165,6 +171,8 @@ class FloatValue(
     suffix: String? = null,
 ) : Value<Float>(name, value, suffix) {
 
+    override fun describe(text: String): FloatValue = apply { descriptionField = text }
+
     override fun validate(newValue: Float): Float = coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
 
     fun set(newValue: Number) = set(newValue.toFloat())
@@ -188,6 +196,8 @@ class FloatRangeValue(
     val range: ClosedFloatingPointRange<Float>,
     suffix: String? = null,
 ) : Value<ClosedFloatingPointRange<Float>>(name, value, suffix) {
+
+    override fun describe(text: String): FloatRangeValue = apply { descriptionField = text }
 
     override fun validate(newValue: ClosedFloatingPointRange<Float>): ClosedFloatingPointRange<Float> =
         coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
@@ -230,6 +240,8 @@ class TextValue(
     value: String,
 ) : Value<String>(name, value) {
 
+    override fun describe(text: String): TextValue = apply { descriptionField = text }
+
     override fun toJson() = JsonPrimitive(value)
 
     override fun fromJsonF(element: JsonElement) =
@@ -251,6 +263,8 @@ class FileValue(
     var dialogMode: FileDialogMode = FileDialogMode.OPEN_FILE,
     var extensions: List<String> = emptyList(),
 ) : Value<String>(name, value) {
+
+    override fun describe(text: String): FileValue = apply { descriptionField = text }
 
     override fun toJson() = JsonPrimitive(value)
 
@@ -326,6 +340,8 @@ class FontValue(
     value: FontRenderer,
 ) : Value<FontRenderer>(name, value) {
 
+    override fun describe(text: String): FontValue = apply { descriptionField = text }
+
     override fun toJson(): JsonElement? {
         val fontDetails = Fonts.getFontDetails(value) ?: return null
         return json {
@@ -379,6 +395,8 @@ class BlockValue(
     name: String, value: Int, val range: IntRange = 1..197
 ) : Value<Int>(name, value, suffix = null) {
 
+    override fun describe(text: String): BlockValue = apply { descriptionField = text }
+
     override fun validate(newValue: Int): Int = coerceUnlessUnlimited(newValue) { it.coerceIn(range) }
 
     override fun toJson() = JsonPrimitive(value)
@@ -402,6 +420,8 @@ class ListValue(
     var values: Array<String>,
     value: String,
 ) : Value<String>(name, value) {
+
+    override fun describe(text: String): ListValue = apply { descriptionField = text }
 
     override fun validate(newValue: String): String = values.find { it.equals(newValue, true) } ?: default
 
@@ -427,6 +447,8 @@ class ListValue(
 class ColorValue(
     name: String, defaultColor: Color, var rainbow: Boolean = false
 ) : Value<Color>(name, defaultColor) {
+
+    override fun describe(text: String): ColorValue = apply { descriptionField = text }
     // Sliders
     var hueSliderY = 0F
     var opacitySliderY = 0F
@@ -548,6 +570,8 @@ class MultiSelectValue(
     val choices: Array<String>,
 ) : Value<Set<String>>(name, value) {
 
+    override fun describe(text: String): MultiSelectValue = apply { descriptionField = text }
+
     var openList = false
 
     override fun validate(newValue: Set<String>): Set<String> =
@@ -590,6 +614,8 @@ class KeyBindValue(
     value: Int = Keyboard.KEY_NONE,
 ) : Value<Int>(name, value) {
 
+    override fun describe(text: String): KeyBindValue = apply { descriptionField = text }
+
     val keyName: String
         get() = (safeKeyName(value) ?: "None") ?: "None"
 
@@ -613,6 +639,8 @@ class Vec3Value(
     name: String,
     value: DoubleArray,
 ) : Value<DoubleArray>(name, value) {
+
+    override fun describe(text: String): Vec3Value = apply { descriptionField = text }
 
     init {
         require(value.size == 3) { "Vec3Value requires exactly 3 components" }
@@ -663,6 +691,8 @@ class CurveValue(
     name: String,
     value: DoubleArray = doubleArrayOf(0.0, 0.25, 0.5, 0.75, 1.0),
 ) : Value<DoubleArray>(name, value) {
+
+    override fun describe(text: String): CurveValue = apply { descriptionField = text }
 
     init {
         require(value.size >= 2) { "CurveValue requires at least 2 points" }

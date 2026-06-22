@@ -19,17 +19,26 @@ import net.ccbluex.liquidbounce.utils.timing.MSTimer
 object AutoLeave : Module("AutoLeave", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val onLowHealth by boolean("OnLowHealth", true)
+        .describe("Leave the server when health gets low.")
     private val health by int("Health", 6, 0..20) { onLowHealth }
+        .describe("Health threshold that triggers leaving.")
 
     private val onCrowd by boolean("OnPlayersNearby", false)
+        .describe("Leave when too many players are nearby.")
     private val players by int("Players", 4, 1..30) { onCrowd }
+        .describe("Number of nearby players that triggers leaving.")
     private val range by int("Range", 8, 1..40) { onCrowd }
+        .describe("Distance used to count nearby players.")
 
     private val notify by boolean("Notify", true)
+        .describe("Send a chat message when leaving.")
 
     private val mode by choices("Mode", arrayOf("Disconnect", "Command"), "Disconnect")
+        .describe("How to leave: disconnect or send a command.")
     private val command by text("Command", "/lobby") { mode == "Command" }
+        .describe("Command to send when leaving in command mode.")
     private val delay by int("Delay", 0, 0..10000)
+        .describe("Delay before leaving in milliseconds.")
 
     private var triggered = false
     private var pending = false

@@ -33,9 +33,13 @@ import java.awt.Color
 object PacketMine : Module("PacketMine", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val range by float("Range", 5F, 1F..6F)
+        .describe("Maximum reach distance to the mined block.")
     private val instant by boolean("Instant", true)
+        .describe("Send start and stop digging packets in one tick.")
     private val visualSwing by boolean("VisualSwing", true).subjective()
+        .describe("Swing your hand visibly while mining.")
     private val esp by boolean("ESP", true).subjective()
+        .describe("Draw a box around the block being mined.")
 
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.NORMAL)
 

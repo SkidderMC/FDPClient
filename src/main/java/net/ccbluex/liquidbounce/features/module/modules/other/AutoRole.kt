@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.event.handler
 
 object AutoRole : Module("AutoAddStaff", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
     private val formattingValue by boolean("Formatting", true)
+        .describe("Add color codes to added staff names.")
 
         private val STAFF_PREFIXES = arrayOf(
             "[Moderador] ",

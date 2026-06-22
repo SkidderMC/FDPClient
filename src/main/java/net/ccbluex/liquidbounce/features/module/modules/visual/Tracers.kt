@@ -28,9 +28,12 @@ import kotlin.math.pow
 object Tracers : Module("Tracers", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
 
     private val colorMode by choices("ColorMode", arrayOf("Custom", "DistanceColor"), "Custom")
+        .describe("Use a custom color or color lines by distance.")
     private val color by color("Color", Color(0, 160, 255, 150)) { colorMode == "Custom" }
+        .describe("Custom color used for tracer lines.")
 
     private val thickness by float("Thickness", 2F, 1F..5F)
+        .describe("Line thickness of the tracers.")
 
     private val maxRenderDistance by int("MaxRenderDistance", 100, 1..200).onChanged {
         maxRenderDistanceSq = (it * it).toDouble()
@@ -42,12 +45,17 @@ object Tracers : Module("Tracers", Category.VISUAL, Category.SubCategory.RENDER_
         }
 
     private val bot by boolean("Bots", true)
+        .describe("Also draw tracers to bot entities.")
     private val teams by boolean("Teams", false)
+        .describe("Use a team color for teammates.")
 
     private val onLook by boolean("OnLook", false)
+        .describe("Only draw tracers to entities you look at.")
     private val maxAngleDifference by float("MaxAngleDifference", 90f, 5.0f..90f) { onLook }
+        .describe("Max angle from your view to count as looked at.")
 
     private val thruBlocks by boolean("ThruBlocks", true)
+        .describe("Draw tracers to entities hidden behind blocks.")
 
     private val entities by EntityLookup<EntityLivingBase>()
         .filter { isSelected(it, false) }

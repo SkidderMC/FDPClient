@@ -26,10 +26,13 @@ object FastClimb : Module("FastClimb", Category.MOVEMENT, Category.SubCategory.M
         arrayOf("Vanilla", "Delay", "Clip", "AAC3.0.0", "AAC3.0.5", "SAAC3.1.2", "AAC3.1.2"), "Vanilla"
     )
     private val speed by float("Speed", 1F, 0.01F..5F) { mode == "Vanilla" }
+        .describe("Upward speed when climbing a ladder or vine.")
 
     // Delay mode | Separated Vanilla & Delay speed value
     private val climbSpeed by float("ClimbSpeed", 1F, 0.01F..5F) { mode == "Delay" }
+        .describe("Upward speed used per climb burst in delay mode.")
     private val tickDelay by int("TickDelay", 10, 1..20) { mode == "Delay" }
+        .describe("Ticks to wait between climb bursts in delay mode.")
 
 
     private val climbDelay = tickDelay

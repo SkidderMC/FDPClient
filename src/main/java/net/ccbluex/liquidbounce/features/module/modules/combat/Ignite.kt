@@ -36,7 +36,9 @@ import kotlin.math.sqrt
 object Ignite : Module("Ignite", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val lighter by boolean("Lighter", true)
+        .describe("Use flint and steel to ignite targets.")
     private val lavaBucket by boolean("Lava", true)
+        .describe("Use a lava bucket to ignite targets.")
 
     private val msTimer = MSTimer()
 

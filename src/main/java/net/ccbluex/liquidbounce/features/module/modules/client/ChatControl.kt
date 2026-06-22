@@ -18,13 +18,20 @@ object ChatControl : Module("ChatControl", Category.CLIENT, Category.SubCategory
     }
 
     val chatLimitValue by boolean("NoChatLimit", true)
+        .describe("Remove the chat message length limit.")
     val chatClearValue by boolean("NoChatClear", true)
+        .describe("Prevent the server from clearing your chat.")
     private val fontChat by boolean("FontChat", false)
+        .describe("Render chat using the custom client font.")
 
     private val appendPrefix by boolean("AppendPrefix", false)
+        .describe("Add a prefix to your outgoing messages.")
     private val prefixText by text("Prefix", "> ") { appendPrefix }
+        .describe("Text prepended to outgoing messages.")
     private val appendSuffix by boolean("AppendSuffix", false)
+        .describe("Add a suffix to your outgoing messages.")
     private val suffixText by text("Suffix", " | FDP") { appendSuffix }
+        .describe("Text appended to outgoing messages.")
 
     fun shouldModifyChatFont() = handleEvents() && fontChat
 

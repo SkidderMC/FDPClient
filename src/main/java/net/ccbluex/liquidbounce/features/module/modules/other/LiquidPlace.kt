@@ -48,18 +48,26 @@ object LiquidPlace : Module("LiquidPlace", Category.OTHER, Category.SubCategory.
 
     // Only act while the use-item key is held (closest to vanilla feel). When off, places continuously.
     private val onlyOnUseKey by boolean("OnlyOnUseKey", true)
+        .describe("Only place while the use-item key is held down.")
 
     private val water by boolean("Water", true)
+        .describe("Allow placing against water.")
     private val lava by boolean("Lava", false)
+        .describe("Allow placing against lava.")
 
     // Only place against full (source) liquid blocks, avoiding partial flowing edges.
     private val onlySource by boolean("OnlySource", true)
+        .describe("Only place against full source liquid blocks.")
 
     private val swing by boolean("Swing", true)
+        .describe("Swing the arm when placing a block.")
     private val placeDelay by int("PlaceDelay", 250, 0..1000)
+        .describe("Minimum delay between placements in milliseconds.")
 
     private val trackCPS by boolean("TrackCPS", false)
+        .describe("Count each placement toward the CPS counter.")
     private val mark by boolean("Mark", false)
+        .describe("Render a box around the targeted liquid block.")
 
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 

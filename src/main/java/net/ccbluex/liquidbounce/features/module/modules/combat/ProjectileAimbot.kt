@@ -30,14 +30,22 @@ import java.awt.Color
 object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val bow by boolean("Bow", true).subjective()
+        .describe("Auto-aim thrown bow shots at targets.")
     private val egg by boolean("Egg", true).subjective()
+        .describe("Auto-aim thrown eggs at targets.")
     private val snowball by boolean("Snowball", true).subjective()
+        .describe("Auto-aim thrown snowballs at targets.")
     private val pearl by boolean("EnderPearl", false).subjective()
+        .describe("Auto-aim thrown ender pearls at targets.")
     private val otherItems by boolean("OtherItems", false).subjective()
+        .describe("Auto-aim other throwable items at targets.")
 
     private val range by float("Range", 10f, 0f..30f)
+        .describe("Maximum distance to aim projectiles at targets.")
     private val throughWalls by boolean("ThroughWalls", false)
+        .describe("Aim at targets even behind walls.")
     private val throughWallsRange by float("ThroughWallsRange", 10f, 0f..30f) { throughWalls }
+        .describe("Maximum distance to aim through walls.")
 
     private val priority by choices(
         "Priority",
@@ -46,8 +54,10 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, Category.S
     )
 
     private val gravityType by choices("GravityType", arrayOf("None", "Projectile"), "Projectile")
+        .describe("How to account for projectile drop when aiming.")
 
     private val predict by boolean("Predict", true) { gravityType == "Projectile" }
+        .describe("Lead the aim to where the target will move.")
     private val predictSize by float("PredictSize", 2F, 0.1F..5F)
     { predict && gravityType == "Projectile" }
 
@@ -84,6 +94,7 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, Category.S
     { options.rotationsActive }
 
     private val mark by boolean("Mark", true).subjective()
+        .describe("Draw a marker on the current target.")
 
     private var target: Entity? = null
 

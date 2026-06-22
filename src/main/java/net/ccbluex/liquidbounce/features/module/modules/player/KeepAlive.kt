@@ -18,6 +18,7 @@ import net.minecraft.network.play.client.C08PacketPlayerBlockPlacement
 object KeepAlive : Module("KeepAlive", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST) {
 
     val mode by choices("Mode", arrayOf("/heal", "Soup"), "/heal")
+        .describe("How to keep yourself alive on death.")
 
     private var runOnce = false
 

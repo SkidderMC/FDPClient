@@ -39,8 +39,11 @@ object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COM
     )
 
     val delay by int("Delay", 0, 0..500)
+        .describe("Minimum delay between critical hits.")
     private val hurtTime by int("HurtTime", 10, 0..10)
+        .describe("Only crit when target hurt-time is at or below this.")
     private val customMotionY by float("Custom-Y", 0.2f, 0.01f..0.42f) { mode == "CustomMotion" }
+        .describe("Upward motion used by the custom crit mode.")
 
     val msTimer = MSTimer()
 

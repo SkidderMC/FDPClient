@@ -39,22 +39,33 @@ import net.minecraft.util.EnumFacing
 object AutoShoot : Module("AutoShoot", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT, gameDetecting = false) {
 
     private val range by float("Range", 30F, 5F..60F)
+        .describe("Max distance to target an enemy.")
     private val throughWalls by boolean("ThroughWalls", false)
+        .describe("Allow shooting at targets behind walls.")
     private val throughWallsRange by float("ThroughWallsRange", 12F, 0F..60F) { throughWalls }
+        .describe("Max distance to shoot through walls.")
 
     private val priority by choices("Priority", arrayOf("Distance", "Direction", "Health"), "Distance")
+        .describe("How to pick the best target.")
 
     // Bow handling
     private val shootBow by boolean("Bow", true)
+        .describe("Charge and fire a held bow.")
     private val charge by int("Charge", 18, 3..20) { shootBow }
+        .describe("Ticks to charge the bow before firing.")
     private val predict by boolean("Predict", true) { shootBow }
+        .describe("Lead the shot based on target movement.")
     private val predictSize by float("PredictSize", 2F, 0.1F..5F) { shootBow && predict }
+        .describe("Strength of the movement prediction.")
 
     // Throwable handling
     private val shootThrowable by boolean("Throwable", false)
+        .describe("Throw a held snowball or egg.")
     private val throwDelay by int("ThrowDelay", 250, 0..2000) { shootThrowable }
+        .describe("Delay between throwable throws.")
 
     private val aimOffThreshold by float("AimOffThreshold", 4F, 0.5F..20F)
+        .describe("Max aim error allowed before releasing a shot.")
 
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 

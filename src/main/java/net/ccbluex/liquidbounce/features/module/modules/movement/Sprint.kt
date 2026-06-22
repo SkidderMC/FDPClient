@@ -23,12 +23,17 @@ import kotlin.math.abs
 
 object Sprint : Module("Sprint", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN, gameDetecting = false) {
     val mode by choices("Mode", arrayOf("Legit", "Vanilla"), "Vanilla")
+        .describe("How aggressively to keep sprinting.")
 
     val onlyOnSprintPress by boolean("OnlyOnSprintPress", false)
+        .describe("Only auto-sprint while the sprint key is held.")
     private val alwaysCorrect by boolean("AlwaysCorrectSprint", false)
+        .describe("Always correct the sprint state every tick.")
 
     val allDirections by boolean("AllDirections", true) { mode == "Vanilla" }
+        .describe("Allow sprinting in any direction.")
     val jumpDirections by boolean("JumpDirections", false) { mode == "Vanilla" && allDirections }
+        .describe("Keep omni-directional sprint while jumping.")
 
     private val allDirectionsLimitSpeed by float("AllDirectionsLimitSpeed", 1f, 0.75f..1f)
     { mode == "Vanilla" && allDirections }
@@ -36,14 +41,20 @@ object Sprint : Module("Sprint", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     { mode == "Vanilla" && allDirections }
 
     private val blindness by boolean("Blindness", true) { mode == "Vanilla" }
+        .describe("Stop sprinting while blinded.")
     private val usingItem by boolean("UsingItem", false) { mode == "Vanilla" }
+        .describe("Stop sprinting while using an item.")
     private val inventory by boolean("Inventory", false) { mode == "Vanilla" }
+        .describe("Stop sprinting while the inventory is open.")
     private val food by boolean("Food", true) { mode == "Vanilla" }
+        .describe("Stop sprinting when out of hunger.")
 
     private val checkServerSide by boolean("CheckServerSide", false) { mode == "Vanilla" }
+        .describe("Use server-side rotation to decide sprint.")
     private val checkServerSideGround by boolean("CheckServerSideOnlyGround", false)
     { mode == "Vanilla" && checkServerSide }
     private val noPackets by boolean("NoPackets", false) { mode == "Vanilla" }
+        .describe("Do not send sprint start/stop packets.")
 
     private var isSprinting = false
 

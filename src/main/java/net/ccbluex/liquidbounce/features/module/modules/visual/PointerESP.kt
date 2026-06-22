@@ -27,20 +27,28 @@ import kotlin.math.*
 
 object PointerESP : Module("PointerESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
     private val dimension by choices("Dimension", arrayOf("2d", "3d"), "2d")
+        .describe("Render the pointers in 2D or 3D space.")
     private val mode by choices("Mode", arrayOf("Solid", "Line", "LoopLine"), "Solid")
+        .describe("Style used to draw the pointer arrows.")
     private val thickness by float("Thickness", 3f, 1f..5f) { mode.contains("Line") }
+        .describe("Line width for the pointer arrows.")
 
     private val colors = ColorSettingsInteger(this, "Colors") { healthMode == "None" }.with(255, 111, 255)
 
     private val healthMode by choices("Health-Mode", arrayOf("None", "Custom"), "Custom")
+        .describe("How target health affects pointer color.")
     private val healthColors = ColorSettingsInteger(this, "Health")
     { healthMode == "Custom" }.with(255, 255, 0)
 
     private val absorption by boolean("Absorption", true) { healthMode == "Custom" }
+        .describe("Include absorption hearts in health color.")
     private val healthFromScoreboard by boolean("HealthFromScoreboard", true) { healthMode == "Custom" }
+        .describe("Read target health from the scoreboard.")
 
     private val distanceAlpha by boolean("DistanceAlpha", true)
+        .describe("Fade pointers based on target distance.")
     private val alphaMin by int("AlphaMin", 100, -50..255) { distanceAlpha }
+        .describe("Lowest opacity for far away pointers.")
 
     private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200).onChanged { value ->
         maxRenderDistanceSq = value.toDouble().pow(2)
@@ -52,12 +60,18 @@ object PointerESP : Module("PointerESP", Category.VISUAL, Category.SubCategory.R
         }
 
     private val arrowSize by int("ArrowSize", 10, 1..30)
+        .describe("Size of the pointer arrows.")
     private val arrowAngle by int("ArrowAngle", 50, 10..90)
+        .describe("Spread angle of the arrow tips.")
     private val arrowRadius by float("ArrowRadius", 50f, 10f..100f)
+        .describe("Distance of arrows from screen center.")
 
     private val team by boolean("Team", true)
+        .describe("Also point toward your own teammates.")
     private val colorTeam by boolean("TeamColor", false)
+        .describe("Color pointers by the target team color.")
     private val bot by boolean("Bots", true)
+        .describe("Also point toward detected bots.")
 
     private val entities by EntityLookup<EntityLivingBase>()
         .filter { bot || !isBot(it) }

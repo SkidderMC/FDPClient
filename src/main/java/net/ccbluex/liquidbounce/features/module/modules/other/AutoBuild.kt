@@ -48,19 +48,27 @@ import java.awt.Color
 object AutoBuild : Module("AutoBuild", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     private val pattern by choices("Pattern", arrayOf("Box", "Nucleus", "Floor"), "Box")
+        .describe("Block shape to build around the player.")
 
     private val autoBlock by choices("AutoBlock", arrayOf("Off", "Pick", "Spoof", "Switch"), "Spoof")
+        .describe("How to switch to a block before placing.")
     private val swing by boolean("Swing", true)
+        .describe("Swing the arm when placing a block.")
     private val placeDelay by int("PlaceDelay", 250, 0..1000)
+        .describe("Minimum delay between placements in milliseconds.")
 
     // How many blocks may be placed within a single tick.
     private val maxPlacements by int("MaxPlacements", 1, 1..4)
+        .describe("Maximum blocks placed within a single tick.")
 
     // Verify the candidate spot is reachable by raytrace before placing.
     private val raycast by boolean("Raycast", true) { options.rotationsActive }
+        .describe("Verify the spot is reachable by raytrace before placing.")
 
     private val trackCPS by boolean("TrackCPS", false)
+        .describe("Count each placement toward the CPS counter.")
     private val mark by boolean("Mark", true)
+        .describe("Render a box around each build position.")
 
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 

@@ -31,7 +31,9 @@ object HitBubbles : Module("HitBubbles", Category.VISUAL, Category.SubCategory.R
     }
 
     private val followHit by boolean("Follow Hit", true)
+        .describe("Spawn the bubble at where you are looking.")
     private val dynamicRotation by boolean("Dynamic Rotation", false)
+        .describe("Rotate bubbles to face the target direction.")
 
     private const val MAX_LIFETIME = 1000.0f
     private const val MAX_BUBBLES = 50

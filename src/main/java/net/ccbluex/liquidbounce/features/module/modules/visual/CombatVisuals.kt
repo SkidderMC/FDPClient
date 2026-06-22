@@ -59,17 +59,26 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCate
         get() = markValue != "None" && markValue != "Sims" && markValue != "FDP"  && markValue != "Lies" && markValue != "Jello"
 
     val colorPrimary by color("Color Primary", Color(0, 90, 255)) { isMarkMode }
+        .describe("Primary color of the target marker.")
     val colorSecondary by color("Color Secondary",Color(0, 90, 255)) { isMarkMode && markValue == "Zavz" }
+        .describe("Secondary color for the Zavz marker.")
 
     // Circle options
     private val circleStartColor by color("CircleStartColor", Color.BLUE) { markValue == "Circle" }.subjective()
+        .describe("Start color of the circle gradient.")
     private val circleEndColor by color("CircleEndColor", Color.CYAN.withAlpha(0)) { markValue == "Circle" }.subjective()
+        .describe("End color of the circle gradient.")
 
     private val pointsSpeed by float("PointsSpeed", 2.0f, 0.5f..5.0f) { markValue == "Points" }.subjective()
+        .describe("Rotation speed of the points marker.")
     private val pointsRadius by float("PointsRadius", 0.60f, 0.20f..1.20f) { markValue == "Points" }.subjective()
+        .describe("Radius of the points marker.")
     private val pointsScale by float("PointsScale", 0.25f, 0.05f..0.60f) { markValue == "Points" }.subjective()
+        .describe("Size of each point in the marker.")
     private val pointsLayers by int("PointsLayers", 3, 1..5) { markValue == "Points" }.subjective()
+        .describe("Number of stacked point layers.")
     private val pointsAdditive by boolean("PointsAdditive", true) { markValue == "Points" }.subjective()
+        .describe("Use additive blending for the points.")
 
     private val imageMode by choices(
         "ImageMode",
@@ -77,16 +86,27 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCate
         "Rectangle"
     ) { markValue == "Image" }.subjective()
     private val imageScale by float("ImageScale", 0.6f, 0.1f..2.0f) { markValue == "Image" }.subjective()
+        .describe("Size of the image marker.")
     private val imageXOffset by float("ImageXOffset", 0.0f, -1.5f..1.5f) { markValue == "Image" }.subjective()
+        .describe("Horizontal offset of the image marker.")
     private val imageYOffset by float("ImageYOffset", 0.0f, -0.5f..1.5f) { markValue == "Image" }.subjective()
+        .describe("Vertical offset of the image marker.")
     private val imageAdditive by boolean("ImageAdditive", true) { markValue == "Image" }.subjective()
+        .describe("Use additive blending for the image.")
     private val imageSpin by boolean("ImageSpin", false) { markValue == "Image" }.subjective()
+        .describe("Spin the image marker over time.")
     private val imageSpinSpeed by float("ImageSpinSpeed", 1.0f, 0.1f..5.0f) { markValue == "Image" && imageSpin }.subjective()
+        .describe("Spin speed of the image marker.")
     private val imageBillboard by boolean("ImageBillboard", true) { markValue == "Image" }.subjective()
+        .describe("Keep the image facing the camera.")
     private val imageColor1 by color("ImageColor1", Color(255,255,255,255)) { markValue == "Image" }.subjective()
+        .describe("First color tint of the image marker.")
     private val imageColor2 by color("ImageColor2", Color(255,255,255,255)) { markValue == "Image" }.subjective()
+        .describe("Second color tint of the image marker.")
     private val imageColor3 by color("ImageColor3", Color(255,255,255,255)) { markValue == "Image" }.subjective()
+        .describe("Third color tint of the image marker.")
     private val imageColor4 by color("ImageColor4", Color(255,255,255,255)) { markValue == "Image" }.subjective()
+        .describe("Fourth color tint of the image marker.")
 
     private val glowCircle = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/targetesp/glow_circle.png")
     private val rectangle = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/targetesp/rectangle.png")
@@ -95,12 +115,19 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCate
     private val trianglestipple  = ResourceLocation("${CLIENT_NAME.lowercase()}/texture/targetesp/trianglestipple.png")
 
     private val fillInnerCircle by boolean("FillInnerCircle", false) { markValue == "Circle" }.subjective()
+        .describe("Fill the inside of the circle marker.")
     private val withHeight by boolean("WithHeight", true) { markValue == "Circle" }.subjective()
+        .describe("Extrude the circle into a cylinder.")
     private val animateHeight by boolean("AnimateHeight", false) { withHeight }.subjective()
+        .describe("Animate the cylinder height.")
     private val heightRange by floatRange("HeightRange", 0.0f..0.4f, -2f..2f) { withHeight }.subjective()
+        .describe("Min and max height of the cylinder.")
     private val extraWidth by float("ExtraWidth", 0F, 0F..2F) { markValue == "Circle" }.subjective()
+        .describe("Extra width added to the circle.")
     private val animateCircleY by boolean("AnimateCircleY", true) { fillInnerCircle || withHeight }.subjective()
+        .describe("Animate the circle vertical position.")
     private val circleYRange by floatRange("CircleYRange", 0F..0.5F, 0F..2F) { animateCircleY }.subjective()
+        .describe("Min and max vertical range of the circle.")
     private val duration by float(
         "Duration",
         1.5F,
@@ -115,11 +142,15 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCate
     )
 
     private val rainbow by boolean("Mark-RainBow", false) { isMarkMode }
+        .describe("Animate the marker with rainbow colors.")
     private val hurt by boolean("Mark-HurtTime", true) { isMarkMode }
+        .describe("Flash the marker red when the target is hurt.")
     private val boxOutline by boolean("Outline", true) { markValue == "Box" }.subjective()
+        .describe("Draw an outline around the box marker.")
 
     // fake sharp
     private val fakeSharp by boolean("FakeSharp", false).subjective()
+        .describe("Play a fake sharpness hit effect.")
 
     // Sound
 
@@ -127,12 +158,16 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCate
         arrayOf("None", "Blood", "Lighting", "Fire", "Heart", "Water", "Smoke", "Magic", "Crits"), "Blood")
 
     private val amount by int("ParticleAmount", 5, 1..20) { particle != "None" }
+        .describe("Number of particles spawned per hit.")
 
     //Sound
     private val sound by choices("Sound", arrayOf("None", "Hit", "Explode", "Orb", "Pop", "Splash", "Lightning"), "Pop")
+        .describe("Sound played when you hit a target.")
 
     private val volume by float("Volume", 1f, 0.1f.. 5f) { sound != "None" }
+        .describe("Volume of the hit sound.")
     private val pitch by float("Pitch", 1f, 0.1f..5f) { sound != "None" }
+        .describe("Pitch of the hit sound.")
 
     // variables
     private val targetList = HashMap<EntityLivingBase, Long>()

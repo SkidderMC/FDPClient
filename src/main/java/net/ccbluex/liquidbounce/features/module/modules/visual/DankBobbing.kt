@@ -14,6 +14,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 object DankBobbing : Module("DankBobbing", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val motion by float("Motion", 5f, 1f..50f)
+        .describe("Strength of the exaggerated view bobbing.")
 
     val onMotion = handler<MotionEvent> { event ->
         if (event.eventState != EventState.POST) return@handler

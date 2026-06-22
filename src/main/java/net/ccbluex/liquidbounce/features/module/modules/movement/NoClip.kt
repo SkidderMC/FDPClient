@@ -13,10 +13,15 @@ import net.ccbluex.liquidbounce.utils.movement.MovementUtils.strafe
 
 object NoClip : Module("NoClip", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
     val speed by float("Speed", 0.5f, 0f..10f)
+        .describe("Horizontal movement speed while clipping through blocks.")
     private val verticalSpeed by float("VerticalSpeed", -1f, -1f..10f)
+        .describe("Vertical speed for jump/sneak; -1 matches horizontal speed.")
     private val onlyInVehicle by boolean("OnlyInVehicle", false)
+        .describe("Only clip through blocks while riding a vehicle.")
     private val onlyOnGround by boolean("OnlyOnGround", false)
+        .describe("Only clip through blocks while on the ground.")
     private val notWhileUsingItem by boolean("NotWhileUsingItem", false)
+        .describe("Disable clipping while using an item.")
 
     override fun onDisable() {
         mc.thePlayer?.noClip = false

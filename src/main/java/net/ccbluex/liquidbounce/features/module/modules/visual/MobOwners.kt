@@ -24,10 +24,15 @@ import java.util.UUID
 object MobOwners : Module("MobOwners", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY) {
 
     private val tameables by boolean("Tameables", true)
+        .describe("Show owner names above tamed pets.")
     private val horses by boolean("Horses", true)
+        .describe("Show owner names above horses.")
     private val projectiles by boolean("Projectiles", false)
+        .describe("Show owner names above arrows and thrown items.")
     private val stripColors by boolean("StripColors", false)
+        .describe("Remove color codes from owner names.")
     private val height by float("Height", 0.6F, 0F..2F)
+        .describe("Vertical offset of the owner name tag.")
 
     val onRender3D = handler<Render3DEvent> {
         val world = mc.theWorld ?: return@handler

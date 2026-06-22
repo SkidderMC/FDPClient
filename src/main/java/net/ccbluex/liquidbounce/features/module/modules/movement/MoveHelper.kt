@@ -27,18 +27,26 @@ object MoveHelper : Module("MoveHelper", Category.MOVEMENT, Category.SubCategory
 
     // General Settings
     private val range by intRange("Range", 2..3, 1..6)
+        .describe("Distance range separating close-range from far-range S-tap.")
 
     // Close Range Settings
     private val closeMode by choices("CloseMode", arrayOf("Interval", "OnAttack"), "Interval")
+        .describe("How to trigger the S-tap at close range.")
     private val closeInterval by int("CloseInterval", 10, 1..40) { closeMode == "Interval" }
+        .describe("Ticks between close-range S-taps in interval mode.")
     private val closeHoldLength by int("CloseHoldLength", 2, 1..10)
+        .describe("How long to hold back movement at close range.")
 
     // Far Range Settings
     private val farMode by choices("FarMode", arrayOf("Interval", "OnAttack"), "Interval")
+        .describe("How to trigger the S-tap at far range.")
     private val farInterval by int("FarInterval", 20, 1..40) { farMode == "Interval" }
+        .describe("Ticks between far-range S-taps in interval mode.")
     private val farHoldLength by int("FarHoldLength", 3, 1..10)
+        .describe("How long to hold back movement at far range.")
 
     private val onlyWhenHurt by boolean("OnlyWhenHurt", true)
+        .describe("Only assist movement while you are hurt.")
 
     private var activeTicks = -1
     private var intervalTimer = MSTimer()

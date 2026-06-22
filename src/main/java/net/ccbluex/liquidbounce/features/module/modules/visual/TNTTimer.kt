@@ -19,12 +19,18 @@ import java.awt.Color
 object TNTTimer : Module("TNTTimer", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, spacedName = "TNT Timer") {
 
     private val scale by float("Scale", 3F, 1F..4F)
+        .describe("Text size of the fuse timer.")
     private val renderY by float("RenderY", 1.5F, 0F..3F)
+        .describe("Vertical offset of the timer above the TNT.")
     private val timeUnit by choices("TimeUnit", arrayOf("Ticks", "Seconds"), "Ticks")
+        .describe("Show the remaining fuse in ticks or seconds.")
     private val font by font("Font", Fonts.fontSemibold40)
+        .describe("Font used to draw the fuse timer.")
     private val fontShadow by boolean("Shadow", true)
+        .describe("Draw a shadow behind the timer text.")
 
     private val color by color("Color", Color.WHITE)
+        .describe("Color of the fuse timer text.")
 
     private val renderFilters = RenderFilterSettings(50, 1..200, defaultMaxAngleDifference = 5f, includeThruBlocks = false)
         .also { addValues(it.values) }

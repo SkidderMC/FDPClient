@@ -30,14 +30,21 @@ import kotlin.math.max
 object NewChunks : Module("NewChunks", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
 
     private val renderDistance by int("RenderDistance", 32, 4..128, "chunks")
+        .describe("How far away chunks are rendered.")
     private val renderY by float("RenderY", 0f, -64f..320f)
+        .describe("Y height at which the chunk overlay is drawn.")
     private val autoY by boolean("AutoY", false)
+        .describe("Automatically place the overlay below you.")
 
     private val smooth by boolean("Smooth", true)
+        .describe("Blend old chunk colors near new chunks.")
     private val persist by boolean("Persist", true)
+        .describe("Keep tracked chunks across renders.")
 
     private val newColor by color("NewColor", Color(0, 255, 0, 80))
+        .describe("Color used for newly generated chunks.")
     private val oldColor by color("OldColor", Color(255, 0, 0, 80))
+        .describe("Color used for previously loaded chunks.")
 
     private val chunks = ConcurrentHashMap<ChunkCoordIntPair, Boolean>()
 

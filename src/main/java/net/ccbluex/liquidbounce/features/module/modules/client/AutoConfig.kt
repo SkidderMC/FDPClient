@@ -16,10 +16,15 @@ import kotlin.concurrent.thread
 object AutoConfig : Module("AutoConfig", Category.CLIENT, Category.SubCategory.CONFIGS, gameDetecting = false) {
 
     private val autoLoadValue = boolean("AutoLoadOnJoin", true)
+        .describe("Load a config automatically when joining a server.")
     private val notifyValue = boolean("Notify", true)
+        .describe("Show chat messages about config loading.")
     private val baseUrlValue = text("BaseURL", "https://raw.githubusercontent.com/")
+        .describe("Base URL where server configs are fetched from.")
     private val suffixValue = text("URLSuffix", ".txt")
+        .describe("Suffix appended to the config URL.")
     private val blacklistValue = text("Blacklist", "poke.sexy,loyisa.cn,anticheat-test.com")
+        .describe("Comma-separated domains to never load configs for.")
 
     private fun currentDomain(): String? {
         val serverData = mc.currentServerData ?: return null

@@ -17,9 +17,13 @@ import java.awt.Color
 object BetterInventory : Module("BetterInventory", Category.OTHER, Category.SubCategory.MISCELLANEOUS, gameDetecting = false) {
 
     val highlightClicked by boolean("HighlightClicked", true)
+        .describe("Highlight the last slot you clicked.")
     val highlightMode by choices("HighlightMode", arrayOf("Border", "Fill"), "Border") { highlightClicked }
+        .describe("Draw the highlight as a border or a fill.")
     val highlightColor by color("HighlightColor", Color(0, 255, 0)) { highlightClicked }
+        .describe("Color used for the slot highlight.")
     val borderWidth by float("BorderWidth", 2F, 1F..5F) { highlightClicked && highlightMode == "Border" }
+        .describe("Thickness of the highlight border.")
 
     var clickedSlot = -1
         private set

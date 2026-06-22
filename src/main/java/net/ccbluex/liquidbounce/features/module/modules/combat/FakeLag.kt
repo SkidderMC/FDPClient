@@ -41,21 +41,32 @@ import kotlin.math.min
 object FakeLag : Module("FakeLag", Category.COMBAT, Category.SubCategory.COMBAT_RAGE, gameDetecting = false) {
 
     private val delay by int("Delay", 550, 0..1000)
+        .describe("How long to hold back packets while lagging.")
     private val recoilTime by int("RecoilTime", 750, 0..2000)
+        .describe("Cooldown after a flush before lagging again.")
 
     private val allowedDistToEnemy by floatRange("MinAllowedDistToEnemy", 1.5f..3.5f, 0f..6f)
+        .describe("Distance to an enemy that forces a flush.")
 
     private val blinkOnAction by boolean("BlinkOnAction", true)
+        .describe("Flush packets when attacking or interacting.")
 
     private val pauseOnNoMove by boolean("PauseOnNoMove", true)
+        .describe("Stop lagging when you are not moving.")
     private val pauseOnChest by boolean("PauseOnChest", false)
+        .describe("Stop lagging while a container is open.")
 
     private val line by boolean("Line", true).subjective()
+        .describe("Draw a line through the held-back positions.")
     private val lineColor by color("LineColor", Color.GREEN) { line }.subjective()
+        .describe("Color of the position line.")
 
     private val renderModel by boolean("RenderModel", true).subjective()
+        .describe("Render your model at the server position.")
     private val serverPosBox by boolean("ServerPosBox", true).subjective()
+        .describe("Draw a box at your server-side position.")
     private val serverPosBoxColor by color("ServerPosBoxColor", Color(0, 160, 255, 130)) { serverPosBox }
+        .describe("Color of the server position box.")
 
     private val packetQueue = Queues.newArrayDeque<QueueData>()
     private val positions = Queues.newArrayDeque<PositionData>()

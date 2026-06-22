@@ -19,7 +19,9 @@ import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 object WaterSpeed : Module("WaterSpeed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
 
     private val speed by float("Speed", 0.28f, 0.15f..0.6f)
+        .describe("Swimming speed while in water.")
     private val ascend by boolean("Ascend", false)
+        .describe("Rise upward while holding jump.")
 
     val onMove = handler<MoveEvent> { event ->
         val player = mc.thePlayer ?: return@handler

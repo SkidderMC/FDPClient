@@ -17,6 +17,7 @@ import net.minecraft.network.play.server.S3FPacketCustomPayload
 object NoBooks : Module("NoBooks", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
     private val blockWritable by boolean("BlockWritable", false)
+        .describe("Also close writable book and sign screens.")
 
     val onPacket = handler<PacketEvent> { event ->
         val packet = event.packet

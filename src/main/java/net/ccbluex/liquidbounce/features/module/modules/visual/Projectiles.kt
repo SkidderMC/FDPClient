@@ -42,10 +42,14 @@ import kotlin.math.sqrt
 
 object Projectiles : Module("Projectiles", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, gameDetecting = false) {
     private val maxTrailSize by int("MaxTrailSize", 20, 1..100)
+        .describe("Maximum number of points kept in a trail.")
     private val trailThickness by float("TrailThickness", 2.0f, 0.5f..5.0f)
+        .describe("Line width of the projectile trails.")
 
     private val colorMode by choices("ColorMode", arrayOf("Custom", "BowPower"), "Custom")
+        .describe("How the predicted path is colored.")
     private val color by color("Color", Color(0, 160, 255)) { colorMode == "Custom" }
+        .describe("Color of the predicted projectile path.")
 
     private val trailPositions = mutableMapOf<Entity, ArrayDeque<ProjectilePos>>()
 

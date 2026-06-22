@@ -18,10 +18,15 @@ import java.util.Locale
 object HideClans : Module("HideClans", Category.VISUAL, Category.SubCategory.RENDER_SELF, gameDetecting = false) {
 
     private val friendsAsAllies by boolean("FriendsAsAllies", true)
+        .describe("Treat your friends as allies to hide.")
     private val showAllies by boolean("ShowAllies", false)
+        .describe("Keep some allies visible instead of hiding all.")
     private val showAlliesMode by choices("ShowAlliesMode", arrayOf("Nearest", "SemiAuto", "Manual"), "Nearest") { showAllies }
+        .describe("How allies to keep visible are selected.")
     private val showAlliesCount by int("ShowAlliesCount", 5, 1..14) { showAllies && showAlliesMode != "Manual" }
+        .describe("Number of nearest allies to keep visible.")
     private val manualShow by text("ManualShow", "") { showAllies && showAlliesMode == "Manual" }
+        .describe("Comma-separated names of allies to keep visible.")
 
     private val hiddenAllies = linkedSetOf<String>()
     private val semiAutoVisibleAllies = linkedSetOf<String>()

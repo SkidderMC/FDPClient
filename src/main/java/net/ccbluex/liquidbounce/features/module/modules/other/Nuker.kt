@@ -46,11 +46,16 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
      */
 
     private val allBlocks by boolean("AllBlocks", true)
+        .describe("Break every block type instead of one chosen block.")
     private val blocks by block("Block", 1) { !allBlocks }
+        .describe("The specific block id to break when AllBlocks is off.")
 
     private val radius by float("Radius", 5.2F, 1F..6F)
+        .describe("Maximum reach distance for breaking blocks.")
     private val throughWalls by boolean("ThroughWalls", false)
+        .describe("Allow breaking blocks that are out of line of sight.")
     private val priority by choices("Priority", arrayOf("Distance", "Hardness", "LightOpacity"), "Distance")
+        .describe("Order in which candidate blocks are broken.")
 
     private val options = RotationSettings(this).apply {
         withRequestPriority(RotationPriority.NORMAL)
@@ -61,20 +66,31 @@ object Nuker : Module("Nuker", Category.OTHER, Category.SubCategory.MISCELLANEOU
     }
 
     private val layer by boolean("Layer", false)
+        .describe("Only break blocks at or above your feet level.")
     private val hitDelay by int("HitDelay", 4, 0..20)
+        .describe("Tick delay after breaking each block.")
     private val nuke by int("Nuke", 1, 1..20)
+        .describe("Number of blocks to break per cycle.")
     private val nukeDelay by int("NukeDelay", 1, 1..20)
+        .describe("Tick delay between nuke cycles.")
 
     private val swingMode by choices("SwingMode", arrayOf("Normal", "Packet", "None"), "Normal")
+        .describe("How the hand swing is sent while breaking.")
     private val ignoreOpenInventory by boolean("IgnoreOpenInventory", true)
+        .describe("Keep breaking even while a container GUI is open.")
 
     private val blockProgress by boolean("BlockProgress", true).subjective()
+        .describe("Render break progress text on the target block.")
 
     private val scale by float("Scale", 2F, 1F..6F) { blockProgress }.subjective()
+        .describe("Size of the break progress text.")
     private val font by font("Font", Fonts.fontSemibold40) { blockProgress }.subjective()
+        .describe("Font used for the break progress text.")
     private val fontShadow by boolean("Shadow", true) { blockProgress }.subjective()
+        .describe("Draw a shadow behind the break progress text.")
 
     private val color by color("Color", Color(200, 100, 0)) { blockProgress }.subjective()
+        .describe("Color of the break progress text.")
 
     /**
      * VALUES

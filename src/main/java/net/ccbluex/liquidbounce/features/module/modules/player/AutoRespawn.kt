@@ -16,7 +16,9 @@ import net.minecraft.client.gui.GuiGameOver
 object AutoRespawn : Module("AutoRespawn", Category.PLAYER, Category.SubCategory.PLAYER_ASSIST, gameDetecting = false) {
 
     private val instant by boolean("Instant", true)
+        .describe("Respawn instantly on death without waiting.")
     private val delay by int("Delay", 0, 0..5000, "ms")
+        .describe("Delay before respawning in milliseconds.")
 
     private val deathTimer = MSTimer()
     private var waiting = false

@@ -21,8 +21,11 @@ import java.awt.Color
 object TNTESP : Module("TNTESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY, spacedName = "TNT ESP") {
 
     private val dangerZoneDome by boolean("DangerZoneDome", false)
+        .describe("Draw a dome showing each TNT blast radius.")
     private val mode by choices("Mode", arrayOf("Lines", "Triangles", "Filled"), "Lines") { dangerZoneDome }
+        .describe("How the danger zone dome is rendered.")
     private val lineWidth by float("LineWidth", 1F, 0.5F..5F) { mode == "Lines" }
+        .describe("Line thickness of the dome in Lines mode.")
     private val colors = ColorSettingsInteger(this, "Dome") { dangerZoneDome }
 
     private val renderModes = mapOf("Lines" to GL_LINES, "Triangles" to GL_TRIANGLES, "Filled" to GL_QUADS)
