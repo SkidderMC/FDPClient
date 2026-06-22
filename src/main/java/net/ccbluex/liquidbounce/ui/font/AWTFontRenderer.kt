@@ -57,6 +57,7 @@ class AWTFontRenderer(
         private const val GC_TICKS = 600                    // Do GC every 600 frames
         private const val CACHED_FONT_REMOVAL_TIME = 30000L // 30s time-based eviction
         private const val MAX_CACHED_STRINGS = 255          // LRU cache size limit
+        private const val MAX_DYNAMIC_GLYPHS = 2048         // cap for on-demand glyph textures
 
         private var gcTicks = 0
 
@@ -92,6 +93,15 @@ class AWTFontRenderer(
     )
 
     private val charLocations = arrayOfNulls<CharLocation>(stopChar)
+
+    /**
+     * On-demand glyphs for characters outside the baked [charLocations] range, each rendered
+     * with the AWT [font] (full quality) into its own small texture and cached. A null entry
+     * means the font cannot display that character, so the vanilla unicode fallback is used.
+     */
+    private class DynamicGlyph(val textureId: Int, val width: Int, val height: Int)
+
+    private val dynamicGlyphs = HashMap<Char, DynamicGlyph?>()
 
     /**
      * We store strings in an LRU-like map with time-based eviction:
@@ -169,38 +179,54 @@ class AWTFontRenderer(
 
         for (char in text) {
             val loc = charLocations.getOrNull(char.code)
-            if (loc == null) {
-                // Fallback => break quads, draw with MC font
+            if (loc != null) {
+                drawChar(loc, currX + (fallbackWidth * 4f), 0f)
+                currX += (loc.width - 8f)
+                continue
+            }
+
+            // High-quality on-demand glyph for characters outside the baked range
+            val glyph = getOrCreateDynamicGlyph(char)
+            if (glyph != null) {
                 glEnd()
-                GlStateManager.resetColor()
-
-                glPushMatrix()
-
-                // Because we scaled by 0.25 => revert
-                val rev = 4.0f
-                glScalef(rev, rev, rev)
-
-                // Then scale by (font.size / 32.0)
-                val scale = font.size / 32.0f
-                glScalef(scale, scale, 1.0f)
-
-                mc.fontRendererObj.posY = 1.0f
-                mc.fontRendererObj.posX = (currX / rev) + fallbackWidth
-
-                val fallbackW = mc.fontRendererObj.renderUnicodeChar(char, false).coerceAtLeast(0f)
-                fallbackWidth += fallbackW
-
+                drawDynamicChar(glyph, currX + (fallbackWidth * 4f), 0f)
                 if (loadingScreen) {
                     glBindTexture(GL_TEXTURE_2D, textureID)
                 } else {
                     bindTexture(textureID)
                 }
-                glPopMatrix()
                 glBegin(GL_QUADS)
-            } else {
-                drawChar(loc, currX + (fallbackWidth * 4f), 0f)
-                currX += (loc.width - 8f)
+                currX += (glyph.width - 8f)
+                continue
             }
+
+            // Fallback => break quads, draw with MC font (chars the AWT font cannot display)
+            glEnd()
+            GlStateManager.resetColor()
+
+            glPushMatrix()
+
+            // Because we scaled by 0.25 => revert
+            val rev = 4.0f
+            glScalef(rev, rev, rev)
+
+            // Then scale by (font.size / 32.0)
+            val scale = font.size / 32.0f
+            glScalef(scale, scale, 1.0f)
+
+            mc.fontRendererObj.posY = 1.0f
+            mc.fontRendererObj.posX = (currX / rev) + fallbackWidth
+
+            val fallbackW = mc.fontRendererObj.renderUnicodeChar(char, false).coerceAtLeast(0f)
+            fallbackWidth += fallbackW
+
+            if (loadingScreen) {
+                glBindTexture(GL_TEXTURE_2D, textureID)
+            } else {
+                bindTexture(textureID)
+            }
+            glPopMatrix()
+            glBegin(GL_QUADS)
         }
 
         glEnd()
@@ -225,12 +251,17 @@ class AWTFontRenderer(
 
         for (char in text) {
             val loc = charLocations.getOrNull(char.code)
-            if (loc == null) {
-                val w = mc.fontRendererObj.getCharWidth(char)
-                fallbackWidth += ((w + 8) * fallbackScale).coerceAtLeast(0f)
-            } else {
+            if (loc != null) {
                 myWidth += (loc.width - 8)
+                continue
             }
+            val glyph = getOrCreateDynamicGlyph(char)
+            if (glyph != null) {
+                myWidth += (glyph.width - 8)
+                continue
+            }
+            val w = mc.fontRendererObj.getCharWidth(char)
+            fallbackWidth += ((w + 8) * fallbackScale).coerceAtLeast(0f)
         }
 
         (myWidth / 2) + fallbackWidth.roundToInt()
@@ -244,12 +275,64 @@ class AWTFontRenderer(
             glDeleteTextures(textureID)
             textureID = -1
         }
+        dynamicGlyphs.values.forEach { it?.let { glyph -> glDeleteTextures(glyph.textureId) } }
+        dynamicGlyphs.clear()
         activeFontRenderers.remove(this)
     }
 
     /** If the user forgets to call [dispose], still free resources. */
     protected fun finalize() {
         dispose()
+    }
+
+    /**
+     * Returns (creating + caching on first use) a high-quality glyph for [c], or null when the
+     * AWT font cannot display it or the cache is full (caller then uses the vanilla fallback).
+     */
+    private fun getOrCreateDynamicGlyph(c: Char): DynamicGlyph? {
+        if (dynamicGlyphs.containsKey(c)) return dynamicGlyphs[c]
+        if (dynamicGlyphs.size >= MAX_DYNAMIC_GLYPHS || !font.canDisplay(c)) {
+            dynamicGlyphs[c] = null
+            return null
+        }
+        val glyph = try {
+            val img = drawCharToImage(c)
+            if (img.width <= 0 || img.height <= 0) null
+            else DynamicGlyph(
+                TextureUtil.uploadTextureImageAllocate(TextureUtil.glGenTextures(), img, true, true),
+                img.width, img.height
+            )
+        } catch (e: Throwable) {
+            null
+        }
+        dynamicGlyphs[c] = glyph
+        return glyph
+    }
+
+    /**
+     * Draws an on-demand glyph (its own full texture) as a single quad. Caller must end the
+     * shared QUADS batch before and rebind the atlas + reopen the batch afterwards.
+     */
+    private fun drawDynamicChar(glyph: DynamicGlyph, x: Float, y: Float) {
+        val w = glyph.width.toFloat()
+        val h = glyph.height.toFloat()
+
+        if (loadingScreen) {
+            glBindTexture(GL_TEXTURE_2D, glyph.textureId)
+        } else {
+            bindTexture(glyph.textureId)
+        }
+
+        glBegin(GL_QUADS)
+        glTexCoord2f(0f, 0f)
+        glVertex2f(x, y)
+        glTexCoord2f(0f, 1f)
+        glVertex2f(x, y + h)
+        glTexCoord2f(1f, 1f)
+        glVertex2f(x + w, y + h)
+        glTexCoord2f(1f, 0f)
+        glVertex2f(x + w, y)
+        glEnd()
     }
 
     private fun drawChar(loc: CharLocation, x: Float, y: Float) {
