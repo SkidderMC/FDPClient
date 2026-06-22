@@ -40,24 +40,38 @@ import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
     private val simulateDoubleClicking by boolean("SimulateDoubleClicking", false)
+        .describe("Occasionally fire a quick double click to mimic real clicking.")
     private val cps by intRange("CPS", 5..8, 1..50)
+        .describe("Random clicks-per-second range to click within.")
 
     private val hurtTime by int("HurtTime", 10, 0..10) { left }
+        .describe("Only attack when the target's hurt-time is at or below this.")
 
     private val right by boolean("Right", true)
+        .describe("Auto click the right mouse button (use/block).")
     private val left by boolean("Left", true)
+        .describe("Auto click the left mouse button (attack).")
     private val jitter by boolean("Jitter", false)
+        .describe("Add small random timing jitter between clicks.")
 
     private val requiresNoInput by boolean("RequiresNoInput", false) { left }
+        .describe("Only click when you are not manually clicking.")
     private val maxAngleDifference by float("MaxAngleDifference", 30f, 10f..180f) { left && requiresNoInput }
+        .describe("Max angle to the target for the click to register.")
     private val range by float("Range", 3f, 0.1f..5f) { left && requiresNoInput }
+        .describe("Max reach distance to the target.")
 
     private val onlyBlocks by boolean("OnlyBlocks", true) { right }
+        .describe("Right click only when holding a placeable block.")
 
     private val delayStart by int("DelayStart", 0, 0..2000, suffix = "ms")
+        .describe("Delay before clicking starts after holding the button.")
     private val onlyBlock by boolean("OnlyBlock", false) { left }
+        .describe("Left click only while blocking with a sword.")
     private val onItemUse by boolean("OnItemUse", true)
+        .describe("Keep clicking while using/eating an item.")
     private val delayPostStopUse by int("DelayPostStopUse", 0, 0..2000, suffix = "ms") { !onItemUse }
+        .describe("Delay before resuming clicks after item use stops.")
 
     private var rightDelay = generateNewClickTime()
     private var rightLastSwing = 0L
