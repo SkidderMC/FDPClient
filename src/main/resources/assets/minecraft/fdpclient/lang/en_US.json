@@ -364,5 +364,6 @@
     "module.autoMobHeal.description": "Automatically feeds nearby golems, tamed animals, and horses to heal them.",
     "module.betterInventory.description": "Improves the inventory screen with tweaks like highlighting the clicked slot.",
     "module.betterTitle.description": "Customizes how server titles and subtitles are displayed, including their timing.",
-    "module.hitFX.description": "Spawns native particle effects on the entity you hit."
+    "module.hitFX.description": "Spawns native particle effects on the entity you hit.",
+    "module.easyPearl.description": "Aim-assists a hand-thrown ender pearl to land where you are looking."
 }

@@ -323,5 +323,6 @@
     "module.autoMobHeal.description": "Alimenta automaticamente golens, animais domados e cavalos por perto para cura-los.",
     "module.betterInventory.description": "Melhora a tela de inventario com ajustes como destacar o slot clicado.",
     "module.betterTitle.description": "Personaliza como titulos e subtitulos do servidor sao exibidos, incluindo o tempo.",
-    "module.hitFX.description": "Gera efeitos de particula nativos na entidade que voce acerta."
+    "module.hitFX.description": "Gera efeitos de particula nativos na entidade que voce acerta.",
+    "module.easyPearl.description": "Mira a perola jogada a mao para cair onde voce esta olhando."
 }
