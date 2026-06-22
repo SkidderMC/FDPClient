@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.config.BlockValue
 import net.ccbluex.liquidbounce.config.BoolValue
 import net.ccbluex.liquidbounce.config.ColorValue
 import net.ccbluex.liquidbounce.config.Configurable
+import net.ccbluex.liquidbounce.config.FileValue
 import net.ccbluex.liquidbounce.config.FloatRangeValue
 import net.ccbluex.liquidbounce.config.FloatValue
 import net.ccbluex.liquidbounce.config.FontValue
@@ -32,6 +33,7 @@ enum class ValueKind {
     FLOAT,
     FLOAT_RANGE,
     TEXT,
+    FILE,
     FONT,
     BLOCK,
     LIST,
@@ -53,6 +55,7 @@ fun Value<*>.kind(): ValueKind = when (this) {
     is FloatValue -> ValueKind.FLOAT
     is FloatRangeValue -> ValueKind.FLOAT_RANGE
     is TextValue -> ValueKind.TEXT
+    is FileValue -> ValueKind.FILE
     is FontValue -> ValueKind.FONT
     is BlockValue -> ValueKind.BLOCK
     is ListValue -> ValueKind.LIST

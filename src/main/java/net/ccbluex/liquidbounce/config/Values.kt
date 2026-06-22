@@ -28,6 +28,11 @@ import net.minecraft.client.gui.FontRenderer
 import org.lwjgl.input.Keyboard
 import org.lwjgl.input.Mouse
 import java.awt.Color
+import java.io.File
+import javax.swing.JFileChooser
+import javax.swing.JFrame
+import javax.swing.SwingUtilities
+import javax.swing.filechooser.FileNameExtensionFilter
 import javax.vecmath.Vector2f
 import kotlin.math.roundToInt
 import kotlin.properties.ReadWriteProperty
@@ -235,6 +240,82 @@ class TextValue(
 
     override fun fromTextF(text: String): String = text
 
+}
+
+/**
+ * File value represents a value holding a filesystem path as a string.
+ */
+class FileValue(
+    name: String,
+    value: String = "",
+    var dialogMode: FileDialogMode = FileDialogMode.OPEN_FILE,
+    var extensions: List<String> = emptyList(),
+) : Value<String>(name, value) {
+
+    override fun toJson() = JsonPrimitive(value)
+
+    override fun fromJsonF(element: JsonElement) =
+        when {
+            element.isJsonPrimitive -> element.asString
+            else -> null
+        }
+
+    override fun fromTextF(text: String): String = text
+
+    val shortName: String
+        get() {
+            if (value.isEmpty()) return "..."
+            val slash = value.lastIndexOf('/')
+            val backslash = value.lastIndexOf('\\')
+            val cut = maxOf(slash, backslash)
+            return if (cut >= 0 && cut < value.length - 1) value.substring(cut + 1) else value
+        }
+
+    fun openDialog() {
+        try {
+            SwingUtilities.invokeLater {
+                try {
+                    val chooser = JFileChooser()
+                    chooser.fileSelectionMode = if (dialogMode == FileDialogMode.SELECT_FOLDER) {
+                        JFileChooser.DIRECTORIES_ONLY
+                    } else {
+                        JFileChooser.FILES_ONLY
+                    }
+
+                    if (value.isNotEmpty()) {
+                        val current = File(value)
+                        val start = if (current.isDirectory) current else current.parentFile
+                        if (start != null && start.exists()) chooser.currentDirectory = start
+                    }
+
+                    if (dialogMode != FileDialogMode.SELECT_FOLDER && extensions.isNotEmpty()) {
+                        chooser.isAcceptAllFileFilterUsed = true
+                        chooser.addChoosableFileFilter(
+                            FileNameExtensionFilter(extensions.joinToString(", "), *extensions.toTypedArray())
+                        )
+                    }
+
+                    val frame = JFrame()
+                    frame.isVisible = true
+                    frame.toFront()
+                    frame.isVisible = false
+
+                    val result = if (dialogMode == FileDialogMode.SAVE_FILE) {
+                        chooser.showSaveDialog(frame)
+                    } else {
+                        chooser.showOpenDialog(frame)
+                    }
+                    frame.dispose()
+
+                    if (result == JFileChooser.APPROVE_OPTION) {
+                        chooser.selectedFile?.let { set(it.absolutePath) }
+                    }
+                } catch (ignored: Throwable) {
+                }
+            }
+        } catch (ignored: Throwable) {
+        }
+    }
 }
 
 /**
@@ -575,3 +656,5 @@ class Vec3Value(
 }
 
 enum class RangeSlider { LEFT, RIGHT }
+
+enum class FileDialogMode { OPEN_FILE, SAVE_FILE, SELECT_FOLDER }
