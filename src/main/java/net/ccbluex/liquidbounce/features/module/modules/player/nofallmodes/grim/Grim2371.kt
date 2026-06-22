@@ -13,10 +13,8 @@ import net.ccbluex.liquidbounce.utils.timing.TickTimer
 import net.minecraft.network.play.client.C03PacketPlayer
 
 /**
- * Bypassing GrimAC Anti Cheat (Adapted from nextgen)
+ * Bypassing GrimAC Anti Cheat.
  * Minecraft Version 1.9+
- *
- * @author XeContrast (original), adapted for FDPClient
  */
 object Grim2371 : NoFallMode("Grim2371") {
 
