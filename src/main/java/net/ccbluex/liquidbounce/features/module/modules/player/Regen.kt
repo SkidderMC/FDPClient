@@ -20,56 +20,112 @@ object Regen : Module("Regen", Category.PLAYER, Category.SubCategory.PLAYER_COUN
 
     private val mode by choices("Mode", arrayOf("Vanilla", "Spartan"), "Vanilla")
     private val speed by int("Speed", 100, 1..100) { mode == "Vanilla" }
+    private val vanillaTimer by float("VanillaTimer", 1F, 0.1F..10F) { mode == "Vanilla" }
+
+    private val spartanPackets by int("SpartanPackets", 9, 1..50) { mode == "Spartan" }
+    private val spartanTimer by float("SpartanTimer", 0.45F, 0.1F..2F) { mode == "Spartan" }
 
     private val delay by int("Delay", 0, 0..10000)
     private val health by int("Health", 18, 0..20)
     private val food by int("Food", 18, 0..20)
 
     private val noAir by boolean("NoAir", false)
+    private val noMove by boolean("NoMove", false)
+    private val pauseOnDamage by boolean("PauseOnDamage", false)
     private val potionEffect by boolean("PotionEffect", false)
+
+    private val fire by boolean("Fire", false)
+    private val badEffects by boolean("BadEffects", false)
+    private val maximumSpeed by int("MaximumSpeed", 100, 5..200) { fire || badEffects }
 
     private val timer = MSTimer()
 
     private var resetTimer = false
 
+    private val badEffectIds = intArrayOf(
+        Potion.poison.id,
+        Potion.wither.id,
+        Potion.weakness.id,
+        Potion.moveSlowdown.id,
+        Potion.digSlowdown.id,
+        Potion.blindness.id,
+        Potion.confusion.id,
+        Potion.hunger.id
+    )
+
     val onUpdate = handler<UpdateEvent> {
         if (resetTimer) {
             mc.timer.timerSpeed = 1F
-        } else {
             resetTimer = false
         }
 
         val thePlayer = mc.thePlayer ?: return@handler
 
+        val lowHealth = thePlayer.health < health
+        val onFire = fire && thePlayer.isBurning && !thePlayer.isInWater && !thePlayer.isWet
+        val badEffect = badEffects && thePlayer.activePotionEffects.any {
+            it.duration > 0 && it.potionID in badEffectIds
+        }
+
         if (
             !mc.playerController.gameIsSurvivalOrAdventure()
             || noAir && !serverOnGround
+            || noMove && thePlayer.isMoving
+            || pauseOnDamage && thePlayer.hurtTime > 0
             || thePlayer.foodStats.foodLevel <= food
             || !thePlayer.isEntityAlive
-            || thePlayer.health >= health
+            || (!lowHealth && !onFire && !badEffect)
             || (potionEffect && !thePlayer.isPotionActive(Potion.regeneration))
             || !timer.hasTimePassed(delay)
         ) return@handler
 
         when (mode.lowercase()) {
             "vanilla" -> {
-                repeat(speed) {
-                    sendPacket(C03PacketPlayer(serverOnGround))
+                var tickSpeed = if (lowHealth) speed else 0
+
+                if (onFire) {
+                    tickSpeed = maxOf(tickSpeed, 9)
+                }
+
+                if (badEffect) {
+                    val maxDuration = thePlayer.activePotionEffects
+                        .filter { it.duration > 0 && it.potionID in badEffectIds }
+                        .maxByOrNull { it.duration }?.duration ?: 0
+
+                    if (maxDuration > 0) {
+                        tickSpeed = maxOf(tickSpeed, minOf(maxDuration / 20, maximumSpeed))
+                    }
+                }
+
+                if (tickSpeed > 0) {
+                    if (vanillaTimer != 1F) {
+                        mc.timer.timerSpeed = vanillaTimer
+                        resetTimer = true
+                    }
+
+                    repeat(tickSpeed) {
+                        sendPacket(C03PacketPlayer(serverOnGround))
+                    }
                 }
             }
 
             "spartan" -> {
                 if (!thePlayer.isMoving && serverOnGround) {
-                    repeat(9) {
+                    repeat(spartanPackets) {
                         sendPacket(C03PacketPlayer(serverOnGround))
                     }
 
-                    mc.timer.timerSpeed = 0.45F
+                    mc.timer.timerSpeed = spartanTimer
                     resetTimer = true
                 }
             }
         }
 
         timer.reset()
+    }
+
+    override fun onDisable() {
+        mc.timer.timerSpeed = 1F
+        resetTimer = false
     }
 }
