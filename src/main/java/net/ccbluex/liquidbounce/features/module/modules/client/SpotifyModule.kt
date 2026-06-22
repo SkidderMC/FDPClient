@@ -26,6 +26,7 @@ import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyConnectionState
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyCredentials
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyAuthFlow
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyDefaults
+import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyLocalSource
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyService
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyState
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyStateChangedEvent
@@ -91,6 +92,11 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
     var lastErrorMessage: String? = null
         private set
 
+    /** True while the module is reading from the zero-setup OS media session instead of the Web API. */
+    @Volatile
+    var usingLocalSource: Boolean = false
+        private set
+
     val pollIntervalSeconds: Int
         get() = pollIntervalValue.get()
 
@@ -126,6 +132,8 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
                         else -> {}
                     }
                 }
+            } else if (SpotifyLocalSource.isAvailable()) {
+                chat("§aSpotify: reading what you're playing from your system — no setup needed.")
             } else {
                 chat("§cSpotify credentials are missing. Open the configuration screen to enter them.")
                 mc.displayGuiScreen(GuiSpotify(mc.currentScreen))
@@ -335,10 +343,22 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
                 val mode = authMode
                 val credentials = resolveCredentials(mode)
                 if (credentials == null) {
+                    // Zero-setup fallback: with no Web API credentials, read whatever Spotify is
+                    // already playing from the OS media session (no app, no login, no settings).
+                    if (SpotifyLocalSource.isAvailable()) {
+                        usingLocalSource = true
+                        val localState = SpotifyLocalSource.fetchNowPlaying()
+                        currentState = localState
+                        EventManager.call(SpotifyStateChangedEvent(localState))
+                        updateConnection(SpotifyConnectionState.CONNECTED, null)
+                        delay(TimeUnit.SECONDS.toMillis(pollIntervalSeconds.toLong()))
+                        continue
+                    }
                     handleError("Missing Spotify credentials (${mode.displayName})")
                     delay(RETRY_DELAY_MS)
                     continue
                 }
+                usingLocalSource = false
 
                 val token = ensureAccessToken(credentials, mode)
                 if (token == null) {
@@ -356,6 +376,43 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
 
                 delay(TimeUnit.SECONDS.toMillis(pollIntervalSeconds.toLong()))
             }
+        }
+    }
+
+    fun togglePlayback() {
+        if (usingLocalSource) {
+            moduleScope.launch { SpotifyLocalSource.playPause() }
+            return
+        }
+        controlViaApi { token ->
+            if (currentState?.isPlaying == true) service.pausePlayback(token) else service.startPlayback(token)
+        }
+    }
+
+    fun next() {
+        if (usingLocalSource) {
+            moduleScope.launch { SpotifyLocalSource.next() }
+            return
+        }
+        controlViaApi { token -> service.skipToNext(token) }
+    }
+
+    fun previous() {
+        if (usingLocalSource) {
+            moduleScope.launch { SpotifyLocalSource.previous() }
+            return
+        }
+        controlViaApi { token -> service.skipToPrevious(token) }
+    }
+
+    private fun controlViaApi(block: suspend (token: String) -> Unit) {
+        moduleScope.launch {
+            val mode = authMode
+            val credentials = resolveCredentials(mode) ?: return@launch
+            val token = ensureAccessToken(credentials, mode) ?: return@launch
+            runCatching { block(token.value) }
+                .onFailure { handleError("Spotify control failed: " + it.message) }
+            requestPlaybackRefresh()
         }
     }
 
