@@ -354,8 +354,10 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
                         usingLocalSource = true
                         val localState = SpotifyLocalSource.fetchNowPlaying()
                         currentState = localState
-                        EventManager.call(SpotifyStateChangedEvent(localState))
+                        // Mark CONNECTED first so a throwing listener can never leave us stuck on CONNECTING.
                         updateConnection(SpotifyConnectionState.CONNECTED, null)
+                        LOGGER.info("[Spotify] local now-playing: ${localState?.track?.title ?: "(nothing playing)"}")
+                        runCatching { EventManager.call(SpotifyStateChangedEvent(localState)) }
                         delay(TimeUnit.SECONDS.toMillis(pollIntervalSeconds.toLong()))
                         continue
                     }
