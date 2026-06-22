@@ -8,7 +8,6 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.button.*
-import net.ccbluex.liquidbounce.config.ListValue
 import net.minecraft.client.gui.GuiButton
 import java.util.*
 
@@ -39,7 +38,7 @@ object BrandSpoofer : Module("BrandSpoofer", Category.CLIENT, Category.SubCatego
 
     val customValue = text("Custom-Brand", "WTF") { possibleBrands.get().equals("Custom", true) }
 
-    private val buttonValue = ListValue(
+    private val buttonValue = choices(
         "Button",
         arrayOf(
             "Dark",
