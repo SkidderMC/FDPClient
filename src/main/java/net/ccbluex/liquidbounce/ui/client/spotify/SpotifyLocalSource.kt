@@ -55,7 +55,9 @@ object SpotifyLocalSource {
           ${'$'}p=${'$'}s.GetPlaybackInfo()
           ${'$'}info=A (${'$'}s.TryGetMediaPropertiesAsync()) ([Windows.Media.Control.GlobalSystemMediaTransportControlsSessionMediaProperties])
           ${'$'}tl=${'$'}s.GetTimelineProperties()
-          ("RESULT`t{0}`t{1}`t{2}`t{3}`t{4}" -f ${'$'}p.PlaybackStatus,${'$'}info.Artist,${'$'}info.Title,[int]${'$'}tl.Position.TotalMilliseconds,[int]${'$'}tl.EndTime.TotalMilliseconds)
+          ${'$'}sh=if(${'$'}p.IsShuffleActive){'1'}else{'0'}
+          ${'$'}rp='{0}' -f ${'$'}p.AutoRepeatMode
+          ("RESULT`t{0}`t{1}`t{2}`t{3}`t{4}`t{5}`t{6}" -f ${'$'}p.PlaybackStatus,${'$'}info.Artist,${'$'}info.Title,[int]${'$'}tl.Position.TotalMilliseconds,[int]${'$'}tl.EndTime.TotalMilliseconds,${'$'}sh,${'$'}rp)
         } else { "RESULT`tNONE" }
     """.trimIndent()
 
@@ -74,9 +76,30 @@ object SpotifyLocalSource {
     fun next() = control("TrySkipNextAsync")
     fun previous() = control("TrySkipPreviousAsync")
 
-    private fun control(action: String) {
+    fun seek(positionMs: Int) {
+        val ticks = positionMs.toLong().coerceAtLeast(0L) * 10000L
+        controlBody("if(${'$'}s){ A (${'$'}s.TryChangePlaybackPositionAsync([long]${ticks})) ([bool])|Out-Null }")
+    }
+
+    fun setShuffle(enabled: Boolean) {
+        val v = if (enabled) "\$true" else "\$false"
+        controlBody("if(${'$'}s){ A (${'$'}s.TryChangeShuffleActiveAsync($v)) ([bool])|Out-Null }")
+    }
+
+    fun setRepeat(mode: SpotifyRepeatMode) {
+        val smtc = when (mode) {
+            SpotifyRepeatMode.ONE -> "Track"
+            SpotifyRepeatMode.ALL -> "List"
+            else -> "None"
+        }
+        controlBody("if(${'$'}s){ A (${'$'}s.TryChangeAutoRepeatModeAsync([Windows.Media.MediaPlaybackAutoRepeatMode]::$smtc)) ([bool])|Out-Null }")
+    }
+
+    private fun control(action: String) =
+        controlBody("if(${'$'}s){ A (${'$'}s.$action()) ([bool])|Out-Null }")
+
+    private fun controlBody(body: String) {
         if (!isWindows) return
-        val body = "if(${'$'}s){ A (${'$'}s.$action()) ([bool])|Out-Null }"
         runPowerShell(encode("$PREFIX\n$body"), readOutput = false)
     }
 
@@ -138,12 +161,17 @@ object SpotifyLocalSource {
             coverUrl = cover,
             durationMs = parts[4].toIntOrNull() ?: 0,
         )
+        val repeat = when (parts.getOrNull(6)?.trim()?.lowercase()) {
+            "track" -> SpotifyRepeatMode.ONE
+            "list" -> SpotifyRepeatMode.ALL
+            else -> SpotifyRepeatMode.OFF
+        }
         return SpotifyState(
             track = track,
             isPlaying = parts[0].equals("Playing", ignoreCase = true),
             progressMs = parts[3].toIntOrNull() ?: 0,
-            shuffleEnabled = false,
-            repeatMode = SpotifyRepeatMode.OFF,
+            shuffleEnabled = parts.getOrNull(5) == "1",
+            repeatMode = repeat,
         )
     }
 

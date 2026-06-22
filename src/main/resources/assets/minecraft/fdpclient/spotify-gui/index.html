@@ -7,7 +7,6 @@
 <style>
   :root {
     --green: #1ed760;
-    --green-deep: #1db954;
     --text: #ffffff;
     --muted: #b3b3b3;
     --bg: #121212;
@@ -22,7 +21,6 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ambient backdrop derived from the cover art */
   #ambient {
     position: fixed; top: -80px; right: -80px; bottom: -80px; left: -80px; z-index: 0;
     background-position: center; background-size: cover;
@@ -41,7 +39,6 @@
   .stage { position: relative; z-index: 2; height: 100%; display: flex;
     align-items: center; justify-content: center; padding: 24px; }
 
-  /* ---------- now playing ---------- */
   .player { width: 380px; max-width: 88vw; opacity: 0; transform: translateY(8px);
     transition: opacity .5s ease, transform .5s ease; }
   .player.show { opacity: 1; transform: none; }
@@ -57,7 +54,6 @@
     background: linear-gradient(150deg, #3a3a44, #1a1a22 70%);
     box-shadow: 0 18px 60px rgba(0,0,0,.6); margin-bottom: 26px;
   }
-  /* square via padding hack (chrome75-safe, no aspect-ratio) */
   .cover::before { content: ""; display: block; padding-top: 100%; }
   .cover > .inner { position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: center; }
   .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -73,23 +69,34 @@
   .seek { display: flex; align-items: center; margin-bottom: 14px; }
   .seek .time { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 34px; }
   .seek .time.end { text-align: right; }
-  .bar { position: relative; flex: 1; height: 4px; border-radius: 2px; margin: 0 10px;
-    background: rgba(255,255,255,.28); overflow: hidden; }
+  .bar { position: relative; flex: 1; height: 6px; border-radius: 3px; margin: 0 10px;
+    background: rgba(255,255,255,.28); cursor: pointer; }
   .bar .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0%;
-    background: #fff; border-radius: 2px; transition: width .25s linear; }
+    background: #fff; border-radius: 3px; transition: width .25s linear; }
+  .bar .knob { position: absolute; top: 50%; left: 0%; width: 12px; height: 12px;
+    margin: -6px 0 0 -6px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,.5);
+    opacity: 0; transition: opacity .12s ease; pointer-events: none; }
+  .seek:hover .bar .knob { opacity: 1; }
+  .seek:hover .bar .fill { background: var(--green); }
 
   .controls { display: flex; align-items: center; justify-content: center; }
-  .controls > * + * { margin-left: 26px; }
-  .ctl { background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px;
+  .controls > * + * { margin-left: 22px; }
+  .ctl { background: none; border: none; cursor: pointer; padding: 4px;
     display: flex; align-items: center; justify-content: center;
     transition: color .15s ease, transform .15s ease; }
-  .ctl svg { width: 22px; height: 22px; fill: currentColor; }
+  .ctl svg { fill: currentColor; }
   .ctl.side { color: #fff; }
+  .ctl.side svg { width: 22px; height: 22px; }
   .ctl.side:hover { transform: scale(1.12); }
   .ctl.side:active { transform: scale(.92); }
-  .ctl.ghost { width: 18px; } /* shuffle/repeat: present but inert, like Spotify when unavailable */
-  .ctl.ghost svg { width: 18px; height: 18px; }
-  .ctl.ghost { cursor: default; }
+  .ctl.small { position: relative; color: var(--muted); }
+  .ctl.small svg { width: 18px; height: 18px; }
+  .ctl.small:hover { color: #fff; }
+  .ctl.small.active { color: var(--green); }
+  .ctl.small.active::after { content: ""; position: absolute; left: 50%; bottom: -3px;
+    width: 3px; height: 3px; margin-left: -1.5px; border-radius: 50%; background: var(--green); }
+  .r1 { position: absolute; top: -3px; right: -1px; font-size: 8px; font-weight: 800;
+    color: var(--green); display: none; }
   .play {
     width: 58px; height: 58px; border-radius: 50%; background: #fff; color: #000;
     border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
@@ -99,7 +106,6 @@
   .play:hover { transform: scale(1.06); }
   .play:active { transform: scale(.95); }
 
-  /* ---------- status (connecting / idle) ---------- */
   .status { display: none; flex-direction: column; align-items: center; text-align: center; }
   .status.show { display: flex; }
   .status .mark { width: 64px; height: 64px; margin-bottom: 22px; color: var(--green); }
@@ -117,7 +123,6 @@
   <div id="wash"></div>
 
   <div class="stage">
-    <!-- now playing -->
     <div id="player" class="player">
       <div class="context">
         <span class="badge"><span class="dot"></span><span id="ctx">Playing from Spotify</span></span>
@@ -135,13 +140,13 @@
       </div>
       <div class="seek">
         <span class="time" id="elapsed">0:00</span>
-        <div class="bar"><div class="fill" id="fill"></div></div>
+        <div class="bar" id="bar"><div class="fill" id="fill"></div><div class="knob" id="knob"></div></div>
         <span class="time end" id="total">0:00</span>
       </div>
       <div class="controls">
-        <span class="ctl ghost" title="Shuffle">
+        <button class="ctl small" id="shuffle" title="Shuffle">
           <svg viewBox="0 0 24 24"><path d="M16 4l4 4-4 4V9h-2.6l-2.2 3 2.2 3H16v-3l4 4-4 4v-3h-3.7l-2.6-3.6L7 17H4v-2h2.3l2.6-3.6L6.3 8H4V6h3.4l2.2 3 2.2-3H16V4z"/></svg>
-        </span>
+        </button>
         <button class="ctl side" id="prev" title="Previous">
           <svg viewBox="0 0 24 24"><path d="M7 6h2v12H7zm3.5 6 8.5 6V6z"/></svg>
         </button>
@@ -151,20 +156,19 @@
         <button class="ctl side" id="next" title="Next">
           <svg viewBox="0 0 24 24"><path d="M15 6h2v12h-2zM5 6l8.5 6L5 18z"/></svg>
         </button>
-        <span class="ctl ghost" title="Repeat">
+        <button class="ctl small" id="repeat" title="Repeat">
           <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
-        </span>
+          <span class="r1" id="repeatOne">1</span>
+        </button>
       </div>
     </div>
 
-    <!-- connecting -->
     <div id="connecting" class="status pulse">
       <span class="mark"><svg viewBox="0 0 168 168"><path fill="currentColor" d="M84 0a84 84 0 1 0 0 168A84 84 0 0 0 84 0zm38.5 121.2a5.2 5.2 0 0 1-7.2 1.7c-19.6-12-44.3-14.7-73.4-8a5.2 5.2 0 1 1-2.3-10.2c31.8-7.3 59.1-4.2 81.1 9.3a5.2 5.2 0 0 1 1.8 7.2zm10.3-22.9a6.5 6.5 0 0 1-9 2.1c-22.4-13.8-56.6-17.8-83.1-9.7a6.5 6.5 0 1 1-3.8-12.4c30.3-9.2 68-4.7 93.7 11.1a6.5 6.5 0 0 1 2.2 8.9zm.9-23.8C107 59.1 64.6 57.7 39.6 65.3a7.8 7.8 0 1 1-4.5-14.9c28.7-8.7 75.5-7 105.3 10.7a7.8 7.8 0 0 1-8 13.4z"/></svg></span>
       <h1>Connecting to Spotify</h1>
       <p>Reading what you're playing from your system — no setup needed.</p>
     </div>
 
-    <!-- idle -->
     <div id="idle" class="status">
       <span class="mark"><svg viewBox="0 0 168 168"><path fill="currentColor" d="M84 0a84 84 0 1 0 0 168A84 84 0 0 0 84 0zm38.5 121.2a5.2 5.2 0 0 1-7.2 1.7c-19.6-12-44.3-14.7-73.4-8a5.2 5.2 0 1 1-2.3-10.2c31.8-7.3 59.1-4.2 81.1 9.3a5.2 5.2 0 0 1 1.8 7.2zm10.3-22.9a6.5 6.5 0 0 1-9 2.1c-22.4-13.8-56.6-17.8-83.1-9.7a6.5 6.5 0 1 1-3.8-12.4c30.3-9.2 68-4.7 93.7 11.1a6.5 6.5 0 0 1 2.2 8.9zm.9-23.8C107 59.1 64.6 57.7 39.6 65.3a7.8 7.8 0 1 1-4.5-14.9c28.7-8.7 75.5-7 105.3 10.7a7.8 7.8 0 0 1-8 13.4z"/></svg></span>
       <h1>Nothing playing</h1>
@@ -182,10 +186,13 @@
   var el = function (id) { return document.getElementById(id); };
   var ICON_PLAY = "M8 5v14l11-7z";
   var ICON_PAUSE = "M6 5h4v14H6zM14 5h4v14h-4z";
+  var LOGO = '<span class="logo"><svg viewBox="0 0 168 168"><path fill="#1ed760" d="M84 0a84 84 0 1 0 0 168A84 84 0 0 0 84 0zm38.5 121.2a5.2 5.2 0 0 1-7.2 1.7c-19.6-12-44.3-14.7-73.4-8a5.2 5.2 0 1 1-2.3-10.2c31.8-7.3 59.1-4.2 81.1 9.3a5.2 5.2 0 0 1 1.8 7.2zm10.3-22.9a6.5 6.5 0 0 1-9 2.1c-22.4-13.8-56.6-17.8-83.1-9.7a6.5 6.5 0 1 1-3.8-12.4c30.3-9.2 68-4.7 93.7 11.1a6.5 6.5 0 0 1 2.2 8.9zm.9-23.8C107 59.1 64.6 57.7 39.6 65.3a7.8 7.8 0 1 1-4.5-14.9c28.7-8.7 75.5-7 105.3 10.7a7.8 7.8 0 0 1-8 13.4z"/></svg></span>';
 
   var lastTrackId = "";
   var lastCover = "";
   var view = "";
+  var ppHoldUntil = 0;   // ignore polled isPlaying briefly after a click (kills the stale flip-back)
+  var seekHoldUntil = 0; // ignore polled progress briefly after a seek
   var st = { isPlaying: false, progressMs: 0, durationMs: 0, fetchedAt: 0 };
 
   function fmt(ms) {
@@ -216,10 +223,15 @@
       ambient.style.backgroundImage = 'url("' + url + '")';
       ambient.classList.add("on");
     } else {
-      inner.innerHTML = el("coverLogo") ? '' : '';
-      inner.innerHTML = '<span class="logo"><svg viewBox="0 0 168 168"><path fill="#1ed760" d="M84 0a84 84 0 1 0 0 168A84 84 0 0 0 84 0zm38.5 121.2a5.2 5.2 0 0 1-7.2 1.7c-19.6-12-44.3-14.7-73.4-8a5.2 5.2 0 1 1-2.3-10.2c31.8-7.3 59.1-4.2 81.1 9.3a5.2 5.2 0 0 1 1.8 7.2zm10.3-22.9a6.5 6.5 0 0 1-9 2.1c-22.4-13.8-56.6-17.8-83.1-9.7a6.5 6.5 0 1 1-3.8-12.4c30.3-9.2 68-4.7 93.7 11.1a6.5 6.5 0 0 1 2.2 8.9zm.9-23.8C107 59.1 64.6 57.7 39.6 65.3a7.8 7.8 0 1 1-4.5-14.9c28.7-8.7 75.5-7 105.3 10.7a7.8 7.8 0 0 1-8 13.4z"/></svg></span>';
+      inner.innerHTML = LOGO;
       ambient.classList.remove("on");
     }
+  }
+
+  function setRepeatUI(mode) {
+    var on = mode === "ALL" || mode === "ONE";
+    el("repeat").classList.toggle("active", on);
+    el("repeatOne").style.display = (mode === "ONE") ? "block" : "none";
   }
 
   function render(data) {
@@ -230,7 +242,6 @@
     if (!track || !track.title) { setView("idle"); return; }
 
     setView("player");
-    el("ctx").textContent = data.local ? "Playing from Spotify" : "Playing from Spotify";
 
     if (track.id !== lastTrackId || el("title").textContent !== track.title) {
       lastTrackId = track.id;
@@ -239,12 +250,17 @@
     }
     setCover(track.coverUrl || "");
 
-    st.isPlaying = !!data.isPlaying;
-    st.progressMs = data.progressMs || 0;
+    var now = Date.now();
+    if (now >= ppHoldUntil) st.isPlaying = !!data.isPlaying;
+    if (now >= seekHoldUntil) {
+      st.progressMs = data.progressMs || 0;
+      st.fetchedAt = now;
+    }
     st.durationMs = track.durationMs || 0;
-    st.fetchedAt = Date.now();
 
     el("ppIcon").setAttribute("d", st.isPlaying ? ICON_PAUSE : ICON_PLAY);
+    el("shuffle").classList.toggle("active", !!data.shuffle);
+    setRepeatUI(data.repeat || "OFF");
     el("total").textContent = fmt(st.durationMs);
     paint();
   }
@@ -252,11 +268,12 @@
   function paint() {
     if (view !== "player") return;
     var elapsed = st.progressMs;
-    if (st.isPlaying) elapsed += (Date.now() - st.fetchedAt);
+    if (st.isPlaying && Date.now() >= seekHoldUntil) elapsed += (Date.now() - st.fetchedAt);
     if (st.durationMs > 0 && elapsed > st.durationMs) elapsed = st.durationMs;
     var pct = st.durationMs > 0 ? (elapsed / st.durationMs) * 100 : 0;
     if (pct < 0) pct = 0; if (pct > 100) pct = 100;
     el("fill").style.width = pct + "%";
+    el("knob").style.left = pct + "%";
     el("elapsed").textContent = fmt(elapsed);
   }
 
@@ -267,23 +284,44 @@
       .catch(function () {});
   }
 
-  function control(action) {
+  function send(payload) {
     fetch(API + "/client/spotify/control", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action: action })
+      body: JSON.stringify(payload)
     }).catch(function () {});
+    setTimeout(poll, 250);
+  }
+
+  function control(action) {
     if (action === "playPause") {
       st.isPlaying = !st.isPlaying;
       st.fetchedAt = Date.now();
+      ppHoldUntil = Date.now() + 1500;
       el("ppIcon").setAttribute("d", st.isPlaying ? ICON_PAUSE : ICON_PLAY);
     }
-    setTimeout(poll, 300);
+    send({ action: action });
+  }
+
+  function seekFromEvent(e) {
+    if (!st.durationMs) return;
+    var rect = el("bar").getBoundingClientRect();
+    var frac = (e.clientX - rect.left) / rect.width;
+    if (frac < 0) frac = 0; if (frac > 1) frac = 1;
+    var posMs = Math.round(frac * st.durationMs);
+    st.progressMs = posMs;
+    st.fetchedAt = Date.now();
+    seekHoldUntil = Date.now() + 1200;
+    paint();
+    send({ action: "seek", positionMs: posMs });
   }
 
   el("playpause").addEventListener("click", function () { control("playPause"); });
   el("next").addEventListener("click", function () { control("next"); });
   el("prev").addEventListener("click", function () { control("previous"); });
+  el("shuffle").addEventListener("click", function () { control("shuffle"); });
+  el("repeat").addEventListener("click", function () { control("repeat"); });
+  el("bar").addEventListener("click", seekFromEvent);
 
   setView("connecting");
   poll();

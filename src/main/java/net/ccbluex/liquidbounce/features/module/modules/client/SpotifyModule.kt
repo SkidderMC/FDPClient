@@ -27,6 +27,7 @@ import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyCredentials
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyAuthFlow
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyDefaults
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyLocalSource
+import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyRepeatMode
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyService
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyState
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyStateChangedEvent
@@ -97,6 +98,11 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
     /** True while the module is reading from the zero-setup OS media session instead of the Web API. */
     @Volatile
     var usingLocalSource: Boolean = false
+        private set
+
+    /** Repeat mode tracked locally — the OS media session does not reliably report it back. */
+    @Volatile
+    var repeatMode: SpotifyRepeatMode = SpotifyRepeatMode.OFF
         private set
 
     val pollIntervalSeconds: Int
@@ -393,7 +399,7 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
 
     fun togglePlayback() {
         if (usingLocalSource) {
-            moduleScope.launch { SpotifyLocalSource.playPause() }
+            runLocalControl { SpotifyLocalSource.playPause() }
             return
         }
         controlViaApi { token ->
@@ -403,7 +409,7 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
 
     fun next() {
         if (usingLocalSource) {
-            moduleScope.launch { SpotifyLocalSource.next() }
+            runLocalControl { SpotifyLocalSource.next() }
             return
         }
         controlViaApi { token -> service.skipToNext(token) }
@@ -411,10 +417,51 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
 
     fun previous() {
         if (usingLocalSource) {
-            moduleScope.launch { SpotifyLocalSource.previous() }
+            runLocalControl { SpotifyLocalSource.previous() }
             return
         }
         controlViaApi { token -> service.skipToPrevious(token) }
+    }
+
+    fun seekTo(positionMs: Int) {
+        if (usingLocalSource) {
+            runLocalControl { SpotifyLocalSource.seek(positionMs) }
+            return
+        }
+        // Web API seek is not wired yet; ignore for now.
+    }
+
+    fun toggleShuffle() {
+        val enable = !(currentState?.shuffleEnabled ?: false)
+        if (usingLocalSource) {
+            runLocalControl { SpotifyLocalSource.setShuffle(enable) }
+            return
+        }
+        controlViaApi { token -> service.setShuffleState(token, enable) }
+    }
+
+    fun cycleRepeat() {
+        val order = arrayOf(SpotifyRepeatMode.OFF, SpotifyRepeatMode.ALL, SpotifyRepeatMode.ONE)
+        val current = currentState?.repeatMode?.takeIf { it != SpotifyRepeatMode.OFF } ?: repeatMode
+        val target = order[(order.indexOf(current).coerceAtLeast(0) + 1) % order.size]
+        repeatMode = target
+        if (usingLocalSource) {
+            runLocalControl { SpotifyLocalSource.setRepeat(target) }
+            return
+        }
+        controlViaApi { token -> service.setRepeatMode(token, target) }
+    }
+
+    /** Issues a local media-session control, then re-reads immediately so the GUI reflects it fast. */
+    private fun runLocalControl(block: suspend () -> Unit) {
+        moduleScope.launch {
+            block()
+            delay(140)
+            val refreshed = SpotifyLocalSource.fetchNowPlaying()
+            currentState = refreshed
+            updateConnection(SpotifyConnectionState.CONNECTED, null)
+            runCatching { EventManager.call(SpotifyStateChangedEvent(refreshed)) }
+        }
     }
 
     private fun controlViaApi(block: suspend (token: String) -> Unit) {

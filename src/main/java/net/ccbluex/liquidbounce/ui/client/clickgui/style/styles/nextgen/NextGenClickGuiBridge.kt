@@ -256,6 +256,8 @@ object NextGenClickGuiBridge : MinecraftInstance {
         addProperty("isPlaying", state?.isPlaying ?: false)
         addProperty("progressMs", state?.progressMs ?: 0)
         addProperty("volumePercent", state?.volumePercent ?: -1)
+        addProperty("shuffle", state?.shuffleEnabled ?: false)
+        addProperty("repeat", SpotifyModule.repeatMode.name)
         addProperty("updatedAt", state?.updatedAt ?: 0L)
         val track = state?.track
         if (track == null) {
@@ -272,13 +274,17 @@ object NextGenClickGuiBridge : MinecraftInstance {
         }
     }
 
-    /** Playback control from the web GUI: {"action":"playPause"|"next"|"previous"}. */
+    /** Playback control from the web GUI: {"action":"playPause"|"next"|"previous"|"seek"|"shuffle"|"repeat"}. */
     fun spotifyControl(body: String) {
-        val action = runCatching { parser.parse(body).asJsonObject.get("action").asString }.getOrNull() ?: return
+        val obj = runCatching { parser.parse(body).asJsonObject }.getOrNull() ?: return
+        val action = runCatching { obj.get("action").asString }.getOrNull() ?: return
         when (action.lowercase(Locale.ROOT)) {
             "playpause", "toggle" -> SpotifyModule.togglePlayback()
             "next" -> SpotifyModule.next()
             "previous", "prev" -> SpotifyModule.previous()
+            "seek" -> obj.get("positionMs")?.takeIf { it.isJsonPrimitive }?.asInt?.let { SpotifyModule.seekTo(it) }
+            "shuffle" -> SpotifyModule.toggleShuffle()
+            "repeat" -> SpotifyModule.cycleRepeat()
         }
     }
 
