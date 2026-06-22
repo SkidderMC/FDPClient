@@ -655,6 +655,64 @@ class Vec3Value(
     }
 }
 
+/**
+ * A tunable curve stored as evenly-spaced control points (each in 0..1). [sample] returns the
+ * interpolated height at a position t (0..1). Used for easing/smoothing/animation tuning.
+ */
+class CurveValue(
+    name: String,
+    value: DoubleArray = doubleArrayOf(0.0, 0.25, 0.5, 0.75, 1.0),
+) : Value<DoubleArray>(name, value) {
+
+    init {
+        require(value.size >= 2) { "CurveValue requires at least 2 points" }
+    }
+
+    override fun validate(newValue: DoubleArray): DoubleArray =
+        if (newValue.size >= 2) DoubleArray(newValue.size) { newValue[it].coerceIn(0.0, 1.0) } else value
+
+    val pointCount: Int
+        get() = value.size
+
+    fun getPoint(index: Int): Double = value[index.coerceIn(0, value.size - 1)]
+
+    fun setPoint(index: Int, y: Double) {
+        if (index !in value.indices) return
+        val copy = value.copyOf()
+        copy[index] = y.coerceIn(0.0, 1.0)
+        set(copy)
+    }
+
+    fun sample(t: Float): Float {
+        if (value.size == 1) return value[0].toFloat()
+        val scaled = t.coerceIn(0f, 1f) * (value.size - 1)
+        val i = scaled.toInt().coerceIn(0, value.size - 2)
+        val frac = scaled - i
+        return (value[i] + (value[i + 1] - value[i]) * frac).toFloat()
+    }
+
+    override fun toJson(): JsonElement = jsonArray {
+        for (v in value) +JsonPrimitive(v)
+    }
+
+    override fun fromJsonF(element: JsonElement): DoubleArray? {
+        val array = element as? JsonArray ?: return null
+        if (array.size() < 2) return null
+        return DoubleArray(array.size()) { array[it].asDouble }
+    }
+
+    override fun toText(): String = value.joinToString(",")
+
+    override fun fromTextF(text: String): DoubleArray? {
+        val parts = text.split(",").map { it.trim() }.takeIf { it.size >= 2 } ?: return null
+        val arr = DoubleArray(parts.size)
+        for (i in parts.indices) {
+            arr[i] = parts[i].toDoubleOrNull() ?: return null
+        }
+        return arr
+    }
+}
+
 enum class RangeSlider { LEFT, RIGHT }
 
 enum class FileDialogMode { OPEN_FILE, SAVE_FILE, SELECT_FOLDER }

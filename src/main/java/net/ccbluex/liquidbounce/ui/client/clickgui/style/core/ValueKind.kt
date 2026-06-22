@@ -9,6 +9,7 @@ import net.ccbluex.liquidbounce.config.BlockValue
 import net.ccbluex.liquidbounce.config.BoolValue
 import net.ccbluex.liquidbounce.config.ColorValue
 import net.ccbluex.liquidbounce.config.Configurable
+import net.ccbluex.liquidbounce.config.CurveValue
 import net.ccbluex.liquidbounce.config.FileValue
 import net.ccbluex.liquidbounce.config.FloatRangeValue
 import net.ccbluex.liquidbounce.config.FloatValue
@@ -41,6 +42,7 @@ enum class ValueKind {
     MULTI_SELECT,
     KEY_BIND,
     VEC3,
+    CURVE,
     OTHER
 }
 
@@ -63,6 +65,7 @@ fun Value<*>.kind(): ValueKind = when (this) {
     is MultiSelectValue -> ValueKind.MULTI_SELECT
     is KeyBindValue -> ValueKind.KEY_BIND
     is Vec3Value -> ValueKind.VEC3
+    is CurveValue -> ValueKind.CURVE
     else -> ValueKind.OTHER
 }
 

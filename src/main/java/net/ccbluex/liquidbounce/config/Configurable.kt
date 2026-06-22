@@ -154,4 +154,10 @@ open class Configurable(
     ) = +Vec3Value(name, doubleArrayOf(x, y, z)).apply {
         if (isSupported != null) setSupport { isSupported.invoke() }
     }
+
+    fun curveValue(
+        name: String, points: DoubleArray = doubleArrayOf(0.0, 0.25, 0.5, 0.75, 1.0), isSupported: (() -> Boolean)? = null
+    ) = +CurveValue(name, points).apply {
+        if (isSupported != null) setSupport { isSupported.invoke() }
+    }
 }
