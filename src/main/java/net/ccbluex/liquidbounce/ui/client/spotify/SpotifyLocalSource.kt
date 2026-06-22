@@ -36,7 +36,23 @@ object SpotifyLocalSource {
           ${'$'}p=${'$'}s.GetPlaybackInfo()
           ${'$'}info=A (${'$'}s.TryGetMediaPropertiesAsync()) ([Windows.Media.Control.GlobalSystemMediaTransportControlsSessionMediaProperties])
           ${'$'}tl=${'$'}s.GetTimelineProperties()
-          ("RESULT`t{0}`t{1}`t{2}`t{3}`t{4}" -f ${'$'}p.PlaybackStatus,${'$'}info.Artist,${'$'}info.Title,[int]${'$'}tl.Position.TotalMilliseconds,[int]${'$'}tl.EndTime.TotalMilliseconds)
+          ${'$'}cover=""
+          try {
+            ${'$'}tr=${'$'}info.Thumbnail
+            if(${'$'}tr){
+              ${'$'}rs=A (${'$'}tr.OpenReadAsync()) ([Windows.Storage.Streams.IRandomAccessStreamWithContentType])
+              ${'$'}sz=[uint32]${'$'}rs.Size
+              if(${'$'}sz -gt 0 -and ${'$'}sz -lt 900000){
+                ${'$'}dr=[Windows.Storage.Streams.DataReader]::new(${'$'}rs)
+                A (${'$'}dr.LoadAsync(${'$'}sz)) ([uint32]) | Out-Null
+                ${'$'}bytes=New-Object byte[] ${'$'}sz
+                ${'$'}dr.ReadBytes(${'$'}bytes)
+                ${'$'}ct=${'$'}rs.ContentType; if(-not ${'$'}ct){${'$'}ct='image/jpeg'}
+                ${'$'}cover='data:'+${'$'}ct+';base64,'+[Convert]::ToBase64String(${'$'}bytes)
+              }
+            }
+          } catch {}
+          ("RESULT`t{0}`t{1}`t{2}`t{3}`t{4}`t{5}" -f ${'$'}p.PlaybackStatus,${'$'}info.Artist,${'$'}info.Title,[int]${'$'}tl.Position.TotalMilliseconds,[int]${'$'}tl.EndTime.TotalMilliseconds,${'$'}cover)
         } else { "RESULT`tNONE" }
     """.trimIndent()
 
@@ -65,14 +81,15 @@ object SpotifyLocalSource {
         return runCatching {
             val process = ProcessBuilder(
                 "powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-EncodedCommand", encodedCommand,
-            ).redirectErrorStream(false).start()
+            ).redirectErrorStream(true).start()
 
-            val output = if (readOutput) process.inputStream.bufferedReader(Charsets.UTF_8).readText() else null
+            // Always drain and close stdout (stderr merged in) so the child never blocks on a full
+            // pipe buffer and no stream handles are leaked, even on the timeout path.
+            val output = process.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
             if (!process.waitFor(8, TimeUnit.SECONDS)) {
                 process.destroyForcibly()
-                return null
             }
-            output
+            if (readOutput) output else null
         }.onFailure { LOGGER.warn("[Spotify][Local] media session call failed: ${it.message}") }.getOrNull()
     }
 
@@ -86,12 +103,13 @@ object SpotifyLocalSource {
         if (title.isBlank()) {
             return null
         }
+        val cover = parts.getOrNull(5)?.takeIf { it.startsWith("data:") }
         val track = SpotifyTrack(
-            id = "local",
+            id = "local:${parts[1]}:$title",
             title = title,
             artists = parts[1],
             album = "",
-            coverUrl = null,
+            coverUrl = cover,
             durationMs = parts[4].toIntOrNull() ?: 0,
         )
         return SpotifyState(

@@ -157,6 +157,11 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
 
     fun openPlayerScreen() {
         reloadCredentialsFromDisk()
+        // Opening the player should just work: enabling the module starts the worker that reads
+        // now-playing (zero-setup OS media session, or the Web API when configured).
+        if (!state) {
+            state = true
+        }
         mc.displayGuiScreen(SpotifyWebScreen())
     }
 

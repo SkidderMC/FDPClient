@@ -6,121 +6,169 @@
 <title>Spotify</title>
 <style>
   :root {
-    --green: #1db954;
-    --green-bright: #1ed760;
-    --bg0: #0b0b0d;
-    --bg1: #17171b;
+    --green: #1ed760;
+    --green-deep: #1db954;
     --text: #ffffff;
-    --muted: #a7a7ad;
-    --card: rgba(255, 255, 255, 0.04);
-    --card-line: rgba(255, 255, 255, 0.08);
+    --muted: #b3b3b3;
+    --bg: #121212;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; width: 100%; overflow: hidden; }
   body {
-    font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    font-family: -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     color: var(--text);
-    background: radial-gradient(1200px 600px at 50% -10%, #1f1f26 0%, var(--bg1) 45%, var(--bg0) 100%);
-    display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
     -webkit-user-select: none; user-select: none;
+    -webkit-font-smoothing: antialiased;
   }
-  /* blurred art backdrop */
-  #backdrop {
-    position: fixed; inset: -60px; z-index: 0;
-    background-size: cover; background-position: center;
-    filter: blur(60px) brightness(0.45) saturate(1.2);
-    opacity: 0; transition: opacity .8s ease, background-image .8s ease;
+
+  /* ambient backdrop derived from the cover art */
+  #ambient {
+    position: fixed; top: -80px; right: -80px; bottom: -80px; left: -80px; z-index: 0;
+    background-position: center; background-size: cover;
+    filter: blur(70px) saturate(1.6) brightness(0.7);
+    transform: scale(1.1);
+    opacity: 0; transition: opacity 1s ease;
   }
-  #backdrop.on { opacity: .85; }
-  #shade { position: fixed; inset: 0; z-index: 1;
-    background: linear-gradient(180deg, rgba(8,8,10,.35) 0%, rgba(8,8,10,.75) 100%); }
-
-  .wrap { position: relative; z-index: 2; width: 540px; max-width: 92vw; padding: 28px; }
-
-  .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
-  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .3px; }
-  .brand .dot { width: 22px; height: 22px; border-radius: 50%; background: var(--green);
-    box-shadow: 0 0 16px rgba(29,185,84,.6); }
-  .badge { font-size: 12px; color: var(--muted); padding: 5px 11px; border: 1px solid var(--card-line);
-    border-radius: 999px; background: var(--card); }
-  .badge.live { color: var(--green-bright); border-color: rgba(30,215,96,.35); }
-
-  .card { display: flex; flex-direction: column; align-items: center; text-align: center; }
-  .art {
-    width: 260px; height: 260px; border-radius: 18px; object-fit: cover;
-    background: linear-gradient(135deg, #2a2a31, #14141a);
-    box-shadow: 0 26px 60px rgba(0,0,0,.55); display: flex; align-items: center; justify-content: center;
-    overflow: hidden; transition: transform .4s cubic-bezier(.2,.8,.2,1);
+  #ambient.on { opacity: 1; }
+  #wash {
+    position: fixed; top: 0; right: 0; bottom: 0; left: 0; z-index: 1;
+    background:
+      radial-gradient(120% 80% at 50% 0%, rgba(0,0,0,.15), rgba(0,0,0,.55) 60%, rgba(0,0,0,.85)),
+      linear-gradient(180deg, rgba(18,18,18,.2), rgba(18,18,18,.9));
   }
-  .art.spin { } /* reserved */
-  .art .ph { font-size: 84px; color: rgba(255,255,255,.16); }
-  .art img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-  .meta { margin-top: 26px; width: 100%; }
-  .title { font-size: 26px; font-weight: 800; line-height: 1.2; white-space: nowrap; overflow: hidden;
-    text-overflow: ellipsis; }
-  .artist { font-size: 16px; color: #d6d6db; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .album { font-size: 13px; color: var(--muted); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .stage { position: relative; z-index: 2; height: 100%; display: flex;
+    align-items: center; justify-content: center; padding: 24px; }
 
-  .bar { margin-top: 22px; width: 100%; }
-  .track { height: 6px; border-radius: 999px; background: rgba(255,255,255,.14); overflow: hidden; }
-  .fill { height: 100%; width: 0%; border-radius: 999px; background: var(--green);
-    transition: width .25s linear; }
-  .times { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 8px; }
+  /* ---------- now playing ---------- */
+  .player { width: 380px; max-width: 88vw; opacity: 0; transform: translateY(8px);
+    transition: opacity .5s ease, transform .5s ease; }
+  .player.show { opacity: 1; transform: none; }
 
-  .controls { margin-top: 26px; display: flex; align-items: center; justify-content: center; gap: 30px; }
-  .btn { background: none; border: none; color: #e8e8ec; cursor: pointer; padding: 8px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center; transition: transform .15s ease, color .15s ease; }
-  .btn:hover { color: #fff; transform: scale(1.12); }
-  .btn:active { transform: scale(.94); }
-  .btn svg { width: 26px; height: 26px; fill: currentColor; }
-  .btn.play { width: 66px; height: 66px; background: var(--green); color: #08130b;
-    box-shadow: 0 10px 26px rgba(29,185,84,.45); }
-  .btn.play:hover { background: var(--green-bright); transform: scale(1.07); }
-  .btn.play svg { width: 30px; height: 30px; }
+  .context { display: flex; align-items: center; margin-bottom: 22px; }
+  .context .badge { display: inline-flex; align-items: center;
+    font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+  .context .badge .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green);
+    box-shadow: 0 0 10px var(--green); margin-right: 7px; }
 
-  .empty { color: var(--muted); font-size: 15px; text-align: center; line-height: 1.6; }
-  .empty .big { font-size: 64px; color: rgba(255,255,255,.14); margin-bottom: 14px; }
+  .cover {
+    position: relative; width: 100%; border-radius: 8px; overflow: hidden;
+    background: linear-gradient(150deg, #3a3a44, #1a1a22 70%);
+    box-shadow: 0 18px 60px rgba(0,0,0,.6); margin-bottom: 26px;
+  }
+  /* square via padding hack (chrome75-safe, no aspect-ratio) */
+  .cover::before { content: ""; display: block; padding-top: 100%; }
+  .cover > .inner { position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; align-items: center; justify-content: center; }
+  .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .cover .logo { width: 38%; height: 38%; opacity: .9; }
+  .cover .logo svg { width: 100%; height: 100%; display: block; }
+
+  .meta { margin-bottom: 18px; }
+  .title { font-size: 26px; font-weight: 700; line-height: 1.15; letter-spacing: -.01em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .artist { font-size: 15px; color: var(--muted); margin-top: 6px; font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .seek { display: flex; align-items: center; margin-bottom: 14px; }
+  .seek .time { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 34px; }
+  .seek .time.end { text-align: right; }
+  .bar { position: relative; flex: 1; height: 4px; border-radius: 2px; margin: 0 10px;
+    background: rgba(255,255,255,.28); overflow: hidden; }
+  .bar .fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0%;
+    background: #fff; border-radius: 2px; transition: width .25s linear; }
+
+  .controls { display: flex; align-items: center; justify-content: center; }
+  .controls > * + * { margin-left: 26px; }
+  .ctl { background: none; border: none; color: var(--muted); cursor: pointer; padding: 4px;
+    display: flex; align-items: center; justify-content: center;
+    transition: color .15s ease, transform .15s ease; }
+  .ctl svg { width: 22px; height: 22px; fill: currentColor; }
+  .ctl.side { color: #fff; }
+  .ctl.side:hover { transform: scale(1.12); }
+  .ctl.side:active { transform: scale(.92); }
+  .ctl.ghost { width: 18px; } /* shuffle/repeat: present but inert, like Spotify when unavailable */
+  .ctl.ghost svg { width: 18px; height: 18px; }
+  .ctl.ghost { cursor: default; }
+  .play {
+    width: 58px; height: 58px; border-radius: 50%; background: #fff; color: #000;
+    border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: transform .12s ease; box-shadow: 0 6px 18px rgba(0,0,0,.35);
+  }
+  .play svg { width: 26px; height: 26px; fill: #000; }
+  .play:hover { transform: scale(1.06); }
+  .play:active { transform: scale(.95); }
+
+  /* ---------- status (connecting / idle) ---------- */
+  .status { display: none; flex-direction: column; align-items: center; text-align: center; }
+  .status.show { display: flex; }
+  .status .mark { width: 64px; height: 64px; margin-bottom: 22px; color: var(--green); }
+  .status .mark svg { width: 100%; height: 100%; }
+  .status.pulse .mark { animation: pulse 1.6s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: .55; transform: scale(.96); } 50% { opacity: 1; transform: scale(1); } }
+  .status h1 { font-size: 19px; font-weight: 700; }
+  .status p { font-size: 13px; color: var(--muted); margin-top: 8px; line-height: 1.5; max-width: 320px; }
+
   .hidden { display: none !important; }
 </style>
 </head>
 <body>
-  <div id="backdrop"></div>
-  <div id="shade"></div>
+  <div id="ambient"></div>
+  <div id="wash"></div>
 
-  <div class="wrap">
-    <div class="topbar">
-      <div class="brand"><span class="dot"></span><span>Spotify</span></div>
-      <div id="badge" class="badge">Connecting…</div>
-    </div>
-
-    <div id="player" class="card hidden">
-      <div class="art" id="artBox"><div class="ph">♪</div></div>
+  <div class="stage">
+    <!-- now playing -->
+    <div id="player" class="player">
+      <div class="context">
+        <span class="badge"><span class="dot"></span><span id="ctx">Playing from Spotify</span></span>
+      </div>
+      <div class="cover">
+        <div class="inner" id="coverInner">
+          <span class="logo" id="coverLogo">
+            <svg viewBox="0 0 168 168"><path fill="#1ed760" d="M84 0a84 84 0 1 0 0 168A84 84 0 0 0 84 0zm38.5 121.2a5.2 5.2 0 0 1-7.2 1.7c-19.6-12-44.3-14.7-73.4-8a5.2 5.2 0 1 1-2.3-10.2c31.8-7.3 59.1-4.2 81.1 9.3a5.2 5.2 0 0 1 1.8 7.2zm10.3-22.9a6.5 6.5 0 0 1-9 2.1c-22.4-13.8-56.6-17.8-83.1-9.7a6.5 6.5 0 1 1-3.8-12.4c30.3-9.2 68-4.7 93.7 11.1a6.5 6.5 0 0 1 2.2 8.9zm.9-23.8C107 59.1 64.6 57.7 39.6 65.3a7.8 7.8 0 1 1-4.5-14.9c28.7-8.7 75.5-7 105.3 10.7a7.8 7.8 0 0 1-8 13.4z"/></svg>
+          </span>
+        </div>
+      </div>
       <div class="meta">
         <div class="title" id="title">—</div>
-        <div class="artist" id="artist">—</div>
-        <div class="album" id="album"></div>
+        <div class="artist" id="artist"></div>
       </div>
-      <div class="bar">
-        <div class="track"><div class="fill" id="fill"></div></div>
-        <div class="times"><span id="elapsed">0:00</span><span id="total">0:00</span></div>
+      <div class="seek">
+        <span class="time" id="elapsed">0:00</span>
+        <div class="bar"><div class="fill" id="fill"></div></div>
+        <span class="time end" id="total">0:00</span>
       </div>
       <div class="controls">
-        <button class="btn" id="prev" title="Previous">
-          <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        <span class="ctl ghost" title="Shuffle">
+          <svg viewBox="0 0 24 24"><path d="M16 4l4 4-4 4V9h-2.6l-2.2 3 2.2 3H16v-3l4 4-4 4v-3h-3.7l-2.6-3.6L7 17H4v-2h2.3l2.6-3.6L6.3 8H4V6h3.4l2.2 3 2.2-3H16V4z"/></svg>
+        </span>
+        <button class="ctl side" id="prev" title="Previous">
+          <svg viewBox="0 0 24 24"><path d="M7 6h2v12H7zm3.5 6 8.5 6V6z"/></svg>
         </button>
-        <button class="btn play" id="playpause" title="Play/Pause">
+        <button class="play" id="playpause" title="Play / Pause">
           <svg id="ppIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </button>
-        <button class="btn" id="next" title="Next">
-          <svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg>
+        <button class="ctl side" id="next" title="Next">
+          <svg viewBox="0 0 24 24"><path d="M15 6h2v12h-2zM5 6l8.5 6L5 18z"/></svg>
         </button>
+        <span class="ctl ghost" title="Repeat">
+          <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+        </span>
       </div>
     </div>
 
-    <div id="empty" class="card empty hidden">
-      <div class="big">♪</div>
-      <div id="emptyMsg">Nothing is playing.<br/>Start a song in Spotify and it shows up here.</div>
+    <!-- connecting -->
+    <div id="connecting" class="status pulse">
+      <span class="mark"><svg viewBox="0 0 168 168"><path fill="currentColor" d="M84 0a84 84 0 1 0 0 168A84 84 0 0 0 84 0zm38.5 121.2a5.2 5.2 0 0 1-7.2 1.7c-19.6-12-44.3-14.7-73.4-8a5.2 5.2 0 1 1-2.3-10.2c31.8-7.3 59.1-4.2 81.1 9.3a5.2 5.2 0 0 1 1.8 7.2zm10.3-22.9a6.5 6.5 0 0 1-9 2.1c-22.4-13.8-56.6-17.8-83.1-9.7a6.5 6.5 0 1 1-3.8-12.4c30.3-9.2 68-4.7 93.7 11.1a6.5 6.5 0 0 1 2.2 8.9zm.9-23.8C107 59.1 64.6 57.7 39.6 65.3a7.8 7.8 0 1 1-4.5-14.9c28.7-8.7 75.5-7 105.3 10.7a7.8 7.8 0 0 1-8 13.4z"/></svg></span>
+      <h1>Connecting to Spotify</h1>
+      <p>Reading what you're playing from your system — no setup needed.</p>
+    </div>
+
+    <!-- idle -->
+    <div id="idle" class="status">
+      <span class="mark"><svg viewBox="0 0 168 168"><path fill="currentColor" d="M84 0a84 84 0 1 0 0 168A84 84 0 0 0 84 0zm38.5 121.2a5.2 5.2 0 0 1-7.2 1.7c-19.6-12-44.3-14.7-73.4-8a5.2 5.2 0 1 1-2.3-10.2c31.8-7.3 59.1-4.2 81.1 9.3a5.2 5.2 0 0 1 1.8 7.2zm10.3-22.9a6.5 6.5 0 0 1-9 2.1c-22.4-13.8-56.6-17.8-83.1-9.7a6.5 6.5 0 1 1-3.8-12.4c30.3-9.2 68-4.7 93.7 11.1a6.5 6.5 0 0 1 2.2 8.9zm.9-23.8C107 59.1 64.6 57.7 39.6 65.3a7.8 7.8 0 1 1-4.5-14.9c28.7-8.7 75.5-7 105.3 10.7a7.8 7.8 0 0 1-8 13.4z"/></svg></span>
+      <h1>Nothing playing</h1>
+      <p>Press play in Spotify (desktop or web) and it shows up here instantly.</p>
     </div>
   </div>
 
@@ -137,12 +185,8 @@
 
   var lastTrackId = "";
   var lastCover = "";
-  var local = {
-    isPlaying: false,
-    progressMs: 0,
-    durationMs: 0,
-    fetchedAt: 0
-  };
+  var view = "";
+  var st = { isPlaying: false, progressMs: 0, durationMs: 0, fetchedAt: 0 };
 
   function fmt(ms) {
     if (!ms || ms < 0) ms = 0;
@@ -152,103 +196,96 @@
     return m + ":" + (s < 10 ? "0" + s : s);
   }
 
-  function setBadge(text, live) {
-    var b = el("badge");
-    b.textContent = text;
-    b.className = "badge" + (live ? " live" : "");
+  function setView(name) {
+    if (view === name) return;
+    view = name;
+    el("player").classList.toggle("show", name === "player");
+    el("player").classList.toggle("hidden", name !== "player");
+    el("connecting").classList.toggle("show", name === "connecting");
+    el("idle").classList.toggle("show", name === "idle");
   }
 
-  function show(node) { node.classList.remove("hidden"); }
-  function hide(node) { node.classList.add("hidden"); }
+  function setCover(url) {
+    if (url === lastCover) return;
+    lastCover = url;
+    var inner = el("coverInner");
+    var ambient = el("ambient");
+    if (url) {
+      inner.innerHTML = '<img alt="" />';
+      inner.firstChild.src = url;
+      ambient.style.backgroundImage = 'url("' + url + '")';
+      ambient.classList.add("on");
+    } else {
+      inner.innerHTML = el("coverLogo") ? '' : '';
+      inner.innerHTML = '<span class="logo"><svg viewBox="0 0 168 168"><path fill="#1ed760" d="M84 0a84 84 0 1 0 0 168A84 84 0 0 0 84 0zm38.5 121.2a5.2 5.2 0 0 1-7.2 1.7c-19.6-12-44.3-14.7-73.4-8a5.2 5.2 0 1 1-2.3-10.2c31.8-7.3 59.1-4.2 81.1 9.3a5.2 5.2 0 0 1 1.8 7.2zm10.3-22.9a6.5 6.5 0 0 1-9 2.1c-22.4-13.8-56.6-17.8-83.1-9.7a6.5 6.5 0 1 1-3.8-12.4c30.3-9.2 68-4.7 93.7 11.1a6.5 6.5 0 0 1 2.2 8.9zm.9-23.8C107 59.1 64.6 57.7 39.6 65.3a7.8 7.8 0 1 1-4.5-14.9c28.7-8.7 75.5-7 105.3 10.7a7.8 7.8 0 0 1-8 13.4z"/></svg></span>';
+      ambient.classList.remove("on");
+    }
+  }
 
   function render(data) {
-    var track = data && data.track ? data.track : null;
     var connected = data && data.connection === "CONNECTED";
-    var sourceLabel = data && data.local ? "System" : "Spotify";
+    var track = data && data.track ? data.track : null;
 
-    if (!track || !track.title) {
-      hide(el("player"));
-      show(el("empty"));
-      el("backdrop").classList.remove("on");
-      setBadge(connected ? sourceLabel + " · idle" : "Connecting…", connected);
-      return;
-    }
+    if (!connected) { setView("connecting"); return; }
+    if (!track || !track.title) { setView("idle"); return; }
 
-    show(el("player"));
-    hide(el("empty"));
-    setBadge(sourceLabel + (data.local ? "" : " · Web API"), true);
+    setView("player");
+    el("ctx").textContent = data.local ? "Playing from Spotify" : "Playing from Spotify";
 
-    if (track.id !== lastTrackId) {
+    if (track.id !== lastTrackId || el("title").textContent !== track.title) {
       lastTrackId = track.id;
       el("title").textContent = track.title;
       el("artist").textContent = track.artists || "";
-      el("album").textContent = track.album || "";
     }
+    setCover(track.coverUrl || "");
 
-    var cover = track.coverUrl || "";
-    if (cover !== lastCover) {
-      lastCover = cover;
-      var artBox = el("artBox");
-      var bg = el("backdrop");
-      if (cover) {
-        artBox.innerHTML = '<img alt="" />';
-        artBox.firstChild.src = cover;
-        bg.style.backgroundImage = 'url("' + cover + '")';
-        bg.classList.add("on");
-      } else {
-        artBox.innerHTML = '<div class="ph">♪</div>';
-        bg.classList.remove("on");
-      }
-    }
+    st.isPlaying = !!data.isPlaying;
+    st.progressMs = data.progressMs || 0;
+    st.durationMs = track.durationMs || 0;
+    st.fetchedAt = Date.now();
 
-    local.isPlaying = !!data.isPlaying;
-    local.progressMs = data.progressMs || 0;
-    local.durationMs = (track.durationMs) || 0;
-    local.fetchedAt = Date.now();
-
-    el("ppIcon").setAttribute("d", local.isPlaying ? ICON_PAUSE : ICON_PLAY);
-    el("total").textContent = fmt(local.durationMs);
+    el("ppIcon").setAttribute("d", st.isPlaying ? ICON_PAUSE : ICON_PLAY);
+    el("total").textContent = fmt(st.durationMs);
     paint();
   }
 
   function paint() {
-    var elapsed = local.progressMs;
-    if (local.isPlaying) elapsed += (Date.now() - local.fetchedAt);
-    if (local.durationMs > 0 && elapsed > local.durationMs) elapsed = local.durationMs;
-    var pct = local.durationMs > 0 ? (elapsed / local.durationMs) * 100 : 0;
+    if (view !== "player") return;
+    var elapsed = st.progressMs;
+    if (st.isPlaying) elapsed += (Date.now() - st.fetchedAt);
+    if (st.durationMs > 0 && elapsed > st.durationMs) elapsed = st.durationMs;
+    var pct = st.durationMs > 0 ? (elapsed / st.durationMs) * 100 : 0;
     if (pct < 0) pct = 0; if (pct > 100) pct = 100;
     el("fill").style.width = pct + "%";
     el("elapsed").textContent = fmt(elapsed);
   }
 
-  async function poll() {
-    try {
-      var res = await fetch(API + "/client/spotify", { cache: "no-store" });
-      if (res.ok) render(await res.json());
-    } catch (e) { /* server not ready yet */ }
+  function poll() {
+    fetch(API + "/client/spotify", { cache: "no-store" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { if (d) render(d); })
+      .catch(function () {});
   }
 
-  async function control(action) {
-    try {
-      await fetch(API + "/client/spotify/control", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: action })
-      });
-    } catch (e) {}
-    // optimistic: flip play icon immediately
+  function control(action) {
+    fetch(API + "/client/spotify/control", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: action })
+    }).catch(function () {});
     if (action === "playPause") {
-      local.isPlaying = !local.isPlaying;
-      local.fetchedAt = Date.now();
-      el("ppIcon").setAttribute("d", local.isPlaying ? ICON_PAUSE : ICON_PLAY);
+      st.isPlaying = !st.isPlaying;
+      st.fetchedAt = Date.now();
+      el("ppIcon").setAttribute("d", st.isPlaying ? ICON_PAUSE : ICON_PLAY);
     }
-    setTimeout(poll, 350);
+    setTimeout(poll, 300);
   }
 
   el("playpause").addEventListener("click", function () { control("playPause"); });
   el("next").addEventListener("click", function () { control("next"); });
   el("prev").addEventListener("click", function () { control("previous"); });
 
+  setView("connecting");
   poll();
   setInterval(poll, 1000);
   setInterval(paint, 250);
