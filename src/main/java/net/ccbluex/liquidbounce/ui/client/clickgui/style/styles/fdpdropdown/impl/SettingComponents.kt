@@ -972,6 +972,73 @@ class SettingComponents(private val module: Module) : Component() {
                 count++
             }
 
+            // ----- CurveValue -----
+            if (setting is CurveValue) {
+                Fonts.InterMedium_18.drawString(
+                    setting.name,
+                    x + 5,
+                    settingY + 5,
+                    textColor.rgb
+                )
+
+                val graphLeft = x + 5
+                val graphRight = x + width - 5
+                val graphWidth = graphRight - graphLeft
+                val graphTop = settingY + 16
+                val graphHeight = rectHeight * 1.6f
+                val graphBottom = graphTop + graphHeight
+
+                val color = if (accent) accentedColor2 else textColor
+
+                drawCustomShapeWithRadius(
+                    graphLeft, graphTop, graphWidth, graphHeight, 2f,
+                    RenderUtils.applyOpacity(darkRectHover, .4f)
+                )
+                RenderUtils.drawBorder(
+                    graphLeft, graphTop, graphRight, graphBottom, 1f,
+                    RenderUtils.applyOpacity(textColor, .25f).rgb
+                )
+
+                val pointCount = setting.pointCount
+
+                val hoveringGraph = isClickable(graphTop)
+                        && RenderUtils.isHovering(graphLeft, graphTop, graphWidth, graphHeight, mouseX, mouseY)
+
+                if (type == GuiEvents.RELEASE) {
+                    draggingNumber = null
+                }
+                if (type == GuiEvents.CLICK && hoveringGraph && button == 0) {
+                    draggingNumber = setting
+                }
+                if (draggingNumber === setting && pointCount > 1) {
+                    val rel = ((mouseX - graphLeft) / graphWidth).coerceIn(0f, 1f)
+                    val nearest = (rel * (pointCount - 1)).roundToInt().coerceIn(0, pointCount - 1)
+                    val newY = (1f - ((mouseY - graphTop) / graphHeight)).coerceIn(0f, 1f)
+                    setting.setPoint(nearest, newY.toDouble())
+                }
+
+                val samples = max(2, graphWidth.roundToInt())
+                var prevX = graphLeft.toDouble()
+                var prevY = (graphTop + (1f - setting.sample(0f)) * graphHeight).toDouble()
+                for (sampleIndex in 1..samples) {
+                    val t = sampleIndex / samples.toFloat()
+                    val curX = (graphLeft + t * graphWidth).toDouble()
+                    val curY = (graphTop + (1f - setting.sample(t)) * graphHeight).toDouble()
+                    RenderUtils.drawLine(prevX, prevY, curX, curY, 1f)
+                    prevX = curX
+                    prevY = curY
+                }
+
+                for (i in 0 until pointCount) {
+                    val pt = if (pointCount > 1) i / (pointCount - 1f) else 0f
+                    val dotX = (graphLeft + pt * graphWidth).toDouble()
+                    val dotY = (graphTop + (1f - setting.getPoint(i)) * graphHeight).toDouble()
+                    RenderUtils.drawGoodCircle(dotX, dotY, 2.5f, color.rgb)
+                }
+
+                count += 2
+            }
+
             // ----- ColorValue -----
             if (setting is ColorValue) {
                 val currentColor = setting.selectedColor()

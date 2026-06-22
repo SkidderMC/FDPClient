@@ -32,9 +32,11 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.setti
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.CurveSetting
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil
 import net.ccbluex.liquidbounce.ui.font.Fonts
+import org.lwjgl.input.Mouse
 import java.awt.Color
 import java.util.function.Consumer
 import java.util.stream.Collectors
+import kotlin.math.abs
 import kotlin.math.max
 
 class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
@@ -356,5 +358,119 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
         }
 
         override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {}
+    }
+
+    private class CurveSetting(setting: CurveValue, moduleRender: NlModule) :
+        Downward<CurveValue>(setting, moduleRender) {
+
+        private val graphWidth = 80f
+        private val graphHeight = 14f
+        private var draggingPoint = -1
+
+        private fun graphX(): Float = (NeverloseGui.getInstance().x + 170 + x)
+
+        private fun graphY(): Float =
+            (NeverloseGui.getInstance().y + (y + getScrollY()).toInt() + 54).toFloat()
+
+        override fun draw(mouseX: Int, mouseY: Int) {
+            val gui = NeverloseGui.getInstance()
+            val mainx = gui.x
+            val mainy = gui.y
+            val textY = (y + getScrollY()).toInt()
+
+            Fonts.Nl_16.drawString(
+                setting.name,
+                (mainx + 100 + x),
+                (mainy + textY + 57).toFloat(),
+                if (gui.light) Color(95, 95, 95).rgb else -1
+            )
+
+            val gx = graphX()
+            val gy = graphY()
+
+            RenderUtil.drawRoundedRect(
+                gx,
+                gy,
+                graphWidth,
+                graphHeight,
+                2f,
+                if (gui.light) Color(255, 255, 255).rgb else Color(0, 5, 19).rgb,
+                1f,
+                Color(13, 24, 35).rgb
+            )
+
+            if (draggingPoint != -1) {
+                if (Mouse.isButtonDown(0)) {
+                    val ratio = 1f - ((mouseY - gy) / graphHeight)
+                    setting.setPoint(draggingPoint, ratio.toDouble())
+                } else {
+                    draggingPoint = -1
+                }
+            }
+
+            val lineColor = NeverloseGui.neverlosecolor.rgb
+            val samples = 32
+            var prevX = gx
+            var prevY = gy + (1f - setting.sample(0f)) * graphHeight
+            for (s in 1..samples) {
+                val t = s.toFloat() / samples
+                val curX = gx + t * graphWidth
+                val curY = gy + (1f - setting.sample(t)) * graphHeight
+                RenderUtil.drawRoundedRect(
+                    prevX,
+                    prevY - 0.5f,
+                    curX,
+                    curY + 0.5f,
+                    0f,
+                    lineColor
+                )
+                prevX = curX
+                prevY = curY
+            }
+
+            val count = setting.pointCount
+            val dotColor = if (gui.light) Color(95, 95, 95).rgb else -1
+            for (i in 0 until count) {
+                val px = if (count <= 1) gx else gx + (i.toFloat() / (count - 1)) * graphWidth
+                val py = gy + (1f - setting.getPoint(i).toFloat()) * graphHeight
+                RenderUtil.drawRoundedRect(
+                    px - 1.5f,
+                    py - 1.5f,
+                    px + 1.5f,
+                    py + 1.5f,
+                    1.5f,
+                    dotColor
+                )
+            }
+        }
+
+        override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
+            if (mouseButton != 0) return
+            val gx = graphX()
+            val gy = graphY()
+            if (!RenderUtil.isHovering(gx, gy, graphWidth, graphHeight, mouseX, mouseY)) return
+
+            val count = setting.pointCount
+            if (count <= 0) return
+
+            var nearest = 0
+            var nearestDist = Float.MAX_VALUE
+            for (i in 0 until count) {
+                val px = if (count <= 1) gx else gx + (i.toFloat() / (count - 1)) * graphWidth
+                val dist = abs(px - mouseX)
+                if (dist < nearestDist) {
+                    nearestDist = dist
+                    nearest = i
+                }
+            }
+
+            draggingPoint = nearest
+            val ratio = 1f - ((mouseY - gy) / graphHeight)
+            setting.setPoint(nearest, ratio.toDouble())
+        }
+
+        override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
+            draggingPoint = -1
+        }
     }
 }

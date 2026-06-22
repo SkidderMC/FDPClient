@@ -904,6 +904,73 @@ object BlackStyle : Style() {
                             yPos += 12
                         }
 
+                        is CurveValue -> {
+                            val text = value.name
+
+                            moduleElement.settingsWidth = fontSemibold35.getStringWidth(text) + 8
+
+                            fontSemibold35.drawString(text, minX + 2, yPos + 2, Color.WHITE.rgb)
+
+                            val graphX = minX + 4
+                            val graphTop = yPos + 13
+                            val graphWidth = moduleElement.settingsWidth - 12
+                            val graphHeight = 22
+                            val graphRight = graphX + graphWidth
+                            val graphBottom = graphTop + graphHeight
+
+                            drawBorderedRect(
+                                graphX, graphTop, graphRight, graphBottom, 1.5,
+                                Color(40, 40, 40).rgb, Color(15, 15, 15).rgb
+                            )
+
+                            val pointCount = value.pointCount
+
+                            if (graphWidth > 1 && pointCount >= 2) {
+                                val segments = graphWidth.coerceAtMost(80)
+                                var prevX = graphX.toDouble()
+                                var prevY = graphBottom - value.sample(0f) * graphHeight
+
+                                for (s in 1..segments) {
+                                    val t = s.toFloat() / segments
+                                    val curX = graphX + t * graphWidth
+                                    val curY = graphBottom - value.sample(t) * graphHeight
+
+                                    RenderUtils.drawLine(
+                                        prevX, prevY.toDouble(),
+                                        curX.toDouble(), curY.toDouble(),
+                                        1f
+                                    )
+
+                                    prevX = curX.toDouble()
+                                    prevY = curY
+                                }
+
+                                val color = Color(20, 20, 20)
+
+                                for (i in 0 until pointCount) {
+                                    val px = graphX + i.toFloat() / (pointCount - 1) * graphWidth
+                                    val py = graphBottom - value.getPoint(i).toFloat() * graphHeight
+                                    drawFilledCircle(px.roundToInt(), py.roundToInt(), 2.5f, color)
+                                }
+
+                                if (mouseButton == 0 && mouseX in graphX..graphRight && mouseY in graphTop..graphBottom || sliderValueHeld == value) {
+                                    val t = ((mouseX - graphX).toFloat() / graphWidth).coerceIn(0f, 1f)
+                                    val nearestIndex = (t * (pointCount - 1)).roundToInt().coerceIn(0, pointCount - 1)
+                                    val newY = (1f - (mouseY - graphTop).toFloat() / graphHeight).coerceIn(0f, 1f)
+
+                                    withDelayedSave {
+                                        value.setPoint(nearestIndex, newY.toDouble())
+                                    }
+
+                                    sliderValueHeld = value
+
+                                    if (mouseButton == 0) return true
+                                }
+                            }
+
+                            yPos += graphHeight + 15
+                        }
+
                         else -> {
                             val startText = value.name + "§f: "
                             var valueText = "${value.get()}"
