@@ -19,7 +19,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.ui.client.gui.GuiSpotify
-import net.ccbluex.liquidbounce.ui.client.gui.GuiSpotifyPlayer
+import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyWebScreen
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyAccessToken
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyConnectionChangedEvent
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyConnectionState
@@ -157,7 +157,7 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
 
     fun openPlayerScreen() {
         reloadCredentialsFromDisk()
-        mc.displayGuiScreen(GuiSpotifyPlayer(mc.currentScreen))
+        mc.displayGuiScreen(SpotifyWebScreen())
     }
 
     fun updateCredentials(clientId: String, clientSecret: String, refreshToken: String): Boolean {

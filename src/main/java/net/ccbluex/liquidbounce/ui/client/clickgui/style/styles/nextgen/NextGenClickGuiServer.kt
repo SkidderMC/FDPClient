@@ -28,6 +28,10 @@ object NextGenClickGuiServer {
     val url: String
         get() = "http://localhost:$serverPort/?port=$serverPort&static#/clickgui"
 
+    /** URL of the standalone Spotify player page (served from a sibling resource folder). */
+    val spotifyUrl: String
+        get() = "http://localhost:$serverPort/spotify-gui/index.html?port=$serverPort"
+
     @Synchronized
     fun start(): String {
         if (server != null) {
@@ -162,8 +166,14 @@ object NextGenClickGuiServer {
     private fun readStatic(path: String): ByteArray? {
         devThemeFile(path)?.takeIf(File::isFile)?.let { return it.readBytes() }
 
+        // The standalone Spotify player lives in a sibling resource folder, not under the clickgui app.
+        val resourcePath = if (path.startsWith("spotify-gui/")) {
+            "/assets/minecraft/fdpclient/$path"
+        } else {
+            "$RESOURCE_ROOT/$path"
+        }
         return NextGenClickGuiServer::class.java
-            .getResourceAsStream("$RESOURCE_ROOT/$path")
+            .getResourceAsStream(resourcePath)
             ?.use { it.readBytes() }
     }
 
