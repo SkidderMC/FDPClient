@@ -344,7 +344,10 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
         }
 
         workerJob = moduleScope.launch {
-            while (this@SpotifyModule.state) {
+            // Loop until the job is cancelled (onDisable cancels it). Do NOT gate on `state`: the
+            // Module setter calls onEnable() -> startWorker() BEFORE it sets state=true, so reading
+            // `state` here races and usually sees false, which made the worker exit instantly.
+            while (isActive) {
                 val mode = authMode
                 val credentials = resolveCredentials(mode)
                 if (credentials == null) {
