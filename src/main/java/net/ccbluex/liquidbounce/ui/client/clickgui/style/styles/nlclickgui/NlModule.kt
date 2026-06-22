@@ -30,6 +30,7 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.setti
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.KeyBindSetting
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.Vec3Setting
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.settings.CurveSetting
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.RenderUtil
 import net.ccbluex.liquidbounce.ui.font.Fonts
 import java.awt.Color
 import java.util.function.Consumer
@@ -186,15 +187,32 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
 
 
         var cheigt = 42
+        var hoveredDescription: String? = null
         for (downward in downwards.stream().filter { s: Downward<*>? -> s!!.setting.shouldRender() }
             .collect(Collectors.toList())) {
             downward.setX(posx)
             downward.setY(calcY() + cheigt)
-            cheigt += downward.rowHeight()
+            val rowH = downward.rowHeight()
+
+            val description = downward.setting.description
+            if (description != null && isHovering(
+                    (getInstance().x + 100 + posx).toFloat(),
+                    (getInstance().y + (downward.y + scrollY).toInt() + 50).toFloat(),
+                    cardWidth - 10f,
+                    rowH.toFloat(),
+                    mx, my
+                )
+            ) {
+                hoveredDescription = description
+            }
+
+            cheigt += rowH
 
             downward.draw(mx, my)
         }
         rendertoggle()
+
+        hoveredDescription?.let { drawDescriptionTooltip(it, mx, my) }
 
         if (module.values.isEmpty()) {
             Fonts.Nl.Nl_22.Nl_22!!.drawString(
@@ -244,6 +262,18 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
                 (87 + (83 * HoveringAnimation.output)).toInt()
             )
         )
+    }
+
+    private fun drawDescriptionTooltip(text: String, mx: Int, my: Int) {
+        val width = Fonts.Nl_15.stringWidth(text) + 6
+        val height = Fonts.Nl_15.height + 4
+        val tipX = (mx + 8).toFloat()
+        val tipY = (my - height - 2).toFloat()
+        RenderUtil.drawRoundedRect(
+            tipX, tipY, width.toFloat(), height.toFloat(), 2f,
+            Color(0, 5, 19).rgb, 1f, Color(13, 24, 35).rgb
+        )
+        Fonts.Nl_15.drawString(text, tipX + 3f, tipY + 2f, Color.WHITE.rgb)
     }
 
     fun keyTyped(typedChar: Char, keyCode: Int) {

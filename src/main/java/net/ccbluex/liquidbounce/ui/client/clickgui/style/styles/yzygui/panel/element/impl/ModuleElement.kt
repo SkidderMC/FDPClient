@@ -29,6 +29,9 @@ import net.ccbluex.liquidbounce.config.MultiSelectValue
 import net.ccbluex.liquidbounce.config.KeyBindValue
 import net.ccbluex.liquidbounce.config.Vec3Value
 import net.ccbluex.liquidbounce.config.CurveValue
+import net.ccbluex.liquidbounce.config.Value
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawRect
+import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBorder
 import org.lwjgl.input.Keyboard
 import java.awt.Color
 
@@ -50,6 +53,7 @@ class ModuleElement(
     }
 
     private val elements = mutableListOf<PanelElement>()
+    private val elementValues = mutableListOf<Value<*>>()
     var isExtended = FDPClient.guiManager.isModuleExtended(module.name)
     private var isBinding = false
     var isBindingSelection = false
@@ -74,7 +78,10 @@ class ModuleElement(
                 is CurveValue -> CurveElement(this, value, parent, x + 4, y, width - 8, 56)
                 else -> null
             }
-            element?.let { elements.add(it) }
+            element?.let {
+                elements.add(it)
+                elementValues.add(value)
+            }
         }
         update()
     }
@@ -197,7 +204,24 @@ class ModuleElement(
 
         if (isExtended) {
             elements.forEach { it.drawScreen(mouseX, mouseY, partialTicks) }
+
+            elements.forEachIndexed { index, element ->
+                val description = elementValues.getOrNull(index)?.description
+                if (description != null && element.isHovering(mouseX, mouseY)) {
+                    drawValueTooltip(description, mouseX, mouseY, font)
+                }
+            }
         }
+    }
+
+    private fun drawValueTooltip(text: String, mouseX: Int, mouseY: Int, font: FontRenderer) {
+        val boxWidth = font.getWidth(text) + 6
+        val boxHeight = 12f
+        val tipX = (mouseX + 8).toFloat()
+        val tipY = (mouseY - boxHeight - 2)
+        drawRect(tipX, tipY, tipX + boxWidth, tipY + boxHeight, Color(20, 20, 20, 235).rgb)
+        drawBorder(tipX, tipY, tipX + boxWidth, tipY + boxHeight, 1f, Color(60, 60, 60).rgb)
+        font.drawString(text, tipX + 3f, tipY + 2.5f, -1)
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, button: Int) {

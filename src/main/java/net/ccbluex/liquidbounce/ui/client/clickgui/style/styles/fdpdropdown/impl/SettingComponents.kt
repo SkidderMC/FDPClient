@@ -298,9 +298,17 @@ class SettingComponents(private val module: Module) : Component() {
         val accentedColor2 = RenderUtils.applyOpacity(colors[1], alphaAnimation / 255f)
 
         var count = 0.0
+        var hoverDescription: String? = null
 
         for (setting in ValueDispatcher.visible(module)) {
             val settingY = roundToHalf(y + (count * rectHeight)).toFloat()
+
+            val desc = setting.description
+            if (desc != null && isClickable(settingY)
+                && RenderUtils.isHovering(x, settingY, width, rectHeight, mouseX, mouseY)
+            ) {
+                hoverDescription = desc
+            }
 
             // ----- FloatValue -----
             if (setting is FloatValue) {
@@ -1501,6 +1509,22 @@ class SettingComponents(private val module: Module) : Component() {
             count++
         }
         settingSize = count
+
+        if (type == GuiEvents.DRAW) {
+            hoverDescription?.let { drawSettingTooltip(it, mouseX, mouseY) }
+        }
+    }
+
+    private fun drawSettingTooltip(text: String, mouseX: Int, mouseY: Int) {
+        val padding = 3f
+        val boxWidth = Fonts.InterMedium_18.stringWidth(text).toFloat() + padding * 2
+        val boxHeight = Fonts.InterMedium_18.height + padding * 2
+        val tipX = mouseX + 8f
+        val tipY = mouseY - boxHeight - 2f
+        GL11.glDisable(GL11.GL_SCISSOR_TEST)
+        drawRect(tipX, tipY, tipX + boxWidth, tipY + boxHeight, Color(20, 20, 20, 240).rgb)
+        RenderUtils.drawBorder(tipX, tipY, tipX + boxWidth, tipY + boxHeight, 1f, Color(70, 70, 70).rgb)
+        Fonts.InterMedium_18.drawString(text, tipX + padding, tipY + padding, Color.WHITE.rgb)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int) {
