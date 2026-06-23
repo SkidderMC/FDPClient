@@ -280,17 +280,25 @@ class SideGui : GuiPanel() {
         return Quad(startX + col * (cardW + gap), startY + row * (cardH + gap), cardW, cardH)
     }
 
+    private val uiCardHover = HashMap<Int, Float>()
+
     private fun drawUiCategory(mouseX: Int, mouseY: Int, alpha: Int) {
         val accent = ClientThemesUtils.getColor()
         uiActions.forEachIndexed { i, action ->
             val r = uiCardRect(i)
             val hovered = RenderUtils.isHovering(r.x, r.y, r.w, r.h, mouseX, mouseY)
             val on = action.second()
-            val fill = if (on) RenderUtils.applyOpacity(accent.rgb, 0.35f * alpha / 255f)
-            else Color(35, 35, 40, alpha).rgb
-            RenderUtils.drawRect2(r.x.toDouble(), r.y.toDouble(), r.w.toDouble(), r.h.toDouble(), fill)
-            if (hovered || on) {
-                drawRoundedOutline(r.x, r.y, r.x + r.w, r.y + r.h, 8f, 2f, RenderUtils.applyOpacity(accent.rgb, alpha / 255f))
+
+            val hv = animate(uiCardHover[i] ?: 0f, if (hovered) 1f else 0f, 0.2f * RenderUtils.deltaTime)
+            uiCardHover[i] = hv
+
+            drawCustomShapeWithRadius(r.x, r.y, r.w, r.h, 8f, Color(32, 33, 38, alpha))
+            val glow = if (on) 0.30f else 0.20f * hv
+            if (glow > 0.001f) {
+                drawCustomShapeWithRadius(r.x, r.y, r.w, r.h, 8f, Color(RenderUtils.applyOpacity(accent.rgb, glow * alpha / 255f), true))
+            }
+            if (on || hv > 0.01f) {
+                drawRoundedOutline(r.x, r.y, r.x + r.w, r.y + r.h, 8f, 1.5f, RenderUtils.applyOpacity(accent.rgb, (if (on) 1f else hv) * alpha / 255f))
             }
             Fonts.InterBold_26.drawCenteredStringShadow(
                 action.first,
