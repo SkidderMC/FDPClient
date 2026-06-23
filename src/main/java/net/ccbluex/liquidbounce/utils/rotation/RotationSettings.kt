@@ -153,6 +153,22 @@ open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean
         useModernRotations && modernAngleSmooth == "Acceleration" && modernSigmoidDeceleration && generalApply()
     }
 
+    open val modernDynamicAccelValue = boolean("DynamicAccel", false) {
+        useModernRotations && modernAngleSmooth == "Acceleration" && generalApply()
+    }
+
+    open val modernDynamicAccelCoefValue = float("CoefDistance", -1.393f, -2f..2f) {
+        useModernRotations && modernAngleSmooth == "Acceleration" && modernDynamicAccel && generalApply()
+    }
+
+    open val modernYawCrosshairAccelValue = floatRange("YawCrosshairAccel", 17f..20f, 1f..180f) {
+        useModernRotations && modernAngleSmooth == "Acceleration" && modernDynamicAccel && generalApply()
+    }
+
+    open val modernPitchCrosshairAccelValue = floatRange("PitchCrosshairAccel", 17f..20f, 1f..180f) {
+        useModernRotations && modernAngleSmooth == "Acceleration" && modernDynamicAccel && generalApply()
+    }
+
     open val modernShortStopValue = boolean("ShortStop", false) {
         useModernRotations && generalApply()
     }
@@ -226,6 +242,10 @@ open class RotationSettings(val moduleOwner: Module, generalApply: () -> Boolean
     val modernSigmoidDeceleration by modernSigmoidDecelerationValue
     val modernSigmoidDecelerationSteepness by modernSigmoidDecelerationSteepnessValue
     val modernSigmoidDecelerationMidpoint by modernSigmoidDecelerationMidpointValue
+    val modernDynamicAccel by modernDynamicAccelValue
+    val modernDynamicAccelCoef by modernDynamicAccelCoefValue
+    val modernYawCrosshairAccel by modernYawCrosshairAccelValue
+    val modernPitchCrosshairAccel by modernPitchCrosshairAccelValue
     val modernShortStop by modernShortStopValue
     val modernShortStopRate by modernShortStopRateValue
     val modernFail by modernFailValue

@@ -1020,6 +1020,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
             return false
         }
 
+        RotationUtils.aimTargetEntity = entity
         setTargetRotation(rotation, options = options)
 
         player.setPosAndPrevPos(currPos, oldPos)

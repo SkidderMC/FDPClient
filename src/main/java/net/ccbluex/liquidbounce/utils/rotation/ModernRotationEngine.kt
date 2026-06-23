@@ -163,19 +163,30 @@ object ModernRotationEngine : MinecraftInstance {
             1f
         }
 
-        val yawAccelerationRange = settings.modernYawAcceleration
-        val pitchAccelerationRange = settings.modernPitchAcceleration
+        // DynamicAccel: bias acceleration by distance to the target and tighten it once the crosshair is on.
+        val dynamic = settings.modernDynamicAccel
+        val distanceFactor = if (dynamic) {
+            val entity = RotationUtils.aimTargetEntity
+            val distance = entity?.let { mc.thePlayer?.getDistanceToEntity(it)?.toDouble() } ?: 0.0
+            (settings.modernDynamicAccelCoef * distance).toFloat()
+        } else {
+            0f
+        }
+        val onTarget = dynamic && delta.length() < 2f
+
+        val yawAccelerationRange = if (onTarget) settings.modernYawCrosshairAccel else settings.modernYawAcceleration
+        val pitchAccelerationRange = if (onTarget) settings.modernPitchCrosshairAccel else settings.modernPitchAcceleration
 
         val yawAcceleration = calculateAcceleration(
             delta.deltaYaw,
             previousDelta.deltaYaw,
-            -yawAccelerationRange.random()..yawAccelerationRange.random(),
+            (-yawAccelerationRange.random() + distanceFactor)..(yawAccelerationRange.random() + distanceFactor),
             decelerationFactor
         )
         val pitchAcceleration = calculateAcceleration(
             delta.deltaPitch,
             previousDelta.deltaPitch,
-            -pitchAccelerationRange.random()..pitchAccelerationRange.random(),
+            (-pitchAccelerationRange.random() + distanceFactor)..(pitchAccelerationRange.random() + distanceFactor),
             decelerationFactor
         )
 

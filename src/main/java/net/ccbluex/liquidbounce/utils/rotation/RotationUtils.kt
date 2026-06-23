@@ -82,6 +82,12 @@ object RotationUtils : MinecraftInstance, Listenable {
     var resetTicks = 0
 
     /**
+     * The entity the active aim is targeting, set by combat modules. Used by DynamicAccel for
+     * distance-aware acceleration; null when not aiming at an entity.
+     */
+    var aimTargetEntity: Entity? = null
+
+    /**
      * Face block
      *
      * @param blockPos target block
@@ -640,6 +646,7 @@ object RotationUtils : MinecraftInstance, Listenable {
         activeSettings = null
         requestArbiter.clear()
         PostRotationExecutor.clear()
+        aimTargetEntity = null
         ModernRotationEngine.reset()
 
         if (resetHistory) {
