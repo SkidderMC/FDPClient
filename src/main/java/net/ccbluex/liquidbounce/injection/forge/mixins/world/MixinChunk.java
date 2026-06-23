@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.injection.forge.mixins.world;
 
 import net.ccbluex.liquidbounce.features.module.modules.visual.ProphuntESP;
 import net.ccbluex.liquidbounce.utils.render.MiniMapRegister;
+import net.ccbluex.liquidbounce.utils.block.ChunkScanner;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.BlockPos;
 import net.minecraft.world.chunk.Chunk;
@@ -32,6 +33,7 @@ public class MixinChunk {
     private void setProphuntBlock(BlockPos pos, IBlockState state, final CallbackInfoReturnable callbackInfo) {
         //noinspection ConstantConditions
         MiniMapRegister.INSTANCE.updateChunk((Chunk) ((Object) this));
+        ChunkScanner.blockChanged(pos, state);
 
         final ProphuntESP prophuntESP = ProphuntESP.INSTANCE;
 
@@ -45,11 +47,13 @@ public class MixinChunk {
     @Inject(method = "onChunkUnload", at = @At("HEAD"))
     private void injectFillChunk(CallbackInfo ci) {
         MiniMapRegister.INSTANCE.unloadChunk(xPosition, zPosition);
+        ChunkScanner.chunkUnloaded(xPosition, zPosition);
     }
 
     @Inject(method = "fillChunk", at = @At("RETURN"))
     private void injectFillChunk(byte[] p_177439_1_, int p_177439_2_, boolean p_177439_3_, CallbackInfo ci) {
         //noinspection ConstantConditions
         MiniMapRegister.INSTANCE.updateChunk((Chunk) ((Object) this));
+        ChunkScanner.chunkLoaded((Chunk) ((Object) this));
     }
 }

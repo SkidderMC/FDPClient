@@ -63,6 +63,7 @@ import net.ccbluex.liquidbounce.utils.movement.BPSUtils
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils
 import net.ccbluex.liquidbounce.utils.movement.TimerBalanceUtils
 import net.ccbluex.liquidbounce.utils.render.MiniMapRegister
+import net.ccbluex.liquidbounce.utils.block.ChunkScanner
 import net.ccbluex.liquidbounce.utils.render.shader.Background
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.timing.TickedActions
@@ -186,6 +187,7 @@ object FDPClient {
             InventoryUtils
             InventoryManager
             MiniMapRegister
+            ChunkScanner
             TickedActions
             MovementUtils
             PacketUtils
