@@ -36,13 +36,20 @@ open class Configurable(
 
     operator fun <T, V : Value<T>> V.unaryPlus() = apply(::addValue)
 
-    override fun toJson(): JsonElement = json {
+    override fun toJson(): JsonElement = toJson(IncludeConfiguration.LOCAL)
+
+    fun toJson(include: IncludeConfiguration): JsonElement = json {
         for (value in values) {
-            if (value.excluded) {
+            if (value.excluded ||
+                (!include.subjectiveValues && value.subjective) ||
+                (!include.hiddenValues && value.hidden) ||
+                (!include.keyBindings && value is KeyBindValue) ||
+                (!include.filePaths && value is FileValue)
+            ) {
                 continue
             }
 
-            value.name to value.toJson()
+            value.name to if (value is Configurable) value.toJson(include) else value.toJson()
         }
     }
 
@@ -124,6 +131,13 @@ open class Configurable(
         name: String, value: ClosedFloatingPointRange<Float>, range: ClosedFloatingPointRange<Float> = 0f..Float.MAX_VALUE,
         suffix: String? = null, isSupported: (() -> Boolean)? = null
     ) = +FloatRangeValue(name, value, range, suffix).apply {
+        if (isSupported != null) setSupport { isSupported.invoke() }
+    }
+
+    fun refreshableRange(
+        name: String, value: ClosedFloatingPointRange<Float>, range: ClosedFloatingPointRange<Float> = 0f..Float.MAX_VALUE,
+        suffix: String? = null, isSupported: (() -> Boolean)? = null
+    ) = +RefreshableRangeValue(name, value, range, suffix).apply {
         if (isSupported != null) setSupport { isSupported.invoke() }
     }
 

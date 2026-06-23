@@ -17,7 +17,7 @@ fun Listenable.launchSequence(
     dispatcher: CoroutineDispatcher = Dispatchers.Unconfined,
     always: Boolean = false,
     body: suspend CoroutineScope.() -> Unit
-) {
+): Job {
     val job = EventManager.launch(dispatcher, block = body)
 
     TickScheduler.schedule {
@@ -28,6 +28,8 @@ fun Listenable.launchSequence(
             job.isCompleted
         }
     }
+
+    return job
 }
 
 /**

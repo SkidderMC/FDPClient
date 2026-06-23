@@ -6,7 +6,6 @@
 package net.ccbluex.liquidbounce.file
 
 import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.FDPClient
@@ -14,6 +13,7 @@ import net.ccbluex.liquidbounce.FDPClient.background
 import net.ccbluex.liquidbounce.FDPClient.isStarting
 import net.ccbluex.liquidbounce.file.configs.*
 import net.ccbluex.liquidbounce.file.configs.section.MacrosSection
+import net.ccbluex.liquidbounce.file.gson.GsonProfiles
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.render.shader.Background
@@ -57,7 +57,7 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
     var backedup = false
         private set
 
-    val PRETTY_GSON: Gson = GsonBuilder().setPrettyPrinting().create()
+    val PRETTY_GSON: Gson = GsonProfiles.localFile
 
     /**
      * Constructor of file manager

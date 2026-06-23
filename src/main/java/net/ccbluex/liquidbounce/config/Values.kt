@@ -190,7 +190,7 @@ class FloatValue(
     val maximum = range.endInclusive
 }
 
-class FloatRangeValue(
+open class FloatRangeValue(
     name: String,
     value: ClosedFloatingPointRange<Float>,
     val range: ClosedFloatingPointRange<Float>,

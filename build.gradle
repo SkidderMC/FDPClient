@@ -129,7 +129,15 @@ tasks.register("verifyRotations", JavaExec) {
     main = "net.ccbluex.liquidbounce.utils.rotation.RotationVerification"
 }
 
-check.dependsOn("verifyRotations")
+tasks.register("verifyFoundations", JavaExec) {
+    group = "verification"
+    description = "Runs deterministic geometry, color and refreshable-range checks."
+    dependsOn(testClasses)
+    classpath = sourceSets.test.runtimeClasspath
+    main = "net.ccbluex.liquidbounce.utils.FoundationVerification"
+}
+
+check.dependsOn("verifyRotations", "verifyFoundations")
 
 shadowJar {
     archiveClassifier.set("")
