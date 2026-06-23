@@ -22,6 +22,7 @@ import net.ccbluex.liquidbounce.utils.render.ColorSettingsInteger
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
 import net.ccbluex.liquidbounce.utils.rotation.*
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
+import net.ccbluex.liquidbounce.utils.rotation.point.PointTracker
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
@@ -129,6 +130,8 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
         .describe("Color of the rendered path.")
 
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.HIGH)
+    private val pointTracker = PointTracker().also { addValues(it.values) }
+    private val usePointTracker by boolean("UsePointTracker", false) { options.rotationsActive }
     private val randomization = RandomizationSettings(this) { options.rotationsActive }
 
     private val highestBodyPointToTargetValue = choices(
@@ -466,7 +469,9 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
 
         val eyes = pos.withY(pos.yCoord + player.eyeHeight)
 
-        val rotation = RotationUtils.searchCenter(
+        val rotation = (if (usePointTracker) {
+            pointTracker.findBestPoint(entity, eyes, currentRotation)?.let { RotationUtils.toRotation(it, false) }
+        } else RotationUtils.searchCenter(
             boundingBox,
             false,
             false,
@@ -477,7 +482,7 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
             0f,
             listOf(highestBodyPointToTarget, lowestBodyPointToTarget),
             horizontalBodySearchRange
-        ) ?: return false
+        )) ?: return false
 
         aimPoint = boundingBox.center
 

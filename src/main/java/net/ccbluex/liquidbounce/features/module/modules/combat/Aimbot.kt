@@ -20,6 +20,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.performAngleChange
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.searchCenter
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
+import net.ccbluex.liquidbounce.utils.rotation.point.PointTracker
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
@@ -107,6 +108,8 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
     private val breakBlocks by boolean("BreakBlocks", true)
         .describe("Allow aiming while breaking blocks.")
 
+    private val pointTracker = PointTracker().also { addValues(it.values) }
+    private val usePointTracker by boolean("UsePointTracker", false) { horizontalAim || verticalAim }
     private val rotationOptions = RotationSettings(this) { horizontalAim || verticalAim }.apply {
         rotationsValue.excludeWithState(true)
         applyServerSideValue.excludeWithState(false)
@@ -186,6 +189,8 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
 
         val destinationRotation = if (center) {
             toRotation(boundingBox.center, true)
+        } else if (usePointTracker) {
+            pointTracker.findBestPoint(entity, player.eyes, currentRotation)?.let { toRotation(it, true) }
         } else {
             searchCenter(
                 boundingBox,
