@@ -21,6 +21,10 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.faceTrajectory
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.rotationDifference
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.searchCenter
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
+import net.ccbluex.liquidbounce.utils.rotation.point.PointTracker
+import net.ccbluex.liquidbounce.utils.extensions.eyes
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -62,6 +66,8 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, Category.S
     { predict && gravityType == "Projectile" }
 
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.HIGH)
+    private val pointTracker = PointTracker().also { addValues(it.values) }
+    private val usePointTracker by boolean("UsePointTracker", false) { options.rotationsActive }
 
     private val randomization = RandomizationSettings(this) { options.rotationsActive }
 
@@ -131,19 +137,20 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, Category.S
             else -> return@handler
         }
 
-        val normalRotation = target?.entityBoundingBox?.let {
-            searchCenter(
-                it,
-                outborder = false,
-                randomization = this.randomization,
-                predict = true,
-                lookRange = range,
-                attackRange = range,
-                throughWallsRange = throughWallsRange,
-                bodyPoints = listOf(highestBodyPointToTarget, lowestBodyPointToTarget),
-                horizontalSearch = horizontalBodySearchRange
-            )
-        } ?: return@handler
+        val aimBox = target?.entityBoundingBox ?: return@handler
+        val normalRotation = (if (usePointTracker) {
+            pointTracker.findBestPoint(target!!, player.eyes, currentRotation)?.let { toRotation(it, true) }
+        } else searchCenter(
+            aimBox,
+            outborder = false,
+            randomization = this.randomization,
+            predict = true,
+            lookRange = range,
+            attackRange = range,
+            throughWallsRange = throughWallsRange,
+            bodyPoints = listOf(highestBodyPointToTarget, lowestBodyPointToTarget),
+            horizontalSearch = horizontalBodySearchRange
+        )) ?: return@handler
 
         setTargetRotation(if (gravityType == "Projectile") targetRotation else normalRotation, options = options)
     }

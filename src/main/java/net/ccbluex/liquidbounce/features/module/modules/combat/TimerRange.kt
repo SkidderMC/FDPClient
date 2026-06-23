@@ -21,6 +21,8 @@ import net.ccbluex.liquidbounce.utils.extensions.*
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.searchCenter
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
+import net.ccbluex.liquidbounce.utils.rotation.point.PointTracker
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -54,6 +56,8 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
     private var confirmAttack = false
 
     private val timerBoostMode by choices("TimerMode", arrayOf("Normal", "Smart", "Modern"), "Modern")
+    private val pointTracker = PointTracker().also { addValues(it.values) }
+    private val usePointTracker by boolean("UsePointTracker", false)
         .describe("Which timer-range algorithm to use.")
 
     private val ticksValue by int("Ticks", 10, 1..20)
@@ -270,7 +274,9 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
 
         player.setPosAndPrevPos(simPlayer.pos)
 
-        val distance = searchCenter(
+        val distance = if (usePointTracker) {
+            pointTracker.findBestPoint(entity, player.eyes, currentRotation)
+        } else searchCenter(
             boundingBox,
             outborder = false,
             predict = true,
