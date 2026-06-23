@@ -295,7 +295,7 @@
     fetch(API+"/client/spotify/play",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}).catch(function(){}); setTimeout(pollNow,400); }
   el("playbig").addEventListener("click",function(){ if(current){ var body=current.uri&&!current.likedSongs?{contextUri:current.uri}:(tracks[0]?{trackUri:tracks[0].uri}:null); if(body){ fetch(API+"/client/spotify/play",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)}).catch(function(){}); setTimeout(pollNow,400);} } });
   el("search").addEventListener("input",function(){ filter=el("search").value; renderTracks(); });
-  el("connectBtn").addEventListener("click",function(){ fetch(API+"/client/action",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"spotify-settings"})}).catch(function(){}); });
+  el("connectBtn").addEventListener("click",function(){ fetch(API+"/client/action",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"spotify-connect"})}).catch(function(){}); });
 
   pollNow(); loadLibrary();
   setInterval(pollNow,1000); setInterval(paintBar,250); setInterval(function(){ if(!libLoaded) loadLibrary(); },4000);
