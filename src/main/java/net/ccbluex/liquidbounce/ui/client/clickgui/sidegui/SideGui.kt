@@ -7,6 +7,10 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.sidegui
 
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.generateColor
 import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule.guiColor
+import net.ccbluex.liquidbounce.features.module.modules.client.HUDModule
+import net.ccbluex.liquidbounce.features.module.modules.client.SpotifyModule
+import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
+import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.Quad
 import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiBackgroundManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiBackgroundManager.bgHexFocused
 import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiBackgroundManager.bgHexInput
@@ -176,7 +180,7 @@ class SideGui : GuiPanel() {
 
         // Category content
         when (currentCategory) {
-            "UI" -> drawUiCategory(alpha)
+            "UI" -> drawUiCategory(mouseX, mouseY, alpha)
             "Configs" -> SideGuiConfigsManager.drawConfigsCategory(mouseX, mouseY, alpha, drag!!, rectWidth)
             "Color" -> SideGuiColorManager.drawColorCategory(mouseX, mouseY, alpha, drag!!, animScroll, rectHeight, smooth)
             "Background" -> SideGuiBackgroundManager.drawBackgroundCategory(mouseX, mouseY, alpha, drag!!, animScroll, rectHeight)
@@ -203,6 +207,13 @@ class SideGui : GuiPanel() {
         }
 
         checkCategoryClick(mouseX, mouseY)
+
+        if (currentCategory == "UI" && button == 0) {
+            uiActions.forEachIndexed { i, action ->
+                val r = uiCardRect(i)
+                if (RenderUtils.isHovering(r.x, r.y, r.w, r.h, mouseX, mouseY)) action.third()
+            }
+        }
 
         colorHexFocused = false
         bgHexFocused = false
@@ -244,8 +255,44 @@ class SideGui : GuiPanel() {
         clickingHeader = false
     }
 
-    private fun drawUiCategory(alpha: Int) {
-        Fonts.InterBold_26.drawString("Not Finished - Coming Soon", drag!!.x + rectWidth / 2, drag!!.y + rectHeight / 2, RenderUtils.applyOpacity(-1, alpha / 255f))
+    private val uiActions: List<Triple<String, () -> Boolean, () -> Unit>>
+        get() = listOf(
+            Triple("HUD Designer", { false }, { MinecraftInstance.mc.displayGuiScreen(GuiHudDesigner()) }),
+            Triple("Spotify", { SpotifyModule.state }, { SpotifyModule.toggle() }),
+            Triple("HUD", { HUDModule.state }, { HUDModule.toggle() }),
+            Triple("Configs", { false }, { openCategory("Configs") })
+        )
+
+    private fun uiCardRect(index: Int): Quad {
+        val gap = 10f
+        val startX = drag!!.x + 25f
+        val startY = drag!!.y + 70f
+        val cardW = (rectWidth - 50f - gap) / 2f
+        val cardH = 50f
+        val col = index % 2
+        val row = index / 2
+        return Quad(startX + col * (cardW + gap), startY + row * (cardH + gap), cardW, cardH)
+    }
+
+    private fun drawUiCategory(mouseX: Int, mouseY: Int, alpha: Int) {
+        val accent = ClientThemesUtils.getColor()
+        uiActions.forEachIndexed { i, action ->
+            val r = uiCardRect(i)
+            val hovered = RenderUtils.isHovering(r.x, r.y, r.w, r.h, mouseX, mouseY)
+            val on = action.second()
+            val fill = if (on) RenderUtils.applyOpacity(accent.rgb, 0.35f * alpha / 255f)
+            else Color(35, 35, 40, alpha).rgb
+            RenderUtils.drawRect2(r.x.toDouble(), r.y.toDouble(), r.w.toDouble(), r.h.toDouble(), fill)
+            if (hovered || on) {
+                drawRoundedOutline(r.x, r.y, r.x + r.w, r.y + r.h, 8f, 2f, RenderUtils.applyOpacity(accent.rgb, alpha / 255f))
+            }
+            Fonts.InterBold_26.drawCenteredStringShadow(
+                action.first,
+                r.x + r.w / 2f,
+                r.y + r.h / 2f - Fonts.InterBold_26.height / 2f,
+                RenderUtils.applyOpacity(-1, alpha / 255f)
+            )
+        }
     }
 
     private fun handleMouseWheel() {
