@@ -51,6 +51,7 @@ import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.searchCenter
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.serverRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.setTargetRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.toRotation
+import net.ccbluex.liquidbounce.utils.rotation.point.PointTracker
 import net.ccbluex.liquidbounce.utils.simulation.SimulatedPlayer
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.ccbluex.liquidbounce.utils.timing.TickedActions.nextTick
@@ -250,6 +251,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
 
     // Rotations
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.HIGH)
+    private val pointTracker = PointTracker().also { addValues(it.values) }
 
     // Raycast
     private val raycastValue = boolean("RayCast", true) { options.rotationsActive }
@@ -278,6 +280,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
 
     private val generateSpotBasedOnDistance by boolean("GenerateSpotBasedOnDistance", false) { options.rotationsActive }
     private val stickyAim by boolean("StickyAim", false) { options.rotationsActive }
+    private val usePointTracker by boolean("UsePointTracker", false) { options.rotationsActive }
         .describe("Pick aim spot scaled by distance to target.")
 
     private val randomization = RandomizationSettings(this) { options.rotationsActive }
@@ -1002,7 +1005,9 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
 
         player.setPosAndPrevPos(pos)
 
-        val rotation = searchCenter(
+        val rotation = if (usePointTracker) {
+            pointTracker.findBestPoint(entity, player.eyes, currentRotation)?.let { toRotation(it, false) }
+        } else searchCenter(
             boundingBox,
             generateSpotBasedOnDistance,
             outBorder && !attackTimer.hasTimePassed(attackDelay / 2),
