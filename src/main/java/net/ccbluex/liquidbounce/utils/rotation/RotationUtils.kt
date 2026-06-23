@@ -88,6 +88,12 @@ object RotationUtils : MinecraftInstance, Listenable {
     var aimTargetEntity: Entity? = null
 
     /**
+     * Last rotation chosen by [searchCenter]; used to bias spot selection toward the previously aimed
+     * point (sticky aim) when a caller opts in.
+     */
+    private var lastSearchRotation: Rotation? = null
+
+    /**
      * Face block
      *
      * @param blockPos target block
@@ -247,6 +253,7 @@ object RotationUtils : MinecraftInstance, Listenable {
         randomization: RandomizationSettings? = null, predict: Boolean,
         lookRange: Float, attackRange: Float, throughWallsRange: Float = 0f,
         bodyPoints: List<String> = listOf("Head", "Feet"), horizontalSearch: ClosedFloatingPointRange<Float> = 0f..1f,
+        preferLastPoint: Boolean = false,
     ): Rotation? {
         val scanRange = lookRange.coerceAtLeast(attackRange)
 
@@ -261,9 +268,9 @@ object RotationUtils : MinecraftInstance, Listenable {
 
         val eyes = mc.thePlayer.eyes
 
-        val preferredRotation = toRotation(getNearestPointBB(eyes, bb), predict).takeIf {
-            distanceBasedSpot
-        } ?: currentRotation ?: mc.thePlayer.rotation
+        val preferredRotation = lastSearchRotation?.takeIf { preferLastPoint }
+            ?: toRotation(getNearestPointBB(eyes, bb), predict).takeIf { distanceBasedSpot }
+            ?: currentRotation ?: mc.thePlayer.rotation
 
         val currRotation = Rotation.ZERO.plus(preferredRotation)
 
@@ -310,13 +317,17 @@ object RotationUtils : MinecraftInstance, Listenable {
             }
         }
 
-        return attackRotation?.first ?: lookRotation?.first ?: run {
+        val result = attackRotation?.first ?: lookRotation?.first ?: run {
             val vec = getNearestPointBB(eyes, bb)
             val dist = eyes.distanceTo(vec)
 
             if (dist <= scanRange && (dist <= throughWallsRange || isVisible(vec))) toRotation(vec, predict)
             else null
         }
+
+        if (preferLastPoint) lastSearchRotation = result
+
+        return result
     }
 
     /**
@@ -647,6 +658,7 @@ object RotationUtils : MinecraftInstance, Listenable {
         requestArbiter.clear()
         PostRotationExecutor.clear()
         aimTargetEntity = null
+        lastSearchRotation = null
         ModernRotationEngine.reset()
 
         if (resetHistory) {

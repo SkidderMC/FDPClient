@@ -277,6 +277,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
         .describe("Distance divisor used to scale clicks.")
 
     private val generateSpotBasedOnDistance by boolean("GenerateSpotBasedOnDistance", false) { options.rotationsActive }
+    private val stickyAim by boolean("StickyAim", false) { options.rotationsActive }
         .describe("Pick aim spot scaled by distance to target.")
 
     private val randomization = RandomizationSettings(this) { options.rotationsActive }
@@ -1011,7 +1012,8 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
             attackRange = range,
             throughWallsRange = throughWallsRange,
             bodyPoints = listOf(highestBodyPointToTarget, lowestBodyPointToTarget),
-            horizontalSearch = horizontalBodySearchRange
+            horizontalSearch = horizontalBodySearchRange,
+            preferLastPoint = stickyAim
         )
 
         if (rotation == null) {
