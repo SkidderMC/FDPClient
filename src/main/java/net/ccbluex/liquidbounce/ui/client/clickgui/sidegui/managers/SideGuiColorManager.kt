@@ -31,6 +31,22 @@ object SideGuiColorManager {
     var colorHexInput = "#"
     var colorHexFocused = false
 
+    private val themeColors = arrayOf(
+        "FDP", "Zywl", "Water", "Magic", "DarkNight", "Sun",
+        "Tree", "Flower", "Loyoi", "Cero",
+        "May", "Mint", "Azure", "Rainbow", "Astolfo",
+        "Pumpkin", "Polarized", "Sundae", "Terminal", "Coral",
+        "Fire", "Aqua", "Peony", "Magics", "EveningSunshine", "LightOrange",
+        "Reef", "Amin", "MangoPulp", "MoonPurple", "Aqualicious",
+        "Stripe", "Shifter", "Quepal", "Orca", "SublimeVivid",
+        "MoonAsteroid", "SummerDog", "PinkFlavour", "SinCityRed",
+        "Timber", "PinotNoir", "DirtyFog", "Piglet", "LittleLeaf",
+        "Nelson", "TurquoiseFlow", "Purplin", "Martini", "SoundCloud",
+        "Inbox", "Amethyst", "Blush", "MochaRose",
+        "Crimson", "Glacier", "Venom", "Ember", "Twilight", "Steel",
+        "Gold", "Abyss", "Lime", "RoseGlow", "Cyber", "Lava"
+    )
+
     fun drawColorCategory(
         mouseX: Int,
         mouseY: Int,
@@ -40,22 +56,6 @@ object SideGuiColorManager {
         rectHeight: Float,
         smooth: FloatArray
     ) {
-        val themeColors = arrayOf(
-            "FDP", "Zywl", "Water", "Magic", "DarkNight", "Sun",
-            "Tree", "Flower", "Loyoi", "Cero",
-            "May", "Mint", "Azure", "Rainbow", "Astolfo",
-            "Pumpkin", "Polarized", "Sundae", "Terminal", "Coral",
-            "Fire", "Aqua", "Peony", "Magics", "EveningSunshine", "LightOrange",
-            "Reef", "Amin", "MangoPulp", "MoonPurple", "Aqualicious",
-            "Stripe", "Shifter", "Quepal", "Orca", "SublimeVivid",
-            "MoonAsteroid", "SummerDog", "PinkFlavour", "SinCityRed",
-            "Timber", "PinotNoir", "DirtyFog", "Piglet", "LittleLeaf",
-            "Nelson", "TurquoiseFlow", "Purplin", "Martini", "SoundCloud",
-            "Inbox", "Amethyst", "Blush", "MochaRose",
-            "Crimson", "Glacier", "Venom", "Ember", "Twilight", "Steel",
-            "Gold", "Abyss", "Lime", "RoseGlow", "Cyber", "Lava"
-        )
-
         val colorXStart = drag.x + 25
         val colorYStart = drag.y + 60 + animScroll
         val colorWidth = 80f
