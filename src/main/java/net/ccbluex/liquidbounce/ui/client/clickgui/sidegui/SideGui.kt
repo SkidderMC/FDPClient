@@ -12,6 +12,7 @@ import net.ccbluex.liquidbounce.features.module.modules.client.SpotifyModule
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.font.fontmanager.GuiFontManager
 import net.ccbluex.liquidbounce.ui.client.altmanager.GuiAltManager
+import net.ccbluex.liquidbounce.ui.client.gui.GuiCapeManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.Quad
 import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiBackgroundManager
 import net.ccbluex.liquidbounce.ui.client.clickgui.sidegui.managers.SideGuiBackgroundManager.bgHexFocused
@@ -262,6 +263,7 @@ class SideGui : GuiPanel() {
             Triple("HUD Designer", { false }, { MinecraftInstance.mc.displayGuiScreen(GuiHudDesigner()) }),
             Triple("Font Manager", { false }, { MinecraftInstance.mc.currentScreen?.let { p -> MinecraftInstance.mc.displayGuiScreen(GuiFontManager(p)) } }),
             Triple("Alt Manager", { false }, { MinecraftInstance.mc.currentScreen?.let { p -> MinecraftInstance.mc.displayGuiScreen(GuiAltManager(p)) } }),
+            Triple("Capes", { false }, { MinecraftInstance.mc.displayGuiScreen(GuiCapeManager) }),
             Triple("Spotify", { SpotifyModule.state }, { SpotifyModule.toggle() }),
             Triple("HUD", { HUDModule.state }, { HUDModule.toggle() }),
             Triple("Configs", { false }, { openCategory("Configs") })
