@@ -41,6 +41,7 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
         arrayOf("None", "Box"),
         "None",
     ).subjective()
+        .describe("How the server-side position is rendered.")
 
     private val resetFlagCounterTicks by int("ResetCounterTicks", 5000, 1000..10000)
         .describe("Ticks before the flag counter resets to zero.")
@@ -49,11 +50,13 @@ object FlagCheck : Module("FlagCheck", Category.OTHER, Category.SubCategory.MISC
         .describe("Detect blocks that failed to place server-side.")
     private val ghostBlockDelay by int("GhostBlockDelay", 750, 500..1000)
     { ghostBlockCheck }
+        .describe("Delay before confirming a ghost block in milliseconds.")
 
     private val rubberbandCheck by boolean("Rubberband-Check", false)
         .describe("Detect sudden position or motion corrections.")
     private val rubberbandThreshold by float("RubberBandThreshold", 5.0f, 0.05f..10.0f)
     { rubberbandCheck }
+        .describe("Minimum position jump that counts as a rubberband.")
 
     private val chatMessage by boolean("ChatMessage", true)
         .describe("Print detected flags to chat.")

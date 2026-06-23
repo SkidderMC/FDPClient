@@ -24,12 +24,15 @@ object AutoPlay : Module("AutoPlay", Category.PLAYER, Category.SubCategory.PLAYE
     private val hypixelMode by choices("HypixelMode", arrayOf("Skywars", "Bedwars"), "Skywars") {
         mode == "Hypixel"
     }
+        .describe("Which Hypixel game to queue for.")
     private val skywarsMode by choices("SkywarsMode", arrayOf("SoloNormal", "SoloInsane"), "SoloNormal") {
         hypixelMode == "Skywars"
     }
+        .describe("Skywars game variant to play.")
     private val bedwarsMode by choices("BedwarsMode", arrayOf("Solo", "Double", "Trio", "Quad"), "Solo") {
         hypixelMode == "Bedwars"
     }
+        .describe("Bedwars team size to play.")
 
     private val delay by int("Delay", 50, 0..200)
         .describe("Delay between auto-play actions in ticks.")

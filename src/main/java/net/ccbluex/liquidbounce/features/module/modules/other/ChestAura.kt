@@ -62,6 +62,7 @@ object ChestAura : Module("ChestAura", Category.OTHER, Category.SubCategory.MISC
         rangeSq = value.pow(2)
         searchRadiusSq = (value + 1).pow(2)
     }
+        .describe("Maximum reach distance to open chests.")
     private val delay by int("Delay", 200, 50..500)
         .describe("Delay between chest clicks in milliseconds.")
 
@@ -74,10 +75,12 @@ object ChestAura : Module("ChestAura", Category.OTHER, Category.SubCategory.MISC
     }.onChanged { value ->
         wallsRangeSq = value.pow(2)
     }
+        .describe("Maximum reach distance for chests behind walls.")
 
     private val minDistanceFromOpponent by float("MinDistanceFromOpponent", 10F, 0F..30F).onChanged { value ->
         minDistanceFromOpponentSq = value.pow(2)
     }
+        .describe("Pause opening chests when an enemy is closer than this.")
 
     private val visualSwing by boolean("VisualSwing", true).subjective()
         .describe("Show a visible arm swing when opening chests.")

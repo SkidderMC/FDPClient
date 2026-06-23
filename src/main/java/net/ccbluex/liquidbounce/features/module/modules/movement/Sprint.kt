@@ -37,8 +37,10 @@ object Sprint : Module("Sprint", Category.MOVEMENT, Category.SubCategory.MOVEMEN
 
     private val allDirectionsLimitSpeed by float("AllDirectionsLimitSpeed", 1f, 0.75f..1f)
     { mode == "Vanilla" && allDirections }
+        .describe("Cap on speed when sprinting in any direction.")
     private val allDirectionsLimitSpeedGround by boolean("AllDirectionsLimitSpeedOnlyGround", true)
     { mode == "Vanilla" && allDirections }
+        .describe("Only apply the speed cap while on the ground.")
 
     private val blindness by boolean("Blindness", true) { mode == "Vanilla" }
         .describe("Stop sprinting while blinded.")
@@ -53,6 +55,7 @@ object Sprint : Module("Sprint", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         .describe("Use server-side rotation to decide sprint.")
     private val checkServerSideGround by boolean("CheckServerSideOnlyGround", false)
     { mode == "Vanilla" && checkServerSide }
+        .describe("Only use the server-side check while on the ground.")
     private val noPackets by boolean("NoPackets", false) { mode == "Vanilla" }
         .describe("Do not send sprint start/stop packets.")
 

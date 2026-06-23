@@ -61,6 +61,7 @@ object BedDefender : Module("BedDefender", Category.OTHER, Category.SubCategory.
         arrayOf("None", "Normal", "Around"),
         "Normal"
     ) { options.rotationsActive }
+        .describe("How placements are raycast against the target.")
     private val scannerMode by choices("Scanner", arrayOf("Nearest", "Random"), "Nearest")
         .describe("Choose the nearest or a random spot to fill.")
 

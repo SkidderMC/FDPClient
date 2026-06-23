@@ -47,11 +47,14 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
         ),
         "NCP"
     )
+        .describe("Anticheat-specific method used to step up blocks.")
 
     private val height by float("Height", 1F, 0.6F..10F)
     { mode !in arrayOf("Jump", "MotionNCP", "LAAC", "AAC3.3.4", "BlocksMCTimer") }
+        .describe("Maximum block height to step up.")
     private val jumpHeight by float("JumpHeight", 0.42F, 0.37F..0.42F)
     { mode == "Jump" }
+        .describe("Jump height used by the Jump step mode.")
 
     private val delay by int("Delay", 0, 0..500)
         .describe("Delay between steps in milliseconds.")
@@ -62,9 +65,11 @@ object Step : Module("Step", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MA
     private val timerValue by float("Timer", 1F, 0.05F..1F) {
         mode !in arrayOf("Matrix6.7.0", "Verus")
     }
+        .describe("Game-speed timer applied while stepping.")
     private val timerDynValue by boolean("UseDynamicTimer", false) {
         mode !in arrayOf("Matrix6.7.0", "Verus")
     }
+        .describe("Adjust the timer dynamically during the step.")
 
     /**
      * VALUES

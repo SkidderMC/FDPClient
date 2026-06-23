@@ -60,6 +60,7 @@ object InventoryCleaner : Module("InventoryCleaner", Category.PLAYER, Category.S
         5,
         0..36,
     ) { limitStackCounts }.subjective()
+        .describe("Maximum throwable stacks to keep.")
     // Keep up to this many arrows total, clean the rest. Default keeps every arrow (current behavior).
     private val maxArrows by int("MaxArrows", 2304, 0..2304) { limitStackCounts }.subjective()
         .describe("Maximum total arrows to keep.")

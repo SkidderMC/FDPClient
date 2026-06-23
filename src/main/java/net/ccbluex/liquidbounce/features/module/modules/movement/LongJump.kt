@@ -98,12 +98,15 @@ object LongJump : Module("LongJump", Category.MOVEMENT, Category.SubCategory.MOV
     val oldNcpDamageMode by choices("OldNCPDamage-Mode", arrayOf("Normal", "OldHypixel"), "Normal") {
         mode == "OldNCPDamage"
     }
+        .describe("Boost variant used by the OldNCPDamage mode.")
     val oldNcpDamageBoostSpeed by float("OldNCPDamage-BoostSpeed", 1.2f, 1f..2f) {
         mode == "OldNCPDamage" && oldNcpDamageMode == "OldHypixel"
     }
+        .describe("Speed multiplier for the OldHypixel variant.")
     val oldNcpDamageBoost by float("OldNCPDamage-Boost", 4.25f, 1f..10f) {
         mode == "OldNCPDamage" && oldNcpDamageMode == "Normal"
     }
+        .describe("Forward boost distance for the Normal variant.")
     val oldNcpDamageInstant by boolean("OldNCPDamage-DamageInstant", false) { mode == "OldNCPDamage" }
         .describe("Trigger the boost instantly on damage.")
 

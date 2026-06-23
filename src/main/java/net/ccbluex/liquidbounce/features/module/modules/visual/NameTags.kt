@@ -114,6 +114,7 @@ object NameTags : Module("NameTags", Category.VISUAL, Category.SubCategory.RENDE
     private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200).onChanged { value ->
         maxRenderDistanceSq = value.toDouble().pow(2)
     }
+        .describe("Maximum distance at which name tags are drawn.")
 
     private val onLook by boolean("OnLook", false)
         .describe("Only show tags for entities you look at.")

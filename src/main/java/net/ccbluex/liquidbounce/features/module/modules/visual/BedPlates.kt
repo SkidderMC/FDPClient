@@ -54,6 +54,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.REN
     private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200).onChanged { value ->
         maxRenderDistanceSq = value.toDouble().pow(2)
     }
+        .describe("Maximum distance at which plates are drawn.")
 
     private var maxRenderDistanceSq = 0.0
         set(value) {
@@ -89,6 +90,7 @@ object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.REN
 
     private val maxTextGradientColors by int("Max-Text-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS)
     { textMode == "Gradient" }
+        .describe("Number of colors used in the text gradient.")
     private val textGradColors = ColorSettingsFloat.create(this, "Text-Gradient")
     { textMode == "Gradient" && it <= maxTextGradientColors }
 
@@ -102,9 +104,11 @@ object BedPlates : Module("BedPlates", Category.VISUAL, Category.SubCategory.REN
 
     private val gradientBackgroundSpeed by float("Background-Gradient-Speed", 1f, 0.5f..10f)
     { backgroundMode == "Gradient" }
+        .describe("Animation speed of the background gradient.")
 
     private val maxBackgroundGradientColors by int("Max-Background-Gradient-Colors", 4, 1..MAX_GRADIENT_COLORS)
     { backgroundMode == "Gradient" }
+        .describe("Number of colors used in the background gradient.")
     private val bgGradColors = ColorSettingsFloat.create(this, "Background-Gradient")
     { backgroundMode == "Gradient" && it <= maxBackgroundGradientColors }
 

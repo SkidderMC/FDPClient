@@ -117,6 +117,7 @@ object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVER
         arrayOf("Custom", "Theme", "Fade", "Rainbow", "Random"),
         "Custom"
     )
+        .describe("Color source for the 2D box.")
     private val color by color("Color", Color.WHITE)  { colorMode == "Custom" || colorMode == "Fade" }
         .describe("Custom color for the ESP.")
 

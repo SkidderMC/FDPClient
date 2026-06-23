@@ -20,6 +20,7 @@ object HitFX : Module("HitFX", Category.VISUAL, Category.SubCategory.RENDER_OVER
         arrayOf("Fire", "Heart", "Water", "Smoke", "Magic", "Crits", "Burst"),
         "Fire"
     )
+        .describe("Particle effect shown when you land a hit.")
 
     private val minAmount by int("MinAmount", 4, 1..40)
         .describe("Minimum number of particles spawned on hit.")

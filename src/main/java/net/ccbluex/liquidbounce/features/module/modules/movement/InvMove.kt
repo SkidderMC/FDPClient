@@ -53,12 +53,14 @@ object InvMove : Module("InvMove", Category.MOVEMENT, Category.SubCategory.MOVEM
         "SilentlyCloseAndReopen",
         false
     ) { noMove && (noMoveAir || noMoveGround) }
+        .describe("Close and later reopen the inventory after a no-move flag.")
 
     // Reopen closed inventory just before a click (could flag for clicking too fast after opening inventory)
     private val reopenOnClick by boolean(
         "ReopenOnClick",
         false
     ) { silentlyCloseAndReopen && noMove && (noMoveAir || noMoveGround) }
+        .describe("Reopen the closed inventory right before a click.")
 
     private val inventoryMotion by float("InventoryMotion", 1F, 0F..2F)
         .describe("Motion multiplier applied while in the inventory.")

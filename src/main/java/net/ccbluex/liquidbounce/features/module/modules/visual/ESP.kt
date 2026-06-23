@@ -38,6 +38,7 @@ object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY)
         "Mode",
         arrayOf("Box", "OtherBox", "WireFrame", "2D", "Real2D", "Gaussian", "Outline", "Glow"), "Box"
     )
+        .describe("Rendering style for highlighted entities.")
 
     val outlineWidth by float("Outline-Width", 3f, 0.5f..5f) { mode == "Outline" }
         .describe("Line width of the outline mode.")

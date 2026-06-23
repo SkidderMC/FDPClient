@@ -112,12 +112,14 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
     }.onChanged {
         maxRetrievalWaitingTimeValue.set(max(maxRetrievalWaitingTime, it))
     }.subjective()
+        .describe("Ticks to wait before retrieving the placed block.")
 
     private val maxRetrievalWaitingTimeValue = int("MaxRetrievalWaitingTime", 10, 1..20) {
         mode == "MLG"
     }.onChange { _, new ->
         new.coerceAtLeast(retrieveDelay)
     }
+        .describe("Maximum ticks to wait while retrieving the block.")
 
     val maxRetrievalWaitingTime by maxRetrievalWaitingTimeValue
 
@@ -143,6 +145,7 @@ object NoFall : Module("NoFall", Category.PLAYER, Category.SubCategory.PLAYER_CO
     val fallDist by floatRange("FallDistance", 2.5f..20f, 0f..100f) {
         mode == "Blink" && checkFallDist
     }.subjective()
+        .describe("Fall-distance range within which to blink.")
 
     val autoOff by boolean("AutoOff", true) { mode == "Blink" }
         .describe("Disable Blink no-fall after landing.")

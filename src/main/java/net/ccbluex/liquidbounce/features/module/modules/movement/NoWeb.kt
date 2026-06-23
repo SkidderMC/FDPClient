@@ -56,6 +56,7 @@ object NoWeb : Module("NoWeb", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     val mode by choices(
         "Mode", noWebModes.modeNames(), "None"
     )
+        .describe("Anticheat-specific bypass used to ignore cobwebs.")
 
     val onUpdate = handler<UpdateEvent> {
         modeModule.onUpdate()

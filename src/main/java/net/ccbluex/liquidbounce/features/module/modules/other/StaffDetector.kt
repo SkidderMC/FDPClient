@@ -51,6 +51,7 @@ object StaffDetector : Module("StaffDetector", Category.OTHER, Category.SubCateg
     private val staffMode by choices(
         "StaffMode", serverIpMap.keys.toTypedArray(), "BlocksMC"
     ).onChanged(::loadStaffData)
+        .describe("Which server's staff list to check against.")
 
     private val tab by boolean("TAB", true)
         .describe("Detect staff by their tab list latency.")

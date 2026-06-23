@@ -22,10 +22,12 @@ object SkinChanger : Module("SkinChanger", Category.VISUAL, Category.SubCategory
     private val mode by choices("Mode", arrayOf("Online", "File"), "Online").onChanged {
         invalidate()
     }
+        .describe("Load the skin from an online account or a local file.")
 
     private val username by text("Username", "Notch") { mode == "Online" }.onChanged {
         invalidate()
     }
+        .describe("Account name whose skin is fetched online.")
 
     private val fileName by fileValue("FileName", "skin.png", extensions = listOf("png")) { mode == "File" }.onChanged {
         invalidate()

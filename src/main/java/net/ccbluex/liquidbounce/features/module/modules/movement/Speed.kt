@@ -146,6 +146,7 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
         mode.changeValue(modesList.first { it !in deprecatedMode }.modeName)
         mode.updateValues(modesList.filter { value || it !in deprecatedMode }.modeNames())
     }
+        .describe("Show deprecated speed modes in the mode list.")
 
     private var modesList = speedModes
 
@@ -174,50 +175,64 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     val legacyCustomLaunchSpeed by float("CustomLaunchSpeed", 1.6f, 0.2f..2f) {
         mode.get() == "Custom" && customBehavior == "Legacy" && legacyCustomDoLaunchSpeed
     }
+        .describe("Initial launch speed in legacy custom mode.")
     val legacyCustomLaunchMoveBeforeJump by boolean("CustomLaunchMoveBeforeJump", false) {
         mode.get() == "Custom" && customBehavior == "Legacy"
     }
+        .describe("Apply launch motion before the jump.")
     val legacyCustomDoMinimumSpeed by boolean("CustomDoMinimumSpeed", true) {
         mode.get() == "Custom" && customBehavior == "Legacy"
     }
+        .describe("Enforce a minimum movement speed.")
     val legacyCustomMinimumSpeed by float("CustomMinimumSpeed", 0.25f, 0.1f..2f) {
         mode.get() == "Custom" && customBehavior == "Legacy" && legacyCustomDoMinimumSpeed
     }
+        .describe("Minimum movement speed to keep.")
     val legacyCustomAddYMotion by float("CustomAddYMotion", 0f, 0f..2f) {
         mode.get() == "Custom" && customBehavior == "Legacy"
     }
+        .describe("Extra vertical motion added each jump.")
     val legacyCustomDoModifyJumpY by boolean("CustomDoModifyJumpY", true) {
         mode.get() == "Custom" && customBehavior == "Legacy"
     }
+        .describe("Modify the vertical jump motion.")
     val legacyCustomUpTimer by float("CustomUpTimer", 1f, 0.1f..2f) {
         mode.get() == "Custom" && customBehavior == "Legacy"
     }
+        .describe("Game timer speed while moving up.")
     val legacyCustomJumpTimer by float("CustomJumpTimer", 1.25f, 0.1f..2f) {
         mode.get() == "Custom" && customBehavior == "Legacy"
     }
+        .describe("Game timer speed on the jump tick.")
     val legacyCustomDownTimer by float("CustomDownTimer", 1f, 0.1f..2f) {
         mode.get() == "Custom" && customBehavior == "Legacy"
     }
+        .describe("Game timer speed while falling.")
     val legacyCustomUpAirSpeed by float("CustomUpAirSpeed", 2.03f, 0.5f..3.5f) {
         mode.get() == "Custom" && customBehavior == "Legacy"
     }
+        .describe("Air speed multiplier while rising.")
     val legacyCustomDownAirSpeed by float("CustomDownAirSpeed", 2.01f, 0.5f..3.5f) {
         mode.get() == "Custom" && customBehavior == "Legacy"
     }
+        .describe("Air speed multiplier while falling.")
     val legacyCustomStrafe by choices(
         "CustomStrafe",
         arrayOf("Strafe", "Boost", "AirSpeed", "Plus", "PlusOnlyUp", "PlusOnlyDown", "Non-Strafe"),
         "Boost"
     ) { mode.get() == "Custom" && customBehavior == "Legacy" }
+        .describe("Strafe behavior for legacy custom mode.")
     val legacyCustomPlusMode by choices("PlusBoostMode", arrayOf("Add", "Multiply"), "Add") {
         mode.get() == "Custom" && customBehavior == "Legacy" &&
             legacyCustomStrafe in arrayOf("Plus", "PlusOnlyUp", "PlusOnlyDown")
     }
+        .describe("How the Plus strafe boost is applied.")
     val legacyCustomPlusMultiplyAmount by float("PlusMultiplyAmount", 1.1f, 1f..2f) {
         mode.get() == "Custom" && customBehavior == "Legacy" &&
             legacyCustomPlusMode == "Multiply" &&
             legacyCustomStrafe in arrayOf("Plus", "PlusOnlyUp", "PlusOnlyDown")
     }
+        .describe("Multiplier used by the Plus strafe boost.")
     val legacyCustomGroundStay by int("CustomGroundStay", 0, 0..10) { mode.get() == "Custom" && customBehavior == "Legacy" }
         .describe("Ticks to stay on the ground before jumping.")
     val legacyCustomGroundResetXZ by boolean("CustomGroundResetXZ", false) { mode.get() == "Custom" && customBehavior == "Legacy" }
@@ -227,12 +242,15 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     val legacyCustomPressSpaceKeyOnGround by boolean("CustomPressSpaceKeyOnGround", true) {
         mode.get() == "Custom" && customBehavior == "Legacy"
     }
+        .describe("Hold the jump key while on the ground.")
     val legacyCustomPressSpaceKeyInAir by boolean("CustomPressSpaceKeyInAir", false) {
         mode.get() == "Custom" && customBehavior == "Legacy"
     }
+        .describe("Hold the jump key while in the air.")
     val legacyCustomUsePreMotion by boolean("CustomUsePreMotion", true) {
         mode.get() == "Custom" && customBehavior == "Legacy"
     }
+        .describe("Apply motion before the move packet is sent.")
 
     // Extra options
     val resetXZ by boolean("ResetXZ", false) { mode.get() == "Custom" }
@@ -249,16 +267,19 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     // TeleportCubecraft Speed
     val cubecraftPortLength by float("CubeCraft-PortLength", 1f, 0.1f..2f)
     { mode.get() == "TeleportCubeCraft" }
+        .describe("Teleport distance per step in the CubeCraft mode.")
 
     // IntaveHop14 Speed
     val boost by boolean("Boost", true) { mode.get() == "IntaveHop14" }
         .describe("Apply an initial speed boost.")
     val initialBoostMultiplier by float("InitialBoostMultiplier", 1f, 0.01f..10f)
     { boost && mode.get() == "IntaveHop14" }
+        .describe("Multiplier for the initial speed boost.")
     val intaveLowHop by boolean("LowHop", true) { mode.get() == "IntaveHop14" }
         .describe("Use a lower jump arc.")
     val strafeStrength by float("StrafeStrength", 0.29f, 0.1f..0.29f)
     { mode.get() == "IntaveHop14" }
+        .describe("Strafe acceleration strength.")
     val groundTimer by float("GroundTimer", 0.5f, 0.1f..5f) { mode.get() == "IntaveHop14" }
         .describe("Game timer speed while on the ground.")
     val airTimer by float("AirTimer", 1.09f, 0.1f..5f) { mode.get() == "IntaveHop14" }
@@ -288,31 +309,39 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     val latestVerusHopJumpMovementFactorWithPotion by float("LatestVerusHop-JumpMovementFactorWithPotion", 0.02f, 0.01f..0.04f) {
         mode.get() == "LatestVerusHop" && latestVerusHopCustomSpeed
     }
+        .describe("Jump air-control factor when on a speed potion.")
     val latestVerusHopJumpMovementFactorWithoutPotion by float("LatestVerusHop-JumpMovementFactorWithoutPotion", 0.02f, 0.01f..0.04f) {
         mode.get() == "LatestVerusHop" && latestVerusHopCustomSpeed
     }
+        .describe("Jump air-control factor with no speed potion.")
     val latestVerusHopFrictionWithPotion by float("LatestVerusHop-FrictionWithPotion", 0.48f, 0.1f..2f) {
         mode.get() == "LatestVerusHop" && latestVerusHopCustomSpeed
     }
+        .describe("Ground friction when on a speed potion.")
     val latestVerusHopFrictionWithoutPotion by float("LatestVerusHop-FrictionWithoutPotion", 0.48f, 0.1f..2f) {
         mode.get() == "LatestVerusHop" && latestVerusHopCustomSpeed
     }
+        .describe("Ground friction with no speed potion.")
     val latestVerusHopSpeedWithPotion by float("LatestVerusHop-SpeedWithPotion", 2.8f, 1f..4f) {
         mode.get() == "LatestVerusHop" && latestVerusHopCustomSpeed
     }
+        .describe("Movement speed when on a speed potion.")
     val latestVerusHopSpeedWithoutPotion by float("LatestVerusHop-SpeedWithoutPotion", 2.0f, 1f..4f) {
         mode.get() == "LatestVerusHop" && latestVerusHopCustomSpeed
     }
+        .describe("Movement speed with no speed potion.")
     val latestVerusHopDamageBoost by boolean("LatestVerusHop-DamageBoost", false) { mode.get() == "LatestVerusHop" }
         .describe("Boost speed after taking damage.")
     val latestVerusHopBoostSpeed by float("LatestVerusHop-BoostSpeed", 1f, 0.1f..9f) {
         mode.get() == "LatestVerusHop" && latestVerusHopDamageBoost
     }
+        .describe("Speed boost applied after taking damage.")
 
     // Vulcan legacy speed pack
     val vulcanMode by choices("Vulcan-Mode", arrayOf("LowHop", "Hop", "OldGround", "YPort", "YPort2", "LowHop2"), "LowHop") {
         mode.get() == "Vulcan"
     }
+        .describe("Which Vulcan speed variant to use.")
     val vulcanBoostDelay by int("Boost-Delay", 8, 2..15) { mode.get() == "Vulcan" && vulcanMode == "OldGround" }
         .describe("Ticks between ground boosts in OldGround.")
     val vulcanGroundBoost by boolean("Ground-Boost", true) { mode.get() == "Vulcan" && vulcanMode == "OldGround" }
@@ -339,8 +368,10 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
     // MatrixHop Speed
     val matrixLowHop by boolean("LowHop", true)
     { mode.get() == "MatrixHop" || mode.get() == "MatrixSlowHop" }
+        .describe("Use a lower jump arc in the Matrix hop.")
     val extraGroundBoost by float("ExtraGroundBoost", 0.2f, 0f..0.5f)
     { mode.get() == "MatrixHop" || mode.get() == "MatrixSlowHop" }
+        .describe("Extra speed added while on the ground.")
 
     // HypixelLowHop Speed
     val glide by boolean("Glide", true) { mode.get() == "HypixelLowHop" }

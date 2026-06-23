@@ -63,23 +63,29 @@ object TargetStrafe : Module("TargetStrafe", Category.MOVEMENT, Category.SubCate
         arrayOf("Custom", "Fade", "Theme"),
         "Custom"
     ) { renderModeValue != "None" }
+        .describe("How the strafe circle is colored.")
 
     private val customColor1 by color("Custom-Color-1", Color(0xFF0054).rgb) {
         renderModeValue != "None" && colorMode == "Custom"
     }
+        .describe("First color for the custom color mode.")
     private val customColor2 by color("Custom-Color-2", Color(0x001300).rgb) {
         renderModeValue != "None" && colorMode == "Custom"
     }
+        .describe("Second color for the custom color mode.")
 
     private val fadeColor1 by color("Fade-Color-1", Color(0xFF0054).rgb) {
         renderModeValue != "None" && colorMode == "Fade"
     }
+        .describe("First color for the fade gradient.")
     private val fadeColor2 by color("Fade-Color-2", Color(0x001300).rgb) {
         renderModeValue != "None" && colorMode == "Fade"
     }
+        .describe("Second color for the fade gradient.")
     private val fadeDistance by int("Fade-Distance", 50, 0..100) {
         renderModeValue != "None" && colorMode == "Fade"
     }
+        .describe("Distance over which the fade gradient spreads.")
 
     private var direction = -1.0
     private var directionA = 1

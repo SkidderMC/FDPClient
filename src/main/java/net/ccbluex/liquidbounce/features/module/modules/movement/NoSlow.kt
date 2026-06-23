@@ -47,6 +47,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         ),
         "None"
     )
+        .describe("Anticheat bypass used while blocking with a sword.")
 
     private val reblinkTicks by int("ReblinkTicks", 10, 1..20) { swordMode == "Blink" }
         .describe("Ticks before re-applying the blink in blink mode.")
@@ -59,12 +60,15 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     private val aac4C07 by boolean("AAC4-C07", true) {
         swordMode == "AAC4" || consumeMode == "AAC4" || bowPacket == "AAC4"
     }
+        .describe("Send a C07 packet for the AAC4 bypass.")
     private val aac4C08 by boolean("AAC4-C08", true) {
         swordMode == "AAC4" || consumeMode == "AAC4" || bowPacket == "AAC4"
     }
+        .describe("Send a C08 packet for the AAC4 bypass.")
     private val aac4OnGround by boolean("AAC4-OnGround", true) {
         swordMode == "AAC4" || consumeMode == "AAC4" || bowPacket == "AAC4"
     }
+        .describe("Only run the AAC4 bypass while on the ground.")
 
     private val blockForwardMultiplier by float("BlockForwardMultiplier", 1f, 0.2F..1f)
         .describe("Forward speed multiplier while blocking with a sword.")
@@ -79,6 +83,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         ),
         "None"
     )
+        .describe("Anticheat bypass used while eating or drinking.")
 
     private val consumeForwardMultiplier by float("ConsumeForwardMultiplier", 1f, 0.2F..1f)
         .describe("Forward speed multiplier while eating or drinking.")
@@ -88,10 +93,12 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         "ConsumeFood",
         true
     ) { consumeForwardMultiplier > 0.2F || consumeStrafeMultiplier > 0.2F }
+        .describe("Apply the consume no-slow when eating food.")
     private val consumeDrinkOnly by boolean(
         "ConsumeDrink",
         true
     ) { consumeForwardMultiplier > 0.2F || consumeStrafeMultiplier > 0.2F }
+        .describe("Apply the consume no-slow when drinking.")
 
     private val bowPacket by choices(
         "BowMode",
@@ -101,6 +108,7 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         ),
         "None"
     )
+        .describe("Anticheat bypass used while drawing a bow.")
 
     private val bowForwardMultiplier by float("BowForwardMultiplier", 1f, 0.2F..1f)
         .describe("Forward speed multiplier while drawing a bow.")
@@ -117,17 +125,21 @@ object NoSlow : Module("NoSlow", Category.MOVEMENT, Category.SubCategory.MOVEMEN
     private val teleportMode by choices("TeleportMode", arrayOf("Vanilla", "VanillaNoSetback", "Custom", "Decrease"), "Vanilla") {
         teleportValue
     }
+        .describe("How to keep momentum through a teleport.")
     private val teleportNoApplyValue by boolean("TeleportNoApply", false) { teleportValue }
         .describe("Do not send the teleport confirmation packet.")
     private val teleportCustomSpeedValue by float("Teleport-CustomSpeed", 0.13f, 0f..1f) {
         teleportValue && teleportMode == "Custom"
     }
+        .describe("Custom speed kept through the teleport.")
     private val teleportCustomYValue by boolean("Teleport-CustomY", false) {
         teleportValue && teleportMode == "Custom"
     }
+        .describe("Also keep vertical motion through the teleport.")
     private val teleportDecreasePercentValue by float("Teleport-DecreasePercent", 0.13f, 0f..1f) {
         teleportValue && teleportMode == "Decrease"
     }
+        .describe("Fraction of speed to reduce on each teleport.")
 
     private var shouldSwap = false
     private var shouldBlink = true

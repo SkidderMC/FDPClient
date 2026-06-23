@@ -25,6 +25,7 @@ object FastClimb : Module("FastClimb", Category.MOVEMENT, Category.SubCategory.M
         "Mode",
         arrayOf("Vanilla", "Delay", "Clip", "AAC3.0.0", "AAC3.0.5", "SAAC3.1.2", "AAC3.1.2"), "Vanilla"
     )
+        .describe("Anticheat-specific method used to climb faster.")
     private val speed by float("Speed", 1F, 0.01F..5F) { mode == "Vanilla" }
         .describe("Upward speed when climbing a ladder or vine.")
 

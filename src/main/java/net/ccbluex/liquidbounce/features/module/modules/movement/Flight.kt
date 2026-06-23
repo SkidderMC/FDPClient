@@ -121,6 +121,7 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         modeValue.changeValue(modesList.first { it !in deprecatedMode }.modeName)
         modeValue.updateValues(modesList.filter { value || it !in deprecatedMode }.modeNames())
     }
+        .describe("Show deprecated fly modes in the mode list.")
 
     private var modesList = flyModes
 
@@ -136,12 +137,14 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
             "BugSpartan"
         )
     }.subjective()
+        .describe("Horizontal fly speed for the vanilla modes.")
     val vanillaVerticalSpeed by float("VanillaVerticalSpeed", 2f, 0f..10f) {
         mode in arrayOf(
             "Vanilla",
             "KeepAlive"
         )
     }.subjective()
+        .describe("Vertical fly speed for the vanilla modes.")
     val blockDropHorizontalSpeed by float("BlockDrop-HorizontalSpeed", 1f, 0.1f..5f) { mode == "BlockDrop" }
         .describe("Horizontal fly speed for the BlockDrop mode.")
     val blockDropVerticalSpeed by float("BlockDrop-VerticalSpeed", 1f, 0.1f..5f) { mode == "BlockDrop" }
@@ -176,6 +179,7 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         "VanillaKickBypass",
         false
     ) { mode in arrayOf("Vanilla", "SmoothVanilla") }.subjective()
+        .describe("Avoid the flying-kick by limiting motion.")
     val ncpMotion by float("NCPMotion", 0f, 0f..1f) { mode == "NCP" }
         .describe("Extra motion added in the NCP mode.")
 
@@ -236,9 +240,11 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         arrayOf("Boost1", "Boost2", "Boost3"),
         "Boost1"
     ) { mode == "VerusDamage" }
+        .describe("Boost variant used by the VerusDamage mode.")
     val verusDamageReDamage by boolean("VerusDamageBoost3-ReDamage", true) {
         mode == "VerusDamage" && verusDamageBoostMode == "Boost3"
     }
+        .describe("Take damage again to re-trigger the Boost3 fly.")
 
     // BlocksMC
     val stable by boolean("Stable", false) { mode == "BlocksMC" || mode == "BlocksMC2" }
@@ -269,6 +275,7 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         arrayOf("Off", "Pick", "Spoof", "Switch"),
         "Spoof"
     ) { mode == "Fireball" }
+        .describe("How to obtain a fireball before throwing.")
     val swing by boolean("Swing", true) { mode == "Fireball" }
         .describe("Swing the arm when throwing a fireball.")
     val fireballTry by int("MaxFireballTry", 1, 0..2) { mode == "Fireball" }
@@ -280,6 +287,7 @@ object Flight : Module("Flight", Category.MOVEMENT, Category.SubCategory.MOVEMEN
         1.05f,
         1f..2f
     ) { fireBallThrowMode == "Edge" && mode == "Fireball" }
+        .describe("Edge distance used when aiming the fireball.")
 
     val options = RotationSettings(this) { mode == "Fireball" }
         .withRequestPriority(RotationPriority.HIGH)

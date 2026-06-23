@@ -36,6 +36,7 @@ object IRCModule : Module("IRC", Category.CLIENT, Category.SubCategory.CLIENT_GE
     var jwt by boolean("JWT", false).onChanged {
         reloadIfEnabled()
     }
+        .describe("Authenticate to the chat server with a saved token.")
 
     @Volatile
     var jwtToken = ""

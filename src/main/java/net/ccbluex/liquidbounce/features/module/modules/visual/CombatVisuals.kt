@@ -55,6 +55,7 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCate
         arrayOf("None", "Points", "Image", "Zavz", "Circle", "Jello", "Lies", "FDP", "Sims", "Box", "RoundBox", "Head", "Mark"),
         "Points"
     )
+        .describe("Style of marker drawn on the target.")
     private val isMarkMode: Boolean
         get() = markValue != "None" && markValue != "Sims" && markValue != "FDP"  && markValue != "Lies" && markValue != "Jello"
 
@@ -85,6 +86,7 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCate
         arrayOf("Rectangle","QuadStapple","TriangleStapple","TriangleStipple","GlowCircle"),
         "Rectangle"
     ) { markValue == "Image" }.subjective()
+        .describe("Shape used for the image marker.")
     private val imageScale by float("ImageScale", 0.6f, 0.1f..2.0f) { markValue == "Image" }.subjective()
         .describe("Size of the image marker.")
     private val imageXOffset by float("ImageXOffset", 0.0f, -1.5f..1.5f) { markValue == "Image" }.subjective()
@@ -134,12 +136,14 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCate
         0.5F..3F,
         suffix = "Seconds"
     ) { animateCircleY || animateHeight }.subjective()
+        .describe("Length of one circle animation cycle.")
 
     private val filterEntityType by choices(
         "FilterEntityType",
         arrayOf("All", "Players", "Mobs", "Animals"),
         "All"
     )
+        .describe("Which entity types get a marker.")
 
     private val rainbow by boolean("Mark-RainBow", false) { isMarkMode }
         .describe("Animate the marker with rainbow colors.")
@@ -156,6 +160,7 @@ object CombatVisuals : Module("CombatVisuals", Category.VISUAL, Category.SubCate
 
     private val particle by choices("Particle",
         arrayOf("None", "Blood", "Lighting", "Fire", "Heart", "Water", "Smoke", "Magic", "Crits"), "Blood")
+        .describe("Particle effect spawned when you hit a target.")
 
     private val amount by int("ParticleAmount", 5, 1..20) { particle != "None" }
         .describe("Number of particles spawned per hit.")

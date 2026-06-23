@@ -53,6 +53,7 @@ object PointerESP : Module("PointerESP", Category.VISUAL, Category.SubCategory.R
     private val maxRenderDistance by int("MaxRenderDistance", 50, 1..200).onChanged { value ->
         maxRenderDistanceSq = value.toDouble().pow(2)
     }
+        .describe("Maximum distance at which pointers are drawn.")
 
     private var maxRenderDistanceSq = 0.0
         set(value) {

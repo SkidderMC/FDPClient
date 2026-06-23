@@ -36,9 +36,11 @@ object NameProtect : Module("NameProtect", Category.VISUAL, Category.SubCategory
     private var nameLength by int("NameLength", 6, 6..16) {
         randomNames && allPlayers && !randomNameLength
     }
+        .describe("Fixed length of generated random names.")
 
     private val nameLengthRange by intRange("NameLengthRange", 6..14, 6..16)
     { allPlayers && randomNames && randomNameLength }
+        .describe("Min and max length of generated random names.")
 
     private val playerRandomNames = mutableMapOf<UUID, Pair<String, Int>>()
     private val characters = ('a'..'z') + ('0'..'9') + ('A'..'Z') + "_"

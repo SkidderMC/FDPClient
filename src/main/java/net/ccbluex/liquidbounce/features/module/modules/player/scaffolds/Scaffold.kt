@@ -73,92 +73,137 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     val scaffoldMode by choices(
         "ScaffoldMode", arrayOf("Normal", "Rewinside", "Expand", "Telly", "GodBridge", "Sprint", "Breezily", "Jump", "Sneak"), "Normal"
     )
+        .describe("Bridging technique to use.")
 
     // Breezily
     private val breezilyEdge by float("BreezilyEdge", 0.22f, 0.05f..0.45f) { scaffoldMode == "Breezily" }
+        .describe("How far back from the edge to start placing.")
 
     // Expand
     private val omniDirectionalExpand by boolean("OmniDirectionalExpand", false) { scaffoldMode == "Expand" }
+        .describe("Expand bridge in all directions, not just forward.")
     private val expandLength by int("ExpandLength", 1, 1..6) { scaffoldMode == "Expand" }
+        .describe("How many blocks ahead to expand.")
 
     // Placeable delay
     private val placeDelayValue = boolean("PlaceDelay", true) { scaffoldMode != "GodBridge" }
+        .describe("Add a delay between block placements.")
     private val delay by intRange("Delay", 0..0, 0..1000) { placeDelayValue.isActive() }
+        .describe("Random delay range between placements in ms.")
 
     // Extra clicks
     private val extraClicks by boolean("DoExtraClicks", false)
+        .describe("Send extra clicks to improve placement reliability.")
     private val simulateDoubleClicking by boolean("SimulateDoubleClicking", false) { extraClicks }
+        .describe("Mimic human double-clicking when placing.")
     private val extraClickCPS by intRange("ExtraClickCPS", 3..7, 0..50) { extraClicks }
+        .describe("Clicks-per-second range for the extra clicks.")
     private val placementAttempt by choices(
         "PlacementAttempt", arrayOf("Fail", "Independent"), "Fail"
     ) { extraClicks }
+        .describe("When extra clicks fire relative to placement.")
 
     // Autoblock
     private val autoBlock by choices("AutoBlock", arrayOf("Off", "Pick", "Spoof", "FakeSpoof", "Switch"), "Spoof")
+        .describe("How to switch to a block before placing.")
     private val sortByHighestAmount by boolean("SortByHighestAmount", false) { autoBlock != "Off" }
+        .describe("Pick the hotbar block with the highest count first.")
     private val earlySwitch by boolean("EarlySwitch", false) { autoBlock != "Off" && !sortByHighestAmount }
+        .describe("Switch to the next slot before running out.")
     private val amountBeforeSwitch by int(
         "SlotAmountBeforeSwitch", 3, 1..10
     ) { earlySwitch && !sortByHighestAmount }
+        .describe("Block count left before switching slots.")
 
     // Settings
     private val autoF5 by boolean("AutoF5", false).subjective()
+        .describe("Force third-person front view while bridging.")
 
     // Basic stuff
     val sprint by boolean("Sprint", false)
+        .describe("Allow sprinting while bridging.")
     val sprintMode by choices("SprintMode", arrayOf("Normal", "MotionSprint", "OnlyOnGround", "OnlyInAir"), "Normal") { sprint }
+        .describe("When sprinting is permitted.")
     private val swing by boolean("Swing", true).subjective()
+        .describe("Swing the arm when placing.")
     private val down by boolean("Down", true) { !sameY && scaffoldMode !in arrayOf("GodBridge", "Telly") }
+        .describe("Look downward while bridging.")
     private val autoJump by boolean("AutoJump", false) { scaffoldMode !in arrayOf("GodBridge", "Telly") }
+        .describe("Automatically jump while bridging.")
 
     private val ticksUntilRotation by intRange("TicksUntilRotation", 3..3, 1..8) {
         scaffoldMode == "Telly"
     }
+        .describe("Ticks to wait before rotating in Telly mode.")
 
     // GodBridge mode sub-values
     private val waitForRots by boolean("WaitForRotations", false) { supportsGodBridgeRotations }
+        .describe("Wait until the rotation lands before placing.")
     private val useOptimizedPitch by boolean("UseOptimizedPitch", false) { supportsGodBridgeRotations }
+        .describe("Auto-tune the GodBridge pitch.")
     private val customGodPitch by float(
         "GodBridgePitch", 73.5f, 0f..90f
     ) { supportsGodBridgeRotations && !useOptimizedPitch }
+        .describe("Manual pitch angle for GodBridge.")
 
     val jumpAutomatically by boolean("JumpAutomatically", true) { scaffoldMode == "GodBridge" }
+        .describe("Jump on a timer instead of per block count.")
     private val blocksToJumpRange by intRange("BlocksToJumpRange", 4..4, 1..8) {  scaffoldMode == "GodBridge" && !jumpAutomatically }
+        .describe("Blocks placed between each jump.")
     private val godbridgeMovementMode by choices("GodBridgeMovementMode", arrayOf("Jump", "Sneak", "Both"), "Jump") { scaffoldMode == "GodBridge" }
+        .describe("Movement used to keep the GodBridge going.")
 
     // Telly mode sub-values
     private val startHorizontally by boolean("StartHorizontally", true) { scaffoldMode == "Telly" }
+        .describe("Begin the Telly pattern with horizontal placements.")
     private val horizontalPlacementsRange by intRange("HorizontalPlacementsRange", 1..1, 1..10) { scaffoldMode == "Telly" }
+        .describe("Horizontal blocks placed per Telly cycle.")
     private val verticalPlacementsRange by intRange("VerticalPlacementsRange", 1..1, 1..10) { scaffoldMode == "Telly" }
+        .describe("Vertical blocks placed per Telly cycle.")
 
     private val jumpTicksRange by intRange("JumpTicksRange", 0..0, 0..10) { scaffoldMode == "Telly" }
+        .describe("Ticks to hold the jump in Telly mode.")
 
     private val allowClutching by boolean("AllowClutching", true) { scaffoldMode !in arrayOf("Telly", "Expand") }
+        .describe("Place blocks to recover when falling off.")
     private val horizontalClutchBlocks by int("HorizontalClutchBlocks", 3, 1..5) {
         allowClutching && scaffoldMode !in arrayOf("Telly", "Expand")
     }
+        .describe("Horizontal reach allowed when clutching.")
     private val verticalClutchBlocks by int("VerticalClutchBlocks", 2, 1..3) {
         allowClutching && scaffoldMode !in arrayOf("Telly", "Expand")
     }
+        .describe("Vertical reach allowed when clutching.")
     private val blockSafe by boolean("BlockSafe", false) { !isGodBridgeBehaviorEnabled }
+        .describe("Only place when standing on a safe spot.")
 
     // Eagle
     private val eagleValue =
         choices("Eagle", arrayOf("Normal", "Silent", "Off"), "Normal") { scaffoldMode != "GodBridge" }
+            .describe("Sneak at block edges to avoid falling.")
     val eagle by eagleValue
     private val eagleMode by choices("EagleMode", arrayOf("Both", "OnGround", "InAir"), "Both")
     { eagle != "Off" && scaffoldMode != "GodBridge" }
+        .describe("When eagle sneaking is active.")
     private val adjustedSneakSpeed by boolean("AdjustedSneakSpeed", true)
     { eagle == "Silent" && scaffoldMode != "GodBridge" }
+        .describe("Compensate speed for silent sneaking.")
     private val eagleSpeed by float("EagleSpeed", 0.3f, 0.3f..1.0f) { eagle != "Off" && scaffoldMode != "GodBridge" }
+        .describe("Movement speed while eagle sneaking.")
     val eagleSprint by boolean("EagleSprint", false) { eagle == "Normal" && scaffoldMode != "GodBridge" }
+        .describe("Keep sprinting while eagle sneaking.")
     private val blocksToEagle by intRange("BlocksToEagle", 0..0, 0..10) { eagle != "Off" && scaffoldMode != "GodBridge" }
+        .describe("Blocks placed between eagle sneaks.")
     private val edgeDistance by float("EagleEdgeDistance", 0f, 0f..0.5f)
     { eagle != "Off" && scaffoldMode != "GodBridge" }
+        .describe("Distance from the edge to start sneaking.")
     private val useMaxSneakTime by boolean("UseMaxSneakTime", true) { eagle != "Off" && scaffoldMode != "GodBridge" }
+        .describe("Limit how long eagle sneaking lasts.")
     private val maxSneakTicks by intRange("MaxSneakTicks", 3..3, 0..10) { useMaxSneakTime }
+        .describe("Maximum ticks to hold the eagle sneak.")
     private val blockSneakingAgainUntilOnGround by boolean("BlockSneakingAgainUntilOnGround", true)
     { useMaxSneakTime && eagleMode != "OnGround" }
+        .describe("Stop re-sneaking until back on the ground.")
 
     // Rotation Options
     private val modeList =
@@ -170,6 +215,7 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
             ),
             "Normal"
         )
+            .describe("Rotation style used while placing.")
     private val jumpRotationMode by choices(
         "JumpRotations",
         arrayOf(
@@ -178,35 +224,47 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
         ),
         "Same"
     )
+        .describe("Rotation style used while jumping.")
     private val aacYawOffset by int("AACYawOffset", 0, -180..180) { supportsAacRotations }
+        .describe("Yaw offset applied in AAC rotation mode.")
     private val customYaw by int("CustomYaw", -145, -180..180) { supportsCustomRotations }
+        .describe("Fixed yaw used in Custom rotation mode.")
     private val customPitch by float("CustomPitch", 82.4f, -90f..90f) { supportsCustomRotations }
+        .describe("Fixed pitch used in Custom rotation mode.")
     private val advancedYawMode by choices(
         "AdvancedYawMode",
         arrayOf("Offset", "Static", "RoundStatic", "Vanilla", "Round", "MoveDirection", "OffsetMove", "RoundMoveDir"),
         "MoveDirection"
     ) { supportsAdvancedRotations }
+        .describe("How yaw is computed in Advanced rotation mode.")
     private val advancedPitchMode by choices(
         "AdvancedPitchMode", arrayOf("Offset", "Static", "Vanilla", "Backwards"), "Static"
     ) { supportsAdvancedRotations }
+        .describe("How pitch is computed in Advanced rotation mode.")
     private val advancedYawOffset by int("AdvancedYawOffset", -15, -180..180) {
         supportsAdvancedRotations && advancedYawMode == "Offset"
     }
+        .describe("Yaw offset for the Advanced Offset yaw mode.")
     private val advancedYawMoveOffset by int("AdvancedYawMoveOffset", -15, -180..180) {
         supportsAdvancedRotations && advancedYawMode == "OffsetMove"
     }
+        .describe("Yaw offset relative to movement direction.")
     private val advancedYawStatic by int("AdvancedYawStatic", 145, -180..180) {
         supportsAdvancedRotations && advancedYawMode in arrayOf("Static", "RoundStatic")
     }
+        .describe("Static yaw for the Advanced Static yaw modes.")
     private val advancedYawRoundValue by int("AdvancedYawRoundValue", 45, 1..180) {
         supportsAdvancedRotations && advancedYawMode in arrayOf("Round", "RoundStatic", "RoundMoveDir")
     }
+        .describe("Rounding step for the Advanced Round yaw modes.")
     private val advancedPitchOffset by float("AdvancedPitchOffset", -0.4f, -90f..90f) {
         supportsAdvancedRotations && advancedPitchMode == "Offset"
     }
+        .describe("Pitch offset for the Advanced Offset pitch mode.")
     private val advancedPitchStatic by float("AdvancedPitchStatic", 82.4f, -90f..90f) {
         supportsAdvancedRotations && advancedPitchMode == "Static"
     }
+        .describe("Static pitch for the Advanced Static pitch mode.")
 
     private val options: RotationSettingsWithRotationModes = RotationSettingsWithRotationModes(this, modeList).apply {
         strictValue.excludeWithState()
@@ -219,47 +277,72 @@ object Scaffold : Module("Scaffold", Category.PLAYER, Category.SubCategory.PLAYE
     private val rotationConsiderInventory by boolean("ConsiderInventory", false) {
         options.useModernRotations
     }
+        .describe("Keep rotating while an inventory is open.")
 
     private val rotationTiming by choices("RotationTiming", arrayOf("Normal", "OnTick", "OnTickSnap"), "Normal") {
         options.useModernRotations
     }
+        .describe("When the rotation is applied each tick.")
 
     // Search options
     val searchMode by choices("SearchMode", arrayOf("Area", "Center"), "Area") { scaffoldMode != "GodBridge" }
+        .describe("How target block faces are searched.")
     private val minDist by float("MinDist", 0f, 0f..0.2f) { scaffoldMode !in arrayOf("GodBridge", "Telly") }
+        .describe("Minimum distance from the block edge to aim.")
 
     // Zitter
     private val zitterMode by choices("Zitter", arrayOf("Off", "Teleport", "Smooth"), "Off")
+        .describe("Side-to-side jitter movement style.")
     private val zitterSpeed by float("ZitterSpeed", 0.13f, 0.1f..0.3f) { zitterMode == "Teleport" }
+        .describe("Speed of the teleport zitter movement.")
     private val zitterStrength by float("ZitterStrength", 0.05f, 0f..0.2f) { zitterMode == "Teleport" }
+        .describe("Sideways strength of the teleport zitter.")
     private val zitterTicks by intRange("ZitterTicks", 2..3, 0..6) { zitterMode == "Smooth" }
+        .describe("Ticks between smooth zitter direction flips.")
 
     private val useSneakMidAir by boolean("UseSneakMidAir", false) { zitterMode == "Smooth" }
+        .describe("Sneak in mid-air during smooth zitter.")
 
     // Game
     val timer by float("Timer", 1f, 0.1f..10f)
+        .describe("Game-speed timer multiplier while bridging.")
     private val speedModifier by float("SpeedModifier", 1f, 0f..2f)
+        .describe("Multiplier applied to movement speed.")
     private val speedLimiter by boolean("SpeedLimiter", false) { !slow }
+        .describe("Cap movement speed to a fixed limit.")
     private val speedLimit by float("SpeedLimit", 0.11f, 0.01f..0.12f) { !slow && speedLimiter }
+        .describe("Maximum allowed movement speed.")
     private val slow by boolean("Slow", false)
+        .describe("Slow down to place more reliably.")
     private val slowGround by boolean("SlowOnlyGround", false) { slow }
+        .describe("Only apply the slowdown while on the ground.")
     private val slowSpeed by float("SlowSpeed", 0.6f, 0.2f..0.8f) { slow }
+        .describe("Movement speed while slowed.")
 
     // Jump Strafe
     private val jumpStrafe by boolean("JumpStrafe", false)
+        .describe("Strafe while jumping to keep momentum.")
     private val jumpStraightStrafe by floatRange("JumpStraightStrafe", 0.4f..0.45f, 0.1f..1f) { jumpStrafe }
+        .describe("Strafe speed range when moving straight.")
     private val jumpDiagonalStrafe by floatRange("JumpDiagonalStrafe", 0.4f..0.45f, 0.1f..1f) { jumpStrafe }
+        .describe("Strafe speed range when moving diagonally.")
 
     // Safety
     private val sameY by boolean("SameY", false) { scaffoldMode != "GodBridge" }
+        .describe("Only bridge at the current Y level.")
     private val jumpOnUserInput by boolean("JumpOnUserInput", true) { sameY && scaffoldMode != "GodBridge" }
+        .describe("Allow jumping when you press jump.")
 
     private val safeWalkValue = boolean("SafeWalk", true) { scaffoldMode != "GodBridge" }
+        .describe("Prevent walking off block edges.")
     private val airSafe by boolean("AirSafe", false) { safeWalkValue.isActive() }
+        .describe("Extend safe-walk protection while airborne.")
 
     // Visuals
     private val mark by boolean("Mark", false).subjective()
+        .describe("Highlight the block about to be placed.")
     private val trackCPS by boolean("TrackCPS", false).subjective()
+        .describe("Show the current placement clicks-per-second.")
 
     // Target placement
     var placeRotation: PlaceRotation? = null

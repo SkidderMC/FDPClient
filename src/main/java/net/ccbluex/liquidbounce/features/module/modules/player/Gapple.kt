@@ -53,9 +53,11 @@ object Gapple : Module("Gapple", Category.PLAYER, Category.SubCategory.PLAYER_CO
     private val legitCompletion by choices("LegitCompletion", arrayOf("Current", "Legacy"), "Current") {
         modeValue == "LegitAuto" || modeValue == "Legit"
     }
+        .describe("Eating-completion logic to use in legit modes.")
     private val fastEatValue by boolean("FastEat", false) {
         legitCompletion == "Current" && (modeValue == "LegitAuto" || modeValue == "Legit")
     }
+        .describe("Speed up finishing the eat in legit modes.")
     private val eatDelayValue by int("FastEatDelay", 14, 0.. 35) { legitCompletion == "Current" && fastEatValue }
         .describe("Ticks to wait before finishing fast eat.")
     val timer = MSTimer()

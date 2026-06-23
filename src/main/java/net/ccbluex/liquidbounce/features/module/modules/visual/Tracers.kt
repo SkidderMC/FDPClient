@@ -38,6 +38,7 @@ object Tracers : Module("Tracers", Category.VISUAL, Category.SubCategory.RENDER_
     private val maxRenderDistance by int("MaxRenderDistance", 100, 1..200).onChanged {
         maxRenderDistanceSq = (it * it).toDouble()
     }
+        .describe("Maximum distance at which tracers are drawn.")
 
     private var maxRenderDistanceSq = 0.0
         set(value) {

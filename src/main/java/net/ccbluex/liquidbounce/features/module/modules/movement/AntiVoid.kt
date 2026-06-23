@@ -46,6 +46,7 @@ object AntiVoid : Module("AntiVoid", Category.MOVEMENT, Category.SubCategory.MOV
         arrayOf("Blink", "TeleportBack", "FlyFlag", "OnGroundSpoof", "MotionTeleport-Flag", "GhostBlock"),
         "FlyFlag"
     )
+        .describe("How the void save reacts when a fall is detected.")
     private val maxFallDistance by int("MaxFallDistance", 10, 2..255)
         .describe("Trigger the void save once predicted fall reaches this.")
     private val maxDistanceWithoutGround by float("MaxDistanceToSetback", 2.5f, 1f..30f) { mode != "Blink" }

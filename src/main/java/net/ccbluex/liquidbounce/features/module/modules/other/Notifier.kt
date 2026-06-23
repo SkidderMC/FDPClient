@@ -99,6 +99,7 @@ object Notifier : Module("Notifier", Category.OTHER, Category.SubCategory.MISCEL
     private val warnDelay by int("WarnDelay", 5000, 1000..50000) {
         onPlayerDeath || onHeldExplosive || onPlayerTool || playerCombat || drinkAlert
     }
+        .describe("Minimum delay between repeated warnings in milliseconds.")
 
     private val recentlyWarned = ConcurrentHashMap<String, Long>()
     private val playerCombat by boolean("PlayerCombat", false)

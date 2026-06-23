@@ -43,10 +43,12 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
             warmupNextGenClickGui()
         }
     }
+        .describe("Visual style of the ClickGUI.")
 
     private val color by choices(
         "Color", arrayOf("Custom", "Fade", "Theme"), "Theme"
     ) { style == "Dropdown" }
+        .describe("Color source for the dropdown style.")
 
     private val customColorSetting by color("CustomColor", Color(255, 255, 255)) { color == "Custom" || color == "Fade" }
         .describe("Custom accent color for the ClickGUI.")
@@ -92,6 +94,7 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
             warmupNextGenClickGui()
         }
     }
+        .describe("Open the menu in an external browser window.")
 
     override fun onEnable() {
         try {

@@ -31,15 +31,19 @@ object TargetFocus : Module("TargetFocus", Category.CLIENT, Category.SubCategory
         arrayOf("LowArmor", "BreakArmor", "Health", "Both", "BrowseAllPlayers", "SwitchVisibleHit", "SwitchVisibleTime"),
         "LowArmor"
     ) { automatic }
+        .describe("How the focused target is chosen automatically.")
     private val browseMode by choices("BrowseMode", arrayOf("Hits", "Time"), "Hits") {
         automatic && mode == "BrowseAllPlayers"
     }
+        .describe("Switch browsed players by hit count or time.")
     private val browseHits by int("BrowseHits", 5, 1..20) {
         automatic && (mode == "BrowseAllPlayers" && browseMode == "Hits" || mode == "SwitchVisibleHit")
     }
+        .describe("Hits before switching to the next player.")
     private val browseTimeMs by int("BrowseTimeMs", 3000, 1..10000) {
         automatic && (mode == "BrowseAllPlayers" && browseMode == "Time" || mode == "SwitchVisibleTime")
     }
+        .describe("Milliseconds before switching to the next player.")
     private val clearBrowseCacheValue = boolean("ClearBrowseCache", false) {
         automatic && mode == "BrowseAllPlayers"
     }
@@ -47,6 +51,7 @@ object TargetFocus : Module("TargetFocus", Category.CLIENT, Category.SubCategory
     private val showBrowsedPlayers by boolean("ShowBrowsedPlayers", false) {
         automatic && mode == "BrowseAllPlayers"
     }
+        .describe("Show a list of already browsed players.")
     private val bothHealthWeight by float("BothHealthWeight", 1F, 0.1F..5F) { automatic && mode == "Both" }
         .describe("Weight given to health in the Both mode score.")
     private val bothArmorWeight by float("BothArmorWeight", 1F, 0.1F..5F) { automatic && mode == "Both" }
@@ -54,9 +59,11 @@ object TargetFocus : Module("TargetFocus", Category.CLIENT, Category.SubCategory
     private val considerDurability by boolean("ConsiderDurability", true) {
         automatic && (mode == "BreakArmor" || mode == "Both")
     }
+        .describe("Prefer armor pieces with lower durability.")
     private val breakArmorPriority by float("BreakArmorPriority", 5F, 0F..10F) {
         automatic && (mode == "BreakArmor" || mode == "Both")
     }
+        .describe("Weight given to breaking armor in target scoring.")
 
     private var lockedTargetName = ""
     private var browseClanKey = ""
