@@ -51,7 +51,9 @@ object SideGuiColorManager {
             "MoonAsteroid", "SummerDog", "PinkFlavour", "SinCityRed",
             "Timber", "PinotNoir", "DirtyFog", "Piglet", "LittleLeaf",
             "Nelson", "TurquoiseFlow", "Purplin", "Martini", "SoundCloud",
-            "Inbox", "Amethyst", "Blush", "MochaRose"
+            "Inbox", "Amethyst", "Blush", "MochaRose",
+            "Crimson", "Glacier", "Venom", "Ember", "Twilight", "Steel",
+            "Gold", "Abyss", "Lime", "RoseGlow", "Cyber", "Lava"
         )
 
         val colorXStart = drag.x + 25

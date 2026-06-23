@@ -231,6 +231,22 @@ object ClientThemesUtils {
     /**
      * Retrieve a color for the current mode, optionally using [index] for animation offsets.
      */
+    private fun themeGradient(mode: String): Pair<Color, Color>? = when (mode) {
+        "crimson"  -> Pair(Color(200, 20, 60),   Color(120, 0, 40))
+        "glacier"  -> Pair(Color(140, 220, 255), Color(40, 120, 200))
+        "venom"    -> Pair(Color(120, 255, 40),  Color(20, 140, 60))
+        "ember"    -> Pair(Color(255, 90, 20),   Color(180, 30, 20))
+        "twilight" -> Pair(Color(90, 40, 160),   Color(220, 90, 200))
+        "steel"    -> Pair(Color(120, 140, 160), Color(40, 50, 70))
+        "gold"     -> Pair(Color(255, 210, 90),  Color(200, 140, 20))
+        "abyss"    -> Pair(Color(10, 20, 60),    Color(40, 80, 160))
+        "lime"     -> Pair(Color(180, 255, 80),  Color(80, 200, 40))
+        "roseglow" -> Pair(Color(255, 120, 160), Color(220, 40, 120))
+        "cyber"    -> Pair(Color(0, 255, 200),   Color(0, 140, 255))
+        "lava"     -> Pair(Color(255, 140, 0),   Color(200, 0, 0))
+        else -> null
+    }
+
     fun getColor(index: Int = 0): Color {
         val mode = ClientColorMode.lowercase()
         val fadeVal = ThemeFadeSpeed / 5.0 * if (updown) 1 else -1
@@ -301,7 +317,7 @@ object ClientThemesUtils {
             )
         )
 
-        val colorPair = colorMap[mode] ?: return Color(-1)
+        val colorPair = colorMap[mode] ?: themeGradient(mode) ?: return Color(-1)
         return mixColors(colorPair.first, colorPair.second, fadeVal, index)
     }
 
@@ -369,7 +385,7 @@ object ClientThemesUtils {
 
             "rainbow"   -> ColorUtils.skyRainbow(0, 1F, 1f, 20000F / ThemeFadeSpeed).setAlpha(alpha)
             "astolfo"   -> ColorUtils.skyRainbow(0, 0.6f, 1f, 20000F / ThemeFadeSpeed).setAlpha(alpha)
-            else        -> Color(-1)
+            else        -> themeGradient(mode)?.let { mixColors(it.first, it.second, fadeSpeed, index).setAlpha(alpha) } ?: Color(-1)
         }
     }
 
@@ -449,7 +465,7 @@ object ClientThemesUtils {
             )
         )
 
-        val pair = colorMap[lower] ?: return Color(-1)
+        val pair = colorMap[lower] ?: themeGradient(lower) ?: return Color(-1)
 
         return mixColors(pair.first, pair.second, fadeVal, index)
     }
