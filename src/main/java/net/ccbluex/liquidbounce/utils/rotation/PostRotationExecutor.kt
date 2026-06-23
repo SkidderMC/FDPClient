@@ -21,15 +21,24 @@ object PostRotationExecutor {
     /** Hard cap so a module that schedules without anything ever flushing cannot leak. */
     private const val MAX_QUEUED = 32
 
-    private val postMoveTasks = ArrayDeque<() -> Unit>()
+    private val postMoveTasks = ArrayDeque<Pair<Long, () -> Unit>>()
     private val nextTickTasks = ArrayDeque<() -> Unit>()
+
+    /**
+     * Monotonic tick generation, bumped once per [tick]. Lets [tick] tell apart a post-move task that
+     * was just queued this tick (still waiting for its rotation packet) from one orphaned in a prior
+     * tick because no rotation packet ever left to flush it (e.g. the player stood still, so the idle
+     * movement packet is not "rotating"). The orphan is drained as a fallback so a queued action can
+     * never get stuck — this is what kept attacks from firing while standing still.
+     */
+    private var generation = 0L
 
     /**
      * Run [task] immediately after the next outgoing rotation packet carried our rotation.
      */
     fun runPostMove(task: () -> Unit) {
         if (postMoveTasks.size >= MAX_QUEUED) postMoveTasks.removeFirst()
-        postMoveTasks.addLast(task)
+        postMoveTasks.addLast(generation to task)
     }
 
     /**
@@ -49,19 +58,29 @@ object PostRotationExecutor {
      */
     fun onRotationPacketSent() {
         while (postMoveTasks.isNotEmpty()) {
-            val task = postMoveTasks.removeFirst()
+            val (_, task) = postMoveTasks.removeFirst()
             runCatching { task() }
         }
     }
 
     /**
-     * Drains the next-tick queue. Called once per rotation tick.
+     * Drains the next-tick queue. Called once per rotation tick. Also drains any post-move task that
+     * was orphaned in an earlier generation (no rotation packet ever left to flush it, e.g. the player
+     * stood still) so the action still fires instead of getting stuck — tasks queued this very tick are
+     * left untouched here so [onRotationPacketSent] can still fire them directly behind the rotation.
      */
     fun tick() {
         while (nextTickTasks.isNotEmpty()) {
             val task = nextTickTasks.removeFirst()
             runCatching { task() }
         }
+
+        while (postMoveTasks.isNotEmpty() && postMoveTasks.first().first < generation) {
+            val (_, task) = postMoveTasks.removeFirst()
+            runCatching { task() }
+        }
+
+        generation++
     }
 
     fun clear() {
