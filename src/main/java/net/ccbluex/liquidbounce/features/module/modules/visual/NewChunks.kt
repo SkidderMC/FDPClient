@@ -67,7 +67,13 @@ object NewChunks : Module("NewChunks", Category.VISUAL, Category.SubCategory.REN
         when (val packet = event.packet) {
             is S21PacketChunkData -> {
                 val pos = ChunkCoordIntPair(packet.chunkX, packet.chunkZ)
-                chunks.putIfAbsent(pos, false)
+                if (packet.extractedSize == 0) {
+                    if (!persist) {
+                        chunks.remove(pos)
+                    }
+                } else {
+                    chunks.putIfAbsent(pos, false)
+                }
             }
 
             is S26PacketMapChunkBulk -> {

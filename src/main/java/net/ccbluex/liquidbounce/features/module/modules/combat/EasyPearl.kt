@@ -52,7 +52,7 @@ object EasyPearl : Module("EasyPearl", Category.COMBAT, Category.SubCategory.COM
     private const val MOTION_FACTOR = 1.5F
     private const val GRAVITY = 0.03
     private const val AIR_SLOWDOWN = 0.99
-    private const val WATER_SLOWDOWN = 0.6
+    private const val WATER_SLOWDOWN = 0.8
 
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.HIGH)
 

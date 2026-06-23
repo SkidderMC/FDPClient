@@ -107,24 +107,26 @@ object MurderMystery : Module("MurderMystery", Category.OTHER, Category.SubCateg
                 else -> continue
             }
 
-            drawEntityBox(entity, color, box)
+            if (box) {
+                drawEntityBox(entity, color, true)
+            }
         }
     }
 
     private fun handleSword(entity: EntityPlayer) {
         val id = entity.gameProfile.id ?: return
 
-        if (mode == "Infection" && murdererPlayers.isNotEmpty()) {
-            return
-        }
+        val firstInfected = mode == "Infection" && murdererPlayers.isEmpty()
 
         if (murdererPlayers.add(id)) {
-            if (chatAlert) {
+            val announce = mode != "Infection" || firstInfected
+
+            if (chatAlert && announce) {
                 val name = entity.gameProfile.name ?: "Unknown"
                 chat(if (mode == "Infection") "§c$name §3is the first infected." else "§cMurderer: §f$name")
             }
 
-            if (sound) {
+            if (sound && announce) {
                 mc.thePlayer?.playSound("mob.villager.hit", 1f, 1f)
             }
         }

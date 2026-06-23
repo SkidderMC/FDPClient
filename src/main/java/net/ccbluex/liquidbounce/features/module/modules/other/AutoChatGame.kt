@@ -10,6 +10,8 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import net.ccbluex.liquidbounce.event.EventState
+import net.ccbluex.liquidbounce.event.MotionEvent
 import net.ccbluex.liquidbounce.event.PacketEvent
 import net.ccbluex.liquidbounce.event.async.launchSequence
 import net.ccbluex.liquidbounce.event.handler
@@ -110,6 +112,20 @@ object AutoChatGame : Module("AutoChatGame", Category.OTHER, Category.SubCategor
 
         if (!triggerTimer.hasTimePassed(bufferTime.toLong())) {
             chatBuffer.add(message)
+            return@handler
+        }
+
+        if (chatBuffer.isNotEmpty() && !pending) {
+            solve()
+        }
+    }
+
+    val onMotion = handler<MotionEvent> { event ->
+        if (event.eventState != EventState.PRE) {
+            return@handler
+        }
+
+        if (!triggerTimer.hasTimePassed(bufferTime.toLong())) {
             return@handler
         }
 

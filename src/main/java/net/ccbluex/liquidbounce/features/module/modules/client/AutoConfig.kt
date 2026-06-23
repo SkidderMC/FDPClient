@@ -70,10 +70,13 @@ object AutoConfig : Module("AutoConfig", Category.CLIENT, Category.SubCategory.C
 
         thread(name = "AutoConfig-Loader") {
             runCatching {
-                SettingsUtils.applyScript(SettingsUtils.loadFromUrl(url))
-            }.onSuccess {
-                if (notifyValue.get()) {
-                    chat("§7[§3§lAutoConfig§7] §7Loaded config for §a§l$domain§7.")
+                SettingsUtils.loadFromUrl(url)
+            }.onSuccess { script ->
+                mc.addScheduledTask {
+                    SettingsUtils.applyScript(script)
+                    if (notifyValue.get()) {
+                        chat("§7[§3§lAutoConfig§7] §7Loaded config for §a§l$domain§7.")
+                    }
                 }
             }.onFailure {
                 if (notifyValue.get()) {

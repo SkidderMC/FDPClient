@@ -74,7 +74,14 @@ object SkinChanger : Module("SkinChanger", Category.VISUAL, Category.SubCategory
 
         lastKey = "online:$name"
 
-        val info = mc.netHandler?.playerInfoMap?.firstOrNull {
+        val playerInfoMap = mc.netHandler?.playerInfoMap ?: run {
+            resolved = null
+            return
+        }
+
+        val info = synchronized(playerInfoMap) {
+            ArrayList(playerInfoMap)
+        }.firstOrNull {
             it?.gameProfile?.name.equals(name, ignoreCase = true)
         }
 
@@ -95,7 +102,8 @@ object SkinChanger : Module("SkinChanger", Category.VISUAL, Category.SubCategory
         lastKey = "file:$target"
 
         runCatching {
-            val file = File(skinDir, target)
+            val configured = File(target)
+            val file = if (configured.isAbsolute || configured.isFile) configured else File(skinDir, target)
             if (!file.isFile) {
                 if (handleEvents()) {
                     chat("Skin file not found: ${file.absolutePath}")

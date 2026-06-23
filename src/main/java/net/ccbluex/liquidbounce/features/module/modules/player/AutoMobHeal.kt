@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.entity.EntityLivingBase
 import net.minecraft.entity.monster.EntityIronGolem
 import net.minecraft.entity.passive.EntityHorse
-import net.minecraft.entity.passive.EntityTameable
+import net.minecraft.entity.passive.EntityWolf
 import net.minecraft.init.Items
 import net.minecraft.item.Item
 import net.minecraft.network.play.client.C02PacketUseEntity
@@ -26,7 +26,7 @@ object AutoMobHeal : Module("AutoMobHeal", Category.PLAYER, Category.SubCategory
     private val golems by boolean("IronGolems", true)
         .describe("Heal hurt iron golems with iron ingots.")
     private val tamed by boolean("TamedAnimals", true)
-        .describe("Heal hurt tamed wolves and cats.")
+        .describe("Heal hurt tamed wolves.")
     private val horses by boolean("Horses", true)
         .describe("Heal hurt tamed horses.")
 
@@ -44,8 +44,7 @@ object AutoMobHeal : Module("AutoMobHeal", Category.PLAYER, Category.SubCategory
 
     private val tamedFood = arrayOf<Item>(
         Items.cooked_beef,
-        Items.cooked_chicken,
-        Items.fish
+        Items.cooked_chicken
     )
 
     private val horseFood = arrayOf<Item>(
@@ -119,7 +118,7 @@ object AutoMobHeal : Module("AutoMobHeal", Category.PLAYER, Category.SubCategory
     private fun isHealable(entity: EntityLivingBase): Boolean = when (entity) {
         is EntityIronGolem -> golems
         is EntityHorse -> horses && entity.isTame && !entity.isChild
-        is EntityTameable -> tamed && entity.isTamed
+        is EntityWolf -> tamed && entity.isTamed
         else -> false
     }
 

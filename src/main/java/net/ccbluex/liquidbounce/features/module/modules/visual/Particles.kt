@@ -159,6 +159,8 @@ object Particles : Module("Particles", Category.VISUAL, Category.SubCategory.REN
                 glPopMatrix()
             }
 
+            glLineWidth(1f)
+            glPointSize(1f)
             glDepthMask(true)
             glShadeModel(GL_FLAT)
             glDisable(GL_LINE_SMOOTH)

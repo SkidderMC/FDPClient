@@ -23,8 +23,8 @@ import net.minecraft.item.ItemEnderPearl
 import net.minecraft.item.ItemFishingRod
 import net.minecraft.item.ItemPotion
 import net.minecraft.item.ItemSnowball
-import net.minecraft.util.BlockPos
 import net.minecraft.util.MathHelper
+import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.GL_ALL_ATTRIB_BITS
 import org.lwjgl.opengl.GL11.GL_ALPHA_TEST
@@ -104,7 +104,7 @@ object Trajectories : Module("Trajectories", Category.VISUAL, Category.SubCatego
             val type = resolveProjectile(source) ?: continue
 
             val rotation = rotationFor(source)
-            val positions = simulate(source, rotation, type, world)
+            val (positions, hit) = simulate(source, rotation, type, world)
             if (positions.size < 2) continue
 
             glColor(lineColor)
@@ -114,9 +114,9 @@ object Trajectories : Module("Trajectories", Category.VISUAL, Category.SubCatego
             }
             glEnd()
 
-            if (landingBox) {
-                val landing = positions.last()
-                drawBlockBox(BlockPos(landing.xCoord, landing.yCoord, landing.zCoord), boxColor, false)
+            if (landingBox && hit != null) {
+                val landingPos = hit.blockPos
+                if (landingPos != null) drawBlockBox(landingPos, boxColor, false)
             }
         }
 
@@ -165,7 +165,7 @@ object Trajectories : Module("Trajectories", Category.VISUAL, Category.SubCatego
         rotation: Rotation,
         type: ProjectileType,
         world: net.minecraft.world.World
-    ): List<Vec3> {
+    ): Pair<List<Vec3>, MovingObjectPosition?> {
         val yaw = rotation.yaw
         val pitch = rotation.pitch
 
@@ -197,7 +197,7 @@ object Trajectories : Module("Trajectories", Category.VISUAL, Category.SubCatego
             val hit = world.rayTraceBlocks(from, to, false, true, false)
             if (hit != null) {
                 positions += hit.hitVec
-                break
+                return positions to hit
             }
 
             x += motionX
@@ -220,6 +220,6 @@ object Trajectories : Module("Trajectories", Category.VISUAL, Category.SubCatego
             ticks++
         }
 
-        return positions
+        return positions to null
     }
 }

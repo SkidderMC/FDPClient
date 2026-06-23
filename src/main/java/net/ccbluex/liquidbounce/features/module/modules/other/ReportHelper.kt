@@ -48,25 +48,29 @@ object ReportHelper : Module("ReportHelper", Category.OTHER, Category.SubCategor
             return@handler
         }
 
-        val candidates = if (onlyOnline) {
-            mc.netHandler?.playerInfoMap?.mapNotNull { it.gameProfile?.name } ?: return@handler
-        } else {
-            mc.theWorld?.playerEntities?.mapNotNull { it.name } ?: return@handler
-        }
+        mc.addScheduledTask {
+            val candidates = if (onlyOnline) {
+                mc.netHandler?.playerInfoMap?.let { infoMap ->
+                    synchronized(infoMap) { infoMap.mapNotNull { it.gameProfile?.name } }
+                } ?: return@addScheduledTask
+            } else {
+                mc.theWorld?.playerEntities?.mapNotNull { it.name } ?: return@addScheduledTask
+            }
 
-        val target = candidates.firstOrNull { name ->
-            name != selfName &&
-                message.contains(name) &&
-                !(ignoreFriends && friendsConfig.isFriend(name))
-        } ?: return@handler
+            val target = candidates.firstOrNull { name ->
+                name != selfName &&
+                    message.contains(name) &&
+                    !(ignoreFriends && friendsConfig.isFriend(name))
+            } ?: return@addScheduledTask
 
-        if (nextInt(0, 100) >= chance || !reported.add(target)) {
-            return@handler
-        }
+            if (nextInt(0, 100) >= chance || !reported.add(target)) {
+                return@addScheduledTask
+            }
 
-        launchSequence {
-            delay(delayTicks.random() * 50L)
-            mc.thePlayer?.sendChatMessage(pattern.format(target))
+            launchSequence {
+                delay(delayTicks.random() * 50L)
+                mc.thePlayer?.sendChatMessage(pattern.format(target))
+            }
         }
     }
 

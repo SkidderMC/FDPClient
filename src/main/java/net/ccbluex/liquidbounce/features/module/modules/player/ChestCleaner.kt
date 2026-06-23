@@ -39,6 +39,7 @@ object ChestCleaner : Module("ChestCleaner", Category.PLAYER, Category.SubCatego
     private val noMoveGround by +InventoryManager.noMoveGroundValue
 
     private val timer = MSTimer()
+    private var entered = false
     private var started = false
 
     private fun parsedItems(): Set<String> =
@@ -68,6 +69,7 @@ object ChestCleaner : Module("ChestCleaner", Category.PLAYER, Category.SubCatego
         val screen = mc.currentScreen
 
         if (screen !is GuiChest) {
+            entered = false
             started = false
             return@handler
         }
@@ -87,13 +89,14 @@ object ChestCleaner : Module("ChestCleaner", Category.PLAYER, Category.SubCatego
         if (chestTitle && Blocks.chest.localizedName !in lowerChest.name)
             return@handler
 
-        if (!started) {
-            started = true
+        if (!entered) {
+            entered = true
             timer.reset()
             return@handler
         }
 
-        if (!timer.hasTimePassed(startDelay.random()))
+        val gate = if (started) delay.random() else startDelay.random()
+        if (!timer.hasTimePassed(gate))
             return@handler
 
         val slots = container.inventorySlots
@@ -114,10 +117,12 @@ object ChestCleaner : Module("ChestCleaner", Category.PLAYER, Category.SubCatego
         }
 
         mc.playerController?.windowClick(container.windowId, targetSlot, 1, 4, player)
+        started = true
         timer.reset()
     }
 
     override fun onDisable() {
+        entered = false
         started = false
     }
 }
