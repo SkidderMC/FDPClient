@@ -324,5 +324,6 @@
     "module.betterInventory.description": "Melhora a tela de inventario com ajustes como destacar o slot clicado.",
     "module.betterTitle.description": "Personaliza como titulos e subtitulos do servidor sao exibidos, incluindo o tempo.",
     "module.hitFX.description": "Gera efeitos de particula nativos na entidade que voce acerta.",
-    "module.easyPearl.description": "Mira a perola jogada a mao para cair onde voce esta olhando."
+    "module.easyPearl.description": "Mira a perola jogada a mao para cair onde voce esta olhando.",
+    "module.debugRecorder.description": "Grava dados de mira, combate e cliques por tick em um arquivo JSON para analise offline."
 }

@@ -132,6 +132,11 @@ public class MixinGuiPlayerTabOverlay {
     private List<NetworkPlayerInfo> redirectSortedCopy(Ordering<NetworkPlayerInfo> ordering, Iterable<NetworkPlayerInfo> iterable) {
         List<NetworkPlayerInfo> list = ordering.sortedCopy(iterable);
 
+        java.util.Comparator<NetworkPlayerInfo> comparator = fdp$sortingComparator();
+        if (comparator != null) {
+            list.sort(comparator);
+        }
+
         if (mc.thePlayer != null) {
             List<NetworkPlayerInfo> priorityPlayers = new ArrayList<>();
             List<NetworkPlayerInfo> enemyPlayers = new ArrayList<>();
@@ -234,6 +239,32 @@ public class MixinGuiPlayerTabOverlay {
     @ModifyConstant(method = "renderPlayerlist", constant = @Constant(intValue = 13))
     private int fdp$expandPingReserve(int original) {
         return Math.max(original, FDP_TAB_RESERVED_PING);
+    }
+
+    @ModifyConstant(method = "renderPlayerlist", constant = @Constant(intValue = 80))
+    private int fdp$expandPlayerCap(int original) {
+        return Math.max(original, TabGUIModule.INSTANCE.getTabMaxPlayers());
+    }
+
+    @Unique
+    private java.util.Comparator<NetworkPlayerInfo> fdp$sortingComparator() {
+        String mode = TabGUIModule.INSTANCE.getTabSorting();
+        switch (mode) {
+            case "Ping":
+                return java.util.Comparator.comparingInt(NetworkPlayerInfo::getResponseTime);
+            case "NameLength":
+                return java.util.Comparator.comparingInt(info -> info.getGameProfile().getName().length());
+            case "DisplayNameLength":
+                return java.util.Comparator.comparingInt(info ->
+                        ScorePlayerTeam.formatPlayerName(info.getPlayerTeam(), info.getGameProfile().getName()).length());
+            case "Alphabetical":
+                return java.util.Comparator.comparing(info -> info.getGameProfile().getName(), String.CASE_INSENSITIVE_ORDER);
+            case "ReverseAlphabetical":
+                return java.util.Comparator.comparing(
+                        (NetworkPlayerInfo info) -> info.getGameProfile().getName(), String.CASE_INSENSITIVE_ORDER).reversed();
+            default:
+                return null;
+        }
     }
 
     @Unique

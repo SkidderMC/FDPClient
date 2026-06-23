@@ -31,6 +31,13 @@ object TabGUIModule : Module("TabGUI", Category.CLIENT, Category.SubCategory.CLI
         .describe("Show the tab list footer.")
     val tabScale by choices("Scale", arrayOf("Small", "Normal", "Large", "Extra Large", "Default"), "Default")
         .describe("Scale of the tab list overlay.")
+    val tabSorting by choices(
+        "Sorting",
+        arrayOf("Vanilla", "Ping", "NameLength", "DisplayNameLength", "Alphabetical", "ReverseAlphabetical"),
+        "Vanilla"
+    ).describe("Reorder the player list by the chosen criterion.")
+    val tabMaxPlayers by int("Max Players", 80, 1..1000)
+        .describe("Raise the cap on how many players the tab list can show.")
 
     var flagRenderTabOverlay = false
         get() = field && tabShowPlayerSkin
