@@ -12,10 +12,13 @@ import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import com.google.gson.JsonPrimitive
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeoutOrNull
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.config.BlockValue
 import net.ccbluex.liquidbounce.config.BoolValue
 import net.ccbluex.liquidbounce.config.ColorValue
+import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.config.CurveValue
 import net.ccbluex.liquidbounce.config.FileValue
 import net.ccbluex.liquidbounce.config.FloatRangeValue
@@ -288,6 +291,70 @@ object NextGenClickGuiBridge : MinecraftInstance {
         }
     }
 
+    fun spotifyPlaylists(): JsonObject = JsonObject().apply {
+        addProperty("connection", SpotifyModule.connectionState.name)
+        addProperty("local", SpotifyModule.usingLocalSource)
+        val playlists = runBlocking { withTimeoutOrNull(12000L) { SpotifyModule.browsePlaylists() } } ?: emptyList()
+        add("playlists", JsonArray().apply {
+            add(JsonObject().apply {
+                addProperty("id", "liked")
+                addProperty("name", "Liked Songs")
+                addProperty("trackCount", -1)
+                addProperty("imageUrl", "")
+                addProperty("uri", "")
+                addProperty("likedSongs", true)
+            })
+            playlists.forEach { p ->
+                add(JsonObject().apply {
+                    addProperty("id", p.id)
+                    addProperty("name", p.name)
+                    addProperty("owner", p.owner ?: "")
+                    addProperty("trackCount", p.trackCount)
+                    addProperty("imageUrl", p.imageUrl ?: "")
+                    addProperty("uri", p.uri ?: "")
+                    addProperty("likedSongs", p.isLikedSongs)
+                })
+            }
+        })
+    }
+
+    fun spotifyPlaylistTracks(id: String): JsonObject = JsonObject().apply {
+        addProperty("id", id)
+        val page = runBlocking { withTimeoutOrNull(15000L) { SpotifyModule.browsePlaylistTracks(id) } }
+        val tracks = page?.tracks ?: emptyList()
+        val liked = runBlocking { withTimeoutOrNull(8000L) { SpotifyModule.likedStatuses(tracks.map { it.id }) } } ?: emptyMap()
+        addProperty("total", page?.total ?: 0)
+        add("tracks", JsonArray().apply {
+            tracks.forEach { t ->
+                add(JsonObject().apply {
+                    addProperty("id", t.id)
+                    addProperty("uri", t.uri ?: "")
+                    addProperty("title", t.title)
+                    addProperty("artists", t.artists)
+                    addProperty("album", t.album)
+                    addProperty("durationMs", t.durationMs)
+                    addProperty("coverUrl", t.coverUrl ?: "")
+                    addProperty("addedAt", t.addedAt ?: 0L)
+                    addProperty("liked", liked[t.id] ?: false)
+                })
+            }
+        })
+    }
+
+    fun spotifyPlay(body: String) {
+        val obj = runCatching { parser.parse(body).asJsonObject }.getOrNull() ?: return
+        val contextUri = obj.get("contextUri")?.takeIf { it.isJsonPrimitive }?.asString?.takeIf { it.isNotBlank() }
+        val trackUri = obj.get("trackUri")?.takeIf { it.isJsonPrimitive }?.asString?.takeIf { it.isNotBlank() }
+        SpotifyModule.playContext(contextUri, trackUri)
+    }
+
+    fun spotifyLike(body: String) {
+        val obj = runCatching { parser.parse(body).asJsonObject }.getOrNull() ?: return
+        val trackId = obj.get("trackId")?.takeIf { it.isJsonPrimitive }?.asString ?: return
+        val save = obj.get("save")?.takeIf { it.isJsonPrimitive }?.asBoolean ?: true
+        SpotifyModule.setLiked(trackId, save)
+    }
+
     fun virtualScreen(): JsonObject = JsonObject().apply {
         addProperty("name", "clickgui")
     }
@@ -448,6 +515,13 @@ object NextGenClickGuiBridge : MinecraftInstance {
                 addProperty("tension", 0.0)
             }
 
+            // Nested group (ValueGroup / ToggleableValueGroup / ModeValueGroup are all Configurable):
+            // emit a CONFIGURABLE whose children are serialized recursively, so sub-group values
+            // actually show up instead of collapsing into a single TEXT field. The group's master
+            // toggle ("Enabled") or mode ("Mode") is itself a child value, so it comes along for free,
+            // and gated-off children already drop out via shouldRender() above.
+            is Configurable -> configurable(value.name, value.values.mapNotNull(::settingJson))
+
             else -> settingBase("TEXT", value.name).apply {
                 addProperty("value", value.toText())
             }
@@ -526,6 +600,7 @@ object NextGenClickGuiBridge : MinecraftInstance {
                         value.set(DoubleArray(points.size) { points[it].second.coerceIn(0.0, 1.0) })
                     }
                 }
+                is Configurable -> applyValues(value.values, element.asJsonArray)
                 else -> Unit
             }
         }

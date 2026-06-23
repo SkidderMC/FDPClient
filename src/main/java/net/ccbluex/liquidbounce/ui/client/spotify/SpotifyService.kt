@@ -435,7 +435,10 @@ class SpotifyService(
             val tracks = items.mapNotNull { element ->
                 val wrapper = element.takeIf { it.isJsonObject }?.asJsonObject ?: return@mapNotNull null
                 val trackObj = wrapper.get("track")?.takeIf { it.isJsonObject }?.asJsonObject ?: wrapper
-                parseTrack(trackObj)
+                val addedAt = wrapper.getString("added_at")?.let { iso ->
+                    runCatching { java.time.Instant.parse(iso).toEpochMilli() }.getOrNull()
+                }
+                parseTrack(trackObj)?.let { if (addedAt != null) it.copy(addedAt = addedAt) else it }
             }
             val total = json.getInt("total") ?: tracks.size
             SpotifyTrackPage(tracks, total)
@@ -588,6 +591,7 @@ class SpotifyService(
                 )
             }
         val duration = trackObj.getInt("duration_ms") ?: 0
+        val uri = trackObj.getString("uri")
 
         return SpotifyTrack(
             id = id,
@@ -596,6 +600,7 @@ class SpotifyService(
             album = albumName,
             coverUrl = coverUrl,
             durationMs = duration,
+            uri = uri,
         )
     }
 

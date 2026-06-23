@@ -27,8 +27,10 @@ import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyCredentials
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyAuthFlow
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyDefaults
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyLocalSource
+import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyPlaylistSummary
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyRepeatMode
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyService
+import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyTrackPage
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyState
 import net.ccbluex.liquidbounce.ui.client.spotify.SpotifyStateChangedEvent
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
@@ -462,6 +464,51 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
             updateConnection(SpotifyConnectionState.CONNECTED, null)
             runCatching { EventManager.call(SpotifyStateChangedEvent(refreshed)) }
         }
+    }
+
+    // --- Library browsing (Web API only; the local OS media session cannot enumerate playlists) ---
+
+    suspend fun browsePlaylists(): List<SpotifyPlaylistSummary> {
+        val token = acquireAccessToken() ?: return emptyList()
+        return runCatching { service.fetchUserPlaylists(token.value) }
+            .onFailure { handleError("Failed to load playlists: ${it.message}") }
+            .getOrDefault(emptyList())
+    }
+
+    suspend fun browseSavedTracks(): SpotifyTrackPage {
+        val token = acquireAccessToken() ?: return SpotifyTrackPage(emptyList(), 0)
+        return runCatching { service.fetchSavedTracks(token.value, 100, 0) }
+            .getOrDefault(SpotifyTrackPage(emptyList(), 0))
+    }
+
+    suspend fun browsePlaylistTracks(id: String): SpotifyTrackPage {
+        if (id.isBlank() || id == "liked") return browseSavedTracks()
+        val token = acquireAccessToken() ?: return SpotifyTrackPage(emptyList(), 0)
+        return runCatching { service.fetchPlaylistTracks(token.value, id, 100, 0) }
+            .onFailure { handleError("Failed to load tracks: ${it.message}") }
+            .getOrDefault(SpotifyTrackPage(emptyList(), 0))
+    }
+
+    suspend fun likedStatuses(trackIds: List<String>): Map<String, Boolean> {
+        if (trackIds.isEmpty()) return emptyMap()
+        val token = acquireAccessToken() ?: return emptyMap()
+        return runCatching { service.fetchSavedStatuses(token.value, trackIds) }.getOrDefault(emptyMap())
+    }
+
+    fun playContext(contextUri: String?, trackUri: String?) {
+        controlViaApi { token ->
+            if (contextUri != null && trackUri != null) {
+                service.startPlayback(token, contextUri = contextUri, offsetUri = trackUri)
+            } else if (contextUri != null) {
+                service.startPlayback(token, contextUri = contextUri)
+            } else if (trackUri != null) {
+                service.startPlayback(token, trackUri = trackUri)
+            }
+        }
+    }
+
+    fun setLiked(trackId: String, save: Boolean) {
+        controlViaApi { token -> service.setSavedTracksState(token, listOf(trackId), save) }
     }
 
     private fun controlViaApi(block: suspend (token: String) -> Unit) {

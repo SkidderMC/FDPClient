@@ -136,6 +136,22 @@ object NextGenClickGuiServer {
                 sendNoContent(exchange)
             }
 
+            method == "GET" && path == "/client/spotify/playlists" ->
+                sendJson(exchange, NextGenClickGuiBridge.spotifyPlaylists())
+
+            method == "GET" && path == "/client/spotify/playlist" ->
+                sendJson(exchange, NextGenClickGuiBridge.spotifyPlaylistTracks(query(exchange, "id") ?: ""))
+
+            method == "POST" && path == "/client/spotify/play" -> {
+                NextGenClickGuiBridge.spotifyPlay(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
+            method == "POST" && path == "/client/spotify/like" -> {
+                NextGenClickGuiBridge.spotifyLike(exchange.bodyText())
+                sendNoContent(exchange)
+            }
+
             method == "POST" && path == "/client/typing" ->
                 sendNoContent(exchange)
 
