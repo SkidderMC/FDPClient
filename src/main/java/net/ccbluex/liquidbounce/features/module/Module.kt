@@ -46,9 +46,11 @@ open class Module(
     val gameDetecting: Boolean = canBeEnabled,
     defaultState: Boolean = false,
     defaultHidden: Boolean = false,
+    legacyNames: Array<String> = emptyArray(),
 ) : Configurable(name), MinecraftInstance, Listenable {
 
     init {
+        aliases(*legacyNames)
         if (subjective) {
             subjective()
         }

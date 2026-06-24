@@ -22,7 +22,10 @@ import net.minecraft.init.Items
 import org.lwjgl.input.Mouse
 
 object MiddleClickAction : Module(
-    "MiddleClickAction", Category.OTHER, Category.SubCategory.MISCELLANEOUS, subjective = true, gameDetecting = false
+    "MiddleClick", Category.OTHER, Category.SubCategory.MISCELLANEOUS,
+    subjective = true,
+    gameDetecting = false,
+    legacyNames = arrayOf("MiddleClickAction", "MidClick", "MCF", "MidClickModule")
 ) {
 
     private val mode by choices("Mode", arrayOf("FriendClicker", "Pearl"), "FriendClicker")
@@ -54,14 +57,14 @@ object MiddleClickAction : Module(
                 if (!friendsConfig.isFriend(playerName)) {
                     friendsConfig.addFriend(playerName)
                     saveConfig(friendsConfig)
-                    chat("§a§l$playerName§c was added to your friends.")
+                    chat("§a§l$playerName §7was added to your friends.")
                 } else {
                     friendsConfig.removeFriend(playerName)
                     saveConfig(friendsConfig)
-                    chat("§a§l$playerName§c was removed from your friends.")
+                    chat("§a§l$playerName §7was removed from your friends.")
                 }
             } else {
-                chat("§c§lError: §aYou need to select a player.")
+                chat("§c§lError: §7You need to select a player.")
             }
         }
 

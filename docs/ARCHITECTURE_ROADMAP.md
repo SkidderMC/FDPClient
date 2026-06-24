@@ -19,8 +19,8 @@ render thread that can be bounded or scheduled.
 | Render | Several font/render paths and damage particle module | Bounded atlas allocation with safe legacy fallback |
 | Browser UI | Existing local browser bridge/server | Non-blocking event stream and reconnect protocol |
 
-The middle-click modules overlap. They will be consolidated only after their registration and
-configuration migration paths are verified, so existing user configs keep loading.
+The overlapping middle-click modules were consolidated under one module. Legacy module names are
+resolved as aliases so existing state, keybind and value configuration continues to load.
 
 ## Current status
 
