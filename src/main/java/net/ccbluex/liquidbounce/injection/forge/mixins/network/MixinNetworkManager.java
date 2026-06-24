@@ -10,6 +10,7 @@ import net.ccbluex.liquidbounce.event.EventManager;
 import net.ccbluex.liquidbounce.event.EventState;
 import net.ccbluex.liquidbounce.event.PacketEvent;
 import net.ccbluex.liquidbounce.features.module.modules.client.TabGUIModule;
+import net.ccbluex.liquidbounce.utils.rotation.PostRotationExecutor;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.ccbluex.liquidbounce.utils.client.PPSCounter;
@@ -41,11 +42,17 @@ public class MixinNetworkManager {
         EventManager.INSTANCE.call(event);
 
         if (event.isCancelled()) {
+            PostRotationExecutor.INSTANCE.discardRotationPacket(packet);
             callback.cancel();
             return;
         }
 
         PPSCounter.INSTANCE.registerType(PPSCounter.PacketType.SEND);
+    }
+
+    @Inject(method = "sendPacket(Lnet/minecraft/network/Packet;)V", at = @At("RETURN"))
+    private void sent(Packet<?> packet, CallbackInfo callback) {
+        PostRotationExecutor.INSTANCE.onPacketSendCompleted(packet);
     }
 
 

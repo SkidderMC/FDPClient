@@ -885,13 +885,13 @@ object RotationUtils : MinecraftInstance, Listenable {
 
         currentRotation?.let {
             packet.rotation = it
-            // Our rotation just left for the server; fire any post-move actions directly behind it.
-            PostRotationExecutor.onRotationPacketSent()
+            // The network tail hook releases post-move actions only after this packet actually sends.
+            PostRotationExecutor.markRotationPacket(packet)
         }
 
         val diffs = angleDifferences(packet.rotation, serverRotation)
 
-        if (Rotations.debugRotations && currentRotation != null) {
+        if (Rotations.shouldPrintDebug() && currentRotation != null) {
             chat("PREV YAW: ${diffs.x}, PREV PITCH: ${diffs.y}")
         }
 

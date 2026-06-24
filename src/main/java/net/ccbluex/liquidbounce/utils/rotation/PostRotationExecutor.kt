@@ -5,6 +5,9 @@
  */
 package net.ccbluex.liquidbounce.utils.rotation
 
+import net.minecraft.network.Packet
+import java.util.IdentityHashMap
+
 /**
  * Schedules actions (attacks, interactions, place-clicks) to fire right after our silent rotation has
  * already been written into the outgoing movement packet ("post-move"), or on the next rotation tick.
@@ -23,6 +26,7 @@ object PostRotationExecutor {
 
     private val postMoveTasks = ArrayDeque<Pair<Long, () -> Unit>>()
     private val nextTickTasks = ArrayDeque<() -> Unit>()
+    private val markedRotationPackets = IdentityHashMap<Packet<*>, Long>()
 
     /**
      * Monotonic tick generation, bumped once per [tick]. Lets [tick] tell apart a post-move task that
@@ -36,6 +40,7 @@ object PostRotationExecutor {
     /**
      * Run [task] immediately after the next outgoing rotation packet carried our rotation.
      */
+    @Synchronized
     fun runPostMove(task: () -> Unit) {
         if (postMoveTasks.size >= MAX_QUEUED) postMoveTasks.removeFirst()
         postMoveTasks.addLast(generation to task)
@@ -44,23 +49,45 @@ object PostRotationExecutor {
     /**
      * Run [task] on the next rotation tick.
      */
+    @Synchronized
     fun runNextTick(task: () -> Unit) {
         if (nextTickTasks.size >= MAX_QUEUED) nextTickTasks.removeFirst()
         nextTickTasks.addLast(task)
     }
 
     val hasPostMoveTasks: Boolean
+        @Synchronized
         get() = postMoveTasks.isNotEmpty()
 
     /**
      * Drains the post-move queue. Called right after the rotation packet was sent with our rotation,
      * so the queued actions land directly behind the movement packet in the send channel.
      */
-    fun onRotationPacketSent() {
+    @Synchronized
+    internal fun onRotationPacketSent() {
         while (postMoveTasks.isNotEmpty()) {
             val (_, task) = postMoveTasks.removeFirst()
             runCatching { task() }
         }
+    }
+
+    /** Marks a movement packet whose rotation was replaced by the active request. */
+    @Synchronized
+    fun markRotationPacket(packet: Packet<*>) {
+        markedRotationPackets[packet] = generation
+    }
+
+    /** Called by the network hook only after the marked packet has completed sendPacket(). */
+    @Synchronized
+    fun onPacketSendCompleted(packet: Packet<*>) {
+        if (markedRotationPackets.remove(packet) == null) return
+        onRotationPacketSent()
+    }
+
+    /** Prevents a cancelled movement packet from releasing queued actions. */
+    @Synchronized
+    fun discardRotationPacket(packet: Packet<*>) {
+        markedRotationPackets.remove(packet)
     }
 
     /**
@@ -69,7 +96,10 @@ object PostRotationExecutor {
      * stood still) so the action still fires instead of getting stuck — tasks queued this very tick are
      * left untouched here so [onRotationPacketSent] can still fire them directly behind the rotation.
      */
+    @Synchronized
     fun tick() {
+        markedRotationPackets.entries.removeIf { it.value < generation }
+
         while (nextTickTasks.isNotEmpty()) {
             val task = nextTickTasks.removeFirst()
             runCatching { task() }
@@ -83,8 +113,10 @@ object PostRotationExecutor {
         generation++
     }
 
+    @Synchronized
     fun clear() {
         postMoveTasks.clear()
         nextTickTasks.clear()
+        markedRotationPackets.clear()
     }
 }

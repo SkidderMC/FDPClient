@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.features.module.modules.client
 
 import net.ccbluex.liquidbounce.event.EventState
 import net.ccbluex.liquidbounce.event.MotionEvent
+import net.ccbluex.liquidbounce.event.Render3DEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.visual.FreeCam
@@ -14,6 +15,8 @@ import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.currentRotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.serverRotation
 import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.utils.render.Render3D
+import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.getVectorForRotation
 import java.awt.Color
 
 object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLIENT_GENERAL, gameDetecting = false) {
@@ -43,7 +46,18 @@ object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLI
         .describe("Color of the rotation ghost.")
 
     val debugRotations by boolean("DebugRotations", false)
-        .describe("Print rotation debug information.")
+        .describe("Enable optional rotation diagnostics.")
+    private val debugMode by choices("DebugMode", arrayOf("Vector", "Chat", "Both"), "Vector") { debugRotations }
+        .describe("Choose visual, chat, or combined rotation diagnostics.")
+    private val debugVectorLength by float("DebugVectorLength", 4f, 0.5f..12f, " blocks") {
+        debugRotations && debugMode != "Chat"
+    }.describe("Length of the server-aim direction vector.")
+    private val debugVectorWidth by float("DebugVectorWidth", 2f, 0.5f..5f) {
+        debugRotations && debugMode != "Chat"
+    }.describe("Width of the server-aim direction vector.")
+    private val debugVectorColor by color("DebugVectorColor", Color(80, 190, 255, 220)) {
+        debugRotations && debugMode != "Chat"
+    }.describe("Color of the server-aim direction vector.")
 
     var prevHeadPitch = 0f
     var headPitch = 0f
@@ -70,6 +84,22 @@ object Rotations : Module("Rotations", Category.CLIENT, Category.SubCategory.CLI
 
         lastRotation = targetRotation
     }
+
+    val onRender3D = handler<Render3DEvent> { event ->
+        if (!debugRotations || debugMode == "Chat") return@handler
+        val player = mc.thePlayer ?: return@handler
+        val rotation = getRotation() ?: return@handler
+        val eyes = player.getPositionEyes(event.partialTicks)
+        val direction = getVectorForRotation(rotation)
+        val end = eyes.addVector(
+            direction.xCoord * debugVectorLength,
+            direction.yCoord * debugVectorLength,
+            direction.zCoord * debugVectorLength
+        )
+        Render3D.drawWorldLine(eyes, end, debugVectorColor, debugVectorWidth)
+    }
+
+    fun shouldPrintDebug(): Boolean = debugRotations && debugMode != "Vector"
 
     fun lerp(tickDelta: Float, old: Float, new: Float): Float {
         return old + (new - old) * tickDelta
