@@ -26,6 +26,7 @@ class NextGenClickGuiScreen : GuiScreen() {
 
     private var openButton = Rect()
     private var copyButton = Rect()
+    private var retryButton = Rect()
 
     private var pressedButtonMask = 0
     private var focusApplied = false
@@ -70,6 +71,7 @@ class NextGenClickGuiScreen : GuiScreen() {
         val centerX = width / 2 - buttonWidth / 2
         openButton = Rect(centerX, height / 2 + 18, buttonWidth, buttonHeight)
         copyButton = Rect(centerX, height / 2 + 44, buttonWidth, buttonHeight)
+        retryButton = Rect(centerX, height / 2 + 70, buttonWidth, buttonHeight)
     }
 
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -102,7 +104,32 @@ class NextGenClickGuiScreen : GuiScreen() {
 
         drawButton(openButton, "Open in browser", mouseX, mouseY)
         drawButton(copyButton, "Copy URL", mouseX, mouseY)
-        drawCenteredString(fontRendererObj, "Press ESC to close", width / 2, copyButton.y + copyButton.h + 8, 0x808080)
+        val failed = !browserMode && NextGenBrowserRuntime.state == NextGenBrowserRuntime.State.FAILED
+        if (failed) drawButton(retryButton, "Retry in-game browser", mouseX, mouseY)
+        val lastButton = if (failed) retryButton else copyButton
+        drawCenteredString(fontRendererObj, "Press ESC to close", width / 2, lastButton.y + lastButton.h + 8, 0x808080)
+        if (failed) {
+            drawErrorLog(lastButton.y + lastButton.h + 22)
+        }
+    }
+
+    /** Show why the in-game browser could not start, so a failed or blocked asset download is diagnosable in-game. */
+    private fun drawErrorLog(topY: Int) {
+        val log = NextGenBrowserRuntime.lastErrorLog
+        if (log.isBlank()) {
+            return
+        }
+        drawCenteredString(fontRendererObj, "Why it failed (full details in the client log):", width / 2, topY, 0xff8080)
+        val maxWidth = (width * 0.8f).toInt().coerceAtLeast(140)
+        var y = topY + 12
+        val lines = log.split('\n').flatMap { fontRendererObj.listFormattedStringToWidth(it, maxWidth) }
+        for (line in lines.take(8)) {
+            if (y > height - 12) {
+                break
+            }
+            drawCenteredString(fontRendererObj, line, width / 2, y, 0xb0b0b0)
+            y += 10
+        }
     }
 
     private fun drawButton(rect: Rect, label: String, mouseX: Int, mouseY: Int) {
@@ -207,6 +234,9 @@ class NextGenClickGuiScreen : GuiScreen() {
             when {
                 openButton.contains(mouseX, mouseY) -> openExternally()
                 copyButton.contains(mouseX, mouseY) -> runCatching { MiscUtils.copy(currentUrl) }
+                retryButton.contains(mouseX, mouseY) && NextGenBrowserRuntime.state == NextGenBrowserRuntime.State.FAILED -> {
+                    NextGenBrowserRuntime.retry()
+                }
             }
         }
     }

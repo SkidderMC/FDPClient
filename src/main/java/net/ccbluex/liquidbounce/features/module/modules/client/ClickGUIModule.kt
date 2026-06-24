@@ -18,6 +18,9 @@ import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen.NextGenB
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen.NextGenClickGuiServer
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nextgen.NextGenClickGuiScreen
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.yzygui.YzYGui
+import net.ccbluex.liquidbounce.ui.client.hud.HUD
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.fade
 import net.minecraft.network.play.server.S2EPacketCloseWindow
@@ -95,6 +98,24 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
         }
     }
         .describe("Open the menu in an external browser window.")
+
+    // Momentary action: flips on, kicks off a fresh asset download/retry, then bounces back off so it
+    // reads like a button. Stays visible after a failure (even from another style) so the in-game
+    // browser can always be recovered, and a failed attempt's reason is shown on the NextGen fallback
+    // screen via [NextGenBrowserRuntime.lastErrorLog].
+    private val redownloadAssetsValue = boolean("Re-download Assets", false) {
+        style == "NextGen" || NextGenBrowserRuntime.state == NextGenBrowserRuntime.State.FAILED
+    }
+        .describe("Click to re-download the in-game browser assets and retry, e.g. if the download failed or stalled.")
+        .onChange { _, triggered ->
+            if (triggered) {
+                NextGenBrowserRuntime.retry()
+                HUD.addNotification(
+                    Notification("NextGen ClickGUI", "Re-downloading in-game browser assets...", Type.INFO)
+                )
+            }
+            false
+        }
 
     override fun onEnable() {
         try {

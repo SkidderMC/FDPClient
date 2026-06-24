@@ -53,12 +53,21 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
     var progress: Double = -1.0
         private set
 
+    /** Reason for the most recent FAILED state (message + exception chain). Shown by the fallback screen. */
+    @Volatile
+    var lastErrorLog: String = ""
+        private set
+
     private const val PROXY_CLASS = "net.montoyo.mcef.client.ClientProxy"
     private const val REMOTE_CONFIG_CLASS = "net.montoyo.mcef.remote.RemoteConfig"
     private const val PROGRESS_LISTENER_CLASS = "net.montoyo.mcef.utilities.IProgressListener"
 
     private var setFocus: Method? = null
     private var initializationAttempted = false
+
+    /** Bumped on every (re)start so a stale background attempt cannot initialize or report after a retry. */
+    @Volatile
+    private var attemptId = 0
 
     private var persistentBrowser: IBrowser? = null
     private var persistentUrl = ""
@@ -80,6 +89,7 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
 
     private val onShutdown = handler<ClientShutdownEvent>(always = true) {
         closePersistentBrowser()
+        NextGenClickGuiServer.stop()
     }
 
     /**
@@ -133,6 +143,8 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
 
         state = State.INITIALIZING
         detail = "Preparing in-game browser (one-time setup)..."
+        lastErrorLog = ""
+        val attempt = ++attemptId
 
         Thread({
             try {
@@ -152,15 +164,20 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
                     Thread.sleep(250L)
                 }
 
+                if (attempt != attemptId) {
+                    return@Thread
+                }
+
                 Minecraft.getMinecraft().addScheduledTask {
-                    if (state == State.INITIALIZING) {
+                    if (attempt == attemptId && state == State.INITIALIZING) {
                         initOnRenderThread()
                     }
                 }
             } catch (throwable: Throwable) {
-                state = State.FAILED
-                detail = "In-game browser failed to download."
-                LOGGER.error("[NextGen] Failed to prepare the in-game browser runtime", throwable)
+                if (attempt != attemptId) {
+                    return@Thread
+                }
+                fail("In-game browser failed to download.", throwable)
                 Minecraft.getMinecraft().addScheduledTask {
                     HUD.addNotification(
                         Notification("NextGen ClickGUI", "In-game browser download failed", Type.ERROR)
@@ -168,6 +185,48 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
                 }
             }
         }, "NextGen-Browser-Init").apply { isDaemon = true }.start()
+    }
+
+    /**
+     * Throw away a failed or stuck preparation and run the whole thing again from scratch: re-download
+     * the natives when they are missing and re-initialize. Any in-flight background attempt is orphaned
+     * through [attemptId] so it cannot report or initialize after this point. Safe to call from a UI
+     * action (the ClickGUI module option and the fallback screen button both route here).
+     */
+    @Synchronized
+    fun retry() {
+        attemptId++
+        closePersistentBrowser()
+        initializationAttempted = false
+        progress = -1.0
+        lastErrorLog = ""
+        detail = "Restarting in-game browser download..."
+        state = State.IDLE
+        ensureStarted()
+    }
+
+    /** Mark the runtime FAILED, recording a readable reason (message + exception chain) for the fallback UI. */
+    private fun fail(message: String, throwable: Throwable? = null) {
+        state = State.FAILED
+        detail = message
+        lastErrorLog = formatFailure(message, throwable)
+        LOGGER.error("[NextGen] $message", throwable)
+    }
+
+    private fun formatFailure(message: String, throwable: Throwable?): String {
+        if (throwable == null) {
+            return message
+        }
+        val builder = StringBuilder(message)
+        var cause: Throwable? = throwable
+        var depth = 0
+        while (cause != null && depth < 4) {
+            builder.append('\n').append(cause.javaClass.simpleName)
+            cause.message?.let { builder.append(": ").append(it) }
+            cause = cause.cause
+            depth++
+        }
+        return builder.toString()
     }
 
     private fun hasNativeRuntime(): Boolean =
@@ -239,8 +298,7 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
             return
         }
         if (initializationAttempted) {
-            state = State.FAILED
-            detail = "In-game browser initialization was already attempted."
+            fail("In-game browser initialization was already attempted.")
             return
         }
 
@@ -258,20 +316,19 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
             val virtual = proxyClass.getField("VIRTUAL").getBoolean(null)
             val app = proxyClass.getMethod("getCefApp").invoke(instance)
             if (virtual || app == null) {
-                state = State.FAILED
-                detail = if (virtual) {
-                    "In-game browser unavailable (virtual mode)."
-                } else {
-                    "In-game browser failed to start."
-                }
+                fail(
+                    if (virtual) {
+                        "In-game browser unavailable (virtual mode) - native assets missing or blocked."
+                    } else {
+                        "In-game browser failed to start."
+                    }
+                )
                 return
             }
 
             markRuntimeReady("initialized")
         } catch (throwable: Throwable) {
-            state = State.FAILED
-            detail = "In-game browser failed to start."
-            LOGGER.error("[NextGen] Failed to initialize the in-game browser runtime", throwable)
+            fail("In-game browser failed to start.", throwable)
         }
     }
 
