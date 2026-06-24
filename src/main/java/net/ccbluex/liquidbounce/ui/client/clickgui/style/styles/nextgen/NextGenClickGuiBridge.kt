@@ -237,6 +237,7 @@ object NextGenClickGuiBridge : MinecraftInstance {
                 "hud-designer" -> mc.displayGuiScreen(GuiHudDesigner())
                 "spotify-player" -> SpotifyModule.openPlayerScreen()
                 "spotify-settings" -> SpotifyModule.openConfigScreen()
+                "spotify-connect" -> SpotifyModule.connectWebApi()
                 "keybind-manager" -> mc.displayGuiScreen(KeyBindManager)
                 "font-manager" -> mc.displayGuiScreen(GuiFontManager(mc.currentScreen))
                 "check-update" -> mc.displayGuiScreen(GuiUpdate())

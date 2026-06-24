@@ -511,6 +511,29 @@ object SpotifyModule : Module("Spotify", Category.CLIENT, Category.SubCategory.C
         controlViaApi { token -> service.setSavedTracksState(token, listOf(trackId), save) }
     }
 
+    /** One-tap connect for the library browser: switch to the QUICK/PKCE flow and authorize in-browser. */
+    fun connectWebApi() {
+        mc.addScheduledTask {
+            if (!supportsQuickConnect()) {
+                openConfigScreen()
+            } else {
+                if (authMode != SpotifyAuthMode.QUICK) {
+                    authModeValue.set(SpotifyAuthMode.QUICK.storageValue)
+                }
+                if (!state) {
+                    state = true
+                }
+                beginBrowserAuthorization { status, message ->
+                    when (status) {
+                        BrowserAuthStatus.SUCCESS -> chat("§aSpotify connected — loading your library.")
+                        BrowserAuthStatus.ERROR -> chat("§c$message")
+                        else -> {}
+                    }
+                }
+            }
+        }
+    }
+
     private fun controlViaApi(block: suspend (token: String) -> Unit) {
         moduleScope.launch {
             val mode = authMode
