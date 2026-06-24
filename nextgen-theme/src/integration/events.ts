@@ -49,6 +49,10 @@ export interface EventMap {
     browserUrlChange: BrowserUrlChangeEvent;
     userLoggedIn: void;
     userLoggedOut: void;
+    configurationChanged: ConfigurationChangedEvent;
+    commandExecuted: CommandExecutedEvent;
+    clientState: ClientStateEvent;
+    pong: Record<string, never>;
 
     //WindowEvents.kt
     mouseButton: MouseButtonEvent;
@@ -76,6 +80,18 @@ export interface EventMap {
 
     //PlayerEvents.kt
     death: void;
+}
+
+export interface ConfigurationChangedEvent {
+    name: string;
+}
+
+export interface CommandExecutedEvent {
+    name: string;
+}
+
+export interface ClientStateEvent {
+    inGame: boolean;
 }
 
 export interface ThemeColorChangeEvent {

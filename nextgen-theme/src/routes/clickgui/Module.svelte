@@ -13,6 +13,7 @@
     import {setItem} from "../../integration/persistent_storage";
     import {convertToSpacedString, spaceSeperatedNames} from "../../theme/theme_config";
     import {scaleFactor} from "./clickgui_store";
+    import {listen} from "../../integration/ws";
 
     export let name: string;
     export let enabled: boolean;
@@ -24,6 +25,16 @@
     const path = `clickgui.${name}`;
     let expanded = false;
     let hasSettings = false;
+
+    listen("moduleToggle", event => {
+        if (event.moduleName === name) enabled = event.enabled;
+    });
+
+    listen("clickGuiValueChange", event => {
+        if (event.configurable.name !== name) return;
+        configurable = event.configurable;
+        hasSettings = configurable.value.some(v => v.name !== "Bind" && v.name !== "Hidden");
+    });
 
     onMount(async () => {
         await fetchModuleSettings();

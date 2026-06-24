@@ -7,14 +7,19 @@
     import {onMount} from "svelte";
     import {getModules} from "../../integration/rest";
     import {groupByCategory} from "../../integration/util";
+    import {listen} from "../../integration/ws";
 
     let categories = $state<GroupedModules>({});
     let modules = $state<Module[]>([]);
 
-    onMount(async () => {
+    async function refreshModules() {
         modules = await getModules();
         categories = groupByCategory(modules);
-    });
+    }
+
+    onMount(refreshModules);
+    listen("configurationChanged", refreshModules);
+    listen("socketReady", refreshModules);
 
     function cloneModules(value: Module[]): Module[] {
         return JSON.parse(JSON.stringify(value));

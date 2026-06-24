@@ -1,31 +1,30 @@
-import {isStatic, WS_BASE} from "./host";
+import {hasEventSocket, isStatic, WS_BASE} from "./host";
 import type {EventMap} from "./events";
 import {onDestroy} from "svelte";
 
-let ws: WebSocket;
+let ws: WebSocket | undefined;
 let reconnectAttempts = 0;
-const maxReconnectAttempts = 3;
+let reconnectTimer: ReturnType<typeof setTimeout> | undefined;
 
 function connect() {
+    if (ws?.readyState === WebSocket.OPEN || ws?.readyState === WebSocket.CONNECTING) return;
     ws = new WebSocket(WS_BASE);
 
     ws.onopen = () => {
         console.log("[WS] Connected to server");
         reconnectAttempts = 0;
+        // Mirror onmessage and notify both maps, so component-scoped socketReady handlers
+        // (registered via listen) also refresh on every (re)connect, not just persistent ones.
         alwaysListeners.get("socketReady")?.forEach(callback => callback());
+        listeners.get("socketReady")?.forEach(callback => callback());
     };
 
     ws.onclose = () => {
-        if (reconnectAttempts >= maxReconnectAttempts) {
-            console.log("[WS] Disabled after repeated reconnect failures");
-            return;
-        }
-
         reconnectAttempts++;
-        console.log("[WS] Disconnected from server, attempting to reconnect...");
-        setTimeout(() => {
-            connect();
-        }, 1000);
+        const delay = Math.min(30_000, 1_000 * (2 ** Math.min(reconnectAttempts - 1, 5)));
+        console.log(`[WS] Disconnected; reconnecting in ${delay}ms`);
+        if (reconnectTimer) clearTimeout(reconnectTimer);
+        reconnectTimer = setTimeout(connect, delay);
     };
 
     ws.onerror = (error) => {
@@ -33,12 +32,16 @@ function connect() {
     };
 
     ws.onmessage = (event) => {
-        const json = JSON.parse(event.data);
-        const eventName = json.name;
-        const eventData = json.event;
+        try {
+            const json = JSON.parse(event.data);
+            const eventName = json.name as keyof EventMap;
+            const eventData = json.event;
 
-        alwaysListeners.get(eventName)?.forEach(callback => callback(eventData));
-        listeners.get(eventName)?.forEach(callback => callback(eventData));
+            alwaysListeners.get(eventName)?.forEach(callback => callback(eventData));
+            listeners.get(eventName)?.forEach(callback => callback(eventData));
+        } catch (error) {
+            console.error("[WS] Invalid event payload", error);
+        }
     }
 }
 
@@ -127,7 +130,7 @@ setInterval(() => {
     }));
 }, 5000);
 
-if (!isStatic) {
+if (!isStatic || hasEventSocket) {
     console.log("Connecting to server at: ", WS_BASE);
     connect();
 }

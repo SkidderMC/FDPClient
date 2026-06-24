@@ -58,6 +58,10 @@ import java.awt.Color
 import java.io.File
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.FutureTask
+import javax.swing.JFileChooser
+import javax.swing.SwingUtilities
+import javax.swing.filechooser.FileNameExtensionFilter
 
 object NextGenClickGuiBridge : MinecraftInstance {
 
@@ -372,7 +376,9 @@ object NextGenClickGuiBridge : MinecraftInstance {
         addProperty("enabled", module.state)
         addProperty("description", runCatching { module.description }.getOrDefault(""))
         addProperty("hidden", module.isHidden)
-        add("aliases", JsonArray())
+        add("aliases", JsonArray().apply {
+            module.aliases.forEach { add(JsonPrimitive(it)) }
+        })
         module.tag?.let { addProperty("tag", it) } ?: add("tag", JsonNull.INSTANCE)
     }
 
@@ -474,9 +480,16 @@ object NextGenClickGuiBridge : MinecraftInstance {
                 addProperty("value", value.get())
             }
 
-            is FileValue -> settingBase("TEXT", value.name).apply {
+            is FileValue -> settingBase("FILE", value.name).apply {
                 addProperty("value", value.get())
                 addProperty("shortName", value.shortName)
+                addProperty("dialogMode", when (value.dialogMode.name) {
+                    "SELECT_FOLDER" -> "OPEN_FOLDER"
+                    else -> value.dialogMode.name
+                })
+                add("supportedExtensions", JsonArray().apply {
+                    value.extensions.forEach { add(JsonPrimitive(it)) }
+                })
             }
 
             is FontValue -> settingBase("CHOOSE", value.name).apply {
@@ -528,7 +541,10 @@ object NextGenClickGuiBridge : MinecraftInstance {
             }
         }
 
-        value.description?.let { json.addProperty("description", it) }
+        json.addProperty(
+            "description",
+            value.description ?: "Configure ${value.name.replace(NAME_BOUNDARY, " ").lowercase(Locale.ROOT)}."
+        )
         return json
     }
 
@@ -642,6 +658,42 @@ object NextGenClickGuiBridge : MinecraftInstance {
         }
     }
 
+    fun openFileDialog(body: String): JsonObject {
+        val request = runCatching { parser.parse(body).asJsonObject }.getOrNull()
+            ?: return JsonObject().apply { add("file", JsonNull.INSTANCE) }
+        val mode = request.get("mode")?.asString ?: "OPEN_FILE"
+        val extensions = request.getAsJsonArray("supportedExtensions")
+            ?.mapNotNull { if (it.isJsonPrimitive) it.asString else null }
+            .orEmpty()
+
+        val task = FutureTask<File?> {
+            val chooser = JFileChooser().apply {
+                fileSelectionMode = if (mode == "OPEN_FOLDER") JFileChooser.DIRECTORIES_ONLY else JFileChooser.FILES_ONLY
+                if (extensions.isNotEmpty() && mode != "OPEN_FOLDER") {
+                    fileFilter = FileNameExtensionFilter(extensions.joinToString(", "), *extensions.toTypedArray())
+                }
+            }
+            val result = if (mode == "SAVE_FILE") chooser.showSaveDialog(null) else chooser.showOpenDialog(null)
+            chooser.selectedFile.takeIf { result == JFileChooser.APPROVE_OPTION }
+        }
+        runCatching {
+            if (SwingUtilities.isEventDispatchThread()) task.run() else SwingUtilities.invokeAndWait(task)
+        }.onFailure { LOGGER.error("Failed to open file chooser", it) }
+
+        return JsonObject().apply {
+            val selected = if (task.isDone) runCatching { task.get() }.getOrNull() else null
+            if (selected == null) add("file", JsonNull.INSTANCE) else addProperty("file", selected.absolutePath)
+        }
+    }
+
+    fun browsePath(body: String) {
+        val path = runCatching { parser.parse(body).asJsonObject.get("path").asString }.getOrNull() ?: return
+        val file = File(path)
+        if (!file.exists()) return
+        runCatching { Desktop.getDesktop().open(file) }
+            .onFailure { LOGGER.error("Failed to open ${file.absolutePath}", it) }
+    }
+
     private fun displayChoice(value: String, choices: Array<String>): String =
         choices.firstOrNull { it.equals(value, ignoreCase = true) } ?: choices.first()
 
@@ -707,6 +759,7 @@ object NextGenClickGuiBridge : MinecraftInstance {
     }
 
     private const val UNKNOWN_KEY = "key.keyboard.unknown"
+    private val NAME_BOUNDARY = Regex("(?<=[a-z0-9])(?=[A-Z])")
 
     private val KEY_TO_MINECRAFT = mapOf(
         "escape" to "key.keyboard.escape",

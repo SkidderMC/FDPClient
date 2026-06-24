@@ -23,13 +23,35 @@
     import CurveSetting from "../CurveSetting.svelte";
     import RegistryMutableListSetting from "../list/RegistryMutableListSetting.svelte";
     import ButtonSetting from "../ButtonSetting.svelte";
+    import {description as descriptionStore, scaleFactor} from "../../clickgui_store";
 
     export let setting: ModuleSetting;
     export let path: string;
+    let element: HTMLElement;
+
+    function showDescription() {
+        if (!element || !setting.description) return;
+        const bounds = element.getBoundingClientRect();
+        const multiplier = 2 / $scaleFactor;
+        const showOnRight = window.innerWidth - bounds.right > 300;
+        descriptionStore.set({
+            description: setting.description,
+            anchor: showOnRight ? "right" : "left",
+            x: (showOnRight ? bounds.right : bounds.left) * multiplier,
+            y: (bounds.top + bounds.height / 2) * multiplier,
+        });
+    }
 </script>
 
 
-<div in:slide|global={{duration: 200, axis: "y"}} out:slide|global={{duration: 200, axis: "y"}}>
+<div
+        role="group"
+        bind:this={element}
+        on:mouseenter={showDescription}
+        on:mouseleave={() => descriptionStore.set(null)}
+        in:slide|global={{duration: 200, axis: "y"}}
+        out:slide|global={{duration: 200, axis: "y"}}
+>
     {#if setting.valueType === "BOOLEAN"}
         <BooleanSetting bind:setting={setting} on:change/>
     {:else if setting.valueType === "BUTTON"}

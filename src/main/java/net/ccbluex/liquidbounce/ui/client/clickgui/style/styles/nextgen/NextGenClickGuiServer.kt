@@ -13,6 +13,7 @@ import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import java.io.File
 import java.net.InetSocketAddress
 import java.net.URLDecoder
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 object NextGenClickGuiServer {
@@ -20,17 +21,18 @@ object NextGenClickGuiServer {
     private const val RESOURCE_ROOT = "/assets/minecraft/fdpclient/nextgen-clickgui"
 
     private var server: HttpServer? = null
+    private var executor: ExecutorService? = null
     private var serverPort = -1
 
     val port: Int
         get() = serverPort
 
     val url: String
-        get() = "http://localhost:$serverPort/?port=$serverPort&static#/clickgui"
+        get() = "http://localhost:$serverPort/?port=$serverPort&wsPort=${UiEventSocket.port}&static#/clickgui"
 
     /** URL of the standalone Spotify player page (served from a sibling resource folder). */
     val spotifyUrl: String
-        get() = "http://localhost:$serverPort/spotify-gui/index.html?port=$serverPort"
+        get() = "http://localhost:$serverPort/spotify-gui/index.html?port=$serverPort&wsPort=${UiEventSocket.port}"
 
     @Synchronized
     fun start(): String {
@@ -38,10 +40,18 @@ object NextGenClickGuiServer {
             return url
         }
 
-        val httpServer = HttpServer.create(InetSocketAddress("localhost", 0), 0)
-        httpServer.executor = Executors.newCachedThreadPool { runnable ->
+        val httpServer = try {
+            UiEventSocket.start()
+            HttpServer.create(InetSocketAddress("localhost", 0), 0)
+        } catch (throwable: Throwable) {
+            UiEventSocket.stop()
+            throw throwable
+        }
+        val requestExecutor = Executors.newCachedThreadPool { runnable ->
             Thread(runnable, "FDP-NextGenClickGUI").apply { isDaemon = true }
         }
+        executor = requestExecutor
+        httpServer.executor = requestExecutor
         httpServer.createContext("/") { exchange ->
             try {
                 addCors(exchange)
@@ -69,6 +79,16 @@ object NextGenClickGuiServer {
 
         LOGGER.info("[NextGenClickGUI] Server started at $url")
         return url
+    }
+
+    @Synchronized
+    fun stop() {
+        server?.stop(0)
+        server = null
+        executor?.shutdownNow()
+        executor = null
+        serverPort = -1
+        UiEventSocket.stop()
     }
 
     private fun handleApi(exchange: HttpExchange) {
@@ -157,6 +177,14 @@ object NextGenClickGuiServer {
 
             method == "GET" && path == "/client/input" ->
                 sendJson(exchange, NextGenClickGuiBridge.printableKey(query(exchange, "key") ?: "key.keyboard.unknown"))
+
+            method == "POST" && path == "/client/fileDialog" ->
+                sendJson(exchange, NextGenClickGuiBridge.openFileDialog(exchange.bodyText()))
+
+            method == "POST" && path == "/client/browsePath" -> {
+                NextGenClickGuiBridge.browsePath(exchange.bodyText())
+                sendNoContent(exchange)
+            }
 
             else -> sendJson(exchange, JsonObject().apply {
                 addProperty("error", "No NextGen ClickGUI endpoint for $method $path")
