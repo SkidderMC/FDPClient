@@ -11,6 +11,7 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.BlockPos
+import net.minecraft.util.Vec3
 import org.lwjgl.opengl.GL11.*
 import java.awt.Color
 
@@ -20,6 +21,34 @@ import java.awt.Color
  * @author Zywl
  */
 object Render3D : MinecraftInstance {
+
+    fun drawWorldLine(start: Vec3, end: Vec3, color: Color, width: Float = 1f, throughWalls: Boolean = false) {
+        drawWorldPolyline(listOf(start, end), color, width, throughWalls)
+    }
+
+    fun drawWorldPolyline(points: List<Vec3>, color: Color, width: Float = 1f, throughWalls: Boolean = false) {
+        if (points.size < 2) return
+        require(width > 0f && width.isFinite()) { "Line width must be finite and positive" }
+        val renderManager = mc.renderManager
+
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+        RenderGL.enableGlCap(GL_BLEND, GL_LINE_SMOOTH)
+        RenderGL.disableGlCap(GL_TEXTURE_2D)
+        if (throughWalls) RenderGL.disableGlCap(GL_DEPTH_TEST)
+        glDepthMask(false)
+        glLineWidth(width)
+        RenderGL.glColor(color)
+
+        glBegin(GL_LINE_STRIP)
+        points.forEach { point ->
+            glVertex3d(point.xCoord - renderManager.renderPosX, point.yCoord - renderManager.renderPosY, point.zCoord - renderManager.renderPosZ)
+        }
+        glEnd()
+
+        GlStateManager.resetColor()
+        glDepthMask(true)
+        RenderGL.resetCaps()
+    }
 
     fun drawBlockBox(blockPos: BlockPos, color: Color, outline: Boolean) {
         val renderManager = mc.renderManager
