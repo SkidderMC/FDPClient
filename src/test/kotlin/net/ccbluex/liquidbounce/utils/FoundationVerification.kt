@@ -10,12 +10,15 @@ import net.ccbluex.liquidbounce.features.command.builder.ParameterBuilder
 import net.ccbluex.liquidbounce.features.command.builder.buildCommand
 import net.ccbluex.liquidbounce.file.gson.Exclude
 import net.ccbluex.liquidbounce.file.gson.GsonProfiles
+import net.ccbluex.liquidbounce.event.ClientChange
+import net.ccbluex.liquidbounce.event.ClientChangeBus
 import net.ccbluex.liquidbounce.utils.math.geometry.Face
 import net.ccbluex.liquidbounce.utils.math.geometry.Line
 import net.ccbluex.liquidbounce.utils.math.geometry.Plane
 import net.ccbluex.liquidbounce.utils.math.geometry.Ray
 import net.ccbluex.liquidbounce.utils.math.geometry.approximatelyEquals
 import net.ccbluex.liquidbounce.utils.render.Color4b
+import net.ccbluex.liquidbounce.utils.render.DynamicAtlasAllocator
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.Vec3
 import kotlin.math.abs
@@ -29,6 +32,8 @@ object FoundationVerification {
         verifyRefreshableRange()
         verifyGsonProfiles()
         verifyCommandDsl()
+        verifyAtlasAllocator()
+        verifyChangeBus()
         println("Foundation verification passed")
     }
 
@@ -93,6 +98,31 @@ object FoundationVerification {
         check(result == 9)
     }
 
+    private fun verifyAtlasAllocator() {
+        val allocator = DynamicAtlasAllocator(16, 16, maxPages = 1, padding = 0)
+        val first = checkNotNull(allocator.allocate(8, 8))
+        val second = checkNotNull(allocator.allocate(8, 8))
+        check(first != second)
+        check(first.page == 0 && second.page == 0)
+        check(allocator.usage().allocationCount == 2)
+        allocator.free(first)
+        allocator.free(second)
+        check(allocator.usage().allocationCount == 0)
+        check(allocator.allocate(16, 16) != null)
+        check(allocator.allocate(17, 1) == null)
+        allocator.clear()
+        check(allocator.pageCount == 0)
+        check(allocator.allocate(16, 16) != null)
+    }
+
+    private fun verifyChangeBus() {
+        val received = ArrayList<ClientChange>()
+        val unsubscribe = ClientChangeBus.subscribe(received::add)
+        ClientChangeBus.publish(ClientChange.Configuration("verification"))
+        unsubscribe()
+        ClientChangeBus.publish(ClientChange.Configuration("ignored"))
+        check(received == listOf(ClientChange.Configuration("verification")))
+    }
 
     private class SerializationProbe(
         val visible: String,
