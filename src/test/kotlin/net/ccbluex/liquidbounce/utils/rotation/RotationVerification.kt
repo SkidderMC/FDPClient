@@ -15,6 +15,8 @@ object RotationVerification {
         verifySensitivityQuantization()
         verifyValidation()
         verifyRequestArbitration()
+        verifyActionTiming()
+        verifyModernSmoothing()
 
         println("Rotation verification passed")
     }
@@ -61,6 +63,48 @@ object RotationVerification {
 
         arbiter.clear()
         check(arbiter.activeRequest == null)
+    }
+
+    private fun verifyActionTiming() {
+        PostRotationExecutor.clear()
+        val events = ArrayList<String>()
+
+        val postMove = RotationMode(RotationActionTiming.POST_MOVE)
+        check(postMove.execute({ events += "aim"; true }, { events += "action" }))
+        check(events == listOf("aim"))
+        val movementPacket = net.minecraft.network.play.client.C03PacketPlayer(true)
+        PostRotationExecutor.markRotationPacket(movementPacket)
+        PostRotationExecutor.onPacketSendCompleted(movementPacket)
+        check(events == listOf("aim", "action"))
+
+        events.clear()
+        val afterAction = RotationMode(RotationActionTiming.INSTANT, aimAfterAction = true)
+        check(afterAction.execute({ events += "aim"; true }, { events += "action" }))
+        check(events == listOf("action", "aim"))
+
+        events.clear()
+        val rejected = RotationMode(RotationActionTiming.INSTANT)
+        check(!rejected.execute({ events += "aim"; false }, { events += "action" }))
+        check(events == listOf("aim"))
+    }
+
+    private fun verifyModernSmoothing() {
+        // Sigmoid mode factor: logistic(scaledDifference, steepness, midpoint) * turnSpeed.
+        assertClose(9.7069f, ModernRotationEngine.computeSigmoidFactor(120f, 10f, 5f, 0.3f), 1.0E-3f)
+        assertClose(1.8243f, ModernRotationEngine.computeSigmoidFactor(0f, 10f, 5f, 0.3f), 1.0E-3f)
+
+        // Quadratic bezier control curve used by interpolation smoothing (middle control point fixed at 1.0).
+        assertClose(0.05f, ModernRotationEngine.bezier(0.05f, 1f, 0f))
+        assertClose(0.7625f, ModernRotationEngine.bezier(0.05f, 1f, 0.5f))
+        assertClose(1f, ModernRotationEngine.bezier(0.05f, 1f, 1f))
+
+        // Logistic ramp used by interpolation smoothing.
+        assertClose(0.5f, ModernRotationEngine.interpolationSigmoid(0.3f))
+        assertClose(0.46257f, ModernRotationEngine.interpolationSigmoid(0f), 1.0E-3f)
+
+        // Interpolation factor: bezier branch above the midpoint, logistic branch below.
+        assertClose(0.05f, ModernRotationEngine.interpolationFactor(180f, 1f, 0f, 0.5f), 1.0E-3f)
+        assertClose(0.46257f, ModernRotationEngine.interpolationFactor(0f, 1f, 0f, 0.5f), 1.0E-3f)
     }
 
     private fun assertClose(expected: Float, actual: Float, tolerance: Float = 1.0E-4f) {

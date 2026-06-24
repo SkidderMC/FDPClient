@@ -75,16 +75,32 @@ object ModernRotationEngine : MinecraftInstance {
     }
 
     fun calculateTicks(currentRotation: Rotation, targetRotation: Rotation, settings: RotationSettings): Int {
-        var rotation = Rotation(currentRotation.yaw, currentRotation.pitch)
-        var ticks = -1
-
-        do {
-            val nextRotation = process(rotation, targetRotation, settings, resetting = false)
-            rotation = nextRotation
-            ticks++
-        } while (!rotation.approximatelyEquals(targetRotation) && ticks < 80)
-
-        return ticks
+        val snapshot = EngineState(
+            previousRotation,
+            previousTargetRotation,
+            shortStopTicksElapsed,
+            shortStopDuration,
+            failTicksElapsed,
+            failTransitionDuration,
+            failShiftRotation,
+        )
+        return try {
+            var rotation = Rotation(currentRotation.yaw, currentRotation.pitch)
+            var ticks = -1
+            do {
+                rotation = process(rotation, targetRotation, settings, resetting = false)
+                ticks++
+            } while (!rotation.approximatelyEquals(targetRotation) && ticks < 80)
+            ticks
+        } finally {
+            previousRotation = snapshot.previousRotation
+            previousTargetRotation = snapshot.previousTargetRotation
+            shortStopTicksElapsed = snapshot.shortStopTicksElapsed
+            shortStopDuration = snapshot.shortStopDuration
+            failTicksElapsed = snapshot.failTicksElapsed
+            failTransitionDuration = snapshot.failTransitionDuration
+            failShiftRotation = snapshot.failShiftRotation
+        }
     }
 
     private fun linear(currentRotation: Rotation, targetRotation: Rotation, settings: RotationSettings): Rotation {
@@ -165,14 +181,13 @@ object ModernRotationEngine : MinecraftInstance {
 
         // DynamicAccel: bias acceleration by distance to the target and tighten it once the crosshair is on.
         val dynamic = settings.modernDynamicAccel
-        val distanceFactor = if (dynamic) {
-            val entity = RotationUtils.aimTargetEntity
-            val distance = entity?.let { mc.thePlayer?.getDistanceToEntity(it)?.toDouble() } ?: 0.0
-            (settings.modernDynamicAccelCoef * distance).toFloat()
-        } else {
-            0f
-        }
-        val onTarget = dynamic && delta.length() < 2f
+        val aimEntity = if (dynamic) RotationUtils.aimTargetEntity else null
+        val aimDistance = aimEntity?.let { mc.thePlayer?.getDistanceToEntity(it)?.toDouble() } ?: 0.0
+        val distanceFactor = if (dynamic) (settings.modernDynamicAccelCoef * aimDistance).toFloat() else 0f
+        // Crosshair check: raycast the target hitbox along the in-progress rotation within reach,
+        // matching the reference look-at test instead of a flat angular-delta proxy.
+        val onTarget = dynamic && aimEntity != null &&
+            RotationUtils.isRotationFaced(aimEntity, maxOf(3.0, aimDistance), currentRotation)
 
         val yawAccelerationRange = if (onTarget) settings.modernYawCrosshairAccel else settings.modernYawAcceleration
         val pitchAccelerationRange = if (onTarget) settings.modernPitchCrosshairAccel else settings.modernPitchAcceleration
@@ -234,6 +249,8 @@ object ModernRotationEngine : MinecraftInstance {
             return targetRotation
         }
 
+        // Roll the stop chance every tick, independent of the previous stop window, so the
+        // stop frequency matches the reference processor instead of only re-arming after a stop ends.
         if (settings.modernShortStopRate > (0..100).random()) {
             shortStopDuration = settings.shortStopDuration.random()
             shortStopTicksElapsed = 0
@@ -258,6 +275,8 @@ object ModernRotationEngine : MinecraftInstance {
             return targetRotation
         }
 
+        // Roll the fail chance every tick (matching the reference), not only once the previous
+        // transition window has elapsed; a successful roll re-arms the shift and resets the window.
         if (settings.modernFailRate > (0..100).random()) {
             failTransitionDuration = settings.modernFailTransitionDuration.random()
             failShiftRotation = Rotation(
@@ -295,7 +314,7 @@ object ModernRotationEngine : MinecraftInstance {
         .coerceIn(acceleration) *
         decelerationFactor
 
-    private fun computeSigmoidFactor(
+    internal fun computeSigmoidFactor(
         rotationDifference: Float,
         turnSpeed: Float,
         steepness: Float,
@@ -309,15 +328,15 @@ object ModernRotationEngine : MinecraftInstance {
 
     private fun normalizeDirectionChange(angle: Float) = (angle / 180f).coerceIn(0f, 1f)
 
-    private fun interpolationSigmoid(t: Float): Float {
+    internal fun interpolationSigmoid(t: Float): Float {
         return 1f / (1f + exp(-0.5f * (t - 0.3f)))
     }
 
-    private fun bezier(start: Float, end: Float, t: Float): Float {
+    internal fun bezier(start: Float, end: Float, t: Float): Float {
         return (1f - t) * (1f - t) * start + 2f * (1f - t) * t + t * t * end
     }
 
-    private fun interpolationFactor(
+    internal fun interpolationFactor(
         rotationDifference: Float,
         turnSpeed: Float,
         directionChange: Float,
@@ -366,4 +385,14 @@ object ModernRotationEngine : MinecraftInstance {
     private data class RotationDelta(val deltaYaw: Float, val deltaPitch: Float) {
         fun length() = hypot(deltaYaw, deltaPitch)
     }
+
+    private data class EngineState(
+        val previousRotation: Rotation?,
+        val previousTargetRotation: Rotation?,
+        val shortStopTicksElapsed: Int,
+        val shortStopDuration: Int,
+        val failTicksElapsed: Int,
+        val failTransitionDuration: Int,
+        val failShiftRotation: Rotation,
+    )
 }
