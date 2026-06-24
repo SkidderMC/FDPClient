@@ -19,6 +19,7 @@ import net.ccbluex.liquidbounce.utils.inventory.InventoryUtils
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextDouble
 import net.ccbluex.liquidbounce.utils.kotlin.RandomUtils.nextFloat
 import net.ccbluex.liquidbounce.utils.rotation.RaycastUtils.raycastEntity
+import net.ccbluex.liquidbounce.utils.simulation.ProjectileSolver
 import net.ccbluex.liquidbounce.utils.timing.WaitTickUtils
 import net.minecraft.entity.Entity
 import net.minecraft.entity.EntityLivingBase
@@ -212,6 +213,38 @@ object RotationUtils : MinecraftInstance, Listenable {
                     finalVelocity * finalVelocity * finalVelocity * finalVelocity - gravityModifier * (gravityModifier * posSqrt * posSqrt + 2 * posY * finalVelocity * finalVelocity)
                 )) / (gravityModifier * posSqrt)
             ).toDegreesF()
+        )
+    }
+
+    /**
+     * Drag-aware launch rotation: solves the ballistic arc (gravity plus 0.99 air drag) for the
+     * given [launchSpeed] and returns the rotation to fire along, or null when no arc reaches the
+     * predicted [target]. Callers fall back to [faceTrajectory] when this returns null.
+     */
+    fun solveTrajectory(
+        target: Entity,
+        predict: Boolean,
+        predictSize: Float,
+        gravity: Double,
+        launchSpeed: Double,
+    ): Rotation? {
+        val player = mc.thePlayer ?: return null
+        val lead = if (predict) predictSize.toDouble() else 0.0
+        val targetPoint = Vec3(
+            target.posX + (target.posX - target.prevPosX) * lead,
+            target.entityBoundingBox.minY + (target.entityBoundingBox.minY - target.prevPosY) * lead +
+                target.eyeHeight - 0.15,
+            target.posZ + (target.posZ - target.prevPosZ) * lead,
+        )
+        val origin = Vec3(player.posX, player.entityBoundingBox.minY + player.getEyeHeight(), player.posZ)
+        val solution = ProjectileSolver(gravity, 0.99).solve(origin, targetPoint, launchSpeed) ?: return null
+
+        val velocity = solution.velocity
+        val horizontal = sqrt(velocity.xCoord * velocity.xCoord + velocity.zCoord * velocity.zCoord)
+        if (horizontal < 1.0E-6) return null
+        return Rotation(
+            atan2(-velocity.xCoord, velocity.zCoord).toDegreesF(),
+            (-atan2(velocity.yCoord, horizontal)).toDegreesF(),
         )
     }
 

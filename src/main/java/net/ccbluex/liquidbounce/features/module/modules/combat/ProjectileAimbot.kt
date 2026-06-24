@@ -15,6 +15,7 @@ import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.inventory.isEmpty
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawPlatform
 import net.ccbluex.liquidbounce.utils.rotation.RandomizationSettings
+import net.ccbluex.liquidbounce.utils.rotation.Rotation
 import net.ccbluex.liquidbounce.utils.rotation.RotationPriority
 import net.ccbluex.liquidbounce.utils.rotation.RotationSettings
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils
@@ -64,6 +65,9 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, Category.S
         .describe("Lead the aim to where the target will move.")
     private val predictSize by float("PredictSize", 2F, 0.1F..5F)
     { predict && gravityType == "Projectile" }
+
+    private val dragCorrection by boolean("DragCorrection", false) { gravityType == "Projectile" }
+        .describe("Solve the launch angle with per-tick air drag for better long-range accuracy.")
 
     private val options = RotationSettings(this).withoutKeepRotation().withRequestPriority(RotationPriority.HIGH)
     private val pointTracker = PointTracker().also { addValues(it.values) }
@@ -120,7 +124,7 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, Category.S
 
                 target = getTarget(throughWalls, priority)
 
-                faceTrajectory(target ?: return@handler, predict, predictSize)
+                projectileRotation(target ?: return@handler, gravity = 0.05f, launchSpeed = 3.0, fallbackVelocity = null)
             }
 
             is Item -> {
@@ -131,7 +135,7 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, Category.S
 
                 target = getTarget(throughWalls, priority)
 
-                faceTrajectory(target ?: return@handler, predict, predictSize, gravity = 0.03f, velocity = 0.5f)
+                projectileRotation(target ?: return@handler, gravity = 0.03f, launchSpeed = 1.5, fallbackVelocity = 0.5f)
             }
 
             else -> return@handler
@@ -159,6 +163,13 @@ object ProjectileAimbot : Module("ProjectileAimbot", Category.COMBAT, Category.S
         if (target != null && priority != "Multi" && mark) {
             drawPlatform(target!!, Color(37, 126, 255, 70))
         }
+    }
+
+    private fun projectileRotation(target: Entity, gravity: Float, launchSpeed: Double, fallbackVelocity: Float?): Rotation {
+        if (dragCorrection) {
+            RotationUtils.solveTrajectory(target, predict, predictSize, gravity.toDouble(), launchSpeed)?.let { return it }
+        }
+        return faceTrajectory(target, predict, predictSize, gravity = gravity, velocity = fallbackVelocity)
     }
 
     private fun getTarget(throughWalls: Boolean, priorityMode: String): Entity? {

@@ -67,6 +67,9 @@ object AutoShoot : Module("AutoShoot", Category.COMBAT, Category.SubCategory.COM
     private val aimOffThreshold by float("AimOffThreshold", 4F, 0.5F..20F)
         .describe("Max aim error allowed before releasing a shot.")
 
+    private val dragCorrection by boolean("DragCorrection", false)
+        .describe("Solve the launch angle with per-tick air drag for better long-range accuracy.")
+
     private val options = RotationSettings(this).withRequestPriority(RotationPriority.HIGH)
 
     private val throwTimer = MSTimer()
@@ -92,7 +95,7 @@ object AutoShoot : Module("AutoShoot", Category.COMBAT, Category.SubCategory.COM
                 val foundTarget = findTarget() ?: return@handler
                 target = foundTarget
 
-                aimAt(faceTrajectoryRotation(foundTarget))
+                aimAt(aimRotationFor(foundTarget))
 
                 // Begin charging the bow if we are not already drawing it.
                 if (!player.isUsingItem) {
@@ -113,7 +116,7 @@ object AutoShoot : Module("AutoShoot", Category.COMBAT, Category.SubCategory.COM
                 val foundTarget = findTarget() ?: return@handler
                 target = foundTarget
 
-                aimAt(faceTrajectory(foundTarget, predict, predictSize, gravity = 0.03F, velocity = 1.5F))
+                aimAt(aimRotationFor(foundTarget))
 
                 if (throwTimer.hasTimePassed(throwDelay) && isAimingAt(foundTarget)) {
                     if (player.sendUseItem(stack)) {
@@ -126,8 +129,28 @@ object AutoShoot : Module("AutoShoot", Category.COMBAT, Category.SubCategory.COM
         }
     }
 
-    private fun faceTrajectoryRotation(target: Entity) =
-        faceTrajectory(target, predict, predictSize)
+    private fun aimRotationFor(target: Entity): Rotation =
+        when (mc.thePlayer?.heldItem?.item) {
+            is ItemSnowball, is ItemEgg -> aimRotation(target, gravity = 0.03f, launchSpeed = 1.5, fallbackVelocity = 1.5f)
+            else -> aimRotation(target, gravity = 0.05f, launchSpeed = bowLaunchSpeed(), fallbackVelocity = null)
+        }
+
+    private fun aimRotation(target: Entity, gravity: Float, launchSpeed: Double, fallbackVelocity: Float?): Rotation {
+        if (dragCorrection) {
+            solvedRotation(target, gravity.toDouble(), launchSpeed)?.let { return it }
+        }
+        return faceTrajectory(target, predict, predictSize, gravity = gravity, velocity = fallbackVelocity)
+    }
+
+    private fun solvedRotation(target: Entity, gravity: Double, launchSpeed: Double): Rotation? =
+        RotationUtils.solveTrajectory(target, predict, predictSize, gravity, launchSpeed)
+
+    /** Vanilla arrow launch speed for the configured release charge (power * 3.0). */
+    private fun bowLaunchSpeed(): Double {
+        val t = charge / 20f
+        val power = ((t * t + t * 2f) / 3f).coerceAtMost(1f)
+        return power * 3.0
+    }
 
     private fun aimAt(rotation: Rotation) {
         setTargetRotation(rotation, options = options)
@@ -135,7 +158,7 @@ object AutoShoot : Module("AutoShoot", Category.COMBAT, Category.SubCategory.COM
 
     private fun isAimingAt(target: Entity): Boolean {
         val current = RotationUtils.currentRotation ?: RotationUtils.serverRotation
-        return rotationDifference(faceTrajectoryRotation(target), current) <= aimOffThreshold
+        return rotationDifference(aimRotationFor(target), current) <= aimOffThreshold
     }
 
     private fun findTarget(): Entity? {
