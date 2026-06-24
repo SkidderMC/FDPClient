@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.utils.simulation
 
 import net.minecraft.entity.Entity
 import net.minecraft.entity.projectile.EntityArrow
+import net.minecraft.util.Vec3
 import kotlin.math.sqrt
 
 /**
@@ -63,4 +64,27 @@ object SimulatedArrow {
      */
     fun willHit(arrow: EntityArrow, target: Entity, maxTicks: Int = 40, radius: Double = 1.0): Boolean =
         closestApproach(arrow, target, maxTicks) <= radius
+
+    /** Immutable trajectory samples, including the arrow's current position. */
+    fun trace(arrow: EntityArrow, maxTicks: Int = 40): List<Vec3> {
+        require(maxTicks in 1..200) { "Arrow prediction must stay within 1..200 ticks" }
+        var px = arrow.posX
+        var py = arrow.posY
+        var pz = arrow.posZ
+        var mx = arrow.motionX
+        var my = arrow.motionY
+        var mz = arrow.motionZ
+        return ArrayList<Vec3>(maxTicks + 1).apply {
+            add(Vec3(px, py, pz))
+            repeat(maxTicks) {
+                px += mx
+                py += my
+                pz += mz
+                add(Vec3(px, py, pz))
+                mx *= DRAG
+                my = my * DRAG - GRAVITY
+                mz *= DRAG
+            }
+        }
+    }
 }
