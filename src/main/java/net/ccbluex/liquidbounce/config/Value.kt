@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.config
 import com.google.gson.JsonElement
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
+import net.ccbluex.liquidbounce.FDPClient.isLoadingConfig
 import net.ccbluex.liquidbounce.event.ClientChange
 import net.ccbluex.liquidbounce.event.ClientChangeBus
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
@@ -138,7 +139,11 @@ sealed class Value<T>(
     fun changeValue(newValue: T) {
         if (value == newValue) return
         value = newValue
-        owner?.let { ClientChangeBus.publish(ClientChange.ValueState(it.name, name)) }
+        // Suppress per-value notifications during bulk config loading; a single Configuration
+        // event is emitted once the load finishes, so the UI refreshes wholesale instead of per value.
+        if (!isLoadingConfig) {
+            owner?.let { ClientChangeBus.publish(ClientChange.ValueState(it.name, name)) }
+        }
     }
 
     // Serializations: JSON/Text

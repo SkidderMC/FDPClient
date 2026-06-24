@@ -5,6 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module
 
+import net.ccbluex.liquidbounce.FDPClient.isLoadingConfig
 import net.ccbluex.liquidbounce.FDPClient.isStarting
 import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Listenable
@@ -133,7 +134,7 @@ open class Module(
             // Save module state
             saveConfig(modulesConfig)
 
-            if (field != previousState) {
+            if (field != previousState && !isLoadingConfig) {
                 ClientChangeBus.publish(ClientChange.ModuleState(name, field, isHidden))
             }
         }
