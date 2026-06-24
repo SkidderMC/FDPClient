@@ -37,6 +37,8 @@ object AntiBot : Module("AntiBot", Category.CLIENT, Category.SubCategory.CLIENT_
         .describe("Flag players whose UUID is missing from tab.")
     private val color by boolean("Color", false)
         .describe("Flag players with no color codes in their name.")
+    private val nameCheck by boolean("Name", true)
+        .describe("Flag blank names and the local profile when tab validation is disabled.")
 
     private val livingTime by boolean("LivingTime", false)
         .describe("Flag players that have existed too briefly.")
@@ -112,6 +114,21 @@ object AntiBot : Module("AntiBot", Category.CLIENT, Category.SubCategory.CLIENT_
 
     val botList = mutableSetOf<UUID>()
 
+    private val transparentPredicates by lazy {
+        listOf(
+            BotPredicate("Age", { livingTime }) { it.ticksExisted < livingTimeTicks },
+            BotPredicate("Name", { nameCheck }) {
+                it.name.isBlank() || (!tab && it.name == mc.thePlayer?.name)
+            },
+            BotPredicate("Armor", { armor }) {
+                it.inventory.armorInventory.all { stack -> stack == null }
+            },
+            BotPredicate("Radius", { alwaysInRadius }) {
+                it.entityId !in notAlwaysInRadiusList
+            }
+        )
+    }
+
     // Periodic cleanup counter to prevent unbounded growth
     private var cleanupTicks = 0
 
@@ -124,11 +141,11 @@ object AntiBot : Module("AntiBot", Category.CLIENT, Category.SubCategory.CLIENT_
         if (!handleEvents())
             return false
 
-        // Anti Bot checks
-        if (color && "§" !in entity.displayName.formattedText.replace("§r", ""))
+        if (transparentPredicates.evaluate(entity).detected)
             return true
 
-        if (livingTime && entity.ticksExisted < livingTimeTicks)
+        // Anti Bot checks
+        if (color && "§" !in entity.displayName.formattedText.replace("§r", ""))
             return true
 
         if (ground && entity.entityId !in groundList)
@@ -155,13 +172,6 @@ object AntiBot : Module("AntiBot", Category.CLIENT, Category.SubCategory.CLIENT_
         if (properties && entity.entityId !in propertiesList)
             return true
 
-        if (armor) {
-            if (entity.inventory.armorInventory[0] == null && entity.inventory.armorInventory[1] == null &&
-                entity.inventory.armorInventory[2] == null && entity.inventory.armorInventory[3] == null
-            )
-                return true
-        }
-
         if (ping) {
             if (entity.getPing() == 0) return true
         }
@@ -182,9 +192,6 @@ object AntiBot : Module("AntiBot", Category.CLIENT, Category.SubCategory.CLIENT_
             return true
 
         if (invalidGround && invalidGroundList.getOrDefault(entity.entityId, 0) >= 10)
-            return true
-
-        if (alwaysInRadius && entity.entityId !in notAlwaysInRadiusList)
             return true
 
         if (alwaysBehind && entity.entityId in alwaysBehindList)
@@ -244,7 +251,12 @@ object AntiBot : Module("AntiBot", Category.CLIENT, Category.SubCategory.CLIENT_
             return !shouldReturn
         }
 
-        return entity.name.isEmpty() || entity.name == mc.thePlayer.name
+        return false
+    }
+
+    fun matchedTransparentPredicates(entity: EntityLivingBase): List<String> {
+        if (entity !is EntityPlayer || !handleEvents()) return emptyList()
+        return transparentPredicates.evaluate(entity).matchedRules
     }
 
     val onUpdate = handler<UpdateEvent>(always = true) {
@@ -330,19 +342,19 @@ object AntiBot : Module("AntiBot", Category.CLIENT, Category.SubCategory.CLIENT_
                     airList += entity.entityId
 
                 if (entity.onGround) {
-                    if (entity.fallDistance > 0.0 || entity.posY == entity.prevPosY || !entity.isCollidedVertically) {
-                        invalidGroundList.putIfAbsent(
-                            entity.entityId,
-                            invalidGroundList.getOrDefault(entity.entityId, 0) + 1
-                        )
+                    // A claimed ground state combined with vertical movement is physically
+                    // impossible, so accumulate a violation; legit standing/flat-walking keeps posY == prevPosY.
+                    if (entity.posY != entity.prevPosY) {
+                        invalidGroundList[entity.entityId] = invalidGroundList.getOrDefault(entity.entityId, 0) + 1
                     }
                 } else {
-                    val currentVL = invalidGroundList.getOrDefault(entity.entityId, 0)
+                    // Decay with a half-life so transient anomalies fade instead of latching.
+                    val newViolations = invalidGroundList.getOrDefault(entity.entityId, 0) / 2
 
-                    if (currentVL > 0) {
-                        invalidGroundList.putIfAbsent(entity.entityId, currentVL - 1)
-                    } else {
+                    if (newViolations <= 0) {
                         invalidGroundList.remove(entity.entityId)
+                    } else {
+                        invalidGroundList[entity.entityId] = newViolations
                     }
                 }
 
