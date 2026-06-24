@@ -8,6 +8,8 @@ package net.ccbluex.liquidbounce.config
 import com.google.gson.JsonElement
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
 import net.ccbluex.liquidbounce.file.FileManager.valuesConfig
+import net.ccbluex.liquidbounce.event.ClientChange
+import net.ccbluex.liquidbounce.event.ClientChangeBus
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
@@ -134,7 +136,9 @@ sealed class Value<T>(
     fun get() = value
 
     fun changeValue(newValue: T) {
+        if (value == newValue) return
         value = newValue
+        owner?.let { ClientChangeBus.publish(ClientChange.ValueState(it.name, name)) }
     }
 
     // Serializations: JSON/Text

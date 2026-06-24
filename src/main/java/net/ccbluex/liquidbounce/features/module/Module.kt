@@ -8,6 +8,8 @@ package net.ccbluex.liquidbounce.features.module
 import net.ccbluex.liquidbounce.FDPClient.isStarting
 import net.ccbluex.liquidbounce.config.Configurable
 import net.ccbluex.liquidbounce.event.Listenable
+import net.ccbluex.liquidbounce.event.ClientChange
+import net.ccbluex.liquidbounce.event.ClientChangeBus
 import net.ccbluex.liquidbounce.features.module.modules.client.GameDetector
 import net.ccbluex.liquidbounce.file.FileManager.modulesConfig
 import net.ccbluex.liquidbounce.file.FileManager.saveConfig
@@ -101,6 +103,8 @@ open class Module(
             if (field == value)
                 return
 
+            val previousState = field
+
             // Call toggle
             onToggle(value)
 
@@ -128,6 +132,10 @@ open class Module(
 
             // Save module state
             saveConfig(modulesConfig)
+
+            if (field != previousState) {
+                ClientChangeBus.publish(ClientChange.ModuleState(name, field, isHidden))
+            }
         }
 
 

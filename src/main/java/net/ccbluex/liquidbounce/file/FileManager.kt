@@ -11,6 +11,8 @@ import com.google.gson.JsonParser
 import net.ccbluex.liquidbounce.FDPClient
 import net.ccbluex.liquidbounce.FDPClient.background
 import net.ccbluex.liquidbounce.FDPClient.isStarting
+import net.ccbluex.liquidbounce.event.ClientChange
+import net.ccbluex.liquidbounce.event.ClientChangeBus
 import net.ccbluex.liquidbounce.file.configs.*
 import net.ccbluex.liquidbounce.file.configs.section.MacrosSection
 import net.ccbluex.liquidbounce.file.gson.GsonProfiles
@@ -300,6 +302,7 @@ object FileManager : MinecraftInstance, Iterable<FileConfig> by FILE_CONFIGS {
             }
 
             LOGGER.info("Config $name.json loaded.")
+            ClientChangeBus.publish(ClientChange.Configuration(name))
         } finally {
             FDPClient.isLoadingConfig = false
         }

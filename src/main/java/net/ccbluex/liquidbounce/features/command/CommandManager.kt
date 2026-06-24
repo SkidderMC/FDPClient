@@ -5,6 +5,8 @@
  */
 package net.ccbluex.liquidbounce.features.command
 
+import net.ccbluex.liquidbounce.event.ClientChange
+import net.ccbluex.liquidbounce.event.ClientChangeBus
 import net.ccbluex.liquidbounce.utils.client.ClassUtils
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.chat
@@ -36,6 +38,7 @@ object CommandManager {
         for (command in commands) {
             if (args[0].equals(command.command, ignoreCase = true)) {
                 CommandUtils.runSafe(command.command) { command.execute(args) }
+                ClientChangeBus.publish(ClientChange.Command(command.command))
                 return
             }
 
@@ -44,6 +47,7 @@ object CommandManager {
                     continue
 
                 CommandUtils.runSafe(command.command) { command.execute(args) }
+                ClientChangeBus.publish(ClientChange.Command(command.command))
                 return
             }
         }
