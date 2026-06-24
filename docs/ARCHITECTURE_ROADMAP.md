@@ -27,7 +27,9 @@ configuration migration paths are verified, so existing user configs keep loadin
 - Block A completed: geometry, packed color, refreshable range and deterministic verification.
 - Block B completed: JSON profiles, export policy, command DSL, suspend handler policies and triggers.
 - Block C in progress: bounded graph search, incremental chunk/block tracking, support planning,
-  face targeting and the separated placement planner are completed. Tool scoring remains.
+  face targeting, separated placement planning and durability-aware tool scoring are completed.
+- Block D in progress: drag-aware projectile solving and bounded generic N-tick prediction are
+  completed; rotation timing and diagnostics remain.
 
 ## Delivery blocks and affected files
 

@@ -145,7 +145,15 @@ tasks.register("verifyWorldFoundations", JavaExec) {
     main = "net.ccbluex.liquidbounce.utils.WorldFoundationVerification"
 }
 
-check.dependsOn("verifyRotations", "verifyFoundations", "verifyWorldFoundations")
+tasks.register("verifySimulation", JavaExec) {
+    group = "verification"
+    description = "Runs projectile solving and bounded prediction checks."
+    dependsOn(testClasses)
+    classpath = sourceSets.test.runtimeClasspath
+    main = "net.ccbluex.liquidbounce.utils.SimulationVerification"
+}
+
+check.dependsOn("verifyRotations", "verifyFoundations", "verifyWorldFoundations", "verifySimulation")
 
 shadowJar {
     archiveClassifier.set("")
