@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce
 import com.formdev.flatlaf.themes.FlatMacLightLaf
 import kotlinx.coroutines.future.future
 import kotlinx.coroutines.launch
+import net.ccbluex.liquidbounce.config.ConfigSystem
 import net.ccbluex.liquidbounce.event.ClientShutdownEvent
 import net.ccbluex.liquidbounce.event.EventManager
 import net.ccbluex.liquidbounce.event.StartupEvent
@@ -108,7 +109,11 @@ object FDPClient {
     }
 
     var isStarting = true
-    var isLoadingConfig = true
+    var isLoadingConfig: Boolean
+        get() = ConfigSystem.isLoadingConfig
+        set(value) {
+            ConfigSystem.isLoadingConfig = value
+        }
 
     // Managers
     val moduleManager = ModuleManager
