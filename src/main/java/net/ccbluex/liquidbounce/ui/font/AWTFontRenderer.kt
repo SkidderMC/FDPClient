@@ -11,14 +11,19 @@ import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 import net.ccbluex.liquidbounce.utils.kotlin.LruCache
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
+import net.ccbluex.liquidbounce.utils.render.AtlasRegion
+import net.ccbluex.liquidbounce.utils.render.DynamicAtlasAllocator
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.GlStateManager.bindTexture
 import net.minecraft.client.renderer.texture.TextureUtil
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 import org.lwjgl.opengl.GL11.*
+import org.lwjgl.opengl.GL12.GL_CLAMP_TO_EDGE
+import org.lwjgl.BufferUtils
 import java.awt.*
 import java.awt.image.BufferedImage
+import java.nio.ByteBuffer
 import kotlin.math.max
 import kotlin.math.roundToInt
 
@@ -58,6 +63,8 @@ class AWTFontRenderer(
         private const val CACHED_FONT_REMOVAL_TIME = 30000L // 30s time-based eviction
         private const val MAX_CACHED_STRINGS = 255          // LRU cache size limit
         private const val MAX_DYNAMIC_GLYPHS = 2048         // cap for on-demand glyph textures
+        private const val DYNAMIC_ATLAS_SIZE = 1024
+        private const val MAX_DYNAMIC_ATLAS_PAGES = 4
 
         private var gcTicks = 0
 
@@ -95,13 +102,23 @@ class AWTFontRenderer(
     private val charLocations = arrayOfNulls<CharLocation>(stopChar)
 
     /**
-     * On-demand glyphs for characters outside the baked [charLocations] range, each rendered
-     * with the AWT [font] (full quality) into its own small texture and cached. A null entry
+     * On-demand glyphs for characters outside the baked [charLocations] range, packed into a
+     * bounded set of atlas pages. A null entry
      * means the font cannot display that character, so the vanilla unicode fallback is used.
      */
-    private class DynamicGlyph(val textureId: Int, val width: Int, val height: Int)
+    private class DynamicGlyph(val textureId: Int, val region: AtlasRegion) {
+        val width get() = region.width
+        val height get() = region.height
+    }
 
     private val dynamicGlyphs = HashMap<Char, DynamicGlyph?>()
+    private val dynamicAtlas = DynamicAtlasAllocator(
+        DYNAMIC_ATLAS_SIZE,
+        DYNAMIC_ATLAS_SIZE,
+        MAX_DYNAMIC_ATLAS_PAGES,
+        padding = 1,
+    )
+    private val dynamicAtlasTextures = mutableListOf<Int>()
 
     /**
      * We store strings in an LRU-like map with time-based eviction:
@@ -275,7 +292,9 @@ class AWTFontRenderer(
             glDeleteTextures(textureID)
             textureID = -1
         }
-        dynamicGlyphs.values.forEach { it?.let { glyph -> glDeleteTextures(glyph.textureId) } }
+        dynamicAtlasTextures.forEach(::glDeleteTextures)
+        dynamicAtlasTextures.clear()
+        dynamicAtlas.clear()
         dynamicGlyphs.clear()
         activeFontRenderers.remove(this)
     }
@@ -298,10 +317,7 @@ class AWTFontRenderer(
         val glyph = try {
             val img = drawCharToImage(c)
             if (img.width <= 0 || img.height <= 0) null
-            else DynamicGlyph(
-                TextureUtil.uploadTextureImageAllocate(TextureUtil.glGenTextures(), img, true, true),
-                img.width, img.height
-            )
+            else allocateDynamicGlyph(img)
         } catch (e: Throwable) {
             null
         }
@@ -310,12 +326,17 @@ class AWTFontRenderer(
     }
 
     /**
-     * Draws an on-demand glyph (its own full texture) as a single quad. Caller must end the
+     * Draws an on-demand glyph from its atlas page as a single quad. Caller must end the
      * shared QUADS batch before and rebind the atlas + reopen the batch afterwards.
      */
     private fun drawDynamicChar(glyph: DynamicGlyph, x: Float, y: Float) {
         val w = glyph.width.toFloat()
         val h = glyph.height.toFloat()
+        val region = glyph.region
+        val u = region.x.toFloat() / DYNAMIC_ATLAS_SIZE
+        val v = region.y.toFloat() / DYNAMIC_ATLAS_SIZE
+        val u2 = (region.x + region.width).toFloat() / DYNAMIC_ATLAS_SIZE
+        val v2 = (region.y + region.height).toFloat() / DYNAMIC_ATLAS_SIZE
 
         if (loadingScreen) {
             glBindTexture(GL_TEXTURE_2D, glyph.textureId)
@@ -324,15 +345,78 @@ class AWTFontRenderer(
         }
 
         glBegin(GL_QUADS)
-        glTexCoord2f(0f, 0f)
+        glTexCoord2f(u, v)
         glVertex2f(x, y)
-        glTexCoord2f(0f, 1f)
+        glTexCoord2f(u, v2)
         glVertex2f(x, y + h)
-        glTexCoord2f(1f, 1f)
+        glTexCoord2f(u2, v2)
         glVertex2f(x + w, y + h)
-        glTexCoord2f(1f, 0f)
+        glTexCoord2f(u2, v)
         glVertex2f(x + w, y)
         glEnd()
+    }
+
+    private fun allocateDynamicGlyph(image: BufferedImage): DynamicGlyph? {
+        val region = dynamicAtlas.allocate(image.width, image.height) ?: return null
+        return try {
+            val texture = ensureDynamicAtlasTexture(region.page)
+            uploadToDynamicAtlas(texture, region, image)
+            DynamicGlyph(texture, region)
+        } catch (throwable: Throwable) {
+            dynamicAtlas.free(region)
+            throw throwable
+        }
+    }
+
+    private fun ensureDynamicAtlasTexture(page: Int): Int {
+        while (dynamicAtlasTextures.size <= page) {
+            val texture = TextureUtil.glGenTextures()
+            bindTexture(texture)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE)
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE)
+            glTexImage2D(
+                GL_TEXTURE_2D,
+                0,
+                GL_RGBA8,
+                DYNAMIC_ATLAS_SIZE,
+                DYNAMIC_ATLAS_SIZE,
+                0,
+                GL_RGBA,
+                GL_UNSIGNED_BYTE,
+                null as ByteBuffer?,
+            )
+            dynamicAtlasTextures += texture
+        }
+        return dynamicAtlasTextures[page]
+    }
+
+    private fun uploadToDynamicAtlas(texture: Int, region: AtlasRegion, image: BufferedImage) {
+        val pixels = BufferUtils.createByteBuffer(region.width * region.height * 4)
+        for (y in 0 until region.height) {
+            for (x in 0 until region.width) {
+                val argb = image.getRGB(x, y)
+                pixels.put((argb ushr 16 and 0xFF).toByte())
+                pixels.put((argb ushr 8 and 0xFF).toByte())
+                pixels.put((argb and 0xFF).toByte())
+                pixels.put((argb ushr 24 and 0xFF).toByte())
+            }
+        }
+        pixels.flip()
+        bindTexture(texture)
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1)
+        glTexSubImage2D(
+            GL_TEXTURE_2D,
+            0,
+            region.x,
+            region.y,
+            region.width,
+            region.height,
+            GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            pixels,
+        )
     }
 
     private fun drawChar(loc: CharLocation, x: Float, y: Float) {
