@@ -62,6 +62,7 @@ object EventManager : CoroutineScope by CoroutineScope(SupervisorJob() + eventCo
     fun <T : Event> registerEventHook(eventClass: Class<out T>, eventHook: EventHook<T>): EventHook<T> {
         val container = registry[eventClass] ?: error("Unsupported Event type: ${eventClass.simpleName}")
 
+        @Suppress("UNCHECKED_CAST")
         eventHook as EventHook<in Event>
 
         check(eventHook !in container) {
