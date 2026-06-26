@@ -25,6 +25,7 @@ import net.montoyo.mcef.api.MCEFApi
 import java.io.File
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
+import java.nio.file.Path
 
 /**
  * Boots the embedded browser runtime on demand and drives its per-frame work so the web
@@ -68,6 +69,11 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
     /** Bumped on every (re)start so a stale background attempt cannot initialize or report after a retry. */
     @Volatile
     private var attemptId = 0
+
+    @Volatile
+    private var forceRedownloadOnNextStart = false
+
+    private val nativeDownloadLock = Any()
 
     private var persistentBrowser: IBrowser? = null
     private var persistentUrl = ""
@@ -134,7 +140,10 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         if (state == State.READY || state == State.INITIALIZING) {
             return
         }
-        if (adoptExistingRuntime()) {
+        val forceRedownload = forceRedownloadOnNextStart
+        forceRedownloadOnNextStart = false
+
+        if (!forceRedownload && adoptExistingRuntime()) {
             return
         }
         if (state == State.FAILED || initializationAttempted) {
@@ -148,20 +157,34 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
 
         Thread({
             try {
-                val nativesPresent = hasNativeRuntime()
-                MCEF.ENABLE_EXAMPLE = false
-                // The montoyo mirror is frequently unreachable, and a failed remote update check forces
-                // MCEF into virtual mode even when valid native files are already on disk. When the
-                // runtime is present locally, skip the remote check entirely and load it directly.
-                MCEF.SKIP_UPDATES = nativesPresent
-                MCEF.WARN_UPDATES = false
-                MCEF.USE_FORGE_SPLASH = false
-                configureMcefDownload()
-                if (nativesPresent) {
-                    detail = "Starting in-game browser..."
-                } else {
-                    downloadNatives()
-                    Thread.sleep(250L)
+                synchronized(nativeDownloadLock) {
+                    if (attempt != attemptId) {
+                        return@Thread
+                    }
+
+                    resetMcefVirtualState()
+                    configureMcefDownload()
+
+                    if (forceRedownload) {
+                        purgeNativeRuntime()
+                    }
+
+                    val nativesPresent = hasNativeRuntime()
+                    MCEF.ENABLE_EXAMPLE = false
+                    // The montoyo mirror is frequently unreachable, and a failed remote update check forces
+                    // MCEF into virtual mode even when valid native files are already on disk. When the
+                    // runtime is present locally and we are not explicitly re-downloading, skip the remote
+                    // check entirely and load it directly.
+                    MCEF.SKIP_UPDATES = nativesPresent && !forceRedownload
+                    MCEF.WARN_UPDATES = false
+                    MCEF.USE_FORGE_SPLASH = false
+
+                    if (nativesPresent && !forceRedownload) {
+                        detail = "Starting in-game browser..."
+                    } else {
+                        downloadNatives()
+                        Thread.sleep(250L)
+                    }
                 }
 
                 if (attempt != attemptId) {
@@ -194,13 +217,19 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
      * action (the ClickGUI module option and the fallback screen button both route here).
      */
     @Synchronized
-    fun retry() {
+    fun retry(redownloadAssets: Boolean = true) {
         attemptId++
         closePersistentBrowser()
+        resetMcefVirtualState()
         initializationAttempted = false
+        forceRedownloadOnNextStart = redownloadAssets
         progress = -1.0
         lastErrorLog = ""
-        detail = "Restarting in-game browser download..."
+        detail = if (redownloadAssets) {
+            "Restarting in-game browser asset download..."
+        } else {
+            "Restarting in-game browser..."
+        }
         state = State.IDLE
         ensureStarted()
     }
@@ -230,7 +259,9 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
     }
 
     private fun hasNativeRuntime(): Boolean =
-        REQUIRED_NATIVE_FILES.all { fileName -> File(mc.mcDataDir, fileName).isFile }
+        REQUIRED_NATIVE_FILES.all { fileName ->
+            File(mc.mcDataDir, fileName).let { it.isFile && it.length() > 0L }
+        }
 
     /**
      * Routes MCEF's downloader through montoyo's plain-HTTP mirror. We boot the browser by calling
@@ -249,6 +280,98 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         MCEF.FORCE_MIRROR = HTTP_MIRROR
         LOGGER.info("[NextGen] In-game browser download routed through the HTTP mirror ($HTTP_MIRROR).")
     }
+
+    private fun resetMcefVirtualState() {
+        runCatching {
+            Class.forName(PROXY_CLASS).getField("VIRTUAL").setBoolean(null, false)
+        }.onFailure {
+            LOGGER.warn("[NextGen] Could not reset MCEF virtual-mode flag before retry.", it)
+        }
+
+        val proxy = runCatching { MCEF.PROXY }.getOrNull() ?: return
+        val virtual = runCatching {
+            proxy.javaClass.getMethod("isVirtual").invoke(proxy) as? Boolean
+        }.getOrNull() == true
+
+        if (virtual) {
+            runCatching { MCEF.PROXY = null }
+                .onFailure { LOGGER.warn("[NextGen] Could not discard the virtual MCEF proxy before retry.", it) }
+        }
+    }
+
+    private fun purgeNativeRuntime() {
+        detail = "Removing cached in-game browser assets..."
+        val rootDir = mc.mcDataDir
+        val rootPath = rootDir.absolutePath.replace("\\", "/").trimEnd('.', '/')
+        LOGGER.info("[NextGen] Removing cached in-game browser assets before re-download.")
+
+        runCatching {
+            Class.forName(PROXY_CLASS).getField("ROOT").set(null, rootPath)
+        }.onFailure {
+            LOGGER.warn("[NextGen] Could not point MCEF at the game directory before cleanup.", it)
+        }
+
+        val targets = linkedSetOf<File>()
+        targets += readInstalledNativeListing(rootDir)
+        targets += remoteResourceFiles()
+        REQUIRED_NATIVE_FILES.mapTo(targets) { File(rootDir, it) }
+        EXTRA_NATIVE_TARGETS.mapTo(targets) { File(rootDir, it) }
+        targets += File(rootDir, "mcef2.new")
+
+        targets.forEach { deleteNativeTarget(rootDir, it) }
+        deleteNativeTarget(rootDir, File(File(rootDir, "config"), "mcefFiles.lst"))
+
+        progress = -1.0
+        detail = "Downloading in-game browser assets..."
+    }
+
+    private fun remoteResourceFiles(): List<File> = runCatching {
+        val remoteConfigClass = Class.forName(REMOTE_CONFIG_CLASS)
+        val remoteConfig = remoteConfigClass.getDeclaredConstructor().newInstance()
+        remoteConfigClass.getMethod("load").invoke(remoteConfig)
+        val resources = remoteConfigClass.getMethod("getResourceArray").invoke(remoteConfig) as? Array<*>
+        resources?.filterIsInstance<File>().orEmpty()
+    }.onFailure {
+        LOGGER.warn("[NextGen] Could not read MCEF remote resource list; cleaning known native files only.", it)
+    }.getOrDefault(emptyList())
+
+    private fun readInstalledNativeListing(rootDir: File): List<File> {
+        val listing = File(File(rootDir, "config"), "mcefFiles.lst")
+        if (!listing.isFile) {
+            return emptyList()
+        }
+
+        return runCatching {
+            listing.readLines()
+                .map { it.trim() }
+                .filter { it.isNotEmpty() && !it.startsWith("#") && !it.startsWith(".") && !it.startsWith("/") && !it.startsWith("\\") }
+                .map { File(rootDir, it) }
+                .asReversed()
+        }.onFailure {
+            LOGGER.warn("[NextGen] Could not read MCEF installed-file list.", it)
+        }.getOrDefault(emptyList())
+    }
+
+    private fun deleteNativeTarget(rootDir: File, target: File) {
+        if (!target.exists()) {
+            return
+        }
+
+        val rootPath = canonicalPath(rootDir)
+        val targetPath = canonicalPath(target)
+        if (rootPath == null || targetPath == null || targetPath == rootPath || !targetPath.startsWith(rootPath)) {
+            LOGGER.warn("[NextGen] Refusing to delete non-MCEF path during asset cleanup: ${target.absolutePath}")
+            return
+        }
+
+        if (!target.deleteRecursively()) {
+            target.deleteOnExit()
+            LOGGER.warn("[NextGen] Could not delete ${target.absolutePath}; scheduled it for deletion on exit.")
+        }
+    }
+
+    private fun canonicalPath(file: File): Path? =
+        runCatching { file.canonicalFile.toPath() }.getOrNull()
 
     /** Replicates the proxy's native-download step (load manifest, mark missing, download). Background only. */
     private fun downloadNatives() {
@@ -554,6 +677,25 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         "cef.pak",
         "natives_blob.bin",
         "snapshot_blob.bin"
+    )
+
+    private val EXTRA_NATIVE_TARGETS = arrayOf(
+        "chrome_elf.dll",
+        "d3dcompiler_47.dll",
+        "libEGL.dll",
+        "libGLESv2.dll",
+        "cef_100_percent.pak",
+        "cef_200_percent.pak",
+        "cef_extensions.pak",
+        "devtools_resources.pak",
+        "v8_context_snapshot.bin",
+        "jcef_helper.exe",
+        "jcef_helper",
+        "libcef.so",
+        "libjcef.so",
+        "MCEFLocales",
+        "MCEFCache",
+        "swiftshader"
     )
 
     private const val HTTP_MIRROR = "http://montoyo.net/jcef"

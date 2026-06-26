@@ -43,6 +43,9 @@ import net.ccbluex.liquidbounce.features.module.modules.client.SpotifyModule
 import net.ccbluex.liquidbounce.file.FileManager
 import net.ccbluex.liquidbounce.file.SettingsFiles
 import net.ccbluex.liquidbounce.ui.client.gui.GuiUpdate
+import net.ccbluex.liquidbounce.ui.client.hud.HUD
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Notification
+import net.ccbluex.liquidbounce.ui.client.hud.element.elements.Type
 import net.ccbluex.liquidbounce.ui.client.hud.designer.GuiHudDesigner
 import net.ccbluex.liquidbounce.ui.client.keybind.KeyBindManager
 import net.ccbluex.liquidbounce.ui.font.fontmanager.GuiFontManager
@@ -247,6 +250,12 @@ object NextGenClickGuiBridge : MinecraftInstance {
                 "check-update" -> mc.displayGuiScreen(GuiUpdate())
                 "save-config" -> FileManager.saveAllConfigs()
                 "reload-config" -> FileManager.load(FileManager.nowConfig, save = false)
+                "redownload-nextgen-assets" -> {
+                    NextGenBrowserRuntime.retry(redownloadAssets = true)
+                    HUD.addNotification(
+                        Notification("NextGen ClickGUI", "Re-downloading in-game browser assets...", Type.INFO)
+                    )
+                }
                 "open-configs-folder" -> openFolder(FileManager.settingsDir)
                 "open-themes-folder" -> openFolder(FileManager.themesDir)
                 "github" -> MiscUtils.showURL(FDPClient.CLIENT_GITHUB)
@@ -417,6 +426,14 @@ object NextGenClickGuiBridge : MinecraftInstance {
     private fun settingJson(value: Value<*>): JsonObject? {
         if (!value.shouldRender()) {
             return null
+        }
+        if (value.owner === ClickGUIModule && value.name == "Re-download Assets") {
+            return button(value.name, "redownload-nextgen-assets").apply {
+                addProperty(
+                    "description",
+                    value.description ?: "Re-download the in-game browser assets and retry the NextGen ClickGUI."
+                )
+            }
         }
 
         val json = when (value) {
