@@ -210,7 +210,6 @@ object NameTags : Module("NameTags", Category.VISUAL, Category.SubCategory.RENDE
             ""
         }
 
-        val healthText = if (health) " §a" + entity.health.toInt() + "" else ""
         val distanceText = if (distance) "§a[§f" + mc.thePlayer.getDistanceToEntity(entity).toInt() + "§a] " else ""
         val HEALTH: Int = entity.health.toInt()
         val COLOR1: String = when {
@@ -220,7 +219,7 @@ object NameTags : Module("NameTags", Category.VISUAL, Category.SubCategory.RENDE
             else -> "§4"
         }
 
-        val hp = " [$COLOR1$HEALTH §c❤§f]"
+        val hp = if (health) " [$COLOR1$HEALTH §c❤§f]" else ""
         glPushMatrix()
         glTranslatef(
             (entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * mc.timer.renderPartialTicks - mc.renderManager.renderPosX).toFloat(),
@@ -236,7 +235,7 @@ object NameTags : Module("NameTags", Category.VISUAL, Category.SubCategory.RENDE
         RenderUtils.setGLCap(GL_DEPTH_TEST, false)
         RenderUtils.setGLCap(GL_BLEND, true)
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
-        val text = distanceText + bot + tag + healthText + hp
+        val text = distanceText + bot + tag + hp
         val stringWidth = fontRenderer.getStringWidth(text) / 2
         if (background) {
             if (backgroundRadius > 0F || borderWidth > 0F) {
