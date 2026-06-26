@@ -22,7 +22,6 @@ import net.ccbluex.liquidbounce.utils.attack.CPSCounter;
 import net.ccbluex.liquidbounce.utils.client.ClientUtils;
 import net.ccbluex.liquidbounce.utils.inventory.SilentHotbar;
 import net.ccbluex.liquidbounce.utils.io.MiscUtils;
-import net.ccbluex.liquidbounce.utils.movement.BPSUtils;
 import net.ccbluex.liquidbounce.utils.render.IconUtils;
 import net.ccbluex.liquidbounce.utils.render.MiniMapRegister;
 import net.ccbluex.liquidbounce.utils.render.RenderUtils;
@@ -55,7 +54,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Queue;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 import static net.ccbluex.liquidbounce.utils.client.MinecraftInstance.mc;
 
@@ -251,7 +249,7 @@ public abstract class MixinMinecraft {
 
     @Inject(method = "clickMouse", at = @At("HEAD"), cancellable = true)
     private void clickMouse(CallbackInfo callbackInfo) {
-        if (HitSelect.shouldCancelClick(objectMouseOver, thePlayer)) {
+        if (HitSelect.shouldCancelClick(objectMouseOver)) {
             callbackInfo.cancel();
             return;
         }
