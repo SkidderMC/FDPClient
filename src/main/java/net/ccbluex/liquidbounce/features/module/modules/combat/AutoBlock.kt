@@ -7,10 +7,9 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker.canClick
 import net.ccbluex.liquidbounce.features.module.modules.combat.AutoClicker.canItemBlock
-import net.ccbluex.liquidbounce.utils.extensions.isAttackingEntity
 import net.ccbluex.liquidbounce.utils.timing.MSTimer
 import net.minecraft.client.settings.GameSettings
-import net.minecraft.entity.EntityLivingBase
+import kotlin.math.max
 
 /**
  * AutoBlock module - Automatically blocks attacks
@@ -22,14 +21,16 @@ import net.minecraft.entity.EntityLivingBase
  */
 object AutoBlock : Module("AutoBlock", Category.COMBAT, Category.SubCategory.COMBAT_LEGIT) {
 
-    private val delay by int("Delay", 300, 300..1000)
-        .describe("Minimum delay between auto blocks.")
+    private val delay by int("Delay", 0, 0..1000)
     private val onlyWhenHurt by boolean("OnlyWhenHurt", false)
-        .describe("Only block while you are taking damage.")
-    private val endOfLastBlock by boolean("EndOfLastBlock", true)
-        .describe("Reset the delay timer when a block ends.")
-    private val maxHoldTicks by int("MaxHoldTicks", 2, 1..20)
-        .describe("Max ticks to hold the block before releasing.")
+    private val hold by int("Hold", 450, 0..1000)
+    private val pingCompensation by boolean("PingCompensation", true)
+    private val compensationThreshold by int("CompensationThreshold", 100, 0..hold) { pingCompensation }
+
+    private val canBlock: Boolean
+        get() = canClick && canItemBlock()
+    private val physicalBlock: Boolean
+        get() = GameSettings.isKeyDown(mc.gameSettings.keyBindUseItem)
 
     private var timer = MSTimer()
     private var isBlocking = false
@@ -40,15 +41,17 @@ object AutoBlock : Module("AutoBlock", Category.COMBAT, Category.SubCategory.COM
     }
 
     val onAttack = handler<AttackEvent> {
-        val target = it.targetEntity as? EntityLivingBase ?: return@handler
-        val thePlayer = mc.thePlayer ?: return@handler
+        if (mc.thePlayer == null) return@handler
         if (isBlocking || KillAura.blockStatus) return@handler
 
-        if ((onlyWhenHurt && mc.thePlayer.hurtTime <= 0) || !target.isAttackingEntity(thePlayer, 45.0, 3.5)) return@handler
-
-        if (!mc.gameSettings.keyBindUseItem.isKeyDown && canClick && canItemBlock() && timer.hasTimePassed(delay)) {
-            isBlocking = true
+        if (onlyWhenHurt && mc.thePlayer.hurtTime <= 0) {
             timer.reset()
+            return@handler
+        }
+
+        if (canBlock && !physicalBlock && timer.hasTimePassed(delay)) {
+            timer.reset()
+            isBlocking = true
         }
     }
 
@@ -56,16 +59,20 @@ object AutoBlock : Module("AutoBlock", Category.COMBAT, Category.SubCategory.COM
         if (!isBlocking) return@handler
 
         // Check if the timer has expired
-        if (timer.hasTimePassed(maxHoldTicks * 50L) || mc.objectMouseOver?.entityHit as? EntityLivingBase == null) {
-            if (endOfLastBlock) {
-                timer.reset()
-            }
+        if (timer.hasTimePassed(effectiveHold())) {
+            timer.reset()
             isBlocking = false
         }
 
         // ONLY affect when there is no physical blocking
-        if (!GameSettings.isKeyDown(mc.gameSettings.keyBindUseItem)) {
+        if (!physicalBlock) {
             mc.gameSettings.keyBindUseItem.pressed = isBlocking
         }
+    }
+
+    private fun effectiveHold(): Int {
+        if (!pingCompensation) return hold;
+        val pingMs = mc.netHandler?.getPlayerInfo(mc.thePlayer?.uniqueID ?: return hold)?.responseTime ?: 50
+        return max(compensationThreshold, pingMs - hold)
     }
 }
