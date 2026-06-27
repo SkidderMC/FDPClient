@@ -35,6 +35,9 @@ object AutoBlock : Module("AutoBlock", Category.COMBAT, Category.SubCategory.COM
     private var timer = MSTimer()
     private var isBlocking = false
 
+    override val tag
+        get() = "${effectiveHold()}ms"
+
     override fun onDisable() {
         timer.reset()
         isBlocking = false
@@ -44,7 +47,7 @@ object AutoBlock : Module("AutoBlock", Category.COMBAT, Category.SubCategory.COM
         if (mc.thePlayer == null) return@handler
         if (isBlocking || KillAura.blockStatus) return@handler
 
-        if (onlyWhenHurt && mc.thePlayer.hurtTime <= 0) {
+        if (onlyWhenHurt && mc.thePlayer.hurtResistantTime <= 0) {
             timer.reset()
             return@handler
         }
@@ -73,6 +76,6 @@ object AutoBlock : Module("AutoBlock", Category.COMBAT, Category.SubCategory.COM
     private fun effectiveHold(): Int {
         if (!pingCompensation) return hold;
         val pingMs = mc.netHandler?.getPlayerInfo(mc.thePlayer?.uniqueID ?: return hold)?.responseTime ?: 50
-        return max(compensationThreshold, pingMs - hold)
+        return max(compensationThreshold, hold - pingMs)
     }
 }

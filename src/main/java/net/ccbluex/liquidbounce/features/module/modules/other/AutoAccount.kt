@@ -25,6 +25,7 @@ import net.minecraft.network.play.server.S40PacketDisconnect
 import net.minecraft.network.play.server.S45PacketTitle
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.Session
+import kotlin.time.Duration.Companion.milliseconds
 
 object AutoAccount :
     Module("AutoAccount", Category.OTHER, Category.SubCategory.MISCELLANEOUS,  subjective = true, gameDetecting = false) {
@@ -114,7 +115,7 @@ object AutoAccount :
         changeAccount()
 
         launchSequence(Dispatchers.Main) {
-            delay(sendDelay.random().toLong())
+            delay(sendDelay.random().milliseconds)
             // connectToLastServer needs thread with OpenGL context
             ServerUtils.connectToLastServer()
         }
@@ -124,7 +125,7 @@ object AutoAccount :
         register && "/reg" in msg -> {
             addNotification(Notification("Trying to register.", "Trying to Register", Type.INFO))
             launchSequence(Dispatchers.IO) {
-                delay(sendDelay.random().toLong())
+                delay(sendDelay.random().milliseconds)
                 mc.thePlayer.sendChatMessage("$registerCommand $password $password")
             }
             true
@@ -133,7 +134,7 @@ object AutoAccount :
         login && "/log" in msg -> {
             addNotification(Notification("Trying to log in.", "Trying to log in.", Type.INFO))
             launchSequence(Dispatchers.IO) {
-                delay(sendDelay.random().toLong())
+                delay(sendDelay.random().milliseconds)
                 mc.thePlayer.sendChatMessage("$loginCommand $password")
             }
             true
