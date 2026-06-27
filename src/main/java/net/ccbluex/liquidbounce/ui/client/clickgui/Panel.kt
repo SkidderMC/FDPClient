@@ -188,12 +188,10 @@ class Panel(
 
     private fun updateElementsHeight() {
         var height = 0
-        var count = 0
 
-        for (element in elements) {
+        for ((count, element) in elements.withIndex()) {
             if (count >= maxElements) break
             height += element.height + 1
-            ++count
         }
 
         elementsHeight = height

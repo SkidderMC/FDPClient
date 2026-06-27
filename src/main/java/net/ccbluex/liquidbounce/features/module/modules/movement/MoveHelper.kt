@@ -52,7 +52,7 @@ object MoveHelper : Module("MoveHelper", Category.MOVEMENT, Category.SubCategory
     private var intervalTimer = MSTimer()
 
     override val tag
-        get() = activeTicks.takeIf { it >= 0 }?.toString() ?: "0"
+        get() = activeTicks.coerceAtLeast(0).toString()
 
     override fun onDisable() {
         activeTicks = -1
@@ -61,12 +61,12 @@ object MoveHelper : Module("MoveHelper", Category.MOVEMENT, Category.SubCategory
     }
 
     val onAttack = handler<AttackEvent> {
-        val thePlayer = mc.thePlayer ?: return@handler
+        val player = mc.thePlayer ?: return@handler
         val target = it.targetEntity as? EntityLivingBase ?: return@handler
 
-        if ((onlyWhenHurt && thePlayer.hurtTime <= 0) || !target.isAttackingEntity(thePlayer, 45.0 * (range.last / range.first), range.last.toDouble())) return@handler
+        if (onlyWhenHurt && player.hurtResistantTime <= 0) return@handler
 
-        val distance = thePlayer.getDistanceToEntityBox(target)
+        val distance = player.getDistanceToEntityBox(target)
 
         when {
             distance < range.first -> handleLogic(closeMode, closeInterval, closeHoldLength, target)
@@ -92,7 +92,7 @@ object MoveHelper : Module("MoveHelper", Category.MOVEMENT, Category.SubCategory
             }
 
             "onhit" -> {
-                if (target.hurtTime > 0) {
+                if (target.hurtResistantTime > 0) {
                     activeTicks = holdLength
                 }
             }

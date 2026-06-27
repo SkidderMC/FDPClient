@@ -16,6 +16,7 @@ import net.ccbluex.liquidbounce.utils.extensions.eyes
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.hitBox
 import net.ccbluex.liquidbounce.utils.extensions.isInLiquid
+import net.ccbluex.liquidbounce.utils.extensions.isLookingOnEntity
 import net.ccbluex.liquidbounce.utils.extensions.minus
 import net.ccbluex.liquidbounce.utils.extensions.offset
 import net.ccbluex.liquidbounce.utils.extensions.plus
@@ -49,23 +50,21 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
     // Settings
     // ────────────────────────────────────────────────────────────────────────────
 
-    private val mode             by choices("Mode", arrayOf("Burst", "Criticals"), "Burst")
-    private val fakeSwing        by choices("FakeSwing", arrayOf("Off", "Client", "Server"), "Off")
-    private val pingCompensation by boolean("PingCompensation", true) { !(mode == "Burst" && useServerAttackTime) }
-    private val extraPingBuffer  by int("PingBuffer", 0, 0..5) { !(mode == "Burst" && useServerAttackTime) }
+    private val mode                by choices("Mode", arrayOf("Burst", "Criticals"), "Burst")
+    private val fakeSwing           by choices("FakeSwing", arrayOf("Off", "Client", "Server"), "Off")
+    private val useServerAttackTime by boolean("UseServerAttackTime", false)
+    private val pingCompensation    by boolean("PingCompensation", true) { !useServerAttackTime }
+    private val extraPingBuffer     by int("PingBuffer", 0, 0..5) { !useServerAttackTime }
+    private val burstCount          by int("BurstCount", 1, 1..10)
+    private val pauseDuration       by int("PauseDuration", 10, 0..20)
+    private val waitForFirstHit     by boolean("WaitForFirstHit", false)
 
     // ── Burst ─────────────────────────────────────────────────────────────────
-    private val waitForFirstHit     by boolean("WaitForFirstHit", false)              { mode == "Burst" }
     private val hitLaterInTrades    by int("HitLaterInTrades", 0, 0..500) { mode == "Burst" }
-    private val useServerAttackTime by boolean("UseServerAttackTime", false)          { mode == "Burst" }
-
-    private val burstCount    by int("BurstCount", 1, 1..10)
-    private val pauseDuration by int("PauseDuration", 10, 0..20)
 
     // ── Criticals ─────────────────────────────────────────────────────────────
     private val predictCritWindow      by boolean("PredictCritWindow", true)       { mode == "Criticals" }
     private val disableDuringKnockback by boolean("DisableDuringKnockback", false) { mode == "Criticals" }
-    private val onlyWhileDamaged       by boolean("OnlyWhileDamaged", false)       { mode == "Criticals" }
 
     // ── Cancel rates ──────────────────────────────────────────────────────────
     private val cancelRate        by int("CancelRate", 100, 0..100)
@@ -77,7 +76,7 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
 
     // ── Click Prediction ──────────────────────────────────────────────────────
     private val clickPredMode         by choices("ClickPredMode", arrayOf("Static", "Prediction", "Adaptive", "Smart", "Semi", "Angular", "Strict"), "Smart")
-    private val clickPredRange        by float("ClickPredRange", 3.2f, 0.5f..6.0f)          { clickPredMode !in arrayOf("Static", "Adaptive") }
+    private val clickPredRange        by float("ClickPredRange", 3.2f, 0.5f..6.0f)          { clickPredMode != "Static" }
     private val predPingCompensation  by boolean("PredPingCompensation", true)                          { clickPredMode != "Static" }
     private val angularTolerance      by float("AngularTolerance", 3.0f, 0.5f..15.0f)       { clickPredMode == "Angular" }
     private val adaptiveBaseLevel     by int("AdaptiveBase", 50, 0..100)                    { clickPredMode == "Adaptive" }
@@ -214,6 +213,9 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
     // Lifecycle
     // ────────────────────────────────────────────────────────────────────────────
 
+    override val tag
+        get() = mode
+
     override fun onDisable() {
         snapshots.clear()
         hitLaterTimer.reset()
@@ -304,7 +306,7 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
         }
 
         val cancel = when (mode) {
-            "Burst"      -> decideBurst(target, snap)
+            "Burst"      -> decideBurst(target, player, snap)
             "Criticals"  -> decideCriticals(target, player, snap)
             else         -> false
         }
@@ -447,9 +449,9 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
     // Mode: Burst — true per-click immunity prediction
     // ────────────────────────────────────────────────────────────────────────────
 
-    private fun decideBurst(target: EntityLivingBase, snap: EntitySnapshot?): Boolean {
+    private fun decideBurst(target: EntityLivingBase, player: EntityPlayerSP, snap: EntitySnapshot?): Boolean {
         // Gate 1: WaitForFirstHit — hold all attacks until player is hit first
-        if (waitForFirstHit && !gotHitFirst) return true
+        if (isWorthWaiting(target, player)) return true
 
         // Gate 2: HitLaterInTrades — delay next attack after being hit in a trade
         if (isHitLaterActive) {
@@ -498,7 +500,7 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
 
     private fun decideCriticals(target: EntityLivingBase, player: EntityPlayerSP, snap: EntitySnapshot?): Boolean {
         if (disableDuringKnockback && player.hurtResistantTime > 0) return false
-        if (onlyWhileDamaged && !gotHitFirst) return true
+        if (isWorthWaiting(target, player)) return true
 
         val inCrit = if (predictCritWindow)
             willBeInCriticalPosition(player, effectivePingTicks())
@@ -555,6 +557,10 @@ object HitSelect : Module("HitSelect", Category.COMBAT, Category.SubCategory.COM
     // ────────────────────────────────────────────────────────────────────────────
     // State helpers
     // ────────────────────────────────────────────────────────────────────────────
+
+    private fun isWorthWaiting(target: EntityLivingBase, player: EntityPlayerSP): Boolean =
+        if (!target.isLookingOnEntity(player, 30.0)) false
+        else waitForFirstHit && !gotHitFirst
 
     private fun handleTargetSwitch(target: EntityLivingBase) {
         if (target.entityId == currentTargetId) return
