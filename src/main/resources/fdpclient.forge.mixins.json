@@ -79,6 +79,7 @@
   ],
   "client": [
     "block.MixinBlockSlime",
+    "client.MixinMcefExampleMod",
     "client.MixinMcefUtil",
     "gui.MixinGuiAchievement",
     "gui.MixinGuiContainer",
