@@ -70,7 +70,7 @@ object ItemESP : Module("ItemESP", Category.VISUAL, Category.SubCategory.RENDER_
     private val itemEntities by EntityLookup<EntityItem>()
         .filter { renderFilters.withinDistance(mc.thePlayer.getDistanceSqToEntity(it)) }
         .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxDistanceSq }
-        .filter { !renderFilters.onLook || mc.thePlayer.isLookingOnEntity(it, renderFilters.maxAngleDifference.toDouble()) }
+        .filter { !renderFilters.onLook || mc.thePlayer.isLookingOn(it, renderFilters.maxAngleDifference.toDouble()) }
         .filter { renderFilters.thruBlocks || isEntityHeightVisible(it) }
 
     val onRender3D = handler<Render3DEvent> {

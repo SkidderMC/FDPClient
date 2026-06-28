@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.client
 
-import net.ccbluex.liquidbounce.event.KeyEvent
+import net.ccbluex.liquidbounce.event.KeyStateEvent
 import net.ccbluex.liquidbounce.event.Render2DEvent
 import net.ccbluex.liquidbounce.event.UpdateEvent
 import net.ccbluex.liquidbounce.event.handler
@@ -56,7 +56,9 @@ object SnakeGame : Module("SnakeGame", Category.CLIENT, Category.SubCategory.CLI
             else     -> 3
         }
 
-    val onKey = handler<KeyEvent> { event ->
+    val onKey = handler<KeyStateEvent> { event ->
+        if (!event.pressed) return@handler
+
         val key = event.key
         if (key == KEY_ESCAPE) {
             toggle()

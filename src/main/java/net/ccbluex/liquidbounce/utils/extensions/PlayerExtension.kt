@@ -90,19 +90,20 @@ val EntityLivingBase.renderHurtTime: Float
 val EntityLivingBase.hurtPercent: Float
     get() = (this.renderHurtTime) / 10
 
-fun EntityLivingBase.isLookingOnEntity(entity: Any, maxAngleDifference: Double): Boolean {
-    if (entity == this) return true
+fun EntityLivingBase.isLookingOn(target: Any, maxAngleDifference: Double): Boolean {
+    if (target == this) return true
 
     val maxAngleDifferenceRadians = maxAngleDifference.toRadians()
 
     // Get the nearest point on the entity's bounding box to properly detect if looking at entity
-    val entityPosVec = when (entity) {
-        is Entity -> getNearestPointBB(eyes, entity.hitBox)
+    val entityPosVec = when (target) {
+        is Entity -> getNearestPointBB(eyes, target.hitBox)
         is TileEntity -> Vec3(
-            entity.pos.x.toDouble(),
-            entity.pos.y.toDouble(),
-            entity.pos.z.toDouble()
+            target.pos.x.toDouble(),
+            target.pos.y.toDouble(),
+            target.pos.z.toDouble()
         )
+        is Vec3 -> target
 
         else -> return false
     }
@@ -111,14 +112,6 @@ fun EntityLivingBase.isLookingOnEntity(entity: Any, maxAngleDifference: Double):
     val dotProductThreshold = lookVec.dotProduct(directionToEntity)
 
     return dotProductThreshold > cos(maxAngleDifferenceRadians)
-}
-
-fun EntityLivingBase.isAttackingEntity(entity: Entity, maxAngleDifference: Double, range: Double): Boolean {
-    val isSwinging = swingProgress > 0f
-    val isLookingAtEntity = isLookingOnEntity(entity, maxAngleDifference)
-    val isInRange = getDistanceToEntityBox(entity) < range
-
-    return isSwinging && isLookingAtEntity && isInRange
 }
 
 fun Entity.isAnimal() =

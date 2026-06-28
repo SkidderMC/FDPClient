@@ -22,21 +22,6 @@ import kotlin.math.sqrt
 /**
  * FastAccel module - reach top movement speed faster than vanilla.
  *
- * Uses Minecraft's ground/air movement physics (reference: SimulatedPlayer) to compute
- * the player's theoretical maximum (equilibrium) speed and interpolates toward it.
- *
- * Boost: 0% = vanilla acceleration, 100% = instant top speed.
- * Does NOT increase maximum speed — only how fast you reach it.
- *
- * The equilibrium speed formula derived from vanilla tick loop:
- *   v_new = (v_old + acceleration) * drag
- *   v_eq  = acceleration * drag / (1 - drag)
- *
- * By boosting v_old toward v_eq before moveFlying adds acceleration, the resulting
- * (v_eq + acceleration) * drag = v_eq — so there is zero overshoot.
- *
- * NOTE: This module makes Illegitimate movement, which is standardly easy to get detected.
- *
  * @author itsakc-me
  */
 object FastAccel : Module("FastAccel", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN, gameDetecting = false) {
@@ -46,7 +31,7 @@ object FastAccel : Module("FastAccel", Category.MOVEMENT, Category.SubCategory.M
         .describe("How fast to reach top speed, 0 vanilla to 100 instant.")
 
     // Conditions
-    private val notDamaged by boolean("NotDamaged", false)
+    private val notWhileHurt by boolean("NotWhileHurt", false)
         .describe("Only accelerate while the player is not hurt.")
 
     /**
@@ -62,7 +47,7 @@ object FastAccel : Module("FastAccel", Category.MOVEMENT, Category.SubCategory.M
         if (player.capabilities.isFlying) return@handler
 
         // Check conditions
-        if (notDamaged && player.hurtTime > 0) return@handler
+        if (notWhileHurt && player.hurtResistantTime > 0) return@handler
 
         val currentSpeed = sqrt(player.motionX * player.motionX + player.motionZ * player.motionZ)
         val maxSpeed = calculateMaxSpeed()

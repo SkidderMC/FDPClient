@@ -15,7 +15,7 @@ import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.animations.Direction
 import net.ccbluex.liquidbounce.utils.animations.impl.SmoothStepAnimation
 import net.ccbluex.liquidbounce.utils.client.ClientThemesUtils
-import net.ccbluex.liquidbounce.utils.extensions.isLookingOnEntity
+import net.ccbluex.liquidbounce.utils.extensions.isLookingOn
 import net.ccbluex.liquidbounce.utils.render.ColorUtils
 import net.ccbluex.liquidbounce.utils.render.ColorUtils.withAlpha
 import net.ccbluex.liquidbounce.utils.render.RenderUtils
@@ -259,7 +259,7 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
         val distanceSq = mc.thePlayer.getDistanceSqToEntity(event.movedEntity)
         if (distanceSq > maxRenderDistanceSq) return@handler
 
-        if (renderOnLook && !mc.thePlayer.isLookingOnEntity(event.movedEntity, maxAngleDifference.toDouble())) return@handler
+        if (renderOnLook && !mc.thePlayer.isLookingOn(event.movedEntity, maxAngleDifference.toDouble())) return@handler
 
         if (event.movedEntity == mc.thePlayer && !renderSelf) return@handler
 
@@ -312,7 +312,7 @@ object DashTrail : Module("DashTrail", Category.VISUAL, Category.SubCategory.REN
 
             val distanceSq = mc.thePlayer.getDistanceSqToEntity(entity)
             if (distanceSq > maxRenderDistanceSq) return@filter false
-            if (renderOnLook && !mc.thePlayer.isLookingOnEntity(entity, maxAngleDifference.toDouble())) return@filter false
+            if (renderOnLook && !mc.thePlayer.isLookingOn(entity, maxAngleDifference.toDouble())) return@filter false
 
             val x = dashCubic.getRenderPosX(partialTicks)
             val y = dashCubic.getRenderPosY(partialTicks)

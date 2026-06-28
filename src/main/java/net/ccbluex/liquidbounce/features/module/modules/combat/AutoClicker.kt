@@ -17,7 +17,7 @@ import net.ccbluex.liquidbounce.utils.extensions.fixedSensitivityPitch
 import net.ccbluex.liquidbounce.utils.extensions.fixedSensitivityYaw
 import net.ccbluex.liquidbounce.utils.extensions.getDistanceToEntityBox
 import net.ccbluex.liquidbounce.utils.extensions.isBlock
-import net.ccbluex.liquidbounce.utils.extensions.isLookingOnEntity
+import net.ccbluex.liquidbounce.utils.extensions.isLookingOn
 import net.minecraft.item.ItemBlock
 import net.minecraft.client.settings.KeyBinding
 import net.minecraft.item.EnumAction
@@ -131,7 +131,7 @@ object AutoClicker : Module("AutoClicker", Category.COMBAT, Category.SubCategory
                 && (!onlyBlock || mc.objectMouseOver.typeOfHit.isBlock)
                 && heldLongEnough(leftHeldSince, time) && canClickWhileUsing(thePlayer, time)) {
                 val nearbyEntity = getNearestEntityInRange() ?: return@handler
-                if (!thePlayer.isLookingOnEntity(nearbyEntity, maxAngleDifference.toDouble())) return@handler
+                if (!thePlayer.isLookingOn(nearbyEntity, maxAngleDifference.toDouble())) return@handler
 
                 handleLeftClick(time, doubleClick)
             } else if (left && mc.gameSettings.keyBindAttack.isKeyDown && !mc.gameSettings.keyBindUseItem.isKeyDown && canClick && time - leftLastSwing >= leftDelay

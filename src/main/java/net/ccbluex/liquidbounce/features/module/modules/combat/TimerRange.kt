@@ -242,7 +242,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
         }
 
         if (isPlayerMoving() && !confirmStop) {
-            if (player.isLookingOnEntity(nearbyEntity, maxAngleDifference.toDouble())) {
+            if (player.isLookingOn(nearbyEntity, maxAngleDifference.toDouble())) {
                 val entityDistance = player.getDistanceToEntityBox(nearbyEntity)
                 if (confirmTick && entityDistance in randomRange..range.endInclusive) {
                     if (updateDistance(nearbyEntity)) {
@@ -382,7 +382,7 @@ object TimerRange : Module("TimerRange", Category.COMBAT, Category.SubCategory.C
 
             if (entityDistance > scanRange) return@let
 
-            val color = if (player.isLookingOnEntity(nearbyEntity, maxAngleDifference.toDouble())) {
+            val color = if (player.isLookingOn(nearbyEntity, maxAngleDifference.toDouble())) {
                 Color(37, 126, 255, 70)
             } else {
                 Color(210, 60, 60, 70)

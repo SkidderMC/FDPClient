@@ -211,11 +211,6 @@ public abstract class MixinMinecraft {
         if (currentScreen == null) {
             EventManager.INSTANCE.call(new KeyStateEvent(keyCode, pressed));
         }
-
-        // Fire KeyEvent only on press
-        if (pressed && currentScreen == null) {
-            EventManager.INSTANCE.call(new KeyEvent(keyCode));
-        }
     }
 
     @Inject(method = "sendClickBlockToController", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/MovingObjectPosition;getBlockPos()Lnet/minecraft/util/BlockPos;"))

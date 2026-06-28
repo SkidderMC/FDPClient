@@ -6,7 +6,7 @@
 package net.ccbluex.liquidbounce.features.module
 
 import net.ccbluex.liquidbounce.event.handler
-import net.ccbluex.liquidbounce.event.KeyEvent
+import net.ccbluex.liquidbounce.event.KeyStateEvent
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.command.CommandManager.registerCommand
 import net.ccbluex.liquidbounce.utils.client.ClassUtils
@@ -110,7 +110,8 @@ object ModuleManager : Listenable, Collection<Module> by MODULE_REGISTRY {
     /**
      * Handle incoming key presses
      */
-    private val onKey = handler<KeyEvent> { event ->
+    private val onKey = handler<KeyStateEvent> { event ->
+        if (!event.pressed) return@handler
         MODULE_REGISTRY.forEach { if (it.keyBind == event.key) it.toggle() }
     }
 

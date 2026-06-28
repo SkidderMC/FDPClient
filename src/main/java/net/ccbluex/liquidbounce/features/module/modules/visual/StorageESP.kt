@@ -232,7 +232,7 @@ object StorageESP : Module("StorageESP", Category.VISUAL, Category.SubCategory.R
         )
 
         return renderFilters.withinDistance(distanceSquared)
-            && (!renderFilters.onLook || mc.thePlayer.isLookingOnEntity(tileEntity, renderFilters.maxAngleDifference.toDouble()))
+            && (!renderFilters.onLook || mc.thePlayer.isLookingOn(tileEntity, renderFilters.maxAngleDifference.toDouble()))
             && (renderFilters.thruBlocks || isEntityHeightVisible(tileEntity))
     }
 
@@ -245,7 +245,7 @@ object StorageESP : Module("StorageESP", Category.VISUAL, Category.SubCategory.R
         )
 
         return renderFilters.withinDistance(distanceSquared)
-            && (!renderFilters.onLook || mc.thePlayer.isLookingOnEntity(entity, renderFilters.maxAngleDifference.toDouble()))
+            && (!renderFilters.onLook || mc.thePlayer.isLookingOn(entity, renderFilters.maxAngleDifference.toDouble()))
             && (renderFilters.thruBlocks || isEntityHeightVisible(entity))
     }
 
