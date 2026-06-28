@@ -110,6 +110,8 @@ val RenderManager.renderPos
 fun Vec3.toFloatArray() = floatArrayOf(xCoord.toFloat(), yCoord.toFloat(), zCoord.toFloat())
 fun Vec3.toDoubleArray() = doubleArrayOf(xCoord, yCoord, zCoord)
 
+fun Int.toTicks() = this / 50
+
 fun Float.ceilInt() = MathHelper.ceiling_float_int(this)
 fun Float.floorInt() = MathHelper.floor_float(this)
 fun Float.toRadians() = this * 0.017453292f

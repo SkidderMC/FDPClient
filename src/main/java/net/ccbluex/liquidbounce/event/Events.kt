@@ -74,13 +74,6 @@ class UpdateModelEvent(val player: EntityPlayer, val model: ModelPlayer) : Event
 class JumpEvent(var motion: Float, val eventState: EventState) : CancellableEvent()
 
 /**
- * Called when user press a key once
- *
- * @param key Pressed key
- */
-class KeyEvent(val key: Int) : Event()
-
-/**
  * Called when a key state changes (press or release)
  *
  * @param key The key code
@@ -295,7 +288,6 @@ internal val ALL_EVENT_CLASSES = arrayOf(
     StartupEvent::class.java,
     SneakSlowDownEvent::class.java,
     PostSprintUpdateEvent::class.java,
-    KeyEvent::class.java,
     KeyStateEvent::class.java,
     SlowDownEvent::class.java,
     TickEndEvent::class.java,

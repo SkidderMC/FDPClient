@@ -139,7 +139,7 @@ object NameTags : Module("NameTags", Category.VISUAL, Category.SubCategory.RENDE
 
     private val entities by EntityLookup<EntityLivingBase>()
         .filter { bot || !isBot(it) }
-        .filter { !onLook || mc.thePlayer.isLookingOnEntity(it, maxAngleDifference.toDouble()) }
+        .filter { !onLook || mc.thePlayer.isLookingOn(it, maxAngleDifference.toDouble()) }
         .filter { thruBlocks || isEntityHeightVisible(it) }
 
     val onRender3D = handler<Render3DEvent> {

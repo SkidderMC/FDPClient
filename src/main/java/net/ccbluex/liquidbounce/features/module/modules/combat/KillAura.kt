@@ -861,7 +861,7 @@ object KillAura : Module("KillAura", Category.COMBAT, Category.SubCategory.COMBA
 
             if (distance > maxRange || fov != 180F && entityFov > fov) continue
 
-            if (switchMode && !thePlayer.isLookingOnEntity(entity, maxSwitchFOV.toDouble())) continue
+            if (switchMode && !thePlayer.isLookingOn(entity, maxSwitchFOV.toDouble())) continue
 
             val currentValue = when (priority.lowercase()) {
                 "distance" -> distance

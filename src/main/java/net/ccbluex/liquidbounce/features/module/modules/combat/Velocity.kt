@@ -424,7 +424,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
 
                 if (nearbyEntity != null) {
                     if (!thePlayer.onGround) {
-                        if (onLook && !thePlayer.isLookingOnEntity(nearbyEntity, maxAngleDifference.toDouble())) {
+                        if (onLook && !thePlayer.isLookingOn(nearbyEntity, maxAngleDifference.toDouble())) {
                             return@handler
                         }
 
@@ -442,7 +442,7 @@ object Velocity : Module("Velocity", Category.COMBAT, Category.SubCategory.COMBA
                         thePlayer.speedInAir = 0.02F
                         reverseHurt = false
                     } else {
-                        if (onLook && !thePlayer.isLookingOnEntity(nearbyEntity, maxAngleDifference.toDouble())) {
+                        if (onLook && !thePlayer.isLookingOn(nearbyEntity, maxAngleDifference.toDouble())) {
                             hasReceivedVelocity = false
                             thePlayer.speedInAir = 0.02F
                             reverseHurt = false

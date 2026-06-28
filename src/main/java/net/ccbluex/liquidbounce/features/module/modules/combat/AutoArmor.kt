@@ -8,7 +8,7 @@ package net.ccbluex.liquidbounce.features.module.modules.combat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import net.ccbluex.liquidbounce.event.KeyEvent
+import net.ccbluex.liquidbounce.event.KeyStateEvent
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
@@ -106,8 +106,8 @@ object AutoArmor : Module("AutoArmor", Category.COMBAT, Category.SubCategory.COM
     override val tag
         get() = mode
 
-    val onKey = handler<KeyEvent> { event ->
-        if (!manualSwap || event.key == Keyboard.KEY_NONE || event.key == keyBind) {
+    val onKey = handler<KeyStateEvent> { event ->
+        if (!event.pressed || !manualSwap || event.key == Keyboard.KEY_NONE || event.key == keyBind) {
             return@handler
         }
 

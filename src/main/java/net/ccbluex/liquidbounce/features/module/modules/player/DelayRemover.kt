@@ -5,16 +5,13 @@
  */
 package net.ccbluex.liquidbounce.features.module.modules.player
 
-import net.ccbluex.liquidbounce.event.MotionEvent
+import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.movement.MovementUtils.updateControls
 import net.ccbluex.liquidbounce.event.handler
 
 object DelayRemover : Module("DelayRemover", Category.PLAYER, Category.SubCategory.PLAYER_COUNTER) {
-
-   // val jumpDelay by boolean("NoJumpDelay", false)
-  //  val jumpDelayTicks by IntegerValue("JumpDelayTicks", 0, 0.. 4) { jumpDelay }
 
     val noClickDelay by boolean("NoClickDelay", true)
         .describe("Remove the delay between left clicks.")
@@ -37,8 +34,8 @@ object DelayRemover : Module("DelayRemover", Category.PLAYER, Category.SubCatego
     private var prevGui = false
 
 
-    val onMotion = handler<MotionEvent> {
-        if (mc.thePlayer != null && mc.theWorld != null && noClickDelay) {
+    val onTick = handler<GameTickEvent> {
+        if (noClickDelay) {
             mc.leftClickCounter = 0
         }
 

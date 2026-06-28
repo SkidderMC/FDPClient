@@ -5,7 +5,7 @@
  */
 package net.ccbluex.liquidbounce.handler.macro
 
-import net.ccbluex.liquidbounce.event.KeyEvent
+import net.ccbluex.liquidbounce.event.KeyStateEvent
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.event.handler
 import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
@@ -13,7 +13,8 @@ import net.ccbluex.liquidbounce.utils.client.MinecraftInstance
 object MacroManager : MinecraftInstance, Listenable {
     val macros = ArrayList<Macro>()
 
-    val onKey = handler<KeyEvent> { event ->
+    val onKey = handler<KeyStateEvent> { event ->
+        if (!event.pressed) return@handler
         macros.filter { it.key == event.key }.forEach { it.exec() }
     }
 

@@ -30,19 +30,19 @@ object MoveHelper : Module("MoveHelper", Category.MOVEMENT, Category.SubCategory
         .describe("Distance range separating close-range from far-range S-tap.")
 
     // Close Range Settings
-    private val closeMode by choices("CloseMode", arrayOf("Interval", "OnAttack"), "Interval")
+    private val closeMode by choices("CloseMode", arrayOf("Interval", "Hit"), "Interval")
         .describe("How to trigger the S-tap at close range.")
-    private val closeInterval by int("CloseInterval", 10, 1..40) { closeMode == "Interval" }
-        .describe("Ticks between close-range S-taps in interval mode.")
-    private val closeHoldLength by int("CloseHoldLength", 2, 1..10)
+    private val closeInterval by int("Interval", 500, 0..1000) { closeMode == "Interval" }
+        .describe("Interval timing between close-range S-tap.")
+    private val closeHoldLength by int("Hold", 100, 0..500)
         .describe("How long to hold back movement at close range.")
 
     // Far Range Settings
-    private val farMode by choices("FarMode", arrayOf("Interval", "OnAttack"), "Interval")
+    private val farMode by choices("FarMode", arrayOf("Interval", "Hit"), "Interval")
         .describe("How to trigger the S-tap at far range.")
-    private val farInterval by int("FarInterval", 20, 1..40) { farMode == "Interval" }
-        .describe("Ticks between far-range S-taps in interval mode.")
-    private val farHoldLength by int("FarHoldLength", 3, 1..10)
+    private val farInterval by int("Interval", 500, 0..1000) { farMode == "Interval" }
+        .describe("Interval timing between far-range S-tap.")
+    private val farHoldLength by int("Hold", 150, 0..500)
         .describe("How long to hold back movement at far range.")
 
     private val onlyWhenHurt by boolean("OnlyWhenHurt", true)
@@ -83,15 +83,15 @@ object MoveHelper : Module("MoveHelper", Category.MOVEMENT, Category.SubCategory
     }
 
     private fun handleLogic(mode: String, interval: Int, holdLength: Int, target: EntityLivingBase) {
-        when (mode.lowercase()) {
-            "interval" -> {
+        when (mode) {
+            "Interval" -> {
                 if (intervalTimer.hasTimePassed(interval * 50L)) {
                     activeTicks = holdLength
                     intervalTimer.reset()
                 }
             }
 
-            "onhit" -> {
+            "Hit" -> {
                 if (target.hurtResistantTime > 0) {
                     activeTicks = holdLength
                 }

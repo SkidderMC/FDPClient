@@ -87,7 +87,7 @@ object ChineseHat : Module("ChineseHat", Category.VISUAL, Category.SubCategory.R
     private val entityLookup by EntityLookup<EntityLivingBase>()
         .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistance * maxRenderDistance }
         .filter { bots || !isBot(it) }
-        .filter { !onLook || mc.thePlayer.isLookingOnEntity(it, maxAngleDifference.toDouble()) }
+        .filter { !onLook || mc.thePlayer.isLookingOn(it, maxAngleDifference.toDouble()) }
         .filter { thruBlocks || isEntityHeightVisible(it) }
 
     val render = handler<Render3DEvent> {

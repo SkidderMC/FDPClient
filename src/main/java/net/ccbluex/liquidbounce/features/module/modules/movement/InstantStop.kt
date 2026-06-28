@@ -63,7 +63,7 @@ object InstantStop : Module("InstantStop", Category.MOVEMENT, Category.SubCatego
 
     fun isTicksOnGoing() = holdLeftTicks > 0 || holdRightTicks > 0 || holdForwardTicks > 0 || holdBackTicks > 0
 
-    val onKeyState = handler<KeyStateEvent> { event ->
+    val onKey = handler<KeyStateEvent> { event ->
         mc.thePlayer ?: return@handler
 
         val left = mc.gameSettings.keyBindLeft

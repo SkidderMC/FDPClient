@@ -398,7 +398,7 @@ object InfiniteAura : Module(name = "InfiniteAura", category = Category.COMBAT, 
 
             if (fov != 180F && entityFov > fov) continue
 
-            if (switchMode && !thePlayer.isLookingOnEntity(entity, maxSwitchFOV.toDouble())) continue
+            if (switchMode && !thePlayer.isLookingOn(entity, maxSwitchFOV.toDouble())) continue
 
             val currentValue = prioritizeTarget(entity)
 

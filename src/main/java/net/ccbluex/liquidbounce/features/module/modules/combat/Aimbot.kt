@@ -236,7 +236,7 @@ object Aimbot : Module("Aimbot", Category.COMBAT, Category.SubCategory.COMBAT_LE
         val realisticTurnSpeed = rotationDiff * ((supposedTurnSpeed + (gaussian - 0.5)) / 180)
 
         val rotation = if (rotationOptions.useModernRotations) {
-            RotationUtils.performAngleChange(player.rotation, destinationRotation, rotationOptions)
+            performAngleChange(player.rotation, destinationRotation, rotationOptions)
         } else {
             // Directly access performAngleChange since this module changes the real client look rotation.
             performAngleChange(

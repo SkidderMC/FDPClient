@@ -38,7 +38,7 @@ object TNTTimer : Module("TNTTimer", Category.VISUAL, Category.SubCategory.RENDE
     private val tntEntities by EntityLookup<EntityTNTPrimed>()
         .filter { it.fuse > 0 }
         .filter { renderFilters.withinDistance(mc.thePlayer.getDistanceSqToEntity(it)) }
-        .filter { !renderFilters.onLook || mc.thePlayer.isLookingOnEntity(it, renderFilters.maxAngleDifference.toDouble()) }
+        .filter { !renderFilters.onLook || mc.thePlayer.isLookingOn(it, renderFilters.maxAngleDifference.toDouble()) }
 
     val onRender3D = handler<Render3DEvent> {
         for (entity in tntEntities) {

@@ -62,7 +62,7 @@ object Tracers : Module("Tracers", Category.VISUAL, Category.SubCategory.RENDER_
         .filter { isSelected(it, false) }
         .filter { mc.thePlayer.getDistanceSqToEntity(it) <= maxRenderDistanceSq }
         .filter { bot || !isBot(it) }
-        .filter { !onLook || mc.thePlayer.isLookingOnEntity(it, maxAngleDifference.toDouble()) }
+        .filter { !onLook || mc.thePlayer.isLookingOn(it, maxAngleDifference.toDouble()) }
         .filter { thruBlocks || isEntityHeightVisible(it) }
 
     // Priority must be set lower than every other Listenable class that also listens to this event.

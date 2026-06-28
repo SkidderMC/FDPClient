@@ -12,7 +12,7 @@ import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
 import net.ccbluex.liquidbounce.utils.client.EntityLookup
-import net.ccbluex.liquidbounce.utils.extensions.isLookingOnEntity
+import net.ccbluex.liquidbounce.utils.extensions.isLookingOn
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawBlockBox
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.drawEntityBox
 import net.ccbluex.liquidbounce.utils.rotation.RotationUtils.isEntityHeightVisible
@@ -39,7 +39,7 @@ object ProphuntESP : Module("ProphuntESP", Category.VISUAL, Category.SubCategory
     private val blocks = ConcurrentHashMap<BlockPos, Long>()
 
     private val entities by EntityLookup<EntityFallingBlock>()
-        .filter { !renderFilters.onLook || mc.thePlayer.isLookingOnEntity(it, renderFilters.maxAngleDifference.toDouble()) }
+        .filter { !renderFilters.onLook || mc.thePlayer.isLookingOn(it, renderFilters.maxAngleDifference.toDouble()) }
         .filter { renderFilters.thruBlocks || isEntityHeightVisible(it) }
         .filter { renderFilters.withinDistance(mc.thePlayer.getDistanceSqToEntity(it)) }
 

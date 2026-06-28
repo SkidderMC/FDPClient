@@ -209,7 +209,7 @@ object ESP : Module("ESP", Category.VISUAL, Category.SubCategory.RENDER_OVERLAY)
 
         return (renderFilters.withinDistance(player.getDistanceSqToEntity(entity))
                 && (renderFilters.thruBlocks || isEntityHeightVisible(entity))
-                && (!renderFilters.onLook || player.isLookingOnEntity(entity, renderFilters.maxAngleDifference.toDouble()))
+                && (!renderFilters.onLook || player.isLookingOn(entity, renderFilters.maxAngleDifference.toDouble()))
                 && isSelected(entity, false)
                 && (bot || !isBot(entity)))
     }

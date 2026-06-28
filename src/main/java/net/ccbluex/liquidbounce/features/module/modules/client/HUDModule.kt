@@ -115,7 +115,8 @@ object HUDModule : Module("HUD", Category.CLIENT, Category.SubCategory.CLIENT_GE
         hud.update()
     }
 
-    val onKey = handler<KeyEvent> { event ->
+    val onKey = handler<KeyStateEvent> { event ->
+        if (!event.pressed) return@handler
         hud.handleKey('a', event.key)
     }
 
