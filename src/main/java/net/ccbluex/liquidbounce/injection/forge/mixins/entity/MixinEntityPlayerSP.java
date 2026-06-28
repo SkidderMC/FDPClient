@@ -279,7 +279,6 @@ public abstract class MixinEntityPlayerSP extends MixinAbstractClientPlayer {
 
     /**
      * @author CCBlueX
-     * @reason Fix horse jump packet not being sent
      */
     @Overwrite
     public void onLivingUpdate() {
