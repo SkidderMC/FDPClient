@@ -208,4 +208,15 @@ public abstract class MixinGuiNewChat {
             callbackInfo.setReturnValue(null);
         }
     }
+
+    /**
+     * Tab-completing player names prints then deletes a temporary chat line; if a null entry ever lands
+     * in the chat-line lists (seen under heavy chat spam, e.g. an anticheat flooding alerts) vanilla's
+     * deleteChatLine NPEs while scanning them. Make the id lookup null-safe so a stray null is skipped
+     * instead of crashing the client.
+     */
+    @Redirect(method = "deleteChatLine", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/ChatLine;getChatLineID()I"), require = 0)
+    private int fdp$nullSafeChatLineId(ChatLine line) {
+        return line == null ? Integer.MIN_VALUE : line.getChatLineID();
+    }
 }
