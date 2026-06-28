@@ -8,6 +8,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.elements
 import net.ccbluex.liquidbounce.FDPClient.clickGui
 import net.ccbluex.liquidbounce.features.module.Module
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule.spacedModules
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.ValueDispatcher
 import net.minecraftforge.fml.relauncher.Side
 import net.minecraftforge.fml.relauncher.SideOnly
 
@@ -61,7 +62,7 @@ class ModuleElement(val module: Module) : ButtonElement(module.name, buttonActio
                 clickGui.style.clickSound()
             }
             1 -> {
-                if (module.values.isNotEmpty()) {
+                if (ValueDispatcher.visibleDeep(module).isNotEmpty()) {
                     showSettings = !showSettings
                     clickGui.style.showSettingsSound()
                 }

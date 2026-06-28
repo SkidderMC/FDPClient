@@ -133,7 +133,7 @@ object BlackStyle : Style() {
         )
 
         // Draw settings
-        val moduleValues = ValueDispatcher.visible(moduleElement.module)
+        val moduleValues = ValueDispatcher.visibleDeep(moduleElement.module)
         if (moduleValues.isNotEmpty()) {
             fontSemibold35.drawString(
                 if (moduleElement.showSettings) "<" else ">",

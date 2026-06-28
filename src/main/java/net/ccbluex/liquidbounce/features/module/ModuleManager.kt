@@ -6,11 +6,13 @@
 package net.ccbluex.liquidbounce.features.module
 
 import net.ccbluex.liquidbounce.event.handler
+import net.ccbluex.liquidbounce.event.GameTickEvent
 import net.ccbluex.liquidbounce.event.KeyStateEvent
 import net.ccbluex.liquidbounce.event.Listenable
 import net.ccbluex.liquidbounce.features.command.CommandManager.registerCommand
 import net.ccbluex.liquidbounce.utils.client.ClassUtils
 import net.ccbluex.liquidbounce.utils.client.ClientUtils.LOGGER
+import org.lwjgl.input.Keyboard
 import java.util.*
 
 val MODULE_REGISTRY = TreeSet(Comparator.comparing(Module::name))
@@ -107,12 +109,100 @@ object ModuleManager : Listenable, Collection<Module> by MODULE_REGISTRY {
 
     fun getKeyBind(key: Int) = MODULE_REGISTRY.filter { it.keyBind == key }
 
+    private val smartPressedStates = mutableMapOf<Module, Pair<Boolean, Long>>()
+
     /**
-     * Handle incoming key presses
+     * Handle incoming key presses and releases.
      */
-    private val onKey = handler<KeyStateEvent> { event ->
-        if (!event.pressed) return@handler
-        MODULE_REGISTRY.forEach { if (it.keyBind == event.key) it.toggle() }
+    private val onKeyState = handler<KeyStateEvent> { event ->
+        if (event.key == Keyboard.KEY_NONE) {
+            return@handler
+        }
+
+        MODULE_REGISTRY.forEach { module ->
+            if (module.keyBind == Keyboard.KEY_NONE) {
+                return@forEach
+            }
+
+            val keyMatches = module.keyBind == event.key
+            val releasedModifier = !event.pressed && module.bindModifiers.any { it.matchesKey(event.key) }
+
+            when (module.bindAction) {
+                ModuleBindAction.TOGGLE -> {
+                    if (event.pressed && keyMatches && module.bindModifiersPressed()) {
+                        module.toggle()
+                    }
+                }
+
+                ModuleBindAction.HOLD -> {
+                    when {
+                        event.pressed && keyMatches && module.bindModifiersPressed() -> module.state = true
+                        !event.pressed && (keyMatches || releasedModifier) -> module.state = false
+                    }
+                }
+
+                ModuleBindAction.SMART -> {
+                    when {
+                        event.pressed && keyMatches && module.bindModifiersPressed() -> {
+                            smartPressedStates[module] = module.state to System.currentTimeMillis()
+                            module.state = true
+                        }
+                        !event.pressed && keyMatches -> {
+                            val (wasEnabled, pressedAt) = smartPressedStates.remove(module) ?: return@forEach
+                            val held = System.currentTimeMillis() - pressedAt >= SMART_HOLD_THRESHOLD_MS
+                            module.state = if (held) false else !wasEnabled
+                        }
+                        releasedModifier && smartPressedStates.remove(module) != null -> module.state = false
+                    }
+                }
+            }
+        }
     }
+
+    /**
+     * Safety net for HOLD/SMART binds. Key-release events are only delivered while no screen is open
+     * (the release fires from the mixin only when currentScreen == null), so holding a bind key and
+     * then opening a GUI - or losing window focus - would otherwise strand the module enabled because
+     * its release is never seen. Every tick we reconcile against the real keyboard state and let go of
+     * the module once the keys are physically up.
+     */
+    private val onBindTick = handler<GameTickEvent> {
+        MODULE_REGISTRY.forEach { module ->
+            if (module.keyBind == Keyboard.KEY_NONE) {
+                return@forEach
+            }
+            when (module.bindAction) {
+                ModuleBindAction.HOLD -> {
+                    if (module.state && !module.bindHeldPhysically()) {
+                        module.state = false
+                    }
+                }
+
+                ModuleBindAction.SMART -> {
+                    val (wasEnabled, pressedAt) = smartPressedStates[module] ?: return@forEach
+                    when {
+                        !Keyboard.isKeyDown(module.keyBind) -> {
+                            smartPressedStates.remove(module)
+                            val held = System.currentTimeMillis() - pressedAt >= SMART_HOLD_THRESHOLD_MS
+                            module.state = if (held) false else !wasEnabled
+                        }
+                        !module.bindModifiersPressed() -> {
+                            smartPressedStates.remove(module)
+                            module.state = false
+                        }
+                    }
+                }
+
+                else -> {}
+            }
+        }
+    }
+
+    private fun Module.bindModifiersPressed() = bindModifiers.all { it.isPressed() }
+
+    private fun Module.bindHeldPhysically() =
+        keyBind != Keyboard.KEY_NONE && Keyboard.isKeyDown(keyBind) && bindModifiersPressed()
+
+    private const val SMART_HOLD_THRESHOLD_MS = 250L
 
 }

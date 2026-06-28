@@ -86,7 +86,7 @@ class SettingComponents(private val module: Module) : Component() {
             DecelerateAnimation(225, 1.0, Direction.BACKWARDS)
         )
 
-        for (setting in module.values) {
+        for (setting in ValueDispatcher.allDeep(module)) {
             if (setting is FloatValue) {
                 sliderfloatMap[setting] = 0f
                 sliderfloatAnimMap[setting] = arrayOf(
@@ -298,7 +298,7 @@ class SettingComponents(private val module: Module) : Component() {
         var count = 0.0
         var hoverDescription: String? = null
 
-        for (setting in ValueDispatcher.visible(module)) {
+        for (setting in ValueDispatcher.visibleDeep(module)) {
             val settingY = roundToHalf(y + (count * rectHeight)).toFloat()
 
             val desc = setting.description
