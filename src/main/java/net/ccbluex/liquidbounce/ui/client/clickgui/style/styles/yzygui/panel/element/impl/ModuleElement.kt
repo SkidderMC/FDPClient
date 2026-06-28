@@ -59,7 +59,7 @@ class ModuleElement(
     var isBindingSelection = false
 
     init {
-        ValueDispatcher.visible(module).forEach { value ->
+        ValueDispatcher.allDeep(module).forEach { value ->
             val element = when (value) {
                 is BoolValue -> BooleanElement(this, value, parent, x + 4, y, width - 8, 12)
                 is FloatValue -> FloatElement(value, parent, x + 4, y, width - 4, 12)
@@ -88,7 +88,7 @@ class ModuleElement(
 
     private fun update() {
         var elementY = y + height
-        elements.forEach { element ->
+        activeElements().forEach { (element, _) ->
             element.x = x + 4
             element.y = elementY
             val actualHeight = when (element) {
@@ -102,7 +102,7 @@ class ModuleElement(
 
     fun getExtendedHeight(): Float {
         return if (isExtended) {
-            val totalHeight = elements.sumOf { element ->
+            val totalHeight = activeElements().sumOf { (element, _) ->
                 when (element) {
                     is ColorElement -> element.getActualHeight().toDouble()
                     is MultiSelectElement -> element.getActualHeight().toDouble()
@@ -121,7 +121,7 @@ class ModuleElement(
         var moduleHeight = height
 
         if (isExtended) {
-            moduleHeight += elements.sumOf { element ->
+            moduleHeight += activeElements().sumOf { (element, _) ->
                 when (element) {
                     is ColorElement -> element.getActualHeight()
                     is MultiSelectElement -> element.getActualHeight()
@@ -178,7 +178,7 @@ class ModuleElement(
             if (isExtended && module.state) moduleColor.rgb else textColor.rgb
         )
 
-        if (ValueDispatcher.visible(module).isNotEmpty()) {
+        if (ValueDispatcher.visibleDeep(module).isNotEmpty()) {
             val indicator = if (isExtended) "▼" else "▶"
             font.drawString(
                 indicator,
@@ -203,10 +203,10 @@ class ModuleElement(
         }
 
         if (isExtended) {
-            elements.forEach { it.drawScreen(mouseX, mouseY, partialTicks) }
+            activeElements().forEach { (element, _) -> element.drawScreen(mouseX, mouseY, partialTicks) }
 
-            elements.forEachIndexed { index, element ->
-                val description = elementValues.getOrNull(index)?.description
+            activeElements().forEach { (element, value) ->
+                val description = value.description
                 if (description != null && element.isHovering(mouseX, mouseY)) {
                     drawValueTooltip(description, mouseX, mouseY, font)
                 }
@@ -241,7 +241,7 @@ class ModuleElement(
                     if (isBindingSelection) {
                         // Cancel bind selection
                         isBindingSelection = false
-                    } else if (ValueDispatcher.visible(module).isNotEmpty()) {
+                    } else if (ValueDispatcher.visibleDeep(module).isNotEmpty()) {
                         isExtended = !isExtended
                         FDPClient.guiManager.moduleExtendeds[module.name] = isExtended
                     }
@@ -256,7 +256,7 @@ class ModuleElement(
         }
 
         if (isExtended && !isBindingSelection) {
-            elements.forEach { element ->
+            activeElements().forEach { (element, _) ->
                 if (element.isHovering(mouseX, mouseY)) {
                     element.mouseClicked(mouseX, mouseY, button)
                 }
@@ -266,7 +266,7 @@ class ModuleElement(
 
     override fun mouseReleased(mouseX: Int, mouseY: Int, state: Int) {
         if (isExtended && !isBindingSelection) {
-            elements.forEach { it.mouseReleased(mouseX, mouseY, state) }
+            activeElements().forEach { (element, _) -> element.mouseReleased(mouseX, mouseY, state) }
         }
     }
 
@@ -290,9 +290,12 @@ class ModuleElement(
         }
 
         if (isExtended && !isBindingSelection) {
-            elements.forEach { it.keyTyped(character, code) }
+            activeElements().forEach { (element, _) -> element.keyTyped(character, code) }
         }
     }
+
+    private fun activeElements() =
+        elements.zip(elementValues).filter { (_, value) -> value.shouldRender() }
 }
 
 /**

@@ -79,4 +79,32 @@ object ValueDispatcher {
      */
     fun visible(configurable: Configurable): List<Value<*>> =
         configurable.values.filter { it.shouldRender() }
+
+    /**
+     * Recursively walks every concrete value inside [configurable].
+     */
+    fun allDeep(configurable: Configurable): List<Value<*>> = buildList {
+        appendValues(configurable, visibleOnly = false)
+    }
+
+    /**
+     * Recursively walks concrete values that should currently be drawn.
+     */
+    fun visibleDeep(configurable: Configurable): List<Value<*>> = buildList {
+        appendValues(configurable, visibleOnly = true)
+    }
+
+    private fun MutableList<Value<*>>.appendValues(configurable: Configurable, visibleOnly: Boolean) {
+        for (value in configurable.values) {
+            if (visibleOnly && !value.shouldRender()) {
+                continue
+            }
+
+            if (value is Configurable) {
+                appendValues(value, visibleOnly)
+            } else {
+                add(value)
+            }
+        }
+    }
 }

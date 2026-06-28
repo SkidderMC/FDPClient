@@ -37,6 +37,8 @@ import net.ccbluex.liquidbounce.config.Value
 import net.ccbluex.liquidbounce.config.Vec3Value
 import net.ccbluex.liquidbounce.features.module.Category
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.features.module.ModuleBindAction
+import net.ccbluex.liquidbounce.features.module.ModuleBindModifier
 import net.ccbluex.liquidbounce.features.module.ModuleManager
 import net.ccbluex.liquidbounce.features.module.modules.client.ClickGUIModule
 import net.ccbluex.liquidbounce.features.module.modules.client.SpotifyModule
@@ -83,7 +85,9 @@ object NextGenClickGuiBridge : MinecraftInstance {
 
         return configurable(
             name = module?.name ?: name,
-            values = module?.values?.mapNotNull(::settingJson).orEmpty()
+            values = module?.let {
+                listOf(moduleBindSetting(it)) + it.values.mapNotNull(::settingJson)
+            }.orEmpty()
         )
     }
 
@@ -96,6 +100,10 @@ object NextGenClickGuiBridge : MinecraftInstance {
             for (setting in settings) {
                 val settingObject = setting.asJsonObject
                 val valueName = settingObject.get("name")?.asString ?: continue
+                if (valueName == MODULE_BIND_SETTING_NAME) {
+                    applyModuleBind(module, settingObject.get("value") ?: continue)
+                    continue
+                }
                 val value = module.getValue(valueName) ?: continue
                 applyValue(value, settingObject.get("value") ?: continue)
             }
@@ -381,7 +389,7 @@ object NextGenClickGuiBridge : MinecraftInstance {
     private fun moduleJson(module: Module): JsonObject = JsonObject().apply {
         addProperty("name", module.name)
         addProperty("category", categoryName(module.category))
-        add("keyBind", inputBind(module.keyBind))
+        add("keyBind", inputBind(module))
         addProperty("enabled", module.state)
         addProperty("description", runCatching { module.description }.getOrDefault(""))
         addProperty("hidden", module.isHidden)
@@ -405,6 +413,13 @@ object NextGenClickGuiBridge : MinecraftInstance {
         addProperty("value", label)
         addProperty("action", action)
     }
+
+    private fun moduleBindSetting(module: Module): JsonObject =
+        settingBase("BIND", MODULE_BIND_SETTING_NAME).apply {
+            add("value", inputBind(module))
+            add("defaultValue", inputBind(Keyboard.KEY_NONE, ModuleBindAction.TOGGLE, emptySet()))
+            addProperty("description", "Configure the key and action used to toggle or hold ${module.name}.")
+        }
 
     private fun choose(name: String, value: String, choices: Array<String>): JsonObject = settingBase("CHOOSE", name).apply {
         addProperty("value", value)
@@ -592,10 +607,28 @@ object NextGenClickGuiBridge : MinecraftInstance {
         } ?: "Unknown"
     }
 
-    private fun inputBind(key: Int): JsonObject = JsonObject().apply {
+    private fun inputBind(module: Module): JsonObject =
+        inputBind(module.keyBind, module.bindAction, module.bindModifiers)
+
+    private fun inputBind(
+        key: Int,
+        action: ModuleBindAction = ModuleBindAction.TOGGLE,
+        modifiers: Set<ModuleBindModifier> = emptySet(),
+    ): JsonObject = JsonObject().apply {
         addProperty("boundKey", toMinecraftKey(key))
-        addProperty("action", "Toggle")
-        add("modifiers", JsonArray())
+        addProperty("action", action.displayName)
+        add("modifiers", JsonArray().apply {
+            modifiers.sortedBy { it.ordinal }.forEach { add(JsonPrimitive(it.displayName)) }
+        })
+    }
+
+    private fun applyModuleBind(module: Module, element: JsonElement) {
+        val bind = runCatching { element.asJsonObject }.getOrNull() ?: return
+        module.keyBind = fromMinecraftKey(bind.get("boundKey")?.asString ?: UNKNOWN_KEY)
+        module.bindAction = ModuleBindAction.fromDisplayName(bind.get("action")?.asString)
+        module.bindModifiers = bind.getAsJsonArray("modifiers")?.mapNotNull {
+            ModuleBindModifier.fromDisplayName(runCatching { it.asString }.getOrNull())
+        }?.toSet().orEmpty()
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -776,6 +809,7 @@ object NextGenClickGuiBridge : MinecraftInstance {
     }
 
     private const val UNKNOWN_KEY = "key.keyboard.unknown"
+    private const val MODULE_BIND_SETTING_NAME = "Bind"
     private val NAME_BOUNDARY = Regex("(?<=[a-z0-9])(?=[A-Z])")
 
     private val KEY_TO_MINECRAFT = mapOf(

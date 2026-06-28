@@ -76,6 +76,20 @@ open class Module(
             saveConfig(modulesConfig)
         }
 
+    var bindAction = ModuleBindAction.TOGGLE
+        set(action) {
+            field = action
+
+            saveConfig(modulesConfig)
+        }
+
+    var bindModifiers: Set<ModuleBindModifier> = emptySet()
+        set(modifiers) {
+            field = modifiers
+
+            saveConfig(modulesConfig)
+        }
+
     var isHidden: Boolean by boolean("Hide", defaultHidden).subjective().onChanged {
         saveConfig(modulesConfig)
     }

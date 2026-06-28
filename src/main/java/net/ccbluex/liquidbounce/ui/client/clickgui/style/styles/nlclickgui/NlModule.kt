@@ -7,6 +7,7 @@ package net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui
 
 import net.ccbluex.liquidbounce.config.*
 import net.ccbluex.liquidbounce.features.module.Module
+import net.ccbluex.liquidbounce.ui.client.clickgui.style.core.ValueDispatcher
 import net.ccbluex.liquidbounce.ui.client.clickgui.style.styles.nlclickgui.NeverloseGui.Companion.getInstance
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.applyOpacity
 import net.ccbluex.liquidbounce.utils.render.RenderUtils.brighter
@@ -71,7 +72,7 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
 
     init {
         this.posx = if (lef) 0 else 170
-        for (setting in module.values) {
+        for (setting in ValueDispatcher.allDeep(module)) {
             if (setting is BoolValue) {
                 this.downwards.add(BoolSetting(setting, this))
             }
@@ -119,7 +120,7 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
                 h += downward.rowHeight()
             }
         }
-        if (module.values.isEmpty()) {
+        if (downwards.isEmpty()) {
             h += 20
         }
         return h
@@ -215,7 +216,7 @@ class NlModule(var NlSub: NlSub, var module: Module, var lef: Boolean) {
 
         hoveredDescription?.let { drawDescriptionTooltip(it, mx, my) }
 
-        if (module.values.isEmpty()) {
+        if (downwards.isEmpty()) {
             Fonts.Nl.Nl_22.Nl_22!!.drawString(
                 "No settings.",
                 x + 100 + posx,
