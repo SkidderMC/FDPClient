@@ -37,6 +37,7 @@ object Criticals : Module("Criticals", Category.COMBAT, Category.SubCategory.COM
         ),
         "Packet"
     )
+        .describe("Critical-hit mode.")
 
     val delay by int("Delay", 0, 0..500)
         .describe("Minimum delay between critical hits.")
