@@ -160,6 +160,37 @@ class NextGenClickGuiScreen : GuiScreen() {
             "Downloads in the background - you can close this and keep playing.",
             width / 2, height / 2 + 26, 0x808080
         )
+
+        drawDownloadSteps(height / 2 + 44)
+    }
+
+    /** Progressive step list of the asset download: completed packages, then the one in progress. */
+    private fun drawDownloadSteps(topY: Int) {
+        val steps = NextGenBrowserRuntime.downloadSteps
+        val current = NextGenBrowserRuntime.currentDownload
+        if (steps.isEmpty() && current.isEmpty()) {
+            return
+        }
+
+        val done = steps.size
+        val total = NextGenBrowserRuntime.downloadTotal
+        val header = if (total > 0) "Packages  $done / $total" else "Packages downloaded: $done"
+        drawCenteredString(fontRendererObj, header, width / 2, topY, 0x9fb3ff)
+
+        var y = topY + 12
+        for (step in steps.takeLast(5)) {
+            if (y > height - 22) {
+                break
+            }
+            drawCenteredString(fontRendererObj, step, width / 2, y, 0x77c777)
+            y += 10
+        }
+
+        if (current.isNotEmpty() && y <= height - 12) {
+            val pct = NextGenBrowserRuntime.progress.takeIf { it in 0.0..100.0 }?.toInt()
+            val label = if (pct != null) "> $current  ($pct%)" else "> $current"
+            drawCenteredString(fontRendererObj, label, width / 2, y, 0xffffff)
+        }
     }
 
     /** Render the embedded browser's texture with 1.8.9 GL calls. Returns false until the texture exists. */

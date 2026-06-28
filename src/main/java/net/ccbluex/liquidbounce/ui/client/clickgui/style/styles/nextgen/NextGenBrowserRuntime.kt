@@ -25,6 +25,7 @@ import net.montoyo.mcef.api.MCEFApi
 import java.io.File
 import java.lang.reflect.Method
 import java.lang.reflect.Proxy
+import java.util.concurrent.CopyOnWriteArrayList
 import java.nio.file.Path
 
 /**
@@ -57,6 +58,20 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
     /** Reason for the most recent FAILED state (message + exception chain). Shown by the fallback screen. */
     @Volatile
     var lastErrorLog: String = ""
+        private set
+
+    /** Completed download packages, in order, for the progressive step list shown on the loading screen. */
+    private val downloadStepsInternal = CopyOnWriteArrayList<String>()
+    val downloadSteps: List<String> get() = downloadStepsInternal
+
+    /** Package currently downloading (the in-progress step), or empty when none. */
+    @Volatile
+    var currentDownload: String = ""
+        private set
+
+    /** Total asset package count for this download, or 0 when unknown (used for the N/total counter). */
+    @Volatile
+    var downloadTotal: Int = 0
         private set
 
     private const val PROXY_CLASS = "net.montoyo.mcef.client.ClientProxy"
@@ -153,6 +168,7 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         state = State.INITIALIZING
         detail = "Preparing in-game browser (one-time setup)..."
         lastErrorLog = ""
+        resetDownloadSteps()
         val attempt = ++attemptId
 
         Thread({
@@ -225,6 +241,7 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         forceRedownloadOnNextStart = redownloadAssets
         progress = -1.0
         lastErrorLog = ""
+        resetDownloadSteps()
         detail = if (redownloadAssets) {
             "Restarting in-game browser asset download..."
         } else {
@@ -256,6 +273,41 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
             depth++
         }
         return builder.toString()
+    }
+
+    private fun resetDownloadSteps() {
+        downloadStepsInternal.clear()
+        currentDownload = ""
+        downloadTotal = 0
+    }
+
+    /** Move the in-progress package into the completed step list (when a task ends or the next begins). */
+    private fun finishCurrentStep() {
+        val name = currentDownload
+        if (name.isNotEmpty() && downloadStepsInternal.lastOrNull() != name) {
+            downloadStepsInternal.add(name)
+        }
+        currentDownload = ""
+    }
+
+    /** Strip any directory part so a step reads as the package/file name only. */
+    private fun cleanTaskName(raw: String?): String {
+        val trimmed = raw?.trim().orEmpty()
+        return trimmed.substringAfterLast('/').substringAfterLast('\\').ifEmpty { trimmed }
+    }
+
+    /** Compact one-line status for the in-game overlay: current package, completed count and percent. */
+    private fun downloadDetailLine(): String = buildString {
+        append("Downloading browser assets")
+        if (currentDownload.isNotEmpty()) {
+            append(": ").append(currentDownload)
+        }
+        val done = downloadStepsInternal.size
+        when {
+            downloadTotal > 0 -> append(" (").append(done).append('/').append(downloadTotal).append(')')
+            done > 0 -> append(" (").append(done).append(" done)")
+        }
+        progress.takeIf { it in 0.0..100.0 }?.let { append(" · ").append(it.toInt()).append('%') }
     }
 
     private fun hasNativeRuntime(): Boolean =
@@ -394,18 +446,28 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
             LOGGER.warn("[NextGen] MCEF file listing could not be established; continuing with resource check.")
         }
 
+        downloadTotal = runCatching {
+            (remoteConfigClass.getMethod("getResourceArray").invoke(remoteConfig) as? Array<*>)?.size ?: 0
+        }.getOrDefault(0)
+
         val listenerClass = Class.forName(PROGRESS_LISTENER_CLASS)
         val listener = Proxy.newProxyInstance(listenerClass.classLoader, arrayOf(listenerClass)) { _, method, args ->
             when (method.name) {
-                "onTaskChanged" -> detail = "Downloading in-game browser: ${args?.getOrNull(0)}"
+                "onTaskChanged" -> {
+                    finishCurrentStep()
+                    currentDownload = cleanTaskName(args?.getOrNull(0)?.toString())
+                    progress = 0.0
+                    detail = downloadDetailLine()
+                }
                 "onProgressed" -> {
                     val pct = (args?.getOrNull(0) as? Double)?.takeIf { it in 0.0..100.0 }
                     if (pct != null) {
                         progress = pct
-                        detail = "Downloading in-game browser: ${pct.toInt()}%"
+                        detail = downloadDetailLine()
                     }
                 }
                 "onProgressEnd" -> {
+                    finishCurrentStep()
                     progress = 100.0
                     detail = "Starting in-game browser..."
                 }
