@@ -233,7 +233,7 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
      * action (the ClickGUI module option and the fallback screen button both route here).
      */
     @Synchronized
-    fun retry(redownloadAssets: Boolean = true) {
+    fun retry(redownloadAssets: Boolean = false) {
         attemptId++
         closePersistentBrowser()
         resetMcefVirtualState()
@@ -243,9 +243,9 @@ object NextGenBrowserRuntime : MinecraftInstance, Listenable {
         lastErrorLog = ""
         resetDownloadSteps()
         detail = if (redownloadAssets) {
-            "Restarting in-game browser asset download..."
+            "Reinstalling all in-game browser assets..."
         } else {
-            "Restarting in-game browser..."
+            "Resuming in-game browser download (fetching missing assets)..."
         }
         state = State.IDLE
         ensureStarted()

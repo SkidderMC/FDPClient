@@ -106,12 +106,28 @@ object ClickGUIModule : Module("ClickGUI", Category.CLIENT, Category.SubCategory
     private val redownloadAssetsValue = boolean("Re-download Assets", false) {
         style == "NextGen" || NextGenBrowserRuntime.state == NextGenBrowserRuntime.State.FAILED
     }
-        .describe("Click to re-download the in-game browser assets and retry, e.g. if the download failed or stalled.")
+        .describe("Click to fetch any missing in-game browser assets and retry - a fast resume after a failed or stalled download.")
         .onChange { _, triggered ->
             if (triggered) {
                 NextGenBrowserRuntime.retry()
                 HUD.addNotification(
-                    Notification("NextGen ClickGUI", "Re-downloading in-game browser assets...", Type.INFO)
+                    Notification("NextGen ClickGUI", "Resuming in-game browser download...", Type.INFO)
+                )
+            }
+            false
+        }
+
+    // Full clean reinstall: purge every cached asset and download from scratch. For the rare case the
+    // cache or manifest is corrupt; everyday recovery should use the fast "Re-download Assets" resume above.
+    private val cleanReinstallValue = boolean("Clean Reinstall", false) {
+        style == "NextGen" || NextGenBrowserRuntime.state == NextGenBrowserRuntime.State.FAILED
+    }
+        .describe("Click to delete all cached browser assets and download everything again from scratch.")
+        .onChange { _, triggered ->
+            if (triggered) {
+                NextGenBrowserRuntime.retry(redownloadAssets = true)
+                HUD.addNotification(
+                    Notification("NextGen ClickGUI", "Reinstalling all in-game browser assets...", Type.INFO)
                 )
             }
             false
