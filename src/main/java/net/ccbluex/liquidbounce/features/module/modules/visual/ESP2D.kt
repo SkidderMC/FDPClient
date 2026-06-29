@@ -204,6 +204,8 @@ object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVER
                         continue
                     }
 
+                    captureProjectionMatrices()
+
                     var bbScreen: Vector4d? = null
 
                     for (corner in corners) {
@@ -541,10 +543,13 @@ object ESP2D : Module("ESP2D", Category.VISUAL, Category.SubCategory.RENDER_OVER
         }
     }
 
-    private fun project2D(scaleFactor: Int, x: Double, y: Double, z: Double): Vector3d? {
+    private fun captureProjectionMatrices() {
         GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, modelview)
         GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, projection)
         GL11.glGetInteger(GL11.GL_VIEWPORT, viewport)
+    }
+
+    private fun project2D(scaleFactor: Int, x: Double, y: Double, z: Double): Vector3d? {
         return if (GLU.gluProject(
                 x.toFloat(), y.toFloat(), z.toFloat(),
                 modelview, projection, viewport, vector
