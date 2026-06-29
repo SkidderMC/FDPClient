@@ -98,3 +98,22 @@ data class DirectionalInput(
         val BACKWARDS_RIGHT = DirectionalInput(forwards = false, backwards = true, left = false, right = true)
     }
 }
+
+fun getDirectionalInputForDegrees(
+    directionalInput: DirectionalInput,
+    degrees: Float,
+    deadAngle: Float = 20F,
+): DirectionalInput {
+    var forwards = directionalInput.forwards
+    var backwards = directionalInput.backwards
+    var left = directionalInput.left
+    var right = directionalInput.right
+
+    if (degrees > -90F + deadAngle && degrees < 90F - deadAngle) forwards = true
+    else if (degrees < -90F - deadAngle || degrees > 90F + deadAngle) backwards = true
+
+    if (degrees > deadAngle && degrees < 180F - deadAngle) right = true
+    else if (degrees > -180F + deadAngle && degrees < -deadAngle) left = true
+
+    return DirectionalInput(forwards, backwards, left, right)
+}

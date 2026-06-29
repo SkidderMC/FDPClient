@@ -13,19 +13,23 @@ import net.ccbluex.liquidbounce.features.module.Module
 
 object NoPush : Module("NoPush", Category.MOVEMENT, Category.SubCategory.MOVEMENT_EXTRAS, gameDetecting = false) {
 
-    private val blocks by boolean("Blocks", true)
-        .describe("Prevent blocks from pushing the player.")
-    private val sinking by boolean("Sinking", true)
-        .describe("Stop sinking downward in water or lava.")
+    private val sourcesValue = multiSelect(
+        "Sources",
+        PushSource.entries.map(PushSource::displayName).toTypedArray(),
+        setOf(PushSource.ENTITIES.displayName, PushSource.BLOCKS.displayName, PushSource.LIQUIDS.displayName)
+    ).describe("Choose which push sources are suppressed.")
+
+    @JvmStatic
+    fun canPush(source: PushSource): Boolean = !handleEvents() || !sourcesValue.isSelected(source.displayName)
 
     val onBlockPush = handler<BlockPushEvent> { event ->
-        if (blocks) {
+        if (!canPush(PushSource.BLOCKS)) {
             event.cancelEvent()
         }
     }
 
     val onUpdate = handler<UpdateEvent> {
-        if (!sinking) {
+        if (canPush(PushSource.SINKING)) {
             return@handler
         }
 
@@ -39,4 +43,11 @@ object NoPush : Module("NoPush", Category.MOVEMENT, Category.SubCategory.MOVEMEN
             player.motionY = 0.0
         }
     }
+}
+
+enum class PushSource(val displayName: String) {
+    ENTITIES("Entities"),
+    BLOCKS("Blocks"),
+    LIQUIDS("Liquids"),
+    SINKING("Sinking")
 }

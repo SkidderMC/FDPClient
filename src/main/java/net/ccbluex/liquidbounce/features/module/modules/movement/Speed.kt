@@ -33,6 +33,9 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulc
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanLowHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.vulcan.VulcanSpeeds
+import net.ccbluex.liquidbounce.features.module.modules.movement.speed.SpeedAntiCornerBump
+import net.ccbluex.liquidbounce.features.module.modules.movement.speed.SpeedPreventDeadlyJump
+import net.ccbluex.liquidbounce.features.module.modules.movement.speed.SpeedYawOffset
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.grim.GrimBHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.grim.GrimLowHop
 import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.sentinel.SentinelSpeed
@@ -42,6 +45,13 @@ import net.ccbluex.liquidbounce.features.module.modules.movement.speedmodes.pola
 import net.ccbluex.liquidbounce.utils.extensions.isMoving
 
 object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_MAIN) {
+
+    private val avoidCornerBump by boolean("AvoidCornerBump", false)
+        .describe("Delay a jump when movement simulation predicts a reachable corner collision.")
+    private val preventDeadlyJump by boolean("PreventDeadlyJump", false)
+        .describe("Cancel speed jumps that movement simulation predicts will end in a dangerous fall.")
+    private val maximumSafeFall by float("MaximumSafeFall", 10f, 3f..30f) { preventDeadlyJump }
+        .describe("Maximum predicted drop allowed after a speed jump.")
 
     private val speedModes = arrayOf(
 
@@ -399,6 +409,7 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
             thePlayer.isSprinting = true
 
         modeModule.onUpdate()
+        SpeedYawOffset.update()
     }
 
     val onMotion = handler<MotionEvent> { event ->
@@ -439,6 +450,15 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
         if (mc.thePlayer?.isSneaking == true)
             return@handler
 
+        if (event.eventState == EventState.PRE) {
+            if (avoidCornerBump && SpeedAntiCornerBump.shouldDelayJump() ||
+                preventDeadlyJump && SpeedPreventDeadlyJump.wouldJumpToDeath(maximumSafeFall.toDouble())
+            ) {
+                event.cancelEvent()
+                return@handler
+            }
+        }
+
         modeModule.onJump(event)
     }
 
@@ -470,6 +490,10 @@ object Speed : Module("Speed", Category.MOVEMENT, Category.SubCategory.MOVEMENT_
 
     override val tag
         get() = mode.get()
+
+    init {
+        addValue(SpeedYawOffset)
+    }
 
     private val modeModule
         get() = speedModes.selectedMode(mode.get())
